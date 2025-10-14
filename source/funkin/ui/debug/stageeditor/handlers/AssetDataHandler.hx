@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.handlers;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import flixel.FlxSprite;
@@ -225,3 +226,4 @@ typedef StageEditorObjectData =
   var animData:String;
   var ?bitmap:BitmapData;
 }
+#end

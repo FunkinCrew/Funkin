@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxTiledSprite;
 import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
@@ -207,7 +208,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       {
         // Move the playhead if it would go out of view.
         var prevPlayheadRelativePos = playheadRelativePos;
-        playheadRelativePos = FlxMath.bound(playheadRelativePos, 0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
+        playheadRelativePos = playheadRelativePos.clamp(0, waveformScrollview.width - PLAYHEAD_RIGHT_PAD);
         trace('newPos: ${playheadRelativePos}');
         var diff = playheadRelativePos - prevPlayheadRelativePos;
 
@@ -683,3 +684,4 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return new ChartEditorFreeplayToolbox(chartEditorState);
   }
 }
+#end

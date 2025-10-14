@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import openfl.display.BitmapData;
@@ -13,7 +14,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
@@ -206,7 +207,7 @@ class StageEditorState extends UIState
         var data = this.packShitToZip();
         var path = haxe.io.Path.join([
           BACKUPS_PATH,
-          'stage-editor-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+          'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
         ]);
 
         FileUtil.writeBytesToPath(path, data);
@@ -498,18 +499,35 @@ class StageEditorState extends UIState
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
         var files = sys.FileSystem.readDirectory(BACKUPS_PATH);
-
+        var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          // ensures that the top most file is a backup
-          files.sort(funkin.util.SortUtil.alphabetically);
-
           while (!files[files.length - 1].endsWith(FileUtil.FILE_EXTENSION_INFO_FNFS.extension)
             || !files[files.length - 1].startsWith("stage-editor-"))
+          {
+            if (files.length == 0) break;
             files.pop();
+          }
         }
 
-        if (files.length != 0) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, files[files.length - 1]])).showDialog(true);
+        var latestBackupPath:Null<String> = files[0];
+
+        for (file in files)
+        {
+          filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, file])));
+        }
+
+        var latestFileIndex:Int = 0;
+        for (index in 0...filestats.length)
+        {
+          if (filestats[latestFileIndex].mtime.getTime() < filestats[index].mtime.getTime())
+          {
+            latestFileIndex = index;
+            latestBackupPath = files[index];
+          }
+        }
+
+        if (latestBackupPath != null) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, latestBackupPath])).showDialog(true);
       }
       #end
     }
@@ -638,7 +656,7 @@ class StageEditorState extends UIState
         if (FlxG.keys.justPressed.S) FlxG.keys.pressed.SHIFT ? onMenuItemClick("save stage as") : onMenuItemClick("save stage");
         if (FlxG.keys.justPressed.F) onMenuItemClick("find object");
         if (FlxG.keys.justPressed.O) onMenuItemClick("open stage");
-        if (FlxG.keys.justPressed.N) onMenuItemClick("new stage");
+        if (FlxG.keys.justPressed.N && welcomeDialog == null && userGuideDialog == null) onMenuItemClick("new stage");
         if (FlxG.keys.justPressed.Q) onMenuItemClick("exit");
       }
 
@@ -1259,7 +1277,7 @@ class StageEditorState extends UIState
         {
           if (exitConfirmDialog == null)
           {
-            exitConfirmDialog = Dialogs.messageBox("You are about to leave the Editor without Saving.\n\nAre you sure? ", "Leave Editor",
+            exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
               MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
                 exitConfirmDialog = null;
                 if (btn == DialogButton.YES)
@@ -1543,6 +1561,7 @@ class StageEditorState extends UIState
     loadUrlDialog.showDialog();
   }
 }
+#end
 
 /**
  * Available themes for the stage editor state.

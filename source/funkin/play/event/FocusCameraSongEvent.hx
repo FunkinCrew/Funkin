@@ -71,7 +71,10 @@ class FocusCameraSongEvent extends SongEvent
     var duration:Null<Float> = data.getFloat('duration');
     if (duration == null) duration = 4.0;
     var ease:Null<String> = data.getString('ease');
-    if (ease == null) ease = 'CLASSIC';
+    if (ease == null) ease = 'CLASSIC'; // No linear in defaults lol
+
+    var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
 
     var currentStage = PlayState.instance.currentStage;
 
@@ -132,7 +135,7 @@ class FocusCameraSongEvent extends SongEvent
         PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
         if (easeFunction == null)
         {
           trace('Invalid ease function: $ease');
@@ -186,6 +189,7 @@ class FocusCameraSongEvent extends SongEvent
         name: 'duration',
         title: 'Duration',
         defaultValue: 4.0,
+        min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
         units: 'steps'
@@ -197,45 +201,28 @@ class FocusCameraSongEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Sine In' => 'sineIn',
-          'Sine Out' => 'sineOut',
-          'Sine In/Out' => 'sineInOut',
-          'Quad In' => 'quadIn',
-          'Quad Out' => 'quadOut',
-          'Quad In/Out' => 'quadInOut',
-          'Cube In' => 'cubeIn',
-          'Cube Out' => 'cubeOut',
-          'Cube In/Out' => 'cubeInOut',
-          'Quart In' => 'quartIn',
-          'Quart Out' => 'quartOut',
-          'Quart In/Out' => 'quartInOut',
-          'Quint In' => 'quintIn',
-          'Quint Out' => 'quintOut',
-          'Quint In/Out' => 'quintInOut',
-          'Expo In' => 'expoIn',
-          'Expo Out' => 'expoOut',
-          'Expo In/Out' => 'expoInOut',
-          'Smooth Step In' => 'smoothStepIn',
-          'Smooth Step Out' => 'smoothStepOut',
-          'Smooth Step In/Out' => 'smoothStepInOut',
-          'Smoother Step In' => 'smootherStepIn',
-          'Smoother Step Out' => 'smootherStepOut',
-          'Smoother Step In/Out' => 'smootherStepInOut',
-          'Elastic In' => 'elasticIn',
-          'Elastic Out' => 'elasticOut',
-          'Elastic In/Out' => 'elasticInOut',
-          'Back In' => 'backIn',
-          'Back Out' => 'backOut',
-          'Back In/Out' => 'backInOut',
-          'Bounce In' => 'bounceIn',
-          'Bounce Out' => 'bounceOut',
-          'Bounce In/Out' => 'bounceInOut',
-          'Circ In' => 'circIn',
-          'Circ Out' => 'circOut',
-          'Circ In/Out' => 'circInOut',
           'Instant (Ignores duration)' => 'INSTANT',
-          'Classic (Ignores duration)' => 'CLASSIC'
+          'Classic (Ignores duration)' => 'CLASSIC',
+          'Sine' => 'sine',
+          'Quad' => 'quad',
+          'Cube' => 'cube',
+          'Quart' => 'quart',
+          'Quint' => 'quint',
+          'Expo' => 'expo',
+          'Smooth Step' => 'smoothStep',
+          'Smoother Step' => 'smootherStep',
+          'Elastic' => 'elastic',
+          'Back' => 'back',
+          'Bounce' => 'bounce',
+          'Circ ' => 'circ',
         ]
+      },
+      {
+        name: 'easeDir',
+        title: 'Easing Direction',
+        defaultValue: 'In',
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       }
     ]);
   }

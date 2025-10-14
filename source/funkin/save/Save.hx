@@ -2,7 +2,7 @@ package funkin.save;
 
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.scoring.Scoring;
 import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
+import funkin.util.macro.ConsoleMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
@@ -20,7 +21,7 @@ import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety
-class Save
+class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
@@ -121,7 +122,9 @@ class Save
           downscroll: false,
           flashingLights: true,
           zoomCamera: true,
-          debugDisplay: false,
+          debugDisplay: 'Off',
+          debugDisplayBGOpacity: 50,
+          subtitles: true,
           hapticsMode: 'All',
           hapticsIntensityMultiplier: 1,
           autoPause: true,
@@ -374,6 +377,23 @@ class Save
     data.optionsChartEditor.showNoteKinds = value;
     flush();
     return data.optionsChartEditor.showNoteKinds;
+  }
+
+  public var chartEditorShowSubtitles(get, set):Bool;
+
+  function get_chartEditorShowSubtitles():Bool
+  {
+    if (data.optionsChartEditor.showSubtitles == null) data.optionsChartEditor.showSubtitles = true;
+
+    return data.optionsChartEditor.showSubtitles;
+  }
+
+  function set_chartEditorShowSubtitles(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.showSubtitles = value;
+    flush();
+    return data.optionsChartEditor.showSubtitles;
   }
 
   public var chartEditorPlaytestStartTime(get, set):Bool;
@@ -1220,7 +1240,7 @@ class Save
   {
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
-    lime.app.Application.current.window.alert(msg, "Save Data Failure");
+    funkin.util.WindowUtil.showError("Save Data Failure", msg);
 
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
@@ -1368,9 +1388,14 @@ class Save
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
-  public function debug_dumpSave():Void
+  public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+  }
+
+  public function debug_dumpSaveJsonPrint():Void
+  {
+    trace(this.serialize());
   }
 
   #if FEATURE_NEWGROUNDS
@@ -1407,7 +1432,7 @@ class Save
       var msg = 'There was an error loading your save data from Newgrounds.';
       msg += '\n${errorMsg}';
       msg += '\nAre you sure you are connected to the internet?';
-      lime.app.Application.current.window.alert(msg, "Newgrounds Save Slot Failure");
+      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
     });
   }
   #end
@@ -1600,9 +1625,21 @@ typedef SaveDataOptions =
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * @default `false`
+   * @default `Off`
    */
-  var debugDisplay:Bool;
+  var debugDisplay:String;
+
+  /**
+   * Opacity of the debug display's background.
+   * @default `50`
+   */
+  var debugDisplayBGOpacity:Int;
+
+  /**
+   * If enabled, subtitles will appear.
+   * @default `true`
+   */
+  var subtitles:Bool;
 
   /**
    * If enabled, haptic feedback will be enabled.
@@ -1865,6 +1902,12 @@ typedef SaveDataChartEditorOptions =
    * @default `true`
    */
   var ?showNoteKinds:Bool;
+
+  /**
+   * Show Subtitles in the Chart Editor.
+   * @default `true`
+   */
+  var ?showSubtitles:Bool;
 
   /**
    * Metronome volume in the Chart Editor.

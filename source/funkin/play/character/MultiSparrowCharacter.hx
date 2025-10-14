@@ -4,7 +4,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 
 /**
  * For some characters which use Sparrow atlases, the spritesheets need to be split
@@ -94,6 +94,7 @@ class MultiSparrowCharacter extends BaseCharacter
       {
         trace('Concatenating multi-sparrow atlas: ${asset}');
         subTexture.parent.destroyOnNoUse = false;
+        FunkinMemory.cacheTexture(Paths.image(asset));
       }
 
       texture.addAtlas(subTexture);

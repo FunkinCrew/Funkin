@@ -1,6 +1,5 @@
 package funkin.api.newgrounds;
 
-import funkin.util.macro.EnvironmentConfigMacro;
 import funkin.save.Save;
 import funkin.api.newgrounds.Medals.Medal;
 #if FEATURE_NEWGROUNDS
@@ -15,11 +14,15 @@ import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
 
+@:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
 class NewgroundsClient
 {
-  static final APP_ID:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("API_NG_APP_ID");
-  static final ENCRYPTION_KEY:Null<String> = EnvironmentConfigMacro.environmentConfig?.get("API_NG_ENC_KEY");
+  @:envField
+  static final API_NG_APP_ID:Null<String>;
+
+  @:envField
+  static final API_NG_ENC_KEY:Null<String>;
 
   public static var instance(get, never):NewgroundsClient;
 
@@ -42,8 +45,8 @@ class NewgroundsClient
     trace('[NEWGROUNDS] Initializing client...');
 
     #if FEATURE_NEWGROUNDS_DEBUG
-    trace('[NEWGROUNDS] App ID: ${APP_ID}');
-    trace('[NEWGROUNDS] Encryption Key: ${ENCRYPTION_KEY}');
+    trace('[NEWGROUNDS] App ID: ${API_NG_APP_ID}');
+    trace('[NEWGROUNDS] Encryption Key: ${API_NG_ENC_KEY}');
     #end
 
     if (!hasValidCredentials())
@@ -54,9 +57,9 @@ class NewgroundsClient
 
     @:nullSafety(Off)
     {
-      NG.create(APP_ID, getSessionId(), #if FEATURE_NEWGROUNDS_DEBUG true #else false #end, onLoginResolved);
+      NG.create(API_NG_APP_ID, getSessionId(), #if FEATURE_NEWGROUNDS_DEBUG true #else false #end, onLoginResolved);
 
-      NG.core.setupEncryption(ENCRYPTION_KEY);
+      NG.core.setupEncryption(API_NG_ENC_KEY);
     }
   }
 
@@ -99,6 +102,12 @@ class NewgroundsClient
     if (NG.core == null)
     {
       FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
+      return;
+    }
+
+    if (NG.core.attemptingLogin)
+    {
+      trace("[NEWGROUNDS] Login attempt ongoing, will not login until finished.");
       return;
     }
 
@@ -176,12 +185,12 @@ class NewgroundsClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(APP_ID == null
-      || APP_ID == ""
-      || (APP_ID != null && APP_ID.contains(" "))
-      || ENCRYPTION_KEY == null
-      || ENCRYPTION_KEY == ""
-      || (ENCRYPTION_KEY != null && ENCRYPTION_KEY.contains(" ")));
+    return !(API_NG_APP_ID == null
+      || API_NG_APP_ID == ""
+      || (API_NG_APP_ID != null && API_NG_APP_ID.contains(" "))
+      || API_NG_ENC_KEY == null
+      || API_NG_ENC_KEY == ""
+      || (API_NG_ENC_KEY != null && API_NG_ENC_KEY.contains(" ")));
   }
 
   function onLoginResolved(outcome:LoginOutcome):Void

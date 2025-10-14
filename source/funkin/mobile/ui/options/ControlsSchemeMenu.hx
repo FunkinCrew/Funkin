@@ -270,7 +270,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   function setSelection(index:Int):Void
   {
-    final newIndex:Int = Math.floor(FlxMath.bound(index, 0, hitboxShowcases.length - 1));
+    final newIndex:Int = Math.floor(index.clamp(0, hitboxShowcases.length - 1));
 
     if (currentIndex != newIndex)
     {
@@ -348,7 +348,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
       hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, showcasesTargetX, elapsed, 0.5);
 
       final minShowcasesX:Float = -1500 * availableSchemes.length;
-      hitboxShowcases.x = FlxMath.bound(hitboxShowcases.x, minShowcasesX, 400);
+      hitboxShowcases.x = hitboxShowcases.x.clamp(minShowcasesX, 400);
 
       final targetIndex:Int = Math.round(hitboxShowcases.x / -1500);
 
@@ -356,8 +356,9 @@ class ControlsSchemeMenu extends MusicBeatSubState
     }
     else
     {
-      hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex), elapsed, 0.5);
+      hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex),
+        elapsed, 0.5);
     }
-  #end
   }
+  #end
 }

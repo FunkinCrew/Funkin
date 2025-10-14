@@ -277,11 +277,11 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
   public function accept():Void
   {
-    var selected = members[selectedIndex];
+    var menuItem:T = members[selectedIndex];
 
-    if (!selected.available) return;
+    if (!menuItem.available) return;
 
-    onAcceptPress.dispatch(selected);
+    onAcceptPress.dispatch(menuItem);
 
     if (selected.fireInstantly)
     {
@@ -293,14 +293,14 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(selected, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_) {
         busy = false;
-        selected.callback();
+        menuItem.callback();
       });
     }
   }
 
-  public function cancelAccept()
+  public function cancelAccept():Void
   {
     FlxFlicker.stopFlickering(members[selectedIndex]);
     busy = false;
@@ -332,22 +332,22 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     selectedIndex = index;
 
-    var selected = members[selectedIndex];
-    selected.select();
-    onChange.dispatch(selected);
+    var selectedMenuItem:T = members[selectedIndex];
+    selectedMenuItem.select();
+    onChange.dispatch(selectedMenuItem);
   }
 
-  public function has(name:String)
+  public function has(name:String):Bool
   {
     return byName.exists(name);
   }
 
-  public function getItem(name:String)
+  public function getItem(name:String):Null<T>
   {
     return byName[name];
   }
 
-  override function destroy()
+  override function destroy():Void
   {
     super.destroy();
     byName.clear();
@@ -371,7 +371,7 @@ class MenuListItem extends FlxSprite
   /**
    * Set to true for things like opening URLs otherwise, it may it get blocked.
    */
-  public var fireInstantly = false;
+  public var fireInstantly:Bool = false;
 
   public var selected(get, never):Bool;
 
@@ -391,7 +391,7 @@ class MenuListItem extends FlxSprite
     idle();
   }
 
-  function setData(name:String, ?callback:Void->Void, available:Bool)
+  function setData(name:String, ?callback:Void->Void, available:Bool):Void
   {
     this.name = name;
 
@@ -405,7 +405,7 @@ class MenuListItem extends FlxSprite
    * @param name      the label.
    * @param callback  Unchanged if null.
    */
-  public function setItem(name:String, ?callback:Void->Void)
+  public function setItem(name:String, ?callback:Void->Void):Void
   {
     setData(name, callback, available);
 
@@ -414,12 +414,12 @@ class MenuListItem extends FlxSprite
       idle();
   }
 
-  public function idle()
+  public function idle():Void
   {
     alpha = 0.6;
   }
 
-  public function select()
+  public function select():Void
   {
     alpha = 1.0;
   }

@@ -1,10 +1,12 @@
 package funkin.play.components;
 
-import funkin.play.character.CharacterData;
+import funkin.data.character.CharacterData;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.graphics.FunkinSprite;
 import funkin.util.MathUtil;
 
@@ -91,7 +93,7 @@ class HealthIcon extends FunkinSprite
   /**
    * The maximum health of the player.
    */
-  static final MAXIMUM_HEALTH:Float = 2;
+  static final MAXIMUM_HEALTH:Float = Constants.HEALTH_MAX;
 
   /**
    * The size of a non-pixel icon when using the legacy format.
@@ -114,6 +116,13 @@ class HealthIcon extends FunkinSprite
    * shitty hardcoded value for a specific positioning!!!
    */
   static final POSITION_OFFSET:Int = 26;
+
+  public var iconOffset:FlxPoint = FlxPoint.get();
+
+  /**
+   * Tween, that makes icon *bop*.
+   */
+  public var bopTween:Null<FlxTween> = null;
 
   public function new(char:Null<String>, playerId:Int = 0)
   {
@@ -151,10 +160,12 @@ class HealthIcon extends FunkinSprite
    */
   public function toggleOldIcon():Void
   {
+    final playState:Null<PlayState> = PlayState.instance;
+    if (playState == null || playState.currentStage == null) return;
     if (characterId == 'bf-old')
     {
-      isPixel = PlayState.instance.currentStage.getBoyfriend().isPixel;
-      PlayState.instance.currentStage.getBoyfriend().initHealthIcon(false);
+      isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
+      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
     }
     else
     {
@@ -163,7 +174,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
     }
 
-    lerpIconSize(true);
+    snapToTargetSize();
   }
 
   /**
@@ -180,8 +191,7 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(1.0, 1.0);
-      this.offset.x = 0.0;
-      this.offset.y = 0.0;
+      this.iconOffset.set();
       this.flipX = false;
     }
     else
@@ -192,8 +202,15 @@ class HealthIcon extends FunkinSprite
       loadCharacter(characterId);
 
       this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      this.offset.x = (data.offsets != null) ? data.offsets[0] : 0.0;
-      this.offset.y = (data.offsets != null) ? data.offsets[1] : 0.0;
+      if (data.offsets != null && data.offsets.length == 2)
+      {
+        this.iconOffset.set(data.offsets[0], data.offsets[1]);
+      }
+      else
+      {
+        this.iconOffset.set(0, 0);
+      }
+
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
     }
   }
@@ -205,45 +222,9 @@ class HealthIcon extends FunkinSprite
   {
     super.update(elapsed);
 
-    if (bopEvery != 0)
-    {
-      lerpIconSize();
-
-      // Lerp the health icon back to its normal angle.
-      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.512);
-    }
+    if (bopEvery != 0) this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.512);
 
     this.updatePosition();
-  }
-
-  /**
-   * Does the calculation to lerp the icon size. Usually called every frame, but can be forced to the target size.
-   * Mainly forced when changing to old icon to not have a weird lerp related to changing from pixel icon to non-pixel old icon
-   * @param force Force the icon immedialtely to be the target size. Defaults to false.
-   */
-  function lerpIconSize(force:Bool = false):Void
-  {
-    // Lerp the health icon back to its normal size,
-    // while maintaining aspect ratio.
-    if (this.width > this.height)
-    {
-      // Apply linear interpolation while accounting for frame rate.
-      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.width, HEALTH_ICON_SIZE * this.size.x, FlxG.elapsed, 0.512));
-
-      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.x);
-
-      setGraphicSize(targetSize, 0);
-    }
-    else
-    {
-      var targetSize:Int = Std.int(MathUtil.smoothLerpPrecision(this.height, HEALTH_ICON_SIZE * this.size.y, FlxG.elapsed, 0.512));
-
-      if (force) targetSize = Std.int(HEALTH_ICON_SIZE * this.size.y);
-
-      setGraphicSize(0, targetSize);
-    }
-
-    this.updateHitbox();
   }
 
   /*
@@ -251,6 +232,7 @@ class HealthIcon extends FunkinSprite
    */
   public function snapToTargetSize():Void
   {
+    bopTween?.cancel();
     if (this.width > this.height)
     {
       setGraphicSize(Std.int(HEALTH_ICON_SIZE * this.size.x), 0);
@@ -260,6 +242,13 @@ class HealthIcon extends FunkinSprite
       setGraphicSize(0, Std.int(HEALTH_ICON_SIZE * this.size.y));
     }
     updateHitbox();
+  }
+
+  // Apply custom icons offset after hitbox update.
+  override public function updateHitbox():Void
+  {
+    super.updateHitbox();
+    offset += iconOffset;
   }
 
   /**
@@ -286,7 +275,6 @@ class HealthIcon extends FunkinSprite
             + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
             - (this.width - POSITION_OFFSET);
       }
-
       // Keep the icon centered vertically on the health bar.
       this.y = PlayState.instance.healthBar.y - (this.height / 2); // - (PlayState.instance.healthBar.height / 2)
     }
@@ -301,22 +289,20 @@ class HealthIcon extends FunkinSprite
     // Make the icons bop.
     if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
     {
-      // Make the icon increase in size (the update function causes them to lerp back down).
-      if (this.width > this.height)
-      {
-        setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
-      }
-      else
-      {
-        setGraphicSize(0, Std.int(this.height + (HEALTH_ICON_SIZE * this.size.y * BOP_SCALE)));
-      }
-      // Make the icon twist (the update function causes them to lerp back to normal).
-      this.angle += bopAngle * (playerId == 0 ? 1 : -1);
-
-      this.updateHitbox();
-
+      bopTween?.cancel();
+      setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
+      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x,
+        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> bopTween = null}, value -> {
+          setGraphicSize(Std.int(value), 0);
+          // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
+          this.updateHitbox();
+          this.updatePosition();
+        });
       // Ensure the icon is positioned correctly after updating the hitbox.
+      this.updateHitbox();
       this.updatePosition();
+
+      this.angle += bopAngle * (playerId == 0 ? 1 : -1);
     }
   }
 

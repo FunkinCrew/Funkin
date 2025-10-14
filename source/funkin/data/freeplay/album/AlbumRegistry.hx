@@ -7,7 +7,7 @@ import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class AlbumRegistry extends BaseRegistry<Album, AlbumData> implements ISingleton implements DefaultRegistryImpl
+class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the album data format.
@@ -23,3 +23,5 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData> implements ISingleton
     super('ALBUM', 'ui/freeplay/albums', ALBUM_DATA_VERSION_RULE);
   }
 }
+
+typedef AlbumEntryParams = {}

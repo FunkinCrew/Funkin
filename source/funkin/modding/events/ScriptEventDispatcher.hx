@@ -2,6 +2,7 @@ package funkin.modding.events;
 
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass;
+import funkin.modding.module.Module;
 
 /**
  * Utility functions to assist with handling scripted classes.
@@ -32,6 +33,13 @@ class ScriptEventDispatcher
       case CREATE:
         target.onCreate(event);
         return;
+      case STATE_CREATE:
+        if (Std.isOfType(target, Module))
+        {
+          var t:Module = cast(target, Module);
+          t.onStateCreate(event);
+        }
+        return;
       case DESTROY:
         target.onDestroy(event);
         return;
@@ -51,6 +59,11 @@ class ScriptEventDispatcher
           return;
         default: // Continue;
       }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([ScriptEventType.ADDED].contains(event.type)) return;
     }
 
     if (Std.isOfType(target, IDialogueScriptedClass))
@@ -76,6 +89,17 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.DIALOGUE_START,
+        ScriptEventType.DIALOGUE_LINE,
+        ScriptEventType.DIALOGUE_COMPLETE_LINE,
+        ScriptEventType.DIALOGUE_SKIP,
+        ScriptEventType.DIALOGUE_END
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, INoteScriptedClass))
     {
@@ -97,6 +121,16 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.NOTE_INCOMING,
+        ScriptEventType.NOTE_HIT,
+        ScriptEventType.NOTE_MISS,
+        ScriptEventType.NOTE_HOLD_DROP
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, IBPMSyncedScriptedClass))
     {
@@ -111,6 +145,11 @@ class ScriptEventDispatcher
           return;
         default: // Continue;
       }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([ScriptEventType.SONG_BEAT_HIT, ScriptEventType.SONG_STEP_HIT].contains(event.type)) return;
     }
 
     if (Std.isOfType(target, IPlayStateScriptedClass))
@@ -157,6 +196,24 @@ class ScriptEventDispatcher
         default: // Continue;
       }
     }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.NOTE_GHOST_MISS,
+        ScriptEventType.SONG_START,
+        ScriptEventType.SONG_END,
+        ScriptEventType.SONG_RETRY,
+        ScriptEventType.GAME_OVER,
+        ScriptEventType.PAUSE,
+        ScriptEventType.RESUME,
+        ScriptEventType.SONG_EVENT,
+        ScriptEventType.COUNTDOWN_START,
+        ScriptEventType.COUNTDOWN_STEP,
+        ScriptEventType.COUNTDOWN_END,
+        ScriptEventType.SONG_LOADED
+      ].contains(event.type)) return;
+    }
 
     if (Std.isOfType(target, IStateChangingScriptedClass))
     {
@@ -192,12 +249,88 @@ class ScriptEventDispatcher
     }
     else
     {
-      // Prevent "NO HELPER error."
-      return;
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.STATE_CHANGE_BEGIN,
+        ScriptEventType.STATE_CHANGE_END,
+        ScriptEventType.SUBSTATE_OPEN_BEGIN,
+        ScriptEventType.SUBSTATE_OPEN_END,
+        ScriptEventType.SUBSTATE_CLOSE_BEGIN,
+        ScriptEventType.SUBSTATE_CLOSE_END,
+        ScriptEventType.FOCUS_LOST,
+        ScriptEventType.FOCUS_GAINED
+      ].contains(event.type)) return;
     }
 
-    // If you get a crash on this line, that means ERIC FUCKED UP!
-    // throw 'No function called for event type: ${event.type}';
+    if (Std.isOfType(target, IFreeplayScriptedClass))
+    {
+      var t:IFreeplayScriptedClass = cast target;
+      switch (event.type)
+      {
+        case CAPSULE_SELECTED:
+          t.onCapsuleSelected(cast event);
+          return;
+        case DIFFICULTY_SWITCH:
+          t.onDifficultySwitch(cast event);
+          return;
+        case SONG_SELECTED:
+          t.onSongSelected(cast event);
+          return;
+        case FREEPLAY_INTRO:
+          t.onFreeplayIntroDone(cast event);
+          return;
+        case FREEPLAY_OUTRO:
+          t.onFreeplayOutro(cast event);
+          return;
+        case FREEPLAY_CLOSE:
+          t.onFreeplayClose(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.CAPSULE_SELECTED,
+        ScriptEventType.DIFFICULTY_SWITCH,
+        ScriptEventType.SONG_SELECTED,
+        ScriptEventType.FREEPLAY_INTRO,
+        ScriptEventType.FREEPLAY_OUTRO,
+        ScriptEventType.FREEPLAY_CLOSE
+      ].contains(event.type)) return;
+    }
+
+    if (Std.isOfType(target, ICharacterSelectScriptedClass))
+    {
+      var t:ICharacterSelectScriptedClass = cast target;
+      switch (event.type)
+      {
+        case CHARACTER_SELECTED:
+          t.onCharacterSelect(cast event);
+          return;
+        case CHARACTER_DESELECTED:
+          t.onCharacterDeselect(cast event);
+          return;
+        case CHARACTER_CONFIRMED:
+          t.onCharacterConfirm(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.CHARACTER_SELECTED,
+        ScriptEventType.CHARACTER_DESELECTED,
+        ScriptEventType.CHARACTER_CONFIRMED
+      ].contains(event.type)) return;
+    }
+
+    // If we reach this line, it means a script event was dispatched while not being properly handled.
+    // Throw an error so we know to add additional fallbacks.
+    throw 'No corresponding function called for dispatched event type: ${event.type}';
   }
 
   public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void

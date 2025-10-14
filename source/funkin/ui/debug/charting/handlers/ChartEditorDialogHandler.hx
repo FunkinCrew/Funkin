@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import flixel.util.FlxTimer;
 import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
@@ -32,6 +33,7 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.Form;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Component;
@@ -167,11 +169,10 @@ class ChartEditorDialogHandler
     var backupTimeLabel:Null<Label> = dialog.findComponent('backupTimeLabel', Label);
     if (backupTimeLabel == null) throw 'Could not locate backupTimeLabel button in Backup Available dialog';
 
-    var latestBackupDate:Null<Date> = ChartEditorImportExportHandler.getLatestBackupDate();
-    if (latestBackupDate != null)
+    var latestBackupInfo:Null<String> = ChartEditorImportExportHandler.getLatestBackupInfo();
+    if (latestBackupInfo != null)
     {
-      var latestBackupDateStr:String = DateUtil.generateCleanTimestamp(latestBackupDate);
-      backupTimeLabel.text = latestBackupDateStr;
+      backupTimeLabel.text = latestBackupInfo;
     }
 
     var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
@@ -619,6 +620,23 @@ class ChartEditorDialogHandler
     };
     inputSongArtist.text = "";
 
+    var inputSongCharter:Null<TextField> = dialog.findComponent('inputSongCharter', TextField);
+    if (inputSongCharter == null) throw 'Could not locate inputSongCharter TextField in Song Metadata dialog';
+    inputSongCharter.onChange = function(event:UIEvent) {
+      var valid:Bool = event.target.text != null && event.target.text != '';
+
+      if (valid)
+      {
+        inputSongCharter.removeClass('invalid-value');
+        newSongMetadata.charter = event.target.text;
+      }
+      else
+      {
+        newSongMetadata.charter = "";
+      }
+    };
+    inputSongCharter.text = "";
+
     var inputStage:Null<DropDown> = dialog.findComponent('inputStage', DropDown);
     if (inputStage == null) throw 'Could not locate inputStage DropDown in Song Metadata dialog';
     inputStage.onChange = function(event:UIEvent) {
@@ -692,6 +710,7 @@ class ChartEditorDialogHandler
       {
         state.songMetadata.clear();
         state.songChartData.clear();
+        state._songManifestData = null;
       }
 
       state.songMetadata.set(targetVariation, newSongMetadata);
@@ -1227,6 +1246,7 @@ class ChartEditorDialogHandler
       pendingVariation.timeChanges[0].bpm = dialogBPM.value;
 
       state.songMetadata.set(pendingVariation.variation, pendingVariation);
+      state.refreshPlayDataVariations();
       state.difficultySelectDirty = true; // Force the Difficulty toolbox to update.
 
       // Don't update conductor since we haven't switched to the new variation yet.
@@ -1293,6 +1313,34 @@ class ChartEditorDialogHandler
 
       dialog.hideDialog(DialogButton.APPLY);
     }
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can confirm to leave the chart editor if they have unsaved changes.
+   * @param state The current chart editor state.
+   * @return The dialog that was opened.
+   */
+  public static function openLeaveConfirmationDialog(state:ChartEditorState):Dialog
+  {
+    var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor",
+      MessageBoxType.TYPE_YESNO, true, function(button:DialogButton) {
+        if (button == DialogButton.YES)
+        {
+          state.quitChartEditor();
+        }
+        state.isHaxeUIDialogOpen = false;
+    });
+
+    dialog.destroyOnClose = true;
+    state.isHaxeUIDialogOpen = true;
+
+    dialog.onDialogClosed = function(event:UIEvent) {
+      state.isHaxeUIDialogOpen = false;
+    };
+
+    dialog.zIndex = 1000;
 
     return dialog;
   }
@@ -1383,3 +1431,4 @@ class ChartEditorDialogHandler
     });
   }
 }
+#end

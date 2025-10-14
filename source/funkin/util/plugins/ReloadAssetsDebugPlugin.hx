@@ -1,5 +1,6 @@
 package funkin.util.plugins;
 
+import funkin.ui.ScriptedMusicBeatState;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
@@ -55,25 +56,44 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     #end
   }
 
+  var path:String = "";
+
   @:noCompletion
   function reload():Void
   {
     var state:Dynamic = FlxG.state;
-    if (state is MusicBeatState || state is MusicBeatSubState) state.reloadAssets();
+    var isScripted:Bool = state is ScriptedMusicBeatState;
+    if (isScripted)
+    {
+      var s:ScriptedMusicBeatState = cast FlxG.state;
+      @:privateAccess
+      path = s._asc.fullyQualifiedName;
+      trace("Current scripted state path: " + path);
+    }
+
+    if ((state is MusicBeatState || state is MusicBeatSubState) && !isScripted) state.reloadAssets();
     else
     {
       funkin.modding.PolymodHandler.forceReloadAssets();
 
+      trace("Reloaded assets, checking for scripted state. Scripted: " + isScripted + ", Path: " + path);
+      if (isScripted)
+      {
+        trace("Reloading scripted state: " + path);
+        var state:Dynamic = ScriptedMusicBeatState.init(path);
+        FlxG.switchState(state);
+      }
+
       // Create a new instance of the current state, so old data is cleared.
-      FlxG.resetState();
+      if (!isScripted) FlxG.resetState();
     }
   }
 
   #if android
   @:noCompletion
-  function onActivityResult(resultCode:Int, requestCode:Int):Void
+  function onActivityResult(requestCode:Int, resultCode:Int):Void
   {
-    if (resultCode == CallbackUtil.DATA_FOLDER_CLOSED)
+    if (requestCode == CallbackUtil.DATA_FOLDER_CLOSED)
     {
       reload();
     }

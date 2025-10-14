@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
@@ -10,8 +11,6 @@ import flixel.FlxG;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageRegistry;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
-
-using funkin.util.tools.FloatTools;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
 class WelcomeDialog extends Dialog
@@ -49,9 +48,9 @@ class WelcomeDialog extends Dialog
 
       #if sys
       var stat = sys.FileSystem.stat(file);
-      var sizeInMB = (stat.size / 1000000).round(2);
+      var sizeInMB = (stat.size / 1000000).round(3);
 
-      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + "MB";
+      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
       #end
 
       contentRecent.addComponent(fileText);
@@ -59,7 +58,7 @@ class WelcomeDialog extends Dialog
 
     boxDrag.onClick = function(_) FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
 
-    var defaultStages:Array<String> = StageRegistry.instance.listBaseGameEntryIds();
+    var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
 
     for (stage in defaultStages)
@@ -145,3 +144,4 @@ class WelcomeDialog extends Dialog
     destroy();
   }
 }
+#end

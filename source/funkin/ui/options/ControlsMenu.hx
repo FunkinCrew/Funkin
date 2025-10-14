@@ -38,6 +38,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       #if FEATURE_DEBUG_MENU DEBUG_MENU, #end
       #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
       #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
+      DEBUG_DISPLAY
     ]
   ];
 

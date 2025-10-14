@@ -330,11 +330,19 @@ class StoryMenuState extends MusicBeatState
 
     handleKeyPresses();
 
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     super.update(elapsed);
   }
 
   function handleKeyPresses():Void
   {
+    @:privateAccess
+    if ((stickerSubState?.switchingState ?? false)) return;
+
     if (!exitingMenu)
     {
       if (!selectedLevel)
@@ -348,6 +356,18 @@ class StoryMenuState extends MusicBeatState
         if (controls.UI_DOWN_P || SwipeUtil.swipeDown)
         {
           changeLevel(1);
+          changeDifficulty(0);
+        }
+
+        if (controls.FREEPLAY_JUMP_TO_TOP)
+        {
+          changeLevel(levelList.length);
+          changeDifficulty(0);
+        }
+
+        if (controls.FREEPLAY_JUMP_TO_BOTTOM)
+        {
+          changeLevel(-levelList.length);
           changeDifficulty(0);
         }
 
@@ -590,7 +610,7 @@ class StoryMenuState extends MusicBeatState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
@@ -706,9 +726,11 @@ class StoryMenuState extends MusicBeatState
 
   function goBack():Void
   {
-    if (exitingMenu || selectedLevel) return;
+    @:privateAccess
+    if (exitingMenu || selectedLevel || (stickerSubState?.switchingState ?? false)) return;
 
     exitingMenu = true;
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
   }

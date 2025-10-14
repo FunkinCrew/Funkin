@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.components.TextField;
 import haxe.ui.components.CheckBox;
@@ -101,3 +102,4 @@ class FindObjDialog extends Dialog
     fn(done);
   }
 }
+#end

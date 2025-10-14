@@ -38,11 +38,7 @@ typedef RegistryTypeParams =
  */
 class RegistryMacro
 {
-  #if ios
-  static final DATA_FILE_BASE_PATH:String = "../../../../../assets/preload/data";
-  #else
   static final DATA_FILE_BASE_PATH:String = "assets/preload/data";
-  #end
 
   /**
    * Builds the registry class.
@@ -147,7 +143,13 @@ class RegistryMacro
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
 
     var dataFilePath:String = getRegistryDataFilePath(cls, fields);
-    var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${DATA_FILE_BASE_PATH}/${dataFilePath}/');
+
+    var dataPath:String = DATA_FILE_BASE_PATH;
+    #if ios
+    if (!sys.FileSystem.exists(dataPath)) dataPath = "../../../../../" + dataPath;
+    #end
+
+    var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${dataPath}/${dataFilePath}/');
 
     return (macro class TempClass
       {
@@ -182,7 +184,7 @@ class RegistryMacro
           switch (this.loadEntryFile(id))
           {
             case {fileName: fileName, contents: contents}:
-              parser.fromJson(contents, fileName);
+              parser.fromJson(funkin.util.SerializerUtil.sanitizeJSON(contents), fileName);
             default:
               return null;
           }

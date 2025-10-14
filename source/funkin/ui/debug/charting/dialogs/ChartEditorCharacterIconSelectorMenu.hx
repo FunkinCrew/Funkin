@@ -1,9 +1,10 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import flixel.math.FlxPoint;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.play.character.CharacterData;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.util.SortUtil;
 import haxe.ui.components.Label;
@@ -147,3 +148,4 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     return menu;
   }
 }
+#end

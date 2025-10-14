@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 
@@ -79,3 +80,4 @@ class MoveNotesCommand implements ChartEditorCommand
     return 'Move $len Notes';
   }
 }
+#end

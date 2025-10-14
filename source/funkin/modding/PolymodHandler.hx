@@ -1,9 +1,9 @@
 package funkin.modding;
 
 import polymod.fs.ZipFileSystem;
-import funkin.data.dialogue.conversation.ConversationRegistry;
-import funkin.data.dialogue.dialoguebox.DialogueBoxRegistry;
-import funkin.data.dialogue.speaker.SpeakerRegistry;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -15,7 +15,7 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.macro.ClassMacro;
@@ -267,6 +267,13 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
 
+    // Backward compatibility for some classes that moved.
+    Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
+    Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
+    Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
 
@@ -374,9 +381,6 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
-    // Contains critical private environment variables.
-    Polymod.blacklistImport('funkin.util.macro.EnvironmentConfigMacro');
-
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
@@ -441,6 +445,11 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // External classes for android that bridge to private JNI methods & callbacks
+    Polymod.blacklistImport('funkin.external.android.CallbackUtil');
+    Polymod.blacklistImport('funkin.external.android.DataFolderUtil');
+    Polymod.blacklistImport('funkin.external.android.JNIUtil');
   }
 
   /**
@@ -557,11 +566,9 @@ class PolymodHandler
     Polymod.clearScripts();
 
     // Forcibly reload Polymod so it finds any new files.
+    // This will also register all scripts.
     // TODO: Replace this with loadEnabledMods().
     funkin.modding.PolymodHandler.loadAllMods();
-
-    // Reload scripted classes so stages and modules will update.
-    Polymod.registerAllScriptClasses();
 
     // Reload everything that is cached.
     // Currently this freezes the game for a second but I guess that's tolerable?
@@ -585,7 +592,8 @@ class PolymodHandler
     FreeplayStyleRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
-    NoteKindManager.loadScripts();
+    NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
+    ModuleHandler.callOnCreate();
   }
 }

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongRegistry;
 import funkin.play.song.Song;
 import funkin.ui.debug.charting.ChartEditorState;
@@ -139,7 +140,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
     for (targetSongId in songList)
     {
-      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
       if (songData == null) continue;
 
       var songName:Null<String> = songData.getDifficulty('normal')?.songName;
@@ -242,3 +243,4 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     chartEditorState.openImportChartWizard('legacy', false);
   }
 }
+#end

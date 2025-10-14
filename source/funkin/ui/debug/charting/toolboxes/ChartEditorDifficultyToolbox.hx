@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
@@ -303,3 +304,4 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     return new ChartEditorDifficultyToolbox(chartEditorState);
   }
 }
+#end

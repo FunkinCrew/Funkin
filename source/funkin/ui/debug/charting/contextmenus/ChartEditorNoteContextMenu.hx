@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
@@ -13,7 +14,7 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
   var contextmenuFlip:MenuItem;
   var contextmenuDelete:MenuItem;
 
-  var data:SongNoteData;
+  public var data:SongNoteData;
 
   public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0, data:SongNoteData)
   {
@@ -23,7 +24,7 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
     initialize();
   }
 
-  function initialize():Void
+  public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
     contextmenuFlip.onClick = function(_) {
@@ -39,3 +40,4 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
     }
   }
 }
+#end

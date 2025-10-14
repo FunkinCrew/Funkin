@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.components.DropDown;
 import haxe.ui.components.TextField;
 import haxe.ui.components.Label;
@@ -301,3 +302,4 @@ typedef ToolboxNoteKindParam =
   var label:Label;
   var component:Component;
 }
+#end

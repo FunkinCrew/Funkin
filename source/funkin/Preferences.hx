@@ -7,6 +7,7 @@ import funkin.mobile.util.InAppPurchasesUtil;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -137,27 +138,46 @@ class Preferences
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
    * Always disabled on mobile.
-   * @default `false`
+   * @default `Off`
    */
-  public static var debugDisplay(get, set):Bool;
+  public static var debugDisplay(get, set):DebugDisplayMode;
 
-  static function get_debugDisplay():Bool
+  static function get_debugDisplay():DebugDisplayMode
   {
     #if mobile
-    return false;
+    return DebugDisplayMode.Off;
     #end
-    return Save?.instance?.options?.debugDisplay ?? false;
+
+    return Save?.instance?.options?.debugDisplay ?? 'Off';
   }
 
-  static function set_debugDisplay(value:Bool):Bool
+  static function set_debugDisplay(value:DebugDisplayMode):DebugDisplayMode
   {
-    if (value != Save.instance.options.debugDisplay)
-    {
-      toggleDebugDisplay(value);
-    }
+    if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
     save.options.debugDisplay = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * Opacity of the debug display's background.
+   * @default `50`
+   */
+  public static var debugDisplayBGOpacity(get, set):Int;
+
+  static function get_debugDisplayBGOpacity():Int
+  {
+    return Save?.instance?.options?.debugDisplayBGOpacity ?? 50;
+  }
+
+  static function set_debugDisplayBGOpacity(value:Int):Int
+  {
+    setDebugDisplayBGOpacity(value / 100);
+
+    var save:Save = Save.instance;
+    save.options.debugDisplayBGOpacity = value;
     save.flush();
     return value;
   }
@@ -232,7 +252,7 @@ class Preferences
   static function get_autoPause():Bool
   {
     #if mobile
-    return true;
+    return false;
     #end
     return Save?.instance?.options?.autoPause ?? true;
   }
@@ -459,16 +479,13 @@ class Preferences
   {
     // Apply the autoPause setting (enables automatic pausing on focus lost).
     FlxG.autoPause = Preferences.autoPause;
-    // WindowUtil.setVSyncMode(Preferences.vsyncMode);
+
     // Apply the debugDisplay setting (enables the FPS and RAM display).
-    toggleDebugDisplay(Preferences.debugDisplay);
+    setDebugDisplayMode(Preferences.debugDisplay);
+    setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
+
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
-
-    #if desktop
-    // Apply the autoFullscreen setting (launches the game in fullscreen automatically)
-    FlxG.fullscreen = Preferences.autoFullscreen;
     #end
 
     #if mobile
@@ -485,26 +502,41 @@ class Preferences
     #end
   }
 
-  static function toggleDebugDisplay(show:Bool):Void
+  public static function setDebugDisplayMode(mode:DebugDisplayMode):Void
   {
-    if (show)
-    {
-      // Enable the debug display.
-      FlxG.game.parent.addChild(Main.fpsCounter);
+    if (FlxG.game.parent.contains(Main.debugDisplay)) FlxG.game.parent.removeChild(Main.debugDisplay);
 
-      #if !html5
-      FlxG.game.parent.addChild(Main.memoryCounter);
-      #end
-    }
-    else
-    {
-      // Disable the debug display.
-      FlxG.game.parent.removeChild(Main.fpsCounter);
+    if (mode == DebugDisplayMode.Off) return;
 
-      #if !html5
-      FlxG.game.parent.removeChild(Main.memoryCounter);
-      #end
-    }
+    Main.debugDisplay.isAdvanced = (mode == DebugDisplayMode.Advanced);
+
+    FlxG.game.parent.addChild(Main.debugDisplay);
+  }
+
+  static function setDebugDisplayBGOpacity(value:Float):Void
+  {
+    if (Main.debugDisplay == null) return;
+
+    Main.debugDisplay.backgroundOpacity = value;
+  }
+
+  /**
+   * If enabled, subtitles will appear during some songs and cutscenes.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    save.flush();
+    return value;
   }
 
   #if mobile

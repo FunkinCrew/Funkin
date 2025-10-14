@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.CheckBox;
@@ -133,6 +134,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var value:Null<Dynamic> = pair.value;
 
       var field:Component = toolboxEventsDataGrid.findComponent(fieldId);
+      field.pauseEvent(UIEvent.CHANGE, true);
 
       if (field == null)
       {
@@ -158,6 +160,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
         }
       }
+      field.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
     toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
@@ -194,7 +197,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           numberStepper.id = field.name;
           numberStepper.step = field.step ?? 1.0;
           if (field.min != null) numberStepper.min = field.min;
-          if (field.min != null) numberStepper.max = field.max;
+          if (field.max != null) numberStepper.max = field.max;
           if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case FLOAT:
@@ -213,9 +216,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
-          dropDown.width = 200.0;
+          dropDown.width = 157.0;
           dropDown.dropdownSize = 10;
-          dropDown.dropdownWidth = 300;
+          dropDown.dropdownWidth = 157;
           dropDown.searchable = true;
           dropDown.dataSource = new ArrayDataSource();
 
@@ -310,3 +313,4 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     return new ChartEditorEventDataToolbox(chartEditorState);
   }
 }
+#end

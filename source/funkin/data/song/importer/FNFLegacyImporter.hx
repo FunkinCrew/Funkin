@@ -95,8 +95,8 @@ class FNFLegacyImporter
     switch (songData.song.speed)
     {
       case Left(speed):
-        // All difficulties will use the one scroll speed.
-        songChartData.scrollSpeed.set('default', speed);
+        // Sets the scroll speed for the difficulty.
+        songChartData.scrollSpeed.set(difficulty, speed);
       case Right(speeds):
         if (speeds.easy != null) songChartData.scrollSpeed.set('easy', speeds.easy);
         if (speeds.normal != null) songChartData.scrollSpeed.set('normal', speeds.normal);

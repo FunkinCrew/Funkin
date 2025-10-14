@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxObject;
@@ -337,3 +338,4 @@ class ChartEditorNoteSprite extends FlxSprite
     return !aboveViewArea && !belowViewArea;
   }
 }
+#end

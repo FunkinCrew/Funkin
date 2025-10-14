@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.focus.FocusManager;
 import flixel.input.gamepad.FlxGamepad;
 import haxe.ui.actions.ActionManager;
@@ -191,3 +192,4 @@ class ChartEditorGamepadActionInputSource implements IActionInputSource
     }
   }
 }
+#end

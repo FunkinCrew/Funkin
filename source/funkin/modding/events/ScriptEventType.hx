@@ -13,6 +13,14 @@ enum abstract ScriptEventType(String) from String to String
   var CREATE = 'CREATE';
 
   /**
+   * Called when the relevant object is fully created and ready to be used.
+   * This assumes all data is loaded and ready to go.
+   *
+   * This event is not cancelable.
+   */
+  var STATE_CREATE = 'STATE_CREATE';
+
+  /**
    * Called when the relevant object is destroyed.
    * This should perform relevant cleanup to ensure good performance.
    *
@@ -55,14 +63,14 @@ enum abstract ScriptEventType(String) from String to String
    *
    * This event is not cancelable.
    */
-  var SONG_BEAT_HIT = 'BEAT_HIT';
+  var SONG_BEAT_HIT = 'SONG_BEAT_HIT';
 
   /**
    * Called once per step in the song. This happens 16 times per measure.
    *
    * This event is not cancelable.
    */
-  var SONG_STEP_HIT = 'STEP_HIT';
+  var SONG_STEP_HIT = 'SONG_STEP_HIT';
 
   /**
    * Called when a note comes on screen and starts approaching the strumline.
@@ -245,6 +253,69 @@ enum abstract ScriptEventType(String) from String to String
    * This event is not cancelable.
    */
   var FOCUS_LOST = 'FOCUS_LOST';
+
+  /**
+   * Called when a freeplay capsule is selected.
+   *
+   * This event is not cancelable.
+   */
+  var CAPSULE_SELECTED = 'CAPSULE_SELECTED';
+
+  /**
+   * Called when the current difficulty in Freeplay is changed.
+   *
+   * This event is not cancelable.
+   */
+  var DIFFICULTY_SWITCH = 'DIFFICULTY_SWITCH';
+
+  /**
+   * Called when a song is selected in Freeplay.
+   *
+   * This event is not cancelable.
+   */
+  var SONG_SELECTED = 'SONG_SELECTED';
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   *
+   * This event is not cancelable.
+   */
+  var FREEPLAY_INTRO = 'FREEPLAY_INTRO';
+
+  /**
+   * Called when the outro for Freeplay starts.
+   *
+   * This event is not cancelable.
+   */
+  var FREEPLAY_OUTRO = 'FREEPLAY_OUTRO';
+
+  /**
+   * Called when Freeplay is closed.
+   *
+   * This event is not cancelable.
+   */
+  var FREEPLAY_CLOSE = 'FREEPLAY_CLOSE';
+
+  /**
+   * Called when a character is selected, but not confirmed, in Character Select.
+   *
+   * This event is not cancelable.
+   */
+  var CHARACTER_SELECTED = 'CHARACTER_SELECTED';
+
+  /**
+   * Called when a character is deselected in Character Select.
+   *
+   * This event is not cancelable.
+   */
+  var CHARACTER_DESELECTED = 'CHARACTER_DESELECTED';
+
+  /**
+   * Called when a character is confirmed in Character Select.
+   *
+   * This event is not cancelable.
+   */
+  var CHARACTER_CONFIRMED = 'CHARACTER_CONFIRMED';
 
   /**
    * Called when the game starts a conversation.

@@ -9,6 +9,7 @@ import funkin.play.notes.SustainTrail;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import funkin.play.notes.NoteDirection;
+import funkin.ui.freeplay.SongMenuItem;
 import openfl.events.KeyboardEvent;
 
 /**
@@ -515,6 +516,79 @@ class FocusScriptEvent extends ScriptEvent
   public override function toString():String
   {
     return 'FocusScriptEvent(type=' + type + ')';
+  }
+}
+
+/**
+ * An event that is fired when a capsule is selected.
+ */
+class CapsuleScriptEvent extends ScriptEvent
+{
+  /**
+   * The capsule that was selected.
+   */
+  public var capsule(default, null):SongMenuItem;
+
+  /**
+   * The difficulty ID of the selected song.
+   */
+  public var difficultyId(default, null):String;
+
+  /**
+   * The variation ID of the selected song.
+   */
+  public var variationId(default, null):String;
+
+  public function new(type:ScriptEventType, capsule:SongMenuItem, difficultyId:String, variationId:String):Void
+  {
+    super(type, false);
+    this.capsule = capsule;
+    this.difficultyId = difficultyId;
+    this.variationId = variationId;
+  }
+
+  public override function toString():String
+  {
+    var songName = this.capsule.freeplayData?.fullSongName ?? 'Random';
+    return 'CapsuleScriptEvent(type=$type, capsule=$songName)';
+  }
+}
+
+/**
+ * An event that is fired when Freeplay is entered or exited.
+ */
+class FreeplayScriptEvent extends ScriptEvent
+{
+  public function new(type:ScriptEventType):Void
+  {
+    super(type, false);
+  }
+
+  public override function toString():String
+  {
+    return 'FreeplayScriptEvent(type=' + type + ')';
+  }
+}
+
+/**
+ * An event that is fired when a character is selected or deselected.
+ */
+class CharacterSelectScriptEvent extends ScriptEvent
+{
+  /**
+   * The character ID of the selected character.
+   */
+  public var characterId(default, null):String;
+
+  public function new(type:ScriptEventType, characterId:String):Void
+  {
+    super(type, false);
+    this.characterId = characterId;
+  }
+
+  public override function toString():String
+  {
+    return 'CharacterSelectScriptEvent(type=' + type + ')';
   }
 }
 

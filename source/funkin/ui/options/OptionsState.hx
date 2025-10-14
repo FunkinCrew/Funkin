@@ -69,13 +69,16 @@ class OptionsState extends MusicBeatState
     optionsCodex = new Codex<OptionsMenuPageName>(Options);
     add(optionsCodex);
 
-    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
-    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu(saveData));
+    var options:OptionsMenu = optionsCodex.addPage(Options, new OptionsMenu());
     var preferences:PreferencesMenu = optionsCodex.addPage(Preferences, new PreferencesMenu());
     var controls:ControlsMenu = optionsCodex.addPage(Controls, new ControlsMenu());
     #if FEATURE_LAG_ADJUSTMENT
     var offsets:OffsetMenu = optionsCodex.addPage(Offsets, new OffsetMenu());
     #end
+    var saveData:SaveDataMenu = optionsCodex.addPage(SaveData, new SaveDataMenu());
+
+    options.addSaveDataOptionsItem(saveData);
+    options.addExitItem();
 
     if (options.hasMultipleOptions())
     {
@@ -138,6 +141,7 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
   }
 }
@@ -161,7 +165,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   final CAMERA_MARGIN:Int = 150;
 
-  public function new(saveDataMenu:SaveDataMenu)
+  public function new()
   {
     super();
     add(items = new TextMenuList());
@@ -230,30 +234,6 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     }
     #end
 
-    // no need to show an entire new menu for just one option
-    if (saveDataMenu.hasMultipleOptions())
-    {
-      createItem("SAVE DATA OPTIONS", function() {
-        codex.switchPage(SaveData);
-      });
-    }
-    else
-    {
-      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
-    }
-
-    #if NO_FEATURE_TOUCH_CONTROLS
-    createItem("EXIT", exit);
-    #else
-    backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
-    backButton.onConfirmStart.add(function() {
-      items.busy = true;
-      goingBack = true;
-      backButton.active = true;
-    });
-    add(backButton);
-    #end
-
     // Create an object for the camera to track.
     camFocusPoint = new FlxObject(0, 0, 140, 70);
     add(camFocusPoint);
@@ -274,6 +254,36 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #end
   }
 
+  public function addSaveDataOptionsItem(saveDataMenu:SaveDataMenu):Void
+  {
+    // no need to show an entire new menu for just one option
+    if (saveDataMenu.hasMultipleOptions())
+    {
+      createItem("SAVE DATA OPTIONS", function() {
+        codex.switchPage(SaveData);
+      });
+    }
+    else
+    {
+      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+    }
+  }
+
+  public function addExitItem():Void
+  {
+    #if NO_FEATURE_TOUCH_CONTROLS
+    createItem("EXIT", exit);
+    #else
+    backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
+    backButton.onConfirmStart.add(function() {
+      items.busy = true;
+      goingBack = true;
+      backButton.active = true;
+    });
+    add(backButton);
+    #end
+  }
+
   function onMenuChange(selected:TextMenuItem):Void
   {
     camFocusPoint.y = selected.y;
@@ -289,6 +299,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
   override function update(elapsed:Float):Void
   {
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     #if FEATURE_TOUCH_CONTROLS
     backButton.active = (!goingBack) ? !items.busy : true;
     #end

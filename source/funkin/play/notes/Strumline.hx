@@ -69,7 +69,8 @@ class Strumline extends FlxSpriteGroup
   function get_renderDistanceMs():Float
   {
     if (useCustomRenderDistance) return customRenderDistanceMs;
-    return FlxG.height / Constants.PIXELS_PER_MS / scrollSpeed;
+    // Only divide by lower scroll speeds to fix renderDistance being too short. Dividing by higher scroll speeds breaks the input system by hitting later notes first!
+    return FlxG.height / Constants.PIXELS_PER_MS / (scrollSpeed < 1 ? scrollSpeed : 1);
   }
 
   /**
@@ -97,9 +98,9 @@ class Strumline extends FlxSpriteGroup
   /**
    * Reset the scroll speed to the current chart's scroll speed.
    */
-  public function resetScrollSpeed():Void
+  public function resetScrollSpeed(?newScrollSpeed:Float):Void
   {
-    scrollSpeed = PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
+    scrollSpeed = newScrollSpeed ?? PlayState.instance?.currentChart?.scrollSpeed ?? 1.0;
   }
 
   var _conductorInUse:Null<Conductor>;
@@ -141,9 +142,15 @@ class Strumline extends FlxSpriteGroup
 
   var background:FunkinSprite;
 
-  var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+  /**
+   * The strumline notes (the receptors) themselves.
+   */
+  public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
-  var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
+  /**
+   * Hold note covers.
+   */
+  public var noteHoldCovers:FlxTypedSpriteGroup<NoteHoldCover>;
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
@@ -184,7 +191,7 @@ class Strumline extends FlxSpriteGroup
 
   static final BACKGROUND_PAD:Int = 16;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool)
+  public function new(noteStyle:NoteStyle, isPlayer:Bool, ?scrollSpeed:Float)
   {
     super();
 
@@ -236,14 +243,13 @@ class Strumline extends FlxSpriteGroup
     if (inArrowContorlSchemeMode && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
-    strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     this.refresh();
 
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
-    resetScrollSpeed();
+    resetScrollSpeed(scrollSpeed);
 
     for (i in 0...KEY_COUNT)
     {
@@ -644,8 +650,6 @@ class Strumline extends FlxSpriteGroup
         if (holdNote.cover != null && isPlayer)
         {
           holdNote.cover.playEnd();
-
-          trace("Sustain Note Splash Vibration");
         }
         else if (holdNote.cover != null)
         {
@@ -949,7 +953,6 @@ class Strumline extends FlxSpriteGroup
   {
     if (note == null) return;
     note.visible = false;
-    notes.remove(note, false);
     note.kill();
 
     if (note.holdNoteSprite != null)
