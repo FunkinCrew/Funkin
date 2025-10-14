@@ -113,10 +113,7 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = [
-    "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFCExtension"
-  ];
+  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension"];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -546,6 +543,11 @@ class Project extends HXProject
       configureIOS();
     }
 
+    if (isCPP())
+    {
+      buildHxCppTools();
+    }
+
     if (!isDisplay())
     {
       checkLibraries();
@@ -743,9 +745,13 @@ class Project extends HXProject
     {
       info('Target Language: C#');
     }
-    else
+    else if (isCPP())
     {
       info('Target Language: C++');
+    }
+    else
+    {
+      error('Unsupported target language!');
     }
 
     for (arch in this.architectures)
@@ -864,7 +870,9 @@ class Project extends HXProject
     FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this) || FEATURE_CHART_EDITOR.isEnabled(this) || FEATURE_STAGE_EDITOR.isEnabled(this));
+    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this)
+      || FEATURE_CHART_EDITOR.isEnabled(this)
+      || FEATURE_STAGE_EDITOR.isEnabled(this));
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
@@ -1166,10 +1174,7 @@ class Project extends HXProject
     action.set('android:name', 'android.intent.action.VIEW');
     intentFilter.addChild(action);
 
-    final intentFilterCategories:Array<String> = [
-      "android.intent.category.DEFAULT",
-      "android.intent.category.BROWSABLE"
-    ];
+    final intentFilterCategories:Array<String> = ["android.intent.category.DEFAULT", "android.intent.category.BROWSABLE"];
 
     for (categoryName in intentFilterCategories)
     {
@@ -1179,22 +1184,25 @@ class Project extends HXProject
     }
 
     final intentFilterDatas:Map<String, Array<String>> = [
-      "android:mimeType"    => ["application/zip"],
+      "android:mimeType" => ["application/zip"],
       // When this is added, it makes the game show up only when it's a FNFC file.
       // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
       // "android:host"        => ["*"],
-      "android:scheme"      => ["file", "content"],
+      "android:scheme" => ["file", "content"],
       // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
       "android:pathPattern" => [
-        ".*\\.fnfc", ".*\\..*\\.fnfc",
+        ".*\\.fnfc",
+        ".*\\..*\\.fnfc",
         ".*\\..*\\..*\\.fnfc",
         ".*\\..*\\..*\\..*\\.fnfc",
         ".*\\..*\\..*\\..*\\..*\\.fnfc"
       ]
     ];
 
-    for (key => values in intentFilterDatas) {
-      for (value in values) {
+    for (key => values in intentFilterDatas)
+    {
+      for (value in values)
+      {
         final data:Xml = Xml.createElement("data");
         data.set(key, value);
         intentFilter.addChild(data);
@@ -1212,7 +1220,6 @@ class Project extends HXProject
         config.get('android.activity').xmlChildren = [Printer.print(intentFilter, true)];
       }
     }
-
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
 
@@ -1401,14 +1408,11 @@ class Project extends HXProject
       addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
     }
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/animation-editor', "default");
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/stage-editor', "default");
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
     // Font assets
     var shouldEmbedFonts = true;
@@ -1473,7 +1477,7 @@ class Project extends HXProject
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
-    switch(platformType)
+    switch (platformType)
     {
       case PlatformType.DESKTOP:
         if (isMacHost())
@@ -1717,6 +1721,11 @@ class Project extends HXProject
     return this.targetFlags.exists("cs");
   }
 
+  public function isCPP():Bool
+  {
+    return this.defines.exists("cpp");
+  }
+
   public function isDisplay():Bool
   {
     return this.command == "display";
@@ -1842,23 +1851,23 @@ class Project extends HXProject
   }
 
   /**
-	 * Remove an asset from the game build.
-	 * @param path The path the asset is located at.
-	 */
-	public function removeAsset(path:String, ?library:String):Void
+   * Remove an asset from the game build.
+   * @param path The path the asset is located at.
+   */
+  public function removeAsset(path:String, ?library:String):Void
   {
-		for (asset in this.assets)
+    for (asset in this.assets)
     {
-			if (asset.sourcePath == path)
+      if (asset.sourcePath == path)
       {
-				if (library != null && asset.library != library) continue;
+        if (library != null && asset.library != library) continue;
 
-				this.assets.remove(asset);
-				// info("Removed asset: " + path);
-				break;
-			}
-		}
-	}
+        this.assets.remove(asset);
+        // info("Removed asset: " + path);
+        break;
+      }
+    }
+  }
 
   /**
    * Add an entire path of assets to the game build.
@@ -1918,39 +1927,48 @@ class Project extends HXProject
   }
 
   /**
-	 * Remove all assets in a path recursively from the game build.
-	 * @param path The path the assets are located at.
-	 * @param library (optional) The asset library to remove the assets from. Defaults to all libraries.
-	 */
-	public function removeAssetPath(path:String, ?library:String):Void {
-		// Argument parsing.
-		if (path == "")
-			return;
+   * Remove all assets in a path recursively from the game build.
+   * @param path The path the assets are located at.
+   * @param library (optional) The asset library to remove the assets from. Defaults to all libraries.
+   */
+  public function removeAssetPath(path:String, ?library:String):Void
+  {
+    // Argument parsing.
+    if (path == "") return;
 
-		// Validate path.
-		if (!sys.FileSystem.exists(path)) {
-			error('Could not find asset path "${path}".');
-		} else if (!sys.FileSystem.isDirectory(path)) {
-			error('Could not parse asset path "${path}", expected a directory.');
-		} else {
-			// info('  Found asset path "${path}".');
-		}
+    // Validate path.
+    if (!sys.FileSystem.exists(path))
+    {
+      error('Could not find asset path "${path}".');
+    }
+    else if (!sys.FileSystem.isDirectory(path))
+    {
+      error('Could not parse asset path "${path}", expected a directory.');
+    }
+    else
+    {
+      // info('  Found asset path "${path}".');
+    }
 
-		for (exclude in EXCLUDE_ASSETS)
-		{
-			// Surely Eric got a better way to solve this.
-			if (path.contains(exclude.replace('*', ''))) return;
-		}
+    for (exclude in EXCLUDE_ASSETS)
+    {
+      // Surely Eric got a better way to solve this.
+      if (path.contains(exclude.replace('*', ''))) return;
+    }
 
-		for (file in sys.FileSystem.readDirectory(path)) {
-			if (sys.FileSystem.isDirectory('${path}/${file}')) {
-				// Attempt to recursively remove all assets in the directory.
-				removeAssetPath('${path}/${file}', library);
-			} else {
-				removeAsset('${path}/${file}', library);
-			}
-		}
-	}
+    for (file in sys.FileSystem.readDirectory(path))
+    {
+      if (sys.FileSystem.isDirectory('${path}/${file}'))
+      {
+        // Attempt to recursively remove all assets in the directory.
+        removeAssetPath('${path}/${file}', library);
+      }
+      else
+      {
+        removeAsset('${path}/${file}', library);
+      }
+    }
+  }
 
   /**
    * Add an asset library to the game build.
@@ -2095,6 +2113,21 @@ class Project extends HXProject
     return gitProccess.stdout.readAll().toString().trim();
   }
 
+  static function getLibraryPath(libraryName:String):String
+  {
+    var libraryDev:String = readLibraryDev(libraryName);
+    var libraryCurrentVersion:String = readLibraryCurrentVersion(libraryName);
+
+    if (libraryDev != "")
+    {
+      return haxe.io.Path.addTrailingSlash(libraryDev);
+    }
+    else
+    {
+      return haxe.io.Path.addTrailingSlash(haxe.io.Path.join([Sys.getCwd(), '.haxelib', libraryName, libraryCurrentVersion]));
+    }
+  }
+
   public function getGitBranch():String
   {
     // Cannibalized from GitCommit.hx
@@ -2118,6 +2151,42 @@ class Project extends HXProject
     var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
 
     return branchProcess.exitCode(true) == 1;
+  }
+
+  public function buildHxCppTools():Void
+  {
+    var path:String = getLibraryPath("hxcpp");
+    var dotNPath:String = haxe.io.Path.join([path, 'hxcpp.n']);
+    var toolsPath:String = haxe.io.Path.join([path, 'tools/hxcpp']);
+
+    if (!sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
+
+    // Build Tools are compiled, no need for us to do it.
+    if (sys.FileSystem.exists(dotNPath))
+    {
+      return;
+    }
+
+    info('Compiling the HXCPP Build Tool...');
+
+    var oldDir:String = Sys.getCwd();
+    info(toolsPath);
+    Sys.setCwd(toolsPath);
+
+    var compileProcess = new sys.io.Process('haxe', ['compile.hxml']);
+
+    if (compileProcess.exitCode() != 0)
+    {
+      info('Could not compile the Build Tool. Is HXCPP installed correctly? Continuing...');
+    }
+    else
+    {
+      info('Compiled the HXCPP Build Tool successfully!');
+    }
+
+    compileProcess.close();
+
+    Sys.setCwd(oldDir);
   }
 
   //
