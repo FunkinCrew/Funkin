@@ -213,6 +213,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.restartVideo();
+      vid.resumeVideo();
       onVideoRestarted.dispatch();
     }
     #end
