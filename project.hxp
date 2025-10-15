@@ -113,7 +113,11 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension"];
+  static final ANDROID_EXTENSIONS:Array<String> = [
+    "funkin.extensions.CallbackUtil",
+    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.AudioSession"
+  ];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
