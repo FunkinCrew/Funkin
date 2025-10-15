@@ -66,7 +66,7 @@ class OsuManiaImporter
    * @param difficulty
    * @return SongMetadata
    */
-  public static function migrateMetadata(songData:Dynamic, difficulty:String = 'normal'):SongMetadata
+  public static function migrateMetadata(songData:OsuManiaData, difficulty:String = 'normal'):SongMetadata
   {
     trace('Migrating song metadata from Osu!Mania.');
 
@@ -90,9 +90,9 @@ class OsuManiaImporter
     return songMetadata;
   }
 
-  static function rebuildTimeChanges(songData:Dynamic):Array<SongTimeChange>
+  static function rebuildTimeChanges(songData:OsuManiaData):Array<SongTimeChange>
   {
-    var timings:Array<TimingPoint> = parseTimingPoints(songData.TimingPoints);
+    var timings:Array<TimingPoint> = parseTimingPoints(cast songData.TimingPoints);
     var bpmPoints:Array<TimingPoint> = timings.filter((tp) -> tp.uninherited == 1);
 
     var result:Array<SongTimeChange> = [];
@@ -117,15 +117,16 @@ class OsuManiaImporter
     return result;
   }
 
-  public static function migrateChartData(songData:Dynamic, difficulty:String = 'normal'):SongChartData
+  public static function migrateChartData(songData:OsuManiaData, difficulty:String = 'normal'):SongChartData
   {
     trace('Migrating song chart data from Osu!Mania.');
 
     // Osu!Mania doesn't have a scroll speed variable as its controlled by the player
     var songChartData:SongChartData = new SongChartData([difficulty => Constants.DEFAULT_SCROLLSPEED], [], [difficulty => []]);
 
-    var osuNotes:Array<ManiaHitObject> = parseManiaHitObjects(songData.HitObjects);
-    songChartData.notes.set(difficulty, convertNotes(osuNotes));
+    // songData.HitObjects is a Array<String> here so im casting it so haxe stops yelling at me
+    var osuNotes:Array<ManiaHitObject> = parseManiaHitObjects(cast songData.HitObjects, songData.Difficulty.CircleSize);
+    songChartData.notes.set(difficulty, convertNotes(osuNotes, songData.Difficulty.CircleSize));
 
     songChartData.events = [];
 
@@ -134,14 +135,20 @@ class OsuManiaImporter
 
   static final STRUMLINE_SIZE = 4;
 
-  static function convertNotes(hitObjects:Array<ManiaHitObject>):Array<SongNoteData>
+  static function convertNotes(hitObjects:Array<ManiaHitObject>, keyCount:Int):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
 
     for (hitObject in hitObjects)
     {
-      result.push(new SongNoteData(hitObject.time, hitObject.column, hitObject.holdDuration ?? 0, ''));
-      result.push(new SongNoteData(hitObject.time, hitObject.column + STRUMLINE_SIZE, hitObject.holdDuration ?? 0, ''));
+      var wrappedColumn:Int = hitObject.column % (keyCount * 2); // wrap overflow for 9K+
+      if (keyCount <= 4) // if its 5K+ dont add the copies beatmap into the opponent
+      {
+        var noteOffset:Int = Std.int(Math.abs(keyCount - STRUMLINE_SIZE)); // to make it on the opponent strumline when on 3K it has a one note offset
+        var flippedNoteData:Int = wrappedColumn + keyCount + noteOffset;
+        result.push(new SongNoteData(hitObject.time, flippedNoteData, hitObject.holdDuration ?? 0, ''));
+      }
+      result.push(new SongNoteData(hitObject.time, wrappedColumn, hitObject.holdDuration ?? 0, ''));
     }
 
     return result;

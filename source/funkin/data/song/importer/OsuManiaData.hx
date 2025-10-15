@@ -27,9 +27,10 @@ typedef OsuManiaData =
     };
   var Difficulty:
     {
-      var OverallDifficulty:Float;
+      var OverallDifficulty:Int;
       var SliderMultiplier:Float;
       var SliderTickRate:Float;
+      var CircleSize:Int;
     };
   var HitObjects:Array<ManiaHitObject>;
   var TimingPoints:Array<TimingPoint>;
