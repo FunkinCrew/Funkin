@@ -2118,17 +2118,9 @@ class Project extends HXProject
 
   static function getLibraryPath(libraryName:String):String
   {
-    var libraryDev:String = readLibraryDev(libraryName);
-    var libraryCurrentVersion:String = readLibraryCurrentVersion(libraryName);
-
-    if (libraryDev != "")
-    {
-      return haxe.io.Path.addTrailingSlash(libraryDev);
-    }
-    else
-    {
-      return haxe.io.Path.addTrailingSlash(haxe.io.Path.join([Sys.getCwd(), '.haxelib', libraryName, libraryCurrentVersion]));
-    }
+    var process = new sys.io.Process('haxelib', ['libpath', libraryName]);
+    @:privateAccess
+    return process.stdout.readLine();
   }
 
   public function getGitBranch():String
@@ -2162,7 +2154,8 @@ class Project extends HXProject
     var dotNPath:String = haxe.io.Path.join([path, 'hxcpp.n']);
     var toolsPath:String = haxe.io.Path.join([path, 'tools/hxcpp']);
 
-    if (!sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
+    // The output can be an error message if the library doesn't exist.
+    if (path.toLowerCase().startsWith("error") || !sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
 
     // Build Tools are compiled, no need for us to do it.
     if (sys.FileSystem.exists(dotNPath))
