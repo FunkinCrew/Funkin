@@ -2706,7 +2706,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function createSubtitles():Void
   {
-    subtitles = new Subtitles(0, -78);
+    subtitles = new Subtitles(0, 78);
     subtitles.zIndex = 100;
     subtitles.cameras = [uiCamera];
     add(subtitles);
