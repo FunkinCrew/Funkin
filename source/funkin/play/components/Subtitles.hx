@@ -33,7 +33,7 @@ class Subtitles extends FlxSpriteGroup
     background.alpha = 0.5;
     add(background);
 
-    subtitleText = new SubtitlesText(0, 0, 30, Paths.font('vcr.ttf'));
+    subtitleText = new SubtitlesText(0, 0, 30, 'VCR OSD Mono');
     add(subtitleText);
 
     setText([], true);
@@ -164,6 +164,11 @@ class SubtitlesText extends FlxText
       _regen = (textField.htmlText != ot) || _regen;
     }
     return Text;
+  }
+
+  override function applyFormats(_:openfl.text.TextFormat, __:Bool = false):Void
+  {
+    // This function shouldn't get called because it messes up `htmlText`.
   }
 }
 
