@@ -100,16 +100,15 @@ class FunkinSoundTray extends FlxSoundTray
     else if (!visible) moveTrayMakeVisible();
   }
 
-  /**
-   * Makes the little volume tray slide out.
-   * This is usually called by SoundFrontEnd, rather than being called by us explicitly
-   * (Which is why it's internals have been separated out a bit, for easier internal calling)
-   *
-   * @param	up Whether the volume is increasing.
-   */
-  override public function show(up:Bool = false):Void
+  override function showIncrement():Void
   {
-    moveTrayMakeVisible(up);
+    moveTrayMakeVisible(true);
+    saveVolumePreferences();
+  }
+
+  override function showDecrement():Void
+  {
+    moveTrayMakeVisible(false);
     saveVolumePreferences();
   }
 
@@ -125,11 +124,6 @@ class FunkinSoundTray extends FlxSoundTray
       _bars[i].visible = i < getGlobalVolume(up);
   }
 
-  /**
-   * Calculates the volume with proper linear scaling, and returns it as an int.
-   * @param up Whether the volume is increasing.
-   * @return Int The volume as an int from 0 to 10.
-   */
   function getGlobalVolume(up:Bool = false):Int
   {
     var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
