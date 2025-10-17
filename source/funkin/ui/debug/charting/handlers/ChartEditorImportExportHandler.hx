@@ -9,6 +9,7 @@ import funkin.util.SortUtil;
 import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
+import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.song.Song;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -80,13 +81,13 @@ class ChartEditorImportExportHandler
 
         var instId:String = diff.variation == Constants.DEFAULT_VARIATION ? '' : diff.variation;
 
-        var playerVoiceList:Array<String> = diff.buildPlayerVoiceList(); // SongDifficulty accounts for variation already.
+        var playerVoiceList:Array<String> = diff.buildVoiceListForCharacter(CharacterType.BF); // SongDifficulty accounts for variation already.
         for (voice in playerVoiceList)
         {
           state.loadVocalsFromAsset(voice, diff.characters.player, instId);
         }
 
-        var opponentVoiceList:Array<String> = diff.buildOpponentVoiceList();
+        var opponentVoiceList:Array<String> = diff.buildVoiceListForCharacter(CharacterType.DAD);
         for (voice in opponentVoiceList)
         {
           state.loadVocalsFromAsset(voice, diff.characters.opponent, instId);
