@@ -483,7 +483,7 @@ class FunkinSprite extends FlxAnimate
     }
 
     var foundLabels:Array<String> = [];
-    var mainTimeline = this.anim.getDefaultTimeline();
+    var mainTimeline:Null<animate.internal.Timeline> = this.library.timeline;
 
     for (layer in mainTimeline.layers)
     {
