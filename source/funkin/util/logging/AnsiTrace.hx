@@ -18,13 +18,12 @@ using StringTools;
 @:nullSafety
 class AnsiTrace
 {
-  #if sys
   private static final HEADER_REGEX = ~/^\s*\[(.*?)\]\s*(.*)$/;
+
   #if (sys && FEATURE_DEBUG_FILE_LOGGING)
   private static final logFilePath:String = 'logs/log-${DateUtil.generateTimestamp()}.txt';
   private static var logFile:Null<FileOutput> = null;
   private static var logFileClosed:Bool = false;
-  #end
   #end
 
   /**
@@ -91,7 +90,7 @@ class AnsiTrace
     var str:String = Std.string(v);
     if (infos == null) return str;
 
-    if (colorSupported)
+    if (AnsiUtil.isColorCodesSupported())
     {
       var dirs:Array<String> = infos.fileName.split("/");
       dirs[dirs.length - 1] = dirs[dirs.length - 1].bold();
@@ -123,7 +122,7 @@ class AnsiTrace
   public static function traceBF()
   {
     #if (sys && debug)
-    if (colorSupported)
+    if (AnsiUtil.isColorCodesSupported())
     {
       for (line in ansiBF)
         Sys.stdout().writeString(line + "\n");

@@ -62,25 +62,25 @@ class AnsiUtil
 {
   #if sys
   @:noCompletion
-  private static final REGEX_TEAMCITY_VERSION:EReg = ~/^9\.(0*[1-9]\d*)\.|\d{2,}\./;
+  static final REGEX_TEAMCITY_VERSION:EReg = ~/^9\.(0*[1-9]\d*)\.|\d{2,}\./;
 
   @:noCompletion
-  private static final REGEX_TERM_256:EReg = ~/(?i)-256(color)?$/;
+  static final REGEX_TERM_256:EReg = ~/(?i)-256(color)?$/;
 
   @:noCompletion
-  private static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
+  static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
   #end
 
   @:noCompletion
-  private static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
+  static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
 
   @:noCompletion
-  private static var codesSupported:Null<Bool> = null;
+  static var codesSupported:Null<Bool> = null;
 
   /**
    * Safe wrapper for Sys.getEnv (returns null on non-sys targets).
    */
-  private static function getEnvSafe(name:String):Null<String>
+  static function getEnvSafe(name:String):Null<String>
   {
     #if sys
     return Sys.getEnv(name);
@@ -274,55 +274,79 @@ class AnsiUtil
     return stripCodes(code + input + AnsiCode.RESET);
   }
 
-  @:noCompletion
-  private static function stripCodes(output:String):String
+  /**
+   * Whether ANSI codes are supported or not.
+   *
+   * @return `true` if ANSI codes are supported, `false` otherwise.
+   */
+  public static function isColorCodesSupported():Bool
   {
-    #if sys
     if (codesSupported == null)
     {
-      final term:Null<String> = getEnvSafe('TERM');
-
-      if (term == 'dumb') codesSupported = false;
-      else
+      #if sys
+      if (codesSupported == null)
       {
-        if (codesSupported != true && term != null) codesSupported = REGEX_TERM_256.match(term) || REGEX_TERM_TYPES.match(term);
+        final term:Null<String> = getEnvSafe('TERM');
 
-        if (getEnvSafe('CI') != null)
+        if (term == 'dumb') codesSupported = false;
+        else
         {
-          final ciEnvNames:Array<String> = [
-            "GITHUB_ACTIONS", "GITEA_ACTIONS",    "TRAVIS", "CIRCLECI",
-                  "APPVEYOR",     "GITLAB_CI", "BUILDKITE",    "DRONE"
-          ];
-
-          for (ci in ciEnvNames)
+          if (codesSupported != true && term != null)
           {
-            if (getEnvSafe(ci) != null)
+            codesSupported = REGEX_TERM_256.match(term) || REGEX_TERM_TYPES.match(term);
+          }
+
+          if (getEnvSafe('CI') != null)
+          {
+            final ciEnvNames:Array<String> = [
+              "GITHUB_ACTIONS", "GITEA_ACTIONS",    "TRAVIS", "CIRCLECI",
+                    "APPVEYOR",     "GITLAB_CI", "BUILDKITE",    "DRONE"
+            ];
+
+            for (ci in ciEnvNames)
+            {
+              if (getEnvSafe(ci) != null)
+              {
+                codesSupported = true;
+                break;
+              }
+            }
+
+            if (codesSupported != true && getEnvSafe("CI_NAME") == "codeship")
             {
               codesSupported = true;
-              break;
             }
           }
 
-          if (codesSupported != true && getEnvSafe("CI_NAME") == "codeship") codesSupported = true;
-        }
+          final teamCity:Null<String> = getEnvSafe("TEAMCITY_VERSION");
 
-        final teamCity:Null<String> = getEnvSafe("TEAMCITY_VERSION");
-        if (codesSupported != true && teamCity != null) codesSupported = REGEX_TEAMCITY_VERSION.match(teamCity);
+          if (codesSupported != true && teamCity != null)
+          {
+            codesSupported = REGEX_TEAMCITY_VERSION.match(teamCity);
+          }
 
-        if (codesSupported != true)
-        {
-          codesSupported = getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
-            || getEnvSafe('TERM_PROGRAM') == 'Apple_Terminal'
-            || getEnvSafe('COLORTERM') != null
-            || getEnvSafe('ANSICON') != null
-            || getEnvSafe('ConEmuANSI') != null
-            || getEnvSafe('WT_SESSION') != null;
+          if (codesSupported != true)
+          {
+            codesSupported = getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
+              || getEnvSafe('TERM_PROGRAM') == 'Apple_Terminal'
+              || getEnvSafe('COLORTERM') != null
+              || getEnvSafe('ANSICON') != null
+              || getEnvSafe('ConEmuANSI') != null
+              || getEnvSafe('WT_SESSION') != null;
+          }
         }
       }
+      #else
+      codesSupported = false;
+      #end
     }
-    #else
-    codesSupported = false;
-    #end
-    return codesSupported == true ? output : REGEX_ANSI_CODES.replace(output, '');
+
+    return codesSupported == true;
+  }
+
+  @:noCompletion
+  static function stripCodes(output:String):String
+  {
+    return isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, '');
   }
 }
