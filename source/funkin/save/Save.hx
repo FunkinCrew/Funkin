@@ -133,7 +133,7 @@ class Save implements ConsoleClass
           autoFullscreen: false,
           globalOffset: 0,
           scrollSpeed: 2.5,
-          scrollSpeedMode: "Off",
+          scrollSpeedMode: 'Off',
           audioVisualOffset: 0,
           unlockedFramerate: false,
 

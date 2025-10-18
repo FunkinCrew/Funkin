@@ -59,11 +59,12 @@ class ScrollSpeedEvent extends SongEvent
     var songScroll:Float = PlayState.instance?.currentChart?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
     switch (Preferences.scrollSpeedMode)
     {
-      case "Static": return;
-      case "Adaptive":
+      case STATIC: return;
+      case ADAPTIVE:
         // Adapt between player's base and event speed
         scroll = songScroll + (scroll - songScroll) * 0.5;
       default:
+        // If absolute is set to false, do the awesome multiplicative thing
         scroll = absolute ? scroll : scroll * songScroll;
     }
 

@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
+import funkin.play.components.ScrollSpeedChanger.ScrollSpeedMode;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -122,12 +123,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     createPrefItemEnum('Scroll Speed', 'If enabled, the scroll speed is determined based on selected mode. (Adaptive => adjusts with events; Static => fixed to the set value)', [
-      "Adaptive" => "Adaptive",
-      "Static" => "Static",
-      "Off" => "Off"
-    ], (key:String, value:String) -> {
+      "Adaptive" => ScrollSpeedMode.ADAPTIVE,
+      "Static" => ScrollSpeedMode.STATIC,
+      "Off" => ScrollSpeedMode.OFF
+    ], (key:String, value:ScrollSpeedMode) -> {
       Preferences.scrollSpeedMode = value;
-    }, Preferences.scrollSpeedMode);
+    }, switch (Preferences.scrollSpeedMode)
+    {
+      case ScrollSpeedMode.ADAPTIVE: "Adaptive";
+      case ScrollSpeedMode.STATIC: "Static";
+      default: "Off";
+    });
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,

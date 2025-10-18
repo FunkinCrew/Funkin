@@ -100,7 +100,11 @@ class Strumline extends FlxSpriteGroup
    */
   public function resetScrollSpeed(?newScrollSpeed:Float):Void
   {
-    scrollSpeed = newScrollSpeed ?? PlayState.instance?.currentChart?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
+    scrollSpeed = switch (Preferences.scrollSpeedMode)
+    {
+      case STATIC, ADAPTIVE: Preferences.scrollSpeed;
+      default: newScrollSpeed ?? PlayState.instance?.currentChart?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
+    }
   }
 
   var _conductorInUse:Null<Conductor>;

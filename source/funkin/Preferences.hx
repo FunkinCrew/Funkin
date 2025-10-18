@@ -4,6 +4,7 @@ package funkin;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
+import funkin.play.components.ScrollSpeedChanger.ScrollSpeedMode;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
@@ -321,32 +322,33 @@ class Preferences
     return value;
   }
 
-  /**
-   *
-   */
-  public static var scrollSpeedMode(get, set):String;
+  public static var scrollSpeedMode(get, set):ScrollSpeedMode;
 
-  static function get_scrollSpeedMode():String
+  static function get_scrollSpeedMode():ScrollSpeedMode
   {
-    return Save?.instance?.options?.scrollSpeedMode ?? "Off";
+    var value = Save?.instance?.options?.scrollSpeedMode ?? "Off";
+
+    return switch (value)
+    {
+      case "Static": ScrollSpeedMode.STATIC;
+      case "Adaptive": ScrollSpeedMode.ADAPTIVE;
+      default: ScrollSpeedMode.OFF;
+    };
   }
 
-  static function set_scrollSpeedMode(value:String):String
+  static function set_scrollSpeedMode(value:ScrollSpeedMode):ScrollSpeedMode
   {
-    var normalized:String = value.toLowerCase();
-
-    var result:String = switch (normalized)
+    var result:String = switch (value)
     {
-      case "off": "Off";
-      case "static": "Static";
-      case "adaptive": "Adaptive";
+      case ScrollSpeedMode.STATIC: "Static";
+      case ScrollSpeedMode.ADAPTIVE: "Adaptive";
       default: "Off";
     };
 
     var save:Save = Save.instance;
     save.options.scrollSpeedMode = result;
     save.flush();
-    return result;
+    return value;
   }
 
   /**

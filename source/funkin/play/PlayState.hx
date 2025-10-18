@@ -38,6 +38,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
+import funkin.play.components.ScrollSpeedChanger;
 import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
@@ -501,7 +502,7 @@ class PlayState extends MusicBeatSubState
    */
   var scoreText:FlxText;
 
-  var scrollSpeedText:FlxText;
+  var scrollSpeedChanger:ScrollSpeedChanger;
 
   /**
    * The bar which displays the player's health.
@@ -747,7 +748,7 @@ class PlayState extends MusicBeatSubState
     noteStyle = nulNoteStyle;
 
     // Scroll Speed Changer
-    scrollSpeedText = new FlxText(0, 0, 0, Std.string(currentChart?.scrollSpeed), 20);
+    scrollSpeedChanger = new ScrollSpeedChanger(0, 0, currentChart?.scrollSpeed);
 
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
@@ -1289,7 +1290,7 @@ class PlayState extends MusicBeatSubState
     if (!isInCutscene && !disableKeys)
     {
       debugKeyShit();
-      if (Preferences.scrollSpeedMode != "Off") handleScrollSpeedChange();
+      if (Preferences.scrollSpeedMode != OFF) handleScrollSpeedChange();
     }
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
@@ -2139,16 +2140,12 @@ class PlayState extends MusicBeatSubState
 
   function initScrollSpeedChanger():Void
   {
-    // The scroll speed changer text
-    scrollSpeedText.y = 20;
-    scrollSpeedText.text = Std.string(FlxMath.roundDecimal(playerStrumline.scrollSpeed, 2));
-    scrollSpeedText.screenCenter(X);
-    scrollSpeedText.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    scrollSpeedText.scrollFactor.set();
-    add(scrollSpeedText);
-
-    // Move the scroll speed changer to the hud camera
-    scrollSpeedText.cameras = [camHUD];
+    // The scroll speed changer
+    scrollSpeedChanger.screenCenter(Y);
+    scrollSpeedChanger.x = playerStrumline.x + playerStrumline.width * 0.5;
+    scrollSpeedChanger.cameras = [camHUD];
+    scrollSpeedChanger.zIndex = 1002;
+    add(scrollSpeedChanger);
   }
 
   /**
@@ -3298,22 +3295,17 @@ class PlayState extends MusicBeatSubState
 
   function handleScrollSpeedChange()
   {
-    if (controls.SCROLL_SPEED_INCREASE_SPEED)
-    {
-      playerStrumline.scrollSpeed += 0.1;
-      opponentStrumline.scrollSpeed += 0.1;
-      Preferences.scrollSpeed += 0.1;
-    }
-    if (controls.SCROLL_SPEED_DECREASE_SPEED)
-    {
-      playerStrumline.scrollSpeed -= 0.1;
-      opponentStrumline.scrollSpeed -= 0.1;
-      Preferences.scrollSpeed -= 0.1;
-    }
-    scrollSpeedText.text = Std.string(FlxMath.roundDecimal(playerStrumline.scrollSpeed, 2));
-    scrollSpeedText.screenCenter(X);
+    if (controls.SCROLL_SPEED_INCREASE_SPEED) changeScrollSpeed(0.1);
+    if (controls.SCROLL_SPEED_DECREASE_SPEED) changeScrollSpeed(-0.1);
   }
 
+  function changeScrollSpeed(value:Float = 0) {
+    playerStrumline.scrollSpeed += value;
+    opponentStrumline.scrollSpeed += value;
+    Preferences.scrollSpeed += value;
+
+    scrollSpeedChanger.updateSpeed(playerStrumline.scrollSpeed);
+  }
 
   /**
      * Handle logic for actually skipping a video cutscene after it has been held.
