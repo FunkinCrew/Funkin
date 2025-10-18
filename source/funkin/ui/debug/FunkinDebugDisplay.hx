@@ -32,6 +32,7 @@ class FunkinDebugDisplay extends Sprite
   public var backgroundOpacity(default, set):Float = 0.5;
 
   var currentFPS:Int;
+  var currentFPSPeak:Int;
   var deltaTimeout:Float;
   var times:Array<Float>;
   var color:Int;
@@ -59,6 +60,7 @@ class FunkinDebugDisplay extends Sprite
     this.x = x;
     this.y = y;
     this.currentFPS = 0;
+    this.currentFPSPeak = 0;
     this.deltaTimeout = 0.0;
     #if !html5
     this.gcMem = 0.0;
@@ -173,6 +175,8 @@ class FunkinDebugDisplay extends Sprite
 
     currentFPS = times.length;
 
+    if (currentFPS > currentFPSPeak) currentFPSPeak = currentFPS;
+
     #if !html5
     gcMem = MemoryUtil.getGCMemory();
 
@@ -207,7 +211,7 @@ class FunkinDebugDisplay extends Sprite
     #end
 
     final info:Array<String> = [];
-    info.push('FPS: $currentFPS');
+    info.push('FPS: $currentFPS / $currentFPSPeak');
     info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
     info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
     fpsGraph.textDisplay.text = info.join('\n');
@@ -228,7 +232,7 @@ class FunkinDebugDisplay extends Sprite
     {
       final info:Array<String> = [];
 
-      info.push('FPS: $currentFPS');
+      info.push('FPS: $currentFPS / $currentFPSPeak');
 
       #if !html5
       info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
