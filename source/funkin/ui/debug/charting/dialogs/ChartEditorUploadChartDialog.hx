@@ -49,7 +49,9 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
     for (dropTarget in dialog.dropHandlers)
     {
+      #if FEATURE_FILE_DROP
       state.addDropHandler(dropTarget);
+      #end
     }
 
     dialog.showDialog(modal ?? true);
