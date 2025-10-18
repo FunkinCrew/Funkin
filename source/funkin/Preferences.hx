@@ -161,6 +161,25 @@ class Preferences
     return value;
   }
 
+    /**
+   * If enabled, statistic peaks will be shown on the debug display.
+   * @default `true`
+   */
+  public static var showStatPeaks(get, set):Bool;
+
+  static function get_showStatPeaks():Bool
+  {
+    return Save?.instance?.options?.showStatPeaks ?? true;
+  }
+
+  static function set_showStatPeaks(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.showStatPeaks = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * Opacity of the debug display's background.
    * @default `50`
