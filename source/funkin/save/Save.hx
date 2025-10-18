@@ -189,6 +189,7 @@ class Save implements ConsoleClass
           chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
+          playtestAudioSettings: false,
           downscroll: false,
           showNoteKinds: true,
           metronomeVolume: 1.0,
@@ -411,6 +412,23 @@ class Save implements ConsoleClass
     data.optionsChartEditor.playtestStartTime = value;
     flush();
     return data.optionsChartEditor.playtestStartTime;
+  }
+
+  public var chartEditorPlaytestAudioSettings(get, set):Bool;
+
+  function get_chartEditorPlaytestAudioSettings():Bool
+  {
+    if (data.optionsChartEditor.playtestAudioSettings == null) data.optionsChartEditor.playtestAudioSettings = false;
+
+    return data.optionsChartEditor.playtestAudioSettings;
+  }
+
+  function set_chartEditorPlaytestAudioSettings(value:Bool):Bool
+  {
+    // Set and apply.
+    data.optionsChartEditor.playtestAudioSettings = value;
+    flush();
+    return data.optionsChartEditor.playtestAudioSettings;
   }
 
   public var chartEditorTheme(get, set):ChartEditorTheme;
@@ -1932,6 +1950,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestStartTime:Bool;
+
+  /**
+   * If true, playtest songs with the current audio settings in the Chart Editor.
+   * @default `false`
+   */
+  var ?playtestAudioSettings:Bool;
 
   /**
    * Theme music in the Chart Editor.
