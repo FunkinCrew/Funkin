@@ -3,14 +3,21 @@ package funkin.play.components;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.graphics.FunkinSprite;
 
 class ScrollSpeedChanger extends FlxSpriteGroup
 {
   var bg:FunkinSprite;
   var scrollSpeedLabel:FlxText;
-  var scrollSpeedValue:FlxText;
+  public var scrollSpeedValue:FlxText;
+
+  var hideTimer:FlxTimer;
+  var hideTween:FlxTween;
+  static inline var hideDelay:Float = 2.0;
 
   public function new(x:Float, y:Float, ?initialSpeed:Float)
   {
@@ -19,19 +26,20 @@ class ScrollSpeedChanger extends FlxSpriteGroup
     initialSpeed = initialSpeed ?? Constants.DEFAULT_SCROLLSPEED;
 
     bg = new FunkinSprite(0, 0);
-    bg.makeGraphic(200, 60, FlxColor.BLACK);
-    bg.alpha = 0.6;
+    bg.makeGraphic(200, 65, 0x99000000);
     add(bg);
 
-    scrollSpeedLabel = new FlxText(10, 10, "Scroll Speed");
-    scrollSpeedLabel.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scrollSpeedLabel = new FlxText(0, 10, bg.width, "Scroll Speed");
+    scrollSpeedLabel.setFormat('VCR OSD Mono', 21, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(scrollSpeedLabel);
 
-    scrollSpeedValue = new FlxText(10, 30, Std.string(FlxMath.roundDecimal(initialSpeed, 2)) + "x");
-    scrollSpeedValue.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scrollSpeedValue = new FlxText(0, scrollSpeedLabel.height + 10, bg.width, Std.string(FlxMath.roundDecimal(initialSpeed, 2)) + "x");
+    scrollSpeedValue.setFormat('VCR OSD Mono', 21, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(scrollSpeedValue);
 
     scrollFactor.set();
+
+    alpha = 0;
   }
 
   /**
@@ -42,6 +50,28 @@ class ScrollSpeedChanger extends FlxSpriteGroup
   public function updateSpeed(speed:Float):Void
   {
     scrollSpeedValue.text = Std.string(FlxMath.roundDecimal(speed, 2)) + "x";
+
+    show();
+
+    if (hideTimer != null) hideTimer.cancel();
+    hideTimer = new FlxTimer().start(hideDelay, (tmr:FlxTimer) -> hide());
+  }
+
+  function show():Void {
+    if (hideTween != null) hideTween.cancel();
+    hideTween = FlxTween.tween(this, {alpha: 1}, 0.2, {ease: FlxEase.quartOut});
+  }
+
+  function hide():Void {
+    if (hideTween != null) hideTween.cancel();
+    hideTween = FlxTween.tween(this, {alpha: 0}, 0.3, {ease: FlxEase.quartIn});
+  }
+
+  override public function destroy():Void
+  {
+    if (hideTimer != null) hideTimer.cancel();
+    if (hideTween != null) hideTween.cancel();
+    super.destroy();
   }
 }
 

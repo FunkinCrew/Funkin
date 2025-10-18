@@ -3311,7 +3311,8 @@ class PlayState extends MusicBeatSubState
     if (controls.SCROLL_SPEED_DECREASE_SPEED) changeScrollSpeed(-0.1);
   }
 
-  function changeScrollSpeed(value:Float = 0) {
+  function changeScrollSpeed(value:Float = 0)
+  {
     playerStrumline.scrollSpeed += value;
     opponentStrumline.scrollSpeed += value;
     Preferences.scrollSpeed += value;
@@ -3943,6 +3944,22 @@ class PlayState extends MusicBeatSubState
 
     // for next event, clean array.
     prevScrollTargets = [];
+
+    if (speed != null)
+    {
+      if (duration == 0)
+      {
+        scrollSpeedChanger.updateSpeed(speed);
+      }
+      else
+      {
+        // Tween the UI
+        scrollSpeedTweens.push(FlxTween.num(playerStrumline.scrollSpeed, speed, duration, {
+          ease: ease,
+          onUpdate: (tween:FlxTween) -> scrollSpeedChanger.updateSpeed(tween.percent * (speed - playerStrumline.scrollSpeed) + playerStrumline.scrollSpeed)
+        }));
+      }
+    }
 
     for (i in strumlines)
     {
