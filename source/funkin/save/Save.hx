@@ -123,6 +123,7 @@ class Save implements ConsoleClass
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: 'Off',
+          showStatPeaks: true,
           debugDisplayBGOpacity: 50,
           subtitles: true,
           hapticsMode: 'All',
@@ -1628,6 +1629,12 @@ typedef SaveDataOptions =
    * @default `Off`
    */
   var debugDisplay:String;
+
+  /**
+   * If enabled, statistic peaks will be shown on the debug display.
+   * @default `true`
+   */
+  var showStatPeaks:Bool;
 
   /**
    * Opacity of the debug display's background.
