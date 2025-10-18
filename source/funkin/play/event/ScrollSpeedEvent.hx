@@ -56,10 +56,15 @@ class ScrollSpeedEvent extends SongEvent
 
     var strumlineNames:Array<String> = [];
 
-    if (!absolute)
+    var songScroll:Float = PlayState.instance?.currentChart?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
+    switch (Preferences.scrollSpeedMode)
     {
-      // If absolute is set to false, do the awesome multiplicative thing
-      scroll = scroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+      case "Static": return;
+      case "Adaptive":
+        // Adapt between player's base and event speed
+        scroll = songScroll + (scroll - songScroll) * 0.5;
+      default:
+        scroll = absolute ? scroll : scroll * songScroll;
     }
 
     switch (strumline)

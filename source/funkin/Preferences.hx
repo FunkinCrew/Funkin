@@ -306,6 +306,49 @@ class Preferences
     return value;
   }
 
+  public static var scrollSpeed(get, set):Float;
+
+  static function get_scrollSpeed():Float
+  {
+    return Save?.instance?.options?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
+  }
+
+  static function set_scrollSpeed(value:Float):Float
+  {
+    var save:Save = Save.instance;
+    save.options.scrollSpeed = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   *
+   */
+  public static var scrollSpeedMode(get, set):String;
+
+  static function get_scrollSpeedMode():String
+  {
+    return Save?.instance?.options?.scrollSpeedMode ?? "Off";
+  }
+
+  static function set_scrollSpeedMode(value:String):String
+  {
+    var normalized:String = value.toLowerCase();
+
+    var result:String = switch (normalized)
+    {
+      case "off": "Off";
+      case "static": "Static";
+      case "adaptive": "Adaptive";
+      default: "Off";
+    };
+
+    var save:Save = Save.instance;
+    save.options.scrollSpeedMode = result;
+    save.flush();
+    return result;
+  }
+
   /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
    * @default `OFF`

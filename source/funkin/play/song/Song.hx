@@ -402,7 +402,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       }
       // Add the chart data to the difficulty.
       difficulty.notes = chartNotes.get(diffId) ?? [];
-      difficulty.scrollSpeed = chartData.getScrollSpeed(diffId) ?? 1.0;
+      difficulty.scrollSpeed = switch (Preferences.scrollSpeedMode)
+      {
+        case "Static", "Adaptive": Preferences.scrollSpeed;
+        default: chartData.getScrollSpeed(diffId) ?? Constants.DEFAULT_SCROLLSPEED;
+      }
 
       difficulty.events = chartData.events;
     }

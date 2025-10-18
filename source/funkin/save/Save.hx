@@ -132,6 +132,8 @@ class Save implements ConsoleClass
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
           globalOffset: 0,
+          scrollSpeed: 2.5,
+          scrollSpeedMode: "Off",
           audioVisualOffset: 0,
           unlockedFramerate: false,
 
@@ -1683,6 +1685,16 @@ typedef SaveDataOptions =
    * @default `0`
    */
   var globalOffset:Int;
+
+  /**
+   *
+   */
+  var scrollSpeed:Float;
+
+  /**
+   *
+   */
+  var scrollSpeedMode:String;
 
   /**
    * Unused !!

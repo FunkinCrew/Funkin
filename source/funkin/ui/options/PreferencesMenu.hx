@@ -121,6 +121,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    createPrefItemEnum('Scroll Speed', 'If enabled, the scroll speed is determined based on selected mode. (Adaptive => adjusts with events; Static => fixed to the set value)', [
+      "Adaptive" => "Adaptive",
+      "Static" => "Static",
+      "Off" => "Off"
+    ], (key:String, value:String) -> {
+      Preferences.scrollSpeedMode = value;
+    }, Preferences.scrollSpeedMode);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,

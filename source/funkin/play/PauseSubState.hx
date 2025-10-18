@@ -199,6 +199,11 @@ class PauseSubState extends MusicBeatSubState
   var metadataArtist:FlxText;
 
   /**
+   *
+   */
+  var scrollSpeedText:FlxText;
+
+  /**
    * A text object that displays the current global offset.
    */
   var offsetText:FlxText;
@@ -440,7 +445,12 @@ class PauseSubState extends MusicBeatSubState
     metadata.add(metadataPractice);
 
     // Right side
-    offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+    scrollSpeedText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, FullScreenScaleMode.gameNotchSize.x),
+    'Current Scroll Speed: ${PlayState.instance.playerStrumline.scrollSpeed ?? 0}\nSet Scroll Speed: ${Preferences.scrollSpeed ?? 0}');
+    scrollSpeedText.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    scrollSpeedText.scrollFactor.set(0, 0);
+
+    offsetText = new FlxText(20, scrollSpeedText.y + 16, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Global Offset: ${Preferences.globalOffset ?? 0}ms');
     offsetText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetText.scrollFactor.set(0, 0);
@@ -450,10 +460,12 @@ class PauseSubState extends MusicBeatSubState
     offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetTextInfo.scrollFactor.set(0, 0);
 
-    offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
+    scrollSpeedText.y = FlxG.height - scrollSpeedText.height * 2 - (offsetText.height * 2 + 16);
+    offsetText.y = scrollSpeedText.y + scrollSpeedText.height + 12;
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
 
     #if !mobile
+    metadata.add(scrollSpeedText);
     metadata.add(offsetText);
     metadata.add(offsetTextInfo);
     #end
@@ -463,6 +475,7 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
     metadataDeaths.alpha = 0;
+    scrollSpeedText.alpha = 0;
     offsetText.alpha = 0;
     offsetTextInfo.alpha = 0;
 

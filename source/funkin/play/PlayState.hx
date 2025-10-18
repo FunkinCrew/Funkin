@@ -501,6 +501,8 @@ class PlayState extends MusicBeatSubState
    */
   var scoreText:FlxText;
 
+  var scrollSpeedText:FlxText;
+
   /**
    * The bar which displays the player's health.
    * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
@@ -744,6 +746,9 @@ class PlayState extends MusicBeatSubState
     if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
     noteStyle = nulNoteStyle;
 
+    // Scroll Speed Changer
+    scrollSpeedText = new FlxText(0, 0, 0, Std.string(currentChart?.scrollSpeed), 20);
+
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
@@ -821,6 +826,7 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
+
     initHealthBar();
     if (!isMinimalMode)
     {
@@ -860,6 +866,8 @@ class PlayState extends MusicBeatSubState
       camControls.bgColor = 0x0;
     }
     #end
+
+    initScrollSpeedChanger();
 
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
@@ -1278,7 +1286,11 @@ class PlayState extends MusicBeatSubState
 
     // Handle keybinds.
     processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
+    if (!isInCutscene && !disableKeys)
+    {
+      debugKeyShit();
+      if (Preferences.scrollSpeedMode != "Off") handleScrollSpeedChange();
+    }
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
@@ -2123,6 +2135,20 @@ class PlayState extends MusicBeatSubState
       // Rearrange by z-indexes.
       currentStage.refresh();
     }
+  }
+
+  function initScrollSpeedChanger():Void
+  {
+    // The scroll speed changer text
+    scrollSpeedText.y = 20;
+    scrollSpeedText.text = Std.string(FlxMath.roundDecimal(playerStrumline.scrollSpeed, 2));
+    scrollSpeedText.screenCenter(X);
+    scrollSpeedText.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scrollSpeedText.scrollFactor.set();
+    add(scrollSpeedText);
+
+    // Move the scroll speed changer to the hud camera
+    scrollSpeedText.cameras = [camHUD];
   }
 
   /**
@@ -3269,6 +3295,25 @@ class PlayState extends MusicBeatSubState
       }
     }
   }
+
+  function handleScrollSpeedChange()
+  {
+    if (controls.SCROLL_SPEED_INCREASE_SPEED)
+    {
+      playerStrumline.scrollSpeed += 0.1;
+      opponentStrumline.scrollSpeed += 0.1;
+      Preferences.scrollSpeed += 0.1;
+    }
+    if (controls.SCROLL_SPEED_DECREASE_SPEED)
+    {
+      playerStrumline.scrollSpeed -= 0.1;
+      opponentStrumline.scrollSpeed -= 0.1;
+      Preferences.scrollSpeed -= 0.1;
+    }
+    scrollSpeedText.text = Std.string(FlxMath.roundDecimal(playerStrumline.scrollSpeed, 2));
+    scrollSpeedText.screenCenter(X);
+  }
+
 
   /**
      * Handle logic for actually skipping a video cutscene after it has been held.
