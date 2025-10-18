@@ -1687,12 +1687,17 @@ typedef SaveDataOptions =
   var globalOffset:Int;
 
   /**
+   * The scroll speed value set by the player.
+   * This is only used with the `ScrollSpeedMode.STATIC` and `ScrollSpeedMode.ADAPTIVE`.
    *
+   * @default `Constants.DEFAULT_SCROLLSPEED`
    */
   var scrollSpeed:Float;
 
   /**
+   * If enabled, controls how the song's scroll speed is applied based on the selected mode.
    *
+   * @default `ScrollSpeedMode.OFF`
    */
   var scrollSpeedMode:String;
 

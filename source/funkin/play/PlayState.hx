@@ -502,6 +502,9 @@ class PlayState extends MusicBeatSubState
    */
   var scoreText:FlxText;
 
+  /**
+   * The scroll speed changer component shows when the player changes the scroll speed mid-song.
+   */
   var scrollSpeedChanger:ScrollSpeedChanger;
 
   /**
@@ -868,6 +871,7 @@ class PlayState extends MusicBeatSubState
     }
     #end
 
+    // Initialize the scroll speed changer component
     initScrollSpeedChanger();
 
     #if FEATURE_DISCORD_RPC
@@ -2138,11 +2142,16 @@ class PlayState extends MusicBeatSubState
     }
   }
 
+  /**
+   * Constructs the scroll speed changer component.
+   */
   function initScrollSpeedChanger():Void
   {
-    // The scroll speed changer
-    scrollSpeedChanger.screenCenter(Y);
-    scrollSpeedChanger.x = playerStrumline.x + playerStrumline.width * 0.5;
+    // Center based on the current position of the player strumline
+    scrollSpeedChanger.setPosition(
+      playerStrumline.x + (playerStrumline.width - scrollSpeedChanger.width) * 0.5,
+      (FlxG.height - scrollSpeedChanger.width) * 0.5,
+    );
     scrollSpeedChanger.cameras = [camHUD];
     scrollSpeedChanger.zIndex = 1002;
     add(scrollSpeedChanger);
@@ -3293,6 +3302,9 @@ class PlayState extends MusicBeatSubState
     }
   }
 
+  /**
+   * Handles the controls for increasing or decreasing the scroll speed mid-song.
+   */
   function handleScrollSpeedChange()
   {
     if (controls.SCROLL_SPEED_INCREASE_SPEED) changeScrollSpeed(0.1);

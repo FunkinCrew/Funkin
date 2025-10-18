@@ -9,6 +9,7 @@ import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import flixel.math.FlxMath;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -307,6 +308,12 @@ class Preferences
     return value;
   }
 
+  /**
+   * The scroll speed value set by the player.
+   * This is only used with the `ScrollSpeedMode.STATIC` and `ScrollSpeedMode.ADAPTIVE`.
+   *
+   * @default `Constants.DEFAULT_SCROLLSPEED`
+   */
   public static var scrollSpeed(get, set):Float;
 
   static function get_scrollSpeed():Float
@@ -316,12 +323,18 @@ class Preferences
 
   static function set_scrollSpeed(value:Float):Float
   {
+    value = FlxMath.roundDecimal(value, 2);
     var save:Save = Save.instance;
     save.options.scrollSpeed = value;
     save.flush();
     return value;
   }
 
+  /**
+   * If enabled, controls how the song's scroll speed is applied based on the selected mode.
+   *
+   * @default `ScrollSpeedMode.OFF`
+   */
   public static var scrollSpeedMode(get, set):ScrollSpeedMode;
 
   static function get_scrollSpeedMode():ScrollSpeedMode

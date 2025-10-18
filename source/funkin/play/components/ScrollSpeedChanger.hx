@@ -34,17 +34,34 @@ class ScrollSpeedChanger extends FlxSpriteGroup
     scrollFactor.set();
   }
 
+  /**
+   * Update the scroll speed value text.
+   *
+   * @param speed The current scroll speed value to display.
+   */
   public function updateSpeed(speed:Float):Void
   {
     scrollSpeedValue.text = Std.string(FlxMath.roundDecimal(speed, 2)) + "x";
   }
 }
 
+/**
+ * An abstract enum for scroll speed modes.
+ */
 enum abstract ScrollSpeedMode(Int) from Int to Int
 {
+  /**
+   * Scroll speed adapts dynamically during the song (e.g. responds to song events)
+   */
   var OFF:Int = 0;
 
+  /**
+   * Scroll speed is fixed to the player's set value (cannot be changed unless modified by mods)
+   */
   var STATIC:Int = 1;
 
+  /**
+   * Scroll speed adapts dynamically during the song (e.g. responds to song events)
+   */
   var ADAPTIVE:Int = 2;
 }
