@@ -1,11 +1,12 @@
 package funkin.data.song;
 
 import funkin.data.event.SongEventRegistry;
-import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
-import thx.semver.Version;
+import funkin.play.event.SongEvent;
+import funkin.play.notes.Strumline;
 import funkin.util.tools.ICloneable;
+import thx.semver.Version;
 
 /**
  * Data containing information about a song.
@@ -1011,14 +1012,14 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    *
    * 0 = left, 1 = down, 2 = up, 3 = right
    */
-  public inline function getDirection(strumlineSize:Int = 4):Int
+  public inline function getDirection(?strumlineSize:Int):Int
   {
-    return this.data % strumlineSize;
+    return this.data % (strumlineSize ?? Strumline.KEY_COUNT);
   }
 
-  public function getDirectionName(strumlineSize:Int = 4):String
+  public function getDirectionName(?strumlineSize:Int):String
   {
-    return SongNoteData.buildDirectionName(this.data, strumlineSize);
+    return SongNoteData.buildDirectionName(this.data, (strumlineSize ?? Strumline.KEY_COUNT));
   }
 
   /**
@@ -1027,9 +1028,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    *
    * 0 = player, 1 = opponent, etc.
    */
-  public function getStrumlineIndex(strumlineSize:Int = 4):Int
+  public function getStrumlineIndex(?strumlineSize:Int):Int
   {
-    return Math.floor(this.data / strumlineSize);
+    return Math.floor(this.data / (strumlineSize ?? Strumline.KEY_COUNT));
   }
 
   /**
@@ -1038,9 +1039,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * @param strumlineSize Defaults to 4.
    * @return True if it's Boyfriend's note.
    */
-  public function getMustHitNote(strumlineSize:Int = 4):Bool
+  public function getMustHitNote(?strumlineSize:Int):Bool
   {
-    return getStrumlineIndex(strumlineSize) == 0;
+    return getStrumlineIndex(strumlineSize ?? Strumline.KEY_COUNT) == 0;
   }
 
   @:jignored
@@ -1147,9 +1148,9 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     this = new SongNoteDataRaw(time, data, length, kind, params);
   }
 
-  public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
+  public static function buildDirectionName(data:Int, ?strumlineSize:Int ):String
   {
-    switch (data % strumlineSize)
+    switch (data % (strumlineSize ?? Strumline.KEY_COUNT))
     {
       case 0:
         return 'Left';
