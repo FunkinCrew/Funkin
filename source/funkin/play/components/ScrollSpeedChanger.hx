@@ -11,13 +11,14 @@ import funkin.graphics.FunkinSprite;
 
 class ScrollSpeedChanger extends FlxSpriteGroup
 {
+  static inline var hideDelay:Float = 2.0;
+
   var bg:FunkinSprite;
   var scrollSpeedLabel:FlxText;
   public var scrollSpeedValue:FlxText;
 
   var hideTimer:FlxTimer;
   var hideTween:FlxTween;
-  static inline var hideDelay:Float = 2.0;
 
   public function new(x:Float, y:Float, ?initialSpeed:Float)
   {
@@ -26,10 +27,10 @@ class ScrollSpeedChanger extends FlxSpriteGroup
     initialSpeed = initialSpeed ?? Constants.DEFAULT_SCROLLSPEED;
 
     bg = new FunkinSprite(0, 0);
-    bg.makeGraphic(200, 65, 0x99000000);
+    bg.makeGraphic(215, 80, 0x99000000);
     add(bg);
 
-    scrollSpeedLabel = new FlxText(0, 10, bg.width, "Scroll Speed");
+    scrollSpeedLabel = new FlxText(0, 6, bg.width, 'Scroll Speed (Mode: ${Preferences.scrollSpeedMode.getName()})');
     scrollSpeedLabel.setFormat('VCR OSD Mono', 21, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     add(scrollSpeedLabel);
 
@@ -57,12 +58,14 @@ class ScrollSpeedChanger extends FlxSpriteGroup
     hideTimer = new FlxTimer().start(hideDelay, (tmr:FlxTimer) -> hide());
   }
 
-  function show():Void {
+  function show():Void
+  {
     if (hideTween != null) hideTween.cancel();
     hideTween = FlxTween.tween(this, {alpha: 1}, 0.2, {ease: FlxEase.quartOut});
   }
 
-  function hide():Void {
+  function hide():Void
+  {
     if (hideTween != null) hideTween.cancel();
     hideTween = FlxTween.tween(this, {alpha: 0}, 0.3, {ease: FlxEase.quartIn});
   }
@@ -94,4 +97,14 @@ enum abstract ScrollSpeedMode(Int) from Int to Int
    * Scroll speed adapts dynamically during the song (e.g. responds to song events)
    */
   var ADAPTIVE:Int = 2;
+
+  public function getName():String
+  {
+    return switch (cast this : ScrollSpeedMode)
+    {
+      case STATIC: "Static";
+      case ADAPTIVE: "Adaptive";
+      default: "Off";
+    }
+  }
 }

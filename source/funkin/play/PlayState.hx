@@ -505,7 +505,7 @@ class PlayState extends MusicBeatSubState
   /**
    * The scroll speed changer component shows when the player changes the scroll speed mid-song.
    */
-  var scrollSpeedChanger:ScrollSpeedChanger;
+  public var scrollSpeedChanger:ScrollSpeedChanger;
 
   /**
    * The bar which displays the player's health.
@@ -2148,10 +2148,7 @@ class PlayState extends MusicBeatSubState
   function initScrollSpeedChanger():Void
   {
     // Center based on the current position of the player strumline
-    scrollSpeedChanger.setPosition(
-      playerStrumline.x + (playerStrumline.width - scrollSpeedChanger.width) * 0.5,
-      (FlxG.height - scrollSpeedChanger.width) * 0.5,
-    );
+    scrollSpeedChanger.screenCenter();
     scrollSpeedChanger.cameras = [camHUD];
     scrollSpeedChanger.zIndex = 1002;
     add(scrollSpeedChanger);
@@ -3311,7 +3308,7 @@ class PlayState extends MusicBeatSubState
     if (controls.SCROLL_SPEED_DECREASE_SPEED) changeScrollSpeed(-0.1);
   }
 
-  function changeScrollSpeed(value:Float = 0)
+  public function changeScrollSpeed(value:Float = 0)
   {
     playerStrumline.scrollSpeed += value;
     opponentStrumline.scrollSpeed += value;

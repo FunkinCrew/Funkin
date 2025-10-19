@@ -351,15 +351,8 @@ class Preferences
 
   static function set_scrollSpeedMode(value:ScrollSpeedMode):ScrollSpeedMode
   {
-    var result:String = switch (value)
-    {
-      case ScrollSpeedMode.STATIC: "Static";
-      case ScrollSpeedMode.ADAPTIVE: "Adaptive";
-      default: "Off";
-    };
-
     var save:Save = Save.instance;
-    save.options.scrollSpeedMode = result;
+    save.options.scrollSpeedMode = value.getName();
     save.flush();
     return value;
   }
