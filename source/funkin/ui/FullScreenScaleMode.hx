@@ -35,7 +35,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   /**
    * The maximum aspect ratio a screen can have.
    */
-  public static var maxAspectRatio:FlxPoint = FlxPoint.get(20, 9);
+  public static var maxAspectRatio:FlxPoint = FlxPoint.get(22, 9);
 
   /**
    * The maximum ratio axis indicating on which axis the black bar will be added.
