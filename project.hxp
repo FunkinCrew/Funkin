@@ -1470,8 +1470,8 @@ class Project extends HXProject
 
   function clearAssets():Void
   {
-    // We don't want the haxe compilation server deleting our assets, do we?
-    if (isDisplay()) return;
+    // Don't run on non-build commands.
+    if (!isBuild()) return;
 
     var exportPath:Null<String> = app.path ?? "";
 
@@ -1737,6 +1737,11 @@ class Project extends HXProject
   public function isClean():Bool
   {
     return this.command == "clean";
+  }
+
+  public function isBuild():Bool
+  {
+    return this.command == "test" || this.command == "build";
   }
 
   public function isDebug():Bool
