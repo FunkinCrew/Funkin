@@ -39,6 +39,6 @@ class Lock extends FunkinSprite
       });
 
     anim.play("idle");
-    offset.set(1400, 130);
+    offset.set(230, 110);
   }
 }
