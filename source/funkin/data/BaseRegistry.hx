@@ -18,7 +18,7 @@ typedef EntryConstructorFunction = (String, ?Dynamic) -> Void;
  */
 @:nullSafety
 @:generic
-@:autoBuild(funkin.util.macro.DataRegistryMacro.buildRegistry())
+@:autoBuild(funkin.util.macro.RegistryMacro.buildRegistry())
 abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P>
 {
   /**
