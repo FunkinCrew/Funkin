@@ -112,6 +112,7 @@ class ScreenshotPlugin extends FlxBasic
     lastHeight = FlxG.height;
 
     flashSprite = new Sprite();
+    flashSprite.mouseEnabled = false;
     flashSprite.alpha = 0;
     flashBitmap = new Bitmap(new BitmapData(lastWidth, lastHeight, true, Preferences.flashingLights ? FlxColor.WHITE : FlxColor.TRANSPARENT));
     flashSprite.addChild(flashBitmap);
