@@ -3,7 +3,9 @@
 #import <TargetConditionals.h>
 #import <Foundation/Foundation.h>
 #import <AVFAudio/AVFAudio.h>
+#if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
+#endif
 
 void Apple_AudioSession_Initialize()
 {
