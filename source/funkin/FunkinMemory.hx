@@ -243,6 +243,7 @@ class FunkinMemory
       if (graphic != null)
       {
         FlxG.bitmap.remove(graphic);
+        graphic.persist = false;
         graphic.destroy();
         previousCachedTextures.remove(graphicKey);
         Assets.cache.clear(graphicKey);
@@ -260,7 +261,7 @@ class FunkinMemory
     {
       var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
-      if (obj == null || obj.persist || permanentCachedTextures.exists(key) || key.contains("fonts"))
+      if (obj == null || (obj.persist && permanentCachedTextures.exists(key)) || key.contains("fonts"))
       {
         continue;
       }
@@ -272,6 +273,7 @@ class FunkinMemory
           if (key.contains(purgeEntry))
           {
             FlxG.bitmap.removeKey(key);
+            obj.persist = false;
             obj.destroy();
           }
         }
