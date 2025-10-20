@@ -574,17 +574,7 @@ class Constants
   /**
    * How much volume should be reduced on Application Focus Lost.
    */
-  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.1;
-
-  /**
-   * Duration, in seconds, how long should volume reduce.
-   */
-  public static final LOST_FOCUS_VOLUME_DURATION:Float = 0.85;
-
-  /**
-   * Delay how long should game wait before fading volume with `Delayed` volume fade option.
-   */
-  public static final LOST_FOCUS_VOLUME_DELAY:Float = 0.15;
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.5;
   #end
 
   /**
