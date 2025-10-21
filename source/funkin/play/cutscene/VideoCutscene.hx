@@ -73,13 +73,10 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      // funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
-      // return;
-
-      // TODO: After moving videos to their own library,
-      // this function ALWAYS FAILS on web, but the video still plays.
-      // I think that's due to a weird quirk with how OpenFL libraries work.
+      funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
       trace('Video file does not exist: ${filePath}');
+
+      return;
     }
 
     var rawFilePath = Paths.stripLibrary(filePath);
@@ -216,6 +213,7 @@ class VideoCutscene
     if (vid != null)
     {
       vid.restartVideo();
+      vid.resumeVideo();
       onVideoRestarted.dispatch();
     }
     #end

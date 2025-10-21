@@ -1,5 +1,6 @@
 package funkin.ui.debug.playtest;
 
+#if sys
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
@@ -97,3 +98,4 @@ class ChartPlaytestMenu extends MusicBeatState
     #end
   }
 }
+#end

@@ -1180,8 +1180,18 @@ class FileUtil
     // thats why the above comment is there!
     Sys.command('open', [pathFolder]);
     #elseif linux
-    // TODO: implement linux
-    // some shit with xdg-open :thinking: emoji...
+    var exitCode = Sys.command("xdg-open", [pathFolder]);
+    if (exitCode == 0) return;
+    var fileManagers:Array<String> = ["dolphin", "nautilus", "nemo", "thunar", "caja", "konqueror", "spacefm", "pcmanfm"];
+
+    for (fm in fileManagers) {
+      if (Sys.command("which", [fm]) == 0) {
+        exitCode = Sys.command(fm, [pathFolder]);
+        if (exitCode == 0) return;
+      }
+    }
+
+    trace('No compatible file manager found for Linux.');
     #end
     #else
     throw 'External folder open is not supported on this platform.';
@@ -1207,8 +1217,9 @@ class FileUtil
     #elseif mac
     Sys.command('open', ['-R', path]);
     #elseif linux
-    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
-    Sys.command('open', [path]);
+    trace('File selection not reliably supported on Linux, opening parent folder instead.');
+    path = Path.directory(path);
+    openFolder(path);
     #end
     #else
     throw 'External file selection is not supported on this platform.';

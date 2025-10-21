@@ -619,6 +619,10 @@ class StoryMenuState extends MusicBeatState
     Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      #if mobile
+      FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      #end
+
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 

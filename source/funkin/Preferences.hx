@@ -137,14 +137,14 @@ class Preferences
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * Always disabled on mobile.
+   * Always disabled on release mobile builds.
    * @default `Off`
    */
   public static var debugDisplay(get, set):DebugDisplayMode;
 
   static function get_debugDisplay():DebugDisplayMode
   {
-    #if mobile
+    #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
     #end
 

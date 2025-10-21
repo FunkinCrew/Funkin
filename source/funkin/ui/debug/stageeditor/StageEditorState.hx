@@ -40,7 +40,7 @@ import haxe.ui.containers.windows.WindowList;
 import haxe.ui.containers.windows.WindowManager;
 import flixel.FlxObject;
 import haxe.ui.components.Label;
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
+import funkin.ui.debug.GraphicCursorCross;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.core.Screen;
 import funkin.util.WindowUtil;
@@ -60,7 +60,7 @@ class StageEditorState extends UIState
 {
   // i aint documenting allat
   // the uh finals
-  public static final BACKUPS_PATH:String = "./stagebackups/";
+  public static final BACKUPS_PATH:String = "./backups/stages/";
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
   public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
 
@@ -202,21 +202,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
-        FileUtil.createDirIfNotExists(BACKUPS_PATH);
-
-        var data = this.packShitToZip();
-        var path = haxe.io.Path.join([
-          BACKUPS_PATH,
-          'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
-        ]);
-
-        FileUtil.writeBytesToPath(path, data);
-        saved = true;
-
-        Save.instance.stageEditorHasBackup = true;
-        Save.instance.flush();
-
-        notifyChange("Auto-Save", "A Backup of this Stage has been made.");
+        saveBackup();
       });
     }
 
@@ -845,7 +831,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      autoSaveTimer.onComplete(autoSaveTimer);
+      saveBackup();
     }
   }
 
@@ -856,7 +842,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      autoSaveTimer.onComplete(autoSaveTimer);
+      saveBackup();
     }
   }
 
@@ -1282,7 +1268,7 @@ class StageEditorState extends UIState
                 exitConfirmDialog = null;
                 if (btn == DialogButton.YES)
                 {
-                  saved = true;
+                  saveBackup();
                   onMenuItemClick("exit");
                 }
             });
@@ -1485,6 +1471,25 @@ class StageEditorState extends UIState
           updateDialog(StageEditorDialogType.STAGE);
         }
     }
+  }
+
+  function saveBackup()
+  {
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
+
+    var data = this.packShitToZip();
+    var path = haxe.io.Path.join([
+      BACKUPS_PATH,
+      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+    ]);
+
+    FileUtil.writeBytesToPath(path, data);
+    saved = true;
+
+    Save.instance.stageEditorHasBackup = true;
+    Save.instance.flush();
+
+    notifyChange("Auto-Save", "A Backup of this Stage has been made.");
   }
 
   public function clearAssets()

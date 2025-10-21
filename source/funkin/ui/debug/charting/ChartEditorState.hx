@@ -49,6 +49,7 @@ import funkin.play.components.Subtitles;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -2331,6 +2332,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  public override function reloadAssets()
+  {
+    // If PlayState isn't open, do a regular reload.
+    if (!Std.isOfType(this.subState, PlayState))
+    {
+      super.reloadAssets();
+      return;
+    }
+
+    funkin.modding.PolymodHandler.forceReloadAssets();
+
+    // Create a new instance of the current substate, so old data is cleared.
+    this.resetSubState();
+
+    @:privateAccess
+    testSongInPlayState(PlayState.lastParams.minimalMode);
+  }
+
   override function create():Void
   {
     // super.create() must be called first, the HaxeUI components get created here.
@@ -2687,7 +2706,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function createSubtitles():Void
   {
-    subtitles = new Subtitles(0, -78);
+    subtitles = new Subtitles(0, 78);
     subtitles.zIndex = 100;
     subtitles.cameras = [uiCamera];
     add(subtitles);

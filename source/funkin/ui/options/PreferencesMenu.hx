@@ -148,7 +148,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Subtitles', 'When enabled, subtitles appear during some songs and cutscenes.', function(value:Bool):Void {
       Preferences.subtitles = value;
     }, Preferences.subtitles);
-    #if !mobile
+    #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.', [
       "Advanced" => DebugDisplayMode.Advanced,
@@ -157,10 +157,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     ], (key:String, value:DebugDisplayMode) -> {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
-
     createPrefItemPercentage('Debug Display BG', "Adjust the debug display's background opacity.", function(value:Int):Void {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);
+    #end
+    #if !mobile
     createPrefItemCheckbox('Pause on Unfocus', 'When enabled, the game automatically pauses when losing focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);

@@ -23,7 +23,7 @@ import thx.semver.Version as SemverVersion;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
-  public static final BACKUPS_PATH:String = './backups/';
+  public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.

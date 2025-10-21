@@ -162,11 +162,11 @@ class DebugBoundingState extends FlxState
     {
       var lineStyle:LineStyle = {color: FlxColor.RED, thickness: 2};
 
-      var uvW:Float = (i.uv.width * i.parent.width) - (i.uv.x * i.parent.width);
-      var uvH:Float = (i.uv.height * i.parent.height) - (i.uv.y * i.parent.height);
+      var uvW:Float = (i.uv.right * i.parent.width) - (i.uv.left * i.parent.width);
+      var uvH:Float = (i.uv.bottom * i.parent.height) - (i.uv.top * i.parent.height);
 
-      // trace(Std.int(i.uv.width * i.parent.width));
-      swagOutlines.drawRect(i.uv.x * i.parent.width, i.uv.y * i.parent.height, uvW, uvH, FlxColor.TRANSPARENT, lineStyle);
+      // trace(Std.int(i.uv.right * i.parent.width));
+      swagOutlines.drawRect(i.uv.left * i.parent.width, i.uv.top * i.parent.height, uvW, uvH, FlxColor.TRANSPARENT, lineStyle);
       // swagGraphic.setPosition(, );
       // trace(uvH);
     }
