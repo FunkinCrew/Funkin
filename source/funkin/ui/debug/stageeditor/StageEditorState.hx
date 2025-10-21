@@ -84,7 +84,7 @@ class StageEditorState extends UIState
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-properties');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-anims');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
-  public static final STAGE_EDITOR_TOOLBOX_CHARACTER_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/character-properties');
+  public static final STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT:String = Paths.ui('stage-editor/toolboxes/character-properties');
 
   /**
    * The base grid size for the stage editor.
@@ -198,12 +198,12 @@ class StageEditorState extends UIState
 
   public var selectedProp(default, set):Null<StageEditorObject> = null;
 
-  function set_selectedProp(value:Null<StageEditorObject>):StageEditorObject
+  function set_selectedProp(value:Null<StageEditorObject>):Null<StageEditorObject>
   {
     if (selectedProp != null) selectedProp.selectedShader.amount = 0;
     this.selectedProp = value;
 
-    // update dialogs
+    this.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT);
 
     if (selectedProp != null) selectedProp.selectedShader.amount = 0.135;
 
@@ -212,13 +212,14 @@ class StageEditorState extends UIState
 
   public var selectedCharacter(default, set):Null<BaseCharacter> = null;
 
-  function set_selectedCharacter(value:Null<BaseCharacter>):BaseCharacter
+  function set_selectedCharacter(value:Null<BaseCharacter>):Null<BaseCharacter>
   {
     if (selectedCharacter != null) selectedCharacter.shader = CHARACTER_DESELECT_SHADER;
     this.selectedCharacter = value;
+    this.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT);
 
-    if (selectedCharacter != null) selectedCharacter.shader = null;
-    // update dialog
+    if (selectedCharacter != null) selectedCharacter.shader = cast null;
+
     return selectedCharacter;
   }
 
@@ -488,12 +489,12 @@ class StageEditorState extends UIState
   /**
    * The UI camera component we're using for this state to show UI components.
    */
-  var uiCamera:FlxCamera;
+  var uiCamera:Null<FlxCamera> = null;
 
   /**
    * The Stage camera component we're using for this state to show the stage itself.
    */
-  var stageCamera:FlxCamera;
+  var stageCamera:Null<FlxCamera> = null;
 
   /**
    * An empty FlxObject contained in the scene.
@@ -502,7 +503,7 @@ class StageEditorState extends UIState
    * It needs to be an object in the scene for the camera to be configured to follow it.
    * We optionally make this a sprite so we can draw a debug graphic with it.
    */
-  var cameraFollowPoint:FlxObject;
+  var cameraFollowPoint:FlxObject = new FlxObject(0, 0, 2, 3);
 
   /**
    * ==============================
@@ -640,7 +641,7 @@ class StageEditorState extends UIState
   /**
    * The data representing the current stage.
    */
-  var stageData:Null<StageData> = new StageData();
+  var stageData:StageData = new StageData();
 
   /**
    * The name of the current stage.
@@ -650,7 +651,7 @@ class StageEditorState extends UIState
   function get_currentStageName():String
   {
     if (stageData.name == null) stageData.name = 'Unknown';
-    return stageData.name;
+    return stageData?.name ?? 'Unknown';
   }
 
   function set_currentStageName(value:String):String
@@ -665,7 +666,7 @@ class StageEditorState extends UIState
     return currentStageName.toLowerCamelCase().sanitize();
   }
 
-  function set_currentStageId(value:Null<String>):String
+  function set_currentStageId(value:String):String
   {
     return value;
   }
@@ -678,7 +679,7 @@ class StageEditorState extends UIState
   function get_currentStageZoom():Float
   {
     if (stageData.cameraZoom == null) stageData.cameraZoom = 1.0;
-    return stageData.cameraZoom;
+    return stageData?.cameraZoom ?? 1.0;
   }
 
   function set_currentStageZoom(value:Float):Float
@@ -695,7 +696,7 @@ class StageEditorState extends UIState
   function get_currentStageDirectory():String
   {
     if (stageData.directory == null) stageData.directory = 'shared';
-    return stageData.directory;
+    return stageData?.directory ?? 'shared';
   }
 
   function set_currentStageDirectory(value:String):String
@@ -727,7 +728,7 @@ class StageEditorState extends UIState
   function get_currentProps():Array<StageDataProp>
   {
     if (stageData.props == null) stageData.props = [];
-    return stageData.props;
+    return stageData?.props ?? [];
   }
 
   function set_currentProps(value:Array<StageDataProp>):Array<StageDataProp>
@@ -754,7 +755,7 @@ class StageEditorState extends UIState
   /**
    * A group of showing camera bounds for each character.
    */
-  var cameraBounds:FlxTypedGroup<FlxShapeBox>;
+  var cameraBounds:FlxTypedGroup<FlxShapeBox> = new FlxTypedGroup<FlxShapeBox>();
 
   /**
    * A list of position markers for each character.
@@ -769,7 +770,7 @@ class StageEditorState extends UIState
   /**
    * Th text object used to display the name of the currently hovered/selected object.
    */
-  var objectNameText:FlxText;
+  var objectNameText:FlxText = new FlxText(0, 0, 0, "", 24);
 
   /**
    * The IMAGE used for the grid. Updated by StageEditorThemeHandler.
@@ -809,7 +810,6 @@ class StageEditorState extends UIState
     uiCamera = new FunkinCamera('stageEditorUI');
     stageCamera = new FlxCamera();
 
-    cameraFollowPoint = new FlxObject(0, 0, 2, 3);
     cameraFollowPoint.screenCenter();
 
     initCameras();
@@ -880,7 +880,7 @@ class StageEditorState extends UIState
       previousWorkingFilePaths = [currentWorkingFilePath].concat(save.stageEditorPreviousFiles);
     }
 
-    moveStepIndex = BASE_STEPS.indexOf(Std.parseInt(StringTools.replace(save.stageEditorMoveStep, "px", "")));
+    moveStepIndex = BASE_STEPS.indexOf(Std.parseInt(StringTools.replace(save.stageEditorMoveStep ?? "0px", "px", "")) ?? BASE_STEP);
     angleStepIndex = BASE_ANGLES.indexOf(save.stageEditorAngleStep);
     currentTheme = save.stageEditorTheme;
   }
@@ -1008,8 +1008,8 @@ class StageEditorState extends UIState
         this.characters.set(character.characterId, character);
     }
 
-    character.x = DEFAULT_POSITIONS[charType][0] - character.characterOrigin.x + character.globalOffsets[0];
-    character.y = DEFAULT_POSITIONS[charType][1] - character.characterOrigin.y + character.globalOffsets[1];
+    character.x = (DEFAULT_POSITIONS[charType] ?? [0, 0])[0] - character.characterOrigin.x + character.globalOffsets[0];
+    character.y = (DEFAULT_POSITIONS[charType] ?? [0, 0])[1] - character.characterOrigin.y + character.globalOffsets[1];
 
     // Set the characters type
     character.characterType = charType;
@@ -1019,7 +1019,6 @@ class StageEditorState extends UIState
 
   function initVisuals():Void
   {
-    cameraBounds = new FlxTypedGroup<FlxShapeBox>();
     cameraBounds.visible = false;
     cameraBounds.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.size() + 1;
 
@@ -1049,7 +1048,6 @@ class StageEditorState extends UIState
 
     add(cameraBounds);
 
-    objectNameText = new FlxText(0, 0, 0, "", 24);
     objectNameText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     objectNameText.cameras = [uiCamera];
     add(objectNameText);
@@ -1079,7 +1077,7 @@ class StageEditorState extends UIState
     // Auto-save to temp file.
     if (needsAutoSave)
     {
-      // this.exportAllStageData(true, null);
+      this.exportAllStageData(true, null);
       var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorImportExportHandler.BACKUPS_PATH]);
       this.infoWithActions('Auto-Save', 'Stage auto-saved to ${absoluteBackupsPath}.', [
         {
@@ -1232,9 +1230,9 @@ class StageEditorState extends UIState
     menubarItemUndo.onClick = _ -> undoLastCommand();
     menubarItemRedo.onClick = _ -> redoLastCommand();
     menubarItemNewObj.onClick = _ -> this.openNewObjectDialog();
-    menubarItemFlipX.onClick = _ -> performCommand(new FlipObjectCommand(selectedProp, true));
-    menubarItemFlipY.onClick = _ -> performCommand(new FlipObjectCommand(selectedProp, false));
-    menubarItemDelete.onClick = _ -> performCommand(new RemoveObjectCommand(selectedProp));
+    menubarItemFlipX.onClick = _ -> if (selectedProp != null) performCommand(new FlipObjectCommand(selectedProp, true));
+    menubarItemFlipY.onClick = _ -> if (selectedProp != null) performCommand(new FlipObjectCommand(selectedProp, false));
+    menubarItemDelete.onClick = _ -> if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
 
     /**
      * VIEW
@@ -1271,6 +1269,8 @@ class StageEditorState extends UIState
     /**
      * WINDOWS
      */
+    menubarItemWindowObjectProps.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT, event.value);
+    menubarItemWindowCharacter.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT, event.value);
     menubarItemWindowStage.onChange = event -> this.setToolboxState(STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
 
     /**
@@ -1302,7 +1302,7 @@ class StageEditorState extends UIState
           currentSelectionMode = NONE;
           if (selectedCharacter != null) selectedCharacter = null;
           for (charType => character in characters)
-            if (character != null) character.shader = null;
+            if (character != null) character.shader = cast null;
         default:
           currentSelectionMode = NONE;
       }
@@ -1329,6 +1329,8 @@ class StageEditorState extends UIState
             selectedProp = prop;
             selectedItemName = prop.name;
           case StageEditorSelectionMode.CHARACTERS:
+            if (selectedCharacter == null) return;
+
             var charList = [for (c in characters) c];
             var index = charList.indexOf(selectedCharacter) + 1;
             if (index >= charList.length) index = 0;
@@ -1568,12 +1570,12 @@ class StageEditorState extends UIState
       {
         // Player is moving their camera in the stage editor.
         targetCursorMode = Grabbing;
-        var safeZoom:Float = FlxMath.bound(stageCamera.zoom, 0.3);
+        var safeZoom:Float = FlxMath.bound(stageCamera?.zoom ?? 1.0, 0.3);
         cameraFollowPoint.x -= Math.round(FlxG.mouse.deltaX / 2 / safeZoom);
         cameraFollowPoint.y -= Math.round(FlxG.mouse.deltaY / 2 / safeZoom);
       }
 
-      if ((FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && stageCamera.zoom > 0.11)) && !isCursorOverHaxeUI)
+      if (stageCamera != null && (FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && stageCamera.zoom > 0.11)) && !isCursorOverHaxeUI)
       {
         stageCamera.zoom += FlxG.mouse.wheel / 10;
         this.updateGridBitmapSize();
@@ -1592,56 +1594,58 @@ class StageEditorState extends UIState
 
             var isOverlapping:Bool = FlxG.mouse.pixelPerfectCheck(prop);
 
-            if (prop == selectedProp)
-            {
-              selectedItemName = prop.name;
-              if (FlxG.keys.pressed.SHIFT) objectNameText.text = prop.name + ' (LOCKED)';
-
-              if (FlxG.mouse.justPressed && isOverlapping && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
-              {
-                dragTargetItem = selectedProp;
-                dragStartPositions = [selectedProp.x, selectedProp.y];
-                dragOffset = [
-                  FlxG.mouse.getWorldPosition().x - selectedProp.x,
-                  FlxG.mouse.getWorldPosition().y - selectedProp.y
-                ];
-                dragWasMoving = false;
-              }
-
-              if (dragTargetItem == selectedProp && FlxG.mouse.pressed && (FlxG.mouse.deltaX != 0 || FlxG.mouse.deltaY != 0))
-              {
-                var mousePos = FlxG.mouse.getWorldPosition();
-                prop.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
-                prop.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
-                // this.refreshToolbox(); // pass the toolbox
-
-                dragWasMoving = true;
-                targetCursorMode = Grabbing;
-              }
-
-              if (dragTargetItem == selectedProp && FlxG.mouse.justReleased)
-              {
-                if (dragWasMoving)
-                {
-                  var endPoints:Array<Float> = [selectedProp.x, selectedProp.y];
-                  if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
-                  {
-                    performCommand(new MoveItemCommand(selectedProp, dragStartPositions, endPoints));
-                  }
-                }
-                dragTargetItem = null;
-                dragOffset = [];
-                dragStartPositions = [];
-                dragWasMoving = false;
-              }
-            }
-
             if (isOverlapping && !FlxG.keys.pressed.SHIFT)
             {
               if (dragTargetItem == null) targetCursorMode = Pointer;
               objectNameText.text = prop.name;
               if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) performCommand(new SelectObjectCommand(prop));
             }
+
+            if (prop == selectedProp)
+            {
+              selectedItemName = prop.name;
+              if (FlxG.keys.pressed.SHIFT) objectNameText.text = prop.name + ' (LOCKED)';
+            }
+          }
+
+          if (selectedProp == null) return;
+
+          if (FlxG.mouse.justPressed && FlxG.mouse.pixelPerfectCheck(selectedProp) && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+          {
+            dragTargetItem = selectedProp;
+            dragStartPositions = [selectedProp.x, selectedProp.y];
+            dragOffset = [
+              FlxG.mouse.getWorldPosition().x - selectedProp.x,
+              FlxG.mouse.getWorldPosition().y - selectedProp.y
+            ];
+            dragWasMoving = false;
+          }
+
+          if (dragTargetItem == selectedProp && FlxG.mouse.pressed && FlxG.mouse.justMoved)
+          {
+            var mousePos = FlxG.mouse.getWorldPosition();
+            selectedProp.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
+            selectedProp.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
+            // this.refreshToolbox(); // pass the toolbox
+
+            dragWasMoving = true;
+            targetCursorMode = Grabbing;
+          }
+
+          if (dragTargetItem == selectedProp && FlxG.mouse.justReleased)
+          {
+            if (dragWasMoving)
+            {
+              var endPoints:Array<Float> = [selectedProp.x, selectedProp.y];
+              if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
+              {
+                performCommand(new MoveItemCommand(selectedProp, dragStartPositions, endPoints));
+              }
+            }
+            dragTargetItem = null;
+            dragOffset = [];
+            dragStartPositions = [];
+            dragWasMoving = false;
           }
         case StageEditorSelectionMode.CHARACTERS:
           if (selectedCharacter != null
@@ -1658,53 +1662,53 @@ class StageEditorState extends UIState
             {
               selectedItemName = Std.string(character.characterType);
               if (FlxG.keys.pressed.SHIFT) objectNameText.text = Std.string(character.characterType) + ' (LOCKED)';
-
-              if (FlxG.mouse.justPressed && isOverlapping && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
-              {
-                dragTargetItem = selectedCharacter;
-                dragStartPositions = [selectedCharacter.x, selectedCharacter.y];
-                dragOffset = [
-                  FlxG.mouse.getWorldPosition().x - selectedCharacter.x,
-                  FlxG.mouse.getWorldPosition().y - selectedCharacter.y
-                ];
-                dragWasMoving = false;
-              }
-
-              if (dragTargetItem == selectedCharacter && FlxG.mouse.pressed && (FlxG.mouse.deltaX != 0 || FlxG.mouse.deltaY != 0))
-              {
-                var mousePos = FlxG.mouse.getWorldPosition();
-                character.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
-                character.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
-                // this.refreshToolbox(); // pass the toolbox
-                updateVisuals(false); // We do not want to redraw the camera bounds each time, as we are just moving the character.
-
-                dragWasMoving = true;
-                targetCursorMode = Grabbing;
-              }
-
-              if (dragTargetItem == selectedCharacter && FlxG.mouse.justReleased)
-              {
-                if (dragWasMoving)
-                {
-                  var endPoints:Array<Float> = [selectedCharacter.x, selectedCharacter.y];
-                  if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
-                  {
-                    performCommand(new MoveItemCommand(selectedCharacter, dragStartPositions, endPoints));
-                  }
-                }
-                dragTargetItem = null;
-                dragOffset = [];
-                dragStartPositions = [];
-                dragWasMoving = false;
-              }
             }
 
             if (isOverlapping && !FlxG.keys.pressed.SHIFT)
             {
-              if (dragTargetItem == null) targetCursorMode = Pointer;
               objectNameText.text = Std.string(character.characterType);
               if (FlxG.mouse.justPressed && !isCursorOverHaxeUI) selectedCharacter = character;
             }
+          }
+
+          if (selectedCharacter == null) return;
+
+          if (FlxG.mouse.justPressed && FlxG.mouse.pixelPerfectCheck(selectedCharacter) && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+          {
+            dragTargetItem = selectedCharacter;
+            dragStartPositions = [selectedCharacter.x, selectedCharacter.y];
+            dragOffset = [
+              FlxG.mouse.getWorldPosition().x - selectedCharacter.x,
+              FlxG.mouse.getWorldPosition().y - selectedCharacter.y
+            ];
+            dragWasMoving = false;
+          }
+
+          if (dragTargetItem == selectedCharacter && FlxG.mouse.pressed && (FlxG.mouse.deltaX != 0 || FlxG.mouse.deltaY != 0))
+          {
+            var mousePos = FlxG.mouse.getWorldPosition();
+            selectedCharacter.x = Math.floor(mousePos.x - dragOffset[0]) - Math.floor(mousePos.x - dragOffset[0]) % moveStep;
+            selectedCharacter.y = Math.floor(mousePos.y - dragOffset[1]) - Math.floor(mousePos.y - dragOffset[1]) % moveStep;
+            updateVisuals(false); // We do not want to redraw the camera bounds each time, as we are just moving the character.
+
+            dragWasMoving = true;
+            targetCursorMode = Grabbing;
+          }
+
+          if (dragTargetItem == selectedCharacter && FlxG.mouse.justReleased)
+          {
+            if (dragWasMoving)
+            {
+              var endPoints:Array<Float> = [selectedCharacter.x, selectedCharacter.y];
+              if (endPoints[0] != dragStartPositions[0] || endPoints[1] != dragStartPositions[1])
+              {
+                performCommand(new MoveItemCommand(selectedCharacter, dragStartPositions, endPoints));
+              }
+            }
+            dragTargetItem = null;
+            dragOffset = [];
+            dragStartPositions = [];
+            dragWasMoving = false;
           }
         default:
           // nothing
@@ -1791,7 +1795,7 @@ class StageEditorState extends UIState
     // CTRL + Delete = Delete
     if (pressingControl() && FlxG.keys.justPressed.DELETE)
     {
-      performCommand(new RemoveObjectCommand(selectedProp));
+      if (selectedProp != null) performCommand(new RemoveObjectCommand(selectedProp));
     }
   }
 
@@ -1852,7 +1856,7 @@ class StageEditorState extends UIState
 
     cameraFollowPoint.velocity.set();
 
-    stageCamera.zoom = currentStageZoom;
+    if (stageCamera != null) stageCamera.zoom = currentStageZoom;
 
     for (prop in spriteArray)
     {
@@ -1865,7 +1869,7 @@ class StageEditorState extends UIState
     {
       if (character == selectedCharacter) continue;
 
-      character.shader = isInTestMode? (currentSelectionMode == CHARACTERS ? CHARACTER_DESELECT_SHADER : null) : null;
+      character.shader = isInTestMode? (currentSelectionMode == CHARACTERS ? CHARACTER_DESELECT_SHADER : cast null) : cast null;
     }
     isInTestMode = !isInTestMode;
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = isInTestMode;

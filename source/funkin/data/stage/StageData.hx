@@ -1,9 +1,10 @@
 package funkin.data.stage;
 
 import funkin.data.animation.AnimationData;
+import funkin.util.tools.ICloneable;
 
 @:nullSafety
-class StageData
+class StageData implements ICloneable<StageData>
 {
   /**
    * The sematic version number of the stage data JSON format.
@@ -28,6 +29,55 @@ class StageData
   {
     this.version = StageRegistry.STAGE_DATA_VERSION;
     this.characters = makeDefaultCharacters();
+  }
+
+  /**
+   * Create a copy of this StageData with the same information.
+   * @return The cloned StageData
+   */
+  public function clone():StageData
+  {
+    var result:StageData = new StageData();
+    result.name = this.name;
+    result.cameraZoom = this.cameraZoom;
+    result.directory = this.directory;
+
+    // Deep clone props
+    result.props = [];
+    if (this.props != null)
+    {
+      for (prop in this.props)
+      {
+        result.props.push({
+          name: prop.name,
+          assetPath: prop.assetPath,
+          animations: prop.animations != null ? prop.animations.copy() : null,
+          scale: prop.scale,
+          position: prop.position != null ? prop.position.copy() : null,
+          alpha: prop.alpha,
+          angle: prop.angle,
+          zIndex: prop.zIndex,
+          danceEvery: prop.danceEvery,
+          isPixel: prop.isPixel,
+          scroll: prop.scroll != null ? prop.scroll.copy() : null,
+          color: prop.color,
+          blend: prop.blend,
+          flipX: prop.flipX,
+          flipY: prop.flipY,
+          startingAnimation: prop.startingAnimation,
+          animType: prop.animType
+        });
+      }
+    }
+
+    // Deep clone characters
+    result.characters = makeDefaultCharacters();
+    if (this.characters != null)
+    {
+      result.characters = haxe.Json.parse(haxe.Json.stringify(this.characters));
+    }
+
+    return result;
   }
 
   public function makeDefaultCharacters():StageDataCharacters

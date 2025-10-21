@@ -2,6 +2,7 @@ package funkin.ui.debug.stageeditor.commands;
 
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
 import funkin.play.character.BaseCharacter;
+import funkin.data.stage.StageData.StageDataCharacter;
 import flixel.FlxSprite;
 
 using StringTools;
@@ -28,6 +29,17 @@ class MoveItemCommand implements StageEditorCommand
     sprite.x = endPosition[0];
     sprite.y = endPosition[1];
 
+    if (Std.isOfType(sprite, BaseCharacter))
+    {
+      var character:BaseCharacter = cast sprite;
+      var data:StageDataCharacter = Reflect.field(state.currentCharacters, Std.string(character.characterType).toLowerCase());
+      data.position = [
+        character.feetPosition.x - character.globalOffsets[0],
+        character.feetPosition.y - character.globalOffsets[1]
+      ];
+      state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT);
+    }
+
     state.playSound(Paths.sound('chartingSounds/noteLay'));
 
     state.saveDataDirty = true;
@@ -41,6 +53,17 @@ class MoveItemCommand implements StageEditorCommand
 
     sprite.x = initialPosition[0];
     sprite.y = initialPosition[1];
+
+    if (Std.isOfType(sprite, BaseCharacter))
+    {
+      var character:BaseCharacter = cast sprite;
+      var data:StageDataCharacter = Reflect.field(state.currentCharacters, Std.string(character.characterType).toLowerCase());
+      data.position = [
+        character.feetPosition.x - character.globalOffsets[0],
+        character.feetPosition.y - character.globalOffsets[1]
+      ];
+      state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT);
+    }
 
     state.updateVisuals(false); // We do not want to redraw the camera bounds each time, as we are just moving the character.
 

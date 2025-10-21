@@ -23,33 +23,28 @@ class StageEditorImportExportHandler
 
   public static function loadStageAsTemplate(state:StageEditorState, stageId:String):Void
   {
-    trace('===============START===============');
-
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
-
     if (stage == null) return;
 
-    var stageData:Null<StageData> = stage?._data;
+    var rawStageData:Null<StageData> = stage?._data;
+    if (rawStageData == null) return;
 
-    if (stageData == null) return;
+    // Clone to prevent modifying the original.
+    var stageData:StageData = rawStageData.clone();
 
-    loadStage(state, stageData, stageId);
+    loadStage(state, stageData);
 
     state.isHaxeUIDialogOpen = false;
     state.currentWorkingFilePath = null; // New file, so no path.
 
-    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT);
-
     state.success('Success', 'Loaded stage (${stageData.name})');
-
-    trace('===============END===============');
   }
 
   /**
    * Loads the stage from given stage data into the editor.
    * @param newStageData The stage data to load.
    */
-  public static function loadStage(state:StageEditorState, newStageData:StageData, stageId:String):Void
+  public static function loadStage(state:StageEditorState, newStageData:StageData):Void
   {
     state.stageData = newStageData;
     state.clearAssets();
@@ -59,6 +54,10 @@ class StageEditorImportExportHandler
 
     // Load characters
     loadCharacters(state, state.stageData.characters);
+
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT);
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT);
 
     // Load props
     if (state.stageData.props != null)
@@ -157,7 +156,7 @@ class StageEditorImportExportHandler
           xmls.set(Path.withoutExtension(entry.fileName), entry.data.toString());
 
         case "json":
-          state.stageData = StageRegistry.instance.parseEntryDataRaw(entry.data.toString(), entry.fileName.replace(extension, '')) ?? null;
+          state.stageData = StageRegistry.instance.parseEntryDataRaw(entry.data.toString(), entry.fileName.replace(extension, '')) ?? new StageData();
       }
     }
 
@@ -169,6 +168,10 @@ class StageEditorImportExportHandler
 
     // Load characters
     loadCharacters(state, state.stageData.characters);
+
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT);
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT);
 
     // Load props
     if (state.stageData.props != null)
@@ -224,10 +227,7 @@ class StageEditorImportExportHandler
       character.x = (characterData.position != null ? characterData.position[0] : 0.0) - character.characterOrigin.x + character.globalOffsets[0];
       character.y = (characterData.position != null ? characterData.position[1] : 0.0) - character.characterOrigin.y + character.globalOffsets[1];
       character.zIndex = characterData.zIndex ?? 0;
-
       character.setScale(character.getBaseScale() * (characterData.scale ?? 1.0));
-      // character.cameraFocusPoint.x += (characterData.cameraOffsets != null ? characterData.cameraOffsets[0] : 0.0);
-      // character.cameraFocusPoint.y += (characterData.cameraOffsets != null ? characterData.cameraOffsets[1] : 0.0);
 
       character.alpha = characterData.alpha ?? 1.0;
       character.angle = characterData.angle ?? 0.0;
@@ -305,7 +305,31 @@ class StageEditorImportExportHandler
   {
     var zipEntries:Array<haxe.zip.Entry> = [];
 
-    // add entries stuff
+    // Add Stage Data
+    zipEntries.push(FileUtil.makeZIPEntry('${state.currentStageId}.json', state.stageData.serialize()));
+
+    // Add images
+    state.removeUnusedBitmaps();
+    for (name => image in StageEditorAssetHandler.bitmaps)
+    {
+      var data:Null<Bytes> = image?.image?.encode(PNG);
+      if (data == null) continue;
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes('${name}.png', data));
+    }
+
+    // Add xmls
+    var xmlMap:Map<String, String> = [];
+    for (prop in state.spriteArray)
+    {
+      var data = prop.toData(false);
+      if (!xmlMap.exists(data.assetPath) && data.animData != '') xmlMap.set(data.assetPath, data.animData);
+    }
+    for (path => xml in xmlMap)
+    {
+      var data:Null<Bytes> = Bytes.ofString(xml);
+      if (data == null) continue;
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes('${path}.xml', data));
+    }
 
     if (force)
     {
@@ -315,6 +339,7 @@ class StageEditorImportExportHandler
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
         targetPath = Path.join([
+          BACKUPS_PATH,
           'stage-editor-${state.currentStageId}-${DateUtil.generateTimestamp()}.${Constants.EXT_STAGE}'
         ]);
         // We have to force write because the program will die before the save dialog is closed.

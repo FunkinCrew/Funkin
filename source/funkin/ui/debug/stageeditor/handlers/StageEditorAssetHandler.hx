@@ -293,16 +293,7 @@ class StageEditorAssetHandler
 
     if (!mouse.overlaps(sprite)) return false;
 
-    var mouseX:Float = FlxG.mouse.x - sprite.x;
-    var mouseY:Float = FlxG.mouse.y - sprite.y;
-
-    if (mouseX < 0 || mouseY < 0 || mouseX >= sprite.frameWidth || mouseY >= sprite.frameHeight) return false;
-
-    if (sprite.framePixels == null) sprite.drawFrame();
-    var currentFramePixels:BitmapData = sprite.framePixels;
-
-    var pixelColor:Int = currentFramePixels.getPixel32(Std.int(mouseX), Std.int(mouseY));
-    if (((pixelColor >> 24) & 0xFF) > 0) return true;
+    return sprite.pixelsOverlapPoint(mouse.getWorldPosition());
 
     return false;
   }
