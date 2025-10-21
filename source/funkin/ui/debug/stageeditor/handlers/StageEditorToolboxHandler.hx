@@ -8,7 +8,9 @@ import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import funkin.ui.debug.stageeditor.toolboxes.StageEditorBaseToolbox;
+import funkin.ui.debug.stageeditor.toolboxes.StageEditorCharacterToolbox;
 import funkin.ui.debug.stageeditor.toolboxes.StageEditorMetadataToolbox;
+import funkin.ui.debug.stageeditor.toolboxes.StageEditorObjectPropertiesToolbox;
 
 @:nullSafety
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
@@ -48,7 +50,7 @@ class StageEditorToolboxHandler
           cast(toolbox, StageEditorBaseToolbox).refresh();
         case StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:
           cast(toolbox, StageEditorBaseToolbox).refresh();
-        case StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_PROPERTIES_LAYOUT:
+        case StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT:
           cast(toolbox, StageEditorBaseToolbox).refresh();
         default:
           // This happens if you try to load an unknown layout.
@@ -142,14 +144,14 @@ class StageEditorToolboxHandler
     {
       case StageEditorState.STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT:
         toolbox = buildToolboxMetadataLayout(state);
-      // case StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:
-      //   toolbox = buildToolboxObjectAnimationsLayout(state);
+      case StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:
+        toolbox = buildToolboxObjectPropertiesLayout(state);
       // case StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:
       //   toolbox = buildToolboxObjectAnimationsLayout(state);
       // case StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:
       //   toolbox = buildToolboxObjectGraphicLayout(state);
-      // case StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_PROPERTIES_LAYOUT:
-      //   toolbox = buildToolboxMetadataLayout(state);
+      case StageEditorState.STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT:
+        toolbox = buildToolboxCharacterLayout(state);
       default:
         // This happens if you try to load an unknown layout.
         trace('StageEditorToolboxHandler.initToolbox() - Unknown toolbox ID: $id');
@@ -181,6 +183,24 @@ class StageEditorToolboxHandler
   static function buildToolboxMetadataLayout(state:StageEditorState):Null<StageEditorBaseToolbox>
   {
     var toolbox:StageEditorBaseToolbox = StageEditorMetadataToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxCharacterLayout(state:StageEditorState):Null<StageEditorBaseToolbox>
+  {
+    var toolbox:StageEditorBaseToolbox = StageEditorCharacterToolbox.build(state);
+
+    if (toolbox == null) return null;
+
+    return toolbox;
+  }
+
+  static function buildToolboxObjectPropertiesLayout(state:StageEditorState):Null<StageEditorBaseToolbox>
+  {
+    var toolbox:StageEditorObjectPropertiesToolbox = StageEditorObjectPropertiesToolbox.build(state);
 
     if (toolbox == null) return null;
 

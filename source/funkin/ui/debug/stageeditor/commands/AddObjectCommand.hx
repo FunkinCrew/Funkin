@@ -31,11 +31,36 @@ class AddObjectCommand implements StageEditorCommand
     var spriteArray = state.spriteArray;
     sprite.zIndex = spriteArray.length == 0 ? 0 : (spriteArray[spriteArray.length - 1].zIndex + 1);
 
+    var data = sprite.toData(false);
+    state.stageData.props.push(
+      {
+        name: data.name,
+        assetPath: data.assetPath.startsWith("#") ? data.color : data.assetPath,
+        position: data.position.copy(),
+        zIndex: data.zIndex,
+        isPixel: data.isPixel,
+        scale: data.scale,
+        alpha: data.alpha,
+        danceEvery: data.danceEvery,
+        scroll: data.scroll?.copy() ?? [1.0, 1.0],
+        animations: data.animations,
+        startingAnimation: data.startingAnimation,
+        animType: data.animType,
+        flipX: data.flipX,
+        flipY: data.flipY,
+        angle: data.angle,
+        blend: data.blend,
+        color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
+      }
+    );
+
     state.selectedProp = sprite;
 
     state.add(sprite);
     state.sortObjects();
     this.addedObject = sprite;
+
+    state.refreshToolbox(StageEditorState.STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT);
 
     state.saveDataDirty = true;
 
