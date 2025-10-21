@@ -9,12 +9,18 @@ import funkin.graphics.FlxFilteredSprite;
 @:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
 {
+  /**
+   * Name which represents the character this icon is for.
+   */
+  public var characterId(default, set):String;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
     this.makeGraphic(32, 32, 0x00000000);
     this.antialiasing = false;
     this.active = false;
+    this.characterId = '';
   }
 
   public function setCharacter(char:String):Void
@@ -84,5 +90,20 @@ class PixelatedIcon extends FlxFilteredSprite
 
       this.animation.play('idle');
     }
+  }
+
+  function set_characterId(id:String):String
+  {
+    if (id == '')
+    {
+      return;
+    }
+
+    if (characterId != id)
+    {
+      this.setCharacter(id);
+    }
+
+    return characterId = id;
   }
 }
