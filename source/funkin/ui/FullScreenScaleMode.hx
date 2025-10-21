@@ -204,7 +204,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     {
       if (bitmap == null)
       {
-        trace("[WARNING] Tried to remove a cutout bar but there don't seem to be any.");
+        trace(" WARNING ".bg_yellow().bold() + " Tried to remove a cutout bar but there don't seem to be any.");
         continue;
       }
 

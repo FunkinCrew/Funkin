@@ -138,7 +138,7 @@ class CharSelectSubState extends MusicBeatSubState
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
     if (bopInfo == null)
     {
-      trace("[ERROR] Failed to load data for bopInfo, is the path provided correct?");
+      trace(" ERROR ".bg_red().bold() + " Failed to load data for bopInfo, is the path provided correct?");
     }
 
     var bg:FlxSprite = new FlxSprite(cutoutSize + -153, -140);

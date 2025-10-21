@@ -1128,7 +1128,7 @@ class PlayState extends MusicBeatSubState
         {
           // Fallback to properly update the conductor incase the lerp messed up
           // Shouldn't be fallen back to unless you're lagging alot
-          trace('[WARNING] Normal Conductor Update!! are you lagging?');
+          trace(' WARNING '.bg_yellow().bold() + ' Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
       }

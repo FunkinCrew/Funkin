@@ -190,8 +190,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
       animInInfo = FramesJSFLParser.parse(animInfoPath + '/In.txt');
       animOutInfo = FramesJSFLParser.parse(animInfoPath + '/Out.txt');
 
-      if (animInInfo == null) trace("[ERROR] Failed to load data for animInInfo, is the path provided correct?");
-      if (animOutInfo == null) trace("[ERROR] Failed to load data for animOutInfo, is the path provided correct?");
+      if (animInInfo == null) trace(" ERROR ".bg_red().bold() + " Failed to load data for animInInfo, is the path provided correct?");
+      if (animOutInfo == null) trace(" ERROR ".bg_red().bold() + " Failed to load data for animOutInfo, is the path provided correct?");
     }
 
     playAnimation("idle", true, false, false);
