@@ -96,7 +96,7 @@ class PixelatedIcon extends FlxFilteredSprite
   {
     if (id == '')
     {
-      return;
+      return characterId;
     }
 
     if (characterId != id)
