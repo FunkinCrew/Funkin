@@ -2023,7 +2023,7 @@ class Project extends HXProject
     if (process.exitCode() != 0)
     {
       var message = process.stderr.readAll().toString();
-      error('[ERROR] Could not determine current git commit; is this a proper Git repository?');
+      error('Could not determine current git commit; is this a proper Git repository?');
     }
 
     var commitHash:String = process.stdout.readLine();
