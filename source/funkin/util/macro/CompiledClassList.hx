@@ -2,6 +2,8 @@ package funkin.util.macro;
 
 import haxe.rtti.Meta;
 
+using funkin.util.AnsiUtil;
+
 /**
  * A complement to `ClassMacro`. See `ClassMacro` for more information.
  */
@@ -56,7 +58,7 @@ class CompiledClassList
 
     if (!classLists.exists(request))
     {
-      trace('[WARNING] Class list $request not properly generated. Please debug the build macro.');
+      trace(' WARNING '.bg_yellow().bold() + ' Class list $request not properly generated. Please debug the build macro.');
       classLists.set(request, new List()); // Make the error only appear once.
     }
 

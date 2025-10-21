@@ -66,7 +66,7 @@ class CreditsDataMacro
     }
     catch (e)
     {
-      trace('[ERROR] Failed to parse JSON data for credits.');
+      trace(' ERROR '.bg_red().bold() + ' Failed to parse JSON data for credits.');
       trace(e);
       return null;
     }
