@@ -264,14 +264,15 @@ class AnsiUtil
    *
    * You can pass one or multiple ANSI codes for combining styles.
    *
-   * @param input The input.
+   * @param str The input string.
    * @param code The ANSI codes to apply.
    *
    * @return The styled string.
    */
-  public static function apply(input:Dynamic, code:AnsiCode):String
+  public static function apply(str:String, code:AnsiCode):String
   {
-    return stripCodes(code + input + AnsiCode.RESET);
+    if (str.indexOf(AnsiCode.RESET) != -1) str = StringTools.replace(str, AnsiCode.RESET, "");
+    return stripCodes(code + str + AnsiCode.RESET);
   }
 
   /**
