@@ -378,6 +378,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Block input until the intro finishes.
     controls.active = false;
+    letterSort.inputEnabled = false;
 
     // Add a null entry that represents the RANDOM option
     songs.push(null);
@@ -721,6 +722,8 @@ class FreeplayState extends MusicBeatSubState
 
       if (!fromCharSelect)
       {
+        if (capsuleOptionsMenu == null) letterSort.inputEnabled = true;
+
         // render optimisation
         if (_parentState != null) _parentState.persistentDraw = false;
 
@@ -1545,6 +1548,7 @@ class FreeplayState extends MusicBeatSubState
   function enterFromCharSel():Void
   {
     controls.active = false;
+    letterSort.inputEnabled = false;
     if (_parentState != null) _parentState.persistentDraw = false;
 
     var transitionGradient = new FlxSprite(0, 720).loadGraphic(Paths.image('freeplay/transitionGradient'));
@@ -1593,11 +1597,16 @@ class FreeplayState extends MusicBeatSubState
           {
             ease: FlxEase.expoOut,
             onComplete: function(_) {
-              for (index => capsule in grpCapsules.members)
+              if (fromCharSelect)
               {
-                capsule.doLerp = true;
+                // This code only needs to be run once (otherwise it causes problems).
+                for (index => capsule in grpCapsules.members)
+                {
+                  capsule.doLerp = true;
+                }
                 fromCharSelect = false;
                 controls.active = true;
+                if (capsuleOptionsMenu == null) letterSort.inputEnabled = true;
               }
             }
           });
