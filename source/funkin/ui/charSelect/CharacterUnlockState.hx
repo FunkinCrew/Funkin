@@ -10,6 +10,7 @@ import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
+import funkin.save.Save;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
@@ -102,6 +103,7 @@ class CharacterUnlockState extends MusicBeatState
         healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
       });
 
+    Save.instance.addCharacterUnlocked(targetCharacterId);
     // performUnlock();
   }
 
