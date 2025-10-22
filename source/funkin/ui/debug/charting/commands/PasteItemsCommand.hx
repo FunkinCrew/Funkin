@@ -54,6 +54,8 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = addedNotes.copy();
     state.currentEventSelection = addedEvents.copy();
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -89,6 +91,8 @@ class PasteItemsCommand implements ChartEditorCommand
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);
     state.currentEventSelection = [];
     state.performCommand(new SelectItemsCommand(removedNotes.copy()), false);
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
