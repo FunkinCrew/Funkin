@@ -107,6 +107,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       var control = controlList[i];
       var name = control.getName();
+      // Don't spoil that you can play different characters until the player has unlocked one
+      if (control == FREEPLAY_CHAR_SELECT && funkin.data.freeplay.player.PlayerRegistry.instance.countUnlockedCharacters() <= 1)
+      {
+        continue;
+      }
+
       if (currentHeader != "UI_" && name.indexOf("UI_") == 0)
       {
         currentHeader = "UI_";
