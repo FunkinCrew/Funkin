@@ -10,6 +10,7 @@ import funkin.audio.FunkinSound;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 
+@:nullSafety
 class Countdown
 {
   /**
@@ -31,14 +32,14 @@ class Countdown
    */
   public static var graphicSuffix:String = '';
 
-  static var noteStyle:NoteStyle;
+  static var noteStyle:Null<NoteStyle>;
 
   static var fallbackNoteStyle:Null<NoteStyle>;
 
   /**
    * The currently running countdown. This will be null if there is no countdown running.
    */
-  static var countdownTimer:FlxTimer = null;
+  static var countdownTimer:Null<FlxTimer> = null;
 
   /**
    * Performs the countdown.
@@ -58,8 +59,8 @@ class Countdown
     // Stop any existing countdown.
     stopCountdown();
 
-    PlayState.instance.isInCountdown = true;
-    Conductor.instance.update(PlayState.instance.startTimestamp + Conductor.instance.beatLengthMs * -5);
+    if (PlayState.instance != null) PlayState.instance.isInCountdown = true;
+    Conductor.instance.update((PlayState.instance?.startTimestamp ?? 0) + Conductor.instance.beatLengthMs * -5);
     // Handle onBeatHit events manually
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
@@ -124,7 +125,7 @@ class Countdown
 
     // Modules, stages, characters.
     @:privateAccess
-    PlayState.instance.dispatchEvent(event);
+    PlayState.instance?.dispatchEvent(event);
 
     return event.eventCanceled;
   }
@@ -211,7 +212,7 @@ class Countdown
 
     if (noteStyleId == null) noteStyleId = PlayState.instance?.currentChart?.noteStyle;
 
-    noteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (noteStyleId != null) noteStyle = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
   }
 
@@ -222,10 +223,13 @@ class Countdown
   {
     fetchNoteStyle();
 
-    var countdownSprite = noteStyle.buildCountdownSprite(index);
+    var countdownSprite = noteStyle?.buildCountdownSprite(index);
     if (countdownSprite == null) return;
 
     var fadeEase = FlxEase.cubeInOut;
+
+    // fetchNoteStyle will always set notestyle to default if null, so no need to worry here
+    @:nullSafety(Off)
     if (noteStyle.isCountdownSpritePixel(index)) fadeEase = EaseUtil.stepped(8);
 
     // Fade sprite in, then out, then destroy it.
@@ -237,25 +241,25 @@ class Countdown
         }
       });
 
-    countdownSprite.cameras = [PlayState.instance.camHUD];
-    PlayState.instance.add(countdownSprite);
+    if (PlayState.instance != null) countdownSprite.cameras = [PlayState.instance.camHUD];
+    PlayState.instance?.add(countdownSprite);
     countdownSprite.screenCenter();
 
+    // fetchNoteStyle will always set notestyle to default if null, so no need to worry here
+    @:nullSafety(Off)
     var offsets = noteStyle.getCountdownSpriteOffsets(index);
     countdownSprite.x += offsets[0];
     countdownSprite.y += offsets[1];
   }
 
   /**
-   * Retrieves the sound file to use for this step of the countdown.
+   * Retrieves and plays the sound file to use for this step of the countdown.
    */
-  public static function playCountdownSound(step:CountdownStep):FunkinSound
+  public static function playCountdownSound(step:CountdownStep):Void
   {
     fetchNoteStyle();
-    var path = noteStyle.getCountdownSoundPath(step);
-    if (path == null) return null;
-
-    return FunkinSound.playOnce(path, Constants.COUNTDOWN_VOLUME, null, null, true);
+    var path = noteStyle?.getCountdownSoundPath(step);
+    if (path != null) FunkinSound.playOnce(path, Constants.COUNTDOWN_VOLUME, null, null, true);
   }
 
   public static function decrement(step:CountdownStep):CountdownStep
