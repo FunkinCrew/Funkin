@@ -193,6 +193,7 @@ class HealthIcon extends FunkinSprite
       this.size.set(1.0, 1.0);
       this.iconOffset.set();
       this.flipX = false;
+      this.updatePosition();
     }
     else
     {
@@ -212,6 +213,7 @@ class HealthIcon extends FunkinSprite
       }
 
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
+      this.updatePosition();
     }
   }
 
