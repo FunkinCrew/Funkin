@@ -2232,6 +2232,7 @@ class PlayState extends MusicBeatSubState
   function initPopups():Void
   {
     // Initialize the judgements and combo meter.
+    comboPopUps.setPosition(FlxG.width * 0.474, FlxG.camera.height * 0.45);
     comboPopUps.zIndex = 900;
     add(comboPopUps);
     comboPopUps.cameras = [camHUD];
