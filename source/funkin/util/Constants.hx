@@ -570,6 +570,13 @@ class Constants
   public static final GHOST_TAP_DELAY:Float = 3 / 8;
   #end
 
+  #if FEATURE_LOST_FOCUS_VOLUME
+  /**
+   * How much volume should be reduced on Application Focus Lost.
+   */
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.5;
+  #end
+
   /**
    * Otherwise known as "The FuckCunt Variable"
    */

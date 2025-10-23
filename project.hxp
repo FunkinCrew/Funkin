@@ -299,6 +299,13 @@ class Project extends HXProject
   static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
 
   /**
+   * `-DFEATURE_LOST_FOCUS_VOLUME`
+   * If this flag is enabled, the game will reduce application volume, when lost focus.
+   * Allowed only on Desktop targets.
+   */
+  static final FEATURE_LOST_FOCUS_VOLUME:FeatureFlag = "FEATURE_LOST_FOCUS_VOLUME";
+
+  /**
    * `-DFEATURE_FILE_DROP`
    * If this flag is enabled, the game will support dragging and dropping files onto it for various features.
    * Disabled on MacOS.
@@ -861,6 +868,8 @@ class Project extends HXProject
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
     FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+
+    FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
 
     // Newgrounds features
     FEATURE_NEWGROUNDS.apply(this, !isMobile());
