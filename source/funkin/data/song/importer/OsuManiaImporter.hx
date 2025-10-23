@@ -45,7 +45,7 @@ class OsuManiaImporter
       {
         var parts:Array<String> = line.split(":");
         var key:String = StringTools.trim(parts.shift());
-        var value:String = StringTools.trim(parts.join(":"));
+        var value:Any = parseValue(StringTools.trim(parts.join(":")));
         if (Reflect.field(result, currentSection) == null) Reflect.setField(result, currentSection, {});
         Reflect.setField(Reflect.field(result, currentSection), key, value);
       }
@@ -188,5 +188,23 @@ class OsuManiaImporter
 
       return new ManiaHitObject(time, noteD, holdDuration);
     });
+  }
+
+  static function parseValue(v:String):Any
+  {
+    var result:Null<Any>;
+
+    if (v.contains('.'))
+    {
+      result = Std.parseFloat(v);
+      if (!Math.isNaN(result)) return result;
+    }
+    else
+    {
+      result = Std.parseInt(v);
+      if (result != null) return result;
+    }
+
+    return v;
   }
 }
