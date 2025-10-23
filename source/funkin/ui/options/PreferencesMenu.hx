@@ -269,7 +269,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       var value = !checkbox.currentValue;
       onChange(value);
       checkbox.currentValue = value;
-    }, false, available);
+    }, true, available);
 
     preferenceItems.add(checkbox);
     preferenceDesc.push(prefDesc);

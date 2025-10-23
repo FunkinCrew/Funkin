@@ -283,7 +283,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     onAcceptPress.dispatch(menuItem);
 
-    if (menuItem.fireInstantly) menuItem.callback();
+    if (selected.fireInstantly)
+    {
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      selected.callback();
+      FlxFlicker.flicker(selected, 1, 0.06, true, false);
+    }
     else
     {
       busy = true;
