@@ -684,7 +684,26 @@ class BaseCharacter extends Bopper
    */
   public function playSingAnimation(dir:NoteDirection, miss:Bool = false, ?suffix:String = ''):Void
   {
-    var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
+    var anim:String = 'sing';
+
+    anim += dir.nameUpper;
+
+    if (this.animation.name.startsWith('sing'))
+    {
+      var splitAnimName = this.animation.name.split('sing')[1].replace('miss', '').split('-')[0]; // this turns smth like 'singLEFT-censor' into 'LEFT'
+
+      var multiDirAnimExists = false;
+
+      if (hasAnimation(anim + splitAnimName) && !miss && suffix == '') multiDirAnimExists = true;
+      if (hasAnimation(anim + splitAnimName + 'miss') && miss && suffix == '') multiDirAnimExists = true;
+      if (hasAnimation(anim + splitAnimName + '-${suffix}') && !miss && suffix != '') multiDirAnimExists = true;
+      if (hasAnimation(anim + splitAnimName + 'miss-${suffix}') && miss && suffix == '') multiDirAnimExists = true;
+
+      if (multiDirAnimExists) anim += splitAnimName.toUpperCase();
+    }
+
+    if (miss) anim += 'miss';
+    if (suffix != '') anim += '-${suffix}';
 
     // restart even if already playing, because the character might sing the same note twice.
     // trace('Playing ${anim}...');
