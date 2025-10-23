@@ -558,7 +558,7 @@ class SongMenuItem extends FlxSpriteGroup
     initData(null, styleData, 1);
     y = intendedY(0) + 10;
     targetPos.x = x;
-    alpha = 0.5;
+    alpha = 0;
     songText.visible = false;
     favIcon.visible = false;
     favIconBlurred.visible = false;
