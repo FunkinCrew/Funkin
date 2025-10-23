@@ -101,26 +101,34 @@ class RegistryMacro
    */
   static function getTypeParams(cls:ClassType):RegistryTypeParams
   {
+    var params:Array<Type> = [];
+    var typeParams:Array<Any> = [];
     switch (cls.superClass.t.get().kind)
     {
-      case KGenericInstance(_, params):
-        var typeParams:Array<Any> = [];
-        for (param in params)
-        {
-          switch (param)
-          {
-            case TInst(t, _):
-              typeParams.push(t.get());
-            case TType(t, _):
-              typeParams.push(t.get());
-            default:
-              throw 'Not a class';
-          }
-        }
-        return {entryType: typeParams[0], dataType: typeParams[1]};
+      case KGenericInstance(_, _params):
+        params = _params;
+      case KGeneric:
+        // For some reason the only case where it's KGeneric
+        // is on the language server so we have to handle it too.
+        // This seems to be somehow related to the broken code completion.
+        params = cls.superClass.params;
       default:
         throw '${cls.name}: Could not interpret type parameters of Registry class.';
     }
+
+    for (param in params)
+    {
+      switch (param)
+      {
+        case TInst(t, _):
+          typeParams.push(t.get());
+        case TType(t, _):
+          typeParams.push(t.get());
+        default:
+          throw 'Not a class';
+      }
+    }
+    return {entryType: typeParams[0], dataType: typeParams[1]};
   }
 
   /**
