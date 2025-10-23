@@ -30,6 +30,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   static var controlGroups:Array<Array<Control>> = [
     [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
     [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
+    [SCROLL_SPEED_INCREASE_SPEED, SCROLL_SPEED_DECREASE_SPEED],
     [CUTSCENE_ADVANCE],
     [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
     [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
@@ -117,6 +118,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       {
         currentHeader = "NOTE_";
         headers.add(new AtlasText(0, y, "NOTES", AtlasFont.BOLD)).screenCenter(X);
+        y += spacer;
+      }
+      else if (currentHeader != "SCROLL_SPEED_" && name.indexOf("SCROLL_SPEED_") == 0)
+      {
+        currentHeader = "SCROLL_SPEED_";
+        headers.add(new AtlasText(0, y, "SCROLL SPEED", AtlasFont.BOLD)).screenCenter(X);
         y += spacer;
       }
       else if (currentHeader != "CUTSCENE_" && name.indexOf("CUTSCENE_") == 0)

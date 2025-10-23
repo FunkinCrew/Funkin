@@ -38,6 +38,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
+import funkin.play.components.ScrollSpeedChanger;
 import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
@@ -502,6 +503,11 @@ class PlayState extends MusicBeatSubState
   var scoreText:FlxText;
 
   /**
+   * The scroll speed changer component shows when the player changes the scroll speed mid-song.
+   */
+  public var scrollSpeedChanger:ScrollSpeedChanger;
+
+  /**
    * The bar which displays the player's health.
    * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
    */
@@ -744,6 +750,9 @@ class PlayState extends MusicBeatSubState
     if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
     noteStyle = nulNoteStyle;
 
+    // Scroll Speed Changer
+    scrollSpeedChanger = new ScrollSpeedChanger(0, 0, currentChart?.scrollSpeed);
+
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
@@ -821,6 +830,7 @@ class PlayState extends MusicBeatSubState
 
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
+
     initHealthBar();
     if (!isMinimalMode)
     {
@@ -860,6 +870,9 @@ class PlayState extends MusicBeatSubState
       camControls.bgColor = 0x0;
     }
     #end
+
+    // Initialize the scroll speed changer component
+    initScrollSpeedChanger();
 
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
@@ -1278,7 +1291,11 @@ class PlayState extends MusicBeatSubState
 
     // Handle keybinds.
     processInputQueue();
-    if (!isInCutscene && !disableKeys) debugKeyShit();
+    if (!isInCutscene && !disableKeys)
+    {
+      debugKeyShit();
+      if (Preferences.scrollSpeedMode != OFF) handleScrollSpeedChange();
+    }
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
     // Moving notes into position is now done by Strumline.update().
@@ -2123,6 +2140,18 @@ class PlayState extends MusicBeatSubState
       // Rearrange by z-indexes.
       currentStage.refresh();
     }
+  }
+
+  /**
+   * Constructs the scroll speed changer component.
+   */
+  function initScrollSpeedChanger():Void
+  {
+    // Center based on the current position of the player strumline
+    scrollSpeedChanger.screenCenter();
+    scrollSpeedChanger.cameras = [camHUD];
+    scrollSpeedChanger.zIndex = 1002;
+    add(scrollSpeedChanger);
   }
 
   /**
@@ -3271,6 +3300,24 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Handles the controls for increasing or decreasing the scroll speed mid-song.
+   */
+  function handleScrollSpeedChange()
+  {
+    if (controls.SCROLL_SPEED_INCREASE_SPEED) changeScrollSpeed(0.1);
+    if (controls.SCROLL_SPEED_DECREASE_SPEED) changeScrollSpeed(-0.1);
+  }
+
+  public function changeScrollSpeed(value:Float = 0)
+  {
+    playerStrumline.scrollSpeed += value;
+    opponentStrumline.scrollSpeed += value;
+    Preferences.scrollSpeed += value;
+
+    scrollSpeedChanger.updateSpeed(playerStrumline.scrollSpeed);
+  }
+
+  /**
      * Handle logic for actually skipping a video cutscene after it has been held.
      */
   function skipVideoCutscene():Void
@@ -3894,6 +3941,22 @@ class PlayState extends MusicBeatSubState
 
     // for next event, clean array.
     prevScrollTargets = [];
+
+    if (speed != null)
+    {
+      if (duration == 0)
+      {
+        scrollSpeedChanger.updateSpeed(speed);
+      }
+      else
+      {
+        // Tween the UI
+        scrollSpeedTweens.push(FlxTween.num(playerStrumline.scrollSpeed, speed, duration, {
+          ease: ease,
+          onUpdate: (tween:FlxTween) -> scrollSpeedChanger.updateSpeed(tween.percent * (speed - playerStrumline.scrollSpeed) + playerStrumline.scrollSpeed)
+        }));
+      }
+    }
 
     for (i in strumlines)
     {

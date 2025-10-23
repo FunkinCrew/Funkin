@@ -4,10 +4,12 @@ package funkin;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
+import funkin.play.components.ScrollSpeedChanger.ScrollSpeedMode;
 import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import flixel.math.FlxMath;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -302,6 +304,55 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.globalOffset = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * The scroll speed value set by the player.
+   * This is only used with the `ScrollSpeedMode.STATIC` and `ScrollSpeedMode.ADAPTIVE`.
+   *
+   * @default `Constants.DEFAULT_SCROLLSPEED`
+   */
+  public static var scrollSpeed(get, set):Float;
+
+  static function get_scrollSpeed():Float
+  {
+    return Save?.instance?.options?.scrollSpeed ?? Constants.DEFAULT_SCROLLSPEED;
+  }
+
+  static function set_scrollSpeed(value:Float):Float
+  {
+    value = FlxMath.roundDecimal(value, 2);
+    var save:Save = Save.instance;
+    save.options.scrollSpeed = value;
+    save.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, controls how the song's scroll speed is applied based on the selected mode.
+   *
+   * @default `ScrollSpeedMode.OFF`
+   */
+  public static var scrollSpeedMode(get, set):ScrollSpeedMode;
+
+  static function get_scrollSpeedMode():ScrollSpeedMode
+  {
+    var value = Save?.instance?.options?.scrollSpeedMode ?? "Off";
+
+    return switch (value)
+    {
+      case "Static": ScrollSpeedMode.STATIC;
+      case "Adaptive": ScrollSpeedMode.ADAPTIVE;
+      default: ScrollSpeedMode.OFF;
+    };
+  }
+
+  static function set_scrollSpeedMode(value:ScrollSpeedMode):ScrollSpeedMode
+  {
+    var save:Save = Save.instance;
+    save.options.scrollSpeedMode = value.getName();
     save.flush();
     return value;
   }

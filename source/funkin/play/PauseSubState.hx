@@ -24,6 +24,9 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
+import funkin.util.InputUtil;
+import funkin.util.InputUtil.InputUtil.format;
+import funkin.input.Controls.Control;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
 #end
@@ -197,6 +200,16 @@ class PauseSubState extends MusicBeatSubState
    * Fades to the charter after a period before fading back.
    */
   var metadataArtist:FlxText;
+
+  /**
+   * A text object that displays the current scroll speed based on the `ScrollSpeedMode`.
+   */
+  var scrollSpeedText:FlxText;
+
+  /**
+   * A text object that displays information about changing scroll speed.
+   */
+  var scrollSpeedInfo:FlxText;
 
   /**
    * A text object that displays the current global offset.
@@ -450,8 +463,37 @@ class PauseSubState extends MusicBeatSubState
     offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetTextInfo.scrollFactor.set(0, 0);
 
-    offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
+    offsetText.y = FlxG.height - (offsetText.height * 2 + 40);
     offsetTextInfo.y = offsetText.y + offsetText.height + 4;
+
+    if (Preferences.scrollSpeedMode != OFF) {
+      var inputIncr = PlayerSettings.player1.controls.getInputsFor(Control.SCROLL_SPEED_INCREASE_SPEED, Keys)[0];
+      var inputDecr = PlayerSettings.player1.controls.getInputsFor(Control.SCROLL_SPEED_DECREASE_SPEED, Keys)[0];
+      scrollSpeedInfo = new FlxText(20, metadataSong.y, (camera.width + 10) - Math.max(40, FullScreenScaleMode.gameNotchSize.x),
+        'Press ${InputUtil.format(inputIncr, Keys)}/${InputUtil.format(inputDecr, Keys)},\nto change the scroll speed.');
+      scrollSpeedInfo.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
+      scrollSpeedInfo.scrollFactor.set(0, 0);
+
+      scrollSpeedText = new FlxText(20, metadataSong.y, (camera.width + 10) - Math.max(40, FullScreenScaleMode.gameNotchSize.x));
+      scrollSpeedText.text = switch (Preferences.scrollSpeedMode)
+      {
+        case STATIC: 'Static Scroll Speed: ${Preferences.scrollSpeed ?? 0}';
+        case ADAPTIVE: 'Current Scroll Speed: ${PlayState.instance.playerStrumline.scrollSpeed ?? 0}\nSet Scroll Speed: ${Preferences.scrollSpeed ?? 0}';
+        default: '';
+      }
+      scrollSpeedText.setFormat('VCR OSD Mono', 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
+      scrollSpeedText.scrollFactor.set(0, 0);
+
+      scrollSpeedInfo.y = offsetText.y - scrollSpeedInfo.height - 12;
+      scrollSpeedText.y = scrollSpeedInfo.y - scrollSpeedText.height - 4;
+
+      #if !mobile
+      metadata.add(scrollSpeedText);
+      metadata.add(scrollSpeedInfo);
+      #end
+
+      scrollSpeedText.alpha = scrollSpeedInfo.alpha = 0;
+    }
 
     #if !mobile
     metadata.add(offsetText);
@@ -639,6 +681,8 @@ class PauseSubState extends MusicBeatSubState
       changeSelection(1);
     }
 
+    if (Preferences.scrollSpeedMode != OFF) handleScrollSpeedChange();
+
     #if FEATURE_TOUCH_CONTROLS
     if (!SwipeUtil.justSwipedAny && !justOpened && currentMenuEntries.length > 0)
     {
@@ -682,6 +726,33 @@ class PauseSubState extends MusicBeatSubState
       this.bgColor = visible ? 0x99000000 : 0x00000000; // 60% or fully transparent black
     }
     #end
+  }
+
+  function handleScrollSpeedChange()
+  {
+    if (PlayState.instance == null) return;
+
+    if (controls.SCROLL_SPEED_INCREASE_SPEED)
+    {
+      changeScrollSpeed(0.1);
+    }
+    if (controls.SCROLL_SPEED_DECREASE_SPEED)
+    {
+      changeScrollSpeed(-0.1);
+    }
+  }
+
+  function changeScrollSpeed(change:Float = 0)
+  {
+    PlayState.instance.scrollSpeedChanger.updateSpeed(change);
+    PlayState.instance.changeScrollSpeed(change);
+
+    scrollSpeedText.text = switch (Preferences.scrollSpeedMode)
+    {
+      case STATIC: 'Static Scroll Speed: ${Preferences.scrollSpeed ?? 0}';
+      case ADAPTIVE: 'Current Scroll Speed: ${PlayState.instance.playerStrumline.scrollSpeed ?? 0}\nSet Scroll Speed: ${Preferences.scrollSpeed ?? 0}';
+      default: '';
+    }
   }
 
   /**

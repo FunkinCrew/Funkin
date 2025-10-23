@@ -52,6 +52,8 @@ class Controls extends FlxActionSet
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
   var _reset = new FunkinAction(Action.RESET);
+  var _scroll_speed_increase_speed = new FunkinAction(Action.SCROLL_SPEED_INCREASE_SPEED);
+  var _scroll_speed_decrease_speed = new FunkinAction(Action.SCROLL_SPEED_DECREASE_SPEED);
   #if FEATURE_SCREENSHOTS
   var _window_screenshot = new FunkinAction(Action.WINDOW_SCREENSHOT);
   #end
@@ -242,6 +244,16 @@ class Controls extends FlxActionSet
   inline function get_RESET()
     return _reset.check();
 
+  public var SCROLL_SPEED_INCREASE_SPEED(get, never):Bool;
+
+  inline function get_SCROLL_SPEED_INCREASE_SPEED()
+    return _scroll_speed_increase_speed.check();
+
+  public var SCROLL_SPEED_DECREASE_SPEED(get, never):Bool;
+
+  inline function get_SCROLL_SPEED_DECREASE_SPEED()
+    return _scroll_speed_decrease_speed.check();
+
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
   inline function get_WINDOW_FULLSCREEN()
@@ -346,6 +358,8 @@ class Controls extends FlxActionSet
     add(_back);
     add(_pause);
     add(_reset);
+    add(_scroll_speed_increase_speed);
+    add(_scroll_speed_decrease_speed);
     #if FEATURE_SCREENSHOTS add(_window_screenshot); #end
     add(_window_fullscreen);
     add(_freeplay_favorite);
@@ -475,6 +489,8 @@ class Controls extends FlxActionSet
       case BACK: _back;
       case PAUSE: _pause;
       case RESET: _reset;
+      case SCROLL_SPEED_INCREASE_SPEED: _scroll_speed_increase_speed;
+      case SCROLL_SPEED_DECREASE_SPEED: _scroll_speed_decrease_speed;
       #if FEATURE_SCREENSHOTS case WINDOW_SCREENSHOT: _window_screenshot; #end
       case WINDOW_FULLSCREEN: _window_fullscreen;
       case FREEPLAY_FAVORITE: _freeplay_favorite;
@@ -549,6 +565,10 @@ class Controls extends FlxActionSet
         func(_pause, JUST_PRESSED);
       case RESET:
         func(_reset, JUST_PRESSED);
+      case SCROLL_SPEED_INCREASE_SPEED:
+        func(_scroll_speed_increase_speed, JUST_PRESSED);
+      case SCROLL_SPEED_DECREASE_SPEED:
+        func(_scroll_speed_decrease_speed, JUST_PRESSED);
       #if FEATURE_SCREENSHOTS
       case WINDOW_SCREENSHOT:
         func(_window_screenshot, JUST_PRESSED);
@@ -786,6 +806,8 @@ class Controls extends FlxActionSet
     bindKeys(Control.BACK, getDefaultKeybinds(scheme, Control.BACK));
     bindKeys(Control.PAUSE, getDefaultKeybinds(scheme, Control.PAUSE));
     bindKeys(Control.RESET, getDefaultKeybinds(scheme, Control.RESET));
+    bindKeys(Control.SCROLL_SPEED_INCREASE_SPEED, getDefaultKeybinds(scheme, Control.SCROLL_SPEED_INCREASE_SPEED));
+    bindKeys(Control.SCROLL_SPEED_DECREASE_SPEED, getDefaultKeybinds(scheme, Control.SCROLL_SPEED_DECREASE_SPEED));
     #if FEATURE_SCREENSHOTS
     bindKeys(Control.WINDOW_SCREENSHOT, getDefaultKeybinds(scheme, Control.WINDOW_SCREENSHOT));
     #end
@@ -831,6 +853,8 @@ class Controls extends FlxActionSet
           case Control.BACK: return [X, BACKSPACE, ESCAPE];
           case Control.PAUSE: return [P, ENTER, ESCAPE];
           case Control.RESET: return [R];
+          case Control.SCROLL_SPEED_INCREASE_SPEED: return [FIVE, NUMPADFIVE];
+          case Control.SCROLL_SPEED_DECREASE_SPEED: return [FOUR, NUMPADFOUR];
           case Control.WINDOW_FULLSCREEN: return [F11]; // We use F for other things LOL.
           #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
           case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
@@ -863,6 +887,8 @@ class Controls extends FlxActionSet
           case Control.BACK: return [H, X];
           case Control.PAUSE: return [ONE];
           case Control.RESET: return [R];
+          case Control.SCROLL_SPEED_INCREASE_SPEED: return [FIVE, NUMPADFIVE];
+          case Control.SCROLL_SPEED_DECREASE_SPEED: return [FOUR, NUMPADFOUR];
           #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
           case Control.WINDOW_FULLSCREEN: return [F11];
           case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
@@ -895,6 +921,8 @@ class Controls extends FlxActionSet
           case Control.BACK: return [ESCAPE];
           case Control.PAUSE: return [ONE];
           case Control.RESET: return [R];
+          case Control.SCROLL_SPEED_INCREASE_SPEED: return [FIVE, NUMPADFIVE];
+          case Control.SCROLL_SPEED_DECREASE_SPEED: return [FOUR, NUMPADFOUR];
           #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return []; #end
           case Control.WINDOW_FULLSCREEN: return [];
           case Control.FREEPLAY_FAVORITE: return [];
@@ -987,6 +1015,8 @@ class Controls extends FlxActionSet
       Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
       Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
       Control.RESET => getDefaultGamepadBinds(Control.RESET),
+      Control.SCROLL_SPEED_INCREASE_SPEED => getDefaultGamepadBinds(Control.SCROLL_SPEED_INCREASE_SPEED),
+      Control.SCROLL_SPEED_DECREASE_SPEED => getDefaultGamepadBinds(Control.SCROLL_SPEED_DECREASE_SPEED),
       Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN),
       #if FEATURE_SCREENSHOTS
       Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT),
@@ -1042,6 +1072,10 @@ class Controls extends FlxActionSet
         return [START];
       case Control.RESET:
         return [FlxGamepadInputID.BACK]; // Back (i.e. Select)
+      case Control.SCROLL_SPEED_INCREASE_SPEED:
+        [];
+      case Control.SCROLL_SPEED_DECREASE_SPEED:
+        [];
       case Control.WINDOW_FULLSCREEN:
         [];
       #if FEATURE_SCREENSHOTS
@@ -1479,6 +1513,9 @@ enum Control
   ACCEPT;
   BACK;
   PAUSE;
+  // SCROLL SPEED
+  SCROLL_SPEED_INCREASE_SPEED;
+  SCROLL_SPEED_DECREASE_SPEED;
   // CUTSCENE
   CUTSCENE_ADVANCE;
   // FREEPLAY
@@ -1534,6 +1571,9 @@ enum abstract Action(String) to String from String
   var BACK = "back";
   var PAUSE = "pause";
   var RESET = "reset";
+  // SCROLL SPEED
+  var SCROLL_SPEED_INCREASE_SPEED = "scroll_speed_increase_speed";
+  var SCROLL_SPEED_DECREASE_SPEED = "scroll_speed_decrease_speed";
   // WINDOW
   var WINDOW_FULLSCREEN = "window_fullscreen";
   #if FEATURE_SCREENSHOTS
