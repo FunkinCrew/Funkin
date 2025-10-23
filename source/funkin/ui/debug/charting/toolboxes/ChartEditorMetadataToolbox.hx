@@ -35,6 +35,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
+  var inputAlbum:DropDown;
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
@@ -147,6 +148,17 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     };
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
+
+    inputAlbum.onChange = function(event:UIEvent) {
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongMetadata.playData.album = event.data.id;
+      }
+    };
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, chartEditorState.currentSongMetadata.playData.album);
+    inputAlbum.value = startingValueAlbum;
 
     inputTimeChange.onChange = function(event:UIEvent) {
       var currentTimeChange = refreshTimeChangeInputs();
