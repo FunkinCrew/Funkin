@@ -286,8 +286,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     textDisplay.setFormat(_data.text.fontFamily, _data.text.size, FlxColor.fromString(_data.text.color), LEFT, SHADOW,
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
-    // TODO: Add an option to configure this.
-    textDisplay.sounds = [FunkinSound.load(Paths.sound('pixelText'), 0.6)];
+    textDisplay.sounds = [FunkinSound.load(Paths.sound(_data?.sound?.assetPath ?? 'pixelText'), _data?.sound?.volume ?? 0.6)];
 
     textDisplay.completeCallback = onTypingComplete;
 

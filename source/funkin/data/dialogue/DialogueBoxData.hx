@@ -67,6 +67,12 @@ typedef DialogueBoxData =
   public var scale:Float;
 
   /**
+   * The sound to play when the text is displayed.
+   */
+  @:optional
+  public var sound:Null<DialogueBoxSoundData>;
+
+  /**
    * If using a spritesheet for the dialogue box, the animations to use.
    */
   @:optional
@@ -125,4 +131,20 @@ typedef DialogueBoxTextData =
   @:optional
   @:default(0)
   var shadowWidth:Int;
+};
+
+typedef DialogueBoxSoundData =
+{
+  /**
+   * The sound to play when the text is displayed.
+   */
+   @:default('pixelText')
+  var assetPath:String;
+
+  /**
+   * The volume of the sound.
+   */
+  @:optional
+  @:default(1.0)
+  var volume:Float;
 };
