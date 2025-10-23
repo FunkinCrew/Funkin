@@ -2650,7 +2650,7 @@ class PlayState extends MusicBeatSubState
     // Process notes on the opponent's side.
     for (note in opponentStrumline.notes.members)
     {
-      if (note == null) continue;
+      if (note == null || !note.alive) continue;
       var r = GRhythmUtil.processWindow(note, false);
       if (r.botplayHit)
       {
@@ -2700,7 +2700,7 @@ class PlayState extends MusicBeatSubState
     // Process notes on the player's side.
     for (note in playerStrumline.notes.members)
     {
-      if (note == null) continue;
+      if (note == null || !note.alive) continue;
       var r = GRhythmUtil.processWindow(note, !isBotPlayMode);
       if (r.botplayHit)
       {
