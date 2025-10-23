@@ -39,6 +39,16 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     switchGF(Constants.DEFAULT_CHARACTER);
   }
 
+  override public function destroy():Void
+  {
+    if (analyzer != null)
+    {
+      analyzer.cleanup();
+    }
+
+    super.destroy();
+  }
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
