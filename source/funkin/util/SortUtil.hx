@@ -6,8 +6,10 @@ import flixel.FlxBasic;
 import flixel.util.FlxSort;
 #end
 import funkin.play.notes.NoteSprite;
+import funkin.play.notes.SustainTrail;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.data.song.SongData.SongTimeChange;
 
 /**
  * Utility functions related to sorting.
@@ -48,9 +50,24 @@ class SortUtil
    * @param b The second Note to compare.
    * @return 1 if `a` has an earlier strumtime, -1 if `b` has an earlier strumtime.
    */
-  public static inline function byStrumtime(order:Int, a:NoteSprite, b:NoteSprite):Int
+  public static inline function notebyStrumtime(order:Int, a:NoteSprite, b:NoteSprite):Int
   {
+    if (a == null || b == null) return 0;
     return noteDataByTime(order, a.noteData, b.noteData);
+  }
+
+  /**
+   * Given two hold note sprites, returns 1 or -1 based on whether `a` or `b` has an earlier strumtime.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first hold note sprite to compare.
+   * @param b The second hold note sprite to compare.
+   * @return 1 if `a` has an earlier strumtime, -1 if `b` has an earlier strumtime.
+   */
+  public static inline function sustainTrailbyStrumtime(order:Int, a:SustainTrail, b:SustainTrail):Int
+  {
+    if (a == null || b == null) return 0;
+    return FlxSort.byValues(order, a.strumTime, b.strumTime);
   }
 
   /**
@@ -63,7 +80,11 @@ class SortUtil
    */
   public static inline function noteDataByTime(order:Int, a:SongNoteData, b:SongNoteData):Int
   {
-    return FlxSort.byValues(order, a.time, b.time);
+    if (a == null || b == null) return 0;
+
+    var result = FlxSort.byValues(order, a.time, b.time);
+    if (result == 0) result = FlxSort.byValues(order, a.length, b.length);
+    return result;
   }
 
   /**
@@ -76,7 +97,22 @@ class SortUtil
    */
   public static inline function eventDataByTime(order:Int, a:SongEventData, b:SongEventData):Int
   {
+    if (a == null || b == null) return 0;
     return FlxSort.byValues(order, a.time, b.time);
+  }
+
+  /**
+   * Given two Time Change objects, returns 1 or -1 based on whether `a` or `b` has an earlier time.
+   *
+   * @param order Either `FlxSort.ASCENDING` or `FlxSort.DESCENDING`
+   * @param a The first Event to compare.
+   * @param b The second Event to compare.
+   * @return 1 if `a` has an earlier time, -1 if `b` has an earlier time.
+   */
+  public static inline function timeChangeByTime(order:Int, a:SongTimeChange, b:SongTimeChange):Int
+  {
+    if (a == null || b == null) return 0;
+    return FlxSort.byValues(order, a.timeStamp, b.timeStamp);
   }
 
   /**

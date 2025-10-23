@@ -805,9 +805,9 @@ class Strumline extends FlxSpriteGroup
   public function onBeatHit():Void
   {
     // why are we doing this every beat? >:(
-    if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
+    if (notes.members.length > 1) notes.members.insertionSort(SortUtil.notebyStrumtime.bind(FlxSort.ASCENDING));
 
-    if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
+    if (holdNotes.members.length > 1) holdNotes.members.insertionSort(SortUtil.sustainTrailbyStrumtime.bind(FlxSort.ASCENDING));
   }
 
   /**
@@ -895,7 +895,7 @@ class Strumline extends FlxSpriteGroup
     this.nextNoteIndex = 0;
 
     // Sort the notes by strumtime.
-    this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
+    this.noteData.insertionSort(SortUtil.noteDataByTime.bind(FlxSort.ASCENDING));
   }
 
   /**
@@ -909,7 +909,7 @@ class Strumline extends FlxSpriteGroup
     if (note == null) return;
 
     this.noteData.push(note);
-    if (sort) this.noteData.sort(compareNoteData.bind(FlxSort.ASCENDING));
+    if (sort) this.noteData.sort(SortUtil.noteDataByTime.bind(FlxSort.ASCENDING));
   }
 
   /**
@@ -1364,42 +1364,6 @@ class Strumline extends FlxSpriteGroup
     {
       fadeOutArrow(index, arrow);
     }
-  }
-
-  /**
-   * Compare two note data objects by their strumtime.
-   * @param order The order to sort the notes in.
-   * @param a The first note data object.
-   * @param b The second note data object.
-   * @return The comparison result, based on the time of the notes.
-   */
-  function compareNoteData(order:Int, a:SongNoteData, b:SongNoteData):Int
-  {
-    return FlxSort.byValues(order, a.time, b.time);
-  }
-
-  /**
-   * Compare two note sprites by their strumtime.
-   * @param order The order to sort the notes in.
-   * @param a The first note sprite.
-   * @param b The second note sprite.
-   * @return The comparison result, based on the time of the notes.
-   */
-  function compareNoteSprites(order:Int, a:NoteSprite, b:NoteSprite):Int
-  {
-    return FlxSort.byValues(order, a?.strumTime, b?.strumTime);
-  }
-
-  /**
-   * Compare two hold note sprites by their strumtime.
-   * @param order The order to sort the notes in.
-   * @param a The first hold note sprite.
-   * @param b The second hold note sprite.
-   * @return The comparison result, based on the time of the notes.
-   */
-  function compareHoldNoteSprites(order:Int, a:SustainTrail, b:SustainTrail):Int
-  {
-    return FlxSort.byValues(order, a?.strumTime, b?.strumTime);
   }
 
   /**

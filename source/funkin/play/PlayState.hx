@@ -1773,7 +1773,7 @@ class PlayState extends MusicBeatSubState
     if (generatedMusic)
     {
       // TODO: Sort more efficiently, or less often, to improve performance.
-      // activeNotes.sort(SortUtil.byStrumtime, FlxSort.DESCENDING);
+      // activeNotes.sort(SortUtil.notebyStrumtime, FlxSort.DESCENDING);
     }
 
     if (FlxG.sound.music != null)
