@@ -291,6 +291,17 @@ class ChartEditorToolboxHandler
       state.playtestSongScripts = checkboxSongScripts.selected;
     };
 
+    var checkboxAudioSettings:Null<CheckBox> = toolbox.findComponent('playtestAudioSettingsCheckbox', CheckBox);
+
+    if (checkboxAudioSettings == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestAudioSettingsCheckbox component.';
+
+    state.playtestAudioSettings = checkboxAudioSettings.selected;
+
+    checkboxAudioSettings.onClick = _ -> {
+      state.playtestAudioSettings = checkboxAudioSettings.selected;
+    };
+
     return toolbox;
   }
 

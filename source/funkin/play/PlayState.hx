@@ -240,6 +240,24 @@ class PlayState extends MusicBeatSubState
   public var playbackRate:Float = 1.0;
 
   /**
+   * The volume of the instrumental track.
+   * @default `1.0` for 100%.
+   */
+  public var instrumentalVolume:Float = 1.0;
+
+  /**
+   * The volume of the player vocals track.
+   * @default `1.0` for 100%.
+   */
+  public var playerVocalsVolume:Float = 1.0;
+
+  /**
+   * The volume of the opponent vocals track.
+   * @default `1.0` for 100%.
+   */
+  public var opponentVocalsVolume:Float = 1.0;
+
+  /**
    * An empty FlxObject contained in the scene.
    * The current gameplay camera will always follow this object. Tween its position to move the camera smoothly.
    *
@@ -1028,16 +1046,15 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = instrumentalVolume;
 
       if (vocals != null)
       {
         vocals.pause();
         vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
-        vocals.volume = 1;
-        vocals.playerVolume = 1;
-        vocals.opponentVolume = 1;
+        vocals.playerVolume = playerVocalsVolume;
+        vocals.opponentVolume = opponentVocalsVolume;
       }
 
       if (!fromDeathState)
@@ -2512,7 +2529,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // Prevent the volume from being wrong.
-    FlxG.sound.music.volume = 1.0;
+    FlxG.sound.music.volume = instrumentalVolume;
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     if (vocals != null)
@@ -2522,7 +2539,8 @@ class PlayState extends MusicBeatSubState
 
       vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
-      vocals.volume = 1.0;
+      vocals.playerVolume = playerVocalsVolume;
+      vocals.opponentVolume = opponentVocalsVolume;
 
       // trace('STARTING SONG AT:');
       // trace('${FlxG.sound.music.time}');
@@ -2986,7 +3004,7 @@ class PlayState extends MusicBeatSubState
     playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    if (vocals != null) vocals.playerVolume = 1;
+    if (vocals != null) vocals.playerVolume = playerVocalsVolume;
 
     // Display the combo meter and add the calculation to the score.
     if (note.scoreable)
@@ -3225,7 +3243,7 @@ class PlayState extends MusicBeatSubState
     comboPopUps.displayRating(daRating);
     if (combo >= 10) comboPopUps.displayCombo(combo);
 
-    if (vocals != null) vocals.playerVolume = 1;
+    if (vocals != null) vocals.playerVolume = playerVocalsVolume;
   }
 
   /**

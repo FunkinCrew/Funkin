@@ -605,6 +605,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestBotPlayMode:Bool = false;
 
   /**
+   * If true, playtesting a chart will use the audio settings that were set here.
+   */
+  var playtestAudioSettings:Bool = false;
+
+  /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
    */
   var enabledDebuggerPopup:Bool = true;
@@ -2486,6 +2491,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     showNoteKindIndicators = save.chartEditorShowNoteKinds;
     showSubtitles = save.chartEditorShowSubtitles;
     playtestStartTime = save.chartEditorPlaytestStartTime;
+    playtestAudioSettings = save.chartEditorPlaytestAudioSettings;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
@@ -2516,6 +2522,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorDownscroll = isViewDownscroll;
     save.chartEditorShowNoteKinds = showNoteKindIndicators;
     save.chartEditorPlaytestStartTime = playtestStartTime;
+    save.chartEditorPlaytestAudioSettings = playtestAudioSettings;
     save.chartEditorTheme = currentTheme;
     save.chartEditorMetronomeVolume = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
@@ -6268,7 +6275,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     Cursor.hide();
 
-    LoadingState.loadPlayState(targetStateParams, false, true, function(targetState) {
+    LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
+    {
+      // Apply volume settings.
+      if (playtestAudioSettings)
+      {
+        targetState.instrumentalVolume = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
+        targetState.playerVocalsVolume = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+        targetState.opponentVocalsVolume = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+      }
+
       targetState.vocals = audioVocalTrackGroup;
     });
   }
