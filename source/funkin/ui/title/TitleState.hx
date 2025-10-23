@@ -33,6 +33,7 @@ import funkin.api.newgrounds.Medals;
 import funkin.ui.freeplay.FreeplayState;
 import openfl.display.BlendMode;
 import funkin.save.Save;
+import funkin.ui.title.OutdatedSubState;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -54,9 +55,12 @@ class TitleState extends MusicBeatState
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
 
+  var leftState:Bool = false;
+
   override public function create():Void
   {
     super.create();
+
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -341,8 +345,12 @@ class TitleState extends MusicBeatState
       attractTimer = null;
     }
 
-    funkin.FunkinMemory.purgeCache();
-    FlxG.switchState(() -> new MainMenuState());
+    var subState:OutdatedSubState = new OutdatedSubState();
+    subState.onFinish.add(() -> {
+      funkin.FunkinMemory.purgeCache();
+      FlxG.switchState(() -> new MainMenuState());
+    });
+    openSubState(subState);
   }
 
   override function draw()
