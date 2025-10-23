@@ -157,6 +157,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     ], (key:String, value:DebugDisplayMode) -> {
       Preferences.debugDisplay = value;
     }, Preferences.debugDisplay);
+    createPrefItemCheckbox('Show Statistic Peaks', 'If enabled, statistic peaks will be shown in the debug display.', function(value:Bool):Void {
+      Preferences.showStatPeaks = value;
+    }, Preferences.showStatPeaks);
     createPrefItemPercentage('Debug Display BG', "Adjust the debug display's background opacity.", function(value:Int):Void {
       Preferences.debugDisplayBGOpacity = value;
     }, Preferences.debugDisplayBGOpacity);
