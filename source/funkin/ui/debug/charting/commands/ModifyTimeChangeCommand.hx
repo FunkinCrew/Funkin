@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.commands;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.data.song.SongDataUtils;
 
 /**
  * A command which modifies the give time change in the current song's time changes.
@@ -61,9 +62,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = timeChanges;
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
-    state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -75,6 +73,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.updateSongTime();
     state.updateGridHeight();
     state.updateTimeSignature();
+    // Fix the positions of the notes and events (don't ask me how this works, I have no clue). It just works!
+    // I considered putting this in updateGridHeight() but I've noticed it gets updated in a lot of places, so I won't.
+
+    state.currentSongChartNoteData = SongDataUtils.offsetSongNoteData(state.currentSongChartNoteData, 0);
+    state.currentSongChartEventData = SongDataUtils.offsetSongEventData(state.currentSongChartEventData, 0);
   }
 
   public function undo(state:ChartEditorState):Void
@@ -94,9 +97,6 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = timeChanges;
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
-    state.notePreviewViewportBoundsDirty = true;
     state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -108,6 +108,8 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.updateSongTime();
     state.updateGridHeight();
     state.updateTimeSignature();
+    state.currentSongChartNoteData = SongDataUtils.offsetSongNoteData(state.currentSongChartNoteData, 0);
+    state.currentSongChartEventData = SongDataUtils.offsetSongEventData(state.currentSongChartEventData, 0);
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.commands;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
+import funkin.data.song.SongDataUtils;
 
 /**
  * A command which removes the given timechange from the current song's timechanges.
@@ -37,9 +38,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = timeChanges;
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
-    state.notePreviewViewportBoundsDirty = true;
+    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -50,6 +49,8 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     state.updateSongTime();
     state.updateGridHeight();
     state.updateTimeSignature();
+    state.currentSongChartNoteData = SongDataUtils.offsetSongNoteData(state.currentSongChartNoteData, 0);
+    state.currentSongChartEventData = SongDataUtils.offsetSongEventData(state.currentSongChartEventData, 0);
   }
 
   public function undo(state:ChartEditorState):Void
@@ -61,9 +62,7 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
     state.currentSongMetadata.timeChanges = previousTimeChanges;
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
-    state.notePreviewViewportBoundsDirty = true;
+    state.scrollPositionInPixels = 0;
 
     var metadataToolbox:ChartEditorMetadataToolbox = cast state.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
@@ -74,6 +73,8 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     state.updateSongTime();
     state.updateGridHeight();
     state.updateTimeSignature();
+    state.currentSongChartNoteData = SongDataUtils.offsetSongNoteData(state.currentSongChartNoteData, 0);
+    state.currentSongChartEventData = SongDataUtils.offsetSongEventData(state.currentSongChartEventData, 0);
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
