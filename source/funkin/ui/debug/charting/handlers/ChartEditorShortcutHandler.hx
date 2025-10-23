@@ -27,8 +27,8 @@ class ChartEditorShortcutHandler
     state.menubarItemSelectAllEvents.shortcutText = ctrlOrCmd(alt('A'));
     state.menubarItemSelectInverse.shortcutText = ctrlOrCmd('I');
     state.menubarItemSelectNone.shortcutText = ctrlOrCmd('D');
-    state.menubarItemSelectBeforeCursor.shortcutText = shift('Home');
-    state.menubarItemSelectAfterCursor.shortcutText = shift('End');
+    state.menubarItemSelectBeforePlayhead.shortcutText = shift('Home');
+    state.menubarItemSelectAfterPlayhead.shortcutText = shift('End');
 
     state.menubarItemDifficultyDown.shortcutText = ctrlOrCmd('←');
     state.menubarItemDifficultyUp.shortcutText = ctrlOrCmd('→');
