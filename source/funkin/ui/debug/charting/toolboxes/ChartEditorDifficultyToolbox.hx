@@ -7,7 +7,6 @@ import funkin.data.song.SongRegistry;
 import haxe.ui.components.Button;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import funkin.data.song.SongData.SongMetadata;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.HorizontalSlider;
 import funkin.util.VersionUtil;
