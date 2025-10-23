@@ -36,14 +36,6 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
     this.addHTML5RecentFileMessage();
     #end
 
-    #if FILE_DROP_SUPPORTED
-    stageEditorState.addDropHandler(
-      {
-        component: this.stageBox,
-        handler: this.onDropFileStageBox
-      });
-    #end
-
     // Add items to the Load From Template list
     this.buildTemplateStageList(stageEditorState);
   }
@@ -123,41 +115,12 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
 
   public function onClickStageBox():Void
   {
-    this.lock();
     // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
     #if !mac
-    FileUtil.browseForBinaryFile('Open Stage', [FileUtil.FILE_EXTENSION_INFO_FNFS], onSelectFile, onCancelBrowse);
+    FileUtil.browseForBinaryFile('Open Stage', [FileUtil.FILE_EXTENSION_INFO_FNFS], onSelectFile);
     #else
-    FileUtil.browseForBinaryFile('Open Stage', null, onSelectFile, onCancelBrowse);
+    FileUtil.browseForBinaryFile('Open Stage', null, onSelectFile);
     #end
-  }
-
-  /**
-   * Called when a file is selected by dropping a file onto the Upload Stage box.
-   */
-  function onDropFileStageBox(pathStr:String):Void
-  {
-    var path:Path = new Path(pathStr);
-    trace('Dropped file (${path})');
-
-    try
-    {
-      var result:Null<Array<String>> = StageEditorImportExportHandler.loadFromFNFSPath(stageEditorState, path.toString());
-      if (result != null)
-      {
-        stageEditorState.success('Loaded Stage',
-          result.length == 0 ? 'Loaded stage (${path.toString()})' : 'Loaded stage (${path.toString()})\n${result.join("\n")}');
-        this.hideDialog(DialogButton.APPLY);
-      }
-      else
-      {
-        stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${path.toString()})');
-      }
-    }
-    catch (err)
-    {
-      stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${path.toString()}): ${err}');
-    }
   }
 
   /**
@@ -165,8 +128,6 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
    */
   function onSelectFile(selectedFile:SelectedFileInfo):Void
   {
-    this.unlock();
-
     if (selectedFile != null && selectedFile.bytes != null)
     {
       try
@@ -189,11 +150,6 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
   }
 
   public function onClickButtonNew(state:StageEditorState):Void {}
-
-  function onCancelBrowse():Void
-  {
-    this.unlock();
-  }
 
   public function buildTemplateStageList(state:StageEditorState):Void
   {

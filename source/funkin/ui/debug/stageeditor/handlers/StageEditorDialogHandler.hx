@@ -3,27 +3,16 @@ package funkin.ui.debug.stageeditor.handlers;
 import lime.utils.Bytes;
 import flixel.util.FlxTimer;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorAboutDialog;
+import funkin.ui.debug.stageeditor.dialogs.StageEditorBackupDialog;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorNewObjectDialog;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorURLObjectDialog;
+import funkin.ui.debug.stageeditor.dialogs.StageEditorUserGuideDialog;
 import funkin.ui.debug.stageeditor.dialogs.StageEditorWelcomeDialog;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
-import haxe.io.Path;
-import haxe.ui.components.Button;
-import haxe.ui.components.DropDown;
-import haxe.ui.components.Label;
-import haxe.ui.components.NumberStepper;
-import haxe.ui.components.Slider;
-import haxe.ui.components.TextField;
-import haxe.ui.containers.Box;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
-import haxe.ui.containers.Form;
-import haxe.ui.containers.menus.Menu;
-import haxe.ui.core.Component;
-import haxe.ui.events.UIEvent;
-import haxe.ui.RuntimeComponentBuilder;
 
 /**
  * Handles dialogs for the new Stage Editor.
@@ -32,21 +21,33 @@ import haxe.ui.RuntimeComponentBuilder;
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 class StageEditorDialogHandler
 {
-  // Paths to HaxeUI layout files for each dialog.
+  /**
+   * Builds and opens a dialog giving brief credits for the stage editor.
+   * @param state The current stage editor state.
+   * @return The dialog that was opened.
+   */
   public static function openAboutDialog(state:StageEditorState, closable:Bool = true):Null<Dialog>
   {
     var dialog = StageEditorAboutDialog.build(state, closable);
 
     dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
 
     return dialog;
   }
 
+  /**
+   * Builds and opens a dialog letting the user create a new stage, open a recent stage, or load from a template.
+   * @param state The current stage editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
   public static function openWelcomeDialog(state:StageEditorState, closable:Bool = true):Null<Dialog>
   {
     var dialog = StageEditorWelcomeDialog.build(state, closable);
 
     dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
 
     return dialog;
   }
@@ -56,21 +57,96 @@ class StageEditorDialogHandler
     var dialog = StageEditorURLObjectDialog.build(state, callback, onFail);
 
     dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
 
     return dialog;
   }
 
-  public static function openNewObjectDialog(state:StageEditorState, ?bitmapData:openfl.display.BitmapData = null, ?closable:Bool, ?modal:Bool):Null<Dialog>
+  /**
+   * Builds and opens a dialog letting the user create a new object.
+   *
+   * @param state The current stage editor state.
+   * @return The dialog that was opened.
+   */
+  public static function openNewObjectDialog(state:StageEditorState, ?bitmapData:openfl.display.BitmapData, ?closable:Bool, ?modal:Bool):Null<Dialog>
   {
     var dialog = StageEditorNewObjectDialog.build(state, bitmapData, closable, modal);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  public static function openBackupAvailableDialog(state:StageEditorState, welcomeDialog:Null<Dialog>, ?closable:Bool, ?modal:Bool):Null<Dialog>
+  {
+    var dialog = StageEditorBackupDialog.build(state, welcomeDialog, closable, modal);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can confirm to leave the stage editor if they have unsaved changes.
+   * @param state The current stage editor state.
+   * @return The dialog that was opened.
+   */
+  public static function openLeaveConfirmationDialog(state:StageEditorState):Dialog
+  {
+    var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor",
+      MessageBoxType.TYPE_YESNO, true, button -> {
+        state.isHaxeUIDialogOpen = false;
+        if (button == DialogButton.YES)
+        {
+          state.autoSave();
+          state.quitStageEditor();
+        }
+    });
+
+    dialog.destroyOnClose = true;
+    state.isHaxeUIDialogOpen = true;
+
+    dialog.onDialogClosed = _ -> {
+      state.isHaxeUIDialogOpen = false;
+    };
 
     dialog.zIndex = 1000;
 
     return dialog;
   }
 
+  /**
+   * Builds and opens a dialog displaying the user guide, providing guidance and help on how to use the stage editor.
+   *
+   * @param state The current stage editor state.
+   * @return The dialog that was opened.
+   */
+  public static function openUserGuideDialog(state:StageEditorState, closable:Bool = true):Null<Dialog>
+  {
+    var dialog = StageEditorUserGuideDialog.build(state, closable);
+
+    dialog.zIndex = 1000;
+    state.isHaxeUIDialogOpen = true;
+
+    return dialog;
+  }
+
+  /**
+   * ==============================
+   * DROP HANDLERS
+   * ==============================
+   */
   static var dropHandlers:Array<DialogDropTarget> = [];
 
+    /**
+   * Add a callback for when a file is dropped on a component.
+   *
+   * On OS X you can’t drop on the application window, but rather only the app icon
+   * (either in the dock while running or the icon on the hard drive) so this must be disabled
+   * and UI updated appropriately.
+   */
   public static function addDropHandler(state:StageEditorState, dropTarget:DialogDropTarget):Void
   {
     #if desktop

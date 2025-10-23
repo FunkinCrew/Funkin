@@ -11,7 +11,7 @@ class AddObjectCommand implements StageEditorCommand
   var addedObject:Null<StageEditorObject>;
   var bitmap:Null<BitmapData> = null;
 
-  public function new(objectID:String, ?bitmap:BitmapData = null)
+  public function new(objectID:String, ?bitmap:BitmapData)
   {
     this.objectID = objectID;
     this.bitmap = bitmap;
@@ -21,7 +21,11 @@ class AddObjectCommand implements StageEditorCommand
   {
     var sprite = new StageEditorObject();
 
-    if (bitmap != null) {}
+    if (bitmap != null)
+    {
+      var bitToLoad = StageEditorAssetHandler.addBitmap(bitmap);
+      if (bitToLoad != null) sprite.loadGraphic(StageEditorAssetHandler.bitmaps[bitToLoad] ?? StageEditorAssetHandler.getDefaultGraphic());
+    }
     else
       sprite.loadGraphic(StageEditorAssetHandler.getDefaultGraphic());
 

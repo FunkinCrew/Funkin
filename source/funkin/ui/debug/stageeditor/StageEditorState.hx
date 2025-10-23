@@ -72,7 +72,7 @@ using StringTools;
  * Some functionality is split into handler classes (just like in the Chart Editor) so that people would not go insane.
  *
  * @author KoloInDaCrib NEVER FORGET!!!
- * @author anysad (refactored code)
+ * @author anysad (additional cleanup)
  */
 // @:nullSafety // stupid haxe-ui having non-null safe macros
 
@@ -84,12 +84,11 @@ class StageEditorState extends UIState
    * CONSTANTS
    * ==============================
    */
-  public static final STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('stage-editor/toolboxes/stage-settings');
-
+  public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-properties');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-anims');
-  public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
   public static final STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT:String = Paths.ui('stage-editor/toolboxes/character-properties');
+  public static final STAGE_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('stage-editor/toolboxes/stage-settings');
 
   /**
    * The base grid size for the stage editor.
@@ -336,7 +335,7 @@ class StageEditorState extends UIState
     if (value)
     {
       // Start the auto-save timer.
-      // autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());  
     }
     else
     {
@@ -861,7 +860,7 @@ class StageEditorState extends UIState
     else
     {
       var welcomeDialog = this.openWelcomeDialog(false);
-      // if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
+      if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
     }
   }
 
@@ -1217,6 +1216,7 @@ class StageEditorState extends UIState
     {
       handleEditKeybinds();
     }
+    handleHelpKeybinds();
 
     if (isInTestMode) handleStageTest();
   }
@@ -1280,6 +1280,13 @@ class StageEditorState extends UIState
     /**
      * HELP
      */
+    menubarItemUserGuide.onClick = _ -> this.openUserGuideDialog();
+    #if sys
+    menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
+    #else
+    // Disable the menu item if we're not on a native platform.
+    menubarItemGoToBackupsFolder.disabled = true;
+    #end
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
 
     /**
@@ -1345,7 +1352,7 @@ class StageEditorState extends UIState
             selectedCharacter = character;
             selectedItemName = Std.string(character.characterType);
           default:
-            // nothing
+            // nothing !!
         }
       }
     }
@@ -1715,7 +1722,7 @@ class StageEditorState extends UIState
             dragWasMoving = false;
           }
         default:
-          // nothing
+          // nothing !!
       }
 
       // Actually set the cursor mode to the one we specified earlier.
@@ -1803,6 +1810,18 @@ class StageEditorState extends UIState
     }
   }
 
+  /**
+   * Handle keybinds for Help menu items.
+   */
+  function handleHelpKeybinds():Void
+  {
+    // F1 = Open Help
+    if (FlxG.keys.justPressed.F1 && !isHaxeUIDialogOpen)
+    {
+      this.openUserGuideDialog();
+    }
+  }
+
   function handleStageTest():Void
   {
     if (FlxG.keys.justPressed.TAB && !FlxG.keys.pressed.SHIFT) currentPreviewedCharacter++;
@@ -1823,11 +1842,11 @@ class StageEditorState extends UIState
 
   function quitStageEditor(exitPrompt:Bool = false):Void
   {
-    // if (saveDataDirty && exitPrompt)
-    // {
-    //   // this.openLeaveConfirmationDialog();
-    //   return;
-    // }
+    if (saveDataDirty && exitPrompt)
+    {
+      this.openLeaveConfirmationDialog();
+      return;
+    }
 
     autoSave();
 

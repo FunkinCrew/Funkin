@@ -19,7 +19,7 @@ import openfl.display.BitmapData;
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 class StageEditorImportExportHandler
 {
-  public static final BACKUPS_PATH:String = './stagebackups/';
+  public static final BACKUPS_PATH:String = './backups/stages/';
 
   public static function loadStageAsTemplate(state:StageEditorState, stageId:String):Void
   {
@@ -98,6 +98,7 @@ class StageEditorImportExportHandler
       state.sortObjects();
     }
 
+    // Set the camera to be in the middle of girlfriend
     var gf:Null<BaseCharacter> = state.characters.get('gf');
     var gfData:Null<StageDataCharacter> = state.stageData.characters.gf;
     if (state.stageData.cameraZoom == null || gf == null || gfData == null) return;
