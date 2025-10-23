@@ -64,6 +64,14 @@ class ResultsDebugSubState extends MusicBeatSubState
     createToggleListItem("Ranking", DebugTallies.DEBUG_RANKS, function(result:String) {
       resultsParams.scoreData.tallies = DebugTallies.getTallyForRank(result);
     });
+    createToggleListItem("Difficulty", Constants.DEFAULT_DIFFICULTY_LIST_FULL, function(result:String) {
+      resultsParams.difficultyId = result;
+    });
+    createToggleListItem("New Highscore", ["True", "False"], function(result:String) {
+      var highscoreEnabled:Bool = true;
+      if (result == "False") highscoreEnabled = false;
+      resultsParams.isNewHighscore = highscoreEnabled;
+    });
   }
 
   function createTextItem(name:String, ?onChange:Void->Void):MenuTypedItem<FlxText>
@@ -103,7 +111,7 @@ class ResultsDebugSubState extends MusicBeatSubState
 
     // We create and call the labelCallback here to initalize it
     var labelCallback:Void->Void = function() {
-      menuItem.label.text = name + ":" + toggleList[toggleCounter];
+      menuItem.label.text = name + ": " + toggleList[toggleCounter].charAt(0).toUpperCase() + toggleList[toggleCounter].substr(1);
       onChange(toggleList[toggleCounter]);
     };
     labelCallback();
