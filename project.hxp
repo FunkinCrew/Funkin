@@ -502,6 +502,13 @@ class Project extends HXProject
    */
   static final FEATURE_DEBUG_DISPLAY:FeatureFlag = "FEATURE_DEBUG_DISPLAY";
 
+  /**
+   * `-DFEATURE_CHECK_FOR_UPDATES`
+   * If this flag is enabled, the game will check for updates, and will show a message if outdated.
+   * This flag is enabled on release desktop builds.
+   */
+  static final FEATURE_CHECK_FOR_UPDATES:FeatureFlag = "FEATURE_CHECK_FOR_UPDATES";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -915,6 +922,9 @@ class Project extends HXProject
     // Turns the debug display off if you are on a non debug mobile build
     // Desktop (Native and Web) always has it | Used for mobile debugging purposes
     FEATURE_DEBUG_DISPLAY.apply(this, !isMobile() || FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+
+    // Should be true only on desktop release builds, since it auto updates everywhere else.
+    FEATURE_CHECK_FOR_UPDATES.apply(this, isRelease() && isDesktop());
 
     renderFlagsTable();
   }
