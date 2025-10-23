@@ -41,9 +41,12 @@ class TitleState extends MusicBeatState
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
 
+  var leftState:Bool = false;
+
   override public function create():Void
   {
     super.create();
+
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -292,8 +295,12 @@ class TitleState extends MusicBeatState
       attractTimer = null;
     }
 
-    funkin.FunkinMemory.purgeCache();
-    FlxG.switchState(() -> new MainMenuState());
+    var subState:OutdatedSubState = new OutdatedSubState();
+    subState.onFinish.add(() -> {
+      funkin.FunkinMemory.purgeCache();
+      FlxG.switchState(() -> new MainMenuState());
+    });
+    openSubState(subState);
   }
 
   override function draw()

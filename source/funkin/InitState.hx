@@ -296,6 +296,8 @@ class InitState extends FlxState
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
 
+    funkin.ui.title.OutdatedSubState.checkForUpdates();
+
     funkin.input.Cursor.hide();
 
     #if !html5
