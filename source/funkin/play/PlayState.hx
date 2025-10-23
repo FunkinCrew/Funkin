@@ -79,6 +79,9 @@ import funkin.api.discord.DiscordClient;
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
+#if sys
+import funkin.util.ThreadUtil;
+#end
 
 /**
  * Parameters used to initialize the PlayState.
@@ -873,6 +876,10 @@ class PlayState extends MusicBeatSubState
     resetCamera();
 
     initPreciseInputs();
+
+    #if sys
+    initThreads();
+    #end
 
     FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -2124,6 +2131,55 @@ class PlayState extends MusicBeatSubState
       currentStage.refresh();
     }
   }
+
+  #if sys
+  /**
+     * Whether the main thread of this application is frozen by a prolonged lag or the window's title bar being dragged.
+     */
+  var isMainThreadFrozen:Bool = false;
+
+  /**
+     * Setups the Thread to check if the game has been dragged by the window's title bar.
+     */
+  function initThreads()
+  {
+    ThreadUtil.createLoopingThread("playStateWindow", function() {
+      var lostFocus:Bool = false;
+      @:privateAccess
+      lostFocus = FlxG.game._lostFocus;
+
+      if (!initialized || health <= Constants.HEALTH_MIN || isGamePaused || !generatedMusic || criticalFailure || lostFocus || justUnpaused) return;
+
+      if (isMainThreadFrozen)
+      {
+        trace("The game is frozen! Pausing.");
+
+        persistentUpdate = false;
+        persistentDraw = true;
+
+        var pauseSubState:FlxSubState = new PauseSubState({mode: isChartingMode ? Charting : Standard});
+
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = camCutscene;
+        openSubState(pauseSubState);
+      }
+      else
+      {
+        // trace("Not frozen! We resetting and checking again!");
+      }
+
+      isMainThreadFrozen = true;
+    }, 1, 0.5);
+
+    FlxG.signals.preUpdate.add(checkMainThreadActivity);
+  }
+
+  function checkMainThreadActivity()
+  {
+    isMainThreadFrozen = false;
+  }
+  #end
 
   /**
      * Constructs the strumlines for each player.
@@ -3562,6 +3618,12 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
+    #if sys
+    // If we have a thread running, stop it.
+    FlxG.signals.preUpdate.remove(checkMainThreadActivity);
+    ThreadUtil.stopThread("playStateWindow");
+    #end
+
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
