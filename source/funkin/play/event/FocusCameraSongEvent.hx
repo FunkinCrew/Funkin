@@ -69,7 +69,7 @@ class FocusCameraSongEvent extends SongEvent
 
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
     if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
-    
+
     if (stagePoint != null && stagePoint != "NONE" && customPoints != null)
     {
       final point = customPoints.exists(stagePoint) ? customPoints.get(stagePoint) : null;
@@ -93,7 +93,7 @@ class FocusCameraSongEvent extends SongEvent
         return;
     }
 
-    applyCameraTween(targetX, targetY, duration, ease);
+    applyCameraTween(targetX, targetY, duration, ease, easeDir);
   }
 
   function getCharacterPoint(char:Int):Null<flixel.math.FlxPoint>
@@ -109,7 +109,7 @@ class FocusCameraSongEvent extends SongEvent
     }
   }
 
-  function applyCameraTween(targetX:Float, targetY:Float, duration:Float, ease:String):Void
+  function applyCameraTween(targetX:Float, targetY:Float, duration:Float, ease:String, easeDir:String):Void
   {
     final playState = PlayState.instance;
 
