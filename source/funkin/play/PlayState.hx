@@ -54,7 +54,12 @@ import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
+#end
+#if FEATURE_STAGE_EDITOR
+import funkin.ui.debug.stageeditor.StageEditorState;
+#end
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.MusicBeatSubState;
@@ -3089,7 +3094,18 @@ class PlayState extends MusicBeatSubState
       // hack for HaxeUI generation, doesn't work unless persistentUpdate is false at state creation!!
       disableKeys = true;
       persistentUpdate = false;
-      openSubState(new StageOffsetSubState());
+      // The strings have to be get like this otherwise it just NORs when setting the params?
+      // Or, none of the characters show up, in the case of the pico songs?
+      var bf:String = currentStage?.getBoyfriend()?.characterId ?? '';
+      var gf:String = currentStage?.getGirlfriend()?.characterId ?? '';
+      var dad:String = currentStage?.getDad()?.characterId ?? '';
+      FlxG.switchState(() -> new StageEditorState(
+        {
+          targetStageId: currentStageId,
+          targetBfChar: bf,
+          targetGfChar: gf,
+          targetDadChar: dad
+        }));
     }
     #end
 

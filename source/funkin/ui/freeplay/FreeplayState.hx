@@ -56,7 +56,13 @@ import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
 import funkin.ui.freeplay.DifficultyDot;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
+#end
+#if FEATURE_STAGE_EDITOR
+import funkin.ui.debug.stageeditor.StageEditorState;
+#end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -1839,52 +1845,121 @@ class FreeplayState extends MusicBeatSubState
   {
     #if FEATURE_CHART_EDITOR
     if (!controls.active) return;
-    if (!controls.DEBUG_CHART) return;
-
-    controls.active = false;
-
-    var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
-    if (targetSongID == 'unknown')
+    if (controls.DEBUG_CHART)
     {
-      letterSort.inputEnabled = false;
+      controls.active = false;
 
-      var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
-        // Dead capsules are ones which were removed from the list when changing filters.
-        return cap.alive && cap.freeplayData != null;
-      });
-
-      trace('Available songs: ${availableSongCapsules.map(function(cap) {
-          return cap?.freeplayData?.data.songName;
-        })}');
-
-      if (availableSongCapsules.length == 0)
+      var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
       {
-        trace('No songs available!');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          controls.active = true;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      }
+      // Play the confirm animation so the user knows they actually did something.
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      // if (dj != null) dj.confirm();
+      dj?.onConfirm();
+      new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: targetSongID,
+            targetSongDifficulty: currentDifficulty,
+            targetSongVariation: currentVariation,
+          }));
+      });
+      return;
+    }
+    #end
+    #if FEATURE_STAGE_EDITOR
+    if (controls.DEBUG_STAGE)
+    {
+      controls.active = false;
+
+      var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
+      {
+        trace('CHART RANDOM SONG');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          controls.active = true;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      }
+
+      var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongID);
+      if (targetSongNullable == null)
+      {
+        FlxG.log.warn('WARN: could not find song with id (${targetSongID})');
         controls.active = true;
         letterSort.inputEnabled = true;
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        return;
+      }
+      var targetSong:Song = targetSongNullable;
+      var targetVariation:Null<String> = currentVariation;
+
+      var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
+      if (targetDifficulty == null)
+      {
+        FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
+        controls.active = true;
+        letterSort.inputEnabled = true;
         return;
       }
 
-      var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
-
-      // Seeing if I can do an animation...
-      curSelected = grpCapsules.members.indexOf(targetSong);
-      changeSelection(0);
-      targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
-    }
-    // Play the confirm animation so the user knows they actually did something.
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
-    // if (dj != null) dj.confirm();
-    dj?.onConfirm();
-    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
-      FlxG.switchState(() -> new ChartEditorState(
+      FlxG.switchState(() -> new StageEditorState(
         {
-          targetSongId: targetSongID,
-          targetSongDifficulty: currentDifficulty,
-          targetSongVariation: currentVariation,
+          targetStageId: targetDifficulty.stage,
+          targetBfChar: targetDifficulty.characters.player,
+          targetGfChar: targetDifficulty.characters.girlfriend,
+          targetDadChar: targetDifficulty.characters.opponent
         }));
-    });
+      return;
+    }
     #end
   }
 
