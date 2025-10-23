@@ -1460,6 +1460,9 @@ class PlayState extends MusicBeatSubState
 
     // Dispatch event to conversation script.
     ScriptEventDispatcher.callEvent(currentConversation, event);
+    
+    // Dispatch event to event notes.
+    if (songEvents != null && songEvents.length > 0) SongEventRegistry.callEvent(songEvents, event);
 
     // Dispatch event to note kind scripts
     NoteKindManager.callEvent(event);
