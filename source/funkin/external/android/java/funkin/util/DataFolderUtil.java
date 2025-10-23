@@ -15,7 +15,7 @@ public class DataFolderUtil
 {
   /**
    * A method that opens the Application's data folder for browsing through the Storage Access Framework.
-   * It's highly based on some code borrowed from Mterial Files
+   * It's highly based on some code borrowed from Material Files
    * https://github.com/zhanghai/MaterialFiles
    */
   public static void openDataFolder(int requestCode)
