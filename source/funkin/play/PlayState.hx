@@ -3702,6 +3702,9 @@ class PlayState extends MusicBeatSubState
             });
          */
     });
+
+    playerStrumline.fadeOutArrows();
+    opponentStrumline.fadeOutArrows();
   }
 
   /**
