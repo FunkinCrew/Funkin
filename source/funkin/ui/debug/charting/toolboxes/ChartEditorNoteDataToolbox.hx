@@ -68,13 +68,12 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       if (noteKind == '~CUSTOM~')
       {
         showCustom();
-        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+        chartEditorState.noteKindToPlace = toolboxNotesCustomKind.value;
       }
       else
       {
         hideCustom();
         chartEditorState.noteKindToPlace = noteKind;
-        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
 
       createNoteKindParams(noteKind);
@@ -112,14 +111,16 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
-    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, '');
+    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, chartEditorState.noteKindToPlace);
     toolboxNotesNoteKind.value = startingValueNoteKind;
 
     toolboxNotesCustomKind.onChange = function(event:UIEvent) {
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
-      if (chartEditorState.currentEventSelection.length > 0)
+      if (toolboxNotesNoteKind.value.id != '~CUSTOM~') return;
+
+      if (chartEditorState.currentNoteSelection.length > 0)
       {
         // Edit the note data of any selected notes.
         for (note in chartEditorState.currentNoteSelection)
@@ -138,8 +139,16 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
-    toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+    toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
+    if (toolboxNotesNoteKind.value.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
+    {
+      showCustom();
+    }
+    else
+    {
+      hideCustom();
+    }
 
     createNoteKindParams(chartEditorState.noteKindToPlace);
   }
