@@ -4930,7 +4930,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           var dragDistanceColumns:Int = cursorGridPos - noteGridPos;
 
-          if (dragTargetCurrentStep != dragDistanceSteps || dragTargetCurrentColumn != dragDistanceColumns)
+          if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
           {
             // Play a sound as we drag.
             this.playSound(Paths.sound('chartingSounds/noteLay'));
