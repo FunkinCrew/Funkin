@@ -22,6 +22,7 @@ enum DotState
   SELECTED;
 }
 
+@:nullSafety
 class DifficultyDot extends FlxSpriteGroup
 {
   /**
@@ -40,8 +41,8 @@ class DifficultyDot extends FlxSpriteGroup
 
   var pulseColor = false;
 
-  public var dot:FlxSprite;
-  public var pulse:FlxSprite;
+  public var dot:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/seperator'));
+  public var pulse:FlxSprite = new FlxSprite(0, 0);
 
   // var newColors:Array<FlxColor> = [0xFFE86D09, 0xFFE54400, 0xFFE83509, 0xFFF3D48A, 0xFFFAF269, 0xFFF9F0C2];
 
@@ -51,12 +52,9 @@ class DifficultyDot extends FlxSpriteGroup
 
     difficultyId = id;
 
-    dot = new FlxSprite().loadGraphic(Paths.image('freeplay/seperator'));
     add(dot);
-
     dot.alpha = 0;
 
-    pulse = new FlxSprite(0, 0);
     pulse.frames = Paths.getSparrowAtlas('freeplay/dotPulse');
     pulse.animation.addByPrefix('pulse', 'pulse', 12, true);
     pulse.animation.play('pulse', true, false, FlxMath.wrap(num * -2, 0, 11));
@@ -68,8 +66,8 @@ class DifficultyDot extends FlxSpriteGroup
     });
   }
 
-  var colorTween:FlxTween;
-  var fadeTween:FlxTween;
+  var colorTween:Null<FlxTween>;
+  var fadeTween:Null<FlxTween>;
 
   /**
    * Interpolates between 2 colors to make the dot pulse in time with the pulse's animation.
@@ -145,7 +143,7 @@ class DifficultyDot extends FlxSpriteGroup
     switch (type)
     {
       case NORMAL:
-        if (fadeTween?.finished) dot.alpha = 1;
+        if (fadeTween != null && fadeTween?.finished) dot.alpha = 1;
 
         switch (state)
         {
@@ -163,7 +161,7 @@ class DifficultyDot extends FlxSpriteGroup
         }
 
       case ERECT:
-        if (fadeTween?.finished) dot.alpha = 1;
+        if (fadeTween != null && fadeTween?.finished) dot.alpha = 1;
 
         switch (state)
         {
@@ -182,7 +180,7 @@ class DifficultyDot extends FlxSpriteGroup
 
       case INACTIVE:
         color = 0xFF121212;
-        if (fadeTween?.finished) dot.alpha = 0.33;
+        if (fadeTween != null && fadeTween?.finished) dot.alpha = 0.33;
 
       default:
         trace('freeplay dot type is invalid!');

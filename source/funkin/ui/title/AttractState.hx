@@ -23,6 +23,7 @@ import flixel.addons.display.FlxPieDial;
  * In the current version, this just plays generic game/merch trailers,
  * but this can be updated to include gameplay footage, or something more elaborate.
  */
+@:nullSafety
 class AttractState extends MusicBeatState
 {
   /**
@@ -42,7 +43,7 @@ class AttractState extends MusicBeatState
    */
   static final HOLD_TIME:Float = 1.5;
 
-  var pie:FlxPieDial;
+  var pie:FlxPieDial = new FlxPieDial(0, 0, 40, FlxColor.WHITE, 45, CIRCLE, true, 20);
   var holdDelta:Float = 0;
 
   public override function create():Void
@@ -51,7 +52,6 @@ class AttractState extends MusicBeatState
     if (FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
-      FlxG.sound.music = null;
     }
 
     #if html5
@@ -66,7 +66,6 @@ class AttractState extends MusicBeatState
     playVideoNative(videoPath);
     #end
 
-    pie = new FlxPieDial(0, 0, 40, FlxColor.WHITE, 45, CIRCLE, true, 20);
     pie.x = FlxG.width - ((pie.width * 1.5) + FullScreenScaleMode.gameNotchSize.x);
     pie.y = FlxG.height - (pie.height * 1.5);
     pie.amount = 0;
@@ -92,12 +91,11 @@ class AttractState extends MusicBeatState
   }
 
   #if html5
-  var vid:FlxVideo;
+  var vid:Null<FlxVideo> = new FlxVideo(filePath);
 
   function playVideoHTML5(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FlxVideo(filePath);
     if (vid != null)
     {
       vid.zIndex = 0;
@@ -114,14 +112,13 @@ class AttractState extends MusicBeatState
   #end
 
   #if hxvlc
-  var vid:FunkinVideoSprite;
+  var vid:Null<FunkinVideoSprite> = new FunkinVideoSprite(0, 0);
 
   function playVideoNative(filePath:String):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FunkinVideoSprite(0, 0);
 
-    if (vid != null)
+    if (vid != null && vid.bitmap != null)
     {
       vid.zIndex = 0;
       vid.active = false;
@@ -132,9 +129,9 @@ class AttractState extends MusicBeatState
       });
       vid.bitmap.onEndReached.add(onAttractEnd);
       vid.bitmap.onFormatSetup.add(() -> {
-        vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
-        vid.updateHitbox();
-        vid.screenCenter();
+        vid?.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid?.updateHitbox();
+        vid?.screenCenter();
       });
 
       add(vid);
@@ -197,8 +194,7 @@ class AttractState extends MusicBeatState
     #end
 
     #if (html5 || hxvlc)
-    vid.destroy();
-    vid = null;
+    vid?.destroy();
     #end
 
     FlxG.switchState(() -> new TitleState());

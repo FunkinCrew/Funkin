@@ -7,18 +7,16 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 
+@:nullSafety
 class FlxSpriteOverlay extends FlxSprite
 {
-  var blendShader:BlendModesShader;
-  var dipshitBitmap:BitmapData;
-  var temp:FlxSprite;
+  var blendShader:BlendModesShader = new BlendModesShader();
+  var dipshitBitmap:BitmapData = new BitmapData(2180, 1720, true, 0xFFCC00CC);
+  var temp:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
 
   public function new(x:Float, y:Float)
   {
     super(x, y);
-    temp = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
-    blendShader = new BlendModesShader();
-    dipshitBitmap = new BitmapData(2180, 1720, true, 0xFFCC00CC);
   }
 
   override function drawComplex(camera:FlxCamera):Void
