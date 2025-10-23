@@ -15,8 +15,6 @@ import haxe.ui.containers.Grid;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.events.UIEvent;
 
-// @:nullSafety
-
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
 class StageEditorCharacterToolbox extends StageEditorBaseToolbox
@@ -119,6 +117,7 @@ class StageEditorCharacterToolbox extends StageEditorBaseToolbox
       inputCharacterAlpha.pos = 1;
       inputCharacterAngle.pos = 0;
 
+      buttonCharacterSelection.icon = null;
       buttonCharacterSelection.text = 'None';
 
       return;

@@ -10,6 +10,7 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.util.Color;
+import openfl.display.BlendMode;
 
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml"))
@@ -54,8 +55,91 @@ class StageEditorObjectPropertiesToolbox extends StageEditorBaseToolbox
   {
     DropDownBuilder.HANDLER_MAP.set('inputObjectTint', Type.getClassName(ObjectTintHandler));
 
+    inputObjectPositionX.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.position[0] = event.value;
+      linkedObject.x = event.value;
+    }
+
+    inputObjectPositionY.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.position[1] = event.value;
+      linkedObject.y = event.value;
+    }
+
+    inputObjectScaleX.onChange = inputObjectScaleX.onChange = _ -> {
+      if (linkedObject == null) return;
+
+      dataObject.scale = inputObjectScaleX.pos == inputObjectScaleY.pos ? Left(inputObjectScaleX.pos) : Right([inputObjectScaleX.pos, inputObjectScaleY.pos]);
+
+      linkedObject.scale.set(inputObjectScaleX.pos, inputObjectScaleY.pos);
+      linkedObject.updateHitbox();
+    }
+
+    inputObjectZIndex.max = StageEditorState.MAX_Z_INDEX;
+    inputObjectZIndex.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.zIndex = event.value;
+      linkedObject.zIndex = event.value;
+      stageEditorState.sortObjects();
+    }
+
+    inputObjectScrollX.onChange = inputObjectScrollY.onChange = _ -> {
+      if (linkedObject == null) return;
+      dataObject.scroll = [inputObjectScrollX.pos, inputObjectScrollY.pos];
+      linkedObject.scrollFactor.set(inputObjectScrollX.pos, inputObjectScrollY.pos);
+    }
+
     inputObjectAlpha.onChange = event -> {
       if (linkedObject == null) return;
+      dataObject.alpha = event.value;
+      linkedObject.alpha = event.value;
+    }
+
+    inputObjectAngle.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.angle = event.value;
+      linkedObject.angle = event.value;
+    }
+
+    inputObjectDanceEvery.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.danceEvery = event.value;
+      linkedObject.danceEvery = event.value;
+    }
+
+    inputObjectBlend.onChange = event -> {
+      if (linkedObject == null) return;
+      // dataObject.blend =
+      @:privateAccess
+      linkedObject.blend = (inputObjectBlend.selectedItem?.text ?? "NONE") == "NONE" ? null : BlendMode.fromString(inputObjectBlend.selectedItem.text.toLowerCase().trim());
+      trace(linkedObject.blend);
+      trace(event);
+      trace(event.data);
+    }
+
+    inputObjectTint.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.color = event.value.toString();
+      linkedObject.color = FlxColor.fromString(event.value) ?? 0xFFFFFFFF;
+    }
+
+    inputObjectFlipX.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.flipX = event.value;
+      linkedObject.flipX = event.value;
+    }
+
+    inputObjectFlipY.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.flipY = event.value;
+      linkedObject.flipY = event.value;
+    }
+
+    inputObjectAntialiasing.onChange = event -> {
+      if (linkedObject == null) return;
+      dataObject.isPixel = event.value;
+      linkedObject.antialiasing = event.value;
     }
   }
 
@@ -90,6 +174,28 @@ class StageEditorObjectPropertiesToolbox extends StageEditorBaseToolbox
     }
 
     dataObject = stageEditorState.currentProps.find(prop -> prop.name == linkedObject.name);
+
+    // Otherwise, only update components whose linked character values have been changed.
+    if (inputObjectPositionX.pos != dataObject.position[0]) inputObjectPositionX.pos = dataObject.position[0];
+    if (inputObjectPositionY.pos != dataObject.position[1]) inputObjectPositionY.pos = dataObject.position[1];
+    // scale
+    if (inputObjectZIndex.pos != dataObject.zIndex) inputObjectZIndex.pos = dataObject.zIndex;
+    if (inputObjectScrollX.pos != dataObject.scroll[0]) inputObjectScrollX.pos = dataObject.scroll[0];
+    if (inputObjectScrollY.pos != dataObject.scroll[1]) inputObjectScrollY.pos = dataObject.scroll[1];
+    if (inputObjectAlpha.pos != dataObject.alpha) inputObjectAlpha.pos = dataObject.alpha;
+    if (inputObjectAngle.pos != dataObject.angle) inputObjectAngle.pos = dataObject.angle;
+    if (inputObjectDanceEvery.pos != dataObject.danceEvery) inputObjectDanceEvery.pos = dataObject.danceEvery;
+
+    var objectBlend:String = dataObject.blend.toUpperCase() ?? 'NONE';
+    if (inputObjectBlend.selectedItem != objectBlend) inputObjectBlend.selectedItem = objectBlend;
+
+    var haxeColor:FlxColor = FlxColor.fromString(dataObject.color);
+    var objectColor:Color = Color.fromComponents(haxeColor.red, haxeColor.green, haxeColor.blue, haxeColor.alpha);
+    if (inputObjectTint.selectedItem != objectColor) inputObjectTint.selectedItem = objectColor;
+
+    if (inputObjectFlipX.selected != dataObject.flipX) inputObjectFlipX.selected = dataObject.flipX;
+    if (inputObjectFlipY.selected != dataObject.flipY) inputObjectFlipY.selected = dataObject.flipY;
+    if (inputObjectAntialiasing.selected != dataObject.isPixel) inputObjectAntialiasing.selected = dataObject.isPixel;
   }
 
   public static function build(stageEditorState:StageEditorState):StageEditorObjectPropertiesToolbox

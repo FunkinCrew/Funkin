@@ -30,7 +30,7 @@ class StageEditorMetadataToolbox extends StageEditorBaseToolbox
 
   function initialize():Void
   {
-    inputStageName.onChange = function(event:UIEvent) {
+    inputStageName.onChange = event -> {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -41,7 +41,7 @@ class StageEditorMetadataToolbox extends StageEditorBaseToolbox
       else stageEditorState.stageData.name = 'Unknown';
     }
 
-    inputStageZoom.onChange = function(event:UIEvent) {
+    inputStageZoom.onChange = event -> {
       if (event.value == null || event.value <= 0) return;
 
       stageEditorState.stageData.cameraZoom = event.value;
@@ -61,7 +61,7 @@ class StageEditorMetadataToolbox extends StageEditorBaseToolbox
 
     for (lib in allLibs) inputStageLibrary.dataSource.add({text: lib});
 
-    inputStageLibrary.onChange = function(event:UIEvent) {
+    inputStageLibrary.onChange = event -> {
       var valid:Bool = event.data != null && event.data.text != null;
 
       if (valid) stageEditorState.stageData.directory = event.data.text;

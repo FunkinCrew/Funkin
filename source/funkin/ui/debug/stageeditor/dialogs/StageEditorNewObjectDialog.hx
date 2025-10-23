@@ -10,12 +10,14 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
 class StageEditorNewObjectDialog extends StageEditorBaseDialog
 {
-  public function new(state2:StageEditorState, ?bitmapData:BitmapData = null, params2:DialogParams)
+  public function new(state2:StageEditorState, ?bitmapData:BitmapData, params2:DialogParams)
   {
     super(state2, params2);
 
     buttons = DialogButton.CANCEL | '{{Create}}';
     defaultButton = '{{Create}}';
+
+    this.title = bitmapData == null ? this.title : 'New Object - From Image';
 
     this.onDialogClosed = function(e:DialogEvent) {
       if (e.button.toString() == '{{Create}}')
