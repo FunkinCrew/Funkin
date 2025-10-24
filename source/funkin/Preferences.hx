@@ -416,6 +416,44 @@ class Preferences
   }
 
   /**
+   * Determines the thousands separators type for the score:
+   * - `"Comma"` -> uses commas, e.g. `1,000`
+   * - `"Period"` -> uses periods, e.g. `1.000`
+   * - `"Off"` -> no separator, e.g. `1000`
+   *
+   * @default `"Comma"`
+   */
+  public static var separatedScore(get, set):String;
+
+  static function get_separatedScore():String
+  {
+    var value = Save?.instance?.options?.commaSeparatedScore ?? "Comma";
+    return value;
+  }
+
+  static function set_separatedScore(value:String):String
+  {
+    var normalized:String = value.toLowerCase();
+
+    var result:String = switch (normalized)
+    {
+      case "off":
+        "Off";
+      case "comma":
+        "Comma";
+      case "period":
+        "Period";
+      default:
+        "Comma";
+    };
+
+    var save:Save = Save.instance;
+    save.options.commaSeparatedScore = result;
+    save.flush();
+    return result;
+  }
+
+  /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`
    */

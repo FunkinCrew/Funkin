@@ -2597,9 +2597,9 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      // TODO: Add an option for this maybe?
-      var commaSeparated:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
+      var commaSeparated:Bool = Preferences.separatedScore == "Comma";
+      var score:String = Preferences.separatedScore != "Off" ? FlxStringUtil.formatMoney(songScore, false, commaSeparated) : Std.string(songScore);
+      scoreText.text = 'Score: ${score}';
     }
   }
 
