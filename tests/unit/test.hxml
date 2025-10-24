@@ -30,3 +30,5 @@
 --macro flixel.system.macros.FlxDefines.run()
 # Funkin' macros
 --macro addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')
+--macro addMetadata('@:build(funkin.util.macro.FlxMacro.buildBitmapFrontEnd())', 'flixel.system.frontEnds.BitmapFrontEnd')
+--macro addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxGraphic())', 'flixel.graphics.FlxGraphic')
