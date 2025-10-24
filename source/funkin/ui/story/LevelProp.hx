@@ -79,6 +79,7 @@ class LevelProp extends Bopper
     this.x = propData.offsets[0];
     this.y = propData.offsets[1];
     this.flipX = propData.flipX;
+    this.flipY = propData.flipY;
 
     FlxAnimationUtil.addAtlasAnimations(this, propData.animations);
     for (propAnim in propData.animations)
