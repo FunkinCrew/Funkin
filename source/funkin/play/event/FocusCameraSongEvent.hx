@@ -46,6 +46,8 @@ import funkin.data.event.SongEventSchema.SongEventFieldType;
  */
 class FocusCameraSongEvent extends SongEvent
 {
+  static final CHARACTER_TARGETS = ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2];
+
   public function new()
   {
     super('FocusCamera');
@@ -53,101 +55,105 @@ class FocusCameraSongEvent extends SongEvent
 
   public override function handleEvent(data:SongEventData):Void
   {
-    // Does nothing if there is no PlayState camera or stage.
-    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    final playState = PlayState.instance;
+    if (playState == null || playState.currentStage == null || playState.isMinimalMode) return;
 
-    // Does nothing if we are minimal mode.
-    if (PlayState.instance.isMinimalMode) return;
+    final stagePoint = data.getString('stagePoint') ?? 'NONE';
+    final customPoints = playState.currentStage?.customCameraPoints ?? [];
 
-    var posX:Null<Float> = data.getFloat('x');
-    if (posX == null) posX = 0.0;
-    var posY:Null<Float> = data.getFloat('y');
-    if (posY == null) posY = 0.0;
-
-    var char:Null<Int> = data.getInt('char');
-
-    if (char == null) char = cast data.value;
-
-    var duration:Null<Float> = data.getFloat('duration');
-    if (duration == null) duration = 4.0;
-    var ease:Null<String> = data.getString('ease');
-    if (ease == null) ease = 'CLASSIC'; // No linear in defaults lol
+    var targetX:Float = data.getFloat('x') ?? 0.0;
+    var targetY:Float = data.getFloat('y') ?? 0.0;
+    var char:Null<Int> = data.getInt('char') ?? cast data.value ?? 0;
+    var duration:Null<Float> = data.getFloat('duration') ?? 4.0;
+    var ease:Null<String> = data.getString('ease') ?? 'CLASSIC';
 
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
     if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
 
-    var currentStage = PlayState.instance.currentStage;
-
-    // Get target position based on char.
-    var targetX:Float = posX;
-    var targetY:Float = posY;
-
-    switch (char)
+    if (stagePoint != null && stagePoint != "NONE" && customPoints != null)
     {
-      case -1: // Position ("focus" on origin)
-        trace('Focusing camera on static position.');
-
-      case 0: // Boyfriend (focus on player)
-        if (currentStage.getBoyfriend() == null)
-        {
-          trace('No BF to focus on.');
-          return;
-        }
-        trace('Focusing camera on player.');
-        var bfPoint = currentStage.getBoyfriend().cameraFocusPoint;
-        targetX += bfPoint.x;
-        targetY += bfPoint.y;
-
-      case 1: // Dad (focus on opponent)
-        if (currentStage.getDad() == null)
-        {
-          trace('No dad to focus on.');
-          return;
-        }
-        trace('Focusing camera on opponent.');
-        var dadPoint = currentStage.getDad().cameraFocusPoint;
-        targetX += dadPoint.x;
-        targetY += dadPoint.y;
-
-      case 2: // Girlfriend (focus on girlfriend)
-        if (currentStage.getGirlfriend() == null)
-        {
-          trace('No GF to focus on.');
-          return;
-        }
-        trace('Focusing camera on girlfriend.');
-        var gfPoint = currentStage.getGirlfriend().cameraFocusPoint;
-        targetX += gfPoint.x;
-        targetY += gfPoint.y;
-
-      default:
-        trace('Unknown camera focus: ' + data);
+      final point = customPoints.exists(stagePoint) ? customPoints.get(stagePoint) : null;
+      if (point != null)
+      {
+        targetX += point.x;
+        targetY += point.y;
+      }
+      else
+        return;
+    }
+    else
+    {
+      final charPoint = getCharacterPoint(char);
+      if (charPoint != null)
+      {
+        targetX += charPoint.x;
+        targetY += charPoint.y;
+      }
+      else
+        return;
     }
 
-    // Apply tween based on ease.
+    applyCameraTween(targetX, targetY, duration, ease, easeDir);
+  }
+
+  function getCharacterPoint(char:Int):Null<flixel.math.FlxPoint>
+  {
+    final currentStage = PlayState.instance.currentStage;
+    return switch (char)
+    {
+      case -1: flixel.math.FlxPoint.get(); // Manual position
+      case 0: currentStage.getBoyfriend()?.requiredCameraPos;
+      case 1: currentStage.getDad()?.requiredCameraPos;
+      case 2: currentStage.getGirlfriend()?.requiredCameraPos;
+      default: null;
+    }
+  }
+
+  function applyCameraTween(targetX:Float, targetY:Float, duration:Float, ease:String, easeDir:String):Void
+  {
+    final playState = PlayState.instance;
+
     switch (ease)
     {
-      case 'CLASSIC': // Old-school. No ease. Just set follow point.
-        PlayState.instance.resetCamera(false, false, false);
-        PlayState.instance.cancelCameraFollowTween();
-        PlayState.instance.cameraFollowPoint.setPosition(targetX, targetY);
-      case 'INSTANT': // Instant ease. Duration is automatically 0.
-        PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
+      case 'CLASSIC':
+        playState.resetCamera(false, false, false);
+        playState.cancelCameraFollowTween();
+        playState.cameraFollowPoint.setPosition(targetX, targetY);
+
+      case 'INSTANT':
+        playState.tweenCameraToPosition(targetX, targetY, 0);
+
       default:
-        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
         if (easeFunction == null)
         {
           trace('Invalid ease function: $ease');
           return;
         }
-        PlayState.instance.tweenCameraToPosition(targetX, targetY, durSeconds, easeFunction);
+        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        playState.tweenCameraToPosition(targetX, targetY, durSeconds, easeFunction);
     }
   }
 
   public override function getTitle():String
   {
     return 'Focus Camera';
+  }
+
+  var _cameraPoints:Map<String, String> = new Map();
+
+  private function getStageCameraPoints()
+  {
+    _cameraPoints?.clear();
+    _cameraPoints ??= new Map();
+    @:privateAccess
+    final stage = funkin.data.stage.StageRegistry.instance.fetchEntry(funkin.ui.debug.charting.ChartEditorState.instance.currentSongStage);
+    _cameraPoints.set("NONE", "NONE");
+    if (stage == null) return _cameraPoints;
+    if (funkin.ui.debug.charting.ChartEditorState.instance != null) for (point in stage?._data?.cameraPoints ?? [])
+      _cameraPoints.set(point.name, point.name);
+
+    return _cameraPoints;
   }
 
   /**
@@ -167,7 +173,14 @@ class FocusCameraSongEvent extends SongEvent
         title: "Target",
         defaultValue: 0,
         type: SongEventFieldType.ENUM,
-        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
+        keys: CHARACTER_TARGETS
+      },
+      {
+        name: "stagePoint",
+        title: "Stage Point",
+        defaultValue: "NONE",
+        type: ENUM,
+        keys: getStageCameraPoints()
       },
       {
         name: "x",
@@ -197,7 +210,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
-        defaultValue: 'linear',
+        defaultValue: 'CLASSIC',
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',

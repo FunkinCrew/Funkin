@@ -24,6 +24,10 @@ class StageData
   @:optional
   public var directory:Null<String>;
 
+  @:optional
+  @:default([])
+  public var cameraPoints:Null<Array<StageCameraPoint>>;
+
   public function new()
   {
     this.version = StageRegistry.STAGE_DATA_VERSION;
@@ -38,6 +42,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
+          forceCameraPos: false,
           cameraOffsets: [-100, -100]
         },
       dad:
@@ -45,6 +50,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
+          forceCameraPos: false,
           cameraOffsets: [100, -100]
         },
       gf:
@@ -52,6 +58,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
+          forceCameraPos: false,
           cameraOffsets: [0, 0]
         }
     };
@@ -256,6 +263,14 @@ typedef StageDataCharacter =
   var scale:Float;
 
   /**
+   * Will force camera position to `cameraOffsets`, excluding character's position.
+   * @default false
+   */
+  @:optional
+  @:default(false)
+  var forceCameraPos:Bool;
+
+  /**
    * The camera offsets to apply when focusing on the character on this stage.
    * @default [-100, -100] for BF, [100, -100] for DAD/OPPONENT, [0, 0] for GF
    */
@@ -290,3 +305,10 @@ typedef StageDataCharacter =
   @:default(0.0)
   var angle:Float;
 };
+
+typedef StageCameraPoint =
+{
+  var name:String;
+  var x:Float;
+  var y:Float;
+}

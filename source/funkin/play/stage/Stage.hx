@@ -55,6 +55,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   var characters:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
   var boppers:Array<Bopper> = new Array<Bopper>();
 
+  public var customCameraPoints:Null<Map<String, FlxPoint>> = new Map();
+
   /**
    * The Stage elements get initialized at the beginning of the game.
    * They're used to cache the data needed to build the stage,
@@ -156,6 +158,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   function buildStage():Void
   {
     trace('Building stage for display: ${this.id}');
+
+    if (_data.cameraPoints.length > 0)
+    {
+      trace('Generating ${_data.cameraPoints.length} custom camera points.');
+      for (point in _data.cameraPoints)
+        customCameraPoints.set(point.name, FlxPoint.get(point.x, point.y));
+    }
 
     this.debugIconGroup = new FlxSpriteGroup();
 
@@ -448,6 +457,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.setScale(finalScale); // Don't use scale.set for characters!
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+      @:privateAccess
+      if (stageCharData.forceCameraPos)
+      {
+        character._stageCamPos = FlxPoint.get(stageCharData.cameraOffsets[0] + character.characterCameraOffsets[0],
+          stageCharData.cameraOffsets[1] + character.characterCameraOffsets[1]);
+      }
 
       character.scrollFactor.x = stageCharData.scroll[0];
       character.scrollFactor.y = stageCharData.scroll[1];

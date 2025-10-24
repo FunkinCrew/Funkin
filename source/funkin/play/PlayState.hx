@@ -2113,7 +2113,7 @@ class PlayState extends MusicBeatSubState
       {
         currentStage.addCharacter(dad, DAD);
         // Camera starts at dad.
-        cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+        cameraFollowPoint.setPosition(dad.requiredCameraPos.x, dad.requiredCameraPos.y);
 
         #if FEATURE_DEBUG_FUNCTIONS
         FlxG.console.registerObject('dad', dad);
