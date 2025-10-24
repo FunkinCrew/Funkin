@@ -40,7 +40,6 @@ import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -880,19 +879,10 @@ class PlayState extends MusicBeatSubState
     // This gets set back to false when the chart actually starts.
     startingSong = true;
 
-    // TODO: We hardcoded the transition into Winter Horrorland. Do this with a ScriptedSong instead.
-    if ((currentSong.id ?? '').toLowerCase() == 'winter-horrorland')
-    {
-      // VanillaCutscenes will call startCountdown later.
-      VanillaCutscenes.playHorrorStartCutscene();
-    }
-    else
-    {
-      // Call a script event to start the countdown.
-      // Songs with cutscenes should call event.cancel().
-      // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
-      startCountdown();
-    }
+    // Call a script event to start the countdown.
+    // Songs with cutscenes should call event.cancel().
+    // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
+    startCountdown();
 
     // Create the pause button.
     #if mobile
