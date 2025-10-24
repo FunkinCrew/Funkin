@@ -70,6 +70,7 @@ class VideoCutscene
   {
     if (PlayState.instance == null) return;
 
+    #if FEATURE_VIDEO_PLAYBACK
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
@@ -78,8 +79,7 @@ class VideoCutscene
 
       return;
     }
-
-    var rawFilePath = Paths.stripLibrary(filePath);
+    #end
 
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
@@ -105,7 +105,7 @@ class VideoCutscene
     finishVideo();
     #else
     #if html5
-    playVideoHTML5(rawFilePath);
+    playVideoHTML5(Paths.stripLibrary(filePath));
     #elseif hxvlc
     playVideoNative(filePath);
     #else
