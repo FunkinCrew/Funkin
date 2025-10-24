@@ -2389,7 +2389,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
-    setupContextMenu();
     setupTurboKeyHandlers();
 
     setupAutoSave();
@@ -3350,21 +3349,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
-  }
-
-  function setupContextMenu():Void
-  {
-    Screen.instance.registerEvent(MouseEvent.RIGHT_MOUSE_UP, function(e:MouseEvent) {
-      var xPos = e.screenX;
-      var yPos = e.screenY;
-      onContextMenu(xPos, yPos);
-    });
-  }
-
-  function onContextMenu(xPos:Float, yPos:Float)
-  {
-    trace('User right clicked to open menu at (${xPos}, ${yPos})');
-    // this.openDefaultContextMenu(xPos, yPos);
   }
 
   function copySelection():Void
