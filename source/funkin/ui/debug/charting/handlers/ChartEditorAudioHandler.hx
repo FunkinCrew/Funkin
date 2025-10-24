@@ -8,7 +8,6 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.util.FileUtil;
 import funkin.util.assets.SoundUtil;
 import funkin.audio.waveform.WaveformData;
-import funkin.audio.waveform.WaveformDataParser;
 import funkin.audio.waveform.WaveformSprite;
 import flixel.util.FlxColor;
 import haxe.io.Bytes;
@@ -201,12 +200,12 @@ class ChartEditorAudioHandler
           {
             var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
             var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-            waveformSprite.x = 840;
             waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
             waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
             waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
             waveformSprite.time = 0;
             waveformSprite.duration = duration;
+            waveformSprite.iconId = "bf";
             state.audioWaveforms.add(waveformSprite);
           }
           else
@@ -225,12 +224,12 @@ class ChartEditorAudioHandler
           {
             var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
             var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-            waveformSprite.x = 360;
             waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
             waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
             waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
             waveformSprite.time = 0;
             waveformSprite.duration = duration;
+            waveformSprite.iconId = "dad";
             state.audioWaveforms.add(waveformSprite);
           }
           else
