@@ -1,17 +1,21 @@
 package funkin.ui.debug.charting.util;
 
 #if FEATURE_CHART_EDITOR
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.notes.notestyle.NoteStyle;
-import funkin.data.song.SongData.SongTimeChange;
-import funkin.play.event.SongEvent;
-import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
-import haxe.ui.components.DropDown;
-import funkin.play.stage.Stage;
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.event.SongEventRegistry;
 import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
+import funkin.play.character.BaseCharacter.CharacterType;
+import funkin.play.event.SongEvent;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.stage.Stage;
+import funkin.ui.freeplay.Album;
+import funkin.ui.transition.stickers.StickerPack;
+import haxe.ui.components.DropDown;
 
 /**
  * Functions for populating dropdowns based on game data.
@@ -179,6 +183,68 @@ class ChartEditorDropdowns
 
       var value = {id: noteStyleId, text: noteStyle.getName()};
       if (startingStyleId == noteStyleId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of albums.
+   */
+  public static function populateDropdownWithAlbums(dropDown:DropDown, startingAlbumId:Null<String>):DropDownEntry
+  {
+    startingAlbumId = startingAlbumId ?? Constants.DEFAULT_ALBUM_ID;
+    dropDown.dataSource.clear();
+
+    var albumIds:Array<String> = AlbumRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "volume1", text: "Volume 1"};
+
+    for (albumId in albumIds)
+    {
+      var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+      if (album == null) continue;
+
+      // Check if the album has all necessary assets (art and title)
+      if (album._data?.albumArtAsset == null || album._data?.albumTitleAsset == null) continue;
+
+      var value = {id: albumId, text: album.getAlbumName()};
+      if (startingAlbumId == albumId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of sticker packs.
+   */
+  public static function populateDropdownWithStickerPacks(dropDown:DropDown, startingStickerPackId:Null<String>):DropDownEntry
+  {
+    startingStickerPackId = startingStickerPackId ?? Constants.DEFAULT_STICKER_PACK;
+    dropDown.dataSource.clear();
+
+    var stickerPackIds:Array<String> = StickerRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "default", text: "Default"};
+
+    for (stickerPackId in stickerPackIds)
+    {
+      var stickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(stickerPackId);
+      if (stickerPack == null) continue;
+
+      // Check if the sticker has all necessary assets (stickers)
+      if (stickerPack._data?.stickers == null) continue;
+
+      var value = {id: stickerPackId, text: stickerPack.getStickerPackName()};
+      if (startingStickerPackId == stickerPackId) returnValue = value;
 
       dropDown.dataSource.add(value);
     }
