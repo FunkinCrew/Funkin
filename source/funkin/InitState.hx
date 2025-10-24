@@ -31,6 +31,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.title.TitleState;
 import funkin.ui.transition.LoadingState;
+import funkin.util.AudioUtil;
 import funkin.util.CLIUtil;
 import funkin.util.CLIUtil.CLIParams;
 import funkin.util.macro.MacroUtil;
@@ -284,6 +285,11 @@ class InitState extends FlxState
     #if !html5
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
+    #end
+
+    #if (windows && cpp)
+    // Initialize the audio fix client to handle audio device changes.
+    AudioUtil.initAudioFix();
     #end
   }
 

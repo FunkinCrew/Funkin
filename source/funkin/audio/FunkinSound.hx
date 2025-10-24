@@ -10,6 +10,7 @@ import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.data.song.SongRegistry;
+import funkin.util.AudioUtil;
 import funkin.util.tools.ICloneable;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.Paths.PathsFunction;
@@ -520,6 +521,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   @:access(openfl.media.SoundMixer)
   override function startSound(startTime:Float)
   {
+    @:privateAccess AudioUtil.regenSound(_sound);
     if (!important)
     {
       super.startSound(startTime);
