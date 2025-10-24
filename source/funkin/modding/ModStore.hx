@@ -40,6 +40,30 @@ class ModStore
   }
 
   /**
+   * Helper function to set the data of a storage key by ID.
+   *
+   * @param id The target ID of the store.
+   * @param data The new storage data that will be set.
+   * @return The store data, or `null` if the store did not exist.
+   */
+  public static function set(id:String, data:Dynamic):Dynamic
+  {
+      stores.set(id, data);
+      return data;
+  }
+
+  /**
+   * Helper function to check if an ID exists in the store.
+   *
+   * @param id The target ID of the store.
+   * @return `true` if data exists, `false` if data doesn't exist.
+   */
+  public static function exists(id:String, data:Dynamic):Bool
+  {
+      return stores.exists(id);
+  }
+
+  /**
    * Helper function to remove a store by ID and return it.
    *
    * @id The target ID of the store.

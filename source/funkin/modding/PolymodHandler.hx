@@ -249,8 +249,12 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
+    Polymod.addDefaultImport(flixel.FlxG);
     Polymod.addDefaultImport(funkin.Assets);
     Polymod.addDefaultImport(funkin.Paths);
+    Polymod.addDefaultImport(funkin.play.PlayState);
+    Polymod.addDefaultImport(funkin.save.Save);
+    Polymod.addDefaultImport(funkin.util.Constants);
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
@@ -292,6 +296,9 @@ class PolymodHandler
     #end
 
     Polymod.addImportAlias('funkin.api.discord.DiscordClient', funkin.api.discord.DiscordClient.DiscordClientSandboxed);
+    Polymod.addImportAlias('funkin.api.newgrounds.Leaderboards', funkin.api.newgrounds.Leaderboards.LeaderboardsSandboxed);
+    Polymod.addImportAlias('funkin.api.newgrounds.NewgroundsClient', funkin.api.newgrounds.NewgroundsClient.NewgroundsClientSandboxed);
+    Polymod.addImportAlias('funkin.api.newgrounds.Medals', funkin.api.newgrounds.Medals.MedalsSandboxed);
 
     // Add blacklisting for prohibited classes and packages.
 
@@ -403,15 +410,6 @@ class PolymodHandler
     // `hscript.*
     // Contains functions which may allow for interpreting unsanitized strings.
     for (cls in ClassMacro.listClassesInPackage('hscript'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // `funkin.api.newgrounds.*`
-    // Contains functions which allow for cheating medals and leaderboards.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
