@@ -121,4 +121,11 @@ typedef LevelPropData =
   @:default(false)
   @:optional
   var flipX:Null<Bool>;
+  
+    /**
+   * Flips the sprite on Y axis.
+   */
+  @:default(false)
+  @:optional
+  var flipY:Null<Bool>;
 }
