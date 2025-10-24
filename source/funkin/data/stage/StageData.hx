@@ -42,7 +42,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
-          stageCamPos: null,
+          forceCameraPos: false,
           cameraOffsets: [-100, -100]
         },
       dad:
@@ -50,7 +50,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
-          stageCamPos: null,
+          forceCameraPos: false,
           cameraOffsets: [100, -100]
         },
       gf:
@@ -58,7 +58,7 @@ class StageData
           zIndex: 0,
           scale: 1,
           position: [0, 0],
-          stageCamPos: null,
+          forceCameraPos: false,
           cameraOffsets: [0, 0]
         }
     };
@@ -263,12 +263,12 @@ typedef StageDataCharacter =
   var scale:Float;
 
   /**
-   * The forced character's camera position.
-   * @default null
+   * Will force camera position to `cameraOffsets`, excluding character's position.
+   * @default false
    */
   @:optional
-  @:default(null)
-  var stageCamPos:Array<Float>;
+  @:default(false)
+  var forceCameraPos:Bool;
 
   /**
    * The camera offsets to apply when focusing on the character on this stage.

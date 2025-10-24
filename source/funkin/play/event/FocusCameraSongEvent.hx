@@ -59,7 +59,7 @@ class FocusCameraSongEvent extends SongEvent
     if (playState == null || playState.currentStage == null || playState.isMinimalMode) return;
 
     final stagePoint = data.getString('stagePoint') ?? 'NONE';
-    final customPoints = playState.currentStage.customCameraPoints;
+    final customPoints = playState.currentStage?.customCameraPoints ?? [];
 
     var targetX:Float = data.getFloat('x') ?? 0.0;
     var targetY:Float = data.getFloat('y') ?? 0.0;
@@ -140,17 +140,19 @@ class FocusCameraSongEvent extends SongEvent
     return 'Focus Camera';
   }
 
+  var _cameraPoints:Map<String, String> = new Map();
+
   private function getStageCameraPoints()
   {
-    var cameraPoints:Map<String, String> = new Map();
+    _cameraPoints ??= new Map();
     @:privateAccess
-    var stage = funkin.data.stage.StageRegistry.instance.fetchEntry(funkin.ui.debug.charting.ChartEditorState.instance.currentSongStage);
-    cameraPoints.set("NONE", "NONE");
-    if (stage == null) return cameraPoints;
+    final stage = funkin.data.stage.StageRegistry.instance.fetchEntry(funkin.ui.debug.charting.ChartEditorState.instance.currentSongStage);
+    _cameraPoints.set("NONE", "NONE");
+    if (stage == null) return _cameraPoints;
     if (funkin.ui.debug.charting.ChartEditorState.instance != null) for (point in stage?._data?.cameraPoints ?? [])
-      cameraPoints.set(point.name, point.name);
+      _cameraPoints.set(point.name, point.name);
 
-    return cameraPoints;
+    return _cameraPoints;
   }
 
   /**

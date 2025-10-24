@@ -458,8 +458,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
       @:privateAccess
-      if (stageCharData.stageCamPos != null) character._stageCamPos = FlxPoint.get(stageCharData.stageCamPos[0] + character.characterCameraOffsets[0],
-        stageCharData.stageCamPos[1] + character.characterCameraOffsets[1]);
+      if (stageCharData.forceCameraPos)
+      {
+        character._stageCamPos = FlxPoint.get(stageCharData.cameraOffsets[0] + character.characterCameraOffsets[0],
+          stageCharData.cameraOffsets[1] + character.characterCameraOffsets[1]);
+      }
 
       character.scrollFactor.x = stageCharData.scroll[0];
       character.scrollFactor.y = stageCharData.scroll[1];
