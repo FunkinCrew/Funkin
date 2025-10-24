@@ -144,6 +144,7 @@ class FocusCameraSongEvent extends SongEvent
 
   private function getStageCameraPoints()
   {
+    _cameraPoints?.clear();
     _cameraPoints ??= new Map();
     @:privateAccess
     final stage = funkin.data.stage.StageRegistry.instance.fetchEntry(funkin.ui.debug.charting.ChartEditorState.instance.currentSongStage);
