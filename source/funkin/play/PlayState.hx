@@ -996,6 +996,8 @@ class PlayState extends MusicBeatSubState
 
       currentStage?.resetStage();
 
+      resetHealth();
+
       dispatchEvent(retryEvent);
 
       resetCamera();
@@ -1057,7 +1059,6 @@ class PlayState extends MusicBeatSubState
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      health = Constants.HEALTH_STARTING;
       songScore = 0;
       Highscore.tallies.combo = 0;
 
@@ -1386,10 +1387,7 @@ class PlayState extends MusicBeatSubState
     songScore = 0;
     updateScoreText();
 
-    health = Constants.HEALTH_STARTING;
-    healthLerp = health;
-
-    healthBar.value = healthLerp;
+    resetHealth();
 
     if (!isMinimalMode)
     {
@@ -2616,6 +2614,15 @@ class PlayState extends MusicBeatSubState
     {
       healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
     }
+  }
+
+  /**
+   * Reset the player's health and health bar to their starting values
+   */
+  function resetHealth():Void
+  {
+    health = healthLerp = Constants.HEALTH_STARTING;
+    healthBar.value = 0;
   }
 
   /**
