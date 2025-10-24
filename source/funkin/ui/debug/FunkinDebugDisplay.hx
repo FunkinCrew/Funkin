@@ -11,7 +11,7 @@ import openfl.text.TextFormat;
 /**
  * A debug overlay showing useful info.
  */
-#if cpp
+#if lime_cffi
 @:access(lime._internal.backend.native.NativeCFFI)
 #end
 class FunkinDebugDisplay extends Sprite
@@ -150,7 +150,7 @@ class FunkinDebugDisplay extends Sprite
 
   override function __enterFrame(deltaTime:Int):Void
   {
-    #if cpp
+    #if lime_cffi
     final currentTime:Float = lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks();
     #elseif html5
     final currentTime:Float = js.Browser.window.performance.now();

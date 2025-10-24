@@ -79,7 +79,9 @@ class TitleState extends MusicBeatState
   var titleText:FlxSprite;
   var maskShader = new LeftMaskShader();
 
+  #if FEATURE_VIDEO_PLAYBACK
   var attractTimer:FlxTimer;
+  #end
 
   function startIntro():Void
   {
@@ -181,8 +183,10 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
+    #if FEATURE_VIDEO_PLAYBACK
     trace('Starting attract timer');
     attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
+    #end
   }
 
   /**
@@ -335,11 +339,13 @@ class TitleState extends MusicBeatState
 
   function moveToMainMenu():Void
   {
+    #if FEATURE_VIDEO_PLAYBACK
     if (attractTimer != null)
     {
       attractTimer.cancel();
       attractTimer = null;
     }
+    #end
 
     funkin.FunkinMemory.purgeCache();
     FlxG.switchState(() -> new MainMenuState());
