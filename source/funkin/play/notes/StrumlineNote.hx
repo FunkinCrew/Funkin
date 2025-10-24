@@ -1,9 +1,11 @@
 package funkin.play.notes;
 
+import flixel.tweens.FlxTween;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.graphics.FunkinSprite;
 import funkin.play.notes.NoteSprite;
+import funkin.input.PreciseInputManager;
 
 /**
  * The actual receptor that you see on screen.
@@ -11,9 +13,28 @@ import funkin.play.notes.NoteSprite;
 class StrumlineNote extends FunkinSprite
 {
   /**
+   * The parent strumline that this strumline note belongs to.
+   */
+  public var parentStrumline:Strumline;
+
+  /**
    * Whether this strumline note is on the player's side or the opponent's side.
    */
-  public var isPlayer(default, null):Bool;
+  public var isPlayer(get, set):Bool;
+
+  function get_isPlayer():Bool
+  {
+    if (parentStrumline == null) return false;
+    return parentStrumline.isPlayer;
+  }
+
+  function set_isPlayer(value:Bool):Bool
+  {
+    // isPlayer is now dependent on parentStrumline.isPlayer.
+    // However, some old scripts probably set this value to match that.
+    // So, we still include a setter that does nothing for backwards compatibility reasons.
+    return isPlayer;
+  }
 
   /**
    * The direction which this strumline note is facing.
@@ -38,6 +59,52 @@ class StrumlineNote extends FunkinSprite
   public var forceActive:Bool = false;
 
   /**
+   * Whether or not this specific lane is able to be used.
+   * Different from `PlayState.instance.disableKeys` in that this only applies to this lane of this strumline.
+   * This will also work if this strumline is controlled by a bot.
+   * Note that if you want to check if a lane is controllable, you should instead call `isLaneDisabled` on the parent.
+   * This is because that function actually considers the parent strumline's `disableInput` variable as well.
+   */
+  public var disableInput(default, set):Bool = false;
+
+  function set_disableInput(value:Bool):Bool
+  {
+    disableInput = value;
+    // If this strumline note is currently pressed, tell the game it was released.
+    if (value && parentStrumline != null && parentStrumline.canMiss)
+    {
+      @:privateAccess
+      var noteIndex:Int = parentStrumline.strumlineNotes.members.indexOf(this);
+      if (parentStrumline.isKeyHeld(noteIndex))
+      {
+        // Update parentStrumline.heldKeys, which is read by PlayState.instance.processNotes.
+        parentStrumline.releaseKey(direction);
+        // We call the parent's version of playStatic because it has haptic code that isn't run in this class's version.
+        parentStrumline.playStatic(direction);
+      }
+    }
+    return value;
+  }
+
+  /**
+   * The tween used in Freeplay songs to fade the arrows in and out.
+   * Stored here so it can be cancelled.
+   */
+  public var fadeTween:FlxTween = null;
+
+  /**
+   * The target Y position for `Strumline.fadeInArrow()` and `Strumline.fadeOutArrow()`.
+   * Used to immediately finish the tweens because they don't have a `complete()` function for some reason.
+   */
+  public var fadeTargetY:Float = 0;
+
+  /**
+   * The target alpha value for `Strumline.fadeInArrow()` and `Strumline.fadeOutArrow()`.
+   * Used to immediately finish the tweens because they don't have a `complete()` function for some reason.
+   */
+  public var fadeTargetAlpha:Float = 1;
+
+  /**
    * How long to continue the hold note animation after a note is pressed.
    */
   static final CONFIRM_HOLD_TIME:Float = 0.15;
@@ -47,11 +114,9 @@ class StrumlineNote extends FunkinSprite
    */
   var confirmHoldTimer:Float = -1;
 
-  public function new(noteStyle:NoteStyle, isPlayer:Bool, direction:NoteDirection)
+  public function new(noteStyle:NoteStyle, direction:NoteDirection)
   {
     super(0, 0);
-
-    this.isPlayer = isPlayer;
 
     this.direction = direction;
 
