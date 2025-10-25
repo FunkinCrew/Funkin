@@ -15,13 +15,17 @@ class MoveNotesCommand implements ChartEditorCommand
   var movedNotes:Array<SongNoteData>;
   var offset:Float;
   var columns:Int;
+  var setPos:Bool;
 
-  public function new(notes:Array<SongNoteData>, offset:Float, columns:Int)
+  public function new(notes:Array<SongNoteData>, offset:Float, columns:Int, setPos:Bool = false, offsetInSteps:Bool = false)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = [for (note in notes) note.clone()];
-    this.offset = offset;
+    if (offsetInSteps) this.offset = Conductor.instance.getStepTimeInMs(offset);
+    else
+      this.offset = offset;
     this.columns = columns;
+    this.setPos = setPos;
     this.movedNotes = [];
   }
 
@@ -35,6 +39,9 @@ class MoveNotesCommand implements ChartEditorCommand
     {
       // Clone the notes to prevent editing from affecting the history.
       var resultNote = note.clone();
+      // If setting position, use the offset as the resulting time
+      if (setPos) resultNote.time = offset.clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+      else
       resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       resultNote.data = ChartEditorState.gridColumnToNoteData((ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0,
         ChartEditorState.STRUMLINE_SIZE * 2 - 1));
