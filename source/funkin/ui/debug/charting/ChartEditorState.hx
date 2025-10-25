@@ -62,6 +62,9 @@ import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
+import funkin.ui.debug.charting.commands.SnapEventsCommand;
+import funkin.ui.debug.charting.commands.SnapItemsCommand;
+import funkin.ui.debug.charting.commands.SnapNotesCommand;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.MoveItemsCommand;
 import funkin.ui.debug.charting.commands.MoveNotesCommand;
@@ -1870,6 +1873,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemDelete:MenuItem;
 
   /**
+   * The `Edit -> Snap Selection` menu item.
+   */
+  var menubarItemSnap:MenuItem;
+
+  /**
    * The `Edit -> Delete Stacked Notes` menu item.
    */
   var menubarItemDeleteStacked:MenuItem;
@@ -3166,6 +3174,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         performCommand(new RemoveStackedNotesCommand(currentNoteSelection.length > 0 ? currentNoteSelection : null));
+      }
+    };
+
+    menubarItemSnap.onClick = _ -> {
+      if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
+      {
+        performCommand(new SnapItemsCommand(currentNoteSelection, currentEventSelection));
+      }
+      else if (currentNoteSelection.length > 0)
+      {
+        performCommand(new SnapNotesCommand(currentNoteSelection));
+      }
+      else if (currentEventSelection.length > 0)
+      {
+        performCommand(new SnapEventsCommand(currentEventSelection));
       }
     };
 
@@ -5907,6 +5930,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetSnappedMs;
       }
       performCommand(new PasteItemsCommand(targetMs));
+    }
+
+    // SHIFT + N = Snap
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.N)
+    {
+      if (currentNoteSelection.length > 0 && currentEventSelection.length > 0)
+      {
+        performCommand(new SnapItemsCommand(currentNoteSelection, currentEventSelection));
+      }
+      else if (currentNoteSelection.length > 0)
+      {
+        performCommand(new SnapNotesCommand(currentNoteSelection));
+      }
+      else if (currentEventSelection.length > 0)
+      {
+        performCommand(new SnapEventsCommand(currentEventSelection));
+      }
     }
 
     // DELETE = Delete
