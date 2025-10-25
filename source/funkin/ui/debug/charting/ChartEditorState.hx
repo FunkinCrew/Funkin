@@ -1117,6 +1117,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var commandHistoryDirty:Bool = true;
 
   /**
+   * Whether the selection has changed and the edit buttons need to be updated.
+   */
+  var editButtonsDirty:Bool = true;
+
+  /**
+   * Whether the clipboard has changed and the paste buttons need to be updated.
+   */
+  var clipboardDirty:Bool = true;
+
+  /**
+   * Whether the clipboard is valid and contains a json of notes and events.
+   */
+  var clipboardValid:Bool = true;
+
+
+  /**
    * If true, we are currently in the process of quitting the chart editor.
    * Skip any update functions as most of them will call a crash.
    */
@@ -3369,6 +3385,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function copySelection():Void
   {
+    clipboardDirty = true;
+    clipboardValid = true;
     // Doesn't use a command because it's not undoable.
 
     // Calculate a single time offset for all the notes and events.
@@ -6811,6 +6829,50 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Change the label to the last command.
         menubarItemRedo.disabled = false;
         menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
+      }
+    }
+    if (clipboardDirty)
+    {
+      clipboardDirty = false;
+
+      if (funkin.util.ClipboardUtil.getClipboard() == null || !clipboardValid)
+      {
+        menubarItemPaste.disabled = true;
+        menubarItemPasteUnsnapped.disabled = true;
+        clipboardValid = false;
+      }
+      else if (clipboardValid)
+      {
+        menubarItemPaste.disabled = false;
+        menubarItemPasteUnsnapped.disabled = false;
+      }
+    }
+
+    if (editButtonsDirty)
+    {
+      editButtonsDirty = false;
+
+      if (currentEventSelection.length > 0 || currentNoteSelection.length > 0)
+      {
+        menubarItemCopy.disabled = false;
+        menubarItemCut.disabled = false;
+        menubarItemDelete.disabled = false;
+        menubarItemSelectNone.disabled = false;
+      }
+      else
+      {
+        menubarItemCopy.disabled = true;
+        menubarItemCut.disabled = true;
+        menubarItemDelete.disabled = true;
+        menubarItemSelectNone.disabled = true;
+      }
+      if (currentNoteSelection.length > 0)
+      {
+        menubarItemFlipNotes.disabled = false;
+      }
+      else
+      {
+        menubarItemFlipNotes.disabled = true;
       }
     }
   }
