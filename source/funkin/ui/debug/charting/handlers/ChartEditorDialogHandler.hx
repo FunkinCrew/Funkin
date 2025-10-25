@@ -32,6 +32,7 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.components.CheckBox;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -1310,12 +1311,17 @@ class ChartEditorDialogHandler
    * Builds and opens a dialog where the user can add a new difficulty for a song.
    * @param state The current chart editor state.
    * @param closable Whether the dialog can be closed by the user.
+   * @param metadataDialog .
    * @return The dialog that was opened.
    */
-  public static function openAddDifficultyDialog(state:ChartEditorState, closable:Bool = true):Dialog
+  public static function openAddDifficultyDialog(state:ChartEditorState, closable:Bool = true, metadataDialog:Bool = false):Dialog
   {
     var dialog:Null<Dialog> = openDialog(state, CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT, true, false);
     if (dialog == null) throw 'Could not locate Add Difficulty dialog';
+
+    if (metadataDialog) dialog.title = 'Add (Metadata) Difficulty';
+    else
+      dialog.title = 'Add (Chartdata) Difficulty';
 
     var difficultyForm:Null<Form> = dialog.findComponent('difficultyForm', Form);
     if (difficultyForm == null) throw 'Could not locate difficultyForm Form in Add Difficulty dialog';
@@ -1348,13 +1354,29 @@ class ChartEditorDialogHandler
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
+    var inputDifficultyRating:Null<NumberStepper> = dialog.findComponent('inputDifficultyRating', NumberStepper);
+    if (inputDifficultyRating == null) throw 'Could not find inputDifficultyRating component.';
+    inputDifficultyRating.value = state.currentSongChartDifficultyRating;
+
+    var inputAddToMetadata:Null<CheckBox> = dialog.findComponent('inputAddToMetadata', CheckBox);
+    if (inputAddToMetadata == null) throw 'Could not find inputAddToMetadata component.';
+    inputAddToMetadata.disabled = metadataDialog;
+    inputAddToMetadata.hidden = metadataDialog;
+
+    var inputAddToChart:Null<CheckBox> = dialog.findComponent('inputAddToChart', CheckBox);
+    if (inputAddToChart == null) throw 'Could not find inputAddToChart component.';
+    inputAddToChart.selected = !metadataDialog;
+    inputAddToChart.disabled = !metadataDialog;
+    inputAddToChart.hidden = !metadataDialog;
+
     difficultyForm.onSubmit = function(_) {
       trace('Add Difficulty dialog submitted, validation succeeded!');
 
       var dialogDifficultyName:Null<TextField> = dialog.findComponent('dialogDifficultyName', TextField);
       if (dialogDifficultyName == null) throw 'Could not locate dialogDifficultyName TextField in Add Difficulty dialog';
 
-      state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0);
+      state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0,
+        inputDifficultyRating.value ?? 1, inputAddToMetadata.selected, inputAddToChart.selected);
 
       state.success('Add Difficulty', 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"');
 

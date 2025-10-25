@@ -1,6 +1,8 @@
 package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.song.importer.ChartManifestData;
@@ -11,6 +13,9 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
@@ -19,6 +24,9 @@ import haxe.ui.components.Slider;
 import haxe.ui.components.TextField;
 import funkin.play.stage.Stage;
 import haxe.ui.containers.Frame;
+import haxe.ui.containers.TreeView;
+import haxe.ui.containers.TreeViewNode;
+import haxe.ui.core.ItemRenderer;
 import haxe.ui.events.UIEvent;
 
 /**
@@ -38,6 +46,9 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
+  var buttonAddVariation:Button;
+  var buttonAddDifficulty:Button;
+  var buttonRemove:Button;
   var inputBPM:NumberStepper;
   var labelTimeStamp:Label;
   var inputTimeStamp:NumberStepper;
@@ -45,13 +56,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputScrollSpeed:Slider;
   var frameVariation:Frame;
   var frameDifficulty:Frame;
-  var tcDropdownItemRenderer:haxe.ui.core.ItemRenderer;
+  var tcDropdownItemRenderer:ItemRenderer;
+  var metadataToolboxTree:TreeView;
 
   public function new(chartEditorState2:ChartEditorState)
   {
     super(chartEditorState2);
 
-    tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
+    tcDropdownItemRenderer = inputTimeChange.findComponent(ItemRenderer);
 
     initialize();
 
@@ -275,6 +287,62 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       chartEditorState.openCharacterDropdown(CharacterType.BF, false);
     };
 
+    buttonAddVariation.onClick = function(_:UIEvent) {
+      chartEditorState.openAddVariationDialog(true);
+    };
+
+    buttonAddDifficulty.onClick = function(_:UIEvent) {
+      chartEditorState.openAddDifficultyDialog(true, true);
+    };
+
+    buttonRemove.onClick = function(_:UIEvent) {
+      var currentVariation:String = chartEditorState.selectedVariation;
+      var currentDifficulty:String = chartEditorState.selectedDifficulty;
+
+      var callback;
+      switch (metadataToolboxTree.selectedNode.data.id.split('_')[1])
+      {
+        case 'variation':
+          callback = (button) -> {
+            switch (button)
+            {
+              case DialogButton.YES:
+                // Remove the variation.
+                chartEditorState.removeVariation(currentVariation);
+                refresh();
+              case DialogButton.NO: // Do nothing.
+
+              default: // Huh?
+            }
+          }
+
+          Dialogs.messageBox("Are you sure? This is destructive and cannot be undone.", "Remove Variation", MessageBoxType.TYPE_YESNO, callback);
+
+        case 'difficulty':
+          callback = (button) -> {
+            switch (button)
+            {
+              case DialogButton.YES:
+                // Remove the difficulty from the chartdata and metadata.
+                chartEditorState.removeDifficulty(currentVariation, currentDifficulty, true, true);
+                refresh();
+              case DialogButton.NO:
+                // Remove the difficulty from the metadata.
+                chartEditorState.removeDifficulty(currentVariation, currentDifficulty, true, false);
+                refresh();
+              case DialogButton.CANCEL: // Do nothing.
+
+              default: // Do nothing.
+            }
+          }
+
+          Dialogs.messageBox("Are you sure? This is destructive and cannot be undone.\n\nYES will remove it from both the chartdata and metadata.\n\nNO will remove it from the metadata.",
+            "Remove Difficulty", MessageBoxType.TYPE_QUESTION, callback);
+        default:
+          trace("WHAT");
+      }
+    };
+
     refresh();
   }
 
@@ -307,6 +375,158 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
     return currentTimeChange;
+  }
+
+  /**
+   * Clear the tree view and rebuild it with the current song metadata (variation and difficulty list).
+   */
+  public function updateTree():Void
+  {
+    // Clear the tree view so we can rebuild it.
+    metadataToolboxTree.clearNodes();
+
+    // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
+    var treeSong:TreeViewNode = metadataToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.currentSongName}'});
+    treeSong.expanded = true;
+
+    for (curVariation in chartEditorState.availableVariations)
+    {
+      var variationMetadata:Null<SongMetadata> = chartEditorState.songMetadata.get(curVariation);
+      if (variationMetadata == null) continue;
+
+      var treeVariation:TreeViewNode = treeSong.addNode(
+        {
+          id: 'stv_variation_$curVariation',
+          text: 'V: ${curVariation.toTitleCase()}'
+        });
+      treeVariation.expanded = true;
+
+      var difficultyList:Array<String> = variationMetadata.playData.difficulties;
+
+      for (difficulty in difficultyList)
+      {
+        var _treeDifficulty:TreeViewNode = treeVariation.addNode(
+          {
+            id: 'stv_difficulty_${curVariation}_$difficulty',
+            text: 'D: ${difficulty.toTitleCase()}'
+          });
+      }
+    }
+
+    metadataToolboxTree.onChange = onTreeChange;
+    refreshTreeSelection();
+  }
+
+  /**
+   * Set the selected item in the tree to the current variation/difficulty.
+   *
+   * @param node The node to select. If null, the current variation/difficulty will be used.
+   */
+  public function refreshTreeSelection(node:TreeViewNode = null):Void
+  {
+    var targetNode = getCurrentTreeNode(node);
+    if (this.visible && metadataToolboxTree.selectedNode != targetNode)
+    {
+      // Bit annoying I have to do this to remove the hightlight on the previous selection when updated by code.
+      if (metadataToolboxTree.selectedNode != null)
+      {
+        var renderer = metadataToolboxTree.selectedNode.findComponent(ItemRenderer, true);
+        if (renderer != null)
+        {
+          renderer.removeClass(":node-selected", true, true);
+        }
+      }
+      metadataToolboxTree.selectedNode = targetNode;
+      if (targetNode != null) targetNode.selected = true; // Add the hightlight to the new selected node.
+    }
+  }
+
+  /**
+   * Get the node in the tree representing the current variation/difficulty.
+   */
+  function getCurrentTreeNode(node:TreeViewNode):TreeViewNode
+  {
+    if (node != null)
+    {
+      return switch (node.data.id.split('_')[1])
+      {
+        case 'song':
+          metadataToolboxTree.findNodeByPath('${node.data.id}');
+
+        case 'variation':
+          metadataToolboxTree.findNodeByPath('stv_song/${node.data.id}');
+
+        case 'difficulty':
+          metadataToolboxTree.findNodeByPath('stv_song/stv_variation_${chartEditorState.selectedVariation}/${node.data.id}');
+        default:
+          metadataToolboxTree.findNodeByPath('stv_song/stv_variation_${chartEditorState.selectedVariation}/stv_difficulty_${chartEditorState.selectedVariation}_${chartEditorState.selectedDifficulty}',
+            'id');
+      }
+    }
+    else
+    return
+      metadataToolboxTree.findNodeByPath('stv_song/stv_variation_${chartEditorState.selectedVariation}/stv_difficulty_${chartEditorState.selectedVariation}_${chartEditorState.selectedDifficulty}',
+      'id');
+  }
+
+  /**
+   * Called when an item in the tree is selected. Updates the current variation/difficulty.
+   */
+  function onTreeChange(event:UIEvent):Void
+  {
+    // Get the newly selected node.
+    var treeView:TreeView = cast event.target;
+    var targetNode:TreeViewNode = metadataToolboxTree.selectedNode;
+
+    if (targetNode == null)
+    {
+      trace('No target node!');
+      // Reset the user's selection.
+      refreshTreeSelection();
+      return;
+    }
+
+    switch (targetNode.data.id.split('_')[1])
+    {
+      case 'difficulty':
+        var variation:String = targetNode.data.id.split('_')[2];
+        var difficulty:String = targetNode.data.id.split('_')[3];
+
+        if (variation != null && difficulty != null)
+        {
+          if ((chartEditorState.songMetadata.size() == 1 || variation == Constants.DEFAULT_VARIATION)
+            && chartEditorState.availableDifficulties.length == 1) buttonRemove.disabled = true;
+          else
+            buttonRemove.disabled = false;
+          trace('Changing difficulty to "$variation:$difficulty"');
+          chartEditorState.selectedVariation = variation;
+          chartEditorState.selectedDifficulty = difficulty;
+          cast(chartEditorState.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT),
+            ChartEditorDifficultyToolbox)?.refreshTreeSelection(targetNode);
+        }
+      // case 'song':
+      case 'variation':
+        var variation:String = targetNode.data.id.split('_')[2];
+        if (variation != null)
+        {
+          if (chartEditorState.songMetadata.size() == 1 || variation == Constants.DEFAULT_VARIATION) buttonRemove.disabled = true;
+          else
+            buttonRemove.disabled = false;
+          chartEditorState.selectedVariation = variation;
+          // Use the first available difficulty as a fallback if the currently selected one cannot be found.
+          if (chartEditorState.availableDifficulties.indexOf(chartEditorState.selectedDifficulty) < 0)
+            chartEditorState.selectedDifficulty = chartEditorState.availableDifficulties[0];
+          trace('Changing difficulty to "$variation:${chartEditorState.selectedDifficulty}"');
+          cast(chartEditorState.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT),
+            ChartEditorDifficultyToolbox)?.refreshTreeSelection(targetNode);
+        }
+      default:
+        buttonRemove.disabled = true;
+        // Reset the user's selection.
+        trace('Selected wrong node type, resetting selection.');
+        cast(chartEditorState.getToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT),
+          ChartEditorDifficultyToolbox)?.refreshTreeSelection(targetNode);
+    }
   }
 
   public override function refresh():Void
@@ -382,6 +602,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterPlayer.icon = null;
       buttonCharacterPlayer.text = "None";
     }
+    if (chartEditorState.songMetadata.size() == 1 && chartEditorState.availableDifficulties.length == 1) buttonRemove.disabled = true;
+    else
+      buttonRemove.disabled = false;
+
+    refreshTreeSelection();
   }
 
   public static function build(chartEditorState:ChartEditorState):ChartEditorMetadataToolbox
