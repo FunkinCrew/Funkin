@@ -13,7 +13,7 @@ class StageEditorBaseDialog extends Dialog
   var stageEditorState:StageEditorState;
   var params:DialogParams;
 
-  var locked = false;
+  var locked:Bool = false;
 
   public function new(stageEditorState:StageEditorState, params:DialogParams)
   {

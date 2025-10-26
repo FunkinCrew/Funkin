@@ -22,7 +22,7 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
   {
     super(state2, params2);
 
-    // this.buttonNew.onClick = - -> ;
+    this.buttonNew.onClick = _ -> onClickButtonNew(stageEditorState);
     this.stageBox.onClick = _ -> onClickStageBox();
 
     // Add items to the Recent Stages list
@@ -112,6 +112,19 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
     splashRecentContainer.addComponent(webLoadLabel);
   }
 
+  public function onClickButtonNew(state:StageEditorState):Void
+  {
+    state.clearAssets();
+    state.loadStage(new StageData().clone()); // Load clean stage data
+    state.cameraFollowPoint.screenCenter();
+    // Position characters properly
+    for (charType => character in state.characters)
+    {
+      character.x = (StageEditorState.DEFAULT_POSITIONS[character.characterType] ?? [0, 0])[0] - character.characterOrigin.x + character.globalOffsets[0];
+      character.y = (StageEditorState.DEFAULT_POSITIONS[character.characterType] ?? [0, 0])[1] - character.characterOrigin.y + character.globalOffsets[1];
+    }
+    this.hideDialog(DialogButton.CANCEL);
+  }
 
   public function onClickStageBox():Void
   {
@@ -148,8 +161,6 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
       }
     }
   }
-
-  public function onClickButtonNew(state:StageEditorState):Void {}
 
   public function buildTemplateStageList(state:StageEditorState):Void
   {

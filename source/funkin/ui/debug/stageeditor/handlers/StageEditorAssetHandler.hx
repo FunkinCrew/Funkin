@@ -9,6 +9,7 @@ import flixel.math.FlxRect;
 import funkin.data.stage.StageData.StageDataProp;
 import funkin.ui.debug.stageeditor.StageEditorState;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import funkin.util.ClipboardUtil;
 import lime.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -20,12 +21,6 @@ using StringTools;
 @:nullSafety
 class StageEditorAssetHandler
 {
-  // public var state:StageEditorState;
-  // public function new(state:StageEditorState)
-  // {
-  //   this.state = state;
-  // }
-
   /**
    * An array of all the prop bitmaps in the stage editor.
    * This is used to keep track of all the props, and to easily iterate over them,
@@ -287,6 +282,51 @@ class StageEditorAssetHandler
     state.removeUnusedBitmaps();
   }
 
+  /**
+   * Serialize object data and write it to the clipboard.
+   */
+  public static function writeItemsToClipboard(data:ObjectClipboardItem):Void
+  {
+    var ignoreNullOptionals = true;
+    var writer = new json2object.JsonWriter<ObjectClipboardItem>(ignoreNullOptionals);
+    var dataString:String = writer.write(data, '  ');
+
+    ClipboardUtil.setClipboard(dataString);
+
+    trace('Wrote ' + data.object.name + ' to clipboard.');
+  }
+
+  /**
+   * Read an array of note data from the clipboard and deserialize it.
+   */
+  public static function readItemsFromClipboard():ObjectClipboardItem
+  {
+    var objectString = ClipboardUtil.getClipboard();
+
+    trace('Read ${objectString.length} characters from clipboard.');
+
+    var parser = new json2object.JsonParser<ObjectClipboardItem>();
+    parser.ignoreUnknownVariables = false;
+    parser.fromJson(objectString, 'clipboard');
+    if (parser.errors.length > 0)
+    {
+      trace('[StageEditorAssetHandler] Error parsing note JSON data from clipboard.');
+      for (error in parser.errors)
+        funkin.data.DataError.printError(error);
+      return {
+        valid: false,
+        object: new StageEditorObject().toData()
+      };
+    }
+    else
+    {
+      var data:ObjectClipboardItem = parser.value;
+      trace('Parsed ' + data.object.name + ' from clipboard.');
+      data.valid = true;
+      return data;
+    }
+  }
+
   public static function pixelPerfectCheck(mouse:FlxMouse, sprite:FlxSprite):Bool
   {
     if (sprite == null || mouse == null) return false;
@@ -303,5 +343,13 @@ typedef StageEditorObjectData =
 {
   > StageDataProp,
   var animData:String;
+  @:jignored
   var ?bitmap:BitmapData;
+}
+
+typedef ObjectClipboardItem =
+{
+  @:optional
+  var valid:Bool;
+  var object:StageEditorObjectData;
 }

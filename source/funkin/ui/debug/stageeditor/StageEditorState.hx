@@ -29,8 +29,9 @@ import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.save.Save;
 import funkin.ui.debug.stageeditor.components.StageEditorObject;
-import funkin.ui.debug.stageeditor.commands.FlipObjectCommand;
+import funkin.ui.debug.stageeditor.commands.CopyObjectCommand;
 import funkin.ui.debug.stageeditor.commands.DeselectObjectCommand;
+import funkin.ui.debug.stageeditor.commands.FlipObjectCommand;
 import funkin.ui.debug.stageeditor.commands.MoveItemCommand;
 import funkin.ui.debug.stageeditor.commands.RemoveObjectCommand;
 import funkin.ui.debug.stageeditor.commands.SelectObjectCommand;
@@ -142,6 +143,7 @@ class StageEditorState extends UIState
     CharacterType.GF => [0, 0],
     CharacterType.DAD => [150, -100]
   ];
+
   public static final MAX_Z_INDEX:Int = 10000;
 
   /**
@@ -335,7 +337,7 @@ class StageEditorState extends UIState
     if (value)
     {
       // Start the auto-save timer.
-      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());  
+      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
     }
     else
     {
@@ -776,6 +778,11 @@ class StageEditorState extends UIState
   var objectNameText:FlxText = new FlxText(0, 0, 0, "", 24);
 
   /**
+   * The text that pops up when copying an object to clipboard
+   */
+  var copyNotificationText:Null<FlxText> = null;
+
+  /**
    * The IMAGE used for the grid. Updated by StageEditorThemeHandler.
    */
   var gridBitmap:Null<BitmapData> = null;
@@ -851,6 +858,14 @@ class StageEditorState extends UIState
         {
           this.warning('Loaded Stage', 'Loaded stage with issues (${params.fnfsTargetPath})\n${result.join("\n")}');
         }
+      }
+      else
+      {
+        this.error('Failure', 'Failed to load stage (${params.fnfsTargetPath})');
+
+        // Stage failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog) this.openBackupAvailableDialog(welcomeDialog);
       }
     }
     else if (params != null && params.targetStageId != null)
@@ -970,6 +985,13 @@ class StageEditorState extends UIState
 
   function buildAdditionalUI():Void
   {
+    // Text that shows up whenever you copy an object.
+    copyNotificationText = new FlxText(0, 0, 0, '', 24);
+    copyNotificationText.setBorderStyle(OUTLINE, 0xFF074809, 1);
+    copyNotificationText.color = 0xFF52FF77;
+    copyNotificationText.zIndex = MAX_Z_INDEX;
+    add(copyNotificationText);
+
     if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
 
     this.setupNotifications();
@@ -1790,6 +1812,21 @@ class StageEditorState extends UIState
     {
       redoLastCommand();
     }
+
+    // CTRL + F = Find Object
+    if (pressingControl() && FlxG.keys.justPressed.F) {}
+
+    // CTRL + C = Copy Object
+    if (pressingControl() && FlxG.keys.justPressed.C)
+    {
+      if (selectedProp != null) performCommand(new CopyObjectCommand(selectedProp));
+    }
+
+    // CTRL + X = Cut Object
+    if (pressingControl() && FlxG.keys.justPressed.X) {}
+
+    // CTRL + V = Paste Object
+    if (pressingControl() && FlxG.keys.justPressed.V) {}
 
     // CTRL + H = Flip Horizontally
     if (pressingControl() && FlxG.keys.justPressed.H)
