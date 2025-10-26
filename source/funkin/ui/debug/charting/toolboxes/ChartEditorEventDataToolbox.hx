@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
+import funkin.play.event.SongEventHelper;
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.CheckBox;
@@ -16,8 +17,16 @@ import haxe.ui.containers.VBox;
 import haxe.ui.containers.Frame;
 import haxe.ui.events.UIEvent;
 import haxe.ui.data.ArrayDataSource;
-
-// TODO: Fix null safety when used with HaxeUI build macros.
+import haxe.ui.containers.Grid;
+import haxe.ui.components.Image;
+import haxe.ui.backend.ImageData;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.geom.Point;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.FlxG;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -29,6 +38,18 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   var toolboxEventsEventKind:DropDown;
   var toolboxEventsDataFrame:Frame;
   var toolboxEventsDataBox:VBox;
+
+  var easeGraphImage:Image;
+  var easeDotImage:Image;
+
+  var _easeGraphSprite:Null<flixel.FlxSprite> = null;
+  var _easeDotSprites:Array<flixel.FlxSprite> = [];
+  var _dotTimer:Null<FlxTimer> = null;
+  var _pauseTimer:Null<FlxTimer> = null;
+  var _dotIndex:Int = 0;
+
+  static var _dotInterval:Float = 1.0 / 30.0;
+  static var _loopPause:Float = 0.15;
 
   var _initializing:Bool = true;
 
@@ -193,6 +214,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     }
 
     shouldTriggerOnEventKindChanged = true;
+    updateEasePreview();
   }
 
   var lastEventKind:String = 'unknown';
@@ -215,6 +237,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
   function recursiveChildAdd(parent:Component, schema:SongEventSchema)
   {
+    // Ensure we have a cleared preview reference for rebuilt form
+    easeGraphImage = null;
+    easeDotImage = null;
+    var _needEasePreview:Bool = false;
+
     for (field in schema)
     {
       if (field == null) continue;
@@ -315,6 +342,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       inputBox.percentWidth = 50;
       if (field.type != FRAME) inputBox.addComponent(input);
 
+      if (field.type == ENUM && (field.name == "ease" || field.name == "easeDir"))
+      {
+        _needEasePreview = true;
+      }
+
       // Add a unit label if applicable.
       if (field.units != null && field.units != "")
       {
@@ -326,6 +358,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       hbox.addComponent(field.type == FRAME ? input : inputBox);
 
+      // Ensure chartEditorState.eventDataToPlace reflects default UI values so preview is correct on first open
+      if (field.defaultValue != null)
+      {
+        // Only set if not already present (don't overwrite existing selection data)
+        if (chartEditorState.eventDataToPlace.get(field.name) == null)
+        {
+          chartEditorState.eventDataToPlace.set(field.name, field.defaultValue);
+        }
+      }
+
       // Update the value of the event data without modifying
       input.pauseEvent(UIEvent.CHANGE, true);
       input.onChange = function(event:UIEvent) {
@@ -336,6 +378,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         {
           var drp:DropDown = cast event.target;
           value = drp.selectedItem?.value ?? field.defaultValue;
+          updateEasePreview();
         }
         else if (field.type == BOOL)
         {
@@ -369,9 +412,138 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           chartEditorState.notePreviewDirty = true;
           chartEditorState.noteTooltipsDirty = true;
         }
+        updateEasePreview();
       }
+
       input.resumeEvent(UIEvent.CHANGE, true, true);
     }
+
+    if (_needEasePreview)
+    {
+      if (easeGraphImage == null)
+      {
+        easeGraphImage = new Image();
+        easeGraphImage.id = "easeGraph";
+        easeGraphImage.width = 100;
+        easeGraphImage.height = 100;
+        easeGraphImage.hidden = true;
+        easeGraphImage.verticalAlign = "bottom";
+      }
+      if (easeDotImage == null)
+      {
+        easeDotImage = new Image();
+        easeDotImage.id = "easeDot";
+        easeDotImage.width = 16;
+        easeDotImage.height = 100;
+        easeDotImage.hidden = true;
+        easeDotImage.verticalAlign = "bottom";
+      }
+
+      var easeHBox = new HBox();
+      easeHBox.percentWidth = 100;
+      easeHBox.height = 100;
+      easeHBox.verticalAlign = "bottom";
+
+      easeHBox.addComponent(easeGraphImage);
+      easeHBox.addComponent(easeDotImage);
+
+      currentEaseHBox = easeHBox;
+      currentEaseHBox.hidden = true;
+      parent.addComponent(easeHBox);
+
+      updateEasePreview();
+    }
+  }
+
+  var currentEaseHBox:HBox = null;
+
+  function updateEasePreview():Void
+  {
+    if (easeGraphImage == null || easeDotImage == null) return;
+
+    final easeVal:Null<String> = chartEditorState.eventDataToPlace.get("ease");
+    final easeDirVal:Null<String> = chartEditorState.eventDataToPlace.get("easeDir");
+    final easeStr:String = easeVal == null ? "linear" : easeVal;
+    final easeDirStr:String = easeDirVal == null ? "In" : easeDirVal;
+    final key:String = easeStr + (easeDirStr == "" ? "" : easeDirStr);
+
+    // Hide preview when easing indicates a non-visual/legacy type such as "classic"
+    if (easeStr != null && easeStr.toLowerCase().indexOf("classic") != -1)
+    {
+      _dotTimer?.cancel();
+      _pauseTimer?.cancel();
+      _dotTimer = null;
+      _pauseTimer = null;
+      _easeDotSprites = [];
+      _dotIndex = 0;
+
+      easeGraphImage.resource = null;
+      easeDotImage.resource = null;
+      easeGraphImage.hidden = true;
+      easeDotImage.hidden = true;
+      if (currentEaseHBox != null) currentEaseHBox.hidden = true;
+      return;
+    }
+
+    // Reset any previous timers/sprites
+    _dotTimer?.cancel();
+    _pauseTimer?.cancel();
+    _dotTimer = null;
+    _pauseTimer = null;
+    _easeDotSprites = [];
+    _dotIndex = 0;
+
+    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(key);
+    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, 100, 100);
+    easeGraphImage.resource = _easeGraphSprite?.frame;
+    if (_graphBd == null || easeGraphImage.resource == null)
+    {
+      easeDotImage.resource = null;
+      easeGraphImage.hidden = true;
+      easeDotImage.hidden = true;
+      if (currentEaseHBox != null) currentEaseHBox.hidden = true;
+      return;
+    }
+
+    // show preview and start dot animation
+    easeGraphImage.hidden = false;
+    easeDotImage.hidden = false;
+    if (currentEaseHBox != null) currentEaseHBox.hidden = false;
+
+    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(key, 30, 3, 16);
+    if (dotSprites == null || dotSprites.length == 0)
+    {
+      // if no dot sprites, still show graph but keep dot empty
+      easeDotImage.resource = null;
+      return;
+    }
+    _easeDotSprites = dotSprites;
+    easeDotImage.resource = _easeDotSprites[0].frame;
+
+    var frameCallback:Dynamic = null;
+    frameCallback = (tmr:FlxTimer) -> {
+      _dotIndex++;
+      if (_dotIndex >= _easeDotSprites.length)
+      {
+        _dotTimer?.cancel();
+        _pauseTimer ??= new FlxTimer();
+        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void {
+          if (easeDotImage != null && !_initializing)
+          {
+            _dotIndex = 0;
+            if (_easeDotSprites[0].frame != null) easeDotImage.resource = _easeDotSprites[0].frame;
+            _dotTimer ??= new FlxTimer();
+            _dotTimer.start(_dotInterval, frameCallback, 0);
+          }
+        }, 1);
+      }
+      else if (easeDotImage != null
+        && !_initializing
+        && _easeDotSprites[_dotIndex].frame != null) easeDotImage.resource = _easeDotSprites[_dotIndex].frame;
+    };
+
+    _dotTimer ??= new FlxTimer();
+    _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
   /**
