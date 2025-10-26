@@ -7,6 +7,9 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
+import flixel.util.FlxSignal;
+import flixel.math.FlxPoint;
+import flixel.math.FlxPoint.FlxCallbackPoint;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -33,6 +36,11 @@ class SustainTrail extends FlxSprite
   public var parentStrumline:Strumline;
 
   public var cover:NoteHoldCover = null;
+
+  /**
+   * Dispatched whenever the scaling of this sustain trail changes.
+   */
+  public var onScaleChanged:FlxTypedSignal<FlxPoint->Void> = new FlxTypedSignal<FlxPoint->Void>();
 
   /**
    * The Y Offset of the note.
@@ -73,8 +81,6 @@ class SustainTrail extends FlxSprite
    */
   public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-  private var zoom:Float = 1;
-
   /**
    * What part of the trail's end actually represents the end of the note.
    * This can be used to have a little bit sticking out.
@@ -93,7 +99,7 @@ class SustainTrail extends FlxSprite
   public var customVertexData:Bool = false;
 
   public var isPixel:Bool;
-  public var noteStyleOffsets:Array<Float>;
+  public var noteStyleOffsets:Array<Float> = [0, 0];
 
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
@@ -107,6 +113,12 @@ class SustainTrail extends FlxSprite
   public function new(noteDirection:NoteDirection, sustainLength:Float, noteStyle:NoteStyle)
   {
     super(0, 0);
+
+    // Re-define this.scale to FlxCallbackPoint to ensure the graphic gets updated everytime it changes.
+    this.scale = new FlxCallbackPoint((value:FlxPoint) -> {
+      triggerRedraw();
+      onScaleChanged.dispatch(value);
+    });
 
     // BASIC SETUP
     this.sustainLength = sustainLength;
@@ -179,7 +191,7 @@ class SustainTrail extends FlxSprite
   }
 
   /**
-   * Creates hold note graphic and applies correct zooming
+   * Creates hold note graphic and applies correct scaling
    * @param noteStyle The note style
    */
   public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
@@ -200,12 +212,12 @@ class SustainTrail extends FlxSprite
       bottomClip = 0.9;
     }
 
-    zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
+    this.scale.set(1, 1);
+    this.scale.x *= noteStyle.fetchHoldNoteScale();
 
     // CALCULATE SIZE
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicWidth = graphic.width / 8 * this.scale.x; // amount of notes * 2
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0) * this.scale.y;
     // instead of scrollSpeed, PlayState.SONG.speed
 
     flipY = Preferences.downscroll #if mobile
@@ -258,7 +270,9 @@ class SustainTrail extends FlxSprite
 
   function triggerRedraw()
   {
-    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+    graphicWidth = (graphic?.width ?? 0.0) / 8 * this.scale.x; // amount of notes * 2
+    graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0) * this.scale.y;
+
     updateClipping();
     updateHitbox();
   }
@@ -294,7 +308,7 @@ class SustainTrail extends FlxSprite
       visible = true;
     }
 
-    var bottomHeight:Float = graphic.height * zoom * endOffset;
+    var bottomHeight:Float = graphic.height * this.scale.x * endOffset;
     var partHeight:Float = clipHeight - bottomHeight;
 
     // ===HOLD VERTICES==
@@ -329,7 +343,7 @@ class SustainTrail extends FlxSprite
     // We are expecting an image containing 8 horizontal segments, each representing a different colored hold note followed by its end cap.
 
     uvtData[0 * 2] = 1 / 4 * (noteDirection % 4); // 0%/25%/50%/75% of the way through the image
-    uvtData[0 * 2 + 1] = (-partHeight) / graphic.height / zoom; // top bound
+    uvtData[0 * 2 + 1] = (-partHeight) / graphic.height / this.scale.x; // top bound
     // Top left
 
     // Top right
@@ -355,7 +369,8 @@ class SustainTrail extends FlxSprite
 
     // Bottom left
     vertices[6 * 2] = vertices[2 * 2]; // Inline with left side
-    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (graphicHeight + graphic.height * (bottomClip - endOffset) * zoom);
+    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * this.scale.x) : (graphicHeight
+      + graphic.height * (bottomClip - endOffset) * this.scale.x);
 
     // Bottom right
     vertices[7 * 2] = vertices[3 * 2]; // Inline with right side
@@ -370,7 +385,7 @@ class SustainTrail extends FlxSprite
     }
     else
     {
-      (bottomHeight - clipHeight) / zoom / graphic.height;
+      (bottomHeight - clipHeight) / this.scale.x / graphic.height;
     };
 
     // Top right
@@ -418,6 +433,8 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+
+    onScaleChanged.removeAll();
   }
 
   public override function revive():Void

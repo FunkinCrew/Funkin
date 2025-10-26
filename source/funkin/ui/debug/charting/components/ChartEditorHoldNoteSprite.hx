@@ -100,13 +100,13 @@ class ChartEditorHoldNoteSprite extends SustainTrail
       bottomClip = 0.9;
     }
 
-    zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
-    zoom *= 0.7;
-    zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
+    this.scale.set(1, 1);
+    this.scale.x *= noteStyle.fetchHoldNoteScale();
+    this.scale.x *= 0.7;
+    this.scale.x *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
-    graphicHeight = sustainLength * 0.45; // sustainHeight
+    graphicWidth = graphic.width / 8 * this.scale.x; // amount of notes * 2
+    graphicHeight = sustainLength * 0.45 * this.scale.y; // sustainHeight
 
     flipY = false;
 
@@ -175,7 +175,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     active = true;
     visible = true;
     alpha = 1.0;
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+    graphicWidth = graphic.width / 8 * this.scale.x; // amount of notes * 2
 
     updateHitbox();
   }
