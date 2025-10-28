@@ -10,6 +10,7 @@ import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
+import funkin.util.macro.SongDataValidator;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
@@ -47,6 +48,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   override public function loadEntries():Void
   {
     clearEntries();
+    SongDataValidator.clearLists();
 
     //
     // SCRIPTED ENTRIES
@@ -490,11 +492,16 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   function loadEntryChartFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath)) return null;
+
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
+
     rawJson = rawJson.trim();
+    SongDataValidator.checkChartValidity(rawJson, id, variation);
+
     return {fileName: entryFilePath, contents: rawJson};
   }
 
