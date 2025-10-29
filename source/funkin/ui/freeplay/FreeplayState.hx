@@ -2441,7 +2441,7 @@ class FreeplayState extends MusicBeatSubState
       if (!capsuleAnim) generateSongList(currentFilter, false, true, true);
     }
 
-    if (intendedCompletion == Math.POSITIVE_INFINITY || intendedCompletion == Math.NEGATIVE_INFINITY || Math.isNaN(intendedCompletion))
+    if (!Math.isFinite(intendedCompletion) || Math.isNaN(intendedCompletion))
     {
       intendedCompletion = 0;
     }
