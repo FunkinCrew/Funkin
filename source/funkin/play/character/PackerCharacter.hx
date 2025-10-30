@@ -31,7 +31,7 @@ class PackerCharacter extends BaseCharacter
 
   function loadSpritesheet():Void
   {
-    trace('Loading assets for Packer character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+    trace('Loading assets for Packer character "${characterId}"');
 
     var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath);
     if (tex == null)

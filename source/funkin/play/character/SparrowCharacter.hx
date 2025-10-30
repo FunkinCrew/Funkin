@@ -34,7 +34,7 @@ class SparrowCharacter extends BaseCharacter
 
   function loadSpritesheet():Void
   {
-    trace('Loading assets for Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+    trace('Loading assets for Sparrow character "${characterId}"');
 
     var tex:FlxFramesCollection = Paths.getSparrowAtlas(_data.assetPath);
     if (tex == null)
