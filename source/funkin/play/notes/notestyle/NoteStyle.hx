@@ -1165,6 +1165,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       if (rawPath == null) return fallback?.getHealthBarAssetPath(true);
       return rawPath;
     }
+    // library:path
+    var parts = getNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
+    if (parts.length == 0) return null;
+    if (parts.length == 1) return getNoteAssetPath(true);
+    return parts[1];
   }
 
   public function getHealthBarOffsets():Array<Float>
