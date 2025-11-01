@@ -42,6 +42,7 @@ import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.notes.HealthBar;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.notekind.NoteKind;
