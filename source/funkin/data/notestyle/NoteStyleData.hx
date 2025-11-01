@@ -76,6 +76,12 @@ typedef NoteStyleAssetsData =
   var holdNoteCover:NoteStyleAssetData<NoteStyleData_HoldNoteCover>;
 
   /**
+   * The sprites for the healthbar
+   */
+  @:optional
+  var healthBar:NoteStyleAssetData<NoteStyleData_HealthBar>;
+
+  /**
    * The THREE sound (and an optional pre-READY graphic).
    */
   @:optional
@@ -222,6 +228,12 @@ typedef NoteStyleData_Countdown =
 typedef NoteStyleData_HoldNote = {}
 typedef NoteStyleData_Judgement = {}
 typedef NoteStyleData_ComboNum = {}
+
+typedef NoteStyleData_HealthBar =
+{
+  @:optional
+  var padding:Null<Array<Float>>;
+}
 
 /**
  * Data on animations for each direction of the strumline.
