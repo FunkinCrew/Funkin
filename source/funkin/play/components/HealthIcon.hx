@@ -171,6 +171,7 @@ class HealthIcon extends FunkinSprite
     {
       characterId = 'bf-old';
       isPixel = false;
+      flipX = true;
       loadCharacter(characterId);
     }
 
