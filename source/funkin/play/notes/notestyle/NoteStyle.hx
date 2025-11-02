@@ -1161,7 +1161,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     if (raw)
     {
-      var rawPath:Null<String> = _data?.assets?.healthBar?.assetPath ?? fallback?.getHealthBarAssetPath() ?? 'healthBar';
+      var rawPath:Null<String> = _data?.assets?.healthBar?.assetPath;
       if (rawPath == null) return fallback?.getHealthBarAssetPath(true);
       return rawPath;
     }
