@@ -25,8 +25,9 @@ class HealthBar extends FlxSpriteGroup
     super(0, 0);
     this.noteStyle = noteStyle;
     this.isBotPlayMode = isBotPlayMode;
+    var padding = noteStyle.getHealthBarPadding();
     healthBarBG = FunkinSprite.create(0, 0, noteStyle.getHealthBarAssetPath());
-    healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this, 'healthLerp', 0, 2);
+    healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - padding[0]), Std.int(healthBarBG.height - padding[1]), this, 'healthLerp', 0, 2);
     var scale = noteStyle.getHealthBarScale();
     healthBarBG.scale.set(scale, scale);
     healthBarBG.y = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
@@ -35,10 +36,8 @@ class HealthBar extends FlxSpriteGroup
     healthBarBG.zIndex = 800;
     noteStyle.applyHealthBarOffsets(this);
     this.add(healthBarBG);
-    healthBar.x = healthBarBG.x + 4;
-    healthBar.y = healthBarBG.y + 4;
-    // healthBar.parent = this;
-    // healthBar.parentVariable = 'healthLerp';
+    healthBar.x = healthBarBG.x + padding[0] / 2;
+    healthBar.y = healthBarBG.y + padding[1] / 2;
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
     healthBar.zIndex = 801;

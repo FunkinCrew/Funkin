@@ -228,7 +228,12 @@ typedef NoteStyleData_Countdown =
 typedef NoteStyleData_HoldNote = {}
 typedef NoteStyleData_Judgement = {}
 typedef NoteStyleData_ComboNum = {}
-typedef NoteStyleData_HealthBar = {}
+
+typedef NoteStyleData_HealthBar =
+{
+  @:optional
+  var padding:Null<Array<Float>>;
+}
 
 /**
  * Data on animations for each direction of the strumline.

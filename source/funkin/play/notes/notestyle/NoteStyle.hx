@@ -1189,6 +1189,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data.assets?.healthBar?.scale ?? fallback?.getHealthBarScale() ?? 1.0;
   }
 
+  public function getHealthBarPadding():Array<Float>
+  {
+    return _data?.assets?.healthBar?.data?.padding ?? fallback?.getHealthBarPadding() ?? [8.0, 8.0];
+  }
+
   public function destroy():Void {}
 
   /**
