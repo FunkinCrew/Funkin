@@ -54,14 +54,15 @@ class FileUtil
    */
   public static var PROTECTED_PATHS(get, never):Array<String>;
 
-  public static function get_PROTECTED_PATHS():Array<String>
+  static function get_PROTECTED_PATHS():Array<String>
   {
     final protected:Array<String> = ['', '.', 'assets', 'assets/*', 'backups', 'backups/*', 'manifest', 'manifest/*', 'plugins', 'plugins/*', 'Funkin.exe', 'Funkin', 'icon.ico', 'libvlc.dll', 'libvlccore.dll', 'lime.ndll', 'scores.json'];
 
     #if sys
     for (i in 0...protected.length)
     {
-      protected[i] = sys.FileSystem.fullPath(Path.join([gameDirectory, protected[i]]));
+      // On Linux 'fullPath' just makes most of these null which actually just makes the paths unprotected
+      protected[i] = #if !linux sys.FileSystem.fullPath #end (Path.join([gameDirectory, protected[i]]));
     }
     #end
 
@@ -1294,8 +1295,26 @@ class FileUtilSandboxed
 
     #if sys
     // TODO: figure out how to get "real" path of symlinked paths
-    final realPath:String = sys.FileSystem.fullPath(Path.join([FileUtil.gameDirectory, sanitized.join('/')]));
-    if (!realPath.startsWith(FileUtil.gameDirectory))
+    #if linux
+    // The implementation on Linux fails if the path doesn't exist
+    var realPath:Null<String> = null;
+    var unresolvedSegments:Array<String> = [];
+    while (realPath == null && sanitized.length > 0)
+    {
+      realPath = sys.FileSystem.fullPath(Path.join([FileUtil.gameDirectory].concat(sanitized)));
+      if (realPath == null) unresolvedSegments.unshift(sanitized.pop() ?? continue);
+    }
+
+    if (unresolvedSegments.length > 0)
+    {
+      if (realPath != null) unresolvedSegments.unshift(realPath);
+      realPath = Path.join(unresolvedSegments);
+    }
+    #else
+    final realPath:Null<String> = sys.FileSystem.fullPath(Path.join([FileUtil.gameDirectory].concat(sanitized)));
+    #end
+
+    if (realPath == null || !realPath.startsWith(FileUtil.gameDirectory))
     {
       return FileUtil.gameDirectory;
     }
