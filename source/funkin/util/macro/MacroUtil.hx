@@ -320,5 +320,60 @@ class MacroUtil
         return null;
     }
   }
+
+  /**
+   * Extracts a map declaration from an Expr. Only supports basic types.
+   * @param input The map Expr.
+   * @return The Map value.
+   */
+  @:generic
+  public static function extractMap<K, V>(?input:ExprOf<Map<K, V>>):Map<K, V>
+  {
+    if (input == null) return null;
+
+    // Forces the Expr to be typed and cause an error
+    // in case the wrong type is used for either K or V.
+    Context.typeExpr(input);
+
+    final result:Map<K, V> = [];
+    switch (input.expr)
+    {
+      case EArrayDecl([for (e in _) e.expr] => pairs):
+        for (pairDef in pairs)
+        {
+          switch (pairDef)
+          {
+            case EBinop(OpArrow, e1, e2):
+              var key:K;
+              try
+              {
+                key = haxe.macro.ExprTools.getValue(e1);
+              }
+              catch (_)
+              {
+                Context.error('Key type not supported.', e1.pos);
+              }
+
+              var value:V;
+              try
+              {
+                value = haxe.macro.ExprTools.getValue(e2);
+              }
+              catch (_)
+              {
+                Context.error('Value type not supported.', e2.pos);
+              }
+              result.set(key, value);
+
+            default:
+              Context.error('Provided Expr is not a Map (declaration does not follow key => value notation)', input.pos);
+          }
+        }
+      default:
+        Context.error('Provided Expr is not a Map (wanted EArrayDecl, got ${input.expr}).', input.pos);
+    }
+
+    return result;
+  }
   #end
 }
