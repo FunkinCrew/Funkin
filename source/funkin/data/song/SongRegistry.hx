@@ -129,6 +129,29 @@ using funkin.data.song.migrator.SongDataMigrator;
     return parseEntryMetadataRaw(contents);
   }
 
+  public override function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
+  {
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+    if (variation != Constants.DEFAULT_VARIATION)
+    {
+      return scriptedSongVariations.exists('${id}:${variation}');
+    }
+    return super.isScriptedEntry(id, params);
+  }
+
+  public override function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
+  {
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+    if (variation != Constants.DEFAULT_VARIATION)
+    {
+      final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
+      @:privateAccess
+      var path:String = variationSongId._asc._c.name;
+      return path;
+    }
+    return super.getScriptedEntryClassName(id, params);
+  }
+
   /**
    * We override `fetchEntry` to handle song variations!
    */

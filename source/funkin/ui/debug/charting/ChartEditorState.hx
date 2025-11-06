@@ -6202,7 +6202,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var targetSong:Song;
     try
     {
-      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), availableVariations, songChartData, playtestSongScripts, false);
+      targetSong = Song.buildRaw(currentSongId, songMetadata.values(), selectedVariation, songChartData, playtestSongScripts, false);
     }
     catch (e)
     {
