@@ -17,6 +17,7 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import funkin.modding.ModOptions;
 #if mobile
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
@@ -210,6 +211,27 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     #end
+
+    // Adds modded options
+    for (option in ModOptions.list())
+    {
+      var data:ModOptionParams = ModOptions.get(option);
+      var value:Dynamic = ModOptions.getValue(option);
+
+      switch (data.type)
+      {
+        case ModOptionType.CHECKBOX:
+          createPrefItemCheckbox(data.name, data.desc, data.onChange, value, data.available);
+        case ModOptionType.NUMBER:
+          createPrefItemNumber(data.name, data.desc, data.onChange, data.valueFormatter, value, data.min, data.max, data.step, data.precision);
+        case ModOptionType.PERCENTAGE:
+          createPrefItemPercentage(data.name, data.desc, data.onChange, value, Std.int(data.min), Std.int(data.max));
+        case ModOptionType.ENUM:
+          createPrefItemEnum(data.name, data.desc, data.values, data.onChange, value);
+        default:
+          // Huh?
+      }
+    }
   }
 
   override function update(elapsed:Float):Void

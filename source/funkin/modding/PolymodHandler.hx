@@ -618,6 +618,9 @@ class PolymodHandler
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
     NoteKindManager.initialize();
+
+    ModOptions.clear();
+
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
   }
