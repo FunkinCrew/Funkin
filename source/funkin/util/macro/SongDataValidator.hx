@@ -1,5 +1,6 @@
 package funkin.util.macro;
 
+import haxe.crypto.Sha1;
 import haxe.rtti.Meta;
 #if macro
 import haxe.macro.Context;
@@ -61,7 +62,7 @@ class SongDataValidator
     else
     {
       // Check if the content matches.
-      var chartClean:String = StringTools.trim(StringTools.replace(chartContent, "\n", ""));
+      var chartClean:String = Sha1.encode(chartContent);
       if (chartClean == _allCharts.get(songFormat)) isValid = true;
     }
 
@@ -123,7 +124,7 @@ class SongDataValidator
           var variation:String = splitter[2] ?? "default";
           var chart:String = sys.io.File.getContent(Path.join([BASE_PATH, song, file]));
 
-          chart = StringTools.trim(StringTools.replace(chart, "\n", ""));
+          chart = Sha1.encode(StringTools.trim(chart));
 
           var entry = [macro $v{'${song}::${variation}'}, macro $v{chart}];
 
