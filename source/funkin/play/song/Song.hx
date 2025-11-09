@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          trace('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -162,19 +162,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         if (variMeta != null)
         {
           _metadata.set(variMeta.variation, variMeta);
-          trace('  Loaded variation: $vari');
+          trace(' Loaded variation: $vari');
         }
         else
         {
           FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
-          trace('  FAILED to load variation: $vari');
+          trace(' FAILED to load variation: $vari');
         }
       }
     }
 
     if (_metadata.size() == 0)
     {
-      trace('[WARN] Could not find song data for songId: $id');
+      trace(' WARNING '.bold().bg_yellow() + ' Could not find song data for songId: $id');
       return;
     }
 
@@ -846,61 +846,91 @@ class SongDifficulty
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
-    // Automatically resolve voices by removing suffixes.
-    // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
-    // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
-
-    if (characters.playerVocals == null)
-    {
-      var playerId:String = characters.player;
-      var playerVoice:String = Paths.voices(this.song.id, '-${playerId}$suffix');
-
-      while (playerVoice != null && !Assets.exists(playerVoice))
-      {
-        // Remove the last suffix.
-        // For example, bf-car becomes bf.
-        playerId = playerId.split('-').slice(0, -1).join('-');
-        // Try again.
-        playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
-      }
-      if (playerVoice == null)
-      {
-        // Try again without $suffix.
-        playerId = characters.player;
-        playerVoice = Paths.voices(this.song.id, '-${playerId}');
-        while (playerVoice != null && !Assets.exists(playerVoice))
-        {
-          // Remove the last suffix.
-          playerId = playerId.split('-').slice(0, -1).join('-');
-          // Try again.
-          playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
-        }
-      }
-
-      return playerVoice != null ? [playerVoice] : [];
-    }
-    else
+    if (characters.playerVocals != null)
     {
       // The metadata explicitly defines the list of voices.
       var playerIds:Array<String> = characters?.playerVocals ?? [characters.player];
       var playerVoices:Array<String> = playerIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+      var validVoices:Bool = true;
 
-      return playerVoices;
+      // Check if all voice paths exist before returning
+      // If not, fallback to the default method for resolving voices
+      for (voice in playerVoices)
+      {
+        if (voice == null || !Assets.exists(voice)) validVoices = false;
+      }
+      if (validVoices) return playerVoices;
     }
+
+    // Automatically resolve voices by removing suffixes.
+    // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
+    // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
+    var playerId:String = characters.player;
+    var playerVoice:String = Paths.voices(this.song.id, '-${playerId}$suffix');
+
+    while (playerVoice != null && !Assets.exists(playerVoice))
+    {
+      // Remove the last suffix.
+      // For example, bf-car becomes bf.
+      playerId = playerId.split('-').slice(0, -1).join('-');
+      // Try again.
+      playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+    }
+    if (playerVoice == null)
+    {
+      // Try again without $suffix.
+      playerId = characters.player;
+      playerVoice = Paths.voices(this.song.id, '-${playerId}');
+      while (playerVoice != null && !Assets.exists(playerVoice))
+      {
+        // Remove the last suffix.
+        playerId = playerId.split('-').slice(0, -1).join('-');
+        // Try again.
+        playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+      }
+    }
+
+    return playerVoice != null ? [playerVoice] : [];
   }
 
   public function buildOpponentVoiceList():Array<String>
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
+    if (characters.opponentVocals != null)
+    {
+      // The metadata explicitly defines the list of voices.
+      var opponentIds:Array<String> = characters?.opponentVocals ?? [characters.opponent];
+      var opponentVoices:Array<String> = opponentIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+      var validVoices:Bool = true;
+
+      // Check if all voice paths exist before returning
+      // If not, fallback to the default method for resolving voices
+      for (voice in opponentVoices)
+      {
+        if (voice == null || !Assets.exists(voice)) validVoices = false;
+      }
+      if (validVoices) return opponentVoices;
+    }
+
     // Automatically resolve voices by removing suffixes.
     // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
 
-    if (characters.opponentVocals == null)
+    var opponentId:String = characters.opponent;
+    var opponentVoice:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
+    while (opponentVoice != null && !Assets.exists(opponentVoice))
     {
-      var opponentId:String = characters.opponent;
-      var opponentVoice:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
+      // Remove the last suffix.
+      opponentId = opponentId.split('-').slice(0, -1).join('-');
+      // Try again.
+      opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+    }
+    if (opponentVoice == null)
+    {
+      // Try again without $suffix.
+      opponentId = characters.opponent;
+      opponentVoice = Paths.voices(this.song.id, '-${opponentId}');
       while (opponentVoice != null && !Assets.exists(opponentVoice))
       {
         // Remove the last suffix.
@@ -908,30 +938,9 @@ class SongDifficulty
         // Try again.
         opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
       }
-      if (opponentVoice == null)
-      {
-        // Try again without $suffix.
-        opponentId = characters.opponent;
-        opponentVoice = Paths.voices(this.song.id, '-${opponentId}');
-        while (opponentVoice != null && !Assets.exists(opponentVoice))
-        {
-          // Remove the last suffix.
-          opponentId = opponentId.split('-').slice(0, -1).join('-');
-          // Try again.
-          opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
-        }
-      }
-
-      return opponentVoice != null ? [opponentVoice] : [];
     }
-    else
-    {
-      // The metadata explicitly defines the list of voices.
-      var opponentIds:Array<String> = characters?.opponentVocals ?? [characters.opponent];
-      var opponentVoices:Array<String> = opponentIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
 
-      return opponentVoices;
-    }
+    return opponentVoice != null ? [opponentVoice] : [];
   }
 
   /**

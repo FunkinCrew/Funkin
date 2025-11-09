@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 
 /**
@@ -23,3 +24,4 @@ class ChartEditorBaseToolbox extends CollapsibleDialog
    */
   public function refresh() {}
 }
+#end

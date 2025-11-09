@@ -8,6 +8,7 @@ import flixel.FlxG;
 
 using haxe.macro.TypeTools;
 using haxe.macro.ComplexTypeTools;
+using funkin.util.AnsiUtil;
 
 class ConsoleMacro
 {
@@ -58,7 +59,7 @@ class ConsoleMacro
       };
 
     fields.push(initField);
-    Sys.println('[INFO] Generated console registration for: $cl');
+    Sys.println(' INFO '.bold().bg_blue() + ' Generated console registration for: $cl');
     return fields;
   }
   #end

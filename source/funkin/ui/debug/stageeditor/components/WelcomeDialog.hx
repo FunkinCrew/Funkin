@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
@@ -47,9 +48,9 @@ class WelcomeDialog extends Dialog
 
       #if sys
       var stat = sys.FileSystem.stat(file);
-      var sizeInMB = (stat.size / 1000000).round(2);
+      var sizeInMB = (stat.size / 1000000).round(3);
 
-      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + "MB";
+      fileText.tooltip = "Full Name: " + file + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
       #end
 
       contentRecent.addComponent(fileText);
@@ -143,3 +144,4 @@ class WelcomeDialog extends Dialog
     destroy();
   }
 }
+#end

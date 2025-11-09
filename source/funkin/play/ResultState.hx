@@ -119,8 +119,8 @@ class ResultState extends MusicBeatSubState
     // We build a lot of this stuff in the constructor, then place it in create().
     // This prevents having to do `null` checks everywhere.
 
-    var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890";
-    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 62)));
+    var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890().-";
+    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 60)));
     songName.text = params.title;
     songName.letterSpacing = -15;
     songName.angle = -4.4;

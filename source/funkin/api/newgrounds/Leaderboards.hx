@@ -17,7 +17,7 @@ class Leaderboards
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
       return [];
     }
 
@@ -37,19 +37,16 @@ class Leaderboards
 
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      var leaderboardList = NewgroundsClient.instance.leaderboards;
-      if (leaderboardList == null) return;
-
-      var leaderboardData:Null<LeaderboardData> = leaderboardList.get(leaderboard.getId());
+      var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
       if (leaderboardData != null)
       {
         leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void {
           switch (outcome)
           {
             case SUCCESS:
-              trace('[NEWGROUNDS] Submitted score!');
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitted score!');
             case FAIL(error):
-              trace('[NEWGROUNDS] Failed to submit score!');
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to submit score!');
               trace(error);
           }
         });
@@ -67,10 +64,7 @@ class Leaderboards
     // Silently reject retrieving scores from unknown leaderboards.
     if (leaderboard == Leaderboard.Unknown) return;
 
-    var leaderboardList = NewgroundsClient.instance.leaderboards;
-    if (leaderboardList == null) return;
-
-    var leaderboardData:Null<LeaderboardData> = leaderboardList.get(leaderboard.getId());
+    var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
     if (leaderboardData == null) return;
 
     var user:Null<User> = null;
@@ -81,11 +75,11 @@ class Leaderboards
         switch (outcome)
         {
           case SUCCESS:
-            trace('[NEWGROUNDS] Fetched scores!');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' Fetched scores!');
             if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
 
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to fetch scores!');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to fetch scores!');
             trace(error);
             if (params != null && params.onFail != null) params.onFail();
         }

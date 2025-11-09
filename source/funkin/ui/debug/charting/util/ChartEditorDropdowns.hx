@@ -1,7 +1,9 @@
 package funkin.ui.debug.charting.util;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
@@ -82,6 +84,39 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
+  /**
+   * Populate a dropdown with a list of time changes.
+   */
+  public static function populateDropdownWithTimeChanges(dropDown:DropDown, timeChanges:Array<SongTimeChange>, startingTimeChange:Int = 0):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry =
+      {
+        id: "0",
+        text: '${timeChanges[0].timeStamp} ms : BPM: ${timeChanges[0].bpm} in ${timeChanges[0].timeSignatureNum}/${timeChanges[0].timeSignatureDen}'
+      };
+
+    for (index in 0...timeChanges.length)
+    {
+      var value =
+        {
+          id: '$index',
+          text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
+        };
+      if (startingTimeChange == index) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of song events.
+   */
   public static function populateDropdownWithSongEvents(dropDown:DropDown, startingEventId:String):DropDownEntry
   {
     dropDown.dataSource.clear();
@@ -157,6 +192,7 @@ class ChartEditorDropdowns
     // Base
     "" => "Default",
     "~CUSTOM~" => "Custom",
+    "noanim" => "No Animation",
     // Weeks 1-7
     "censor" => "[UH-OH!] Censor Bar",
     "mom" => "Mom Sings (Week 5)",
@@ -259,3 +295,5 @@ typedef DropDownEntry =
   id:String,
   text:String
 };
+
+#end

@@ -19,7 +19,7 @@ class Medals
 
     if (medalList == null)
     {
-      trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
       return [];
     }
 
@@ -30,20 +30,16 @@ class Medals
   {
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      var medalList = NewgroundsClient.instance.medals;
-      @:privateAccess
-      if (medalList == null || medalList._map == null) return;
-
-      var medalData:Null<MedalData> = medalList.get(medal.getId());
+      var medalData:Null<MedalData> = listMedalData().get(medal.getId());
       @:privateAccess
       if (medalData == null || medalData._data == null)
       {
-        trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Could not retrieve data for medal: ${medal}');
         return;
       }
       else if (!medalData.unlocked)
       {
-        trace('[NEWGROUNDS] Awarding medal (${medal}).');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Awarding medal (${medal}).');
         medalData.sendUnlock();
 
         // Play the medal unlock animation, but only if the user has not already unlocked it.
@@ -85,12 +81,12 @@ class Medals
       }
       else
       {
-        trace('[NEWGROUNDS] User already has medal (${medal}).');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' User already has medal (${medal}).');
       }
     }
     else
     {
-      trace('[NEWGROUNDS] Attempted to award medal (${medal}), but not logged into Newgrounds.');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Attempted to award medal (${medal}), but not logged into Newgrounds.');
     }
   }
 
@@ -102,12 +98,12 @@ class Medals
 
     var parser = new json2object.JsonParser<Array<MedalJSON>>();
     parser.ignoreUnknownVariables = false;
-    trace('[NEWGROUNDS] Parsing local medal data...');
+    trace(' NEWGROUNDS '.bold().bg_orange() + ' Parsing local medal data...');
     parser.fromJson(jsonString, jsonPath);
 
     if (parser.errors.length > 0)
     {
-      trace('[NEWGROUNDS] Failed to parse local medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to parse local medal data!');
       for (error in parser.errors)
         funkin.data.DataError.printError(error);
       medalJSON = [];
@@ -120,15 +116,11 @@ class Medals
 
   public static function fetchMedalData(medal:Medal):Null<FetchedMedalData>
   {
-    var medalList = NewgroundsClient.instance.medals;
-    @:privateAccess
-    if (medalList == null || medalList._map == null) return null;
-
-    var medalData:Null<MedalData> = medalList.get(medal.getId());
+    var medalData:Null<MedalData> = listMedalData().get(medal.getId());
     @:privateAccess
     if (medalData == null || medalData._data == null)
     {
-      trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Could not retrieve data for medal: ${medal}');
       return null;
     }
 
@@ -149,7 +141,7 @@ class Medals
     var medal:Medal = Medal.getMedalByStoryLevel(id);
     if (medal == Medal.Unknown)
     {
-      trace('[NEWGROUNDS] Story level does not have a medal! (${id}).');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Story level does not have a medal! (${id}).');
       return;
     }
     Medals.award(medal);

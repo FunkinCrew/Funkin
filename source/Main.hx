@@ -1,24 +1,27 @@
 package;
 
+import lime.system.System;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
+import funkin.PlayerSettings;
 import funkin.util.logging.CrashHandler;
-import funkin.ui.debug.MemoryCounter;
+import funkin.ui.debug.FunkinDebugDisplay;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.save.Save;
-import haxe.ui.Toolkit;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
-import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.util.WindowUtil;
+
+using funkin.util.AnsiUtil;
 
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
@@ -80,35 +83,44 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    var context = stage.window.context.type;
+    if (context != WEBGL && context != OPENGL && context != OPENGLES)
+    {
+      var tech:String = #if web "WebGL" #elseif desktop "OpenGL" #else "OpenGL ES" #end;
+      var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
+      var desc:String = 'Failed to initialize the $tech rendering context!\n\n';
+      #if web
+      desc += 'Make sure your graphics card supports $requiredVersion, your graphics drivers are up to date, and hardware acceleration is enabled on your browser.';
+      #elseif desktop
+      desc += 'Make sure your graphics card supports $requiredVersion, and your graphics drivers are up to date.';
+      #else
+      desc += 'Make sure your device supports $requiredVersion.';
+      #end
+
+      WindowUtil.showError('Failed to initialize $tech', desc);
+      System.exit(1);
+    }
+
     setupGame();
   }
 
-  var video:Video;
-  var netStream:NetStream;
-  var overlay:Sprite;
-
   /**
-   * A frame counter displayed at the top left.
+   * The debug display at the top left.
    */
-  public static var fpsCounter:FPS;
-
-  /**
-   * A RAM counter displayed at the top left.
-   */
-  public static var memoryCounter:MemoryCounter;
+  public static var debugDisplay:FunkinDebugDisplay;
 
   function setupGame():Void
   {
+    #if FEATURE_HAXEUI
     initHaxeUI();
-
-    // addChild gets called by the user settings code.
-    fpsCounter = new FPS(10, 3, 0xFFFFFF);
-
-    #if !html5
-    // addChild gets called by the user settings code.
-    // TODO: disabled on HTML5 (todo: find another method that works?)
-    memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
     #end
+
+    // addChild gets called by the user settings code.
+    debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
+
+    // Add this signal so the player can toggle the debug display using a hotkey.
+    FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
@@ -123,11 +135,11 @@ class Main extends Sprite
     Handle.initAsync(function(success:Bool):Void {
       if (success)
       {
-        trace('[HXVLC] LibVLC instance initialized!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance initialized!');
       }
       else
       {
-        trace('[HXVLC] LibVLC instance failed to initialize!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance failed to initialize!');
       }
     });
     #end
@@ -173,19 +185,42 @@ class Main extends Sprite
     #end
   }
 
+  #if FEATURE_HAXEUI
   function initHaxeUI():Void
   {
+    // This has to come before Toolkit.init since locales get initialized there
+    haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
     // Calling this before any HaxeUI components get used is important:
     // - It initializes the theme styles.
     // - It scans the class path and registers any HaxeUI components.
-    Toolkit.init();
-    Toolkit.theme = 'dark'; // don't be cringe
-    // Toolkit.theme = 'light'; // embrace cringe
-    Toolkit.autoScale = false;
+    haxe.ui.Toolkit.init();
+    haxe.ui.Toolkit.theme = 'dark'; // don't be cringe
+    // haxe.ui.Toolkit.theme = 'light'; // embrace cringe
+    haxe.ui.Toolkit.autoScale = false;
     // Don't focus on UI elements when they first appear.
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
+  }
+  #end
+
+  function handleDebugDisplayKeys():Void
+  {
+    if (PlayerSettings.player1.controls == null || !PlayerSettings.player1.controls.check(DEBUG_DISPLAY)) return;
+
+    var nextMode:DebugDisplayMode;
+
+    switch (Preferences.debugDisplay)
+    {
+      case DebugDisplayMode.Off:
+        nextMode = DebugDisplayMode.Simple;
+      case DebugDisplayMode.Simple:
+        nextMode = DebugDisplayMode.Advanced;
+      case DebugDisplayMode.Advanced:
+        nextMode = DebugDisplayMode.Off;
+    }
+
+    Preferences.debugDisplay = nextMode;
   }
 
   #if mobile
@@ -200,41 +235,23 @@ class Main extends Sprite
     scale = Math.min(scale, 1);
     #end
     final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
-    if (fpsCounter != null)
+
+    if (debugDisplay != null)
     {
-      fpsCounter.scaleX = fpsCounter.scaleY = scale;
+      debugDisplay.scaleX = debugDisplay.scaleY = scale;
 
       if (FlxG.game != null)
       {
         if (lerp)
         {
-          fpsCounter.x = flixel.math.FlxMath.lerp(fpsCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
+          debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
         else
         {
-          fpsCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+          debugDisplay.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
         }
 
-        fpsCounter.y = FlxG.game.y + (3 * scale);
-      }
-    }
-
-    if (memoryCounter != null)
-    {
-      memoryCounter.scaleX = memoryCounter.scaleY = scale;
-
-      if (FlxG.game != null)
-      {
-        if (lerp)
-        {
-          memoryCounter.x = flixel.math.FlxMath.lerp(memoryCounter.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
-        }
-        else
-        {
-          memoryCounter.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
-        }
-
-        memoryCounter.y = FlxG.game.y + (13 * scale);
+        debugDisplay.y = FlxG.game.y + (3 * scale);
       }
     }
   }

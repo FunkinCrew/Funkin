@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "4e86b724ca43489a59ea465a46ffc12598e5df15",
+      "ref": "26ed20b9c181a576f4cbe18ccdea38912c01476e",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "96385202f6f951b2bde0cbe836c5da21dde1f36e",
+      "ref": "cb921a591bdb2dba604decf44cd8f5c3fbbe969b",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -45,14 +45,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "ac2a34fe4b3400bc04218f46320a65af0f337fc0",
+      "ref": "daca24c941b99f877aa800fae4511b258364d1ef",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "b9118f47f43a66bc0e5fbfcfd9903f0425e918ee",
+      "ref": "6fa30b3f5209146c852c25f3d1003e08898083e2",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -71,14 +71,14 @@
       "name": "funkin.vis",
       "type": "git",
       "dir": null,
-      "ref": "1966f8fbbbc509ed90d4b520f3c49c084fc92fd6",
+      "ref": "02bada154b474c2554709b9d12aef0cbf0da3ec9",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
       "name": "grig.audio",
       "type": "git",
       "dir": "src",
-      "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
+      "ref": "6409f3c6d1b4c52176813d3ede86c0d34e8af2c1",
       "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
@@ -90,7 +90,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "47ee9f5fa02d422e186e844f87e68220cabfcc5b",
+      "ref": "578d61bc275cf71f473647eeb5aab002e45338be",
       "url": "https://github.com/haxeui/haxeui-core"
     },
     {
@@ -104,29 +104,27 @@
       "name": "hscript",
       "type": "git",
       "dir": null,
-      "ref": "8c1d238b069ef97cec13f5121b29d2afe2b8985d",
+      "ref": "dcc6f822e0866ca4fda300ed23e99559260f7bf5",
       "url": "https://github.com/FunkinCrew/hscript"
     },
     {
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "363d3d0a8d3ac450f5ba1b4c3357353656b71e82",
+      "ref": "6546fa5c3ad1bac065f144745122ab5a6d4195ff",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
       "name": "hxcpp-debug-server",
       "type": "git",
       "dir": "hxcpp-debug-server",
-      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "ref": "7459934666a473a4cc4d066ba4a93ef92f1ce94c",
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
     },
     {
       "name": "hxdiscord_rpc",
-      "type": "git",
-      "dir": null,
-      "ref": "82c47ecc1a454b7dd644e4fcac7e91155f176dec",
-      "url": "https://github.com/FunkinCrew/hxdiscord_rpc"
+      "type": "haxelib",
+      "version": "1.3.0"
     },
     {
       "name": "hxjsonast",
@@ -136,6 +134,11 @@
       "url": "https://github.com/nadako/hxjsonast/"
     },
     {
+      "name": "hxgamemode",
+      "type": "haxelib",
+      "version": "1.0.1"
+    },
+    {
       "name": "hxp",
       "type": "haxelib",
       "version": "1.3.0"
@@ -143,13 +146,13 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.3"
+      "version": "2.2.4"
     },
     {
       "name": "json2object",
       "type": "git",
       "dir": null,
-      "ref": "a8c26f18463c98da32f744c214fe02273e1823fa",
+      "ref": "a7e4cef3d444bea8d8244d6e59ab82f5a593f597",
       "url": "https://github.com/FunkinCrew/json2object"
     },
     {
@@ -170,7 +173,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "e5f8c27124598505917a001588b560244731adfb",
+      "ref": "27092822abf7b8c2ec2905053cf5435be4de838e",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -184,14 +187,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "a0df7c3afe360c9af59a76e45007dbf4e53b5131",
+      "ref": "a69a6e778816c6a57eba7a91bfb0b60295508e88",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "55ee00236806330c89c3bff1e1563eb6425a9d96",
+      "ref": "39b1d179b0ebabb43234fb02604d7a91250d7fc4",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

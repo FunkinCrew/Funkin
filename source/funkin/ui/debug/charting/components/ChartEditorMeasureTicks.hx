@@ -1,8 +1,9 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.FlxSprite;
-import flixel.addons.display.FlxTiledSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -11,8 +12,10 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 {
   var chartEditorState:ChartEditorState;
 
-  var tickTiledSprite:FlxTiledSprite;
-  var measureNumber:FlxText;
+  var measureTicksSprite:FlxSprite;
+  var measureNumbers:Array<FlxText> = [];
+
+  public var measureLengthsInPixels:Array<Int> = [];
 
   override function set_y(value:Float):Float
   {
@@ -29,49 +32,59 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
     this.chartEditorState = chartEditorState;
 
-    tickTiledSprite = new FlxTiledSprite(chartEditorState.measureTickBitmap, chartEditorState.measureTickBitmap.width, 1000, false, true);
-    add(tickTiledSprite);
+    measureTicksSprite = new FlxSprite(0, 0);
+    add(measureTicksSprite);
 
-    measureNumber = new FlxText(0, 0, ChartEditorState.GRID_SIZE, "1");
-    measureNumber.setFormat(Paths.font('vcr.ttf'), 20, FlxColor.WHITE);
-    measureNumber.borderStyle = FlxTextBorderStyle.OUTLINE;
-    measureNumber.borderColor = FlxColor.BLACK;
-    add(measureNumber);
+    for (i in 0...5)
+    {
+      var measureNumber = new FlxText(0, 0, ChartEditorState.GRID_SIZE, "1");
+      measureNumber.setFormat(Paths.font('vcr.ttf'), 20, FlxColor.WHITE);
+      measureNumber.borderStyle = FlxTextBorderStyle.OUTLINE;
+      measureNumber.borderColor = FlxColor.BLACK;
+      add(measureNumber);
+      measureNumbers.push(measureNumber);
+    }
+    // Need these two lines or the ticks don't render before loading a chart!
+    chartEditorState.updateMeasureTicks(true);
+    reloadTickBitmap();
   }
 
   public function reloadTickBitmap():Void
   {
-    tickTiledSprite.loadGraphic(chartEditorState.measureTickBitmap);
+    measureTicksSprite.loadGraphic(chartEditorState.measureTickBitmap);
+  }
+
+  public function setClipRect(rect:Null<FlxRect>):Void
+  {
+    measureTicksSprite.clipRect = rect;
   }
 
   /**
-   * At time of writing, we only have to manipulate one measure number because we can only see one measure at a time.
+   * Update all 5 measure numbers, since that's the most we can really see at a time, even if barely.
+   * Please excuse the horror you're about to witness.
+   * Welp, you gotta go back in commits to see it now.
    */
   function updateMeasureNumber()
   {
-    if (measureNumber == null) return;
+    if (measureLengthsInPixels.length == 0 || measureLengthsInPixels == null) return;
 
-    var viewTopPosition = 0 - this.y;
-    var viewHeight = FlxG.height - ChartEditorState.MENU_BAR_HEIGHT - ChartEditorState.PLAYBAR_HEIGHT;
-    var viewBottomPosition = viewTopPosition + viewHeight;
+    var currentMeasure:Int = Math.floor(Conductor.instance?.getTimeInMeasures(chartEditorState.scrollPositionInMs));
+    for (i in 0...measureNumbers.length)
+    {
+      var measureNumber:FlxText = measureNumbers[i];
+      if (measureNumber == null) continue;
 
-    var measureNumberInViewport = Math.floor(viewTopPosition / ChartEditorState.GRID_SIZE / Conductor.instance.stepsPerMeasure) + 1;
-    var measureNumberPosition = measureNumberInViewport * ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure;
+      var measureNumberPosition = measureLengthsInPixels[i];
+      measureNumber.y = this.y + measureNumberPosition;
 
-    measureNumber.y = measureNumberPosition + this.y;
-
-    // Show the measure number only if it isn't beneath the end of the note grid.
-    // Using measureNumber + 1 because the cut-off bar at the bottom is technically a bar, but it looks bad if a measure number shows up there.
-    if ((measureNumberInViewport + 1) < chartEditorState.songLengthInSteps / Conductor.instance.stepsPerMeasure)
-      measureNumber.text = '${measureNumberInViewport + 1}';
-    else
-      measureNumber.text = '';
-
-    // trace(measureNumber.text + ' at ' + measureNumber.y);
-  }
-
-  public function setHeight(songLengthInPixels:Float):Void
-  {
-    tickTiledSprite.height = songLengthInPixels;
+      // Show the measure number only if it isn't beneath the end of the note grid.
+      // Using measureNumber + 1 because the cut-off bar at the bottom is technically a bar, but it looks bad if a measure number shows up there.
+      var fixedMeasureNumberValue = currentMeasure + i + 1;
+      if (fixedMeasureNumberValue < Math.ceil(Conductor.instance?.getTimeInMeasures(chartEditorState.songLengthInMs)))
+        measureNumber.text = '${fixedMeasureNumberValue}';
+      else
+        measureNumber.text = '';
+    }
   }
 }
+#end

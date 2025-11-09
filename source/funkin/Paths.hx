@@ -2,6 +2,7 @@ package funkin;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
+import haxe.io.Path;
 
 /**
  * A core class which handles determining asset paths.
@@ -103,6 +104,11 @@ class Paths
     return getPath('data/$key.json', TEXT, library);
   }
 
+  public static function srt(key:String, ?library:String, ?directory:String = "data/"):String
+  {
+    return getPath('$directory$key.srt', TEXT, library);
+  }
+
   public static function sound(key:String, ?library:String):String
   {
     return getPath('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
@@ -120,6 +126,13 @@ class Paths
 
   public static function videos(key:String, ?library:String):String
   {
+    final path:Path = new Path(key);
+
+    if (path.ext != null)
+    {
+      return getPath('videos/${path.file}.${path.ext}', BINARY, library ?? 'videos');
+    }
+
     return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library ?? 'videos');
   }
 

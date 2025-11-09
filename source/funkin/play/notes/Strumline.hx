@@ -420,7 +420,7 @@ class Strumline extends FlxSpriteGroup
       notesVwoosh.add(note);
 
       var targetY:Float = FlxG.height + note.y;
-      if (isDownscroll) targetY = 0 - note.height;
+      if (isDownscroll) targetY = note.y - FlxG.height;
       FlxTween.tween(note, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,
@@ -441,7 +441,7 @@ class Strumline extends FlxSpriteGroup
       holdNotesVwoosh.add(holdNote);
 
       var targetY:Float = FlxG.height + holdNote.y;
-      if (isDownscroll) targetY = 0 - holdNote.height;
+      if (isDownscroll) targetY = holdNote.y - FlxG.height;
       FlxTween.tween(holdNote, {y: targetY}, vwooshTime,
         {
           ease: FlxEase.expoIn,

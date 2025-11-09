@@ -89,7 +89,7 @@ class PlayerData
     updateVersionToLatest();
 
     var writer = new json2object.JsonWriter<PlayerData>();
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void
@@ -130,6 +130,14 @@ class PlayerFreeplayDJData
   @:optional
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
+  @:optional
+  @:default("animateatlas")
+  public var renderType:Null<String>;
+
+  @:optional
+  @:default("")
+  public var scriptClass:Null<String>;
+
   public function new()
   {
     animationMap = new Map();
@@ -149,10 +157,11 @@ class PlayerFreeplayDJData
     }
   }
 
-  public function getAtlasPath():String
-  {
-    return Paths.animateAtlas(assetPath);
-  }
+  public inline function getAssetPath():String
+    return assetPath; // return Paths.animateAtlas(assetPath);
+
+  public inline function getAnimationsList():Array<AnimationData>
+    return animations;
 
   public function getFreeplayDJText(index:Int):String
   {

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.contextmenus.ChartEditorDefaultContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorEventContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorHoldNoteContextMenu;
@@ -32,7 +33,6 @@ class ChartEditorContextMenuHandler
       existingDefaultContextMenu.left = xPos;
       existingDefaultContextMenu.top = yPos;
       Screen.instance.addComponent(existingDefaultContextMenu);
-
     }
     else
     {
@@ -150,3 +150,4 @@ class ChartEditorContextMenuHandler
     }
   }
 }
+#end

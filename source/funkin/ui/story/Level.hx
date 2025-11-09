@@ -176,7 +176,7 @@ class Level implements IRegistryEntry<LevelData>
 
       if (song == null) continue;
 
-      for (difficulty in difficulties)
+      for (difficulty in difficulties.copy())
       {
         if (!song.hasDifficulty(difficulty, [Constants.DEFAULT_VARIATION, 'erect']))
         {

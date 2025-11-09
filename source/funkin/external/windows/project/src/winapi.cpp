@@ -41,6 +41,16 @@ void WINAPI_DisableWindowsGhosting()
   DisableProcessWindowsGhosting();
 }
 
+size_t WINAPI_GetProcessMemoryWorkingSetSize()
+{
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+		return pmc.WorkingSetSize;
+
+	return 0;
+}
+
 void WINAPI_SetDarkMode(bool enable)
 {
   HWND window = GetActiveWindow();

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.audio.SoundGroup;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
@@ -103,6 +104,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   function onClose(event:UIEvent)
   {
+    stopAudioPreview(); // Pause it instead, maybe?
     chartEditorState.menubarItemToggleToolboxOffsets.selected = false;
   }
 
@@ -458,6 +460,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   public function playAudioPreview():Void
   {
+    chartEditorState.stopAudioPlayback();
     audioPreviewTracks.play(false, audioPreviewTracks.time);
   }
 
@@ -839,3 +842,4 @@ enum Waveform
   OPPONENT;
   INSTRUMENTAL;
 }
+#end

@@ -4,6 +4,7 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
+@:nullSafety
 class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
 {
   var initialX:Float = 0;
@@ -65,7 +66,7 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   }
 
-  public function switchChar(str:String)
+  public function switchChar(str:String, playSlideAnim:Bool = true)
   {
     switch str
     {
@@ -73,7 +74,8 @@ class CharSelectPlayer extends FlxAtlasSprite implements IBPMSyncedScriptedClass
         loadAtlas(Paths.animateAtlas("charSelect/" + str + "Chill"));
     }
 
-    playAnimation("slidein", true, false, false);
+    final animName:String = playSlideAnim ? "slidein" : "idle";
+    playAnimation(animName, true, false, false);
 
     updateHitbox();
 

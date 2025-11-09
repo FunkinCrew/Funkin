@@ -29,20 +29,20 @@ class ModuleHandler
     trace("[MODULEHANDLER] Loading module cache...");
 
     var scriptedModuleClassNames:Array<String> = ScriptedModule.listScriptClasses();
-    trace('  Instantiating ${scriptedModuleClassNames.length} modules...');
+    trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
     for (moduleCls in scriptedModuleClassNames)
     {
       var module:Module = ScriptedModule.init(moduleCls, moduleCls);
       if (module != null)
       {
-        trace('    Loaded module: ${moduleCls}');
+        trace('   Loaded module: ${moduleCls}');
 
         // Then store it.
         addToModuleCache(module);
       }
       else
       {
-        trace('    Failed to instantiate module: ${moduleCls}');
+        trace('   Failed to instantiate module: ${moduleCls}');
       }
     }
     reorderModuleCache();

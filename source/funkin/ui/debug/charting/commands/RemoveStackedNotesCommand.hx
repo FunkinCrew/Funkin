@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
@@ -80,3 +81,4 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     return 'Remove ${removedNotes.length} Stacked Notes';
   }
 }
+#end

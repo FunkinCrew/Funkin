@@ -112,6 +112,7 @@ class ScreenshotPlugin extends FlxBasic
     lastHeight = FlxG.height;
 
     flashSprite = new Sprite();
+    flashSprite.mouseEnabled = false;
     flashSprite.alpha = 0;
     flashBitmap = new Bitmap(new BitmapData(lastWidth, lastHeight, true, Preferences.flashingLights ? FlxColor.WHITE : FlxColor.TRANSPARENT));
     flashSprite.addChild(flashBitmap);
@@ -520,7 +521,7 @@ class ScreenshotPlugin extends FlxBasic
 
         if (pngData == null)
         {
-          trace('[WARN] Failed to encode PNG data');
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to encode PNG data');
           previousScreenshotName = null;
           // Just in case
           unsavedScreenshotBuffer.shift();
@@ -544,7 +545,7 @@ class ScreenshotPlugin extends FlxBasic
 
       if (pngData == null)
       {
-        trace('[WARN] Failed to encode PNG data');
+        trace(' WARNING '.bold().bg_yellow() + ' Failed to encode PNG data');
         previousScreenshotName = null;
         return;
       }

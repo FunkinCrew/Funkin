@@ -340,6 +340,9 @@ class StoryMenuState extends MusicBeatState
 
   function handleKeyPresses():Void
   {
+    @:privateAccess
+    if ((stickerSubState?.switchingState ?? false)) return;
+
     if (!exitingMenu)
     {
       if (!selectedLevel)
@@ -616,6 +619,10 @@ class StoryMenuState extends MusicBeatState
     Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      #if mobile
+      FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      #end
+
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 
@@ -723,7 +730,8 @@ class StoryMenuState extends MusicBeatState
 
   function goBack():Void
   {
-    if (exitingMenu || selectedLevel) return;
+    @:privateAccess
+    if (exitingMenu || selectedLevel || (stickerSubState?.switchingState ?? false)) return;
 
     exitingMenu = true;
     FlxG.keys.enabled = false;
