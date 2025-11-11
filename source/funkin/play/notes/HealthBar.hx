@@ -11,7 +11,7 @@ class HealthBar extends FlxSpriteGroup
   final noteStyle:NoteStyle;
 
   public var healthBar:FlxBar;
-  public var healthBarBG:Null<FunkinSprite>;
+  public var healthBarBG:FunkinSprite;
   public var isBotPlayMode:Bool;
 
   final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
@@ -26,8 +26,9 @@ class HealthBar extends FlxSpriteGroup
     this.noteStyle = noteStyle;
     this.isBotPlayMode = isBotPlayMode;
     var padding = noteStyle.getHealthBarPadding();
-    trace(Paths.image(noteStyle.getHealthBarAssetPath()));
-    healthBarBG = FunkinSprite.create(0, 0, "healthBar");
+    trace(noteStyle.getHealthBarAssetPath());
+    var assetPath = Paths.image(noteStyle.getHealthBarAssetPath() ?? "healthBar");
+    healthBarBG = FunkinSprite.create(0, 0, assetPath);
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - padding[0]), Std.int(healthBarBG.height - padding[1]), this, 'healthLerp', 0, 2);
     var scale = noteStyle.getHealthBarScale();
     if (healthBarBG != null)
