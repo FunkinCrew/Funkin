@@ -11,7 +11,7 @@ class HealthBar extends FlxSpriteGroup
   final noteStyle:NoteStyle;
 
   public var healthBar:FlxBar;
-  public var healthBarBG:FunkinSprite;
+  public var healthBarBG:Null<FunkinSprite>;
   public var isBotPlayMode:Bool;
 
   final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
@@ -26,16 +26,32 @@ class HealthBar extends FlxSpriteGroup
     this.noteStyle = noteStyle;
     this.isBotPlayMode = isBotPlayMode;
     var padding = noteStyle.getHealthBarPadding();
-    healthBarBG = FunkinSprite.create(0, 0, noteStyle.getHealthBarAssetPath());
+    trace(Paths.image(noteStyle.getHealthBarAssetPath()));
+    healthBarBG = FunkinSprite.create(0, 0, "healthBar");
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - padding[0]), Std.int(healthBarBG.height - padding[1]), this, 'healthLerp', 0, 2);
     var scale = noteStyle.getHealthBarScale();
-    healthBarBG.scale.set(scale, scale);
-    healthBarBG.y = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    healthBarBG.screenCenter(X);
-    healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
-    noteStyle.applyHealthBarOffsets(this);
-    this.add(healthBarBG);
+    if (healthBarBG != null)
+    {
+      healthBarBG.scale.set(scale, scale);
+      healthBarBG.y = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
+      healthBarBG.screenCenter(X);
+      healthBarBG.scrollFactor.set(0, 0);
+      healthBarBG.zIndex = 800;
+      noteStyle.applyHealthBarOffsets(this);
+      this.add(healthBarBG);
+    }
+    else
+    {
+      healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
+      healthBarBG.scale.set(scale, scale);
+      healthBarBG.y = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
+      healthBarBG.screenCenter(X);
+      healthBarBG.scrollFactor.set(0, 0);
+      healthBarBG.zIndex = 800;
+      noteStyle.applyHealthBarOffsets(this);
+      this.add(healthBarBG);
+    }
+
     healthBar.x = healthBarBG.x + padding[0] / 2;
     healthBar.y = healthBarBG.y + padding[1] / 2;
     healthBar.scrollFactor.set();
