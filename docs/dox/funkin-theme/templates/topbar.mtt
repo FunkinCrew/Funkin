@@ -11,7 +11,7 @@
 	<div class="navbar">
 		<div class="navbar-inner" style="background:$$getHexValue(::themeColor::); border-bottom:1px solid rgba(0,0,0,.09)">
 			<div class="container">
-				<a ::cond api.isDefined("logo"):: ::attr href if(api.isDefined("website")) api.getValue("website") else api.config.rootPath:: class="brand"><img alt="" src="https://funkin.me/img/api/funkin-api-export.svg" width="150" height="50"/></a>
+				<a href="https://funkin.me/" class="brand"><img alt="The Funkin' Crew Inc main website" src="https://funkin.me/img/api/funkin-api-export.svg" width="150" height="50"/></a>
 				<a href="https://funkin.me/api-reference/" class="brand" style="color:$$getHexValue(::textColor::)">::if api.config.pageTitle!=null::::api.config.pageTitle::::else::API Documentation::end::</a>
 				<div class="brand">
 					<p>|</p>
