@@ -34,7 +34,7 @@ class NumberPreferenceItem extends TextMenuItem
   public var onChangeCallback:Null<Float->Void>;
   public var valueFormatter:Null<Float->String>;
   public var dragStepMultiplier:Float;
-  public var keyMultipler:Float;
+  public var keyMultiplier:Float;
 
   // Variables
   var holdDelayTimer:Float = HOLD_DELAY; // seconds
@@ -47,10 +47,10 @@ class NumberPreferenceItem extends TextMenuItem
    * @param callback Will get called every time the user changes the setting; use this to apply/save the setting.
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
    * @param dragStepMultiplier The multiplier for step value in case player does touch drag.
-   * @param keyMultipler The multipler for pressing Left or Right on a Number Preference Item while holding Shift.
+   * @param keyMultiplier The multipler for pressing Left or Right on a Number Preference Item while holding Shift.
    */
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
-      ?valueFormatter:Float->String, dragStepMultiplier:Float = 1, keyMultipler:Float = 5):Void
+      ?valueFormatter:Float->String, dragStepMultiplier:Float = 1, keyMultiplier:Float = 5):Void
   {
     super(x, y, name, function() {
       callback(this.currentValue);
@@ -68,7 +68,7 @@ class NumberPreferenceItem extends TextMenuItem
     this.onChangeCallback = callback;
     this.valueFormatter = valueFormatter;
     this.dragStepMultiplier = dragStepMultiplier;
-    this.keyMultipler = keyMultipler;
+    this.keyMultiplier = keyMultiplier;
 
     this.fireInstantly = true;
   }
@@ -101,7 +101,7 @@ class NumberPreferenceItem extends TextMenuItem
     {
       if (FlxG.keys.pressed.SHIFT)
       {
-        step = baseStep * keyMultipler;
+        step = baseStep * keyMultiplier;
       }
     }
     
