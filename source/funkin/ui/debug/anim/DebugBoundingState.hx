@@ -417,7 +417,7 @@ class DebugBoundingState extends FlxState
       {
         offsetAnimationDropdown.value = {id: targetLabel, text: targetLabel};
 
-        // Play the new animation if the IDs are the different.
+        // Play the new animation if the IDs are different.
         // Override the onion skin.
         playCharacterAnimation(currentAnimationName, true);
       }
