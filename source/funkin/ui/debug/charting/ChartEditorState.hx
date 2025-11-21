@@ -3422,7 +3422,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Setup timers and listerners to handle auto-save.
+   * Setup timers and listeners to handle auto-save.
    */
   function setupAutoSave():Void
   {
