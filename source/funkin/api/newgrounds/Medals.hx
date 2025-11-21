@@ -226,7 +226,7 @@ enum abstract Medal(Int) from Int to Int
 
   /**
    * That's How You Do It!
-   * Beat Tutoria l in Story Mode (on any difficulty).
+   * Beat Tutorial in Story Mode (on any difficulty).
    */
   var StoryTutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80906 #else 83647 #end;
 
