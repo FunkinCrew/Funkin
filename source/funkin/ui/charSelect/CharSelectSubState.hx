@@ -829,8 +829,7 @@ class CharSelectSubState extends MusicBeatSubState
         mobileAccept = true;
       }
       #end
-
-      //
+        
       if (controls.UI_UP) holdTmrUp += elapsed;
       if (controls.UI_UP_R)
       {
