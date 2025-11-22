@@ -744,8 +744,6 @@ class PlayState extends MusicBeatSubState
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     // Healthbar
-    // healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
-    // healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
     healthBar = new HealthBar(noteStyle, isBotPlayMode);
     scoreText = new FlxText(0, 0, 0, '', 20);
 
@@ -1892,23 +1890,6 @@ class PlayState extends MusicBeatSubState
     final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
       && !ControlsHandler.usingExternalInputDevice)
       || #end Preferences.downscroll;
-
-    // var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-
-    // healthBarBG.y = healthBarYPos;
-    // healthBarBG.screenCenter(X);
-    // healthBarBG.scrollFactor.set(0, 0);
-    // healthBarBG.zIndex = 800;
-    // add(healthBarBG);
-
-    // healthBar.x = healthBarBG.x + 4;
-    // healthBar.y = healthBarBG.y + 4;
-    // healthBar.parent = this;
-    // healthBar.parentVariable = 'healthLerp';
-    // healthBar.scrollFactor.set();
-    // healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    // healthBar.zIndex = 801;
-    // add(healthBar);
 
     add(healthBar);
 
