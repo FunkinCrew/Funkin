@@ -102,6 +102,8 @@ class CharSelectSubState extends MusicBeatSubState
     super();
     rememberedChar = params?.character ?? "";
 
+    cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
+
     grpCursors = new FlxTypedGroup<FunkinSprite>();
     grpHitboxes = new FlxTypedGroup<FlxObject>();
 
@@ -168,8 +170,6 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     loadAvailableCharacters();
-
-    cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
 
     bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
     if (bopInfo == null)
