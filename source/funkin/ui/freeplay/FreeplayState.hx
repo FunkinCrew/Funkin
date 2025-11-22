@@ -1764,12 +1764,12 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.BACK)
+    if (controls.BACK_P)
     {
       goBack();
     }
 
-    if (controls.ACCEPT && controls.active)
+    if (controls.ACCEPT_P && controls.active)
     {
       currentCapsule.onConfirm();
     }

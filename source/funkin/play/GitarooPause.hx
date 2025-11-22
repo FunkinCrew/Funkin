@@ -76,7 +76,7 @@ class GitarooPause extends MusicBeatState
   {
     if (controls.UI_LEFT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedLeft || SwipeUtil.justSwipedRight #end) changeThing();
 
-    if (controls.ACCEPT #if mobile || checkSelectionPress() #end)
+    if (controls.ACCEPT_P #if mobile || checkSelectionPress() #end)
     {
       if (replaySelect)
       {

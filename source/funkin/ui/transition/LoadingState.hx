@@ -157,7 +157,7 @@ class LoadingState extends MusicBeatSubState
     funkay.updateHitbox();
     // funkay.updateHitbox();
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT_P)
     {
       funkay.setGraphicSize(Std.int(funkay.width + 60));
       funkay.updateHitbox();

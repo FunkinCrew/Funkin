@@ -606,7 +606,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     _lastTime = FlxG.sound.music.time;
 
     // Back logic
-    if (controls.BACK && shouldOffset == 1)
+    if (controls.BACK_P && shouldOffset == 1)
     {
       exitCalibration(true);
       return;
@@ -853,7 +853,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     /*debugBeatText.x = receptor.x + receptor.width * 2;
         debugBeatText.y = receptor.y - 20;
-  
+
             debugBeatText.text = 'Beat: ' + b; */
 
     // receptor.angle += angleVel * elapsed;

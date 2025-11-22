@@ -898,7 +898,7 @@ class CharSelectSubState extends MusicBeatSubState
         selectSound.play(true);
       }
 
-      if (controls.BACK) goBack();
+      if (controls.BACK_P) goBack();
     }
 
     if (cursorX < -1)
@@ -924,7 +924,7 @@ class CharSelectSubState extends MusicBeatSubState
       var charId:String = availableChars.get(getCurrentSelected()) ?? Constants.DEFAULT_CHARACTER;
       if (charId != null) curChar = charId;
 
-      if (allowInput && pressedSelect && (controls.BACK #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
+      if (allowInput && pressedSelect && (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
       {
         mobileDeny = false;
         cursorConfirmed.visible = false;
@@ -960,7 +960,7 @@ class CharSelectSubState extends MusicBeatSubState
         selectTimer.cancel();
       }
 
-      if (allowInput && !pressedSelect && (controls.ACCEPT || mobileAccept))
+      if (allowInput && !pressedSelect && (controls.ACCEPT_P || mobileAccept))
       {
         mobileDeny = false;
         spamUp = false;
@@ -1006,7 +1006,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       gfChill.visible = false;
 
-      if (allowInput && (controls.ACCEPT || mobileAccept))
+      if (allowInput && (controls.ACCEPT_P || mobileAccept))
       {
         cursorDenied.visible = true;
 
@@ -1166,7 +1166,7 @@ class CharSelectSubState extends MusicBeatSubState
               case "idle":
                 lock.anim.play("selected");
               case "selected" | "clicked":
-                if (controls.ACCEPT) lock.anim.play("clicked", true);
+                if (controls.ACCEPT_P) lock.anim.play("clicked", true);
             }
           }
           else

@@ -774,7 +774,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (controls.PAUSE || controls.ACCEPT #if mobile || TouchUtil.pressAction() #end)
+    if (controls.PAUSE_P || controls.ACCEPT_P #if mobile || TouchUtil.pressAction() #end)
     {
       if (busy) return;
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)
