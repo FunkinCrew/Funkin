@@ -170,7 +170,7 @@ class FunkinMemory
     graphic.persist = true;
     permanentCachedTextures.set(key, graphic);
     forceRender(graphic);
-    currentCachedTextures = permanentCachedTextures;
+    currentCachedTextures = permanentCachedTextures.copy();
   }
 
   /**
@@ -211,7 +211,7 @@ class FunkinMemory
    */
   public inline static function preparePurgeTextureCache():Void
   {
-    previousCachedTextures = currentCachedTextures;
+    previousCachedTextures = currentCachedTextures.copy();
 
     for (graphicKey in previousCachedTextures.keys())
     {
@@ -221,7 +221,7 @@ class FunkinMemory
       }
     }
 
-    currentCachedTextures = permanentCachedTextures;
+    currentCachedTextures = permanentCachedTextures.copy();
   }
 
   /**
@@ -358,7 +358,7 @@ class FunkinMemory
 
   public static function preparePurgeSoundCache():Void
   {
-    previousCachedSounds = currentCachedSounds;
+    previousCachedSounds = currentCachedSounds.copy();
 
     for (key in previousCachedSounds.keys())
     {
@@ -368,7 +368,7 @@ class FunkinMemory
       }
     }
 
-    currentCachedSounds = permanentCachedSounds;
+    currentCachedSounds = permanentCachedSounds.copy();
   }
 
   /**
