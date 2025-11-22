@@ -47,7 +47,7 @@ class NumberPreferenceItem extends TextMenuItem
    * @param callback Will get called every time the user changes the setting; use this to apply/save the setting.
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
    * @param dragStepMultiplier The multiplier for step value in case player does touch drag.
-   * @param keyMultiplier The multipler for pressing Left or Right on a Number Preference Item while holding Shift.
+   * @param keyMultiplier The multiplier for pressing Left or Right on a Number Preference Item while holding Shift.
    */
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
       ?valueFormatter:Float->String, dragStepMultiplier:Float = 1, keyMultiplier:Float = 5):Void
