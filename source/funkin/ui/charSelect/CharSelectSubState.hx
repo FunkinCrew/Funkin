@@ -9,6 +9,7 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
 import funkin.data.freeplay.player.PlayerRegistry;
