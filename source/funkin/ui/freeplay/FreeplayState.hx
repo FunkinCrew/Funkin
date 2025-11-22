@@ -2980,6 +2980,8 @@ class FreeplayState extends MusicBeatSubState
 
     clearPreviews();
 
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -3054,8 +3056,6 @@ class FreeplayState extends MusicBeatSubState
     }
 
     previewTimers = [];
-
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
   }
 
   public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void
