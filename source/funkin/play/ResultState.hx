@@ -761,12 +761,15 @@ class ResultState extends MusicBeatSubState
 
     if (movingSongStuff)
     {
-      songName.x += speedOfTween.x;
-      difficulty.x += speedOfTween.x;
-      clearPercentSmall.x += speedOfTween.x;
-      songName.y += speedOfTween.y;
-      difficulty.y += speedOfTween.y;
-      clearPercentSmall.y += speedOfTween.y;
+      var speedX:Float = speedOfTween.x * 60 * elapsed;
+      var speedY:Float = speedOfTween.y * 60 * elapsed;
+
+      songName.x += speedX;
+      difficulty.x += speedX;
+      clearPercentSmall.x += speedX;
+      songName.y += speedY;
+      difficulty.y += speedY;
+      clearPercentSmall.y += speedY;
 
       if (songName.x + songName.width < 100)
       {
