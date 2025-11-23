@@ -303,7 +303,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputPressed.dispatch(
         {
           noteDirection: getDirectionForKey(key),
-          timestamp: timestamp
+          timestamp: timestamp,
+          keyCode: keyCode
         });
       _dirPressTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -325,7 +326,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch(
         {
           noteDirection: getDirectionForKey(key),
-          timestamp: timestamp
+          timestamp: timestamp,
+          keyCode: keyCode
         });
       _dirReleaseTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -349,7 +351,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputPressed.dispatch(
         {
           noteDirection: getDirectionForButton(gamepad, buttonId),
-          timestamp: timestamp
+          timestamp: timestamp,
+          keyCode: button // implicit cast to int
         });
       _dirPressTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -373,7 +376,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch(
         {
           noteDirection: getDirectionForButton(gamepad, buttonId),
-          timestamp: timestamp
+          timestamp: timestamp,
+          keyCode: button // implicit cast to int
         });
       _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -491,4 +495,10 @@ typedef PreciseInputEvent =
    * The timestamp of the input. Measured in nanoseconds.
    */
   timestamp:Int64,
+
+  /**
+   * The key that was used for the input.
+   * Used to distinguish between multiple inputs for the same direction.
+   */
+  keyCode:Int
 };

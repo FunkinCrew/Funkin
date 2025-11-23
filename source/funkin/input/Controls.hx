@@ -28,26 +28,10 @@ class Controls extends FlxActionSet
   var _ui_left = new FunkinAction(Action.UI_LEFT);
   var _ui_right = new FunkinAction(Action.UI_RIGHT);
   var _ui_down = new FunkinAction(Action.UI_DOWN);
-  var _ui_upP = new FunkinAction(Action.UI_UP_P);
-  var _ui_leftP = new FunkinAction(Action.UI_LEFT_P);
-  var _ui_rightP = new FunkinAction(Action.UI_RIGHT_P);
-  var _ui_downP = new FunkinAction(Action.UI_DOWN_P);
-  var _ui_upR = new FunkinAction(Action.UI_UP_R);
-  var _ui_leftR = new FunkinAction(Action.UI_LEFT_R);
-  var _ui_rightR = new FunkinAction(Action.UI_RIGHT_R);
-  var _ui_downR = new FunkinAction(Action.UI_DOWN_R);
   var _note_up = new FunkinAction(Action.NOTE_UP);
   var _note_left = new FunkinAction(Action.NOTE_LEFT);
   var _note_right = new FunkinAction(Action.NOTE_RIGHT);
   var _note_down = new FunkinAction(Action.NOTE_DOWN);
-  var _note_upP = new FunkinAction(Action.NOTE_UP_P);
-  var _note_leftP = new FunkinAction(Action.NOTE_LEFT_P);
-  var _note_rightP = new FunkinAction(Action.NOTE_RIGHT_P);
-  var _note_downP = new FunkinAction(Action.NOTE_DOWN_P);
-  var _note_upR = new FunkinAction(Action.NOTE_UP_R);
-  var _note_leftR = new FunkinAction(Action.NOTE_LEFT_R);
-  var _note_rightR = new FunkinAction(Action.NOTE_RIGHT_R);
-  var _note_downR = new FunkinAction(Action.NOTE_DOWN_R);
   var _accept = new FunkinAction(Action.ACCEPT);
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
@@ -225,22 +209,62 @@ class Controls extends FlxActionSet
   public var ACCEPT(get, never):Bool;
 
   inline function get_ACCEPT()
-    return _accept.check();
+    return _accept.checkPressed();
+
+  public var ACCEPT_P(get, never):Bool;
+
+  inline function get_ACCEPT_P()
+    return _accept.checkJustPressed();
+
+  public var ACCEPT_R(get, never):Bool;
+
+  inline function get_ACCEPT_R()
+    return _accept.checkJustReleased();
 
   public var BACK(get, never):Bool;
 
   inline function get_BACK()
-    return _back.check();
+    return _back.checkPressed();
+
+  public var BACK_P(get, never):Bool;
+
+  inline function get_BACK_P()
+    return _back.checkJustPressed();
+
+  public var BACK_R(get, never):Bool;
+
+  inline function get_BACK_R()
+    return _back.checkJustReleased();
 
   public var PAUSE(get, never):Bool;
 
   inline function get_PAUSE()
-    return _pause.check();
+    return _pause.checkPressed();
+
+  public var PAUSE_P(get, never):Bool;
+
+  inline function get_PAUSE_P()
+    return _pause.checkJustPressed();
+
+  public var PAUSE_R(get, never):Bool;
+
+  inline function get_PAUSE_R()
+    return _pause.checkJustReleased();
 
   public var RESET(get, never):Bool;
 
   inline function get_RESET()
-    return _reset.check();
+    return _reset.checkPressed();
+
+  public var RESET_P(get, never):Bool;
+
+  inline function get_RESET_P()
+    return _reset.checkJustPressed();
+
+  public var RESET_R(get, never):Bool;
+
+  inline function get_RESET_R()
+    return _reset.checkJustReleased();
 
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
@@ -505,7 +529,7 @@ class Controls extends FlxActionSet
    * @param func
    * @return ->Void)
    */
-  function forEachBound(control:Control, func:FlxActionDigital->FlxInputState->Void)
+  function forEachBound(control:Control, func:FunkinAction->FlxInputState->Void)
   {
     switch (control)
     {
@@ -542,13 +566,21 @@ class Controls extends FlxActionSet
         func(_note_down, JUST_PRESSED);
         func(_note_down, JUST_RELEASED);
       case ACCEPT:
+        func(_accept, PRESSED);
         func(_accept, JUST_PRESSED);
+        func(_accept, JUST_RELEASED);
       case BACK:
+        func(_back, PRESSED);
         func(_back, JUST_PRESSED);
+        func(_back, JUST_RELEASED);
       case PAUSE:
+        func(_pause, PRESSED);
         func(_pause, JUST_PRESSED);
+        func(_pause, JUST_RELEASED);
       case RESET:
+        func(_reset, PRESSED);
         func(_reset, JUST_PRESSED);
+        func(_reset, JUST_RELEASED);
       #if FEATURE_SCREENSHOTS
       case WINDOW_SCREENSHOT:
         func(_window_screenshot, JUST_PRESSED);
@@ -1402,8 +1434,6 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool
   {
-    // The normal
-
     // Make sure we only update the inputs once per frame.
     var key = '${filterTrigger}:${filterDevice}';
     var cacheEntry = cache.get(key);

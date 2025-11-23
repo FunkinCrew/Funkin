@@ -337,7 +337,7 @@ class BaseCharacter extends Bopper
     {
       if (PlayState.instance.iconP1 == null)
       {
-        trace('[WARN] Player 1 health icon not found!');
+        trace(' WARNING '.bold().bg_yellow() + ' Player 1 health icon not found!');
         return;
       }
       PlayState.instance.iconP1.configure(_data?.healthIcon);
@@ -347,7 +347,7 @@ class BaseCharacter extends Bopper
     {
       if (PlayState.instance.iconP2 == null)
       {
-        trace('[WARN] Player 2 health icon not found!');
+        trace(' WARNING '.bold().bg_yellow() + ' Player 2 health icon not found!');
         return;
       }
       PlayState.instance.iconP2.configure(_data?.healthIcon);

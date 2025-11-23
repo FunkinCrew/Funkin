@@ -68,7 +68,7 @@ class FrameBuffer
   {
     camera.clearDrawStack();
     camera.canvas.graphics.clear();
-    camera.fill(camera.bgColor.to24Bit(), camera.useBgAlphaBlending, camera.bgColor.alphaFloat);
+    camera.fill(camera.bgColor.rgb, camera.useBgAlphaBlending, camera.bgColor.alphaFloat);
     #if FLX_DEBUG
     camera.debugLayer.graphics.clear();
     #end

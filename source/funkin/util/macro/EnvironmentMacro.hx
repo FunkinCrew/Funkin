@@ -5,12 +5,11 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import sys.FileSystem;
 import sys.io.File;
-import funkin.util.AnsiUtil;
-import funkin.util.AnsiUtil.AnsiCode;
 import funkin.util.macro.MacroUtil;
 #end
 
 using StringTools;
+using funkin.util.AnsiUtil;
 
 /**
  * A macro class that loads environment variables from a .env file for compile-time injection.
@@ -101,8 +100,7 @@ class EnvironmentMacro
                   }
                   else
                   {
-                    warning('${AnsiUtil.apply('Value for ', [BRIGHT_RED])} ${AnsiUtil.apply(field.name, [BOLD, BRIGHT_RED])} ${AnsiUtil.apply(' not found in the environment file.', [BRIGHT_RED])}',
-                      field.pos);
+                    warning('Value for '.bright_red() + field.name.bold().bright_red() + ' not found in the environment file.'.bright_red(), field.pos);
                   }
 
                   buildFields[i].kind = FVar(t, e);
@@ -235,18 +233,18 @@ class EnvironmentMacro
     var lineText = if (infos.line > 0 && infos.line <= lines.length) lines[Std.int(infos.line - 1)] else "";
 
     // highlight code line
-    lineText = AnsiUtil.apply(lineText, [BOLD]);
+    lineText = lineText.bold();
 
     // underline from min to max (at least one ^)
     var underlineLen = Std.int(Math.max(1, infos.max - infos.min));
-    var underline = AnsiUtil.apply(StringTools.lpad("", " ", Std.int(infos.column - 1)) + StringTools.rpad("", "^", underlineLen), [BOLD, BRIGHT_RED]);
+    var underline = StringTools.lpad("", " ", Std.int(infos.column - 1)) + StringTools.rpad("", "^", underlineLen).bold().bright_red();
 
     // header like Haxe diagnostics
-    var header_title = AnsiUtil.apply(" ENVIRONMENT ", [BOLD, BG_RED]);
+    var header_title = " ENVIRONMENT ".bold().bg_red();
     var header = '${header_title} ${infos.file}:${infos.line}: characters ${infos.column}-${infos.column + underlineLen}\n';
 
     // body with code + pointer + message
-    var body = '  ${infos.line} |   ${lineText}\n' + '     |   ${underline}\n' + '     |  ${msg}\n';
+    var body = ' ${infos.line} |   ${lineText}\n' + '    |   ${underline}\n' + '    |  ${msg}\n';
 
     Sys.println(header + "\n" + body);
   }

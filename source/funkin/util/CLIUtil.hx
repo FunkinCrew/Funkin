@@ -21,7 +21,7 @@ class CLIUtil
     gameDir = Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
     #elseif ios
     // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled and no solution is found...
-    trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');
+    trace(' WARNING '.bold().bg_yellow() + ' : Reseting the Current Working Directory is unavailable on iOS targets');
     gameDir = cwd;
     #elseif mac
     gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));

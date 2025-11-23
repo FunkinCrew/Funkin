@@ -44,7 +44,7 @@ class Preferences
     #else
     var save:Save = Save.instance;
     save.options.framerate = value;
-    save.flush();
+    Save.system.flush();
     FlxG.updateFramerate = value;
     FlxG.drawFramerate = value;
     return value;
@@ -74,7 +74,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.naughtyness = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -93,7 +93,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.downscroll = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -112,7 +112,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.flashingLights = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -131,20 +131,20 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.zoomCamera = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * Always disabled on mobile.
+   * Always disabled on release mobile builds.
    * @default `Off`
    */
   public static var debugDisplay(get, set):DebugDisplayMode;
 
   static function get_debugDisplay():DebugDisplayMode
   {
-    #if mobile
+    #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
     #end
 
@@ -157,7 +157,7 @@ class Preferences
 
     var save = Save.instance;
     save.options.debugDisplay = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -178,7 +178,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.debugDisplayBGOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -219,7 +219,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.hapticsMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -238,7 +238,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.hapticsIntensityMultiplier = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -263,30 +263,9 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.autoPause = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
-
-  #if FEATURE_VIDEO_SUBTITLES
-  /**
-   * If enabled, subtitles will be shown on video cutscenes.
-   * @default `true`
-   */
-  public static var videoSubtitles(get, set):Bool;
-
-  static function get_videoSubtitles():Bool
-  {
-    return Save?.instance?.options?.videoSubtitles ?? true;
-  }
-
-  static function set_videoSubtitles(value:Bool):Bool
-  {
-    var save:Save = Save.instance;
-    save.options.videoSubtitles = value;
-    save.flush();
-    return value;
-  }
-  #end
 
   /**
    * If enabled, the game will automatically launch in fullscreen on startup.
@@ -303,7 +282,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.autoFullscreen = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -323,7 +302,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.globalOffset = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -370,7 +349,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.vsyncMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -392,7 +371,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.unlockedFramerate = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -432,7 +411,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.strumlineBackgroundOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -451,7 +430,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.shouldHideMouse = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -470,7 +449,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.fancyPreview = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -489,7 +468,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.previewOnSave = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -541,6 +520,25 @@ class Preferences
     Main.debugDisplay.backgroundOpacity = value;
   }
 
+  /**
+   * If enabled, subtitles will appear during some songs and cutscenes.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.
@@ -559,7 +557,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.mobileOptions.screenTimeout = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -578,7 +576,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.controlsScheme = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -603,7 +601,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.noAds = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
   #end

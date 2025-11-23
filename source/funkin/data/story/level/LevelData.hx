@@ -114,4 +114,11 @@ typedef LevelPropData =
   @:default([])
   @:optional
   var animations:Array<AnimationData>;
+
+  /**
+   * Flips the sprite on X axis.
+   */
+  @:default(false)
+  @:optional
+  var flipX:Null<Bool>;
 }

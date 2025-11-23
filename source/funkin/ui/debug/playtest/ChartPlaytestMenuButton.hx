@@ -1,5 +1,6 @@
 package funkin.ui.debug.playtest;
 
+#if sys
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -104,3 +105,4 @@ class ChartPlaytestMenuButtonListToggle extends ChartPlaytestMenuButtonBase
     return '$title: $selectedItem';
   }
 }
+#end

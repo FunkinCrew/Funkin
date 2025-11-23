@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          trace('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -162,19 +162,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         if (variMeta != null)
         {
           _metadata.set(variMeta.variation, variMeta);
-          trace('  Loaded variation: $vari');
+          trace(' Loaded variation: $vari');
         }
         else
         {
           FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
-          trace('  FAILED to load variation: $vari');
+          trace(' FAILED to load variation: $vari');
         }
       }
     }
 
     if (_metadata.size() == 0)
     {
-      trace('[WARN] Could not find song data for songId: $id');
+      trace(' WARNING '.bold().bg_yellow() + ' Could not find song data for songId: $id');
       return;
     }
 

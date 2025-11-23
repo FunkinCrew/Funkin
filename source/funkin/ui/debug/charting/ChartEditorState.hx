@@ -45,9 +45,11 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
+import funkin.play.components.Subtitles;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -641,6 +643,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var showNoteKindIndicators:Bool = false;
 
   /**
+   * Toggles the subtitles.
+   */
+  var showSubtitles(default, set):Bool = false;
+
+  function set_showSubtitles(value:Bool):Bool
+  {
+    showSubtitles = value;
+
+    if (subtitles != null)
+    {
+      subtitles.exists = showSubtitles;
+    }
+
+    return showSubtitles;
+  }
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -996,12 +1015,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.instance.chartEditorHasBackup && ChartEditorImportExportHandler.getLatestBackupPath() != null;
+    return Save.instance.chartEditorHasBackup.value && ChartEditorImportExportHandler.getLatestBackupPath() != null;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.instance.chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup.value = value;
   }
 
   /**
@@ -1916,6 +1935,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewIndicators:MenuCheckBox;
 
   /**
+   * The `View -> Subtitles` menu item.
+   */
+  var menubarItemViewSubtitles:MenuCheckBox;
+
+  /**
    * The `View -> Increase Difficulty` menu item.
    */
   var menubarItemDifficultyUp:MenuItem;
@@ -2227,6 +2251,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBG:Null<FlxSprite> = null;
 
   /**
+   * The subtitles to display song's lyrics.
+   */
+  var subtitles:Null<Subtitles> = null;
+
+  /**
    * The sprite group containing the note graphics.
    * Only displays a subset of the data from `currentSongChartNoteData`,
    * and kills notes that are off-screen to be recycled later.
@@ -2303,6 +2332,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  public override function reloadAssets()
+  {
+    // If PlayState isn't open, do a regular reload.
+    if (!Std.isOfType(this.subState, PlayState))
+    {
+      super.reloadAssets();
+      return;
+    }
+
+    funkin.modding.PolymodHandler.forceReloadAssets();
+
+    // Create a new instance of the current substate, so old data is cleared.
+    this.resetSubState();
+
+    @:privateAccess
+    testSongInPlayState(PlayState.lastParams.minimalMode);
+  }
+
   override function create():Void
   {
     // super.create() must be called first, the HaxeUI components get created here.
@@ -2337,6 +2384,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buildAdditionalUI();
     populateOpenRecentMenu();
     this.applyPlatformShortcutText();
+
+    createSubtitles();
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
@@ -2425,27 +2474,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (previousWorkingFilePaths[0] == null)
     {
-      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles);
+      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles.value);
     }
     else
     {
-      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles);
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles.value);
     }
-    noteSnapQuantIndex = save.chartEditorNoteQuant;
-    currentLiveInputStyle = save.chartEditorLiveInputStyle;
-    isViewDownscroll = save.chartEditorDownscroll;
-    showNoteKindIndicators = save.chartEditorShowNoteKinds;
-    playtestStartTime = save.chartEditorPlaytestStartTime;
-    currentTheme = save.chartEditorTheme;
-    metronomeVolume = save.chartEditorMetronomeVolume;
-    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
-    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
-    this.welcomeMusic.active = save.chartEditorThemeMusic;
 
-    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume * 100);
-    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume * 100);
-    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume * 100);
-    menubarItemPlaybackSpeed.value = Std.int(save.chartEditorPlaybackSpeed * 100.0);
+    noteSnapQuantIndex = save.chartEditorNoteQuant.value;
+    currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
+    isViewDownscroll = save.chartEditorDownscroll.value;
+    showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
+    showSubtitles = save.chartEditorShowSubtitles.value;
+    playtestStartTime = save.chartEditorPlaytestStartTime.value;
+    currentTheme = save.chartEditorTheme.value;
+    metronomeVolume = save.chartEditorMetronomeVolume.value;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
+    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
+    this.welcomeMusic.active = save.chartEditorThemeMusic.value;
+
+    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
+    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
+    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
+    menubarItemPlaybackSpeed.value = Std.int(save.chartEditorPlaybackSpeed.value * 100.0);
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -2456,26 +2507,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var filteredWorkingFilePaths:Array<String> = [];
     for (chartPath in previousWorkingFilePaths)
       if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
-    save.chartEditorPreviousFiles = filteredWorkingFilePaths;
+    save.chartEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
-    save.chartEditorHasBackup = hasBackup;
+    save.chartEditorHasBackup.value = hasBackup;
 
-    save.chartEditorNoteQuant = noteSnapQuantIndex;
-    save.chartEditorLiveInputStyle = currentLiveInputStyle;
-    save.chartEditorDownscroll = isViewDownscroll;
-    save.chartEditorShowNoteKinds = showNoteKindIndicators;
-    save.chartEditorPlaytestStartTime = playtestStartTime;
-    save.chartEditorTheme = currentTheme;
-    save.chartEditorMetronomeVolume = metronomeVolume;
-    save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
-    save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
-    save.chartEditorThemeMusic = this.welcomeMusic.active;
+    save.chartEditorNoteQuant.value = noteSnapQuantIndex;
+    save.chartEditorLiveInputStyle.value = currentLiveInputStyle;
+    save.chartEditorDownscroll.value = isViewDownscroll;
+    save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
+    save.chartEditorPlaytestStartTime.value = playtestStartTime;
+    save.chartEditorTheme.value = currentTheme;
+    save.chartEditorMetronomeVolume.value = metronomeVolume;
+    save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
+    save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
 
-    save.chartEditorInstVolume = menubarItemVolumeInstrumental.value / 100.0;
-    save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value / 100.0;
-    save.chartEditorOpponentVoiceVolume = menubarItemVolumeVocalsOpponent.value / 100.0;
-    save.chartEditorPlaybackSpeed = menubarItemPlaybackSpeed.value / 100.0;
+    save.chartEditorInstVolume.value = menubarItemVolumeInstrumental.value / 100.0;
+    save.chartEditorPlayerVoiceVolume.value = menubarItemVolumeVocalsPlayer.value / 100.0;
+    save.chartEditorOpponentVoiceVolume.value = menubarItemVolumeVocalsOpponent.value / 100.0;
+    save.chartEditorPlaybackSpeed.value = menubarItemPlaybackSpeed.value / 100.0;
   }
 
   public function populateOpenRecentMenu():Void
@@ -2654,6 +2704,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(audioWaveforms);
   }
 
+  function createSubtitles():Void
+  {
+    subtitles = new Subtitles(0, 78);
+    subtitles.zIndex = 100;
+    subtitles.cameras = [uiCamera];
+    add(subtitles);
+  }
+
   function buildMeasureTicks():Void
   {
     measureTicks = new ChartEditorMeasureTicks(this);
@@ -2765,7 +2823,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewViewport == null)
     {
-      trace('[WARN] Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      trace(' WARNING '.bold().bg_yellow() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
       return;
     }
 
@@ -3179,6 +3237,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
     menubarItemViewIndicators.selected = showNoteKindIndicators;
 
+    menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
+    menubarItemViewSubtitles.selected = showSubtitles;
+
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
 
@@ -3224,6 +3285,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemThemeMusic.onChange = event -> {
       this.welcomeMusic.active = event.value;
+      Save.instance.chartEditorThemeMusic.value = event.value;
+
       fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     };
     menubarItemThemeMusic.selected = this.welcomeMusic.active;
@@ -3359,7 +3422,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
-   * Setup timers and listerners to handle auto-save.
+   * Setup timers and listeners to handle auto-save.
    */
   function setupAutoSave():Void
   {
@@ -6864,6 +6927,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
+  }
+
+  public function loadSubtitles():Void
+  {
+    var subtitlesFile:String = 'songs/${currentSongId}/subtitles/song-lyrics';
+    if (selectedVariation != Constants.DEFAULT_VARIATION)
+    {
+      subtitlesFile += '-${selectedVariation}';
+    }
+    subtitles.assignSubtitles(subtitlesFile, audioInstTrack);
   }
 
   public function postLoadVocals():Void

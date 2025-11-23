@@ -431,7 +431,7 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT)
+      if (controls.ACCEPT_P)
       {
         selectLevel();
       }
@@ -452,7 +452,7 @@ class StoryMenuState extends MusicBeatState
       #end
     }
 
-    if (controls.BACK) goBack();
+    if (controls.BACK_P) goBack();
   }
 
   /**
@@ -619,6 +619,10 @@ class StoryMenuState extends MusicBeatState
     Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
     new FlxTimer().start(1, function(tmr:FlxTimer) {
+      #if mobile
+      FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      #end
+
       FlxTransitionableState.skipNextTransIn = false;
       FlxTransitionableState.skipNextTransOut = false;
 

@@ -11,6 +11,7 @@ import haxe.ds.Map;
 import haxe.xml.Printer;
 
 using StringTools;
+using tools.AnsiUtil;
 
 /**
  * This HXP performs the functions of a Lime `project.xml` file,
@@ -115,7 +116,8 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = [
     "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFCExtension"
+    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.AudioSession"
   ];
 
   /**
@@ -295,6 +297,13 @@ class Project extends HXProject
    * This is used to provide Discord Rich Presence support.
    */
   static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
+
+  /**
+   * `-DFEATURE_LOST_FOCUS_VOLUME`
+   * If this flag is enabled, the game will reduce application volume, when lost focus.
+   * Allowed only on Desktop targets.
+   */
+  static final FEATURE_LOST_FOCUS_VOLUME:FeatureFlag = "FEATURE_LOST_FOCUS_VOLUME";
 
   /**
    * `-DFEATURE_FILE_DROP`
@@ -493,6 +502,13 @@ class Project extends HXProject
    */
   static final FEATURE_VIDEO_SUBTITLES:FeatureFlag = "FEATURE_VIDEO_SUBTITLES";
 
+  /**
+   * `-DFEATURE_DEBUG_DISPLAY`
+   * If this flag is enabled, the game will be able to show a framerate counter with the memory and current FPS
+   * This flag is disabled on non debug mobile builds
+   */
+  static final FEATURE_DEBUG_DISPLAY:FeatureFlag = "FEATURE_DEBUG_DISPLAY";
+
   //
   // CONFIGURATION FUNCTIONS
   //
@@ -537,6 +553,11 @@ class Project extends HXProject
     if (isIOS())
     {
       configureIOS();
+    }
+
+    if (isCPP())
+    {
+      buildHxCppTools();
     }
 
     if (!isDisplay())
@@ -736,9 +757,13 @@ class Project extends HXProject
     {
       info('Target Language: C#');
     }
-    else
+    else if (isCPP())
     {
       info('Target Language: C++');
+    }
+    else
+    {
+      error('Unsupported target language!');
     }
 
     for (arch in this.architectures)
@@ -844,6 +869,8 @@ class Project extends HXProject
     // We don't want testers to accidentally leak songs to their Discord friends!
     FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
+    FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
+
     // Newgrounds features
     FEATURE_NEWGROUNDS.apply(this, !isMobile());
     FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
@@ -857,7 +884,9 @@ class Project extends HXProject
     FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this) || FEATURE_CHART_EDITOR.isEnabled(this) || FEATURE_STAGE_EDITOR.isEnabled(this));
+    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this)
+      || FEATURE_CHART_EDITOR.isEnabled(this)
+      || FEATURE_STAGE_EDITOR.isEnabled(this));
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
@@ -891,6 +920,10 @@ class Project extends HXProject
     // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
     // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
     FEATURE_COMPRESSED_TEXTURES.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+
+    // Turns the debug display off if you are on a non debug mobile build
+    // Desktop (Native and Web) always has it | Used for mobile debugging purposes
+    FEATURE_DEBUG_DISPLAY.apply(this, !isMobile() || FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
     renderFlagsTable();
   }
@@ -1069,6 +1102,9 @@ class Project extends HXProject
       addHaxeMacro("include('haxe.ui.containers.properties')");
     }
 
+    // Ensure all flixel-animate classes are available at runtime.
+    addHaxeMacro("include('animate')");
+
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
     addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
@@ -1155,10 +1191,7 @@ class Project extends HXProject
     action.set('android:name', 'android.intent.action.VIEW');
     intentFilter.addChild(action);
 
-    final intentFilterCategories:Array<String> = [
-      "android.intent.category.DEFAULT",
-      "android.intent.category.BROWSABLE"
-    ];
+    final intentFilterCategories:Array<String> = ["android.intent.category.DEFAULT", "android.intent.category.BROWSABLE"];
 
     for (categoryName in intentFilterCategories)
     {
@@ -1168,22 +1201,25 @@ class Project extends HXProject
     }
 
     final intentFilterDatas:Map<String, Array<String>> = [
-      "android:mimeType"    => ["application/zip"],
+      "android:mimeType" => ["application/zip"],
       // When this is added, it makes the game show up only when it's a FNFC file.
       // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
       // "android:host"        => ["*"],
-      "android:scheme"      => ["file", "content"],
+      "android:scheme" => ["file", "content"],
       // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
       "android:pathPattern" => [
-        ".*\\.fnfc", ".*\\..*\\.fnfc",
+        ".*\\.fnfc",
+        ".*\\..*\\.fnfc",
         ".*\\..*\\..*\\.fnfc",
         ".*\\..*\\..*\\..*\\.fnfc",
         ".*\\..*\\..*\\..*\\..*\\.fnfc"
       ]
     ];
 
-    for (key => values in intentFilterDatas) {
-      for (value in values) {
+    for (key => values in intentFilterDatas)
+    {
+      for (value in values)
+      {
         final data:Xml = Xml.createElement("data");
         data.set(key, value);
         intentFilter.addChild(data);
@@ -1201,7 +1237,6 @@ class Project extends HXProject
         config.get('android.activity').xmlChildren = [Printer.print(intentFilter, true)];
       }
     }
-
 
     final extensions:Null<Array<String>> = config.getArrayString('android.extension');
 
@@ -1281,7 +1316,7 @@ class Project extends HXProject
     }
 
     addHaxelib('polymod'); // Modding framework
-    addHaxelib('flxanimate'); // Texture atlas rendering
+    addHaxelib('flixel-animate'); // Texture atlas rendering
 
     addHaxelib('json2object'); // JSON parsing
     addHaxelib('jsonpath'); // JSON parsing
@@ -1385,14 +1420,16 @@ class Project extends HXProject
     addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
     addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/animation-editor', "default");
+    if (!HARDCODED_CREDITS.isEnabled(this))
+    {
+      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
+    }
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this))
-      removeAssetPath('assets/preload/data/ui/stage-editor', "default");
+    if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+
+    if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
     // Font assets
     var shouldEmbedFonts = true;
@@ -1450,6 +1487,9 @@ class Project extends HXProject
 
   function clearAssets():Void
   {
+    // Don't run on non-build commands.
+    if (!isBuild()) return;
+
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
@@ -1457,13 +1497,21 @@ class Project extends HXProject
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
-    if (isMacHost())
+    switch (platformType)
     {
-      assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
-    }
-    else
-    {
-      assetsPath = Path.join([basePath, "assets"]);
+      case PlatformType.DESKTOP:
+        if (isMacHost())
+        {
+          assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
+        }
+        else
+        {
+          assetsPath = Path.join([basePath, "assets"]);
+        }
+
+      default:
+        // Don't do this for other platform types yet.
+        return;
     }
 
     if (sys.FileSystem.exists(assetsPath))
@@ -1693,6 +1741,11 @@ class Project extends HXProject
     return this.targetFlags.exists("cs");
   }
 
+  public function isCPP():Bool
+  {
+    return this.defines.exists("cpp");
+  }
+
   public function isDisplay():Bool
   {
     return this.command == "display";
@@ -1701,6 +1754,11 @@ class Project extends HXProject
   public function isClean():Bool
   {
     return this.command == "clean";
+  }
+
+  public function isBuild():Bool
+  {
+    return this.command == "test" || this.command == "build";
   }
 
   public function isDebug():Bool
@@ -1818,23 +1876,23 @@ class Project extends HXProject
   }
 
   /**
-	 * Remove an asset from the game build.
-	 * @param path The path the asset is located at.
-	 */
-	public function removeAsset(path:String, ?library:String):Void
+   * Remove an asset from the game build.
+   * @param path The path the asset is located at.
+   */
+  public function removeAsset(path:String, ?library:String):Void
   {
-		for (asset in this.assets)
+    for (asset in this.assets)
     {
-			if (asset.sourcePath == path)
+      if (asset.sourcePath == path)
       {
-				if (library != null && asset.library != library) continue;
+        if (library != null && asset.library != library) continue;
 
-				this.assets.remove(asset);
-				// info("Removed asset: " + path);
-				break;
-			}
-		}
-	}
+        this.assets.remove(asset);
+        // info("Removed asset: " + path);
+        break;
+      }
+    }
+  }
 
   /**
    * Add an entire path of assets to the game build.
@@ -1870,7 +1928,7 @@ class Project extends HXProject
     }
     else
     {
-      // info('  Found asset path "${path}".');
+      // info(' Found asset path "${path}".');
     }
 
     for (file in sys.FileSystem.readDirectory(path))
@@ -1894,39 +1952,48 @@ class Project extends HXProject
   }
 
   /**
-	 * Remove all assets in a path recursively from the game build.
-	 * @param path The path the assets are located at.
-	 * @param library (optional) The asset library to remove the assets from. Defaults to all libraries.
-	 */
-	public function removeAssetPath(path:String, ?library:String):Void {
-		// Argument parsing.
-		if (path == "")
-			return;
+   * Remove all assets in a path recursively from the game build.
+   * @param path The path the assets are located at.
+   * @param library (optional) The asset library to remove the assets from. Defaults to all libraries.
+   */
+  public function removeAssetPath(path:String, ?library:String):Void
+  {
+    // Argument parsing.
+    if (path == "") return;
 
-		// Validate path.
-		if (!sys.FileSystem.exists(path)) {
-			error('Could not find asset path "${path}".');
-		} else if (!sys.FileSystem.isDirectory(path)) {
-			error('Could not parse asset path "${path}", expected a directory.');
-		} else {
-			// info('  Found asset path "${path}".');
-		}
+    // Validate path.
+    if (!sys.FileSystem.exists(path))
+    {
+      error('Could not find asset path "${path}".');
+    }
+    else if (!sys.FileSystem.isDirectory(path))
+    {
+      error('Could not parse asset path "${path}", expected a directory.');
+    }
+    else
+    {
+      // info('  Found asset path "${path}".');
+    }
 
-		for (exclude in EXCLUDE_ASSETS)
-		{
-			// Surely Eric got a better way to solve this.
-			if (path.contains(exclude.replace('*', ''))) return;
-		}
+    for (exclude in EXCLUDE_ASSETS)
+    {
+      // Surely Eric got a better way to solve this.
+      if (path.contains(exclude.replace('*', ''))) return;
+    }
 
-		for (file in sys.FileSystem.readDirectory(path)) {
-			if (sys.FileSystem.isDirectory('${path}/${file}')) {
-				// Attempt to recursively remove all assets in the directory.
-				removeAssetPath('${path}/${file}', library);
-			} else {
-				removeAsset('${path}/${file}', library);
-			}
-		}
-	}
+    for (file in sys.FileSystem.readDirectory(path))
+    {
+      if (sys.FileSystem.isDirectory('${path}/${file}'))
+      {
+        // Attempt to recursively remove all assets in the directory.
+        removeAssetPath('${path}/${file}', library);
+      }
+      else
+      {
+        removeAsset('${path}/${file}', library);
+      }
+    }
+  }
 
   /**
    * Add an asset library to the game build.
@@ -1968,7 +2035,7 @@ class Project extends HXProject
     if (process.exitCode() != 0)
     {
       var message = process.stderr.readAll().toString();
-      error('[ERROR] Could not determine current git commit; is this a proper Git repository?');
+      error('Could not determine current git commit; is this a proper Git repository?');
     }
 
     var commitHash:String = process.stdout.readLine();
@@ -1980,7 +2047,7 @@ class Project extends HXProject
   }
 
   @SuppressWarnings('checkstyle:Dynamic')
-  static function checkLibraries():Void
+  function checkLibraries():Void
   {
     var outdatedLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
@@ -2008,7 +2075,7 @@ class Project extends HXProject
             outdatedLibraries.set(libraryName, [libraryCurrentVersion, library.version]);
           }
         case 'git':
-          if (libraryDev != "")
+          if (libraryDev != "" && !isLibraryGitDev(libraryName))
           {
             outdatedLibraries.set(libraryName, [libraryDev, library.ref]);
           }
@@ -2016,16 +2083,21 @@ class Project extends HXProject
           {
             var commitHash:String = readLibraryGitCommitHash(libraryName);
 
-            if (commitHash != library.ref && commitHash != "") outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            if (commitHash != library.ref && commitHash != "")
+            {
+              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            }
           }
       }
     }
 
     if (Lambda.count(outdatedLibraries) > 0)
     {
-      Sys.println("\x1b[1;33m\nWARNING: The following haxelibs diverge from the versions set in hmm.json."
-        + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
-        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n\x1b[0m");
+      warn("The following haxelibs diverge from the versions set in hmm.json.".bold().yellow());
+      warn("They may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library.".bold().yellow());
+      warn("You may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.".bold().yellow());
+
+      Sys.println('');
 
       for (libraryName in outdatedLibraries.keys())
       {
@@ -2035,18 +2107,18 @@ class Project extends HXProject
         var outdatedVersion:String = versions[0];
         var expectedVersion:String = versions[1];
 
-        var isDev:Bool = outdatedVersion.contains("/");
-
-        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? "\x1b[1;34m (Development Build)\x1b[0m" : ""));
-        Sys.println("   \x1b[38;5;203mCurrent version: " + outdatedVersion + "\x1b[0m");
-        Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m\n");
+        Sys.println("- " + libraryName.replace(",", ".") + (haxe.io.Path.isAbsolute(outdatedVersion) ? " (Development Build)".blue().bold() : ""));
+        Sys.println(("   Current version: " + outdatedVersion).red());
+        Sys.println(("   Expected version: " + expectedVersion).green());
       }
+
+      Sys.println('');
     }
   }
 
   static function readLibraryCurrentVersion(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+    var path = getLibraryCurrentFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2055,7 +2127,7 @@ class Project extends HXProject
 
   static function readLibraryDev(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+    var path = getLibraryDevFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2064,11 +2136,46 @@ class Project extends HXProject
 
   static function readLibraryGitCommitHash(libraryName:String):String
   {
-    var gitProccess = new sys.io.Process("git", ["-C", ".haxelib/" + libraryName + "/git", "rev-parse", "HEAD"]);
+    var gitProccess = new sys.io.Process("git", ["-C", getLibraryGitPath(libraryName), "rev-parse", "HEAD"]);
 
     gitProccess.exitCode(true);
 
     return gitProccess.stdout.readAll().toString().trim();
+  }
+
+  static function getLibraryCurrentFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+  }
+
+  static function getLibraryDevFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+  }
+
+  static function getLibraryGitPath(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, 'git']);
+  }
+
+  static function isLibraryGitDev(libraryName:String):Bool
+  {
+    final gitPath:String = getLibraryGitPath(libraryName);
+    final devFile:String = getLibraryDevFile(libraryName);
+
+    if (FileSystem.exists(gitPath) && FileSystem.exists(devFile))
+    {
+      return Path.normalize(readLibraryDev(libraryName)).startsWith(gitPath);
+    }
+
+    return false;
+  }
+
+  static function getLibraryPath(libraryName:String):String
+  {
+    var process = new sys.io.Process('haxelib', ['libpath', libraryName]);
+    @:privateAccess
+    return process.stdout.readLine();
   }
 
   public function getGitBranch():String
@@ -2096,6 +2203,43 @@ class Project extends HXProject
     return branchProcess.exitCode(true) == 1;
   }
 
+  public function buildHxCppTools():Void
+  {
+    var path:String = getLibraryPath("hxcpp");
+    var dotNPath:String = haxe.io.Path.join([path, 'hxcpp.n']);
+    var toolsPath:String = haxe.io.Path.join([path, 'tools/hxcpp']);
+
+    // The output can be an error message if the library doesn't exist.
+    if (path.toLowerCase().startsWith("error") || !sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
+
+    // Build Tools are compiled, no need for us to do it.
+    if (sys.FileSystem.exists(dotNPath))
+    {
+      return;
+    }
+
+    info('Compiling the HXCPP Build Tool...');
+
+    var oldDir:String = Sys.getCwd();
+    info(toolsPath);
+    Sys.setCwd(toolsPath);
+
+    var compileProcess = new sys.io.Process('haxe', ['compile.hxml']);
+
+    if (compileProcess.exitCode() != 0)
+    {
+      info('Could not compile the Build Tool. Is HXCPP installed correctly? Continuing...');
+    }
+    else
+    {
+      info('Compiled the HXCPP Build Tool successfully!');
+    }
+
+    compileProcess.close();
+
+    Sys.setCwd(oldDir);
+  }
+
   //
   // LOGGING FUNCTIONS
   //
@@ -2105,7 +2249,7 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.stderr().write(Bytes.ofString(' ERROR '.bold().bg_red() + " " + message));
     Sys.exit(1);
   }
 
@@ -2116,7 +2260,18 @@ class Project extends HXProject
   {
     if (!(isDisplay() || isClean()))
     {
-      Sys.println('[INFO] ${message}');
+      Sys.println(' INFO '.bold().bg_blue() + " " + message);
+    }
+  }
+
+  /**
+   * Display a warning message. This should not interfere with the build process.
+   */
+  public function warn(message:String):Void
+  {
+    if (!(isDisplay() || isClean()))
+    {
+      Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }
   }
 
@@ -2128,7 +2283,7 @@ class Project extends HXProject
   {
     if (!FileSystem.exists(file))
     {
-      info('Environment file does not exist: ${file}');
+      warn('Environment file does not exist: ${file}');
       return null;
     }
 
@@ -2136,7 +2291,7 @@ class Project extends HXProject
 
     if (envFile == null)
     {
-      info('Failed to parse environment file: ${file}');
+      warn('Failed to parse environment file: ${file}');
       return null;
     }
 

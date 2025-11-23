@@ -273,7 +273,7 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Restart the level when pressing the assigned key.
-    if ((controls.ACCEPT #if mobile || (TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput) #end)
+    if ((controls.ACCEPT_P #if mobile || (TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput) #end)
       && blueballed
       && !mustNotExit)
     {
@@ -281,7 +281,7 @@ class GameOverSubState extends MusicBeatSubState
       confirmDeath();
     }
 
-    if (controls.BACK && !mustNotExit && !isEnding) goBack();
+    if (controls.BACK_P && !mustNotExit && !isEnding) goBack();
 
     if (gameOverMusic != null && gameOverMusic.playing)
     {
@@ -499,9 +499,9 @@ class GameOverSubState extends MusicBeatSubState
       else
       {
         onComplete = function() {
-          isStarting = true;
+          isStarting = false;
           // We need to force to ensure that the non-starting music plays.
-          startDeathMusic(0.0, true);
+          startDeathMusic(1.0, true);
         };
       }
     }

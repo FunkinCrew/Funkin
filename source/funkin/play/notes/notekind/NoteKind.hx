@@ -43,7 +43,7 @@ class NoteKind implements INoteScriptedClass
    * Only accessible in scripts
    * Defaults to true
    */
-  public var scoreable:Bool = true;
+  public var scoreable(default, default):Bool = true;
 
   public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
   {
@@ -62,13 +62,27 @@ class NoteKind implements INoteScriptedClass
 
   /**
    * Retrieve all notes of this kind
+   * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
-  function getNotes():Array<NoteSprite>
+  function getNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite) {
-      return note != null && note.noteData.kind == this.noteKind;
+      return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
+    });
+  }
+
+  /**
+   * Retrieve all notes NOT of this kind
+   * @param visibleCheck If true, only visible notes will be returned
+   * @return Array<NoteSprite>
+   */
+  function getOtherNotes(visibleCheck:Bool = false):Array<NoteSprite>
+  {
+    var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
+    return allNotes.filter(function(note:NoteSprite) {
+      return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
     });
   }
 

@@ -78,7 +78,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     if (!busy)
     {
       @:privateAccess
-      if (parent.controls.BACK #if mobile || TouchUtil.pressAction(parent.backButton) #end)
+      if (parent.controls.BACK_P #if mobile || TouchUtil.pressAction(parent.backButton) #end)
       {
         close();
         return;
@@ -95,7 +95,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         changedInst = true;
       }
       if (parent.getControls()
-        .ACCEPT #if mobile
+        .ACCEPT_P #if mobile
         || ((TouchUtil.pressAction(currentInstrumental))
           && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
