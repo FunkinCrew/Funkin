@@ -133,7 +133,7 @@ class ResultsDebugSubState extends MusicBeatSubState
         isBotPlayMode: true, // Invalidates achievements/scores.
         scoreData:
           {
-            score: 1_234_567,
+            score: 1_234_567_890,
             tallies:
               {
                 sick: 130,
