@@ -941,7 +941,8 @@ class FreeplayState extends MusicBeatSubState
       {
         // If the song list is the same, we don't need to generate a new list.
         // Instead, we just apply the jump-in animation to the existing capsules.
-        if (!noJumpIn) playJumpInAnimation(force);
+        grpCapsules.resetSongCapsulesPosition();
+        if (!noJumpIn) playJumpInAnimation(force, false);
         return;
       }
     }
@@ -965,12 +966,13 @@ class FreeplayState extends MusicBeatSubState
   /**
    * Plays the "jumpIn" animation on all active song cards
    * @param force Used by the animation
+   * @param resetPosition Also resets their position
    */
-  function playJumpInAnimation(force:Bool):Void
+  function playJumpInAnimation(force:Bool, resetPosition:Bool = true):Void
   {
     for (capsule in grpCapsules.activeSongItems)
     {
-      capsule.initPosition(FlxG.width, 0);
+      if (resetPosition) capsule.initPosition(FlxG.width, 0);
       capsule.initJumpIn(0, force);
     }
   }

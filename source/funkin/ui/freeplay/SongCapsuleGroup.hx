@@ -49,6 +49,18 @@ class SongCapsuleGroup extends FlxTypedGroup<SongMenuItem>
   }
 
   /**
+   * Sets the position of the currently active card to the post-creation values
+   */
+  public function resetSongCapsulesPosition():Void
+  {
+    for (cap in activeSongItems)
+    {
+      cap.targetPos.x = FlxG.width;
+      cap.y = cap.intendedY(cap.index) + 10;
+    }
+  }
+
+  /**
    * Rebuilds the song list with provided songList.
    * Where possible, attempts to either reuse, or recycle any dead song cards in the pool.
    *
