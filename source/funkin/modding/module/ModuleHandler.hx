@@ -275,17 +275,25 @@ class ModuleHandler
       // The module needs to be active to receive events.
       if (module != null && module.active)
       {
-        if (module.state != null)
-        {
-          // Only call the event if the current state is what the module's state is.
-          if (!(Type.getClass(FlxG.state) == module.state) && !(Type.getClass(FlxG.state?.subState) == module.state))
-          {
-            continue;
-          }
-        }
+        // Only call the event if the module's state is active.
+        if (!isStateActive(module.state)) continue;
+
         ScriptEventDispatcher.callEvent(module, event);
       }
     }
+  }
+
+  static function isStateActive(stateToFind:Null<Class<Dynamic>>):Bool
+  {
+    if (stateToFind == null) return true;
+
+    var state:Null<flixel.FlxState> = FlxG.state;
+    while (state != null && !Std.isOfType(state, stateToFind))
+    {
+      state = state?.subState;
+    }
+
+    return state != null;
   }
 
   public static inline function callOnCreate():Void
