@@ -1378,7 +1378,6 @@ class PlayState extends MusicBeatSubState
 
         if (!event.eventCanceled)
         {
-          shouldSubstatePause = true;
           persistentUpdate = false;
           persistentDraw = true;
 
@@ -1431,6 +1430,7 @@ class PlayState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransOut = true;
     pauseSubState.camera = cam;
     persistentUpdate = false;
+    shouldSubstatePause = true;
     openSubState(pauseSubState);
   }
 
