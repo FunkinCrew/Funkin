@@ -175,27 +175,26 @@ class DebugBoundingState extends FlxState
   function updateOnionSkin():Void
   {
     if (swagChar == null) return;
-    if (swagChar.hasAnimation("idle")) swagChar.playAnimation("idle", true);
 
     onionSkinChar.alpha = 0.6;
+    onionSkinChar.flipX = swagChar.flipX;
 
     if (onionSkinChar.hasAnimation("idle"))
     {
       onionSkinChar.playAnimation("idle", true);
     }
+    else if (onionSkinChar.hasAnimation("danceLeft"))
+    {
+      onionSkinChar.playAnimation("danceLeft", true);
+    }
+    else if (onionSkinChar.hasAnimation("danceRight"))
+    {
+      onionSkinChar.playAnimation("danceRight", true);
+    }
     else
     {
       onionSkinChar.playAnimation(currentAnimationName, true);
     }
-
-    onionSkinChar.animation.pause();
-    onionSkinChar.flipX = swagChar.flipX;
-    onionSkinChar.scale.set(swagChar.scale.x, swagChar.scale.y);
-    onionSkinChar.updateHitbox();
-    onionSkinChar.offset.x = swagChar.offset.x + (swagChar.animOffsets[0] - swagChar.globalOffsets[0]) * swagChar.scale.x;
-    onionSkinChar.offset.y = swagChar.offset.y + (swagChar.animOffsets[1] - swagChar.globalOffsets[1]) * swagChar.scale.y;
-
-    swagChar.playAnimation(currentAnimationName, true);
   }
 
   function initOffsetView():Void
