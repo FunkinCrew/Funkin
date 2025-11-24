@@ -150,6 +150,34 @@ Choose the `main` branch if you modify:
 Choosing the right base branch helps keep your commit history clean and avoid merge conflicts.
 Once you’re satisfied with the changes you’ve made, open a PR and base it on the same branch you previously chose.
 
+## Commit Names
+When writing commit names, make sure that they are descriptive and have no jokes or unrelated info in them! This is to help maintain an orderly commit history.
+
+### Example Commit Names
+#### DO NOT:
+Below are examples of what you SHOULD NOT do when writing commit names.
+```
+- H
+- Stupid
+- Blah Blah Blah
+- Stupid code im gonna kill someone
+- 67 😁😁😁
+- I'm gonna eat a muffin this friday night
+```
+
+#### DO:
+Below are examples on what you SHOULD do when writing commit names.
+
+```
+- Add `feature`.
+- Remove `feature`.
+- Replace `issue` with `feature`.
+- Fix `issue` by/from `fix/problem`.
+```
+
+> [!TIP]
+> This doesn't apply to descriptions or branch names, go wild all you want!
+
 ## Maintaining your pull request
 Keeping your pull request clean and easy to review increases the chance that it will be accepted!
 
