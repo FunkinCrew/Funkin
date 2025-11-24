@@ -10,7 +10,6 @@ import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 import funkin.graphics.shaders.ColorSwap;
-import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.audio.FunkinSound;
@@ -25,28 +24,48 @@ import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 #end
 
+/**
+ * The title screen state.
+ * Also the first state that the player can interact with.
+ */
 class TitleState extends MusicBeatState
 {
   /**
    * Only play the credits once per session.
    */
-  public static var initialized:Bool = false;
+  static var initialized:Bool = false;
 
   var blackScreen:FunkinSprite;
   var credGroup:FlxGroup;
   var textGroup:FlxGroup;
   var ngSpr:FunkinSprite;
 
-  var curWacky:Array<String> = [];
-  var lastBeat:Int = 0;
+  var curWacky:Array<String>;
+  var lastBeat:Int;
   var swagShader:ColorSwap;
+
+  public function new()
+  {
+    curWacky = FlxG.random.getObject(getIntroTextShit());
+    swagShader = new ColorSwap();
+
+    lastBeat = 0;
+    danceLeft = false;
+    transitioning = false;
+
+    curCheatPos = 0;
+    cheatActive = false;
+
+    isRainbow = false;
+    skippedIntro = false;
+
+    super();
+  }
 
   override public function create():Void
   {
     super.create();
-    swagShader = new ColorSwap();
 
-    curWacky = FlxG.random.getObject(getIntroTextShit());
     funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
 
     // DEBUG BULLSHIT
@@ -60,9 +79,8 @@ class TitleState extends MusicBeatState
 
   var logoBl:FunkinSprite;
   var gfDance:FunkinSprite;
-  var danceLeft:Bool = false;
+  var danceLeft:Bool;
   var titleText:FunkinSprite;
-  var maskShader = new LeftMaskShader();
 
   var attractTimer:FlxTimer;
 
@@ -106,7 +124,6 @@ class TitleState extends MusicBeatState
     titleText.animation.play('idle');
     titleText.updateHitbox();
     titleText.shader = swagShader.shader;
-
     add(titleText);
 
     if (!initialized) // Fix an issue where returning to the credits would play a black screen.
@@ -203,7 +220,7 @@ class TitleState extends MusicBeatState
     return swagGoodArray;
   }
 
-  var transitioning:Bool = false;
+  var transitioning:Bool;
 
   override function update(elapsed:Float):Void
   {
@@ -296,14 +313,18 @@ class TitleState extends MusicBeatState
     FlxG.switchState(() -> new MainMenuState());
   }
 
-  override function draw()
+  override function draw():Void
   {
     super.draw();
   }
 
-  var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
-  var curCheatPos:Int = 0;
-  var cheatActive:Bool = false;
+  /**
+   * The directions that need to be pressed to enable the cheat.
+   */
+  public static final cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
+
+  var curCheatPos:Int;
+  var cheatActive:Bool;
 
   function cheatCodeShit():Void
   {
@@ -355,7 +376,6 @@ class TitleState extends MusicBeatState
       var money:AtlasText = new AtlasText(0, 0, textArray[i], AtlasFont.BOLD);
       money.screenCenter(X);
       money.y += (i * 60) + 200;
-      // credGroup.add(money);
       textGroup.add(money);
     }
   }
@@ -378,13 +398,12 @@ class TitleState extends MusicBeatState
 
     while (textGroup.members.length > 0)
     {
-      // credGroup.remove(textGroup.members[0], true);
       textGroup.remove(textGroup.members[0], true);
     }
   }
 
-  var isRainbow:Bool = false;
-  var skippedIntro:Bool = false;
+  var isRainbow:Bool;
+  var skippedIntro:Bool;
 
   override function beatHit():Bool
   {
@@ -393,7 +412,6 @@ class TitleState extends MusicBeatState
 
     if (!skippedIntro)
     {
-      // FlxG.log.add(Conductor.instance.currentBeat);
       // if the user is draggin the window some beats will
       // be missed so this is just to compensate
       if (Conductor.instance.currentBeat > lastBeat)

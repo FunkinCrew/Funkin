@@ -44,7 +44,13 @@ class AttractState extends MusicBeatState
   static final HOLD_TIME:Float = 1.5;
 
   var pie:FlxRadialGauge;
-  var holdDelta:Float = 0;
+  var holdDelta:Float;
+
+  public function new()
+  {
+    holdDelta = 0;
+    super();
+  }
 
   public override function create():Void
   {
