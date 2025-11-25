@@ -132,7 +132,7 @@ class CreditsState extends MusicBeatState
     // add(bg);
 
     // TODO: Once we need to display Kickstarter backers,
-    // make this use a recycled pool so we don't kill peformance.
+    // make this use a recycled pool so we don't kill performance.
     creditsGroup = new FlxSpriteGroup();
     creditsGroup.x = Math.max(funkin.ui.FullScreenScaleMode.gameNotchSize.x, SCREEN_PAD);
     creditsGroup.y = STARTING_HEIGHT;
