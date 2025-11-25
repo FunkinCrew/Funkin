@@ -115,7 +115,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking = new FunkinSprite(cutoutSize + 423, -17);
     chooseDipshit = new FunkinSprite(cutoutSize + 426, -13);
 
-    nametag = new Nametag(curChar);
+    nametag = new Nametag(rememberedChar);
 
     cursor = new FunkinSprite(0, 0);
     cursorBlue = new FunkinSprite(0, 0);
@@ -829,7 +829,7 @@ class CharSelectSubState extends MusicBeatSubState
         mobileAccept = true;
       }
       #end
-        
+
       if (controls.UI_UP) holdTmrUp += elapsed;
       if (controls.UI_UP_R)
       {
