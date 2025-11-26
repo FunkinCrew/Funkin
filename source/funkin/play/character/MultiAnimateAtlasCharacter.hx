@@ -49,7 +49,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     originalSizes.set(this.width, this.height);
   }
 
-  function loadAtlases()
+  function loadAtlases():Void
   {
     trace('[MULTIATLASCHAR] Loading sprite atlases for ${characterId}.');
 
@@ -65,7 +65,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
     var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
 
-    loadTextureAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
+    loadTextureAtlas(baseAssetPath, baseAssetLibrary, getAtlasSettings());
 
     for (asset in assetList)
     {
@@ -95,7 +95,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     this.setScale(_data.scale);
   }
 
-  function loadAnimations()
+  function loadAnimations():Void
   {
     trace('[MULTIATLASCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
@@ -125,5 +125,14 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
   override function get_height():Float
   {
     return originalSizes.y;
+  }
+
+  /**
+   * Get the configuration for the texture atlas.
+   * @return The configuration for the texture atlas.
+   */
+  public function getAtlasSettings():AtlasSpriteSettings
+  {
+    return cast _data.atlasSettings;
   }
 }

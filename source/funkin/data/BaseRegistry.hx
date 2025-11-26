@@ -157,7 +157,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return `true` if the entry has an attached script, `false` otherwise.
    */
-  public function isScriptedEntry(id:String):Bool
+  public function isScriptedEntry(id:String, ?params:Null<P>):Bool
   {
     return scriptedEntryIds.exists(id);
   }
@@ -167,7 +167,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return The class name, or `null` if it does not exist.
    */
-  public function getScriptedEntryClassName(id:String):Null<String>
+  public function getScriptedEntryClassName(id:String, ?params:Null<P>):Null<String>
   {
     return scriptedEntryIds.get(id);
   }
