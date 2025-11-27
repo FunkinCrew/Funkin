@@ -811,6 +811,10 @@ class PlayState extends MusicBeatSubState
     // This state receives draw calls even when a substate is active.
     this.persistentDraw = true;
 
+    // Make the player unable to pause if they're moving from the chart editor while the focus is still on since the input persists.
+    @:privateAccess
+    justUnpaused = isChartingMode && !FlxG.game._lostFocus;
+
     // Stop any pre-existing music.
     if (!overrideMusic)
     {
