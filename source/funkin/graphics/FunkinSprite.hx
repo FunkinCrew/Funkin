@@ -21,6 +21,7 @@ import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.SymbolInstance;
 import animate.FlxAnimate;
 import animate.FlxAnimateFrames;
+import haxe.io.Path;
 
 using StringTools;
 
@@ -104,10 +105,41 @@ class FunkinSprite extends FlxAnimate
   /**
    * @param x Starting X position
    * @param y Starting Y position
+   * @param path The asset path for the graphic
+   * @param atlasSettings The optional settings for the texture atlas
    */
-  public function new(?x:Float = 0, ?y:Float = 0)
+  public function new(?x:Float = 0, ?y:Float = 0, ?path:String, ?atlasSettings:AtlasSpriteSettings)
   {
     super(x, y);
+
+    if (path != null)
+    {
+      var ext:String = Path.extension(path);
+
+      switch (ext)
+      {
+        case 'png':
+          this.loadGraphic(path);
+
+        case '':
+          // Do the opposite of Paths.animateAtlas since that function is called in loadTextureAtlas.
+          var lib:String = Paths.getLibrary(path);
+
+          if (lib == 'preload')
+          {
+            path = path.replace('assets/images/', '');
+          }
+          else
+          {
+            path = path.replace('$lib:assets/$lib/images/', '');
+          }
+
+          this.loadTextureAtlas(path, lib, atlasSettings);
+
+        default:
+          FlxG.log.warn('Texture path $path is not a valid path. Make sure the path points to either an image or a folder with the texture atlas files!');
+      }
+    }
   }
 
   override function initVars():Void
