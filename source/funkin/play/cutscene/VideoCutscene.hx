@@ -198,6 +198,7 @@ class VideoCutscene
       if (vid.load(filePath, fileOptions) && vid.play())
       {
         onVideoStarted.dispatch();
+        vid.bitmap.onOpening.dispatch();
       }
     }
     else
