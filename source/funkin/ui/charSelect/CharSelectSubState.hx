@@ -357,6 +357,8 @@ class CharSelectSubState extends MusicBeatSubState
       FlxTween.tween(member, {y: member.y - 300}, 1, {ease: FlxEase.expoOut});
     }
 
+    cursors.slide(true);
+
     FlxG.debugger.addTrackerProfile(new TrackerProfile(CharSelectSubState, ["curChar", "grpXSpread", "grpYSpread"]));
     FlxG.debugger.track(this);
 
@@ -682,7 +684,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
     #end
 
-    FlxTween.tween(cursors, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    cursors.slide(false);
 
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(nametag, {y: nametag.y + 80}, 0.8, {ease: FlxEase.backIn});

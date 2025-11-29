@@ -21,6 +21,8 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
   var cursorConfirmed:FunkinSprite;
   var cursorDenied:FunkinSprite;
 
+  var cursorsIntroOutroOffset:Float = 240;
+
   public function new()
   {
     super();
@@ -96,20 +98,14 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
    */
   public function snapToLocation(intendedPosition:FlxPoint):Void
   {
-    main.x = intendedPosition.x;
-    main.y = intendedPosition.y;
+    main.setPosition(intendedPosition.x, intendedPosition.y);
 
-    lightBlue.x = main.x;
-    lightBlue.y = main.y;
+    // Using intendedPosition since we anyway snapping them
+    lightBlue.setPosition(intendedPosition.x, intendedPosition.y);
+    darkBlue.setPosition(intendedPosition.x, intendedPosition.y);
 
-    darkBlue.x = intendedPosition.x;
-    darkBlue.y = intendedPosition.y;
-
-    cursorConfirmed.x = main.x - 2;
-    cursorConfirmed.y = main.y - 4;
-
-    cursorDenied.x = main.x - 2;
-    cursorDenied.y = main.y - 4;
+    cursorConfirmed.setPosition(main.x - 2, main.x - 4);
+    cursorDenied.setPosition(main.x - 2, main.x - 4);
   }
 
   /**
@@ -132,5 +128,30 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
 
     cursorDenied.x = main.x - 2;
     cursorDenied.y = main.y - 4;
+  }
+
+  public function slide(slideIn:Bool)
+  {
+    if (slideIn)
+    {
+      main.alpha = 0;
+      lightBlue.alpha = 0;
+      darkBlue.alpha = 0;
+
+      main.y += cursorsIntroOutroOffset;
+      lightBlue.y += cursorsIntroOutroOffset;
+      darkBlue.y += cursorsIntroOutroOffset;
+
+      FlxTween.tween(main, {alpha: 1, y: main.y - cursorsIntroOutroOffset}, 0.9, {ease: FlxEase.expoOut});
+      FlxTween.tween(lightBlue, {alpha: 1, y: lightBlue.y - cursorsIntroOutroOffset}, 0.95, {ease: FlxEase.expoOut});
+      FlxTween.tween(darkBlue, {alpha: 1, y: darkBlue.y - cursorsIntroOutroOffset}, 1.0, {ease: FlxEase.expoOut});
+    }
+    else
+    {
+      FlxTween.tween(main, {alpha: 0, y: main.y + cursorsIntroOutroOffset}, 0.8, {ease: FlxEase.backIn});
+      FlxTween.tween(lightBlue, {alpha: 0, y: lightBlue.y + cursorsIntroOutroOffset}, 0.82, {ease: FlxEase.backIn});
+      FlxTween.tween(darkBlue, {alpha: 0, y: darkBlue.y + cursorsIntroOutroOffset}, 0.84, {ease: FlxEase.backIn});
+      FlxTween.tween(cursorConfirmed, {alpha: 0, y: cursorConfirmed.y + cursorsIntroOutroOffset}, 0.8, {ease: FlxEase.expoOut});
+    }
   }
 }
