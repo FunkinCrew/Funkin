@@ -1330,9 +1330,6 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool
   {
-    // Make sure we only update the inputs once per frame.
-    if (_timestamp == FlxG.game.ticks) return triggered; // run no more than once per frame
-
     _x = null;
     _y = null;
 
