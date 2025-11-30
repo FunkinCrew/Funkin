@@ -598,7 +598,7 @@ class MainMenuState extends MusicBeatState
       @:privateAccess
       {
         funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
-        funkin.save.Save.instance.data.unlocks.oldChar = false;
+        funkin.save.Save.instance.oldChar.value = false;
       }
     }
 
@@ -608,7 +608,7 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (controls.BACK) goBack();
+    if (controls.BACK_P) goBack();
   }
 
   function goOptions():Void

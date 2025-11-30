@@ -126,7 +126,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     // I believe @:jignored should be ignored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void
@@ -664,7 +664,7 @@ class SongChartData implements ICloneable<SongChartData>
 
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void

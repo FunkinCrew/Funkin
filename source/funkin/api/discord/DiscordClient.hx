@@ -29,7 +29,7 @@ class DiscordClient
 
   private function new()
   {
-    trace('[DISCORD] Initializing event handlers...');
+    trace(' DISCORD '.bold().bg_blue() + ' Initializing event handlers...');
 
     handlers = new DiscordEventHandlers();
 
@@ -40,7 +40,7 @@ class DiscordClient
 
   public function init():Void
   {
-    trace('[DISCORD] Initializing connection...');
+    trace(' DISCORD '.bold().bg_blue() + ' Initializing connection...');
 
     if (!hasValidCredentials())
     {
@@ -86,7 +86,7 @@ class DiscordClient
 
   public function shutdown():Void
   {
-    trace('[DISCORD] Shutting down...');
+    trace(' DISCORD '.bold().bg_blue() + ' Shutting down...');
 
     Discord.Shutdown();
   }
@@ -140,7 +140,7 @@ class DiscordClient
   // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
   private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
   {
-    trace('[DISCORD] Client has connected!');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
 
     final username:String = request[0].username;
     final globalName:String = request[0].username;
@@ -148,22 +148,22 @@ class DiscordClient
 
     if (discriminator != null && discriminator != 0)
     {
-      trace('[DISCORD] User: ${username}#${discriminator} (${globalName})');
+      trace(' DISCORD '.bold().bg_blue() + ' User: ${username}#${discriminator} (${globalName})');
     }
     else
     {
-      trace('[DISCORD] User: @${username} (${globalName})');
+      trace(' DISCORD '.bold().bg_blue() + ' User: @${username} (${globalName})');
     }
   }
 
   private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
   {
-    trace('[DISCORD] Client has disconnected! ($errorCode) "${cast (message, String)}"');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has disconnected! ($errorCode) "${cast (message, String)}"');
   }
 
   private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
   {
-    trace('[DISCORD] Client has received an error! ($errorCode) "${cast (message, String)}"');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
   }
 
   // public var type(get, set):DiscordActivityType;

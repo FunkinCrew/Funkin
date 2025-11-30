@@ -11,6 +11,7 @@ import haxe.ds.Map;
 import haxe.xml.Printer;
 
 using StringTools;
+using tools.AnsiUtil;
 
 /**
  * This HXP performs the functions of a Lime `project.xml` file,
@@ -113,7 +114,11 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension"];
+  static final ANDROID_EXTENSIONS:Array<String> = [
+    "funkin.extensions.CallbackUtil",
+    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.AudioSession"
+  ];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -292,6 +297,13 @@ class Project extends HXProject
    * This is used to provide Discord Rich Presence support.
    */
   static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
+
+  /**
+   * `-DFEATURE_LOST_FOCUS_VOLUME`
+   * If this flag is enabled, the game will reduce application volume, when lost focus.
+   * Allowed only on Desktop targets.
+   */
+  static final FEATURE_LOST_FOCUS_VOLUME:FeatureFlag = "FEATURE_LOST_FOCUS_VOLUME";
 
   /**
    * `-DFEATURE_FILE_DROP`
@@ -857,6 +869,8 @@ class Project extends HXProject
     // We don't want testers to accidentally leak songs to their Discord friends!
     FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
+    FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
+
     // Newgrounds features
     FEATURE_NEWGROUNDS.apply(this, !isMobile());
     FEATURE_NEWGROUNDS_DEBUG.apply(this, false);
@@ -1088,6 +1102,9 @@ class Project extends HXProject
       addHaxeMacro("include('haxe.ui.containers.properties')");
     }
 
+    // Ensure all flixel-animate classes are available at runtime.
+    addHaxeMacro("include('animate')");
+
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
     addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
@@ -1299,7 +1316,7 @@ class Project extends HXProject
     }
 
     addHaxelib('polymod'); // Modding framework
-    addHaxelib('flxanimate'); // Texture atlas rendering
+    addHaxelib('flixel-animate'); // Texture atlas rendering
 
     addHaxelib('json2object'); // JSON parsing
     addHaxelib('jsonpath'); // JSON parsing
@@ -1410,9 +1427,9 @@ class Project extends HXProject
 
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+    if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
+    if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
     // Font assets
     var shouldEmbedFonts = true;
@@ -1470,8 +1487,8 @@ class Project extends HXProject
 
   function clearAssets():Void
   {
-    // We don't want the haxe compilation server deleting our assets, do we?
-    if (isDisplay()) return;
+    // Don't run on non-build commands.
+    if (!isBuild()) return;
 
     var exportPath:Null<String> = app.path ?? "";
 
@@ -1739,6 +1756,11 @@ class Project extends HXProject
     return this.command == "clean";
   }
 
+  public function isBuild():Bool
+  {
+    return this.command == "test" || this.command == "build";
+  }
+
   public function isDebug():Bool
   {
     return this.debug;
@@ -1906,7 +1928,7 @@ class Project extends HXProject
     }
     else
     {
-      // info('  Found asset path "${path}".');
+      // info(' Found asset path "${path}".');
     }
 
     for (file in sys.FileSystem.readDirectory(path))
@@ -2013,7 +2035,7 @@ class Project extends HXProject
     if (process.exitCode() != 0)
     {
       var message = process.stderr.readAll().toString();
-      error('[ERROR] Could not determine current git commit; is this a proper Git repository?');
+      error('Could not determine current git commit; is this a proper Git repository?');
     }
 
     var commitHash:String = process.stdout.readLine();
@@ -2025,7 +2047,7 @@ class Project extends HXProject
   }
 
   @SuppressWarnings('checkstyle:Dynamic')
-  static function checkLibraries():Void
+  function checkLibraries():Void
   {
     var outdatedLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
@@ -2053,7 +2075,7 @@ class Project extends HXProject
             outdatedLibraries.set(libraryName, [libraryCurrentVersion, library.version]);
           }
         case 'git':
-          if (libraryDev != "")
+          if (libraryDev != "" && !isLibraryGitDev(libraryName))
           {
             outdatedLibraries.set(libraryName, [libraryDev, library.ref]);
           }
@@ -2061,16 +2083,21 @@ class Project extends HXProject
           {
             var commitHash:String = readLibraryGitCommitHash(libraryName);
 
-            if (commitHash != library.ref && commitHash != "") outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            if (commitHash != library.ref && commitHash != "")
+            {
+              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            }
           }
       }
     }
 
     if (Lambda.count(outdatedLibraries) > 0)
     {
-      Sys.println("\x1b[1;33m\nWARNING: The following haxelibs diverge from the versions set in hmm.json."
-        + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
-        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n\x1b[0m");
+      warn("The following haxelibs diverge from the versions set in hmm.json.".bold().yellow());
+      warn("They may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library.".bold().yellow());
+      warn("You may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.".bold().yellow());
+
+      Sys.println('');
 
       for (libraryName in outdatedLibraries.keys())
       {
@@ -2080,18 +2107,18 @@ class Project extends HXProject
         var outdatedVersion:String = versions[0];
         var expectedVersion:String = versions[1];
 
-        var isDev:Bool = outdatedVersion.contains("/");
-
-        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? "\x1b[1;34m (Development Build)\x1b[0m" : ""));
-        Sys.println("   \x1b[38;5;203mCurrent version: " + outdatedVersion + "\x1b[0m");
-        Sys.println("   \x1b[38;5;82mExpected version: " + expectedVersion + "\x1b[0m\n");
+        Sys.println("- " + libraryName.replace(",", ".") + (haxe.io.Path.isAbsolute(outdatedVersion) ? " (Development Build)".blue().bold() : ""));
+        Sys.println(("   Current version: " + outdatedVersion).red());
+        Sys.println(("   Expected version: " + expectedVersion).green());
       }
+
+      Sys.println('');
     }
   }
 
   static function readLibraryCurrentVersion(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+    var path = getLibraryCurrentFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2100,7 +2127,7 @@ class Project extends HXProject
 
   static function readLibraryDev(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+    var path = getLibraryDevFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2109,11 +2136,39 @@ class Project extends HXProject
 
   static function readLibraryGitCommitHash(libraryName:String):String
   {
-    var gitProccess = new sys.io.Process("git", ["-C", ".haxelib/" + libraryName + "/git", "rev-parse", "HEAD"]);
+    var gitProccess = new sys.io.Process("git", ["-C", getLibraryGitPath(libraryName), "rev-parse", "HEAD"]);
 
     gitProccess.exitCode(true);
 
     return gitProccess.stdout.readAll().toString().trim();
+  }
+
+  static function getLibraryCurrentFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+  }
+
+  static function getLibraryDevFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+  }
+
+  static function getLibraryGitPath(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, 'git']);
+  }
+
+  static function isLibraryGitDev(libraryName:String):Bool
+  {
+    final gitPath:String = getLibraryGitPath(libraryName);
+    final devFile:String = getLibraryDevFile(libraryName);
+
+    if (FileSystem.exists(gitPath) && FileSystem.exists(devFile))
+    {
+      return Path.normalize(readLibraryDev(libraryName)).startsWith(gitPath);
+    }
+
+    return false;
   }
 
   static function getLibraryPath(libraryName:String):String
@@ -2194,7 +2249,7 @@ class Project extends HXProject
    */
   public function error(message:String):Void
   {
-    Sys.stderr().write(Bytes.ofString('[ERROR] ${message}'));
+    Sys.stderr().write(Bytes.ofString(' ERROR '.bold().bg_red() + " " + message));
     Sys.exit(1);
   }
 
@@ -2205,7 +2260,18 @@ class Project extends HXProject
   {
     if (!(isDisplay() || isClean()))
     {
-      Sys.println('[INFO] ${message}');
+      Sys.println(' INFO '.bold().bg_blue() + " " + message);
+    }
+  }
+
+  /**
+   * Display a warning message. This should not interfere with the build process.
+   */
+  public function warn(message:String):Void
+  {
+    if (!(isDisplay() || isClean()))
+    {
+      Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }
   }
 
@@ -2217,7 +2283,7 @@ class Project extends HXProject
   {
     if (!FileSystem.exists(file))
     {
-      info('Environment file does not exist: ${file}');
+      warn('Environment file does not exist: ${file}');
       return null;
     }
 
@@ -2225,7 +2291,7 @@ class Project extends HXProject
 
     if (envFile == null)
     {
-      info('Failed to parse environment file: ${file}');
+      warn('Failed to parse environment file: ${file}');
       return null;
     }
 

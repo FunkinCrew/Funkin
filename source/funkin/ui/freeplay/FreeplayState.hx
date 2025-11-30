@@ -56,7 +56,13 @@ import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import openfl.display.BlendMode;
 import funkin.ui.freeplay.DifficultyDot;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
+#end
+#if FEATURE_STAGE_EDITOR
+import funkin.ui.debug.stageeditor.StageEditorState;
+#end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -129,6 +135,11 @@ class FreeplayState extends MusicBeatSubState
    * For positioning the difficulty dots.
    */
   public static final DEFAULT_DOTS_GROUP_POS:Array<Int> = [260, 170];
+
+  /**
+   * For the audio preview, the time to wait before attempting to load a song preview.
+   */
+  public static final FADE_IN_DELAY:Float = 0.25;
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
@@ -389,7 +400,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (level == null)
       {
-        trace('[WARN] Could not find level with id (${levelId})');
+        trace(' WARNING '.bold().bg_yellow() + ' Could not find level with id (${levelId})');
         continue;
       }
 
@@ -399,7 +410,7 @@ class FreeplayState extends MusicBeatSubState
 
         if (song == null)
         {
-          trace('[WARN] Could not find song with id (${songId})');
+          trace(' WARNING '.bold().bg_yellow() + ' Could not find song with id (${songId})');
           continue;
         }
 
@@ -1558,21 +1569,7 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
     add(transitionGradient);
-    // FlxTween.tween(transitionGradient, {alpha: 0}, 1, {ease: FlxEase.circIn});
-    // for (index => capsule in grpCapsules.members)
-    // {
-    //   var distFromSelected:Float = Math.abs(index - curSelected) - 1;
-    //   if (distFromSelected < 5)
-    //   {
-    //     capsule.doLerp = false;
-    //     exitMoversCharSel.set([capsule],
-    //       {
-    //         y: -250,
-    //         speed: 0.8,
-    //         wait: 0.1
-    //       });
-    //   }
-    // }
+
     funnyCam.filtersEnabled = true;
     fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn, onComplete: (twn) -> funnyCam.filtersEnabled = false});
 
@@ -1603,6 +1600,10 @@ class FreeplayState extends MusicBeatSubState
           });
       }
     }
+
+    // TODO: i have no fucking idea why the dj position is shitty when entering from char select
+    // the easiest way is to just snap them back into place
+    if (dj != null) dj.setPosition((CUTOUT_WIDTH * DJ_POS_MULTI) + 640, 366);
   }
 
   var spamTimer:Float = 0;
@@ -1666,7 +1667,8 @@ class FreeplayState extends MusicBeatSubState
 
     if ((controls.FREEPLAY_CHAR_SELECT && !fromCharSelect #if FEATURE_TOUCH_CONTROLS
       || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
-      && controls.active)
+      && controls.active
+      && !FlxG.debugger.visible)
     {
       tryOpenCharSelect();
     }
@@ -1767,12 +1769,12 @@ class FreeplayState extends MusicBeatSubState
     }
     #end
 
-    if (controls.BACK)
+    if (controls.BACK_P)
     {
       goBack();
     }
 
-    if (controls.ACCEPT && controls.active)
+    if (controls.ACCEPT_P && controls.active)
     {
       currentCapsule.onConfirm();
     }
@@ -1827,7 +1829,8 @@ class FreeplayState extends MusicBeatSubState
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
-    } else if (rightPressed)
+    }
+    else if (rightPressed)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
@@ -1839,52 +1842,121 @@ class FreeplayState extends MusicBeatSubState
   {
     #if FEATURE_CHART_EDITOR
     if (!controls.active) return;
-    if (!controls.DEBUG_CHART) return;
-
-    controls.active = false;
-
-    var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
-    if (targetSongID == 'unknown')
+    if (controls.DEBUG_CHART)
     {
-      letterSort.inputEnabled = false;
+      controls.active = false;
 
-      var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
-        // Dead capsules are ones which were removed from the list when changing filters.
-        return cap.alive && cap.freeplayData != null;
-      });
-
-      trace('Available songs: ${availableSongCapsules.map(function(cap) {
-          return cap?.freeplayData?.data.songName;
-        })}');
-
-      if (availableSongCapsules.length == 0)
+      var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
       {
-        trace('No songs available!');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          controls.active = true;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      }
+      // Play the confirm animation so the user knows they actually did something.
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      // if (dj != null) dj.confirm();
+      dj?.onConfirm();
+      new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
+        FlxG.switchState(() -> new ChartEditorState(
+          {
+            targetSongId: targetSongID,
+            targetSongDifficulty: currentDifficulty,
+            targetSongVariation: currentVariation,
+          }));
+      });
+      return;
+    }
+    #end
+    #if FEATURE_STAGE_EDITOR
+    if (controls.DEBUG_STAGE)
+    {
+      controls.active = false;
+
+      var targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
+      {
+        trace('CHART RANDOM SONG');
+        letterSort.inputEnabled = false;
+
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          controls.active = true;
+          letterSort.inputEnabled = true;
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = grpCapsules.members[curSelected]?.freeplayData?.data.id ?? 'unknown';
+      }
+
+      var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongID);
+      if (targetSongNullable == null)
+      {
+        FlxG.log.warn('WARN: could not find song with id (${targetSongID})');
         controls.active = true;
         letterSort.inputEnabled = true;
-        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        return;
+      }
+      var targetSong:Song = targetSongNullable;
+      var targetVariation:Null<String> = currentVariation;
+
+      var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
+      if (targetDifficulty == null)
+      {
+        FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
+        controls.active = true;
+        letterSort.inputEnabled = true;
         return;
       }
 
-      var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
-
-      // Seeing if I can do an animation...
-      curSelected = grpCapsules.members.indexOf(targetSong);
-      changeSelection(0);
-      targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
-    }
-    // Play the confirm animation so the user knows they actually did something.
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
-    // if (dj != null) dj.confirm();
-    dj?.onConfirm();
-    new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer) {
-      FlxG.switchState(() -> new ChartEditorState(
+      FlxG.switchState(() -> new StageEditorState(
         {
-          targetSongId: targetSongID,
-          targetSongDifficulty: currentDifficulty,
-          targetSongVariation: currentVariation,
+          targetStageId: targetDifficulty.stage,
+          targetBfChar: targetDifficulty.characters.player,
+          targetGfChar: targetDifficulty.characters.girlfriend,
+          targetDadChar: targetDifficulty.characters.opponent
         }));
-    });
+      return;
+    }
     #end
   }
 
@@ -2128,6 +2200,8 @@ class FreeplayState extends MusicBeatSubState
     super.destroy();
     // remove and destroy freeplay camera
     FlxG.cameras.remove(funnyCam);
+    // Cancel all song preview timers just in case a preview loads after we exit.
+    clearPreviews();
   }
 
   function goBack():Void
@@ -2890,7 +2964,8 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && controls.active)
     {
-      playCurSongPreview(currentCapsule);
+      FlxG.sound.music?.pause();
+      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
       currentCapsule.selected = true;
 
       // switchBackingImage(currentCapsule.freeplayData);
@@ -2911,6 +2986,8 @@ class FreeplayState extends MusicBeatSubState
 
     clearPreviews();
 
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
     if (curSelected == 0)
     {
       FunkinSound.playMusic('freeplayRandom',
@@ -2923,6 +3000,8 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
+      // Make sure the player is still hovering over the song we want to load preview for
+      if (!daSongCapsule.selected) return;
       var previewSong:Null<Song> = daSongCapsule?.freeplayData?.data;
       if (previewSong == null) return;
 
@@ -2985,8 +3064,6 @@ class FreeplayState extends MusicBeatSubState
     }
 
     previewTimers = [];
-
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
   }
 
   public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void

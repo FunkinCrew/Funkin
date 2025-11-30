@@ -431,7 +431,7 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT)
+      if (controls.ACCEPT_P)
       {
         selectLevel();
       }
@@ -452,7 +452,7 @@ class StoryMenuState extends MusicBeatState
       #end
     }
 
-    if (controls.BACK) goBack();
+    if (controls.BACK_P) goBack();
   }
 
   /**

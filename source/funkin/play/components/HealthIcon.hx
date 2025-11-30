@@ -193,6 +193,7 @@ class HealthIcon extends FunkinSprite
       this.size.set(1.0, 1.0);
       this.iconOffset.set();
       this.flipX = false;
+      this.updatePosition();
     }
     else
     {
@@ -212,6 +213,7 @@ class HealthIcon extends FunkinSprite
       }
 
       this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
+      this.updatePosition();
     }
   }
 
@@ -222,7 +224,12 @@ class HealthIcon extends FunkinSprite
   {
     super.update(elapsed);
 
-    if (bopEvery != 0) this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.512);
+    if (bopEvery != 0)
+    {
+      var dt:Float = elapsed * 60;
+
+      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, dt, 0.512);
+    }
 
     this.updatePosition();
   }
@@ -434,35 +441,6 @@ class HealthIcon extends FunkinSprite
     }
 
     this.antialiasing = !isPixel;
-  }
-
-  /**
-   * @return Name of the current animation being played by this health icon.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
-  }
-
-  /**
-   * @param id The name of the animation to check for.
-   * @return Whether this sprite posesses the given animation.
-   *   Only true if the animation was successfully loaded from the XML.
-   */
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
-  }
-
-  /**
-   * @return Whether the current animation is in the finished state.
-   */
-  public function isAnimationFinished():Bool
-  {
-    return this.animation.finished;
   }
 
   /**

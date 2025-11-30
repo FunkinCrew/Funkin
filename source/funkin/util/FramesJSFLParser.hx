@@ -15,7 +15,7 @@ class FramesJSFLParser
     var text:String = Assets.getText(path);
     if (text == null)
     {
-      trace('[ERROR] Could not load FramesJSFL data asset from path $path');
+      trace(' ERROR '.bg_red().bold() + ' Could not load FramesJSFL data asset from path $path');
       return null;
     }
 

@@ -12,7 +12,6 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 @:nullSafety
 class PlayerSettings
 {
-  // TODO: Finish implementation of second player.
   public static var numPlayers(default, null) = 0;
   public static var numAvatars(default, null) = 0;
   // TODO: Making both of these null makes a lot of errors with the controls.
@@ -101,7 +100,7 @@ class PlayerSettings
     trace('loading player settings for id: $id');
 
     this.id = id;
-    this.controls = new Controls('player$id', None);
+    this.controls = new Controls('player$id');
 
     addKeyboard();
   }
@@ -124,7 +123,7 @@ class PlayerSettings
     if (useDefault)
     {
       trace('Loading default keyboard control scheme');
-      controls.setKeyboardScheme(Solo);
+      controls.initKeyboardBindings();
     }
 
     PreciseInputManager.instance.initializeKeys(controls);

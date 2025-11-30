@@ -105,7 +105,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds);
+    loadModsById(Save.instance.enabledModIds.value);
   }
 
   /**
@@ -194,7 +194,7 @@ class PolymodHandler
     loadedModIds = [];
     for (mod in loadedModList)
     {
-      trace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
+      trace(' * ${mod.title} v${mod.modVersion} [${mod.id}]');
       loadedModIds.push(mod.id);
     }
 
@@ -203,35 +203,35 @@ class PolymodHandler
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.TEXT);
     trace('Installed mods have added/replaced ${fileList.length} text files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_MUSIC);
     trace('Installed mods have replaced ${fileList.length} music files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_SOUND);
     trace('Installed mods have replaced ${fileList.length} sound files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_GENERIC);
     trace('Installed mods have replaced ${fileList.length} generic audio files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
     #end
   }
@@ -273,6 +273,11 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
     Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
     Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+
+    // `FlxAtlasSprite` was merged into `FunkinSprite` and then removed.
+    // We add the import alias here so mods don't error out as much.
+    Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.ScriptedFunkinSprite);
 
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
@@ -542,7 +547,7 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds:Array<String> = Save.instance.enabledModIds;
+    var modIds:Array<String> = Save.instance.enabledModIds.value;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = [];
     for (item in modMetadata)

@@ -84,7 +84,7 @@ class ChartEditorBaseDialog extends Dialog
 
     if (_overlay == null)
     {
-      trace('[WARN] Dialog overlay is null, skipping overlay fade...');
+      trace(' WARNING '.bold().bg_yellow() + ' Dialog overlay is null, skipping overlay fade...');
       return;
     }
 

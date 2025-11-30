@@ -570,6 +570,13 @@ class Constants
   public static final GHOST_TAP_DELAY:Float = 3 / 8;
   #end
 
+  #if FEATURE_LOST_FOCUS_VOLUME
+  /**
+   * How much volume should be reduced on Application Focus Lost.
+   */
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.5;
+  #end
+
   /**
    * Otherwise known as "The FuckCunt Variable"
    */
@@ -640,4 +647,30 @@ class Constants
    * Default vibration sharpness.
    */
   public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
+
+  /**
+   * The path where our save data will be stored.
+   */
+  public inline static final SAVE_PATH:String = 'FunkinCrew';
+
+  /**
+   * The name of our save slot.
+   */
+  public inline static final SAVE_NAME:String = 'Funkin';
+
+  /**
+   * The legacy path where our save data was saved. Used for backwards compatibility.
+   */
+  public inline static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
+
+  /**
+   * The legacy save slot name, used for backwards compatibility.
+   */
+  public inline static final SAVE_NAME_LEGACY:String = 'funkin';
+
+  /**
+   * We always use this save slot.
+   * Alter this if you want to use a different save slot.
+   */
+  public inline static final BASE_SAVE_SLOT:Int = 1;
 }

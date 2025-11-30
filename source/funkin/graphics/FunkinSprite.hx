@@ -9,12 +9,90 @@ import funkin.graphics.framebuffer.FixedBitmapData;
 import openfl.display.BitmapData;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
-import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.math.FlxMatrix;
+import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
 import openfl.system.System;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.FunkinMemory;
+import animate.internal.SymbolItem;
+import animate.internal.elements.Element;
+import animate.internal.elements.AtlasInstance;
+import animate.internal.elements.SymbolInstance;
+import animate.FlxAnimate;
+import animate.FlxAnimateFrames;
+import haxe.io.Path;
 
 using StringTools;
+
+typedef AtlasSpriteSettings =
+{
+  /**
+   * If true, the texture atlas will behave as if it was exported as an SWF file.
+   * Notably, this allows MovieClip symbols to play.
+   */
+  @:optional
+  var swfMode:Bool;
+
+  /**
+   * If true, filters and masks will be cached when the atlas is loaded, instead of during runtime.
+   */
+  @:optional
+  var cacheOnLoad:Bool;
+
+  /**
+   * The filter quality.
+   * Available values are: HIGH, MEDIUM, LOW, and RUDY.
+   *
+   * If you're making an atlas sprite in HScript, you pass an Int instead:
+   *
+   * HIGH - 0
+   * MEDIUM - 1
+   * LOW - 2
+   * RUDY - 3
+   */
+  @:optional
+  var filterQuality:FilterQuality;
+
+  /**
+   * Optional, an array of spritemaps for the atlas to load.
+   */
+  @:optional
+  var spritemaps:Array<SpritemapInput>;
+
+  /**
+   * Optional, string of the metadata.json contents.
+   */
+  @:optional
+  var metadataJson:String;
+
+  /**
+   * Optional, force the cache to use a specific key to index the texture atlas.
+   */
+  @:optional
+  var cacheKey:String;
+
+  /**
+   * If true, the texture atlas will use a new slot in the cache.
+   */
+  @:optional
+  var uniqueInCache:Bool;
+
+  /**
+   * Optional callback for when a symbol is created.
+   */
+  @:optional
+  var onSymbolCreate:animate.internal.SymbolItem->Void;
+
+  /**
+   * Whether to apply the stage matrix, if it was exported from a symbol instance.
+   * Also positions the Texture Atlas as it displays in Animate.
+   * Turning this on is only recommended if you prepositioned the character in Animate.
+   * For other cases, it should be turned off to act similarly to a normal FlxSprite.
+   */
+  @:optional
+  var applyStageMatrix:Bool;
+}
 
 /**
  * An FlxSprite with additional functionality.
@@ -22,15 +100,56 @@ using StringTools;
  * - TODO: Better cache handling for textures.
  */
 @:nullSafety
-class FunkinSprite extends FlxSprite
+class FunkinSprite extends FlxAnimate
 {
   /**
    * @param x Starting X position
    * @param y Starting Y position
+   * @param path The asset path for the graphic
+   * @param atlasSettings The optional settings for the texture atlas
    */
-  public function new(?x:Float = 0, ?y:Float = 0)
+  public function new(?x:Float = 0, ?y:Float = 0, ?path:String, ?atlasSettings:AtlasSpriteSettings)
   {
     super(x, y);
+
+    if (path != null)
+    {
+      var ext:String = Path.extension(path);
+
+      switch (ext)
+      {
+        case 'png':
+          this.loadGraphic(path);
+
+        case '':
+          // Do the opposite of Paths.animateAtlas since that function is called in loadTextureAtlas.
+          var lib:String = Paths.getLibrary(path);
+
+          if (lib == 'preload')
+          {
+            path = path.replace('assets/images/', '');
+          }
+          else
+          {
+            path = path.replace('$lib:assets/$lib/images/', '');
+          }
+
+          this.loadTextureAtlas(path, lib, atlasSettings);
+
+        default:
+          FlxG.log.warn('Texture path $path is not a valid path. Make sure the path points to either an image or a folder with the texture atlas files!');
+      }
+    }
+  }
+
+  override function initVars():Void
+  {
+    super.initVars();
+
+    var newController:FunkinAnimationController = new FunkinAnimationController(this);
+
+    animation = newController;
+    anim = newController;
   }
 
   /**
@@ -76,6 +195,20 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
+   * Create a new FunkinSprite with an Adobe Animate texture atlas.
+   * @param x The starting X position.
+   * @param y The starting Y position.
+   * @param key The key of the texture to load.
+   * @return The new FunkinSprite.
+   */
+  public static function createTextureAtlas(x:Float = 0.0, y:Float = 0.0, key:String, ?assetLibrary:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
+  {
+    var sprite:FunkinSprite = new FunkinSprite(x, y);
+    sprite.loadTextureAtlas(key, assetLibrary ?? "", settings);
+    return sprite;
+  }
+
+  /**
    * Load a static image as the sprite's texture.
    * @param key The key of the texture to load.
    * @return This sprite, for chaining.
@@ -83,7 +216,17 @@ class FunkinSprite extends FlxSprite
   public function loadTexture(key:String):FunkinSprite
   {
     var graphicKey:String = Paths.image(key);
-    if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+
+    if (!Assets.exists(graphicKey, IMAGE))
+    {
+      FlxG.log.error('Texture not found, check your path! $graphicKey');
+      return this;
+    }
+
+    if (!FunkinMemory.isTextureCached(graphicKey))
+    {
+      FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+    }
 
     loadGraphic(graphicKey);
 
@@ -164,6 +307,63 @@ class FunkinSprite extends FlxSprite
   }
 
   /**
+   * Loads an Adobe Animate texture atlas as the sprite's texture.
+   * @param key The key of the texture to load.
+   * @param settings Additional settings for loading the atlas.
+   * @return This sprite, for chaining.
+   */
+  public function loadTextureAtlas(key:Null<String>, ?assetLibrary:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
+  {
+    if (key == null)
+    {
+      throw 'Null path specified for loadTextureAtlas()!';
+    }
+
+    var validatedSettings:AtlasSpriteSettings =
+      {
+        swfMode: settings?.swfMode ?? false,
+        cacheOnLoad: settings?.cacheOnLoad ?? false,
+        filterQuality: settings?.filterQuality ?? MEDIUM,
+        spritemaps: settings?.spritemaps ?? null,
+        metadataJson: settings?.metadataJson ?? null,
+        cacheKey: settings?.cacheKey ?? null,
+        uniqueInCache: settings?.uniqueInCache ?? false,
+        onSymbolCreate: settings?.onSymbolCreate ?? null,
+        applyStageMatrix: settings?.applyStageMatrix ?? false
+      };
+
+    var assetLibrary:String = assetLibrary ?? "";
+    var graphicKey:String = "";
+
+    if (assetLibrary != "")
+    {
+      graphicKey = Paths.animateAtlas(key, assetLibrary);
+    }
+    else
+    {
+      graphicKey = Paths.animateAtlas(key);
+    }
+
+    // Validate asset path.
+    if (!Assets.exists('${graphicKey}/Animation.json'))
+    {
+      throw 'No Animation.json file exists at the specified path (${graphicKey})';
+    }
+
+    this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
+
+    frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache, {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
+      });
+
+    return this;
+  }
+
+  /**
    * Load an animated texture (Sparrow atlas spritesheet) as the sprite's texture.
    * @param key The key of the texture to load.
    * @return This sprite, for chaining.
@@ -171,7 +371,7 @@ class FunkinSprite extends FlxSprite
   public function loadSparrow(key:String):FunkinSprite
   {
     var graphicKey:String = Paths.image(key);
-    if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+    if (!FunkinMemory.isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getSparrowAtlas(key);
 
@@ -186,71 +386,11 @@ class FunkinSprite extends FlxSprite
   public function loadPacker(key:String):FunkinSprite
   {
     var graphicKey:String = Paths.image(key);
-    if (!isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+    if (!FunkinMemory.isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getPackerAtlas(key);
 
     return this;
-  }
-
-  /**
-   * Determine whether the texture with the given key is cached.
-   * @param key The key of the texture to check.
-   * @return Whether the texture is cached.
-   */
-  public static function isTextureCached(key:String):Bool
-  {
-    return FlxG.bitmap.get(key) != null;
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheTexture(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.permanentCacheTexture() instead")
-  public static function permanentCacheTexture(key:String):Void
-  {
-    @:privateAccess FunkinMemory.permanentCacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cacheSparrow(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.cacheTexture() instead")
-  public static function cachePacker(key:String):Void
-  {
-    FunkinMemory.cacheTexture(Paths.image(key));
-  }
-
-  @:deprecated("Use FunkinMemory.preparePurgeTextureCache() instead")
-  public static function preparePurgeCache():Void
-  {
-    FunkinMemory.preparePurgeTextureCache();
-  }
-
-  @:deprecated("Use FunkinMemory.purgeCache() instead")
-  public static function purgeCache():Void
-  {
-    FunkinMemory.purgeCache();
-  }
-
-  static function isGraphicCached(graphic:FlxGraphic):Bool
-  {
-    var result = null;
-    if (graphic == null) return false;
-    result = FlxG.bitmap.get(graphic.key);
-    if (result == null) return false;
-    if (result != graphic)
-    {
-      FlxG.log.warn('Cached graphic does not match original: ${graphic.key}');
-      return false;
-    }
-    return true;
   }
 
   /**
@@ -264,6 +404,67 @@ class FunkinSprite extends FlxSprite
     animData = this.animation.getByName(id);
     if (animData == null) return false;
     return animData.numFrames > 1;
+  }
+
+  /**
+   * Whether or not this sprite has an animation with the given ID.
+   * @param id The ID of the animation to check.
+   */
+  public function hasAnimation(id:String):Bool
+  {
+    var animationList:Array<String> = this.animation?.getNameList() ?? [];
+    if (animationList.contains(id))
+    {
+      return true;
+    }
+    else if (this.isAnimate && !animationList.contains(id))
+    {
+      return addAnimationIfMissing(id);
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds an animation if it doesn't exist.
+   * @param id The animation ID to check.
+   */
+  function addAnimationIfMissing(id:String):Bool
+  {
+    @:privateAccess
+    var symbols:Array<String> = this.library.dictionary.keys().array();
+    var frameLabels:Array<String> = listAnimations();
+
+    if (frameLabels.contains(id))
+    {
+      // Animation exists as a frame label but wasn't added, so we add it
+      anim.addByFrameLabel(id, id, this.library.frameRate, false);
+      return true;
+    }
+    else if (symbols.contains(id))
+    {
+      // Animation exists as a symbol but wasn't added, so we add it
+      anim.addBySymbol(id, id, this.library.frameRate, false);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Gets the current animation ID.
+   */
+  public function getCurrentAnimation():String
+  {
+    return this.animation?.curAnim?.name ?? '';
+  }
+
+  /**
+   * Whether or not the current animation is finished.
+   */
+  public function isAnimationFinished():Bool
+  {
+    return this.animation?.finished ?? false;
   }
 
   /**
@@ -284,6 +485,201 @@ class FunkinSprite extends FlxSprite
     updateHitbox();
 
     return this;
+  }
+
+  /**
+   * @return A list of all the animations this sprite has available.
+   */
+  public function listAnimations():Array<String>
+  {
+    var frameLabels:Array<String> = getFrameLabelList();
+    var animationList:Array<String> = this.animation?.getNameList() ?? [];
+
+    return frameLabels.concat(animationList);
+  }
+
+  /**
+   * TEXTURE ATLAS-EXCLUSIVE FUNCTIONS
+   * These functions only work if the sprite's texture is an Adobe Animate texture atlas.
+   * Calling these functions on non-texture atlases will do nothing.
+   */
+  /**
+   * Gets a list of frame labels from the default timeline.
+   */
+  public function getFrameLabelList():Array<String>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFrameLabelList() only works texture atlases!');
+      return [];
+    }
+
+    var foundLabels:Array<String> = [];
+    var mainTimeline:Null<animate.internal.Timeline> = this.library.timeline;
+
+    for (layer in mainTimeline.layers)
+    {
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name.rtrim() != '')
+        {
+          foundLabels.push(frame.name);
+        }
+      }
+    }
+
+    return foundLabels;
+  }
+
+  /**
+   * Gets a frame label by its name.
+   * @param name The name of the frame label to retrieve.
+   * @return The frame label, or null if it doesn't exist.
+   */
+  public function getFrameLabel(name:String):Null<animate.internal.Frame>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFrameLabel() only works texture atlases!');
+      return null;
+    }
+
+    for (layer in this.timeline.layers)
+    {
+      @:nullSafety(Off)
+      for (frame in layer.frames)
+      {
+        if (frame.name == name)
+        {
+          return frame;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the default symbol in the atlas.
+   */
+  public function getDefaultSymbol():String
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getDefaultSymbol() only works texture atlases!');
+      return '';
+    }
+
+    return library.timeline.name;
+  }
+
+  /**
+   * Replaces the graphic of a symbol in the atlas.
+   * @param symbol The symbol to replace.
+   * @param graphic The new graphic to use.
+   * @param adjustScale Whether to adjust the scale of new frame to match the old one.
+   */
+  public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: replaceSymbolGraphic() only works texture atlases!');
+      return;
+    }
+
+    var elements:Array<Element> = getSymbolElements(symbol);
+
+    for (element in elements)
+    {
+      var atlasInstance:AtlasInstance = element.toAtlasInstance();
+      var frame:Null<FlxFrame> = graphic != null ? FlxG.bitmap.add(graphic).imageFrame.frame : null;
+
+      atlasInstance.replaceFrame(frame, adjustScale);
+      element = atlasInstance;
+    }
+  }
+
+  /**
+   * Returns the first element of a symbol in the atlas.
+   * @param symbol The symbol to get elements from.
+   * @return The first element of the symbol. WARNING: Can be null.
+   */
+  public function getFirstElement(symbol:String):Null<Element>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFirstElement() only works texture atlases!');
+      return null;
+    }
+
+    var symbolElements:Array<Element> = getSymbolElements(symbol);
+    return symbolElements.length > 0 ? symbolElements[0] : null;
+  }
+
+  /**
+   * Returns the elements of a symbol in the atlas.
+   * @param symbol The symbol to get elements from.
+   */
+  public function getSymbolElements(symbol:String):Array<Element>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getSymbolElements() only works texture atlases!');
+      return [];
+    }
+
+    var symbolInstance:Null<SymbolItem> = this.library.getSymbol(symbol);
+
+    if (symbolInstance == null)
+    {
+      throw 'Symbol not found in atlas: ${symbol}';
+      return [];
+    }
+
+    var elements:Array<Element> = symbolInstance.timeline.getElementsAtIndex(0);
+
+    if (elements?.length == 0)
+    {
+      trace('WARNING: No Atlas Elements found for "$symbol" symbol.');
+    }
+
+    return elements ?? [];
+  }
+
+  /**
+   * Scales an element by a certain multiplier.
+   * @param element The element to scale.
+   * @param scale The scale multiplier.
+   * @param positionOffset The offset to apply to `tx` and `ty` after scaling.
+   * (Or in other words, the position of the element.)
+   */
+  public function scaleElement(element:Element, scale:Float, positionOffset:Float = 0, scaleEverything:Bool = false):Void
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: scaleElement() only works texture atlases!');
+      return;
+    }
+
+    var elementMatrix:FlxMatrix = element.matrix;
+
+    if (scaleEverything)
+    {
+      elementMatrix.scale(scale, scale);
+      return;
+    }
+
+    var symbolInstance:SymbolInstance = element.parentFrame.convertToSymbol(0, 1);
+    var transformPoint:FlxPoint = symbolInstance.transformationPoint;
+
+    elementMatrix.a += scale;
+    elementMatrix.d += scale;
+
+    elementMatrix.tx -= transformPoint.x * scale;
+    elementMatrix.ty -= transformPoint.y * scale;
+
+    elementMatrix.tx -= positionOffset;
+    elementMatrix.ty -= positionOffset;
   }
 
   /**
@@ -325,77 +721,10 @@ class FunkinSprite extends FlxSprite
     return _rect;
   }
 
-  /**
-   * Returns the screen position of this object.
-   *
-   * @param   result  Optional arg for the returning point
-   * @param   camera  The desired "screen" coordinate space. If `null`, `FlxG.camera` is used.
-   * @return  The screen position of this object.
-   */
-  public override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  override function preparePixelPerfectMatrix(matrix:FlxMatrix)
   {
-    if (result == null) result = FlxPoint.get();
-
-    if (camera == null) camera = FlxG.camera;
-
-    result.set(x, y);
-    if (pixelPerfectPosition)
-    {
-      _rect.width = _rect.width / this.scale.x;
-      _rect.height = _rect.height / this.scale.y;
-      _rect.x = _rect.x / this.scale.x;
-      _rect.y = _rect.y / this.scale.y;
-      _rect.round();
-      _rect.x = _rect.x * this.scale.x;
-      _rect.y = _rect.y * this.scale.y;
-      _rect.width = _rect.width * this.scale.x;
-      _rect.height = _rect.height * this.scale.y;
-    }
-
-    return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
-  }
-
-  override function drawSimple(camera:FlxCamera):Void
-  {
-    getScreenPosition(_point, camera).subtractPoint(offset);
-    if (isPixelPerfectRender(camera))
-    {
-      _point.x = _point.x / this.scale.x;
-      _point.y = _point.y / this.scale.y;
-      _point.round();
-
-      _point.x = _point.x * this.scale.x;
-      _point.y = _point.y * this.scale.y;
-    }
-
-    _point.copyToFlash(_flashPoint);
-    camera.copyPixels(_frame, framePixels, _flashRect, _flashPoint, colorTransform, blend, antialiasing);
-  }
-
-  override function drawComplex(camera:FlxCamera):Void
-  {
-    _frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
-    _matrix.translate(-origin.x, -origin.y);
-    _matrix.scale(scale.x, scale.y);
-
-    if (bakedRotationAngle <= 0)
-    {
-      updateTrig();
-
-      if (angle != 0) _matrix.rotateWithTrig(_cosAngle, _sinAngle);
-    }
-
-    getScreenPosition(_point, camera).subtractPoint(offset);
-    _point.add(origin.x, origin.y);
-    _matrix.translate(_point.x, _point.y);
-
-    if (isPixelPerfectRender(camera))
-    {
-      _matrix.tx = Math.round(_matrix.tx / this.scale.x) * this.scale.x;
-      _matrix.ty = Math.round(_matrix.ty / this.scale.y) * this.scale.y;
-    }
-
-    camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
+    matrix.tx = Math.round(matrix.tx / this.scale.x) * this.scale.x;
+    matrix.ty = Math.round(matrix.ty / this.scale.y) * this.scale.y;
   }
 
   public override function destroy():Void

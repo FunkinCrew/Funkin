@@ -36,7 +36,7 @@ class ChartEditorAudioHandler
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadVocalsFromBytes(state, fileBytes, charId, instId, wipeFirst);
     #else
-    trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    trace(" WARNING '.bold().bg_yellow() + ' This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
     #end
   }
@@ -88,7 +88,7 @@ class ChartEditorAudioHandler
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadInstFromBytes(state, fileBytes, instId, wipeFirst);
     #else
-    trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    trace(" WARNING '.bold().bg_yellow() + ' This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
     #end
   }
@@ -211,7 +211,7 @@ class ChartEditorAudioHandler
           }
           else
           {
-            trace('[WARN] Failed to parse waveform data for vocal track.');
+            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
           }
 
           state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
@@ -235,7 +235,7 @@ class ChartEditorAudioHandler
           }
           else
           {
-            trace('[WARN] Failed to parse waveform data for vocal track.');
+            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
           }
 
           state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
@@ -311,7 +311,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get('default');
         if (data == null)
         {
-          trace('[WARN] Failed to access inst track ($key)');
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
@@ -321,7 +321,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get(key);
         if (data == null)
         {
-          trace('[WARN] Failed to access inst track ($key)');
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
@@ -346,7 +346,7 @@ class ChartEditorAudioHandler
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
       if (data == null)
       {
-        trace('[WARN] Failed to access vocal track ($key)');
+        trace(' WARNING '.bold().bg_yellow() + ' Failed to access vocal track ($key)');
         continue;
       }
       zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));

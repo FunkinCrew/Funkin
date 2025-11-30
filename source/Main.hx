@@ -21,6 +21,8 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import funkin.util.WindowUtil;
 
+using funkin.util.AnsiUtil;
+
 /**
  * The main class which initializes HaxeFlixel and starts the game in its initial state.
  */
@@ -133,11 +135,11 @@ class Main extends Sprite
     Handle.initAsync(function(success:Bool):Void {
       if (success)
       {
-        trace('[HXVLC] LibVLC instance initialized!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance initialized!');
       }
       else
       {
-        trace('[HXVLC] LibVLC instance failed to initialize!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance failed to initialize!');
       }
     });
     #end

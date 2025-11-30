@@ -10,12 +10,16 @@ import sys.io.FileOutput;
 import sys.io.File;
 #end
 
+using StringTools;
+
 /**
  * Class that helps with some Ansi related logging functionality like some terminal color checking
  */
 @:nullSafety
 class AnsiTrace
 {
+  private static final HEADER_REGEX = ~/^\s*\[(.*?)\]\s*(.*)$/;
+
   #if (sys && FEATURE_DEBUG_FILE_LOGGING)
   private static final logFilePath:String = 'logs/log-${DateUtil.generateTimestamp()}.txt';
   private static var logFile:Null<FileOutput> = null;
@@ -77,14 +81,6 @@ class AnsiTrace
   public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm')
     || Sys.getEnv("ANSICON") != null) #else false #end;
 
-  // ansi stuff
-  static inline var RED = "\x1b[31m";
-  static inline var YELLOW = "\x1b[33m";
-  static inline var WHITE = "\x1b[37m";
-  static inline var NORMAL = "\x1b[0m";
-  static inline var BOLD = "\x1b[1m";
-  static inline var ITALIC = "\x1b[3m";
-
   /**
    * Format the output to use ANSI colors.
    * Edited from the standard `trace()` implementation.
@@ -94,18 +90,29 @@ class AnsiTrace
     var str:String = Std.string(v);
     if (infos == null) return str;
 
-    if (colorSupported)
+    if (AnsiUtil.isColorCodesSupported())
     {
       var dirs:Array<String> = infos.fileName.split("/");
-      dirs[dirs.length - 1] = ansiWrap(dirs[dirs.length - 1], BOLD);
+      dirs[dirs.length - 1] = dirs[dirs.length - 1].bold();
 
       // rejoin the dirs
       infos.fileName = dirs.join("/");
     }
 
-    var pstr:String = infos.fileName + ":" + ansiWrap(infos.lineNumber, BOLD);
+    var pstr:String = infos.fileName + ":" + '${infos.lineNumber}'.bold();
     if (infos.customParams != null) for (v in infos.customParams)
       str += ", " + Std.string(v);
+
+    var header:String = "";
+    var body:String = str;
+
+    if (HEADER_REGEX.match(str))
+    {
+      header = ' ${HEADER_REGEX.matched(1)} ';
+      body = HEADER_REGEX.matched(2);
+    }
+
+    if (header.ltrim() != '') str = header.bg_white().bold() + ' ${body}';
     return pstr + ": " + str;
   }
 
@@ -115,23 +122,13 @@ class AnsiTrace
   public static function traceBF()
   {
     #if (sys && debug)
-    if (colorSupported)
+    if (AnsiUtil.isColorCodesSupported())
     {
       for (line in ansiBF)
         Sys.stdout().writeString(line + "\n");
       Sys.stdout().flush();
     }
     #end
-  }
-
-  static function ansiWrap(str:Dynamic, ansiCol:String)
-  {
-    return ansify(ansiCol) + str + ansify(NORMAL);
-  }
-
-  static function ansify(ansiCol:String)
-  {
-    return (colorSupported ? ansiCol : "");
   }
 
   /**

@@ -120,14 +120,14 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
-          trace('  Loaded entry data: ${entry}');
+          trace(' Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e)
       {
         // Print the error.
-        trace('  Failed to load entry data: ${entryId}');
+        trace(' Failed to load entry data: ${entryId}');
         trace(e);
         continue;
       }
@@ -157,7 +157,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return `true` if the entry has an attached script, `false` otherwise.
    */
-  public function isScriptedEntry(id:String):Bool
+  public function isScriptedEntry(id:String, ?params:Null<P>):Bool
   {
     return scriptedEntryIds.exists(id);
   }
@@ -167,7 +167,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return The class name, or `null` if it does not exist.
    */
-  public function getScriptedEntryClassName(id:String):Null<String>
+  public function getScriptedEntryClassName(id:String, ?params:Null<P>):Null<String>
   {
     return scriptedEntryIds.get(id);
   }
