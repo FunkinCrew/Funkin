@@ -56,6 +56,7 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
     add(cursorDenied);
 
     scrollFactor.set();
+    directAlpha = true;
   }
 
   public function confirm():Void
