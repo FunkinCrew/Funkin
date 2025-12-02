@@ -14,6 +14,8 @@ import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import haxe.ui.components.Button;
+import haxe.ui.components.DropDown;
+import haxe.ui.data.DataSource;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -22,14 +24,132 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;
   public var charIconName:Label;
+  public var charVariationDropdown:DropDown;
 
   var currentCharButton:Null<Button> = null;
   var currentCharId:String = '';
+  var currentBaseCharId:String = '';
+  var charType:CharacterType;
+
+  var lastSelectedVariations:Map<String, String> = new Map();
+
+  function findBaseCharacterId(charId:String):String
+  {
+    if (charId == "") return "";
+
+    var charIds:Array<String> = CharacterDataParser.listCharacterIds();
+
+    for (baseId in charIds)
+    {
+      var charData:CharacterData = CharacterDataParser.fetchCharacterData(baseId);
+
+      if (charData?.isVariation) continue;
+
+      if (baseId == charId) return charId;
+
+      if (charData != null && charData.variations != null && charData.variations.variations != null)
+      {
+        var variations = charData.variations.variations;
+        var keys = variations.keys();
+
+        for (vName in keys)
+        {
+          if (variations.get(vName) == charId)
+          {
+            return baseId;
+          }
+        }
+      }
+    }
+
+    return charId;
+  }
+
+  function getCurrentVariationForBase(baseId:String):String
+  {
+    if (baseId == "") return "";
+
+    if (lastSelectedVariations.exists(baseId)) return lastSelectedVariations.get(baseId);
+
+    return baseId;
+  }
+
+  function saveVariationForBase(baseId:String, variationId:String):Void
+  {
+    if (baseId != "" && variationId != "") lastSelectedVariations.set(baseId, variationId);
+  }
+
+  function buildVariationItems(baseId:String, baseData:CharacterData):Array<Dynamic>
+  {
+    var items:Array<Dynamic> = [];
+
+    if (baseId == "" || baseData == null)
+    {
+      items.push({id: "", text: "None"});
+      return items;
+    }
+
+    items.push({id: baseId, text: "Default"});
+
+    if (baseData.variations != null && baseData.variations.variations != null)
+    {
+      var variations = baseData.variations.variations;
+      var keys = variations.keys();
+
+      for (vName in keys)
+      {
+        var vId = variations.get(vName);
+        items.push({id: vId, text: vName});
+      }
+    }
+
+    return items;
+  }
+
+  function populateVariationDropdown(baseId:String, baseData:CharacterData, selectedId:String):Void
+  {
+    charVariationDropdown.dataSource.clear();
+
+    if (baseId == "" || baseData == null)
+    {
+      charVariationDropdown.dataSource.add({id: "", text: "None"});
+      charVariationDropdown.selectedItem = {id: "", text: "None"};
+      charVariationDropdown.disabled = true;
+      return;
+    }
+
+    charVariationDropdown.disabled = false;
+    var items = buildVariationItems(baseId, baseData);
+
+    for (item in items)
+    {
+      charVariationDropdown.dataSource.add(item);
+    }
+
+    var foundItem = null;
+    for (item in items)
+    {
+      if (item.id == selectedId)
+      {
+        foundItem = item;
+        break;
+      }
+    }
+
+    if (foundItem != null)
+    {
+      charVariationDropdown.selectedItem = foundItem;
+    }
+    else if (items.length > 0)
+    {
+      charVariationDropdown.selectedItem = items[0];
+    }
+  }
 
   public function new(chartEditorState2:ChartEditorState, charType:CharacterType, lockPosition:Bool = false)
   {
     super(chartEditorState2);
-
+    this.charType = charType;
     initialize(charType, lockPosition);
     this.alpha = 0;
     this.y -= 10;
@@ -55,7 +175,10 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       default: throw 'Invalid charType: ' + charType;
     };
 
-    // Position this menu.
+    currentBaseCharId = findBaseCharacterId(currentCharId);
+
+    if (currentBaseCharId != "") lastSelectedVariations.set(currentBaseCharId, currentCharId);
+
     var targetHealthIcon:Null<HealthIcon> = switch (charType)
     {
       case BF: chartEditorState.healthIconBF;
@@ -92,59 +215,130 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     {
       var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
 
+      if (charData?.isVariation) continue;
+
       var charButton = new Button();
       charButton.width = 70;
       charButton.height = 70;
       charButton.padding = 8;
       charButton.iconPosition = "top";
 
-      if (charId == currentCharId)
+      var isCurrentChar = (charId == currentBaseCharId);
+
+      if (isCurrentChar)
       {
         // Scroll to the character if it is already selected.
         charSelectScroll.vscrollPos = Math.floor(charIndex / 5) * 80;
         charButton.focus = true;
 
-        defaultText = (currentCharId != "") ? '${charData.name} [${charId}]' : 'None';
+        // Get the actual character data for display (could be variation)
+        var displayCharData:CharacterData = CharacterDataParser.fetchCharacterData(currentCharId);
+        defaultText = (currentCharId != "") ? '${displayCharData.name} [${currentCharId}]' : 'None';
 
         currentCharButton = charButton;
+
+        populateVariationDropdown(charId, charData, currentCharId);
       }
 
       var LIMIT = 6;
       charButton.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(charId));
       charButton.text = (charId != "") ? (charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}') : 'None';
 
-      charButton.onClick = _ ->
-      {
-        switch (charType)
-        {
-          case BF:
-            chartEditorState.currentSongMetadata.playData.characters.player = charId;
-            chartEditorState.playerPreviewDirty = true;
-          case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
-          case DAD:
-            chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
-            chartEditorState.opponentPreviewDirty = true;
-          default: throw 'Invalid charType: ' + charType;
-        };
+      charButton.onClick = _ -> {
+        var savedVariationId = getCurrentVariationForBase(charId);
+        currentBaseCharId = charId;
+        currentCharId = savedVariationId;
 
-        defaultText = (charId != "") ? '${charData.name} [${charId}]' : 'None';
-        chartEditorState.healthIconsDirty = true;
+        var baseCharData = CharacterDataParser.fetchCharacterData(charId);
 
-        chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-      };
+        populateVariationDropdown(charId, baseCharData, currentCharId);
 
-      charButton.onMouseOver = _ ->
-      {
-        charIconName.text = (charId != "") ? '${charData.name} [${charId}]' : 'None';
-      };
-      charButton.onMouseOut = _ ->
-      {
+        applyCharacter(currentCharId);
+
+        // Get the actual character data for display (could be variation)
+        var displayCharData:CharacterData = CharacterDataParser.fetchCharacterData(currentCharId);
+        defaultText = (currentCharId != "") ? '${displayCharData.name} [${currentCharId}]' : 'None';
         charIconName.text = defaultText;
+      };
+
+      charButton.onMouseOver = _ -> {
+        var hoverCharData = CharacterDataParser.fetchCharacterData(charId);
+        charIconName.text = (charId != "") ? '${hoverCharData.name} [${charId}]' : 'None';
+      };
+      charButton.onMouseOut = _ -> {
+        // Get the actual character data for display (could be variation)
+        var currentCharData:CharacterData = CharacterDataParser.fetchCharacterData(currentCharId);
+        if (currentCharData != null)
+        {
+          charIconName.text = (currentCharId != "") ? '${currentCharData.name} [${currentCharId}]' : 'None';
+        }
+        else
+        {
+          charIconName.text = defaultText;
+        }
       };
       charGrid.addComponent(charButton);
     }
 
-    charIconName.text = defaultText;
+
+    // todo: fix rebase
+    charVariationDropdown.onChange = function(_) {
+      var selectedItem = charVariationDropdown.selectedItem;
+      if (selectedItem != null)
+      {
+        var selectedId:String = selectedItem.id;
+        currentCharId = selectedId;
+
+        saveVariationForBase(currentBaseCharId, selectedId);
+
+        applyCharacter(selectedId);
+
+        // Get the actual character data for display (could be variation)
+        var selectedCharData:CharacterData = CharacterDataParser.fetchCharacterData(selectedId);
+        var displayName = "";
+
+        if (selectedId == currentBaseCharId)
+        {
+          // For default variation, use base character name
+          displayName = selectedCharData != null ? selectedCharData.name : selectedId;
+        }
+        else if (selectedId == "")
+        {
+          displayName = "None";
+        }
+        else
+        {
+          // For variation, use the variation's own name
+          displayName = selectedCharData != null ? selectedCharData.name : selectedId;
+        }
+
+        charIconName.text = (selectedId != "") ? '${displayName} [${selectedId}]' : 'None';
+      }
+    };
+
+    // Set initial text using current character data (could be variation)
+    var initialCharData:CharacterData = CharacterDataParser.fetchCharacterData(currentCharId);
+    charIconName.text = (currentCharId != "") ? '${initialCharData.name} [${currentCharId}]' : 'None';
+  }
+
+  function applyCharacter(charId:String):Void
+  {
+    switch (charType)
+    {
+      case BF:
+        chartEditorState.currentSongMetadata.playData.characters.player = charId;
+        chartEditorState.playerPreviewDirty = true;
+      case GF:
+        chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
+      case DAD:
+        chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
+        chartEditorState.opponentPreviewDirty = true;
+      default:
+        throw 'Invalid charType: ' + charType;
+    };
+
+    chartEditorState.healthIconsDirty = true;
+    chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
   }
 
   public static function build(chartEditorState:ChartEditorState, charType:CharacterType, lockPosition:Bool = false):ChartEditorCharacterIconSelectorMenu

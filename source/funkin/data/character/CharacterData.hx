@@ -43,6 +43,36 @@ class CharacterDataParser
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
 
   /**
+   * Helper function to format variation names from file names.
+   * Converts hyphen-separated names to Title Case with spaces.
+   * Example: "dark-christmas" becomes "Dark Christmas"
+   * NOT AN ACTUAL VARIATION
+   */
+  static function formatVariationName(variationName:String):String
+  {
+    if (variationName == null || variationName == '') return '';
+
+    // Replace hyphens with spaces
+    var withSpaces:String = variationName.replace('-', ' ');
+
+    // Split into words and capitalize each word
+    var words:Array<String> = withSpaces.split(' ');
+    var formattedWords:Array<String> = [];
+
+    for (word in words)
+    {
+      if (word.length > 0)
+      {
+        // Capitalize first letter, lowercase the rest
+        var formattedWord:String = word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+        formattedWords.push(formattedWord);
+      }
+    }
+
+    return formattedWords.join(' ');
+  }
+
+  /**
    * Parses and preloads the game's stage data and scripts when the game starts.
    *
    * If you want to force stages to be reloaded, you can just call this function again.
@@ -52,6 +82,10 @@ class CharacterDataParser
     // Clear any stages that are cached if there were any.
     clearCharacterCache();
     log(' INFO '.info() + 'Parsing all entries...');
+
+    // HANDLE CHARACTERS VARIATIONS
+    // VariationCharacterName -> {VariationName, TargetCharacter}
+    var variationsOnHold:Map<String, {variationName:String, targetCharacter:String}> = [];
 
     //
     // UNSCRIPTED CHARACTERS
@@ -71,12 +105,88 @@ class CharacterDataParser
         {
           log('Loaded character "${charId}"');
           characterCache.set(charId, charData);
+
+          @:nullSafety(Off)
+          // Check if character has variationFor explicitly set to null - if so, skip auto-detection
+          var shouldSkipAutoDetection:Bool = false;
+          if (charData.variations != null && charData.variations.variationFor == null)
+          {
+            // Check if variationFor was explicitly set in JSON (not from filename auto-detection)
+            // We can check if variationName is also null, or if the character ID has hyphen
+            if (charData.variations.variationName == null)
+            {
+              // Both variationFor and variationName are null, likely explicitly set
+              // Check if filename has hyphen but JSON explicitly sets variationFor to null
+              if (charId.indexOf('-') != -1)
+              {
+                // Filename has hyphen but JSON explicitly says no variation
+                shouldSkipAutoDetection = true;
+                trace('Skipping auto-detection for ${charId}: variationFor explicitly set to null');
+              }
+            }
+          }
+
+          // Only auto-detect if not explicitly skipped and filename has hyphen
+          if (!shouldSkipAutoDetection && charId.indexOf('-') != -1)
+          {
+            var parts:Array<String> = charId.split('-');
+            if (parts.length >= 2)
+            {
+              var baseId:String = parts[0];
+              var variationName:String = parts.slice(1).join('-');
+              var formattedVariationName:String = formatVariationName(variationName);
+
+              var baseData:Null<CharacterData> = characterCache.get(baseId);
+              @:nullSafety(Off)
+              if (baseData != null && !baseData.isVariation)
+              {
+                charData.isVariation = true;
+                charData.variations.variationFor = baseId;
+                charData.variations.variationName = formattedVariationName;
+
+                if (baseData.variations.variations == null)
+                {
+                  baseData.variations.variations = new Map<String, String>();
+                }
+                baseData.variations.variations.set(formattedVariationName, charId);
+
+                trace('Auto-detected variation: ${charId} is variation "${formattedVariationName}" of ${baseId}');
+              }
+              else if (charData?.variations?.variationName != null && charData?.variations?.variationFor != null)
+              {
+                @:nullSafety(Off)
+                variationsOnHold.set(charId, {variationName: charData.variations.variationName, targetCharacter: charData.variations.variationFor});
+              }
+            }
+          }
+          else if (charData?.variations?.variationName != null && charData?.variations?.variationFor != null)
+          {
+            @:nullSafety(Off)
+            variationsOnHold.set(charId, {variationName: charData.variations.variationName, targetCharacter: charData.variations.variationFor});
+          }
         }
       }
       catch (e)
       {
         // Assume error was already logged.
         continue;
+      }
+    }
+
+    // CONCAT VARIATIONS
+    @:nullSafety(Off) // i hate you
+    for (variationCharacter => variationMicroData in variationsOnHold)
+    {
+      if (!characterCache.exists(variationMicroData.targetCharacter))
+      {
+        trace('WARN: Attempted to add "${variationMicroData.variationName}" variation for non-existent "${variationMicroData.targetCharacter}" character!');
+        continue;
+      }
+      final targetCharData = characterCache.get(variationMicroData.targetCharacter);
+      if (targetCharData != null)
+      {
+        targetCharData.variations.variations.set(variationMicroData.variationName, variationCharacter);
+        characterCache.get(variationCharacter).isVariation = true;
       }
     }
 
@@ -310,6 +420,78 @@ class CharacterDataParser
   }
 
   /**
+   * Gets the base character ID for a variation.
+   * @param charId Character ID (can be a variation)
+   * @return Base character ID or null
+   */
+  public static function getBaseCharacterId(charId:String):Null<String>
+  {
+    if (charId == null || charId == '') return null;
+
+    var charData:Null<CharacterData> = fetchCharacterData(charId);
+    if (charData == null) return null;
+
+    if (charData.isVariation && charData.variations != null && charData.variations.variationFor != null)
+    {
+      return charData.variations.variationFor;
+    }
+
+    if (charId.indexOf('-') != -1)
+    {
+      var parts:Array<String> = charId.split('-');
+      var potentialBaseId:String = parts[0];
+
+      var baseData:Null<CharacterData> = fetchCharacterData(potentialBaseId);
+      @:nullSafety(Off)
+      if (baseData != null && !baseData.isVariation)
+      {
+        return potentialBaseId;
+      }
+    }
+
+    return charId;
+  }
+
+  /**
+   * Gets the variation name for a character.
+   * @param charId Character ID
+   * @return Variation name or null if not a variation
+   */
+  public static function getVariationName(charId:String):Null<String>
+  {
+    if (charId == null || charId == '') return null;
+
+    var charData:Null<CharacterData> = fetchCharacterData(charId);
+    if (charData == null) return null;
+
+    if (charData.isVariation && charData.variations != null && charData.variations.variationName != null)
+    {
+      return charData.variations.variationName;
+    }
+
+    if (charId.indexOf('-') != -1)
+    {
+      var parts:Array<String> = charId.split('-');
+      if (parts.length >= 2)
+      {
+        return formatVariationName(parts.slice(1).join('-'));
+      }
+    }
+
+    return null;
+  }
+
+  public static function getCharVariations(charId:String):Map<String, String>
+  {
+    var charData:Null<CharacterData> = fetchCharacterData(charId);
+    if (charData != null && charData.variations != null && charData.variations.variations != null)
+    {
+      return charData.variations.variations;
+    }
+    return new Map<String, String>();
+  }
+
+  /**
    * Lists all the valid character IDs.
    * @return An array of character IDs.
    */
@@ -505,6 +687,37 @@ class CharacterDataParser
     {
       trace('WARN: Character data for "$id" missing name');
       input.name = DEFAULT_NAME;
+    }
+    if (input.isVariation == null)
+    {
+      input.isVariation = false;
+    }
+
+    if (input.variations == null)
+    {
+      input.variations =
+        {
+          variations: new Map<String, String>(),
+          variationFor: null,
+          variationName: null
+        };
+    }
+    else if (input.variations.variations == null)
+    {
+      input.variations.variations = new Map<String, String>();
+    }
+
+    // If filename contains hyphen, try to determine base character and variation name
+    // But only if variationFor is not explicitly set to null in JSON
+    if (input.variations.variationFor == null && input.variations.variationName == null && id.indexOf('-') != -1)
+    {
+      var parts:Array<String> = id.split('-');
+      if (parts.length >= 2)
+      {
+        // Set temporary values, may be overridden in loadCharacterCache
+        input.variations.variationFor = parts[0];
+        input.variations.variationName = formatVariationName(parts.slice(1).join('-'));
+      }
     }
 
     if (input.renderType == null)
@@ -716,6 +929,15 @@ typedef CharacterData =
   var name:String;
 
   /**
+   * Optional data about the health icon for the character.
+   */
+  var variations:Null<VariationsData>;
+
+  @:optional
+  @:default(false)
+  var isVariation:Null<Bool>;
+
+  /**
    * The type of rendering system to use for the character.
    * @default sparrow
    */
@@ -821,6 +1043,28 @@ typedef CharacterData =
   @:optional
   var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
 };
+
+typedef VariationsData =
+{
+  /**
+   * Available variations list for character. ([dark => bf-dark, car => bf-car] etc.)
+   */
+  @:optional
+  @:default([])
+  var variations:Null<Map<String, String>>;
+
+  /**
+   * If current character IS A specific variation of a character, this is the variation name. (Dark, Car, Christmas, Pixel)
+   */
+  @:optional
+  var variationName:Null<String>;
+
+  /**
+   * Character's file name which this character is a variation of.
+   */
+  @:optional
+  var variationFor:Null<String>;
+}
 
 /**
  * The JSON data schema used to define the health icon for a character.
