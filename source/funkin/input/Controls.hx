@@ -37,11 +37,9 @@ class Controls extends FlxActionSet
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
   var _reset = new FunkinAction(Action.RESET);
-
   #if FEATURE_SCREENSHOTS
   var _window_screenshot = new FunkinAction(Action.WINDOW_SCREENSHOT);
   #end
-
   var _window_fullscreen = new FunkinAction(Action.WINDOW_FULLSCREEN);
   var _freeplay_favorite = new FunkinAction(Action.FREEPLAY_FAVORITE);
   var _freeplay_left = new FunkinAction(Action.FREEPLAY_LEFT);
@@ -67,6 +65,7 @@ class Controls extends FlxActionSet
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
   public var gamepadsAdded:Array<Int> = [];
+  public var keyboardScheme = KeyboardScheme.None;
 
   public var UI_UP(get, never):Bool;
 
@@ -336,7 +335,7 @@ class Controls extends FlxActionSet
   inline function get_VOLUME_MUTE()
     return _volume_mute.check();
 
-  public function new(name)
+  public function new(name, ?scheme:KeyboardScheme)
   {
     super(name);
 
@@ -380,7 +379,9 @@ class Controls extends FlxActionSet
       }
     }
 
-    initKeyboardBindings(false);
+    if (scheme == null) scheme = None;
+
+    setKeyboardScheme(scheme, false);
   }
 
   override function update():Void
@@ -709,18 +710,37 @@ class Controls extends FlxActionSet
 
     switch (device)
     {
-      case Gamepad(id):
-        gamepadsAdded.push(id);
-      default:
+      case null:
         // add all
         for (gamepad in controls.gamepadsAdded)
           if (gamepadsAdded.indexOf(gamepad) == -1) gamepadsAdded.push(gamepad);
+
+        mergeKeyboardScheme(controls.keyboardScheme);
+
+      case Gamepad(id):
+        gamepadsAdded.push(id);
+      case Keys:
+        mergeKeyboardScheme(controls.keyboardScheme);
     }
   }
 
   inline public function copyTo(controls:Controls, ?device:Device):Void
   {
     controls.copyFrom(this, device);
+  }
+
+  function mergeKeyboardScheme(scheme:KeyboardScheme):Void
+  {
+    if (scheme != None)
+    {
+      switch (keyboardScheme)
+      {
+        case None:
+          keyboardScheme = scheme;
+        default:
+          keyboardScheme = Custom;
+      }
+    }
   }
 
   /**
@@ -760,119 +780,155 @@ class Controls extends FlxActionSet
     }
   }
 
-  public function initKeyboardBindings(reset = true):Void
+  public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
   {
     if (reset) removeKeyboard();
 
-    bindKeys(Control.UI_UP, getDefaultKeybinds(Control.UI_UP));
-    bindKeys(Control.UI_DOWN, getDefaultKeybinds(Control.UI_DOWN));
-    bindKeys(Control.UI_LEFT, getDefaultKeybinds(Control.UI_LEFT));
-    bindKeys(Control.UI_RIGHT, getDefaultKeybinds(Control.UI_RIGHT));
-    bindKeys(Control.NOTE_UP, getDefaultKeybinds(Control.NOTE_UP));
-    bindKeys(Control.NOTE_DOWN, getDefaultKeybinds(Control.NOTE_DOWN));
-    bindKeys(Control.NOTE_LEFT, getDefaultKeybinds(Control.NOTE_LEFT));
-    bindKeys(Control.NOTE_RIGHT, getDefaultKeybinds(Control.NOTE_RIGHT));
-    bindKeys(Control.ACCEPT, getDefaultKeybinds(Control.ACCEPT));
-    bindKeys(Control.BACK, getDefaultKeybinds(Control.BACK));
-    bindKeys(Control.PAUSE, getDefaultKeybinds(Control.PAUSE));
-    bindKeys(Control.RESET, getDefaultKeybinds(Control.RESET));
+    keyboardScheme = scheme;
+
+    bindKeys(Control.UI_UP, getDefaultKeybinds(scheme, Control.UI_UP));
+    bindKeys(Control.UI_DOWN, getDefaultKeybinds(scheme, Control.UI_DOWN));
+    bindKeys(Control.UI_LEFT, getDefaultKeybinds(scheme, Control.UI_LEFT));
+    bindKeys(Control.UI_RIGHT, getDefaultKeybinds(scheme, Control.UI_RIGHT));
+    bindKeys(Control.NOTE_UP, getDefaultKeybinds(scheme, Control.NOTE_UP));
+    bindKeys(Control.NOTE_DOWN, getDefaultKeybinds(scheme, Control.NOTE_DOWN));
+    bindKeys(Control.NOTE_LEFT, getDefaultKeybinds(scheme, Control.NOTE_LEFT));
+    bindKeys(Control.NOTE_RIGHT, getDefaultKeybinds(scheme, Control.NOTE_RIGHT));
+    bindKeys(Control.ACCEPT, getDefaultKeybinds(scheme, Control.ACCEPT));
+    bindKeys(Control.BACK, getDefaultKeybinds(scheme, Control.BACK));
+    bindKeys(Control.PAUSE, getDefaultKeybinds(scheme, Control.PAUSE));
+    bindKeys(Control.RESET, getDefaultKeybinds(scheme, Control.RESET));
     #if FEATURE_SCREENSHOTS
-    bindKeys(Control.WINDOW_SCREENSHOT, getDefaultKeybinds(Control.WINDOW_SCREENSHOT));
+    bindKeys(Control.WINDOW_SCREENSHOT, getDefaultKeybinds(scheme, Control.WINDOW_SCREENSHOT));
     #end
-    bindKeys(Control.WINDOW_FULLSCREEN, getDefaultKeybinds(Control.WINDOW_FULLSCREEN));
-    bindKeys(Control.FREEPLAY_FAVORITE, getDefaultKeybinds(Control.FREEPLAY_FAVORITE));
-    bindKeys(Control.FREEPLAY_LEFT, getDefaultKeybinds(Control.FREEPLAY_LEFT));
-    bindKeys(Control.FREEPLAY_RIGHT, getDefaultKeybinds(Control.FREEPLAY_RIGHT));
-    bindKeys(Control.FREEPLAY_CHAR_SELECT, getDefaultKeybinds(Control.FREEPLAY_CHAR_SELECT));
-    bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(Control.FREEPLAY_JUMP_TO_TOP));
-    bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(Control.FREEPLAY_JUMP_TO_BOTTOM));
-    bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(Control.CUTSCENE_ADVANCE));
+    bindKeys(Control.WINDOW_FULLSCREEN, getDefaultKeybinds(scheme, Control.WINDOW_FULLSCREEN));
+    bindKeys(Control.FREEPLAY_FAVORITE, getDefaultKeybinds(scheme, Control.FREEPLAY_FAVORITE));
+    bindKeys(Control.FREEPLAY_LEFT, getDefaultKeybinds(scheme, Control.FREEPLAY_LEFT));
+    bindKeys(Control.FREEPLAY_RIGHT, getDefaultKeybinds(scheme, Control.FREEPLAY_RIGHT));
+    bindKeys(Control.FREEPLAY_CHAR_SELECT, getDefaultKeybinds(scheme, Control.FREEPLAY_CHAR_SELECT));
+    bindKeys(Control.FREEPLAY_JUMP_TO_TOP, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_TOP));
+    bindKeys(Control.FREEPLAY_JUMP_TO_BOTTOM, getDefaultKeybinds(scheme, Control.FREEPLAY_JUMP_TO_BOTTOM));
+    bindKeys(Control.CUTSCENE_ADVANCE, getDefaultKeybinds(scheme, Control.CUTSCENE_ADVANCE));
     #if FEATURE_DEBUG_MENU
-    bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(Control.DEBUG_MENU));
+    bindKeys(Control.DEBUG_MENU, getDefaultKeybinds(scheme, Control.DEBUG_MENU));
     #end
     #if FEATURE_CHART_EDITOR
-    bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(Control.DEBUG_CHART));
+    bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
     #end
     #if FEATURE_STAGE_EDITOR
-    bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(Control.DEBUG_STAGE));
+    bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(scheme, Control.DEBUG_STAGE));
     #end
-    bindKeys(Control.DEBUG_DISPLAY, getDefaultKeybinds(Control.DEBUG_DISPLAY));
-    bindKeys(Control.VOLUME_UP, getDefaultKeybinds(Control.VOLUME_UP));
-    bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(Control.VOLUME_DOWN));
-    bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(Control.VOLUME_MUTE));
+    bindKeys(Control.DEBUG_DISPLAY, getDefaultKeybinds(scheme, Control.DEBUG_DISPLAY));
+    bindKeys(Control.VOLUME_UP, getDefaultKeybinds(scheme, Control.VOLUME_UP));
+    bindKeys(Control.VOLUME_DOWN, getDefaultKeybinds(scheme, Control.VOLUME_DOWN));
+    bindKeys(Control.VOLUME_MUTE, getDefaultKeybinds(scheme, Control.VOLUME_MUTE));
   }
 
-  function getDefaultKeybinds(control:Control):Array<FlxKey>
+  function getDefaultKeybinds(scheme:KeyboardScheme, control:Control):Array<FlxKey>
   {
-    return switch (control)
+    switch (scheme)
     {
-      case Control.UI_UP:
-        [W, FlxKey.UP];
-      case Control.UI_DOWN:
-        [S, FlxKey.DOWN];
-      case Control.UI_LEFT:
-        [A, FlxKey.LEFT];
-      case Control.UI_RIGHT:
-        [D, FlxKey.RIGHT];
-      case Control.NOTE_UP:
-        [W, FlxKey.UP];
-      case Control.NOTE_DOWN:
-        [S, FlxKey.DOWN];
-      case Control.NOTE_LEFT:
-        [A, FlxKey.LEFT];
-      case Control.NOTE_RIGHT:
-        [D, FlxKey.RIGHT];
-      case Control.ACCEPT:
-        [Z, SPACE, ENTER];
-      case Control.BACK:
-        [X, BACKSPACE, ESCAPE];
-      case Control.PAUSE:
-        [P, ENTER, ESCAPE];
-      case Control.RESET:
-        [R];
-      case Control.WINDOW_FULLSCREEN:
-        [F11]; // We use F for other things LOL.
-      #if FEATURE_SCREENSHOTS
-      case Control.WINDOW_SCREENSHOT:
-        [F3];
-      #end
-      case Control.FREEPLAY_FAVORITE:
-        [F]; // Favorite a song on the menu
-      case Control.FREEPLAY_LEFT:
-        [Q]; // Switch tabs on the menu
-      case Control.FREEPLAY_RIGHT:
-        [E]; // Switch tabs on the menu
-      case Control.FREEPLAY_CHAR_SELECT:
-        [TAB];
-      case Control.FREEPLAY_JUMP_TO_TOP:
-        [HOME];
-      case Control.FREEPLAY_JUMP_TO_BOTTOM:
-        [END];
-      case Control.CUTSCENE_ADVANCE:
-        [Z, ENTER];
-      #if FEATURE_DEBUG_MENU
-      case Control.DEBUG_MENU:
-        [GRAVEACCENT];
-      #end
-      #if FEATURE_CHART_EDITOR
-      case Control.DEBUG_CHART:
-        [];
-      #end
-      #if FEATURE_STAGE_EDITOR
-      case Control.DEBUG_STAGE:
-        [];
-      #end
-      case Control.DEBUG_DISPLAY:
-        [F6];
-      case Control.VOLUME_UP:
-        [PLUS, NUMPADPLUS];
-      case Control.VOLUME_DOWN:
-        [MINUS, NUMPADMINUS];
-      case Control.VOLUME_MUTE:
-        [ZERO, NUMPADZERO];
+      case Solo:
+        switch (control)
+        {
+          case Control.UI_UP: return [W, FlxKey.UP];
+          case Control.UI_DOWN: return [S, FlxKey.DOWN];
+          case Control.UI_LEFT: return [A, FlxKey.LEFT];
+          case Control.UI_RIGHT: return [D, FlxKey.RIGHT];
+          case Control.NOTE_UP: return [W, FlxKey.UP];
+          case Control.NOTE_DOWN: return [S, FlxKey.DOWN];
+          case Control.NOTE_LEFT: return [A, FlxKey.LEFT];
+          case Control.NOTE_RIGHT: return [D, FlxKey.RIGHT];
+          case Control.ACCEPT: return [Z, SPACE, ENTER];
+          case Control.BACK: return [X, BACKSPACE, ESCAPE];
+          case Control.PAUSE: return [P, ENTER, ESCAPE];
+          case Control.RESET: return [R];
+          case Control.WINDOW_FULLSCREEN: return [F11]; // We use F for other things LOL.
+          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
+          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
+          case Control.FREEPLAY_CHAR_SELECT: return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
+          case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
+          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
+          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
+          case Control.DEBUG_DISPLAY: return [F6];
+          case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
+          case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
+          case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
+        }
+      case Duo(true):
+        switch (control)
+        {
+          case Control.UI_UP: return [W];
+          case Control.UI_DOWN: return [S];
+          case Control.UI_LEFT: return [A];
+          case Control.UI_RIGHT: return [D];
+          case Control.NOTE_UP: return [W];
+          case Control.NOTE_DOWN: return [S];
+          case Control.NOTE_LEFT: return [A];
+          case Control.NOTE_RIGHT: return [D];
+          case Control.ACCEPT: return [G, Z];
+          case Control.BACK: return [H, X];
+          case Control.PAUSE: return [ONE];
+          case Control.RESET: return [R];
+          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
+          case Control.WINDOW_FULLSCREEN: return [F11];
+          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
+          case Control.FREEPLAY_CHAR_SELECT: return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
+          case Control.CUTSCENE_ADVANCE: return [G, Z];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
+          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
+          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
+          case Control.DEBUG_DISPLAY: return [F6];
+          case Control.VOLUME_UP: return [PLUS];
+          case Control.VOLUME_DOWN: return [MINUS];
+          case Control.VOLUME_MUTE: return [ZERO];
+        }
+      case Duo(false):
+        switch (control)
+        {
+          case Control.UI_UP: return [FlxKey.UP];
+          case Control.UI_DOWN: return [FlxKey.DOWN];
+          case Control.UI_LEFT: return [FlxKey.LEFT];
+          case Control.UI_RIGHT: return [FlxKey.RIGHT];
+          case Control.NOTE_UP: return [FlxKey.UP];
+          case Control.NOTE_DOWN: return [FlxKey.DOWN];
+          case Control.NOTE_LEFT: return [FlxKey.LEFT];
+          case Control.NOTE_RIGHT: return [FlxKey.RIGHT];
+          case Control.ACCEPT: return [ENTER];
+          case Control.BACK: return [ESCAPE];
+          case Control.PAUSE: return [ONE];
+          case Control.RESET: return [R];
+          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return []; #end
+          case Control.WINDOW_FULLSCREEN: return [];
+          case Control.FREEPLAY_FAVORITE: return [];
+          case Control.FREEPLAY_LEFT: return [];
+          case Control.FREEPLAY_RIGHT: return [];
+          case Control.FREEPLAY_CHAR_SELECT: return [];
+          case Control.FREEPLAY_JUMP_TO_TOP: return [];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
+          case Control.CUTSCENE_ADVANCE: return [ENTER];
+          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return []; #end
+          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
+          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
+          case Control.DEBUG_DISPLAY: return [];
+          case Control.VOLUME_UP: return [NUMPADPLUS];
+          case Control.VOLUME_DOWN: return [NUMPADMINUS];
+          case Control.VOLUME_MUTE: return [NUMPADZERO];
+        }
       default:
-        [];
+        // Fallthrough.
     }
+
+    return [];
   }
 
   function removeKeyboard():Void
@@ -1101,44 +1157,43 @@ class Controls extends FlxActionSet
     {
       var inputs:Array<Int> = Reflect.field(data, control.getName());
       inputs = inputs?.distinct();
-
-      if (inputs == null)
+      if (inputs != null)
       {
-        trace('Control ${control} is missing bindings, resetting to default.');
-        switch (device)
+        if (inputs.length == 0)
         {
-          case Keys:
-            bindKeys(control, getDefaultKeybinds(control));
-          case Gamepad(id):
-            bindButtons(control, id, getDefaultGamepadBinds(control));
+          trace('Control ${control} is missing bindings, resetting to default.');
+          switch (device)
+          {
+            case Keys:
+              bindKeys(control, getDefaultKeybinds(Solo, control));
+            case Gamepad(id):
+              bindButtons(control, id, getDefaultGamepadBinds(control));
+          }
         }
-
-        return;
-      }
-
-      if (inputs.length == 0)
-      {
-        trace('Control ${control} is missing bindings, resetting to default.');
-        switch (device)
+        else if (inputs == [FlxKey.NONE])
         {
-          case Keys:
-            bindKeys(control, getDefaultKeybinds(control));
-          case Gamepad(id):
-            bindButtons(control, id, getDefaultGamepadBinds(control));
+          trace('Control ${control} is unbound, leaving it be.');
         }
-      }
-      else if (inputs == [FlxKey.NONE])
-      {
-        trace('Control ${control} is unbound, leaving it be.');
+        else
+        {
+          switch (device)
+          {
+            case Keys:
+              bindKeys(control, inputs.copy());
+            case Gamepad(id):
+              bindButtons(control, id, inputs.copy());
+          }
+        }
       }
       else
       {
+        trace('Control ${control} is missing bindings, resetting to default.');
         switch (device)
         {
           case Keys:
-            bindKeys(control, inputs.copy());
+            bindKeys(control, getDefaultKeybinds(Solo, control));
           case Gamepad(id):
-            bindButtons(control, id, inputs.copy());
+            bindButtons(control, id, getDefaultGamepadBinds(control));
         }
       }
     }
@@ -1469,4 +1524,12 @@ enum Device
 {
   Keys;
   Gamepad(id:Int);
+}
+
+enum KeyboardScheme
+{
+  Solo;
+  Duo(first:Bool);
+  None;
+  Custom;
 }

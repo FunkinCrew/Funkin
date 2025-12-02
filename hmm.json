@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "6546fa5c3ad1bac065f144745122ab5a6d4195ff",
+      "ref": "5932340d095a7eea8635fe4d1355f1c0efd0b3c2",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -146,7 +146,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.4"
+      "version": "2.2.5"
     },
     {
       "name": "json2object",

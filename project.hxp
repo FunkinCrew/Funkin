@@ -2049,7 +2049,7 @@ class Project extends HXProject
   @SuppressWarnings('checkstyle:Dynamic')
   function checkLibraries():Void
   {
-    var outdatedLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
+    var diffrentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
 
@@ -2063,53 +2063,71 @@ class Project extends HXProject
 
       var libraryCurrentVersion:String = readLibraryCurrentVersion(libraryName);
 
-      switch (library.type)
-      {
-        case 'haxelib':
-          if (libraryDev != "")
-          {
-            outdatedLibraries.set(libraryName, [libraryDev, library.version]);
-          }
-          else if (library.version != libraryCurrentVersion)
-          {
-            outdatedLibraries.set(libraryName, [libraryCurrentVersion, library.version]);
-          }
-        case 'git':
-          if (libraryDev != "" && !isLibraryGitDev(libraryName))
-          {
-            outdatedLibraries.set(libraryName, [libraryDev, library.ref]);
-          }
-          else
-          {
-            var commitHash:String = readLibraryGitCommitHash(libraryName);
+      var libraryCurrentCommitHash:String = readLibraryGitCommitHash(libraryName);
 
-            if (commitHash != library.ref && commitHash != "")
+      if (libraryDev != "" && !isLibraryLocalGitDev(libraryName))
+      {
+        switch (library.type)
+        {
+          case 'haxelib':
+            diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
+          case 'git':
+            if (libraryCurrentCommitHash != library.ref)
             {
-              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+              diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
             }
-          }
+        }
+      }
+      else
+      {
+        switch (library.type)
+        {
+          case 'haxelib':
+            if (library.version != libraryCurrentVersion)
+            {
+              diffrentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
+            }
+          case 'git':
+            if (libraryCurrentCommitHash != library.ref)
+            {
+              diffrentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
+            }
+        }
       }
     }
 
-    if (Lambda.count(outdatedLibraries) > 0)
+    if (Lambda.count(diffrentLibraries) > 0)
     {
-      warn("The following haxelibs diverge from the versions set in hmm.json.".bold().yellow());
-      warn("They may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library.".bold().yellow());
-      warn("You may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.".bold().yellow());
+      warn("Some libraries differ from the versions defined in hmm.json.".bold().yellow());
+      warn("To ensure consistency, it's recommended to stop the build and run `hmm reinstall [library]`.".bold().yellow());
+      warn("If you're intentionally using development builds or newer versions, you can ignore this warning.".bold().yellow());
 
       Sys.println('');
 
-      for (libraryName in outdatedLibraries.keys())
+      for (libraryName in diffrentLibraries.keys())
       {
-        var versions:Null<Array<String>> = outdatedLibraries.get(libraryName);
-        if (versions == null) continue;
+        var infos:Null<Array<String>> = diffrentLibraries.get(libraryName);
 
-        var outdatedVersion:String = versions[0];
-        var expectedVersion:String = versions[1];
+        if (infos == null) continue;
 
-        Sys.println("- " + libraryName.replace(",", ".") + (haxe.io.Path.isAbsolute(outdatedVersion) ? " (Development Build)".blue().bold() : ""));
-        Sys.println(("   Current version: " + outdatedVersion).red());
-        Sys.println(("   Expected version: " + expectedVersion).green());
+        var devPath:String = infos[0];
+        var currentVersion:String = infos[1];
+        var expectedVersion:String = infos[2];
+        var libType:String = infos[3];
+
+        if (haxe.io.Path.isAbsolute(devPath))
+        {
+          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
+          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
+
+        }
+        else
+        {
+          Sys.println("- " + libraryName.replace(",", "."));
+        }
+
+        Sys.println(("   Current:  " + currentVersion).red());
+        Sys.println(("   Expected: " + expectedVersion).green());
       }
 
       Sys.println('');
@@ -2136,11 +2154,20 @@ class Project extends HXProject
 
   static function readLibraryGitCommitHash(libraryName:String):String
   {
+    var commit:String = '';
+
     var gitProccess = new sys.io.Process("git", ["-C", getLibraryGitPath(libraryName), "rev-parse", "HEAD"]);
-
     gitProccess.exitCode(true);
+    commit = gitProccess.stdout.readAll().toString().trim();
 
-    return gitProccess.stdout.readAll().toString().trim();
+    if (commit.length <= 0)
+    {
+      gitProccess = new sys.io.Process("git", ["-C", readLibraryDev(libraryName), "rev-parse", "HEAD"]);
+      gitProccess.exitCode(true);
+      commit = gitProccess.stdout.readAll().toString().trim();
+    }
+
+    return commit;
   }
 
   static function getLibraryCurrentFile(libraryName:String):String
@@ -2158,7 +2185,7 @@ class Project extends HXProject
     return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, 'git']);
   }
 
-  static function isLibraryGitDev(libraryName:String):Bool
+  static function isLibraryLocalGitDev(libraryName:String):Bool
   {
     final gitPath:String = getLibraryGitPath(libraryName);
     final devFile:String = getLibraryDevFile(libraryName);
