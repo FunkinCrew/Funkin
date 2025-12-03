@@ -111,8 +111,12 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
+    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
+
     var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, chartEditorState.noteKindToPlace);
     toolboxNotesNoteKind.value = startingValueNoteKind;
+
+    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
 
     toolboxNotesCustomKind.onChange = function(event:UIEvent) {
       var customKind:Null<String> = event?.target?.text;
@@ -120,7 +124,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       if (toolboxNotesNoteKind.value.id != '~CUSTOM~') return;
 
-      if (chartEditorState.currentNoteSelection.length > 0)
+      if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
         // Edit the note data of any selected notes.
         for (note in chartEditorState.currentNoteSelection)
@@ -132,12 +136,19 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
+    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
+
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+    
+    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   public override function refresh():Void
   {
     super.refresh();
+
+    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
+    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
 
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
     toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
@@ -151,6 +162,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     }
 
     createNoteKindParams(chartEditorState.noteKindToPlace);
+    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
+    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   function showCustom():Void
