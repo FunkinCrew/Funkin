@@ -192,7 +192,7 @@ class DropShadowShader extends FlxShader
   function set_attachedSprite(spr:FlxSprite):FlxSprite
   {
     attachedSprite = spr;
-    updateFrameInfo(attachedSprite.frame);
+    updateFrameInfo(attachedSprite.frameWidth, attachedSprite.frameHeight, attachedSprite.frame.angle);
     return spr;
   }
 
@@ -217,19 +217,18 @@ class DropShadowShader extends FlxShader
    */
   public function onAttachedFrame(name, frameNum, frameIndex)
   {
-    if (attachedSprite != null) updateFrameInfo(attachedSprite.frame);
+    if (attachedSprite != null) updateFrameInfo(attachedSprite.frameWidth, attachedSprite.frameHeight, attachedSprite.frame.angle);
   }
 
   /*
     Updates the frame bounds and angle offset of the sprite for the shader.
    */
-  public function updateFrameInfo(frame:FlxFrame)
+  public function updateFrameInfo(width:Float, height:Float, angle:Float)
   {
-    // NOTE: uv.right is actually the right pos and uv.bottom is the bottom pos
-    uFrameBounds.value = [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom];
+    uFrameBounds.value = [0, 0, width, height];
 
     // if a frame is rotated the shader will look completely wrong lol
-    angOffset.value = [frame.angle * FlxAngle.TO_RAD];
+    angOffset.value = [angle * FlxAngle.TO_RAD];
   }
 
   function set_altMaskImage(_bitmapData:BitmapData):BitmapData
