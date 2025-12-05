@@ -5,10 +5,10 @@
     - Download Git from [git-scm.com](https://www.git-scm.com)
     - Do NOT download the repository using the Download ZIP button on GitHub or you may run into errors!
     - Instead, open a command prompt and do the following steps...
-1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
-    - For example, `cd C:\Users\YOURNAME\Documents` would instruct the command prompt to perform the next steps in your Documents folder.
-2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
-3. Run `cd funkin` to enter the cloned repository's directory.
+1. Run `cd the/directory/you/want/the/source/code/in` to specify which folder the command prompt is working in.
+    - For example, `cd C:/Users/YOURNAME/Documents` would instruct the command prompt to perform the next steps in your Documents folder.
+2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository at the `HEAD` or `main` branch. It is recommended to clone the latest stable release's branch instead, do `git clone --branch <tag_name> https://github.com/FunkinCrew/funkin.git` use the version's name in place of `<tag_name>` (e.g. `v0.7.5`).
+3. Run `cd Funkin` to enter the cloned repository's directory.
 4. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
 5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
@@ -25,6 +25,7 @@
         - One of Funkin's dependencies uses libVLC, which requires you to install some development packages to be able to compile.
           Command for Ubuntu/Debian based systems: `sudo apt install libvlc-dev libvlccore-dev libvlccore9`, and for other distros, please refer to [hxvlc's documentation](https://github.com/MAJigsaw77/hxvlc?tab=readme-ov-file#dependencies)
     - HTML5: Compiles without any extra setup
+    - WebAssembly: Follow [Lime's WASM guide](https://lime.openfl.org/docs/advanced-setup/webassembly/) for help installing Emscripten SDK and other steps.
 10. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
 11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
 
