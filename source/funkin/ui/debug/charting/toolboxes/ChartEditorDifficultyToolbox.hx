@@ -208,7 +208,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxTree.clearNodes();
 
     // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.currentSongName}'});
+    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.songMetadata.get('default').songName}'});
     treeSong.expanded = true;
 
     for (curVariation in chartEditorState.availableVariations)
