@@ -546,6 +546,7 @@ class DebugBoundingState extends FlxState
       trace('ERROR: Failed to load character ${char}!');
     }
 
+    updateOnionSkin();
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 
