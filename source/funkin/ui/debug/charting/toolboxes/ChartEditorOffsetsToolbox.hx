@@ -492,13 +492,13 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   public function pauseAudioPreview():Void
   {
     audioPreviewTracks.pause();
-    chartEditorState.fadeInWelcomeMusic(chartEditorState.welcomeMusicFadeInDelay, chartEditorState.welcomeMusicFadeInDuration);
+    chartEditorState.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);
   }
 
   public function stopAudioPreview():Void
   {
     audioPreviewTracks.stop();
-    chartEditorState.fadeInWelcomeMusic(chartEditorState.welcomeMusicFadeInDelay, chartEditorState.welcomeMusicFadeInDuration);
+    chartEditorState.fadeInWelcomeMusic(ChartEditorState.WELCOME_MUSIC_FADE_IN_DELAY, ChartEditorState.WELCOME_MUSIC_FADE_IN_DURATION);
 
     audioPreviewTracks.time = 0;
 
