@@ -165,7 +165,7 @@ typedef NoteStyleAssetData<T> =
   var assetPath:String;
 
   /**
-   * The scale to render the prop at.
+   * The scale to render the note at.
    * @default 1.0
    */
   @:default(1.0)
@@ -181,7 +181,7 @@ typedef NoteStyleAssetData<T> =
   var offsets:Null<Array<Float>>;
 
   /**
-   * If true, the prop is a pixel sprite, and will be rendered without anti-aliasing.
+   * If true, the note is a pixel sprite, and will be rendered without anti-aliasing.
    */
   @:default(false)
   @:optional

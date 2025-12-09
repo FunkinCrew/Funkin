@@ -65,7 +65,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = Math.round(curNumber);
 
-    while (tempCombo != 0)
+    while (tempCombo > 0 && tempCombo != 0)
     {
       seperatedScore.push(tempCombo % 10);
       tempCombo = Math.floor(tempCombo / 10);

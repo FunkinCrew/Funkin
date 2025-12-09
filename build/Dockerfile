@@ -102,7 +102,7 @@ RUN <<EOF
 #  | jq '.[] | select(.name == "'"$neko_version"'")' \
 #  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
 #  | jq -r '.browser_download_url')
-neko_url="https://geo.thei.rs/funkin/neko-2.4.0-linux64.tar.gz"
+neko_url="https://geo.thei.rs/funkin/neko-2.4.1-linux64.tar.gz"
 curl -fL "$neko_url" | tar -xz -C /usr/local
 EOF
 

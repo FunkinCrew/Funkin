@@ -3,6 +3,7 @@ package funkin.util.tools;
 /**
  * A static extension which provides utility functions for Arrays.
  */
+@:nullSafety
 class ArrayTools
 {
   /*
@@ -95,5 +96,19 @@ class ArrayTools
   {
     // Switch it around.
     return isSuperset(superset, subset);
+  }
+
+  /**
+   * Like `join` but adds a word before the last element.
+   * @param array The array to join.
+   * @param separator The separator to use between elements.
+   * @param andWord The word to use before the last element.
+   * @return The joined string.
+   */
+  public static function joinPlural(array:Array<String>, separator:String = ', ', andWord:String = 'and'):String
+  {
+    if (array.length == 0) return '';
+    if (array.length == 1) return array[0];
+    return '${array.slice(0, array.length - 1).join(separator)} $andWord ${array[array.length - 1]}';
   }
 }

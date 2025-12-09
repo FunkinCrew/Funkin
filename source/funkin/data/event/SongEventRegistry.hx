@@ -8,11 +8,12 @@ import funkin.play.event.ScriptedSongEvent;
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
  */
+@:nullSafety
 class SongEventRegistry
 {
   /**
    * Every built-in event class must be added to this list.
-   * Thankfully, with the power of `SongEventMacro`, this is done automatically.
+   * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
   static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
 
@@ -45,12 +46,12 @@ class SongEventRegistry
 
       if (event != null)
       {
-        trace('  Loaded built-in song event: ${event.id}');
+        trace(' Loaded built-in song event: ${event.id}');
         eventCache.set(event.id, event);
       }
       else
       {
-        trace('  Failed to load built-in song event: ${Type.getClassName(eventCls)}');
+        trace(' Failed to load built-in song event: ${Type.getClassName(eventCls)}');
       }
     }
   }
@@ -67,12 +68,12 @@ class SongEventRegistry
 
       if (event != null)
       {
-        trace('  Loaded scripted song event: ${event.id}');
+        trace(' Loaded scripted song event: ${event.id}');
         eventCache.set(event.id, event);
       }
       else
       {
-        trace('  Failed to instantiate scripted song event class: ${eventCls}');
+        trace(' Failed to instantiate scripted song event class: ${eventCls}');
       }
     }
   }
@@ -87,14 +88,14 @@ class SongEventRegistry
     return eventCache.values();
   }
 
-  public static function getEvent(id:String):SongEvent
+  public static function getEvent(id:String):Null<SongEvent>
   {
     return eventCache.get(id);
   }
 
-  public static function getEventSchema(id:String):SongEventSchema
+  public static function getEventSchema(id:String):Null<SongEventSchema>
   {
-    var event:SongEvent = getEvent(id);
+    var event:Null<SongEvent> = getEvent(id);
     if (event == null) return null;
 
     return event.getEventSchema();
@@ -108,7 +109,7 @@ class SongEventRegistry
   public static function handleEvent(data:SongEventData):Void
   {
     var eventKind:String = data.eventKind;
-    var eventHandler:SongEvent = eventCache.get(eventKind);
+    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
 
     if (eventHandler != null)
     {

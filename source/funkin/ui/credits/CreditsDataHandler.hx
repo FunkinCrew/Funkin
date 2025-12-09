@@ -2,6 +2,7 @@ package funkin.ui.credits;
 
 import funkin.data.JsonFile;
 
+using funkin.util.AnsiUtil;
 using StringTools;
 
 @:nullSafety
@@ -15,17 +16,18 @@ class CreditsDataHandler
   static final CREDITS_DATA_PATH:String = "assets/data/credits.json";
   #end
 
+  #if macro
   public static function debugPrint(data:Null<CreditsData>):Void
   {
     if (data == null)
     {
-      trace('CreditsData(NULL)');
+      Sys.println(' INFO '.bold().bg_blue() + ' CreditsData(NULL)');
       return;
     }
 
     if (data.entries == null || data.entries.length == 0)
     {
-      trace('CreditsData(EMPTY)');
+      Sys.println(' INFO '.bold().bg_blue() + ' CreditsData(EMPTY)');
       return;
     }
 
@@ -36,8 +38,9 @@ class CreditsDataHandler
       lineCount += entry?.body?.length ?? 0;
     }
 
-    trace('CreditsData($entryCount entries containing $lineCount lines)');
+    Sys.println(' INFO '.bold().bg_blue() + ' CreditsData($entryCount entries containing $lineCount lines)');
   }
+  #end
 
   /**
    * If for some reason the full credits won't load,

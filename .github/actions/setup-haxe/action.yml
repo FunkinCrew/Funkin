@@ -30,7 +30,7 @@ runs:
       echo "TIMER_HAXE=$(date +%s)" >> "$GITHUB_ENV"
 
   - name: Install Haxe
-    uses: funkincrew/ci-haxe@v3.2.6
+    uses: funkincrew/ci-haxe@v3.2.7
     with:
       haxe-version: ${{ inputs.haxe }}
 

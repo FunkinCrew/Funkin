@@ -36,7 +36,8 @@
     (NOTE: Make sure you do this via `hmm` (e.g `hmm reinstall -f lime`) to guarantee you get Funkin's version of Lime.)
 
 - `Uncaught exception - Could not find lime.ndll.` ... `Advanced users may run "lime rebuild cpp" instead.`
-  - Usually specific to Linux. Running the commands below should fix it.
+  - If on Linux:
+    - The binaries GLibC version might more recent than the one your system supports. Running the commands below should fix it.
       ```
       cd .haxelib/lime/git
       git submodule init
@@ -47,4 +48,6 @@
       sudo apt install libgl1-mesa-dev libglu1-mesa-dev g++ g++-multilib gcc-multilib libasound2-dev libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libpulse-dev
       lime rebuild cpp -64 -release -clean
       ```
-    For Windows or MacOS you can download pre-built binaries from [Funkin's Lime](https://github.com/FunkinCrew/lime/tree/dev-funkin/ndll).
+      
+  - The binaries are missing for some reason. You can download pre-built binaries from [Funkin's Lime](https://github.com/FunkinCrew/lime/tree/dev-funkin/ndll).  
+    You should copy them to `.haxelib/lime/git/ndll/<PLATFORM>64/`, where `<PLATFORM>` is the current platform you're on, which can be either Windows, Linux or MacOS.

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import lime.utils.Bytes;
 import haxe.ui.components.TextField;
@@ -67,3 +68,4 @@ class LoadFromUrlDialog extends Dialog
     }
   }
 }
+#end

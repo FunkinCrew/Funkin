@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import funkin.audio.FunkinSound;
 
@@ -16,7 +17,7 @@ class StageEditorDefaultToolbox extends CollapsibleDialog
 
     this.stageEditorState = stageEditorState;
 
-    closable = false;
+    closable = true;
     modal = true;
     destroyOnClose = false;
   }
@@ -42,3 +43,4 @@ class StageEditorDefaultToolbox extends CollapsibleDialog
    */
   public function refresh() {}
 }
+#end

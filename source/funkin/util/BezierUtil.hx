@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 /**
  * Utilities for performing math with bezier curves.
  */
+@:nullSafety
 class BezierUtil
 {
   /**

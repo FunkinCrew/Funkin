@@ -14,6 +14,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 {
   // public var vis:VisShit;
   var analyzer:Null<SpectralAnalyzer> = null;
+  var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
 
   var volumes:Array<Float> = [];
 
@@ -72,8 +73,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     // we use a very low minFreq since some songs use low low subbass like a boss
     analyzer.minFreq = 10;
 
-    #if desktop
-    // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+    #if sys
+    // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
     // So we want to manually change it!
     analyzer.fftN = 256;
     #end
@@ -112,11 +113,11 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
    */
   function drawFFT():Void
   {
-    var levels = (analyzer != null) ? analyzer.getLevels() : getDefaultLevels();
+    analyzerLevelsCache = (analyzer != null) ? analyzer.getLevels(analyzerLevelsCache) : getDefaultLevels();
 
-    for (i in 0...min(group.members.length, levels.length))
+    for (i in 0...min(group.members.length, analyzerLevelsCache.length))
     {
-      var animFrame:Int = Math.round(levels[i].value * 6);
+      var animFrame:Int = (FlxG.sound.volume == 0 || FlxG.sound.muted) ? 0 : Math.round(analyzerLevelsCache[i].value * 6);
 
       // don't display if we're at 0 volume from the level
       group.members[i].visible = animFrame > 0;

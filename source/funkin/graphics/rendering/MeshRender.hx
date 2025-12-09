@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
  * Yoinked from AustinEast, thanks hopefully u dont mind me using some of ur good code
  * instead of my dumbass ugly code bro
  */
+@:nullSafety
 class MeshRender extends FlxStrip
 {
   public var vertex_count(default, null):Int = 0;
@@ -67,6 +68,11 @@ class MeshRender extends FlxStrip
   {
     add_tri(a, b, c);
     add_tri(a, c, d);
+  }
+
+  public override function draw():Void
+  {
+    super.draw();
   }
 
   /**

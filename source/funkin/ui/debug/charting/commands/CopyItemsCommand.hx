@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
@@ -132,6 +133,8 @@ class CopyItemsCommand implements ChartEditorCommand
         if (copiedEvents > 1) copiedString += 's';
       }
 
+      FlxTween.globalManager.cancelTweensOf(state.txtCopyNotif);
+
       state.txtCopyNotif.visible = true;
       state.txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
       state.txtCopyNotif.x = FlxG.mouse.x - (state.txtCopyNotif.width / 2);
@@ -168,3 +171,4 @@ class CopyItemsCommand implements ChartEditorCommand
       return 'Copy $len Items to Clipboard';
   }
 }
+#end

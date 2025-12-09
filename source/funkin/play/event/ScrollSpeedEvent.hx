@@ -33,7 +33,6 @@ class ScrollSpeedEvent extends SongEvent
 
   static final DEFAULT_SCROLL:Float = 1;
   static final DEFAULT_DURATION:Float = 4.0;
-  static final DEFAULT_EASE:String = 'linear';
   static final DEFAULT_ABSOLUTE:Bool = false;
   static final DEFAULT_STRUMLINE:String = 'both'; // my special little trick
 
@@ -46,7 +45,10 @@ class ScrollSpeedEvent extends SongEvent
 
     var duration:Float = data.getFloat('duration') ?? DEFAULT_DURATION;
 
-    var ease:String = data.getString('ease') ?? DEFAULT_EASE;
+    var ease:String = data.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
 
     var strumline:String = data.getString('strumline') ?? DEFAULT_STRUMLINE;
 
@@ -74,7 +76,7 @@ class ScrollSpeedEvent extends SongEvent
         PlayState.instance.tweenScrollSpeed(scroll, 0, null, strumlineNames);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease);
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
         if (easeFunction == null)
         {
           trace('Invalid ease function: $ease');
@@ -96,6 +98,7 @@ class ScrollSpeedEvent extends SongEvent
    *   'scroll': FLOAT, // Target scroll level.
    *   'duration': FLOAT, // Duration in steps.
    *   'ease': ENUM, // Easing function.
+   *   'easeDir': ENUM, // Easing function direction (In, Out, InOut).
    *   'strumline': ENUM, // Which strumline to change
    *   'absolute': BOOL, // True to set the scroll speed to the target level, false to set the scroll speed to (target level x base scroll speed)
    * }
@@ -108,6 +111,7 @@ class ScrollSpeedEvent extends SongEvent
         name: 'scroll',
         title: 'Target Value',
         defaultValue: 1.0,
+        min: 0.1,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
         units: 'x'
@@ -116,6 +120,7 @@ class ScrollSpeedEvent extends SongEvent
         name: 'duration',
         title: 'Duration',
         defaultValue: 4.0,
+        min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
         units: 'steps'
@@ -127,32 +132,27 @@ class ScrollSpeedEvent extends SongEvent
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
-          'Instant (Ignores Duration)' => 'INSTANT',
-          'Sine In' => 'sineIn',
-          'Sine Out' => 'sineOut',
-          'Sine In/Out' => 'sineInOut',
-          'Quad In' => 'quadIn',
-          'Quad Out' => 'quadOut',
-          'Quad In/Out' => 'quadInOut',
-          'Cube In' => 'cubeIn',
-          'Cube Out' => 'cubeOut',
-          'Cube In/Out' => 'cubeInOut',
-          'Quart In' => 'quartIn',
-          'Quart Out' => 'quartOut',
-          'Quart In/Out' => 'quartInOut',
-          'Quint In' => 'quintIn',
-          'Quint Out' => 'quintOut',
-          'Quint In/Out' => 'quintInOut',
-          'Expo In' => 'expoIn',
-          'Expo Out' => 'expoOut',
-          'Expo In/Out' => 'expoInOut',
-          'Smooth Step In' => 'smoothStepIn',
-          'Smooth Step Out' => 'smoothStepOut',
-          'Smooth Step In/Out' => 'smoothStepInOut',
-          'Elastic In' => 'elasticIn',
-          'Elastic Out' => 'elasticOut',
-          'Elastic In/Out' => 'elasticInOut'
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Sine' => 'sine',
+          'Quad' => 'quad',
+          'Cube' => 'cube',
+          'Quart' => 'quart',
+          'Quint' => 'quint',
+          'Expo' => 'expo',
+          'Smooth Step' => 'smoothStep',
+          'Smoother Step' => 'smootherStep',
+          'Elastic' => 'elastic',
+          'Back' => 'back',
+          'Bounce' => 'bounce',
+          'Circ ' => 'circ',
         ]
+      },
+      {
+        name: 'easeDir',
+        title: 'Easing Direction',
+        defaultValue: 'In',
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       },
       {
         name: 'strumline',

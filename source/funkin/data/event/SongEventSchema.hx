@@ -155,6 +155,12 @@ typedef SongEventSchemaField =
   ?children:SongEventSchemaRaw,
 
   /**
+   * Used for FRAME values.
+   * Whether to make the frame be collapsible.
+   */
+  ?collapsible:Bool,
+
+  /**
    * An optional default value for the field.
    */
   ?defaultValue:Dynamic,

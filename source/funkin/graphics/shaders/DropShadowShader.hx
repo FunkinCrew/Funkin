@@ -198,7 +198,7 @@ class DropShadowShader extends FlxShader
 
   /*
     Loads an image for the mask.
-    While you *could* directly set the value of the mask, this function works for both HTML5 and desktop targets.
+    While you *could* directly set the value of the mask, this function works for both HTML5 and native targets.
    */
   public function loadAltMask(path:String)
   {
@@ -207,7 +207,7 @@ class DropShadowShader extends FlxShader
       altMaskImage = bmp;
     });
     #else
-    altMaskImage = BitmapData.fromFile(path);
+    altMaskImage = Assets.getBitmapData(path, false);
     #end
   }
 
@@ -225,8 +225,8 @@ class DropShadowShader extends FlxShader
    */
   public function updateFrameInfo(frame:FlxFrame)
   {
-    // NOTE: uv.width is actually the right pos and uv.height is the bottom pos
-    uFrameBounds.value = [frame.uv.x, frame.uv.y, frame.uv.width, frame.uv.height];
+    // NOTE: uv.right is actually the right pos and uv.bottom is the bottom pos
+    uFrameBounds.value = [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom];
 
     // if a frame is rotated the shader will look completely wrong lol
     angOffset.value = [frame.angle * FlxAngle.TO_RAD];
@@ -362,6 +362,9 @@ class DropShadowShader extends FlxShader
       // essentially just stole this from the AngleMask shader but repurposed it to smooth
       // the threshold because without any sort of smoothing it produces horrible edges
       float antialias(vec2 fragCoord, float curThreshold, bool useMask) {
+        if (AA_STAGES == 0.0) {
+          return intensityPass(fragCoord, curThreshold, useMask);
+        }
 
         // In GLSL 100, we need to use constant loop bounds
         // Well assume a reasonable maximum for AA_STAGES and use a fixed loop

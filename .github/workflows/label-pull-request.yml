@@ -1,6 +1,18 @@
+# Applies the following labels to pull requests whenver they are created or modified:
+#  - pr: documentation
+#  - pr: haxe
+#  - pr: github
+#  - size: tiny
+#  - size: small
+#  - size: medium
+#  - size: large
+#  - size: huge
+# see .github/labeler.yml and .github/changed-lines-count-labeler.yml
+
 name: "Pull Request Labeler"
 on:
 - pull_request_target
+
 
 jobs:
   # Apply labels to pull requests based on which files were edited

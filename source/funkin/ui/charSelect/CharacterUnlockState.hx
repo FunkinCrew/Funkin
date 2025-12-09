@@ -6,12 +6,17 @@ import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
-import funkin.play.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.util.DeviceUtil;
+#end
 
 using flixel.util.FlxSpriteUtil;
 
@@ -19,6 +24,7 @@ using flixel.util.FlxSpriteUtil;
  * When you want the player to unlock a character, call `CharacterUnlockState.unlock(characterName)`.
  * It handles both the act of unlocking the character and displaying the dialog.
  */
+@:nullSafety
 class CharacterUnlockState extends MusicBeatState
 {
   public var targetCharacterId:String = "";
@@ -73,11 +79,11 @@ class CharacterUnlockState extends MusicBeatState
 
     // HealthIcon handles getting the right frames for us,
     // but it has a bunch of overhead in it that makes it gross to work with outside the health bar.
-    var healthIconCharacterId = targetCharacterData.getOwnedCharacterIds()[0];
-    var baseCharacter = CharacterDataParser.fetchCharacter(healthIconCharacterId);
+    var healthIconCharacterId = targetCharacterData?.getOwnedCharacterIds()[0];
+    var baseCharacter = CharacterDataParser.fetchCharacter(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
     var healthIcon:HealthIcon = new HealthIcon(healthIconCharacterId);
     @:privateAccess
-    healthIcon.configure(baseCharacter._data.healthIcon);
+    healthIcon.configure(baseCharacter?._data.healthIcon);
     healthIcon.autoUpdate = false;
     healthIcon.bopEvery = 0; // You can increase this number later once the animation is done.
     healthIcon.size.set(0.5, 0.5);
@@ -109,7 +115,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT || controls.BACK && !busy)
+    if (controls.ACCEPT_P || controls.BACK_P #if mobile || TouchUtil.pressAction() #end && !busy)
     {
       busy = true;
       startClose();
@@ -120,7 +126,16 @@ class CharacterUnlockState extends MusicBeatState
   {
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
-      FlxG.switchState(nextState);
+      funkin.FunkinMemory.clearFreeplay();
+      #if ios
+      trace(DeviceUtil.iPhoneNumber);
+      if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+      else
+        funkin.FunkinMemory.purgeCache();
+      #else
+      funkin.FunkinMemory.purgeCache(true);
+      #end
+      FlxG.switchState(() -> nextState);
     });
   }
 }

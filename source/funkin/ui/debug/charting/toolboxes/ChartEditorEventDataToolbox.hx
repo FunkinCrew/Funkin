@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.event.SongEventSchema;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.CheckBox;
@@ -56,6 +57,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
 
       var eventType:String = event.data.id;
+      var sameEvent:Bool = (eventType == chartEditorState.eventKindToPlace);
 
       trace('ChartEditorEventDataToolbox - Event type changed: $eventType');
 
@@ -70,6 +72,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         return;
       }
 
+      if (!sameEvent) chartEditorState.eventDataToPlace = {};
       buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
 
       if (!_initializing && chartEditorState.currentEventSelection.length > 0)
@@ -85,14 +88,20 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     }
+    toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
+
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     trace('ChartEditorEventDataToolbox - Starting event kind: ${startingEventValue}');
     toolboxEventsEventKind.value = startingEventValue;
+
+    toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   public override function refresh():Void
   {
     super.refresh();
+
+    toolboxEventsEventKind.pauseEvent(UIEvent.CHANGE, true);
 
     var newDropdownElement = ChartEditorDropdowns.findDropdownElement(chartEditorState.eventKindToPlace, toolboxEventsEventKind);
 
@@ -126,6 +135,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var value:Null<Dynamic> = pair.value;
 
       var field:Component = toolboxEventsDataBox.findComponent(fieldId);
+      field.pauseEvent(UIEvent.CHANGE, true);
 
       if (field == null)
       {
@@ -151,7 +161,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
         }
       }
+      field.resumeEvent(UIEvent.CHANGE, true, true);
     }
+
+    toolboxEventsEventKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   var lastEventKind:String = 'unknown';
@@ -185,6 +198,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var label:Label = new Label();
       label.text = field.title;
       label.verticalAlign = "center";
+      label.percentWidth = 50;
       hbox.addComponent(label);
 
       // Add an input field for the data field.
@@ -196,7 +210,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           numberStepper.id = field.name;
           numberStepper.step = field.step ?? 1.0;
           if (field.min != null) numberStepper.min = field.min;
-          if (field.min != null) numberStepper.max = field.max;
+          if (field.max != null) numberStepper.max = field.max;
           if (field.defaultValue != null) numberStepper.value = field.defaultValue;
           input = numberStepper;
         case FLOAT:
@@ -215,9 +229,9 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
-          dropDown.width = 200.0;
+          dropDown.width = 157.0;
           dropDown.dropdownSize = 10;
-          dropDown.dropdownWidth = 300;
+          dropDown.dropdownWidth = 157;
           dropDown.searchable = true;
           dropDown.dataSource = new ArrayDataSource();
 
@@ -249,6 +263,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           input.id = field.name;
           input.text = field.title;
           input.percentWidth = 100;
+          if (field.collapsible != null) cast(input, Frame).collapsible = field.collapsible;
 
           var frameVBox:VBox = new VBox();
           frameVBox.percentWidth = 100;
@@ -265,6 +280,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       // Putting in a box so we can add a unit label easily if there is one.
       var inputBox:HBox = new HBox();
+      inputBox.percentWidth = 50;
       if (field.type != FRAME) inputBox.addComponent(input);
 
       // Add a unit label if applicable.
@@ -285,7 +301,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         var value = event.target.value;
         if (field.type == ENUM)
         {
-          value = event.target.value.value;
+          var drp:DropDown = cast event.target;
+          value = drp.selectedItem?.value ?? field.defaultValue;
         }
         else if (field.type == BOOL)
         {
@@ -327,3 +344,4 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     return new ChartEditorEventDataToolbox(chartEditorState);
   }
 }
+#end

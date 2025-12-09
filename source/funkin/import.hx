@@ -8,6 +8,7 @@ import funkin.Paths;
 import funkin.Preferences;
 import flixel.FlxG; // This one in particular causes a compile error if you're using macros.
 import flixel.system.debug.watch.Tracker;
+import haxe.ds.Option;
 
 // These are great.
 using Lambda;
@@ -23,4 +24,5 @@ using funkin.util.tools.MapTools;
 using funkin.util.tools.SongEventDataArrayTools;
 using funkin.util.tools.SongNoteDataArrayTools;
 using funkin.util.tools.StringTools;
+using funkin.util.AnsiUtil;
 #end

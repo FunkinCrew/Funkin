@@ -3,7 +3,7 @@ package funkin.play.character;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import flixel.graphics.frames.FlxFramesCollection;
-import funkin.play.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData.CharacterRenderType;
 
 /**
  * A SparrowCharacter is a Character which is rendered by
@@ -49,8 +49,6 @@ class SparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      // pixelPerfectRender = true;
-      // pixelPerfectPosition = true;
     }
     else
     {

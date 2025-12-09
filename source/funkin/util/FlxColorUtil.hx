@@ -5,6 +5,7 @@ import flixel.util.FlxColor;
 /**
  * Non inline FlxColor functions for use in hscript files
  */
+@:nullSafety
 class FlxColorUtil
 {
   /**

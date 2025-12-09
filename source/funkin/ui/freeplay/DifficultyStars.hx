@@ -1,9 +1,10 @@
 package funkin.ui.freeplay;
 
 import flixel.group.FlxSpriteGroup;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
 
+@:nullSafety
 class DifficultyStars extends FlxSpriteGroup
 {
   /**
@@ -17,7 +18,7 @@ class DifficultyStars extends FlxSpriteGroup
    */
   public var difficulty(default, set):Int = 1;
 
-  public var stars:FlxAtlasSprite;
+  public var stars:FunkinSprite;
 
   public var flames:FreeplayFlames;
 
@@ -30,10 +31,11 @@ class DifficultyStars extends FlxSpriteGroup
     hsvShader = new HSVShader();
 
     flames = new FreeplayFlames(0, 0);
-    add(flames);
 
-    stars = new FlxAtlasSprite(0, 0, Paths.animateAtlas("freeplay/freeplayStars"));
+    stars = FunkinSprite.createTextureAtlas(0, 0, "freeplay/freeplayStars");
     stars.anim.play("diff stars");
+
+    add(flames);
     add(stars);
 
     stars.shader = hsvShader;
@@ -54,7 +56,7 @@ class DifficultyStars extends FlxSpriteGroup
     // ......
     // 1300-1499: 15 stars
     // 1500 : 0 stars
-    if (curDifficulty < 15 && stars.anim.curFrame >= (curDifficulty + 1) * 100)
+    if (curDifficulty < 15 && stars.anim.curAnim.curFrame >= (curDifficulty + 1) * 100)
     {
       stars.anim.play("diff stars", true, false, curDifficulty * 100);
     }
@@ -95,6 +97,7 @@ class DifficultyStars extends FlxSpriteGroup
   function set_curDifficulty(value:Int):Int
   {
     curDifficulty = value;
+
     if (curDifficulty == 15)
     {
       stars.anim.play("diff stars", true, false, 1500);
@@ -102,7 +105,7 @@ class DifficultyStars extends FlxSpriteGroup
     }
     else
     {
-      stars.anim.curFrame = Std.int(curDifficulty * 100);
+      stars.anim.curAnim.curFrame = Std.int(curDifficulty * 100);
       stars.anim.play("diff stars", true, false, curDifficulty * 100);
     }
 

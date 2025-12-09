@@ -7,6 +7,7 @@ import flixel.math.FlxMath;
 import funkin.util.MathUtil;
 import flixel.util.FlxColor;
 
+@:nullSafety
 class MenuItem extends FlxSpriteGroup
 {
   public var targetY:Float = 0;
@@ -40,7 +41,7 @@ class MenuItem extends FlxSpriteGroup
   override function update(elapsed:Float)
   {
     super.update(elapsed);
-    y = MathUtil.coolLerp(y, (targetY * 120) + 480, 0.17);
+    y = MathUtil.smoothLerpPrecision(y, (targetY * 120) + 480, elapsed, 0.451);
 
     if (isFlashing)
     {

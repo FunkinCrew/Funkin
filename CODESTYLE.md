@@ -14,8 +14,8 @@ Code Quality is handled by the `vshaxe.haxe-checkstyle` extension, which include
 * `IndentationCharacter` checks what is used to indent, `Indentation` checks how deep the indentation is.
 * `CommentedOutCode` check is in place because old code should be retrieved via Git history.
 * TODO items: Enable these one-by-one and fix them to improve the overall code quality.
-  - Reconfigure `MethodLength`
-  - Reconfigure `CyclomaticComplexity`
+  - Re-configure `MethodLength`
+  - Re-configure `CyclomaticComplexity`
   - Re-enable `MagicNumber`
   - Re-configure `NestedControlFlow`
   - Re-configure `NestedIfDepth`
@@ -28,5 +28,5 @@ Prettier automatically handles formatting of JSON files, and can be configured i
 
 ### Prettier Notes
 * Prettier will automatically attempt to place expressions on a single line if they fit, but will keep them multi-line if they are manually made multi-line.
-  * This means that long singleline objects are automatically expanded, and short multiline objects aren't automatically collapsed.
+  * This means that long single-line objects are automatically expanded, and short multi-line objects aren't automatically collapsed.
   * You may want to use regex replacement to manually remove the first newline in short multi-line objects to convince Prettier to collapse them.

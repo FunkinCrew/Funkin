@@ -3,6 +3,9 @@ package source; // Yeah, I know...
 import sys.FileSystem;
 import sys.io.File;
 
+using StringTools;
+using tools.AnsiUtil;
+
 /**
  * A script which executes after the game is built.
  */
@@ -27,14 +30,32 @@ class Postbuild
 
       sys.FileSystem.deleteFile(BUILD_TIME_FILE);
 
-      var buildTime:Float = roundToTwoDecimals(end - start);
-
-      trace('Build took: ${buildTime} seconds');
+      Sys.println(' INFO '.bold().bg_blue() + ' Build took: ${format(end - start)}');
     }
   }
 
-  static function roundToTwoDecimals(value:Float):Float
+  static function format(time:Float, decimals:Int = 1):String
   {
-    return Math.round(value * 100) / 100;
+    var units = [
+      {name: "day", secs: 86400},
+      {name: "hour", secs: 3600},
+      {name: "minute", secs: 60},
+      {name: "second", secs: 1}
+    ];
+
+    var parts:Array<String> = [];
+    var remaining:Float = time;
+    var factor = Math.pow(10, decimals); // compute once because the old code was computing it twice.
+
+    for (u in units)
+    {
+      var value:Float = (u.name == "second") ? Math.round(remaining * factor) / factor : Math.floor(remaining / u.secs);
+
+      if (u.name != "second") remaining %= u.secs;
+
+      if (value > 0 || (u.name == "second" && parts.length == 0)) parts.push('${value} ${u.name}${value == 1 ? "" : "s"}');
+    }
+
+    return parts.join(" ");
   }
 }

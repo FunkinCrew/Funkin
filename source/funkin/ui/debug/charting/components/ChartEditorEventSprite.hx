@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
@@ -123,7 +124,6 @@ class ChartEditorEventSprite extends FlxSprite
   public function correctAnimationName(name:String):String
   {
     if (this.animation.exists(name)) return name;
-    trace('Warning: Invalid animation name "${name}" for song event. Using "${DEFAULT_EVENT}"');
     return DEFAULT_EVENT;
   }
 
@@ -245,3 +245,4 @@ class ChartEditorEventSprite extends FlxSprite
     return !aboveViewArea && !belowViewArea;
   }
 }
+#end

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+	<pragma once="true" />
+
+	<files id="haxe">
+		<compilerflag value="-I${this_dir}/include" />
+	</files>
+
+	<files id="__main__">
+		<compilerflag value="-I${this_dir}/include" />
+	</files>
+
+	<files id="external-apple">
+		<compilerflag value="-I${this_dir}/include" />
+
+		<file name="${this_dir}/src/AudioSession.mm" />
+		<file name="${this_dir}/src/MemoryUtil.mm" />
+		<file name="${this_dir}/src/ScreenUtil.mm" />
+		<file name="${this_dir}/src/FNFCUtil.mm" />
+	</files>
+
+	<target id="haxe">
+		<vflag name="-framework" value="UIKit" unless="macos" />
+		<vflag name="-framework" value="Foundation" />
+		<vflag name="-framework" value="AVFAudio" />
+
+		<files id="external-apple" />
+	</target>
+</xml>

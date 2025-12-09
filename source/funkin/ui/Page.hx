@@ -34,7 +34,7 @@ class Page<T:PageName> extends FlxGroup
     onSwitch.dispatch(name);
   }
 
-  inline function exit()
+  function exit()
   {
     onExit.dispatch();
   }
@@ -48,7 +48,7 @@ class Page<T:PageName> extends FlxGroup
 
   function updateEnabled(elapsed:Float)
   {
-    if (canExit && controls.BACK)
+    if (canExit && controls.BACK_P)
     {
       exit();
       FunkinSound.playOnce(Paths.sound('cancelMenu'));

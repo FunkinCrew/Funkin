@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.contextmenus.ChartEditorDefaultContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorEventContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorHoldNoteContextMenu;
@@ -9,6 +10,7 @@ import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Screen;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
+import haxe.ui.events.UIEvent;
 
 /**
  * Handles context menus (the little menus that appear when you right click on stuff) for the new Chart Editor.
@@ -17,11 +19,27 @@ import funkin.data.song.SongData.SongEventData;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorContextMenuHandler
 {
-  static var existingMenus:Array<Menu> = [];
+  static var existingMenu:Null<Menu>;
+  static var existingDefaultContextMenu:Null<ChartEditorDefaultContextMenu>;
+  static var existingSelectionContextMenu:Null<ChartEditorSelectionContextMenu>;
+  static var existingNoteContextMenu:Null<ChartEditorNoteContextMenu>;
+  static var existingHoldNoteContextMenu:Null<ChartEditorHoldNoteContextMenu>;
+  static var existingEventContextMenu:Null<ChartEditorEventContextMenu>;
 
   public static function openDefaultContextMenu(state:ChartEditorState, xPos:Float, yPos:Float)
   {
-    displayMenu(state, new ChartEditorDefaultContextMenu(state, xPos, yPos));
+    if (existingDefaultContextMenu != null)
+    {
+      existingDefaultContextMenu.left = xPos;
+      existingDefaultContextMenu.top = yPos;
+      Screen.instance.addComponent(existingDefaultContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorDefaultContextMenu(state, xPos, yPos);
+      displayMenu(state, targetMenu);
+      existingDefaultContextMenu = targetMenu;
+    }
   }
 
   /**
@@ -29,7 +47,19 @@ class ChartEditorContextMenuHandler
    */
   public static function openSelectionContextMenu(state:ChartEditorState, xPos:Float, yPos:Float)
   {
-    displayMenu(state, new ChartEditorSelectionContextMenu(state, xPos, yPos));
+    if (existingSelectionContextMenu != null)
+    {
+      existingSelectionContextMenu.left = xPos;
+      existingSelectionContextMenu.top = yPos;
+      existingSelectionContextMenu.initialize();
+      Screen.instance.addComponent(existingSelectionContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorSelectionContextMenu(state, xPos, yPos);
+      displayMenu(state, targetMenu);
+      existingSelectionContextMenu = targetMenu;
+    }
   }
 
   /**
@@ -37,7 +67,20 @@ class ChartEditorContextMenuHandler
    */
   public static function openNoteContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongNoteData)
   {
-    displayMenu(state, new ChartEditorNoteContextMenu(state, xPos, yPos, data));
+    if (existingNoteContextMenu != null)
+    {
+      existingNoteContextMenu.left = xPos;
+      existingNoteContextMenu.top = yPos;
+      existingNoteContextMenu.data = data;
+      existingNoteContextMenu.initialize();
+      Screen.instance.addComponent(existingNoteContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorNoteContextMenu(state, xPos, yPos, data);
+      displayMenu(state, targetMenu);
+      existingNoteContextMenu = targetMenu;
+    }
   }
 
   /**
@@ -45,7 +88,20 @@ class ChartEditorContextMenuHandler
    */
   public static function openHoldNoteContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongNoteData)
   {
-    displayMenu(state, new ChartEditorHoldNoteContextMenu(state, xPos, yPos, data));
+    if (existingHoldNoteContextMenu != null)
+    {
+      existingHoldNoteContextMenu.left = xPos;
+      existingHoldNoteContextMenu.top = yPos;
+      existingHoldNoteContextMenu.data = data;
+      existingHoldNoteContextMenu.initialize();
+      Screen.instance.addComponent(existingHoldNoteContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorHoldNoteContextMenu(state, xPos, yPos, data);
+      displayMenu(state, targetMenu);
+      existingHoldNoteContextMenu = targetMenu;
+    }
   }
 
   /**
@@ -53,30 +109,45 @@ class ChartEditorContextMenuHandler
    */
   public static function openEventContextMenu(state:ChartEditorState, xPos:Float, yPos:Float, data:SongEventData)
   {
-    displayMenu(state, new ChartEditorEventContextMenu(state, xPos, yPos, data));
+    if (existingEventContextMenu != null)
+    {
+      existingEventContextMenu.left = xPos;
+      existingEventContextMenu.top = yPos;
+      existingEventContextMenu.data = data;
+      existingEventContextMenu.initialize();
+      Screen.instance.addComponent(existingEventContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorEventContextMenu(state, xPos, yPos, data);
+      displayMenu(state, targetMenu);
+      existingEventContextMenu = targetMenu;
+    }
   }
 
   static function displayMenu(state:ChartEditorState, targetMenu:Menu)
   {
-    // Close any existing menus
-    closeAllMenus(state);
+    // Close the existing menu because it's of a different type
+    closeExistingMenu(state);
 
     // Show the new menu
     Screen.instance.addComponent(targetMenu);
-    existingMenus.push(targetMenu);
+    existingMenu = targetMenu;
   }
 
-  public static function closeMenu(state:ChartEditorState, targetMenu:Menu)
+  public static function closeExistingMenu(state:ChartEditorState)
   {
-    // targetMenu.close();
-    existingMenus.remove(targetMenu);
-  }
-
-  public static function closeAllMenus(state:ChartEditorState)
-  {
-    for (existingMenu in existingMenus)
+    if (existingMenu != null)
     {
-      closeMenu(state, existingMenu);
+      Screen.instance.removeComponent(existingMenu);
+
+      existingDefaultContextMenu = null;
+      existingSelectionContextMenu = null;
+      existingNoteContextMenu = null;
+      existingHoldNoteContextMenu = null;
+      existingEventContextMenu = null;
+      existingMenu = null;
     }
   }
 }
+#end

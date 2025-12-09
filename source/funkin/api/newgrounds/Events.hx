@@ -1,9 +1,11 @@
 package funkin.api.newgrounds;
 
+#if FEATURE_NEWGROUNDS_EVENTS
 import io.newgrounds.Call.CallOutcome;
 import io.newgrounds.NG;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.objects.events.Result;
+#end
 
 /**
  * Use Newgrounds to perform basic telemetry. Ignore if not logged in to Newgrounds.
@@ -31,30 +33,32 @@ class Events
     #end
   }
 
+  #if FEATURE_NEWGROUNDS_EVENTS
   static function onEventLogged(eventName:String, outcome:CallOutcome<LogEventData>)
   {
     switch (outcome)
     {
       case SUCCESS(data):
-        trace('[NEWGROUNDS] Logged event: ${data.eventName}');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Logged event: ${data.eventName}');
       case FAIL(outcome):
         switch (outcome)
         {
           case HTTP(error):
-            trace('[NEWGROUNDS] HTTP error while logging event: ${error}');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' HTTP error while logging event: ${error}');
           case RESPONSE(error):
-            trace('[NEWGROUNDS] Response error (${error.code}) while logging event: ${error.message}');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' Response error (${error.code}) while logging event: ${error.message}');
           case RESULT(error):
             switch (error.code)
             {
               case 103: // Invalid custom event name
-                trace('[NEWGROUNDS] Invalid custom event name: ${eventName}');
+                trace(' NEWGROUNDS '.bold().bg_orange() + ' Invalid custom event name: ${eventName}');
               default:
-                trace('[NEWGROUNDS] Result error (${error.code}) while logging event: ${error.message}');
+                trace(' NEWGROUNDS '.bold().bg_orange() + ' Result error (${error.code}) while logging event: ${error.message}');
             }
         }
     }
   }
+  #end
 
   public static inline function logStartGame():Void
   {

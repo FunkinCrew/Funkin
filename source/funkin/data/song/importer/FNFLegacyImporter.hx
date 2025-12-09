@@ -9,9 +9,10 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyData.LegacyNoteSection;
 
+@:nullSafety
 class FNFLegacyImporter
 {
-  public static function parseLegacyDataRaw(input:String, fileName:String = 'raw'):FNFLegacyData
+  public static function parseLegacyDataRaw(input:String, fileName:String = 'raw'):Null<FNFLegacyData>
   {
     var parser = new json2object.JsonParser<FNFLegacyData>();
     parser.ignoreUnknownVariables = true; // Set to true to ignore extra variables that might be included in the JSON.
@@ -36,18 +37,16 @@ class FNFLegacyImporter
   {
     trace('Migrating song metadata from FNF Legacy.');
 
-    var songMetadata:SongMetadata = new SongMetadata('Import', Constants.DEFAULT_ARTIST, 'default');
-
-    var hadError:Bool = false;
+    var songMetadata:SongMetadata = new SongMetadata('Import', Constants.DEFAULT_ARTIST, Constants.DEFAULT_CHARTER, Constants.DEFAULT_VARIATION);
 
     // Set generatedBy string for debugging.
     songMetadata.generatedBy = 'Chart Editor Import (FNF Legacy)';
 
-    songMetadata.playData.stage = songData?.song?.stageDefault ?? 'mainStage';
-    songMetadata.songName = songData?.song?.song ?? 'Import';
+    songMetadata.playData.stage = songData.song?.stageDefault ?? 'mainStage';
+    songMetadata.songName = songData.song?.song ?? 'Import';
     songMetadata.playData.difficulties = [];
 
-    if (songData?.song?.notes != null)
+    if (songData.song?.notes != null)
     {
       switch (songData.song.notes)
       {
@@ -65,7 +64,7 @@ class FNFLegacyImporter
 
     songMetadata.timeChanges = rebuildTimeChanges(songData);
 
-    songMetadata.playData.characters = new SongCharacterData(songData?.song?.player1 ?? 'bf', 'gf', songData?.song?.player2 ?? 'dad');
+    songMetadata.playData.characters = new SongCharacterData(songData.song?.player1 ?? 'bf', 'gf', songData.song?.player2 ?? 'dad');
 
     return songMetadata;
   }
@@ -76,7 +75,7 @@ class FNFLegacyImporter
 
     var songChartData:SongChartData = new SongChartData([difficulty => 1.0], [], [difficulty => []]);
 
-    if (songData?.song?.notes != null)
+    if (songData.song?.notes != null)
     {
       switch (songData.song.notes)
       {
@@ -84,7 +83,6 @@ class FNFLegacyImporter
           // One difficulty of notes.
           songChartData.notes.set(difficulty, migrateNoteSections(notes));
         case Right(difficulties):
-          var baseDifficulty = null;
           if (difficulties.easy != null) songChartData.notes.set('easy', migrateNoteSections(difficulties.easy));
           if (difficulties.normal != null) songChartData.notes.set('normal', migrateNoteSections(difficulties.normal));
           if (difficulties.hard != null) songChartData.notes.set('hard', migrateNoteSections(difficulties.hard));
@@ -97,8 +95,8 @@ class FNFLegacyImporter
     switch (songData.song.speed)
     {
       case Left(speed):
-        // All difficulties will use the one scroll speed.
-        songChartData.scrollSpeed.set('default', speed);
+        // Sets the scroll speed for the difficulty.
+        songChartData.scrollSpeed.set(difficulty, speed);
       case Right(speeds):
         if (speeds.easy != null) songChartData.scrollSpeed.set('easy', speeds.easy);
         if (speeds.normal != null) songChartData.scrollSpeed.set('normal', speeds.normal);
@@ -124,8 +122,8 @@ class FNFLegacyImporter
         noteSections = notes;
       case Right(difficulties):
         if (difficulties.normal != null) noteSections = difficulties.normal;
-        if (difficulties.hard != null) noteSections = difficulties.normal;
-        if (difficulties.easy != null) noteSections = difficulties.normal;
+        if (difficulties.hard != null) noteSections = difficulties.hard;
+        if (difficulties.easy != null) noteSections = difficulties.easy;
     }
 
     if (noteSections == null || noteSections.length == 0) return result;
@@ -158,7 +156,7 @@ class FNFLegacyImporter
   {
     var result:Array<SongTimeChange> = [];
 
-    result.push(new SongTimeChange(0, songData?.song?.bpm ?? Constants.DEFAULT_BPM));
+    result.push(new SongTimeChange(0, songData.song?.bpm ?? Constants.DEFAULT_BPM));
 
     var noteSections = [];
     switch (songData.song.notes)
@@ -168,8 +166,8 @@ class FNFLegacyImporter
         noteSections = notes;
       case Right(difficulties):
         if (difficulties.normal != null) noteSections = difficulties.normal;
-        if (difficulties.hard != null) noteSections = difficulties.normal;
-        if (difficulties.easy != null) noteSections = difficulties.normal;
+        if (difficulties.hard != null) noteSections = difficulties.hard;
+        if (difficulties.easy != null) noteSections = difficulties.easy;
     }
 
     if (noteSections == null || noteSections.length == 0) return result;
@@ -179,7 +177,7 @@ class FNFLegacyImporter
       if (noteSection.changeBPM ?? false)
       {
         var firstNote:LegacyNote = noteSection.sectionNotes[0];
-        if (firstNote != null) result.push(new SongTimeChange(firstNote.time, noteSection.bpm));
+        if (firstNote != null) result.push(new SongTimeChange(firstNote.time, noteSection.bpm ?? Constants.DEFAULT_BPM));
       }
     }
 

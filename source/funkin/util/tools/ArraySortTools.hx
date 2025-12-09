@@ -4,6 +4,7 @@ package funkin.util.tools;
  * Contains code for sorting arrays using various algorithms.
  * @see https://algs4.cs.princeton.edu/20sorting/
  */
+@:nullSafety
 class ArraySortTools
 {
   /**

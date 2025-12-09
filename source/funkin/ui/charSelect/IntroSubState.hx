@@ -12,6 +12,7 @@ import funkin.save.Save;
 /**
  * When you first enter the character select state, it will play an introductory video opening up the lights
  */
+@:nullSafety
 class IntroSubState extends MusicBeatSubState
 {
   #if html5
@@ -24,7 +25,7 @@ class IntroSubState extends MusicBeatSubState
 
   public override function create():Void
   {
-    if (Save.instance.oldChar)
+    if (Save.instance.oldChar.value)
     {
       onLightsEnd();
       return;
@@ -33,6 +34,7 @@ class IntroSubState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
+      @:nullSafety(Off)
       FlxG.sound.music = null;
     }
 
@@ -53,7 +55,7 @@ class IntroSubState extends MusicBeatSubState
   }
 
   #if html5
-  var vid:FlxVideo;
+  var vid:Null<FlxVideo>;
 
   function playVideoHTML5(filePath:String):Void
   {
@@ -77,7 +79,7 @@ class IntroSubState extends MusicBeatSubState
   #end
 
   #if hxvlc
-  var vid:FunkinVideoSprite;
+  var vid:Null<FunkinVideoSprite>;
 
   function playVideoNative(filePath:String):Void
   {
@@ -89,7 +91,18 @@ class IntroSubState extends MusicBeatSubState
     if (vid != null)
     {
       vid.zIndex = 0;
-      vid.bitmap.onEndReached.add(onLightsEnd);
+      vid.active = false;
+      vid.bitmap?.onEncounteredError.add(function(msg:String):Void {
+        trace('[VLC] Encountered an error: $msg');
+
+        onLightsEnd();
+      });
+      vid.bitmap?.onEndReached.add(onLightsEnd);
+      vid.bitmap?.onFormatSetup.add(() -> {
+        vid?.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
+        vid?.updateHitbox();
+        vid.screenCenter();
+      });
 
       add(vid);
       if (vid.load(filePath)) vid.play();
@@ -121,6 +134,7 @@ class IntroSubState extends MusicBeatSubState
    */
   function onLightsEnd():Void
   {
+    #if (html5 || hxvlc)
     if (vid != null)
     {
       #if hxvlc
@@ -128,8 +142,10 @@ class IntroSubState extends MusicBeatSubState
       #end
       remove(vid);
       vid.destroy();
+      @:nullSafety(Off)
       vid = null;
     }
+    #end
 
     FlxG.camera.zoom = 1;
 

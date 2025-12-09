@@ -12,6 +12,7 @@ import openfl.filters.BitmapFilter;
 /**
  * Provides cool stuff for `BitmapData`s that have a hardware texture internally.
  */
+@:nullSafety
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
@@ -19,7 +20,7 @@ class BitmapDataUtil
 {
   static function getCache():{sprite:Sprite, bitmap:Bitmap}
   {
-    static var cache:{sprite:Sprite, bitmap:Bitmap} = null;
+    static var cache:Null<{sprite:Sprite, bitmap:Bitmap}> = null;
     if (cache == null)
     {
       final sprite = new Sprite();
@@ -56,7 +57,7 @@ class BitmapDataUtil
    * @param format the format if the internal texture
    * @return the bitmap
    */
-  public static function create(width:Int, height:Int, format:Context3DTextureFormat = BGRA):FixedBitmapData
+  public static function create(width:Int, height:Int, format:Context3DTextureFormat = BGRA):Null<FixedBitmapData>
   {
     final texture = Lib.current.stage.context3D.createTexture(width, height, format, true);
     return FixedBitmapData.fromTexture(texture);
@@ -83,6 +84,7 @@ class BitmapDataUtil
    * @param width the width
    * @param height the height
    */
+  @:nullSafety(Off) // the final context there is causing an error, idk how to fix it
   public static function resizeTexture(texture:TextureBase, width:Int, height:Int):Void
   {
     if (texture.__width == width && texture.__height == height) return;
@@ -101,6 +103,7 @@ class BitmapDataUtil
    * @param dst the destination bitmap
    * @param src the source bitmap
    */
+  @:nullSafety(Off) // TODO: Remove this once openfl.display.Sprite has been null safed.
   public static function copy(dst:BitmapData, src:BitmapData):Void
   {
     hardwareCheck(dst);

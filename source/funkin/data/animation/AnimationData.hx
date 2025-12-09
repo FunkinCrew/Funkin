@@ -1,8 +1,9 @@
 package funkin.data.animation;
 
+@:nullSafety
 class AnimationDataUtil
 {
-  public static function toNamed(data:UnnamedAnimationData, ?name:String = ""):AnimationData
+  public static function toNamed(data:UnnamedAnimationData, name:String = ""):AnimationData
   {
     return {
       name: name,
@@ -22,7 +23,7 @@ class AnimationDataUtil
    * @param name (adds index to name)
    * @return Array<AnimationData>
    */
-  public static function toNamedArray(data:Array<UnnamedAnimationData>, ?name:String = ""):Array<AnimationData>
+  public static function toNamedArray(data:Array<UnnamedAnimationData>, name:String = ""):Array<AnimationData>
   {
     return data.mapi(function(animItem, ind) return toNamed(animItem, '$name$ind'));
   }
@@ -82,7 +83,7 @@ typedef UnnamedAnimationData =
 
   /**
    * Optionally specify an asset path to use for this specific animation.
-   * ONLY for use by MultiSparrow characters.
+   * ONLY for use by MultiSparrow and MultiAnimateAtlas characters.
    * @default The assetPath of the parent sprite
    */
   @:optional
@@ -137,4 +138,13 @@ typedef UnnamedAnimationData =
   @:default([])
   @:optional
   var frameIndices:Null<Array<Int>>;
+
+  /**
+   * The type of animation to use.
+   * Only available for texture atlases.
+   * Options: "framelabel", "symbol"
+   */
+  @:default("framelabel")
+  @:optional
+  var animType:String;
 }

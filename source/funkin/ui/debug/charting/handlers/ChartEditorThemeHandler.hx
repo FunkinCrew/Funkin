@@ -1,10 +1,12 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.FlxSprite;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
+import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
@@ -23,35 +25,37 @@ class ChartEditorThemeHandler
   static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF361E60;
 
   // Color 1 of the grid pattern. Alternates with Color 2.
-  static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
-  static final GRID_COLOR_1_DARK:FlxColor = 0xFF181919;
+  public static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
+  public static final GRID_COLOR_1_DARK:FlxColor = 0xFF181919;
 
   // Color 2 of the grid pattern. Alternates with Color 1.
-  static final GRID_COLOR_2_LIGHT:FlxColor = 0xFFF8F8F8;
-  static final GRID_COLOR_2_DARK:FlxColor = 0xFF202020;
+  public static final GRID_COLOR_2_LIGHT:FlxColor = 0xFFF8F8F8;
+  public static final GRID_COLOR_2_DARK:FlxColor = 0xFF202020;
 
   // Color 3 of the grid pattern. Borders the other colors.
-  static final GRID_COLOR_3_LIGHT:FlxColor = 0xFFD9D5D5;
-  static final GRID_COLOR_3_DARK:FlxColor = 0xFF262A2A;
+  public static final GRID_COLOR_3_LIGHT:FlxColor = 0xFFD9D5D5;
+  public static final GRID_COLOR_3_DARK:FlxColor = 0xFF262A2A;
 
   // Vertical divider between characters.
-  static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
-  static final GRID_STRUMLINE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
+  public static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
+  public static final GRID_STRUMLINE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_STRUMLINE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
   // Horizontal divider between measures.
-  static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
-  static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
+  public static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
+  public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
-  // Horizontal divider between beats.
-  static final GRID_BEAT_DIVIDER_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
-  static final GRID_BEAT_DIVIDER_COLOR_DARK:FlxColor = 0xFF848484;
-  static final GRID_BEAT_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
+  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
+  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF484848;
 
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
+
+  /**
+   * The width of the opaque border around the square highlighting selected notes.
+   */
   public static final SELECTION_SQUARE_BORDER_WIDTH:Int = 1;
 
   // Fill on the square highlighting selected notes.
@@ -63,6 +67,11 @@ class ChartEditorThemeHandler
   static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
   static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
 
+  // Lines on the measure ticks.
+  public static final MEASURE_TICKS_MEASURE_WIDTH:Int = 6;
+  public static final MEASURE_TICKS_BEAT_WIDTH:Int = 4;
+  public static final MEASURE_TICKS_STEP_WIDTH:Int = 2;
+
   // Border on the square over the note preview.
   static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT = 0xFFF8A657;
   static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK = 0xFFF8A657;
@@ -71,7 +80,7 @@ class ChartEditorThemeHandler
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT = 0x80F8A657;
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK = 0x80F8A657;
 
-  static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
+  public static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
 
   /**
    * When the theme is changed, this function updates all of the UI elements to match the new theme.
@@ -81,10 +90,10 @@ class ChartEditorThemeHandler
   {
     updateBackground(state);
     updateGridBitmap(state);
-    updateMeasureTicks(state);
     updateOffsetTicks(state);
     updateSelectionSquare(state);
     updateNotePreview(state);
+    updateMeasureTicks(state);
   }
 
   /**
@@ -122,6 +131,13 @@ class ChartEditorThemeHandler
       default: GRID_COLOR_2_LIGHT;
     };
 
+    var dividerColor:FlxColor = switch (state.currentTheme)
+    {
+      case Light: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
+      case Dark: GRID_STRUMLINE_DIVIDER_COLOR_DARK;
+      default: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
+    }
+
     // Draw the base grid.
 
     // 2 * (Strumline Size) + 1 grid squares wide, by (4 * quarter notes per measure) grid squares tall.
@@ -156,7 +172,7 @@ class ChartEditorThemeHandler
       ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
       selectionBorderColor);
 
-    // Selection border at left.
+    // Selection border at far left.
     state.gridBitmap.fillRect(new Rectangle(-(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0, ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
       state.gridBitmap.height),
       selectionBorderColor);
@@ -164,112 +180,23 @@ class ChartEditorThemeHandler
     // Selection borders vertically along the middle.
     for (i in 1...TOTAL_COLUMN_COUNT)
     {
+      var isStrumlineColumn:Bool = (i % ChartEditorState.STRUMLINE_SIZE == 0) && (i > 0);
+
       state.gridBitmap.fillRect(new Rectangle((ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
         ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
-        selectionBorderColor);
+        isStrumlineColumn ? dividerColor : selectionBorderColor);
     }
 
-    // Selection border at right.
+    // Selection border at far right.
     state.gridBitmap.fillRect(new Rectangle(state.gridBitmap.width - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
       ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
       selectionBorderColor);
-
-    // Draw horizontal dividers between the measures.
-
-    var gridMeasureDividerColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light: GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_MEASURE_DIVIDER_COLOR_DARK;
-      default: GRID_MEASURE_DIVIDER_COLOR_LIGHT;
-    };
-
-    // Divider at top
-    state.gridBitmap.fillRect(new Rectangle(0, 0, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
-    // Divider at bottom
-    var dividerLineBY:Float = state.gridBitmap.height - (GRID_MEASURE_DIVIDER_WIDTH / 2);
-    state.gridBitmap.fillRect(new Rectangle(0, dividerLineBY, state.gridBitmap.width, GRID_MEASURE_DIVIDER_WIDTH / 2), gridMeasureDividerColor);
-
-    // Draw horizontal dividers between the beats.
-
-    var gridBeatDividerColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light: GRID_BEAT_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_BEAT_DIVIDER_COLOR_DARK;
-      default: GRID_BEAT_DIVIDER_COLOR_LIGHT;
-    };
-
-    // Selection borders horizontally in the middle.
-    for (i in 1...(Conductor.instance.stepsPerMeasure))
-    {
-      // There may be a different number of beats per measure, but there's always 4 steps per beat.
-      if ((i % Constants.STEPS_PER_BEAT) == 0)
-      {
-        state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (GRID_BEAT_DIVIDER_WIDTH / 2), state.gridBitmap.width,
-          GRID_BEAT_DIVIDER_WIDTH),
-          gridBeatDividerColor);
-      }
-    }
-
-    // Draw vertical dividers between the strumlines.
-
-    var gridStrumlineDividerColor:FlxColor = switch (state.currentTheme)
-    {
-      case Light: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_STRUMLINE_DIVIDER_COLOR_DARK;
-      default: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-    };
-
-    // Divider at 1 * (Strumline Size)
-    var dividerLineAX:Float = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
-    state.gridBitmap.fillRect(new Rectangle(dividerLineAX, 0, GRID_STRUMLINE_DIVIDER_WIDTH, state.gridBitmap.height), gridStrumlineDividerColor);
-    // Divider at 2 * (Strumline Size)
-    var dividerLineBX:Float = ChartEditorState.GRID_SIZE * (ChartEditorState.STRUMLINE_SIZE * 2) - (GRID_STRUMLINE_DIVIDER_WIDTH / 2);
-    state.gridBitmap.fillRect(new Rectangle(dividerLineBX, 0, GRID_STRUMLINE_DIVIDER_WIDTH, state.gridBitmap.height), gridStrumlineDividerColor);
 
     if (state.gridTiledSprite != null)
     {
       state.gridTiledSprite.loadGraphic(state.gridBitmap);
     }
     // Else, gridTiledSprite will be built later.
-  }
-
-  /**
-   * Vertical measure ticks.
-   */
-  static function updateMeasureTicks(state:ChartEditorState):Void
-  {
-    var measureTickWidth:Int = 6;
-    var beatTickWidth:Int = 4;
-    var stepTickWidth:Int = 2;
-
-    // Draw the measure ticks.
-    var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE); // 1 grid squares wide.
-    var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure); // 1 measure tall.
-    state.measureTickBitmap = new BitmapData(ticksWidth, ticksHeight, true);
-    state.measureTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), GRID_BEAT_DIVIDER_COLOR_DARK);
-
-    // Draw the measure ticks.
-    state.measureTickBitmap.fillRect(new Rectangle(0, 0, state.measureTickBitmap.width, measureTickWidth / 2), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-    var bottomTickY:Float = state.measureTickBitmap.height - (measureTickWidth / 2);
-    state.measureTickBitmap.fillRect(new Rectangle(0, bottomTickY, state.measureTickBitmap.width, measureTickWidth / 2), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-
-    // Draw the beat and step ticks. No need for two seperate loops thankfully.
-    // This'll be fun to update when beat tuplets become functional.
-    for (i in 1...(Conductor.instance.stepsPerMeasure))
-    {
-      if ((i % Constants.STEPS_PER_BEAT) == 0) // If we're on a beat, draw a beat tick.
-      {
-        var beatTickY:Float = state.measureTickBitmap.height * i / Conductor.instance.stepsPerMeasure - (beatTickWidth / 2);
-        var beatTickLength:Float = state.measureTickBitmap.width * 2 / 3;
-        state.measureTickBitmap.fillRect(new Rectangle(0, beatTickY, beatTickLength, beatTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-      }
-      else // Else, draw a step tick.
-      {
-        var stepTickY:Float = state.measureTickBitmap.height * i / Conductor.instance.stepsPerMeasure - (stepTickWidth / 2);
-        var stepTickLength:Float = state.measureTickBitmap.width * 1 / 3;
-        state.measureTickBitmap.fillRect(new Rectangle(0, stepTickY, stepTickLength, stepTickWidth), GRID_MEASURE_DIVIDER_COLOR_LIGHT);
-      }
-    }
   }
 
   /**
@@ -283,7 +210,7 @@ class ChartEditorThemeHandler
     var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure); // 10 minor ticks wide.
     var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE); // 1 grid squares tall.
     state.offsetTickBitmap = new BitmapData(ticksWidth, ticksHeight, true);
-    state.offsetTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), GRID_BEAT_DIVIDER_COLOR_DARK);
+    state.offsetTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), 0xFFC4C4C4);
 
     // Draw the major ticks.
     var leftTickX:Float = 0;
@@ -397,6 +324,11 @@ class ChartEditorThemeHandler
     }
   }
 
+  static function updateMeasureTicks(state:ChartEditorState):Void
+  {
+    state.measureTicks?.updateTheme();
+  }
+
   public static function buildPlayheadBlock():FlxSprite
   {
     var playheadBlock:FlxSprite = new FlxSprite();
@@ -413,3 +345,4 @@ class ChartEditorThemeHandler
     return playheadBlock.loadGraphic(playheadBlockBitmap);
   }
 }
+#end

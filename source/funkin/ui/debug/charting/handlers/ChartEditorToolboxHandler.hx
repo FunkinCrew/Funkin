@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.haxeui.components.CharacterPlayer;
@@ -113,7 +114,10 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null) return;
+    if (toolbox == null)
+    {
+      toolbox = cast initToolbox(state, id);
+    }
 
     if (toolbox != null)
     {
@@ -276,6 +280,16 @@ class ChartEditorToolboxHandler
       state.playtestBotPlayMode = checkboxBotPlay.selected;
     };
 
+    var checkboxShowResults:Null<CheckBox> = toolbox.findComponent('playtestShowResultsCheckbox', CheckBox);
+    if (checkboxShowResults == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestShowResultsCheckbox component.';
+
+    checkboxShowResults.selected = state.playtestShowResults;
+
+    checkboxShowResults.onClick = _ -> {
+      state.playtestShowResults = checkboxShowResults.selected;
+    };
+
     var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
 
     if (checkboxSongScripts == null)
@@ -393,3 +407,4 @@ class ChartEditorToolboxHandler
 
   static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
 }
+#end

@@ -9,46 +9,47 @@ import flixel.util.FlxStringUtil;
  * AtlasText is an improved version of Alphabet and FlxBitmapText.
  * It supports animations on the letters, and is less buggy than Alphabet.
  */
+@:nullSafety
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
-  static var fonts = new Map<AtlasFont, AtlasFontData>();
-  static var casesAllowed = new Map<AtlasFont, Case>();
+  static var fonts:Map<AtlasFont, AtlasFontData> = new Map<AtlasFont, AtlasFontData>();
+  static var casesAllowed:Map<AtlasFont, Case> = new Map<AtlasFont, Case>();
 
   public var text(default, set):String = "";
 
-  var font:AtlasFontData;
+  var font:AtlasFontData = new AtlasFontData(AtlasFont.DEFAULT);
 
   public var atlas(get, never):FlxAtlasFrames;
 
-  inline function get_atlas()
+  inline function get_atlas():FlxAtlasFrames
     return font.atlas;
 
   public var caseAllowed(get, never):Case;
 
-  inline function get_caseAllowed()
+  inline function get_caseAllowed():Case
     return font.caseAllowed;
 
   public var maxHeight(get, never):Float;
 
-  inline function get_maxHeight()
+  inline function get_maxHeight():Float
     return font.maxHeight;
 
-  public function new(x = 0.0, y = 0.0, text:String, fontName:AtlasFont = AtlasFont.DEFAULT)
+  public function new(x = 0.0, y = 0.0, text:String = "", fontName:AtlasFont = AtlasFont.DEFAULT)
   {
     if (!fonts.exists(fontName)) fonts[fontName] = new AtlasFontData(fontName);
-    font = fonts[fontName];
+    font = fonts[fontName] ?? new AtlasFontData(fontName);
 
     super(x, y);
 
     this.text = text;
   }
 
-  function set_text(value:String)
+  function set_text(value:String):String
   {
-    if (value == null) value = "";
+    value ??= "";
 
-    var caseValue = restrictCase(value);
-    var caseText = restrictCase(this.text);
+    final caseValue:String = restrictCase(value);
+    final caseText:String = restrictCase(this.text);
 
     this.text = value;
     if (caseText == caseValue) return value; // cancel redraw
@@ -72,113 +73,101 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   /**
    * Adds new characters, without needing to redraw the previous characters
-   * @param text The text to add.
+   * @param str The text to add.
    * @throws String if `text` is null.
    */
-  public function appendText(text:String)
+  public function appendText(str:String):Void
   {
-    if (text == null) throw "cannot append null";
+    if (str == null) throw "cannot append null";
+    if (str == "") return;
 
-    if (text == "") return;
-
-    this.text = this.text + text;
+    this.text += str;
   }
 
   /**
    * Converts all characters to fit the font's `allowedCase`.
-   * @param text
+   * @param str
    */
-  function restrictCase(text:String)
+  function restrictCase(str:String):String
   {
     return switch (caseAllowed)
     {
-      case Both: text;
-      case Upper: text.toUpperCase();
-      case Lower: text.toLowerCase();
+      case Both: str;
+      case Upper: str.toUpperCase();
+      case Lower: str.toLowerCase();
     }
   }
 
   /**
    * Adds new text on top of the existing text. Helper for other methods; DOESN'T CHANGE `this.text`.
-   * @param text The text to add, assumed to match the font's `caseAllowed`.
+   * @param str The text to add, assumed to match the font's `caseAllowed`.
    */
-  function appendTextCased(text:String)
+  function appendTextCased(str:String):Void
   {
-    var charCount = group.countLiving();
+    var charCount:Int = group.countLiving();
     var xPos:Float = 0;
     var yPos:Float = 0;
     // `countLiving` returns -1 if group is empty
     if (charCount == -1) charCount = 0;
     else if (charCount > 0)
     {
-      var lastChar = group.members[charCount - 1];
+      var lastChar:AtlasChar = group.members[charCount - 1];
       xPos = lastChar.x + lastChar.width - x;
       yPos = lastChar.y + lastChar.height - maxHeight - y;
     }
 
-    var splitValues = text.split("");
-    for (i in 0...splitValues.length)
+    for (splitStr in str.split(""))
     {
-      switch (splitValues[i])
+      switch (splitStr)
       {
         case " ":
-          {
-            xPos += 40;
-          }
+          xPos += 40;
         case "\n":
-          {
-            xPos = 0;
-            yPos += maxHeight;
-          }
+          xPos = 0;
+          yPos += maxHeight;
         case char:
+          var charSprite:AtlasChar;
+          if (group.members.length <= charCount) charSprite = new AtlasChar(atlas, char);
+          else
           {
-            var charSprite:AtlasChar;
-            if (group.members.length <= charCount) charSprite = new AtlasChar(atlas, char);
-            else
-            {
-              charSprite = group.members[charCount];
-              charSprite.revive();
-              charSprite.char = char;
-              charSprite.alpha = 1; // gets multiplied when added
-            }
-            charSprite.x = xPos;
-            charSprite.y = yPos + maxHeight - charSprite.height;
-            add(charSprite);
-
-            xPos += charSprite.width;
-            charCount++;
+            charSprite = group.members[charCount];
+            charSprite.revive();
+            charSprite.char = char;
+            charSprite.alpha = 1; // gets multiplied when added
           }
+          charSprite.x = xPos;
+          charSprite.y = yPos + maxHeight - charSprite.height;
+          add(charSprite);
+
+          xPos += charSprite.width;
+          charCount++;
       }
     }
   }
 
   public function getWidth():Int
   {
-    var width = 0;
+    var width:Int = 0;
     for (char in this.text.split(""))
     {
       switch (char)
       {
         case " ":
-          {
-            width += 40;
-          }
+          width += 40;
         case "\n":
-          {}
+          // no width for newline character
         case char:
-          {
-            var sprite = new AtlasChar(atlas, char);
-            sprite.revive();
-            sprite.char = char;
-            sprite.alpha = 1;
-            width += Std.int(sprite.width);
-          }
+          var sprite = new AtlasChar(atlas, char);
+          sprite.revive();
+          sprite.char = char;
+          sprite.alpha = 1;
+          width += Std.int(sprite.width);
       }
     }
     return width;
   }
 
-  override function toString()
+  override function toString():String
   {
     return "InputItem, " + FlxStringUtil.getDebugString([
       LabelValuePair.weak("x", x),
@@ -190,6 +179,9 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
 class AtlasChar extends FlxSprite
 {
+  /**
+   * Which character in the font we are using
+   */
   public var char(default, set):String;
 
   public function new(x = 0.0, y = 0.0, atlas:FlxAtlasFrames, char:String)
@@ -199,27 +191,19 @@ class AtlasChar extends FlxSprite
     this.char = char;
   }
 
-  function set_char(value:String)
+  function set_char(value:String):String
   {
-    if (this.char != value)
-    {
-      var prefix = getAnimPrefix(value);
-      animation.addByPrefix('anim', prefix, 24);
-      if (animation.exists('anim'))
-      {
-        animation.play('anim');
-      }
-      else
-      {
-        trace('Could not find animation for char "' + value + '"');
-      }
-      updateHitbox();
-    }
+    if (this.char == value) return this.char;
+
+    animation.addByPrefix('anim', getAnimPrefix(value), 24);
+    if (animation.exists('anim')) animation.play('anim');
+
+    updateHitbox();
 
     return this.char = value;
   }
 
-  function getAnimPrefix(char:String)
+  function getAnimPrefix(char:String):String
   {
     return switch (char)
     {
@@ -251,6 +235,7 @@ class AtlasChar extends FlxSprite
   }
 }
 
+@:nullSafety
 private class AtlasFontData
 {
   static public var upperChar = ~/^[A-Z]\d+$/;
@@ -262,26 +247,24 @@ private class AtlasFontData
 
   public function new(name:AtlasFont)
   {
-    var fontName:String = name;
-    atlas = Paths.getSparrowAtlas('fonts/${fontName.toLowerCase()}');
+    atlas = Paths.getSparrowAtlas('fonts/${name}');
     if (atlas == null)
     {
-      FlxG.log.warn('Could not find font atlas for font "${fontName}".');
+      FlxG.log.warn('Could not find font atlas for font "${name}".');
       return;
     }
 
     atlas.parent.destroyOnNoUse = false;
     atlas.parent.persist = true;
 
-    var containsUpper = false;
-    var containsLower = false;
+    var containsUpper:Bool = false;
+    var containsLower:Bool = false;
 
     for (frame in atlas.frames)
     {
       maxHeight = Math.max(maxHeight, frame.frame.height);
 
       if (!containsUpper) containsUpper = upperChar.match(frame.name);
-
       if (!containsLower) containsLower = lowerChar.match(frame.name);
     }
 

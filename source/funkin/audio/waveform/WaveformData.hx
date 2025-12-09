@@ -166,7 +166,7 @@ class WaveformData
 
     var ratio = newSamplesPerPoint / samplesPerPoint;
     if (ratio == 1) return result;
-    if (ratio < 1) trace('[WARNING] Downsampling will result in a low precision.');
+    if (ratio < 1) trace(' WARNING '.bg_yellow().bold() + ' Downsampling will result in a low precision.');
 
     var inputSampleCount = this.lenSamples();
     var outputSampleCount = Std.int(inputSampleCount * ratio);
@@ -243,9 +243,10 @@ class WaveformDataChannel
   }
 
   /**
-   * Retrieve a given minimum point at an index.
+   * @param i Index
+   * @return minimum point at an index.
    */
-  public function minSample(i:Int)
+  public function minSample(i:Int):Int
   {
     var offset = (i * parent.channels + this.channelId) * 2;
     return inline parent.get(offset);

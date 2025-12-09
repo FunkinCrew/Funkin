@@ -1,107 +1,95 @@
 package funkin.ui.freeplay;
 
-import flixel.FlxObject;
-import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 
 // its kinda like marqeee html lol!
-class BGScrollingText extends FlxSpriteGroup
+@:nullSafety
+class BGScrollingText extends FlxText
 {
-  var grpTexts:FlxTypedSpriteGroup<FlxText>;
+  var _textPositions:Array<FlxPoint> = [];
+  var _positionCache:FlxPoint = FlxPoint.get();
 
   public var widthShit:Float = FlxG.width;
   public var placementOffset:Float = 20;
   public var speed:Float = 1;
-  public var size(default, set):Int = 48;
 
-  public var funnyColor(default, set):Int = 0xFFFFFFFF;
+  @:deprecated("Use color instead")
+  public var funnyColor(get, set):FlxColor;
+
+  function get_funnyColor():FlxColor
+    return color;
+
+  function set_funnyColor(c:FlxColor):FlxColor
+  {
+    return color = c;
+  }
 
   public function new(x:Float, y:Float, text:String, widthShit:Float = 100, ?bold:Bool = false, ?size:Int = 48)
   {
-    super(x, y);
+    super(x, y, 0, text, size);
+    _positionCache = FlxPoint.get(x, y);
+    font = "5by7";
+    this.bold = bold ?? false;
 
     this.widthShit = widthShit;
-    if (size != null) this.size = size;
 
-    grpTexts = new FlxTypedSpriteGroup<FlxText>();
-    add(grpTexts);
+    @:privateAccess
+    regenGraphic();
 
-    var testText:FlxText = new FlxText(0, 0, 0, text, this.size);
-    testText.font = "5by7";
-    testText.bold = bold;
-    testText.updateHitbox();
-    grpTexts.add(testText);
-
-    var needed:Int = Math.ceil(widthShit / testText.frameWidth) + 1;
+    var needed:Int = Math.ceil(widthShit / frameWidth) + 1;
 
     for (i in 0...needed)
     {
-      var lmfao:Int = i + 1;
-
-      var coolText:FlxText = new FlxText((lmfao * testText.frameWidth) + (lmfao * 20), 0, 0, text, this.size);
-
-      coolText.font = "5by7";
-      coolText.bold = bold;
-      coolText.updateHitbox();
-      grpTexts.add(coolText);
+      _textPositions.push(FlxPoint.get((i * frameWidth) + (i * 20), 0));
     }
   }
 
-  function set_size(value:Int):Int
+  override public function update(elapsed:Float):Void
   {
-    if (grpTexts != null)
-    {
-      grpTexts.forEach(function(txt:FlxText) {
-        txt.size = value;
-      });
-    }
-    this.size = value;
-    return value;
-  }
-
-  function set_funnyColor(col:Int):Int
-  {
-    grpTexts.forEach(function(txt) {
-      txt.color = col;
-    });
-
-    return col;
-  }
-
-  override public function update(elapsed:Float)
-  {
-    for (txt in grpTexts.group)
-    {
-      txt.x -= 1 * (speed * (elapsed / (1 / 60)));
-
-      if (speed > 0)
-      {
-        if (txt.x < -txt.frameWidth)
-        {
-          txt.x = grpTexts.group.members[grpTexts.length - 1].x + grpTexts.group.members[grpTexts.length - 1].frameWidth + placementOffset;
-
-          sortTextShit();
-        }
-      }
-      else
-      {
-        if (txt.x > txt.frameWidth * 2)
-        {
-          txt.x = grpTexts.group.members[0].x - grpTexts.group.members[0].frameWidth - placementOffset;
-
-          sortTextShit();
-        }
-      }
-    }
-
     super.update(elapsed);
+
+    for (txtPosition in _textPositions)
+    {
+      if (txtPosition == null) continue;
+      txtPosition.x -= 1 * (speed * (elapsed / (1 / 60)));
+
+      if (speed > 0) // Going left
+      {
+        if (txtPosition.x < -frameWidth)
+        {
+          txtPosition.x = _textPositions[_textPositions.length - 1].x + frameWidth + placementOffset;
+          sortTextShit();
+        }
+      }
+      else // Going right
+      {
+        if (txtPosition.x > frameWidth * 2)
+        {
+          txtPosition.x = _textPositions[0].x - frameWidth - placementOffset;
+          sortTextShit();
+        }
+      }
+    }
+  }
+
+  override public function draw():Void
+  {
+    _positionCache.set(x, y);
+    for (position in _textPositions)
+    {
+      setPosition(_positionCache.x + position.x, _positionCache.y + position.y);
+      super.draw();
+    }
+    setPosition(_positionCache.x, _positionCache.y);
   }
 
   function sortTextShit():Void
   {
-    grpTexts.sort(function(Order:Int, Obj1:FlxObject, Obj2:FlxObject) {
-      return FlxSort.byValues(Order, Obj1.x, Obj2.x);
+    _textPositions.sort(function(Obj1:FlxPoint, Obj2:FlxPoint) {
+      return FlxSort.byValues(FlxSort.ASCENDING, Obj1.x, Obj2.x);
     });
   }
 }

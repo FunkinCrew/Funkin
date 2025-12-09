@@ -32,6 +32,15 @@ class PlayerData
   public var showUnownedChars:Bool = false;
 
   /**
+   * The default sticker pack to use for songs featuring this playable character.
+   * Can be overridden by specific songs.
+   * @default `default`
+   */
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_STICKER_PACK)
+  public var stickerPack:String = Constants.DEFAULT_STICKER_PACK;
+
+  /**
    * Which freeplay style to use for this character.
    */
   @:optional
@@ -80,7 +89,7 @@ class PlayerData
     updateVersionToLatest();
 
     var writer = new json2object.JsonWriter<PlayerData>();
-    return writer.write(this, pretty ? '  ' : null);
+    return writer.write(this, pretty ? ' ' : null);
   }
 
   public function updateVersionToLatest():Void
@@ -93,6 +102,10 @@ class PlayerFreeplayDJData
 {
   var assetPath:String;
   var animations:Array<AnimationData>;
+
+  @:optional
+  @:default(false)
+  var applyStageMatrix:Bool;
 
   @:optional
   @:default("BOYFRIEND")
@@ -121,6 +134,14 @@ class PlayerFreeplayDJData
   @:optional
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
+  @:optional
+  @:default("animateatlas")
+  public var renderType:Null<String>;
+
+  @:optional
+  @:default("")
+  public var scriptClass:Null<String>;
+
   public function new()
   {
     animationMap = new Map();
@@ -140,9 +161,15 @@ class PlayerFreeplayDJData
     }
   }
 
-  public function getAtlasPath():String
+  public inline function getAssetPath():String
+    return assetPath; // return assetPath;
+
+  public inline function getAnimationsList():Array<AnimationData>
+    return animations;
+
+  public function useApplyStageMatrix():Bool
   {
-    return Paths.animateAtlas(assetPath);
+    return applyStageMatrix;
   }
 
   public function getFreeplayDJText(index:Int):String
@@ -325,7 +352,15 @@ typedef PlayerResultsAnimationData =
    */
   var renderType:String;
 
-  var assetPath:String;
+  @:optional
+  @:default(false)
+  var applyStageMatrix:Bool;
+
+  @:optional
+  var assetPath:Null<String>;
+
+  @:optional
+  var scriptClass:Null<String>;
 
   @:optional
   @:default([0, 0])

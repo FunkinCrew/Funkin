@@ -1,11 +1,11 @@
 package funkin.play.cutscene;
 
-import funkin.play.PlayState;
 import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
+import funkin.play.PlayState;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
@@ -18,12 +18,19 @@ import funkin.graphics.video.FunkinVideoSprite;
  */
 class VideoCutscene
 {
+  #if hxvlc
+  @:noCompletion
+  static final DEFAULT_LANGUAGE:String = 'English';
+  #end
+
   static var blackScreen:FlxSprite;
+
   static var cutsceneType:CutsceneType;
 
   #if html5
   static var vid:FlxVideo;
   #end
+
   #if hxvlc
   static var vid:FunkinVideoSprite;
   #end
@@ -66,13 +73,10 @@ class VideoCutscene
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
-      // lime.app.Application.current.window.alert('Video file does not exist: ${filePath}', 'Error playing video');
-      // return;
-
-      // TODO: After moving videos to their own library,
-      // this function ALWAYS FAILS on web, but the video still plays.
-      // I think that's due to a weird quirk with how OpenFL libraries work.
+      funkin.util.WindowUtil.showError('Error playing video', 'Video file does not exist: ${filePath}');
       trace('Video file does not exist: ${filePath}');
+
+      return;
     }
 
     var rawFilePath = Paths.stripLibrary(filePath);
@@ -88,6 +92,13 @@ class VideoCutscene
     PlayState.instance.add(blackScreen);
 
     VideoCutscene.cutsceneType = cutsceneType;
+
+    #if mobile
+    if (cutsceneType == ENDING)
+    {
+      PlayState.instance.togglePauseButton();
+    }
+    #end
 
     #if html5
     playVideoHTML5(rawFilePath);
@@ -112,6 +123,7 @@ class VideoCutscene
   {
     // Video displays OVER the FlxState.
     vid = new FlxVideo(filePath);
+
     if (vid != null)
     {
       vid.zIndex = 0;
@@ -142,6 +154,24 @@ class VideoCutscene
     if (vid != null)
     {
       vid.zIndex = 0;
+
+      vid.active = false;
+
+      vid.bitmap.onFormatSetup.add(function():Void {
+        if (vid.bitmap != null && vid.bitmap.bitmapData != null)
+        {
+          final scale:Float = Math.min(FlxG.width / vid.bitmap.bitmapData.width, FlxG.height / vid.bitmap.bitmapData.height);
+
+          vid.setGraphicSize(vid.bitmap.bitmapData.width * scale, vid.bitmap.bitmapData.height * scale);
+          vid.updateHitbox();
+          vid.screenCenter();
+        }
+      });
+
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+        finishVideo(0.5);
+      });
+
       vid.bitmap.onEndReached.add(finishVideo.bind(0.5));
 
       vid.cameras = [PlayState.instance.camCutscene];
@@ -150,19 +180,25 @@ class VideoCutscene
 
       PlayState.instance.refresh();
 
-      if (vid.load(filePath)) vid.play();
+      final fileOptions:Array<String> = [];
 
-      // Resize videos bigger or smaller than the screen.
-      vid.bitmap.onFormatSetup.add(function():Void {
-        if (vid == null) return;
-        vid.setGraphicSize(FlxG.width, FlxG.height);
-        vid.updateHitbox();
-        vid.x = 0;
-        vid.y = 0;
-        // vid.scale.set(0.5, 0.5);
-      });
+      #if FEATURE_VIDEO_SUBTITLES
+      if (Preferences.subtitles)
+      {
+        fileOptions.push(':sub-language=$DEFAULT_LANGUAGE');
+      }
+      else
+      {
+        fileOptions.push(':sub-language=none');
+      }
 
-      onVideoStarted.dispatch();
+      fileOptions.push(':audio-language=$DEFAULT_LANGUAGE');
+      #end
+
+      if (vid.load(filePath, fileOptions) && vid.play())
+      {
+        onVideoStarted.dispatch();
+      }
     }
     else
     {
@@ -171,12 +207,13 @@ class VideoCutscene
   }
   #end
 
-  public static function restartVideo(resume:Bool = true):Void
+  public static function restartVideo():Void
   {
     #if html5
     if (vid != null)
     {
       vid.restartVideo();
+      vid.resumeVideo();
       onVideoRestarted.dispatch();
     }
     #end
@@ -184,14 +221,8 @@ class VideoCutscene
     #if hxvlc
     if (vid != null)
     {
-      // Seek to the start of the video.
       vid.bitmap.time = 0;
-      if (resume)
-      {
-        // Resume the video if it was paused.
-        vid.resume();
-      }
-
+      vid.resume();
       onVideoRestarted.dispatch();
     }
     #end
@@ -339,6 +370,38 @@ class VideoCutscene
       case CutsceneType.MIDSONG:
         // Do nothing.
         // throw "Not implemented!";
+    }
+  }
+
+  /**
+   * Destroy the active cutscene, if any. Separate from finishVideo() so that it doesn't trigger onCutsceneFinish().
+   */
+  public static function destroyVideo()
+  {
+    #if html5
+    if (vid != null) PlayState.instance.remove(vid);
+    #end
+
+    #if hxvlc
+    if (vid != null)
+    {
+      vid.stop();
+      PlayState.instance.remove(vid);
+    }
+    #end
+
+    #if (html5 || hxvlc)
+    if (vid != null)
+    {
+      vid?.destroy();
+      vid = null;
+    }
+    #end
+
+    if (blackScreen != null)
+    {
+      PlayState.instance.remove(blackScreen);
+      blackScreen = null;
     }
   }
 }

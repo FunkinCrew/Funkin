@@ -5,6 +5,7 @@ package funkin.data;
  * A `String->Void` constructor is also mandatory, but enforced elsewhere.
  * @param T The JSON data type of the registry entry.
  */
+@:autoBuild(funkin.util.macro.RegistryMacro.buildEntry())
 interface IRegistryEntry<T>
 {
   public final id:String;

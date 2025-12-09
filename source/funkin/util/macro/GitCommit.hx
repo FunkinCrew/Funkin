@@ -1,6 +1,9 @@
 package funkin.util.macro;
 
+using funkin.util.AnsiUtil;
+
 #if !display
+@:nullSafety
 class GitCommit
 {
   /**
@@ -16,7 +19,7 @@ class GitCommit
     if (process.exitCode() != 0)
     {
       var message = process.stderr.readAll().toString();
-      haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
+      haxe.macro.Context.info(' WARNING '.bold().bg_yellow() + ' Could not determine current git commit; is this a proper Git repository?', pos);
     }
 
     // read the output of the process
@@ -24,8 +27,6 @@ class GitCommit
     var commitHashSplice:String = commitHash.substr(0, 7);
 
     process.close();
-
-    trace('Git Commit ID: ${commitHashSplice}');
 
     // Generates a string expression
     return macro $v{commitHashSplice};
@@ -50,12 +51,11 @@ class GitCommit
     if (branchProcess.exitCode() != 0)
     {
       var message = branchProcess.stderr.readAll().toString();
-      haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
+      haxe.macro.Context.info(' WARNING '.bold().bg_yellow() + ' Could not determine current git commit; is this a proper Git repository?', pos);
     }
 
     var branchName:String = branchProcess.stdout.readLine();
     branchProcess.close();
-    trace('Git Branch Name: ${branchName}');
 
     // Generates a string expression
     return macro $v{branchName};
@@ -73,39 +73,9 @@ class GitCommit
   public static macro function getGitHasLocalChanges():haxe.macro.Expr.ExprOf<Bool>
   {
     #if !display
-    // Get the current line number.
-    var pos = haxe.macro.Context.currentPos();
-    var branchProcess = new sys.io.Process('git', ['status', '--porcelain']);
+    var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
 
-    if (branchProcess.exitCode() != 0)
-    {
-      var message = branchProcess.stderr.readAll().toString();
-      haxe.macro.Context.info('[WARN] Could not determine current git commit; is this a proper Git repository?', pos);
-    }
-
-    var output:String = '';
-    try
-    {
-      output = branchProcess.stdout.readLine();
-      branchProcess.close();
-    }
-    catch (e)
-    {
-      if (e.message == 'Eof')
-      {
-        // Do nothing.
-        // Eof = No output.
-      }
-      else
-      {
-        // Rethrow other exceptions.
-        throw e;
-      }
-    }
-    trace('Git Status Output: ${output}');
-
-    // Generates a string expression
-    return macro $v{output.length > 0};
+    return macro $v{branchProcess.exitCode(true) == 1};
     #else
     // `#if display` is used for code completion. In this case we just assume true.
     return macro $v{true};

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import openfl.display.BitmapData;
@@ -62,7 +63,9 @@ class NewObjDialog extends Dialog
 
         spr.name = field.text;
         spr.screenCenter();
-        spr.zIndex = 0;
+
+        var sprArray = stageEditorState.spriteArray;
+        spr.zIndex = sprArray.length == 0 ? 0 : (sprArray[sprArray.length - 1].zIndex + 1);
 
         stageEditorState.selectedSprite = spr;
         stageEditorState.createAndPushAction(OBJECT_CREATED);
@@ -82,3 +85,4 @@ class NewObjDialog extends Dialog
     fn(done);
   }
 }
+#end

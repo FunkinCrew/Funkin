@@ -30,10 +30,6 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
-  public final id:String;
-
-  public final _data:StageData;
-
   public var stageName(get, never):String;
 
   function get_stageName():String
@@ -66,7 +62,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    *
    * @param id
    */
-  public function new(id:String)
+  public function new(id:String, ?params:Dynamic)
   {
     super();
 
@@ -165,13 +161,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     for (dataProp in _data.props)
     {
-      trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
+      trace(' Placing prop: ${dataProp.name} (${dataProp.assetPath})');
 
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
 
       var propSprite:StageProp;
-      if (dataProp.danceEvery != 0)
+      if (dataProp.danceEvery != 0 || isAnimated)
       {
         propSprite = new Bopper(dataProp.danceEvery);
       }
@@ -187,6 +183,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         {
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
+          case 'animateatlas':
+            propSprite.loadTextureAtlas(dataProp.assetPath, _data.directory, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
@@ -219,7 +217,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        trace('    ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        trace('   ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 
@@ -252,8 +250,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       propSprite.scrollFactor.y = dataProp.scroll[1];
 
       propSprite.angle = dataProp.angle;
-      propSprite.color = FlxColor.fromString(dataProp.color);
-      @:privateAccess if (!isSolidColor) propSprite.blend = BlendMode.fromString(dataProp.blend);
+      if (!isSolidColor) propSprite.color = FlxColor.fromString(dataProp.color);
+      @:privateAccess propSprite.blend = BlendMode.fromString(dataProp.blend);
 
       propSprite.zIndex = dataProp.zIndex;
 
@@ -272,6 +270,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
+        case 'animateatlas':
+          FlxAnimationUtil.addTextureAtlasAnimations(propSprite, dataProp.animations);
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
           if (Std.isOfType(propSprite, Bopper))
@@ -297,9 +297,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         }
       }
 
-      if (dataProp.startingAnimation != null)
+      if (dataProp.startingAnimation != null && propSprite is Bopper)
       {
-        propSprite.animation.play(dataProp.startingAnimation);
+        cast(propSprite, Bopper).playAnimation(dataProp.startingAnimation);
       }
 
       if (Std.isOfType(propSprite, BaseCharacter))
@@ -859,16 +859,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public override function toString():String
-  {
-    return 'Stage($id)';
-  }
-
-  static function _fetchData(id:String):Null<StageData>
-  {
-    return StageRegistry.instance.parseEntryDataWithMigration(id, StageRegistry.instance.fetchEntryVersion(id));
-  }
-
   public function onScriptEvent(event:ScriptEvent)
   {
     // Ensure all custom events get broadcast to the elements of the stage.
@@ -900,6 +890,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   public function onNoteHit(event:HitNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   public function onSongEvent(event:SongEventScriptEvent) {}
 

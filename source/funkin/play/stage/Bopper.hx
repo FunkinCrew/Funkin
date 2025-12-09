@@ -107,8 +107,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
     if (this.animation != null)
     {
-      this.animation.callback = this.onAnimationFrame;
-      this.animation.finishCallback = this.onAnimationFinished;
+      this.animation.onFrameChange.add(this.onAnimationFrame);
+      this.animation.onFinish.add(this.onAnimationFinished);
     }
   }
 
@@ -201,13 +201,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     {
       playAnimation('idle$idleSuffix', forceRestart);
     }
-  }
-
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
   }
 
   /**
@@ -327,25 +320,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     this.animOffsets = offsets;
   }
 
-  public function isAnimationFinished():Bool
-  {
-    return this.animation?.finished ?? false;
-  }
-
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
   {
     animationOffsets.set(name, [xOffset, yOffset]);
-  }
-
-  /**
-   * Returns the name of the animation that is currently playing.
-   * If no animation is playing (usually this means the character is BROKEN!),
-   *   returns an empty string to prevent NPEs.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
   }
 
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
@@ -370,6 +347,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   public function onNoteIncoming(event:NoteScriptEvent) {}
 
   public function onNoteHit(event:HitNoteScriptEvent) {}
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
 
   public function onNoteMiss(event:NoteScriptEvent) {}
 

@@ -4,18 +4,20 @@ package funkin.ui.credits;
 import haxe.macro.Context;
 #end
 
+using funkin.util.AnsiUtil;
+
 @:access(funkin.ui.credits.CreditsDataHandler)
 class CreditsDataMacro
 {
   public static macro function loadCreditsData():haxe.macro.Expr.ExprOf<CreditsData>
   {
     #if !display
-    trace('Hardcoding credits data...');
+    Sys.println(' INFO '.bold().bg_blue() + ' Hardcoding credits data...');
     var json = CreditsDataMacro.fetchJSON();
 
     if (json == null)
     {
-      Context.info('[WARN] Could not fetch JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.bold().bg_yellow() + ' Could not fetch JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
@@ -23,7 +25,7 @@ class CreditsDataMacro
 
     if (creditsData == null)
     {
-      Context.info('[WARN] Could not parse JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.bold().bg_yellow() + ' Could not parse JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
@@ -40,7 +42,13 @@ class CreditsDataMacro
   #if macro
   static function fetchJSON():Null<String>
   {
-    return sys.io.File.getContent(CreditsDataHandler.CREDITS_DATA_PATH);
+    var creditsPath:String = CreditsDataHandler.CREDITS_DATA_PATH;
+
+    #if ios
+    if (!sys.FileSystem.exists(creditsPath)) creditsPath = "../../../../../" + creditsPath;
+    #end
+
+    return sys.io.File.getContent(creditsPath);
   }
 
   /**
@@ -58,7 +66,7 @@ class CreditsDataMacro
     }
     catch (e)
     {
-      trace('[ERROR] Failed to parse JSON data for credits.');
+      trace(' ERROR '.bg_red().bold() + ' Failed to parse JSON data for credits.');
       trace(e);
       return null;
     }

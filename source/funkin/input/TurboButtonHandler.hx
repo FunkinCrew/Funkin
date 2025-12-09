@@ -12,6 +12,7 @@ import flixel.FlxBasic;
  *
  * Example: Pressing Ctrl+Z will undo, while holding Ctrl+Z will start to undo repeatedly.
  */
+@:nullSafety
 class TurboButtonHandler extends FlxBasic
 {
   /**
@@ -54,6 +55,7 @@ class TurboButtonHandler extends FlxBasic
   function get_allPressed():Bool
   {
     if (targetGamepad == null) return false;
+    if (!targetGamepad.connected) return false;
     if (inputs == null || inputs.length == 0) return false;
     if (inputs.length == 1) return targetGamepad.anyPressed(inputs);
 

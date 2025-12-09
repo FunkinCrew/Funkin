@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.animation.AnimationBuilder;
@@ -83,7 +84,7 @@ class ChartEditorBaseDialog extends Dialog
 
     if (_overlay == null)
     {
-      trace('[WARN] Dialog overlay is null, skipping overlay fade...');
+      trace(' WARNING '.bold().bg_yellow() + ' Dialog overlay is null, skipping overlay fade...');
       return;
     }
 
@@ -112,3 +113,4 @@ typedef DialogDropTarget =
   component:Component,
   handler:String->Void
 }
+#end

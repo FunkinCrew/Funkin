@@ -1,5 +1,8 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -10,6 +13,9 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
+import haxe.ui.tooltips.ToolTipRegionOptions;
+import funkin.util.HaxeUIUtil;
+import haxe.ui.tooltips.ToolTipManager;
 
 /**
  * A sprite that can be used to display a note in a chart.
@@ -63,11 +69,21 @@ class ChartEditorNoteSprite extends FlxSprite
     return overrideData;
   }
 
-  public function new(parent:ChartEditorState)
+  public var isGhost:Bool = false;
+  public var tooltip:ToolTipRegionOptions;
+
+  /**
+   * An indicator if the note is a note kind different than Default ("").
+   */
+  public var kindIndicator:FlxText = new FlxText(5, 5, 100, '*', 16);
+
+  public function new(parent:ChartEditorState, isGhost:Bool = false)
   {
     super();
 
     this.parentState = parent;
+    this.isGhost = isGhost;
+    this.tooltip = HaxeUIUtil.buildTooltip('N/A');
 
     var entries:Array<String> = NoteStyleRegistry.instance.listEntryIds();
 
@@ -89,6 +105,8 @@ class ChartEditorNoteSprite extends FlxSprite
     {
       addNoteStyleAnimations(fetchNoteStyle(entry));
     }
+
+    kindIndicator.setFormat("VCR OSD Mono", 24, FlxColor.YELLOW, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
   }
 
   static var noteFrameCollection:Null<FlxFramesCollection> = null;
@@ -156,6 +174,7 @@ class ChartEditorNoteSprite extends FlxSprite
     if (this.noteData == null)
     {
       this.kill();
+      updateTooltipPosition();
       return this.noteData;
     }
 
@@ -167,7 +186,7 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Update the position to match the note data.
     updateNotePosition();
-
+    updateTooltipText();
     return this.noteData;
   }
 
@@ -194,6 +213,50 @@ class ChartEditorNoteSprite extends FlxSprite
       this.x += origin.x;
       this.y += origin.y;
     }
+
+    this.updateTooltipPosition();
+  }
+
+  public function updateTooltipText():Void
+  {
+    if (this.noteData == null) return;
+    if (this.isGhost) return;
+    this.tooltip.tipData = {text: this.noteData.buildTooltip()};
+  }
+
+  public function updateTooltipPosition():Void
+  {
+    // No tooltip for ghost sprites.
+    if (this.isGhost) return;
+
+    if (this.noteData == null || (this.tooltip.tipData?.text ?? "").length == 0)
+    {
+      // Disable the tooltip.
+      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    }
+    else
+    {
+      // Update the position.
+      this.tooltip.left = this.x;
+      this.tooltip.top = this.y;
+      this.tooltip.width = this.width;
+      this.tooltip.height = this.height;
+
+      // Enable the tooltip.
+      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+    }
+  }
+
+  override public function draw()
+  {
+    super.draw();
+
+    if (!parentState.showNoteKindIndicators) return;
+    if ((this.noteData?.kind ?? "").length == 0) return; // Do not render the note kind indicator if the note kind is default.
+
+    kindIndicator.x = this.x;
+    kindIndicator.y = this.y;
+    kindIndicator.draw();
   }
 
   function get_noteStyle():Null<String>
@@ -275,3 +338,4 @@ class ChartEditorNoteSprite extends FlxSprite
     return !aboveViewArea && !belowViewArea;
   }
 }
+#end

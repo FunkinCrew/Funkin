@@ -7,6 +7,7 @@ package funkin.util.tools;
  *
  * @see https://haxe.org/manual/lf-static-extension.html
  */
+@:nullSafety
 class IteratorTools
 {
   public static function array<T>(iterator:Iterator<T>):Array<T>

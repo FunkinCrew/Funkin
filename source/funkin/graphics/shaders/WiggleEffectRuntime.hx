@@ -18,16 +18,17 @@ enum WiggleEffectType
  * 2. Call `sprite.shader = wiggleEffect` on the target sprite.
  * 3. Call the update() method on the instance every frame.
  */
+@:nullSafety
 class WiggleEffectRuntime extends FlxRuntimeShader
 {
-  public static function getEffectTypeId(v:WiggleEffectType):Int
+  public static function getEffectTypeId(v:Null<WiggleEffectType>):Int
   {
     return WiggleEffectType.getConstructors().indexOf(Std.string(v));
   }
 
-  public var effectType(default, set):WiggleEffectType = DREAMY;
+  public var effectType(default, set):Null<WiggleEffectType> = DREAMY;
 
-  function set_effectType(v:WiggleEffectType):WiggleEffectType
+  function set_effectType(v:Null<WiggleEffectType>):Null<WiggleEffectType>
   {
     this.setInt('effectType', getEffectTypeId(v));
     return effectType = v;

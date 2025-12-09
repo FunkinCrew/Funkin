@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
@@ -11,7 +12,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
   var contextmenuEdit:MenuItem;
   var contextmenuDelete:MenuItem;
 
-  var data:SongEventData;
+  public var data:SongEventData;
 
   public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0, data:SongEventData)
   {
@@ -21,7 +22,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
     initialize();
   }
 
-  function initialize()
+  public function initialize()
   {
     contextmenuEdit.onClick = function(_) {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
@@ -32,3 +33,4 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
     }
   }
 }
+#end
