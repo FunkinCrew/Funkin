@@ -128,48 +128,40 @@ class ZoomCameraSongEvent extends SongEvent
         units: 'steps'
       },
       {
-        name: 'frame1',
-        title: "Ease",
-        collapsible: true,
-        type: SongEventFieldType.FRAME,
-        children: [
-          {
-            name: 'ease',
-            title: 'Easing Type',
-            defaultValue: 'linear',
-            type: SongEventFieldType.ENUM,
-            keys: [
-              'Linear' => 'linear',
-              'Instant (Ignores duration)' => 'INSTANT',
-              'Sine' => 'sine',
-              'Quad' => 'quad',
-              'Cube' => 'cube',
-              'Quart' => 'quart',
-              'Quint' => 'quint',
-              'Expo' => 'expo',
-              'Smooth Step' => 'smoothStep',
-              'Smoother Step' => 'smootherStep',
-              'Elastic' => 'elastic',
-              'Back' => 'back',
-              'Bounce' => 'bounce',
-              'Circ ' => 'circ',
-            ]
-          },
-          {
-            name: 'easeDir',
-            title: 'Easing Direction',
-            defaultValue: 'In',
-            type: SongEventFieldType.ENUM,
-            keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-          }
-        ]
-      },
-      {
         name: 'mode',
         title: 'Mode',
         defaultValue: 'stage',
         type: SongEventFieldType.ENUM,
         keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+      },
+      {
+        name: 'ease',
+        title: 'Easing Type',
+        defaultValue: 'linear',
+        type: SongEventFieldType.ENUM,
+        keys: [
+          'Linear' => 'linear',
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Sine' => 'sine',
+          'Quad' => 'quad',
+          'Cube' => 'cube',
+          'Quart' => 'quart',
+          'Quint' => 'quint',
+          'Expo' => 'expo',
+          'Smooth Step' => 'smoothStep',
+          'Smoother Step' => 'smootherStep',
+          'Elastic' => 'elastic',
+          'Back' => 'back',
+          'Bounce' => 'bounce',
+          'Circ ' => 'circ',
+        ]
+      },
+      {
+        name: 'easeDir',
+        title: 'Easing Direction',
+        defaultValue: 'In',
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       }
     ]);
   }
