@@ -1267,6 +1267,8 @@ class FunkinAction extends FlxActionDigital
   public var namePressed(default, null):Null<String>;
   public var nameReleased(default, null):Null<String>;
 
+  var cache:Map<String, {timestamp:Int, value:Bool}> = [];
+
   public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
   {
     super(name);
@@ -1386,7 +1388,13 @@ class FunkinAction extends FlxActionDigital
   public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool
   {
     // Make sure we only update the inputs once per frame.
-    if (_timestamp == FlxG.game.ticks) return triggered; // run no more than once per frame
+    var key = '${filterTrigger}:${filterDevice}';
+    var cacheEntry = cache.get(key);
+
+    if (cacheEntry != null && cacheEntry.timestamp == FlxG.game.ticks)
+    {
+      return cacheEntry.value;
+    }
 
     _x = null;
     _y = null;
@@ -1427,6 +1435,8 @@ class FunkinAction extends FlxActionDigital
         triggered = true;
       }
     }
+
+    cache.set(key, {timestamp: FlxG.game.ticks, value: triggered});
 
     return triggered;
   }

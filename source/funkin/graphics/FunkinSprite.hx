@@ -452,6 +452,46 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
+   * Gets every frame on every symbol that starts with the given keyword.
+   * @param keyword The keyword to search for.
+   * @return An array of frames.
+   */
+  public function getFramesWithKeyword(keyword:String):Array<animate.internal.Frame>
+  {
+    if (!this.isAnimate)
+    {
+      trace('WARNING: getFramesWithKeyword() only works texture atlases!');
+      return [];
+    }
+
+    var symbolItems:Array<animate.internal.SymbolItem> = [];
+    var frames:Array<animate.internal.Frame> = [];
+
+    @:privateAccess
+    for (symbol in this.library.dictionary.keys())
+    {
+      var symbolItem:Null<animate.internal.SymbolItem> = this.library.getSymbol(symbol);
+      if (symbolItem == null) continue;
+
+      if (symbolItem.name.contains(keyword))
+      {
+        symbolItems.push(symbolItem);
+      }
+    }
+
+    for (symbolItem in symbolItems)
+    {
+      symbolItem.timeline.forEachLayer((layer) -> {
+        layer.forEachFrame((frame) -> {
+          frames.push(frame);
+        });
+      });
+    }
+
+    return frames;
+  }
+
+  /**
    * Gets the current animation ID.
    */
   public function getCurrentAnimation():String

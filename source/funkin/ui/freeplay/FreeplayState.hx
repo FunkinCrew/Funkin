@@ -157,7 +157,7 @@ class FreeplayState extends MusicBeatSubState
    */
   var currentVariation:String = Constants.DEFAULT_VARIATION;
 
-  public var fp:FreeplayScore;
+  var fpScoreDisplay:FreeplayScore;
 
   var txtCompletion:AtlasText;
   var lerpCompletion:Float = 0;
@@ -330,7 +330,7 @@ class FreeplayState extends MusicBeatSubState
 
     // We build a bunch of sprites BEFORE create() so we can guarantee they aren't null later on.
     albumRoll = new AlbumRoll();
-    fp = new FreeplayScore(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 353), 60, 7, 100, styleData);
+    fpScoreDisplay = new FreeplayScore(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 353), 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
     grpCapsules = new FlxTypedGroup<SongMenuItem>();
@@ -629,8 +629,8 @@ class FreeplayState extends MusicBeatSubState
       tmr.time = FlxG.random.float(20, 60);
     }, 0);
 
-    fp.visible = false;
-    add(fp);
+    fpScoreDisplay.visible = false;
+    add(fpScoreDisplay);
 
     var clearBoxSprite:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 115), 65).loadGraphic(Paths.image('freeplay/clearBox'));
     clearBoxSprite.visible = false;
@@ -687,13 +687,13 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
+    exitMovers.set([fpScoreDisplay, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         x: FlxG.width,
         speed: 0.3
       });
 
-    exitMoversCharSel.set([fp, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
+    exitMoversCharSel.set([fpScoreDisplay, txtCompletion, fnfHighscoreSpr, clearBoxSprite],
       {
         y: -270,
         speed: 0.8,
@@ -781,8 +781,8 @@ class FreeplayState extends MusicBeatSubState
         freeplayTxtBg.visible = true;
         if (freeplayArrow != null) freeplayArrow.visible = true;
         ostName.visible = true;
-        fp.visible = true;
-        fp.updateScore(0);
+        fpScoreDisplay.visible = true;
+        fpScoreDisplay.updateScore(0);
 
         clearBoxSprite.visible = true;
         txtCompletion.visible = true;
@@ -995,7 +995,6 @@ class FreeplayState extends MusicBeatSubState
       if (tempSong == null) continue;
 
       var funnyMenu:SongMenuItem = grpCapsules.recycle(SongMenuItem);
-
       funnyMenu.initPosition(FlxG.width, 0);
       funnyMenu.initData(tempSong, styleData, i + 1);
       funnyMenu.onConfirm = function() {
@@ -1702,7 +1701,7 @@ class FreeplayState extends MusicBeatSubState
       lerpCompletion = intendedCompletion;
     }
 
-    fp.updateScore(Std.int(lerpScore));
+    fpScoreDisplay.updateScore(Std.int(lerpScore));
 
     // sets the text of the completion percentage. Perhaps eventually we may want to generalize this,
     // but for now we can just clamp the values between 0 and 100.

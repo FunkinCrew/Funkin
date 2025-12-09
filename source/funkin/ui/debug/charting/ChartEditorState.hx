@@ -386,12 +386,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (isViewDownscroll)
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
-        measureTicks.y = gridTiledSprite.y;
       }
       else
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
-        measureTicks.y = gridTiledSprite.y;
 
         for (member in audioWaveforms.members)
         {
@@ -609,6 +607,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * If true, playtesting a chart will use the audio settings that were set here.
    */
   var playtestAudioSettings:Bool = false;
+
+  /**
+   * If true, after playtesting a chart the results screen will show your score.
+   */
+  var playtestShowResults:Bool = false;
 
   /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
@@ -2179,11 +2182,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var notePreviewViewportBitmap:Null<BitmapData> = null;
 
   /**
-   * The IMAGE used for the measure ticks. Updated by ChartEditorThemeHandler.
-   */
-  var measureTickBitmap:Null<BitmapData> = null;
-
-  /**
    * The IMAGE used for the offset ticks. Updated by ChartEditorThemeHandler.
    */
   var offsetTickBitmap:Null<BitmapData> = null;
@@ -2413,7 +2411,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
-    setupContextMenu();
     setupTurboKeyHandlers();
 
     setupAutoSave();
@@ -2743,10 +2740,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     measureTicks = new ChartEditorMeasureTicks(this);
     var measureTicksWidth = (GRID_SIZE);
     measureTicks.x = gridTiledSprite.x - measureTicksWidth;
-    measureTicks.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
     measureTicks.zIndex = 20;
-
     add(measureTicks);
+
+    handleMeasureTickPosition();
   }
 
   function buildNotePreview():Void
@@ -3381,21 +3378,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
-  }
-
-  function setupContextMenu():Void
-  {
-    Screen.instance.registerEvent(MouseEvent.RIGHT_MOUSE_UP, function(e:MouseEvent) {
-      var xPos = e.screenX;
-      var yPos = e.screenY;
-      onContextMenu(xPos, yPos);
-    });
-  }
-
-  function onContextMenu(xPos:Float, yPos:Float)
-  {
-    trace('User right clicked to open menu at (${xPos}, ${yPos})');
-    // this.openDefaultContextMenu(xPos, yPos);
   }
 
   function copySelection():Void
@@ -6290,6 +6272,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetVariation: selectedVariation,
         practiceMode: playtestPracticeMode,
         botPlayMode: playtestBotPlayMode,
+        playtestResults: playtestShowResults,
         minimalMode: minimal,
         startTimestamp: startTimestamp,
         playbackRate: playbackRate,
@@ -6463,6 +6446,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (gridTiledSprite != null)
     {
       gridTiledSprite.height = songLengthInPixels;
+      measureTicks.setHeight(gridTiledSprite.height);
     }
 
     // Remove any notes past the end of the song.
@@ -6818,32 +6802,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Updates the measure tick bitmap forcibly to make sure it's correct.
    */
-  function updateTimeSignature():Void
-  {
-    this.updateMeasureTicks(true);
-    gridTiledSprite.loadGraphic(gridBitmap);
-  }
+  function updateTimeSignature():Void {}
 
   /**
    * Handle positioning the measure ticks sprite.
    */
   function handleMeasureTickPosition():Void
   {
-    this.updateMeasureTicks();
-    var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
-    var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
-    measureTicks.y = gridTiledSprite?.y + currentMeasurePos;
-    // Make sure the measure tick bitmap does not past the grid itself.
-    var totalMeasureTicksHeight:Float = currentMeasurePos + measureTickBitmap.height;
-    if (totalMeasureTicksHeight >= songLengthInPixels)
-    {
-      var spillOver:Float = totalMeasureTicksHeight - songLengthInPixels;
-      measureTicks.setClipRect(new FlxRect(0, 0, measureTickBitmap.width, measureTickBitmap.height - spillOver));
-    }
-    else
-    {
-      measureTicks.setClipRect(null);
-    }
+    // var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
+    // var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
+    measureTicks.y = gridTiledSprite?.y;
   }
 
   /**

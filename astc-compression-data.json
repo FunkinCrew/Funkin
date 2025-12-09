@@ -6,7 +6,7 @@
   "colorprofile": "cl",
   "custom": [
     {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
       "blocksize": "4x4"
     },
     {
@@ -14,11 +14,7 @@
       "blocksize": "4x4"
     },
     {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
+      "asset": "asset/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
       "blocksize": "4x4"
     },
     {
@@ -40,6 +36,10 @@
     {
       "asset": "assets/preload/images/alphabet.png",
       "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/preload/images/charSelect/gfChill/spritemap1.png",
+      "blocksize": "6x6"
     },
     {
       "asset": "assets/shared/images/NOTE_hold_assets.png",
@@ -79,6 +79,10 @@
     },
     {
       "asset": "assets/shared/images/notes.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
       "blocksize": "4x4"
     },
     {

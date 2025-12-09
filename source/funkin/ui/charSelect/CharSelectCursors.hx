@@ -10,6 +10,9 @@ import funkin.util.MathUtil;
 
 class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
 {
+  /**
+   * The main cursor sprite for this class.
+   */
   public var main:FunkinSprite;
 
   var lightBlue:FunkinSprite;
@@ -56,6 +59,7 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
     add(cursorDenied);
 
     scrollFactor.set();
+    directAlpha = true;
   }
 
   public function confirm():Void
@@ -86,6 +90,32 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
     main.visible = lightBlue.visible = darkBlue.visible = true;
   }
 
+  /**
+   * Snaps the cursors to the given position.
+   * @param intendedPosition The position to snap to as a `FlxPoint`.
+   */
+  public function snapToLocation(intendedPosition:FlxPoint):Void
+  {
+    main.x = intendedPosition.x;
+    main.y = intendedPosition.y;
+
+    lightBlue.x = main.x;
+    lightBlue.y = main.y;
+
+    darkBlue.x = intendedPosition.x;
+    darkBlue.y = intendedPosition.y;
+
+    cursorConfirmed.x = main.x - 2;
+    cursorConfirmed.y = main.y - 4;
+
+    cursorDenied.x = main.x - 2;
+    cursorDenied.y = main.y - 4;
+  }
+
+  /**
+   * Lerps the cursors to the given position.
+   * @param intendedPosition The position to lerp to as a `FlxPoint`.
+   */
   public function lerpToLocation(intendedPosition:FlxPoint):Void
   {
     main.x = MathUtil.snap(MathUtil.smoothLerpPrecision(main.x, intendedPosition.x, FlxG.elapsed, 0.1), intendedPosition.x, 1);

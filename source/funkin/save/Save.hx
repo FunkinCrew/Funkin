@@ -67,7 +67,7 @@ class Save implements ConsoleClass
   @:nullSafety(Off)
   public function new(?data:RawSaveData)
   {
-    this.data = data ?? Save.getDefaultData();
+    this.data = data ??= Save.getDefaultData();
     // Build macro will inject SaveProperty initialization here automatically
 
     // Make sure the verison number is up to date before we flush.
