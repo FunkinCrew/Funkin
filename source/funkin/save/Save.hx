@@ -171,6 +171,7 @@ class Save implements ConsoleClass
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           playtestAudioSettings: false,
+          playtestShowCamera: false,
           downscroll: false,
           showNoteKinds: true,
           metronomeVolume: 1.0,
@@ -284,6 +285,9 @@ class Save implements ConsoleClass
 
   @:saveProperty(data.optionsChartEditor.playtestAudioSettings, false)
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
+
+  @:saveProperty(data.optionsChartEditor.playtestShowCamera, false)
+  public var chartEditorPlaytestShowCamera:SaveProperty<Bool>;
 
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
@@ -1437,6 +1441,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestAudioSettings:Bool;
+
+  /**
+   * If true, the position the camera is being tweened to will be shown.
+   * @default `false`
+   */
+  var ?playtestShowCamera:Bool;
 
   /**
    * Theme music in the Chart Editor.

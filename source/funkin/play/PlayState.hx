@@ -151,6 +151,10 @@ typedef PlayStateParams =
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
   ?cameraFollowPoint:FlxPoint,
+  /**
+   * If specified, the camera follow point will be shown as a green square.
+   */
+  ?showCameraFollowPoint:Bool,
 }
 
 /**
@@ -760,13 +764,11 @@ class PlayState extends MusicBeatSubState
 
     // Basic object initialization
 
-    // TODO: Add something to toggle this on!
-    if (false)
+    if ((params?.showCameraFollowPoint ?? false))
     {
       // Displays the camera follow point as a sprite for debug purposes.
       var cameraFollowPoint = new FunkinSprite(0, 0);
       cameraFollowPoint.makeSolidColor(8, 8, 0xFF00FF00);
-      cameraFollowPoint.visible = false;
       cameraFollowPoint.zIndex = 1000000;
       this.cameraFollowPoint = cameraFollowPoint;
     }

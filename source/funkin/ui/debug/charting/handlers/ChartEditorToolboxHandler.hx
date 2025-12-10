@@ -309,6 +309,17 @@ class ChartEditorToolboxHandler
       state.playtestAudioSettings = checkboxAudioSettings.selected;
     };
 
+    var checkboxShowCamera:Null<CheckBox> = toolbox.findComponent('playtestShowCameraPoint', CheckBox);
+
+    if (checkboxShowCamera == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestShowCameraPoint component.';
+
+    state.playtestShowCamera = checkboxShowCamera.selected;
+
+    checkboxShowCamera.onClick = _ -> {
+      state.playtestShowCamera = checkboxShowCamera.selected;
+    };
+
     return toolbox;
   }
 

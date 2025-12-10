@@ -605,6 +605,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestAudioSettings:Bool = false;
 
   /**
+   * If true, playtesting a chart will show the point the camera is being tweened to.
+   */
+  var playtestShowCamera:Bool = false;
+
+  /**
    * Enables or disables the "debugger" popup that appears when you run into a flixel error.
    */
   var enabledDebuggerPopup:Bool = true;
@@ -2524,6 +2529,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     showSubtitles = save.chartEditorShowSubtitles.value;
     playtestStartTime = save.chartEditorPlaytestStartTime.value;
     playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
+    playtestShowCamera = save.chartEditorPlaytestShowCamera.value;
     currentTheme = save.chartEditorTheme.value;
     metronomeVolume = save.chartEditorMetronomeVolume.value;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
@@ -2555,6 +2561,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
     save.chartEditorPlaytestStartTime.value = playtestStartTime;
     save.chartEditorPlaytestAudioSettings.value = playtestAudioSettings;
+    save.chartEditorPlaytestShowCamera.value = playtestShowCamera;
     save.chartEditorTheme.value = currentTheme;
     save.chartEditorMetronomeVolume.value = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
@@ -6337,6 +6344,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         startTimestamp: startTimestamp,
         playbackRate: playbackRate,
         overrideMusic: true,
+        showCameraFollowPoint: playtestShowCamera
       };
 
     // Override music.
