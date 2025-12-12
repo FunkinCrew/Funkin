@@ -24,8 +24,19 @@ import funkin.api.newgrounds.Leaderboards;
 @:nullSafety @:build(funkin.util.macro.SaveMacro.buildSaveProperties())
 class Save implements ConsoleClass
 {
+  /**
+   * The current version of the save data schema.
+   */
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
+
+  /**
+   * The versions of the save data schema that are compatible with this version of the game without migration.
+   */
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
+
+  /**
+   * The underlying save data system.
+   */
   public static var system:SaveSystem = new SaveSystem();
 
   /**
@@ -43,6 +54,10 @@ class Save implements ConsoleClass
 
   var data:RawSaveData;
 
+  /**
+   * Load the game's save data from disk.
+   * @return The resulting Save.
+   */
   public static function load():Save
   {
     trace(' SAVE '.bold().bg_note_down() + ' Loading save...');
@@ -54,6 +69,9 @@ class Save implements ConsoleClass
     return loadedSave;
   }
 
+  /**
+   * Clear the game's save data and write the default values to disk.
+   */
   public static function clearData():Void
   {
     _instance = Save.system.clearSlot(Constants.BASE_SAVE_SLOT);
@@ -68,10 +86,13 @@ class Save implements ConsoleClass
     this.data = data ??= Save.getDefaultData();
     // Build macro will inject SaveProperty initialization here automatically
 
-    // Make sure the verison number is up to date before we flush.
+    // Make sure the version number is up to date before we flush.
     updateVersionToLatest();
   }
 
+  /**
+   * @return A Save Data object representing the default values.
+   */
   public static function getDefaultData():RawSaveData
   {
     #if mobile
@@ -386,8 +407,8 @@ class Save implements ConsoleClass
   }
 
   /**
-   * When we've seen a character unlock, add it to the list of characters seen.
-   * @param character
+   * When we've seen a character unlock in Character Select, add it to the list of characters seen.
+   * @param character The playable character ID to add.
    */
   public function addCharacterSeen(character:String):Void
   {
@@ -407,8 +428,10 @@ class Save implements ConsoleClass
    * @param difficultyId The difficulty to check.
    * @return A data structure containing score, judgement counts, and accuracy. Returns `null` if no score is saved.
    */
-  public function getLevelScore(levelId:String, difficultyId:String = 'normal'):Null<SaveScoreData>
+  public function getLevelScore(levelId:String, ?difficultyId:String):Null<SaveScoreData>
   {
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
     if (data.scores?.levels == null)
     {
       if (data.scores == null)
@@ -434,6 +457,9 @@ class Save implements ConsoleClass
 
   /**
    * Apply the score the user achieved for a given level on a given difficulty.
+   * @param levelId The level ID to check.
+   * @param difficultyId The difficulty to check.
+   * @param score The new score to apply.
    */
   public function setLevelScore(levelId:String, difficultyId:String, score:SaveScoreData):Void
   {
@@ -447,8 +473,17 @@ class Save implements ConsoleClass
     Save.system.flush();
   }
 
-  public function isLevelHighScore(levelId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  /**
+   * Compare the provided score to the current high score for the given level, and return `true` if the new score is better.
+   * @param levelId The level ID to check.
+   * @param difficultyId The difficulty to check.
+   * @param score The new score to compare with.
+   * @return `true` if the new score is better than the current high score.
+   */
+  public function isLevelHighScore(levelId:String, ?difficultyId:String, score:SaveScoreData):Bool
   {
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
     var level = data.scores.levels.get(levelId);
     if (level == null)
     {
@@ -463,15 +498,22 @@ class Save implements ConsoleClass
     return score.score > currentScore.score;
   }
 
+  /**
+   * Returns `true` if the level has been beaten on any of the listed difficulties.
+   *
+   * NOTE: If the compile flag `-DUNLOCK_EVERYTHING` is enabled, `hasBeatenLevel()` will always return `true`.
+   *
+   * @param levelId The song ID to check.
+   * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
+   * @return Whether the level has been beaten on any of the listed difficulties.
+   */
   public function hasBeatenLevel(levelId:String, ?difficultyList:Array<String>):Bool
   {
     #if UNLOCK_EVERYTHING
     return true;
     #end
-    if (difficultyList == null)
-    {
-      difficultyList = ['easy', 'normal', 'hard'];
-    }
+
+    difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST;
     for (difficulty in difficultyList)
     {
       var score:Null<SaveScoreData> = getLevelScore(levelId, difficulty);
@@ -500,32 +542,47 @@ class Save implements ConsoleClass
    * @param variation The variation to check. Defaults to empty string. Appended to difficulty with `-`, e.g. `easy-pico`.
    * @return A data structure containing score, judgement counts, and accuracy. Returns `null` if no score is saved.
    */
-  public function getSongScore(songId:String, difficultyId:String = 'normal', ?variation:String):Null<SaveScoreData>
+  public function getSongScore(songId:String, ?difficultyId:String, ?variation:String):Null<SaveScoreData>
   {
-    var song = data.scores.songs.get(songId);
-    if (song == null)
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
+    var song:SaveScoreDifficultiesData = data.scores.songs.get(songId) ?? [];
+    if (song.size() == 0)
     {
       trace(' SAVE '.bold().bg_note_down() + ' WARNING '.warning() + 'Could not find song data for $songId $difficultyId $variation');
-      song = [];
       data.scores.songs.set(songId, song);
     }
+
     // 'default' variations are left with no suffix ('easy', 'normal', 'hard'),
-    // along with 'erect' variations ('erect', 'nightmare')
+    // 'erect' variations are left with no suffix too ('erect', 'nightmare') due to backwards compatibility
     // otherwise, we want to add a suffix of our current variation to get the save data.
-    if (variation != null && variation != '' && variation != 'default' && variation != 'erect')
+    if (variation != null && variation != '' && variation != Constants.DEFAULT_VARIATION && variation != 'erect')
     {
       difficultyId = '${difficultyId}-${variation}';
     }
     return song.get(difficultyId);
   }
 
-  public function getSongRank(songId:String, difficultyId:String = 'normal', ?variation:String):Null<ScoringRank>
+  /**
+   * Get the rank the user achieved for a given song on a given difficulty.
+   * @param songId The ID of the song.
+   * @param difficultyId The difficulty to check.
+   * @param variation The variation to check.
+   * @return The rank the user achieved for the song, or `null` if no score is saved.
+   */
+  public function getSongRank(songId:String, ?difficultyId:String, ?variation:String):Null<ScoringRank>
   {
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
     return Scoring.calculateRank(getSongScore(songId, difficultyId, variation));
   }
 
   /**
    * Directly set the score the user achieved for a given song on a given difficulty.
+   *
+   * @param songId The ID of the song.
+   * @param difficultyId The difficulty to check.
+   * @param score The new score to apply.
    */
   public function setSongScore(songId:String, difficultyId:String, score:SaveScoreData):Void
   {
@@ -541,32 +598,45 @@ class Save implements ConsoleClass
 
   /**
    * Only replace the ranking data for the song, because the old score is still better.
+   *
+   * @param songId The ID of the song.
+   * @param difficultyId The difficulty to check.
+   * @param newScoreData The new score to apply.
    */
   public function applySongRank(songId:String, difficultyId:String, newScoreData:SaveScoreData):Void
   {
     var newRank = Scoring.calculateRank(newScoreData);
     if (newScoreData == null || newRank == null) return;
-    var song = data.scores.songs.get(songId);
-    if (song == null)
+
+    var song = data.scores.songs.get(songId) ?? [];
+    // If the song doesn't have a highscore yet on any difficulty, set the score directly.
+    if (song.size() == 0)
     {
-      song = [];
+      // Directly set the highscore.
       data.scores.songs.set(songId, song);
     }
+
     var previousScoreData = song.get(difficultyId);
     var previousRank = Scoring.calculateRank(previousScoreData);
+    // If the song has no highscore yet on this difficulty, set the score directly.
     if (previousScoreData == null || previousRank == null)
     {
       // Directly set the highscore.
       setSongScore(songId, difficultyId, newScoreData);
       return;
     }
-    // Set the high score and the high rank separately.
-    var newScore:SaveScoreData = {
-      score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-      tallies: (previousRank > newRank
-        || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
-    };
-    song.set(difficultyId, newScore);
+
+    // Compare the high score and the high rank separately.
+    // This prevents an issue where a lower rank could apply when getting a higher score.
+    var useOldTallies:Bool = previousRank > newRank
+      || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies);
+    var newHighScore:Int = (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score;
+    var newHighTallies:SaveScoreTallyData = useOldTallies ? previousScoreData.tallies : newScoreData.tallies;
+
+    song.set(difficultyId, {
+      score: newHighScore,
+      tallies: newHighTallies
+    });
     Save.system.flush();
   }
 
@@ -577,8 +647,10 @@ class Save implements ConsoleClass
    * @param score The score to check.
    * @return Whether the score is better than the current high score.
    */
-  public function isSongHighScore(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  public function isSongHighScore(songId:String, ?difficultyId:String, score:SaveScoreData):Bool
   {
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
@@ -600,8 +672,10 @@ class Save implements ConsoleClass
    * @param score The score to check the rank for.
    * @return Whether the score's rank is better than the current rank.
    */
-  public function isSongHighRank(songId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
+  public function isSongHighRank(songId:String, ?difficultyId:String, score:SaveScoreData):Bool
   {
+    difficultyId ??= Constants.DEFAULT_DIFFICULTY;
+
     var newScoreRank = Scoring.calculateRank(score);
     if (newScoreRank == null)
     {
@@ -625,52 +699,47 @@ class Save implements ConsoleClass
   }
 
   /**
-   * Has the provided song been beaten on one of the listed difficulties?
-   * Note: This function can still take in the 'difficulty-variation' format for the difficultyList parameter
-   * as it is used in the old save data format. However inputting a variation will append it to the difficulty
-   * so you can do `hasBeatenSong('dadbattle', ['easy-pico'])` to check if you've beaten the Pico mix on easy.
-   * or you can do `hasBeatenSong('dadbattle', ['easy'], 'pico')` to check if you've beaten the Pico mix on easy.
-   * however you should not mix the two as it will append '-pico' to the 'easy-pico' if it's inputted into the array.
+   * Returns `true` if the song has been beaten on any of the listed difficulties.
+   *
+   * NOTE: If the compile flag `-DUNLOCK_EVERYTHING` is enabled, `hasBeatenSong()` will always return `true`,
+   * but `hasSongScore()` only returns `true` if there is a score for that difficulty.
+   *
    * @param songId The song ID to check.
    * @param difficultyList The difficulties to check. Defaults to `easy`, `normal`, and `hard`.
-   * @param variation The variation to check. Defaults to empty string. Appended to difficulty list with `-`, e.g. `easy-pico`.
-   *                  This is our old format for getting difficulty/variation information, however we don't want to mess around with
-   *                  save migration just yet.
+   *   Note: This function can still take in the 'difficulty-variation' format for the difficultyList parameter
+   *   as it is used in the old save data format. However inputting a variation will append it to the difficulty
+   *   so you can do `hasBeatenSong('dadbattle', ['easy-pico'])` to check if you've beaten the Pico mix on easy.
+   *   or you can do `hasBeatenSong('dadbattle', ['easy'], 'pico')` to check if you've beaten the Pico mix on easy.
+   *   however you should not mix the two as it will append '-pico' to the 'easy-pico' if it's inputted into the array.
+   * @param variation The variation to check. Defaults to `''` for the default variation.
+   *                  Appended to difficulty list with `-`, e.g. `easy-pico`.
+   *                  This is our old format for getting difficulty/variation information,
+   *                  however we don't want to mess around with save migration just yet.
    * @return Whether the song has been beaten on any of the listed difficulties.
    */
   public function hasBeatenSong(songId:String, ?difficultyList:Array<String>, ?variation:String):Bool
   {
     #if UNLOCK_EVERYTHING
     return true;
-    #else
-    if (difficultyList == null)
-    {
-      difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
-    }
+    #end
 
-    if (variation == null) variation = '';
+    difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST;
 
+    // Check each difficulty for a score.
     for (difficulty in difficultyList)
     {
-      if (variation != '') difficulty = '${difficulty}-${variation}';
-
-      var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
-      if (score != null)
+      if (hasSongScore(songId, difficulty, variation))
       {
-        if (score.score > 0)
-        {
-          // Level has score data, which means we cleared it!
-          return true;
-        }
-        else
-        {
-          // Level has score data, but the score is 0.
-          continue;
-        }
+        return true;
+      }
+      else
+      {
+        continue;
       }
     }
+
+    // No difficulty has a score.
     return false;
-    #end
   }
 
   public function isSongFavorited(id:String):Bool
@@ -683,6 +752,10 @@ class Save implements ConsoleClass
     return data.favoriteSongs.contains(id);
   }
 
+  /**
+   * Add a song to the list of favorited songs.
+   * @param id The song ID to add.
+   */
   public function favoriteSong(id:String):Void
   {
     if (!isSongFavorited(id))
@@ -692,6 +765,10 @@ class Save implements ConsoleClass
     }
   }
 
+  /**
+   * Removes a song from the list of favorited songs.
+   * @param id The song ID to remove.
+   */
   public function unfavoriteSong(id:String):Void
   {
     if (isSongFavorited(id))
@@ -803,7 +880,7 @@ class Save implements ConsoleClass
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
         }
-      case ERROR(_): // DEPRECATED: Unused
+      case ERROR(_): // This value is deprecated.
         return handleSaveDataError(slot);
       case SAVE_ERROR(_):
         return handleSaveDataError(slot);
@@ -832,6 +909,10 @@ class Save implements ConsoleClass
     return loadFromSlot(nextSlot);
   }
 
+  /**
+   * A debug function.
+   * Search for, and print the contents of, bad save data in need of recovery.
+   */
   public static function debug_queryBadSaveData():Void
   {
     final RECOVERY_SLOT_START = 1000;
@@ -867,7 +948,7 @@ class Save implements ConsoleClass
     {
       case EMPTY:
         return false;
-      case ERROR(_): // DEPRECATED: Unused
+      case ERROR(_): // This value is deprecated.
         return false;
       case LOAD_ERROR(_):
         return false;
@@ -906,22 +987,36 @@ class Save implements ConsoleClass
     return writer.write(data, pretty ? ' ' : null);
   }
 
+  /**
+   * Set the version of the save data to the latest version.
+   */
   public function updateVersionToLatest():Void
   {
     this.data.version = Save.SAVE_DATA_VERSION;
   }
 
+  /**
+   * A debug function.
+   * Dump the current save data to a JSON file.
+   */
   public function debug_dumpSaveJsonSave():Void
   {
     FileUtil.saveFile('Write save data as JSON...', haxe.io.Bytes.ofString(this.serializeJson()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json');
   }
 
+  /**
+   * A debug function.
+   * Print the current save data as JSON to the console.
+   */
   public function debug_dumpSaveJsonPrint():Void
   {
     trace(this.serializeJson());
   }
 
   #if FEATURE_NEWGROUNDS
+  /**
+   * Save the current save data to the cloud on Newgrounds.
+   */
   public static function saveToNewgrounds():Void
   {
     if (_instance == null) return;
@@ -929,6 +1024,10 @@ class Save implements ConsoleClass
     funkin.api.newgrounds.NGSaveSlot.instance.save(_instance.data);
   }
 
+  /**
+   * Load the save data from the cloud on Newgrounds.
+   * @param onFinish The function to call when the save data has been loaded.
+   */
   public static function loadFromNewgrounds(onFinish:Void->Void):Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
@@ -1024,11 +1123,17 @@ typedef RawSaveData =
   var optionsCameraEditor:SaveDataCameraEditorOptions;
 };
 
+/**
+ * Stores user preferences related to the user's use of external APIs.
+ */
 typedef SaveApiData =
 {
   var newgrounds:SaveApiNewgroundsData;
 }
 
+/**
+ * Stores user preferences related to the user's use of the Newgrounds API.
+ */
 typedef SaveApiNewgroundsData =
 {
   var sessionId:Null<String>;
@@ -1065,6 +1170,10 @@ typedef SaveHighScoresData =
   var songs:SaveScoreSongsData;
 };
 
+/**
+ * An anonymous structure containing options about the user's preferences for mods,
+ * and the values of custom options provided by mods.
+ */
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
@@ -1104,6 +1213,9 @@ typedef SaveScoreData =
   var tallies:SaveScoreTallyData;
 }
 
+/**
+ * Contains all the user's tallies and judgements hit for a song score.
+ */
 typedef SaveScoreTallyData =
 {
   var sick:Int;
@@ -1253,6 +1365,9 @@ typedef SaveDataOptions =
     };
 }
 
+/**
+ * An anonymous structure containing all the user's options and preferences, specific to the user's controls for different devices.
+ */
 typedef PlayerControlData =
 {
   var keyboard:SaveControlsData;
@@ -1260,6 +1375,9 @@ typedef PlayerControlData =
 }
 
 #if mobile
+/**
+ * An anonymous structure containing all the user's options and preferences, specific to Mobile builds.
+ */
 typedef SaveDataMobileOptions =
 {
   /**
@@ -1509,6 +1627,9 @@ typedef SaveDataChartEditorOptions =
   var ?playbackSpeed:Float;
 }
 
+/**
+ * An anonymous structure containing all the user's options and preferences, specific to the Stage Editor.
+ */
 typedef SaveDataStageEditorOptions =
 {
   // a lot of these things were copied from savedatacharteditoroptions
