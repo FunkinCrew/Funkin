@@ -705,7 +705,7 @@ enum abstract CharacterRenderType(String) from String to String
 typedef CharacterData =
 {
   /**
-   * The sematic version number of the character data JSON format.
+   * The semantic version number of the character data JSON format.
    */
   var version:String;
 
@@ -723,7 +723,7 @@ typedef CharacterData =
   /**
    * Behavior varies by render type:
    * - SPARROW: Path to retrieve both the spritesheet and the XML data from.
-   * - PACKER: Path to retrieve both the spritsheet and the TXT data from.
+   * - PACKER: Path to retrieve both the spritesheet and the TXT data from.
    */
   var assetPath:String;
 
