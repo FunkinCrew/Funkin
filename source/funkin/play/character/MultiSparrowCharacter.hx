@@ -2,6 +2,8 @@ package funkin.play.character;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
+import animate.FlxAnimateFrames;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.character.CharacterData.CharacterRenderType;
@@ -44,8 +46,6 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      // pixelPerfectRender = true;
-      // pixelPerfectPosition = true;
     }
     else
     {
@@ -56,62 +56,103 @@ class MultiSparrowCharacter extends BaseCharacter
 
   function buildSpritesheet():Void
   {
-    trace('Loading assets for Multi-Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+    log('Loading assets for Multi-Sparrow character "${characterId}"');
 
-    var assetList = [];
-    for (anim in _data.animations)
+    var textureList:Array<FlxAtlasFrames> = [];
+    var addedAssetPaths:Array<String> = [];
+
+    var mainTexture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
+    if (mainTexture == null)
     {
-      if (anim.assetPath != null && !assetList.contains(anim.assetPath))
-      {
-        assetList.push(anim.assetPath);
-      }
-    }
-
-    var texture:FlxAtlasFrames = Paths.getSparrowAtlas(_data.assetPath);
-
-    if (texture == null)
-    {
-      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
+      log('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
       FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${_data.assetPath}');
       return;
     }
     else
     {
-      trace('Creating multi-sparrow atlas: ${_data.assetPath}');
-      texture.parent.destroyOnNoUse = false;
+      log('Creating multi-sparrow atlas: ${_data.assetPath}');
+      mainTexture.parent.destroyOnNoUse = false;
+      textureList.push(mainTexture);
     }
 
-    for (asset in assetList)
+    var hasTextureAtlas:Bool = false;
+
+    for (anim in _data.animations)
     {
-      var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
-      // If we don't do this, the unused textures will be removed as soon as they're loaded.
-
-      if (subTexture == null)
+      if (anim.renderType == "animateatlas")
       {
-        trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
+        hasTextureAtlas = true;
+        break;
       }
-      else
-      {
-        trace('Concatenating multi-sparrow atlas: ${asset}');
-        subTexture.parent.destroyOnNoUse = false;
-        FunkinMemory.cacheTexture(Paths.image(asset));
-      }
-
-      texture.addAtlas(subTexture);
     }
 
-    this.frames = texture;
+    for (animation in _data.animations)
+    {
+      if (animation.assetPath == null) continue;
+      if (addedAssetPaths.contains(animation.assetPath)) continue;
+
+      switch (animation.renderType)
+      {
+        case "animateatlas":
+          var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
+          var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
+
+          var clone:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
+          var subTexture:FlxAnimateFrames = clone.library;
+
+          log('Concatenating texture atlas: ${animation.assetPath}');
+          subTexture.parent.destroyOnNoUse = false;
+
+          textureList.push(subTexture);
+        default:
+          var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animation.assetPath);
+          // If we don't do this, the unused textures will be removed as soon as they're loaded.
+
+          if (subTexture == null)
+          {
+            log('Multi-Sparrow atlas could not load subtexture: ${animation.assetPath}');
+            FlxG.log.error('Multi-Sparrow atlas could not load subtexture: ${animation.assetPath}');
+            continue;
+          }
+          else
+          {
+            log('Concatenating multi-sparrow atlas: ${animation.assetPath}');
+            subTexture.parent.destroyOnNoUse = false;
+
+            // Only cache the texture if we don't have a texture atlas animation.
+            // Caching sparrows breaks mix-and-match and I wanna fix it at some point...
+            // TODO: Re-enable this line once a proper fix is found.
+            // - Abnormal
+            if (!hasTextureAtlas)
+            {
+              FunkinMemory.cacheTexture(Paths.image(animation.assetPath));
+            }
+          }
+
+          textureList.push(subTexture);
+      }
+
+      addedAssetPaths.push(animation.assetPath);
+    }
+
+    this.frames = FlxAnimateFrames.combineAtlas(textureList);
     this.setScale(_data.scale);
   }
 
-  function buildAnimations()
+  function buildAnimations():Void
   {
-    trace('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    log('[MULTISPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
 
     // We need to swap to the proper frame collection before adding the animations, I think?
     for (anim in _data.animations)
     {
-      FlxAnimationUtil.addAtlasAnimation(this, anim);
+      switch (anim.renderType)
+      {
+        case "animateatlas":
+          FlxAnimationUtil.addTextureAtlasAnimation(this, anim);
+        default:
+          FlxAnimationUtil.addAtlasAnimation(this, anim);
+      }
 
       if (anim.offsets == null)
       {
@@ -123,7 +164,12 @@ class MultiSparrowCharacter extends BaseCharacter
       }
     }
 
-    var animNames = this.animation.getNameList();
-    trace('[MULTISPARROWCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
+    var animationNames:Array<String> = this.animation.getNameList();
+    log('[MULTISPARROWCHAR] Successfully loaded ${animationNames.length} animations for ${characterId}');
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' MULTIATLASCHAR '.bold().bg_blue() + ' $message');
   }
 }

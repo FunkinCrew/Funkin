@@ -253,7 +253,8 @@ class GameOverSubState extends MusicBeatSubState
         }
         else
         {
-          boyfriend.playAnimation('firstDeath', true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
+          boyfriend.playAnimation('firstDeath' + animationSuffix, true,
+            false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
           // Play the "blue balled" sound. May play a variant if one has been assigned.
           playBlueBalledSFX();
         }

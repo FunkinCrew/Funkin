@@ -42,6 +42,22 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/characters/pico-dark/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/basic-animations/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/explosion-death/spritemap1.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/playable-animations/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
       "asset": "assets/shared/images/holdCoverBlue.png",
       "blocksize": "4x4"
     },
@@ -107,6 +123,10 @@
     },
     {
       "asset": "assets/week1/image/erect/lights.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/death/spritemap1.png",
       "blocksize": "6x6"
     },
     {
