@@ -19,6 +19,21 @@ import thx.semver.Version as SemverVersion;
 class FNFCUtil
 {
   /**
+   * Loads a song from
+   * @param fnfcPath The absolute file path to the .FNFC file to load.
+   */
+  public static function loadSongFromFNFCPath(fnfcPath:String):Song
+  {
+    var fileBytes = sys.io.File.getBytes(fnfcPath);
+    var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(fileBytes);
+    var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
+
+    var manifest:ChartManifestData = loadChartManifestFromFNFCZipEntries(mappedFileEntries);
+
+    return loadSongFromFNFCZipEntries(mappedFileEntries, manifest);
+  }
+
+  /**
    * Open a song's chart from a .FNFC file and play it in the Play State.
    * @param fnfcPath The absolute file path to the .FNFC file to load.
    * @param difficulty The difficulty level to play.
@@ -180,7 +195,7 @@ class FNFCUtil
     }
 
     // Combine into a Song object that can be played in PlayState.
-    var song = Song.buildRaw(songId, songMetadatas.values(), variationList, songChartDatas, false, false);
+    var song = Song.buildRaw(songId, songMetadatas.values(), Constants.DEFAULT_VARIATION, songChartDatas, false, false);
 
     return song;
   }

@@ -29,9 +29,9 @@ class DiscordClient
 
   private function new()
   {
-    trace('[DISCORD] Initializing event handlers...');
+    trace(' DISCORD '.bold().bg_blue() + ' Initializing event handlers...');
 
-    handlers = DiscordEventHandlers.create();
+    handlers = new DiscordEventHandlers();
 
     handlers.ready = cpp.Function.fromStaticFunction(onReady);
     handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
@@ -40,7 +40,7 @@ class DiscordClient
 
   public function init():Void
   {
-    trace('[DISCORD] Initializing connection...');
+    trace(' DISCORD '.bold().bg_blue() + ' Initializing connection...');
 
     if (!hasValidCredentials())
     {
@@ -50,7 +50,7 @@ class DiscordClient
 
     @:nullSafety(Off)
     {
-      Discord.Initialize(DISCORD_CLIENT_ID, cpp.RawPointer.addressOf(handlers), 1, "");
+      Discord.Initialize(DISCORD_CLIENT_ID, cpp.RawPointer.addressOf(handlers), false, "");
     }
 
     createDaemon();
@@ -79,26 +79,21 @@ class DiscordClient
       Discord.updateConnection();
       #end
 
-      Discord.runCallbacks();
+      Discord.RunCallbacks();
       Sys.sleep(2);
     }
   }
 
   public function shutdown():Void
   {
-    trace('[DISCORD] Shutting down...');
+    trace(' DISCORD '.bold().bg_blue() + ' Shutting down...');
 
-    Discord.shutdown();
+    Discord.Shutdown();
   }
 
   public function setPresence(params:DiscordClientPresenceParams):Void
   {
-    Discord.updatePresence(buildPresence(params));
-  }
-
-  function buildPresence(params:DiscordClientPresenceParams):DiscordRichPresence
-  {
-    var presence = DiscordRichPresence.create();
+    var presence:DiscordRichPresence = new DiscordRichPresence();
 
     // Presence should always be playing the game.
     presence.type = DiscordActivityType_Playing;
@@ -129,23 +124,23 @@ class DiscordClient
     // presence.startTimestamp = time - 10;
     // presence.endTimestamp = time + 30;
 
-    final button1:DiscordButton = DiscordButton.create();
+    final button1:DiscordButton = new DiscordButton();
     button1.label = "Play on Web";
     button1.url = Constants.URL_NEWGROUNDS;
     presence.buttons[0] = button1;
 
-    final button2:DiscordButton = DiscordButton.create();
+    final button2:DiscordButton = new DiscordButton();
     button2.label = "Download";
     button2.url = Constants.URL_ITCH;
     presence.buttons[1] = button2;
 
-    return presence;
+    Discord.UpdatePresence(cpp.RawConstPointer.addressOf(presence));
   }
 
   // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
   private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
   {
-    trace('[DISCORD] Client has connected!');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
 
     final username:String = request[0].username;
     final globalName:String = request[0].username;
@@ -153,22 +148,22 @@ class DiscordClient
 
     if (discriminator != null && discriminator != 0)
     {
-      trace('[DISCORD] User: ${username}#${discriminator} (${globalName})');
+      trace(' DISCORD '.bold().bg_blue() + ' User: ${username}#${discriminator} (${globalName})');
     }
     else
     {
-      trace('[DISCORD] User: @${username} (${globalName})');
+      trace(' DISCORD '.bold().bg_blue() + ' User: @${username} (${globalName})');
     }
   }
 
   private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
   {
-    trace('[DISCORD] Client has disconnected! ($errorCode) "${cast (message, String)}"');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has disconnected! ($errorCode) "${cast (message, String)}"');
   }
 
   private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
   {
-    trace('[DISCORD] Client has received an error! ($errorCode) "${cast (message, String)}"');
+    trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
   }
 
   // public var type(get, set):DiscordActivityType;

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.components.NumberStepper;
 import haxe.ui.components.TextField;
 import haxe.ui.components.DropDown;
@@ -67,3 +68,4 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
     stageLibraryDrop.selectedItem = stageEditorState.stageFolder;
   }
 }
+#end

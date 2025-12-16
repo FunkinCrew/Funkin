@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.song.importer.ChartManifestData;
@@ -187,7 +188,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       {
         chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, event.value,
           currentTimeChange.timeSignatureNum, currentTimeChange.timeSignatureDen));
-        inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${event.value} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${event.value} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
         tcDropdownItemRenderer.data = inputTimeChange.value;
       }
     };
@@ -202,7 +203,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       {
         chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, event.value, currentTimeChange.bpm,
           currentTimeChange.timeSignatureNum, currentTimeChange.timeSignatureDen));
-        inputTimeChange.value.text = '${event.value} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+        inputTimeChange.value.text = '${event.value} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
         tcDropdownItemRenderer.data = inputTimeChange.value;
       }
     };
@@ -216,7 +217,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, currentTimeChange.bpm,
         numerator, currentTimeChange.timeSignatureDen));
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${numerator}/${currentTimeChange.timeSignatureDen}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
 
@@ -229,13 +230,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
       chartEditorState.performCommand(new ModifyTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange.timeStamp, currentTimeChange.bpm,
         currentTimeChange.timeSignatureNum, denominator));
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${denominator}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
 
-    addTimeChange.onClick = function(_:UIEvent) {
-      var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
-      chartEditorState.performCommand(new AddNewTimeChangeCommand(inputTimeChange.selectedIndex, currentTimeChange?.timeStamp + inputTimeStamp.step));
+    createTimeChange.onClick = function(_:UIEvent) {
+      var currentTimeChangeIndex = chartEditorState.currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
+      chartEditorState.performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex,
+        chartEditorState.scrollPositionInMs + chartEditorState.playheadPositionInMs));
     }
 
     removeTimeChange.onClick = function(_:UIEvent) {
@@ -301,7 +303,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeStamp.value = currentTimeChange.timeStamp;
     if (updateDropdownText)
     {
-      inputTimeChange.value.text = '${currentTimeChange.timeStamp} : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
+      inputTimeChange.value.text = '${currentTimeChange.timeStamp} ms : BPM: ${currentTimeChange.bpm} in ${currentTimeChange.timeSignatureNum}/${currentTimeChange.timeSignatureDen}';
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
     return currentTimeChange;
@@ -387,3 +389,4 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     return new ChartEditorMetadataToolbox(chartEditorState);
   }
 }
+#end

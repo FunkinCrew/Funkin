@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.handlers;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
 import flixel.FlxSprite;
@@ -192,7 +193,7 @@ class AssetDataHandler
 
     for (daFrame in obj.frames.frames)
     {
-      xml += '  <SubTexture name="${daFrame.name}" x="${daFrame.frame.x}" y="${daFrame.frame.y}" width="${daFrame.frame.width}" height="${daFrame.frame.height}" frameX="${- daFrame.offset.x}" frameY="${- daFrame.offset.y}" frameWidth="${daFrame.sourceSize.x}" frameHeight="${daFrame.sourceSize.y}" flipX="${daFrame.flipX}" flipY="${daFrame.flipY}" rotated="${daFrame.angle == -90}"/>\n';
+      xml += ' <SubTexture name="${daFrame.name}" x="${daFrame.frame.x}" y="${daFrame.frame.y}" width="${daFrame.frame.width}" height="${daFrame.frame.height}" frameX="${- daFrame.offset.x}" frameY="${- daFrame.offset.y}" frameWidth="${daFrame.sourceSize.x}" frameHeight="${daFrame.sourceSize.y}" flipX="${daFrame.flipX}" flipY="${daFrame.flipY}" rotated="${daFrame.angle == -90}"/>\n';
     }
 
     xml += "</TextureAtlas>";
@@ -225,3 +226,4 @@ typedef StageEditorObjectData =
   var animData:String;
   var ?bitmap:BitmapData;
 }
+#end

@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.util.PlatformUtil;
 
 /**
@@ -64,3 +65,4 @@ class ChartEditorShortcutHandler
     return (PlatformUtil.isMacOS()) ? '⇧+${input}' : 'Shift+${input}';
   }
 }
+#end

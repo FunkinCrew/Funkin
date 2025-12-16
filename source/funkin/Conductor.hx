@@ -526,7 +526,7 @@ class Conductor
 
   /**
    * Can be called in-between frames, usually for input related things
-   * that can potentially get processed on exact milliseconds/timestmaps.
+   * that can potentially get processed on exact milliseconds/timestamps.
    * If you need song position, use `Conductor.instance.songPosition` instead
    * for use in update() related functions.
    * @param soundToCheck Which FlxSound object to check, defaults to FlxG.sound.music if no input

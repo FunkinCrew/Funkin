@@ -55,13 +55,19 @@ class SetHealthIconSongEvent extends SongEvent
     switch (data?.value?.char ?? 0)
     {
       case 0:
-        trace('Applying Player health icon via song event: ${healthIconData.id}');
-        PlayState.instance.iconP1.configure(healthIconData);
+        if (PlayState.instance.iconP1 != null)
+        {
+          trace('Applying Player health icon via song event: ${healthIconData.id}');
+          PlayState.instance.iconP1.configure(healthIconData);
+        }
       case 1:
-        trace('Applying Opponent health icon via song event: ${healthIconData.id}');
-        PlayState.instance.iconP2.configure(healthIconData);
+        if (PlayState.instance.iconP2 != null)
+        {
+          trace('Applying Opponent health icon via song event: ${healthIconData.id}');
+          PlayState.instance.iconP2.configure(healthIconData);
+        }
       default:
-        trace('[WARN] Unknown character index: ' + data.value.char);
+        trace(' WARNING '.bold().bg_yellow() + ' Unknown character index: ' + data.value.char);
     }
   }
 

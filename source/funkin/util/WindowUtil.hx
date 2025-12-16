@@ -96,20 +96,11 @@ class WindowUtil
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
   /**
-   * Has `initWindowEvents()` been called already?
-   * This is to prevent multiple instances of the same function.
-   */
-  private static var _initializedWindowEvents:Bool = false;
-
-  /**
    * Wires up FlxSignals that happen based on window activity.
    * For example, we can run a callback when the window is closed.
    */
   public static function initWindowEvents():Void
   {
-    if (_initializedWindowEvents) return; // Fix that annoying
-    // onUpdate is called every frame just before rendering.
-
     // onExit is called when the game window is closed.
     openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
       windowExit.dispatch(exitCode);
@@ -117,10 +108,12 @@ class WindowUtil
 
     #if (desktop || html5)
     openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
+      #if FEATURE_HAXEUI
       if (haxe.ui.focus.FocusManager.instance.focus != null)
       {
         return;
       }
+      #end
 
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
@@ -142,7 +135,6 @@ class WindowUtil
       }
     });
     #end
-    _initializedWindowEvents = true;
   }
 
   /**
@@ -162,7 +154,11 @@ class WindowUtil
   public static function showError(name:String, desc:String):Void
   {
     #if (windows && cpp)
-    funkin.external.windows.WinAPI.showError(desc, name);
+    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
+
+    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
+
+    funkin.external.windows.WinAPI.showError(handlePtr, desc, name);
     #else
     lime.app.Application.current.window.alert(desc, name);
     #end
@@ -176,7 +172,11 @@ class WindowUtil
   public static function showWarning(name:String, desc:String):Void
   {
     #if (windows && cpp)
-    funkin.external.windows.WinAPI.showWarning(desc, name);
+    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
+
+    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
+
+    funkin.external.windows.WinAPI.showWarning(handlePtr, desc, name);
     #else
     lime.app.Application.current.window.alert(desc, name);
     #end
@@ -190,23 +190,30 @@ class WindowUtil
   public static function showInformation(name:String, desc:String):Void
   {
     #if (windows && cpp)
-    funkin.external.windows.WinAPI.showInformation(desc, name);
+    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
+
+    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
+
+    funkin.external.windows.WinAPI.showInformation(handlePtr, desc, name);
     #else
     lime.app.Application.current.window.alert(desc, name);
     #end
   }
 
   /**
-   * Shows a question dialog with a question icon and OK/Cancel buttons.
-   * @param name The title of the dialog window.
-   * @param desc The question message to display.
+   * Sets the dark mode appearance for the specified window.
+   *
+   * @param window The window instance to modify.
+   * @param value Whether to enable (`true`) or disable (`false`) dark mode.
    */
-  public static function showQuestion(name:String, desc:String):Void
+  public static function setDarkMode(window:lime.ui.Window, value:Bool):Void
   {
     #if (windows && cpp)
-    funkin.external.windows.WinAPI.showQuestion(desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
+    final handleVal:Float = window.nativeHandle;
+
+    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
+
+    funkin.external.windows.WinAPI.setDarkMode(handlePtr, value);
     #end
   }
 

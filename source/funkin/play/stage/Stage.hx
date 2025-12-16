@@ -98,11 +98,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // Reset positions of characters.
     if (getBoyfriend() != null)
     {
-      getBoyfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.bf;
       var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
       getBoyfriend().setScale(finalScale);
+      getBoyfriend().resetCharacter(true);
+
       getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -112,21 +113,23 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
     if (getGirlfriend() != null)
     {
-      getGirlfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.gf;
       var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
       getGirlfriend().setScale(finalScale);
+      getGirlfriend().resetCharacter(true);
+
       getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
     if (getDad() != null)
     {
-      getDad().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.dad;
       var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
       getDad().setScale(finalScale);
+      getDad().resetCharacter(true);
+
       getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -161,13 +164,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
     for (dataProp in _data.props)
     {
-      trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
+      trace(' Placing prop: ${dataProp.name} (${dataProp.assetPath})');
 
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
 
       var propSprite:StageProp;
-      if (dataProp.danceEvery != 0)
+      if (dataProp.danceEvery != 0 || isAnimated)
       {
         propSprite = new Bopper(dataProp.danceEvery);
       }
@@ -183,6 +186,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         {
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
+          case 'animateatlas':
+            propSprite.loadTextureAtlas(dataProp.assetPath, _data.directory, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
@@ -215,7 +220,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        trace('    ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        trace('   ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 
@@ -268,6 +273,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
+        case 'animateatlas':
+          FlxAnimationUtil.addTextureAtlasAnimations(propSprite, dataProp.animations);
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
           if (Std.isOfType(propSprite, Bopper))
@@ -293,9 +300,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         }
       }
 
-      if (dataProp.startingAnimation != null)
+      if (dataProp.startingAnimation != null && propSprite is Bopper)
       {
-        propSprite.animation.play(dataProp.startingAnimation);
+        cast(propSprite, Bopper).playAnimation(dataProp.startingAnimation);
       }
 
       if (Std.isOfType(propSprite, BaseCharacter))
@@ -442,10 +449,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.x = stageCharData.position[0] - character.characterOrigin.x;
       character.y = stageCharData.position[1] - character.characterOrigin.y;
 
-      character.originalPosition.set(character.x, character.y);
-
       var finalScale = character.getBaseScale() * stageCharData.scale;
       character.setScale(finalScale); // Don't use scale.set for characters!
+      character.originalPosition.set(character.x, character.y);
+
+      // Reset the camera focus point to be based on the new original position.
+      character.resetCameraFocusPoint();
+
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 

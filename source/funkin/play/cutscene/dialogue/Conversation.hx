@@ -301,7 +301,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     }
     else
     {
-      trace('[WARNING] Unexpected state transition from ${this.state}');
+      trace(' WARNING '.bg_yellow().bold() + ' Unexpected state transition from ${this.state}');
       this.state = ConversationState.Idle;
     }
   }

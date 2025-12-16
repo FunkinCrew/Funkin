@@ -99,14 +99,14 @@ using funkin.data.song.migrator.SongDataMigrator;
         var entry:Null<Song> = createEntry(entryId);
         if (entry != null)
         {
-          trace('  Loaded entry data: ${entry}');
+          trace(' Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e:Dynamic)
       {
         // Print the error.
-        trace('  Failed to load entry data: ${entryId}');
+        trace(' Failed to load entry data: ${entryId}');
         trace(e);
         continue;
       }
@@ -127,6 +127,29 @@ using funkin.data.song.migrator.SongDataMigrator;
   public function parseEntryDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     return parseEntryMetadataRaw(contents);
+  }
+
+  public override function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
+  {
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+    if (variation != Constants.DEFAULT_VARIATION)
+    {
+      return scriptedSongVariations.exists('${id}:${variation}');
+    }
+    return super.isScriptedEntry(id, params);
+  }
+
+  public override function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
+  {
+    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
+    if (variation != Constants.DEFAULT_VARIATION)
+    {
+      final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
+      @:privateAccess
+      var path:String = variationSongId._asc._c.name;
+      return path;
+    }
+    return super.getScriptedEntryClassName(id, params);
   }
 
   /**
@@ -446,7 +469,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
-      trace('  [WARN] Could not locate file $entryFilePath');
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       return null;
     }
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
@@ -524,7 +547,7 @@ using funkin.data.song.migrator.SongDataMigrator;
 
     if (character == null)
     {
-      trace('  [WARN] Could not locate character $characterId');
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate character $characterId');
       return allDifficulties;
     }
 
@@ -542,7 +565,7 @@ using funkin.data.song.migrator.SongDataMigrator;
 
     if (allDifficulties.length == 0)
     {
-      trace('  [WARN] No difficulties found. Returning default difficulty list.');
+      trace('  WARNING '.bold().bg_yellow() + ' No difficulties found. Returning default difficulty list.');
       allDifficulties = Constants.DEFAULT_DIFFICULTY_LIST.copy();
     }
 

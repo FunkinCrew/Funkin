@@ -1,5 +1,6 @@
 package funkin.util;
 
+#if FEATURE_HAXEUI
 import haxe.ui.tooltips.ToolTipRegionOptions;
 
 @:nullSafety
@@ -16,3 +17,4 @@ class HaxeUIUtil
     }
   }
 }
+#end

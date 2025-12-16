@@ -8,10 +8,12 @@ import haxe.io.Path;
 import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
+#if FEATURE_HAXEUI
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
+#end
 
 using StringTools;
 
@@ -27,6 +29,7 @@ class FileUtil
   public static final FILE_FILTER_PNG:FileFilter = new FileFilter("PNG Image (.png)", "*.png");
   public static final FILE_FILTER_FNFS:FileFilter = new FileFilter("Friday Night Funkin' Stage (.fnfs)", "*.fnfs");
 
+  #if FEATURE_HAXEUI
   public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
     {
       extension: 'fnfc',
@@ -48,6 +51,7 @@ class FileUtil
       extension: 'fnfs',
       label: 'Friday Night Funkin\' Stage',
     };
+  #end
 
   /**
    * Paths which should not be deleted or modified by scripts.
@@ -106,6 +110,7 @@ class FileUtil
   }
   #end
 
+  #if FEATURE_HAXEUI
   /**
    * Browses for a single file, then calls `onSelect(fileInfo)` when a file is selected.
    * Powered by HaxeUI, so it works on all platforms.
@@ -171,6 +176,7 @@ class FileUtil
         title: dialogTitle,
       });
   }
+  #end
 
   /**
    * Browses for a directory, then calls `onSelect(path)` when a path chosen.
@@ -1174,8 +1180,18 @@ class FileUtil
     // thats why the above comment is there!
     Sys.command('open', [pathFolder]);
     #elseif linux
-    // TODO: implement linux
-    // some shit with xdg-open :thinking: emoji...
+    var exitCode = Sys.command("xdg-open", [pathFolder]);
+    if (exitCode == 0) return;
+    var fileManagers:Array<String> = ["dolphin", "nautilus", "nemo", "thunar", "caja", "konqueror", "spacefm", "pcmanfm"];
+
+    for (fm in fileManagers) {
+      if (Sys.command("which", [fm]) == 0) {
+        exitCode = Sys.command(fm, [pathFolder]);
+        if (exitCode == 0) return;
+      }
+    }
+
+    trace('No compatible file manager found for Linux.');
     #end
     #else
     throw 'External folder open is not supported on this platform.';
@@ -1201,8 +1217,9 @@ class FileUtil
     #elseif mac
     Sys.command('open', ['-R', path]);
     #elseif linux
-    // TODO: unsure of the linux equivalent to opening a folder and then "selecting" a file.
-    Sys.command('open', [path]);
+    trace('File selection not reliably supported on Linux, opening parent folder instead.');
+    path = Path.directory(path);
+    openFolder(path);
     #end
     #else
     throw 'External file selection is not supported on this platform.';
@@ -1325,6 +1342,7 @@ class FileUtilSandboxed
   public static final FILE_FILTER_ZIP:FileFilter = FileUtil.FILE_FILTER_ZIP;
   public static final FILE_FILTER_PNG:FileFilter = FileUtil.FILE_FILTER_PNG;
 
+  #if FEATURE_HAXEUI
   public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo = FileUtil.FILE_EXTENSION_INFO_FNFC;
   public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo = FileUtil.FILE_EXTENSION_INFO_ZIP;
   public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo = FileUtil.FILE_EXTENSION_INFO_PNG;
@@ -1340,6 +1358,7 @@ class FileUtilSandboxed
   {
     FileUtil.browseForTextFile(dialogTitle, typeFilter, onSelect, onCancel);
   }
+  #end
 
   public static function browseForDirectory(?typeFilter:Array<FileFilter>, onSelect:(String) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       ?dialogTitle:String):Bool

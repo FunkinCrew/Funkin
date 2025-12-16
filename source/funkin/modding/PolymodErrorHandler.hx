@@ -63,16 +63,16 @@ class PolymodErrorHandler
 
   static function logInfo(message:String):Void
   {
-    trace('[INFO-] ${message}');
+    trace(' INFO '.bg_blue().bold() + ' ${message}');
   }
 
   static function logError(message:String):Void
   {
-    trace('[ERROR] ${message}');
+    trace(' ERROR '.bg_red().bold() + ' ${message}');
   }
 
   static function logWarn(message:String):Void
   {
-    trace('[WARN-] ${message}');
+    trace(' WARNING '.bg_yellow().bold() + ' ${message}');
   }
 }

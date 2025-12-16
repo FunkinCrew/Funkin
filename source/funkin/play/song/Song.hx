@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          trace('  [WARN] Variation id "$vari" is invalid, skipping...');
+          trace('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -162,19 +162,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         if (variMeta != null)
         {
           _metadata.set(variMeta.variation, variMeta);
-          trace('  Loaded variation: $vari');
+          trace(' Loaded variation: $vari');
         }
         else
         {
           FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
-          trace('  FAILED to load variation: $vari');
+          trace(' FAILED to load variation: $vari');
         }
       }
     }
 
     if (_metadata.size() == 0)
     {
-      trace('[WARN] Could not find song data for songId: $id');
+      trace(' WARNING '.bold().bg_yellow() + ' Could not find song data for songId: $id');
       return;
     }
 
@@ -193,15 +193,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param validScore Whether the song is elegible for highscores.
    * @return The constructed song object.
    */
-  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
-      includeScript:Bool = true, validScore:Bool = false):Song
+  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variation:String, charts:Map<String, SongChartData>, includeScript:Bool = true,
+      validScore:Bool = false):Song
   {
     @:privateAccess
     var result:Null<Song> = null;
 
-    if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
+    if (includeScript && SongRegistry.instance.isScriptedEntry(songId, {variation: variation}))
     {
-      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId);
+      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId, {variation: variation});
       @:privateAccess
       if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.VBox;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
@@ -136,7 +137,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 
     objPosX.step = stageEditorState.moveStep;
     objPosY.step = stageEditorState.moveStep;
-    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep;
+    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
 
     if (linkedObj == null)
     {
@@ -293,3 +294,4 @@ private class ObjectTintView extends VBox
     dropdown.dispatch(event);
   }
 }
+#end

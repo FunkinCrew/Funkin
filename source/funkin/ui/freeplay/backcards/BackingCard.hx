@@ -6,13 +6,14 @@ import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSpriteUtil;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import openfl.display.BlendMode;
+import funkin.modding.events.ScriptEvent;
 import flixel.group.FlxSpriteGroup;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
+import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.BitmapUtil;
@@ -20,9 +21,9 @@ import funkin.util.BitmapUtil;
 /**
  * A class for the backing cards so they dont have to be part of freeplayState......
  */
-class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass
+class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
 {
-  public var backingTextYeah:FlxAtlasSprite;
+  public var backingTextYeah:FunkinSprite;
   public var orangeBackShit:FunkinSprite;
   public var alsoOrangeLOL:FunkinSprite;
   public var pinkBack:FunkinSprite;
@@ -56,15 +57,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
-    backingTextYeah = new FlxAtlasSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + 640, 370,
-      Paths.animateAtlas("freeplay/backing-text-yeah"), {
-        FrameRate: 24.0,
-        Reversed: false,
-        // ?OnComplete:Void -> Void,
-        ShowPivot: false,
-        Antialiasing: true,
-        ScrollFactor: new FlxPoint(1, 1),
-      });
+    backingTextYeah = FunkinSprite.createTextureAtlas((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320, 120, "freeplay/backing-text-yeah",);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
@@ -274,6 +267,36 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   public function onFocusLost(event:FocusScriptEvent):Void {}
 
   public function onFocusGained(event:FocusScriptEvent):Void {}
+
+  /**
+   * Called when a capsule is selected.
+   */
+  public function onCapsuleSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onDifficultySwitch(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when a song is selected.
+   */
+  public function onSongSelected(event:CapsuleScriptEvent):Void {}
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   */
+  public function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when the Freeplay outro begins.
+   */
+  public function onFreeplayOutro(event:FreeplayScriptEvent):Void {}
+
+  /**
+   * Called when Freeplay is closed.
+   */
+  public function onFreeplayClose(event:FreeplayScriptEvent):Void {}
 
   public function centerObjectOnCard(object:flixel.FlxObject)
   {
