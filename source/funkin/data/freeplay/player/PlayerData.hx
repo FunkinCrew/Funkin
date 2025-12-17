@@ -1,6 +1,7 @@
 package funkin.data.freeplay.player;
 
 import funkin.data.animation.AnimationData;
+import funkin.graphics.FunkinSprite;
 
 @:nullSafety
 class PlayerData
@@ -297,19 +298,114 @@ class PlayerCharSelectData
    */
   @:optional
   public var gf:PlayerCharSelectGFData;
+
+  /**
+   * The optional data for the character bopping in the character select menu.
+   */
+  @:optional
+  public var characterData:PlayerCharSelectCharacterData;
+
+  /**
+   * Return the array of default animations for the player character. Used for backwards compatibility with older versions.
+   */
+  public function getDefaultAnimations(gf:Bool = false):Array<AnimationData>
+  {
+    if (gf)
+    {
+      return [
+        {
+          name: "idle",
+          prefix: "idle",
+          looped: true
+        },
+        {
+          name: "confirm",
+          prefix: "confirm",
+          looped: true
+        },
+        {
+          name: "cancel",
+          prefix: "deselect"
+        }
+      ];
+    }
+
+    return [
+      {
+        name: "idle",
+        prefix: "idle",
+        looped: true
+      },
+      {
+        name: "unlock",
+        prefix: "unlock"
+      },
+      {
+        name: "slideOut-unlock",
+        prefix: "death"
+      },
+      {
+        name: "confirm",
+        prefix: "select"
+      },
+      {
+        name: "cancel",
+        prefix: "deselect"
+      },
+      {
+        name: "cancel-hold",
+        prefix: "deselect loop start"
+      },
+      {
+        name: "locked",
+        prefix: "cannot select"
+      },
+      {
+        name: "slideOut",
+        prefix: "slideout"
+      },
+      {
+        name: "slideIn",
+        prefix: "slidein"
+      }
+    ];
+  }
 }
 
 typedef PlayerCharSelectGFData =
 {
-  @:optional
-  public var assetPath:String;
+  > PlayerCharSelectCharacterData,
 
   @:optional
   public var animInfoPath:String;
+}
 
+typedef PlayerCharSelectCharacterData =
+{
+  /**
+   * Optional asset path for the character.
+   */
   @:optional
-  @:default(false)
-  public var visualizer:Bool;
+  var assetPath:String;
+
+  /**
+   * Optional render type for the character. Defaults to using texture atlases.
+   */
+  @:optional
+  @:default("animateatlas")
+  var renderType:String;
+
+  /**
+   * Optional script class to use for the character, allowing for custom behavior.
+   */
+  @:optional
+  var scriptClass:String;
+
+  /**
+   * Optional list of animations for the character.
+   */
+  @:optional
+  var animations:Array<AnimationData>;
 }
 
 typedef PlayerResultsData =
