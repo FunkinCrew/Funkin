@@ -458,8 +458,16 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      '${PlayState.instance?.deathCounter} Blue Balls');
+    if (PlayState.instance.deathCounter != 1)
+    {
+      metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+        '${PlayState.instance?.deathCounter} Deaths');
+    }
+    else
+    {
+      metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+        '${PlayState.instance?.deathCounter} Death');
+    }
     metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
@@ -944,10 +952,30 @@ class PauseSubState extends MusicBeatSubState
     }
     #end
 
+    var playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(PlayState.instance.currentChart.characters.player);
+    var playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
+
     switch (this.currentMode)
     {
       case Standard | Difficulty:
-        metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
+        if (PlayState.instance.deathCounter != 1)
+        {
+          metadataDeaths.text = '${PlayState.instance?.deathCounter} ${playerCharacter.getDeathName()}';
+        }
+        /**
+         * Singularize the character's type of death if the death count equals 1.
+         * Print singular death name only if using default plural death name (meaning singular death name is likely also default),
+         * or not using default singular death name (meaning plural death name is likely also not default).
+         */
+        else if (playerCharacter.getDeathName() == "Deaths" || playerCharacter.getDeathNameSingular() != "Death")
+        {
+          metadataDeaths.text = '${PlayState.instance?.deathCounter} ${playerCharacter.getDeathNameSingular()}';
+        }
+        // If using default singular death name, but custom plural death name, print the plural death name.
+        else
+        {
+          metadataDeaths.text = '${PlayState.instance?.deathCounter} ${playerCharacter.getDeathName()}';
+        }
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
       case Conversation:

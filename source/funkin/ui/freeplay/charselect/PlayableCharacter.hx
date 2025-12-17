@@ -69,6 +69,22 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     return false;
   }
 
+  /**
+   * Retrieve the name of the character's type of death.
+   */
+  public function getDeathName():String
+  {
+    return _data?.deathName ?? "Deaths";
+  }
+
+  /**
+   * Retrieve the name of the character's type of death in singular form.
+   */
+  public function getDeathNameSingular():String
+  {
+    return _data?.deathNameSingular ?? "Death";
+  }
+
   public function getStickerPackID():String
   {
     return _data?.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
