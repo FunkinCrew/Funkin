@@ -1993,7 +1993,7 @@ class PlayState extends MusicBeatSubState
     healthBar.parentVariable = 'healthLerp';
     healthBar.scrollFactor.set();
     healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.numDivisions = healthBar.width;
+    healthBar.numDivisions = Math.round(healthBar.width);
     healthBar.zIndex = 800;
     add(healthBar);
 
