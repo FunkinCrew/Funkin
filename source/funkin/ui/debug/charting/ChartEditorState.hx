@@ -5456,8 +5456,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarStepNum.text = 'Step: ${Conductor.instance.currentStep}';
 
     playbarNoteSnap.text = '1/${noteSnapQuant}';
-    playbarDifficulty.text = '${selectedDifficulty.toTitleCase()}${selectedVariation == Constants.DEFAULT_VARIATION ? '' : ' (${selectedVariation.toTitleCase()})'}';
-    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)} in ${Conductor.instance.timeSignatureNumerator}/${Conductor.instance.timeSignatureDenominator}';
+    var difftext:String = '${selectedDifficulty.toTitleCase()}${selectedVariation == Constants.DEFAULT_VARIATION ? '' : ' (${selectedVariation.toTitleCase()})'}';
+    if (difftext.length > 20) difftext = difftext.substring(0, 19) + '...';
+    playbarDifficulty.text = difftext;
+    playbarBPM.text = 'BPM: ${(Conductor.instance.bpm ?? 0.0)}${Conductor.instance.timeSignatureNumerator != Constants.DEFAULT_TIME_SIGNATURE_NUM
+        || Conductor.instance.timeSignatureDenominator != Constants.DEFAULT_TIME_SIGNATURE_DEN ? ' (${Conductor.instance.timeSignatureNumerator}/${Conductor.instance.timeSignatureDenominator})' : ''}';
   }
 
   function handlePlayhead():Void

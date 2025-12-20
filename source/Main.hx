@@ -5,8 +5,10 @@ import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
+import funkin.PlayerSettings;
 import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.save.Save;
 import haxe.ui.Toolkit;
 #if hxvlc
@@ -94,6 +96,9 @@ class Main extends Sprite
     // addChild gets called by the user settings code.
     debugDisplay = new FunkinDebugDisplay(10, 10, 0xFFFFFF);
 
+    // Add this signal so the player can toggle the debug display using a hotkey.
+    FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
+
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
@@ -170,6 +175,25 @@ class Main extends Sprite
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
     funkin.input.Cursor.registerHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
+  }
+
+  function handleDebugDisplayKeys():Void
+  {
+    if (PlayerSettings.player1.controls == null || !PlayerSettings.player1.controls.check(DEBUG_DISPLAY)) return;
+
+    var nextMode:DebugDisplayMode;
+
+    switch (Preferences.debugDisplay)
+    {
+      case DebugDisplayMode.Off:
+        nextMode = DebugDisplayMode.Simple;
+      case DebugDisplayMode.Simple:
+        nextMode = DebugDisplayMode.Advanced;
+      case DebugDisplayMode.Advanced:
+        nextMode = DebugDisplayMode.Off;
+    }
+
+    Preferences.debugDisplay = nextMode;
   }
 
   #if mobile

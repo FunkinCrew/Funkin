@@ -371,8 +371,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         testStrumline.setNoteSpacing(playerNoteSpacing);
         testStrumline.width *= 2;
 
+        var height = testStrumline.strumlineNotes.members[0].height;
+
         testStrumline.x = (FlxG.width - testStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
-        testStrumline.y = (FlxG.height - testStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
+        testStrumline.y = (FlxG.height - height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
         testStrumline.y -= 10;
       }
       else
@@ -850,7 +852,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     /*debugBeatText.x = receptor.x + receptor.width * 2;
         debugBeatText.y = receptor.y - 20;
-  
             debugBeatText.text = 'Beat: ' + b; */
 
     // receptor.angle += angleVel * elapsed;

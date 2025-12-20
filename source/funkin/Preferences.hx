@@ -502,7 +502,7 @@ class Preferences
     #end
   }
 
-  static function setDebugDisplayMode(mode:DebugDisplayMode):Void
+  public static function setDebugDisplayMode(mode:DebugDisplayMode):Void
   {
     if (FlxG.game.parent.contains(Main.debugDisplay)) FlxG.game.parent.removeChild(Main.debugDisplay);
 
