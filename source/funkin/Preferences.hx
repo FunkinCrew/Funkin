@@ -137,14 +137,14 @@ class Preferences
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * Always disabled on mobile.
+   * Always disabled on release mobile builds.
    * @default `Off`
    */
   public static var debugDisplay(get, set):DebugDisplayMode;
 
   static function get_debugDisplay():DebugDisplayMode
   {
-    #if mobile
+    #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
     #end
 
@@ -252,7 +252,7 @@ class Preferences
   static function get_autoPause():Bool
   {
     #if mobile
-    return true;
+    return false;
     #end
     return Save?.instance?.options?.autoPause ?? true;
   }
@@ -518,6 +518,25 @@ class Preferences
     if (Main.debugDisplay == null) return;
 
     Main.debugDisplay.backgroundOpacity = value;
+  }
+
+  /**
+   * If enabled, subtitles will appear during some songs and cutscenes.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    save.flush();
+    return value;
   }
 
   #if mobile

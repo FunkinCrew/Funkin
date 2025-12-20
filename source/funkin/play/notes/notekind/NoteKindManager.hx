@@ -65,12 +65,12 @@ class NoteKindManager
 
       if (kind != null)
       {
-        trace('  Loaded built-in note kind: ${kind.noteKind}');
+        trace(' Loaded built-in note kind: ${kind.noteKind}');
         noteKinds.set(kind.noteKind, kind);
       }
       else
       {
-        trace('  Failed to load built-in note kind: ${noteKindClsName}');
+        trace(' Failed to load built-in note kind: ${noteKindClsName}');
       }
     }
   }
@@ -91,7 +91,9 @@ class NoteKindManager
           var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
+          #if FEATURE_CHART_EDITOR
           ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
+          #end
         }
         catch (e)
         {

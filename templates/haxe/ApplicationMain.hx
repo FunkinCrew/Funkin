@@ -7,6 +7,8 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
+import hxgamemode.GamemodeClient;
+
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
 #end
@@ -55,6 +57,7 @@ class ApplicationMain
     {
       window.setIcon(new ApplicationIcon());
     });
+    GamemodeClient.request_start();
     #end
 
     #if !disable_preloader_assets
@@ -169,6 +172,10 @@ class ApplicationMain
 
     #if (sys && !ios && !nodejs && !emscripten)
     lime.system.System.exit(result);
+    #end
+
+    #if linux
+    GamemodeClient.request_end();
     #end
   }
 

@@ -3,6 +3,7 @@ package funkin.ui.transition.stickers;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.FlxCamera;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxSort;
@@ -45,6 +46,11 @@ class StickerSubState extends MusicBeatSubState
   public var grpStickers:FlxTypedGroup<StickerSprite>;
 
   /**
+   *  An OpenFL sprite that serves as a container for rendering stickers on top of the game.
+   */
+  public static var transitionSprite:Null<StickerTransitionSprite> = null;
+
+  /**
    * The state to switch to after the stickers are done.
    * This is a FUNCTION so we can pass it directly to `FlxG.switchState()`,
    * and we can add constructor parameters in the caller.
@@ -53,7 +59,6 @@ class StickerSubState extends MusicBeatSubState
 
   var stickerPackId:String;
   var stickerPack:StickerPack;
-
   // what "folders" to potentially load from (as of writing only "keys" exist)
   var soundSelections:Array<String> = [];
   // what "folder" was randomly selected
@@ -63,16 +68,12 @@ class StickerSubState extends MusicBeatSubState
   public function new(params:StickerSubStateParams):Void
   {
     super();
-
+    transitionSprite ??= new StickerTransitionSprite();
     // Define the target state, with a default fallback.
     this.targetState = params?.targetState ?? (sticker) -> FreeplayState.build(null, sticker);
-
     this.stickerPackId = params.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
-
     var targetStickerPack = StickerRegistry.instance.fetchEntry(this.stickerPackId);
-
     this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
-
     // TODO: Make this tied to the sticker pack more closely.
     var assetsInList = Assets.list();
     var soundFilterFunc = function(a:String) {
@@ -82,10 +83,7 @@ class StickerSubState extends MusicBeatSubState
     soundSelections = soundSelections.map(function(a:String) {
       return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
     });
-
     grpStickers = new FlxTypedGroup<StickerSprite>();
-    add(grpStickers);
-
     // cracked cleanup... yuchh...
     for (i in soundSelections)
     {
@@ -95,9 +93,7 @@ class StickerSubState extends MusicBeatSubState
       }
       soundSelections.push(i);
     }
-
     soundSelection = FlxG.random.getObject(soundSelections);
-
     var filterFunc = function(a:String) {
       return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
     };
@@ -108,18 +104,10 @@ class StickerSubState extends MusicBeatSubState
       sounds[i] = sounds[i].replace('assets/shared/sounds/', '');
       sounds[i] = sounds[i].substring(0, sounds[i].lastIndexOf('.'));
     }
-
-    // makes the stickers on the most recent camera, which is more often than not... a UI camera!!
-    // grpStickers.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-    grpStickers.cameras = FlxG.cameras.list;
-
     if (params.oldStickers != null)
     {
       for (sticker in params.oldStickers)
-      {
         grpStickers.add(sticker);
-      }
-
       degenStickers();
     }
     else
@@ -130,33 +118,22 @@ class StickerSubState extends MusicBeatSubState
 
   public function degenStickers():Void
   {
-    grpStickers.cameras = FlxG.cameras.list;
-
-    /*
-      if (dipshit != null)
-      {
-        FlxG.removeChild(dipshit);
-        dipshit = null;
-      }
-     */
-
     if (grpStickers.members == null || grpStickers.members.length == 0)
     {
       switchingState = false;
       close();
       return;
     }
-
+    transitionSprite?.insert();
+    transitionSprite?.setupStickers(grpStickers);
     for (ind => sticker in grpStickers.members)
     {
       new FlxTimer().start(sticker.timing, _ -> {
         sticker.visible = false;
         var daSound:String = FlxG.random.getObject(sounds);
         FunkinSound.playOnce(Paths.sound(daSound));
-
         // Do the small vibration each time sticker disappears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
-
         if (grpStickers == null || ind == grpStickers.members.length - 1)
         {
           switchingState = false;
@@ -169,10 +146,8 @@ class StickerSubState extends MusicBeatSubState
 
   function regenStickers():Void
   {
-    if (grpStickers.members.length > 0)
-    {
-      grpStickers.clear();
-    }
+    transitionSprite?.insert();
+    if (grpStickers.members.length > 0) grpStickers.clear();
 
     // Initialize stickers at each point on the screen, then shuffle up the order they will get placed.
     // This ensures stickers consistently cover the screen.
@@ -183,11 +158,9 @@ class StickerSubState extends MusicBeatSubState
       var stickerPath:String = stickerPack.getRandomStickerPath(false);
       var sticky:StickerSprite = new StickerSprite(0, 0, stickerPath);
       sticky.visible = false;
-
       sticky.x = xPos;
       sticky.y = yPos;
       xPos += sticky.frameWidth * 0.5;
-
       if (xPos >= FlxG.width)
       {
         if (yPos <= FlxG.height)
@@ -196,77 +169,52 @@ class StickerSubState extends MusicBeatSubState
           yPos += FlxG.random.float(70, 120);
         }
       }
-
       sticky.angle = FlxG.random.int(-60, 70);
       grpStickers.add(sticky);
     }
-
     FlxG.random.shuffle(grpStickers.members);
-
     // Creates a new sticker for the very center.
-    var lastStickerPath:String = stickerPack.getRandomStickerPath(true);
+    final lastStickerPath:String = stickerPack.getRandomStickerPath(true);
     var lastSticker:StickerSprite = new StickerSprite(0, 0, lastStickerPath);
     lastSticker.visible = false;
     lastSticker.updateHitbox();
     lastSticker.angle = 0;
     lastSticker.screenCenter();
     grpStickers.add(lastSticker);
-
+    transitionSprite?.setupStickers(grpStickers);
     // another damn for loop... apologies!!!
     for (ind => sticker in grpStickers.members)
     {
       sticker.timing = FlxMath.remapToRange(ind, 0, grpStickers.members.length, 0, 0.9);
-
       new FlxTimer().start(sticker.timing, _ -> {
         if (grpStickers == null) return;
-
         sticker.visible = true;
         var daSound:String = FlxG.random.getObject(sounds);
         FunkinSound.playOnce(Paths.sound(daSound));
-
         // Do the small vibration each time sticker appears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
-
         var frameTimer:Int = FlxG.random.int(0, 2);
-
         // always make the last one POP
         if (ind == grpStickers.members.length - 1) frameTimer = 2;
-
         new FlxTimer().start((1 / 24) * frameTimer, _ -> {
           if (sticker == null) return;
-
           sticker.scale.x = sticker.scale.y = FlxG.random.float(0.97, 1.02);
-
           if (ind == grpStickers.members.length - 1)
           {
             switchingState = true;
-
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
-
-            // I think this grabs the screen and puts it under the stickers?
-            // Leaving this commented out rather than stripping it out because it's cool...
-            /*
-              dipshit = new Sprite();
-              var scrn:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
-              var mat:Matrix = new Matrix();
-              scrn.draw(grpStickers.cameras[0].canvas, mat);
-
-              var bitmap:Bitmap = new Bitmap(scrn);
-
-              dipshit.addChild(bitmap);
-              // FlxG.addChildBelowMouse(dipshit);
-             */
-            FlxG.signals.preStateSwitch.addOnce(function() {
-              #if ios
-              trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
-              else
-                funkin.FunkinMemory.purgeCache();
-              #else
-              funkin.FunkinMemory.purgeCache(true);
-              #end
-            });
+            FlxG.signals.preStateSwitch.addOnce(() ->
+              {
+                #if ios
+                trace(DeviceUtil.iPhoneNumber);
+                if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+                else
+                  funkin.FunkinMemory.purgeCache();
+                #else
+                funkin.FunkinMemory.purgeCache(true);
+                #end
+              });
             FlxG.switchState(() -> {
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
@@ -278,15 +226,20 @@ class StickerSubState extends MusicBeatSubState
         });
       });
     }
-
     grpStickers.sort((ord, a, b) -> {
       return FlxSort.byValues(ord, a.timing, b.timing);
     });
   }
 
+  override public function onResize(width:Int, height:Int):Void
+  {
+    transitionSprite?.onResize();
+  }
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    transitionSprite?.update(elapsed);
   }
 
   var switchingState:Bool = false;
@@ -294,12 +247,83 @@ class StickerSubState extends MusicBeatSubState
   override public function close():Void
   {
     if (switchingState) return;
+    transitionSprite?.clear();
     super.close();
   }
 
   override public function destroy():Void
   {
+    transitionSprite?.clear();
     if (switchingState) return;
     super.destroy();
+  }
+}
+
+@:access(flixel.FlxCamera)
+class StickerTransitionSprite extends openfl.display.Sprite
+{
+  public var stickersCamera:FlxCamera;
+  public var grpStickers:FlxTypedGroup<StickerSprite>;
+
+  public function new():Void
+  {
+    super();
+    visible = false;
+    stickersCamera = new FlxCamera();
+    stickersCamera.bgColor = 0x00000000;
+    addChild(stickersCamera.flashSprite);
+    FlxG.signals.gameResized.add((_, _) -> this.onResize());
+    scrollRect = new openfl.geom.Rectangle();
+    onResize();
+  }
+
+  public function update(elapsed:Float):Void
+  {
+    stickersCamera.visible = visible;
+    if (!visible) return;
+    grpStickers?.update(elapsed);
+    stickersCamera.update(elapsed);
+
+    stickersCamera?.clearDrawStack();
+    stickersCamera?.canvas?.graphics.clear();
+
+    grpStickers?.draw();
+
+    stickersCamera.render();
+  }
+
+  public function insert():Void
+  {
+    FlxG.addChildBelowMouse(this, 9999);
+    visible = true;
+    onResize();
+  }
+
+  public function clear():Void
+  {
+    FlxG.removeChild(this);
+    visible = false;
+    grpStickers = null;
+    stickersCamera?.clearDrawStack();
+    stickersCamera?.canvas?.graphics.clear();
+  }
+
+  public function onResize():Void
+  {
+    x = y = 0;
+    scaleX = 1;
+    scaleY = 1;
+
+    // Adjusting camera and container cropping to the game resolution
+    __scrollRect.setTo(0, 0, FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y);
+
+    stickersCamera.onResize();
+    stickersCamera._scrollRect.scrollRect = scrollRect;
+  }
+
+  public function setupStickers(group:FlxTypedGroup<StickerSprite>):Void
+  {
+    grpStickers = group;
+    grpStickers.camera = stickersCamera;
   }
 }

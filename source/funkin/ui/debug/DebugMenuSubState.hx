@@ -72,8 +72,10 @@ class DebugMenuSubState extends MusicBeatSubState
     onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
 
+    #if FEATURE_HAXEUI
     // Remove the "user" stylesheet to prevent components using incorrect style data when entering an editor.
     haxe.ui.Toolkit.styleSheet.clear("user");
+    #end
   }
 
   function onMenuChange(selected:TextMenuItem)
@@ -100,23 +102,27 @@ class DebugMenuSubState extends MusicBeatSubState
     return item;
   }
 
+  #if FEATURE_CHART_EDITOR
   function openChartEditor():Void
   {
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
   }
+  #end
 
   function openCharSelect():Void
   {
     FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState());
   }
 
+  #if FEATURE_ANIMATION_EDITOR
   function openAnimationEditor():Void
   {
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
+  #end
 
   function testStickers():Void
   {
@@ -124,16 +130,20 @@ class DebugMenuSubState extends MusicBeatSubState
     trace('opened stickers');
   }
 
+  #if FEATURE_STAGE_EDITOR
   function openStageEditor():Void
   {
     trace('Stage Editor');
     FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
   }
+  #end
 
+  #if FEATURE_RESULTS_DEBUG
   function openTestResultsScreen():Void
   {
     FlxG.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState());
   }
+  #end
 
   #if sys
   function openLogFolder()

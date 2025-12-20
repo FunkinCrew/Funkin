@@ -5,9 +5,10 @@ import openfl.filters.DropShadowFilter;
 import openfl.filters.ConvolutionFilter;
 import funkin.graphics.shaders.StrokeShader;
 
+@:nullSafety
 class CharIconCharacter extends CharIcon
 {
-  public var dropShadowFilter:DropShadowFilter;
+  // public var dropShadowFilter:DropShadowFilter;
 
   var matrixFilter:Array<Float> = [
     1, 1, 1,
@@ -17,12 +18,12 @@ class CharIconCharacter extends CharIcon
 
   var divisor:Int = 1;
   var bias:Int = 0;
-  var convolutionFilter:ConvolutionFilter;
+  // var convolutionFilter:ConvolutionFilter;
 
-  public var noDropShadow:BitmapData;
-  public var withDropShadow:BitmapData;
+  // public var noDropShadow:BitmapData;
+  // public var withDropShadow:BitmapData;
 
-  var strokeShader:StrokeShader;
+  // var strokeShader:StrokeShader;
 
   public function new(path:String)
   {
@@ -33,7 +34,7 @@ class CharIconCharacter extends CharIcon
     updateHitbox();
     antialiasing = false;
 
-    strokeShader = new StrokeShader();
+    // strokeShader = new StrokeShader();
     // shader = strokeShader;
 
     // noDropShadow = pixels.clone();

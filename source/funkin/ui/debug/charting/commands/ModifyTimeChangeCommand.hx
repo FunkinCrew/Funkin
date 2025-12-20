@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
@@ -120,6 +121,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
 
   public function toString():String
   {
-    return 'TimeChange ${timeChangeIndex}: ${targetTimeStamp} : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';
+    return 'TimeChange ${timeChangeIndex}: ${targetTimeStamp} ms : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';
   }
 }
+#end

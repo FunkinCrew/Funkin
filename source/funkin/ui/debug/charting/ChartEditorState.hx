@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxSliceSprite;
 import flixel.addons.display.FlxTiledSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -39,13 +40,16 @@ import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.event.SongEvent;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
+import funkin.play.components.Subtitles;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -639,6 +643,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var showNoteKindIndicators:Bool = false;
 
   /**
+   * Toggles the subtitles.
+   */
+  var showSubtitles(default, set):Bool = false;
+
+  function set_showSubtitles(value:Bool):Bool
+  {
+    showSubtitles = value;
+
+    if (subtitles != null)
+    {
+      subtitles.exists = showSubtitles;
+    }
+
+    return showSubtitles;
+  }
+
+  /**
    * The current theme used by the editor.
    * Dictates the appearance of many UI elements.
    * Currently hardcoded to just Light and Dark.
@@ -697,7 +718,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by ChartEditorDialogHandler, used to prevent background interaction while the dialog is open.
+   * Set by ChartEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
 
@@ -1914,6 +1935,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewIndicators:MenuCheckBox;
 
   /**
+   * The `View -> Subtitles` menu item.
+   */
+  var menubarItemViewSubtitles:MenuCheckBox;
+
+  /**
    * The `View -> Increase Difficulty` menu item.
    */
   var menubarItemDifficultyUp:MenuItem;
@@ -2225,6 +2251,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menuBG:Null<FlxSprite> = null;
 
   /**
+   * The subtitles to display song's lyrics.
+   */
+  var subtitles:Null<Subtitles> = null;
+
+  /**
    * The sprite group containing the note graphics.
    * Only displays a subset of the data from `currentSongChartNoteData`,
    * and kills notes that are off-screen to be recycled later.
@@ -2301,6 +2332,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  public override function reloadAssets()
+  {
+    // If PlayState isn't open, do a regular reload.
+    if (!Std.isOfType(this.subState, PlayState))
+    {
+      super.reloadAssets();
+      return;
+    }
+
+    funkin.modding.PolymodHandler.forceReloadAssets();
+
+    // Create a new instance of the current substate, so old data is cleared.
+    this.resetSubState();
+
+    @:privateAccess
+    testSongInPlayState(PlayState.lastParams.minimalMode);
+  }
+
   override function create():Void
   {
     // super.create() must be called first, the HaxeUI components get created here.
@@ -2335,6 +2384,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buildAdditionalUI();
     populateOpenRecentMenu();
     this.applyPlatformShortcutText();
+
+    createSubtitles();
 
     // Setup the onClick listeners for the UI after it's been created.
     setupUIListeners();
@@ -2377,6 +2428,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
       this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
+
+      // Set the scroll position to the current song time.
+      scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
+      currentScrollEase = scrollPositionInPixels;
+      moveSongToScrollPosition();
     }
     else
     {
@@ -2428,6 +2484,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentLiveInputStyle = save.chartEditorLiveInputStyle;
     isViewDownscroll = save.chartEditorDownscroll;
     showNoteKindIndicators = save.chartEditorShowNoteKinds;
+    showSubtitles = save.chartEditorShowSubtitles;
     playtestStartTime = save.chartEditorPlaytestStartTime;
     currentTheme = save.chartEditorTheme;
     metronomeVolume = save.chartEditorMetronomeVolume;
@@ -2595,21 +2652,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridGhostNote.noteData = new SongNoteData(0, 0, 0, "", []);
     gridGhostNote.visible = false;
     add(gridGhostNote);
-    gridGhostNote.zIndex = 11;
+    gridGhostNote.zIndex = 21;
 
     gridGhostHoldNote = new ChartEditorHoldNoteSprite(this);
     gridGhostHoldNote.alpha = 0.6;
     gridGhostHoldNote.noteData = null;
     gridGhostHoldNote.visible = false;
     add(gridGhostHoldNote);
-    gridGhostHoldNote.zIndex = 11;
+    gridGhostHoldNote.zIndex = 21;
 
     gridGhostEvent = new ChartEditorEventSprite(this, true);
     gridGhostEvent.alpha = 0.6;
     gridGhostEvent.eventData = new SongEventData(-1, '', {});
     gridGhostEvent.visible = false;
     add(gridGhostEvent);
-    gridGhostEvent.zIndex = 12;
+    gridGhostEvent.zIndex = 22;
 
     buildNoteGroup();
 
@@ -2645,6 +2702,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconBF.zIndex = 30;
 
     add(audioWaveforms);
+  }
+
+  function createSubtitles():Void
+  {
+    subtitles = new Subtitles(0, 78);
+    subtitles.zIndex = 100;
+    subtitles.cameras = [uiCamera];
+    add(subtitles);
   }
 
   function buildMeasureTicks():Void
@@ -2758,7 +2823,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewViewport == null)
     {
-      trace('[WARN] Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      trace(' WARNING '.bold().bg_yellow() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
       return;
     }
 
@@ -3051,7 +3116,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     };
     menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
-    menubarItemExit.onClick = _ -> quitChartEditor();
+    menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
     menubarItemUndo.onClick = _ -> undoLastCommand();
@@ -3171,6 +3236,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemViewIndicators.onClick = event -> showNoteKindIndicators = menubarItemViewIndicators.selected;
     menubarItemViewIndicators.selected = showNoteKindIndicators;
+
+    menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
+    menubarItemViewSubtitles.selected = showSubtitles;
 
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
@@ -3534,7 +3602,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
-    Cursor.show();
+    if (this.subState == null) Cursor.show();
 
     return true;
   }
@@ -3825,10 +3893,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       for (eventData in currentSongChartEventData)
       {
         // Remember if we are already displaying this event.
-        if (displayedEventData.indexOf(eventData) != -1)
-        {
-          continue;
-        }
+        if (displayedEventData.indexOf(eventData) != -1) continue;
 
         if (!ChartEditorEventSprite.wouldEventBeVisible(viewAreaBottomPixels, viewAreaTopPixels, eventData, renderedNotes)) continue;
 
@@ -3840,6 +3905,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this), false, true);
         eventSprite.parentState = this;
         trace('Creating new Event... (${renderedEvents.members.length})');
+
+        if (eventData?.value != null && (eventData?.value?.ease != null && eventData?.value?.easeDir == null))
+        {
+          eventData.value = migrateEventEaseDirectionFields(eventData.value);
+        }
 
         // The event sprite handles animation playback and positioning.
         eventSprite.eventData = eventData;
@@ -4070,6 +4140,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Sort the events DESCENDING. This keeps the sustain behind the associated note.
       renderedEvents.sort(FlxSort.byY, FlxSort.DESCENDING); // TODO: .group.insertionSort()
     }
+  }
+
+  /**
+   * Migrates old event data with ease and without easeDir fields, so we split them into ease and easeDir here.
+   */
+  function migrateEventEaseDirectionFields(eventValues:Dynamic):Dynamic
+  {
+    if (eventValues.ease != null && SongEvent.EASE_TYPE_DIR_REGEX.match(eventValues.ease))
+    {
+      eventValues.ease = SongEvent.EASE_TYPE_DIR_REGEX.matchedLeft();
+      eventValues.easeDir = SongEvent.EASE_TYPE_DIR_REGEX.matched(0);
+    }
+    return eventValues;
   }
 
   /**
@@ -5554,7 +5637,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       ghost.alpha = 0.6;
       ghost.noteData = null;
       ghost.visible = false;
-      ghost.zIndex = 11;
+      ghost.zIndex = 21;
       add(ghost); // Don't add to `renderedHoldNotes` because then it will get killed every frame.
 
       gridPlayheadGhostHoldNotes.push(ghost);
@@ -5750,18 +5833,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // CTRL + Q = Quit to Menu
     if (pressingControl() && FlxG.keys.justPressed.Q)
     {
-      quitChartEditor();
+      quitChartEditor(true);
     }
   }
 
   @:nullSafety(Off)
-  function quitChartEditor():Void
+  function quitChartEditor(exitPrompt:Bool = false):Void
   {
-    if (saveDataDirty)
+    if (saveDataDirty && exitPrompt)
     {
       this.openLeaveConfirmationDialog();
       return;
     }
+
+    autoSave();
 
     this.hideAllToolboxes();
 
@@ -6123,6 +6208,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
+    PlayStatePlaylist.reset();
+
     // TODO: Rework asset system so we can remove this jank.
     switch (currentSongStage)
     {
@@ -6178,6 +6265,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.persistentUpdate = false;
     this.persistentDraw = false;
     stopWelcomeMusic();
+
+    Cursor.hide();
 
     LoadingState.loadPlayState(targetStateParams, false, true, function(targetState) {
       targetState.vocals = audioVocalTrackGroup;
@@ -6563,7 +6652,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       displayAutosavePopup = false;
       #if sys
-      Toolkit.callLater(() -> {
+      haxe.ui.Toolkit.callLater(() -> {
         var absoluteBackupsPath:String = Path.join([Sys.getCwd(), ChartEditorImportExportHandler.BACKUPS_PATH]);
         this.infoWithActions('Auto-Save', 'Chart auto-saved to ${absoluteBackupsPath}.', [
           {
@@ -6580,6 +6669,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     moveSongToScrollPosition();
 
     fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+
+    Cursor.show();
 
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
@@ -6615,7 +6706,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     var oldTimeSignatureNum:Int = Conductor.instance.timeSignatureNumerator;
     var oldTimeSignatureDen:Int = Conductor.instance.timeSignatureDenominator;
-    Conductor.instance.update(audioInstTrack.time);
+    Conductor.instance.update(audioInstTrack.time, false);
     if (Conductor.instance.timeSignatureNumerator != oldTimeSignatureNum
       || Conductor.instance.timeSignatureDenominator != oldTimeSignatureDen)
     {
@@ -6836,6 +6927,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     healthIconsDirty = true;
   }
 
+  public function loadSubtitles():Void
+  {
+    var subtitlesFile:String = 'songs/${currentSongId}/subtitles/song-lyrics';
+    if (selectedVariation != Constants.DEFAULT_VARIATION)
+    {
+      subtitlesFile += '-${selectedVariation}';
+    }
+    subtitles.assignSubtitles(subtitlesFile, audioInstTrack);
+  }
+
   public function postLoadVocals():Void
   {
     // Reapply the volume and playback rate.
@@ -7009,6 +7110,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return params;
   }
 }
+#end
 
 /**
  * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
@@ -7052,6 +7154,11 @@ typedef ChartEditorParams =
    * If non-null, load this variation immediately instead of the default variation.
    */
   var ?targetSongVariation:String;
+
+  /**
+   * If non-null, set this as the song position immediately instead of the default song position.
+   */
+  var ?targetSongPosition:Float;
 };
 
 /**

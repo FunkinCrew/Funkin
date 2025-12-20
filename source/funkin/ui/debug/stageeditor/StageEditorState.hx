@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import openfl.display.BitmapData;
@@ -39,7 +40,7 @@ import haxe.ui.containers.windows.WindowList;
 import haxe.ui.containers.windows.WindowManager;
 import flixel.FlxObject;
 import haxe.ui.components.Label;
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
+import funkin.ui.debug.GraphicCursorCross;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.core.Screen;
 import funkin.util.WindowUtil;
@@ -59,7 +60,7 @@ class StageEditorState extends UIState
 {
   // i aint documenting allat
   // the uh finals
-  public static final BACKUPS_PATH:String = "./stagebackups/";
+  public static final BACKUPS_PATH:String = "./backups/stages/";
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
   public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
 
@@ -201,21 +202,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
-        FileUtil.createDirIfNotExists(BACKUPS_PATH);
-
-        var data = this.packShitToZip();
-        var path = haxe.io.Path.join([
-          BACKUPS_PATH,
-          'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
-        ]);
-
-        FileUtil.writeBytesToPath(path, data);
-        saved = true;
-
-        Save.instance.stageEditorHasBackup = true;
-        Save.instance.flush();
-
-        notifyChange("Auto-Save", "A Backup of this Stage has been made.");
+        saveBackup();
       });
     }
 
@@ -498,18 +485,35 @@ class StageEditorState extends UIState
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
         var files = sys.FileSystem.readDirectory(BACKUPS_PATH);
-
+        var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          // ensures that the top most file is a backup
-          files.sort(funkin.util.SortUtil.alphabetically);
-
           while (!files[files.length - 1].endsWith(FileUtil.FILE_EXTENSION_INFO_FNFS.extension)
             || !files[files.length - 1].startsWith("stage-editor-"))
+          {
+            if (files.length == 0) break;
             files.pop();
+          }
         }
 
-        if (files.length != 0) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, files[files.length - 1]])).showDialog(true);
+        var latestBackupPath:Null<String> = files[0];
+
+        for (file in files)
+        {
+          filestats.push(sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, file])));
+        }
+
+        var latestFileIndex:Int = 0;
+        for (index in 0...filestats.length)
+        {
+          if (filestats[latestFileIndex].mtime.getTime() < filestats[index].mtime.getTime())
+          {
+            latestFileIndex = index;
+            latestBackupPath = files[index];
+          }
+        }
+
+        if (latestBackupPath != null) new BackupAvailableDialog(this, haxe.io.Path.join([BACKUPS_PATH, latestBackupPath])).showDialog(true);
       }
       #end
     }
@@ -827,7 +831,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      autoSaveTimer.onComplete(autoSaveTimer);
+      saveBackup();
     }
   }
 
@@ -838,7 +842,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      autoSaveTimer.onComplete(autoSaveTimer);
+      saveBackup();
     }
   }
 
@@ -1264,7 +1268,7 @@ class StageEditorState extends UIState
                 exitConfirmDialog = null;
                 if (btn == DialogButton.YES)
                 {
-                  saved = true;
+                  saveBackup();
                   onMenuItemClick("exit");
                 }
             });
@@ -1469,6 +1473,25 @@ class StageEditorState extends UIState
     }
   }
 
+  function saveBackup()
+  {
+    FileUtil.createDirIfNotExists(BACKUPS_PATH);
+
+    var data = this.packShitToZip();
+    var path = haxe.io.Path.join([
+      BACKUPS_PATH,
+      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
+    ]);
+
+    FileUtil.writeBytesToPath(path, data);
+    saved = true;
+
+    Save.instance.stageEditorHasBackup = true;
+    Save.instance.flush();
+
+    notifyChange("Auto-Save", "A Backup of this Stage has been made.");
+  }
+
   public function clearAssets()
   {
     selectedSprite = null;
@@ -1543,6 +1566,7 @@ class StageEditorState extends UIState
     loadUrlDialog.showDialog();
   }
 }
+#end
 
 /**
  * Available themes for the stage editor state.

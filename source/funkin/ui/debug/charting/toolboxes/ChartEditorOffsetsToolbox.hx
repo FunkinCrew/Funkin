@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import funkin.audio.SoundGroup;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
@@ -841,3 +842,4 @@ enum Waveform
   OPPONENT;
   INSTRUMENTAL;
 }
+#end

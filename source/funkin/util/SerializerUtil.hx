@@ -34,7 +34,7 @@ class SerializerUtil
    */
   public static function fromJSON(input:String):Dynamic
   {
-    input = input.substring(input.indexOf("{"), input.lastIndexOf("}") + 1);
+    input = sanitizeJSON(input);
 
     try
     {
@@ -90,5 +90,29 @@ class SerializerUtil
     // TODO: Merge fix for version.hasBuild
     if (value.build.length > 0) result += '+${value.build}';
     return result;
+  }
+
+  /**
+   * Trims garbage data that may accompany JSON strings converted from bytes.
+   */
+  static function sanitizeJSON(data:String):String
+  {
+    var startIndex:Int = -1;
+    var closeChar:String = '';
+    for (i => c in data)
+    {
+      if (c == '{'.code || c == '['.code)
+      {
+        startIndex = i;
+        closeChar = (c == '{'.code) ? '}' : ']';
+        break;
+      }
+    }
+    if (startIndex == -1) return data;
+
+    var endIndex = data.lastIndexOf(closeChar);
+    if (endIndex == -1) endIndex = data.length - 1;
+
+    return data.substring(startIndex, endIndex + 1);
   }
 }

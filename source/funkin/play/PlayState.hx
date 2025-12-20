@@ -38,6 +38,7 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
+import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
@@ -382,7 +383,11 @@ class PlayState extends MusicBeatSubState
 
   function get_isChartingMode():Bool
   {
+    #if FEATURE_CHART_EDITOR
     return this._parentState != null && Std.isOfType(this._parentState, ChartEditorState);
+    #else
+    return false;
+    #end
   }
 
   /**
@@ -509,6 +514,11 @@ class PlayState extends MusicBeatSubState
   public var healthBarBG:FunkinSprite;
 
   /**
+   * A sprite group for subtitle display.
+   */
+  public var subtitles:Null<Subtitles>;
+
+  /**
    * The health icon representing the player.
    */
   public var iconP1:Null<HealthIcon>;
@@ -570,7 +580,7 @@ class PlayState extends MusicBeatSubState
   public var debugUnbindCameraZoom:Bool = false;
 
   /**
-   * The camera which contains, and controls visibility of, a video cutscene, dialogue, pause menu and sticker transition.
+   * The camera which contains, and controls visibility of, a video cutscene, dialogue.
    */
   public var camCutscene:FlxCamera;
 
@@ -578,6 +588,16 @@ class PlayState extends MusicBeatSubState
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
   public var camCutouts:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of, the subtitles.
+   */
+  public var camSubtitles:FlxCamera;
+
+  /**
+   * The camera which contains, and controls visibility of, pause menu.
+   */
+  public var camPause:FlxCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -741,6 +761,8 @@ class PlayState extends MusicBeatSubState
     camHUD = new FlxCamera();
     camCutscene = new FlxCamera();
     camCutouts = new FlxCamera();
+    camSubtitles = new FlxCamera();
+    camPause = new FlxCamera();
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:Null<String> = currentChart?.noteStyle;
@@ -1144,7 +1166,7 @@ class PlayState extends MusicBeatSubState
         {
           // Fallback to properly update the conductor incase the lerp messed up
           // Shouldn't be fallen back to unless you're lagging alot
-          trace('[WARNING] Normal Conductor Update!! are you lagging?');
+          trace(' WARNING '.bg_yellow().bold() + ' Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
       }
@@ -1232,7 +1254,10 @@ class PlayState extends MusicBeatSubState
         Events.logFailSong(currentSong.id, currentVariation);
         #end
 
-        dispatchEvent(new ScriptEvent(GAME_OVER));
+        var event:ScriptEvent = new ScriptEvent(GAME_OVER, true);
+        dispatchEvent(event);
+
+        if (event.eventCanceled) return;
 
         // Disable updates, preventing animations in the background from playing.
         persistentUpdate = false;
@@ -1316,11 +1341,11 @@ class PlayState extends MusicBeatSubState
     {
       case Conversation:
         preparePauseUI();
-        openPauseSubState(Conversation, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> currentConversation?.pauseMusic());
+        openPauseSubState(Conversation, camPause, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
-        openPauseSubState(Cutscene, FullScreenScaleMode.hasFakeCutouts ? camCutouts : camCutscene, () -> VideoCutscene.pauseVideo());
+        openPauseSubState(Cutscene, camPause, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -1351,7 +1376,7 @@ class PlayState extends MusicBeatSubState
               boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
             }
 
-            openPauseSubState(isChartingMode ? Charting : Standard, camCutscene);
+            openPauseSubState(isChartingMode ? Charting : Standard, camPause);
           }
 
           #if FEATURE_DISCORD_RPC
@@ -1543,6 +1568,10 @@ class PlayState extends MusicBeatSubState
         cameraTweensPausedBySubState.add(cameraZoomTween);
       }
 
+      // Icons should not bop while the game is paused.
+      if (iconP1 != null && iconP1.bopTween != null) iconP1.bopTween.active = false;
+      if (iconP2 != null && iconP2.bopTween != null) iconP2.bopTween.active = false;
+
       // Pause camera follow
       FlxG.camera.followLerp = 0;
 
@@ -1593,6 +1622,9 @@ class PlayState extends MusicBeatSubState
         camTween.active = true;
       }
       cameraTweensPausedBySubState.clear();
+
+      if (iconP1 != null && iconP1.bopTween != null) iconP1.bopTween.active = true;
+      if (iconP2 != null && iconP2.bopTween != null) iconP2.bopTween.active = true;
 
       // Resume camera follow
       FlxG.camera.followLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
@@ -1650,7 +1682,7 @@ class PlayState extends MusicBeatSubState
      */
   public override function onFocus():Void
   {
-    if (VideoCutscene.isPlaying() && Preferences.autoPause && isGamePaused) VideoCutscene.pauseVideo();
+    if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
     else if (Preferences.autoPause) VideoCutscene.resumeVideo();
     #end
@@ -1712,7 +1744,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // if else if else if else if else if else AAAAAAAAAAAAAAAAAAAAAAA
-    if (!isGamePaused && Preferences.autoPause)
+    if (!isGamePaused #if !mobile && Preferences.autoPause #end)
     {
       if (currentConversation != null)
       {
@@ -1875,11 +1907,15 @@ class PlayState extends MusicBeatSubState
     camCutouts.setPosition((FlxG.width - FlxG.initialWidth) / 2, (FlxG.height - FlxG.initialHeight) / 2);
     camCutouts.setSize(FlxG.initialWidth, FlxG.initialHeight);
     camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
+    if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camPause.bgColor.alpha = 0; // Show the game scene behind the camera.
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
+    if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
+    FlxG.cameras.add(camPause, false);
 
     // Configure camera follow point.
     if (previousCameraFollowPoint != null)
@@ -1895,11 +1931,11 @@ class PlayState extends MusicBeatSubState
      */
   function initHealthBar():Void
   {
-    var healthBarYPos:Float = Preferences.downscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-    #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice) healthBarYPos = FlxG.height * 0.1;
-    #end
+    final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !ControlsHandler.usingExternalInputDevice)
+      || #end Preferences.downscroll;
+
+    var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
 
     healthBarBG.y = healthBarYPos;
     healthBarBG.screenCenter(X);
@@ -1928,6 +1964,21 @@ class PlayState extends MusicBeatSubState
     healthBar.cameras = [camHUD];
     healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
+
+    // Create subtitles if they are enabled.
+    if (Preferences.subtitles)
+    {
+      final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+        && !ControlsHandler.usingExternalInputDevice)
+        || #end Preferences.downscroll;
+
+      final subtitlesAlignment:SubtitlesAlignment = isDownscroll ? SubtitlesAlignment.SUBTITLES_TOP : SubtitlesAlignment.SUBTITLES_BOTTOM;
+      subtitles = new Subtitles(0, 139, subtitlesAlignment);
+      subtitles.zIndex = 10000;
+      add(subtitles);
+
+      subtitles.cameras = [camSubtitles];
+    }
   }
 
   /**
@@ -2565,6 +2616,16 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.pause();
     FlxG.sound.music.time = startTimestamp;
     FlxG.sound.music.pitch = playbackRate;
+
+    if (Preferences.subtitles)
+    {
+      var subtitlesFile:String = 'songs/${currentSong.id}/subtitles/song-lyrics';
+      if (currentVariation != Constants.DEFAULT_VARIATION)
+      {
+        subtitlesFile += '-${currentVariation}';
+      }
+      if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
+    }
 
     // Prevent the volume from being wrong.
     FlxG.sound.music.volume = 1.0;
@@ -3210,6 +3271,7 @@ class PlayState extends MusicBeatSubState
             targetSongId: currentSong.id,
             targetSongDifficulty: currentDifficulty,
             targetSongVariation: currentVariation,
+            targetSongPosition: Conductor.instance.songPosition
           }));
       }
     }
@@ -3233,14 +3295,23 @@ class PlayState extends MusicBeatSubState
     if ((FlxG.keys.justPressed.NINE #if FEATURE_TOUCH_CONTROLS || (TouchUtil.justPressed && TouchUtil.overlapsComplex(iconP1)) #end)
       && iconP1 != null) iconP1.toggleOldIcon();
 
-    #if FEATURE_DEBUG_FUNCTIONS
-    // PAGEUP: Skip forward two sections.
-    // SHIFT+PAGEUP: Skip forward twenty sections.
-    if (FlxG.keys.justPressed.PAGEUP) changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2);
-    // PAGEDOWN: Skip backward two section. Doesn't replace notes.
-    // SHIFT+PAGEDOWN: Skip backward twenty sections.
-    if (FlxG.keys.justPressed.PAGEDOWN) changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2);
-    #end
+    final isDebug:Bool = #if FEATURE_DEBUG_FUNCTIONS true #else false #end;
+    if (isChartingMode || isDebug)
+    {
+      // PAGEUP: Skip forward two sections.
+      // SHIFT+PAGEUP: Skip forward twenty sections.
+      if (FlxG.keys.justPressed.PAGEUP)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? 20 : 2, true);
+      }
+
+      // PAGEDOWN: Skip backward two section. Doesn't replace notes.
+      // SHIFT+PAGEDOWN: Skip backward twenty sections.
+      if (FlxG.keys.justPressed.PAGEDOWN)
+      {
+        changeSection(FlxG.keys.pressed.SHIFT ? -20 : -2, true);
+      }
+    }
   }
 
   /**
@@ -4034,13 +4105,13 @@ class PlayState extends MusicBeatSubState
     soundsPausedBySubState.clear();
   }
 
-  #if FEATURE_DEBUG_FUNCTIONS
   /**
      * Jumps forward or backward a number of sections in the song.
-     * Accounts for BPM changes, does not prevent death from skipped notes.
+     * Accounts for BPM changes.
      * @param sections The number of sections to jump, negative to go backwards.
+     * @param preventDeath Decides if time skip should prevent player from dying.
      */
-  function changeSection(sections:Int):Void
+  function changeSection(sections:Int, preventDeath:Bool = false):Void
   {
     // FlxG.sound.music.pause();
 
@@ -4057,11 +4128,10 @@ class PlayState extends MusicBeatSubState
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    // regenNoteData(FlxG.sound.music.time);
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 
     resyncVocals();
   }
-  #end
 }

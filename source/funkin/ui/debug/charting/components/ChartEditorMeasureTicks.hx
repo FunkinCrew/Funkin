@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxRect;
@@ -43,6 +44,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       add(measureNumber);
       measureNumbers.push(measureNumber);
     }
+    // Need these two lines or the ticks don't render before loading a chart!
+    chartEditorState.updateMeasureTicks(true);
+    reloadTickBitmap();
   }
 
   public function reloadTickBitmap():Void
@@ -83,3 +87,4 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 }
+#end

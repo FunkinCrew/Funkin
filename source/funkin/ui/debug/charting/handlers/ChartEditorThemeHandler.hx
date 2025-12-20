@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxSliceSprite;
 import flixel.FlxSprite;
@@ -435,3 +436,4 @@ class ChartEditorThemeHandler
     return playheadBlock.loadGraphic(playheadBlockBitmap);
   }
 }
+#end
