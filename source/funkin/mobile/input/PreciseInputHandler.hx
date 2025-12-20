@@ -34,7 +34,7 @@ class PreciseInputHandler
     @:privateAccess
     if (hint.input?.justPressed ?? false)
     {
-      PreciseInputManager.instance.onInputPressed.dispatch({noteDirection: hint.noteDirection, timestamp: timestamp});
+      PreciseInputManager.instance.onInputPressed.dispatch({noteDirection: hint.noteDirection, timestamp: timestamp, keyCode: 0});
       PreciseInputManager.instance._dirPressTimestamps.set(hint.noteDirection, timestamp);
     }
   }
@@ -50,7 +50,7 @@ class PreciseInputHandler
     @:privateAccess
     if (hint.input?.justReleased ?? false)
     {
-      PreciseInputManager.instance.onInputReleased.dispatch({noteDirection: hint.noteDirection, timestamp: timestamp});
+      PreciseInputManager.instance.onInputReleased.dispatch({noteDirection: hint.noteDirection, timestamp: timestamp, keyCode: 0});
       PreciseInputManager.instance._dirPressTimestamps.set(hint.noteDirection, timestamp);
     }
   }

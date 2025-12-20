@@ -285,7 +285,7 @@ class CreditsState extends MusicBeatState
         creditsGroup.y -= CREDITS_SCROLL_BASE_SPEED * elapsed;
       }
     }
-    if (controls.BACK || hasEnded())
+    if (controls.BACK_P || hasEnded())
     {
       exit();
     }

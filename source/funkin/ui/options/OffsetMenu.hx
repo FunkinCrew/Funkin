@@ -301,7 +301,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.clean();
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
-
       @:privateAccess
       if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
@@ -337,7 +336,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     createButtonItem('Test', function() {
       // Reset testing state and start another one.
       // We do not reset the offset here, so the player can test their current offset.
-
       @:privateAccess
       if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
@@ -411,8 +409,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       {
       #end
         var height = testStrumline.strumlineNotes.members[0].height;
-        testStrumline.y = Preferences.downscroll ? FlxG.height - (height + 45) - Constants.STRUMLINE_Y_OFFSET : (height / 2)
-        - Constants.STRUMLINE_Y_OFFSET;
+        testStrumline.y = Preferences.downscroll ? FlxG.height - (height + 45) - Constants.STRUMLINE_Y_OFFSET : (height / 2) - Constants.STRUMLINE_Y_OFFSET;
         if (Preferences.downscroll) jumpInText.y = FlxG.height - 425;
         testStrumline.isDownscroll = Preferences.downscroll;
       #if mobile
@@ -611,7 +608,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     _lastTime = FlxG.sound.music.time;
 
     // Back logic
-    if (controls.BACK && shouldOffset == 1)
+    if (controls.BACK_P && shouldOffset == 1)
     {
       exitCalibration(true);
       return;
@@ -937,7 +934,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       var input:PreciseInputEvent = inputPressQueue.shift();
 
-      testStrumline.pressKey(input.noteDirection);
+      testStrumline.pressKey(input.noteDirection, input.keyCode);
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
@@ -969,7 +966,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       // Play the strumline animation.
       testStrumline.playStatic(input.noteDirection);
 
-      testStrumline.releaseKey(input.noteDirection);
+      testStrumline.releaseKey(input.noteDirection, input.keyCode);
     }
 
     NoteVibrationsHandler.instance.tryNoteVibration();

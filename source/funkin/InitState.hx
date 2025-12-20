@@ -153,6 +153,11 @@ class InitState extends FlxState
       // Set the game to a lower frame rate while it is in the background.
       FlxG.game.focusLostFramerate = 30;
 
+      // Persist controls inputs between states.
+      // Without this, the game would release your keybinds when you switch states,
+      // and then act like you released and re-pressed them the frame after.
+      FlxG.inputs.resetOnStateSwitch = false;
+
       // Makes Flixel use frame times instead of locked movements per frame for things like tweens
       FlxG.fixedTimestep = false;
 
@@ -212,6 +217,10 @@ class InitState extends FlxState
       });
       #end
 
+      #if FEATURE_LOST_FOCUS_VOLUME
+      FlxG.signals.focusLost.add(onLostFocus);
+      FlxG.signals.focusGained.add(onGainFocus);
+      #end
       //
       // ANDROID SETUP
       //
@@ -286,6 +295,23 @@ class InitState extends FlxState
     funkin.FunkinMemory.initialCache();
     #end
   }
+
+  #if FEATURE_LOST_FOCUS_VOLUME
+  @:noCompletion var _lastFocusVolume:Null<Float>;
+
+  function onLostFocus()
+  {
+    if (FlxG.sound.muted || FlxG.sound.volume == 0 || FlxG.autoPause) return;
+    _lastFocusVolume = FlxG.sound.volume;
+    FlxG.sound.volume *= Constants.LOST_FOCUS_VOLUME_MULTIPLIER;
+  }
+
+  function onGainFocus()
+  {
+    if (FlxG.sound.muted || FlxG.autoPause) return;
+    if (_lastFocusVolume != null) FlxG.sound.volume = _lastFocusVolume;
+  }
+  #end
 
   /**
    * Start the game.
@@ -558,19 +584,6 @@ class InitState extends FlxState
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
     TrackerUtil.initTrackers();
-    // Adds an additional Close Debugger button.
-    // This big obnoxious white button is for MOBILE, so that you can press it
-    // easily with your finger when debug bullshit pops up during testing lol!
-    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
-      FlxG.debugger.visible = false;
-
-      // Make errors and warnings less annoying.
-      // Forcing this always since I have never been happy to have the debugger to pop up
-      LogStyle.ERROR.openConsole = false;
-      LogStyle.ERROR.errorSound = null;
-      LogStyle.WARNING.openConsole = false;
-      LogStyle.WARNING.errorSound = null;
-    });
 
     // Adds a red button to the debugger.
     // This pauses the game AND the music! This ensures the Conductor stops.
@@ -613,6 +626,22 @@ class InitState extends FlxState
       FlxG.sound.music.pause();
       FlxG.sound.music.time += FlxG.elapsed * 1000;
     });
+
+    // Adds an additional Close Debugger button.
+    // This big obnoxious white button is for MOBILE, so that you can press it
+    // easily with your finger when debug bullshit pops up during testing lol!
+    #if mobile
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
+      FlxG.debugger.visible = false;
+
+      // Make errors and warnings less annoying.
+      // Forcing this always since I have never been happy to have the debugger to pop up
+      LogStyle.ERROR.openConsole = false;
+      LogStyle.ERROR.errorSound = null;
+      LogStyle.WARNING.openConsole = false;
+      LogStyle.WARNING.errorSound = null;
+    });
+    #end // mobile big butotn crap
     #end
   }
 

@@ -232,6 +232,12 @@ class DropShadowShader extends FlxShader
     angOffset.value = [frame.angle * FlxAngle.TO_RAD];
   }
 
+  public function updateFrameInfoSimple(width:Float, height:Float, angle:Float):Void
+  {
+    uFrameBounds.value = [0, 0, width, height];
+    angOffset.value = [angle * FlxAngle.TO_RAD];
+  }
+
   function set_altMaskImage(_bitmapData:BitmapData):BitmapData
   {
     altMask.input = _bitmapData;
