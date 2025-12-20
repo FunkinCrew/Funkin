@@ -3614,7 +3614,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.onFocusLost();
 
     // Stop the song upon tabbing out.
-    if (Preferences.autoPause)
+    if (Preferences.autoPause && subState == null)
     {
       stopAudioPlayback();
     }
