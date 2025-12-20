@@ -1983,7 +1983,7 @@ class PlayState extends MusicBeatSubState
     healthBarBG.y = healthBarYPos;
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.blend = BlendMode.DARKEN;
+    healthBarBG.blend = BlendMode.MULTIPLY;
     healthBarBG.zIndex = 801;
     add(healthBarBG);
 
