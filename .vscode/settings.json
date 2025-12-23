@@ -1,31 +1,22 @@
 {
   "[haxe]": {
-    // Automatically keep Haxe files formatted.
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": "never"
-    },
+    "editor.codeActionsOnSave": { "source.organizeImports": "never" },
     "editor.defaultFormatter": "nadako.vshaxe",
     "editor.tabSize": 2
   },
-
   "[json]": {
-    // Automatically keep JSON files formatted.
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-
   "[jsonc]": {
-    // Automatically keep JSONC files formatted.
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "prettier.tabWidth": 2,
-
-  // XML formatting style configuration
+  // XML Formatting
   "xml.format.enabled": true,
   "xml.format.legacy": false,
   "xml.format.emptyElements": "collapse",
@@ -33,7 +24,7 @@
   "xml.format.enforceQuoteStyle": "preferred",
   "xml.format.preserveAttributeLineBreaks": false,
   "xml.format.preservedNewlines": 0,
-  "xml.format.splitAttributes": false,
+  "xml.format.splitAttributes": "preserve",
   "xml.format.joinCDATALines": true,
   "xml.format.preserveEmptyContent": false,
   "xml.format.joinCommentLines": false,
@@ -56,26 +47,19 @@
   "xml.format.maxLineWidth": 0,
   "xml.format.grammarAwareFormatting": true,
 
-  // Generic file formatting style configuration
+  // General formatting
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": false,
   "files.trimTrailingWhitespace": true,
-
-  // Automatically detect indentation.
   "editor.detectIndentation": true,
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
-
-  // Automatically enforce Linux style line endings.
+  "prettier.tabWidth": 2,
   "files.eol": "\n",
-
   "haxe.displayPort": "auto",
   "haxe.enableCompilationServer": true,
   "haxe.enableServerView": true,
-  "haxe.displayServer": {
-    "arguments": ["-v"]
-  },
-  // Fix file associations for HScript.
+  "haxe.displayServer": { "arguments": ["-v"] },
   "files.associations": {
     "*.hxp": "haxe",
     "*.hscript": "haxe",
@@ -84,14 +68,27 @@
     "*.hxc": "haxe"
   },
   "projectManager.git.baseFolders": ["./"],
-
   "haxecheckstyle.sourceFolders": ["src", "source"],
   "haxecheckstyle.externalSourceRoots": [],
   "haxecheckstyle.configurationFile": "checkstyle.json",
   "haxecheckstyle.codeSimilarityBufferSize": 100,
-
   "lime.projectFile": "project.hxp",
-
+  "lime.targets": [
+    { "name": "windows", "enabled": true, "label": "Windows" },
+    { "name": "mac", "enabled": true, "label": "macOS" },
+    { "name": "linux", "enabled": true, "label": "Linux" },
+    { "name": "html5", "enabled": true, "label": "HTML5" },
+    { "name": "android", "enabled": true, "label": "Android" },
+    { "name": "ios", "enabled": true, "label": "iOS" },
+    // Disabled targets
+    { "name": "hl", "enabled": false, "label": "HashLink" },
+    { "name": "air", "enabled": false },
+    { "name": "electron", "enabled": false },
+    { "name": "flash", "enabled": false },
+    { "name": "neko", "enabled": false },
+    { "name": "tvos", "enabled": false }
+  ],
+  "lime.defaultTargetConfiguration": "Windows / Debug",
   "lime.targetConfigurations": [
     {
       "label": "Windows / Debug (Discord)",
@@ -104,19 +101,9 @@
       "args": ["-debug", "-DANIMATE", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "HashLink / Debug (FlxAnimate Test)",
-      "target": "hl",
-      "args": ["-debug", "-DANIMATE"]
-    },
-    {
       "label": "Windows / Debug (Straight to Freeplay)",
       "target": "windows",
       "args": ["-debug", "-DFREEPLAY", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug (Straight to Freeplay)",
-      "target": "hl",
-      "args": ["-debug", "-DFREEPLAY"]
     },
     {
       "label": "Windows / Debug (Straight to Play - Bopeebo Normal)",
@@ -131,26 +118,6 @@
       "label": "Windows / Debug (Straight to Play - 2hot)",
       "target": "windows",
       "args": ["-debug", "-DSONG=2hot", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug (Straight to Play - Bopeebo Normal)",
-      "target": "hl",
-      "args": ["-debug", "-DSONG=bopeebo -DDIFFICULTY=normal"]
-    },
-    {
-      "label": "Windows / Debug (Conversation Test)",
-      "target": "windows",
-      "args": ["-debug", "-DDIALOGUE", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "HashLink / Debug (Conversation Test)",
-      "target": "hl",
-      "args": ["-debug", "-DDIALOGUE"]
-    },
-    {
-      "label": "Windows / Debug (Results Screen Test)",
-      "target": "windows",
-      "args": ["-debug", "-DRESULTS"]
     },
     {
       "label": "Windows / Debug (Straight to Stage Editor)",
@@ -173,34 +140,14 @@
       "args": ["-debug", "-DHXVLC_LOGGING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "HashLink / Debug (Straight to Animation Editor)",
-      "target": "hl",
-      "args": ["-debug", "-DANIMDEBUG"]
-    },
-    {
       "label": "Windows / Debug (Latency Test)",
       "target": "windows",
       "args": ["-debug", "-DLATENCY", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
-      "label": "HashLink / Debug (Latency Test)",
-      "target": "hl",
-      "args": ["-debug", "-DLATENCY"]
-    },
-    {
       "label": "Windows / Debug (Waveform Test)",
       "target": "windows",
       "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
-    {
-      "label": "Windows / Release (GitHub Actions)",
-      "target": "windows",
-      "args": ["-release", "-DGITHUB_BUILD"]
-    },
-    {
-      "label": "HashLink / Debug (Waveform Test)",
-      "target": "hl",
-      "args": ["-debug", "-DWAVEFORM"]
     },
     {
       "label": "HTML5 / Debug (Watch)",
@@ -209,10 +156,7 @@
     }
   ],
   "lime.buildTypes": [
-    {
-      "label": "Debug",
-      "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"]
-    },
+    { "label": "Debug", "args": ["-debug", "-DFEATURE_DEBUG_FUNCTIONS"] },
     {
       "label": "Debug (Unlock Everything)",
       "args": ["-debug", "-DUNLOCK_EVERYTHING"]
@@ -225,10 +169,7 @@
       "label": "Debug (Straight to Chart Editor)",
       "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
-    {
-      "label": "Release",
-      "args": ["-release"]
-    },
+    { "label": "Release", "args": ["-release"] },
     {
       "label": "Release (GitHub Actions)",
       "args": ["-release", "-DGITHUB_BUILD"]
@@ -244,9 +185,6 @@
   ],
   "vscord.app.privacyMode.enable": true,
   "json.schemas": [
-    {
-      "fileMatch": ["/hmm.json"],
-      "url": "./.vscode/schema/hmm.json"
-    }
+    { "fileMatch": ["/hmm.json"], "url": "./.vscode/schema/hmm.json" }
   ]
 }

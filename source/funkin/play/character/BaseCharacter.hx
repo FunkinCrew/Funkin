@@ -318,11 +318,11 @@ class BaseCharacter extends Bopper
     }
   }
 
-  function resetCameraFocusPoint():Void
+  public function resetCameraFocusPoint():Void
   {
     // Calculate the camera focus point
-    var charCenterX = this.x + this.width / 2;
-    var charCenterY = this.y + this.height / 2;
+    var charCenterX = this.originalPosition.x + this.width / 2;
+    var charCenterY = this.originalPosition.y + this.height / 2;
     this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 

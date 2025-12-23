@@ -176,7 +176,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
         for (i in 0...group.members.length)
         {
           // needs to be exponential growth / scaling
-          // still need to optmize the FFT to run better, gets only samples needed?
+          // still need to optimize the FFT to run better, gets only samples needed?
           // not every frequency is built the same!
           // 20hz to 40z is a LOT of subtle low ends, but somethin like 20,000hz to 20,020hz, the difference is NOT the same!
 

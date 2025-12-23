@@ -137,7 +137,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 
     objPosX.step = stageEditorState.moveStep;
     objPosY.step = stageEditorState.moveStep;
-    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep;
+    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
 
     if (linkedObj == null)
     {

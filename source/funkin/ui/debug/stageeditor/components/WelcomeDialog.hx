@@ -30,7 +30,7 @@ class WelcomeDialog extends Dialog
       killDaDialog();
     }
 
-    for (file in Save.instance.stageEditorPreviousFiles)
+    for (file in Save.instance.stageEditorPreviousFiles.value)
     {
       trace(file);
 

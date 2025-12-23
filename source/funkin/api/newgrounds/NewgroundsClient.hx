@@ -165,7 +165,7 @@ class NewgroundsClient
       }
     }
 
-    Save.instance.ngSessionId = null;
+    Save.instance.ngSessionId.value = null;
   }
 
   /**
@@ -248,7 +248,7 @@ class NewgroundsClient
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Login successful!');
 
     // Persist the session ID.
-    Save.instance.ngSessionId = NG.core.sessionId;
+    Save.instance.ngSessionId.value = NG.core.sessionId;
 
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitting medal request...');
     NG.core.requestMedals(onFetchedMedals);
@@ -362,7 +362,7 @@ class NewgroundsClient
     #end
 
     // We have to fetch the session ID from the save file.
-    return Save.instance.ngSessionId;
+    return Save.instance.ngSessionId.value;
   }
 }
 

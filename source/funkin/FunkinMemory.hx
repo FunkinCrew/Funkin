@@ -112,6 +112,16 @@ class FunkinMemory
   ///// TEXTURES /////
 
   /**
+   * Determine whether the texture with the given key is cached.
+   * @param key The key of the texture to check.
+   * @return Whether the texture is cached.
+   */
+  public static function isTextureCached(key:String):Bool
+  {
+    return FlxG.bitmap.get(key) != null;
+  }
+
+  /**
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
@@ -160,7 +170,7 @@ class FunkinMemory
     graphic.persist = true;
     permanentCachedTextures.set(key, graphic);
     forceRender(graphic);
-    currentCachedTextures = permanentCachedTextures;
+    currentCachedTextures = permanentCachedTextures.copy();
   }
 
   /**
@@ -201,7 +211,7 @@ class FunkinMemory
    */
   public inline static function preparePurgeTextureCache():Void
   {
-    previousCachedTextures = currentCachedTextures;
+    previousCachedTextures = currentCachedTextures.copy();
 
     for (graphicKey in previousCachedTextures.keys())
     {
@@ -211,7 +221,7 @@ class FunkinMemory
       }
     }
 
-    currentCachedTextures = permanentCachedTextures;
+    currentCachedTextures = permanentCachedTextures.copy();
   }
 
   /**
@@ -233,6 +243,7 @@ class FunkinMemory
       if (graphic != null)
       {
         FlxG.bitmap.remove(graphic);
+        graphic.persist = false;
         graphic.destroy();
         previousCachedTextures.remove(graphicKey);
         Assets.cache.clear(graphicKey);
@@ -250,7 +261,7 @@ class FunkinMemory
     {
       var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
-      if (obj == null || obj.persist || permanentCachedTextures.exists(key) || key.contains("fonts"))
+      if (obj == null || (obj.persist && permanentCachedTextures.exists(key)) || key.contains("fonts"))
       {
         continue;
       }
@@ -262,6 +273,7 @@ class FunkinMemory
           if (key.contains(purgeEntry))
           {
             FlxG.bitmap.removeKey(key);
+            obj.persist = false;
             obj.destroy();
           }
         }
@@ -346,7 +358,7 @@ class FunkinMemory
 
   public static function preparePurgeSoundCache():Void
   {
-    previousCachedSounds = currentCachedSounds;
+    previousCachedSounds = currentCachedSounds.copy();
 
     for (key in previousCachedSounds.keys())
     {
@@ -356,7 +368,7 @@ class FunkinMemory
       }
     }
 
-    currentCachedSounds = permanentCachedSounds;
+    currentCachedSounds = permanentCachedSounds.copy();
   }
 
   /**
