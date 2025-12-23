@@ -733,7 +733,8 @@ class ResultState extends MusicBeatSubState
     }
 
     songName.y = -songName.height;
-    var fuckedupnumber = (10) * (songName.text.length / 15);
+    final DEG_TO_RAD:Float = Math.PI / 180;
+    var fuckedupnumber:Float = -(songName.width * 0.5) * Math.sin(songName.angle * DEG_TO_RAD) - 10;
     FlxTween.tween(songName, {y: (diffYTween - 25 - fuckedupnumber) + ((blackTopBar.height - 148) / 1)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = clearPercentSmall.x + 94;
 
