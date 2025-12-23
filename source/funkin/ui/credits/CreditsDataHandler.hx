@@ -8,12 +8,79 @@ using StringTools;
 class CreditsDataHandler
 {
   public static final BACKER_PUBLIC_URL:String = 'https://funkin.me/backers';
+  public static final API_URL:String = 'https://api.github.com/repos/FunkinCrew/Funkin/contributors';
 
   #if HARDCODED_CREDITS
   static final CREDITS_DATA_PATH:String = "assets/exclude/data/credits.json";
   #else
   static final CREDITS_DATA_PATH:String = "assets/data/credits.json";
   #end
+
+  /* 
+    Fetch the github contributors.
+  */
+  public static function fetchContributors(onComplete:Void->Void):Void
+  {
+    var http = new haxe.Http(API_URL);
+  
+    http.setHeader('User-Agent', 'HaxeFlixel');
+  
+    http.onData = function(data:String)
+    {
+      var json:Array<Dynamic> = haxe.Json.parse(data);
+  
+      if (CREDITS_DATA == null)
+      {
+        CREDITS_DATA = getFallback();
+      }
+  
+      var role:CreditsDataRole = {
+        header: 'GitHub Contributors',
+        body: [],
+        appendBackers: false
+      };
+  
+      if (json.length == 0)
+      {
+        role.body.push({ line: 'None (for now.)' });
+      }
+      else
+      {
+        for (contributor in json)
+        {
+          var username:String = contributor.login;
+          var commits:Int = contributor.contributions;
+  
+          role.body.push({
+            line: username + ' — ' + commits + ' commits'
+          });
+        }
+      }
+  
+      CREDITS_DATA.entries.push(role);
+      onComplete();
+    };
+  
+    http.onError = function(error:String)
+    {
+      trace('[CREDITS] GitHub load failed: ' + error);
+  
+      if (CREDITS_DATA == null)
+      {
+        CREDITS_DATA = getFallback();
+      }
+  
+      CREDITS_DATA.entries.push({
+        header: 'GitHub Contributors',
+        body: [{ line: 'Failed to load contributors.' }],
+        appendBackers: false
+      });
+  
+      onComplete();
+    };
+  
+    http.request();
+  }
 
   #if macro
   public static function debugPrint(data:Null<CreditsData>):Void
