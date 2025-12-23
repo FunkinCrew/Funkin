@@ -4665,10 +4665,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (gridPlayhead != null && FlxG.mouse.overlaps(gridPlayhead) && !isCursorOverHaxeUI)
       {
-        var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
+        this.openGridPlayheadContextMenu(FlxG.mouse.viewX, FlxG.mouse.viewY);
+        // var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
         // Add a new time change at the grid playhead's position.
-        performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
-        this.success('New Time Change', '${undoHistory[undoHistory.length - 1].toString()} ms');
+        // performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
       }
     }
 

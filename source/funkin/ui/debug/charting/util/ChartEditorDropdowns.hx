@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.util;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.song.SongData.SongLabel;
 import funkin.play.event.SongEvent;
 import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
@@ -105,6 +106,36 @@ class ChartEditorDropdowns
           text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
         };
       if (startingTimeChange == index) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of song labels.
+   */
+  public static function populateDropdownWithLabels(dropDown:DropDown, labels:Array<SongLabel>):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry =
+      {
+        id: "0",
+        text: '0 ms : Label'
+      };
+
+    for (index in 0...labels.length)
+    {
+      var value =
+        {
+          id: '$index',
+          text: '${labels[index].timeStamp} ms : ${labels[index].name}'
+        }
+      if (index == 0) returnValue = value;
 
       dropDown.dataSource.add(value);
     }

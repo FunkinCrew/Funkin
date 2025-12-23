@@ -48,6 +48,13 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var offsets:Null<SongOffsets>;
 
   /**
+   * Song labels for the game to use in the Chart Editor and Practice Mode.
+   */
+  @:optional
+  @:default([])
+  public var labels:Array<SongLabel>;
+
+  /**
    * Data relating to the song's gameplay.
    */
   public var playData:SongPlayData;
@@ -75,6 +82,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     this.timeFormat = 'ms';
     this.divisions = null;
     this.offsets = new SongOffsets();
+    this.labels = [];
     this.timeChanges = [new SongTimeChange(0, 100)];
     this.looped = false;
     this.playData = new SongPlayData();
@@ -100,6 +108,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
     result.offsets = this.offsets != null ? this.offsets.clone() : new SongOffsets(); // if no song offsets found (aka null), so just create new ones
+    result.labels = this.labels;
     result.timeChanges = this.timeChanges.deepClone();
     result.looped = this.looped;
     result.playData = this.playData.clone();
@@ -337,6 +346,59 @@ class SongOffsets implements ICloneable<SongOffsets>
   public function toString():String
   {
     return 'SongOffsets(${this.instrumental}ms, ${this.altInstrumentals}, ${this.vocals}, ${this.altVocals})';
+  }
+}
+
+/**
+ * Song labels are used as markers that can be jumped to within the Chart Editor and Practice Mode and used for notes.
+ */
+class SongLabel implements ICloneable<SongLabel>
+{
+  /**
+   * Timestamp in specified `timeFormat`.
+   */
+  @:alias("t")
+  public var timeStamp:Float;
+
+  /**
+   * The name of the label.
+   */
+  @:alias("n")
+  public var name:String;
+
+  /**
+   * Whether to show this label in Practice Mode for the player to jump to.
+   */
+  @:default(false)
+  @:alias("p")
+  public var practiceMode:Bool;
+
+  /**
+   * Optional field for an attached description. Shows up in the Chart Editor.
+   */
+  @:alias("d")
+  @:optional
+  public var description:String;
+
+  public function new(timeStamp:Float, name:String, practiceMode:Bool = false, ?description:String)
+  {
+    this.timeStamp = timeStamp;
+    this.name = name;
+    this.practiceMode = practiceMode;
+    this.description = description == null ? "" : description;
+  }
+
+  public function clone():SongLabel
+  {
+    return new SongLabel(this.timeStamp, this.name, this.practiceMode, this.description);
+  }
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  public function toString():String
+  {
+    return 'SongLabel(${this.timeStamp}ms,${this.name},${this.practiceMode},${this.description})';
   }
 }
 

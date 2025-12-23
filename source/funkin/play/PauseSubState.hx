@@ -13,6 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
+import funkin.data.song.SongData.SongLabel;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.graphics.FunkinSprite;
 import funkin.play.cutscene.VideoCutscene;
@@ -61,6 +62,11 @@ class PauseSubState extends MusicBeatSubState
     {text: 'Restart Song', callback: restartPlayState},
     {text: 'Change Difficulty', callback: switchMode.bind(_, Difficulty)},
     {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () -> !(PlayState.instance?.isPracticeMode ?? false)},
+    {
+      text: 'Jump To Point',
+      callback: switchMode.bind(_, Label),
+      filter: () -> (PlayState.instance?.isPracticeMode ?? false)
+        && (PlayState.instance?.currentSong?.getLabels(PlayState.instance?.currentChart?.variation, true).length > 0)},
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
@@ -74,9 +80,9 @@ class PauseSubState extends MusicBeatSubState
   ];
 
   /**
-   * Pause menu entries for when the user selects "Change Difficulty".
+   * Pause menu entries for when the user selects an item that enters a sub-menu.
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
+  static final PAUSE_MENU_ENTRIES_SUB:Array<PauseMenuEntry> = [
     {text: 'Back', callback: switchMode.bind(_, Standard)}
     // Other entries are added dynamically.
   ];
@@ -845,7 +851,26 @@ class PauseSubState extends MusicBeatSubState
         }
 
         // Add the back button.
-        currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_DIFFICULTY.clone());
+        currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_SUB.clone());
+      case PauseMode.Label:
+        // Prepend the labels.
+        var entries:Array<PauseMenuEntry> = [];
+        if (PlayState.instance.currentSong != null)
+        {
+          if (PlayState.instance.currentSong.getLabels(PlayState.instance.currentChart.variation, true)[0].timeStamp != 0)
+          {
+            var startLabel:SongLabel = new SongLabel(0, "Start", true);
+            entries.push({text: startLabel.name.toTitleCase(), callback: (state) -> jumpToLabel(state, startLabel)});
+          }
+          var labelsInVariation = PlayState.instance.currentSong.getLabels(PlayState.instance.currentChart.variation, true);
+          for (label in labelsInVariation)
+          {
+            entries.push({text: label.name.toTitleCase(), callback: (state) -> jumpToLabel(state, label)});
+          }
+        }
+
+        // Add the back button.
+        currentMenuEntries = entries.concat(PAUSE_MENU_ENTRIES_SUB.clone());
       case PauseMode.Conversation:
         currentMenuEntries = PAUSE_MENU_ENTRIES_CONVERSATION.clone();
       case PauseMode.Cutscene:
@@ -946,7 +971,7 @@ class PauseSubState extends MusicBeatSubState
 
     switch (this.currentMode)
     {
-      case Standard | Difficulty:
+      case Standard | Difficulty | Label:
         metadataDeaths.text = '${PlayState.instance?.deathCounter} Blue Balls';
       case Charting:
         metadataDeaths.text = 'Chart Editor Preview';
@@ -1035,6 +1060,13 @@ class PauseSubState extends MusicBeatSubState
     #else
     state.close();
     #end
+  }
+
+  static function jumpToLabel(state:PauseSubState, label:SongLabel):Void
+  {
+    PlayState.instance.startTimestamp = label.timeStamp;
+
+    restartPlayState(state);
   }
 
   /**
@@ -1221,6 +1253,11 @@ enum PauseMode
    * The menu displayed when the player moves to change the game's difficulty.
    */
   Difficulty;
+
+  /**
+   * The menu displayed when the player wishes to jump to a point in the song.
+   */
+  Label;
 
   /**
    * The menu displayed when the player pauses the game during a conversation.

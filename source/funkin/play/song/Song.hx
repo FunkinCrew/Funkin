@@ -9,6 +9,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
+import funkin.data.song.SongData.SongLabel;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.song.SongRegistry;
@@ -429,6 +430,32 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
 
     return null;
+  }
+
+  /**
+   * Retrieve the labels for a variation.
+   * @param variation The variation ID to fetch the labels for.
+   * @param practiceMode Whether to return only ones available to Practice Mode.
+   */
+  public function getLabels(?variation:String, practiceMode:Bool = false):Array<SongLabel>
+  {
+    if (variation == null) variation = Constants.DEFAULT_VARIATION;
+
+    var metadata = _metadata.get(variation);
+
+    if (metadata == null) return [];
+
+    if (practiceMode)
+    {
+      var practiceLabels = [];
+      for (label in metadata.labels)
+      {
+        if (label.practiceMode) practiceLabels.push(label);
+      }
+      return practiceLabels;
+    }
+    else
+      return metadata.labels;
   }
 
   /**

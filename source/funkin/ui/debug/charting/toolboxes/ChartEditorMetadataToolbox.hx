@@ -10,6 +10,8 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
+import funkin.ui.debug.charting.commands.AddLabelCommand;
+import funkin.ui.debug.charting.commands.RemoveLabelCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -46,12 +48,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var frameVariation:Frame;
   var frameDifficulty:Frame;
   var tcDropdownItemRenderer:haxe.ui.core.ItemRenderer;
+  var labDropdownItemRenderer:haxe.ui.core.ItemRenderer;
 
   public function new(chartEditorState2:ChartEditorState)
   {
     super(chartEditorState2);
 
     tcDropdownItemRenderer = inputTimeChange.findComponent(haxe.ui.core.ItemRenderer);
+    labDropdownItemRenderer = inputLabel.findComponent(haxe.ui.core.ItemRenderer);
 
     initialize();
 
@@ -275,6 +279,67 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       chartEditorState.openCharacterDropdown(CharacterType.BF, false);
     };
 
+    inputLabel.onChange = function(event:UIEvent) {
+      refreshLabelInputs();
+      var previousLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex - 1];
+      var currentTimeChange = refreshTimeChangeInputs();
+      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
+      // Set the step of the timestamp to the step.
+      inputLabelTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
+      inputLabelTimeStamp.min = (previousLabel?.timeStamp ?? 0);
+      inputLabelTimeStamp.max = (chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
+      inputLabelTimeStamp.max -= 1;
+    };
+    refreshLabels();
+
+    inputLabelName.onChange = function(event:UIEvent) {
+      var currentLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex];
+      if (currentLabel == null) return;
+      currentLabel.name = event.target.text;
+      inputLabel.value.text = '${currentLabel.timeStamp} ms : ${currentLabel.name}';
+      labDropdownItemRenderer.data = inputLabel.value;
+    };
+
+    inputLabelTimeStamp.onChange = function(event:UIEvent) {
+      var currentLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex];
+      if (currentLabel == null) return;
+      currentLabel.timeStamp = event.target.value;
+      inputLabel.value.text = '${currentLabel.timeStamp} ms : ${currentLabel.name}';
+      labDropdownItemRenderer.data = inputLabel.value;
+    };
+
+    checkPracticeMode.onChange = function(event:UIEvent) {
+      var currentLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex];
+      if (currentLabel == null) return;
+      currentLabel.practiceMode = event.target.value;
+    };
+
+    inputLabelDesc.onChange = function(event:UIEvent) {
+      var currentLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex];
+      if (currentLabel == null) return;
+      currentLabel.description = event.target.text;
+    };
+
+    addLabel.onClick = function(_:UIEvent) {
+      chartEditorState.performCommand(new AddLabelCommand(chartEditorState.scrollPositionInMs + chartEditorState.playheadPositionInMs));
+    }
+
+    removeLabel.onClick = function(_:UIEvent) {
+      chartEditorState.performCommand(new RemoveLabelCommand(inputLabel.selectedIndex));
+    }
+
+    jumpToLabel.onClick = function(_:UIEvent) {
+      var currentLabel = refreshLabelInputs();
+      if (currentLabel == null) return;
+      // Set the scroll position to the current song time.
+      chartEditorState.scrollPositionInMs = Math.min(currentLabel.timeStamp - chartEditorState.playheadPositionInMs, chartEditorState.songLengthInMs);
+      if (chartEditorState.scrollPositionInMs
+        + chartEditorState.playheadPositionInMs != currentLabel.timeStamp) chartEditorState.playheadPositionInMs -= chartEditorState.scrollPositionInMs
+          + chartEditorState.playheadPositionInMs - currentLabel.timeStamp;
+      chartEditorState.currentScrollEase = chartEditorState.scrollPositionInPixels;
+      chartEditorState.moveSongToScrollPosition();
+    }
+
     refresh();
   }
 
@@ -287,6 +352,28 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
     inputTimeChange.value = startingTimeChange;
     chartEditorState.updateSongTime();
+  }
+
+  public function refreshLabels():Void
+  {
+    // Reset labels dropdown and the associated inputs
+    var startingLabel = ChartEditorDropdowns.populateDropdownWithLabels(inputLabel, chartEditorState.currentSongMetadata.labels);
+    inputLabel.selectedIndex = Std.parseInt(startingLabel.id);
+    inputLabel.value = startingLabel;
+    if (chartEditorState.currentSongMetadata.labels.length < 1)
+    {
+      inputLabel.hidden = true;
+      frameLabels.hidden = true;
+      removeLabel.disabled = true;
+      jumpToLabel.disabled = true;
+    }
+    else
+    {
+      inputLabel.hidden = false;
+      frameLabels.hidden = false;
+      removeLabel.disabled = false;
+      jumpToLabel.disabled = false;
+    }
   }
 
   public function refreshTimeChangeInputs(updateDropdownText:Bool = false):Null<funkin.data.song.SongData.SongTimeChange>
@@ -309,6 +396,22 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     return currentTimeChange;
   }
 
+  public function refreshLabelInputs(updateDropdownText:Bool = false):Null<funkin.data.song.SongData.SongLabel>
+  {
+    var currentLabel = chartEditorState.currentSongMetadata.labels[inputLabel.selectedIndex];
+    if (currentLabel == null) return null;
+    inputLabelName.value = currentLabel.name;
+    inputLabelTimeStamp.value = currentLabel.timeStamp;
+    inputLabelDesc.value = currentLabel.description;
+    checkPracticeMode.value = currentLabel.practiceMode;
+    if (updateDropdownText)
+    {
+      inputLabel.value.text = '${currentLabel.timeStamp} ms : ${currentLabel.name}';
+      labDropdownItemRenderer.data = inputLabel.value;
+    }
+    return currentLabel;
+  }
+
   public override function refresh():Void
   {
     super.refresh();
@@ -326,6 +429,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     frameDifficulty.text = 'Difficulty: ${chartEditorState.selectedDifficulty.toTitleCase()}';
 
     refreshTimeChanges();
+
+    refreshLabels();
 
     var stageId:String = chartEditorState.currentSongMetadata.playData.stage;
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);

@@ -6,6 +6,7 @@ import funkin.ui.debug.charting.contextmenus.ChartEditorEventContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorHoldNoteContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorNoteContextMenu;
 import funkin.ui.debug.charting.contextmenus.ChartEditorSelectionContextMenu;
+import funkin.ui.debug.charting.contextmenus.ChartEditorGridPlayheadContextMenu;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.core.Screen;
 import funkin.data.song.SongData.SongNoteData;
@@ -25,6 +26,7 @@ class ChartEditorContextMenuHandler
   static var existingNoteContextMenu:Null<ChartEditorNoteContextMenu>;
   static var existingHoldNoteContextMenu:Null<ChartEditorHoldNoteContextMenu>;
   static var existingEventContextMenu:Null<ChartEditorEventContextMenu>;
+  static var existingGridPlayheadContextMenu:Null<ChartEditorGridPlayheadContextMenu>;
 
   public static function openDefaultContextMenu(state:ChartEditorState, xPos:Float, yPos:Float)
   {
@@ -122,6 +124,26 @@ class ChartEditorContextMenuHandler
       var targetMenu = new ChartEditorEventContextMenu(state, xPos, yPos, data);
       displayMenu(state, targetMenu);
       existingEventContextMenu = targetMenu;
+    }
+  }
+
+  /**
+   * Opened when shift+right-clicking the playhead on the grid.
+   */
+  public static function openGridPlayheadContextMenu(state:ChartEditorState, xPos:Float, yPos:Float)
+  {
+    if (existingGridPlayheadContextMenu != null)
+    {
+      existingGridPlayheadContextMenu.left = xPos;
+      existingGridPlayheadContextMenu.top = yPos;
+      existingGridPlayheadContextMenu.initialize();
+      Screen.instance.addComponent(existingGridPlayheadContextMenu);
+    }
+    else
+    {
+      var targetMenu = new ChartEditorGridPlayheadContextMenu(state, xPos, yPos);
+      displayMenu(state, targetMenu);
+      existingGridPlayheadContextMenu = targetMenu;
     }
   }
 
