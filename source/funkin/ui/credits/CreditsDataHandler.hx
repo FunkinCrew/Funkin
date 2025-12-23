@@ -18,6 +18,8 @@ class CreditsDataHandler
 
   /* 
     Fetch the github contributors.
+
+    THIS IS INDEED IN BETA TESTING, MAY NOT WORK AS EXPECTED.
   */
   public static function fetchContributors(onComplete:Void->Void):Void
   {
