@@ -218,7 +218,13 @@ class MainMenuState extends MusicBeatState
     }
 
     createMenuItem('credits', 'mainmenu/credits', function() {
-      startExitState(() -> new funkin.ui.credits.CreditsState());
+      startExitState(() -> {
+        funkin.ui.credits.CreditsDataHandler.CREDITS_DATA;
+    
+        funkin.ui.credits.CreditsDataHandler.fetchGitHubContributors(function() {
+          FlxG.switchState(() -> new funkin.ui.credits.CreditsState());
+        });
+      });
     });
 
     // Reset position of menu items.
