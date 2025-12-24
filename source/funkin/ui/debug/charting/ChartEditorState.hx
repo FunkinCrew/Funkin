@@ -5901,6 +5901,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.hideAllToolboxes();
 
     stopWelcomeMusic();
+
+    Cursor.hide(); // Should fix the issue :D
+    
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
     FlxG.switchState(() -> new MainMenuState());
