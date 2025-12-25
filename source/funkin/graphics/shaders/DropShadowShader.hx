@@ -2,6 +2,7 @@ package funkin.graphics.shaders;
 
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxColor;
+import funkin.play.character.BaseCharacter;
 import funkin.graphics.FunkinSprite;
 import flixel.math.FlxAngle;
 import flixel.graphics.frames.FlxFrame;
@@ -203,6 +204,20 @@ class DropShadowShader extends FlxShader
     if (attachedSprite.isAnimate && !attachedSprite.useRenderTexture)
     {
       attachedSprite.useRenderTexture = true;
+    }
+
+    if (Std.isOfType(spr, BaseCharacter))
+    {
+      var character:BaseCharacter = cast spr;
+      var charId:String = character.characterId;
+
+      var maskPath:String = Paths.image('masks/' + charId);
+
+      if (Assets.exists(maskPath))
+      {
+        loadAltMask(maskPath);
+        useAltMask = true;
+      }
     }
 
     return spr;
