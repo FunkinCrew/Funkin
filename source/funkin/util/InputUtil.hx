@@ -18,7 +18,7 @@ class InputUtil
     return switch (device)
     {
       case Keys: getKeyName(id);
-      case Gamepad(gamepadID): getButtonName(id, FlxG.gamepads.getByID(gamepadID));
+      case Gamepad(gamepadID): FlxG.gamepads.getByID(gamepadID) != null ? getButtonName(id, FlxG.gamepads.getByID(gamepadID)) : 'N/A';
     }
   }
 
