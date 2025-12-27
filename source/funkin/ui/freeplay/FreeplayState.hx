@@ -2921,9 +2921,13 @@ class FreeplayState extends MusicBeatSubState
       // switchBackingImage(currentCapsule.freeplayData);
     }
 
-    // Small vibrations every selection change.
-    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
-
+    // Clear song previews and add small vibrations every selection change.
+    if (change != 0)
+    {
+      clearPreviews();
+      HapticUtil.vibrate(0, 0.01, 0.5);
+    }
+		
     dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
 
