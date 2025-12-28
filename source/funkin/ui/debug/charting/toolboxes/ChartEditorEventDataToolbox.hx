@@ -301,40 +301,41 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
             dropDown.dataSource.add({value: optionValue, text: optionName});
           }
 
-          dropDown.value = field.defaultValue;
 
           // TODO: Add an option to customize sort.
           dropDown.dataSource.sort('text', ASCENDING);
 
+          if (field.defaultValue != null)
+          {
+            dropDown.value = field.defaultValue;
+          }
           input = dropDown;
         case STRING:
-          input = new TextField();
-          input.id = field.name;
-          if (field.defaultValue != null) input.text = field.defaultValue;
+          var tf:TextField = new TextField();
+          tf.id = field.name;
+          if (field.defaultValue != null) tf.text = field.defaultValue;
+          input = tf;
         case FRAME:
           hbox.removeComponent(label, true);
 
-          input = new Frame();
-          input.id = field.name;
-          input.text = field.title;
-          input.percentWidth = 100;
-          if (field.collapsible != null)
-          {
-            var targetFrame:Frame = cast parent;
-            targetFrame.collapsible = field.collapsible;
-          }
+          var frame:Frame = new Frame();
+          frame.id = field.name;
+          frame.text = field.title;
+          frame.percentWidth = 100;
+          if (field.collapsible != null) frame.collapsible = field.collapsible;
 
           var frameVBox:VBox = new VBox();
           frameVBox.percentWidth = 100;
-          input.addComponent(frameVBox);
+          frame.addComponent(frameVBox);
 
           if (field.children != null) recursiveChildAdd(frameVBox, new SongEventSchema(field.children));
 
+          input = frame;
         default:
-          // Unknown type. Display a label that proclaims the type so we can debug it.
-          input = new Label();
-          input.id = field.name;
-          input.text = field.type;
+          var lbl:Label = new Label();
+          lbl.id = field.name;
+          lbl.text = field.type;
+          input = lbl;
       }
 
       // Putting in a box so we can add a unit label easily if there is one.
@@ -369,6 +370,32 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       }
 
       // Update the value of the event data without modifying
+      if (field.type != FRAME)
+      {
+        var initialValue:Null<Dynamic> = null;
+
+        switch (field.type)
+        {
+          case INTEGER, FLOAT:
+            if (field.defaultValue != null) initialValue = field.defaultValue;
+          case BOOL:
+            if (field.defaultValue != null) initialValue = cast(field.defaultValue, Null<Bool>);
+          case ENUM:
+            var drp:DropDown = cast input;
+            var enumVal = drp.selectedItem?.value;
+            if (enumVal != null) initialValue = enumVal;
+            else if (field.defaultValue != null) initialValue = field.defaultValue;
+          case STRING:
+            if (field.defaultValue != null) initialValue = field.defaultValue;
+          default:
+        }
+
+        if (initialValue != null && !chartEditorState.eventDataToPlace.exists(field.name))
+        {
+          chartEditorState.eventDataToPlace.set(field.name, initialValue);
+        }
+      }
+
       input.pauseEvent(UIEvent.CHANGE, true);
       input.onChange = function(event:UIEvent) {
         if (field.type == FRAME) return;
