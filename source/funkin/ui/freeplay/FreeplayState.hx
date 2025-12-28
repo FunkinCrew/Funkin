@@ -4,7 +4,6 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -198,7 +197,7 @@ class FreeplayState extends MusicBeatSubState
     return grpCapsules.members[curSelected];
   }
 
-  var grpCapsules:FlxTypedGroup<SongMenuItem>;
+  var grpCapsules:SongItemGroup;
 
   var dj:Null<BaseFreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
@@ -335,7 +334,7 @@ class FreeplayState extends MusicBeatSubState
     fpScoreDisplay = new FreeplayScore(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 353), 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
-    grpCapsules = new FlxTypedGroup<SongMenuItem>();
+    grpCapsules = new SongItemGroup();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
 
     difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);

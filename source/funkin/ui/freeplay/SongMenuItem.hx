@@ -150,7 +150,6 @@ class SongMenuItem extends FlxSpriteGroup
     add(fakeRanking);
 
     fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
-    fakeBlurredRanking.shader = new GaussianBlurShader(1);
     add(fakeBlurredRanking);
 
     fakeRanking.visible = false;
@@ -162,7 +161,6 @@ class SongMenuItem extends FlxSpriteGroup
     add(ranking);
 
     blurredRanking = new FreeplayRank(ranking.x, ranking.y);
-    blurredRanking.shader = new GaussianBlurShader(1);
     add(blurredRanking);
 
     sparkle = new FlxSprite(ranking.x, ranking.y);
@@ -218,7 +216,6 @@ class SongMenuItem extends FlxSpriteGroup
 
     favIconBlurred.setGraphicSize(50, 50);
     favIconBlurred.blend = BlendMode.ADD;
-    favIconBlurred.shader = new GaussianBlurShader(1.2);
     favIconBlurred.visible = false;
     add(favIconBlurred);
 
