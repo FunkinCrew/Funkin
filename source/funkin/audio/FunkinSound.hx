@@ -369,10 +369,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       var music = FunkinSound.load(pathToUse, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, params.persist ?? false, params.onComplete);
       if (music != null)
       {
-        FlxG.sound.music = music;
-
-        // Prevent repeat update() and onFocus() calls.
-        FlxG.sound.list.remove(FlxG.sound.music);
+        setMusic(music);
 
         if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
 
@@ -383,6 +380,18 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         return false;
       }
     }
+  }
+
+  /**
+   * Replaces the Flixel current music object with the given `FunkinSound` object.
+   * @param newMusic The new music to be set as the current music.
+   */
+  public static function setMusic(newMusic:FunkinSound):Void
+  {
+    FlxG.sound.music = newMusic;
+
+    // Prevent repeat update() and onFocus() calls.
+    FlxG.sound.list.remove(FlxG.sound.music);
   }
 
   public static function emptyPartialQueue():Void

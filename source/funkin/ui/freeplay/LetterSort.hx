@@ -31,8 +31,6 @@ class LetterSort extends FlxSpriteGroup
   var rightArrow:FlxSprite;
   var grpSeperators:FlxSpriteGroup;
 
-  public var inputEnabled:Bool = true;
-
   public var instance(default, set):FreeplayState;
 
   var swipeBounds:FlxObject;
@@ -103,70 +101,60 @@ class LetterSort extends FlxSpriteGroup
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    if (!instance.uiStateMachine.canInteract()) return;
+
     #if FEATURE_TOUCH_CONTROLS
-    @:privateAccess
-    if (TouchUtil.justPressed) inputEnabled = instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam);
+    if (TouchUtil.pressAction())
+    {
+      for (index => letter in letterHitboxes)
+      {
+        @:privateAccess
+        if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+
+        if (index == 2 || index == 5) continue;
+
+        var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+        var changeValue = selectionChanges[index];
+
+        if (changeValue != 0)
+        {
+          changeSelection(changeValue);
+
+          if (index == 0 || index == 4)
+          {
+            changeSelection(changeValue, false);
+          }
+        }
+
+        break;
+      }
+    }
     #end
 
-    if (inputEnabled)
+    @:privateAccess
     {
-      #if FEATURE_TOUCH_CONTROLS
-      if (TouchUtil.pressAction())
-      {
-        for (index => letter in letterHitboxes)
-        {
-          @:privateAccess
-          if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+      if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
 
-          if (index == 2 || index == 5) continue;
-
-          var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
-          var changeValue = selectionChanges[index];
-
-          if (changeValue != 0)
-          {
-            changeSelection(changeValue);
-
-            if (index == 0 || index == 4)
-            {
-              changeSelection(changeValue, false);
-            }
-          }
-
-          break;
-        }
-      }
-      #end
-
-      @:privateAccess
-      {
-        if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
-          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
-
-        if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
-          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
-      }
+      if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
     }
   }
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
-    @:privateAccess
-    if (instance.controls.active)
-    {
-      doLetterChangeAnims(diff);
+    doLetterChangeAnims(diff);
 
-      var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-      // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
-      var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
-      arrowToMove.offset.x = 3 * multiPosOrNeg;
+    // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
+    var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
+    arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-      new FlxTimer().start(2 / 24, function(_) {
-        arrowToMove.offset.x = 0;
-      });
-      if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-    }
+    new FlxTimer().start(2 / 24, function(_) {
+      arrowToMove.offset.x = 0;
+    });
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
   }
 
   /**

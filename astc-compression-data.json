@@ -6,26 +6,6 @@
   "colorprofile": "cl",
   "custom": [
     {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsGREAT/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "asset/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
       "asset": "assets/preload/images/NOTE_assets.png",
       "blocksize": "4x4"
     },
@@ -42,7 +22,19 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/preload/images/charSelect/gfChill/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
       "asset": "assets/shared/images/NOTE_hold_assets.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/characters/nene-dark/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/shared/images/characters/otis/muzzle-flashes/otis_flashes.png",
       "blocksize": "4x4"
     },
     {
@@ -82,6 +74,22 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/resultScreen/results-pico/resultsGREAT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/week1/image/erect/bg.png",
       "blocksize": "8x8"
     },
@@ -96,6 +104,14 @@
     {
       "asset": "assets/week1/images/erect/server.png",
       "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week7/images/erect/rando/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/week7/images/erect/sniper/spritemap1.png",
+      "blocksize": "6x6"
     }
   ],
   "excludes": [
@@ -111,8 +127,14 @@
     "assets/shared/images/characters/abotPixel/*",
     "assets/shared/images/characters/bfPixel.png",
     "assets/shared/images/characters/bfPixelsDEAD.png",
+    "assets/shared/images/characters/gf-christmas/spritemap1.png",
+    "assets/shared/images/characters/gf-dark/spritemap1.png",
+    "assets/shared/images/characters/gf/spritemap1.png",
+    "assets/shared/images/characters/gfCar/spritemap1.png",
     "assets/shared/images/characters/gfPixel.png",
+    "assets/shared/images/characters/nene/spritemap1.png",
     "assets/shared/images/characters/nenePixel/*",
+    "assets/shared/images/characters/pico-holding-nene/spritemap1.png",
     "assets/shared/images/characters/picoPixel/*",
     "assets/shared/images/characters/senpai.png",
     "assets/shared/images/characters/spirit.png",
@@ -120,6 +142,10 @@
     "assets/shared/images/resultScreen/*",
     "assets/shared/images/resultScreen/clearPercent/",
     "assets/shared/images/resultScreen/rankText/",
+    "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
+    "assets/shared/images/resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD.png",
+    "assets/shared/images/resultScreen/results-bf/resultsGREAT/gf/spritemap1.png",
+    "assets/shared/images/resultScreen/results-bf/resultsSHIT/gf/spritemap1.png",
     "assets/shared/images/ui/chart-editor/",
     "assets/shared/images/ui/countdown/pixel/*",
     "assets/week1/*",

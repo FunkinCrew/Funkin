@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.math.FlxAngle;
 import flixel.FlxState;
 import funkin.ui.transition.stickers.StickerSubState;
 import flixel.addons.display.FlxBackdrop;
@@ -35,6 +36,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.HapticUtil;
 import funkin.graphics.ScriptedFunkinSprite;
+import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
@@ -93,6 +95,11 @@ class ResultState extends MusicBeatSubState
 
   var introMusicAudio:Null<FunkinSound> = null;
 
+  /**
+   * The music playing in the background of the state.
+   */
+  var resultsMusic:Null<FunkinSound> = null;
+
   var rankBg:FunkinSprite;
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
@@ -101,6 +108,15 @@ class ResultState extends MusicBeatSubState
   var blackTopBar:FlxSprite = new FlxSprite();
 
   var busy:Bool = false;
+
+  public var isChartingMode(get, never):Bool;
+
+  function get_isChartingMode():Bool
+  {
+    if (PlayState.instance != null) return PlayState.instance.isChartingMode;
+    else
+      return false;
+  }
 
   public function new(params:ResultsStateParams)
   {
@@ -481,28 +497,42 @@ class ResultState extends MusicBeatSubState
     // }
 
     new FlxTimer().start(rank.getMusicDelay(), _ -> {
-      var introMusic:String = Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank) + '-intro');
+      var musicPath = getMusicPath(playerCharacter, rank);
+      var introMusic:String = Paths.music('$musicPath/$musicPath-intro');
+
       if (Assets.exists(introMusic))
       {
+        var mainMusic:String = Paths.music('$musicPath/$musicPath'); // wraps how FunkinSound load audios
+
+        // preload the loop music
+        @:nullSafety(Off)
+        var musicLoop:FunkinSound = FunkinSound.load(mainMusic, 1.0, true, true, false, false, null, null, true);
+
         // Play the intro music.
         introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
           introMusicAudio = null;
-          FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
-            {
-              startingVolume: 1.0,
-              overrideExisting: true,
-              restartTrack: true
-            });
+          musicLoop.play();
+          if (!isChartingMode) // Don't override the music and cause problems on the chart editor
+            FunkinSound.setMusic(musicLoop);
+          else // Play the results music as a looped sound instead (that we cancel before closing and returning to the chart editor)
+          {
+            resultsMusic = musicLoop;
+            false; // Why is this necessary for this to work?
+          }
         });
       }
       else
       {
-        FunkinSound.playMusic(getMusicPath(playerCharacter, rank),
+        if (!isChartingMode) FunkinSound.playMusic(musicPath,
           {
             startingVolume: 1.0,
             overrideExisting: true,
             restartTrack: true
           });
+        else
+        {
+          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
+        }
       }
     });
 
@@ -704,7 +734,7 @@ class ResultState extends MusicBeatSubState
     }
 
     songName.y = -songName.height;
-    var fuckedupnumber = (10) * (songName.text.length / 15);
+    var fuckedupnumber:Float = -(songName.width * 0.5) * Math.sin(songName.angle * FlxAngle.TO_RAD) - 10;
     FlxTween.tween(songName, {y: (diffYTween - 25 - fuckedupnumber) + ((blackTopBar.height - 148) / 1)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = clearPercentSmall.x + 94;
 
@@ -761,12 +791,15 @@ class ResultState extends MusicBeatSubState
 
     if (movingSongStuff)
     {
-      songName.x += speedOfTween.x;
-      difficulty.x += speedOfTween.x;
-      clearPercentSmall.x += speedOfTween.x;
-      songName.y += speedOfTween.y;
-      difficulty.y += speedOfTween.y;
-      clearPercentSmall.y += speedOfTween.y;
+      var speedX:Float = speedOfTween.x * 60 * elapsed;
+      var speedY:Float = speedOfTween.y * 60 * elapsed;
+
+      songName.x += speedX;
+      difficulty.x += speedX;
+      clearPercentSmall.x += speedX;
+      songName.y += speedY;
+      difficulty.y += speedY;
+      clearPercentSmall.y += speedY;
 
       if (songName.x + songName.width < 100)
       {
@@ -793,6 +826,7 @@ class ResultState extends MusicBeatSubState
         introMusicAudio.onComplete = null;
 
         FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+
           {
             onComplete: _ -> {
               if (introMusicAudio != null)
@@ -893,6 +927,16 @@ class ResultState extends MusicBeatSubState
           trace('THE RANK IS Higher.....');
 
           shouldTween = true;
+          if (isChartingMode)
+          {
+            PlayState.instance?.close();
+            FlxTimer.globalManager.clear();
+            FlxTween.globalManager.clear();
+            if (introMusicAudio != null) introMusicAudio.stop();
+            if (resultsMusic != null) resultsMusic.stop();
+            this.close();
+            return;
+          }
           targetState = FreeplayState.build(
             {
               {
@@ -910,6 +954,16 @@ class ResultState extends MusicBeatSubState
         }
         else
         {
+          if (isChartingMode)
+          {
+            PlayState.instance?.close();
+            FlxTimer.globalManager.clear();
+            FlxTween.globalManager.clear();
+            if (introMusicAudio != null) introMusicAudio.stop();
+            if (resultsMusic != null) resultsMusic.stop();
+            this.close();
+            return;
+          }
           shouldTween = false;
           shouldUseSubstate = true;
           targetStateFactory = () -> new StickerSubState(

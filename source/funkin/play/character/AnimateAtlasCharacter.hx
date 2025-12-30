@@ -5,7 +5,6 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
-import flixel.math.FlxPoint;
 
 /**
  * An AnimateAtlasCharacter is a Character which is rendered by
@@ -16,8 +15,6 @@ import flixel.math.FlxPoint;
  */
 class AnimateAtlasCharacter extends BaseCharacter
 {
-  var originalSizes(default, never):FlxPoint = new FlxPoint(0, 0);
-
   public function new(id:String)
   {
     super(id, CharacterRenderType.AnimateAtlas);
@@ -32,7 +29,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
     try
     {
-      trace('Loading assets for Animate Atlas character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+      log('Loading assets for Animate Atlas character "${characterId}"');
       loadAtlas();
       loadAnimations();
     }
@@ -41,15 +38,13 @@ class AnimateAtlasCharacter extends BaseCharacter
       throw "Exception thrown while building sprite: " + e;
     }
 
-    trace('[ATLASCHAR] Successfully loaded texture atlas for ${characterId} with ${_data.animations.length} animations.');
+    log('Successfully loaded texture atlas for ${characterId} with ${_data.animations.length} animations.');
     super.onCreate(event);
-
-    originalSizes.set(this.width, this.height);
   }
 
   function loadAtlas():Void
   {
-    trace('[ATLASCHAR] Loading sprite atlas for ${characterId}.');
+    log('Loading sprite atlas for ${characterId}.');
     var assetLibrary:String = Paths.getLibrary(_data.assetPath);
     var assetPath:String = Paths.stripLibrary(_data.assetPath);
 
@@ -71,7 +66,7 @@ class AnimateAtlasCharacter extends BaseCharacter
 
   function loadAnimations():Void
   {
-    trace('[ATLASCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    log('Loading ${_data.animations.length} animations for ${characterId}');
 
     FlxAnimationUtil.addTextureAtlasAnimations(this, _data.animations);
 
@@ -88,17 +83,7 @@ class AnimateAtlasCharacter extends BaseCharacter
     }
 
     var animNames = this.anim.getNameList();
-    trace('[ATLASCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
-  }
-
-  override function get_width():Float
-  {
-    return originalSizes.x;
-  }
-
-  override function get_height():Float
-  {
-    return originalSizes.y;
+    log('Successfully loaded ${animNames.length} animations for ${characterId}');
   }
 
   /**
@@ -108,5 +93,10 @@ class AnimateAtlasCharacter extends BaseCharacter
   public function getAtlasSettings():AtlasSpriteSettings
   {
     return cast _data.atlasSettings;
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' ATLASCHAR '.bold().bg_blue() + ' $message');
   }
 }

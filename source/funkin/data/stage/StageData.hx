@@ -274,6 +274,17 @@ typedef TextureAtlasData =
    */
   @:optional
   var applyStageMatrix:Bool;
+
+  /**
+   * If enabled, the sprite will render as one texture instead of rendering multiple limbs.
+   * This is useful for stuff like changing alpha, and shaders that require the whole sprite.
+   *
+   * Only enable this if your sprite either:
+   * - Changes alpha to something other than 1.0
+   * - Has a shader or blend mode
+   */
+  @:optional
+  var useRenderTexture:Bool;
 };
 
 typedef StageDataCharacter =

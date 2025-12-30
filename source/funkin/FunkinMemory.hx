@@ -145,7 +145,7 @@ class FunkinMemory
       return;
     }
 
-    trace('Successfully cached graphic: $key');
+    log('Cached asset $key');
     graphic.persist = true;
     currentCachedTextures.set(key, graphic);
     forceRender(graphic);
@@ -166,7 +166,7 @@ class FunkinMemory
       return;
     }
 
-    trace('Successfully cached graphic: $key');
+    log('Cached graphic $key');
     graphic.persist = true;
     permanentCachedTextures.set(key, graphic);
     forceRender(graphic);
@@ -421,7 +421,7 @@ class FunkinMemory
     @:privateAccess
     for (key in keysToRemove)
     {
-      trace('Cleaning up $key');
+      log('Cleaning asset $key');
       var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
       if (obj != null)
       {
@@ -452,7 +452,7 @@ class FunkinMemory
     @:privateAccess
     for (key in keysToRemove)
     {
-      trace('Cleaning up $key');
+      log('Cleaning asset $key');
       var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
       if (obj != null)
       {
@@ -462,5 +462,10 @@ class FunkinMemory
       if (currentCachedTextures.exists(key)) currentCachedTextures.remove(key);
       Assets.cache.clear(key);
     }
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' MEMORY '.bg_bright_lilac().bold() + ' ${message}');
   }
 }

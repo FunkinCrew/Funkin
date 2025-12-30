@@ -181,7 +181,7 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    trace('Starting attract timer');
+    trace('Opening Attract state in ${Constants.TITLE_ATTRACT_DELAY} seconds...');
     attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
   }
 

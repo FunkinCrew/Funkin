@@ -425,7 +425,7 @@ class HealthIcon extends FunkinSprite
 
     isLegacyStyle = !isNewSpritesheet(charId);
 
-    trace(' Loading health icon for character: $charId (legacy: $isLegacyStyle)');
+    trace('Loading health icon for character: $charId (legacy: $isLegacyStyle)');
 
     if (!isLegacyStyle)
     {

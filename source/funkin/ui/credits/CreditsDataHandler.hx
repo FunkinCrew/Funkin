@@ -21,13 +21,13 @@ class CreditsDataHandler
   {
     if (data == null)
     {
-      Sys.println(' INFO '.bold().bg_blue() + ' CreditsData(NULL)');
+      Sys.println(' INFO '.info() + ' CreditsData(NULL)');
       return;
     }
 
     if (data.entries == null || data.entries.length == 0)
     {
-      Sys.println(' INFO '.bold().bg_blue() + ' CreditsData(EMPTY)');
+      Sys.println(' INFO '.info() + ' CreditsData(EMPTY)');
       return;
     }
 
@@ -38,7 +38,7 @@ class CreditsDataHandler
       lineCount += entry?.body?.length ?? 0;
     }
 
-    Sys.println(' INFO '.bold().bg_blue() + ' CreditsData($entryCount entries containing $lineCount lines)');
+    Sys.println(' INFO '.info() + ' CreditsData($entryCount entries containing $lineCount lines)');
   }
   #end
 

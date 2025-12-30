@@ -151,6 +151,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           chartEditorState.currentSongMetadata = songMetadata;
           chartEditorState.healthIconsDirty = true;
+          chartEditorState.playerPreviewDirty = true;
+          chartEditorState.opponentPreviewDirty = true;
+
           chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
           chartEditorState.success('Replaced Metadata', 'Replaced metadata with file (${fileReference.name})');
         }
@@ -208,7 +211,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxTree.clearNodes();
 
     // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.currentSongName}'});
+    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.songMetadata.get('default').songName}'});
     treeSong.expanded = true;
 
     for (curVariation in chartEditorState.availableVariations)

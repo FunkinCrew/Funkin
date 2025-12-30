@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          trace('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
+          log('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -162,19 +162,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         if (variMeta != null)
         {
           _metadata.set(variMeta.variation, variMeta);
-          trace(' Loaded variation: $vari');
+          log('Loaded variation: $vari');
         }
         else
         {
           FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
-          trace(' FAILED to load variation: $vari');
+          log('FAILED to load variation: $vari');
         }
       }
     }
 
     if (_metadata.size() == 0)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Could not find song data for songId: $id');
+      log(' WARNING '.warning() + ' Could not find song data for songId: $id');
       return;
     }
 
@@ -302,7 +302,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // If there are no difficulties in the metadata, there's a problem.
       if (metadata.playData.difficulties.length == 0)
       {
-        trace('[SONG] Warning: Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
+        log(' WARNING '.warning() + 'Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
         continue;
       }
 
@@ -351,36 +351,35 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       clearCharts();
     }
 
-    trace('Caching ${variations.length} chart files for song $id');
-    for (variation in variations)
+    for (vari in variations)
     {
-      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, variation);
+      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, vari);
       if (version == null) continue;
-      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, variation, version);
+      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, vari, version);
       if (chart == null) continue;
-      applyChartData(chart, variation);
+      applyChartData(chart, vari);
     }
-    trace('Done caching charts.');
+    log('Cached ${variations.length} chart data files for song "$id"');
   }
 
-  function applyChartData(chartData:SongChartData, variation:String):Void
+  function applyChartData(chartData:SongChartData, vari:String):Void
   {
     var chartNotes = chartData.notes;
 
     for (diffId in chartNotes.keys())
     {
       // Retrieve the cached difficulty data. This one could potentially be null.
-      var nullDiff:Null<SongDifficulty> = getDifficulty(diffId, variation);
+      var nullDiff:Null<SongDifficulty> = getDifficulty(diffId, vari);
 
       // if the difficulty doesn't exist, create a new one, and then proceed to fill it with data.
       // I mostly do this since I don't wanna throw around ? everywhere for null check lol?
-      var difficulty:SongDifficulty = nullDiff ?? new SongDifficulty(this, diffId, variation);
+      var difficulty:SongDifficulty = nullDiff ?? new SongDifficulty(this, diffId, vari);
 
       if (nullDiff == null)
       {
         trace('Fabricated new difficulty for $diffId.');
-        var metadata = _metadata.get(variation);
-        difficulties.get(variation)?.set(diffId, difficulty);
+        var metadata = _metadata.get(vari);
+        difficulties.get(vari)?.set(diffId, difficulty);
 
         if (metadata != null)
         {
@@ -668,7 +667,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   static function _fetchData(id:String):Null<SongMetadata>
   {
-    trace('Fetching song metadata for $id');
     var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
     if (version == null) return null;
     return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
@@ -694,6 +692,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
 
     return VARIATION_REGEX.match(variation);
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' SONG '.bold().bg_note_down() + ' $message');
   }
 }
 
@@ -817,7 +820,7 @@ class SongDifficulty
   {
     for (voice in buildVoiceList())
     {
-      trace('Caching vocal track: $voice');
+      trace(' SONG '.bold().bg_note_down() + ' Caching vocal track "$voice" for song "${song.id}"');
       funkin.FunkinMemory.cacheSound(voice);
     }
   }

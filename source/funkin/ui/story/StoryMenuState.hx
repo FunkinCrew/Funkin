@@ -437,7 +437,7 @@ class StoryMenuState extends MusicBeatState
       }
 
       #if FEATURE_TOUCH_CONTROLS
-      if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
+      if (!selectedLevel && TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
       {
         for (i in 0...levelTitles.members.length)
         {

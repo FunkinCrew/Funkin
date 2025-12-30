@@ -47,7 +47,7 @@ class Save implements ConsoleClass
 
   public static function load():Save
   {
-    trace("[SAVE] Loading save...");
+    trace(' SAVE '.bold().bg_note_down() + ' Loading save...');
 
     // Bind save data.
     final loadedSave:Save = loadFromSlot(Constants.BASE_SAVE_SLOT);
@@ -67,7 +67,7 @@ class Save implements ConsoleClass
   @:nullSafety(Off)
   public function new(?data:RawSaveData)
   {
-    this.data = data ?? Save.getDefaultData();
+    this.data = data ??= Save.getDefaultData();
     // Build macro will inject SaveProperty initialization here automatically
 
     // Make sure the verison number is up to date before we flush.
@@ -170,6 +170,7 @@ class Save implements ConsoleClass
           chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
+          playtestAudioSettings: false,
           downscroll: false,
           showNoteKinds: true,
           metronomeVolume: 1.0,
@@ -280,6 +281,9 @@ class Save implements ConsoleClass
 
   @:saveProperty(data.optionsChartEditor.playtestStartTime, false)
   public var chartEditorPlaytestStartTime:SaveProperty<Bool>;
+
+  @:saveProperty(data.optionsChartEditor.playtestAudioSettings, false)
+  public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
 
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
@@ -400,9 +404,9 @@ class Save implements ConsoleClass
   {
     if (!data.unlocks.charactersSeen.contains(character))
     {
-      trace('Character seen: ' + character);
+      trace(' SAVE '.bold().bg_note_down() + 'Seen character "$character" in Character Select!');
       data.unlocks.charactersSeen.push(character);
-      trace('New characters seen list: ' + data.unlocks.charactersSeen);
+      trace(' SAVE '.bold().bg_note_down() + 'New list of characters seen: ${data.unlocks.charactersSeen}');
       Save.system.flush();
     }
   }
@@ -513,7 +517,7 @@ class Save implements ConsoleClass
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
-      trace('Could not find song data for $songId $difficultyId $variation');
+      trace(' SAVE '.bold().bg_note_down() + ' WARNING '.warning() + 'Could not find song data for $songId $difficultyId $variation');
       song = [];
       data.scores.songs.set(songId, song);
     }
@@ -1427,6 +1431,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestStartTime:Bool;
+
+  /**
+   * If true, playtest songs with the current audio settings in the Chart Editor.
+   * @default `false`
+   */
+  var ?playtestAudioSettings:Bool;
 
   /**
    * Theme music in the Chart Editor.

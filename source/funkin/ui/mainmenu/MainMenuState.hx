@@ -80,7 +80,7 @@ class MainMenuState extends MusicBeatState
     overrideMusic = _overrideMusic;
 
     // Start in Entering state during screen fade in
-    uiStateMachine.transition(Entering);
+    uiStateMachine.transition(EnteringMainMenu);
 
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
     magenta = new FlxSprite(Paths.image('menuBGMagenta'));

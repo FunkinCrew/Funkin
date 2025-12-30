@@ -998,12 +998,14 @@ class PauseSubState extends MusicBeatSubState
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.
-    PlayStatePlaylist.campaignScore = 0;
-    PlayStatePlaylist.campaignDifficulty = difficulty;
-    PlayState.instance.previousDifficulty = PlayState.instance.currentDifficulty;
-    PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
-
-    FreeplayState.rememberedDifficulty = difficulty;
+    if (difficulty != PlayState.instance.currentDifficulty)
+    {
+      PlayStatePlaylist.campaignScore = 0;
+      PlayStatePlaylist.campaignDifficulty = difficulty;
+      PlayState.instance.previousDifficulty = PlayState.instance.currentDifficulty;
+      PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
+      FreeplayState.rememberedDifficulty = difficulty;
+    }
 
     PlayState.instance.needsReset = true;
 

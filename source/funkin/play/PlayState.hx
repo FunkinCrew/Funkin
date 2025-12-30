@@ -122,6 +122,11 @@ typedef PlayStateParams =
    */
   ?botPlayMode:Bool,
   /**
+   * Whether the results screen should show up before returning to the chart editor.
+   * @default `false`
+   */
+  ?playtestResults:Bool,
+  /**
    * Whether the song should be in minimal mode.
    * @default `false`
    */
@@ -245,6 +250,24 @@ class PlayState extends MusicBeatSubState
   public var playbackRate:Float = 1.0;
 
   /**
+   * The volume of the instrumental track.
+   * @default `1.0` for 100%.
+   */
+  public var instrumentalVolume:Float = 1.0;
+
+  /**
+   * The volume of the player vocals track.
+   * @default `1.0` for 100%.
+   */
+  public var playerVocalsVolume:Float = 1.0;
+
+  /**
+   * The volume of the opponent vocals track.
+   * @default `1.0` for 100%.
+   */
+  public var opponentVocalsVolume:Float = 1.0;
+
+  /**
    * An empty FlxObject contained in the scene.
    * The current gameplay camera will always follow this object. Tween its position to move the camera smoothly.
    *
@@ -361,6 +384,11 @@ class PlayState extends MusicBeatSubState
    * If true, player will not gain or lose score from notes.
    */
   public var isBotPlayMode:Bool = false;
+
+  /**
+   * Whether the results screen should show up before returning to the chart editor.
+   */
+  public var isPlaytestResults:Bool = false;
 
   /**
    * Whether the player has dropped below zero health,
@@ -723,6 +751,7 @@ class PlayState extends MusicBeatSubState
     if (params.targetInstrumental != null) currentInstrumental = params.targetInstrumental;
     isPracticeMode = params.practiceMode ?? false;
     isBotPlayMode = params.botPlayMode ?? false;
+    isPlaytestResults = params.playtestResults ?? false;
     isMinimalMode = params.minimalMode ?? false;
     startTimestamp = params.startTimestamp ?? 0.0;
     playbackRate = params.playbackRate ?? 1.0;
@@ -837,6 +866,7 @@ class PlayState extends MusicBeatSubState
     var pre:Float = (Conductor.instance.beatLengthMs * -5) + startTimestamp;
 
     trace('Attempting to start at ' + pre);
+    trace('startTimestamp ${startTimestamp}');
 
     Conductor.instance.update(pre);
 
@@ -1049,16 +1079,15 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = instrumentalVolume;
 
       if (vocals != null)
       {
         vocals.pause();
         vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
-        vocals.volume = 1;
-        vocals.playerVolume = 1;
-        vocals.opponentVolume = 1;
+        vocals.playerVolume = playerVocalsVolume;
+        vocals.opponentVolume = opponentVocalsVolume;
       }
 
       if (!fromDeathState)
@@ -1071,7 +1100,7 @@ class PlayState extends MusicBeatSubState
       opponentStrumline.clean();
 
       // Delete all notes and reset the arrays.
-      regenNoteData();
+      regenNoteData(startTimestamp);
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
@@ -1172,15 +1201,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     if (justUnpaused)
     {
-      // pauseButton.alpha = 1;
-      // pauseCircle.alpha = 0.1;
-
-      FlxTween.cancelTweensOf(pauseButton);
-      FlxTween.cancelTweensOf(pauseCircle);
-
-      FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
-      FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
-
+      tweenPauseButtonIn();
       if (!startingSong && hitbox != null) hitbox.visible = true;
     }
     #end
@@ -1349,7 +1370,6 @@ class PlayState extends MusicBeatSubState
 
         if (!event.eventCanceled)
         {
-          shouldSubstatePause = true;
           persistentUpdate = false;
           persistentDraw = true;
 
@@ -1402,6 +1422,7 @@ class PlayState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransOut = true;
     pauseSubState.camera = cam;
     persistentUpdate = false;
+    shouldSubstatePause = true;
     openSubState(pauseSubState);
   }
 
@@ -2275,6 +2296,19 @@ class PlayState extends MusicBeatSubState
     hitbox?.forEachAlive(function(hint:FunkinHint) {
       hint.deadZones.push(pauseButton);
     });
+
+    VideoCutscene.onVideoEnded.add(tweenPauseButtonIn);
+    VideoCutscene.onVideoResumed.add(tweenPauseButtonIn);
+    VideoCutscene.onVideoRestarted.add(tweenPauseButtonIn);
+  }
+
+  function tweenPauseButtonIn():Void
+  {
+    FlxTween.cancelTweensOf(pauseButton);
+    FlxTween.cancelTweensOf(pauseCircle);
+
+    FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
+    FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
   }
   #end
 
@@ -2388,7 +2422,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    regenNoteData();
+    regenNoteData(startTimestamp);
 
     var event:ScriptEvent = new ScriptEvent(CREATE, false);
     ScriptEventDispatcher.callEvent(currentSong, event);
@@ -2564,7 +2598,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // Prevent the volume from being wrong.
-    FlxG.sound.music.volume = 1.0;
+    FlxG.sound.music.volume = instrumentalVolume;
     if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
 
     if (vocals != null)
@@ -2574,7 +2608,8 @@ class PlayState extends MusicBeatSubState
 
       vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
-      vocals.volume = 1.0;
+      vocals.playerVolume = playerVocalsVolume;
+      vocals.opponentVolume = opponentVocalsVolume;
 
       // trace('STARTING SONG AT:');
       // trace('${FlxG.sound.music.time}');
@@ -2700,7 +2735,7 @@ class PlayState extends MusicBeatSubState
     // Process notes on the opponent's side.
     for (note in opponentStrumline.notes.members)
     {
-      if (note == null) continue;
+      if (note == null || !note.alive) continue;
       var r = GRhythmUtil.processWindow(note, false);
       if (r.botplayHit)
       {
@@ -2750,7 +2785,7 @@ class PlayState extends MusicBeatSubState
     // Process notes on the player's side.
     for (note in playerStrumline.notes.members)
     {
-      if (note == null) continue;
+      if (note == null || !note.alive) continue;
       var r = GRhythmUtil.processWindow(note, !isBotPlayMode);
       if (r.botplayHit)
       {
@@ -3039,7 +3074,7 @@ class PlayState extends MusicBeatSubState
     playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    if (vocals != null) vocals.playerVolume = 1;
+    if (vocals != null) vocals.playerVolume = playerVocalsVolume;
 
     // Display the combo meter and add the calculation to the score.
     if (note.scoreable)
@@ -3289,7 +3324,7 @@ class PlayState extends MusicBeatSubState
     comboPopUps.displayRating(daRating);
     if (combo >= 10) comboPopUps.displayCombo(combo);
 
-    if (vocals != null) vocals.playerVolume = 1;
+    if (vocals != null) vocals.playerVolume = playerVocalsVolume;
   }
 
   /**
@@ -3598,7 +3633,21 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        this.close();
+        if (isPlaytestResults)
+        {
+          var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
+          var clearPercentFloat = talliesToUse.totalNotes == 0 ? 0.0 : (talliesToUse.sick + talliesToUse.good) / talliesToUse.totalNotes * 100;
+          /*
+              Only move to the score screen if more than 30% of the song was successfully hit.
+              While that might sound like a low clear percent, consider the fact that some songs are hard,
+              and the user might be only playtesting one third or half the song.
+             */
+          if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
+          else
+            this.close();
+        }
+        else
+          this.close();
       }
       else
       {

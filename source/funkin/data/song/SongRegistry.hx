@@ -56,7 +56,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
+    log(' INFO '.info() + 'Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -99,15 +99,15 @@ using funkin.data.song.migrator.SongDataMigrator;
         var entry:Null<Song> = createEntry(entryId);
         if (entry != null)
         {
-          trace(' Loaded entry data: ${entry}');
+          log('Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e:Dynamic)
       {
         // Print the error.
-        trace(' Failed to load entry data: ${entryId}');
-        trace(e);
+        log(' ERROR '.error() + 'Failed to load entry data: ${entryId}');
+        log(' ERROR '.error() + e);
         continue;
       }
     }

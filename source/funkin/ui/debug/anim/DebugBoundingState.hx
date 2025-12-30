@@ -536,6 +536,10 @@ class DebugBoundingState extends FlxState
     onionSkinChar.y = swagChar.y;
     onionSkinChar.debug = true;
 
+    // Enable `useRenderTexture` for texture atlas sprites so the alpha renders properly for them.
+    // This doesn't do anything for sparrows, don't worry!
+    onionSkinChar.useRenderTexture = true;
+
     offsetView.add(onionSkinChar);
     offsetView.add(swagChar);
 

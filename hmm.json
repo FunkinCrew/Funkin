@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "cb921a591bdb2dba604decf44cd8f5c3fbbe969b",
+      "ref": "4c69bb43f1fb89fd6003dc98d2f3a9d75c5364b6",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -42,10 +42,15 @@
       "version": "1.0.3"
     },
     {
+      "name": "extension-webviewcore",
+      "type": "haxelib",
+      "version": "1.0.0"
+    },
+    {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "757f2d0ab241ad0fb99fbcdac598fee31a905ea5",
+      "ref": "c8e79d2a42f9c11c639519ef2a6fd7ef2379a8aa",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -59,7 +64,7 @@
       "name": "flixel-animate",
       "type": "git",
       "dir": null,
-      "ref": "220463c8089444d6c9957b68919fe88e6cba495f",
+      "ref": "c61476f4b3a3d225631ab3065e4e925a4b63c076",
       "url": "https://github.com/MaybeMaru/flixel-animate"
     },
     {
@@ -111,7 +116,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "6546fa5c3ad1bac065f144745122ab5a6d4195ff",
+      "ref": "5932340d095a7eea8635fe4d1355f1c0efd0b3c2",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -146,7 +151,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.4"
+      "version": "2.2.5"
     },
     {
       "name": "json2object",
@@ -157,31 +162,27 @@
     },
     {
       "name": "jsonpatch",
-      "type": "git",
-      "dir": null,
-      "ref": "f9b83215acd586dc28754b4ae7f69d4c06c3b4d3",
-      "url": "https://github.com/EliteMasterEric/jsonpatch"
+      "type": "haxelib",
+      "version": "1.1.0"
     },
     {
       "name": "jsonpath",
-      "type": "git",
-      "dir": null,
-      "ref": "7a24193717b36393458c15c0435bb7c4470ecdda",
-      "url": "https://github.com/EliteMasterEric/jsonpath"
+      "type": "haxelib",
+      "version": "1.1.0"
     },
     {
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "d1596fe7daa9c479384ad2705e7813dbccf28839",
+      "ref": "318253ea3a28a3299a167748912c40444f403777",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "newgrounds",
       "type": "git",
       "dir": null,
-      "ref": "c8b30832027fa04f48fe6a45fa7903d5b265d56e",
-      "url": "https://github.com/Geokureli/Newgrounds/"
+      "ref": "b2b53cd0a5f030af74efd325732951cddbea8826",
+      "url": "https://github.com/FunkinCrew/Newgrounds"
     },
     {
       "name": "openfl",

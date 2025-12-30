@@ -125,7 +125,6 @@ class Conductor
     if (bpmOverride != null) return bpmOverride;
 
     if (currentTimeChange == null) return Constants.DEFAULT_BPM;
-
     @:privateAccess
     if (PlayState.instance != null && PlayState.instance.startingSong)
     {
@@ -398,11 +397,11 @@ class Conductor
   {
     if (bpm != null)
     {
-      trace('[CONDUCTOR] Forcing BPM to ${bpm}');
+      log('Forcing BPM to ${bpm}');
     }
     else
     {
-      trace('[CONDUCTOR] Resetting BPM to default');
+      log('Resetting BPM to default');
     }
 
     this.bpmOverride = bpm;
@@ -461,7 +460,7 @@ class Conductor
 
     if (currentTimeChange == null && bpmOverride == null && FlxG.sound.music != null)
     {
-      trace('WARNING: Conductor is broken, timeChanges is empty.');
+      log(' WARNING '.warning() + 'Conductor is broken, timeChanges is empty.');
     }
     else if (currentTimeChange != null && this.songPosition > 0.0)
     {
@@ -535,12 +534,9 @@ class Conductor
   public function getTimeWithDiff(?soundToCheck:FlxSound):Float
   {
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;
-    // trace(this.songPosition);
 
     @:privateAccess
     this.songPosition = soundToCheck._channel.position;
-    // return this.songPosition + (Std.int(Timer.stamp() * 1000) - prevTimestamp);
-    // trace("\t--> " + this.songPosition);
     return this.songPosition;
   }
 
@@ -584,9 +580,17 @@ class Conductor
       timeChanges.push(songTimeChange);
     }
 
-    if (timeChanges.length > 0)
+    if (timeChanges.length == 1)
     {
-      trace('Done mapping time changes: ${timeChanges}');
+      log('Done mapping single time change to ${timeChanges[0].bpm} BPM');
+    }
+    else if (timeChanges.length > 1)
+    {
+      log('Done mapping ${timeChanges.length} time changes (starting at ${timeChanges[0].bpm} BPM)');
+    }
+    else
+    {
+      log(' WARNING '.warning() + ' Conductor mapped no time changes?');
     }
 
     // Update currentStepTime
@@ -882,5 +886,10 @@ class Conductor
     FlxG.watch.addQuick('currentMeasureTime', target.currentMeasureTime);
     FlxG.watch.addQuick('currentBeatTime', target.currentBeatTime);
     FlxG.watch.addQuick('currentStepTime', target.currentStepTime);
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' CONDUCTOR '.bg_purple().bold() + ' ${message}');
   }
 }
