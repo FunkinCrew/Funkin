@@ -1196,10 +1196,11 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.visible = true;
       holdNoteSprite.alpha = 1.0;
 
-      holdNoteSprite.x = this.x;
-      holdNoteSprite.x += getXPos(DIRECTIONS[note.getDirection() % KEY_COUNT]);
-      holdNoteSprite.x += STRUMLINE_SIZE / 2;
-      holdNoteSprite.x -= holdNoteSprite.width / 2;
+      // Make sure the hold note stays centered to the strumline if the scale changes.
+      holdNoteSprite.onScaleChanged.add(function(value:FlxPoint) {
+        setupHoldNotePosition(holdNoteSprite);
+      });
+      setupHoldNotePosition(holdNoteSprite);
       holdNoteSprite.y = -9999;
     }
 
@@ -1430,6 +1431,18 @@ class Strumline extends FlxSpriteGroup
   function compareHoldNoteSprites(order:Int, a:SustainTrail, b:SustainTrail):Int
   {
     return FlxSort.byValues(order, a?.strumTime, b?.strumTime);
+  }
+
+  /**
+   * Re-positions the given hold note sprite to be centered to its strumline.
+   * @param holdNote The hold note to re-position.
+   */
+  function setupHoldNotePosition(holdNote:SustainTrail)
+  {
+    holdNote.x = this.x;
+    holdNote.x += getXPos(DIRECTIONS[holdNote.noteData.getDirection() % KEY_COUNT]);
+    holdNote.x += STRUMLINE_SIZE / 2;
+    holdNote.x -= holdNote.width / 2;
   }
 
   /**
