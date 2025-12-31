@@ -11,36 +11,25 @@
 #include <stdint.h>
 #include <stdio.h>
 
-void WINAPI_ShowError(void* handle, const char *message, const char *title)
+void WINAPI_ShowError(const char *message, const char *title)
 {
-    HWND hwnd = (HWND)handle;
-
-    if (!IsWindow(hwnd))
-      hwnd = nullptr;
-
-    MessageBox(hwnd, message, title, MB_OK | MB_ICONERROR);
+  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONERROR);
 }
 
-void WINAPI_ShowWarning(void* handle, const char *message, const char *title)
+void WINAPI_ShowWarning(const char *message, const char *title)
 {
-    HWND hwnd = (HWND)handle;
-
-    if (!IsWindow(hwnd))
-        hwnd = nullptr;
-
-    MessageBox(hwnd, message, title, MB_OK | MB_ICONWARNING);
+  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONWARNING);
 }
 
-void WINAPI_ShowInformation(void* handle, const char *message, const char *title)
+void WINAPI_ShowInformation(const char *message, const char *title)
 {
-    HWND hwnd = (HWND)handle;
-
-    if (!IsWindow(hwnd))
-        hwnd = nullptr;
-
-    MessageBox(hwnd, message, title, MB_OK | MB_ICONINFORMATION);
+  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONINFORMATION);
 }
 
+void WINAPI_ShowQuestion(const char *message, const char *title)
+{
+  MessageBox(GetActiveWindow(), message, title, MB_OKCANCEL | MB_ICONQUESTION);
+}
 
 void WINAPI_DisableErrorReporting()
 {
@@ -62,19 +51,16 @@ size_t WINAPI_GetProcessMemoryWorkingSetSize()
 	return 0;
 }
 
-void WINAPI_SetDarkMode(void* handle, bool enable)
+void WINAPI_SetDarkMode(bool enable)
 {
-  HWND hwnd = (HWND)handle;
-
-  if (!IsWindow(hwnd))
-    return;
+  HWND window = GetActiveWindow();
 
   int darkMode = enable ? 1 : 0;
 
-  if (DwmSetWindowAttribute(hwnd, 20, &darkMode, sizeof(darkMode)) != S_OK)
-    DwmSetWindowAttribute(hwnd, 19, &darkMode, sizeof(darkMode));
+  if (DwmSetWindowAttribute(window, 20, &darkMode, sizeof(darkMode)) != S_OK)
+    DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode));
 
-  UpdateWindow(hwnd);
+  UpdateWindow(window);
 }
 
 bool WINAPI_IsSystemDarkMode()

@@ -188,69 +188,69 @@ class ChartEditorAudioHandler
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
-    // early return
-    if (vocalTrack == null) return false;
-
-    switch (charType)
+    if (vocalTrack != null)
     {
-      case BF:
-        state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+      switch (charType)
+      {
+        case BF:
+          state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
 
-        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-        if (waveformData != null)
-        {
-          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
-          waveformSprite.x = 840;
-          state.audioWaveforms.add(waveformSprite);
-        }
-        else
-        {
-          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
-        }
+          if (waveformData != null)
+          {
+            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
+            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            waveformSprite.x = 840;
+            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+            waveformSprite.time = 0;
+            waveformSprite.duration = duration;
+            state.audioWaveforms.add(waveformSprite);
+          }
+          else
+          {
+            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+          }
 
-        state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
-        return true;
-      case DAD:
-        state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
+          return true;
+        case DAD:
+          state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-        if (waveformData != null)
-        {
-          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
-          waveformSprite.x = 360;
-          state.audioWaveforms.add(waveformSprite);
-        }
-        else
-        {
-          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
-        }
+          if (waveformData != null)
+          {
+            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
+            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            waveformSprite.x = 360;
+            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+            waveformSprite.time = 0;
+            waveformSprite.duration = duration;
+            state.audioWaveforms.add(waveformSprite);
+          }
+          else
+          {
+            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+          }
 
-        state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
+          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
-        return true;
-      case OTHER:
-        state.audioVocalTrackGroup.add(vocalTrack);
-        // TODO: Add offset for other characters.
-        return true;
-      default:
-        // Do nothing.
+          return true;
+        case OTHER:
+          state.audioVocalTrackGroup.add(vocalTrack);
+          // TODO: Add offset for other characters.
+          return true;
+        default:
+          // Do nothing.
+      }
     }
 
     return false;
-  }
-
-  // initializes a waveform sprite with buncho non-charType specific things
-  static function initWaveformSprite(waveformData:WaveformData, state:ChartEditorState):WaveformSprite
-  {
-    var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-    waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-    waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-    waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-    waveformSprite.time = 0;
-    waveformSprite.duration = Conductor.instance.getStepTimeInMs(16) * 0.001;
-    return waveformSprite;
   }
 
   public static function stopExistingVocals(state:ChartEditorState):Void
@@ -311,7 +311,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get('default');
         if (data == null)
         {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
@@ -321,7 +321,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get(key);
         if (data == null)
         {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
@@ -346,7 +346,7 @@ class ChartEditorAudioHandler
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
       if (data == null)
       {
-        trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
+        trace(' WARNING '.bold().bg_yellow() + ' Failed to access vocal track ($key)');
         continue;
       }
       zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));

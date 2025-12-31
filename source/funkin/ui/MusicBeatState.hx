@@ -14,7 +14,6 @@ import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.input.Controls;
-import funkin.ui.FullScreenScaleMode;
 #if mobile
 import funkin.graphics.FunkinCamera;
 import funkin.mobile.ui.FunkinHitbox;
@@ -56,8 +55,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function new()
   {
-    if (FullScreenScaleMode.instance != null) FullScreenScaleMode.instance.onMeasurePostAwait();
-
     super();
 
     initCallbacks();

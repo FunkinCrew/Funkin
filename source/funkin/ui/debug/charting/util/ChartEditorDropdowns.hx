@@ -236,7 +236,7 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind(startingKindId);
+    var returnValue:DropDownEntry = lookupNoteKind('');
 
     for (noteKindId in NOTE_KINDS.keys())
     {
@@ -256,7 +256,7 @@ class ChartEditorDropdowns
   public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
   {
     if (noteKindId == null) return lookupNoteKind('');
-    if (noteKindId != '' && !NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
+    if (!NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
     return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
   }
 

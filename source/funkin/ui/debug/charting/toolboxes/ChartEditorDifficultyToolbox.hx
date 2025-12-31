@@ -1,6 +1,5 @@
 package funkin.ui.debug.charting.toolboxes;
 
-import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -70,14 +69,6 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 
     difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
       chartEditorState.openAddDifficultyDialog(true);
-    };
-
-    difficultyToolboxCloneDifficulty.onClick = function(_:UIEvent) {
-      chartEditorState.openCloneDifficultyDialog(false, true);
-    };
-
-    difficultyToolboxMoveDifficulty.onClick = function(_:UIEvent) {
-      chartEditorState.openCloneDifficultyDialog(true, true);
     };
 
     difficultyToolboxRemoveDifficulty.onClick = function(_:UIEvent) {
@@ -151,9 +142,6 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           chartEditorState.currentSongMetadata = songMetadata;
           chartEditorState.healthIconsDirty = true;
-          chartEditorState.playerPreviewDirty = true;
-          chartEditorState.opponentPreviewDirty = true;
-
           chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
           chartEditorState.success('Replaced Metadata', 'Replaced metadata with file (${fileReference.name})');
         }
@@ -211,7 +199,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxTree.clearNodes();
 
     // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.songMetadata.get('default').songName}'});
+    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.currentSongName}'});
     treeSong.expanded = true;
 
     for (curVariation in chartEditorState.availableVariations)
@@ -289,10 +277,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         if (variation != null && difficulty != null)
         {
           trace('Changing difficulty to "$variation:$difficulty"');
-
-          chartEditorState.performCommand(new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation,
-            variation));
-
+          chartEditorState.selectedVariation = variation;
+          chartEditorState.selectedDifficulty = difficulty;
+          chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
           refreshTreeSelection();
         }
       // case 'song':

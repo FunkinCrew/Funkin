@@ -154,7 +154,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       {
         if (!validateVariationId(vari))
         {
-          log('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
+          trace('  WARNING '.bold().bg_yellow() + ' Variation id "$vari" is invalid, skipping...');
           continue;
         }
 
@@ -162,19 +162,19 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         if (variMeta != null)
         {
           _metadata.set(variMeta.variation, variMeta);
-          log('Loaded variation: $vari');
+          trace(' Loaded variation: $vari');
         }
         else
         {
           FlxG.log.warn('[SONG] Failed to load variation metadata (${id}:${vari}), is the path correct?');
-          log('FAILED to load variation: $vari');
+          trace(' FAILED to load variation: $vari');
         }
       }
     }
 
     if (_metadata.size() == 0)
     {
-      log(' WARNING '.warning() + ' Could not find song data for songId: $id');
+      trace(' WARNING '.bold().bg_yellow() + ' Could not find song data for songId: $id');
       return;
     }
 
@@ -193,15 +193,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param validScore Whether the song is elegible for highscores.
    * @return The constructed song object.
    */
-  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variation:String, charts:Map<String, SongChartData>, includeScript:Bool = true,
-      validScore:Bool = false):Song
+  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variations:Array<String>, charts:Map<String, SongChartData>,
+      includeScript:Bool = true, validScore:Bool = false):Song
   {
     @:privateAccess
     var result:Null<Song> = null;
 
-    if (includeScript && SongRegistry.instance.isScriptedEntry(songId, {variation: variation}))
+    if (includeScript && SongRegistry.instance.isScriptedEntry(songId))
     {
-      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId, {variation: variation});
+      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId);
       @:privateAccess
       if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }
@@ -302,7 +302,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       // If there are no difficulties in the metadata, there's a problem.
       if (metadata.playData.difficulties.length == 0)
       {
-        log(' WARNING '.warning() + 'Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
+        trace('[SONG] Warning: Song $id (variation ${metadata.variation}) has no difficulties listed in metadata!');
         continue;
       }
 
@@ -351,35 +351,36 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       clearCharts();
     }
 
-    for (vari in variations)
+    trace('Caching ${variations.length} chart files for song $id');
+    for (variation in variations)
     {
-      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, vari);
+      var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryChartVersion(id, variation);
       if (version == null) continue;
-      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, vari, version);
+      var chart:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataWithMigration(id, variation, version);
       if (chart == null) continue;
-      applyChartData(chart, vari);
+      applyChartData(chart, variation);
     }
-    log('Cached ${variations.length} chart data files for song "$id"');
+    trace('Done caching charts.');
   }
 
-  function applyChartData(chartData:SongChartData, vari:String):Void
+  function applyChartData(chartData:SongChartData, variation:String):Void
   {
     var chartNotes = chartData.notes;
 
     for (diffId in chartNotes.keys())
     {
       // Retrieve the cached difficulty data. This one could potentially be null.
-      var nullDiff:Null<SongDifficulty> = getDifficulty(diffId, vari);
+      var nullDiff:Null<SongDifficulty> = getDifficulty(diffId, variation);
 
       // if the difficulty doesn't exist, create a new one, and then proceed to fill it with data.
       // I mostly do this since I don't wanna throw around ? everywhere for null check lol?
-      var difficulty:SongDifficulty = nullDiff ?? new SongDifficulty(this, diffId, vari);
+      var difficulty:SongDifficulty = nullDiff ?? new SongDifficulty(this, diffId, variation);
 
       if (nullDiff == null)
       {
         trace('Fabricated new difficulty for $diffId.');
-        var metadata = _metadata.get(vari);
-        difficulties.get(vari)?.set(diffId, difficulty);
+        var metadata = _metadata.get(variation);
+        difficulties.get(variation)?.set(diffId, difficulty);
 
         if (metadata != null)
         {
@@ -667,6 +668,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   static function _fetchData(id:String):Null<SongMetadata>
   {
+    trace('Fetching song metadata for $id');
     var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
     if (version == null) return null;
     return SongRegistry.instance.parseEntryMetadataWithMigration(id, Constants.DEFAULT_VARIATION, version);
@@ -692,11 +694,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
 
     return VARIATION_REGEX.match(variation);
-  }
-
-  static function log(message:String):Void
-  {
-    trace(' SONG '.bold().bg_note_down() + ' $message');
   }
 }
 
@@ -820,7 +817,7 @@ class SongDifficulty
   {
     for (voice in buildVoiceList())
     {
-      trace(' SONG '.bold().bg_note_down() + ' Caching vocal track "$voice" for song "${song.id}"');
+      trace('Caching vocal track: $voice');
       funkin.FunkinMemory.cacheSound(voice);
     }
   }

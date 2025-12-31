@@ -104,10 +104,6 @@ class PlayerFreeplayDJData
   var animations:Array<AnimationData>;
 
   @:optional
-  @:default(false)
-  var applyStageMatrix:Bool;
-
-  @:optional
   @:default("BOYFRIEND")
   var text1:String;
 
@@ -162,15 +158,10 @@ class PlayerFreeplayDJData
   }
 
   public inline function getAssetPath():String
-    return assetPath; // return assetPath;
+    return assetPath; // return Paths.animateAtlas(assetPath);
 
   public inline function getAnimationsList():Array<AnimationData>
     return animations;
-
-  public function useApplyStageMatrix():Bool
-  {
-    return applyStageMatrix;
-  }
 
   public function getFreeplayDJText(index:Int):String
   {
@@ -351,10 +342,6 @@ typedef PlayerResultsAnimationData =
    * `sparrow` or `animate` or whatever
    */
   var renderType:String;
-
-  @:optional
-  @:default(false)
-  var applyStageMatrix:Bool;
 
   @:optional
   var assetPath:Null<String>;

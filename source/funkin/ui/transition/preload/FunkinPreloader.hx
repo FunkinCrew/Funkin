@@ -120,7 +120,8 @@ class FunkinPreloader extends FlxBasePreloader
   {
     super(Constants.PRELOADER_MIN_STAGE_TIME);
 
-    trace(' PRELOADER '.bold().bg_note_left() + ' Starting custom preloader...');
+    // We can't even call trace() yet, until Flixel loads.
+    trace('Initializing custom preloader...');
   }
 
   override function create():Void
@@ -142,7 +143,7 @@ class FunkinPreloader extends FlxBasePreloader
     this._width = Lib.current.stage.stageWidth;
     this._height = Lib.current.stage.stageHeight;
 
-    trace(' PRELOADER '.bold().bg_note_left() + ' Resolution: ${this._width}x${this._height}');
+    trace('Preloader size: ' + this._width + 'x' + this._height);
 
     // Scale assets to the screen size.
     // Desktop is always 1:1 scale, mobile needs DPI normalization for consistent positioning
@@ -878,10 +879,7 @@ class FunkinPreloader extends FlxBasePreloader
     var percentage:Int = Math.floor(percent * 100);
     progressRightText.text = '$percentage%';
 
-    if (currentState.getProgressLeftText() != null)
-    {
-      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
-    }
+    if (currentState.getProgressLeftText() != null) trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
 
     super.update(percent);
   }

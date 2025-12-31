@@ -116,19 +116,14 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       charButton.onClick = _ -> {
         switch (charType)
         {
-          case BF:
-            chartEditorState.currentSongMetadata.playData.characters.player = charId;
-            chartEditorState.playerPreviewDirty = true;
+          case BF: chartEditorState.currentSongMetadata.playData.characters.player = charId;
           case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
-          case DAD:
-            chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
-            chartEditorState.opponentPreviewDirty = true;
+          case DAD: chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
           default: throw 'Invalid charType: ' + charType;
         };
 
         defaultText = (charId != "") ? '${charData.name} [${charId}]' : 'None';
         chartEditorState.healthIconsDirty = true;
-
         chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       };
 
