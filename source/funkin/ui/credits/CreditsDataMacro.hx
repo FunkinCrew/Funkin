@@ -12,12 +12,12 @@ class CreditsDataMacro
   public static macro function loadCreditsData():haxe.macro.Expr.ExprOf<CreditsData>
   {
     #if !display
-    Sys.println(' INFO '.bold().bg_blue() + ' Hardcoding credits data...');
+    Sys.println(' INFO '.info() + ' Hardcoding credits data...');
     var json = CreditsDataMacro.fetchJSON();
 
     if (json == null)
     {
-      Context.info(' WARNING '.bold().bg_yellow() + ' Could not fetch JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.warning() + ' Could not fetch JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
@@ -25,7 +25,7 @@ class CreditsDataMacro
 
     if (creditsData == null)
     {
-      Context.info(' WARNING '.bold().bg_yellow() + ' Could not parse JSON data for credits.', Context.currentPos());
+      Context.info(' WARNING '.warning() + ' Could not parse JSON data for credits.', Context.currentPos());
       return macro $v{CreditsDataHandler.getFallback()};
     }
 
@@ -66,7 +66,7 @@ class CreditsDataMacro
     }
     catch (e)
     {
-      trace(' ERROR '.bg_red().bold() + ' Failed to parse JSON data for credits.');
+      trace(' ERROR '.error() + ' Failed to parse JSON data for credits.');
       trace(e);
       return null;
     }

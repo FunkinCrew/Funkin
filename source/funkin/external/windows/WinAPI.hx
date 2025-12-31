@@ -11,38 +11,32 @@ extern class WinAPI
   /**
    * Shows a message box with an error icon.
    *
+   * @param handle A handle to the parent window.
    * @param message The message to display.
    * @param title The title of the message box.
    */
   @:native('WINAPI_ShowError')
-  static function showError(message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
+  static function showError(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
 
   /**
    * Shows a message box with a warning icon.
    *
+   * @param handle A handle to the parent window.
    * @param message The message to display.
    * @param title The title of the message box.
    */
   @:native('WINAPI_ShowWarning')
-  static function showWarning(message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
+  static function showWarning(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
 
   /**
    * Shows a message box with an information icon.
    *
+   * @param handle A handle to the parent window.
    * @param message The message to display.
    * @param title The title of the message box.
    */
   @:native('WINAPI_ShowInformation')
-  static function showInformation(message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
-
-  /**
-   * Shows a message box with a question icon.
-   *
-   * @param message The message to display.
-   * @param title The title of the message box.
-   */
-  @:native('WINAPI_ShowQuestion')
-  static function showQuestion(message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
+  static function showInformation(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
 
   /**
    * Disables the "Report to Microsoft" dialog that appears when the application crashes.
@@ -67,10 +61,11 @@ extern class WinAPI
   /**
    * Sets the dark mode for the active window.
    *
+   * @param handle A handle to the parent window.
    * @param enable Whether to enable or disable dark mode.
    */
   @:native('WINAPI_SetDarkMode')
-  static function setDarkMode(enable:Bool):Void;
+  static function setDarkMode(handle:cpp.RawPointer<cpp.Void>, enable:Bool):Void;
 
   /**
    * Checks if the system is using dark mode.

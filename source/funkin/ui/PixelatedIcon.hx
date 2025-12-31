@@ -40,7 +40,7 @@ class PixelatedIcon extends FlxFilteredSprite
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no freeplay icon.');
+      trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       this.visible = false;
       return;
     }
@@ -78,7 +78,6 @@ class PixelatedIcon extends FlxFilteredSprite
       this.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
 
       this.animation.onFinish.add(function(name:String):Void {
-        trace('Finish pixel animation: ${name}');
         if (name == 'confirm') this.animation.play('confirm-hold');
       });
 

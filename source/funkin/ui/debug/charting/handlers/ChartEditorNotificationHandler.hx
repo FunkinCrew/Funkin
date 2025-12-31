@@ -1,8 +1,10 @@
 package funkin.ui.debug.charting.handlers;
 
 #if FEATURE_CHART_EDITOR
+import haxe.ui.animation.AnimationBuilder;
 import haxe.ui.components.Button;
 import haxe.ui.containers.HBox;
+import haxe.ui.core.Screen;
 import haxe.ui.notifications.Notification;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
@@ -15,6 +17,35 @@ class ChartEditorNotificationHandler
     // Setup notifications.
     @:privateAccess
     NotificationManager.GUTTER_SIZE = 45;
+
+    NotificationManager.instance.animationFn = AnimateFromBottom;
+  }
+
+  // since GUTTER_SIZE affects both x and y, we'll replace the positioning with this!
+  // for some reason the first notif always has a downwards offset of like 10 and idk how to fix that
+  // that was also a problem before this
+  public static function AnimateFromBottom(notifications:Array<Notification>):Array<AnimationBuilder>
+  {
+    var builders = [];
+
+    var scy = Screen.instance.height;
+    var baselineY = scy - 65;
+
+    for (notification in notifications)
+    {
+      var builder = new AnimationBuilder(notification);
+      builder.setPosition(0, "top", Std.int(notification.top), true);
+      builder.setPosition(100, "top", Std.int(baselineY - notification.height), true);
+      if (notification.opacity == 0)
+      {
+        builder.setPosition(0, "opacity", 0, true);
+        builder.setPosition(100, "opacity", 1, true);
+      }
+      builders.push(builder);
+      baselineY -= (notification.height + @:privateAccess NotificationManager.SPACING);
+    }
+
+    return builders;
   }
 
   /**

@@ -115,7 +115,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT || controls.BACK #if mobile || TouchUtil.pressAction() #end && !busy)
+    if (controls.ACCEPT_P || controls.BACK_P #if mobile || TouchUtil.pressAction() #end && !busy)
     {
       busy = true;
       startClose();

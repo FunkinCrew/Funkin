@@ -70,7 +70,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
   public function hasNewCharacter():Bool
   {
     #if (!UNLOCK_EVERYTHING)
-    var charactersSeen = Save.instance.charactersSeen.clone();
+    var charactersSeen = Save.instance.charactersSeen.value.clone();
 
     for (charId in listEntryIds())
     {
@@ -94,7 +94,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
     var result = [];
 
     #if (!UNLOCK_EVERYTHING)
-    var charactersSeen = Save.instance.charactersSeen.clone();
+    var charactersSeen = Save.instance.charactersSeen.value.clone();
     for (charId in listEntryIds())
     {
       var player = fetchEntry(charId);
@@ -143,7 +143,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
     #if UNLOCK_EVERYTHING
     return true;
     #else
-    return Save.instance.charactersSeen.contains(characterId);
+    return Save.instance.charactersSeen.value.contains(characterId);
     #end
   }
 }
