@@ -24,17 +24,14 @@ import funkin.ui.options.items.NumberPreferenceItem;
 import haxe.Int64;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
-import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-/*
-  ArrowData is a structure that holds the sprite and beat of an arrow.
-  @param sprite The sprite of the arrow.
-  @param beat The beat of the arrow.
+/**
+ * Data structure for an arrow in the offset calibration/testing screen.
+ * Contains the sprite, beat, and direction of the arrow.
  */
 typedef ArrowData =
 {
@@ -110,10 +107,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
-  /*
-    Creates an arrow at the specified beat.
-    The arrow will be positioned below the screen and will move up to the receptor.
-    @param beat The beat at which to create the arrow.
+  /**
+   * Creates an arrow at the specified beat.
+   * @param beat The beat to create the arrow at.
    */
   public function createArrow(beat:Float):Void
   {
@@ -125,43 +121,18 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     arrow.cameras = [menuCamera];
     add(arrow);
 
-    /*var debugText = new FlxText(0, 0);
-      debugText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.CENTER);
-      debugText.text = 'Beat: ' + beat;
-      debugText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-          add(debugText); */
-
     arrows.push(
       {
         sprite: arrow,
-        /*debugText: debugText,*/
         beat: beat,
         direction: 0
       });
   }
 
-  /*
-    Creates a directed arrow at the specified beat and direction.
-    The direction can be 0 (left), 1 (down), 2 (up), or 3 (right).
-    @param beat The beat at which to create the arrow.
-    @param direction The direction of the arrow.
-   */
-  public function createDirectedArrow(beat:Float, direction:Int):Void
-  {
-    var arrow = new FunkinSprite(0, 0);
-    arrow.loadGraphic(Paths.image('latencyArrow'));
-    arrow.origin.set(0.5, 0.5);
-    arrow.setPosition(FlxG.width / 2, FlxG.height + arrow.height); // Below the screen
-    arrow.updateHitbox();
-    add(arrow);
-
-    arrows.push({sprite: arrow, beat: beat, direction: direction});
-  }
-
-  /*
-    Gets the arrow at the specified beat.
-    @param beat The beat at which to get the arrow.
-    @return The ArrowData object containing the sprite and beat, or null if no arrow is found.
+  /**
+   * Gets the arrow at the specified beat.
+   * @param beat The beat to check.
+   * @return ArrowData of the arrow at the specified beat, or null if none exists.
    */
   public function getArrowAtBeat(beat:Float):ArrowData
   {
@@ -172,11 +143,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     return null;
   }
 
-  /*
-    Gets the closest arrow to the specified beat.
-    This is used to find the arrow that is closest to the current time.
-    @param beat The beat at which to find the closest arrow.
-    @return The ArrowData object containing the sprite and beat of the closest arrow.
+  /**
+   * Gets the closest arrow to the specified beat.
+   * @param beat The beat to check against.
+   * @return ArrowData of the closest arrow.
    */
   public function getClosestArrowAtBeat(beat:Float):ArrowData
   {
@@ -186,7 +156,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     for (arrow in arrows)
     {
       var diff:Float = arrow.beat - beat;
-      // trace('Checking arrow at beat: ' + arrow.beat + ' (diff: ' + diff + ')');
       if (diff < closestDiff)
       {
         closestDiff = diff;
@@ -194,7 +163,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       }
     }
 
-    // trace('Closest arrow at beat: ' + (closest != null ? closest.beat : 0) + ' (diff: ' + closestDiff + ')');
 
     return closest;
   }
@@ -217,15 +185,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     blackRect.alpha = 0;
     blackRect.scrollFactor.set(0, 0);
     add(blackRect);
-
-    /*debugBeatText = new FlxText(0, 0);
-      debugBeatText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.LEFT);
-      debugBeatText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-      debugBeatText.setPosition(10, 10);
-      debugBeatText.scrollFactor.set(0, 0);
-      add(debugBeatText);
-
-          debugBeatText.alpha = 0; */
 
     receptor = new FunkinSprite(0, 0);
     receptor.loadGraphic(Paths.image('latencyReceptor'));
@@ -422,17 +381,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
 
-    // camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    // if (items != null) camFollow.y = items.selectedItem.y;
-
-    // menuCamera.follow(camFollow, null, 0.085);
-    // var margin = 160;
-    // menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
-    // menuCamera.minScrollY = 0;
-
-    // items.onChange.add(function(selected) {
-    //  camFollow.y = selected.y;
-    // });
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, handleMobileExit);
     #if FEATURE_TOUCH_CONTROLS // We do this here because we want to animate the back button (on Mobile), but we don't want it on Desktop.
     add(backButton);
@@ -504,7 +452,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   // Returns the consistency of the differences.
-  // Consistency is the average of the squared differences from the mean.
+  // Consistency is the average of the squared differences from the mean. (Standard deviation)
   public function getConsistency():Float
   {
     if (differences.length == 0) return 0;
@@ -516,31 +464,31 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       variance += Math.pow(differences[i] - avg, 2);
     }
-    variance /= differences.length;
 
-    return Math.sqrt(variance);
+    return Math.sqrt(variance / differences.length);
   }
 
   var _offsetLerpTime:Float = 0;
   var _lastOffset:Float = 0;
   var _lastDirection:Int = 0;
 
-  /* Adds a difference in milliseconds to the list.
-      If there are more than 4 differences, it calculates the average and sets the global offset.
-      This is used for calibrating the offset based on user input.
-      @param ms The difference in milliseconds to add.
-      @see Preferences.globalOffset
+  /**
+     * Adds a difference in milliseconds to the list of differences.
+     * Calculates a new temporary offset every 4 differences.
+     * @param ms The difference in milliseconds.
+     * @see Preferences.globalOffset
      */
   public function addDifference(ms:Float):Void
   {
     differences.push(ms);
 
-    if (differences.length > 2 && differences.length % 2 != 0 && calibrating)
+    if (differences.length % 4 == 0 && calibrating)
     {
       var avg:Float = getAverage();
       tempOffset = Std.int(avg);
       _lastOffset = appliedOffsetLerp;
       _offsetLerpTime = 0;
+      trace('New offset calculated: ' + tempOffset + 'ms');
     }
   }
 
@@ -632,22 +580,17 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       {
         var arrow:ArrowData = arrows[i];
 
-        var beatOffset:Float = appliedOffsetLerp / msPerBeat;
-
         var ms:Float = arrow.beat * msPerBeat;
-        var offset:Float = GRhythmUtil.getNoteY(ms + appliedOffsetLerp, 2, false, localConductor);
+        var offset:Float = GRhythmUtil.getNoteY(ms - appliedOffsetLerp, 2, false, localConductor);
         arrow.sprite.y = receptor.y + offset - (arrow.sprite.height / 2);
         arrow.sprite.x = receptor.x - (arrow.sprite.width / 2);
 
-        // arrow.debugText.text = 'Beat: ' + arrow.beat;
-        // arrow.debugText.setPosition(arrow.sprite.x + arrow.sprite.width, arrow.sprite.y - 20);
-
-        if ((arrow.beat + beatOffset) < b - 0.25)
+        if ((ms - appliedOffsetLerp) - localConductor.songPosition < -180)
         {
           arrow.sprite.alpha -= elapsed * 5;
         }
 
-        if (arrow.beat == _lastArrowBeat || arrow.sprite.alpha <= 0)
+        if (arrow.beat == _lastArrowBeat || arrow.sprite.alpha <= 0 || differences.length < 8)
         {
           toRemove.push(arrow);
           arrow.sprite.kill();
@@ -659,17 +602,15 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       // Remove arrows that are marked for removal.
       for (arrow in toRemove)
       {
-        // trace("Removing arrow at beat: " + arrow.beat);
         arrows.remove(arrow);
       }
 
       while (b >= arrowBeat - 1)
       {
-        // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
         arrowBeat = (arrowBeat - (arrowBeat % 2)) + 2;
         var nextBeat:Float = arrowBeat;
-        createArrow(nextBeat);
+        if (differences.length >= 8) createArrow(nextBeat);
       }
 
       // Hit a note (calibration)
@@ -679,26 +620,23 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         var closestBeat:Float = Math.round(b);
         var diff:Float = closestBeat - b;
-        var ms:Float = diff * msPerBeat;
+        var ms:Float = (diff * msPerBeat);
 
         if (arrow != null) // eric sees this and goes "OMG NULL REF!!!!"
         {
-          var beatOffset:Float = appliedOffsetLerp / msPerBeat;
+          var timeDiff = (arrow.beat - b) * msPerBeat;
 
-          var arrowDiff:Float = (arrow.beat + beatOffset) - b;
-
-          if (Math.abs(arrowDiff) < 0.25)
+          if (Math.abs(timeDiff - tempOffset) <= 80)
           {
             arrow.sprite.alpha = 0;
             arrow.sprite.kill();
-            // arrow.debugText.kill();
             arrows.remove(arrow);
           }
         }
 
         var consistency:Float = getConsistency();
 
-        if (consistency > 80 && differences.length > 4)
+        if (consistency > 50 && differences.length > 8)
         {
           jumpInText.text = 'Try to be a little more consistent with your timing!';
           differences = [];
@@ -710,7 +648,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         addDifference(ms);
 
-        if (differences.length >= 16)
+        var actualMs = ms - tempOffset;
+
+        if (differences.length >= 30)
         {
           jumpInText.text = 'Calibration complete!';
           Preferences.globalOffset = tempOffset;
@@ -720,12 +660,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         if (!_gotMad)
         {
-          if (Math.abs(ms + tempOffset) < 45) jumpInText.text = 'Great job, keep going!';
+          if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job, keep going!';
           else
             jumpInText.text = 'Nice job, keep going!';
         }
 
-        jumpInText.text += '\n' + differences.length + '/16';
+        jumpInText.text += '\n' + differences.length + '/30';
 
         _gotMad = false;
 
@@ -738,12 +678,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       // If we are not calibrating, we are just testing the strumline.
 
       processInputQueue();
-
-      // trace(b + ' - ' + arrowBeat);
-
       while (b >= arrowBeat - 2 && b < 124)
       {
-        // trace("Spawning arrow at beat: " + arrowBeat);
         // Create a new arrow at the next beat division.
         arrowBeat = arrowBeat + 1;
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
@@ -771,7 +707,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         if (arrow.sprite.alpha <= 0)
         {
           arrow.sprite.kill();
-          // arrow.debugText.kill();
           toRemove.push(arrow);
         }
       }
@@ -824,7 +759,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     if (calibrating)
     {
       receptor.alpha = FlxMath.lerp(0, 1, FlxEase.cubeInOut(offsetLerp));
-      // debugBeatText.alpha = FlxMath.lerp(0, 1, FlxEase.cubeInOut(offsetLerp));
       countText.alpha = FlxMath.lerp(0, 1, FlxEase.cubeInOut(offsetLerp));
     }
     else
@@ -835,7 +769,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     if (scaleModifier < 1)
     {
-      // trace("scaleModifier: " + scaleModifier);
       scaleModifier += elapsed / 2;
       if (scaleModifier >= 1) scaleModifier = 1;
     }
@@ -851,13 +784,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       GRhythmUtil.processWindow(note, true, localConductor);
       note.alpha = FlxMath.lerp(0, 1, FlxEase.cubeInOut(offsetLerp));
     }
-
-    /*debugBeatText.x = receptor.x + receptor.width * 2;
-        debugBeatText.y = receptor.y - 20;
-
-            debugBeatText.text = 'Beat: ' + b; */
-
-    // receptor.angle += angleVel * elapsed;
 
     var ind = 0;
     // Indent the selected item.
@@ -888,8 +814,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
     var diff:Float = note.noteData.time - localConductor.songPosition;
-
-    // trace('Input latency: ' + inputLatencyMs + 'ms (diff: ' + diff + 'ms)');
 
     var totalDiff:Float = diff;
     if (totalDiff < 0) totalDiff = diff + inputLatencyMs;
@@ -941,8 +865,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.pressKey(input.noteDirection, input.keyCode);
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
-
-      // trace('Processing input: ' + input.noteDirection + ' with ' + notesInDirection.length + ' notes in range.');
 
       if (notesInDirection.length == 0)
       {
