@@ -157,7 +157,7 @@ class LoadingState extends MusicBeatSubState
     funkay.updateHitbox();
     // funkay.updateHitbox();
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT_P)
     {
       funkay.setGraphicSize(Std.int(funkay.width + 60));
       funkay.updateHitbox();
@@ -228,6 +228,8 @@ class LoadingState extends MusicBeatSubState
     var daStage:Null<Stage> = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
     stageDirectory = daStage?._data?.directory ?? "shared";
     Paths.setCurrentLevel(stageDirectory);
+
+    if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
 
     var playStateCtor:() -> PlayState = function() {
       return new PlayState(params);

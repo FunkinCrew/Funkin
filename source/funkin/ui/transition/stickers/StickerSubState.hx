@@ -315,7 +315,7 @@ class StickerTransitionSprite extends openfl.display.Sprite
     scaleY = 1;
 
     // Adjusting camera and container cropping to the game resolution
-    __scrollRect.setTo(0, 0, FlxG.scaleMode.gameSize.x, FlxG.scaleMode.gameSize.y);
+    __scrollRect.setTo(0, 0, FlxG.camera._scrollRect.scrollRect.width, FlxG.camera._scrollRect.scrollRect.height);
 
     stickersCamera.onResize();
     stickersCamera._scrollRect.scrollRect = scrollRect;

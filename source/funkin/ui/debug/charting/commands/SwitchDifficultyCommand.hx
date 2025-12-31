@@ -21,24 +21,42 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     this.newVariation = newVariation;
   }
 
+  /**
+   * Perform the difficulty switch.
+   * @param state The ChartEditorState to perform the action on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     state.selectedVariation = newVariation != null ? newVariation : prevVariation;
     state.selectedDifficulty = newDifficulty != null ? newDifficulty : prevDifficulty;
 
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
+    markDirty(state);
   }
 
+  /**
+   * Reverse the difficulty switch.
+   * @param state The ChartEditorState to perform the action on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.selectedVariation = prevVariation != null ? prevVariation : newVariation;
     state.selectedDifficulty = prevDifficulty != null ? prevDifficulty : newDifficulty;
 
+    markDirty(state);
+  }
+
+  function markDirty(state:ChartEditorState):Void
+  {
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
   }
 
+  /**
+   * @param state The ChartEditorState to perform the action on.
+   * @return Whether or not this instance of the command should be added to the history.
+   *   If the command didn't actually change anything, return `false` to prevent polluting the history.
+   */
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // Add to the history if we actually performed an action.
@@ -47,7 +65,7 @@ class SwitchDifficultyCommand implements ChartEditorCommand
 
   public function toString():String
   {
-    return 'Switch Difficulty';
+    return 'Switch Difficulty to $newDifficulty ($newVariation)';
   }
 }
 #end

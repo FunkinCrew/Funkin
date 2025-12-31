@@ -3,6 +3,10 @@ package funkin.audio.waveform;
 import funkin.graphics.rendering.MeshRender;
 import flixel.util.FlxColor;
 
+/**
+ * A sprite which displays the waveform of audio data.
+ * Generate a WaveformData and provide it to this sprite.
+ */
 class WaveformSprite extends MeshRender
 {
   static final DEFAULT_COLOR:FlxColor = FlxColor.WHITE;
@@ -18,14 +22,17 @@ class WaveformSprite extends MeshRender
    * Do this any time the data or drawable area of the waveform changes.
    * This often (but not always) needs to be done every frame.
    */
-  var isWaveformDirty:Bool = true;
+  var isWaveformDirty:Bool;
 
   /**
    * If true, force the waveform to redraw every frame.
    * Useful if the waveform's clipRect is constantly changing.
    */
-  public var forceUpdate:Bool = false;
+  public var forceUpdate:Bool;
 
+  /**
+   * The data to render the waveform with.
+   */
   public var waveformData(default, set):Null<WaveformData>;
 
   function set_waveformData(value:Null<WaveformData>):Null<WaveformData>
@@ -52,6 +59,9 @@ class WaveformSprite extends MeshRender
     return waveformColor;
   }
 
+  /**
+   * Whether the Waveform is horizontal or vertical.
+   */
   public var orientation(default, set):WaveformOrientation;
 
   function set_orientation(value:WaveformOrientation):WaveformOrientation
@@ -68,7 +78,7 @@ class WaveformSprite extends MeshRender
    */
   public var time(default, set):Float;
 
-  function set_time(value:Float)
+  function set_time(value:Float):Float
   {
     if (time == value) return value;
 
@@ -77,13 +87,22 @@ class WaveformSprite extends MeshRender
     return time;
   }
 
+  override function set_visible(value:Bool):Bool
+  {
+    if (visible == value) return value;
+
+    visible = value;
+    isWaveformDirty = true;
+    return visible;
+  }
+
   /**
    * The duration, in seconds, that the waveform represents.
    * The section of waveform from `time` to `time + duration` and `width` are used to determine how many samples each pixel represents.
    */
   public var duration(default, set):Float;
 
-  function set_duration(value:Float)
+  function set_duration(value:Float):Float
   {
     if (duration == value) return value;
 
@@ -120,13 +139,13 @@ class WaveformSprite extends MeshRender
    *
    * NOTE: This is technically doubled since it's applied above and below the center of the waveform.
    */
-  public var minWaveformSize:Int = 1;
+  public var minWaveformSize:Int;
 
   /**
    * A multiplier on the size of the waveform.
    * Still capped at the width and height set for the sprite.
    */
-  public var amplitude:Float = 1.0;
+  public var amplitude:Float;
 
   public function new(?waveformData:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
   {
@@ -134,6 +153,11 @@ class WaveformSprite extends MeshRender
     this.waveformColor = color ?? DEFAULT_COLOR;
     this.width = DEFAULT_WIDTH;
     this.height = DEFAULT_HEIGHT;
+
+    this.minWaveformSize = 1;
+    this.amplitude = 1.0;
+    this.isWaveformDirty = true;
+    this.forceUpdate = false;
 
     this.waveformData = waveformData;
     this.orientation = orientation ?? DEFAULT_ORIENTATION;
@@ -151,7 +175,7 @@ class WaveformSprite extends MeshRender
     isWaveformDirty = true;
   }
 
-  public override function update(elapsed:Float)
+  public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -170,6 +194,11 @@ class WaveformSprite extends MeshRender
     makeGraphic(1, 1, this.waveformColor);
   }
 
+  public override function draw():Void
+  {
+    super.draw();
+  }
+
   /**
    * @param offsetX Horizontal offset to draw the waveform at, in samples.
    */
@@ -183,12 +212,12 @@ class WaveformSprite extends MeshRender
 
     this.clear();
 
-    if (waveformData == null) return;
+    if (waveformData == null || !this.visible) return;
 
     // Center point of the waveform. When horizontal this is half the height, when vertical this is half the width.
     var waveformCenterPos:Int = orientation == HORIZONTAL ? Std.int(this.height / 2) : Std.int(this.width / 2);
 
-    var oneSecondInIndices:Int = waveformData.secondsToIndex(1);
+    // var oneSecondInIndices:Int = waveformData.secondsToIndex(1)
 
     var startTime:Float = time;
     var endTime:Float = time + duration;
@@ -223,7 +252,10 @@ class WaveformSprite extends MeshRender
 
         var isBeforeClipRect:Bool = (clipRect != null) && ((orientation == HORIZONTAL) ? pixelPos < clipRect.x : pixelPos < clipRect.y);
 
-        if (isBeforeClipRect) continue;
+        if (isBeforeClipRect)
+        {
+          continue;
+        }
 
         var isAfterClipRect:Bool = (clipRect != null)
           && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
@@ -426,20 +458,40 @@ class WaveformSprite extends MeshRender
     }
   }
 
-  public static function buildFromWaveformData(data:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
+  /**
+   * Build a WaveformSprite from waveform data.
+   * @param data The data for the waveform to use.
+   * @param orientation Whether the waveform should be horizontal or vertical.
+   * @param color The color of the waveform.
+   * @param duration The width of the waveform, in seconds.
+   *
+   * @return The resulting WaveformSprite.
+   */
+  public static function buildFromWaveformData(data:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float):WaveformSprite
   {
     return new WaveformSprite(data, orientation, color, duration);
   }
 
-  public static function buildFromFunkinSound(sound:FunkinSound, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
+  /**
+   * Build a WaveformSprite from a FunkinSound's waveform data.
+   * @param sound The audio for the waveform to use.
+   * @param orientation Whether the waveform should be horizontal or vertical.
+   * @param color The color of the waveform.
+   * @param duration The width of the waveform, in seconds.
+   *
+   * @return The resulting WaveformSprite.
+   */
+  public static function buildFromFunkinSound(sound:FunkinSound, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float):WaveformSprite
   {
-    // TODO: Build waveform data from FunkinSound.
-    var data = null;
+    var data = WaveformDataParser.interpretFlxSound(sound);
 
     return buildFromWaveformData(data, orientation, color, duration);
   }
 }
 
+/**
+ * The possible orientations of a waveform.
+ */
 enum WaveformOrientation
 {
   HORIZONTAL;

@@ -25,7 +25,7 @@ class NGSaveSlot
 
   public static function loadInstance():NGSaveSlot
   {
-    var loadedSave:NGSaveSlot = loadSlot(Save.BASE_SAVE_SLOT);
+    var loadedSave:NGSaveSlot = loadSlot(Constants.BASE_SAVE_SLOT);
     if (_instance == null) _instance = loadedSave;
 
     return loadedSave;
@@ -46,11 +46,6 @@ class NGSaveSlot
   public function new(?ngSaveSlot:Null<SaveSlot>)
   {
     this.ngSaveSlot = ngSaveSlot;
-
-    #if FLX_DEBUG
-    FlxG.console.registerClass(NGSaveSlot);
-    FlxG.console.registerClass(Save);
-    #end
   }
 
   /**

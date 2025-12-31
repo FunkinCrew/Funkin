@@ -86,6 +86,9 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
 
+    var noteOffsets:Array<Float> = getNoteOffsets();
+    target.offset.set(noteOffsets[0], noteOffsets[1]);
+
     // Apply the animations.
     buildNoteAnimations(target);
 
@@ -115,7 +118,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(noteAssetPath)))
     {
       FlxG.log.warn('Note texture is not cached: ${noteAssetPath}');
     }
@@ -178,6 +181,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getNoteScale():Float
   {
     return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
+  }
+
+  public function getNoteOffsets():Array<Float>
+  {
+    return _data?.assets?.note?.offsets ?? fallback?.getNoteOffsets() ?? [0.0, 0.0];
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
@@ -896,7 +904,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(splashAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(splashAssetPath)))
     {
       FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
     }
@@ -1046,7 +1054,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(holdCoverAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(holdCoverAssetPath)))
     {
       FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
     }

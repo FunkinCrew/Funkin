@@ -12,27 +12,27 @@ class DataError
     switch (error)
     {
       case IncorrectType(vari, expected, pos):
-        trace(' Expected field "$vari" to be of type "$expected".');
+        trace(' ERROR '.error() + 'Expected field "$vari" to be of type "$expected".');
         printPos(pos);
       case IncorrectEnumValue(value, expected, pos):
-        trace(' Invalid enum value (expected "$expected", got "$value")');
+        trace(' ERROR '.error() + 'Invalid enum value (expected "$expected", got "$value")');
         printPos(pos);
       case InvalidEnumConstructor(value, expected, pos):
-        trace(' Invalid enum constructor (epxected "$expected", got "$value")');
+        trace(' ERROR '.error() + 'Invalid enum constructor (epxected "$expected", got "$value")');
         printPos(pos);
       case UninitializedVariable(vari, pos):
-        trace(' Uninitialized variable "$vari"');
+        trace(' ERROR '.error() + 'Uninitialized variable "$vari"');
         printPos(pos);
       case UnknownVariable(vari, pos):
-        trace(' Unknown variable "$vari"');
+        trace(' ERROR '.error() + 'Unknown variable "$vari"');
         printPos(pos);
       case ParserError(message, pos):
-        trace(' Parsing error: ${message}');
+        trace(' ERROR '.error() + 'Parsing error: ${message}');
         printPos(pos);
       case CustomFunctionException(e, pos):
         if (Std.isOfType(e, String))
         {
-          trace(' ${e}');
+          trace(' ERROR '.error() + '${e}');
         }
         else
         {
@@ -49,11 +49,11 @@ class DataError
     switch (Type.typeof(e))
     {
       case TClass(c):
-        trace(' [${Type.getClassName(c)}] ${e.toString()}');
+        trace(' ERROR '.error() + '(${Type.getClassName(c)}) ${e.toString()}');
       case TEnum(c):
-        trace(' [${Type.getEnumName(c)}] ${e.toString()}');
+        trace(' ERROR '.error() + '(${Type.getEnumName(c)}) ${e.toString()}');
       default:
-        trace(' [${Type.typeof(e)}] ${e.toString()}');
+        trace(' ERROR '.error() + '(${Type.typeof(e)}) ${e.toString()}');
     }
   }
 

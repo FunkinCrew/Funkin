@@ -49,8 +49,6 @@ class SparrowCharacter extends BaseCharacter
     {
       this.isPixel = true;
       this.antialiasing = false;
-      // pixelPerfectRender = true;
-      // pixelPerfectPosition = true;
     }
     else
     {

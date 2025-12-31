@@ -87,7 +87,7 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (controls.BACK)
+    if (controls.BACK_P)
     {
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       exitDebugMenu();
