@@ -68,12 +68,13 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       if (noteKind == '~CUSTOM~')
       {
         showCustom();
-        chartEditorState.noteKindToPlace = toolboxNotesCustomKind.value;
+        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
       else
       {
         hideCustom();
         chartEditorState.noteKindToPlace = noteKind;
+        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
 
       createNoteKindParams(noteKind);
@@ -111,20 +112,14 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
-    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
-
-    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, chartEditorState.noteKindToPlace);
+    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, '');
     toolboxNotesNoteKind.value = startingValueNoteKind;
-
-    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
 
     toolboxNotesCustomKind.onChange = function(event:UIEvent) {
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
-      if (toolboxNotesNoteKind.value.id != '~CUSTOM~') return;
-
-      if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
+      if (chartEditorState.currentEventSelection.length > 0)
       {
         // Edit the note data of any selected notes.
         for (note in chartEditorState.currentNoteSelection)
@@ -136,34 +131,17 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
-    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
-
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
-    
-    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   public override function refresh():Void
   {
     super.refresh();
 
-    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
-    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
-
-    toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
     toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
-    if (toolboxNotesNoteKind.value.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
-    {
-      showCustom();
-    }
-    else
-    {
-      hideCustom();
-    }
+    toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
 
     createNoteKindParams(chartEditorState.noteKindToPlace);
-    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
-    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   function showCustom():Void

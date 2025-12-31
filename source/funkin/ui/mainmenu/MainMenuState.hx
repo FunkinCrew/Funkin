@@ -80,7 +80,7 @@ class MainMenuState extends MusicBeatState
     overrideMusic = _overrideMusic;
 
     // Start in Entering state during screen fade in
-    uiStateMachine.transition(EnteringMainMenu);
+    uiStateMachine.transition(Entering);
 
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
     magenta = new FlxSprite(Paths.image('menuBGMagenta'));
@@ -598,7 +598,7 @@ class MainMenuState extends MusicBeatState
       @:privateAccess
       {
         funkin.save.Save.instance.data.unlocks.charactersSeen = ["bf"];
-        funkin.save.Save.instance.oldChar.value = false;
+        funkin.save.Save.instance.data.unlocks.oldChar = false;
       }
     }
 
@@ -608,7 +608,7 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (controls.BACK_P) goBack();
+    if (controls.BACK) goBack();
   }
 
   function goOptions():Void

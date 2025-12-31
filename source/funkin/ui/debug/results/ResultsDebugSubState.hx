@@ -5,7 +5,6 @@ import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.MenuList.MenuTypedItem;
 import flixel.text.FlxText;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
@@ -55,9 +54,8 @@ class ResultsDebugSubState extends MusicBeatSubState
           FlxG.switchState(() -> new funkin.play.ResultState(resultsParams));
       });
     });
-    createToggleListItem("Character", PlayerRegistry.instance.listEntryIds(), function(result:String) {
-      var playableCharacter:PlayableCharacter = PlayerRegistry.instance.fetchEntry(result);
-      resultsParams.characterId = playableCharacter.getOwnedCharacterIds()[0];
+    createToggleListItem("Character", PlayerRegistry.instance.listBaseGameEntryIds(), function(result:String) {
+      resultsParams.characterId = result;
     });
     createToggleListItem("Results Mode", ["Debug", "Story", "Freeplay"], function(result:String) {
       returnToDebugScreen = result == "Debug"; // We will create the ResultsState as a Substate, that we will just close and return back to here
@@ -133,7 +131,7 @@ class ResultsDebugSubState extends MusicBeatSubState
         isBotPlayMode: true, // Invalidates achievements/scores.
         scoreData:
           {
-            score: 1_234_567_890,
+            score: 1_234_567,
             tallies:
               {
                 sick: 130,

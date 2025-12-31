@@ -217,7 +217,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     #end
 
     // Todo: bypass popup blocker on firefox
-    if (controls.ACCEPT_P) accept();
+    if (controls.ACCEPT) accept();
 
     return;
   }

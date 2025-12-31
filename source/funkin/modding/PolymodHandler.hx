@@ -105,7 +105,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds.value);
+    loadModsById(Save.instance.enabledModIds);
   }
 
   /**
@@ -274,11 +274,6 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
     Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
 
-    // `FlxAtlasSprite` was merged into `FunkinSprite` and then removed.
-    // We add the import alias here so mods don't error out as much.
-    Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
-    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.ScriptedFunkinSprite);
-
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
 
@@ -330,27 +325,16 @@ class PolymodHandler
     // Disable access to In-App Purchases Util
     Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
 
-    // Disable access to In-App Reviews Util
-    Polymod.blacklistImport('funkin.mobile.util.InAppReviewUtil');
+    // Disable access to Admob Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
 
     // Disable access to AndroidTools Extension
     for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // Disable access to Haptics Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // Disable access to Admob Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -365,16 +349,8 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to IARCore Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.iarcore'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // Disable access to WebViewCore Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.webviewcore'))
+    // Disable access to Haptics Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -566,7 +542,7 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds:Array<String> = Save.instance.enabledModIds.value;
+    var modIds:Array<String> = Save.instance.enabledModIds;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = [];
     for (item in modMetadata)

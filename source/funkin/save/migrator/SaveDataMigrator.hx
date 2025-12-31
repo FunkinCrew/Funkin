@@ -19,7 +19,7 @@ class SaveDataMigrator
     {
       trace('[SAVE] No version found in save data! Returning blank data.');
       trace(inputData);
-      return new Save(Save.getDefaultData());
+      return new Save(Save.getDefault());
     }
     else
     {
@@ -28,7 +28,7 @@ class SaveDataMigrator
       if (VersionUtil.validateVersion(version, Save.SAVE_DATA_VERSION_RULE))
       {
         // Import the structured data.
-        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), inputData);
+        var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
         var save:Save = new Save(saveDataWithDefaults);
         return save;
       }
@@ -38,13 +38,11 @@ class SaveDataMigrator
       }
       else
       {
-        var slot:Int = Save.system.archiveBadSaveData(inputData);
-        var message:String = 'An error occurred migrating your save data.'
-          + '\nError migrating save data, expected ${Save.SAVE_DATA_VERSION}.'
-          + '\nInvalid data has been moved to save slot ${slot}.';
-
-        funkin.util.WindowUtil.showError("Save Data Failure", message);
-        return new Save(Save.getDefaultData());
+        var message:String = 'Error migrating save data, expected ${Save.SAVE_DATA_VERSION}.';
+        var slot:Int = Save.archiveBadSaveData(inputData);
+        var fullMessage:String = 'An error occurred migrating your save data.\n${message}\nInvalid data has been moved to save slot ${slot}.';
+        funkin.util.WindowUtil.showError("Save Data Failure", fullMessage);
+        return new Save(Save.getDefault());
       }
     }
   }
@@ -52,7 +50,7 @@ class SaveDataMigrator
   static function migrate_v2_0_0(inputData:Dynamic):Save
   {
     // Import the structured data.
-    var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefaultData(), inputData);
+    var saveDataWithDefaults:RawSaveData = cast thx.Objects.deepCombine(Save.getDefault(), inputData);
 
     // Reset these values to valid ones.
     saveDataWithDefaults.optionsChartEditor.chartEditorLiveInputStyle = funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle.None;
@@ -70,12 +68,12 @@ class SaveDataMigrator
   {
     var inputSaveData:RawSaveData_v1_0_0 = cast inputData;
 
-    var result:Save = new Save(Save.getDefaultData());
+    var result:Save = new Save(Save.getDefault());
 
-    result.volume.value = inputSaveData.volume;
-    result.mute.value = inputSaveData.mute;
+    result.volume = inputSaveData.volume;
+    result.mute = inputSaveData.mute;
 
-    result.ngSessionId.value = inputSaveData.sessionId;
+    result.ngSessionId = inputSaveData.sessionId;
 
     // TODO: Port over the save data from the legacy save data format.
     migrateLegacyScores(result, inputSaveData);

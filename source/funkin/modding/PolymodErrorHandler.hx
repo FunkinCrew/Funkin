@@ -68,7 +68,7 @@ class PolymodErrorHandler
 
   static function logError(message:String):Void
   {
-    trace(' ERROR '.error() + ' ${message}');
+    trace(' ERROR '.bg_red().bold() + ' ${message}');
   }
 
   static function logWarn(message:String):Void
