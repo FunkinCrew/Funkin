@@ -29,6 +29,13 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   var leftArrow:InstrumentalSelector;
   var rightArrow:InstrumentalSelector;
 
+  public function setBusy(b:Bool):Void
+  {
+    busy = b;
+    leftArrow.busy = b;
+    rightArrow.busy = b;
+  }
+
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
@@ -46,8 +53,11 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     currentInstrumental.setFormat('VCR OSD Mono', 40, FlxTextAlign.CENTER, true);
 
     final PAD = 4;
-    leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.getControls());
-    rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.getControls());
+
+    @:privateAccess
+    leftArrow = new InstrumentalSelector(parent, PAD, 30, false, parent.controls);
+    @:privateAccess
+    rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.controls);
 
     var label:FlxText = new FlxText(0, 5, capsuleMenuBG.width, 'INSTRUMENTAL');
     label.setFormat('VCR OSD Mono', 24, FlxTextAlign.CENTER, true);
@@ -74,32 +84,31 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       return;
     }
     var changedInst:Bool = false;
-
+    @:privateAccess
     if (!busy)
     {
-      @:privateAccess
-      if (parent.controls.BACK #if mobile || TouchUtil.pressAction(parent.backButton) #end)
+      if (parent.controls.BACK_P #if mobile || TouchUtil.pressAction(parent.backButton) #end)
       {
+        setBusy(true);
         close();
         return;
       }
 
-      if (parent.getControls().UI_LEFT_P #if mobile || TouchUtil.pressAction(leftArrow) #end)
+      if (parent.controls.UI_LEFT_P #if mobile || TouchUtil.pressAction(leftArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex + 1) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls().UI_RIGHT_P #if mobile || TouchUtil.pressAction(rightArrow) #end)
+      if (parent.controls.UI_RIGHT_P #if mobile || TouchUtil.pressAction(rightArrow) #end)
       {
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.getControls()
-        .ACCEPT #if mobile
+      if (parent.controls.ACCEPT_P #if mobile
         || ((TouchUtil.pressAction(currentInstrumental))
           && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
-        busy = true;
+        setBusy(true);
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
       }
     }
@@ -120,7 +129,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
     if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
     capsuleMenuBG.animation.onFinish.add(function(_) {
-      parent.cleanupCapsuleOptionsMenu();
+      parent.cleanupInstSelectMenu();
       queueDestroy = true;
     });
   }
@@ -144,6 +153,8 @@ class InstrumentalSelector extends FunkinSprite
   var whiteShader:PureColor;
 
   var parent:FreeplayState;
+
+  public var busy:Bool = false;
 
   var baseScale:Float = 0.6;
 
@@ -172,10 +183,11 @@ class InstrumentalSelector extends FunkinSprite
 
   override function update(elapsed:Float):Void
   {
+    super.update(elapsed);
+
+    if (busy) return;
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();
-
-    super.update(elapsed);
   }
 
   function moveShitDown():Void

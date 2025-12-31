@@ -254,7 +254,6 @@ class FunkinCamera extends FlxCamera
 
   function disposeTextures():Void
   {
-    trace('disposing textures');
     for (bitmap in grabbed)
     {
       bitmap.dispose();

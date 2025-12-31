@@ -2,6 +2,7 @@ package funkin.play.notes;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
+import funkin.play.notes.NoteVibrationsHandler.NoteStatus;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -9,11 +10,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import funkin.graphics.FunkinSprite;
-import funkin.play.notes.NoteHoldCover;
-import funkin.play.notes.NoteSplash;
-import funkin.play.notes.NoteSprite;
-import funkin.play.notes.SustainTrail;
-import funkin.play.notes.NoteVibrationsHandler;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
@@ -69,7 +65,8 @@ class Strumline extends FlxSpriteGroup
   function get_renderDistanceMs():Float
   {
     if (useCustomRenderDistance) return customRenderDistanceMs;
-    // Only divide by lower scroll speeds to fix renderDistance being too short. Dividing by higher scroll speeds breaks the input system by hitting later notes first!
+    // Only divide by lower scroll speeds to fix renderDistance being too short.
+    // Dividing by higher scroll speeds breaks the input system by hitting later notes first!
     return FlxG.height / Constants.PIXELS_PER_MS / (scrollSpeed < 1 ? scrollSpeed : 1);
   }
 
@@ -146,7 +143,9 @@ class Strumline extends FlxSpriteGroup
    * The strumline notes (the receptors) themselves.
    */
   public var strumlineNotes:FlxTypedSpriteGroup<StrumlineNote>;
+
   var noteSplashes:FlxTypedSpriteGroup<NoteSplash>;
+
   /**
    * Hold note covers.
    */
@@ -159,17 +158,26 @@ class Strumline extends FlxSpriteGroup
 
   var noteSpacingScale:Float = 1;
 
+  /**
+   * The scale of the strumline. Use this to resize it rather than setting the scale directly.
+   */
   public var strumlineScale(default, null):FlxPoint;
 
   #if FEATURE_GHOST_TAPPING
   var ghostTapTimer:Float = 0.0;
   #end
 
+  /**
+   * Handles note vibrations for this strumline
+   */
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  final inArrowContorlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+  final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice) #else false #end;
 
+  /**
+   * Whether the strumline is downscroll.
+   */
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
     && !ControlsHandler.usingExternalInputDevice)
     || #end Preferences.downscroll;
@@ -187,7 +195,12 @@ class Strumline extends FlxSpriteGroup
    */
   public var nextNoteIndex:Int = -1;
 
-  var heldKeys:Array<Bool> = [];
+  /**
+   * Indicates which keys are pressed for which directions.
+   * The direction is pressed as long as at least one key is held,
+   * and released when no keys are held.
+   */
+  var heldKeys:Array<Array<Int>>;
 
   static final BACKGROUND_PAD:Int = 16;
 
@@ -229,7 +242,7 @@ class Strumline extends FlxSpriteGroup
 
     var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer)
+    if (inArrowControlSchemeMode && isPlayer)
     {
       backgroundWidth = backgroundWidth * 1.84;
     }
@@ -240,7 +253,7 @@ class Strumline extends FlxSpriteGroup
     this.background.scrollFactor.set(0, 0);
     this.background.x = -BACKGROUND_PAD;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) this.background.x -= 100;
+    if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
     #end
     this.add(this.background);
 
@@ -261,9 +274,10 @@ class Strumline extends FlxSpriteGroup
       this.strumlineNotes.add(child);
     }
 
+    this.heldKeys = [];
     for (i in 0...KEY_COUNT)
     {
-      heldKeys.push(false);
+      this.heldKeys[i] = [];
     }
 
     strumlineScale.set(1, 1);
@@ -458,7 +472,7 @@ class Strumline extends FlxSpriteGroup
    * Enter mini mode, which displays only small strumline notes
    * @param scale scale of strumline
    */
-  public function enterMiniMode(scale:Float = 1)
+  public function enterMiniMode(scale:Float = 1):Void
   {
     forEach(function(obj:flixel.FlxObject):Void {
       if (obj != strumlineNotes) obj.visible = false;
@@ -467,11 +481,15 @@ class Strumline extends FlxSpriteGroup
     this.strumlineScale.set(scale, scale);
   }
 
-  public function strumlineScaleCallback(Scale:FlxPoint)
+  /**
+   * Called whenever the `strumlineScale` value is updated.
+   * @param Scale The new value.
+   */
+  function strumlineScaleCallback(scale:FlxPoint):Void
   {
     strumlineNotes.forEach(function(note:StrumlineNote):Void {
       var styleScale = noteStyle.getStrumlineScale();
-      note.scale.set(styleScale * Scale.x, styleScale * Scale.y);
+      note.scale.set(styleScale * scale.x, styleScale * scale.y);
     });
     setNoteSpacing(noteSpacingScale);
   }
@@ -545,6 +563,9 @@ class Strumline extends FlxSpriteGroup
     }
   }
 
+  /**
+   * Called every frame to update the position and hitbox of each child note.
+   */
   public function updateNotes():Void
   {
     if (noteData.length == 0) return;
@@ -566,7 +587,6 @@ class Strumline extends FlxSpriteGroup
       {
         // Note is in the past, skip it.
         nextNoteIndex = noteIndex + 1;
-        // trace("Strumline: Skipping note at index " + noteIndex + " with strum time " + note.time);
         continue;
       }
       if (note.time > renderWindowStart) break; // Note is too far ahead to render
@@ -813,19 +833,29 @@ class Strumline extends FlxSpriteGroup
   /**
    * Called when a key is pressed.
    * @param dir The direction of the key that was pressed.
+   * @param keyCode The key input used to press the direction. Used to distinguish when two keys for the same direction are pressed.
    */
-  public function pressKey(dir:NoteDirection):Void
+  public function pressKey(dir:NoteDirection, keyCode:Int):Void
   {
-    heldKeys[dir] = true;
+    heldKeys[dir].push(keyCode);
   }
 
   /**
    * Called when a key is released.
    * @param dir The direction of the key that was released.
+   * @param keyCode The key input used to press the direction. Used to distinguish when two keys for the same direction are pressed.
+   *   If null, all keys for the direction are released.
    */
-  public function releaseKey(dir:NoteDirection):Void
+  public function releaseKey(dir:NoteDirection, ?keyCode:Int):Void
   {
-    heldKeys[dir] = false;
+    if (keyCode == null)
+    {
+      heldKeys[dir].clear();
+    }
+    else
+    {
+      heldKeys[dir].remove(keyCode);
+    }
   }
 
   /**
@@ -835,7 +865,7 @@ class Strumline extends FlxSpriteGroup
    */
   public function isKeyHeld(dir:NoteDirection):Bool
   {
-    return heldKeys[dir];
+    return heldKeys[dir].length > 0;
   }
 
   /**
@@ -869,7 +899,7 @@ class Strumline extends FlxSpriteGroup
       cover.kill();
     }
 
-    heldKeys = [false, false, false, false];
+    heldKeys = [[], [], [], []];
 
     for (dir in DIRECTIONS)
     {
@@ -1113,7 +1143,7 @@ class Strumline extends FlxSpriteGroup
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
       #if mobile
-      if (inArrowContorlSchemeMode)
+      if (inArrowControlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
@@ -1300,7 +1330,7 @@ class Strumline extends FlxSpriteGroup
   {
     var pos:Float = 0;
     #if mobile
-    if (inArrowContorlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    if (inArrowControlSchemeMode && isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     #end
     return switch (direction)
     {

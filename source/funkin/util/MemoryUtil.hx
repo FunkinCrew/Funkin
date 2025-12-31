@@ -86,7 +86,7 @@ class MemoryUtil
 
       final kb:Float = Std.parseFloat(regex.matched(1));
 
-      if (kb != Math.NaN)
+      if (!Math.isNaN(kb))
       {
         return kb * 1024.0;
       }

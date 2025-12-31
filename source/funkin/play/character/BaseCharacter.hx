@@ -296,10 +296,10 @@ class BaseCharacter extends Bopper
 
     // Child class should have created animations by now,
     // so we can query which ones are available.
-    this.comboNoteCounts = findCountAnimations('combo'); // example: combo50
-    this.dropNoteCounts = findCountAnimations('drop'); // example: drop50
-    if (comboNoteCounts.length > 0) trace('Combo note counts: ' + this.comboNoteCounts);
-    if (dropNoteCounts.length > 0) trace('Drop note counts: ' + this.dropNoteCounts);
+    this.comboNoteCounts = findCountAnimations('combo'); // ex. combo50
+    this.dropNoteCounts = findCountAnimations('drop'); // ex. drop50
+    if (comboNoteCounts.length > 0) log('Character $characterId plays Combo animation at ${this.comboNoteCounts.join(', ')}');
+    if (dropNoteCounts.length > 0) log('Character $characterId plays Drop animation at ${this.dropNoteCounts.join(', ')}');
 
     super.onCreate(event);
   }
@@ -308,7 +308,6 @@ class BaseCharacter extends Bopper
   {
     super.onAnimationFinished(animationName);
 
-    // trace('${characterId} has finished animation: ${animationName}');
     if ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
       || animationName.startsWith('combo')
       || animationName.startsWith('drop'))
@@ -318,11 +317,11 @@ class BaseCharacter extends Bopper
     }
   }
 
-  function resetCameraFocusPoint():Void
+  public function resetCameraFocusPoint():Void
   {
     // Calculate the camera focus point
-    var charCenterX = this.x + this.width / 2;
-    var charCenterY = this.y + this.height / 2;
+    var charCenterX = this.originalPosition.x + this.width / 2;
+    var charCenterY = this.originalPosition.y + this.height / 2;
     this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
@@ -337,7 +336,7 @@ class BaseCharacter extends Bopper
     {
       if (PlayState.instance.iconP1 == null)
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Player 1 health icon not found!');
+        log(' WARNING '.warning() + ' Player 1 ($characterId) health icon not found!');
         return;
       }
       PlayState.instance.iconP1.configure(_data?.healthIcon);
@@ -347,7 +346,7 @@ class BaseCharacter extends Bopper
     {
       if (PlayState.instance.iconP2 == null)
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Player 2 health icon not found!');
+        log(' WARNING '.warning() + ' Player 2 ($characterId) health icon not found!');
         return;
       }
       PlayState.instance.iconP2.configure(_data?.healthIcon);
@@ -366,7 +365,7 @@ class BaseCharacter extends Bopper
 
     if (isDead)
     {
-      // playDeathAnimation();
+      // playDeathAnimation
       return;
     }
 
@@ -386,7 +385,7 @@ class BaseCharacter extends Bopper
     {
       if (isAnimationFinished())
       {
-        // trace('Not playing hold (${getCurrentAnimation()}) (${isAnimationFinished()}, ${getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)}, ${hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)})');
+        // Not playing hold (${getCurrentAnimation()}) (${isAnimationFinished()}, ${getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)}, ${hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)})
       }
     }
 
@@ -410,7 +409,6 @@ class BaseCharacter extends Bopper
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
       if (holdTimer > singTimeSec && shouldStopSinging)
       {
-        // trace('holdTimer reached ${holdTimer}sec (> ${singTimeSec}), stopping sing animation');
         holdTimer = 0;
 
         var currentAnimation:String = getCurrentAnimation();
@@ -422,7 +420,6 @@ class BaseCharacter extends Bopper
         if (hasAnimation(endAnimation))
         {
           // Play the '-end' animation, if one exists.
-          trace('${characterId}: playing ${endAnimation}');
           playAnimation(endAnimation);
         }
         else
@@ -623,7 +620,7 @@ class BaseCharacter extends Bopper
     var comboAnim = 'combo${comboCount}';
     if (hasAnimation(comboAnim))
     {
-      trace('Playing GF combo animation: ${comboAnim}');
+      log('Playing combo animation "${comboAnim}"');
       this.playAnimation(comboAnim, true, true);
     }
   }
@@ -645,7 +642,7 @@ class BaseCharacter extends Bopper
 
     if (dropAnim != null)
     {
-      trace('Playing GF combo drop animation: ${dropAnim}');
+      log('Playing combo drop animation "${dropAnim}"');
       this.playAnimation(dropAnim, true, true);
     }
   }
@@ -666,7 +663,6 @@ class BaseCharacter extends Bopper
     if (characterType == BF)
     {
       // If the note is from the same strumline, play the sing animation.
-      // trace('Playing ghost miss animation...');
       this.playSingAnimation(event.dir, true);
     }
   }
@@ -687,7 +683,6 @@ class BaseCharacter extends Bopper
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
-    // trace('Playing ${anim}...');
 
     playAnimation(anim, true);
   }
@@ -700,6 +695,11 @@ class BaseCharacter extends Bopper
   public function getDeathQuote():Null<String>
   {
     return null;
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' CHARACTER '.bold().bg_blue() + ' $message');
   }
 }
 

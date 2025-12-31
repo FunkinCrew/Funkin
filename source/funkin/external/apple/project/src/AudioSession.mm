@@ -15,21 +15,7 @@ void Apple_AudioSession_Initialize()
 
   NSError *error;
 
-  [session setCategory:AVAudioSessionCategorySoloAmbient error:nil];
-  [session setActive:YES error:nil];
-
-  [[NSNotificationCenter defaultCenter] addObserverForName:@"UISceneWillEnterForegroundNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-    NSError *resumeError = nil;
-    [session setCategory:AVAudioSessionCategorySoloAmbient withOptions:0 error:nil];
-
-    [session setActive:YES error:&resumeError];
-
-    if (resumeError)
-      NSLog(@"AudioSession resume error: %@", resumeError);
-    else
-      NSLog(@"AudioSession resumed and reactivated");
-  }];
-  [session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault options:AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers error:&error];
+  [session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault options:AVAudioSessionCategoryOptionAllowBluetoothA2DP error:&error];
 
   if (@available(iOS 17.0, *))
   {
@@ -43,6 +29,8 @@ void Apple_AudioSession_Initialize()
 
   if (error)
     NSLog(@"Unable to set category of audio session: %@", error);
+  else
+    [session setActive:YES error:nil];
   #endif
 }
 

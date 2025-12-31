@@ -6,6 +6,8 @@ import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
 import funkin.data.song.importer.OsuManiaData;
 import funkin.data.song.importer.OsuManiaImporter;
+import funkin.data.song.importer.StepManiaData;
+import funkin.data.song.importer.StepManiaImporter;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -61,6 +63,8 @@ class ChartEditorDialogHandler
   static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.ui('chart-editor/dialogs/user-guide');
   static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-variation');
   static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/dialogs/add-difficulty');
+  static final CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/dialogs/clone-difficulty');
+  static final CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/dialogs/move-difficulty');
   static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = Paths.ui('chart-editor/dialogs/backup-available');
 
   /**
@@ -91,7 +95,8 @@ class ChartEditorDialogHandler
     dialog.zIndex = 1000;
     state.isHaxeUIDialogOpen = true;
 
-    state.fadeInWelcomeMusic();
+    state.stopAudioPlayback();
+    if (state.welcomeMusic != null && !state.welcomeMusic.isPlaying) state.fadeInWelcomeMusic();
 
     return dialog;
   }
@@ -1059,6 +1064,7 @@ class ChartEditorDialogHandler
     var prettyFormat:String = switch (format)
     {
       case 'legacy': 'FNF Legacy';
+      case 'stepmania': 'StepMania';
       case 'osumania': 'Osu!Mania';
       default: 'Unknown';
     }
@@ -1068,6 +1074,9 @@ class ChartEditorDialogHandler
       case 'legacy':
         [
           {label: 'JSON Data File (.json)', extension: 'json'}];
+      case 'stepmania':
+        [
+          {label: 'StepMania File (.sm)', extension: 'sm'}];
       case 'osumania':
         [
           {label: 'OSU! Beatmap File (.osu)', extension: 'osu'}];
@@ -1078,7 +1087,8 @@ class ChartEditorDialogHandler
     {
       case 'osumania':
         "osu";
-
+      case 'stepmania':
+        "sm";
       default: "json";
     }
 
@@ -1147,6 +1157,21 @@ class ChartEditorDialogHandler
           songChartData = FNFLegacyImporter.migrateChartData(fnfLegacyData);
 
           loadedText = 'Loaded chart file';
+        case 'stepmania':
+          var stepmaniaData:Null<StepManiaData> = StepManiaImporter.parseStepManiaFile(content);
+
+          if (stepmaniaData == null)
+          {
+            state.error('Failure', 'Failed to parse StepMania step file (${path.file}.${path.ext})');
+            return;
+          }
+
+          trace('Parsed StepMania data for ' + stepmaniaData.Metadata.Title);
+
+          songMetadata = StepManiaImporter.migrateChartMetadata(stepmaniaData);
+          songChartData = StepManiaImporter.migrateChartData(stepmaniaData);
+
+          loadedText = 'Loaded step file';
 
         case 'osumania':
           var osuManiaData:Null<OsuManiaData> = OsuManiaImporter.parseOsuFile(content);
@@ -1357,6 +1382,86 @@ class ChartEditorDialogHandler
       state.createDifficulty(dialogVariation.value.id, dialogDifficultyName.text.toLowerCase(), inputScrollSpeed.value ?? 1.0);
 
       state.success('Add Difficulty', 'Added new difficulty "${dialogDifficultyName.text.toLowerCase()}"');
+
+      dialog.hideDialog(DialogButton.APPLY);
+    }
+
+    return dialog;
+  }
+
+  /**
+   * Builds and opens a dialog where the user can copy an existing difficulty for a song.
+   * @param state The current chart editor state.
+   * @param deleteOriginal Whether to delete the original difficulty after copying.
+   *                       This essentially turns the copy into a move.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  public static function openCloneDifficultyDialog(state:ChartEditorState, deleteOriginal:Bool, closable:Bool = true):Dialog
+  {
+    var layout = deleteOriginal ? CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT : CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT;
+    var dialog:Null<Dialog> = openDialog(state, layout, true, false);
+    if (dialog == null) throw 'Could not locate Clone/Move Difficulty dialog';
+
+    var difficultyForm:Null<Form> = dialog.findComponent('difficultyForm', Form);
+    if (difficultyForm == null) throw 'Could not locate difficultyForm Form in Clone Difficulty dialog';
+
+    var buttonCancel:Null<Button> = dialog.findComponent('dialogCancel', Button);
+    if (buttonCancel == null) throw 'Could not locate dialogCancel button in Clone Difficulty dialog';
+    buttonCancel.onClick = function(_) {
+      dialog.hideDialog(DialogButton.CANCEL);
+    }
+
+    var dialogClone:Null<Button> = dialog.findComponent('dialogClone', Button);
+    if (dialogClone == null) throw 'Could not locate dialogClone button in Clone Difficulty dialog';
+    dialogClone.onClick = function(_) {
+      // This performs validation before the onSubmit callback is called.
+      difficultyForm.submit();
+    }
+
+    var dialogVariation:Null<DropDown> = dialog.findComponent('dialogVariation', DropDown);
+    if (dialogVariation == null) throw 'Could not locate dialogVariation DropDown in Clone Variation dialog';
+    dialogVariation.value = ChartEditorDropdowns.populateDropdownWithVariations(dialogVariation, state, true);
+
+    var labelScrollSpeed:Null<Label> = dialog.findComponent('labelScrollSpeed', Label);
+    if (labelScrollSpeed == null) throw 'Could not find labelScrollSpeed component.';
+
+    var inputScrollSpeed:Null<Slider> = dialog.findComponent('inputScrollSpeed', Slider);
+    if (inputScrollSpeed == null) throw 'Could not find inputScrollSpeed component.';
+    inputScrollSpeed.onChange = function(event:UIEvent) {
+      labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
+    };
+    inputScrollSpeed.value = state.currentSongChartScrollSpeed;
+    labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
+
+    difficultyForm.onSubmit = function(_) {
+      trace('Clone Difficulty dialog submitted, validation succeeded!');
+
+      var dialogDifficultyName:Null<TextField> = dialog.findComponent('dialogDifficultyName', TextField);
+      if (dialogDifficultyName == null) throw 'Could not locate dialogDifficultyName TextField in Add Difficulty dialog';
+
+      var variationToClone:String = state.selectedVariation;
+      var difficultyToClone:String = state.selectedDifficulty;
+      var targetVariation:String = dialogVariation.value.id;
+      var targetDifficulty:String = dialogDifficultyName.text.toLowerCase();
+
+      state.cloneDifficulty(variationToClone, difficultyToClone, targetVariation, targetDifficulty, inputScrollSpeed.value ?? 1.0);
+
+      if (deleteOriginal)
+      {
+        state.removeDifficulty(variationToClone, difficultyToClone);
+        state.selectedDifficulty = targetDifficulty;
+        state.selectedVariation = targetVariation;
+
+        state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+        state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+
+        state.success('Move Difficulty', 'Moved difficulty "$difficultyToClone" to "${dialogDifficultyName.text.toLowerCase()}"');
+      }
+      else
+      {
+        state.success('Clone Difficulty', 'Cloned difficulty "$difficultyToClone" to "${dialogDifficultyName.text.toLowerCase()}"');
+      }
 
       dialog.hideDialog(DialogButton.APPLY);
     }
