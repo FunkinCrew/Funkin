@@ -34,6 +34,38 @@ typedef HitWindowRes =
 class GRhythmUtil
 {
   /**
+   * Mirror the note direction.
+   * @param noteData The original note direction.
+   * @return The mirrored note direction.
+   */
+  public static function mirrorNoteDirection(noteData:Int):Int
+  {
+    return switch (noteData)
+    {
+      case 0:
+        3;
+      case 1:
+        2;
+      case 2:
+        1;
+      case 3:
+        0;
+
+      case 4:
+        7;
+      case 5:
+        6;
+      case 6:
+        5;
+      case 7:
+        4;
+
+      default:
+        noteData;
+    }
+  }
+
+  /**
    * Get the current hit window for a note.
    * @param note The note to get the hit window for.
    * @return A HitWindow object containing the start, center, and end times of the hit window.

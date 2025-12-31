@@ -2783,6 +2783,7 @@ class FreeplayState extends MusicBeatSubState
 
             #if FEATURE_DEBUG_FUNCTIONS
             botPlayMode: FlxG.keys.pressed.SHIFT,
+            mirrored: FlxG.keys.pressed.CONTROL,
             #else
             botPlayMode: false,
             #end

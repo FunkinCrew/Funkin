@@ -151,6 +151,11 @@ typedef PlayStateParams =
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
   ?cameraFollowPoint:FlxPoint,
+  /**
+   * Whether the note data should be mirrored horizontally.
+   * @default `false`
+   */
+  ?mirrored:Bool
 }
 
 /**
@@ -719,6 +724,8 @@ class PlayState extends MusicBeatSubState
    */
   static final MUSIC_EASE_RATIO:Float = 42;
 
+  var mirrorSongData:Bool = false;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
@@ -757,6 +764,9 @@ class PlayState extends MusicBeatSubState
     playbackRate = params.playbackRate ?? 1.0;
     overrideMusic = params.overrideMusic ?? false;
     previousCameraFollowPoint = params.cameraFollowPoint;
+    mirrorSongData = params.mirrored ?? false;
+
+    trace("Params: " + mirrorSongData + ", " + isBotPlayMode);
 
     // Basic object initialization
 
@@ -2477,10 +2487,13 @@ class PlayState extends MusicBeatSubState
       switch (songNote.getStrumlineIndex())
       {
         case 0:
+          if (mirrorSongData) songNote.data = GRhythmUtil.mirrorNoteDirection(noteData);
+
           playerNoteData.push(songNote);
           // increment totalNotes for total possible notes able to be hit by the player
           if (scoreable) Highscore.tallies.totalNotes++;
         case 1:
+          if (mirrorSongData) songNote.data = GRhythmUtil.mirrorNoteDirection(noteData);
           opponentNoteData.push(songNote);
       }
     }
