@@ -114,7 +114,10 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null) return;
+    if (toolbox == null)
+    {
+      toolbox = cast initToolbox(state, id);
+    }
 
     if (toolbox != null)
     {
@@ -201,14 +204,14 @@ class ChartEditorToolboxHandler
    * @param id The asset ID of the toolbox layout.
    * @return The toolbox.
    */
-  public static function getToolboxUnCast(state:ChartEditorState, id:String):Null<CollapsibleDialog>
+  public static function getToolbox_OLD(state:ChartEditorState, id:String):Null<CollapsibleDialog>
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolboxUnCast() - Could not retrieve or build toolbox: $id';
+    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox_OLD() - Could not retrieve or build toolbox: $id';
 
     return toolbox;
   }
@@ -277,16 +280,6 @@ class ChartEditorToolboxHandler
       state.playtestBotPlayMode = checkboxBotPlay.selected;
     };
 
-    var checkboxShowResults:Null<CheckBox> = toolbox.findComponent('playtestShowResultsCheckbox', CheckBox);
-    if (checkboxShowResults == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestShowResultsCheckbox component.';
-
-    checkboxShowResults.selected = state.playtestShowResults;
-
-    checkboxShowResults.onClick = _ -> {
-      state.playtestShowResults = checkboxShowResults.selected;
-    };
-
     var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
 
     if (checkboxSongScripts == null)
@@ -296,17 +289,6 @@ class ChartEditorToolboxHandler
 
     checkboxSongScripts.onClick = _ -> {
       state.playtestSongScripts = checkboxSongScripts.selected;
-    };
-
-    var checkboxAudioSettings:Null<CheckBox> = toolbox.findComponent('playtestAudioSettingsCheckbox', CheckBox);
-
-    if (checkboxAudioSettings == null)
-      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestAudioSettingsCheckbox component.';
-
-    state.playtestAudioSettings = checkboxAudioSettings.selected;
-
-    checkboxAudioSettings.onClick = _ -> {
-      state.playtestAudioSettings = checkboxAudioSettings.selected;
     };
 
     return toolbox;
@@ -364,8 +346,8 @@ class ChartEditorToolboxHandler
     if (toolbox == null) return null;
 
     // Starting position.
-    toolbox.x = 700;
-    toolbox.y = 150;
+    toolbox.x = 200;
+    toolbox.y = 350;
 
     toolbox.onDialogClosed = function(event:DialogEvent) {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
@@ -394,14 +376,14 @@ class ChartEditorToolboxHandler
 
     // Starting position.
     toolbox.x = 200;
-    toolbox.y = 150;
+    toolbox.y = 350;
 
     toolbox.onDialogClosed = (event:DialogEvent) -> {
       state.menubarItemToggleToolboxOpponentPreview.selected = false;
     }
 
-    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charOpponent');
-    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charOpponent component.';
+    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
+    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charPlayer component.';
     // TODO: We need to implement character swapping in ChartEditorState.
     charPlayer.loadCharacter('dad');
     charPlayer.characterType = CharacterType.DAD;

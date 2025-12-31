@@ -431,13 +431,13 @@ class StoryMenuState extends MusicBeatState
         }
       }
 
-      if (controls.ACCEPT_P)
+      if (controls.ACCEPT)
       {
         selectLevel();
       }
 
       #if FEATURE_TOUCH_CONTROLS
-      if (!selectedLevel && TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
+      if (TouchUtil.justReleased && !TouchUtil.overlaps(leftDifficultyArrow) && !SwipeUtil.justSwipedAny)
       {
         for (i in 0...levelTitles.members.length)
         {
@@ -452,7 +452,7 @@ class StoryMenuState extends MusicBeatState
       #end
     }
 
-    if (controls.BACK_P) goBack();
+    if (controls.BACK) goBack();
   }
 
   /**

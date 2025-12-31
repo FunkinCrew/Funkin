@@ -181,7 +181,7 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    trace('Opening Attract state in ${Constants.TITLE_ATTRACT_DELAY} seconds...');
+    trace('Starting attract timer');
     attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
   }
 
@@ -238,7 +238,7 @@ class TitleState extends MusicBeatState
     // Pressing BACK on the title screen should close the game.
     // This lets you exit without leaving fullscreen mode.
     // Only applicable on desktop and Android.
-    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK_P)
+    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK)
     {
       openfl.Lib.application.window.close();
     }
@@ -392,9 +392,6 @@ class TitleState extends MusicBeatState
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
-
-    // Stop the attract timer so you can listen to the whole song!
-    attractTimer.cancel();
   }
 
   function createCoolText(textArray:Array<String>)

@@ -4,4 +4,3 @@
 [submodule "art"]
 	path = art
 	url = https://github.com/FunkinCrew/Funkin.art
-	shallow = true

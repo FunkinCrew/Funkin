@@ -31,7 +31,7 @@ typedef AnimationInfo =
 @:composite(Layout)
 class CharacterPlayer extends Box
 {
-  public var character:Null<BaseCharacter>;
+  var character:Null<BaseCharacter>;
 
   public function new(defaultToBf:Bool = true)
   {
@@ -74,7 +74,6 @@ class CharacterPlayer extends Box
    * Loads a character by ID.
    * @param id The ID of the character to load.
    */
-  @:access(funkin.play.character.BaseCharacter)
   public function loadCharacter(id:String):Void
   {
     if (id == null) return;
@@ -102,14 +101,12 @@ class CharacterPlayer extends Box
     if (flip) character.flipX = !character.flipX;
     if (targetScale != 1.0) character.setScale(targetScale);
 
-    if (character._data.isPixel)
-    {
-      character.scale.x *= Constants.PIXEL_ART_SCALE;
-      character.scale.y *= Constants.PIXEL_ART_SCALE;
-    }
-
-    character.animation.onFrameChange.add(onFrame);
-    character.animation.onFinish.add(onFinish);
+    character.animation.onFrameChange.add(function(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1) {
+      dispatch(new AnimationEvent(AnimationEvent.FRAME));
+    });
+    character.animation.onFinish.add(function(name:String = '') {
+      dispatch(new AnimationEvent(AnimationEvent.END));
+    });
     add(character);
 
     invalidateComponentLayout();
@@ -173,18 +170,17 @@ class CharacterPlayer extends Box
     dispatch(new AnimationEvent(AnimationEvent.END));
   }
 
-  public function playAnimManually(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
-  {
-    if (character != null) character.playAnimation(name, restart, ignoreOther, reversed);
-  }
-
   override function repositionChildren():Void
   {
     super.repositionChildren();
+    character.x = this.cachedScreenX;
+    character.y = this.cachedScreenY;
 
-    if (character == null) return;
-    character.x = this.cachedScreenX + (-character.globalOffsets[0] * character.scale.x);
-    character.y = this.cachedScreenY + (-character.globalOffsets[1] * character.scale.y);
+    // Apply animation offsets, so the character is positioned correctly based on the animation.
+    @:privateAccess var animOffsets:Array<Float> = character.animOffsets;
+
+    character.x -= animOffsets[0] * targetScale * (flip ? -1 : 1);
+    character.y -= animOffsets[1] * targetScale;
   }
 
   /**
@@ -217,7 +213,7 @@ class CharacterPlayer extends Box
     if (character != null) character.onStepHit(event);
   }
 
-  public function onNoteIncoming(event:NoteScriptEvent):Void
+  public function onNoteIncoming(event:NoteScriptEvent)
   {
     if (character != null) character.onNoteIncoming(event);
   }
@@ -229,14 +225,7 @@ class CharacterPlayer extends Box
    */
   public function onNoteHit(event:HitNoteScriptEvent):Void
   {
-    if (character != null)
-    {
-      character.onNoteHit(event);
-
-      if ((event.note.noteData.getMustHitNote() && characterType == BF)
-        || (!event.note.noteData.getMustHitNote() && characterType == DAD)) character.holdTimer = -event.note.noteData?.length / 1000;
-      // At least i tried yaknow?
-    }
+    if (character != null) character.onNoteHit(event);
   }
 
   /**
@@ -271,7 +260,6 @@ class CharacterPlayer extends Box
 }
 
 @:access(funkin.ui.haxeui.components.CharacterPlayer)
-@:access(funkin.play.character.BaseCharacter)
 private class Layout extends DefaultLayout
 {
   public override function resizeChildren():Void
@@ -286,6 +274,7 @@ private class Layout extends DefaultLayout
     }
 
     character.cornerPosition.set(0, 0);
+    // character.setGraphicSize(Std.int(innerWidth), Std.int(innerHeight));
   }
 
   public override function calcAutoSize(exclusions:Array<Component> = null):Size
@@ -297,11 +286,8 @@ private class Layout extends DefaultLayout
       return super.calcAutoSize(exclusions);
     }
     var size:Size = new Size();
-
-    final charSceenBounds = character.getScreenBounds();
-    size.width = charSceenBounds.width + paddingLeft + paddingRight;
-    size.height = charSceenBounds.height + paddingTop + paddingBottom;
-
+    size.width = character.width + paddingLeft + paddingRight;
+    size.height = character.height + paddingTop + paddingBottom;
     return size;
   }
 }

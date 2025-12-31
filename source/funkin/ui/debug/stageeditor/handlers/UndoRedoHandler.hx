@@ -22,7 +22,6 @@ class UndoRedoHandler
 
         for (char in state.getCharacters())
         {
-          if (char == null) continue;
           if (char.characterType == type) state.selectedChar = char;
         }
 

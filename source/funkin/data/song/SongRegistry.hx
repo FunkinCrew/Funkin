@@ -56,7 +56,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log(' INFO '.info() + 'Parsing ${scriptedEntryClassNames.length} scripted entries...');
+    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -99,15 +99,15 @@ using funkin.data.song.migrator.SongDataMigrator;
         var entry:Null<Song> = createEntry(entryId);
         if (entry != null)
         {
-          log('Loaded entry data: ${entry}');
+          trace(' Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e:Dynamic)
       {
         // Print the error.
-        log(' ERROR '.error() + 'Failed to load entry data: ${entryId}');
-        log(' ERROR '.error() + e);
+        trace(' Failed to load entry data: ${entryId}');
+        trace(e);
         continue;
       }
     }
@@ -127,29 +127,6 @@ using funkin.data.song.migrator.SongDataMigrator;
   public function parseEntryDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
     return parseEntryMetadataRaw(contents);
-  }
-
-  public override function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
-  {
-    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
-    if (variation != Constants.DEFAULT_VARIATION)
-    {
-      return scriptedSongVariations.exists('${id}:${variation}');
-    }
-    return super.isScriptedEntry(id, params);
-  }
-
-  public override function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
-  {
-    var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
-    if (variation != Constants.DEFAULT_VARIATION)
-    {
-      final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
-      @:privateAccess
-      var path:String = variationSongId._asc._c.name;
-      return path;
-    }
-    return super.getScriptedEntryClassName(id, params);
   }
 
   /**

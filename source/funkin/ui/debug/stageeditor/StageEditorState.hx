@@ -277,10 +277,7 @@ class StageEditorState extends UIState
     this.showChars = value;
 
     for (cooldude in getCharacters())
-    {
-      if (cooldude == null) continue;
       cooldude.visible = showChars;
-    }
 
     return value;
   }
@@ -332,20 +329,20 @@ class StageEditorState extends UIState
     Screen.instance.addComponent(root);
 
     // Characters setup.
-    var gf = CharacterDataParser.fetchCharacter(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, true);
-    if (gf != null) gf.characterType = CharacterType.GF;
-    var dad = CharacterDataParser.fetchCharacter(params?.targetDadChar ?? Save.instance.stageDadChar, true);
-    if (dad != null) dad.characterType = CharacterType.DAD;
-    var bf = CharacterDataParser.fetchCharacter(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, true);
-    if (bf != null) bf.characterType = CharacterType.BF;
+    var gf = CharacterDataParser.fetchCharacter(Save.instance.stageGirlfriendChar, true);
+    gf.characterType = CharacterType.GF;
+    var dad = CharacterDataParser.fetchCharacter(Save.instance.stageDadChar, true);
+    dad.characterType = CharacterType.DAD;
+    var bf = CharacterDataParser.fetchCharacter(Save.instance.stageBoyfriendChar, true);
+    bf.characterType = CharacterType.BF;
 
-    if (bf != null) bf.flipX = !bf.getDataFlipX();
-    if (gf != null) gf.flipX = gf.getDataFlipX();
-    if (dad != null) dad.flipX = dad.getDataFlipX();
+    bf.flipX = !bf.getDataFlipX();
+    gf.flipX = gf.getDataFlipX();
+    dad.flipX = dad.getDataFlipX();
 
-    gf?.updateHitbox();
-    dad?.updateHitbox();
-    bf?.updateHitbox();
+    gf.updateHitbox();
+    dad.updateHitbox();
+    bf.updateHitbox();
 
     // Only one character per group allowed.
     charGroups = [
@@ -354,21 +351,12 @@ class StageEditorState extends UIState
       CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)
     ];
 
-    if (gf != null)
-    {
-      gf.x = charPos[CharacterType.GF][0] - gf.characterOrigin.x + gf.globalOffsets[0];
-      gf.y = charPos[CharacterType.GF][1] - gf.characterOrigin.y + gf.globalOffsets[1];
-    }
-    if (dad != null)
-    {
-      dad.x = charPos[CharacterType.DAD][0] - dad.characterOrigin.x + dad.globalOffsets[0];
-      dad.y = charPos[CharacterType.DAD][1] - dad.characterOrigin.y + dad.globalOffsets[1];
-    }
-    if (bf != null)
-    {
-      bf.x = charPos[CharacterType.BF][0] - bf.characterOrigin.x + bf.globalOffsets[0];
-      bf.y = charPos[CharacterType.BF][1] - bf.characterOrigin.y + bf.globalOffsets[1];
-    }
+    gf.x = charPos[CharacterType.GF][0] - gf.characterOrigin.x + gf.globalOffsets[0];
+    gf.y = charPos[CharacterType.GF][1] - gf.characterOrigin.y + gf.globalOffsets[1];
+    dad.x = charPos[CharacterType.DAD][0] - dad.characterOrigin.x + dad.globalOffsets[0];
+    dad.y = charPos[CharacterType.DAD][1] - dad.characterOrigin.y + dad.globalOffsets[1];
+    bf.x = charPos[CharacterType.BF][0] - bf.characterOrigin.x + bf.globalOffsets[0];
+    bf.y = charPos[CharacterType.BF][1] - bf.characterOrigin.y + bf.globalOffsets[1];
 
     selectedChar = bf;
 
@@ -492,7 +480,7 @@ class StageEditorState extends UIState
       welcomeDialog.closable = false;
 
       #if sys
-      if (Save.instance.stageEditorHasBackup.value)
+      if (Save.instance.stageEditorHasBackup)
       {
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
@@ -534,7 +522,7 @@ class StageEditorState extends UIState
     CrashHandler.errorSignal.add(autosavePerCrash);
     CrashHandler.criticalErrorSignal.add(autosavePerCrash);
 
-    Save.instance.stageEditorHasBackup.value = false;
+    Save.instance.stageEditorHasBackup = false;
 
     Cursor.show();
     FunkinSound.playMusic('chartEditorLoop',
@@ -553,7 +541,7 @@ class StageEditorState extends UIState
       if (conductorInUse.currentBeat % 2 == 0)
       {
         for (char in getCharacters())
-          char?.dance(true);
+          char.dance(true);
       }
 
       for (asset in spriteArray)
@@ -600,10 +588,7 @@ class StageEditorState extends UIState
     if (testingMode)
     {
       for (char in getCharacters())
-      {
-        if (char == null) continue;
         char.shader = null;
-      }
 
       // spriteMarker.visible = camMarker.visible = false;
       findObjDialog.hideDialog(DialogButton.CANCEL);
@@ -616,15 +601,11 @@ class StageEditorState extends UIState
 
       if (curTestChar >= getCharacters().length) curTestChar = 0;
 
-      var text = Std.string(getCharacters()[curTestChar]?.characterType);
-      bottomBarSelectText.text = (text == 'null') ? 'None' : text;
+      bottomBarSelectText.text = Std.string(getCharacters()[curTestChar].characterType);
 
       var char = getCharacters()[curTestChar];
-      if (char != null)
-      {
-        camFollow.x = char.cameraFocusPoint.x + charCamOffsets.get(char.characterType)[0];
-        camFollow.y = char.cameraFocusPoint.y + charCamOffsets.get(char.characterType)[1];
-      }
+      camFollow.x = char.cameraFocusPoint.x + charCamOffsets.get(char.characterType)[0];
+      camFollow.y = char.cameraFocusPoint.y + charCamOffsets.get(char.characterType)[1];
 
       // EXIT
       if (FlxG.keys.justPressed.ENTER) // so we dont accidentally get stuck (happened to me once, terrible experience)
@@ -756,25 +737,21 @@ class StageEditorState extends UIState
           this.createAndPushAction(OBJECT_ROTATED);
         }
 
-        if (FlxG.keys.justPressed.LEFT) selectedSprite.angle -= Save.instance.stageEditorAngleStep.value;
-        if (FlxG.keys.justPressed.RIGHT) selectedSprite.angle += Save.instance.stageEditorAngleStep.value;
+        if (FlxG.keys.justPressed.LEFT) selectedSprite.angle -= Save.instance.stageEditorAngleStep;
+        if (FlxG.keys.justPressed.RIGHT) selectedSprite.angle += Save.instance.stageEditorAngleStep;
       }
 
       arrowMovement(selectedSprite);
 
       for (char in getCharacters())
-      {
-        if (char == null) continue;
         char.shader = null;
-      }
     }
     else
     {
-      if (selectedChar != null) selectedChar.shader = null;
+      selectedChar.shader = null;
 
       for (char in getCharacters())
       {
-        if (char == null) continue;
         if (char != selectedChar) char.shader = charDeselectShader;
 
         if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
@@ -871,15 +848,15 @@ class StageEditorState extends UIState
 
   public function updateRecentFiles()
   {
-    var files = Save.instance.stageEditorPreviousFiles.value;
+    var files = Save.instance.stageEditorPreviousFiles;
     files.remove(currentFile);
     files.unshift(currentFile);
 
     while (files.length > Constants.MAX_PREVIOUS_WORKING_FILES)
       files.pop();
 
-    Save.instance.stageEditorPreviousFiles.value = files;
-    Save.system.flush();
+    Save.instance.stageEditorPreviousFiles = files;
+    Save.instance.flush();
   }
 
   public function updateMarkerPos()
@@ -887,7 +864,6 @@ class StageEditorState extends UIState
     for (i in 0...getCharacters().length)
     {
       var char = getCharacters()[i];
-      if (char == null) continue;
       var type = char.characterType;
 
       charPos.set(type, [
@@ -918,7 +894,6 @@ class StageEditorState extends UIState
   // it comes from some flxobject/polymod error apparently and I have no idea why
   function checkCharOverlaps(char:BaseCharacter)
   {
-    if (char == null) return false;
     var mouseX = FlxG.mouse.x >= char.x && FlxG.mouse.x <= char.x + char.width;
     var mouseY = FlxG.mouse.y >= char.y && FlxG.mouse.y <= char.y + char.height;
 
@@ -1019,7 +994,7 @@ class StageEditorState extends UIState
 
   function updateBGColors():Void
   {
-    var colArray = Save.instance.stageEditorTheme.value == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
+    var colArray = Save.instance.stageEditorTheme == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
 
     var index = members.indexOf(bg);
     bg.kill();
@@ -1076,7 +1051,7 @@ class StageEditorState extends UIState
     bottomBarSelectText.onClick = function(_) onMenuItemClick("switch focus");
 
     var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
-    bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep.value) ? Save.instance.stageEditorMoveStep.value : "1px";
+    bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep) ? Save.instance.stageEditorMoveStep : "1px";
 
     var changeStep = function(change:Int = 0) {
       var id = stepOptions.indexOf(bottomBarMoveStepText.text);
@@ -1085,7 +1060,7 @@ class StageEditorState extends UIState
       if (id >= stepOptions.length) id = stepOptions.length - 1;
       else if (id < 0) id = 0;
 
-      bottomBarMoveStepText.text = Save.instance.stageEditorMoveStep.value = stepOptions[id];
+      bottomBarMoveStepText.text = Save.instance.stageEditorMoveStep = stepOptions[id];
       var shit = Std.parseInt(StringTools.replace(bottomBarMoveStepText.text, "px", ""));
       moveStep = shit;
 
@@ -1100,17 +1075,17 @@ class StageEditorState extends UIState
     changeStep(); // update
 
     var angleOptions = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
-    bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
+    bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
 
     var changeAngle = function(change:Int = 0) {
-      var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep.value);
+      var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep);
       id += change;
 
       if (id >= angleOptions.length) id = angleOptions.length - 1;
       else if (id < 0) id = 0;
 
-      Save.instance.stageEditorAngleStep.value = angleOptions[id];
-      bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
+      Save.instance.stageEditorAngleStep = angleOptions[id];
+      bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
 
       updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     }
@@ -1133,17 +1108,17 @@ class StageEditorState extends UIState
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
     menubarItemThemeLight.onClick = function(_) {
-      Save.instance.stageEditorTheme.value = StageEditorTheme.Light;
+      Save.instance.stageEditorTheme = StageEditorTheme.Light;
       updateBGColors();
     }
 
     menubarItemThemeDark.onClick = function(_) {
-      Save.instance.stageEditorTheme.value = StageEditorTheme.Dark;
+      Save.instance.stageEditorTheme = StageEditorTheme.Dark;
       updateBGColors();
     }
 
-    menubarItemThemeDark.selected = Save.instance.stageEditorTheme.value == StageEditorTheme.Dark;
-    menubarItemThemeLight.selected = Save.instance.stageEditorTheme.value == StageEditorTheme.Light;
+    menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
+    menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
 
     menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
     menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
@@ -1168,7 +1143,7 @@ class StageEditorState extends UIState
     for (a in menubarItemOpenRecent.childComponents)
       menubarItemOpenRecent.removeComponent(a);
 
-    for (file in Save.instance.stageEditorPreviousFiles.value)
+    for (file in Save.instance.stageEditorPreviousFiles)
     {
       var filePath = new haxe.io.Path(file);
       var item = new MenuItem();
@@ -1332,6 +1307,7 @@ class StageEditorState extends UIState
             index++;
 
             if (index >= chars.length) index = 0;
+
             selectedChar = chars[index];
           }
           else
@@ -1510,8 +1486,8 @@ class StageEditorState extends UIState
     FileUtil.writeBytesToPath(path, data);
     saved = true;
 
-    Save.instance.stageEditorHasBackup.value = true;
-    Save.system.flush();
+    Save.instance.stageEditorHasBackup = true;
+    Save.instance.flush();
 
     notifyChange("Auto-Save", "A Backup of this Stage has been made.");
   }
@@ -1647,18 +1623,4 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
-  /**
-   * If non-null, load this character as Boyfriend.
-   */
-  var ?targetBfChar:String;
-
-  /**
-   * If non-null, load this character as Girlfriend.
-   */
-  var ?targetGfChar:String;
-
-  /**
-   * If non-null, load this character as Dad.
-   */
-  var ?targetDadChar:String;
 };

@@ -62,10 +62,6 @@ class Main extends Sprite
     haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
     funkin.util.logging.AnsiTrace.traceBF();
 
-    // Get OpenFL to stop complaining so much.
-    // You can remove this line if you want to read debug messages.
-    openfl.utils._internal.Log.level = openfl.utils._internal.Log.LogLevel.INFO;
-
     // Load mods to override assets.
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
     funkin.modding.PolymodHandler.loadAllMods();
@@ -139,11 +135,11 @@ class Main extends Sprite
     Handle.initAsync(function(success:Bool):Void {
       if (success)
       {
-        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance initialized!');
       }
       else
       {
-        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance failed to initialize!');
+        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance failed to initialize!');
       }
     });
     #end

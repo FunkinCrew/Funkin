@@ -143,6 +143,7 @@ class FunkinDebugDisplay extends Sprite
     infoDisplay.mouseEnabled = false;
     infoDisplay.defaultTextFormat = new TextFormat('Monsterrat', 12, color, JUSTIFY);
     infoDisplay.antiAliasType = NORMAL;
+    infoDisplay.sharpness = 100;
     infoDisplay.multiline = true;
     addChild(infoDisplay);
   }

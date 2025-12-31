@@ -35,6 +35,7 @@ class ConsoleMacro
   public static function registerClass(className:String):Void
   {
     classes.push(className);
+    trace("Registered console class: " + className);
   }
 
   #if macro
@@ -58,7 +59,7 @@ class ConsoleMacro
       };
 
     fields.push(initField);
-    Sys.println(' INFO '.info() + ' Generated console registration for: $cl');
+    Sys.println(' INFO '.bold().bg_blue() + ' Generated console registration for: $cl');
     return fields;
   }
   #end

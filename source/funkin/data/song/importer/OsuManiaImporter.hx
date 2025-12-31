@@ -62,8 +62,8 @@ class OsuManiaImporter
   }
 
   /**
-   * @param songData The raw parsed JSON data to migrate, as a Dynamic.
-   * @param difficulty The difficulty name to assign to the migrated chart.
+   * @param data The raw parsed JSON data to migrate, as a Dynamic.
+   * @param difficulty
    * @return SongMetadata
    */
   public static function migrateMetadata(songData:OsuManiaData, difficulty:String = 'normal'):SongMetadata
@@ -117,11 +117,6 @@ class OsuManiaImporter
     return result;
   }
 
-  /**
-   * @param songData The raw parsed JSON data to migrate, as a Dynamic.
-   * @param difficulty The difficulty name to assign to the migrated chart.
-   * @return SongChartData
-   */
   public static function migrateChartData(songData:OsuManiaData, difficulty:String = 'normal'):SongChartData
   {
     trace('Migrating song chart data from Osu!Mania.');
@@ -147,15 +142,13 @@ class OsuManiaImporter
     for (hitObject in hitObjects)
     {
       var wrappedColumn:Int = hitObject.column % (keyCount * 2); // wrap overflow for 9K+
-      if (keyCount <= 4) // if its 4K or less, flip to BF side
+      if (keyCount <= 4) // if its 5K+ dont add the copies beatmap into the opponent
       {
-        wrappedColumn -= 4;
-        var noteOffset:Int = Std.int(Math.abs(keyCount - STRUMLINE_SIZE));
+        var noteOffset:Int = Std.int(Math.abs(keyCount - STRUMLINE_SIZE)); // to make it on the opponent strumline when on 3K it has a one note offset
         var flippedNoteData:Int = wrappedColumn + keyCount + noteOffset;
         result.push(new SongNoteData(hitObject.time, flippedNoteData, hitObject.holdDuration ?? 0, ''));
       }
-      else
-        result.push(new SongNoteData(hitObject.time, wrappedColumn, hitObject.holdDuration ?? 0, ''));
+      result.push(new SongNoteData(hitObject.time, wrappedColumn, hitObject.holdDuration ?? 0, ''));
     }
 
     return result;

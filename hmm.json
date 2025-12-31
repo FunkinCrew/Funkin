@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "4c69bb43f1fb89fd6003dc98d2f3a9d75c5364b6",
+      "ref": "cb921a591bdb2dba604decf44cd8f5c3fbbe969b",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -42,15 +42,10 @@
       "version": "1.0.3"
     },
     {
-      "name": "extension-webviewcore",
-      "type": "haxelib",
-      "version": "1.0.0"
-    },
-    {
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "c8e79d2a42f9c11c639519ef2a6fd7ef2379a8aa",
+      "ref": "daca24c941b99f877aa800fae4511b258364d1ef",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -61,11 +56,11 @@
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
-      "name": "flixel-animate",
+      "name": "flxanimate",
       "type": "git",
       "dir": null,
-      "ref": "c61476f4b3a3d225631ab3065e4e925a4b63c076",
-      "url": "https://github.com/MaybeMaru/flixel-animate"
+      "ref": "49214278b9124823582cdcecd94f4a1de9a4b36b",
+      "url": "https://github.com/FunkinCrew/flxanimate"
     },
     {
       "name": "format",
@@ -95,8 +90,8 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "088b153b35985f8e4419ef710057ebd5b3749513",
-      "url": "https://github.com/FunkinCrew/haxeui-core"
+      "ref": "578d61bc275cf71f473647eeb5aab002e45338be",
+      "url": "https://github.com/haxeui/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
@@ -116,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "5932340d095a7eea8635fe4d1355f1c0efd0b3c2",
+      "ref": "6546fa5c3ad1bac065f144745122ab5a6d4195ff",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -151,7 +146,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.5"
+      "version": "2.2.4"
     },
     {
       "name": "json2object",
@@ -162,27 +157,31 @@
     },
     {
       "name": "jsonpatch",
-      "type": "haxelib",
-      "version": "1.1.0"
+      "type": "git",
+      "dir": null,
+      "ref": "f9b83215acd586dc28754b4ae7f69d4c06c3b4d3",
+      "url": "https://github.com/EliteMasterEric/jsonpatch"
     },
     {
       "name": "jsonpath",
-      "type": "haxelib",
-      "version": "1.1.0"
+      "type": "git",
+      "dir": null,
+      "ref": "7a24193717b36393458c15c0435bb7c4470ecdda",
+      "url": "https://github.com/EliteMasterEric/jsonpath"
     },
     {
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "318253ea3a28a3299a167748912c40444f403777",
+      "ref": "27092822abf7b8c2ec2905053cf5435be4de838e",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "newgrounds",
       "type": "git",
       "dir": null,
-      "ref": "b2b53cd0a5f030af74efd325732951cddbea8826",
-      "url": "https://github.com/FunkinCrew/Newgrounds"
+      "ref": "c8b30832027fa04f48fe6a45fa7903d5b265d56e",
+      "url": "https://github.com/Geokureli/Newgrounds/"
     },
     {
       "name": "openfl",
