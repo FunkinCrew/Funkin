@@ -1730,12 +1730,12 @@ class FreeplayState extends MusicBeatSubState
 
     handleDirectionalInput(elapsed);
 
-    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+    final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
 
     if (wheelAmount != 0)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
-      changeSelection(-Math.round(wheelAmount));
+      changeSelection(-wheelAmount);
     }
 
     handleDifficultySwitch();
