@@ -79,7 +79,8 @@ class Paths implements ConsoleClass
 
   public static function animateAtlas(path:String, ?library:String):String
   {
-    return getLibraryPath('images/$path', library);
+    var animationPath:String = getPath('images/$path/Animation.json', TEXT, library);
+    return Path.directory(animationPath);
   }
 
   public static function txt(key:String, ?library:String):String

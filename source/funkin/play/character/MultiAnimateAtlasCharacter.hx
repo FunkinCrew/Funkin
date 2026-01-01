@@ -47,7 +47,8 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
+    var baseAssetLibrary:Null<String> = Paths.getLibrary(_data.assetPath);
+    if (baseAssetLibrary == "preload") baseAssetLibrary = null;
     var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
 
     var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
@@ -89,7 +90,8 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
           if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
         default:
-          var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
+          var subAssetLibrary:Null<String> = Paths.getLibrary(animation.assetPath);
+          if (subAssetLibrary == "preload") subAssetLibrary = null;
           var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
 
           var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);

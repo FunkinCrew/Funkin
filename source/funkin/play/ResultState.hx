@@ -226,12 +226,13 @@ class ResultState extends MusicBeatSubState
       }
 
       var animPath:String = "";
-      var animLibrary:String = "";
+      var animLibrary:Null<String> = null;
 
       if (animData.assetPath != null)
       {
         animPath = Paths.stripLibrary(animData.assetPath);
         animLibrary = Paths.getLibrary(animData.assetPath);
+        if (animLibrary == "preload") animLibrary = null;
       }
       var offsets = animData.offsets ?? [0, 0];
       switch (animData.renderType)
