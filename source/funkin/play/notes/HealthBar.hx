@@ -49,7 +49,9 @@ class HealthBar extends FlxSpriteGroup
     var scale = noteStyle.getHealthBarScale();
 
     healthBarBG = FunkinSprite.create(0, 0, assetPath ?? "healthBar");
-    healthBarBG.scale.set(scale, scale);
+    if (!isDownscroll) healthBarBG.scale.set(scale, scale)
+    else
+      healthBarBG.scale.set(scale, -scale);
     healthBarBG.y = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
     healthBarBG.screenCenter(X);
     healthBarBG.scrollFactor.set(0, 0);
