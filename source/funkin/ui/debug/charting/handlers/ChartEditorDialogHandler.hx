@@ -1065,25 +1065,11 @@ class ChartEditorDialogHandler
     {
       case 'legacy': 'FNF Legacy';
       case 'stepmania': 'StepMania';
-      case 'osumania': 'Osu!Mania';
+      case 'osumania': 'osu!Mania';
       default: 'Unknown';
     }
 
-    var fileFilter = switch (format)
-    {
-      case 'legacy':
-        [
-          {label: 'JSON Data File (.json)', extension: 'json'}];
-      case 'stepmania':
-        [
-          {label: 'StepMania File (.sm)', extension: 'sm'}];
-      case 'osumania':
-        [
-          {label: 'OSU! Beatmap File (.osu)', extension: 'osu'}];
-      default: null;
-    }
-
-    var fileExt = switch (format)
+    var fileExt:String = switch (format)
     {
       case 'osumania':
         "osu";
@@ -1091,6 +1077,18 @@ class ChartEditorDialogHandler
         "sm";
       default: "json";
     }
+
+    var fileFilterLabel:String = switch (fileExt)
+    {
+      case 'json':
+        'JSON Data File';
+      case 'sm':
+        'StepMania File';
+      case 'osu':
+        'osu! Beatmap File';
+      default: "Unknown File Type";
+    };
+    fileFilterLabel += ' (.$fileExt)';
 
     dialog.title = 'Import Chart - ${prettyFormat}';
 
@@ -1166,8 +1164,6 @@ class ChartEditorDialogHandler
             return;
           }
 
-          trace('Parsed StepMania data for ' + stepmaniaData.Metadata.Title);
-
           songMetadata = StepManiaImporter.migrateChartMetadata(stepmaniaData);
           songChartData = StepManiaImporter.migrateChartData(stepmaniaData);
 
@@ -1178,7 +1174,14 @@ class ChartEditorDialogHandler
 
           if (osuManiaData == null)
           {
-            state.error('Failure', 'Failed to parse Osu!Mania beatmap file (${path.file}.${path.ext})');
+            state.error('Failure', 'Failed to parse osu!Mania beatmap file (${path.file}.${path.ext})');
+            return;
+          }
+          else if (osuManiaData.General.Mode != 3)
+          {
+            var modes = ["osu!", "osu!taiko", "osu!catch"];
+            state.error('Failure',
+              'Not a osu!mania beatmap!\nGiven beatmap seems to be a ${modes[osuManiaData.General.Mode]} beatmap (${path.file}.${path.ext})');
             return;
           }
 
@@ -1199,9 +1202,11 @@ class ChartEditorDialogHandler
       state.success('Success', '$loadedText (${path.file}.${path.ext})');
     };
 
+    // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
+    var fileTypes = #if !mac [
+      {label: fileFilterLabel, extension: fileExt}] #else [] #end;
     importBox.onClick = function(_) {
-      // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', #if !mac fileFilter ?? [] #else [] #end, function(selectedFile:SelectedFileInfo) {
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileTypes, function(selectedFile:SelectedFileInfo) {
         if (selectedFile != null && selectedFile.bytes != null)
         {
           @:nullSafety(Off)

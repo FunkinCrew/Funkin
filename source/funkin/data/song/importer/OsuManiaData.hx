@@ -9,6 +9,7 @@ typedef OsuManiaData =
   var General:
     {
       var PreviewTime:Int;
+      var Mode:Int; // Should only be 3 if you are sure this is a mania beatmap
     };
   var Editor:
     {
