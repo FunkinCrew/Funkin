@@ -33,9 +33,9 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.splashCreateFromSongBasicOnly.onClick = _ -> onClickLinkCreateBasicOnly();
     this.splashCreateFromSongErectOnly.onClick = _ -> onClickLinkCreateErectOnly();
     this.splashCreateFromSongBasicErect.onClick = _ -> onClickLinkCreateBasicErect();
-    this.splashImportChartLegacy.onClick = _ -> onClickLinkImportChartLegacy();
-    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImportOsuMania();
-    this.splashImportChartStepMania.onClick = _ -> onClickLinkImportStepMania();
+    this.splashImportChartLegacy.onClick = _ -> onClickLinkImport("legacy");
+    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImport("osumania");
+    this.splashImportChartStepMania.onClick = _ -> onClickLinkImport('stepmania');
 
     // Add items to the Recent Charts list
     #if sys
@@ -236,42 +236,16 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   }
 
   /**
-   * Called when the user clicks the "Import Chart: FNF Legacy" link in the dialog.
+   * Called when the user clicks on any "Import Chart" link in the dialog.
    * Reassign this function to change the behavior.
    */
-  public function onClickLinkImportChartLegacy():Void
+  public function onClickLinkImport(format:String):Void
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
 
-    // Open the "Import Chart" dialog
-    chartEditorState.openImportChartWizard('legacy', false);
-  }
-
-  /**
-   * Called when the user clicks the "Import Chart: Osu! Mania" link in the dialog.
-   * Reassign this function to change the behavior.
-   */
-  public function onClickLinkImportOsuMania():Void
-  {
-    // Hide the welcome dialog
-    this.hideDialog(DialogButton.CANCEL);
-
-    // Open the "Import Chart" dialog
-    chartEditorState.openImportChartWizard('osumania', false);
-  }
-
-  /**
-   * Called when the user clicks the "Import Chart: StepMania" link in the dialog.
-   * Reassign this function to change the behavior.
-   */
-  public function onClickLinkImportStepMania():Void
-  {
-    // Hide the welcome dialog
-    this.hideDialog(DialogButton.CANCEL);
-
-    // Open the "Import Chart" dialog
-    chartEditorState.openImportChartWizard('stepmania', false);
+    // Open the "Import Chart" dialog for specified format
+    chartEditorState.openImportChartWizard(format, false);
   }
 }
 #end
