@@ -286,6 +286,7 @@ class FunkinMemory
   public static function cacheNoteStyle(style:NoteStyle):Void
   {
     // TODO: Texture paths should fall back to the default values.
+    cacheTexture(Paths.image(style.getHealthBarAssetPath() ?? "healthBar"));
     cacheTexture(Paths.image(style.getNoteAssetPath() ?? "note"));
     cacheTexture(style.getHoldNoteAssetPath() ?? "noteHold");
     cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? "strumline"));

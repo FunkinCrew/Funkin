@@ -42,6 +42,7 @@ import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VanillaCutscenes;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.notes.HealthBar;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.notekind.NoteKind;
@@ -547,16 +548,10 @@ class PlayState extends MusicBeatSubState
   var scoreText:FlxText;
 
   /**
-   * The bar which displays the player's health.
-   * Dynamically updated based on the value of `healthLerp` (which is based on `health`).
+   * The sprite group displays the player's health.
+   * Dynamically updated.
    */
-  public var healthBar:FlxBar;
-
-  /**
-   * The background image used for the health bar.
-   * Emma says the image is slightly skewed so I'm leaving it as an image instead of a `createGraphic`.
-   */
-  public var healthBarBG:FunkinSprite;
+  public var healthBar:HealthBar;
 
   /**
    * A sprite group for subtitle display.
@@ -795,8 +790,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     // Healthbar
-    healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
-    healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
+    healthBar = new HealthBar(noteStyle, isBotPlayMode);
     scoreText = new FlxText(0, 0, 0, '', 20);
 
     // Combo & Pop Up
@@ -1031,7 +1025,7 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    updateHealthBar();
+    healthBar.updateHealthBar(health);
     updateScoreText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
@@ -1438,7 +1432,7 @@ class PlayState extends MusicBeatSubState
     updateScoreText();
 
     health = Constants.HEALTH_STARTING;
-    healthLerp = health;
+    healthBar.healthLerp = health;
 
     healthBar.value = healthLerp;
 
@@ -1969,26 +1963,11 @@ class PlayState extends MusicBeatSubState
       && !ControlsHandler.usingExternalInputDevice)
       || #end Preferences.downscroll;
 
-    var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
-
-    healthBarBG.y = healthBarYPos;
-    healthBarBG.screenCenter(X);
-    healthBarBG.scrollFactor.set(0, 0);
-    healthBarBG.zIndex = 800;
-    add(healthBarBG);
-
-    healthBar.x = healthBarBG.x + 4;
-    healthBar.y = healthBarBG.y + 4;
-    healthBar.parent = this;
-    healthBar.parentVariable = 'healthLerp';
-    healthBar.scrollFactor.set();
-    healthBar.createFilledBar(Constants.COLOR_HEALTH_BAR_RED, Constants.COLOR_HEALTH_BAR_GREEN);
-    healthBar.zIndex = 801;
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText.x = healthBarBG.x + healthBarBG.width - 190;
-    scoreText.y = healthBarBG.y + 30;
+    scoreText.x = healthBar.healthBar.x + healthBar.healthBar.width - 190;
+    scoreText.y = healthBar.healthBar.y + 30;
     scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
@@ -1996,7 +1975,6 @@ class PlayState extends MusicBeatSubState
 
     // Move the health bar to the HUD camera.
     healthBar.cameras = [camHUD];
-    healthBarBG.cameras = [camHUD];
     scoreText.cameras = [camHUD];
 
     // Create subtitles if they are enabled.
@@ -2127,7 +2105,7 @@ class PlayState extends MusicBeatSubState
       // OPPONENT HEALTH ICON
       //
       iconP2 = new HealthIcon('dad', 1);
-      iconP2.y = healthBar.y - (iconP2.height / 2);
+      iconP2.y = healthBar.healthBar.y - (iconP2.height / 2);
       dad.initHealthIcon(true); // Apply the character ID here
       iconP2.zIndex = 850;
       add(iconP2);
@@ -2150,7 +2128,7 @@ class PlayState extends MusicBeatSubState
       // PLAYER HEALTH ICON
       //
       iconP1 = new HealthIcon('bf', 0);
-      iconP1.y = healthBar.y - (iconP1.height / 2);
+      iconP1.y = healthBar.healthBar.y - (iconP1.height / 2);
       boyfriend.initHealthIcon(false); // Apply the character ID here
       iconP1.zIndex = 850;
       add(iconP1);
@@ -2687,21 +2665,6 @@ class PlayState extends MusicBeatSubState
       // TODO: Add an option for this maybe?
       var commaSeparated:Bool = true;
       scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
-    }
-  }
-
-  /**
-     * Updates the values of the health bar.
-     */
-  function updateHealthBar():Void
-  {
-    if (isBotPlayMode)
-    {
-      healthLerp = Constants.HEALTH_MAX;
-    }
-    else
-    {
-      healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
     }
   }
 
