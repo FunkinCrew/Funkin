@@ -233,6 +233,9 @@ typedef NoteStyleData_HealthBar =
 {
   @:optional
   var padding:Null<Array<Float>>;
+
+  @:optional
+  var barOffsets:Null<Array<Float>>;
 }
 
 /**

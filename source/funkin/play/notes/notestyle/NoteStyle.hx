@@ -1180,16 +1180,28 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return parts[1];
   }
 
-  public function getHealthBarOffsets():Array<Float>
+  public function getHealthBarBGOffsets():Array<Float>
   {
     return _data?.assets?.healthBar?.offsets ?? fallback?.getHealthBarOffsets() ?? [0.0, 0.0];
+  }
+
+  public function applyHealthBarBGOffsets(target:HealthBar):Void
+  {
+    var offsets = getHealthBarBGOffsets();
+    target.healthBarBG.x += offsets[0];
+    target.healthBarBG.y += offsets[1];
+  }
+
+  public function getHealthBarOffsets():Array<Float>
+  {
+    return _data?.assets?.healthBar?.data?.barOffsets ?? fallback?.getHealthBarOffsets() ?? [0.0, 0.0];
   }
 
   public function applyHealthBarOffsets(target:HealthBar):Void
   {
     var offsets = getHealthBarOffsets();
-    target.healthBarBG.x += offsets[0];
-    target.healthBarBG.y += offsets[1];
+    target.healthBar.x += offsets[0];
+    target.healthBar.y += offsets[1];
   }
 
   public function getHealthBarScale():Float
