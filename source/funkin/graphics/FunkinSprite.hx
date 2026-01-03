@@ -440,7 +440,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getFramesWithKeyword() only works texture atlases!');
+      trace('WARNING: getFramesWithKeyword() only works on texture atlases!');
       return [];
     }
 
@@ -530,7 +530,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getFrameLabelList() only works texture atlases!');
+      trace('WARNING: getFrameLabelList() only works on texture atlases!');
       return [];
     }
 
@@ -561,7 +561,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getFrameLabel() only works texture atlases!');
+      trace('WARNING: getFrameLabel() only works on texture atlases!');
       return null;
     }
 
@@ -586,7 +586,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getDefaultSymbol() only works texture atlases!');
+      trace('WARNING: getDefaultSymbol() only works on texture atlases!');
       return '';
     }
 
@@ -603,7 +603,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: replaceSymbolGraphic() only works texture atlases!');
+      trace('WARNING: replaceSymbolGraphic() only works on texture atlases!');
       return;
     }
 
@@ -628,7 +628,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getFirstElement() only works texture atlases!');
+      trace('WARNING: getFirstElement() only works on texture atlases!');
       return null;
     }
 
@@ -644,7 +644,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: getSymbolElements() only works texture atlases!');
+      trace('WARNING: getSymbolElements() only works on texture atlases!');
       return [];
     }
 
@@ -677,7 +677,7 @@ class FunkinSprite extends FlxAnimate
   {
     if (!this.isAnimate)
     {
-      trace('WARNING: scaleElement() only works texture atlases!');
+      trace('WARNING: scaleElement() only works on texture atlases!');
       return;
     }
 
