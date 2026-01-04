@@ -69,7 +69,16 @@ class HealthBar extends FlxSpriteGroup
     this.add(healthBar);
 
     noteStyle.applyHealthBarBGOffsets(this);
-    noteStyle.applyHealthBarOffsets(this);
+    if (!isDownscroll)
+    {
+      noteStyle.applyHealthBarOffsets(this);
+    }
+    else
+    {
+      var offsets:Array<Float> = noteStyle.getHealthBarOffsets();
+      healthBar.x += offsets[0];
+      healthBar.x -= offsets[1];
+    }
   }
 
   /**

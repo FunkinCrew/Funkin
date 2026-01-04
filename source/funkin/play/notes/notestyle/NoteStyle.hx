@@ -1182,7 +1182,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function getHealthBarBGOffsets():Array<Float>
   {
-    return _data?.assets?.healthBar?.offsets ?? fallback?.getHealthBarOffsets() ?? [0.0, 0.0];
+    return _data?.assets?.healthBar?.offsets ?? fallback?.getHealthBarBGOffsets() ?? [0.0, 0.0];
   }
 
   public function applyHealthBarBGOffsets(target:HealthBar):Void
