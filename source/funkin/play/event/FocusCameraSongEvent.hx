@@ -50,7 +50,10 @@ class FocusCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('FocusCamera');
+    super('FocusCamera',
+      {
+        processOldEvents: true
+      });
   }
 
   static final DEFAULT_X_POSITION:Float = 0.0;

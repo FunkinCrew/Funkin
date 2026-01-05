@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.play.event.SongEvent;
 import funkin.play.PauseSubState.PauseMode;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
@@ -1488,12 +1489,18 @@ class PlayState extends MusicBeatSubState
           var eventAge:Float = Conductor.instance.songPosition - event.time;
           if (eventAge > 1000)
           {
-            event.activated = true;
-            continue;
+            // Setting `event.processOldEvents = true` allows events to be handled even if they are old.
+            var eventHandler:Null<SongEvent> = SongEventRegistry.getEvent(event.eventKind);
+            if (eventHandler == null || !eventHandler.processOldEvents)
+            {
+              event.activated = true;
+              continue;
+            }
           };
 
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
+
           // Calling event.cancelEvent() skips the event. Neat!
           if (!eventEvent.eventCanceled)
           {

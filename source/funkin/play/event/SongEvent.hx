@@ -4,6 +4,20 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
 
 /**
+ * Parameters used to initialize a song event.
+ */
+typedef SongEventParams =
+{
+  /**
+   * Defaults to `false`, causing events to get skipped when starting mid-song,
+   *   or when skipping forward past an event.
+   * If `true`, the song event will be handled and executed, even if it is old.
+   * @default `false`
+   */
+  ?processOldEvents:Bool
+}
+
+/**
  * This class provides a handler for a type of song event.
  * It is used by the ScriptedSongEvent class to handle user-defined events,
  * and also used by other classes in this package to provide default behavior for built-in events.
@@ -30,9 +44,17 @@ class SongEvent
    */
   public var id:String;
 
-  public function new(id:String)
+  /**
+   * If `false`, skipping forward in the song will ignore this event.
+   * If `true`, events will always be handled, in order.
+   */
+  public var processOldEvents:Bool = false;
+
+  public function new(id:String, ?params:SongEventParams)
   {
     this.id = id;
+
+    this.processOldEvents = params?.processOldEvents ?? false;
   }
 
   /**
