@@ -1140,7 +1140,7 @@ class FreeplayState extends MusicBeatSubState
     // capsuleToRank.targetPos.set((FlxG.width / 2) - (capsuleToRank.width / 2),
     //  (FlxG.height / 2) - (capsuleToRank.height / 2));
 
-    capsuleToRank.setPosition((FlxG.width / 2) - (capsuleToRank.width / 2), (FlxG.height / 2) - (capsuleToRank.height / 2));
+    capsuleToRank.setPosition((FlxG.width / 2) - (capsuleToRank.capsule.width / 2), (FlxG.height / 2) - (capsuleToRank.capsule.height / 2));
 
     new FlxTimer().start(0.5, _ -> {
       rankDisplayNew(fromResults, capsuleToRank);
