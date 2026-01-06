@@ -384,6 +384,9 @@ class InitState extends FlxState
     #elseif STAGEBUILD
     // -DSTAGEBUILD
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
+    #elseif EYESOFGOD
+    // -DEYESOFGOD
+    FlxG.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState());
     #elseif RESULTS
     // -DRESULTS
     FlxG.switchState(() -> new funkin.play.ResultState({
