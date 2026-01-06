@@ -488,6 +488,12 @@ class Project extends HXProject
   static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
 
   /**
+   * `-DFEATURE_CAMERA_EDITOR`
+   * If this flag is enabled, the Camera Editor will be accessible from the debug menu.
+   */
+
+   static final FEATURE_CAMERA_EDITOR:FeatureFlag = "FEATURE_CAMERA_EDITOR";
+  /**
    * `-DFEATURE_TOUCH_CONTROLS`
    * If this flag is enabled, the touch controls for the game is also enabled.
    * Works with desktop builds I think maybe?
@@ -936,9 +942,11 @@ class Project extends HXProject
     FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_CAMERA_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this)
       || FEATURE_CHART_EDITOR.isEnabled(this)
-      || FEATURE_STAGE_EDITOR.isEnabled(this));
+      || FEATURE_STAGE_EDITOR.isEnabled(this)
+      || FEATURE_CAMERA_EDITOR.isEnabled(this));
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
@@ -1055,6 +1063,7 @@ class Project extends HXProject
     setHaxedef("HXCPP_CHECK_POINTER");
     setHaxedef("HXCPP_STACK_LINE");
     setHaxedef("HXCPP_STACK_TRACE");
+
     setHaxedef("hscriptPos");
 
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
@@ -1132,6 +1141,11 @@ class Project extends HXProject
       {
         addHaxeMacro("include('funkin.ui.debug.stage')");
         addHaxeMacro("include('funkin.ui.debug.stageeditor')");
+      }
+
+      if (FEATURE_CAMERA_EDITOR.isEnabled(this))
+      {
+        addHaxeMacro("include('funkin.ui.debug.cameraeditor')");
       }
 
       addHaxeMacro("include('funkin.ui.haxeui')");
@@ -1458,6 +1472,8 @@ class Project extends HXProject
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
     if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+
+    if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/camera-editor', "default");
 
     if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
