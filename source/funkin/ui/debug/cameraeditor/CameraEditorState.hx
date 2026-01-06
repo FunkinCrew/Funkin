@@ -27,6 +27,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
+import haxe.ui.events.MouseEvent;
 
 /**
  * The EYES OF GOD......
@@ -186,59 +187,6 @@ class CameraEditorState extends UIState
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
   }
 
-  public function onMenuItemClick(item:String):Void
-  {
-    switch (item.toLowerCase())
-    {
-      case "exit":
-        if (!saved)
-        {
-          if (exitConfirmDialog == null)
-          {
-            exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
-              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-                exitConfirmDialog = null;
-                if (btn == DialogButton.YES)
-                {
-                  saveBackup();
-                  onMenuItemClick("exit");
-                }
-            });
-          }
-
-          return;
-        }
-
-        resetWindowTitle();
-
-        WindowUtil.windowExit.remove(windowClose);
-        CrashHandler.errorSignal.remove(autosavePerCrash);
-        CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
-
-        Cursor.hide();
-        FlxG.switchState(() -> new MainMenuState());
-        FlxG.sound.music.stop();
-
-      case "about":
-        aboutDialog = new AboutDialog();
-        aboutDialog.showDialog();
-
-      case "user guide":
-        userGuideDialog = new UserGuideDialog();
-        userGuideDialog.showDialog();
-
-        userGuideDialog.onDialogClosed = function(_) {
-          userGuideDialog = null;
-        }
-
-      case "open folder":
-        #if sys
-        var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
-        FileUtil.openFolder(absoluteBackupsPath);
-        #end
-    }
-  }
-
   function autosavePerCrash(message:String)
   {
     trace("Crashed the game for the reason: " + message);
@@ -279,14 +227,6 @@ class CameraEditorState extends UIState
     WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
-  function addUI():Void
-  {
-    menubarItemExit.onClick = function(_) onMenuItemClick("exit");
-    menubarItemUserGuide.onClick = function(_) onMenuItemClick("user guide");
-    menubarItemGoToBackupsFolder.onClick = function(_) onMenuItemClick("open folder");
-    menubarItemAbout.onClick = function(_) onMenuItemClick("about");
-  }
-
   function saveBackup()
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
@@ -302,6 +242,67 @@ class CameraEditorState extends UIState
         body: notif,
         type: isError ? NotificationType.Error : NotificationType.Info
       });
+  }
+
+  // ui function bindings
+
+  @:bind(menubarItemExit, MouseEvent.CLICK)
+  function onMenubarExit(_)
+  {
+    if (!saved)
+    {
+      if (exitConfirmDialog == null)
+      {
+        exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
+          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
+            exitConfirmDialog = null;
+            if (btn == DialogButton.YES)
+            {
+              saveBackup();
+              onMenubarExit(null);
+            }
+        });
+      }
+
+      return;
+    }
+
+    resetWindowTitle();
+
+    WindowUtil.windowExit.remove(windowClose);
+    CrashHandler.errorSignal.remove(autosavePerCrash);
+    CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+
+    Cursor.hide();
+    FlxG.switchState(() -> new MainMenuState());
+    FlxG.sound.music.stop();
+  }
+
+  @:bind(menubarItemUserGuide, MouseEvent.CLICK)
+  function onUserGuide(_)
+  {
+    userGuideDialog = new UserGuideDialog();
+    userGuideDialog.showDialog();
+
+    userGuideDialog.onDialogClosed = function(_) {
+      userGuideDialog = null;
+    }
+  }
+
+  @:bind(menubarItemGoToBackupsFolder, MouseEvent.CLICK)
+  function onOpenBackupsFolder(_)
+  {
+    #if sys
+    var absoluteBackupsPath:String = haxe.io.Path.join([Sys.getCwd(), BACKUPS_PATH]);
+    FileUtil.openFolder(absoluteBackupsPath);
+    #end
+  }
+
+  @:bind(menubarItemAbout, MouseEvent.CLICK)
+  function onAbout(_)
+  {
+    aboutDialog = new AboutDialog();
+    aboutDialog.showDialog();
   }
 }
 #end
