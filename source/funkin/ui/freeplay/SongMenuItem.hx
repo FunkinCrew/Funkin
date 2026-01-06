@@ -371,6 +371,8 @@ class SongMenuItem extends FlxSpriteGroup
           }
         case 2:
           bpmNumbers[i].digit = newBPM % 10;
+
+          if (Math.floor(newBPM) % 10 == 1) tempShift -= 4;
         default:
           trace('why the fuck is this being called');
       }
