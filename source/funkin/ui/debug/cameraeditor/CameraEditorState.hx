@@ -1,6 +1,9 @@
 package funkin.ui.debug.cameraeditor;
 
 #if FEATURE_CAMERA_EDITOR
+import haxe.ui.containers.Panel;
+import haxe.ui.containers.Panel;
+import haxe.ui.focus.FocusManager;
 import flixel.FlxCamera;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -17,6 +20,7 @@ import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
@@ -33,6 +37,7 @@ import funkin.util.macro.ConsoleMacro;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
+import haxe.ui.containers.Panel;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs;
@@ -44,8 +49,18 @@ import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
+
+import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.stage.StageRegistry;
+import funkin.play.stage.Stage;
+
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 
 /**
  * The EYES OF GOD......
@@ -53,10 +68,25 @@ import haxe.ui.notifications.NotificationType;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/camera-editor/main-view.xml"))
 class CameraEditorState extends UIState implements ConsoleClass
 {
+  /**
+   * CONSTANTS
+   */
+  // ==============================
+
+  /**
+   * The path to save backups to, when the editor is closed unexpectedly.
+   */
   public static final BACKUPS_PATH:String = "./backups/camera/";
 
+  /**
+   * The current instance of the Camera Editor.
+   */
   public static var instance:CameraEditorState = null;
 
+  /**
+   * INSTANCE DATA
+   */
+  // ==============================
   public var currentVariation:String = Constants.DEFAULT_VARIATION;
 
   public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
@@ -163,13 +193,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     updateWindowTitle();
 
-    if (!autoSaveTimer.finished)
-    {
-      autoSaveTimer.cancel();
-    }
-
     if (!saved)
     {
+      if (!autoSaveTimer.finished)
+      {
+        autoSaveTimer.cancel();
+      }
+
       autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
         saveBackup();
       });
@@ -178,24 +208,132 @@ class CameraEditorState extends UIState implements ConsoleClass
     return value;
   }
 
-  public var exitConfirmDialog:Dialog;
+  /**
+   * The path to the current file being operated on.
+   */
+  public var currentFile(default, set):String = "";
 
+  function set_currentFile(value:String):String
+  {
+    currentFile = value;
+
+    updateWindowTitle();
+
+    // TODO: Update list of recent files to include this file.
+
+    return value;
+  }
+
+  /**
+   * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
+   * If the user clicks off the input, focus will leave.
+   */
+  var isHaxeUIFocused(get, never):Bool;
+
+  function get_isHaxeUIFocused():Bool
+  {
+    return FocusManager.instance.focus != null;
+  }
+
+  /**
+   * Whether the user's mouse cursor is hovering over a SOLID component of the HaxeUI.
+   * If so, we can ignore certain mouse events underneath.
+   */
   var isCursorOverHaxeUI(get, never):Bool;
 
   function get_isCursorOverHaxeUI():Bool
   {
-    return Screen.instance.hasSolidComponentUnderPoint(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    return Screen.instance.hasSolidComponentUnderPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
   }
 
-  public var autoSaveTimer:FlxTimer = new FlxTimer();
+  /**
+   * The value of `isCursorOverHaxeUI` from the previous frame.
+   * This is useful because we may have just clicked a menu item, causing the menu to disappear.
+   */
+  var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * The params which were passed in when the Stage Editor was initialized.
+   * Set by CameraEditorDialogHandler, used to prevent background interaction while a dialog is open.
+   */
+  var isHaxeUIDialogOpen:Bool = false;
+
+  /**
+   * The camera that the HUD is rendered to.
+   */
+  var camHUD:FlxCamera;
+
+  /**
+   * The camera that the game underneath the HUD is rendered to.
+   */
+  var camGame:FlxCamera;
+
+  /**
+   * HAXEUI COMPONENTS
+   */
+  // ==============================
+
+  /**
+   * The User Guide dialog, opened from the menu bar.
+   */
+  public var userGuideDialog:UserGuideDialog;
+
+  /**
+   * The About dialog, opened from the menu bar.
+   */
+  public var aboutDialog:AboutDialog;
+
+  /**
+   * The dialog which warns the user that they are about to leave the editor without saving.
+   */
+  public var exitConfirmDialog:Dialog;
+
+  /**
+   * The properties panel on the right side.
+   * Holds the properties container, which gets swapped when a different event type is selected.
+   */
+  var propertiesPanel:Panel;
+
+  // Auto-save
+
+  /**
+   * A timer used to auto-save the chart after a period of inactivity.
+   */
+  var autoSaveTimer:Null<FlxTimer> = null;
+
+  // History
+
+  /**
+   * The list of command previously performed. Used for undoing previous actions.
+   */
+  var undoHistory:Array<CameraEditorCommand> = [];
+
+  /**
+   * The list of commands that have been undone. Used for redoing previous actions.
+   */
+  var redoHistory:Array<CameraEditorCommand> = [];
+
+  // Parameters
+
+  /**
+   * The params which were passed in when the Camera Editor was initialized.
    */
   var params:Null<CameraEditorParams>;
 
-  var camHUD:FlxCamera;
-  var camGame:FlxCamera;
+  /**
+   * Whether the undo/redo histories have changed since the last time the UI was updated.
+   */
+  var commandHistoryDirty:Bool = true;
+
+  /**
+   * If true, we are currently in the process of quitting the chart editor.
+   * Skip any update functions as most of them will call a crash.
+   */
+  var criticalFailure:Bool = false;
+
+  /**
+   * LIFE CYCLE FUNCTIONS
+   */
+  // ==============================
 
   public function new(?params:CameraEditorParams)
   {
@@ -203,7 +341,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     this.params = params;
   }
 
-  override public function create():Void
+  public override function create():Void
   {
     WindowManager.instance.reset();
     instance = this;
@@ -247,11 +385,13 @@ class CameraEditorState extends UIState implements ConsoleClass
         startingVolume: 0.0
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
+
+    this.hidePropertiesPanel();
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
 
-  override public function update(elapsed:Float):Void
+  public override function update(elapsed:Float):Void
   {
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
@@ -300,6 +440,22 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+
+    this.updatePropertiesPanel(elapsed);
+
+    // DEBUG
+    if (FlxG.keys.justPressed.ONE)
+    {
+      this.useFocusCameraContainer();
+    }
+    if (FlxG.keys.justPressed.TWO)
+    {
+      this.useZoomCameraContainer();
+    }
+    if (FlxG.keys.justPressed.ZERO)
+    {
+      this.hidePropertiesPanel();
+    }
   }
 
   /**
@@ -487,8 +643,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       previousWorkingFilePaths = [currentWorkingFilePath].concat(save.cameraEditorPreviousFiles.value);
     }
-
-    // currentTheme = save.chartEditorTheme.value;
   }
 
   /**
