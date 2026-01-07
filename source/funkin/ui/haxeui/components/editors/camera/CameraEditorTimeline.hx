@@ -1,26 +1,30 @@
 package funkin.ui.haxeui.components.editors.camera;
 
-import haxe.ui.containers.Grid;
+import haxe.ui.containers.VBox;
+import haxe.ui.events.MouseEvent;
 
 @:xml('
-<grid>
-                <box width="70" height="25" style="background-color: #B41C2B;border:1px solid #B41C2B;background-opacity: .1" />
-                <box width="100%" height="25" style="background-color: #B41C2B;border:1px solid #B41C2B;background-opacity: .1" />
-                <box width="70" height="25" style="background-color: #B41C2B;border:1px solid #B41C2B;background-opacity: .1" />
-
-                <box width="70" height="100%" style="background-color: #009F42;border:1px solid #009F42;background-opacity: .1" />
-                <box width="100%" height="100%" style="background-color: #009F42;border:1px solid #009F42;background-opacity: .1" />
-                <box width="70" height="100%" style="background-color: #009F42;border:1px solid #009F42;background-opacity: .1" />
-
-                <box width="70" height="25" style="background-color: #2D70E7;border:1px solid #2D70E7;background-opacity: .1" />
-                <box width="100%" height="25" style="background-color: #2D70E7;border:1px solid #2D70E7;background-opacity: .1" />
-                <box width="70" height="25" style="background-color: #2D70E7;border:1px solid #2D70E7;background-opacity: .1" />
-</grid>
+<vbox width="100%">
+  <TimelineControls id="timelineControls"/>
+  <TimelineLayers id="timelineLayers"/>
+</vbox>
 ')
-class CameraEditorTimeline extends Grid
+class CameraEditorTimeline extends VBox
 {
   public function new()
   {
     super();
+  }
+
+  @:bind(timelineControls.btnAddLayer, MouseEvent.CLICK)
+  function clickAdd(_):Void
+  {
+    timelineLayers.dataSource.add({layerName: 'Layer ${timelineLayers.dataSource.size + 1}'});
+  }
+
+  @:bind(timelineControls.btnRemoveLayer, MouseEvent.CLICK)
+  function clickRemove(_):Void
+  {
+    timelineLayers.dataSource.remove(timelineLayers.selectedItem);
   }
 }
