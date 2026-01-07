@@ -13,6 +13,7 @@ import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.input.Cursor;
 import funkin.save.Save;
+import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.util.FileUtil;
@@ -28,6 +29,8 @@ import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 
 /**
  * The EYES OF GOD......
@@ -38,6 +41,24 @@ class CameraEditorState extends UIState
   public static final BACKUPS_PATH:String = "./backups/camera/";
 
   public static var instance:CameraEditorState = null;
+
+  public var currentVariation:String = Constants.DEFAULT_VARIATION;
+
+  public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
+  public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
+
+  public var currentSongMetadata(get, never):Null<SongMetadata>;
+  public var currentSongChartData(get, never):Null<SongChartData>;
+
+  function get_currentSongMetadata():Null<SongMetadata>
+  {
+    return songMetadatas.get(currentVariation);
+  }
+
+  function get_currentSongChartData():Null<SongChartData>
+  {
+    return songDatas.get(currentVariation);
+  }
 
   public var saved(default, set):Bool = true;
   public var currentFile(default, set):String = "";
@@ -81,6 +102,7 @@ class CameraEditorState extends UIState
 
   var menubarMenuFile:Menu;
   var menubarItemExit:MenuItem;
+  var menubarItemOpen:MenuItem;
 
   var menubarMenuEdit:Menu;
 
@@ -95,6 +117,7 @@ class CameraEditorState extends UIState
 
   public var userGuideDialog:UserGuideDialog;
   public var aboutDialog:AboutDialog;
+  public var uploadChartDialog:UploadChartDialog;
   public var exitConfirmDialog:Dialog;
 
   var isCursorOverHaxeUI(get, never):Bool;
@@ -245,6 +268,13 @@ class CameraEditorState extends UIState
   }
 
   // ui function bindings
+
+  @:bind(menubarItemOpen, MouseEvent.CLICK)
+  function onOpenMenu(_)
+  {
+    var uploadDialog = new UploadChartDialog(this);
+    uploadDialog.showDialog();
+  }
 
   @:bind(menubarItemExit, MouseEvent.CLICK)
   function onMenubarExit(_)
