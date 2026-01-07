@@ -247,8 +247,18 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    Polymod.addDefaultImport(funkin.Assets);
-    Polymod.addDefaultImport(funkin.Paths);
+    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
+      funkin.Assets,
+      funkin.Paths,
+      funkin.Preferences,
+      funkin.util.Constants,
+      flixel.FlxG
+    ];
+
+    for (cls in DEFAULT_IMPORTS)
+    {
+      Polymod.addDefaultImport(cls);
+    }
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
