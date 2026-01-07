@@ -255,51 +255,15 @@ class ChartEditorImportExportHandler
   {
     var output:Array<String> = [];
 
-    // TODO: Combine with code in FNFCUtil.hx
-
-    // Read the ZIP/.FNFC file, and create a map of entries.
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
-    var manifestString:String = mappedFileEntries.get('manifest.json')?.data?.toString() ?? throw 'Could not locate manifest.';
-    var manifest:ChartManifestData = ChartManifestData.deserialize(manifestString) ?? throw 'Could not read manifest.';
 
-    var baseMetadataPath:String = manifest.getMetadataFileName();
-    var baseMetadataString:String = mappedFileEntries.get(baseMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata (default).';
-    var baseMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseMetadataString) ?? throw 'Could not read metadata version (default).';
-    var baseMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath,
-      baseMetadataVersion) ?? throw 'Could not read metadata (default).';
+    var entries:Array<Dynamic> = genericLoadFNFC(bytes);
+    if (entries == null || entries.length != 3) return null;
+    var songMetadatas:Map<String, SongMetadata> = entries[0];
+    var songChartDatas:Map<String, SongChartData> = entries[1];
+    var manifest:ChartManifestData = entries[2];
 
-    var songMetadatas:Map<String, SongMetadata> = [];
-    songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
-
-    var baseChartDataPath:String = manifest.getChartDataFileName();
-    var baseChartDataString:String = mappedFileEntries.get(baseChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data (default).';
-    var baseChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseChartDataString) ?? throw 'Could not read chart data version (default).';
-    var baseChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
-      baseChartDataVersion) ?? throw 'Could not read chart data (default).';
-
-    var songChartDatas:Map<String, SongChartData> = [];
-    songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
-
-    var variationList:Array<String> = baseMetadata.playData.songVariations;
-
-    for (variation in variationList)
-    {
-      var variMetadataPath:String = manifest.getMetadataFileName(variation);
-      var variMetadataString:String = mappedFileEntries.get(variMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata ($variation).';
-      var variMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variMetadataString) ?? throw 'Could not read metadata ($variation) version.';
-      var variMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath, variMetadataVersion,
-        variation) ?? throw 'Could not read metadata ($variation).';
-
-      songMetadatas.set(variation, variMetadata);
-
-      var variChartDataPath:String = manifest.getChartDataFileName(variation);
-      var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
-      var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
-      var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
-        variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
-      songChartDatas.set(variation, variChartData);
-    }
     loadSong(state, songMetadatas, songChartDatas, manifest);
 
     state.sortChartData();
@@ -354,15 +318,67 @@ class ChartEditorImportExportHandler
       }
     }
 
-    // Apply chart data.
-    trace(songMetadatas);
-    trace(songChartDatas);
-
     state.switchToCurrentInstrumental();
     state.postLoadInstrumental();
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
 
     return output;
+  }
+
+  /**
+   * Loads a FNFC chart from bytes.
+   * @param bytes the bytes of the FNFC file.
+   * @return Array<Dynamic>, [songMetadatas, songChartDatas, manifest]
+   */
+  public static function genericLoadFNFC(bytes:Bytes):Array<Dynamic>
+  {
+    // TODO: Combine with code in FNFCUtil.hx
+
+    // Read the ZIP/.FNFC file, and create a map of entries.
+    var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
+    var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
+    var manifestString:String = mappedFileEntries.get('manifest.json')?.data?.toString() ?? throw 'Could not locate manifest.';
+    var manifest:ChartManifestData = ChartManifestData.deserialize(manifestString) ?? throw 'Could not read manifest.';
+
+    var baseMetadataPath:String = manifest.getMetadataFileName();
+    var baseMetadataString:String = mappedFileEntries.get(baseMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata (default).';
+    var baseMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseMetadataString) ?? throw 'Could not read metadata version (default).';
+    var baseMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath,
+      baseMetadataVersion) ?? throw 'Could not read metadata (default).';
+
+    var songMetadatas:Map<String, SongMetadata> = [];
+    songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
+
+    var baseChartDataPath:String = manifest.getChartDataFileName();
+    var baseChartDataString:String = mappedFileEntries.get(baseChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data (default).';
+    var baseChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(baseChartDataString) ?? throw 'Could not read chart data version (default).';
+    var baseChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
+      baseChartDataVersion) ?? throw 'Could not read chart data (default).';
+
+    var songChartDatas:Map<String, SongChartData> = [];
+    songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
+
+    var variationList:Array<String> = baseMetadata.playData.songVariations;
+
+    for (variation in variationList)
+    {
+      var variMetadataPath:String = manifest.getMetadataFileName(variation);
+      var variMetadataString:String = mappedFileEntries.get(variMetadataPath)?.data?.toString() ?? throw 'Could not locate metadata ($variation).';
+      var variMetadataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variMetadataString) ?? throw 'Could not read metadata ($variation) version.';
+      var variMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath, variMetadataVersion,
+        variation) ?? throw 'Could not read metadata ($variation).';
+
+      songMetadatas.set(variation, variMetadata);
+
+      var variChartDataPath:String = manifest.getChartDataFileName(variation);
+      var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
+      var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
+      var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
+        variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
+      songChartDatas.set(variation, variChartData);
+    }
+
+    return [songMetadatas, songChartDatas, manifest];
   }
 
   /**
