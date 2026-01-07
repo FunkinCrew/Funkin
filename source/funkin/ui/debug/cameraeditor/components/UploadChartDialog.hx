@@ -91,21 +91,16 @@ class UploadChartDialog extends Dialog
 
     if (selectedFile != null && selectedFile.bytes != null)
     {
-      try
+      var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes);
+      if (entires == null || entires.length != 3)
       {
-        var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes);
-        if (entires == null || entires.length != 3)
-        {
-          throw 'Invalid or corrupted FNFC file.';
-        }
-        this.cameraEditorState.songMetadatas = entires[0];
-        this.cameraEditorState.songDatas = entires[1];
-        this.hideDialog(DialogButton.APPLY);
+        throw 'Invalid or corrupted FNFC file.';
       }
-      catch (err)
-      {
-        trace('Failed to load chart (${selectedFile.name}): ${err}');
-      }
+      this.cameraEditorState.songMetadatas = entires[0];
+      this.cameraEditorState.songDatas = entires[1];
+      this.cameraEditorState.buildStage();
+
+      this.hideDialog(DialogButton.APPLY);
     }
   }
 
