@@ -12,6 +12,7 @@ import flixel.util.FlxSort;
 import openfl.display.BitmapData;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.PlayState;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.data.IRegistryEntry;
@@ -72,6 +73,37 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     if (_data == null)
     {
       throw 'Could not find stage data for stage id: $id';
+    }
+  }
+
+  /**
+   * Get the campaign ID associated with this stage.
+   * @param stageName The name of the stage.
+   * @return String The campaign ID.
+   */
+  public static function getCampaignID(stageName:String):String
+  {
+    // Should probably be data driven?
+    return switch (stageName)
+    {
+      case 'mainStage' | 'mainStageErect':
+        'week1';
+      case 'spookyMansion' | 'spookyMansionErect':
+        'week2';
+      case 'phillyTrain' | 'phillyTrainErect':
+        'week3';
+      case 'limoRide' | 'limoRideErect':
+        'week4';
+      case 'mallXmas' | 'mallXmasErect' | 'mallEvil':
+        'week5';
+      case 'school' | 'schoolEvil' | 'schoolEvilErect':
+        'week6';
+      case 'tankmanBattlefield' | 'tankmanBattlefieldErect':
+        'week7';
+      case 'phillyStreets' | 'phillyStreetsErect' | 'phillyBlazin' | 'phillyBlazin2':
+        'weekend1';
+      default:
+        stageName;
     }
   }
 
@@ -424,7 +456,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         stageCharData = _data.characters.bf;
         character.flipX = !character.getDataFlipX();
         character.name = 'bf';
-        character.initHealthIcon(false);
+        if (PlayState.instance != null) character.initHealthIcon(false);
       case GF:
         this.characters.set('gf', character);
         stageCharData = _data.characters.gf;
@@ -435,7 +467,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         stageCharData = _data.characters.dad;
         character.flipX = character.getDataFlipX();
         character.name = 'dad';
-        character.initHealthIcon(true);
+        if (PlayState.instance != null) character.initHealthIcon(true);
       default:
         this.characters.set(character.characterId, character);
     }
@@ -489,12 +521,15 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // Add the character to the scene.
     this.add(character);
 
-    ScriptEventDispatcher.callEvent(character, new ScriptEvent(ADDED, false));
+    if (PlayState.instance != null)
+    {
+      ScriptEventDispatcher.callEvent(character, new ScriptEvent(ADDED, false));
 
-    #if FEATURE_DEBUG_FUNCTIONS
-    debugIconGroup.add(debugIcon);
-    debugIconGroup.add(debugIcon2);
-    #end
+      #if FEATURE_DEBUG_FUNCTIONS
+      debugIconGroup.add(debugIcon);
+      debugIconGroup.add(debugIcon2);
+      #end
+    }
   }
 
   /**
