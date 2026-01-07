@@ -1,6 +1,14 @@
 package funkin.ui.debug.cameraeditor;
 
 #if FEATURE_CAMERA_EDITOR
+import flixel.math.FlxMath;
+import haxe.ui.notifications.NotificationType;
+import haxe.ui.notifications.NotificationManager;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.dialogs.Dialogs;
+import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.util.MouseUtil;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
@@ -32,6 +40,15 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
 
+import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.stage.StageRegistry;
+import funkin.play.stage.Stage;
+
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
+
 /**
  * The EYES OF GOD......
  */
@@ -59,6 +76,8 @@ class CameraEditorState extends UIState
   {
     return songDatas.get(currentVariation);
   }
+
+  public var currentStage:Null<Stage> = null;
 
   public var saved(default, set):Bool = true;
   public var currentFile(default, set):String = "";
@@ -162,7 +181,7 @@ class CameraEditorState extends UIState
 
     super.create();
     root.scrollFactor.set();
-    // root.cameras = [camHUD];
+    root.cameras = [camHUD];
     root.width = FlxG.width;
     root.height = FlxG.height;
 
@@ -183,6 +202,8 @@ class CameraEditorState extends UIState
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
   }
+
+  var goToPoint:FlxPoint = new FlxPoint();
 
   override public function update(elapsed:Float):Void
   {
@@ -206,8 +227,89 @@ class CameraEditorState extends UIState
 
     super.update(elapsed);
 
+    MouseUtil.mouseWheelZoom(0.08);
+
+    if (FlxG.mouse.pressedMiddle)
+    {
+      goToPoint.x -= FlxG.mouse.deltaX;
+      goToPoint.y -= FlxG.mouse.deltaY;
+      FlxG.camera.scroll.x = FlxMath.lerp(FlxG.camera.scroll.x, goToPoint.x, 0.8);
+      FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, goToPoint.y, 0.8);
+    }
+
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+  }
+
+  /**
+   * Builds the current stage based on the current song metadata.
+   */
+  public function buildStage():Void
+  {
+    if (currentSongMetadata == null) return;
+    var stageID = currentSongMetadata.playData.stage;
+
+    if (currentStage != null)
+    {
+      remove(currentStage);
+      currentStage = null;
+    }
+
+    currentStage = StageRegistry.instance.fetchEntry(stageID);
+
+    currentStage.revive();
+
+    var campaignId:String = Stage.getCampaignID(stageID);
+
+    Paths.setCurrentLevel(campaignId);
+
+    add(currentStage);
+
+    currentStage.onCreate(null);
+
+    var songCharacterData = currentSongMetadata.playData.characters;
+
+    if (songCharacterData == null) return;
+
+    var gf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.girlfriend);
+
+    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.opponent);
+
+    var bf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.player);
+
+    FlxG.camera.filters = [];
+
+    if (gf != null)
+    {
+      gf.currentStage = currentStage;
+      gf.debug = true;
+      currentStage.addCharacter(gf, GF);
+      gf.onCreate(null);
+      gf.onUpdate(null);
+    }
+    if (bf != null)
+    {
+      bf.currentStage = currentStage;
+      bf.debug = true;
+      currentStage.addCharacter(bf, BF);
+      bf.onCreate(null);
+      bf.onUpdate(null);
+    }
+    if (dad != null)
+    {
+      dad.currentStage = currentStage;
+      dad.debug = true;
+      currentStage.addCharacter(dad, DAD);
+      dad.onCreate(null);
+      dad.onUpdate(null);
+    }
+
+    currentStage.refresh();
+    goToPoint.x = 0;
+    goToPoint.y = 0;
+    FlxG.camera.scroll.x = 0;
+    FlxG.camera.scroll.y = 0;
+    trace("Built stage: " + stageID);
   }
 
   function autosavePerCrash(message:String)
@@ -306,6 +408,21 @@ class CameraEditorState extends UIState
     Cursor.hide();
     FlxG.switchState(() -> new MainMenuState());
     FlxG.sound.music.stop();
+  }
+
+  @:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
+  function onResetCameraScroll(_)
+  {
+    goToPoint.x = 0;
+    goToPoint.y = 0;
+    FlxG.camera.scroll.x = 0;
+    FlxG.camera.scroll.y = 0;
+  }
+
+  @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
+  function onResetCameraZoom(_)
+  {
+    FlxG.camera.zoom = 1.0;
   }
 
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)

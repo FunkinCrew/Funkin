@@ -42,8 +42,8 @@ class MouseUtil
   /**
    * Increment the zoom level of the current camera by the mouse wheel scroll value.
    */
-  public static function mouseWheelZoom():Void
+  public static function mouseWheelZoom(intensityMult:Float = 0.1):Void
   {
-    if (FlxG.mouse.wheel != 0) FlxG.camera.zoom += FlxG.mouse.wheel * (0.1 * FlxG.camera.zoom);
+    if (FlxG.mouse.wheel != 0) FlxG.camera.zoom += FlxG.mouse.wheel * (intensityMult * FlxG.camera.zoom);
   }
 }
