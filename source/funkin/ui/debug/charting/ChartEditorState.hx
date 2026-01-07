@@ -49,6 +49,7 @@ import funkin.play.components.Subtitles;
 import funkin.play.notes.NoteSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
+import funkin.play.stage.Stage;
 import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
@@ -6555,27 +6556,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     PlayStatePlaylist.reset();
 
-    // TODO: Rework asset system so we can remove this jank.
-    switch (currentSongStage)
-    {
-      case 'mainStage' | 'mainStageErect':
-        PlayStatePlaylist.campaignId = 'week1';
-      case 'spookyMansion' | 'spookyMansionErect':
-        PlayStatePlaylist.campaignId = 'week2';
-      case 'phillyTrain' | 'phillyTrainErect':
-        PlayStatePlaylist.campaignId = 'week3';
-      case 'limoRide' | 'limoRideErect':
-        PlayStatePlaylist.campaignId = 'week4';
-      case 'mallXmas' | 'mallXmasErect' | 'mallEvil':
-        PlayStatePlaylist.campaignId = 'week5';
-      case 'school' | 'schoolEvil':
-        PlayStatePlaylist.campaignId = 'week6';
-      case 'tankmanBattlefield':
-        PlayStatePlaylist.campaignId = 'week7';
-      case 'phillyStreets' | 'phillyStreetsErect' | 'phillyBlazin' | 'phillyBlazin2':
-        PlayStatePlaylist.campaignId = 'weekend1';
-    }
-    Paths.setCurrentLevel(PlayStatePlaylist.campaignId);
+    Paths.setCurrentLevel(Stage.getCampaignID(currentSongStage));
 
     subStateClosed.add(reviveUICamera);
     subStateClosed.add(resetConductorAfterTest);
