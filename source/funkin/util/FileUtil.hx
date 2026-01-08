@@ -1,20 +1,18 @@
 package funkin.util;
 
-import flixel.util.FlxTimer;
-import haxe.io.Path;
 import haxe.zip.Entry;
-import lime.ui.FileDialog;
 import lime.utils.Bytes;
+import lime.ui.FileDialog;
+import openfl.net.FileFilter;
+import haxe.io.Path;
+import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.net.FileFilter;
-import openfl.net.FileReference;
 #if FEATURE_HAXEUI
-import haxe.ui.backend.OpenFileDialogBase.OpenFileDialogOptions;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
+import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 #end
 
 using StringTools;
@@ -136,7 +134,7 @@ class FileUtil
       }
     };
 
-    openBrowseDialog(onComplete,
+    Dialogs.openFile(onComplete,
       {
         readContents: true,
         readAsBinary: true, // Binary
@@ -169,7 +167,7 @@ class FileUtil
       }
     };
 
-    openBrowseDialog(onComplete,
+    Dialogs.openFile(onComplete,
       {
         readContents: true,
         readAsBinary: false, // Text
@@ -177,23 +175,6 @@ class FileUtil
         extensions: typeFilter ?? new Array<FileDialogExtensionInfo>(),
         title: dialogTitle,
       });
-  }
-
-  static function openBrowseDialog(onComplete:DialogButton->Array<SelectedFileInfo>->Void, options:OpenFileDialogOptions):Void
-  {
-    // Resolve an issue where the game failed to handle focus loss during the browse dialog.
-    // We do this by forcing autoPause on, waiting a bit before opening the dialog, then restoring the value after the dialog closes.
-
-    FlxG.autoPause = true;
-
-    var callback:DialogButton->Array<SelectedFileInfo>->Void = function(button, selectedFiles) {
-      FlxG.autoPause = Preferences.autoPause;
-      onComplete(button, selectedFiles);
-    };
-
-    FlxTimer.wait(0.2, function() {
-      Dialogs.openFile(callback, options);
-    });
   }
   #end
 
@@ -1201,21 +1182,10 @@ class FileUtil
     #elseif linux
     var exitCode = Sys.command("xdg-open", [pathFolder]);
     if (exitCode == 0) return;
-    var fileManagers:Array<String> = [
-      "dolphin",
-      "nautilus",
-      "nemo",
-      "thunar",
-      "caja",
-      "konqueror",
-      "spacefm",
-      "pcmanfm"
-    ];
+    var fileManagers:Array<String> = ["dolphin", "nautilus", "nemo", "thunar", "caja", "konqueror", "spacefm", "pcmanfm"];
 
-    for (fm in fileManagers)
-    {
-      if (Sys.command("which", [fm]) == 0)
-      {
+    for (fm in fileManagers) {
+      if (Sys.command("which", [fm]) == 0) {
         exitCode = Sys.command(fm, [pathFolder]);
         if (exitCode == 0) return;
       }

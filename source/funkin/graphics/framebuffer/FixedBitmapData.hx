@@ -6,6 +6,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.IBitmapDrawable;
 import openfl.display.OpenGLRenderer;
 import openfl.display3D.textures.TextureBase;
+import openfl.Lib;
 
 /**
  * `BitmapData` is kinda broken so I fixed it.
@@ -26,18 +27,47 @@ class FixedBitmapData extends BitmapData
   }
 
   /**
-   * Never use `BitmapData.fromTexture`, always use this.
-   * @param texture the texture
-   * @return the bitmap data
+   * Creates a `FixedBitmapData` with the given dimensions.
+   * @param width The width of the bitmap
+   * @param height The height of the bitmap
+   * @param useGPU Whether or not this bitmap should use a hardware texture
+   * @return The newly created `FixedBitmapData`
    */
-  public static function fromTexture(texture:Null<TextureBase>):Null<FixedBitmapData>
+  public static function create(width:Int, height:Int, useGPU:Bool = true):FixedBitmapData
   {
-    if (texture == null) return null;
-    final bitmapData:FixedBitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);
-    // bitmapData.readable = false;
+    if (useGPU)
+    {
+      var texture:TextureBase = _createTexture(width, height);
+      return fromTexture(texture);
+    }
+
+    return new FixedBitmapData(width, height, true, 0);
+  }
+
+  /**
+   * Creates a `FixedBitmapData` from a hardware texture.
+   * @param texture The texture
+   * @return The newly created `FixedBitmapData`
+   */
+  public static function fromTexture(texture:TextureBase):FixedBitmapData
+  {
+    var bitmapData:FixedBitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);
+    bitmapData.readable = false;
     bitmapData.__texture = texture;
     bitmapData.__textureContext = texture.__textureContext;
-    // bitmapData.image = null;
+
+    @:nullSafety(Off)
+    bitmapData.image = null;
+
     return bitmapData;
+  }
+
+  static function _createTexture(width:Int, height:Int):TextureBase
+  {
+    // Zero-sized textures will be problematic.
+    width = width < 1 ? 1 : width;
+    height = height < 1 ? 1 : height;
+
+    return Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
   }
 }

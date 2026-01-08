@@ -1,126 +1,151 @@
 package funkin.graphics.framebuffer;
 
-import flixel.FlxG;
-import openfl.Lib;
-import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Sprite;
-import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3D;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
+import animate.internal.FilterRenderer;
+import flixel.math.FlxMatrix;
+import openfl.display.OpenGLRenderer;
+import flixel.FlxCamera;
+import openfl.Lib;
+import openfl.geom.Matrix;
+import openfl.geom.ColorTransform;
 
 /**
- * Provides cool stuff for `BitmapData`s that have a hardware texture internally.
+ * A utility class for `BitmapData`s.
  */
 @:nullSafety
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.OpenGLRenderer)
+@:access(flixel.FlxCamera)
+@:access(openfl.display.Sprite)
+@:access(openfl.geom.ColorTransform)
 class BitmapDataUtil
 {
-  static function getCache():{sprite:Sprite, bitmap:Bitmap}
+  static var renderer(get, never):OpenGLRenderer;
+  static var _renderer:Null<OpenGLRenderer>;
+
+  static inline function get_renderer():OpenGLRenderer
   {
-    static var cache:Null<{sprite:Sprite, bitmap:Bitmap}> = null;
-    if (cache == null)
+    if (_renderer == null)
     {
-      final sprite = new Sprite();
-      final bitmap = new Bitmap();
-      sprite.addChild(bitmap);
-      cache =
-        {
-          sprite: sprite,
-          bitmap: bitmap
-        }
+      _renderer = new OpenGLRenderer(FlxG.stage.context3D);
+      _renderer.__worldTransform = new Matrix();
+      _renderer.__worldColorTransform = new ColorTransform();
     }
-    return cache;
+
+    return _renderer;
   }
 
   /**
-   * Applies a bitmap filter to a bitmap immediately. The bitmap filter may refer
-   * the bitmap itself as a shader input.
-   * @param bitmap the bitmap data
-   * @param filter the bitmap filter
+   * Draws the contents of a camera onto a `BitmapData` object.
+   *
+   * Mostly copied from flixel-animate's `RenderTexture`
+   * Shoutouts to ACrazyTown and MaybeMaru this is some crazy work
+   * https://github.com/MaybeMaru/flixel-animate/blob/main/src/animate/internal/RenderTexture.hx
+   *
+   * @param bitmap The bitmap to draw onto.
+   * @param camera The camera to grab the screen from.
+   *
+   * @return The camera screen as a `BitmapData`.
    */
-  public static function applyFilter(bitmap:BitmapData, filter:BitmapFilter):Void
+  public static function drawCameraScreen(bitmap:BitmapData, camera:FlxCamera):BitmapData
   {
-    hardwareCheck(bitmap);
-    final cache = getCache();
-    cache.bitmap.bitmapData = bitmap;
-    cache.sprite.filters = [filter];
-    bitmap.draw(cache.sprite);
+    var matrix:FlxMatrix = new FlxMatrix();
+    var pivotX:Float = FlxG.scaleMode.scale.x;
+    var pivotY:Float = FlxG.scaleMode.scale.y;
+
+    matrix.setTo(1 / pivotX, 0, 0, 1 / pivotY, camera.flashSprite.x / pivotX, camera.flashSprite.y / pivotY);
+
+    bitmap.__fillRect(bitmap.rect, 0, true);
+
+    camera.render();
+    camera.flashSprite.__update(false, true);
+
+    renderer.__cleanup();
+
+    renderer.setShader(renderer.__defaultShader);
+    renderer.__allowSmoothing = false;
+    renderer.__pixelRatio = Lib.current.stage.window.scale;
+    renderer.__worldAlpha = 1 / camera.flashSprite.__worldAlpha;
+    renderer.__worldTransform.copyFrom(camera.flashSprite.__renderTransform);
+    renderer.__worldTransform.invert();
+    renderer.__worldTransform.concat(matrix);
+    renderer.__worldColorTransform.__copyFrom(camera.flashSprite.__worldColorTransform);
+    renderer.__worldColorTransform.__invert();
+    renderer.__setRenderTarget(bitmap);
+
+    bitmap.__drawGL(camera.canvas, renderer);
+
+    return bitmap;
   }
 
   /**
-   * Creates a bitmap with a hardware texture.
-   * @param width the width
-   * @param height the height
-   * @param format the format if the internal texture
-   * @return the bitmap
+   * Applies a `BitmapFilter` to a bitmap.
+   * @param bitmap The `BitmapData` to apply the filter to.
+   * @param filter The filter to apply.
+   *
+   * @return The `BitmapData` with the filter applied.
    */
-  public static function create(width:Int, height:Int, format:Context3DTextureFormat = BGRA):Null<FixedBitmapData>
+  public static function applyFilter(bitmap:BitmapData, filter:BitmapFilter):BitmapData
   {
-    final texture = Lib.current.stage.context3D.createTexture(width, height, format, true);
-    return FixedBitmapData.fromTexture(texture);
+    return FilterRenderer.applyFilter(null, bitmap, [filter]);
   }
 
   /**
    * Resizes the bitmap.
-   * @param bitmap the bitmap data
-   * @param width the width
-   * @param height the height
+   * @param bitmap The `BitmapData` to resize.
+   * @param width The new width.
+   * @param height The new height.
    */
   public static function resize(bitmap:BitmapData, width:Int, height:Int):Void
   {
-    hardwareCheck(bitmap);
     if (bitmap.width == width && bitmap.height == height) return;
+
     bitmap.width = width;
     bitmap.height = height;
-    resizeTexture(bitmap.__texture, width, height);
+
+    if (!bitmap.readable)
+    {
+      resizeTexture(bitmap.__texture, width, height);
+    }
   }
 
   /**
-   * Resizes the texture.
-   * @param texture the texture
-   * @param width the width
-   * @param height the height
+   * Resizes the hardware texture.
+   * @param texture The `TextureBase` to resize.
+   * @param width The new width.
+   * @param height The new height.
    */
-  @:nullSafety(Off) // the final context there is causing an error, idk how to fix it
   public static function resizeTexture(texture:TextureBase, width:Int, height:Int):Void
   {
     if (texture.__width == width && texture.__height == height) return;
+
+    var context:Context3D = texture.__context;
+
     texture.__width = width;
     texture.__height = height;
-    final context = texture.__context;
-    final gl = context.gl;
+
     context.__bindGLTexture2D(texture.__textureID);
-    gl.texImage2D(gl.TEXTURE_2D, 0, texture.__internalFormat, width, height, 0, texture.__format, gl.UNSIGNED_BYTE, null);
+    context.gl.texImage2D(context.gl.TEXTURE_2D, 0, texture.__internalFormat, width, height, 0, texture.__format, context.gl.UNSIGNED_BYTE, null);
+
+    @:nullSafety(Off)
     context.__bindGLTexture2D(null);
   }
 
   /**
-   * Copies the content of `src` to `dst`. The destination bitmap `dst` will be resized
-   * so that it has the same size as `src`.
-   * @param dst the destination bitmap
-   * @param src the source bitmap
+   * Copies the contents of `source` to `destination`. `destination` bitmap will be resized
+   * so that it has the same size as `source`.
+   * @param source The source `BitmapData`.
+   * @param destination The destination `BitmapData`.
    */
-  @:nullSafety(Off) // TODO: Remove this once openfl.display.Sprite has been null safed.
-  public static function copy(dst:BitmapData, src:BitmapData):Void
+  public static function copy(source:BitmapData, destination:BitmapData):Void
   {
-    hardwareCheck(dst);
-    hardwareCheck(src);
-    final cache = getCache();
-    cache.bitmap.bitmapData = src;
-    cache.sprite.filters = null;
-    resize(dst, src.width, src.height);
-    dst.fillRect(dst.rect, 0);
-    dst.draw(cache.sprite);
-  }
-
-  static function hardwareCheck(bitmap:BitmapData):Void
-  {
-    if (bitmap.readable)
-    {
-      FlxG.log.error('do not use `BitmapDataUtil` for non-GPU bitmaps!');
-    }
+    resize(destination, source.width, source.height);
+    destination.fillRect(destination.rect, 0);
+    destination.draw(source);
   }
 }

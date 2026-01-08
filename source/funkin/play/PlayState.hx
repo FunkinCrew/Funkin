@@ -591,12 +591,12 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, the user interface elements.
    */
-  public var camHUD:FlxCamera;
+  public var camHUD:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
-  public var camGame:FlxCamera;
+  public var camGame:FunkinCamera;
 
   /**
    * Simple helper debug variable, to be able to move the camera around for debug purposes
@@ -607,22 +607,22 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, a video cutscene, dialogue.
    */
-  public var camCutscene:FlxCamera;
+  public var camCutscene:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
-  public var camCutouts:FlxCamera;
+  public var camCutouts:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, the subtitles.
    */
-  public var camSubtitles:FlxCamera;
+  public var camSubtitles:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, pause menu.
    */
-  public var camPause:FlxCamera;
+  public var camPause:FunkinCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -788,11 +788,11 @@ class PlayState extends MusicBeatSubState
 
     // Cameras
     camGame = new FunkinCamera('playStateCamGame');
-    camHUD = new FlxCamera();
-    camCutscene = new FlxCamera();
-    camCutouts = new FlxCamera();
-    camSubtitles = new FlxCamera();
-    camPause = new FlxCamera();
+    camHUD = new FunkinCamera('playStateCamHUD');
+    camCutscene = new FunkinCamera('playStateCamCutscene');
+    camCutouts = new FunkinCamera('playStateCamCutouts');
+    camSubtitles = new FunkinCamera('playStateCamSubtitles');
+    camPause = new FunkinCamera('playStateCamPause');
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:Null<String> = currentChart?.noteStyle;

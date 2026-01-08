@@ -184,9 +184,7 @@ class Project extends HXProject
   /**
    * The songs whose audio files should be embedded inside the executable.
    */
-  static final EMBED_SONGS_AUDIO:Array<String> = [
-    "spaghetti"
-  ];
+  static final EMBED_SONGS_AUDIO:Array<String> = ["spaghetti"];
 
   //
   // BUILD FLAGS
@@ -215,6 +213,13 @@ class Project extends HXProject
    * If this flag is enabled, armv7 won't be compiled when building android.
    */
   static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
+  /**
+   * `-DFORCE_BLEND_SHADER`
+   * If this flag is enabled, the game will force the use of shaders to render
+   * certain blend modes, even if the device supports the needed OpenGL extensions.
+   */
+  static final FORCE_BLEND_SHADER:FeatureFlag = "FORCE_BLEND_SHADER";
 
   /**
    * `-DGITHUB_BUILD`
@@ -494,8 +499,8 @@ class Project extends HXProject
    * `-DFEATURE_CAMERA_EDITOR`
    * If this flag is enabled, the Camera Editor will be accessible from the debug menu.
    */
+  static final FEATURE_CAMERA_EDITOR:FeatureFlag = "FEATURE_CAMERA_EDITOR";
 
-   static final FEATURE_CAMERA_EDITOR:FeatureFlag = "FEATURE_CAMERA_EDITOR";
   /**
    * `-DFEATURE_TOUCH_CONTROLS`
    * If this flag is enabled, the touch controls for the game is also enabled.
@@ -860,6 +865,11 @@ class Project extends HXProject
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
+
+    // Should be true on Android.
+    // Some Android devices support native blends, but it causes issues
+    // with other shaders, so we'll disable it for now.
+    FORCE_BLEND_SHADER.apply(this, isAndroid());
 
     //
     // FEATURE FLAGS
@@ -1515,8 +1525,6 @@ class Project extends HXProject
     addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("sserafim", shouldEmbed, shouldPreload);
     addAssetPath("assets/sserafim", "assets/sserafim", "sserafim", ["*"], exclude, shouldEmbed, "assets");
-
-
 
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
@@ -2182,7 +2190,6 @@ class Project extends HXProject
         {
           Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
           Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
-
         }
         else
         {

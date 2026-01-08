@@ -14,6 +14,14 @@ class RuntimeCustomBlendShader extends RuntimePostEffectShader
     return sourceSwag = value;
   }
 
+  public var backgroundSwag(default, set):BitmapData;
+
+  function set_backgroundSwag(value:BitmapData):BitmapData
+  {
+    this.setBitmapData("backgroundSwag", value);
+    return backgroundSwag = value;
+  }
+
   // name change make sure it's not the same variable name as whatever is in the shader file
   public var blendSwag(default, set):BlendMode;
 
