@@ -1,28 +1,41 @@
 package funkin.graphics;
 
+import animate.internal.RenderTexture;
 import flash.geom.ColorTransform;
 import flixel.FlxCamera;
+import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxShader;
-import funkin.graphics.shaders.RuntimeCustomBlendShader;
-import funkin.graphics.framebuffer.BitmapDataUtil;
 import funkin.graphics.framebuffer.FixedBitmapData;
+import funkin.graphics.shaders.RuntimeCustomBlendShader;
+import openfl.display.OpenGLRenderer;
 import openfl.Lib;
+import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display3D.textures.TextureBase;
-import openfl.filters.BitmapFilter;
-import openfl.filters.ShaderFilter;
 
 /**
  * A FlxCamera with additional powerful features:
- * - Grab the camera screen as a `BitmapData` and use it as a texture
- * - Support `sprite.blend = DARKEN/HARDLIGHT/LIGHTEN/OVERLAY` to apply visual effects using certain sprites
- *   - NOTE: Several other blend modes work without FunkinCamera. Some still do not work.
- * - NOTE: Framerate-independent camera tweening is fixed in Flixel 6.x. Rest in peace, SwagCamera.
+ * - Added the ability to grab the camera screen as a `BitmapData` and use it as a texture.
+ * - Added support for the following blend modes for a sprite through shaders:
+ *   - DARKEN
+ *   - HARDLIGHT
+ *   - LIGHTEN
+ *   - OVERLAY
+ *   - DIFFERENCE
+ *   - INVERT
+ *   - COLORDODGE
+ *   - COLORBURN
+ *   - SOFTLIGHT
+ *   - EXCLUSION
+ *   - HUE
+ *   - SATURATION
+ *   - COLOR
+ *   - LUMINOSITY
  */
 @:nullSafety
 @:access(openfl.display.DisplayObject)
@@ -31,38 +44,87 @@ import openfl.filters.ShaderFilter;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(flixel.graphics.FlxGraphic)
 @:access(flixel.graphics.frames.FlxFrame)
+@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.geom.ColorTransform)
 class FunkinCamera extends FlxCamera
 {
-  final grabbed:Array<BitmapData> = [];
-  final texturePool:Array<TextureBase> = [];
+  /**
+   * Whether or not the device supports the OpenGL extension `KHR_blend_equation_advanced`.
+   * If `false`, a shader implementation will be used to render certain blend modes.
+   */
+  public static var hasKhronosExtension(get, never):Bool;
 
-  final bgTexture:TextureBase;
-  final bgBitmap:BitmapData;
-  final bgFrame:FlxFrame;
+  static inline function get_hasKhronosExtension():Bool
+  {
+    @:privateAccess
+    return OpenGLRenderer.__complexBlendsSupported ?? false;
+  }
 
-  final customBlendShader:RuntimeCustomBlendShader;
-  final customBlendFilter:ShaderFilter;
+  /**
+   * A list of blend modes that require the OpenGL extension `KHR_blend_equation_advanced`.
+   *
+   * NOTE:
+   *  - `LIGHTEN` is supported natively on desktop, but not other platforms.
+   *  - While `DARKEN` is supported natively on desktop, it causes issues with transparency.
+   */
+  static final KHR_BLEND_MODES:Array<BlendMode> = [
+    DARKEN,
+    HARDLIGHT,
+    #if !desktop LIGHTEN, #end
+    OVERLAY,
+    DIFFERENCE,
+    COLORDODGE,
+    COLORBURN,
+    SOFTLIGHT,
+    EXCLUSION,
+    HUE,
+    SATURATION,
+    COLOR,
+    LUMINOSITY
+  ];
 
-  var filtersApplied:Bool = false;
-  var bgItemCount:Int = 0;
+  /**
+   * A list of blend modes that require the shader no matter what.
+   * This is due to these blend modes not being supported on any platform.
+   */
+  static final SHADER_REQUIRED_BLEND_MODES:Array<BlendMode> = [INVERT];
 
-  public var shouldDraw:Bool = true;
+  /**
+   * The ID of this camera, used for debugging.
+   */
+  public var id:String;
 
-  // Used to identify the camera during debugging.
-  final id:String = 'unknown';
+  var _blendShader:RuntimeCustomBlendShader;
+  var _backgroundFrame:FlxFrame;
+
+  var _blendRenderTexture:RenderTexture;
+  var _backgroundRenderTexture:RenderTexture;
+
+  var _cameraTexture:Null<BitmapData>;
+  var _cameraMatrix:FlxMatrix;
+
+  var _renderer:OpenGLRenderer;
 
   @:nullSafety(Off)
   public function new(id:String = 'unknown', x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
   {
     super(x, y, width, height, zoom);
+
     this.id = id;
-    bgTexture = @:nullSafety(Off) pickTexture(width, height);
-    bgBitmap = FixedBitmapData.fromTexture(bgTexture);
-    bgFrame = new FlxFrame(new FlxGraphic('', null));
-    bgFrame.parent.bitmap = bgBitmap;
-    bgFrame.frame = new FlxRect();
-    customBlendShader = new RuntimeCustomBlendShader();
-    customBlendFilter = new ShaderFilter(customBlendShader);
+
+    _backgroundFrame = new FlxFrame(new FlxGraphic('', null));
+    _backgroundFrame.frame = new FlxRect();
+
+    _blendShader = new RuntimeCustomBlendShader();
+
+    _backgroundRenderTexture = new RenderTexture(width, height);
+    _blendRenderTexture = new RenderTexture(width, height);
+
+    _cameraMatrix = new FlxMatrix();
+
+    _renderer = new OpenGLRenderer(FlxG.stage.context3D);
+    _renderer.__worldTransform = new Matrix();
+    _renderer.__worldColorTransform = new ColorTransform();
   }
 
   /**
@@ -70,144 +132,117 @@ class FunkinCamera extends FlxCamera
    * will not be referred by the camera so, changing it will not affect the scene.
    * The returned bitmap **will be reused in the next frame**, so the content is available
    * only in the current frame.
-   * @param applyFilters if this is `true`, the camera's filters will be applied to the grabbed bitmap,
-   * and the camera's filters will be disabled until the beginning of the next frame
-   * @param isolate if this is `true`, sprites to be rendered will only be rendered to the grabbed bitmap,
-   * and the grabbed bitmap will not include any previously rendered sprites
+   *
+   * @param clearScreen if this is `true`, the screen will be cleared before rendering
    * @return the grabbed bitmap data
    */
-  public function grabScreen(applyFilters:Bool, isolate:Bool = false):Null<BitmapData>
+  public function grabScreen(clearScreen:Bool = false):Null<BitmapData>
   {
-    final texture = pickTexture(width, height);
-    final bitmap = FixedBitmapData.fromTexture(texture);
-    if (bitmap != null)
+    if (_cameraTexture == null)
     {
-      squashTo(bitmap, applyFilters, isolate);
-      grabbed.push(bitmap);
-    }
-    return bitmap;
-  }
+      var texture:Null<TextureBase> = _createTexture(width, height);
+      if (texture == null) return null;
 
-  /**
-   * Applies the filter immediately to the camera. This will be done independently from
-   * the camera's filters. This method can only be called after the first `grabScreen`
-   * in the frame.
-   * @param filter the filter
-   */
-  public function applyFilter(filter:BitmapFilter):Void
-  {
-    if (grabbed.length == 0)
-    {
-      FlxG.log.error('grab screen before you can apply a filter!');
-      return;
-    }
-    BitmapDataUtil.applyFilter(bgBitmap, filter);
-  }
-
-  function squashTo(bitmap:BitmapData, applyFilters:Bool, isolate:Bool, clearScreen:Bool = false):Void
-  {
-    if (applyFilters && isolate)
-    {
-      FlxG.log.error('cannot apply filters while isolating!');
-    }
-    if (filtersApplied && applyFilters)
-    {
-      FlxG.log.warn('filters already applied!');
-    }
-    static final matrix = new FlxMatrix();
-
-    // resize the background bitmap if needed
-    if (bgTexture.__width != width || bgTexture.__height != height)
-    {
-      BitmapDataUtil.resizeTexture(bgTexture, width, height);
-      bgBitmap.__resize(width, height);
-      bgFrame.parent.bitmap = bgBitmap;
+      _cameraTexture = FixedBitmapData.fromTexture(texture);
     }
 
-    // grab the bitmap
-    renderSkipping(isolate ? bgItemCount : 0);
-    bitmap.fillRect(bitmap.rect, 0);
-    matrix.setTo(1, 0, 0, 1, flashSprite.x, flashSprite.y);
-    if (applyFilters)
+    if (_cameraTexture != null)
     {
-      bitmap.draw(flashSprite, matrix);
-      @:nullSafety(Off) // TODO: Remove this once openfl.display.Sprite has been null safed.
-      flashSprite.filters = null;
-      filtersApplied = true;
-    }
-    else
-    {
-      final tmp = flashSprite.filters;
-      @:nullSafety(Off)
-      flashSprite.filters = null;
-      bitmap.draw(flashSprite, matrix);
-      flashSprite.filters = tmp;
-    }
+      var matrix:FlxMatrix = new FlxMatrix();
+      var pivotX:Float = FlxG.scaleMode.scale.x;
+      var pivotY:Float = FlxG.scaleMode.scale.y;
 
-    if (!isolate)
-    {
-      // also copy to the background bitmap
-      bgBitmap.fillRect(bgBitmap.rect, 0);
-      bgBitmap.draw(bitmap);
-    }
+      matrix.setTo(1 / pivotX, 0, 0, 1 / pivotY, flashSprite.x / pivotX, flashSprite.y / pivotY);
 
-    if (clearScreen)
-    {
-      // clear graphics data
-      super.clearDrawStack();
-      canvas.graphics.clear();
-    }
+      // Mostly copied from flixel-animate's `RenderTexture`
+      // Shoutouts to ACrazyTown and Maru this is some crazy work...
+      // https://github.com/MaybeMaru/flixel-animate/blob/main/src/animate/internal/RenderTexture.hx
+      _cameraTexture.__fillRect(_cameraTexture.rect, 0, true);
 
-    // render the background bitmap
-    bgFrame.frame.set(0, 0, width, height);
-    matrix.setTo(viewWidth / width, 0, 0, viewHeight / height, viewMarginLeft, viewMarginTop);
-    drawPixels(bgFrame, matrix);
+      this.render();
+      this.flashSprite.__update(false, true);
 
-    // count background draw items for future isolation
-    bgItemCount = 0;
-    {
-      var item = _headOfDrawStack;
-      while (item != null)
+      _renderer.__cleanup();
+
+      _renderer.setShader(_renderer.__defaultShader);
+      _renderer.__allowSmoothing = false;
+      _renderer.__pixelRatio = Lib.current.stage.window.scale;
+      _renderer.__worldAlpha = 1 / this.flashSprite.__worldAlpha;
+      _renderer.__worldTransform.copyFrom(this.flashSprite.__renderTransform);
+      _renderer.__worldTransform.invert();
+      _renderer.__worldTransform.concat(matrix);
+      _renderer.__worldColorTransform.__copyFrom(this.flashSprite.__worldColorTransform);
+      _renderer.__worldColorTransform.__invert();
+      _renderer.__setRenderTarget(_cameraTexture);
+
+      _cameraTexture.__drawGL(this.canvas, _renderer);
+
+      if (clearScreen)
       {
-        item = item.next;
-        bgItemCount++;
+        // Clear the camera's graphics
+        this.clearDrawStack();
+        this.canvas.graphics.clear();
       }
-    }
-  }
 
-  function renderSkipping(count:Int):Void
-  {
-    var item = _headOfDrawStack;
-    while (item != null)
-    {
-      if (--count < 0) item.render(this);
-      item = item.next;
+      _backgroundFrame.frame.set(0, 0, width, height);
     }
+
+    return _cameraTexture;
   }
 
   override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
       ?shader:FlxShader):Void
   {
-    if (!shouldDraw) return;
+    var shouldUseShader:Bool = (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend);
 
-    if ( switch blend
-      {
-        case DARKEN | HARDLIGHT | LIGHTEN | OVERLAY: true;
-        case _: false;
-      })
+    // Fallback to the shader implementation if the device doesn't support `KHR_blend_equation_advanced`, or if
+    // the specified blend mode requires the shader.
+    if (shouldUseShader)
     {
-      // squash the screen
-      grabScreen(false);
-      // render without blend
-      super.drawPixels(frame, pixels, matrix, transform, null, smoothing, shader);
-      // get the isolated bitmap
-      final isolated = grabScreen(false, true);
-      // apply fullscreen blend
-      customBlendShader.blendSwag = blend;
-      @:nullSafety(Off) // I hope this doesn't cause issues
-      customBlendShader.sourceSwag = isolated;
-      customBlendShader.updateViewInfo(FlxG.width, FlxG.height, this);
-      applyFilter(customBlendFilter);
+      var background:Null<BitmapData> = grabScreen(true);
+
+      _blendRenderTexture.init(this.width, this.height);
+      _blendRenderTexture.drawToCamera((camera, frameMatrix) -> {
+        var pivotX:Float = width / 2;
+        var pivotY:Float = height / 2;
+
+        frameMatrix.copyFrom(matrix);
+        frameMatrix.translate(-pivotX, -pivotY);
+        frameMatrix.scale(this.scaleX, this.scaleY);
+        frameMatrix.translate(pivotX, pivotY);
+        camera.drawPixels(frame, pixels, frameMatrix, transform, null, smoothing, shader);
+      });
+      _blendRenderTexture.render();
+
+      if (background == null || _blendRenderTexture.graphic.bitmap == null)
+      {
+        FlxG.log.error('Failed to get bitmap for blending!');
+        super.drawPixels(frame, pixels, matrix, transform, blend, smoothing, shader);
+        return;
+      }
+
+      _blendShader.sourceSwag = _blendRenderTexture.graphic.bitmap;
+      _blendShader.backgroundSwag = background;
+
+      _blendShader.blendSwag = blend;
+      _blendShader.updateViewInfo(width, height, this);
+
+      _backgroundFrame.parent.bitmap = _blendRenderTexture.graphic.bitmap;
+
+      _backgroundRenderTexture.init(this.width, this.height);
+      _backgroundRenderTexture.drawToCamera((camera, matrix) -> {
+        camera.zoom = this.zoom;
+        camera.drawPixels(_backgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);
+      });
+
+      _backgroundRenderTexture.render();
+
+      // Resize the frame so it always fills the screen
+      _cameraMatrix.identity();
+      _cameraMatrix.scale(1 / this.scaleX, 1 / this.scaleY);
+      _cameraMatrix.translate(((width - width / this.scaleX) * 0.5), ((height - height / this.scaleY) * 0.5));
+
+      super.drawPixels(_backgroundRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
     }
     else
     {
@@ -218,53 +253,23 @@ class FunkinCamera extends FlxCamera
   override function destroy():Void
   {
     super.destroy();
-    disposeTextures();
-  }
 
-  override function clearDrawStack():Void
-  {
-    super.clearDrawStack();
-    // also clear grabbed bitmaps
-    for (bitmap in grabbed)
+    _blendRenderTexture.destroy();
+    _backgroundRenderTexture.destroy();
+
+    if (_cameraTexture != null)
     {
-      texturePool.push(bitmap.__texture);
-      bitmap.dispose(); // this doesn't release the texture
+      _cameraTexture.dispose();
+      _cameraTexture = null;
     }
-    grabbed.clear();
-    // clear filters applied flag
-    filtersApplied = false;
-    bgItemCount = 0;
   }
 
-  function pickTexture(width:Int, height:Int):Null<TextureBase>
+  function _createTexture(width:Int, height:Int):Null<TextureBase>
   {
     // zero-sized textures will be problematic
     width = width < 1 ? 1 : width;
     height = height < 1 ? 1 : height;
-    if (texturePool.length > 0)
-    {
-      final res = texturePool.pop();
-      if (res != null) BitmapDataUtil.resizeTexture(res, width, height);
-      else
-        trace('huh? why is this null? $texturePool');
-      return res;
-    }
-    return Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
-  }
 
-  function disposeTextures():Void
-  {
-    for (bitmap in grabbed)
-    {
-      bitmap.dispose();
-    }
-    grabbed.clear();
-    for (texture in texturePool)
-    {
-      texture.dispose();
-    }
-    texturePool.resize(0);
-    bgTexture.dispose();
-    bgBitmap.dispose();
+    return Lib.current.stage.context3D.createTexture(width, height, BGRA, true);
   }
 }

@@ -34,10 +34,12 @@ class FixedBitmapData extends BitmapData
   {
     if (texture == null) return null;
     final bitmapData:FixedBitmapData = new FixedBitmapData(texture.__width, texture.__height, true, 0);
-    // bitmapData.readable = false;
+    bitmapData.readable = false;
     bitmapData.__texture = texture;
     bitmapData.__textureContext = texture.__textureContext;
-    // bitmapData.image = null;
+
+    @:nullSafety(Off)
+    bitmapData.image = null;
     return bitmapData;
   }
 }

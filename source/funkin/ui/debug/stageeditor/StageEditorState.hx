@@ -50,6 +50,7 @@ import haxe.ui.notifications.NotificationManager;
 import funkin.util.logging.CrashHandler;
 import funkin.graphics.shaders.Grayscale;
 import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
 
 /**
  * Da Stage Editor woo!!
@@ -252,7 +253,7 @@ class StageEditorState extends UIState
   var posCircles:Array<FlxShapeCircle> = [];
   var camFields:FlxTypedGroup<FlxSprite>;
   var camHUD:FlxCamera;
-  var camGame:FlxCamera;
+  var camGame:FunkinCamera;
 
   public var camFollow:FlxObject;
   public var moveOffset:Array<Float> = [];
@@ -305,7 +306,7 @@ class StageEditorState extends UIState
 
     AssetDataHandler.init(this);
 
-    camGame = new FlxCamera();
+    camGame = new FunkinCamera();
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
 
