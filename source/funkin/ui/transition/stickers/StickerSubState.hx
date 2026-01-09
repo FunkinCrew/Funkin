@@ -294,7 +294,8 @@ class StickerTransitionSprite extends openfl.display.Sprite
 
   public function insert():Void
   {
-    FlxG.addChildBelowMouse(this, 9999);
+    FlxG.addChildBelowMouse(this, 1);
+
     visible = true;
     onResize();
   }
