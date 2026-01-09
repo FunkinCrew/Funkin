@@ -9,9 +9,14 @@ import funkin.graphics.FlxFilteredSprite;
 @:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
 {
+  public var char:String;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
+
+    this.char = '';
+
     this.makeGraphic(32, 32, 0x00000000);
     this.antialiasing = false;
     this.active = false;
@@ -19,6 +24,9 @@ class PixelatedIcon extends FlxFilteredSprite
 
   public function setCharacter(char:String):Void
   {
+    if (this.char == char) return;
+    this.char = char;
+
     var charPath:String = "freeplay/icons/";
 
     final charIDParts:Array<String> = char.split("-");
