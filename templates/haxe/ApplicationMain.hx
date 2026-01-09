@@ -7,8 +7,14 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
+import hxgamemode.GamemodeClient;
+
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
+#end
+
+#if (windows && cpp)
+using funkin.util.WindowUtil;
 #end
 
 @:access(lime.app.Application)
@@ -19,8 +25,24 @@ class ApplicationIcon extends lime.graphics.Image {}
 class ApplicationMain
 {
   #if !macro
-  public static function main()
+
+  #if (windows && cpp)
+  public static var systemDarkMode:Bool = false;
+  #end
+
+  public static function main():Void
   {
+    #if (windows && cpp)
+    // Disable the Windows "ghosting" effect that dims unresponsive windows.
+    funkin.external.windows.WinAPI.disableWindowsGhosting();
+
+    // Disable Windows error reporting (avoids sending bug reports to Microsoft).
+    funkin.external.windows.WinAPI.disableErrorReporting();
+
+    // Whether the system is currently using dark mode.
+    systemDarkMode = funkin.external.windows.WinAPI.isSystemDarkMode();
+    #end
+
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
     #if (js && html5)
@@ -34,6 +56,10 @@ class ApplicationMain
 
   public static function create(config):Void
   {
+    #if linux
+    GamemodeClient.request_start();
+    #end
+
     final appMeta:Map<String, String> = [];
 
     appMeta.set("build", "::meta.buildNumber::");
@@ -50,10 +76,19 @@ class ApplicationMain
 
     var app = new openfl.display.Application(appMeta);
 
-    #if linux
+    #if ((windows && cpp) || linux)
     app.onCreateWindow.add(function(window:lime.ui.Window):Void
     {
+      #if (windows && cpp)
+      if (systemDarkMode)
+      {
+        window.setDarkMode(systemDarkMode);
+      }
+      #end
+
+      #if linux
       window.setIcon(new ApplicationIcon());
+      #end
     });
     #end
 
@@ -125,20 +160,6 @@ class ApplicationMain
     app.window.frameRate = ::WIN_FPS::;
     #end
 
-    #if (windows && cpp)
-    // Disable the Windows "ghosting" effect that dims unresponsive windows.
-    funkin.external.windows.WinAPI.disableWindowsGhosting();
-
-    // Disable Windows error reporting (avoids sending bug reports to Microsoft).
-    funkin.external.windows.WinAPI.disableErrorReporting();
-
-    // Enable dark mode if the system theme is set to dark.
-    if (funkin.external.windows.WinAPI.isSystemDarkMode())
-    {
-      funkin.external.windows.WinAPI.setDarkMode(true);
-    }
-    #end
-
     var preloader = getPreloader();
     app.preloader.onProgress.add (function(loaded, total)
     {
@@ -169,6 +190,10 @@ class ApplicationMain
 
     #if (sys && !ios && !nodejs && !emscripten)
     lime.system.System.exit(result);
+    #end
+
+    #if linux
+    GamemodeClient.request_end();
     #end
   }
 

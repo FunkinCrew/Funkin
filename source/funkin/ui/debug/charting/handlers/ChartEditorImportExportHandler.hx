@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongNoteDataUtils;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
@@ -22,7 +23,7 @@ import thx.semver.Version as SemverVersion;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
-  public static final BACKUPS_PATH:String = './backups/';
+  public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
@@ -346,24 +347,47 @@ class ChartEditorImportExportHandler
     return output;
   }
 
+  /**
+   * Evaluates the list of backups,
+   * @return The file path to the latest chart backup, or null if no backups exist.
+   */
   public static function getLatestBackupPath():Null<String>
   {
     #if sys
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    var entries:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
-    entries.sort(SortUtil.alphabetically);
+    var files:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
+    // Filter to only the backups for the chart editor
+    files = files.filter((file:String) -> {
+      return file.endsWith(Constants.EXT_CHART);
+    });
+    if (files.length == 0) return null; // No backups.
+    if (files.length == 1) return haxe.io.Path.join([BACKUPS_PATH, files[0]]);
 
-    var latestBackupPath:Null<String> = entries[(entries.length - 1)];
+    // Get the stats for each file so we can compare timestamps.
+    // Sort the list of files by their timestamp (newest first)
+    files.sort((a:String, b:String) -> {
+      var aStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, a]));
+      var bStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, b]));
+      return aStat.mtime.getTime() < bStat.mtime.getTime() ? 1 : -1;
+    });
 
-    if (latestBackupPath == null) return null;
+    trace('Sorted backup files: ${files}');
+
+    // The first file in the list is the latest backup.
+    var latestBackupPath:String = files[0];
+
     return haxe.io.Path.join([BACKUPS_PATH, latestBackupPath]);
     #else
     return null;
     #end
   }
 
-  public static function getLatestBackupDate():Null<String>
+  /**
+   * Retrieve the latest chart backup file, then return a string containing identifying info like the full filename and timestamp.
+   * @return The formatted info.
+   */
+  public static function getLatestBackupInfo():Null<String>
   {
     #if sys
     var latestBackupPath:Null<String> = getLatestBackupPath();
@@ -499,7 +523,7 @@ class ChartEditorImportExportHandler
       var onSave:Array<String>->Void = function(paths:Array<String>) {
         if (paths.length != 1)
         {
-          trace('[WARN] Could not get save path.');
+          trace(' WARNING '.bold().bg_yellow() + ' Could not get save path.');
           state.applyWindowTitle();
         }
         else
@@ -526,3 +550,4 @@ class ChartEditorImportExportHandler
     }
   }
 }
+#end

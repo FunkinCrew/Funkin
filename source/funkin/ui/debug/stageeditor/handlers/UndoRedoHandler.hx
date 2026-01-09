@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.handlers;
 
+#if FEATURE_STAGE_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler.StageEditorObjectData;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorDialogType;
@@ -21,6 +22,7 @@ class UndoRedoHandler
 
         for (char in state.getCharacters())
         {
+          if (char == null) continue;
           if (char.characterType == type) state.selectedChar = char;
         }
 
@@ -193,3 +195,4 @@ enum abstract UndoActionType(String) from String
    */
   var OBJECT_ROTATED = "object_rotated";
 }
+#end

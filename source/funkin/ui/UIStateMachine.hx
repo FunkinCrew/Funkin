@@ -8,7 +8,8 @@ enum UIState
 {
   Idle;
   Interacting;
-  Entering;
+  EnteringMainMenu;
+  EnteringFreeplay;
   Exiting;
   Disabled;
 }
@@ -17,6 +18,8 @@ enum UIState
  * Note: Not to be confust with FlxState or FlxSubState!
  * State as in the design pattern!
  * https://refactoring.guru/design-patterns/state
+ *
+ * TODO: Generalize this a bit more to allow the UIState enum be defined with any enum
  */
 @:nullSafety
 class UIStateMachine
@@ -31,11 +34,12 @@ class UIStateMachine
   {
     // Default valid transitions if none provided
     validTransitions = transitions != null ? transitions : [
-      Idle => [Interacting, Entering, Exiting, Disabled],
-      Entering => [Idle, Exiting, Disabled, Interacting],
-      Interacting => [Idle, Entering, Exiting, Disabled],
+      Idle => [Interacting, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled],
+      EnteringMainMenu => [Idle, Exiting, Disabled, Interacting],
+      Interacting => [Idle, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled],
       Exiting => [Idle],
-      Disabled => [Idle]
+      Disabled => [Idle],
+      EnteringFreeplay => [Idle]
     ];
   }
 
@@ -95,6 +99,6 @@ class UIStateMachine
   public function canInteract():Bool
   {
     // Entering is an enabled state since we want to be able to interact even during the screen fade wipe thing
-    return currentState == Idle || currentState == Entering;
+    return currentState == Idle || currentState == EnteringMainMenu;
   }
 }

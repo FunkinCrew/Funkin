@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.event.SongEventRegistry;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.display.BitmapData;
@@ -244,3 +245,4 @@ class ChartEditorEventSprite extends FlxSprite
     return !aboveViewArea && !belowViewArea;
   }
 }
+#end

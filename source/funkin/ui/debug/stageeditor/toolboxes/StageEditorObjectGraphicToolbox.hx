@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import haxe.ui.components.Button;
@@ -208,3 +209,4 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     stageEditorState.updateDialog(OBJECT_ANIMS);
   }
 }
+#end

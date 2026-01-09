@@ -12,7 +12,9 @@ import flixel.util.FlxTimer;
 import funkin.input.Controls;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.math.FlxPoint;
+import flixel.FlxCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 
 class LetterSort extends FlxSpriteGroup
@@ -28,8 +30,6 @@ class LetterSort extends FlxSpriteGroup
   var leftArrow:FlxSprite;
   var rightArrow:FlxSprite;
   var grpSeperators:FlxSpriteGroup;
-
-  public var inputEnabled:Bool = true;
 
   public var instance(default, set):FreeplayState;
 
@@ -53,7 +53,7 @@ class LetterSort extends FlxSpriteGroup
 
     for (i in 0...5)
     {
-      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i);
+      var letter:FreeplayLetter = new FreeplayLetter(i * 80, 0, i, curSelection);
       letter.x += 50;
       letter.y += 50;
       // letter.visible = false;
@@ -101,70 +101,60 @@ class LetterSort extends FlxSpriteGroup
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+    if (!instance.uiStateMachine.canInteract()) return;
+
     #if FEATURE_TOUCH_CONTROLS
-    @:privateAccess
-    if (TouchUtil.justPressed) inputEnabled = instance != null && TouchUtil.overlaps(swipeBounds, instance.funnyCam);
+    if (TouchUtil.pressAction())
+    {
+      for (index => letter in letterHitboxes)
+      {
+        @:privateAccess
+        if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+
+        if (index == 2 || index == 5) continue;
+
+        var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+        var changeValue = selectionChanges[index];
+
+        if (changeValue != 0)
+        {
+          changeSelection(changeValue);
+
+          if (index == 0 || index == 4)
+          {
+            changeSelection(changeValue, false);
+          }
+        }
+
+        break;
+      }
+    }
     #end
 
-    if (inputEnabled)
+    @:privateAccess
     {
-      #if FEATURE_TOUCH_CONTROLS
-      if (TouchUtil.pressAction())
-      {
-        for (index => letter in letterHitboxes)
-        {
-          @:privateAccess
-          if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+      if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
 
-          if (index == 2 || index == 5) continue;
-
-          var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
-          var changeValue = selectionChanges[index];
-
-          if (changeValue != 0)
-          {
-            changeSelection(changeValue);
-
-            if (index == 0 || index == 4)
-            {
-              changeSelection(changeValue, false);
-            }
-          }
-
-          break;
-        }
-      }
-      #end
-
-      @:privateAccess
-      {
-        if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
-          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
-
-        if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
-          || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
-      }
+      if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
     }
   }
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
   {
-    @:privateAccess
-    if (instance.controls.active)
-    {
-      doLetterChangeAnims(diff);
+    doLetterChangeAnims(diff);
 
-      var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
+    var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-      // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
-      var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
-      arrowToMove.offset.x = 3 * multiPosOrNeg;
+    // if we're moving left (diff < 0), we want control of the right arrow, and vice versa
+    var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
+    arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-      new FlxTimer().start(2 / 24, function(_) {
-        arrowToMove.offset.x = 0;
-      });
-      if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
-    }
+    new FlxTimer().start(2 / 24, function(_) {
+      arrowToMove.offset.x = 0;
+    });
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
   }
 
   /**
@@ -247,9 +237,9 @@ class LetterSort extends FlxSpriteGroup
 }
 
 /**
- * The actual FlxAtlasSprite for the letters, with their animation code stuff and regex stuff
+ * The actual FunkinSprite for the letters, with their animation code stuff and regex stuff
  */
-class FreeplayLetter extends FlxAtlasSprite
+class FreeplayLetter extends FunkinSprite
 {
   /**
    * A preformatted array of letter strings, for use when doing regex
@@ -268,9 +258,11 @@ class FreeplayLetter extends FlxAtlasSprite
    */
   public var curLetter:Int = 0;
 
-  public function new(x:Float, y:Float, ?letterInd:Int)
+  public function new(x:Float, y:Float, ?letterInd:Int, curSelected:Int = 0)
   {
-    super(x, y, Paths.animateAtlas("freeplay/sortedLetters"));
+    super(x, y);
+
+    loadTextureAtlas("freeplay/sortedLetters");
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
@@ -290,11 +282,16 @@ class FreeplayLetter extends FlxAtlasSprite
 
     if (letterInd != null)
     {
-      this.anim.play(animLetters[letterInd] + " move");
-      this.anim.pause();
+      this.anim.play(animLetters[letterInd] + " move", true);
       curLetter = letterInd;
-      this.anim.onComplete.add(function() {
-        this.anim.play(animLetters[curLetter] + " move");
+
+      if (curSelected != curLetter)
+      {
+        this.anim.pause();
+      }
+
+      this.anim.onFinish.add(function(name:String) {
+        this.anim.play(animLetters[curLetter] + " move", true);
       });
     }
   }
@@ -328,6 +325,16 @@ class FreeplayLetter extends FlxAtlasSprite
     {
       this.anim.pause();
     }
-    // updateHitbox();
+  }
+
+  /**
+   * Offset the letter.
+   */
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= 50;
+    output.y -= 60;
+    return output;
   }
 }

@@ -23,12 +23,8 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       createItem("LOAD FROM NG", function() {
         openConfirmPrompt("This will overwrite
         \nALL your save data.
-        \nAre you sure?
-      ", "Overwrite", function() {
-          Save.loadFromNewgrounds(function() {
-            FlxG.switchState(() -> new funkin.InitState());
-          });
-        });
+        \nAre you sure?", "Overwrite",
+          () -> Save.loadFromNewgrounds(() -> FlxG.switchState(() -> new funkin.InitState())));
       });
 
       createItem("SAVE TO NG", function() {
@@ -101,6 +97,7 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
       prompt = null;
     }
   }
+
   public function openSaveDataPrompt()
   {
     openConfirmPrompt("This will delete

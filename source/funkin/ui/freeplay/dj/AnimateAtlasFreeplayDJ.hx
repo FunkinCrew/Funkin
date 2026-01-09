@@ -1,7 +1,5 @@
 package funkin.ui.freeplay.dj;
 
-import flixel.util.FlxSignal;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 /**
@@ -11,15 +9,31 @@ import funkin.data.freeplay.player.PlayerRegistry;
 @:hscriptClass
 class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass {}
 
+/**
+ * An AnimateAtlasFreeplayDJ is a Freeplay DJ which is rendered by
+ * displaying an animation derived from an Adobe Animate texture atlas spritesheet file.
+ *
+ * BaseFreeplayDJ has game logic, AnimateAtlasFreeplayDJ has only rendering logic.
+ * KEEP THEM SEPARATE!
+ */
 class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
 {
   public function new(x:Float, y:Float, characterId:String)
   {
     super(x, y, characterId);
-    loadAtlas(Paths.animateAtlas(playableCharData.getAssetPath()));
 
-    onAnimationComplete.add(onFinishAnim);
-    onAnimationLoop.add(onFinishAnim);
+    loadTextureAtlas(playableCharData?.getAssetPath(),
+      {
+        swfMode: true
+      });
+
+    if (playableCharData?.useApplyStageMatrix() ?? false)
+    {
+      this.applyStageMatrix = true;
+    }
+
+    animation.onFinish.add(onFinishAnim);
+    animation.onLoop.add(onFinishAnim);
   }
 
   public override function update(elapsed:Float):Void
@@ -29,7 +43,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
       case Intro:
         // Play the intro animation then leave this state immediately.
         var animPrefix = playableCharData?.getAnimationPrefix('intro');
-        if (animPrefix != null && (getCurrentAnimation() != animPrefix || !this.anim.isPlaying))
+        if (animPrefix != null && (getCurrentAnimation() != animPrefix))
         {
           playFlashAnimation(animPrefix, true);
         }
@@ -63,7 +77,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -71,7 +85,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -88,7 +102,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -96,7 +110,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curFrame >= endFrame)
+          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
@@ -131,14 +145,12 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
     }
 
     // Call the superclass function AFTER updating the current state and playing the next animation.
-    // This ensures that FlxAnimate starts rendering the new animation immediately.
+    // This ensures that flixel-animate starts rendering the new animation immediately.
     super.update(elapsed);
   }
 
   override function onFinishAnim(name:String):Void
   {
-    // var name = anim.curSymbol.name;
-
     if (name == playableCharData?.getAnimationPrefix('intro'))
     {
       if (PlayerRegistry.instance.hasNewCharacter())
@@ -183,25 +195,6 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
       // trace('Finished loss reaction');
       currentState = Idle;
     }
-    else if (name == playableCharData?.getAnimationPrefix('cartoon'))
-    {
-      // trace('Finished cartoon');
-
-      var frame:Int = FlxG.random.bool(33) ? (playableCharData?.getCartoonLoopBlinkFrame() ?? 0) : (playableCharData?.getCartoonLoopFrame() ?? 0);
-
-      // Character switches channels when the video ends, or at a 10% chance each time his idle loops.
-      if (FlxG.random.bool(5))
-      {
-        frame = playableCharData?.getCartoonChannelChangeFrame() ?? 0;
-        // boyfriend switches channel code?
-        // Transefer into bf.hxc in scripts/freeplay/dj
-        // runTvLogic();
-      }
-      trace('Replay idle: ${frame}');
-      var animPrefix = playableCharData?.getAnimationPrefix('cartoon');
-      if (animPrefix != null) playFlashAnimation(animPrefix, true, false, false, frame);
-      // trace('Finished confirm');
-    }
     else if (name == playableCharData?.getAnimationPrefix('newUnlock'))
     {
       // Animation should loop.
@@ -216,25 +209,14 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
     }
   }
 
-  override public function listAnimations():Array<String>
-  {
-    var anims:Array<String> = [];
-    @:privateAccess
-    for (animKey in anim.symbolDictionary)
-      anims.push(animKey.name);
-
-    return anims;
-  }
-
-  override public function getCurrentAnimation():String
-  {
-    if (this.anim == null || this.anim.curSymbol == null) return "";
-    return this.anim.curSymbol.name;
-  }
-
   override public function playFlashAnimation(id:String, Force:Bool = false, Reverse:Bool = false, Loop:Bool = false, Frame:Int = 0):Void
   {
-    playAnimation(id, Force, Reverse, Loop, Frame);
-    applyAnimOffset();
+    animation.play(id, Force, Reverse, Frame);
+
+    if (animation.curAnim != null)
+    {
+      animation.curAnim.looped = Loop;
+    }
+    applyAnimationOffset();
   }
 }
