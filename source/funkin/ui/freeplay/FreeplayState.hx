@@ -3378,12 +3378,16 @@ class FreeplaySongData
 
   function get_previewStartTime():Float
   {
-    return data.previewStartTime > 1 ? 0 : data.previewStartTime;
+    var prevStartTime = @:privateAccess data._metadata.get(curVariation)?.playData?.previewStart ?? 0.0;
+
+    return prevStartTime > 1 ? 0 : prevStartTime;
   }
 
   function get_previewEndTime():Float
   {
-    return data.previewEndTime > 1 ? 0.2 : data.previewEndTime;
+    var prevEndTime = @:privateAccess data._metadata.get(curVariation)?.playData?.previewEnd ?? 0.2;
+
+    return prevEndTime > 1 ? 0.2 : prevEndTime;
   }
 
   function get_isNew():Bool
