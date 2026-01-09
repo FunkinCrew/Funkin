@@ -2876,7 +2876,7 @@ class PlayState extends MusicBeatSubState
           // NOTE: This is what handles the strumline and cleaning up the note itself!
           strumline.hitNote(note);
           // Update strumline.heldKeys as a surprise tool to help us later.
-          strumline.pressKey(note.direction);
+          strumline.playConfirm(note.direction);
 
           // Try vibrations in case any botted strumlines have them enabled.
           NoteVibrationsHandler.instance.tryNoteVibration();
@@ -3079,10 +3079,6 @@ class PlayState extends MusicBeatSubState
 
       var strumlinePressQueue = inputPressQueue.copy();
       var strumlineReleaseQueue = inputReleaseQueue.copy();
-      // Whether this direction is already held by another key.
-      var isAlreadyHeld = strumline.isKeyHeld(input.noteDirection);
-
-      strumline.pressKey(input.noteDirection, input.keyCode);
 
       // Generate a list of notes within range.
       var notesInRange:Array<NoteSprite> = strumline.getNotesMayHit();
@@ -3098,7 +3094,7 @@ class PlayState extends MusicBeatSubState
         var input:Null<PreciseInputEvent> = strumlinePressQueue.shift();
         if (input == null || strumline.isLaneDisabled(input.noteDirection)) continue;
 
-        strumline.pressKey(input.noteDirection);
+        strumline.pressKey(input.noteDirection, input.keyCode);
 
         // Don't credit or penalize inputs for bots.
         if (!strumline.isPlayer) continue;

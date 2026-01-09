@@ -340,6 +340,7 @@ class Strumline extends FlxSpriteGroup
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
     resetScrollSpeed(scrollSpeed);
 
+    heldKeys = [];
     for (i in 0...KEY_COUNT)
     {
       var child:StrumlineNote = new StrumlineNote(noteStyle, DIRECTIONS[i]);
@@ -350,7 +351,7 @@ class Strumline extends FlxSpriteGroup
       noteStyle.applyStrumlineOffsets(child);
       this.strumlineNotes.add(child);
 
-      heldKeys.push(false);
+      heldKeys.push([]);
 
       noteStatuses.push(NoteStatus.idle);
     }
@@ -1018,7 +1019,7 @@ class Strumline extends FlxSpriteGroup
     heldKeys = [];
     for (_ in 0...KEY_COUNT)
     {
-      heldKeys.push(false);
+      heldKeys.push([]);
     }
 
     for (dir in DIRECTIONS)
