@@ -31,10 +31,22 @@ import funkin.util.MathUtil;
 class HealthIcon extends FunkinSprite
 {
   /**
-   * The character this icon is representing.
+   * The character this icon will represent and display.
    * Setting this variable will automatically update the graphic.
    */
+  public var displayCharacterId(default, set):String = Constants.DEFAULT_HEALTH_ICON;
+
+  /**
+   * The character this icon should represent
+   * Used when toggleOldIcon toggles off
+   */
   public var characterId(default, set):String = Constants.DEFAULT_HEALTH_ICON;
+
+  /**
+   * Offsets of the current character icon
+   * Used when toggleOldIcon toggles off
+   */
+  public var offsets:Array<Float> = [0.0, 0.0];
 
   /**
    * Whether this health icon should automatically update its state based on the character's health.
@@ -74,6 +86,12 @@ class HealthIcon extends FunkinSprite
    * Whether the sprite is pixel art or not.
    */
   public var isPixel(default, set):Bool = false;
+
+  /**
+   * Whether the sprite is pixel art or not.
+   * Used when toggleOldIcon toggles off
+   */
+  public var prevIsPixel(default, set):Bool = false;
 
   /**
    * Whether this is a legacy icon or not.
@@ -132,11 +150,22 @@ class HealthIcon extends FunkinSprite
     this.scrollFactor.set();
     size.set(1.0, 1.0);
     this.characterId = char;
+    this.displayCharacterId = char;
   }
 
   function onSetSize(value:FlxPoint):Void
   {
     snapToTargetSize();
+  }
+
+  function set_displayCharacterId(value:Null<String>):String
+  {
+    if (value == displayCharacterId) return value;
+
+    displayCharacterId = value ?? Constants.DEFAULT_HEALTH_ICON;
+    loadCharacter(displayCharacterId);
+    updatePosition();
+    return displayCharacterId;
   }
 
   function set_characterId(value:Null<String>):String
@@ -155,6 +184,14 @@ class HealthIcon extends FunkinSprite
     return isPixel;
   }
 
+  function set_prevIsPixel(value:Bool):Bool
+  {
+    if (value == prevIsPixel) return value;
+
+    prevIsPixel = value;
+    return prevIsPixel;
+  }
+
   /**
    * Easter egg; press 9 in the PlayState to use the old player icon.
    */
@@ -162,16 +199,18 @@ class HealthIcon extends FunkinSprite
   {
     final playState:Null<PlayState> = PlayState.instance;
     if (playState == null || playState.currentStage == null) return;
-    if (characterId == 'bf-old')
+    if (displayCharacterId == 'bf-old')
     {
-      isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
-      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
+      isPixel = prevIsPixel;
+      iconOffset.set(offsets[0], offsets[1]);
+      displayCharacterId = characterId;
     }
     else
     {
-      characterId = 'bf-old';
       isPixel = false;
-      loadCharacter(characterId);
+      iconOffset.set(0, 0);
+      flipX = true;
+      displayCharacterId = 'bf-old';
     }
 
     snapToTargetSize();
@@ -185,35 +224,36 @@ class HealthIcon extends FunkinSprite
   {
     if (data == null)
     {
-      this.characterId = Constants.DEFAULT_HEALTH_ICON;
       this.isPixel = false;
-
-      loadCharacter(characterId);
-
       this.size.set(1.0, 1.0);
       this.iconOffset.set();
       this.flipX = false;
-      this.updatePosition();
+
+      this.displayCharacterId = Constants.DEFAULT_HEALTH_ICON;
     }
     else
     {
       this.characterId = data.id;
-      this.isPixel = data.isPixel ?? false;
+      this.prevIsPixel = data.isPixel ?? false;
+      this.offsets = data.offsets ?? [0.0, 0.0];
 
-      loadCharacter(characterId);
-
-      this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      if (data.offsets != null && data.offsets.length == 2)
+      if (this.displayCharacterId != 'bf-old')
       {
-        this.iconOffset.set(data.offsets[0], data.offsets[1]);
-      }
-      else
-      {
-        this.iconOffset.set(0, 0);
-      }
+        this.isPixel = this.prevIsPixel;
 
-      this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
-      this.updatePosition();
+        this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
+        if (data.offsets != null && data.offsets.length == 2)
+        {
+          this.iconOffset.set(data.offsets[0], data.offsets[1]);
+        }
+        else
+        {
+          this.iconOffset.set(0, 0);
+        }
+
+        this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
+        this.displayCharacterId = characterId;
+      }
     }
   }
 
@@ -411,7 +451,7 @@ class HealthIcon extends FunkinSprite
 
   function isNewSpritesheet(charId:String):Bool
   {
-    return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
+    return Assets.exists(Paths.file('images/icons/icon-$displayCharacterId.xml'));
   }
 
   function loadCharacter(charId:Null<String>):Void
@@ -419,8 +459,8 @@ class HealthIcon extends FunkinSprite
     if (charId == null || !iconExists(charId))
     {
       FlxG.log.warn('No icon for character: $charId : using default placeholder face instead!');
-      characterId = Constants.DEFAULT_HEALTH_ICON;
-      charId = characterId;
+      displayCharacterId = Constants.DEFAULT_HEALTH_ICON;
+      charId = displayCharacterId;
     }
 
     isLegacyStyle = !isNewSpritesheet(charId);
