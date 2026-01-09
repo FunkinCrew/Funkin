@@ -18,7 +18,7 @@ class InAppReviewUtil
   /**
    * Chance for exiting the Results screen to display a prompt to review the game, as a percent.
    */
-  public static var ODDS:UInt = 5;
+  public static final ODDS:UInt = 5;
 
   /**
    * Initializes callbacks tied to the In-App Review functionality.

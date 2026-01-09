@@ -402,7 +402,7 @@ class FreeplayState extends MusicBeatSubState
 
       if (level == null)
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Could not find level with id (${levelId})');
+        trace(' WARNING '.warning() + ' Could not find level with id (${levelId})');
         continue;
       }
 
@@ -412,7 +412,7 @@ class FreeplayState extends MusicBeatSubState
 
         if (song == null)
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Could not find song with id (${songId})');
+          trace(' WARNING '.warning() + ' Could not find song with id (${songId})');
           continue;
         }
 
@@ -423,11 +423,6 @@ class FreeplayState extends MusicBeatSubState
     // LOAD MUSIC
 
     // LOAD CHARACTERS
-
-    trace(FlxG.width);
-    trace(FlxG.camera.zoom);
-    trace(FlxG.camera.initialZoom);
-    trace(FlxCamera.defaultZoom);
 
     backingCard.instance = this;
     add(backingCard);
@@ -2662,12 +2657,6 @@ class FreeplayState extends MusicBeatSubState
 
       return;
     }
-    #end
-
-    #if mobile
-    trace('ALTS ARE DISABLED');
-    #else
-    trace('NO ALTS');
     #end
 
     capsuleOnConfirmDefault(cap);

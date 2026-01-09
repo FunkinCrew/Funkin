@@ -523,7 +523,7 @@ class ChartEditorImportExportHandler
       var onSave:Array<String>->Void = function(paths:Array<String>) {
         if (paths.length != 1)
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Could not get save path.');
+          trace(' WARNING '.warning() + ' Could not get save path.');
           state.applyWindowTitle();
         }
         else

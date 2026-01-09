@@ -330,16 +330,27 @@ class PolymodHandler
     // Disable access to In-App Purchases Util
     Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
 
-    // Disable access to Admob Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    // Disable access to In-App Reviews Util
+    Polymod.blacklistImport('funkin.mobile.util.InAppReviewUtil');
+
+    // Disable access to AndroidTools Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to AndroidTools Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
+    // Disable access to Haptics Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to Admob Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -354,8 +365,16 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to Haptics Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
+    // Disable access to IARCore Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.iarcore'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to WebViewCore Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.webviewcore'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);

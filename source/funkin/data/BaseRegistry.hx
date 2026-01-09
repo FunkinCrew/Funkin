@@ -78,7 +78,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // SCRIPTED ENTRIES
     //
     var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log('Parsing ${scriptedEntryClassNames.length} scripted entries...');
+    log(' INFO '.info() + 'Parsing ${scriptedEntryClassNames.length} scripted entries...');
 
     for (entryCls in scriptedEntryClassNames)
     {
@@ -112,7 +112,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
-    log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
+    log(' INFO '.info() + 'Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
       try
@@ -120,14 +120,14 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
-          trace(' Loaded entry data: ${entry}');
+          log('Loaded entry data: ${entry}');
           entries.set(entry.id, entry);
         }
       }
       catch (e)
       {
         // Print the error.
-        trace(' Failed to load entry data: ${entryId}');
+        log(' WARNING '.warning() + ' Failed to load entry data: ${entryId}');
         trace(e);
         continue;
       }
@@ -224,7 +224,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function log(message:String):Void
   {
-    trace('[' + registryId + '] ' + message);
+    trace(' $registryId '.bold().bg_note_down() + ' $message');
   }
 
   function loadEntryFile(id:String):JsonFile
@@ -333,7 +333,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
   {
-    trace('[${registryId}] Failed to parse entry data: ${id}');
+    trace(' $registryId '.bold().bg_note_down() + ' ERROR '.error() + 'Failed to parse entry data: ${id}');
 
     for (error in errors)
     {

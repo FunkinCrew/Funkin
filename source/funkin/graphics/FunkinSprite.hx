@@ -330,48 +330,15 @@ class FunkinSprite extends FlxAnimate
       throw 'Null path specified for loadTextureAtlas()!';
     }
 
-    var validatedSettings:AtlasSpriteSettings =
-      {
-        swfMode: settings?.swfMode ?? false,
-        cacheOnLoad: settings?.cacheOnLoad ?? false,
-        filterQuality: settings?.filterQuality ?? MEDIUM,
-        spritemaps: settings?.spritemaps ?? null,
-        metadataJson: settings?.metadataJson ?? null,
-        cacheKey: settings?.cacheKey ?? null,
-        uniqueInCache: settings?.uniqueInCache ?? false,
-        onSymbolCreate: settings?.onSymbolCreate ?? null,
-        applyStageMatrix: settings?.applyStageMatrix ?? false,
-        useRenderTexture: settings?.useRenderTexture ?? false
-      };
-
-    var assetLibrary:String = assetLibrary ?? "";
-    var graphicKey:String = "";
-
-    if (assetLibrary != "")
+    if (settings == null)
     {
-      graphicKey = Paths.animateAtlas(key, assetLibrary);
-    }
-    else
-    {
-      graphicKey = Paths.animateAtlas(key);
+      settings = getDefaultAtlasSettings();
     }
 
-    // Validate asset path.
-    if (!Assets.exists('${graphicKey}/Animation.json'))
-    {
-      throw 'No Animation.json file exists at the specified path (${graphicKey})';
-    }
+    this.applyStageMatrix = settings.applyStageMatrix ?? false;
+    this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
-    this.useRenderTexture = validatedSettings.useRenderTexture ?? false;
-
-    frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
-      validatedSettings.uniqueInCache, {
-        swfMode: validatedSettings.swfMode,
-        cacheOnLoad: validatedSettings.cacheOnLoad,
-        filterQuality: validatedSettings.filterQuality,
-        onSymbolCreate: validatedSettings.onSymbolCreate
-      });
+    frames = Paths.getAnimateAtlas(key, assetLibrary, settings);
 
     return this;
   }
@@ -733,6 +700,26 @@ class FunkinSprite extends FlxAnimate
 
     elementMatrix.tx -= positionOffset;
     elementMatrix.ty -= positionOffset;
+  }
+
+  /**
+   * Gets the default settings for a texture atlas sprite.
+   * @return The default settings for a texture atlas sprite.
+   */
+  public function getDefaultAtlasSettings():AtlasSpriteSettings
+  {
+    return {
+      swfMode: false,
+      cacheOnLoad: false,
+      filterQuality: MEDIUM,
+      spritemaps: null,
+      metadataJson: null,
+      cacheKey: null,
+      uniqueInCache: false,
+      onSymbolCreate: null,
+      applyStageMatrix: false,
+      useRenderTexture: false
+    };
   }
 
   /**

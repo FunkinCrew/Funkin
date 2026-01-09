@@ -206,7 +206,7 @@ class ChartEditorAudioHandler
         }
         else
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
         }
 
         state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
@@ -224,7 +224,7 @@ class ChartEditorAudioHandler
         }
         else
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
         }
 
         state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
@@ -311,7 +311,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get('default');
         if (data == null)
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
+          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
@@ -321,7 +321,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get(key);
         if (data == null)
         {
-          trace(' WARNING '.bold().bg_yellow() + ' Failed to access inst track ($key)');
+          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
@@ -346,7 +346,7 @@ class ChartEditorAudioHandler
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
       if (data == null)
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Failed to access vocal track ($key)');
+        trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
         continue;
       }
       zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));

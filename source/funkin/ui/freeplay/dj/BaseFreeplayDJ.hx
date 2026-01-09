@@ -230,12 +230,10 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
         finalOffsetY = globalOffsets[1] - animationOffsets[1];
       }
 
-      trace('Successfully applied offset ($animationName): ' + animationOffsets[0] + ', ' + animationOffsets[1]);
       offset.set(finalOffsetX, finalOffsetY);
     }
     else
     {
-      trace('No offset found ($animationName), defaulting to: 0, 0');
       offset.set(0, 0);
     }
   }

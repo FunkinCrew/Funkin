@@ -90,7 +90,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     debugIconGroup = new FlxSpriteGroup();
     debugIconGroup.visible = false;
     debugIconGroup.zIndex = 1000000;
-    // add(debugIconGroup);
   }
 
   public function resetStage():Void
@@ -109,7 +108,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
     else
     {
-      trace('STAGE RESET: No boyfriend found.');
+      log(' WARNING '.warning() + ' No boyfriend found while resetting stage.');
     }
     if (getGirlfriend() != null)
     {
@@ -158,13 +157,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   function buildStage():Void
   {
-    trace('Building stage for display: ${this.id}');
+    log('Building stage "${this.id}" for display...');
 
     this.debugIconGroup = new FlxSpriteGroup();
 
     for (dataProp in _data.props)
     {
-      trace(' Placing prop: ${dataProp.name} (${dataProp.assetPath})');
+      log('Placing prop ${dataProp.name} (${dataProp.assetPath})');
 
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
@@ -220,7 +219,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        trace('   ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        log(' ERROR '.error() + ' Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 
@@ -906,4 +905,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   public function onSongLoaded(event:SongLoadScriptEvent) {}
 
   public function onSongRetry(event:SongRetryEvent) {}
+
+  static function log(message:String):Void
+  {
+    trace(' STAGE '.bold().bg_red() + ' $message');
+  }
 }

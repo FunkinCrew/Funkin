@@ -179,9 +179,11 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       var targetMeasure:Int = currentMeasure + i - 1;
       if (targetMeasure < 0) continue;
 
-      // TODO: This math is kinda awkward but DOES account for time signatures,
-      // might want some cleanup though? Maybe add a `getMeasureTimeInSteps` method?
       var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
+
+      // If we've gone past the end of the song, we're done.
+      if (measureTimeInMs > chartEditorState.songLengthInMs) break;
+
       var measureTimeInSteps:Float = Conductor.instance.getTimeInSteps(measureTimeInMs);
       var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.GRID_SIZE;
 

@@ -67,7 +67,7 @@ class SetHealthIconSongEvent extends SongEvent
           PlayState.instance.iconP2.configure(healthIconData);
         }
       default:
-        trace(' WARNING '.bold().bg_yellow() + ' Unknown character index: ' + data.value.char);
+        trace(' WARNING '.warning() + ' Unknown character index: ' + data.value.char);
     }
   }
 

@@ -56,20 +56,20 @@ class UIStateMachine
     // Allow same-state transitions (idempotent)
     if (currentState == newState)
     {
-      trace('State transition: ${currentState} -> ${newState} (no change)');
+      log('State transition ${currentState} -> ${newState} (no change)');
       return true;
     }
 
     if (!canTransition(currentState, newState))
     {
-      trace('Invalid state transition: ${currentState} -> ${newState}');
+      log('State transition: ${currentState} -> ${newState} (INVALID, blocked)');
       return false;
     }
 
     previousState = currentState;
     currentState = newState;
 
-    trace('State transition: ${previousState} -> ${currentState}');
+    log('State transition ${previousState} -> ${currentState}');
 
     // Notify listeners
     for (callback in onStateChange)
@@ -100,5 +100,10 @@ class UIStateMachine
   {
     // Entering is an enabled state since we want to be able to interact even during the screen fade wipe thing
     return currentState == Idle || currentState == EnteringMainMenu;
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' UI '.bold().bg_orange() + ' $message');
   }
 }

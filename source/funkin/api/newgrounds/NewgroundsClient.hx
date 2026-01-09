@@ -13,6 +13,9 @@ import io.newgrounds.utils.MedalList;
 import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
+#if FEATURE_MOBILE_WEBVIEW
+import funkin.mobile.util.WebViewUtil;
+#end
 
 @:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
@@ -104,20 +107,39 @@ class NewgroundsClient
       FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
       return;
     }
-
     if (NG.core.attemptingLogin)
     {
       trace(" NEWGROUNDS '.bold().bg_orange() + ' Login attempt ongoing, will not login until finished.");
       return;
     }
 
+    var passportHandler:String->Void = function(passportUrl:String) {
+      // This exists so we can create a popup on mobile but with a WebView instead.
+      #if FEATURE_MOBILE_WEBVIEW
+      if (passportUrl != null)
+      {
+        NG.core.logVerbose('Loading passport from WebView: ${passportUrl}');
+
+        WebViewUtil.openURL(passportUrl, function():Void {
+          NG.core.cancelLoginRequest();
+        });
+
+        NG.core.onPassportUrlOpen();
+      }
+      else
+        NG.core.logError("Cannot open passport");
+      #else
+      NG.core.openPassportUrl();
+      #end
+    };
+
     if (onSuccess != null && onError != null)
     {
-      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
+      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError), passportHandler);
     }
     else
     {
-      NG.core.requestLogin(onLoginResolved);
+      NG.core.requestLogin(onLoginResolved, passportHandler);
     }
   }
 
@@ -195,6 +217,10 @@ class NewgroundsClient
 
   function onLoginResolved(outcome:LoginOutcome):Void
   {
+    #if FEATURE_MOBILE_WEBVIEW
+    WebViewUtil.close();
+    #end
+
     switch (outcome)
     {
       case SUCCESS:
@@ -249,6 +275,8 @@ class NewgroundsClient
 
     // Persist the session ID.
     Save.instance.ngSessionId.value = NG.core.sessionId;
+
+    trace(NG.core.sessionId);
 
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitting medal request...');
     NG.core.requestMedals(onFetchedMedals);

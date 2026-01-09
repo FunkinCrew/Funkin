@@ -47,7 +47,7 @@ class Save implements ConsoleClass
 
   public static function load():Save
   {
-    trace("[SAVE] Loading save...");
+    trace(' SAVE '.bold().bg_note_down() + ' Loading save...');
 
     // Bind save data.
     final loadedSave:Save = loadFromSlot(Constants.BASE_SAVE_SLOT);
@@ -404,9 +404,9 @@ class Save implements ConsoleClass
   {
     if (!data.unlocks.charactersSeen.contains(character))
     {
-      trace('Character seen: ' + character);
+      trace(' SAVE '.bold().bg_note_down() + 'Seen character "$character" in Character Select!');
       data.unlocks.charactersSeen.push(character);
-      trace('New characters seen list: ' + data.unlocks.charactersSeen);
+      trace(' SAVE '.bold().bg_note_down() + 'New list of characters seen: ${data.unlocks.charactersSeen}');
       Save.system.flush();
     }
   }
@@ -517,7 +517,7 @@ class Save implements ConsoleClass
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
-      trace('Could not find song data for $songId $difficultyId $variation');
+      trace(' SAVE '.bold().bg_note_down() + ' WARNING '.warning() + 'Could not find song data for $songId $difficultyId $variation');
       song = [];
       data.scores.songs.set(songId, song);
     }

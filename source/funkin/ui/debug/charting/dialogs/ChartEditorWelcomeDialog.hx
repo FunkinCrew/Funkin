@@ -149,7 +149,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       if (songName == null) songName = songData.getDifficulty()?.songName;
       if (songName == null) // Still null?
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Could not fetch song name for ${targetSongId}');
+        trace(' WARNING '.warning() + ' Could not fetch song name for ${targetSongId}');
         continue;
       }
 
@@ -257,6 +257,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     // Open the "Import Chart" dialog
     chartEditorState.openImportChartWizard('osumania', false);
   }
+
   /**
    * Called when the user clicks the "Import Chart: StepMania" link in the dialog.
    * Reassign this function to change the behavior.

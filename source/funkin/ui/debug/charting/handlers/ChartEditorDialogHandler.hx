@@ -95,7 +95,7 @@ class ChartEditorDialogHandler
     dialog.zIndex = 1000;
     state.isHaxeUIDialogOpen = true;
 
-    state.stopAudioPlayback(false);
+    state.stopAudioPlayback();
     if (state.welcomeMusic != null && !state.welcomeMusic.isPlaying) state.fadeInWelcomeMusic();
 
     return dialog;

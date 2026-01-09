@@ -20,6 +20,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.NoteSplash;
 import funkin.ui.options.items.NumberPreferenceItem;
 import haxe.Int64;
 import flixel.FlxSprite;
@@ -904,6 +905,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       // \n to signify a line break (because the original text has 3 lines)
       jumpInText.text = 'Perfect!\n';
+      var notesplash:NoteSplash = new NoteSplash(NoteStyleRegistry.instance.fetchEntry(Constants.DEFAULT_NOTE_STYLE));
+      notesplash.play(note.direction, 0);
+      notesplash.setPosition(note.x, note.y);
+      add(notesplash);
     }
     else
     {

@@ -31,7 +31,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     try
     {
-      trace('Loading assets for Multi-Animate Atlas character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+      log('Loading assets for Multi-Animate Atlas character "${characterId}"');
       loadAtlases();
       loadAnimations();
     }
@@ -40,13 +40,13 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
       throw "Exception thrown while building sprite: " + e;
     }
 
-    trace('[MULTIATLASCHAR] Successfully loaded texture atlases for ${characterId} with ${_data.animations.length} animations.');
+    log('Successfully loaded texture atlases for ${characterId} with ${_data.animations.length} animations.');
     super.onCreate(event);
   }
 
   function loadAtlases():Void
   {
-    trace('[MULTIATLASCHAR] Loading sprite atlases for ${characterId}.');
+    log('Loading sprite atlases for ${characterId}.');
 
     var assetList:Array<String> = [];
     for (anim in _data.animations)
@@ -67,10 +67,9 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
       var subAssetLibrary:String = Paths.getLibrary(asset);
       var subAssetPath:String = Paths.stripLibrary(asset);
 
-      var clone:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, subAssetPath, subAssetLibrary, cast _data.atlasSettings);
-      var subTexture:FlxAnimateFrames = clone.library;
+      var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast _data.atlasSettings);
 
-      trace('Concatenating texture atlas: ${asset}');
+      log('Concatenating texture atlas: ${asset}');
       subTexture.parent.destroyOnNoUse = false;
 
       this.library.addAtlas(subTexture);
@@ -92,7 +91,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
   function loadAnimations():Void
   {
-    trace('[MULTIATLASCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    log('Loading ${_data.animations.length} animations for ${characterId}');
 
     FlxAnimationUtil.addTextureAtlasAnimations(this, _data.animations);
 
@@ -109,7 +108,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     }
 
     var animNames = this.anim.getNameList();
-    trace('[MULTIATLASCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
+    log('Successfully loaded ${animNames.length} animations for ${characterId}');
   }
 
   /**
@@ -119,5 +118,10 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
   public function getAtlasSettings():AtlasSpriteSettings
   {
     return cast _data.atlasSettings;
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' MULTIATLASCHAR '.bold().bg_blue() + ' $message');
   }
 }

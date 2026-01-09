@@ -615,6 +615,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var playtestSongScripts:Bool = true;
 
+  /**
+   * Whether we are CURRENTLY playtesting a chart.
+   */
+  var isPlaytesting(get, never):Bool;
+
+  function get_isPlaytesting():Bool
+  {
+    return this.subState != null && Std.isOfType(this.subState, PlayState);
+  }
+
   // Visuals
 
   /**
@@ -989,7 +999,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_notePreviewDirty(value:Bool):Bool
   {
-    // trace('Note preview dirtied!');
     return notePreviewDirty = value;
   }
 
@@ -2363,7 +2372,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public override function reloadAssets()
   {
     // If PlayState isn't open, do a regular reload.
-    if (!Std.isOfType(this.subState, PlayState))
+    if (!isPlaytesting)
     {
       super.reloadAssets();
       return;
@@ -2622,20 +2631,33 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (welcomeMusic.isPlaying) return;
 
+    if (!welcomeMusic.exists) setupWelcomeMusic();
+
     if (bgMusicTimer != null) bgMusicTimer.cancel();
     bgMusicTimer = new FlxTimer().start(extraWait, (_) -> {
       if (shouldPlayWelcomeMusic)
       {
+        trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Starting welcome music!');
         this.welcomeMusic.play();
         this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+      }
+      // Cleanup.
+      if (bgMusicTimer != null)
+      {
+        bgMusicTimer.cancel();
+        bgMusicTimer = null;
       }
     });
   }
 
   function stopWelcomeMusic():Void
   {
-    if (bgMusicTimer != null) bgMusicTimer.cancel();
-    // this.welcomeMusic.fadeOut(4, 0);
+    trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Stopping welcome music.');
+    if (bgMusicTimer != null)
+    {
+      bgMusicTimer.cancel();
+      bgMusicTimer = null;
+    }
     this.welcomeMusic.pause();
   }
 
@@ -2857,7 +2879,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewViewport == null)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      trace(' WARNING '.warning() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
       return;
     }
 
@@ -2975,14 +2997,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup character dropdowns.
     FlxMouseEvent.add(healthIconDad, function(_) {
-      if (!isCursorOverHaxeUI && this.subState == null)
+      if (!isCursorOverHaxeUI && !isPlaytesting)
       {
         this.openCharacterDropdown(CharacterType.DAD, true);
       }
     });
 
     FlxMouseEvent.add(healthIconBF, function(_) {
-      if (!isCursorOverHaxeUI && this.subState == null)
+      if (!isCursorOverHaxeUI && !isPlaytesting)
       {
         this.openCharacterDropdown(CharacterType.BF, true);
       }
@@ -3322,7 +3344,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemThemeMusic.onChange = event -> {
       shouldPlayWelcomeMusic = event.value;
       // Don't restart the music when the menu is opened for the first time
-      if (!welcomeMusic.active || !shouldPlayWelcomeMusic) fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+      if (!welcomeMusic.active || !shouldPlayWelcomeMusic)
+      {
+        fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+      }
     };
     menubarItemThemeMusic.selected = shouldPlayWelcomeMusic;
 
@@ -3382,8 +3407,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxFreeplay.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT, event.value);
     menubarItemToggleToolboxPlaytestProperties.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT, event.value);
-    menubarItemToggleToolboxPlayerPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
-    menubarItemToggleToolboxOpponentPreview.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
+    menubarItemToggleToolboxPlayerPreview.onChange = event -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, event.value);
+      playerPreviewDirty = event.value;
+    }
+    menubarItemToggleToolboxOpponentPreview.onChange = event -> {
+      this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
+      opponentPreviewDirty = event.value;
+    }
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
@@ -3616,7 +3647,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Stop the song upon tabbing out.
     if (Preferences.autoPause)
     {
-      stopAudioPlayback();
+      stopAudioPlayback(false);
+    }
+  }
+
+  /**
+   * Function called when the game window regains focus.
+   */
+  public override function onFocus():Void
+  {
+    super.onFocus();
+
+    if (!isPlaytesting)
+    {
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     }
   }
 
@@ -3628,9 +3672,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (metronomeVolume > 0.0
-      && this.subState == null
-      && ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing))
+    if (metronomeVolume > 0.0 && !isPlaytesting && ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing))
     {
       var currentMeasureTime:Float = Conductor.instance.getMeasureTimeInMs(Conductor.instance.currentMeasure);
       var currentStepTime:Float = Conductor.instance.getStepTimeInMs(Conductor.instance.currentStep);
@@ -3640,7 +3682,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
-    if (this.subState == null) Cursor.show();
+    if (!isPlaytesting) Cursor.show();
 
     return true;
   }
@@ -3708,7 +3750,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var oldStepTime:Float = Conductor.instance.currentStepTime;
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         updateSongTime();
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleMusicPositionUpdate(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -3726,7 +3768,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Else, move the entire view.
         var oldSongPosition:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
         updateSongTime();
-        handleHitsounds(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
+        handleMusicPositionUpdate(oldSongPosition, Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
         // Resync vocals.
         if (Math.abs(audioInstTrack.time - audioVocalTrackGroup.time) > 100)
         {
@@ -3747,7 +3789,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    if (FlxG.keys.justPressed.SPACE && !isHaxeUIDialogOpen)
+    if (FlxG.keys.justPressed.SPACE && !(isHaxeUIDialogOpen || isHaxeUIFocused))
     {
       toggleAudioPlayback();
     }
@@ -3943,7 +3985,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // If a new event is needed, call buildEventSprite.
         var eventSprite:ChartEditorEventSprite = renderedEvents.recycle(() -> new ChartEditorEventSprite(this), false, true);
         eventSprite.parentState = this;
-        trace('Creating new Event... (${renderedEvents.members.length})');
+        // trace('Creating new Event... (${renderedEvents.members.length})');
 
         if (eventData?.value != null && (eventData?.value?.ease != null && eventData?.value?.easeDir == null))
         {
@@ -5430,8 +5472,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleToolboxes():Void
   {
     handleDifficultyToolbox();
-    // handlePlayerPreviewToolbox();
-    // handleOpponentPreviewToolbox();
+    handlePlayerPreviewToolbox();
+    handleOpponentPreviewToolbox();
   }
 
   function handleDifficultyToolbox():Void
@@ -5454,15 +5496,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handlePlayerPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolboxUnCast(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
-
     // TODO: Re-enable the player preview once we figure out the performance issues.
-    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charPlayer');
     if (charPlayer == null) return;
-
-    currentPlayerCharacterPlayer = charPlayer;
-
     if (playerPreviewDirty)
     {
       playerPreviewDirty = false;
@@ -5480,27 +5518,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.title = 'Player Preview - ${charPlayer.charName}';
-      }
-
-      if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-      {
-        charPreviewToolbox.width = charPlayer.width + 32;
-        charPreviewToolbox.height = charPlayer.height + 64;
+        charPreviewToolbox.invalidateComponentLayout();
       }
     }
+
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
+    {
+      charPreviewToolbox.width = charPlayer.width + 32;
+      charPreviewToolbox.height = charPlayer.height + 64;
+    }
+    currentPlayerCharacterPlayer = charPlayer;
   }
 
   function handleOpponentPreviewToolbox():Void
   {
     // Manage the Select Difficulty tree view.
-    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolbox_OLD(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
+    var charPreviewToolbox:Null<CollapsibleDialog> = this.getToolboxUnCast(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
     if (charPreviewToolbox == null) return;
 
     // TODO: Re-enable the player preview once we figure out the performance issues.
-    var charPlayer:Null<CharacterPlayer> = null; // charPreviewToolbox.findComponent('charPlayer');
+    var charPlayer:Null<CharacterPlayer> = charPreviewToolbox.findComponent('charOpponent');
     if (charPlayer == null) return;
-
-    currentOpponentCharacterPlayer = charPlayer;
 
     if (opponentPreviewDirty)
     {
@@ -5519,14 +5557,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         charPlayer.targetScale = 0.5;
 
         charPreviewToolbox.title = 'Opponent Preview - ${charPlayer.charName}';
-      }
-
-      if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
-      {
-        charPreviewToolbox.width = charPlayer.width + 32;
-        charPreviewToolbox.height = charPlayer.height + 64;
+        charPreviewToolbox.invalidateComponentLayout();
       }
     }
+
+    if (charPreviewToolbox != null && !charPreviewToolbox.minimized)
+    {
+      charPreviewToolbox.width = charPlayer.width + 32;
+      charPreviewToolbox.height = charPlayer.height + 64;
+    }
+    currentOpponentCharacterPlayer = charPlayer;
   }
 
   function handleSelectionButtons():Void
@@ -5783,32 +5823,40 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Handle aligning the health icons next to the grid.
    */
+  var _charIconData = null;
+
+  @:access(funkin.play.character.BaseCharacter)
   function handleHealthIcons():Void
   {
     if (healthIconsDirty)
     {
-      var charDataBF = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
-      var charDataDad = CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
+      _charIconData = currentPlayerCharacterPlayer?.character?._data ?? CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
+
       if (healthIconBF != null)
       {
-        healthIconBF.configure(charDataBF?.healthIcon);
+        healthIconBF.configure(_charIconData?.healthIcon);
         healthIconBF.size *= 0.5; // Make the icon smaller in Chart Editor.
         healthIconBF.flipX = !healthIconBF.flipX; // BF faces the other way.
       }
+
       if (buttonSelectPlayer != null)
       {
-        buttonSelectPlayer.text = charDataBF?.name ?? 'Player';
+        buttonSelectPlayer.text = _charIconData?.name ?? 'Player';
       }
+
+      _charIconData = currentOpponentCharacterPlayer?.character?._data ?? CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
+
       if (healthIconDad != null)
       {
-        healthIconDad.configure(charDataDad?.healthIcon);
+        healthIconDad.configure(_charIconData?.healthIcon);
         healthIconDad.size *= 0.5; // Make the icon smaller in Chart Editor.
       }
       if (buttonSelectOpponent != null)
       {
-        buttonSelectOpponent.text = charDataDad?.name ?? 'Opponent';
+        buttonSelectOpponent.text = _charIconData?.name ?? 'Opponent';
       }
       healthIconsDirty = false;
+      _charIconData = null;
     }
 
     // Right align, and visibly center, the BF health icon.
@@ -6222,11 +6270,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     autoSave(true);
 
-    stopWelcomeMusic();
-    stopAudioPlayback();
-
     // Force pauses audio preview from OffsetsToolbox, if it exists.
     cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+
+    // Stop audio playback after note preview is stopped.
+    // `false` to force the welcome theme to stop too.
+    stopAudioPlayback(false);
 
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
@@ -6303,7 +6352,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     this.persistentUpdate = false;
     this.persistentDraw = false;
-    stopWelcomeMusic();
 
     Cursor.hide();
 
@@ -6897,9 +6945,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Handle the playback of hitsounds.
    */
-  function handleHitsounds(oldSongPosition:Float, newSongPosition:Float):Void
+  var _scriptNoteObj:NoteSprite = null;
+
+  var _noteScriptEvent:NoteScriptEvent = null;
+
+  var _currentEvents = null;
+  var _allowedEvents = null;
+  var _eventTarget:Null<CharacterPlayer> = null;
+
+  public static var _allowedEventsNames:Array<String> = ['PlayAnimation'];
+
+  function handleMusicPositionUpdate(oldSongPosition:Float, newSongPosition:Float):Void
   {
-    if (!hitsoundsEnabled) return;
+    _currentEvents = SongDataUtils.getEventsInTimeRange(currentSongChartEventData, oldSongPosition, newSongPosition);
+    _allowedEvents = SongDataUtils.getEventsWithKind(_currentEvents, _allowedEventsNames);
 
     // Assume notes are sorted by time.
     for (noteData in currentSongChartNoteData)
@@ -6909,25 +6968,34 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (noteData.time < oldSongPosition) // Note is in the past.
         continue;
 
-      if (noteData.time > newSongPosition) // Note is in the future.
-        return; // Assume all notes are also in the future.
+      if (noteData.time > newSongPosition) break;
 
-      // Note was just hit.
+      /**
+       * We hit a note.
+       * We're gonna create scripted event and dispatch it al over ChartEditor.
+       */
+      _scriptNoteObj = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
+      _scriptNoteObj.noteData = noteData;
+      _scriptNoteObj.kill();
+      _scriptNoteObj.direction = _scriptNoteObj.noteData?.getDirection() ?? 0;
+      _scriptNoteObj.scrollFactor.set();
 
-      // Character preview.
-
-      // NoteScriptEvent takes a sprite, ehe. Need to rework that.
-      var tempNote:NoteSprite = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
-      tempNote.noteData = noteData;
-      tempNote.scrollFactor.set(0, 0);
-      var event:NoteScriptEvent = new HitNoteScriptEvent(tempNote, 0.0, 0, 'perfect', false, 0);
-      dispatchEvent(event);
+      _noteScriptEvent = new HitNoteScriptEvent(_scriptNoteObj, 0.0, 0, (noteData.getStrumlineIndex() == 0 ? 'perfect' : 'sick'), false, 0);
+      dispatchEvent(_noteScriptEvent);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
-      if (event.eventCanceled) continue;
+      if (_noteScriptEvent.eventCanceled)
+      {
+        _scriptNoteObj.destroy();
+        _scriptNoteObj = null;
+
+        _noteScriptEvent = null;
+
+        continue;
+      }
 
       // Hitsounds.
-      switch (noteData.getStrumlineIndex())
+      if (hitsoundsEnabled) switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
           if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
@@ -6935,15 +7003,52 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
       }
     }
+    // Clearing memory before next event call.
+    _scriptNoteObj?.destroy();
+    _scriptNoteObj = null;
+
+    _noteScriptEvent = null;
+    for (data in _allowedEvents)
+    {
+      switch (data.eventKind)
+      {
+        case "PlayAnimation":
+          switch (data.getString('target').toLowerCase().trim())
+          {
+            case 'boyfriend' | 'bf' | 'player':
+              _eventTarget = currentPlayerCharacterPlayer;
+            case 'dad' | 'opponent' | 'enemy':
+              _eventTarget = currentOpponentCharacterPlayer;
+            default:
+          }
+          if (_eventTarget != null) _eventTarget.playAnimManually(data.getString('anim') ?? 'idle', data.getBool('force') ?? false);
+      }
+    }
+
+    _currentEvents = null;
+    _allowedEvents.resize(0);
+    _eventTarget = null;
   }
 
-  function stopAudioPlayback(themeMusic:Bool = true):Void
+  /**
+   * Stop playback of the chart's instrumental and vocals.
+   * @param welcomeMusic If `true`, queue the welcome music to play after a timeout. `false` to force the welcome music to stop too.
+   */
+  function stopAudioPlayback(welcomeMusic:Bool = true):Void
   {
     if (audioInstTrack == null && audioVocalTrackGroup.length == 0) return;
 
     if (audioInstTrack != null) audioInstTrack.pause();
     audioVocalTrackGroup.pause();
-    if (themeMusic) fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    if (welcomeMusic)
+    {
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    }
+    else
+    {
+      // Force the welcome music to stop too.
+      stopWelcomeMusic();
+    }
 
     playbarPlay.text = '>';
   }
@@ -7005,6 +7110,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
+    playerPreviewDirty = true;
+    opponentPreviewDirty = true;
   }
 
   public function loadSubtitles():Void

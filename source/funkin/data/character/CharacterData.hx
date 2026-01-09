@@ -51,7 +51,7 @@ class CharacterDataParser
   {
     // Clear any stages that are cached if there were any.
     clearCharacterCache();
-    trace('[CHARACTER] Parsing all entries...');
+    log(' INFO '.info() + 'Parsing all entries...');
 
     //
     // UNSCRIPTED CHARACTERS
@@ -60,7 +60,7 @@ class CharacterDataParser
     var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool {
       return !characterCache.exists(charId);
     });
-    trace(' Fetching data for ${unscriptedCharIds.length} characters...');
+    log('Fetching data for ${unscriptedCharIds.length} characters...');
     for (charId in unscriptedCharIds)
     {
       try
@@ -68,7 +68,7 @@ class CharacterDataParser
         var charData:Null<CharacterData> = parseCharacterData(charId);
         if (charData != null)
         {
-          trace('   Loaded character data: ${charId}');
+          log('Loaded character "${charId}"');
           characterCache.set(charId, charData);
         }
       }
@@ -88,19 +88,19 @@ class CharacterDataParser
     var scriptedCharClassNames1:Array<String> = ScriptedSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames1.length > 0)
     {
-      trace(' Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames1.length} (Sparrow) scripted characters...');
       for (charCls in scriptedCharClassNames1)
       {
         try
         {
           var character:SparrowCharacter = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
-          trace(' Initialized character ${character.characterName}');
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('   FAILED to instantiate scripted Sparrow character: ${charCls}');
-          trace(e);
+          log(' ERROR '.error() + 'Failed to initialize scripted Sparrow character: $charCls');
+          log(' ERROR '.error() + '$e');
         }
       }
     }
@@ -108,18 +108,19 @@ class CharacterDataParser
     var scriptedCharClassNames2:Array<String> = ScriptedPackerCharacter.listScriptClasses();
     if (scriptedCharClassNames2.length > 0)
     {
-      trace(' Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames2.length} (Packer) scripted characters...');
       for (charCls in scriptedCharClassNames2)
       {
         try
         {
           var character:PackerCharacter = ScriptedPackerCharacter.init(charCls, DEFAULT_CHAR_ID);
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('   FAILED to instantiate scripted Packer character: ${charCls}');
-          trace(e);
+          log(' ERROR '.error() + 'Failed to initialize scripted Packer character: $charCls');
+          log(' ERROR '.error() + '$e');
         }
       }
     }
@@ -127,18 +128,19 @@ class CharacterDataParser
     var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames3.length > 0)
     {
-      trace(' Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames3.length} (Multi-Sparrow) scripted characters...');
       for (charCls in scriptedCharClassNames3)
       {
         try
         {
           var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('   FAILED to instantiate scripted Multi-Sparrow character: ${charCls}');
-          trace(e);
+          log(' ERROR '.error() + 'Failed to initialize scripted Multi-Sparrow character: $charCls');
+          log(' ERROR '.error() + '$e');
         }
       }
     }
@@ -146,18 +148,19 @@ class CharacterDataParser
     var scriptedCharClassNames4:Array<String> = ScriptedAnimateAtlasCharacter.listScriptClasses();
     if (scriptedCharClassNames4.length > 0)
     {
-      trace(' Instantiating ${scriptedCharClassNames4.length} (Animate Atlas) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames4.length} (Animate Atlas) scripted characters...');
       for (charCls in scriptedCharClassNames4)
       {
         try
         {
           var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.init(charCls, DEFAULT_CHAR_ID);
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('   FAILED to instantiate scripted Animate Atlas character: ${charCls}');
-          trace(e);
+          log(' ERROR '.error() + 'Failed to initialize scripted Animate Atlas character: $charCls');
+          log(' ERROR '.error() + '$e');
         }
       }
     }
@@ -165,18 +168,19 @@ class CharacterDataParser
     var scriptedCharClassNames5:Array<String> = ScriptedMultiAnimateAtlasCharacter.listScriptClasses();
     if (scriptedCharClassNames5.length > 0)
     {
-      trace('  Instantiating ${scriptedCharClassNames5.length} (Multi-Animate Atlas) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames5.length} (Multi-Animate Atlas) scripted characters...');
       for (charCls in scriptedCharClassNames5)
       {
         try
         {
           var character:MultiAnimateAtlasCharacter = ScriptedMultiAnimateAtlasCharacter.init(charCls, DEFAULT_CHAR_ID);
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
         catch (e)
         {
-          trace('    FAILED to instantiate scripted Multi-Animate Atlas character: ${charCls}');
-          trace(e);
+          log(' ERROR '.error() + 'Failed to initialize scripted Multi-Animate Atlas character: $charCls');
+          log(' ERROR '.error() + '$e');
         }
       }
     }
@@ -194,24 +198,24 @@ class CharacterDataParser
 
     if (scriptedCharClassNames.length > 0)
     {
-      trace(' Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
+      log('Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
       for (charCls in scriptedCharClassNames)
       {
         var character:BaseCharacter = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID, Custom);
         if (character == null)
         {
-          trace('   Failed to instantiate scripted character: ${charCls}');
+          log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
           continue;
         }
         else
         {
-          trace('   Successfully instantiated scripted character: ${charCls}');
+          log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
       }
     }
 
-    trace(' Successfully loaded ${Lambda.count(characterCache)} stages.');
+    log(' INFO '.info() + 'Successfully loaded ${characterCache.size()} stages.');
   }
 
   /**
@@ -270,7 +274,7 @@ class CharacterDataParser
         case CharacterRenderType.MultiAnimateAtlas:
           char = new MultiAnimateAtlasCharacter(charId);
         default:
-          trace(' WARNING '.bold().bg_yellow() + ' Creating character with undefined renderType ${charData.renderType}');
+          trace(' WARNING '.warning() + ' Creating character with undefined renderType ${charData.renderType}');
           char = new BaseCharacter(charId, CharacterRenderType.Custom);
       }
     }
@@ -338,7 +342,7 @@ class CharacterDataParser
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no freeplay icon.');
+      trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       return null;
     }
 
@@ -355,7 +359,7 @@ class CharacterDataParser
 
       if (idleFrame == null)
       {
-        trace(' WARNING '.bold().bg_yellow() + ' Character ${char} has no idle in their freeplay icon.');
+        trace(' WARNING '.warning() + ' Character ${char} has no idle in their freeplay icon.');
         return null;
       }
 
@@ -651,6 +655,11 @@ class CharacterDataParser
 
     // All good!
     return input;
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' CHARACTER '.bold().bg_note_down() + ' $message');
   }
 }
 

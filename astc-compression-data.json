@@ -30,6 +30,14 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/characters/nene-dark/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/shared/images/characters/otis/muzzle-flashes/otis_flashes.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/shared/images/holdCoverBlue.png",
       "blocksize": "4x4"
     },
@@ -124,6 +132,7 @@
     "assets/shared/images/characters/gf/spritemap1.png",
     "assets/shared/images/characters/gfCar/spritemap1.png",
     "assets/shared/images/characters/gfPixel.png",
+    "assets/shared/images/characters/nene/spritemap1.png",
     "assets/shared/images/characters/nenePixel/*",
     "assets/shared/images/characters/pico-holding-nene/spritemap1.png",
     "assets/shared/images/characters/picoPixel/*",
