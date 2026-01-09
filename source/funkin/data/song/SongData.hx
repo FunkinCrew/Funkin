@@ -1,5 +1,6 @@
 package funkin.data.song;
 
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
@@ -120,6 +121,16 @@ class SongMetadata implements ICloneable<SongMetadata>
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
+
+    // This might not be a very wise hack, but it works.
+    if (Std.isOfType(FlxG.state, ChartEditorState))
+    {
+      var state:ChartEditorState = cast(FlxG.state, ChartEditorState);
+
+      final songLength:Float = @:privateAccess state.songLengthInMs;
+      if (playData.previewStart > 1) playData.previewStart /= songLength;
+      if (playData.previewEnd > 1) playData.previewEnd /= songLength;
+    }
 
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
@@ -486,16 +497,16 @@ class SongPlayData implements ICloneable<SongPlayData>
    */
   @:optional
   @:default(0)
-  public var previewStart:Int;
+  public var previewStart:Float;
 
   /**
    * The end time for the audio preview in Freeplay.
-   * Defaults to 15 seconds in.
+   * Defaults to 20% seconds in.
    * @since `2.2.2`
    */
   @:optional
-  @:default(15000)
-  public var previewEnd:Int;
+  @:default(0.2)
+  public var previewEnd:Float;
 
   public function new()
   {

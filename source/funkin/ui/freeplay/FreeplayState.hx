@@ -2995,8 +2995,8 @@ class FreeplayState extends MusicBeatSubState
         suffix: instSuffix,
         partialParams: {
           loadPartial: true,
-          start: 0,
-          end: 0.2
+          start: daSongCapsule?.freeplayData?.previewStartTime ?? 0,
+          end: daSongCapsule?.freeplayData?.previewEndTime ?? 0.2
         },
         onLoad: function()
         {
@@ -3284,6 +3284,16 @@ class FreeplaySongData
   final songId:String;
 
   /**
+   * The start time of this song's preview in Freeplay (in range 0 - 1)
+   */
+  public var previewStartTime(get, never):Float;
+
+  /**
+   * The end time of this song's preview in Freeplay (in range 0 - 1)
+   */
+  public var previewEndTime(get, never):Float;
+
+  /**
    * Whether or not the song has been favorited.
    */
   public var isFav(get, never):Bool;
@@ -3364,6 +3374,16 @@ class FreeplaySongData
     // grabs a specific difficulty's new status. used for the difficulty dots.
 
     return data.isSongNew(difficulty, curVariation);
+  }
+
+  function get_previewStartTime():Float
+  {
+    return data.previewStartTime > 1 ? 0 : data.previewStartTime;
+  }
+
+  function get_previewEndTime():Float
+  {
+    return data.previewEndTime > 1 ? 0.2 : data.previewEndTime;
   }
 
   function get_isNew():Bool
