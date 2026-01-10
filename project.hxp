@@ -1473,7 +1473,7 @@ class Project extends HXProject
 
     if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
 
-    if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/camera-editor', "default");
+    // if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/camera-editor', "default");
 
     if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
 
