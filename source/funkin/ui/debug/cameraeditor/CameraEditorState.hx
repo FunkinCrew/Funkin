@@ -1,27 +1,27 @@
 package funkin.ui.debug.cameraeditor;
 
-import haxe.ui.notifications.NotificationType;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
-import haxe.ui.containers.dialogs.Dialogs;
-import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
-import funkin.ui.mainmenu.MainMenuState;
 #if FEATURE_CAMERA_EDITOR
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongMetadata;
 import funkin.input.Cursor;
 import funkin.save.Save;
-import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
+import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
+import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.FileUtil;
-import funkin.util.logging.CrashHandler;
 import funkin.util.WindowUtil;
+import funkin.util.logging.CrashHandler;
 import haxe.ui.backend.flixel.UIState;
-import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.menus.Menu;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.menus.MenuItem;
@@ -29,8 +29,8 @@ import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongData.SongMetadata;
+import haxe.ui.notifications.NotificationManager;
+import haxe.ui.notifications.NotificationType;
 
 /**
  * The EYES OF GOD......
