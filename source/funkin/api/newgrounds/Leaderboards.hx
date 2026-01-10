@@ -24,7 +24,7 @@ class Leaderboards
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch leaderboard data!');
       return [];
     }
 
@@ -161,7 +161,7 @@ class LeaderboardsSandboxed
    * @param leaderboard The leaderboard to fetch scores from.
    * @param params Additional parameters for fetching the score.
    */
-  public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  public static function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
   {
     Leaderboards.requestScores(leaderboard, params);
   }
