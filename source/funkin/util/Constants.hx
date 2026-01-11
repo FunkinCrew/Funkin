@@ -167,6 +167,151 @@ class Constants
   public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
 
   /**
+   * AUDIO
+   */
+  // ==============================
+
+  /**
+   * Default sound played when scrolling through menu items.
+   */
+  public static final DEFAULT_SCROLL_SOUND:String = 'scrollMenu';
+
+  /**
+   * Default sound played when confirming a menu selection.
+   */
+  public static final DEFAULT_CONFIRM_SOUND:String = 'confirmMenu';
+
+  /**
+   * Default sound played when cancelling or backing out of a menu.
+   */
+  public static final DEFAULT_CANCEL_SOUND:String = 'cancelMenu';
+
+  /**
+   * Default sound played when Newgrounds medal notifications fade in.
+   */
+  public static final DEFAULT_NG_FADEIN_SOUND:String = 'NGFadeIn';
+
+  /**
+   * Default sound played when Newgrounds medal notifications fade out.
+   */
+  public static final DEFAULT_NG_FADEOUT_SOUND:String = 'NGFadeOut';
+
+  /**
+   * Default rank sound played when entering the results screen for a "Shit" rank.
+   */
+  public static final SOUND_RANK_IN_BAD:String = 'ranks/rankinbad';
+
+  /**
+   * Default rank sound played when entering the results screen for a "Perfect" rank.
+   */
+  public static final SOUND_RANK_IN_PERFECT:String = 'ranks/rankinperfect';
+
+  /**
+   * Default rank sound played when entering the results screen for a "Perfect Gold" rank.
+   */
+  public static final SOUND_RANK_IN_PERFECT_GOLD:String = 'ranks/rankinperfect';
+
+  /**
+   * Default rank sound played when entering the results screen for most standard ranks.
+   */
+  public static final SOUND_RANK_IN_NORMAL:String = 'ranks/rankinnormal';
+
+  /**
+   * Default rank sound played in the results screen after a loss.
+   */
+  public static final SOUND_RANK_LOSS:String = 'ranks/loss';
+
+  /**
+   * Default rank sound played in the results screen for a "Good" rank.
+   */
+  public static final SOUND_RANK_GOOD:String = 'ranks/good';
+
+  /**
+   * Default rank sound played in the results screen for a "Great" rank.
+   */
+  public static final SOUND_RANK_GREAT:String = 'ranks/great';
+
+  /**
+   * Default rank sound played in the results screen for an "Excellent" rank.
+   */
+  public static final SOUND_RANK_EXCELLENT:String = 'ranks/excellent';
+
+  /**
+   * Default rank sound played in the results screen for a "Perfect" rank.
+   */
+  public static final SOUND_RANK_PERFECT:String = 'ranks/perfect';
+
+  /**
+   * Default rank sound played in the results screen for a "Perfect Gold" rank.
+   */
+  public static final SOUND_RANK_PERFECT_GOLD:String = 'ranks/perfect';
+
+  /**
+   * Default sound played when you get blueballed.
+   */
+  public static final BLUEBALL_SFX:String = 'gameplay/gameover/fnf_loss_sfx';
+
+  /**
+   * Default sound played when selecting a character in Character Select.
+   */
+  public static final SOUND_CHARACTER_SELECT:String = 'CS_select';
+
+  /**
+   * Default sound played when unlocking a character in Character Select.
+   */
+  public static final SOUND_CHARACTER_UNLOCK:String = 'CS_unlock';
+
+  /**
+   * Default sound played when attempting to select a locked character.
+   */
+  public static final SOUND_CHARACTER_LOCKED:String = 'CS_locked';
+
+  /**
+   * Default sound played for the static loop effect in Character Select.
+   */
+  public static final SOUND_CHARACTER_STATIC:String = 'static loop';
+
+  /**
+   * Default sound played for the light-on effect in Character Select.
+   */
+  public static final SOUND_CHARACTER_LIGHTS:String = 'CS_Lights';
+
+  /**
+   * Default sound played when confirming a character selection in Character Select.
+   */
+  public static final SOUND_CHARACTER_CONFIRM:String = 'CS_confirm';
+
+  /**
+   * Default sound played when characters type in dialogue boxes.
+   */
+  public static final SOUND_DIALOGUE_TYPING:String = 'pixelText';
+
+  /**
+   * Default sound played when the player misses a note.
+   */
+  public static final SOUND_GAMEPLAY_MISS:String = 'missnote';
+
+  /**
+   * Default sound played when increasing the volume.
+   */
+  public static final SOUND_TRAY_VOL_UP:String = 'soundtray/Volup';
+
+  /**
+   * Default sound played when decreasing the volume.
+   */
+  public static final SOUND_TRAY_VOL_DOWN:String = 'soundtray/Voldown';
+
+  /**
+   * Default sound played when the volume reaches its maximum level.
+   */
+  public static final SOUND_TRAY_VOL_MAX:String = 'soundtray/VolMAX';
+
+  /**
+   * Default sound played when a screenshot is captured.
+   */
+  public static final SOUND_SCREENSHOT:String = 'screenshot';
+
+  /**
    * GAME DEFAULTS
    */
   // ==============================
@@ -316,6 +461,11 @@ class Constants
   public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
 
   /**
+   * The default divisions for songs
+   */
+  public static final DEFAULT_DIVISIONS:Null<Int> = null;
+
+  /**
    * The default scroll speed for songs.
    */
   public static final DEFAULT_SCROLLSPEED:Float = 1.0;
@@ -329,6 +479,11 @@ class Constants
    * Default denominator for the time signature.
    */
   public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
+
+  /**
+   * The default value for whether songs loop.
+   */
+  public static final DEFAULT_LOOPED:Bool = false;
 
   /**
    * ANIMATIONS

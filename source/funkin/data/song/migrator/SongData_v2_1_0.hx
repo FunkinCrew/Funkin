@@ -55,8 +55,8 @@ class SongMetadata_v2_1_0
     this.playData.songVariations = [];
     this.playData.difficulties = [];
     this.playData.characters = new SongCharacterData('bf', 'gf', 'dad');
-    this.playData.stage = 'mainStage';
-    this.playData.noteSkin = 'funkin';
+    this.playData.stage = Constants.DEFAULT_STAGE;
+    this.playData.noteSkin = Constants.DEFAULT_NOTE_STYLE;
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
     this.variation = (variation == null) ? Constants.DEFAULT_VARIATION : variation;

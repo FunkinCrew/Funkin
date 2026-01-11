@@ -21,10 +21,6 @@ class ChartEditorNotePreview extends FlxSprite
   static final WIDTH:Int = NOTE_WIDTH * 9;
   static final NOTE_HEIGHT:Int = 1;
   static final BG_COLOR:FlxColor = 0xFF606060;
-  static final LEFT_COLOR:FlxColor = 0xFFFF22AA;
-  static final DOWN_COLOR:FlxColor = 0xFF00EEFF;
-  static final UP_COLOR:FlxColor = 0xFF00CC00;
-  static final RIGHT_COLOR:FlxColor = 0xFFCC1111;
   static final EVENT_COLOR:FlxColor = 0xFF111111;
   static final SELECTED_COLOR:FlxColor = 0xFFFFFF00;
   static final OVERLAPPING_COLOR:FlxColor = 0xFF640000;
@@ -152,19 +148,7 @@ class ChartEditorNotePreview extends FlxSprite
    */
   public function drawNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInPixels:Int, previewType:NotePreviewType = None):Void
   {
-    var color:FlxColor = switch (dir)
-    {
-      case 0:
-        LEFT_COLOR;
-      case 1:
-        DOWN_COLOR;
-      case 2:
-        UP_COLOR;
-      case 3:
-        RIGHT_COLOR;
-      default:
-        EVENT_COLOR;
-    };
+    var color:FlxColor = (dir >= 0 && dir < Constants.COLOR_NOTES.length) ? Constants.COLOR_NOTES[dir] : EVENT_COLOR;
 
     var noteHeight:Int = NOTE_HEIGHT;
 

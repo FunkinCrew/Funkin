@@ -150,7 +150,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       if (newIndex != selectedIndex)
       {
-        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+        FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
         selectItem(newIndex);
       }
     }
@@ -177,7 +177,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
           }
           else
           {
-            FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+            FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
             selectItem(i);
           }
 
@@ -213,13 +213,13 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
     if (newIndex != selectedIndex && !_isMainMenuState)
     {
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
       selectItem(newIndex);
     }
     #else
     if (newIndex != selectedIndex)
     {
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
       selectItem(newIndex);
     }
     #end
@@ -295,7 +295,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     else
     {
       busy = true;
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
       FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_)
       {
         busy = false;

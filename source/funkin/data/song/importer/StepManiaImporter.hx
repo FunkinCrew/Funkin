@@ -553,7 +553,7 @@ class StepManiaImporter
   {
     var metadata:SongMetadata = new SongMetadata(songData.Metadata.Title, songData.Metadata.Artist);
 
-    metadata.playData.stage = 'mainStage';
+    metadata.playData.stage = Constants.DEFAULT_STAGE;
     metadata.playData.characters = new SongCharacterData('bf', 'gf', 'dad');
 
     metadata.generatedBy = 'Chart Editor Import (StepMania)';

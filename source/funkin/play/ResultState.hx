@@ -595,7 +595,7 @@ class ResultState extends MusicBeatSubState
         {
           // trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
           clearPercentLerp = clearPercentCounter.curNumber;
-          FunkinSound.playOnce(Paths.sound('scrollMenu'));
+          FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND));
 
           // Weak vibration each number increase.
           HapticUtil.vibrate(0, 0.01);
@@ -607,7 +607,7 @@ class ResultState extends MusicBeatSubState
         HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
 
         // Play confirm sound.
-        FunkinSound.playOnce(Paths.sound('confirmMenu'));
+        FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
 
         // Just to be sure that the lerp didn't mess things up.
         clearPercentCounter.curNumber = clearPercentTarget;
@@ -957,7 +957,7 @@ class ResultState extends MusicBeatSubState
           }
           targetState = FreeplayState.build({
             {
-              character: playerCharacterId ?? "bf",
+              character: playerCharacterId ?? Constants.DEFAULT_CHARACTER,
               fromResults: {
                 oldRank: Scoring.calculateRank(params?.prevScoreData),
                 newRank: rank,

@@ -74,7 +74,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     this.playData.songVariations = [];
     this.playData.difficulties = [];
     this.playData.characters = new SongCharacterData('bf', 'gf', 'dad');
-    this.playData.stage = 'mainStage';
+    this.playData.stage = Constants.DEFAULT_STAGE;
     this.playData.noteStyle = Constants.DEFAULT_NOTE_STYLE;
     this.generatedBy = SongRegistry.DEFAULT_GENERATEDBY;
     // Variation ID.
@@ -600,7 +600,7 @@ class SongChartData implements ICloneable<SongChartData>
 
     if (result == 0.0 && diff != 'default') return getScrollSpeed('default');
 
-    return (result == 0.0) ? 1.0 : result;
+    return (result == 0.0) ? Constants.DEFAULT_SCROLLSPEED : result;
   }
 
   public function setScrollSpeed(value:Float, diff:String = 'default'):Float

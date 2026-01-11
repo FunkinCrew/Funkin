@@ -2984,7 +2984,7 @@ class PlayState extends MusicBeatSubState
                 if (vocals.legacyVoiceSystem && !vocals.legacyVoiceUsesPlayer) vocals.opponentVolume = 0;
                 vocals.playerVolume = 0;
               }
-              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+              FunkinSound.playOnce(Paths.soundRandom(Constants.SOUND_GAMEPLAY_MISS, 1, 3), FlxG.random.float(0.5, 0.6));
             }
           }
           else
@@ -3192,7 +3192,7 @@ class PlayState extends MusicBeatSubState
     {
       var tempVocals:Bool = currentStage != null && currentStage.getBoyfriend()?.tempVocals;
       if (vocals != null && !tempVocals) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+      FunkinSound.playOnce(Paths.soundRandom(Constants.SOUND_GAMEPLAY_MISS, 1, 3), FlxG.random.float(0.5, 0.6));
     }
   }
 
@@ -3234,7 +3234,7 @@ class PlayState extends MusicBeatSubState
     {
       var tempVocals:Bool = currentStage != null && currentStage.getBoyfriend()?.tempVocals;
       if (vocals != null && !tempVocals) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom(Constants.SOUND_GAMEPLAY_MISS, 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
 

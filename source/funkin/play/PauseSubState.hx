@@ -807,7 +807,7 @@ class PauseSubState extends MusicBeatSubState
       if (currentEntry >= currentMenuEntries.length) currentEntry = 0;
     }
 
-    if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentEntry != prevEntry) FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
 
     for (entryIndex in 0...currentMenuEntries.length)
     {

@@ -115,7 +115,7 @@ class FunkinBackButton extends FunkinButton
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
 
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
 
     onConfirmStart.dispatch();
 

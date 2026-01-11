@@ -78,7 +78,7 @@ class OsuManiaImporter
     // Set generatedBy string for debugging.
     songMetadata.generatedBy = 'Chart Editor Import (Osu!Mania)';
 
-    songMetadata.playData.stage = 'mainStage';
+    songMetadata.playData.stage = Constants.DEFAULT_STAGE;
     songMetadata.songName = songData.Metadata.TitleUnicode ?? songData.Metadata.Title ?? 'Import';
     songMetadata.playData.difficulties = [difficulty];
 

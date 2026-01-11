@@ -601,13 +601,13 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
-    if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+    if (Assets.exists(Paths.sound(Constants.BLUEBALL_SFX + blueBallSuffix)))
     {
-      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      FunkinSound.playOnce(Paths.sound(Constants.BLUEBALL_SFX + blueBallSuffix));
     }
     else
     {
-      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound(Constants.BLUEBALL_SFX + blueBallSuffix));
     }
   }
 

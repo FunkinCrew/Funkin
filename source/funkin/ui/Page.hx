@@ -48,7 +48,7 @@ class Page<T:PageName> extends FlxGroup
     if (canExit && controls.BACK_P)
     {
       exit();
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
     }
   }
 

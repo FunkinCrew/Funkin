@@ -159,7 +159,7 @@ class LetterSort extends FlxSpriteGroup
     {
       arrowToMove.offset.x = 0;
     });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
   }
 
   /**

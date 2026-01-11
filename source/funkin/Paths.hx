@@ -29,14 +29,14 @@ class Paths implements ConsoleClass
 
   public static function stripLibrary(path:String):String
   {
-    var parts:Array<String> = path.split(':');
+    var parts:Array<String> = path.split(Constants.LIBRARY_SEPARATOR);
     if (parts.length < 2) return path;
     return parts[1];
   }
 
   public static function getLibrary(path:String):String
   {
-    var parts:Array<String> = path.split(':');
+    var parts:Array<String> = path.split(Constants.LIBRARY_SEPARATOR);
     if (parts.length < 2) return 'preload';
     return parts[0];
   }
@@ -104,7 +104,7 @@ class Paths implements ConsoleClass
 
   public static function json(key:String, ?library:String):String
   {
-    return getPath('data/$key.json', TEXT, library);
+    return getPath('data/$key.${Constants.EXT_DATA}', TEXT, library);
   }
 
   public static function srt(key:String, ?library:String, ?directory:String = 'data/'):String
@@ -161,7 +161,7 @@ class Paths implements ConsoleClass
 
   public static function image(key:String, ?library:String):String
   {
-    return getPath('images/$key.png', IMAGE, library);
+    return getPath('images/$key.${Constants.EXT_IMAGE}', IMAGE, library);
   }
 
   public static function font(key:String):String
