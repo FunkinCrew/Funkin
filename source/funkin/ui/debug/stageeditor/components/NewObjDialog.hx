@@ -10,6 +10,8 @@ import haxe.ui.notifications.NotificationManager;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/new-object.xml"))
 class NewObjDialog extends Dialog
 {
+  public var bitmapName:Null<String> = null;
+
   var stageEditorState:StageEditorState;
   var bitmap:BitmapData;
 
@@ -55,7 +57,7 @@ class NewObjDialog extends Dialog
 
         if (bitmap != null)
         {
-          var bitToLoad = stageEditorState.addBitmap(bitmap);
+          var bitToLoad = stageEditorState.addBitmap(bitmap, bitmapName);
           spr.loadGraphic(stageEditorState.bitmaps[bitToLoad]);
         }
         else

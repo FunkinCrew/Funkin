@@ -145,7 +145,7 @@ class StageDataHandler
     var stageBytes = Bytes.ofString(endData.serialize());
     entryList.push(
       {
-        fileName: "yourstagename.json",
+        fileName: formatStageId(endData.name) + ".json",
         fileSize: stageBytes.length,
         fileTime: Date.now(),
         compressed: false,
@@ -384,6 +384,17 @@ class StageDataHandler
     // no props :p
 
     state.updateMarkerPos();
+  }
+
+  static function formatStageId(name:String)
+  {
+    // Make the name use lowerCamelCase without any special characters.
+    name = name.sanitize();
+    name = name.charAt(0).toLowerCase() + name.substring(1);
+
+    if (name.length == 0) return "unnamed";
+
+    return name;
   }
 }
 #end

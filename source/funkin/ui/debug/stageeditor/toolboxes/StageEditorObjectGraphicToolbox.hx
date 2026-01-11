@@ -54,7 +54,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 
           // This checks if the same image had already been loaded, so that we don't add it twice.
           // Kind of hacky but it is what it is.
-          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels());
+          var name:String = haxe.io.Path.withoutExtension(selectedFile.name);
+          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels(), name);
           linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
           linkedObj.updateHitbox();
 
@@ -74,7 +75,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
       if (linkedObj == null) return;
 
       state.createURLDialog(function(bytes:lime.utils.Bytes) {
-        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes));
+        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes), linkedObj.name);
         linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
         linkedObj.updateHitbox();
 
