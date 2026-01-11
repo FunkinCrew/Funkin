@@ -352,14 +352,14 @@ class PlayState extends MusicBeatSubState
    * How many beats (quarter notes) between camera zooms.
    * @default One camera zoom per measure (four beats).
    */
-  public var cameraZoomRate:Int = Constants.DEFAULT_ZOOM_RATE;
+  public var cameraZoomRate:Float = Constants.DEFAULT_ZOOM_RATE;
 
   /**
    * How many beats (quarter notes) the zoom rate is offset.
    * For if you want the zoom to happen off-beat.
    * @default Zero beats (on-beat).
    */
-  public var cameraZoomRateOffset:Int = Constants.DEFAULT_ZOOM_OFFSET;
+  public var cameraZoomRateOffset:Float = Constants.DEFAULT_ZOOM_OFFSET;
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -1838,6 +1838,19 @@ class PlayState extends MusicBeatSubState
     iconP1?.onStepHit(Std.int(Conductor.instance.currentStep));
     iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
 
+    // Only bop camera if zoom level is below 135%
+    if (Preferences.zoomCamera
+      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
+      && cameraZoomRate > 0
+      && (Conductor.instance.currentStep + cameraZoomRateOffset * Constants.STEPS_PER_BEAT) % (cameraZoomRate * Constants.STEPS_PER_BEAT) == 0)
+    {
+      // Set zoom multiplier for camera bop.
+      cameraBopMultiplier = cameraBopIntensity;
+      // HUD camera zoom still uses old system. To change. (+3%)
+      camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
+    }
+    // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
+
     // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
     playerStrumline.noteVibrations.tryHoldNoteVibration();
 
@@ -1897,19 +1910,6 @@ class PlayState extends MusicBeatSubState
         resyncVocals();
       }
     }
-
-    // Only bop camera if zoom level is below 135%
-    if (Preferences.zoomCamera
-      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
-      && cameraZoomRate > 0
-      && (Conductor.instance.currentBeat + cameraZoomRateOffset) % cameraZoomRate == 0)
-    {
-      // Set zoom multiplier for camera bop.
-      cameraBopMultiplier = cameraBopIntensity;
-      // HUD camera zoom still uses old system. To change. (+3%)
-      camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
-    }
-    // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
 
     if (playerStrumline != null) playerStrumline.onBeatHit();
     if (opponentStrumline != null) opponentStrumline.onBeatHit();

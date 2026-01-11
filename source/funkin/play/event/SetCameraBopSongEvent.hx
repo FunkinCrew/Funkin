@@ -40,12 +40,9 @@ class SetCameraBopSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null) return;
 
-    var rate:Null<Int> = data.getInt('rate');
-    if (rate == null) rate = Constants.DEFAULT_ZOOM_RATE;
-    var offset:Null<Int> = data.getInt('offset');
-    if (rate == null) offset = Constants.DEFAULT_ZOOM_OFFSET;
-    var intensity:Null<Float> = data.getFloat('intensity');
-    if (intensity == null) intensity = 1.0;
+    var rate:Float = data.getFloat('rate') ?? Constants.DEFAULT_ZOOM_RATE;
+    var offset:Float = data.getFloat('offset') ?? Constants.DEFAULT_ZOOM_OFFSET;
+    var intensity:Float = data.getFloat('intensity') ?? 1.0;
 
     PlayState.instance.cameraBopIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity + 1.0;
     PlayState.instance.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity * 2.0;
@@ -84,8 +81,8 @@ class SetCameraBopSongEvent extends SongEvent
         name: 'offset',
         title: 'Offset',
         defaultValue: Constants.DEFAULT_ZOOM_OFFSET,
-        step: 1,
-        type: SongEventFieldType.INTEGER,
+        step: 0.25,
+        type: SongEventFieldType.FLOAT,
         units: 'beats'
       },
       {
@@ -93,8 +90,8 @@ class SetCameraBopSongEvent extends SongEvent
         title: 'Rate',
         defaultValue: Constants.DEFAULT_ZOOM_RATE,
         min: 0,
-        step: 1,
-        type: SongEventFieldType.INTEGER,
+        step: 0.25,
+        type: SongEventFieldType.FLOAT,
         units: 'beats/zoom'
       }
     ]);
