@@ -442,6 +442,7 @@ class StageEditorState extends UIState
       if (data != null)
       {
         objNameDialog = new NewObjDialog(this, data);
+        objNameDialog.bitmapName = new haxe.io.Path(path).file;
         objNameDialog.showDialog();
 
         objNameDialog.onDialogClosed = function(_) {
@@ -1554,12 +1555,18 @@ class StageEditorState extends UIState
     }
   }
 
-  public function addBitmap(newBitmap:BitmapData):String
+  public function addBitmap(newBitmap:BitmapData, ?name:String):String
   {
     // first we check for existing bitmaps so we dont like add an extra one
     for (name => bitmap in bitmaps)
     {
       if (bitmap == newBitmap) return name;
+    }
+
+    if (name != null && !bitmaps.exists(name))
+    {
+      bitmaps.set(name, newBitmap);
+      return name;
     }
 
     var id:Int = 0;
@@ -1647,6 +1654,7 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
+
   /**
    * If non-null, load this character as Boyfriend.
    */
