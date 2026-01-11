@@ -79,7 +79,12 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
 
   public function toString():String
   {
-    return 'Module(' + this.moduleId + ')';
+    return 'Module(' +
+    'id: $moduleId | ' +
+    'priority: $priority | ' +
+    'active: $active' +
+    '${state != null ? " | state: " + Type.getClassName(state) : ""}' +
+    ')';
   }
 
   // TODO: Half of these aren't actually being called!!!!!!!

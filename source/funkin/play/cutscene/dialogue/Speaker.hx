@@ -305,4 +305,10 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
   public function onScriptEvent(event:ScriptEvent):Void
   {
   }
+
+  public override function toString():String
+  {
+    var flxDebug:String = super.toString();
+    return 'Speaker(id: $id | speakerName: $speakerName | debug: $flxDebug)';
+  }
 }
