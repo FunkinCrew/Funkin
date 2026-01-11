@@ -49,6 +49,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
 
   public function playStart():Void
   {
+    glow.setPosition(this.x, this.y);
     var direction:NoteDirection = holdNote.noteDirection;
     glow.animation.play('holdCoverStart${direction.colorName.toTitleCase()}');
   }
