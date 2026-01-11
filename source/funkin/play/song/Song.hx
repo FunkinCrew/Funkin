@@ -121,15 +121,27 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * The artist of the song.
+   * The charter of the song.
    */
   public var charter(get, never):String;
 
   function get_charter():String
   {
-    if (_data != null) return _data?.charter ?? 'Unknown';
-    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charter ?? 'Unknown';
+    if (_data != null) return _data?.charter ?? Constants.DEFAULT_CHARTER;
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charter ?? Constants.DEFAULT_CHARTER;
     return Constants.DEFAULT_CHARTER;
+  }
+
+  /**
+   * The charters of the song.
+   */
+  public var charters(get, never):Map<String, String>;
+
+  function get_charters():Map<String, String>
+  {
+    if (_data != null) return _data?.charters ?? ["normal" => Constants.DEFAULT_CHARTER];
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.charters ?? ["normal" => Constants.DEFAULT_CHARTER];
+    return ["normal" => Constants.DEFAULT_CHARTER];
   }
 
   public var variation:Null<String> = null;
@@ -321,7 +333,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
         difficulty.songName = metadata.songName;
         difficulty.songArtist = metadata.artist;
-        difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
+        difficulty.charter = metadata?.charters?.get(diffId) ?? metadata.charter ?? Constants.DEFAULT_CHARTER;
         difficulty.timeFormat = metadata.timeFormat;
         difficulty.divisions = metadata.divisions;
         difficulty.timeChanges = metadata.timeChanges;
@@ -388,7 +400,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
         {
           difficulty.songName = metadata.songName;
           difficulty.songArtist = metadata.artist;
-          difficulty.charter = metadata.charter ?? Constants.DEFAULT_CHARTER;
+          difficulty.charter = metadata?.charters?.get(diffId) ?? metadata.charter ?? Constants.DEFAULT_CHARTER;
           difficulty.timeFormat = metadata.timeFormat;
           difficulty.divisions = metadata.divisions;
           difficulty.timeChanges = metadata.timeChanges;

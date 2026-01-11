@@ -1494,6 +1494,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Convenience property to get the charter for this difficulty.
+   */
+  public var currentSongChartDifficultyCharter(get, set):String;
+
+  function get_currentSongChartDifficultyCharter():String
+  {
+    return currentSongMetadata.charters?.get(selectedDifficulty)
+    ?? currentSongMetadata.charter
+    ?? Constants.DEFAULT_CHARTER;
+  }
+
+  function set_currentSongChartDifficultyCharter(value:String):String
+  {
+    if (currentSongMetadata.charters == null) currentSongMetadata.charters = new Map<String, String>();
+
+    currentSongMetadata.charters.set(selectedDifficulty, value);
+    return value;
+  }
+
+  /**
    * Convenience property to get (and set) the scroll speed for the current difficulty.
    */
   var currentSongChartScrollSpeed(get, set):Float;

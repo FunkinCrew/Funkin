@@ -125,11 +125,11 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       if (valid)
       {
         inputSongCharter.removeClass('invalid-value');
-        chartEditorState.currentSongMetadata.charter = event.target.text;
+        chartEditorState.currentSongChartDifficultyCharter = event.target.text;
       }
       else
       {
-        chartEditorState.currentSongMetadata.charter = null;
+        chartEditorState.currentSongChartDifficultyCharter = Constants.DEFAULT_CHARTER;
       }
     };
 
@@ -367,7 +367,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongId.value = chartEditorState.songManifestData.songId;
     inputSongName.value = chartEditorState.currentSongMetadata.songName;
     inputSongArtist.value = chartEditorState.currentSongMetadata.artist;
-    inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
+    inputSongCharter.value = chartEditorState.currentSongChartDifficultyCharter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
     inputAlbum.value = chartEditorState.currentSongMetadata.playData.album;

@@ -571,6 +571,7 @@ class StepManiaImporter
       }
       difficulties.push(diff.name);
       metadata.playData.ratings.set(diff.name, diff.difficultyRating);
+      metadata.charters.set(diff.name, songData.Metadata.Credit != "" ? songData.Metadata.Credit : null);
     }
 
     metadata.playData.difficulties = difficulties;

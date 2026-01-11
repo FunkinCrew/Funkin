@@ -556,7 +556,7 @@ class PauseSubState extends MusicBeatSubState
       {
         if (PlayState.instance?.currentChart != null)
         {
-          metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
+          metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? Constants.DEFAULT_CHARTER}';
         }
         else
         {

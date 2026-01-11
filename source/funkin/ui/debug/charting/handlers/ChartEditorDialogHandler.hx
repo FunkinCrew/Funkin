@@ -659,14 +659,15 @@ class ChartEditorDialogHandler
     {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
+      if (newSongMetadata.charters == null) newSongMetadata.charters = new Map<String, String>();
       if (valid)
       {
         inputSongCharter.removeClass('invalid-value');
-        newSongMetadata.charter = event.target.text;
+        newSongMetadata.charters.set(state.selectedDifficulty, event.target.text);
       }
       else
       {
-        newSongMetadata.charter = "";
+        newSongMetadata.charters.set(state.selectedDifficulty, "");
       }
     };
     inputSongCharter.text = "";
@@ -1355,7 +1356,7 @@ class ChartEditorDialogHandler
 
     var dialogSongCharter:Null<TextField> = dialog.findComponent('dialogSongCharter', TextField);
     if (dialogSongCharter == null) throw 'Could not locate dialogSongCharter TextField in Add Variation dialog';
-    dialogSongCharter.value = state.currentSongMetadata.charter;
+    dialogSongCharter.value = state.currentSongMetadata.charters?.get(state.selectedDifficulty) ?? "";
 
     var dialogStage:Null<DropDown> = dialog.findComponent('dialogStage', DropDown);
     if (dialogStage == null) throw 'Could not locate dialogStage DropDown in Add Variation dialog';

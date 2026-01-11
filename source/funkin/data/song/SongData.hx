@@ -29,6 +29,10 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var songName:String;
   @:default("Unknown")
   public var artist:String;
+  /**
+   * The charters displayed in pause menu for this song difficulty.
+   * Key is a difficulty ID.
+   */
   @:optional
   public var charter:Null<String> = null;
   @:optional @:default(96)
@@ -59,12 +63,13 @@ class SongMetadata implements ICloneable<SongMetadata>
   @:jignored
   public var variation:String;
 
-  public function new(songName:String, artist:String, ?charter:String, ?variation:String)
+  public function new(songName:String, artist:String, ?charter:String, ?charters:Null<Map<String, String>>, ?variation:String)
   {
     this.version = SongRegistry.SONG_METADATA_VERSION;
     this.songName = songName;
     this.artist = artist;
     this.charter = (charter == null) ? null : charter;
+    this.charters = charters ?? new Map<String, String>();
     this.timeFormat = 'ms';
     this.divisions = null;
     this.offsets = new SongOffsets();
@@ -88,7 +93,7 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public function clone():SongMetadata
   {
-    var result:SongMetadata = new SongMetadata(this.songName, this.artist, this.charter, this.variation);
+    var result:SongMetadata = new SongMetadata(this.songName, this.artist, this.charter, this.charters, this.variation);
     result.version = this.version;
     result.timeFormat = this.timeFormat;
     result.divisions = this.divisions;
