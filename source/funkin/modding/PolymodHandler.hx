@@ -483,6 +483,8 @@ class PolymodHandler
   {
     var result = Polymod.getDefaultIgnoreList();
 
+    result.push('.vscode');
+    result.push('.idea');
     result.push('.git');
     result.push('.gitignore');
     result.push('.gitattributes');
