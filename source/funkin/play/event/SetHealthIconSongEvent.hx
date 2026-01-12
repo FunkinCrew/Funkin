@@ -29,7 +29,10 @@ class SetHealthIconSongEvent extends SongEvent
 {
   public function new()
   {
-    super('SetHealthIcon');
+    super('SetHealthIcon',
+      {
+        processOldEvents: true
+      });
   }
 
   static final DEFAULT_CHAR:Int = 0;

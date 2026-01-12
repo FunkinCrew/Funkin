@@ -22,7 +22,10 @@ class ZoomCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('ZoomCamera');
+    super('ZoomCamera',
+      {
+        processOldEvents: true
+      });
   }
 
   static final DEFAULT_ZOOM:Float = 1.0;

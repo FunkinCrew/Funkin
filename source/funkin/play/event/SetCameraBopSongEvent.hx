@@ -32,7 +32,10 @@ class SetCameraBopSongEvent extends SongEvent
 {
   public function new()
   {
-    super('SetCameraBop');
+    super('SetCameraBop',
+      {
+        processOldEvents: true
+      });
   }
 
   public override function handleEvent(data:SongEventData):Void

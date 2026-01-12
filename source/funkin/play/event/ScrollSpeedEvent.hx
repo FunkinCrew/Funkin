@@ -29,7 +29,10 @@ class ScrollSpeedEvent extends SongEvent
 {
   public function new()
   {
-    super('ScrollSpeed');
+    super('ScrollSpeed',
+      {
+        processOldEvents: true
+      });
   }
 
   static final DEFAULT_SCROLL:Float = 1;
