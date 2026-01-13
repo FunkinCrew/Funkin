@@ -7,13 +7,13 @@ import sys.io.File;
 using StringTools;
 
 #if !interp
-package art;
+package scripts;
 
 // needs this thing to be run by interp, just for me lol!
 #end
 // general use of this!!
 // if run in INTERP MODE:
-//		- art>haxe --main SongConverter --interp
+//		- scripts>haxe --main SongConverter --interp
 //		- song to convert: ../assets/preload/data/
 //		it will run through EVERY folder in there and convert the old songs to the new format!
 // TODO make instructions for the C# script version!

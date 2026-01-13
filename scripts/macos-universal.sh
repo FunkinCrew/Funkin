@@ -1,4 +1,7 @@
 #!/bin/sh
+echo "Note! This should be run from the root of the main Funkin repo, after creating a universal macOS build!"
+echo "This script will assist in creating a universal build of Funkin.app for macOS"
+echo ""
 lime build mac -64 -release
 cd export/release
 rm -rf macosUniversal
