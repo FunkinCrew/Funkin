@@ -568,6 +568,21 @@ class SongChartData implements ICloneable<SongChartData>
   public var events:Array<SongEventData>;
   @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var notes:Map<String, Array<SongNoteData>>;
+
+  /**
+   * Data used by the ingame editors, not necessary for gameplay.
+   * @default `null`, to be populated only when needed by the game.
+   */
+  @:alias("_editor")
+  @:optional
+  public var editorData:Null<SongChartEditorData>;
+
+  /**
+   * Provides info about the song that output this chart.
+   * When exporting, this should always be re-updated to `SongRegistry.DEFAULT_GENERATEDBY`,
+   * so we know the last version that modified it.
+   */
+  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   /**
@@ -650,6 +665,7 @@ class SongChartData implements ICloneable<SongChartData>
     result.version = this.version;
     result.generatedBy = this.generatedBy;
     result.variation = this.variation;
+    result.editorData = this.editorData;
 
     return result;
   }
@@ -661,6 +677,70 @@ class SongChartData implements ICloneable<SongChartData>
   {
     return 'SongChartData(${this.events.length} events, ${this.notes.size()} difficulties, ${generatedBy})';
   }
+}
+
+/**
+ * The chart data used by the Chart Editor and other debug editors.
+ * Located in `_editor`; the `_` prefix indicates optional debug data that isn't needed
+ */
+class SongChartEditorData implements ICloneable<SongChartEditorData>
+{
+  /**
+   * A list of data for each layer in the Camera Editor.
+   */
+  public var eventLayers:Array<EventLayerData>;
+
+  public function new()
+  {
+    this.eventLayers = [];
+  }
+
+  /**
+   * Creates an independent copy of the data, with the same underlying data.
+   * @return The cloned data.
+   */
+  public function clone():SongChartEditorData
+  {
+    var result:SongChartEditorData = new SongChartEditorData();
+
+    result.eventLayers = this.eventLayers.clone();
+
+    return result;
+  }
+
+  /**
+   * Creates an instance with default data, for use when no data is available.
+   * @return The default data.
+   */
+  public static function buildDefault():SongChartEditorData
+  {
+    var result = new SongChartEditorData();
+
+    result.eventLayers.push({name: 'Layer 1', color: '#FF0000'});
+
+    return result;
+  }
+
+  public function toString():String
+  {
+    return 'SongChartEditorData(${this.eventLayers.length} layers)';
+  }
+}
+
+/**
+ * Provides the data for a layer in the Camera Editor.
+ */
+typedef EventLayerData =
+{
+  /**
+   * The name of the layer.
+   */
+  var name:String;
+
+  /**
+   * The color associated with the layer.
+   */
+  var color:String;
 }
 
 /**
@@ -698,17 +778,27 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public var value:Dynamic = null;
 
   /**
-   * Whether this event has been activated.
+   * The name of the layer this event appears on in the Camera Editor.
+   * @default `null`, excluded from chart data unless explicitly set by the editor.
+   */
+  @:alias("_layer")
+  @:optional
+  public var editorLayer:Null<String>;
+
+  /**
    * This is only used internally by the game during gameplay. It should not be serialized.
    */
   @:jignored
-  public var activated:Bool = false;
+  public var activated:Bool;
 
-  public function new(time:Float, eventKind:String, value:Dynamic = null)
+  public function new(time:Float, eventKind:String, ?value:Dynamic, ?editorLayer:Null<String>)
   {
     this.time = time;
     this.eventKind = eventKind;
     this.value = value;
+    this.editorLayer = editorLayer;
+
+    this.activated = false;
   }
 
   /**
@@ -737,7 +827,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function clone():SongEventDataRaw
   {
-    return new SongEventDataRaw(this.time, this.eventKind, this.value);
+    return new SongEventDataRaw(this.time, this.eventKind, this.value, this.editorLayer);
   }
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
