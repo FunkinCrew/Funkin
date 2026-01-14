@@ -444,7 +444,7 @@ class InitState extends FlxState
     }
     else
     {
-      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
+      // FlxG.sound.cache(Paths.music('${Constants.MENU_MUSIC}/${Constants.MENU_MUSIC}'));
       #if mobile
       funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String) {
         flixel.tweens.FlxTween.globalManager.clear();

@@ -673,4 +673,10 @@ class Constants
    * Alter this if you want to use a different save slot.
    */
   public inline static final BASE_SAVE_SLOT:Int = 1;
+
+  /**
+   * The ID of the music used for the main menus.
+   */
+  @SuppressWarnings('checkstyle:Final')
+  public static var MENU_MUSIC:String = 'freakyMenu';
 }
