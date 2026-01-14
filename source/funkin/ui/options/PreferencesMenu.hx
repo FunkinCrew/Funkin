@@ -29,6 +29,11 @@ import lime.ui.WindowVSyncMode;
 
 class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 {
+  /**
+   * Margin to use for the camera.
+   */
+  public static final CAMERA_MARGIN:Float = 160;
+
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
   var preferenceDesc:Array<String> = [];
@@ -67,8 +72,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 
     menuCamera.follow(camFollow, null, 0.085);
-    var margin = 160;
-    menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
+    menuCamera.deadzone.set(0, CAMERA_MARGIN, menuCamera.width, menuCamera.height - CAMERA_MARGIN * 2);
     menuCamera.minScrollY = 0;
 
     items.onChange.add(function(selected)
@@ -244,7 +248,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     super.update(elapsed);
 
     // Positions the camera to the selected item.
-    if (items != null) camFollow.y = items.selectedItem.y;
+    if (items != null) camFollow.y = Math.max(items.selectedItem.y, CAMERA_MARGIN);
 
     // Indent the selected item.
     items.forEach(function(daItem:TextMenuItem)
