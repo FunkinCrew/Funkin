@@ -116,27 +116,6 @@ class CameraEditorState extends UIState
     return value;
   }
 
-  // the other shit:tm:
-  var menubar:MenuBar;
-
-  var menubarMenuFile:Menu;
-  var menubarItemExit:MenuItem;
-  var menubarItemOpen:MenuItem;
-
-  var menubarMenuEdit:Menu;
-
-  var menubarMenuView:Menu;
-  var menubarItemThemeLight:MenuOptionBox; // light mode option
-  var menubarItemThemeDark:MenuOptionBox; // dark mode option
-
-  var menubarMenuHelp:Menu;
-  var menubarItemUserGuide:MenuItem;
-  var menubarItemGoToBackupsFolder:MenuItem;
-  var menubarItemAbout:MenuItem;
-
-  public var userGuideDialog:UserGuideDialog;
-  public var aboutDialog:AboutDialog;
-  public var uploadChartDialog:UploadChartDialog;
   public var exitConfirmDialog:Dialog;
 
   var isCursorOverHaxeUI(get, never):Bool;
@@ -428,12 +407,10 @@ class CameraEditorState extends UIState
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)
   function onUserGuide(_)
   {
-    userGuideDialog = new UserGuideDialog();
+    var userGuideDialog = new UserGuideDialog();
     userGuideDialog.showDialog();
 
-    userGuideDialog.onDialogClosed = function(_) {
-      userGuideDialog = null;
-    }
+    userGuideDialog.onDialogClosed = (_) -> userGuideDialog = null;
   }
 
   @:bind(menubarItemGoToBackupsFolder, MouseEvent.CLICK)
@@ -448,8 +425,10 @@ class CameraEditorState extends UIState
   @:bind(menubarItemAbout, MouseEvent.CLICK)
   function onAbout(_)
   {
-    aboutDialog = new AboutDialog();
+    var aboutDialog = new AboutDialog();
     aboutDialog.showDialog();
+
+    aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
   }
 }
 #end
