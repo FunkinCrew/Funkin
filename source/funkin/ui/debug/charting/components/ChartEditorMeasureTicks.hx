@@ -152,7 +152,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   }
 
   // The last measure number we updated the ticks on.
-  var previousMeasure:Int = 0;
+  var previousMeasure:Int = -1;
 
   function updateMeasureNumbers(force:Bool = false):Void
   {
@@ -163,6 +163,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     var currentMeasure:Int = Math.floor(Conductor.instance.getTimeInMeasures(chartEditorState.scrollPositionInMs));
     if (previousMeasure == currentMeasure && !force) return;
     if (currentMeasure < 0) currentMeasure = previousMeasure = 0;
+    else
+      previousMeasure = currentMeasure;
 
     // Remove existing measure numbers.
     measureNumbers.forEachAlive(function(measureNumber:FlxText) {
