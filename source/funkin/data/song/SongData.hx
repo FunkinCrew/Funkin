@@ -19,7 +19,6 @@ class SongMetadata implements ICloneable<SongMetadata>
    * A semantic versioning string for the song data format.
    *
    */
-  // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
@@ -53,7 +52,6 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public var playData:SongPlayData;
 
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   @:optional
@@ -352,7 +350,6 @@ class SongMusicData implements ICloneable<SongMusicData>
    * A semantic versioning string for the song data format.
    *
    */
-  // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
@@ -463,6 +460,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    */
   @:optional
   @:default(['normal' => 0])
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var ratings:Map<String, Int>;
 
   /**
@@ -595,16 +593,16 @@ class SongCharacterData implements ICloneable<SongCharacterData>
 
 class SongChartData implements ICloneable<SongChartData>
 {
-  @:default(funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var notes:Map<String, Array<SongNoteData>>;
 
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   /**
