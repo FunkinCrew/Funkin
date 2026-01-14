@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0]
+### Added
+- Added `_editor` field to the root of the chart data, to hold data specifically for the game's debug editors.
+  - Added the `_editor.eventLayers` field to hold the list of event layers for the camera editor.
+- Added `_layer` to event data, used for Camera events to hold which layer they should be on.
+
 ## [2.2.5]
 ### Added
 - Added `playData.stickerPack` to specify which sticker pack to use when transitioning into and out of a song.
