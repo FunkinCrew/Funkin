@@ -14,6 +14,7 @@ import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import funkin.ui.debug.charting.util.FNFCData;
 
@@ -32,17 +33,17 @@ class UploadChartDialog extends Dialog
 
     this.dialogCancel.onClick = (_) -> this.hideDialog(DialogButton.CANCEL);
 
-    this.chartBox.onClick = (_) -> this.onClickChartBox();
-
-    this.chartBox.onMouseOver = function(_event) {
+    this.chartBox.onMouseOver = (_) -> {
       if (locked) return;
       this.chartBox.swapClass('upload-bg', 'upload-bg-hover');
+
       Cursor.cursorMode = Pointer;
     }
 
-    this.chartBox.onMouseOut = function(_event) {
+    this.chartBox.onMouseOut = (_) -> {
       if (locked) return;
       this.chartBox.swapClass('upload-bg-hover', 'upload-bg');
+
       Cursor.cursorMode = Default;
     }
   }
@@ -68,7 +69,8 @@ class UploadChartDialog extends Dialog
     this.closable = true;
   }
 
-  public function onClickChartBox():Void
+  @:bind(chartBox, MouseEvent.CLICK)
+  public function onClickChartBox(_):Void
   {
     if (this.locked) return;
 
@@ -88,32 +90,26 @@ class UploadChartDialog extends Dialog
   {
     this.unlock();
 
-    if (selectedFile != null && selectedFile.bytes != null)
+    if (selectedFile == null || selectedFile.bytes == null) return;
+
+    var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
+    if (entires == null || entires.length != 5)
     {
-      var entries:FNFCData = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
-
-      if (entries == null)
-      {
-        CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
-        this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
-        this.hideDialog(DialogButton.APPLY);
-      }
-      else
-      {
-        CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
-      }
-
-      this.cameraEditorState.songMetadatas = entries.songMetadatas;
-      this.cameraEditorState.songDatas = entries.songChartDatas;
-      this.cameraEditorState.audioInstTrackData = entries.instrumentals;
-      this.cameraEditorState.audioVocalTrackData = entries.vocals;
-      this.cameraEditorState.loadCurrentInstrumentalAndVocals();
-      this.cameraEditorState.buildStage();
-
-      this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
-
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
       this.hideDialog(DialogButton.APPLY);
+      return;
     }
+
+    CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
+
+    this.cameraEditorState.songMetadatas = entires[0];
+    this.cameraEditorState.songDatas = entires[1];
+    this.cameraEditorState.audioInstTrackData = entires[3];
+    this.cameraEditorState.audioVocalTrackData = entires[4];
+    this.cameraEditorState.loadCurrentInstrumentalAndVocals();
+    this.cameraEditorState.buildStage();
+
+    this.hideDialog(DialogButton.APPLY);
   }
 
   function onCancelBrowse():Void
