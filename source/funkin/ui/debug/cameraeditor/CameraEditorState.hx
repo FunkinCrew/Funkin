@@ -49,12 +49,13 @@ import funkin.play.stage.Stage;
 import funkin.util.assets.SoundUtil;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.util.macro.ConsoleMacro;
 
 /**
  * The EYES OF GOD......
  */
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/camera-editor/main-view.xml"))
-class CameraEditorState extends UIState
+class CameraEditorState extends UIState implements ConsoleClass
 {
   public static final BACKUPS_PATH:String = "./backups/camera/";
 
