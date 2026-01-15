@@ -416,19 +416,34 @@ class KeyboardInputScriptEvent extends ScriptEvent
 
 /**
  * An event that is fired once the song's chart has been parsed.
+ *
+ * The event data includes the song's full note data and event data, which lets you modify it if you like.
+ * Override `onSongLoad(event:SongLoadScriptEvent)` on a song/character/stage/module to use it.
  */
 class SongLoadScriptEvent extends ScriptEvent
 {
   /**
-   * The note associated with this event.
-   * You cannot replace it, but you can edit it.
+   * The note data for the song that just loaded.
+   * Modifying this will carry over to the song, so feel free to edit it
+   * (to easily mirror a chart, randomize it, add/remove notes, etc.)
    */
   public var notes(default, set):Array<SongNoteData>;
 
+  /**
+   * The event data for the song that just loaded.
+   * Modifying this will carry over to the song, so feel free to edit it
+   * (add/remove events, modify event data, etc.)
+   */
   public var events(default, set):Array<SongEventData>;
 
+  /**
+   * The ID of the song that just loaded.
+   */
   public var id(default, null):String;
 
+  /**
+   * The difficulty of the song that just loaded.
+   */
   public var difficulty(default, null):String;
 
   function set_notes(notes:Array<SongNoteData>):Array<SongNoteData>
@@ -455,7 +470,8 @@ class SongLoadScriptEvent extends ScriptEvent
   public override function toString():String
   {
     var noteStr = notes == null ? 'null' : 'Array(' + notes.length + ')';
-    return 'SongLoadScriptEvent(notes=$noteStr, id=$id, difficulty=$difficulty)';
+    var eventStr = events == null ? 'null' : 'Array(' + events.length + ')';
+    return 'SongLoadScriptEvent(notes=$noteStr, events=$eventStr, id=$id, difficulty=$difficulty)';
   }
 }
 
