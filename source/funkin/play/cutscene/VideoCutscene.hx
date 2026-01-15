@@ -197,34 +197,32 @@ class VideoCutscene
 
   public static function restartVideo():Void
   {
-    #if html5
     if (vid != null)
     {
+      #if html5
       vid.restartVideo();
       vid.resumeVideo();
       onVideoRestarted.dispatch();
-    }
-    #end
-
-    #if hxvlc
-    if (vid != null)
-    {
+      #else if hxvlc
       vid.bitmap.time = 0;
       vid.resume();
       onVideoRestarted.dispatch();
-    }
-    #end
+      #end
+      }
   }
 
   public static function pauseVideo():Void
   {
-    #if (html5 || hxvlc)
     if (vid != null)
     {
+      #if html5
       vid.pauseVideo();
       onVideoPaused.dispatch();
+      #elseif hxvlc
+      vid.pause();
+      onVideoPaused.dispatch();
+      #end
     }
-    #end
   }
 
   public static function hideVideo():Void
@@ -251,13 +249,17 @@ class VideoCutscene
 
   public static function resumeVideo():Void
   {
-   #if (html5 || hxvlc)
+    
     if (vid != null)
     {
+      #if html5
+      vid.resumeVideo();
+      onVideoResumed.dispatch();
+      #elseif hxvlc
       vid.resume();
       onVideoResumed.dispatch();
+      #end
     }
-    #end
   }
 
   /**
