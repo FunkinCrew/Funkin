@@ -95,9 +95,7 @@ class VideoCutscene
 
     #if mobile
     if (cutsceneType == ENDING)
-    {
       PlayState.instance.togglePauseButton();
-    }
     #end
 
     #if html5
@@ -139,9 +137,7 @@ class VideoCutscene
       onVideoStarted.dispatch();
     }
     else
-    {
       trace('ALERT: Video is null! Could not play cutscene!');
-    }
   }
   #end
 
@@ -184,26 +180,18 @@ class VideoCutscene
 
       #if FEATURE_VIDEO_SUBTITLES
       if (Preferences.subtitles)
-      {
         fileOptions.push(':sub-language=$DEFAULT_LANGUAGE');
-      }
       else
-      {
         fileOptions.push(':sub-language=none');
-      }
 
       fileOptions.push(':audio-language=$DEFAULT_LANGUAGE');
       #end
 
       if (vid.load(filePath, fileOptions) && vid.play())
-      {
         onVideoStarted.dispatch();
-      }
     }
     else
-    {
       trace('ALERT: Video is null! Could not play cutscene!');
-    }
   }
   #end
 
@@ -230,18 +218,10 @@ class VideoCutscene
 
   public static function pauseVideo():Void
   {
-    #if html5
+    #if (html5 || hxvlc)
     if (vid != null)
     {
       vid.pauseVideo();
-      onVideoPaused.dispatch();
-    }
-    #end
-
-    #if hxvlc
-    if (vid != null)
-    {
-      vid.pause();
       onVideoPaused.dispatch();
     }
     #end
@@ -249,15 +229,7 @@ class VideoCutscene
 
   public static function hideVideo():Void
   {
-    #if html5
-    if (vid != null)
-    {
-      vid.visible = false;
-      blackScreen.visible = false;
-    }
-    #end
-
-    #if hxvlc
+    #if (html5 || hxvlc)
     if (vid != null)
     {
       vid.visible = false;
@@ -268,15 +240,7 @@ class VideoCutscene
 
   public static function showVideo():Void
   {
-    #if html5
-    if (vid != null)
-    {
-      vid.visible = true;
-      blackScreen.visible = false;
-    }
-    #end
-
-    #if hxvlc
+    #if (html5 || hxvlc)
     if (vid != null)
     {
       vid.visible = true;
@@ -287,15 +251,7 @@ class VideoCutscene
 
   public static function resumeVideo():Void
   {
-    #if html5
-    if (vid != null)
-    {
-      vid.resumeVideo();
-      onVideoResumed.dispatch();
-    }
-    #end
-
-    #if hxvlc
+   #if (html5 || hxvlc)
     if (vid != null)
     {
       vid.resume();
@@ -317,9 +273,7 @@ class VideoCutscene
 
     #if html5
     if (vid != null)
-    {
       PlayState.instance.remove(vid);
-    }
     #end
 
     #if hxvlc
