@@ -855,7 +855,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      saveBackup();
+      saveBackup(true);
     }
   }
 
@@ -866,7 +866,7 @@ class StageEditorState extends UIState
     if (!saved)
     {
       trace("You haven't saved recently, so a backup will be made.");
-      saveBackup();
+      saveBackup(true);
     }
   }
 
@@ -1498,7 +1498,7 @@ class StageEditorState extends UIState
     }
   }
 
-  function saveBackup()
+  function saveBackup(isClose:Bool = false)
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
@@ -1509,12 +1509,16 @@ class StageEditorState extends UIState
     ]);
 
     FileUtil.writeBytesToPath(path, data);
-    saved = true;
+
+    if (!isClose)
+    {
+      saved = true;
+
+      notifyChange("Auto-Save", "A Backup of this Stage has been made.");
+    }
 
     Save.instance.stageEditorHasBackup.value = true;
     Save.system.flush();
-
-    notifyChange("Auto-Save", "A Backup of this Stage has been made.");
   }
 
   public function clearAssets()
