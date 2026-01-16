@@ -2108,7 +2108,7 @@ class Project extends HXProject
   @SuppressWarnings('checkstyle:Dynamic')
   function checkLibraries():Void
   {
-    var diffrentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
+    var differentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
 
@@ -2129,11 +2129,11 @@ class Project extends HXProject
         switch (library.type)
         {
           case 'haxelib':
-            diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
+            differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
@@ -2144,18 +2144,18 @@ class Project extends HXProject
           case 'haxelib':
             if (library.version != libraryCurrentVersion)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
+              differentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
             }
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
     }
 
-    if (Lambda.count(diffrentLibraries) > 0)
+    if (Lambda.count(differentLibraries) > 0)
     {
       warn("Some libraries differ from the versions defined in hmm.json.".bold().yellow());
       warn("To ensure consistency, it's recommended to stop the build and run `hmm reinstall [library]`.".bold().yellow());
@@ -2163,9 +2163,9 @@ class Project extends HXProject
 
       Sys.println('');
 
-      for (libraryName in diffrentLibraries.keys())
+      for (libraryName in differentLibraries.keys())
       {
-        var infos:Null<Array<String>> = diffrentLibraries.get(libraryName);
+        var infos:Null<Array<String>> = differentLibraries.get(libraryName);
 
         if (infos == null) continue;
 
