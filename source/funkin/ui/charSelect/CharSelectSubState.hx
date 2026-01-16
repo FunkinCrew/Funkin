@@ -1065,7 +1065,7 @@ class CharSelectSubState extends MusicBeatSubState
               case "idle":
                 lock.anim.play("selected");
               case "selected" | "clicked":
-                if (controls.ACCEPT_P) lock.anim.play("clicked", true);
+                if (controls.ACCEPT_P || mobileAccept) lock.anim.play("clicked", true);
             }
           }
           else
