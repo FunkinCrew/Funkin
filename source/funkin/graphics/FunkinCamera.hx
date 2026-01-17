@@ -17,6 +17,8 @@ import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display3D.textures.TextureBase;
+import flixel.graphics.tile.FlxDrawQuadsItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem;
 
 /**
  * A FlxCamera with additional powerful features:
@@ -248,6 +250,69 @@ class FunkinCamera extends FlxCamera
     {
       super.drawPixels(frame, pixels, matrix, transform, blend, smoothing, shader);
     }
+  }
+
+  override function startQuadBatch(graphic:FlxGraphic, colored:Bool, hasColorOffsets:Bool = false, ?blend:BlendMode, smooth:Bool = false,
+      ?shader:FlxShader):FlxDrawQuadsItem
+  {
+    // Can't batch complex non-coherent blends, so always force a new batch
+    if (hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
+    {
+      var itemToReturn = null;
+
+      if (FlxCamera._storageTilesHead != null)
+      {
+        itemToReturn = FlxCamera._storageTilesHead;
+        var newHead = FlxCamera._storageTilesHead.nextTyped;
+        itemToReturn.reset();
+        FlxCamera._storageTilesHead = newHead;
+      }
+      else
+      {
+        itemToReturn = new FlxDrawQuadsItem();
+      }
+
+      // TODO: catch this error when the dev actually messes up, not in the draw phase
+      if (graphic.isDestroyed)
+        throw 'Cannot queue ${graphic.key}. This sprite was destroyed.';
+
+      itemToReturn.graphics = graphic;
+      itemToReturn.antialiasing = smooth;
+      itemToReturn.colored = colored;
+      itemToReturn.hasColorOffsets = hasColorOffsets;
+      itemToReturn.blend = blend;
+      @:nullSafety(Off)
+      itemToReturn.shader = shader;
+
+      itemToReturn.nextTyped = _headTiles;
+      _headTiles = itemToReturn;
+
+      if (_headOfDrawStack == null)
+      {
+        _headOfDrawStack = itemToReturn;
+      }
+
+      if (_currentDrawItem != null)
+      {
+        _currentDrawItem.next = itemToReturn;
+      }
+
+      _currentDrawItem = itemToReturn;
+
+      return itemToReturn;
+    }
+
+    return super.startQuadBatch(graphic, colored, hasColorOffsets, blend, smooth, shader);
+  }
+
+  override function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool,
+      ?shader:FlxShader):FlxDrawTrianglesItem
+  {
+    // Can't batch complex non-coherent blends, so always force a new batch
+    if (hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
+      return getNewDrawTrianglesItem(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
+
+    return super.startTrianglesBatch(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
   }
 
   override function destroy():Void
