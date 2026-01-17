@@ -365,7 +365,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxHorizontalAlign.LEFT:
         0;
       case FlxHorizontalAlign.CENTER:
-        Math.ceil((finishingAwait && enabled) ? (deviceSize.x - gameSize.x) : (deviceSize.x - (gameSize.x #if desktop * scale.x #end)) * 0.5);
+        Math.ceil((finishingAwait && enabled) ? (deviceSize.x - gameSize.x) : (deviceSize.x - (gameSize.x #if desktop * (enabled ? scale.x : 1) #end)) * 0.5);
       case FlxHorizontalAlign.RIGHT:
         deviceSize.x - gameSize.x;
     }
@@ -378,7 +378,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxVerticalAlign.TOP:
         0;
       case FlxVerticalAlign.CENTER:
-        Math.ceil((finishingAwait && enabled) ? (deviceSize.y - gameSize.y) : (deviceSize.y - (gameSize.y #if desktop * scale.y #end)) * 0.5);
+        Math.ceil((finishingAwait && enabled) ? (deviceSize.y - gameSize.y) : (deviceSize.y - (gameSize.y #if desktop * (enabled ? scale.y : 1) #end)) * 0.5);
       case FlxVerticalAlign.BOTTOM:
         deviceSize.y - gameSize.y;
     }
