@@ -1564,6 +1564,10 @@ class Project extends HXProject
         {
           assetsPath = Path.join([basePath, "app", "src", "main", "assets", "assets"]);
         }
+        else if (isIOS())
+        {
+          assetsPath = Path.join([exportPath, platform, '${this.app.file}', "assets", "assets"]);
+        }
         else
         {
           return;
