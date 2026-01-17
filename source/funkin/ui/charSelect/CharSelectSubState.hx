@@ -398,7 +398,14 @@ class CharSelectSubState extends MusicBeatSubState
 
     camFollow.screenCenter();
     camFollow.y -= 150;
-    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadOut});
+    FlxG.camera.filtersEnabled = true;
+    fadeShader.fade(0.0, 1.0, 0.8,
+      {
+        ease: FlxEase.quadOut,
+        onComplete: (twn) -> {
+          FlxG.camera.filtersEnabled = false;
+        }
+      });
     FlxTween.tween(camFollow, {y: camFollow.y + 150}, 1.5,
       {
         ease: FlxEase.expoOut,
@@ -700,6 +707,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.cancelTweensOf(camFollow);
 
     FlxTween.tween(transitionGradient, {y: -150}, 0.8, {ease: FlxEase.backIn});
+    FlxG.camera.filtersEnabled = true;
     fadeShader.fade(1.0, 0, 0.8, {ease: FlxEase.quadIn});
     FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8,
       {
