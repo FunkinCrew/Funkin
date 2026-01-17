@@ -173,13 +173,13 @@ class Strumline extends FlxSpriteGroup
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
   final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.usingExternalInputDevice) #else false #end;
+    && !ControlsHandler.hasExternalInputDevice) #else false #end;
 
   /**
    * Whether the strumline is downscroll.
    */
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.usingExternalInputDevice)
+    && !ControlsHandler.hasExternalInputDevice)
     || #end Preferences.downscroll;
 
   /**

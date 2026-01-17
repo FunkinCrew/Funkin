@@ -896,7 +896,7 @@ class PlayState extends MusicBeatSubState
     initPopups();
 
     #if mobile
-    if (!ControlsHandler.usingExternalInputDevice)
+    if (!ControlsHandler.hasExternalInputDevice)
     {
       // Initialize the hitbox for mobile controls
       addHitbox(false);
@@ -1976,7 +1976,7 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice)
+      && !ControlsHandler.hasExternalInputDevice)
       || #end Preferences.downscroll;
 
     var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
@@ -2013,7 +2013,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.subtitles)
     {
       final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-        && !ControlsHandler.usingExternalInputDevice)
+        && !ControlsHandler.hasExternalInputDevice)
         || #end Preferences.downscroll;
 
       final subtitlesAlignment:SubtitlesAlignment = isDownscroll ? SubtitlesAlignment.SUBTITLES_TOP : SubtitlesAlignment.SUBTITLES_BOTTOM;
@@ -2236,7 +2236,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.cameras = [camHUD];
 
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
     {
       initNoteHitbox();
     }

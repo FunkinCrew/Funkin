@@ -323,7 +323,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       jumpInText.text = 'Hit the notes as they come in!';
       #if mobile
       if (OptionsState.instance.hitbox != null) OptionsState.instance.hitbox.visible = true;
-      if (!ControlsHandler.usingExternalInputDevice)
+      if (!ControlsHandler.hasExternalInputDevice)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
         final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
@@ -363,7 +363,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       jumpInText.y = 350;
 
       #if mobile
-      if (ControlsHandler.usingExternalInputDevice)
+      if (ControlsHandler.hasExternalInputDevice)
       {
       #end
         var height = testStrumline.strumlineNotes.members[0].height;
