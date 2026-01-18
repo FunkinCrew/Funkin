@@ -111,7 +111,8 @@ class ChartEditorAudioHandler
     state.postLoadVocals();
     state.hardRefreshOffsetsToolbox();
     state.hardRefreshFreeplayToolbox();
-    state.loadSubtitles();
+
+    state.loadSubtitles(state.currentSongSubtitles, true);
 
     return true;
   }

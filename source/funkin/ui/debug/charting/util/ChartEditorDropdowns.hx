@@ -7,6 +7,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.SongTimeChange;
+import funkin.util.SRTUtil.SubtitleEntry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import haxe.ui.components.DropDown;
@@ -133,6 +134,36 @@ class ChartEditorDropdowns
         text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
       };
       if (startingTimeChange == index) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate a dropdown with a list of subtitless.
+   */
+  public static function populateDropdownWithSubtitles(dropDown:DropDown, subtitlesData:Array<SubtitleEntry>, startingSubtitles:Int = 0):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    var returnValue:DropDownEntry =
+      {
+        id: '0',
+        text: '${subtitlesData[0].start} ms --> ${subtitlesData[0].end} ms : ${subtitlesData[0].text}'
+      };
+
+    for (index in 0...subtitlesData.length)
+    {
+      var value =
+        {
+          id: '$index',
+          text: '${subtitlesData[index].start} ms --> ${subtitlesData[index].end} ms : ${subtitlesData[index].text}'
+        };
+      if (startingSubtitles == index) returnValue = value;
 
       dropDown.dataSource.add(value);
     }
