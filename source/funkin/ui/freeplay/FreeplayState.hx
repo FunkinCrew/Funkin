@@ -2484,7 +2484,7 @@ class FreeplayState extends MusicBeatSubState
 
     // Set the album graphic and play the animation if relevant.
     var newAlbumId:Null<String> = daSong?.data.getAlbumId(currentDifficulty, currentVariation);
-    if (albumRoll.albumId != newAlbumId && (currentVariation != previousVariation || uiStateMachine.canInteract()))
+    if (albumRoll.albumId != newAlbumId && (currentVariation != previousVariation || uiStateMachine.canInteract()) && !fromCharSelect)
     {
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
