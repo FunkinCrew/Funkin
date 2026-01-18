@@ -607,6 +607,8 @@ class ScreenshotPlugin extends FlxBasic
       Cursor.show();
     }
 
+    if (screenshotSpammedTimer != null && !screenshotSpammedTimer.finished) screenshotSpammedTimer.cancel();
+
     if (unsavedScreenshotBuffer[0] == null) return;
     // There's unsaved screenshots, let's save them! (haha, get it?)
 
