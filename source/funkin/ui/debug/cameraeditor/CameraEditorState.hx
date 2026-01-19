@@ -258,30 +258,19 @@ class CameraEditorState extends UIState
 
     FlxG.camera.filters = [];
 
-    if (gf != null)
-    {
-      gf.currentStage = currentStage;
-      gf.debug = true;
-      currentStage.addCharacter(gf, GF);
-      gf.onCreate(null);
-      gf.onUpdate(null);
-    }
-    if (bf != null)
-    {
-      bf.currentStage = currentStage;
-      bf.debug = true;
-      currentStage.addCharacter(bf, BF);
-      bf.onCreate(null);
-      bf.onUpdate(null);
-    }
-    if (dad != null)
-    {
-      dad.currentStage = currentStage;
-      dad.debug = true;
-      currentStage.addCharacter(dad, DAD);
-      dad.onCreate(null);
-      dad.onUpdate(null);
-    }
+    var buildChar:Null<BaseCharacter>->CharacterType->Void = (char, charType) -> {
+      if (char == null) return;
+
+      char.currentStage = currentStage;
+      char.debug = true;
+      currentStage.addCharacter(char, charType);
+      char.onCreate(null);
+      char.onUpdate(null);
+    };
+
+    buildChar(gf, GF);
+    buildChar(bf, BF);
+    buildChar(dad, DAD);
 
     currentStage.refresh();
     goToPoint.x = 0;
