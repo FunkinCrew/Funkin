@@ -143,7 +143,7 @@ class CrashHandler
     fullContents += '\n';
 
     var currentState:String = 'No state loaded';
-    if (FlxG.state != null)
+    if (FlxG.game != null && FlxG.state != null)
     {
       var currentStateCls:Null<Class<Dynamic>> = Type.getClass(FlxG.state);
       if (currentStateCls != null)
