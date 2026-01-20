@@ -3,18 +3,15 @@ package funkin.ui.debug.cameraeditor.components;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 #if FEATURE_CAMERA_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
-
 import funkin.input.Cursor;
-
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-
 import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
-
+import funkin.Conductor;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
 
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
@@ -45,7 +42,6 @@ class UploadChartDialog extends Dialog
       this.chartBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }
-
   }
 
   /**
@@ -91,13 +87,16 @@ class UploadChartDialog extends Dialog
 
     if (selectedFile != null && selectedFile.bytes != null)
     {
-      var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes);
-      if (entires == null || entires.length != 3)
+      var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
+      if (entires == null || entires.length != 5)
       {
         throw 'Invalid or corrupted FNFC file.';
       }
       this.cameraEditorState.songMetadatas = entires[0];
       this.cameraEditorState.songDatas = entires[1];
+      this.cameraEditorState.audioInstTrackData = entires[3];
+      this.cameraEditorState.audioVocalTrackData = entires[4];
+      this.cameraEditorState.loadCurrentInstrumentalAndVocals();
       this.cameraEditorState.buildStage();
 
       this.hideDialog(DialogButton.APPLY);
