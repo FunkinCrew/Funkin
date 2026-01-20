@@ -7,6 +7,7 @@ import haxe.ui.notifications.NotificationManager;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.containers.dialogs.Dialogs;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import haxe.io.Bytes;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import flixel.FlxCamera;
@@ -39,13 +40,12 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
-
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.stage.StageRegistry;
 import funkin.play.stage.Stage;
-
+import funkin.util.assets.SoundUtil;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 
@@ -66,6 +66,23 @@ class CameraEditorState extends UIState
 
   public var currentSongMetadata(get, never):Null<SongMetadata>;
   public var currentSongChartData(get, never):Null<SongChartData>;
+
+  public var currentInstrumental:Null<FunkinSound> = null;
+  public var currentVocals:Array<FunkinSound> = [];
+
+  /**
+   * The raw byte data for the instrumental audio tracks.
+   * Key is the instrumental name.
+   * `null` until an instrumental track is loaded.
+   */
+  public var audioInstTrackData:Map<String, Bytes> = [];
+
+  /**
+   * A map of the audio tracks for each character's vocals.
+   * - Keys are `characterId-variation` (with `characterId` being the default variation).
+   * - Values are the byte data for the audio track.
+   */
+  public var audioVocalTrackData:Map<String, Bytes> = [];
 
   function get_currentSongMetadata():Null<SongMetadata>
   {
@@ -186,6 +203,9 @@ class CameraEditorState extends UIState
 
   override public function update(elapsed:Float):Void
   {
+    // TODO: sync vocals if they desync, im just too lazy to put this in rn
+    if (currentInstrumental != null && currentInstrumental.playing) Conductor.instance.update();
+
     // Save the stage if exiting through the F4 keybind, as it moves you to the Main Menu.
     if (FlxG.keys.justPressed.F4)
     {
@@ -215,6 +235,9 @@ class CameraEditorState extends UIState
       FlxG.camera.scroll.x = FlxMath.lerp(FlxG.camera.scroll.x, goToPoint.x, 0.8);
       FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, goToPoint.y, 0.8);
     }
+
+    if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
+    if (FlxG.keys.justPressed.R) onStopPlayback(null);
 
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
@@ -337,6 +360,118 @@ class CameraEditorState extends UIState
       });
   }
 
+  /**
+   * Loads the current instrumental and vocal tracks based on the current variation and song metadata.
+   */
+  public function loadCurrentInstrumentalAndVocals():Void
+  {
+    if (currentSongMetadata == null) return;
+    if (audioInstTrackData == null) return;
+    if (audioInstTrackData.get(currentVariation) == null) return;
+
+    currentInstrumental?.stop();
+    currentInstrumental?.destroy();
+    currentInstrumental = null;
+    for (vocal in currentVocals)
+    {
+      vocal.stop();
+      vocal.destroy();
+    }
+    currentVocals = [];
+
+    var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
+    trace('Loading instrumental for variation: ' + currentVariation);
+    if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
+    var vocalPlayer = currentSongMetadata?.playData?.characters?.player;
+    if (currentSongMetadata?.playData?.characters?.playerVocals != null
+      && currentSongMetadata.playData.characters.playerVocals.length > 0) vocalPlayer = currentSongMetadata.playData.characters.playerVocals[0];
+    var vocalData:Null<Bytes> = audioVocalTrackData.get(currentVariation + "-" + vocalPlayer);
+    if (vocalData != null)
+    {
+      var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
+      currentVocals.push(vocalSound);
+    }
+
+    var vocalOpponent = currentSongMetadata?.playData?.characters?.opponent;
+    if (currentSongMetadata?.playData?.characters?.opponentVocals != null
+      && currentSongMetadata.playData.characters.opponentVocals.length > 0) vocalOpponent = currentSongMetadata.playData.characters.opponentVocals[0];
+    var vocalDataOpp:Null<Bytes> = audioVocalTrackData.get(currentVariation + "-" + vocalOpponent);
+    if (vocalDataOpp != null)
+    {
+      var vocalSoundOpp = SoundUtil.buildSoundFromBytes(vocalDataOpp);
+      currentVocals.push(vocalSoundOpp);
+    }
+
+    trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
+    trace('    Vocals: ' + currentVocals.length + ' loaded');
+
+    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    {
+      FlxG.sound.music.stop();
+      FlxG.sound.music = null;
+    }
+
+    FlxG.sound.music = currentInstrumental;
+
+    Conductor.instance.forceBPM(null);
+    Conductor.instance.instrumentalOffset = currentSongMetadata.offsets.instrumental;
+    Conductor.instance.mapTimeChanges(currentSongMetadata.timeChanges);
+  }
+
+  /**
+   * Toggles playback of the current instrumental and vocal tracks.
+   */
+  public function togglePlayback(forceStop:Bool = false):Void
+  {
+    if (currentInstrumental == null) return;
+    if (forceStop)
+    {
+      if (currentInstrumental.playing)
+      {
+        currentInstrumental.pause();
+        for (vocal in currentVocals)
+        {
+          vocal.pause();
+        }
+      }
+      return;
+    }
+    if (currentInstrumental.playing)
+    {
+      currentInstrumental.pause();
+      for (vocal in currentVocals)
+      {
+        vocal.pause();
+      }
+    }
+    else
+    {
+      currentInstrumental.play();
+      for (vocal in currentVocals)
+      {
+        vocal.time = currentInstrumental.time;
+        vocal.play();
+      }
+    }
+    trace(currentInstrumental.playing ? "Toggled playback ON" : "Toggled playback OFF");
+  }
+
+  /**
+   * Sets the time position of the current instrumental and vocal tracks.
+   */
+  public function setTimePosition(position:Float):Void
+  {
+    if (currentInstrumental == null) return;
+
+    currentInstrumental.time = position;
+    for (vocal in currentVocals)
+    {
+      vocal.time = position;
+    }
+
+    Conductor.instance.update(currentInstrumental.time);
+  }
+
   // ui function bindings
 
   @:bind(menubarItemOpen, MouseEvent.CLICK)
@@ -376,6 +511,21 @@ class CameraEditorState extends UIState
     Cursor.hide();
     FlxG.switchState(() -> new MainMenuState());
     FlxG.sound.music.stop();
+  }
+
+  @:bind(menubarItemPlayPause, MouseEvent.CLICK)
+  function onPlayPause(_)
+  {
+    togglePlayback();
+  }
+
+  @:bind(menubarItemResetPlayback, MouseEvent.CLICK)
+  function onStopPlayback(_)
+  {
+    var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
+    togglePlayback(true);
+    setTimePosition(0);
+    if (playing) togglePlayback();
   }
 
   @:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
