@@ -328,9 +328,13 @@ class ChartEditorImportExportHandler
   /**
    * Loads a FNFC chart from bytes.
    * @param bytes the bytes of the FNFC file.
-   * @return Array<Dynamic>, [songMetadatas, songChartDatas, manifest]
+   * @param loadAudio whether to load audio files from the FNFC. Defaults to `false`.
+   * `instrumentals` is [`variation`, `bytes`], `vocals` is [`variation-player`, `bytes`].
+   * @return Array<Dynamic>, [`songMetadatas:Map<String, SongMetadata>`,
+   * `songChartDatas:Map<String, SongChartData>`, `manifest:ChartManifestData`,
+   * `instrumentals:Map<String, Bytes>`, `vocals:Map<String, Bytes> `]
    */
-  public static function genericLoadFNFC(bytes:Bytes):Array<Dynamic>
+  public static function genericLoadFNFC(bytes:Bytes, loadAudio:Bool = false):Array<Dynamic>
   {
     // Read the ZIP/.FNFC file, and create a map of entries.
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
@@ -357,6 +361,8 @@ class ChartEditorImportExportHandler
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
     var variationList:Array<String> = baseMetadata.playData.songVariations;
+    var instrumentals:Map<String, Bytes> = new Map<String, Bytes>();
+    var vocals:Map<String, Bytes> = new Map<String, Bytes>();
 
     for (variation in variationList)
     {
@@ -374,9 +380,75 @@ class ChartEditorImportExportHandler
       var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
         variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
       songChartDatas.set(variation, variChartData);
+      // Load instrumentals and vocals
+      trace('Loading audio for variation: $variation');
+      if (loadAudio)
+      {
+        var instId:String = variMetadata?.playData?.characters?.instrumental ?? '';
+
+        var instFileName:String = manifest.getInstFileName(instId);
+        var instFileBytes:Bytes = mappedFileEntries.get(instFileName)?.data ?? throw 'Could not locate instrumental ($instFileName).';
+        instrumentals.set(variation, instFileBytes);
+        trace('  Loaded instrumental: $instFileName');
+
+        var playerCharId:String = variMetadata?.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER;
+        var playerVoiceList:Array<String> = variMetadata?.playData.characters?.playerVocals ?? [playerCharId];
+        for (voice in playerVoiceList)
+        {
+          var playerVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
+          var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
+          if (playerVocalsFileBytes == null) continue;
+          vocals.set('${variation}-${voice}', playerVocalsFileBytes);
+          trace('  Loaded vocals: $playerVocalsFileName');
+        }
+
+        var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? "dad";
+        var opponentVoiceList:Array<String> = variMetadata?.playData.characters?.opponentVocals ?? [opponentCharId];
+        for (voice in opponentVoiceList)
+        {
+          var opponentVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
+          var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
+          if (opponentVocalsFileBytes == null) continue;
+          vocals.set('${variation}-${voice}', opponentVocalsFileBytes);
+          trace('  Loaded vocals: $opponentVocalsFileName');
+        }
+      }
+    }
+    if (loadAudio)
+    {
+      trace('Loading audio for default variation.');
+      var variMeta:Null<SongMetadata> = songMetadatas.get(Constants.DEFAULT_VARIATION);
+      if (variMeta == null) throw 'Could not locate default variation metadata for audio loading.';
+      var instId:String = variMeta?.playData?.characters?.instrumental ?? '';
+      var instFileName:String = manifest.getInstFileName(instId);
+      var instFileBytes:Bytes = mappedFileEntries.get(instFileName)?.data ?? throw 'Could not locate instrumental ($instFileName).';
+      instrumentals.set(Constants.DEFAULT_VARIATION, instFileBytes);
+      trace('  Loaded instrumental: $instFileName');
+
+      var playerCharId:String = variMeta.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER;
+      var playerVoiceList:Array<String> = variMeta.playData.characters?.playerVocals ?? [playerCharId];
+      for (voice in playerVoiceList)
+      {
+        var playerVocalsFileName:String = manifest.getVocalsFileName(voice, Constants.DEFAULT_VARIATION);
+        var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
+        if (playerVocalsFileBytes == null) continue;
+        vocals.set('${Constants.DEFAULT_VARIATION}-${voice}', playerVocalsFileBytes);
+        trace('  Loaded vocals: $playerVocalsFileName');
+      }
+
+      var opponentCharId:Null<String> = variMeta?.playData?.characters?.opponent ?? "dad";
+      var opponentVoiceList:Array<String> = variMeta?.playData.characters?.opponentVocals ?? [opponentCharId];
+      for (voice in opponentVoiceList)
+      {
+        var opponentVocalsFileName:String = manifest.getVocalsFileName(voice, Constants.DEFAULT_VARIATION);
+        var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
+        if (opponentVocalsFileBytes == null) continue;
+        vocals.set('${Constants.DEFAULT_VARIATION}-${voice}', opponentVocalsFileBytes);
+        trace('  Loaded vocals: $opponentVocalsFileName');
+      }
     }
 
-    return [songMetadatas, songChartDatas, manifest];
+    return [songMetadatas, songChartDatas, manifest, instrumentals, vocals];
   }
 
   /**
