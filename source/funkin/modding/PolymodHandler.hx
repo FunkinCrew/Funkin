@@ -320,10 +320,6 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `flixel.util.FlxSave`
-    // FlxSave.resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistImport('flixel.util.FlxSave');
-
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
 
@@ -404,6 +400,12 @@ class PolymodHandler
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
+
+    // `flixel.util.FlxSave`
+    // resolveFlixelClasses() can access blacklisted packages
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
+    // Disallow direct manipulation of save data.
+    Polymod.blacklistInstanceFields(flixel.util.FlxSave, ['data']);
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
