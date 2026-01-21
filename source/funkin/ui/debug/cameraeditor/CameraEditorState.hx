@@ -1,32 +1,34 @@
 package funkin.ui.debug.cameraeditor;
 
-import funkin.data.song.SongData.SongCharacterData;
 #if FEATURE_CAMERA_EDITOR
-import flixel.math.FlxMath;
-import haxe.ui.notifications.NotificationType;
-import haxe.ui.notifications.NotificationManager;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
-import haxe.ui.containers.dialogs.Dialogs;
-import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
-import haxe.io.Bytes;
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.util.MouseUtil;
 import flixel.FlxCamera;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.stage.StageRegistry;
 import funkin.input.Cursor;
+import funkin.play.PlayState;
+import funkin.play.character.BaseCharacter;
+import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.FileUtil;
+import funkin.util.MouseUtil;
 import funkin.util.WindowUtil;
+import funkin.util.assets.SoundUtil;
 import funkin.util.logging.CrashHandler;
+import funkin.util.macro.ConsoleMacro;
+import haxe.io.Bytes;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog;
@@ -41,15 +43,6 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
-import funkin.play.PlayState;
-import funkin.play.character.BaseCharacter;
-import funkin.data.character.CharacterData.CharacterDataParser;
-import funkin.data.stage.StageRegistry;
-import funkin.play.stage.Stage;
-import funkin.util.assets.SoundUtil;
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongData.SongMetadata;
-import funkin.util.macro.ConsoleMacro;
 
 /**
  * The EYES OF GOD......
@@ -98,8 +91,77 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var currentStage:Null<Stage> = null;
 
+  /**
+   * A list of previous working file paths.
+   * Also known as the "recent files" list.
+   * The first element is [null] if the current working file has not been saved anywhere yet.
+   */
+  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
+
+  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
+  {
+    // Called only when the WHOLE LIST is overridden.
+    previousWorkingFilePaths = value;
+    updateWindowTitle();
+    populateOpenRecentMenu();
+    applyCanQuickSave();
+    return value;
+  }
+
+  /**
+   * The current file path which the chart editor is working with.
+   * If `null`, the current chart has not been saved yet.
+   */
+  public var currentWorkingFilePath(get, set):Null<String>;
+
+  function get_currentWorkingFilePath():Null<String>
+  {
+    return previousWorkingFilePaths[0];
+  }
+
+  function set_currentWorkingFilePath(value:Null<String>):Null<String>
+  {
+    // Do nothing if the value hasn't changed.
+    if (value == previousWorkingFilePaths[0]) return value;
+
+    // Update the recent files list.
+
+    if (previousWorkingFilePaths.contains(null))
+    {
+      // Filter all instances of `null` from the array.
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+        return x != null;
+      });
+    }
+
+    if (previousWorkingFilePaths.contains(value))
+    {
+      // Move the path to the front of the list.
+      previousWorkingFilePaths.remove(value);
+      previousWorkingFilePaths.unshift(value);
+    }
+    else
+    {
+      // Add the path to the front of the list.
+      previousWorkingFilePaths.unshift(value);
+    }
+
+    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
+    {
+      // Remove the last path in the list.
+      previousWorkingFilePaths.pop();
+    }
+
+    populateOpenRecentMenu();
+    updateWindowTitle();
+
+    return value;
+  }
+
+  /**
+   * Whether the current chart being worked on has been modified since it was last saved.
+   */
   public var saved(default, set):Bool = true;
-  public var currentFile(default, set):String = "";
 
   function set_saved(value:Bool):Bool
   {
@@ -118,19 +180,6 @@ class CameraEditorState extends UIState implements ConsoleClass
         saveBackup();
       });
     }
-
-    return value;
-  }
-
-  function set_currentFile(value:String):String
-  {
-    currentFile = value;
-
-    updateWindowTitle();
-
-    // if (currentFile != "") updateRecentFiles();
-
-    // reloadRecentFiles();
 
     return value;
   }
@@ -167,6 +216,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.sound.music?.stop();
     WindowUtil.setWindowTitle("Friday Night Funkin\' Camera Editor");
 
+    loadPreferences();
+
     camGame = new FlxCamera();
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
@@ -186,6 +237,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     menubar.height = 35;
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
+
+    CameraEditorNotificationHandler.setupNotifications(this);
+    applyCanQuickSave();
 
     WindowUtil.windowExit.add(windowClose);
     CrashHandler.errorSignal.add(autosavePerCrash);
@@ -323,6 +377,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       trace("You haven't saved recently, so a backup will be made.");
       saveBackup();
     }
+
+    writePreferences(!saved);
   }
 
   function windowClose(exitCode:Int)
@@ -334,19 +390,96 @@ class CameraEditorState extends UIState implements ConsoleClass
       trace("You haven't saved recently, so a backup will be made.");
       saveBackup();
     }
+
+    writePreferences(!saved);
   }
 
+  /**
+   * Updates the list of recently opened charts in the `File->Open Recent` menu.
+   */
+  public function populateOpenRecentMenu():Void
+  {
+    if (menubarOpenRecent == null) return;
+
+    #if sys
+    menubarOpenRecent.removeAllComponents();
+
+    for (chartPath in previousWorkingFilePaths)
+    {
+      if (chartPath == null) continue;
+
+      var menuItemRecentChart:MenuItem = new MenuItem();
+      menuItemRecentChart.text = chartPath;
+      menuItemRecentChart.onClick = function(_event) {
+        // Load chart from file
+        // TODO: Load chart from path when clicking this!
+        // var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
+        var result = null;
+        if (result != null)
+        {
+          if (result.length == 0)
+          {
+            CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath.toString()})');
+          }
+          else
+          {
+            CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
+          }
+        }
+        else
+        {
+          CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath.toString()})');
+        }
+      }
+
+      if (!FileUtil.fileExists(chartPath))
+      {
+        trace('Previously loaded chart file (${chartPath.toString()}) does not exist, disabling link...');
+        menuItemRecentChart.disabled = true;
+      }
+      else
+      {
+        menuItemRecentChart.disabled = false;
+      }
+
+      menubarOpenRecent.addComponent(menuItemRecentChart);
+    }
+    #else
+    menubarOpenRecent.hide();
+    #end
+  }
+
+  /**
+   * Modify the title of the game window to reflect the current state of the editor.
+   */
   public function updateWindowTitle()
   {
     var defaultTitle = "Friday Night Funkin\' Camera Editor";
 
-    if (currentFile == "") defaultTitle += " - New File"
+    if (currentWorkingFilePath == "") defaultTitle += " - New File"
     else
-      defaultTitle += " - " + currentFile;
+      defaultTitle += " - " + currentWorkingFilePath;
 
     if (!saved) defaultTitle += "*";
 
     WindowUtil.setWindowTitle(defaultTitle);
+  }
+
+  /**
+   * Only enable the "Save Chart" menu item if a chart already on disk is loaded.
+   */
+  function applyCanQuickSave():Void
+  {
+    if (menubarItemSave == null) return;
+
+    if (currentWorkingFilePath == null)
+    {
+      menubarItemSave.disabled = true;
+    }
+    else
+    {
+      menubarItemSave.disabled = false;
+    }
   }
 
   function resetWindowTitle():Void
@@ -359,6 +492,45 @@ class CameraEditorState extends UIState implements ConsoleClass
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     notifyChange("Auto-Save", "A Backup of this Chart has been made.");
+  }
+
+  /**
+   * Read preferences for the Camera Editor from the user's save data.
+   */
+  public function loadPreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    if (previousWorkingFilePaths[0] == null)
+    {
+      previousWorkingFilePaths = [null].concat(save.cameraEditorPreviousFiles.value);
+    }
+    else
+    {
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.cameraEditorPreviousFiles.value);
+    }
+
+    // currentTheme = save.chartEditorTheme.value;
+  }
+
+  /**
+   * Write preferences for the Camera Editor to the user's save data.
+   */
+  public function writePreferences(hasBackup:Bool):Void
+  {
+    var save:Save = Save.instance;
+
+    // Can't use filter() because of null safety checking!
+    trace('Saving previous files: ${previousWorkingFilePaths.toString()}');
+    var filteredWorkingFilePaths:Array<String> = [];
+    for (chartPath in previousWorkingFilePaths)
+      if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+    save.cameraEditorPreviousFiles.value = filteredWorkingFilePaths;
+
+    if (hasBackup) trace('Queuing backup prompt for next time!');
+    save.cameraEditorHasBackup.value = hasBackup;
+
+    // save.cameraEditorTheme.value = currentTheme;
   }
 
   public function notifyChange(change:String, notif:String, isError:Bool = false)
@@ -490,11 +662,17 @@ class CameraEditorState extends UIState implements ConsoleClass
   // ui function bindings
 
   @:bind(menubarItemOpen, MouseEvent.CLICK)
-  function onOpenMenu(_)
+  function onMenubarOpen(_)
   {
     var uploadDialog = new UploadChartDialog(this);
     uploadDialog.showDialog();
   }
+
+  @:bind(menubarItemOpen, MouseEvent.CLICK)
+  function onMenubarSave(_) {}
+
+  @:bind(menubarItemOpen, MouseEvent.CLICK)
+  function onMenubarSaveAs(_) {}
 
   @:bind(menubarItemExit, MouseEvent.CLICK)
   function onMenubarExit(_)
@@ -517,6 +695,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       return;
     }
 
+    writePreferences(!saved);
     resetWindowTitle();
 
     WindowUtil.windowExit.remove(windowClose);
