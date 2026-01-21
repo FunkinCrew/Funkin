@@ -182,6 +182,11 @@ class Save implements ConsoleClass
         bfChar: "bf",
         gfChar: "gf",
         dadChar: "dad"
+      },
+      optionsCameraEditor:
+      {
+        previousFiles: [],
+        theme: ChartEditorTheme.Light,
       }
     };
   }
@@ -363,7 +368,16 @@ class Save implements ConsoleClass
     return data.optionsStageEditor.dadChar;
   }
 
-  /// UTIL FUNCTIONS
+  ///
+  /// CAMERA EDITOR OPTIONS
+  ///
+  @:saveProperty(data.optionsCameraEditor.previousFiles, [])
+  public var cameraEditorPreviousFiles:SaveProperty<Array<String>>;
+
+  @:saveProperty(data.optionsCameraEditor.hasBackup, false)
+  public var cameraEditorHasBackup:SaveProperty<Bool>;
+
+  /// UTIL FUNCITONS
 
   /**
    * Call this to make sure the save data is written to disk.
@@ -1002,6 +1016,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Stage Editor.
    */
   var optionsStageEditor:SaveDataStageEditorOptions;
+
+  /**
+   * The user's preferences specific to the Camera Editor.
+   */
+  var optionsCameraEditor:SaveDataCameraEditorOptions;
 };
 
 typedef SaveApiData =
@@ -1541,4 +1560,29 @@ typedef SaveDataStageEditorOptions =
    * @default dad
    */
   var ?dadChar:String;
+}
+
+/**
+ * An anonymous structure containing all the user's options and preferences, specific to the Camera Editor.
+ */
+typedef SaveDataCameraEditorOptions =
+{
+  /**
+   * Whether the Camera Editor created a backup the last time it closed.
+   * Prompt the user to load it, then set this back to `false`.
+   * @default `false`
+   */
+  var ?hasBackup:Bool;
+
+  /**
+   * Previous files opened in the Camera Editor.
+   * @default `[]`
+   */
+  var ?previousFiles:Array<String>;
+
+  /**
+   * Theme in the Camera Editor.
+   * @default `ChartEditorTheme.Light`
+   */
+  var ?theme:ChartEditorTheme;
 }
