@@ -1,18 +1,18 @@
 package funkin.ui.debug.cameraeditor.components;
 
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 #if FEATURE_CAMERA_EDITOR
-import haxe.ui.containers.dialogs.Dialog;
+import funkin.Conductor;
 import funkin.input.Cursor;
+import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
+import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
-import funkin.Conductor;
-import funkin.ui.debug.cameraeditor.CameraEditorState;
 
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
 class UploadChartDialog extends Dialog
@@ -94,6 +94,8 @@ class UploadChartDialog extends Dialog
       this.cameraEditorState.audioVocalTrackData = entries.vocals;
       this.cameraEditorState.loadCurrentInstrumentalAndVocals();
       this.cameraEditorState.buildStage();
+
+      this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
 
       this.hideDialog(DialogButton.APPLY);
     }
