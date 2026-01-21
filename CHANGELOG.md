@@ -112,7 +112,6 @@ The LE SSERAFIM collab update!
 - [iOS] The navigation bar is no longer unlocked after watching an ad.
 - [iOS] The “larger text” accessibility setting no longer causes the game to not fill the whole screen.
 - [iOS] The game now displays error popups.
-- [ANDROID] Keyboard detection and strumline positioning now work properly.
 - [ANDROID] Taking a screenshot no longer pauses the game for a moment.
 - The Title Screen no longer switches to Attract Mode while the Girlfriend’s Ringtone easter egg is playing.
 - Holding Escape in the Main Menu no longer quickly closes the game.
@@ -151,6 +150,7 @@ The LE SSERAFIM collab update!
 - Hold note covers no longer get permanently stuck playing after a lag spike. ([66882d9](https://github.com/FunkinCrew/Funkin/commit/66882d9677268396320ee003478a3e2627655755)) - by @KoloInDaCrib in [#6066](https://github.com/FunkinCrew/Funkin/pull/6066)
 - Scrolling through Freeplay songs for the first time no longer stutters. ([cc486ad](https://github.com/FunkinCrew/Funkin/commit/cc486ad94b5e9806d18fb65165663fea0ce0d7b4)) - by @mikolka9144 in [#4851](https://github.com/FunkinCrew/Funkin/pull/4851)
 - Re-implemented an error that appears when a video file does not exist. ([2ad5933](https://github.com/FunkinCrew/Funkin/commit/2ad593341f8bea8384646f4803dc8795a9efe32a)) - by @TechnikTil in [#6253](https://github.com/FunkinCrew/Funkin/pull/6253)
+- [ANDROID] Keyboard detection and strumline positioning now work properly. ([5763ae5](https://github.com/FunkinCrew/Funkin/commit/5763ae5b728359c5639bbc578f15b65a16fa57b1)) - by @NotHyper-474 in [#6328](https://github.com/FunkinCrew/Funkin/pull/6328)
 - The game now properly parses .json files beginning with a bracket. ([c7367ae](https://github.com/FunkinCrew/Funkin/commit/c7367ae33d7e11f57b821f7d5fbff39a3edc1604)) - by @NotHyper-474 in [#6164](https://github.com/FunkinCrew/Funkin/pull/6164)
 - The Newgrounds logo no longer covers the intro text. ([28883fb](https://github.com/FunkinCrew/Funkin/commit/28883fb9ed025abf9f9aee2621f365cd6f4d8b6c)) - by @hucks5 in [#6196](https://github.com/FunkinCrew/Funkin/pull/6196)
 - Exiting from the Save Data Options menu no longer exits the Options Menu as well. ([26b253d](https://github.com/FunkinCrew/Funkin/commit/26b253d8cac97f0dcd09a5ef233f7058cd26008e)) - by @VirtuGuy in [#6036](https://github.com/FunkinCrew/Funkin/pull/6036)
