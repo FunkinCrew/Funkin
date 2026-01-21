@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
+import funkin.data.song.SongData.SongCharacterData;
 #if FEATURE_CAMERA_EDITOR
 import flixel.math.FlxMath;
 import haxe.ui.notifications.NotificationType;
@@ -372,35 +373,37 @@ class CameraEditorState extends UIState
     currentInstrumental?.stop();
     currentInstrumental?.destroy();
     currentInstrumental = null;
+
     for (vocal in currentVocals)
     {
       vocal.stop();
       vocal.destroy();
     }
+
     currentVocals = [];
 
-    var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
     trace('Loading instrumental for variation: ' + currentVariation);
-    if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
-    var vocalPlayer = currentSongMetadata?.playData?.characters?.player;
-    if (currentSongMetadata?.playData?.characters?.playerVocals != null
-      && currentSongMetadata.playData.characters.playerVocals.length > 0) vocalPlayer = currentSongMetadata.playData.characters.playerVocals[0];
-    var vocalData:Null<Bytes> = audioVocalTrackData.get(currentVariation + "-" + vocalPlayer);
-    if (vocalData != null)
-    {
-      var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
-      currentVocals.push(vocalSound);
-    }
 
-    var vocalOpponent = currentSongMetadata?.playData?.characters?.opponent;
-    if (currentSongMetadata?.playData?.characters?.opponentVocals != null
-      && currentSongMetadata.playData.characters.opponentVocals.length > 0) vocalOpponent = currentSongMetadata.playData.characters.opponentVocals[0];
-    var vocalDataOpp:Null<Bytes> = audioVocalTrackData.get(currentVariation + "-" + vocalOpponent);
-    if (vocalDataOpp != null)
-    {
-      var vocalSoundOpp = SoundUtil.buildSoundFromBytes(vocalDataOpp);
-      currentVocals.push(vocalSoundOpp);
-    }
+    var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
+    if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
+
+    trace('Loading vocals');
+
+    var buildVocal:Null<String>->Null<Array<String>>->Void = function(character, vocals) {
+      var vocal = character;
+      if (vocals != null && vocals.length > 0) vocal = vocals[0];
+
+      var vocalData:Null<Bytes> = audioVocalTrackData.get('$currentVariation-$vocal');
+      if (vocalData != null)
+      {
+        var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
+        currentVocals.push(vocalSound);
+      }
+    };
+
+    var currentCharactersData:Null<SongCharacterData> = currentSongMetadata?.playData?.characters;
+    buildVocal(currentCharactersData?.player, currentCharactersData?.playerVocals);
+    buildVocal(currentCharactersData?.opponent, currentCharactersData?.opponentVocals);
 
     trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
     trace('    Vocals: ' + currentVocals.length + ' loaded');
