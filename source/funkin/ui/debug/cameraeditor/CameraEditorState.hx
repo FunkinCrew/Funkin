@@ -424,36 +424,35 @@ class CameraEditorState extends UIState
   public function togglePlayback(forceStop:Bool = false):Void
   {
     if (currentInstrumental == null) return;
-    if (forceStop)
-    {
-      if (currentInstrumental.playing)
-      {
-        currentInstrumental.pause();
-        for (vocal in currentVocals)
-        {
-          vocal.pause();
-        }
-      }
-      return;
-    }
-    if (currentInstrumental.playing)
-    {
-      currentInstrumental.pause();
-      for (vocal in currentVocals)
-      {
-        vocal.pause();
-      }
-    }
+
+    if (currentInstrumental.playing || forceStop) pauseAudioPlayback();
     else
-    {
-      currentInstrumental.play();
-      for (vocal in currentVocals)
-      {
-        vocal.time = currentInstrumental.time;
-        vocal.play();
-      }
-    }
+      playAudioPlayback();
+
     trace(currentInstrumental.playing ? "Toggled playback ON" : "Toggled playback OFF");
+  }
+
+  function playAudioPlayback():Void
+  {
+    if (currentInstrumental == null) return;
+
+    currentInstrumental.play();
+    for (vocal in currentVocals)
+    {
+      vocal.time = currentInstrumental.time;
+      vocal.play();
+    }
+  }
+
+  function pauseAudioPlayback():Void
+  {
+    if (currentInstrumental == null) return;
+
+    currentInstrumental.pause();
+    for (vocal in currentVocals)
+    {
+      vocal.pause();
+    }
   }
 
   /**
