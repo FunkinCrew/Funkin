@@ -408,7 +408,7 @@ class GameOverSubState extends MusicBeatSubState
           close();
         };
 
-        if (musicSuffix == '-pixel')
+        if (musicSuffix.contains('-pixel'))
         {
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
           new FlxTimer().start(2, _ -> {
