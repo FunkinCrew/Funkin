@@ -4,6 +4,8 @@ package funkin.ui.debug.cameraeditor.components;
 import funkin.Conductor;
 import funkin.input.Cursor;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
@@ -88,6 +90,18 @@ class UploadChartDialog extends Dialog
     if (selectedFile != null && selectedFile.bytes != null)
     {
       var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
+
+      if (entires == null || entires.length != 5)
+      {
+        CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
+        this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
+        this.hideDialog(DialogButton.APPLY);
+      }
+      else
+      {
+        CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
+      }
+
       this.cameraEditorState.songMetadatas = entries.songMetadatas;
       this.cameraEditorState.songDatas = entries.songChartDatas;
       this.cameraEditorState.audioInstTrackData = entries.instrumentals;
