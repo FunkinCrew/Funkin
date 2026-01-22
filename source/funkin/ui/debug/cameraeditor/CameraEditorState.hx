@@ -68,20 +68,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
 
-  /**
-   * The raw byte data for the instrumental audio tracks.
-   * Key is the instrumental name.
-   * `null` until an instrumental track is loaded.
-   */
-  public var audioInstTrackData:Map<String, Bytes> = [];
-
-  /**
-   * A map of the audio tracks for each character's vocals.
-   * - Keys are `characterId-variation` (with `characterId` being the default variation).
-   * - Values are the byte data for the audio track.
-   */
-  public var audioVocalTrackData:Map<String, Bytes> = [];
-
   function get_currentSongMetadata():Null<SongMetadata>
   {
     return songMetadatas.get(currentVariation);

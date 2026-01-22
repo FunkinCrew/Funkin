@@ -25,7 +25,7 @@ class CameraEditorImportExportHandler
   public static function loadFNFCFromBytes(state:CameraEditorState, bytes:Bytes):Bool
   {
     // [Array<SongMetadata>, Array<SongChartData>, ChartManifestData, Map<String, Bytes>, Map<String, Bytes>]
-    var entries:Array<Dynamic> = funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.genericLoadFNFC(bytes);
+    var entries:Array<Dynamic> = funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.genericLoadFNFC(bytes, true);
 
     if (entries == null || entries.length != 5)
     {
@@ -39,6 +39,8 @@ class CameraEditorImportExportHandler
     state.audioInstTrackData = entries[3];
     state.audioVocalTrackData = entries[4];
     state.buildStage();
+
+    trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals.');
 
     return true;
   }
