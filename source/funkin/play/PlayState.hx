@@ -1366,11 +1366,19 @@ class PlayState extends MusicBeatSubState
     {
       case Conversation:
         preparePauseUI();
-        openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pauseMusic());
+
+        final event = new PauseScriptEvent(false);
+        dispatchEvent(event);
+
+        if (!event.eventCanceled) openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
-        openPauseSubState(Cutscene, camPause, lostFocus, () -> VideoCutscene.pauseVideo());
+
+        final event = new PauseScriptEvent(false);
+        dispatchEvent(event);
+
+        if (!event.eventCanceled) openPauseSubState(Cutscene, camPause, lostFocus, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
