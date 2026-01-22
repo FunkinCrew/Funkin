@@ -362,6 +362,9 @@ class ChartEditorImportExportHandler
     var songChartDatas:Map<String, SongChartData> = [];
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
+    var audioInstTrackData:Map<String, Bytes> = [];
+    var audioVocalTrackData:Map<String, Bytes> = [];
+
     var variationList:Array<String> = baseMetadata.playData.songVariations;
     var instrumentals:Map<String, Bytes> = new Map<String, Bytes>();
     var vocals:Map<String, Bytes> = new Map<String, Bytes>();
