@@ -10,6 +10,7 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.input.Cursor;
 import funkin.play.PlayState;
@@ -19,6 +20,7 @@ import funkin.save.Save;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.mainmenu.MainMenuState;
@@ -29,6 +31,7 @@ import funkin.util.assets.SoundUtil;
 import funkin.util.logging.CrashHandler;
 import funkin.util.macro.ConsoleMacro;
 import haxe.io.Bytes;
+import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog;
@@ -90,6 +93,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   public var currentStage:Null<Stage> = null;
+
+  // Song chart data we have to hold onto just to save properly later.
+  public var songManifestData:Null<ChartManifestData> = null;
+  public var audioInstTrackData:Map<String, Bytes> = [];
+  public var audioVocalTrackData:Map<String, Bytes> = [];
 
   /**
    * A list of previous working file paths.
@@ -410,27 +418,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       var menuItemRecentChart:MenuItem = new MenuItem();
       menuItemRecentChart.text = chartPath;
-      menuItemRecentChart.onClick = function(_event) {
-        // Load chart from file
-        // TODO: Load chart from path when clicking this!
-        // var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
-        var result = null;
-        if (result != null)
-        {
-          if (result.length == 0)
-          {
-            CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath.toString()})');
-          }
-          else
-          {
-            CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
-          }
-        }
-        else
-        {
-          CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath.toString()})');
-        }
-      }
+      menuItemRecentChart.onClick = onMenubarOpenRecent.bind(_, chartPath);
 
       if (!FileUtil.fileExists(chartPath))
       {
@@ -491,7 +479,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    notifyChange("Auto-Save", "A Backup of this Chart has been made.");
+    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String) {
+      notifyChange("Auto-Save", "A Backup of this Chart has been made.");
+    }, function() {
+      // Failed to save backup?
+    });
   }
 
   /**
@@ -668,11 +660,48 @@ class CameraEditorState extends UIState implements ConsoleClass
     uploadDialog.showDialog();
   }
 
-  @:bind(menubarItemOpen, MouseEvent.CLICK)
-  function onMenubarSave(_) {}
+  function onMenubarOpenRecent(_event:MouseEvent, chartPath:String)
+  {
+    var result:Bool = CameraEditorImportExportHandler.loadFNFCFromPath(this, chartPath);
 
-  @:bind(menubarItemOpen, MouseEvent.CLICK)
-  function onMenubarSaveAs(_) {}
+    if (result)
+    {
+      CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath})');
+      this.currentWorkingFilePath = chartPath;
+    }
+    else
+    {
+      CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${chartPath})');
+    }
+  }
+
+  @:bind(menubarItemSave, MouseEvent.CLICK)
+  function onMenubarSave(event:MouseEvent)
+  {
+    if (currentWorkingFilePath != null)
+    {
+      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String) {
+        notifyChange("Chart Save", 'This chart has been saved to ${path}');
+      }, function() {
+        // Failed to save backup?
+      });
+    }
+    else
+    {
+      this.onMenubarSaveAs(event);
+    }
+  }
+
+  @:bind(menubarItemSaveAs, MouseEvent.CLICK)
+  function onMenubarSaveAs(_)
+  {
+    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String) {
+      notifyChange("Chart Save", 'This chart has been saved to ${path}');
+      currentWorkingFilePath = path;
+    }, function() {
+      // Failed to save backup?
+    });
+  }
 
   @:bind(menubarItemExit, MouseEvent.CLICK)
   function onMenubarExit(_)
