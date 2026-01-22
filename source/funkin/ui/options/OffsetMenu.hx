@@ -262,9 +262,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       @:privateAccess
       if (OptionsState.instance.optionsCodex.currentPage != this) return;
 
-      jumpInText.text = 'Press any key to the beat!\nThe arrow will start to sync to the receptor.';
+      jumpInText.text = 'Press any key to the beat!';
       #if mobile
-      jumpInText.text = 'Tap to the beat!\nThe arrow will start to sync to the receptor.';
+      jumpInText.text = 'Tap to the beat!';
       #end
 
       jumpInText.y = 100;
@@ -636,7 +636,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         var consistency:Float = getConsistency();
 
-        if (consistency > 50 && differences.length > 8)
+        if (consistency > 40 && differences.length > 8)
         {
           jumpInText.text = 'Try to be a little more consistent with your timing!';
           differences = [];
@@ -660,9 +660,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
         if (!_gotMad)
         {
-          if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job, keep going!';
+          if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job';
           else
-            jumpInText.text = 'Nice job, keep going!';
+            jumpInText.text = 'Nice job';
+          if (differences.length < 8)
+            jumpInText.text += ", keep going!";
+          else
+            jumpInText.text += "!";
         }
 
         jumpInText.text += '\n' + differences.length + '/30';
