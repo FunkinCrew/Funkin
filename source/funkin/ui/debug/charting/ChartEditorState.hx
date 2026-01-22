@@ -4667,6 +4667,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
         // Add a new time change at the grid playhead's position.
         performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
+        this.success('New Time Change', '${undoHistory[undoHistory.length - 1].toString()} ms');
       }
     }
 
