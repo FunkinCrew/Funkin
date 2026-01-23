@@ -211,6 +211,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       Conductor.instance.update();
       timeline.timelineControls.updateTime(Conductor.instance.songPosition / 1000);
     }
+    else if (currentVocals.length > 0 && currentVocals[0].playing)
+    {
+      for (vocal in currentVocals)
+        if (vocal.playing) vocal.pause();
+    }
 
     // Save the stage if exiting through the F4 keybind, as it moves you to the Main Menu.
     if (FlxG.keys.justPressed.F4)
