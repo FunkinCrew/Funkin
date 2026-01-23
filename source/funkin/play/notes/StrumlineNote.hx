@@ -42,6 +42,8 @@ class StrumlineNote extends FunkinSprite
    */
   static final CONFIRM_HOLD_TIME:Float = 0.15;
 
+  static final DEFAULT_OFFSET:Int = 13;
+
   /**
    * How long the hold note animation has been playing after a note is pressed.
    */
@@ -73,9 +75,9 @@ class StrumlineNote extends FunkinSprite
   {
     // Run a timer before we stop playing the confirm animation.
     // On player, this allows holding the confirm key to fall back to press.
-    if (isPlayer && name == 'confirm')
+    if (isPlayer && name == 'confirm' && !holding)
     {
-      confirmHoldTimer = 0;
+      confirmHoldTimer = CONFIRM_HOLD_TIME;
     }
   }
 
@@ -85,15 +87,16 @@ class StrumlineNote extends FunkinSprite
 
     centerOrigin();
 
-    if (confirmHoldTimer >= 0)
+    if (confirmHoldTimer > 0)
     {
-      confirmHoldTimer += elapsed;
+      confirmHoldTimer -= elapsed;
 
       // Ensure the opponent stops holding the key after a certain amount of time.
-      if (confirmHoldTimer >= CONFIRM_HOLD_TIME)
+      if (confirmHoldTimer <= 0)
       {
         confirmHoldTimer = -1;
         playStatic();
+        holding = false;
       }
     }
   }
@@ -145,7 +148,8 @@ class StrumlineNote extends FunkinSprite
 
     // On opponent, run a timer to stop playing the confirm animation.
     // On player, stop the timer to avoid stopping the confirm animation earlier.
-    confirmHoldTimer = isPlayer ? -1 : 0;
+    confirmHoldTimer = isPlayer ? -1 : CONFIRM_HOLD_TIME;
+    holding = false;
   }
 
   public function isConfirm():Bool
@@ -153,29 +157,34 @@ class StrumlineNote extends FunkinSprite
     return getCurrentAnimation().startsWith('confirm');
   }
 
-  public function holdConfirm():Void
+  public var holding:Bool = false;
+
+  public function holdConfirm(?length:Float = 0):Void
   {
     this.active = true;
 
-    if (getCurrentAnimation() == "confirm-hold")
+    if (holding) return;
+
+    this.confirmHoldTimer = isPlayer ? -1 : Math.max(length, CONFIRM_HOLD_TIME);
+
+    if ((getCurrentAnimation() == 'confirm' && isAnimationFinished()) || !gotCorrectConfirmHoldAnimation()) holding = true;
+
+    if (holding)
     {
-      return;
-    }
-    else if (getCurrentAnimation() == "confirm")
-    {
-      if (isAnimationFinished())
+      if (gotCorrectConfirmHoldAnimation())
       {
-        this.confirmHoldTimer = -1;
         this.playAnimation('confirm-hold', false, false);
       }
-    }
-    else
-    {
-      this.playAnimation('confirm', false, false);
+      else
+      {
+        // Commented out, since it will spam this trace in console on every hold note with default notestlyes lol.
+        // trace('[WARN] Incorrect data for `confirm-hold` animation!');
+      }
     }
   }
 
-  static final DEFAULT_OFFSET:Int = 13;
+  private inline function gotCorrectConfirmHoldAnimation():Bool
+    return animation?.getByName("confirm-hold")?.looped ?? false;
 
   /**
    * Adjusts the position of the sprite's graphic relative to the hitbox.
