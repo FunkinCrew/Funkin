@@ -218,16 +218,6 @@ class Save implements ConsoleClass
   #end
 
   /**
-   * NOTE: Modifications will not be saved without calling `Save.flush()`!
-   */
-  public var modOptions(get, never):Map<String, Dynamic>;
-
-  function get_modOptions():Map<String, Dynamic>
-  {
-    return data.mods.modOptions;
-  }
-
-  /**
    * The user's current volume setting.
    */
   @:saveProperty(data.volume)
@@ -312,6 +302,9 @@ class Save implements ConsoleClass
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
+  /**
+   * Marks whether a character has been introduced in the Character Select screen.
+   */
   @:saveProperty(data.unlocks.charactersSeen, ["bf"])
   public var charactersSeen:SaveProperty<Array<String>>;
 
@@ -754,6 +747,36 @@ class Save implements ConsoleClass
         trace('Unknown character ID: ' + characterId);
         return true;
     }
+  }
+
+  /**
+   * Retrieve the mod options object for a given mod ID.
+   * This is a dynamic object that mods can write any values they like to.
+   *
+   * @param modId The mod ID to retrieve
+   * @return The mod options for the given mod ID.
+   */
+  public function getModOptions(modId:String):Dynamic
+  {
+    if (!data.mods.modOptions.exists(modId))
+    {
+      data.mods.modOptions.set(modId, {});
+    }
+
+    return data.mods.modOptions.get(modId);
+  }
+
+  /**
+   * Store the mod options object for a given mod ID.
+   * Call this function to ensure your changes get written to the user's save file.
+   *
+   * @param modId The mod ID to store data for.
+   * @param options The mod options object.
+   */
+  public function setModOptions(modId:String, options:Dynamic):Void
+  {
+    data.mods.modOptions.set(modId, options);
+    Save.system.flush();
   }
 
   /**

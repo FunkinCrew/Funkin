@@ -403,9 +403,23 @@ class PolymodHandler
 
     // `flixel.util.FlxSave`
     // resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses', 'save']);
     // Disallow direct manipulation of save data.
     Polymod.blacklistInstanceFields(flixel.util.FlxSave, ['data']);
+
+    // `funkin.save.Save`
+    // Direct access to save data is important for scripts (like checking unlocks),
+    // but we don't want scripts to be able to perform operations like writing scores.
+    Polymod.blacklistInstanceFields(funkin.save.Save, [
+      // No direct field access
+      'data',
+      // LMFAO definitely not
+      'clearData',
+      // No score manipulation please
+      'setLevelScore',
+      'setSongScore',
+      'applySongRank'
+    ]);
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
