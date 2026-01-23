@@ -206,7 +206,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   override public function update(elapsed:Float):Void
   {
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
-    if (currentInstrumental != null && currentInstrumental.playing) Conductor.instance.update();
+    if (currentInstrumental != null && currentInstrumental.playing)
+    {
+      Conductor.instance.update();
+      timeline.timelineControls.updateTime(Conductor.instance.songPosition / 1000);
+    }
 
     // Save the stage if exiting through the F4 keybind, as it moves you to the Main Menu.
     if (FlxG.keys.justPressed.F4)
@@ -420,6 +424,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     Conductor.instance.forceBPM(null);
     Conductor.instance.instrumentalOffset = currentSongMetadata.offsets.instrumental;
     Conductor.instance.mapTimeChanges(currentSongMetadata.timeChanges);
+    timeline.timelineControls.updateLength(currentInstrumental.length / 1000);
+    timeline.timelineControls.updateTime(0);
   }
 
   /**
@@ -473,6 +479,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     Conductor.instance.update(currentInstrumental.time);
+    timeline.timelineControls.updateTime(Conductor.instance.songPosition / 1000);
   }
 
   // ui function bindings
