@@ -58,6 +58,14 @@ enum FreeplayDJState
   CharSelect;
 }
 
+/**
+ * A script that can be tied to a BaseFreeplayDJ.
+ * Create a scripted class that extends BaseFreeplayDJ to use this.
+ * Can be used for full control over DJ's logic.
+ */
+@:hscriptClass
+class ScriptedBaseFreeplayDJ extends BaseFreeplayDJ implements polymod.hscript.HScriptedClass {}
+
 @:nullSafety
 class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
 {
