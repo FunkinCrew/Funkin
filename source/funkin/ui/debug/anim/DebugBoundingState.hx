@@ -354,6 +354,11 @@ class DebugBoundingState extends FlxState
 
     // Hide the mouse cursor on other states.
     Cursor.hide();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
   }
 
   function offsetControls():Void

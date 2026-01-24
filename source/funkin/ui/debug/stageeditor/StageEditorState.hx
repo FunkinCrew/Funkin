@@ -1581,6 +1581,16 @@ class StageEditorState extends UIState
     return "image" + id;
   }
 
+  override function destroy():Void
+  {
+    super.destroy();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
+  }
+
   public function notifyChange(change:String, notif:String, isError:Bool = false)
   {
     NotificationManager.instance.addNotification(
@@ -1658,6 +1668,7 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
+
   /**
    * If non-null, load this character as Boyfriend.
    */
