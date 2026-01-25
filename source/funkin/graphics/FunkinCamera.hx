@@ -100,7 +100,7 @@ class FunkinCamera extends FlxCamera
   public var id:String;
 
   /**
-   * If `true` the blend shader will try to blend with the camera underneath it.
+   * If `true` the blend shader will try to blend with the cameras underneath it.
    * This is useful for, say, making a strumline note have a shader-only blend mode like `INVERT`.
    *
    * Defaults to `false` since this can impact performance.
@@ -148,17 +148,22 @@ class FunkinCamera extends FlxCamera
     {
       if (crossCameraBlending)
       {
-        var underneathCamera:FlxCamera = FlxG.cameras.list[FlxG.cameras.list.indexOf(this) - 1];
-        if (underneathCamera != null)
-        {
-          _cameraTexture.drawCameraScreens([underneathCamera, this]);
+        var camerasUnderneath:Array<FlxCamera> = FlxG.cameras.list.copy();
 
-          underneathCamera.clearDrawStack();
-          underneathCamera.canvas.graphics.clear();
-        }
-        else
+        for (i in camerasUnderneath.length - 1...-1)
         {
-          _cameraTexture.drawCameraScreen(this);
+          if (i > FlxG.cameras.list.indexOf(this))
+          {
+            camerasUnderneath.remove(camerasUnderneath[i]);
+          }
+        }
+
+        _cameraTexture.drawCameraScreens(camerasUnderneath);
+
+        for (camera in camerasUnderneath)
+        {
+          camera.clearDrawStack();
+          camera.canvas.graphics.clear();
         }
       }
       else
