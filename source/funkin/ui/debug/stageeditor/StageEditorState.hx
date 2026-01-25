@@ -416,6 +416,7 @@ class StageEditorState extends UIState
     camMarker.setGraphicSize(80, 80);
     camMarker.updateHitbox();
     camMarker.zIndex = MAX_Z_INDEX + CHARACTER_COLORS.length + 2;
+    camMarker.antialiasing = false;
 
     updateMarkerPos();
 
