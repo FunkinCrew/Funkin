@@ -209,7 +209,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (currentInstrumental != null && currentInstrumental.playing)
     {
       Conductor.instance.update();
-      timeline.timelineControls.updateTime(Conductor.instance.songPosition / 1000);
+      timeline.timelineControls.songPosition = Conductor.instance.songPosition;
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
     {
@@ -429,6 +429,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     Conductor.instance.forceBPM(null);
     Conductor.instance.instrumentalOffset = currentSongMetadata.offsets.instrumental;
     Conductor.instance.mapTimeChanges(currentSongMetadata.timeChanges);
+    timeline.timelineControls.songLength = currentInstrumental.length;
+    timeline.timelineControls.songPosition = 0;
   }
 
   /**
@@ -482,6 +484,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     Conductor.instance.update(currentInstrumental.time);
+    timeline.timelineControls.songPosition = Conductor.instance.songPosition;
   }
 
   // ui function bindings
@@ -525,6 +528,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.sound.music.stop();
   }
 
+  @:bind(timeline.timelineControls.btnTogglePlayback, MouseEvent.CLICK)
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
   function onPlayPause(_)
   {
