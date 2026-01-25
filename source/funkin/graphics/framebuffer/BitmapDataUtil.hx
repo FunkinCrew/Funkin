@@ -41,6 +41,33 @@ class BitmapDataUtil
   }
 
   /**
+   * Draws the contents of multiple cameras onto a `BitmapData` object.
+   *
+   * @param bitmap The bitmap to draw onto.
+   * @param cameras The cameras to grab the screens from.
+   *
+   * @return The combined camera screens as a `BitmapData`.
+   */
+  public static function drawCameraScreens(bitmap:BitmapData, cameras:Array<FlxCamera>):BitmapData
+  {
+    bitmap.__fillRect(bitmap.rect, 0, true);
+
+    for (camera in cameras)
+    {
+      if (camera.filters != null && camera.filters.length > 0)
+      {
+        drawCameraScreen(bitmap, camera, false, true);
+      }
+      else
+      {
+        drawCameraScreen(bitmap, camera, false);
+      }
+    }
+
+    return bitmap;
+  }
+
+  /**
    * Draws the contents of a camera onto a `BitmapData` object.
    *
    * Mostly copied from flixel-animate's `RenderTexture`
@@ -49,10 +76,12 @@ class BitmapDataUtil
    *
    * @param bitmap The bitmap to draw onto.
    * @param camera The camera to grab the screen from.
+   * @param clearBitmap Whether to clear the bitmap before drawing.
+   * @param drawFlashSprite Whether to draw the camera's flash sprite instead of the canvas.
    *
    * @return The camera screen as a `BitmapData`.
    */
-  public static function drawCameraScreen(bitmap:BitmapData, camera:FlxCamera):BitmapData
+  public static function drawCameraScreen(bitmap:BitmapData, camera:FlxCamera, clearBitmap:Bool = true, drawFlashSprite:Bool = false):BitmapData
   {
     var matrix:FlxMatrix = new FlxMatrix();
     var pivotX:Float = FlxG.scaleMode.scale.x;
@@ -60,7 +89,7 @@ class BitmapDataUtil
 
     matrix.setTo(1 / pivotX, 0, 0, 1 / pivotY, camera.flashSprite.x / pivotX, camera.flashSprite.y / pivotY);
 
-    bitmap.__fillRect(bitmap.rect, 0, true);
+    if (clearBitmap) bitmap.__fillRect(bitmap.rect, 0, true);
 
     camera.render();
     camera.flashSprite.__update(false, true);
@@ -78,7 +107,14 @@ class BitmapDataUtil
     renderer.__worldColorTransform.__invert();
     renderer.__setRenderTarget(bitmap);
 
-    bitmap.__drawGL(camera.canvas, renderer);
+    if (drawFlashSprite)
+    {
+      bitmap.__drawGL(camera.flashSprite, renderer);
+    }
+    else
+    {
+      bitmap.__drawGL(camera.canvas, renderer);
+    }
 
     return bitmap;
   }

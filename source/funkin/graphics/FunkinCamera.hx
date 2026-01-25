@@ -99,6 +99,14 @@ class FunkinCamera extends FlxCamera
    */
   public var id:String;
 
+  /**
+   * If `true` the blend shader will try to blend with the camera underneath it.
+   * This is useful for, say, making a strumline note have a shader-only blend mode like `INVERT`.
+   *
+   * Defaults to `false` since this can impact performance.
+   */
+  public var crossCameraBlending:Bool;
+
   var _blendShader:RuntimeCustomBlendShader;
   var _backgroundFrame:FlxFrame;
 
@@ -125,6 +133,8 @@ class FunkinCamera extends FlxCamera
 
     _cameraMatrix = new FlxMatrix();
     _cameraTexture = FixedBitmapData.create(this.width, this.height);
+
+    crossCameraBlending = false;
   }
 
   override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
@@ -136,7 +146,26 @@ class FunkinCamera extends FlxCamera
     // the specified blend mode requires the shader.
     if (shouldUseShader)
     {
-      _cameraTexture.drawCameraScreen(this);
+      if (crossCameraBlending)
+      {
+        var underneathCamera:FlxCamera = FlxG.cameras.list[FlxG.cameras.list.indexOf(this) - 1];
+        if (underneathCamera != null)
+        {
+          _cameraTexture.drawCameraScreens([underneathCamera, this]);
+
+          underneathCamera.clearDrawStack();
+          underneathCamera.canvas.graphics.clear();
+        }
+        else
+        {
+          _cameraTexture.drawCameraScreen(this);
+        }
+      }
+      else
+      {
+        _cameraTexture.drawCameraScreen(this);
+      }
+
       _backgroundFrame.frame.set(0, 0, this.width, this.height);
 
       // Clear the camera's graphics
