@@ -616,7 +616,6 @@ class SongChartData implements ICloneable<SongChartData>
    * When exporting, this should always be re-updated to `SongRegistry.DEFAULT_GENERATEDBY`,
    * so we know the last version that modified it.
    */
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   /**
