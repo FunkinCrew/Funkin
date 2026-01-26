@@ -566,7 +566,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.opponent = opponent;
     this.instrumental = instrumental;
 
-    this.altInstrumentals = altInstrumentals;
+    this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
 
