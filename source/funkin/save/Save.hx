@@ -218,6 +218,16 @@ class Save implements ConsoleClass
   #end
 
   /**
+   * NOTE: Modifications will not be saved without calling `Save.flush()`!
+   */
+  public var modOptions(get, never):Map<String, Dynamic>;
+
+  function get_modOptions():Map<String, Dynamic>
+  {
+    return data.mods.modOptions;
+  }
+
+  /**
    * The user's current volume setting.
    */
   @:saveProperty(data.volume)

@@ -403,9 +403,9 @@ class PolymodHandler
 
     // `flixel.util.FlxSave`
     // resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses', 'save']);
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
     // Disallow direct manipulation of save data.
-    Polymod.blacklistInstanceFields(flixel.util.FlxSave, ['data']);
+    Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
 
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
