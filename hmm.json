@@ -108,13 +108,6 @@
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
-      "name": "hscript",
-      "type": "git",
-      "dir": null,
-      "ref": "dcc6f822e0866ca4fda300ed23e99559260f7bf5",
-      "url": "https://github.com/FunkinCrew/hscript"
-    },
-    {
       "name": "hxcpp",
       "type": "git",
       "dir": null,
@@ -197,7 +190,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "b1108c0b5cccf4aceb92935866ef7b9a0fc81aec",
+      "ref": "3f511487c36e6ef8bdcef90edee08b83e9880d23",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {
