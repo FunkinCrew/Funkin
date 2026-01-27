@@ -87,15 +87,11 @@ class UploadChartDialog extends Dialog
 
     if (selectedFile != null && selectedFile.bytes != null)
     {
-      var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
-      if (entires == null || entires.length != 5)
-      {
-        throw 'Invalid or corrupted FNFC file.';
-      }
-      this.cameraEditorState.songMetadatas = entires[0];
-      this.cameraEditorState.songDatas = entires[1];
-      this.cameraEditorState.audioInstTrackData = entires[3];
-      this.cameraEditorState.audioVocalTrackData = entires[4];
+      var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
+      this.cameraEditorState.songMetadatas = entries.songMetadatas;
+      this.cameraEditorState.songDatas = entries.songChartDatas;
+      this.cameraEditorState.audioInstTrackData = entries.instrumentals;
+      this.cameraEditorState.audioVocalTrackData = entries.vocals;
       this.cameraEditorState.loadCurrentInstrumentalAndVocals();
       this.cameraEditorState.buildStage();
 
