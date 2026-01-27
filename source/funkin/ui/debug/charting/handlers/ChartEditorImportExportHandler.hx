@@ -262,21 +262,11 @@ class ChartEditorImportExportHandler
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
 
-    var entries:Array<Dynamic> = genericLoadFNFC(bytes);
-    if (entries == null)
-    {
-      trace('Failed to parse FNFC from bytes, got null!');
-      return null;
-    }
-    else if (entries.length != 5)
-    {
-      trace('Failed to parse FNFC from bytes, got insufficient entries!');
-      return null;
-    }
+    var entries:FNFCData = genericLoadFNFC(bytes);
 
-    var songMetadatas:Map<String, SongMetadata> = entries[0];
-    var songChartDatas:Map<String, SongChartData> = entries[1];
-    var manifest:ChartManifestData = entries[2];
+    var songMetadatas:Map<String, SongMetadata> = entries.songMetadatas;
+    var songChartDatas:Map<String, SongChartData> = entries.songChartDatas;
+    var manifest:ChartManifestData = entries.manifest;
 
     loadSong(state, songMetadatas, songChartDatas, manifest);
 
@@ -344,11 +334,9 @@ class ChartEditorImportExportHandler
    * @param bytes the bytes of the FNFC file.
    * @param loadAudio whether to load audio files from the FNFC. Defaults to `false`.
    * `instrumentals` is [`variation`, `bytes`], `vocals` is [`variation-player`, `bytes`].
-   * @return Array<Dynamic>, [`songMetadatas:Map<String, SongMetadata>`,
-   * `songChartDatas:Map<String, SongChartData>`, `manifest:ChartManifestData`,
-   * `instrumentals:Map<String, Bytes>`, `vocals:Map<String, Bytes> `]
+   * @return Chart data, including songMetadatas, songChartDatas, manifest, instrumentals, vocals
    */
-  public static function genericLoadFNFC(bytes:Bytes, loadAudio:Bool = false):Array<Dynamic>
+  public static function genericLoadFNFC(bytes:Bytes, loadAudio:Bool = false):FNFCData
   {
     // Read the ZIP/.FNFC file, and create a map of entries.
     var fileEntries:Array<haxe.zip.Entry> = FileUtil.readZIPFromBytes(bytes);
@@ -462,7 +450,13 @@ class ChartEditorImportExportHandler
       }
     }
 
-    return [songMetadatas, songChartDatas, manifest, instrumentals, vocals];
+    return {
+      songMetadatas: songMetadatas,
+      songChartDatas: songChartDatas,
+      manifest: manifest,
+      instrumentals: instrumentals,
+      vocals: vocals
+    };
   }
 
   /**
@@ -674,4 +668,13 @@ class ChartEditorImportExportHandler
     }
   }
 }
+
+typedef FNFCData =
+{
+  var songMetadatas:Map<String, SongMetadata>;
+  var songChartDatas:Map<String, SongChartData>;
+  var manifest:ChartManifestData;
+  var instrumentals:Map<String, Bytes>;
+  var vocals:Map<String, Bytes>;
+};
 #end
