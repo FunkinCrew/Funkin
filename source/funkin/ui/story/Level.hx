@@ -202,10 +202,13 @@ class Level implements IRegistryEntry<LevelData>
 
     if (_data.props.length == 0) return props;
 
-    var hiddenProps:Array<LevelProp> = props.splice(_data.props.length - 1, props.length - 1);
-    for (hiddenProp in hiddenProps)
+    // Hides unused props
+    if (_data.props.length < props.length)
     {
-      hiddenProp.visible = false;
+      for (i in _data.props.length...props.length)
+      {
+        props[i].visible = false;
+      }
     }
 
     for (propIndex in 0..._data.props.length)
