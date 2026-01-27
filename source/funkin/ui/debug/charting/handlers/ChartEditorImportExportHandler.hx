@@ -230,9 +230,13 @@ class ChartEditorImportExportHandler
   public static function loadFromFNFCPath(state:ChartEditorState, path:String):Null<Array<String>>
   {
     var bytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
-    if (bytes == null) return null;
+    if (bytes == null)
+    {
+      trace('Failed to load bytes for FNFC from $path');
+      return null;
+    }
 
-    trace('Loaded ${bytes.length} bytes from $path');
+    trace('Loaded FNFC (${bytes.length} bytes) from $path');
 
     var result:Null<Array<String>> = loadFromFNFC(state, bytes);
     if (result != null)
@@ -259,7 +263,17 @@ class ChartEditorImportExportHandler
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(fileEntries);
 
     var entries:Array<Dynamic> = genericLoadFNFC(bytes);
-    if (entries == null || entries.length != 3) return null;
+    if (entries == null)
+    {
+      trace('Failed to parse FNFC from bytes, got null!');
+      return null;
+    }
+    else if (entries.length != 5)
+    {
+      trace('Failed to parse FNFC from bytes, got insufficient entries!');
+      return null;
+    }
+
     var songMetadatas:Map<String, SongMetadata> = entries[0];
     var songChartDatas:Map<String, SongChartData> = entries[1];
     var manifest:ChartManifestData = entries[2];
