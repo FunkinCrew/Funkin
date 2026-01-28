@@ -120,6 +120,7 @@ class Save implements ConsoleClass
           globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
+          audioDevice: 'Default',
           screenshot:
             {
               shouldHideMouse: true,
@@ -1231,6 +1232,12 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  /**
+   * What audio device should it playback sounds to.
+   * @default 'Default'
+   */
+  var audioDevice:String;
 
   /**
    * Screenshot options

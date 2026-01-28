@@ -416,6 +416,38 @@ class Preferences
   }
 
   /**
+   * What audio device should it playback sounds to.
+   * @default Default
+   */
+  public static var audioDevice(get, set):String;
+
+  static function get_audioDevice():String
+  {
+    return Save?.instance?.options?.audioDevice ?? "Default";
+  }
+
+  static function set_audioDevice(value:String):String
+  {
+    if (value == Save.instance.options.audioDevice) return value;
+
+    var save:Save = Save.instance;
+    if (value != "Default" && lime.media.AudioManager.refresh(value))
+    {
+      lime.media.AudioManager.automaticDefaultPlaybackDevice = false;
+    }
+    else
+    {
+      lime.media.AudioManager.refresh();
+      lime.media.AudioManager.automaticDefaultPlaybackDevice = true;
+    }
+
+    save.options.audioDevice = value;
+    Save.system.flush();
+
+    return value;
+  }
+
+  /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`
    */
@@ -483,6 +515,17 @@ class Preferences
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
+
+    // Apply audio device preference, if failed, fallback to Default.
+    if (lime.media.AudioManager.refresh(Preferences.audioDevice))
+    {
+      lime.media.AudioManager.automaticDefaultPlaybackDevice = false;
+    }
+    else
+    {
+      Preferences.audioDevice = "Default";
+      lime.media.AudioManager.automaticDefaultPlaybackDevice = true;
+    }
 
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);

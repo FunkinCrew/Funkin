@@ -30,14 +30,23 @@ class EnumPreferenceItem<T> extends TextMenuItem
   {
     super(x, y, name, function() {
       var value = map.get(this.currentKey);
-      callback(this.currentKey, value);
+      this.onChangeCallback(this.currentKey, value);
     });
 
     updateHitbox();
 
-    this.map = map;
-    this.currentKey = defaultKey;
     this.onChangeCallback = callback;
+    changeEnums(map, defaultKey);
+
+    lefthandText = new AtlasText(x + 15, y, formatted(defaultKey), AtlasFont.DEFAULT);
+
+    this.fireInstantly = true;
+  }
+
+  public function changeEnums(map:Map<String, T>, ?defaultKey:String):Void
+  {
+    this.map = map;
+    if (defaultKey != null) this.currentKey = defaultKey;
 
     var i:Int = 0;
     for (key in map.keys())
@@ -48,10 +57,6 @@ class EnumPreferenceItem<T> extends TextMenuItem
       if (this.currentKey == key) index = i;
       i += 1;
     }
-
-    lefthandText = new AtlasText(x + 15, y, formatted(defaultKey), AtlasFont.DEFAULT);
-
-    this.fireInstantly = true;
   }
 
   override function update(elapsed:Float):Void
