@@ -298,19 +298,25 @@ class CameraEditorState extends UIState implements ConsoleClass
       char.currentStage = currentStage;
       char.debug = true;
       currentStage.addCharacter(char, charType);
+
       char.onCreate(null);
       char.onUpdate(null);
+      char.onAdd(null);
     };
 
     buildChar(gf, GF);
     buildChar(bf, BF);
     buildChar(dad, DAD);
 
+    currentStage.resetStage();
     currentStage.refresh();
+
     goToPoint.x = 0;
     goToPoint.y = 0;
+
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
+
     trace("Built stage: " + stageID);
   }
 
