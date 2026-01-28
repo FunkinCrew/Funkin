@@ -1,5 +1,6 @@
 package funkin.play.notes.notekind;
 
+import funkin.data.note.SongNoteSchema;
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
@@ -9,17 +10,17 @@ import funkin.modding.events.ScriptEvent;
 class NoteKind implements INoteScriptedClass
 {
   /**
-   * The name of the note kind
+   * The name of the Note Kind.
    */
   public var noteKind:String;
 
   /**
-   * Description used in chart editor
+   * Description used in the Chart Editor.
    */
   public var description:String;
 
   /**
-   * Custom note style
+   * Custom Note Style of this Note Style.
    */
   public var noteStyleId:Null<String>;
 
@@ -34,25 +35,38 @@ class NoteKind implements INoteScriptedClass
   public var suffix:String;
 
   /**
-   * Custom parameters for the chart editor
-   */
-  public var params:Array<NoteKindParam>;
-
-  /**
    * Set this to `false` to disable scoring for this note.
    * The note will no longer count towards ratings, points, or accuracy.
    * @default `true` to enable scoring.
    */
   public var scoreable(default, default):Bool = true;
 
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
+  public function new(noteKind:String, description:String = '', ?noteStyleId:String, ?noanim:Bool, ?suffix:String)
   {
     this.noteKind = noteKind;
     this.description = description;
     this.noteStyleId = noteStyleId;
-    this.params = params ?? [];
     this.noanim = noanim ?? false;
     this.suffix = suffix ?? '';
+  }
+
+  /**
+   * Retrieves the chart editor schema for this note kind.
+   * @return The schema, or null if this note kind does not have a schema.
+   */
+  public function getNoteSchema():SongNoteSchema
+  {
+    return null;
+  }
+
+  /**
+   * Retrieves the human readable title of this note kind.
+   * Used for the chart editor.
+   * @return The title.
+   */
+  public function getDescription():String
+  {
+    return this.description;
   }
 
   public function toString():String
@@ -119,47 +133,4 @@ class NoteKind implements INoteScriptedClass
   public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
   }
-}
-
-/**
- * Abstract for setting the type of the `NoteKindParam`
- * This was supposed to be an enum but polymod kept being annoying
- */
-abstract NoteKindParamType(String) from String to String
-{
-  public static final STRING:String = 'String';
-  public static final INT:String = 'Int';
-  public static final FLOAT:String = 'Float';
-}
-
-typedef NoteKindParamData =
-{
-  /**
-   * If `min` is null, there is no minimum
-   */
-  ?min:Null<Float>,
-  /**
-   * If `max` is null, there is no maximum
-   */
-  ?max:Null<Float>,
-  /**
-   * If `step` is null, it will use 1.0
-   */
-  ?step:Null<Float>,
-  /**
-   * If `precision` is null, there will be 0 decimal places
-   */
-  ?precision:Null<Int>,
-  ?defaultValue:Dynamic
-}
-
-/**
- * Typedef for creating custom parameters in the chart editor
- */
-typedef NoteKindParam =
-{
-  name:String,
-  description:String,
-  type:NoteKindParamType,
-  ?data:NoteKindParamData
 }
