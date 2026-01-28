@@ -384,7 +384,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         for (member in audioWaveforms.members)
         {
-          member.time = Conductor.instance.songPosition / Constants.MS_PER_SEC;
+          member.time = scrollPositionInMs / Constants.MS_PER_SEC;
           member.duration = (Conductor.instance.stepLengthMs * 16) / Constants.MS_PER_SEC;
 
           // Doing this desyncs the waveforms from the grid.
