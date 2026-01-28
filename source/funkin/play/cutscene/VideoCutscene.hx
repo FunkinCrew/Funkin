@@ -203,7 +203,7 @@ class VideoCutscene
       vid.restartVideo();
       vid.resumeVideo();
       onVideoRestarted.dispatch();
-      #else if hxvlc
+      #elseif hxvlc
       vid.bitmap.time = 0;
       vid.resume();
       onVideoRestarted.dispatch();
