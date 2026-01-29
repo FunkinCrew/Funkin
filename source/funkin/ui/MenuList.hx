@@ -148,11 +148,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
     else if (TouchUtil.pressed)
     {
+      final menuCamera = this.camera;
       for (i in 0...members.length)
       {
         final item = members[i];
-        final menuCamera = FlxG.cameras.list[1];
-
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
         final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
 
