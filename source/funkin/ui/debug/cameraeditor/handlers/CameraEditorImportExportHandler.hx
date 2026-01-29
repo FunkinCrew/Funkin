@@ -8,6 +8,7 @@ import funkin.util.FileUtil;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.importer.ChartManifestData;
+import funkin.ui.debug.charting.util.FNFCData;
 
 /**
  * Handles saving, loading, importing, and exporting for the camera editor.
@@ -24,20 +25,19 @@ class CameraEditorImportExportHandler
    */
   public static function loadFNFCFromBytes(state:CameraEditorState, bytes:Bytes):Bool
   {
-    // [Array<SongMetadata>, Array<SongChartData>, ChartManifestData, Map<String, Bytes>, Map<String, Bytes>]
-    var entries:Array<Dynamic> = funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.genericLoadFNFC(bytes, true);
+    var entries:FNFCData = funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.genericLoadFNFC(bytes, true);
 
-    if (entries == null || entries.length != 5)
+    if (entries == null)
     {
       throw 'Invalid or corrupted FNFC file.';
       return false;
     }
 
-    state.songMetadatas = entries[0];
-    state.songDatas = entries[1];
-    state.songManifestData = entries[2];
-    state.audioInstTrackData = entries[3];
-    state.audioVocalTrackData = entries[4];
+    state.songMetadatas = entries.songMetadatas;
+    state.songDatas = entries.songChartDatas;
+    state.songManifestData = entries.manifest;
+    state.audioInstTrackData = entries.instrumentals;
+    state.audioVocalTrackData = entries.vocals;
     state.buildStage();
 
     trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals.');
