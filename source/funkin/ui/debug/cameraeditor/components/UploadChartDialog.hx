@@ -15,6 +15,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
+import funkin.ui.debug.charting.util.FNFCData;
 
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
 class UploadChartDialog extends Dialog
@@ -89,9 +90,9 @@ class UploadChartDialog extends Dialog
 
     if (selectedFile != null && selectedFile.bytes != null)
     {
-      var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
+      var entries:FNFCData = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
 
-      if (entires == null || entires.length != 5)
+      if (entries == null)
       {
         CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
         this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
