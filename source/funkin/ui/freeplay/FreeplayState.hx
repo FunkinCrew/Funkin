@@ -1995,11 +1995,12 @@ class FreeplayState extends MusicBeatSubState
       _pressedOnCapsule = true;
     }
 
+    final framerateMultiplier:Float = (FlxG.updateFramerate / 60);
     for (touch in FlxG.touches.list)
     {
       if (touch.pressed && _pressedOnCapsule)
       {
-        final delta = touch.deltaViewY;
+        final delta = touch.deltaViewY * framerateMultiplier;
         if (Math.abs(delta) >= 2)
         {
           var dpiScale = FlxG.stage.window.display.dpi / 160;
@@ -2025,7 +2026,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (FlxG.touches.flickManager.initialized)
     {
-      var flickVelocity = FlxG.touches.flickManager.velocity.y;
+      var flickVelocity = FlxG.touches.flickManager.velocity.y * framerateMultiplier;
       if (Math.isFinite(flickVelocity))
       {
         _flickEnded = false;

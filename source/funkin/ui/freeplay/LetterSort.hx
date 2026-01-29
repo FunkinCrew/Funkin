@@ -109,7 +109,7 @@ class LetterSort extends FlxSpriteGroup
       for (index => letter in letterHitboxes)
       {
         @:privateAccess
-        if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+        if (!TouchUtil.overlaps(letter, instance.funnyCam) || instance._pressedOnCapsule) continue;
 
         if (index == 2 || index == 5) continue;
 
@@ -134,10 +134,14 @@ class LetterSort extends FlxSpriteGroup
     @:privateAccess
     {
       if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
-        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam)
+          && SwipeUtil.swipeLeft
+          && !instance._pressedOnCapsule) #end) changeSelection(-1);
 
       if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
-        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
+        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam)
+          && SwipeUtil.swipeRight
+          && !instance._pressedOnCapsule) #end) changeSelection(1);
     }
   }
 
