@@ -241,7 +241,14 @@ class AlbumRoll extends FlxSpriteGroup
    */
   public function showStars():Void
   {
-    difficultyStars.visible = true; // true;
+    difficultyStars.visible = true;
     difficultyStars.flameCheck();
+  }
+
+  override function destroy():Void
+  {
+    newAlbumArt.replaceSymbolGraphic(ALBUM_ART_SYMBOL, null);
+
+    super.destroy();
   }
 }
