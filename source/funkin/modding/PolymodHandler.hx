@@ -397,6 +397,13 @@ class PolymodHandler
     Polymod.blacklistImport('openfl.system.ApplicationDomain');
     Polymod.blacklistImport('openfl.net.SharedObject');
 
+    // These classes have a couple functions that can basically do `Type.resolveClass()`
+    // using `AssetLibrary.classTypes.get()`.
+    Polymod.blacklistImport('lime.utils.AssetLibrary');
+    Polymod.blacklistImport('lime.utils.AssetManifest');
+    Polymod.blacklistImport('openfl.utils.AssetLibrary');
+    Polymod.blacklistImport('openfl.utils.AssetManifest');
+
     // `openfl.desktop.NativeProcess`
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
