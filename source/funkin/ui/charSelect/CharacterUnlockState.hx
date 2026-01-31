@@ -127,9 +127,7 @@ class CharacterUnlockState extends MusicBeatState
     // Fade to black, then switch state.
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () ->
     {
-      funkin.FunkinMemory.clearFreeplay();
       #if ios
-      trace(DeviceUtil.iPhoneNumber);
       if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
       else
         funkin.memory.FunkinMemory.purgeCache();
