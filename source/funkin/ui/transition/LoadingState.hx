@@ -310,7 +310,7 @@ class LoadingState extends MusicBeatSubState
           trace('Queueing $sprite to preload.');
           // new Future<String>(function() {
           var path = Paths.image(sprite);
-          funkin.FunkinMemory.cacheTexture(path);
+          funkin.memory.FunkinMemory.cacheTexture(path);
           // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
           // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
           if (path.endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || path.endsWith('spritemap1.astc') #end)
@@ -328,7 +328,7 @@ class LoadingState extends MusicBeatSubState
           new Future<String>(function()
           {
             var path = Paths.sound(sound);
-            funkin.FunkinMemory.cacheSound(path);
+            funkin.memory.FunkinMemory.cacheSound(path);
             return '${path} successfuly loaded.';
           }, true);
         }
@@ -341,11 +341,11 @@ class LoadingState extends MusicBeatSubState
     }
     else
     {
-      // funkin.FunkinMemory.clearFreeplay();
+      // funkin.memory.FunkinMemory.clearFreeplay();
       FlxG.signals.preStateSwitch.addOnce(function()
       {
-        funkin.FunkinMemory.clearFreeplay();
-        funkin.FunkinMemory.purgeCache(true);
+        funkin.memory.FunkinMemory.clearFreeplay();
+        funkin.memory.FunkinMemory.purgeCache(true);
       });
       FlxG.switchState(playStateCtor);
     }
@@ -367,7 +367,7 @@ class LoadingState extends MusicBeatSubState
   {
     // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
     // FunkinSprite.preparePurgeCache();
-    // funkin.FunkinMemory.purgeSoundCache();
+    // funkin.memory.FunkinMemory.purgeSoundCache();
 
     // List all image assets in the level's library.
 

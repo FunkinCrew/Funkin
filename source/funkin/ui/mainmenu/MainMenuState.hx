@@ -150,8 +150,8 @@ class MainMenuState extends MusicBeatState
     {
       FlxG.signals.preStateSwitch.addOnce(function()
       {
-        funkin.FunkinMemory.clearFreeplay();
-        funkin.FunkinMemory.purgeCache();
+        funkin.memory.FunkinMemory.clearFreeplay();
+        funkin.memory.FunkinMemory.purgeCache();
       });
       startExitState(() -> new StoryMenuState());
     });

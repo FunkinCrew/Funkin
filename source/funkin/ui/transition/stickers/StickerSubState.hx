@@ -15,7 +15,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerPack;
-import funkin.FunkinMemory;
+import funkin.memory.FunkinMemory;
 import funkin.util.DeviceUtil;
 import funkin.Preferences;
 
@@ -206,11 +206,11 @@ class StickerSubState extends MusicBeatSubState
             FlxG.signals.preStateSwitch.addOnce(() -> {
               #if ios
               trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+              if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
               else
-                funkin.FunkinMemory.purgeCache();
+                funkin.memory.FunkinMemory.purgeCache();
               #else
-              funkin.FunkinMemory.purgeCache(true);
+              funkin.memory.FunkinMemory.purgeCache(true);
               #end
             });
             FlxG.switchState(() ->

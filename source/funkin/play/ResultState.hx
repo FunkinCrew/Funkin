@@ -1113,11 +1113,11 @@ class ResultState extends MusicBeatSubState
             {
               #if ios
               trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+              if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
               else
-                funkin.FunkinMemory.purgeCache();
+                funkin.memory.FunkinMemory.purgeCache();
               #else
-              funkin.FunkinMemory.purgeCache(true);
+              funkin.memory.FunkinMemory.purgeCache(true);
               #end
             });
             FlxG.switchState(() -> targetState);
@@ -1144,11 +1144,11 @@ class ResultState extends MusicBeatSubState
         {
           #if ios
           trace(DeviceUtil.iPhoneNumber);
-          if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+          if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
           else
-            funkin.FunkinMemory.purgeCache();
+            funkin.memory.FunkinMemory.purgeCache();
           #else
-          funkin.FunkinMemory.purgeCache(true);
+          funkin.memory.FunkinMemory.purgeCache(true);
           #end
         });
         FlxG.switchState(() -> targetState);
