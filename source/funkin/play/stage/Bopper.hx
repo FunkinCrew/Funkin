@@ -335,14 +335,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return output;
   }
 
-  override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
-  {
-    var output:FlxRect = super.getScreenBounds(newRect, camera);
-    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
-    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
-    return output;
-  }
-
   public function onPause(event:PauseScriptEvent) {}
 
   public function onResume(event:ScriptEvent) {}
