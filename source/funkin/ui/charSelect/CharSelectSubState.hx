@@ -1100,11 +1100,14 @@ class CharSelectSubState extends MusicBeatSubState
             if (autoFollow && !pressedSelect && memb.animation.curAnim?.name != 'idle')
             {
               memb.animation.play("confirm", false, true);
-              var onFinish:String->Void = (_) ->
+
+              var onFinish:String->Void;
+              onFinish = (_) ->
               {
                 member.animation.play('idle');
-                member.animation.onFinish.removeAll();
+                member.animation.onFinish.remove(onFinish);
               };
+
               member.animation.onFinish.add(onFinish);
             }
           }
