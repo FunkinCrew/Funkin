@@ -45,7 +45,7 @@ class Strumline extends FlxSpriteGroup
   static final INITIAL_OFFSET:Float = -0.275 * STRUMLINE_SIZE;
   static final NUDGE:Float = 2.0;
 
-  static final KEY_COUNT:Int = 4;
+  public static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
 
   var renderDistanceMs(get, never):Float;

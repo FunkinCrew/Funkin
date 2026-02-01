@@ -2486,10 +2486,7 @@ class PlayState extends MusicBeatSubState
         if (noteKind != null) scoreable = noteKind.scoreable;
       }
 
-      var noteData:Int = songNote.getDirection();
-      var playerNote:Bool = true;
-
-      if (noteData > 3) playerNote = false;
+      var noteData:Int = songNote.data;
 
       switch (songNote.getStrumlineIndex())
       {
