@@ -204,11 +204,6 @@ class LoadingState extends MusicBeatSubState
     }
   }
 
-  static function getSongPath():String
-  {
-    return Paths.inst(PlayState.instance?.currentSong.id ?? throw 'Cannot retrieve song path');
-  }
-
   /**
    * Starts the transition to a new `PlayState` to start a new song.
    * First switches to the `LoadingState` if assets need to be loaded.
@@ -293,21 +288,7 @@ class LoadingState extends MusicBeatSubState
       {
         var spritesToCache = ["gameplay/songs/darnell/cutscene/cutscene-can", "gameplay/songs/2hot/graphics/spraycan-explosion-ez", "gameplay/songs/2hot/graphics/can-impact"];
 
-        var soundsToCache = [
-          "gameplay/songs/2hot/sounds/darnell-lighter",
-          "gameplay/characters/pico-playable/sounds/gun-prep",
-          "gameplay/songs/2hot/sounds/kick-can-forward",
-          "gameplay/songs/2hot/sounds/kick-can-up",
-          "gameplay/songs/2hot/spraycan/spritemap1",
-          "gameplay/stages/phillyBlazin/sounds/lightning-1",
-          "gameplay/stages/phillyBlazin/sounds/lightning-2",
-          "gameplay/stages/phillyBlazin/sounds/lightning-3",
-          "gameplay/characters/pico-playable/sounds/bonk",
-          "gameplay/characters/pico-playable/sounds/shot-1",
-          "gameplay/characters/pico-playable/sounds/shot-2",
-          "gameplay/characters/pico-playable/sounds/shot-3",
-          "gameplay/characters/pico-playable/sounds/shot-4"
-        ];
+        var soundsToCache = ["gameplay/songs/2hot/sounds/darnell-lighter", "gameplay/characters/pico-playable/sounds/gun-prep", "gameplay/songs/2hot/sounds/kick-can-forward", "gameplay/songs/2hot/sounds/kick-can-up", "gameplay/songs/2hot/spraycan/spritemap1", "gameplay/stages/phillyBlazin/sounds/lightning-1", "gameplay/stages/phillyBlazin/sounds/lightning-2", "gameplay/stages/phillyBlazin/sounds/lightning-3", "gameplay/characters/pico-playable/sounds/bonk", "gameplay/characters/pico-playable/sounds/shot-1", "gameplay/characters/pico-playable/sounds/shot-2", "gameplay/characters/pico-playable/sounds/shot-3", "gameplay/characters/pico-playable/sounds/shot-4"];
 
         for (sprite in spritesToCache)
         {

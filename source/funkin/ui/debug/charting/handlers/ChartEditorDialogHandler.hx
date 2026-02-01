@@ -127,8 +127,6 @@ class ChartEditorDialogHandler
   {
     var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
 
-    var hasClearedVocals:Bool = false;
-
     var charIdsForVocals:Array<String> = [charData.player, charData.opponent];
 
     var dialog = ChartEditorUploadVocalsDialog.build(state, charIdsForVocals, closable);

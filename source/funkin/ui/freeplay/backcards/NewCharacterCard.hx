@@ -21,8 +21,6 @@ class NewCharacterCard extends BackingCard
   var yellow:FlxSprite;
   var multiplyBar:FlxSprite;
 
-  var bruh:FlxSprite;
-
   public var friendFoe:BGScrollingText;
   public var newUnlock1:BGScrollingText;
   public var waiting:BGScrollingText;

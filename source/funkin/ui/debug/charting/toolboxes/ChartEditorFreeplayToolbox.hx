@@ -101,31 +101,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return previewSelectionSprite.width = value - previewBoxStartPosAbsolute;
   }
 
-  var previewBoxStartPosRelative(get, set):Float;
-
-  function get_previewBoxStartPosRelative():Float
-  {
-    return previewSelectionSprite.left - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxStartPosRelative(value:Float):Float
-  {
-    return previewSelectionSprite.left = waveformScrollview.hscrollPos + value;
-  }
-
-  var previewBoxEndPosRelative(get, set):Float;
-
-  function get_previewBoxEndPosRelative():Float
-  {
-    return previewSelectionSprite.left + previewSelectionSprite.width - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxEndPosRelative(value:Float):Float
-  {
-    if (value < previewBoxStartPosRelative) return previewSelectionSprite.left = previewBoxStartPosRelative;
-    return previewSelectionSprite.width = value - previewBoxStartPosRelative;
-  }
-
   /**
    * The amount you need to multiply the zoom by such that, at the base zoom level, one tick is equal to `MAGIC_SCALE_BASE_TIME` seconds.
    */
@@ -362,10 +337,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
       return '${integerMinutes}:${remainingSecondsPad}${decimalSeconds > 0 ? '.$decimalSeconds' : ''}';
     }
-  }
-
-  function buildTickLabel():Void
-  {
   }
 
   public function onStartDragPlayhead():Void
@@ -635,9 +606,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
-      var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;
-      var playheadDiff = playheadAbsolutePos - prevPlayheadAbsolutePos;
 
       // BEHAVIOR C.
       // Copy Audacity!

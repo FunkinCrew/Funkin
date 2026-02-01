@@ -612,11 +612,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var playtestAudioSettings:Bool = false;
 
   /**
-   * Enables or disables the "debugger" popup that appears when you run into a flixel error.
-   */
-  var enabledDebuggerPopup:Bool = true;
-
-  /**
    * Whether song scripts should be enabled during playtesting.
    * You should probably check the box if the song has custom mechanics.
    */
@@ -1132,12 +1127,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * This happens when we add/remove difficulties.
    */
   var difficultySelectDirty:Bool = true;
-
-  /**
-   * Whether the character select view in the toolbox has been modified and needs to be updated.
-   * This happens when we add/remove characters.
-   */
-  var characterSelectDirty:Bool = true;
 
   /**
    * Whether the player preview toolbox have been modified and need to be updated.
@@ -2209,25 +2198,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var buttonSelectEvent:Button;
 
   /**
-   * The slider above the grid that sets the volume of the player's sounds.
-   * Constructed manually and added to the layout so we can control its position.
-   */
-  var sliderVolumePlayer:Slider;
-
-  /**
-   * The slider above the grid that sets the volume of the opponent's sounds.
-   * Constructed manually and added to the layout so we can control its position.
-   */
-  var sliderVolumeOpponent:Slider;
-
-  /**
    * RENDER OBJECTS
    */
   // ==============================
-
-  /**
-   * The group containing the visulizers! */
-  var visulizerGrps:FlxTypedGroup<PolygonSpectogram> = null;
 
   /**
    * The IMAGE used for the grid. Updated by ChartEditorThemeHandler.
@@ -2746,8 +2719,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBG.scrollFactor.set(0, 0);
     menuBG.zIndex = -100;
   }
-
-  var oppSpectogram:PolygonSpectogram;
 
   /**
    * Builds and displays the chart editor grid, including the playhead and cursor.

@@ -448,11 +448,6 @@ class Controls extends FlxActionSet
     }
   }
 
-  static function init():Void
-  {
-    FlxG.inputs.addUniqueType(new FlxActionManager());
-  }
-
   /**
    * Calls a function passing each action bound by the specified control
    * @param control

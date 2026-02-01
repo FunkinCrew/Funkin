@@ -450,7 +450,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateDifficultyRating(newRating:Int):Void
   {
-    var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
+    //var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
 
     for (i in 0...difficultyNumbers.length)
     {

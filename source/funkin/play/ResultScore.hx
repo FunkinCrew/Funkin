@@ -17,7 +17,7 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     if (group == null || group.members == null) return val;
     var loopNum:Int = group.members.length - 1;
     var dumbNumb = Std.parseInt(Std.string(val));
-    var prevNum:ScoreNum;
+    //var prevNum:ScoreNum;
 
     dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
 

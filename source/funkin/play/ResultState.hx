@@ -564,7 +564,6 @@ class ResultState extends MusicBeatSubState
     return (playerCharacter?.getResultsMusicPath(rank) ?? 'gameplay/playable-characters/bf/results/music/results-normal/results-normal') + suffix;
   }
 
-  var rankTallyTimer:Null<FlxTimer> = null;
   var clearPercentTarget:Int = 100;
   var clearPercentLerp:Int = 0;
 

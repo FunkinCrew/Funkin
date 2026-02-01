@@ -215,34 +215,6 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
   }
 
   /**
-   * Called when a file is selected by dropping a file onto the Upload Chart box.
-   */
-  function onDropFileChartBox(pathStr:String):Void
-  {
-    var path:Path = new Path(pathStr);
-    trace('Dropped file (${path})');
-
-    try
-    {
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(chartEditorState, path.toString());
-      if (result != null)
-      {
-        chartEditorState.success('Loaded Chart',
-          result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
-        this.hideDialog(DialogButton.APPLY);
-      }
-      else
-      {
-        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
-      }
-    }
-    catch (err)
-    {
-      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
-    }
-  }
-
-  /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
   function onSelectFile(selectedFile:SelectedFileData):Void

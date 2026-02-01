@@ -29,11 +29,6 @@ class ChartEditorEventSprite extends FlxSprite
    */
   public var eventData(default, set):Null<SongEventData> = null;
 
-  /**
-   * The image used for all song events. Cached for performance.
-   */
-  static var eventSpriteBasic:Null<BitmapData> = null;
-
   public var overrideStepTime(default, set):Null<Float> = null;
 
   public var tooltip:ToolTipRegionOptions;

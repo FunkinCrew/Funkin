@@ -149,8 +149,6 @@ class AlbumRoll extends FlxSpriteGroup
     });
   }
 
-  var titleTimer:Null<FlxTimer> = null;
-
   /**
    * Play the intro animation on the album art.
    */

@@ -4,7 +4,6 @@ import openfl.filters.BitmapFilterQuality;
 import flixel.text.FlxText;
 import flixel.group.FlxSpriteGroup;
 import funkin.graphics.shaders.GaussianBlurShader;
-import funkin.graphics.shaders.LeftMaskShader;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
@@ -20,8 +19,6 @@ class CapsuleText extends FlxSpriteGroup
   var whiteText:FlxText;
 
   public var text(default, set):Null<String>;
-
-  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
 
   public var clipWidth(default, set):Int = 255;
 

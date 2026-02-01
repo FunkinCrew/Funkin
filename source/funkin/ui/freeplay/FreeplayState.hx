@@ -3399,11 +3399,6 @@ class FreeplaySongData
     return isFav;
   }
 
-  function updateValues(variations:Array<String>):Void
-  {
-    // this.isNew = song.isSongNew(suffixedDifficulty);
-  }
-
   function get_idAndVariation()
   {
     return '${data.id}:${curVariation}';
