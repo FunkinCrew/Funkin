@@ -27,7 +27,6 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
   var contextmenuOffsetMove:MenuItem;
   var contextmenuCut:MenuItem;
   var contextmenuCopy:MenuItem;
-  var contextmenuPaste:MenuItem;
   var contextmenuDelete:MenuItem;
   var contextmenuFlip:MenuItem;
   var contextmenuMirrorX:MenuItem;

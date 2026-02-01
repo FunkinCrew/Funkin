@@ -43,8 +43,6 @@ class EnumPreferenceItem<T> extends TextMenuItem
     var i:Int = 0;
     for (key in map.keys())
     {
-      var value:T = map[key];
-
       this.keys.push(key);
       if (this.currentKey == key) index = i;
       i += 1;

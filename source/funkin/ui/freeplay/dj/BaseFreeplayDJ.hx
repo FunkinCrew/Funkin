@@ -90,7 +90,6 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   final playableCharData:Null<PlayerFreeplayDJData>;
 
   var timeIdling:Float = 0;
-  var lowPumpLoopPoint:Int = 4;
 
   public function new(x:Float, y:Float, characterId:String)
   {

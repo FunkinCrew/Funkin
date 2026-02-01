@@ -209,11 +209,6 @@ class LoadingState extends MusicBeatSubState
     }
   }
 
-  static function getSongPath():String
-  {
-    return Paths.inst(PlayState.instance?.currentSong.id ?? throw 'Cannot retrieve song path');
-  }
-
   static var stageDirectory:String = "shared";
 
   /**

@@ -106,17 +106,6 @@ class Nametag extends FlxSprite
     }
   }
 
-  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float):Void
-  {
-    var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
-    var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
-
-    FlxTimer.wait(frame / 30, () ->
-    {
-      mosaicShader.setBlockSize(daX, daY);
-    });
-  }
-
   function set_midpointX(val:Float):Float
   {
     this.midpointX = val;

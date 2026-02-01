@@ -243,7 +243,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 
       for (difficulty in difficultyList)
       {
-        var _treeDifficulty:TreeViewNode = treeVariation.addNode({
+        treeVariation.addNode({
           id: 'stv_difficulty_${curVariation}_$difficulty',
           text: 'D: ${difficulty.toTitleCase()}'
         });
@@ -281,7 +281,6 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
   function onTreeChange(event:UIEvent):Void
   {
     // Get the newly selected node.
-    var treeView:TreeView = cast event.target;
     var targetNode:TreeViewNode = difficultyToolboxTree.selectedNode;
 
     if (targetNode == null)

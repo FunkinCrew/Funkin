@@ -33,8 +33,6 @@ class Countdown
 
   static var noteStyle:NoteStyle;
 
-  static var fallbackNoteStyle:Null<NoteStyle>;
-
   /**
    * The currently running countdown. This will be null if there is no countdown running.
    */

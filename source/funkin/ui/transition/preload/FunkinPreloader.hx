@@ -92,8 +92,6 @@ class FunkinPreloader extends FlxBasePreloader
 
   private var initializingScriptsPercent:Float = -1;
 
-  private var cachingCoreAssetsPercent:Float = -1;
-
   /**
    * The timestamp when the other steps completed and the `Finishing up` step started.
    */
@@ -445,9 +443,8 @@ class FunkinPreloader extends FlxBasePreloader
           cachingAudioPercent = 0.0;
           cachingAudioStartTime = elapsed;
 
-          var assetsToCache:Array<String> = []; // Assets.listSound('core');
-
           /*
+          var assetsToCache:Array<String> = []; // Assets.listSound('core');
             var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
 
             future.onProgress((loaded:Int, total:Int) -> {

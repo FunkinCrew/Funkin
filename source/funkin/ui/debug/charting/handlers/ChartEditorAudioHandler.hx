@@ -377,7 +377,6 @@ class ChartEditorAudioHandler
   {
     var zipEntries = [];
 
-    var vocalTrackIds = state.audioVocalTrackData.keys().array();
     for (key in state.audioVocalTrackData.keys())
     {
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);

@@ -39,7 +39,6 @@ class DebugBoundingState extends FlxState
     - Cleaner UI
    */
   var bg:FlxBackdrop;
-  var fileInfo:FlxText;
 
   var txtGrp:FlxTypedGroup<FlxText>;
 
@@ -277,23 +276,6 @@ class DebugBoundingState extends FlxState
   function clearInfo()
   {
     txtGrp.clear();
-  }
-
-  function checkLibrary(library:String)
-  {
-    trace(Assets.hasLibrary(library));
-    if (Assets.getLibrary(library) == null)
-    {
-      @:privateAccess
-      if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
-
-      // var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_)
-      {
-        trace('LOADED... awesomeness...');
-        // callback();
-      });
-    }
   }
 
   override function update(elapsed:Float)

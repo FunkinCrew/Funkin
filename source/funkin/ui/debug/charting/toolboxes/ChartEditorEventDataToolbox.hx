@@ -36,7 +36,6 @@ import flixel.FlxG;
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
-  var toolboxEventsDataFrame:Frame;
   var toolboxEventsDataBox:VBox;
 
   var easeGraphImage:Image;

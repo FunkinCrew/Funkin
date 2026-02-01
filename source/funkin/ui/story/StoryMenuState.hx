@@ -64,11 +64,6 @@ class StoryMenuState extends MusicBeatState
   var scoreText:FlxText;
 
   /**
-   * The mode text at the top-middle.
-   */
-  var modeText:FlxText;
-
-  /**
    * The list of songs on the left.
    */
   var tracklistText:FlxText;

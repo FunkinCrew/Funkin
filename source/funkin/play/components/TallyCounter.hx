@@ -31,8 +31,6 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
     if (curNumber == neededNumber) drawNumbers();
   }
 
-  var tmr:Float = 0;
-
   override function update(elapsed:Float)
   {
     super.update(elapsed);

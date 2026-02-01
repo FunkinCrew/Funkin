@@ -10,7 +10,6 @@ import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 import funkin.graphics.shaders.ColorSwap;
-import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.audio.FunkinSound;
@@ -63,7 +62,6 @@ class TitleState extends MusicBeatState
   var gfDance:FunkinSprite;
   var danceLeft:Bool = false;
   var titleText:FunkinSprite;
-  var maskShader = new LeftMaskShader();
 
   #if FEATURE_VIDEO_PLAYBACK
   var attractTimer:FlxTimer;

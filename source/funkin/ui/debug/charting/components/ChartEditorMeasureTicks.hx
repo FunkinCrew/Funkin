@@ -39,11 +39,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   var measureDividers:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
   /**
-   * The positions of each measure tick, in pixels, relative to the start of the song.
-   */
-  var measurePositions:Array<Float> = [];
-
-  /**
    * A map of the
    * @param value
    * @return Float

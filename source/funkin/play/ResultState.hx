@@ -566,7 +566,6 @@ class ResultState extends MusicBeatSubState
     return playerCharacter?.getResultsMusicPath(rank) ?? 'resultsNORMAL';
   }
 
-  var rankTallyTimer:Null<FlxTimer> = null;
   var clearPercentTarget:Int = 100;
   var clearPercentLerp:Int = 0;
 
