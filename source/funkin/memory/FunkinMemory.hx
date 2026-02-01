@@ -154,7 +154,7 @@ class FunkinMemory
    */
   public static function isTextureCached(key:String):Bool
   {
-    return FlxG.bitmap.get(key) != null && (permanentCachedTextures.exists(key) || currentCachedTextures.exists(key) || previousCachedTextures.exists(key));
+    return BitmapCache.isCached(key);
   }
 
   ///// NOTE STYLE //////

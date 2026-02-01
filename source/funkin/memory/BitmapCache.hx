@@ -81,7 +81,7 @@ class BitmapCache
   /**
    * Checks, if graphic with given path cached in memory.
    */
-  static function isGraphicCached(path:String):Bool
+  static function isCached(path:String):Bool
     return (FlxG.bitmap.get(path) != null)
       && (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
 
