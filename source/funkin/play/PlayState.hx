@@ -3656,19 +3656,12 @@ class PlayState extends MusicBeatSubState
       {
         if (isPlaytestResults)
         {
-          var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
-          var clearPercentFloat = talliesToUse.totalNotes == 0 ? 0.0 : (talliesToUse.sick + talliesToUse.good) / talliesToUse.totalNotes * 100;
-          /*
-              Only move to the score screen if more than 30% of the song was successfully hit.
-              While that might sound like a low clear percent, consider the fact that some songs are hard,
-              and the user might be only playtesting one third or half the song.
-             */
-          if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
-          else
-            this.close();
+          moveToResultsScreen(false, prevScoreData);
         }
         else
+        {
           this.close();
+        }
       }
       else
       {

@@ -554,6 +554,7 @@ class Cursor
     registerHaxeUICursor('grabbing', CURSOR_GRABBING_PARAMS);
     registerHaxeUICursor('hourglass', CURSOR_HOURGLASS_PARAMS);
     registerHaxeUICursor('pointer', CURSOR_POINTER_PARAMS);
+    registerHaxeUICursor('move', CURSOR_POINTER_PARAMS);
     registerHaxeUICursor('text', CURSOR_TEXT_PARAMS);
     registerHaxeUICursor('text-vertical', CURSOR_TEXT_VERTICAL_PARAMS);
     registerHaxeUICursor('zoom-in', CURSOR_ZOOM_IN_PARAMS);

@@ -66,7 +66,7 @@
       "name": "flixel-animate",
       "type": "git",
       "dir": null,
-      "ref": "c61476f4b3a3d225631ab3065e4e925a4b63c076",
+      "ref": "a31d1aaa73cf9397f9c70e5747c623ab86c8d419",
       "url": "https://github.com/MaybeMaru/flixel-animate"
     },
     {
@@ -183,14 +183,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "caf5f604f733c4c19bfde42bda0380931a01f3c9",
+      "ref": "5399946b68fd98f345d6b3e52b95ed6b78bf427c",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "3f511487c36e6ef8bdcef90edee08b83e9880d23",
+      "ref": "51c440e8af4da2032813ed285d485a9aafdccb51",
       "url": "https://github.com/larsiusprime/polymod"
     },
     {

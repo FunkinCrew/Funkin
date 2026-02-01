@@ -21,6 +21,8 @@ import funkin.data.character.CharacterData.CharacterRenderType;
  */
 class MultiSparrowCharacter extends BaseCharacter
 {
+  var _usedAtlases:Array<FlxAtlasFrames> = [];
+
   public function new(id:String)
   {
     super(id, CharacterRenderType.MultiSparrow);
@@ -72,7 +74,6 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       log('Creating multi-sparrow atlas: ${_data.assetPath}');
       mainTexture.parent.destroyOnNoUse = false;
-      textureList.push(mainTexture);
     }
 
     var hasTextureAtlas:Bool = false;
@@ -97,8 +98,7 @@ class MultiSparrowCharacter extends BaseCharacter
           var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
           var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
 
-          var clone:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
-          var subTexture:FlxAnimateFrames = clone.library;
+          var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
 
           log('Concatenating texture atlas: ${animation.assetPath}');
           subTexture.parent.destroyOnNoUse = false;
@@ -130,10 +130,17 @@ class MultiSparrowCharacter extends BaseCharacter
           }
 
           textureList.push(subTexture);
+
+          if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
       }
 
       addedAssetPaths.push(animation.assetPath);
     }
+
+    // Finally, add the main texture to the list
+    // Prevents sub-textures from overriding the the frames of the main texture
+    textureList.push(mainTexture);
+    _usedAtlases.push(mainTexture);
 
     this.frames = FlxAnimateFrames.combineAtlas(textureList);
     this.setScale(_data.scale);
@@ -171,5 +178,18 @@ class MultiSparrowCharacter extends BaseCharacter
   static function log(message:String):Void
   {
     trace(' MULTIATLASCHAR '.bold().bg_blue() + ' $message');
+  }
+
+  override function destroy():Void
+  {
+    for (atlas in _usedAtlases)
+    {
+      if (atlas.parent == null) continue;
+      atlas.parent.destroyOnNoUse = true;
+    }
+
+    _usedAtlases.clear();
+
+    super.destroy();
   }
 }
