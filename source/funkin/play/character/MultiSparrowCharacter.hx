@@ -21,6 +21,8 @@ import funkin.data.character.CharacterData.CharacterRenderType;
  */
 class MultiSparrowCharacter extends BaseCharacter
 {
+  var _usedAtlases:Array<FlxAtlasFrames> = [];
+
   public function new(id:String)
   {
     super(id, CharacterRenderType.MultiSparrow);
@@ -72,7 +74,6 @@ class MultiSparrowCharacter extends BaseCharacter
     {
       log('Creating multi-sparrow atlas: ${_data.assetPath}');
       mainTexture.parent.destroyOnNoUse = false;
-      textureList.push(mainTexture);
     }
 
     var hasTextureAtlas:Bool = false;
@@ -104,6 +105,8 @@ class MultiSparrowCharacter extends BaseCharacter
           subTexture.parent.destroyOnNoUse = false;
 
           textureList.push(subTexture);
+
+          if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
         default:
           var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animation.assetPath);
           // If we don't do this, the unused textures will be removed as soon as they're loaded.
@@ -130,10 +133,17 @@ class MultiSparrowCharacter extends BaseCharacter
           }
 
           textureList.push(subTexture);
+
+          if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
       }
 
       addedAssetPaths.push(animation.assetPath);
     }
+
+    // Finally, add the main texture to the list
+    // Prevents sub-textures from overriding the the frames of the main texture
+    textureList.push(mainTexture);
+    _usedAtlases.push(mainTexture);
 
     this.frames = FlxAnimateFrames.combineAtlas(textureList);
     this.setScale(_data.scale);
@@ -171,5 +181,18 @@ class MultiSparrowCharacter extends BaseCharacter
   static function log(message:String):Void
   {
     trace(' MULTIATLASCHAR '.bold().bg_blue() + ' $message');
+  }
+
+  override function destroy():Void
+  {
+    for (atlas in _usedAtlases)
+    {
+      if (atlas.parent == null) continue;
+      atlas.parent.destroyOnNoUse = true;
+    }
+
+    _usedAtlases.clear();
+
+    super.destroy();
   }
 }
