@@ -43,6 +43,8 @@ class OptionsState extends MusicBeatState
    */
   public static var instance:OptionsState;
 
+  var menuBG:FlxSprite;
+
   var optionsCodex:Codex<OptionsMenuPageName>;
 
   public var drumsBG:FunkinSound;
@@ -57,7 +59,7 @@ class OptionsState extends MusicBeatState
 
     drumsBG = FunkinSound.load(Paths.music('offsetsLoop/drumsLoop'), 0, true, false, false, false);
 
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
+    menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
     menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));

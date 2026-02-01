@@ -57,6 +57,7 @@ class TitleState extends MusicBeatState
       startIntro();
   }
 
+  var bg:FunkinSprite;
   var logoBl:FunkinSprite;
   var gfDance:FunkinSprite;
   var danceLeft:Bool = false;
@@ -71,7 +72,7 @@ class TitleState extends MusicBeatState
 
     persistentUpdate = true;
 
-    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
+    bg = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
     bg.screenCenter();
     add(bg);
 
