@@ -53,6 +53,9 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
     textureList.push(mainTexture);
 
+    this.useRenderTexture = _data.atlasSettings.useRenderTexture;
+    this.applyStageMatrix = _data.atlasSettings.applyStageMatrix;
+
     mainTexture.parent.destroyOnNoUse = false;
 
     for (animation in _data.animations)
