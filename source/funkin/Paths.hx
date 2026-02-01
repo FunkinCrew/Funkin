@@ -26,6 +26,7 @@ class Paths implements ConsoleClass
    * @param path The asset path string to remove the library from.
    * @return The asset path string without the library prefix.
    */
+  @:allow(funkin.memory.FunkinMemory)
   public static function stripLibrary(key:String):String
   {
     var parts:Array<String> = key.split(':');
