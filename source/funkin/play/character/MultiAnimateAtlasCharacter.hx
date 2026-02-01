@@ -50,11 +50,10 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
     var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
 
-    loadTextureAtlas(baseAssetPath, baseAssetLibrary, getAtlasSettings());
-
-    var mainTexture:FlxAtlasFrames = this.library;
+    var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
     textureList.push(mainTexture);
-    _usedAtlases.push(mainTexture);
+
+    mainTexture.parent.destroyOnNoUse = false;
 
     for (animation in _data.animations)
     {
@@ -96,8 +95,6 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
           subTexture.parent.destroyOnNoUse = false;
 
           textureList.push(subTexture);
-
-          if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
       }
 
       addedAssetPaths.push(animation.assetPath);

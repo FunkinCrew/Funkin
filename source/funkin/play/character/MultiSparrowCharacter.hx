@@ -98,15 +98,12 @@ class MultiSparrowCharacter extends BaseCharacter
           var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
           var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
 
-          var clone:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
-          var subTexture:FlxAnimateFrames = clone.library;
+          var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
 
           log('Concatenating texture atlas: ${animation.assetPath}');
           subTexture.parent.destroyOnNoUse = false;
 
           textureList.push(subTexture);
-
-          if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
         default:
           var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animation.assetPath);
           // If we don't do this, the unused textures will be removed as soon as they're loaded.
