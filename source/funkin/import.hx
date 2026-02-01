@@ -7,6 +7,7 @@ import flixel.system.debug.watch.Tracker;
 // Only import these when we aren't in a macro.
 import funkin.Assets;
 import funkin.Paths;
+import funkin.memory.FunkinMemory;
 import funkin.Preferences;
 import funkin.util.Constants;
 

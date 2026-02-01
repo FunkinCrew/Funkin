@@ -15,7 +15,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerPack;
-import funkin.memory.FunkinMemory;
 import funkin.util.DeviceUtil;
 import funkin.Preferences;
 

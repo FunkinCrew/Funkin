@@ -13,7 +13,6 @@ import flixel.math.FlxMatrix;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import funkin.memory.FunkinMemory;
 import animate.internal.SymbolItem;
 import animate.internal.elements.Element;
 import animate.internal.elements.AtlasInstance;
