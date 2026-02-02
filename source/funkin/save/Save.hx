@@ -1223,7 +1223,7 @@ typedef SaveDataOptions =
   var audioVisualOffset:Int;
 
   /**
-   * If we want the framerate to be unlocked on HTML5.
+   * If we want the framerate to be unlocked.
    * @default `false`
    */
   var unlockedFramerate:Bool;

@@ -1180,7 +1180,7 @@ class FunkinAction extends FlxActionDigital
   public var nameReleased(default, null):Null<String>;
 
   var cache:Map<String,
-    {timestamp:Int, value:Bool}> = [];
+    {timestamp:Float, value:Bool}> = [];
 
   public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
   {

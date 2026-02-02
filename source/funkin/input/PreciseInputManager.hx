@@ -134,11 +134,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   }
 
   /**
-   * Convert from int to Int64.
-   */
-  static final NS_PER_MS:Int64 = Constants.NS_PER_MS;
-
-  /**
    * Returns a precise timestamp, measured in nanoseconds.
    * Timestamp is only useful for comparing against other timestamps.
    *
@@ -151,11 +146,11 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     // NOTE: This timestamp isn't that precise on standard HTML5 builds.
     // This is because of browser safeguards against timing attacks.
     // See https://web.dev/coop-coep to enable headers which allow for more precise timestamps.
-    return haxe.Int64.fromFloat(js.Browser.window.performance.now()) * NS_PER_MS;
+    return haxe.Int64.fromFloat(js.Browser.window.performance.now()) * Constants.NS_PER_MS;
     #elseif lime_cffi
     // NOTE: If the game hard crashes on this line, rebuild Lime!
     // `lime rebuild windows -clean`
-    return lime._internal.backend.native.NativeCFFI.lime_sdl_get_ticks() * NS_PER_MS;
+    return Int64.fromFloat(lime._internal.backend.native.NativeCFFI.lime_system_get_timer());
     #else
     throw "Eric didn't implement precise timestamps on this platform!";
     #end
@@ -290,11 +285,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     var key:FlxKey = convertKeyCode(keyCode);
     if (_keyList.indexOf(key) == -1) return;
 
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps are measured in nanoseconds, not milliseconds.
-    timestamp *= Constants.NS_PER_MS; // 18126000000 38367000000
-    // timestamp -= globalOffset * Constants.NS_PER_MS;
-    // trace(timestamp);
     updateKeyStates(key, true);
 
     if (getInputByKey(key)?.justPressed ?? false)
@@ -312,10 +302,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   {
     var key:FlxKey = convertKeyCode(keyCode);
     if (_keyList.indexOf(key) == -1) return;
-
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
-    timestamp *= Constants.NS_PER_MS;
 
     updateKeyStates(key, false);
 
@@ -337,10 +323,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     var buttonListEntry = _buttonList.get(gamepad.id);
     if (buttonListEntry == null || buttonListEntry.indexOf(buttonId) == -1) return;
 
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
-    timestamp *= Constants.NS_PER_MS;
-
     updateButtonStates(gamepad, buttonId, true);
 
     if (getInputByButton(gamepad, buttonId)?.justPressed ?? false)
@@ -360,10 +342,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     var buttonListEntry = _buttonList.get(gamepad.id);
     if (buttonListEntry == null || buttonListEntry.indexOf(buttonId) == -1) return;
-
-    // TODO: Remove this line with SDL3 when timestamps change meaning.
-    // This is because SDL3's timestamps ar e measured in nanoseconds, not milliseconds.
-    timestamp *= Constants.NS_PER_MS;
 
     updateButtonStates(gamepad, buttonId, false);
 

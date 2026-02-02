@@ -149,7 +149,7 @@ class FunkinPreloader extends FlxBasePreloader
     // Scale assets to the screen size.
     // Desktop is always 1:1 scale, mobile needs DPI normalization for consistent positioning
     #if mobile
-    var display = lime.system.System.getDisplay(0);
+    var display = Lib.current.stage.window.display;
     var dpiScale = display.dpi / 160.0; // 160 is Android's baseline DPI
     var normalizedWidth = this._width / dpiScale;
     ratio = normalizedWidth / BASE_WIDTH;
@@ -925,7 +925,7 @@ class FunkinPreloader extends FlxBasePreloader
    */
   function isLandscapeFlipped():Bool
   {
-    return lime.system.System.getDisplayOrientation(0) == DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED;
+    return lime.system.System.getDisplayOrientation(lime.app.Application.current.window.display) == DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED;
   }
 
   function immediatelyStartGame():Void

@@ -311,19 +311,34 @@ class InitState extends FlxState
   #if FEATURE_LOST_FOCUS_VOLUME
   @:noCompletion var _lastFocusVolume:Null<Float>;
 
-  function onLostFocus()
+  function onLostFocus():Void
   {
     if (FlxG.sound.muted || FlxG.sound.volume == 0 || FlxG.autoPause) return;
     _lastFocusVolume = FlxG.sound.volume;
     FlxG.sound.volume *= Constants.LOST_FOCUS_VOLUME_MULTIPLIER;
   }
+  #end
 
-  function onGainFocus()
+  function onGainFocus():Void
   {
+    #if !mobile
+    if (Preferences.unlockedFramerate)
+    {
+      FlxG.updateFramerate = 0;
+      FlxG.drawFramerate = 0;
+    }
+    else
+    {
+      FlxG.updateFramerate = Preferences.framerate;
+      FlxG.drawFramerate = Preferences.framerate;
+    }
+    #end
+
+    #if FEATURE_LOST_FOCUS_VOLUME
     if (FlxG.sound.muted || FlxG.autoPause) return;
     if (_lastFocusVolume != null) FlxG.sound.volume = _lastFocusVolume;
+    #end
   }
-  #end
 
   /**
    * Start the game.

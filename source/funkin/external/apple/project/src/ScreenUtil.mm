@@ -11,16 +11,18 @@ void Apple_ScreenUtil_GetSafeAreaInsets(double* top, double* bottom, double* lef
   #if TARGET_OS_IOS
   if (@available(iOS 11, *))
   {
-    UIWindow* window = [UIApplication sharedApplication].windows[0];
-    UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
-    float scale = [UIScreen mainScreen].scale;
+    UIWindow *window = [UIApplication sharedApplication].windows[0];
+    if (window)
+    {
+      UIEdgeInsets insets = window.safeAreaInsets;
+      CGFloat scale = window.screen.nativeScale;
 
-    (*top) = safeAreaInsets.top * scale;
-    (*bottom) = safeAreaInsets.bottom * scale;
-    (*left) = safeAreaInsets.left * scale;
-    (*right) = safeAreaInsets.right * scale;
-
-    return;
+      (*top) = (double)(insets.top * scale);
+      (*bottom) = (double)(insets.bottom * scale);
+      (*left) = (double)(insets.left * scale);
+      (*right)  = (double)(insets.right * scale);
+      return;
+    }
   }
   #endif
 
@@ -33,13 +35,22 @@ void Apple_ScreenUtil_GetSafeAreaInsets(double* top, double* bottom, double* lef
 void Apple_ScreenUtil_GetScreenSize(double* width, double* height)
 {
   #if TARGET_OS_IOS
-  CGRect screenRect = [[UIScreen mainScreen] bounds];
-  float scale = [UIScreen mainScreen].scale;
+  if (@available(iOS 11, *))
+  {
+    UIWindow *window = [UIApplication sharedApplication].windows[0];
+    if (window && window.rootViewController)
+    {
+      UIView *view = window.rootViewController.view;
+      CGSize size = view.bounds.size;
+      CGFloat scale = window.screen.nativeScale;
 
-  (*width) = (double)screenRect.size.width  * scale;
-  (*height) = (double)screenRect.size.height * scale;
-  #else
-  (*width) = 0.0;
-  (*width) = 0.0;
+      (*width) = (double)((int)(size.width  * scale));
+      (*height) = (double)((int)(size.height * scale));
+      return;
+    }
+  }
   #endif
+
+  (*width) = 0.0;
+  (*height) = 0.0;
 }

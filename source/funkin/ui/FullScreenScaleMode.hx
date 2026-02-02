@@ -385,7 +385,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   }
 
   #if mobile
-  private function updateDeviceNotch(notch:lime.math.Rectangle):Void
+  private function updateDeviceNotch(notch:openfl.geom.Rectangle):Void
   {
     notchPosition.set(enabled ? notch.x : 0, enabled ? notch.y : 0);
     notchSize.set(enabled ? notch.width : 0, enabled ? notch.height : 0);
@@ -403,11 +403,6 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       gameNotchPosition *= scale;
       gameNotchSize *= scale;
     }
-
-    #if ios
-    gameNotchPosition /= 2;
-    gameNotchSize /= 2;
-    #end
   }
   #end
 
