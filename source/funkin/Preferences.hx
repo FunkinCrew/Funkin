@@ -41,12 +41,23 @@ class Preferences
   {
     #if web
     return 60;
+    #elseif mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+
+    return refreshRate;
     #else
     var save:Save = Save.instance;
     save.options.framerate = value;
     Save.system.flush();
-    FlxG.updateFramerate = value;
-    FlxG.drawFramerate = value;
+
+    if (!unlockedFramerate)
+    {
+      FlxG.updateFramerate = value;
+      FlxG.drawFramerate = value;
+    }
+
     return value;
     #end
   }
@@ -69,13 +80,13 @@ class Preferences
   static function set_naughtyness(value:Bool):Bool
   {
     #if NO_FEATURE_NAUGHTYNESS
-    value = false;
-    #end
-
+    return false;
+    #else
     var save:Save = Save.instance;
     save.options.naughtyness = value;
     Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -146,8 +157,7 @@ class Preferences
   {
     #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
-    #end
-
+    #else
     #if hl
     // Account for when debugDisplay used to be a boolean
     var options:Null<SaveDataOptions> = Save.instance?.options;
@@ -158,18 +168,22 @@ class Preferences
       Save.system.flush();
     }
     #end
-
     return Save?.instance?.options?.debugDisplay ?? 'Off';
+    #end
   }
 
   static function set_debugDisplay(value:DebugDisplayMode):DebugDisplayMode
   {
+    #if NO_FEATURE_DEBUG_DISPLAY
+    return DebugDisplayMode.Off;
+    #else
     if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
     save.options.debugDisplay = value;
     Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -264,18 +278,23 @@ class Preferences
   {
     #if mobile
     return false;
-    #end
+    #else
     return Save?.instance?.options?.autoPause ?? true;
+    #end
   }
 
   static function set_autoPause(value:Bool):Bool
   {
+    #if mobile
+    return false;
+    #else
     if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
 
     var save:Save = Save.instance;
     save.options.autoPause = value;
     Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -325,6 +344,9 @@ class Preferences
 
   static function get_vsyncMode():lime.ui.WindowVSyncMode
   {
+    #if mobile
+    return lime.ui.WindowVSyncMode.OFF;
+    #else
     var value = Save?.instance?.options?.vsyncMode ?? "Off";
 
     return switch (value)
@@ -338,10 +360,14 @@ class Preferences
       default:
         lime.ui.WindowVSyncMode.OFF;
     };
+    #end
   }
 
   static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
   {
+    #if mobile
+    return lime.ui.WindowVSyncMode.OFF;
+    #else
     var string;
 
     switch (value)
@@ -362,28 +388,35 @@ class Preferences
     save.options.vsyncMode = string;
     Save.system.flush();
     return value;
+    #end
   }
 
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
   {
+    #if mobile
+    return false;
+    #else
     return Save?.instance?.options?.unlockedFramerate ?? false;
+    #end
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
   {
+    #if mobile
+    return false;
+    #else
     if (value != Save.instance.options.unlockedFramerate)
     {
-      #if web
       toggleFramerateCap(value);
-      #end
     }
 
     var save:Save = Save.instance;
     save.options.unlockedFramerate = value;
     Save.system.flush();
     return value;
+    #end
   }
 
   #if web
@@ -496,9 +529,7 @@ class Preferences
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
 
-    #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
 
     #if mobile
     // Apply the allowScreenTimeout setting.
@@ -511,6 +542,9 @@ class Preferences
     #if web
     var framerateFunction = unlocked ? unlockedFramerateFunction : lockedFramerateFunction;
     untyped js.Syntax.code("window.requestAnimationFrame = framerateFunction;");
+    #else
+    FlxG.drawFramerate = unlocked ? 0 : framerate;
+    FlxG.updateFramerate = unlocked ? 0 : framerate;
     #end
   }
 

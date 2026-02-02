@@ -1268,7 +1268,7 @@ class ChartEditorDialogHandler
     importBox.onClick = function(_)
     {
       // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', #if !mac fileFilter ?? [] #else [] #end, function(selectedFile:SelectedFileInfo)
+      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {
@@ -1651,7 +1651,7 @@ class ChartEditorDialogHandler
 
   static final EPSILON:Float = 0.01;
 
-  static function onDropFile(path:String):Void
+  static function onDropFile(path:String, state:String, x:Float, y:Float):Void
   {
     // a VERY short timer to wait for the mouse position to update
     new FlxTimer().start(EPSILON, function(_)

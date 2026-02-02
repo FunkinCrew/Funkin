@@ -60,7 +60,7 @@ class BackupAvailableDialog extends Dialog
     {
       if (FileUtil.fileExists(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
       {
-        state.welcomeDialog.loadFromFilePath(filePath);
+        state.welcomeDialog.loadFromFilePath(filePath, null, 0, 0);
       }
       hideDialog(DialogButton.APPLY);
     }

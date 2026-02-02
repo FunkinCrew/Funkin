@@ -177,7 +177,9 @@ class Main extends Sprite
     // This allows the blend mode shader to work everywhere.
     untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
+    var framerate:Int = Preferences.unlockedFramerate ? 0 : Preferences.framerate;
+
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash,
       (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -251,14 +253,7 @@ class Main extends Sprite
   function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
-    var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
-
-    #if android
-    scale = Math.max(scale, 1);
-    #else
-    scale = Math.min(scale, 1);
-    #end
-    final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+    var scale:Float = Math.max(Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height), 1);
 
     if (debugDisplay != null)
     {
@@ -266,13 +261,15 @@ class Main extends Sprite
 
       if (FlxG.game != null)
       {
+        final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+
         if (lerp)
         {
           debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
         else
         {
-          debugDisplay.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+          debugDisplay.x = FlxG.game.x + thypos;
         }
 
         debugDisplay.y = FlxG.game.y + (3 * scale);

@@ -426,7 +426,7 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? "" : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(path:String):Void
+    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float):Void
     {
       if (!allowInput || welcomeDialog != null) return;
 

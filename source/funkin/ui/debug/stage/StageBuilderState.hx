@@ -94,7 +94,7 @@ class StageBuilderState extends MusicBeatState
     hudGrp.add(saveSceneBtn);
 
     #if desktop
-    FlxG.stage.window.onDropFile.add(function(path:String)
+    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float)
     {
       trace("DROPPED FILE FROM: " + Std.string(path));
 

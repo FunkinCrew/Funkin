@@ -155,15 +155,7 @@ class WindowUtil
    */
   public static function showError(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
-
-    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
-
-    funkin.external.windows.WinAPI.showError(handlePtr, desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name);
   }
 
   /**
@@ -173,15 +165,7 @@ class WindowUtil
    */
   public static function showWarning(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
-
-    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
-
-    funkin.external.windows.WinAPI.showWarning(handlePtr, desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.WARNING, desc, name);
   }
 
   /**
@@ -191,38 +175,11 @@ class WindowUtil
    */
   public static function showInformation(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    final handleVal:Float = lime.app.Application.current.window.nativeHandle;
-
-    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
-
-    funkin.external.windows.WinAPI.showInformation(handlePtr, desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
-  }
-
-  /**
-   * Sets the dark mode appearance for the specified window.
-   *
-   * @param window The window instance to modify.
-   * @param value Whether to enable (`true`) or disable (`false`) dark mode.
-   */
-  public static function setDarkMode(window:lime.ui.Window, value:Bool):Void
-  {
-    #if (windows && cpp)
-    final handleVal:Float = window.nativeHandle;
-
-    final handlePtr:cpp.RawPointer<cpp.Void> = untyped __cpp__('(void*)(uintptr_t){0}', handleVal);
-
-    funkin.external.windows.WinAPI.setDarkMode(handlePtr, value);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.INFORMATION, desc, name);
   }
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
-    // vsync crap dont worky on mac rn derp
-    #if !mac
     var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
 
     // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
@@ -232,6 +189,5 @@ class WindowUtil
       trace('Failed to set VSync mode to ' + value);
       FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
     }
-    #end
   }
 }

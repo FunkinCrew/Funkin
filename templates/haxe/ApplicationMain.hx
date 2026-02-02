@@ -28,10 +28,6 @@ class ApplicationMain
 {
   #if !macro
 
-  #if (windows && cpp)
-  public static var systemDarkMode:Bool = false;
-  #end
-
   public static function main():Void
   {
     #if (windows && cpp)
@@ -40,9 +36,6 @@ class ApplicationMain
 
     // Disable Windows error reporting (avoids sending bug reports to Microsoft).
     funkin.external.windows.WinAPI.disableErrorReporting();
-
-    // Whether the system is currently using dark mode.
-    systemDarkMode = funkin.external.windows.WinAPI.isSystemDarkMode();
     #end
 
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
@@ -62,6 +55,10 @@ class ApplicationMain
     GamemodeClient.request_start();
     #end
 
+    ::if (WIN_ORIENTATION != "auto")::
+    lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
+    ::end::
+
     final appMeta:Map<String, String> = [];
 
     appMeta.set("build", "::meta.buildNumber::");
@@ -78,19 +75,10 @@ class ApplicationMain
 
     var app = new openfl.display.Application(appMeta);
 
-    #if ((windows && cpp) || linux)
+    #if linux
     app.onCreateWindow.add(function(window:lime.ui.Window):Void
     {
-      #if (windows && cpp)
-      if (systemDarkMode)
-      {
-        window.setDarkMode(systemDarkMode);
-      }
-      #end
-
-      #if linux
       window.setIcon(new ApplicationIcon());
-      #end
     });
     #end
 
@@ -103,6 +91,7 @@ class ApplicationMain
     var attributes:lime.ui.WindowAttributes = {
       allowHighDPI: ::allowHighDPI::,
       alwaysOnTop: ::alwaysOnTop::,
+      transparent: ::transparent::,
       borderless: ::borderless::,
       // display: ::display::,
       element: null,
