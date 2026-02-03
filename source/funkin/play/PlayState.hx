@@ -2173,8 +2173,6 @@ class PlayState extends MusicBeatSubState
       add(iconP2);
       iconP2.cameras = [camHUD];
 
-      dad.strumlines.push(opponentStrumline);
-
       #if FEATURE_DISCORD_RPC
       discordRPCAlbum = 'album-${currentChart?.album}';
       discordRPCIcon = 'icon-${currentCharacterData.opponent}';
@@ -2197,8 +2195,6 @@ class PlayState extends MusicBeatSubState
       iconP1.zIndex = 850;
       add(iconP1);
       iconP1.cameras = [camHUD];
-
-      boyfriend.strumlines.push(playerStrumline);
     }
 
     //

@@ -35,9 +35,34 @@ class BaseCharacter extends Bopper
 
   /**
    * A list of strumlines that control this character.
-   * The strumlines must be of the same type as `characterType`.
    */
-  public var strumlines:Array<Strumline>;
+  public var strumlines(get, set):Array<Strumline>;
+  var _strumlines:Array<Strumline> = [];
+
+  function get_strumlines():Array<Strumline> {
+  if (debug) return _strumlines;
+
+    switch (this.characterType) {
+      case CharacterType.BF:
+        return _strumlines.concat([PlayState.instance.playerStrumline]);
+      case CharacterType.DAD:
+        return _strumlines.concat([PlayState.instance.opponentStrumline]);
+      default:
+        return _strumlines;
+    }
+  }
+
+  function set_strumlines(value:Array<Strumline>):Array<Strumline> {
+    var result = value.copy();
+    switch (this.characterType) {
+      case CharacterType.BF:
+        result.remove(PlayState.instance.playerStrumline);
+      case CharacterType.DAD:
+        result.remove(PlayState.instance.opponentStrumline);
+      default: {}
+    }
+    return _strumlines = result;
+  }
 
   /**
    * A list of voice groups that this strumline affects.
@@ -539,7 +564,6 @@ class BaseCharacter extends Bopper
 
     if (event.playAnim
       && event.note.parentStrumline != null
-      && this.characterType == event.note.parentStrumline.characterType
       && strumlines.contains(event.note.parentStrumline))
     {
       // If the strumline controls this character, play the sing animation with the note's permission.
@@ -582,7 +606,6 @@ class BaseCharacter extends Bopper
 
     if (event.playAnim
       && event.note.parentStrumline != null
-      && this.characterType == event.note.parentStrumline.characterType
       && strumlines.contains(event.note.parentStrumline))
     {
       // If the strumline controls this character, play the miss animation.
@@ -603,7 +626,6 @@ class BaseCharacter extends Bopper
 
     if (event.playAnim
       && event.holdNote.parentStrumline != null
-      && this.characterType == event.holdNote.parentStrumline.characterType
       && strumlines.contains(event.holdNote.parentStrumline))
     {
       // If the strumline controls this character, play the miss animation.
@@ -660,7 +682,7 @@ class BaseCharacter extends Bopper
       return;
     }
 
-    if (event.strumline != null && this.characterType == event.strumline.characterType && strumlines.contains(event.strumline))
+    if (event.strumline != null && strumlines.contains(event.strumline))
     {
       // If the strumline controls this character, play the miss animation.
       this.playSingAnimation(event.dir, true);

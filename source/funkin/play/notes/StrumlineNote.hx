@@ -20,20 +20,12 @@ class StrumlineNote extends FunkinSprite
   /**
    * Whether this strumline note is on the player's side or the opponent's side.
    */
-  public var isPlayer(get, set):Bool;
+  public var isPlayer(get, never):Bool;
 
   function get_isPlayer():Bool
   {
     if (parentStrumline == null) return false;
     return parentStrumline.isPlayer;
-  }
-
-  function set_isPlayer(value:Bool):Bool
-  {
-    // isPlayer is now dependent on parentStrumline.isPlayer.
-    // However, some old scripts probably set this value to match that.
-    // So, we still include a setter that does nothing for backwards compatibility reasons.
-    return isPlayer;
   }
 
   /**
