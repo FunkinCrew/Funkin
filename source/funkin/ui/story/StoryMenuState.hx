@@ -6,6 +6,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
@@ -175,7 +176,8 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    // x on tracklistText is set/updated later, we dont need to init it
+    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
@@ -371,21 +373,12 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
-        #if !html5
-        if (FlxG.mouse.wheel != 0)
+        final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
+
+        if (wheelAmount != 0)
         {
-          changeLevel(-Math.round(FlxG.mouse.wheel));
+          changeLevel(-wheelAmount);
         }
-        #else
-        if (FlxG.mouse.wheel < 0)
-        {
-          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
-        }
-        else if (FlxG.mouse.wheel > 0)
-        {
-          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
-        }
-        #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
@@ -721,7 +714,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
 
     tracklistText.screenCenter(X);
-    tracklistText.x -= (FlxG.width * 0.35);
+    tracklistText.x -= (FlxG.width * 0.33);
 
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;

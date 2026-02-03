@@ -197,7 +197,7 @@ You can view the `funkin-assets` license here: (https://github.com/FunkinCrew/fu
       same "printed page" as the copyright notice for easier
       identification within third-party archives.
 
-   Copyright 2020-2024 The Funkin' Crew Inc.
+   Copyright 2020-2026 The Funkin' Crew Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

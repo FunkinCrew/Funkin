@@ -354,6 +354,11 @@ class DebugBoundingState extends FlxState
 
     // Hide the mouse cursor on other states.
     Cursor.hide();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
   }
 
   function offsetControls():Void
@@ -526,15 +531,17 @@ class DebugBoundingState extends FlxState
       onionSkinChar.destroy();
     }
 
-    swagChar = CharacterDataParser.fetchCharacter(char);
+    swagChar = CharacterDataParser.fetchCharacter(char, true);
     swagChar.x = 100;
     swagChar.y = 100;
-    swagChar.debug = true;
 
-    onionSkinChar = CharacterDataParser.fetchCharacter(char);
+    onionSkinChar = CharacterDataParser.fetchCharacter(char, true);
     onionSkinChar.x = swagChar.x;
     onionSkinChar.y = swagChar.y;
-    onionSkinChar.debug = true;
+
+    // Enable `useRenderTexture` for texture atlas sprites so the alpha renders properly for them.
+    // This doesn't do anything for sparrows, don't worry!
+    onionSkinChar.useRenderTexture = true;
 
     // Enable `useRenderTexture` for texture atlas sprites so the alpha renders properly for them.
     // This doesn't do anything for sparrows, don't worry!
@@ -548,6 +555,7 @@ class DebugBoundingState extends FlxState
       trace('ERROR: Failed to load character ${char}!');
     }
 
+    updateOnionSkin();
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 

@@ -152,7 +152,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   }
 
   // The last measure number we updated the ticks on.
-  var previousMeasure:Int = 0;
+  var previousMeasure:Int = -1;
 
   function updateMeasureNumbers(force:Bool = false):Void
   {
@@ -163,6 +163,8 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     var currentMeasure:Int = Math.floor(Conductor.instance.getTimeInMeasures(chartEditorState.scrollPositionInMs));
     if (previousMeasure == currentMeasure && !force) return;
     if (currentMeasure < 0) currentMeasure = previousMeasure = 0;
+    else
+      previousMeasure = currentMeasure;
 
     // Remove existing measure numbers.
     measureNumbers.forEachAlive(function(measureNumber:FlxText) {
@@ -176,48 +178,56 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
     for (i in 0...ARBITRARY_LIMIT)
     {
+      // NOTE: i = 0 when rendering Measure 1 here.
       var targetMeasure:Int = currentMeasure + i - 1;
       if (targetMeasure < 0) continue;
 
       var measureTimeInMs:Float = Conductor.instance.getMeasureTimeInMs(targetMeasure);
 
-      // If we've gone past the end of the song, we're done.
-      if (measureTimeInMs > chartEditorState.songLengthInMs) break;
-
       var measureTimeInSteps:Float = Conductor.instance.getTimeInSteps(measureTimeInMs);
       var measureTimeInPixels:Float = measureTimeInSteps * ChartEditorState.GRID_SIZE;
+
+      // If we've gone past the end of the song, we're done.
+      if (measureTimeInPixels > chartEditorState.songLengthInPixels) break;
+
+      // Handle the case where the measure at the end of the song is too short to display a measure number.
+      final MIN_MEASURE_HEIGHT:Float = 24; // The minimum height of a measure, in pixels, in order for a measure number to display.
+      var shouldDisplayMeasureNumber:Bool = measureTimeInPixels + MIN_MEASURE_HEIGHT <= chartEditorState.songLengthInPixels;
+      var shouldDisplayMeasureDivider:Bool = true;
 
       var relativeMeasureTimeInPixels:Float = measureTimeInPixels + this.y;
 
       final SCREEN_PADDING:Float = ChartEditorState.GRID_SIZE / 2;
 
-      // Above the visible area, keep going.
-      if (relativeMeasureTimeInPixels < 0 - SCREEN_PADDING)
-      {
-        continue;
-      }
       // Below the visible area, quit it.
       if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
       {
         break;
       }
 
-      // Else, display a number.
+      // Else, display a number and divider.
 
-      // Reuse an existing number. If we need a new number, create one with makeMeasureNumber().
-      final REVIVE:Bool = true;
-      var measureNumber = measureNumbers.recycle(makeMeasureNumber, false, REVIVE);
+      if (shouldDisplayMeasureNumber)
+      {
+        // Reuse an existing number. If we need a new number, create one with makeMeasureNumber().
+        final REVIVE:Bool = true;
+        var measureNumber = measureNumbers.recycle(makeMeasureNumber, false, REVIVE);
 
-      // Measures are base ZERO gah!
-      final OFFSET = 2;
-      measureNumber.text = '${targetMeasure + 1}';
-      measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
-      measureNumber.x = this.x;
+        // Measures are base ZERO gah!
+        final OFFSET = 2;
+        measureNumber.text = '${targetMeasure + 1}';
+        measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
+        measureNumber.x = this.x;
+      }
 
-      // Place a measure divider too.
-      var measureDivider = measureDividers.recycle(makeMeasureDivider, false, REVIVE);
-      measureDivider.y = relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-      measureDivider.x = this.x + (measureTicksSprite.width);
+      if (shouldDisplayMeasureDivider)
+      {
+        // Reuse an existing divider. If we need a new divider, create one with makeMeasureDivider().
+        final REVIVE:Bool = true;
+        var measureDivider = measureDividers.recycle(makeMeasureDivider, false, REVIVE);
+        measureDivider.y = relativeMeasureTimeInPixels - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
+        measureDivider.x = this.x + (measureTicksSprite.width);
+      }
     }
   }
 

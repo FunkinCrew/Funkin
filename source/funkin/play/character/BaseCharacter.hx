@@ -10,7 +10,7 @@ import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.Strumline;
+import funkin.play.stage.Stage;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -88,6 +88,11 @@ class BaseCharacter extends Bopper
    * Used by scripts to ensure that they don't try to run code to interact with the stage when the stage doesn't actually exist.
    */
   public var debug:Bool = false;
+
+  /**
+   * If set, this stage will be used instead of the current stage in PlayState.
+   */
+  public var currentStage:Null<Stage> = null;
 
   /**
    * The current note kind.
@@ -218,6 +223,8 @@ class BaseCharacter extends Bopper
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
     }
+
+    if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;
 
     shouldBop = false;
 

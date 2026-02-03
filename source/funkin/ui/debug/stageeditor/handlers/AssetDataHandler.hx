@@ -85,7 +85,7 @@ class AssetDataHandler
     {
       if (data.animations != null && data.animations.length > 0)
       {
-        var bitToLoad = state.addBitmap(data.bitmap.clone());
+        var bitToLoad = state.addBitmap(data.bitmap.clone(), data.name);
         object.frames = FlxAtlasFrames.fromSparrow(state.bitmaps[bitToLoad], data.animData);
       }
       else if (areTheseBitmapsEqual(data.bitmap, getDefaultGraphic()))
@@ -94,7 +94,7 @@ class AssetDataHandler
       }
       else
       {
-        var bitToLoad = state.addBitmap(data.bitmap.clone());
+        var bitToLoad = state.addBitmap(data.bitmap.clone(), data.name);
         object.loadGraphic(state.bitmaps[bitToLoad]);
       }
     }

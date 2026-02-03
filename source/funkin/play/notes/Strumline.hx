@@ -241,13 +241,13 @@ class Strumline extends FlxSpriteGroup
   public var hasVibrations:Bool = false;
 
   final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.usingExternalInputDevice) #else false #end;
+    && !ControlsHandler.hasExternalInputDevice) #else false #end;
 
   /**
    * Whether the strumline is downscroll.
    */
   public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.usingExternalInputDevice)
+    && !ControlsHandler.hasExternalInputDevice)
     || #end Preferences.downscroll;
 
   /**
@@ -1270,7 +1270,10 @@ class Strumline extends FlxSpriteGroup
     if (noteSprite != null)
     {
       var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
-      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id) ?? this.noteStyle;
+      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
+      if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
+      if (noteKindStyle == null) noteKindStyle = this.noteStyle;
+
       noteSprite.setupNoteGraphic(noteKindStyle);
 
       var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
@@ -1294,6 +1297,7 @@ class Strumline extends FlxSpriteGroup
       noteSprite.x -= (noteSprite.width - Strumline.STRUMLINE_SIZE) / 2; // Center it
       noteSprite.x -= NUDGE;
       noteSprite.y = -9999;
+
       if (noteKind != null) noteSprite.scoreable = noteKind.scoreable;
     }
 
@@ -1311,6 +1315,7 @@ class Strumline extends FlxSpriteGroup
 
     if (holdNoteSprite != null)
     {
+      var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
       var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
       if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
       if (noteKindStyle == null) noteKindStyle = this.noteStyle;
@@ -1333,6 +1338,8 @@ class Strumline extends FlxSpriteGroup
       holdNoteSprite.x += STRUMLINE_SIZE / 2;
       holdNoteSprite.x -= holdNoteSprite.width / 2;
       holdNoteSprite.y = -9999;
+
+      if (noteKind != null) holdNoteSprite.scoreable = noteKind.scoreable;
     }
 
     return holdNoteSprite;

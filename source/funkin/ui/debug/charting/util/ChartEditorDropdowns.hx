@@ -193,6 +193,7 @@ class ChartEditorDropdowns
     "" => "Default",
     "~CUSTOM~" => "Custom",
     "noanim" => "No Animation",
+    "non_scoreable" => "Non-scoreable",
     // Weeks 1-7
     "censor" => "[UH-OH!] Censor Bar",
     "mom" => "Mom Sings (Week 5)",

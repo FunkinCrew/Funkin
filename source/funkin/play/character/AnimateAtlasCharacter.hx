@@ -27,16 +27,9 @@ class AnimateAtlasCharacter extends BaseCharacter
     cpp.vm.tracy.TracyProfiler.zoneScoped('AnimateAtlasCharacter.create(${this.characterId})');
     #end
 
-    try
-    {
-      log('Loading assets for Animate Atlas character "${characterId}"');
-      loadAtlas();
-      loadAnimations();
-    }
-    catch (e)
-    {
-      throw "Exception thrown while building sprite: " + e;
-    }
+    log('Loading assets for Animate Atlas character "${characterId}"');
+    loadAtlas();
+    loadAnimations();
 
     log('Successfully loaded texture atlas for ${characterId} with ${_data.animations.length} animations.');
     super.onCreate(event);
@@ -82,8 +75,8 @@ class AnimateAtlasCharacter extends BaseCharacter
       }
     }
 
-    var animNames = this.anim.getNameList();
-    log('Successfully loaded ${animNames.length} animations for ${characterId}');
+    var animationNames:Array<String> = this.animation.getNameList();
+    log('[ATLASCHAR] Successfully loaded ${animationNames.length} animations for ${characterId}');
   }
 
   /**

@@ -39,9 +39,9 @@ class NoteKind implements INoteScriptedClass
   public var params:Array<NoteKindParam>;
 
   /**
-   * If this note kind is scoreable (ie, counted towards score and accuracy)
-   * Only accessible in scripts
-   * Defaults to true
+   * Set this to `false` to disable scoring for this note.
+   * The note will no longer count towards ratings, points, or accuracy.
+   * @default `true` to enable scoring.
    */
   public var scoreable(default, default):Bool = true;
 

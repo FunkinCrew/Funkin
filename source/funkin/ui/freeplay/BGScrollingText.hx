@@ -47,6 +47,23 @@ class BGScrollingText extends FlxText
     }
   }
 
+  public function updateText(newText:String)
+  {
+    this.text = newText;
+
+    @:privateAccess
+    regenGraphic();
+
+    var needed:Int = Math.ceil(widthShit / frameWidth) + 1;
+
+    _textPositions.clear();
+
+    for (i in 0...needed)
+    {
+      _textPositions.push(FlxPoint.get((i * frameWidth) + (i * 20), 0));
+    }
+  }
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);

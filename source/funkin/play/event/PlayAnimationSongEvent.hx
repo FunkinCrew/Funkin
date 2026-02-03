@@ -8,6 +8,9 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
+/**
+ * This class handles song events which force a specific character or stage prop to play an animation.
+ */
 class PlayAnimationSongEvent extends SongEvent
 {
   public function new()
@@ -15,15 +18,23 @@ class PlayAnimationSongEvent extends SongEvent
     super('PlayAnimation');
   }
 
-  public override function handleEvent(data:SongEventData)
+  static final DEFAULT_TARGET:String = 'boyfriend';
+  static final DEFAULT_ANIM:String = 'idle';
+  static final DEFAULT_FORCE:Bool = false;
+
+  public override function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
-    var targetName = data.getString('target');
+    var targetName:Null<String> = data.getString('target');
+    if (targetName == null) targetName = DEFAULT_TARGET;
+
     var anim = data.getString('anim');
+    if (anim == null) anim = DEFAULT_ANIM;
+
     var force = data.getBool('force');
-    if (force == null) force = false;
+    if (force == null) force = DEFAULT_FORCE;
 
     var target:FlxSprite = null;
 
@@ -57,6 +68,10 @@ class PlayAnimationSongEvent extends SongEvent
         target.animation.play(anim, force);
       }
     }
+    else
+    {
+      trace('Unknown PlayAnimation target: $targetName');
+    }
   }
 
   public override function getTitle():String
@@ -80,19 +95,19 @@ class PlayAnimationSongEvent extends SongEvent
         name: 'target',
         title: 'Target',
         type: SongEventFieldType.STRING,
-        defaultValue: 'boyfriend',
+        defaultValue: DEFAULT_TARGET,
       },
       {
         name: 'anim',
         title: 'Animation',
         type: SongEventFieldType.STRING,
-        defaultValue: 'idle',
+        defaultValue: DEFAULT_ANIM,
       },
       {
         name: 'force',
         title: 'Force',
         type: SongEventFieldType.BOOL,
-        defaultValue: false
+        defaultValue: DEFAULT_FORCE
       }
     ]);
   }

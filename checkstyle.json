@@ -1,4 +1,6 @@
 {
+  "version": 1,
+  "exclude": {},
   "defaultSeverity": "INFO",
   "extendsConfigPath": "",
   "numberOfCheckerThreads": 5,
@@ -6,113 +8,124 @@
   "defineCombinations": [],
   "checks": [
     {
-      "props": {},
+      "comment": "If enabled, prevents using anonymous types inline without creating a typedef for them.",
+      "props": { "severity": "INFO" },
       "type": "Anonymous"
     },
     {
+      "comment": "If enabled, mandates spacing around array access syntax.",
       "props": {
         "spaceBefore": false,
-        "spaceInside": false
+        "spaceInside": false,
+        "severity": "INFO"
       },
       "type": "ArrayAccess"
     },
     {
-      "props": {},
+      "comment": "If enabled, mandates array literals be defined with [] instead of 'new'.",
+      "props": { "severity": "WARNING" },
       "type": "ArrayLiteral"
     },
     {
+      "comment": "If enabled, mandates specific syntax for the use of array literals.",
       "props": {
         "allowSingleArgParens": true,
         "allowReturn": true,
         "allowFunction": true,
-        "allowCurlyBody": true
+        "allowCurlyBody": true,
+        "severity": "INFO"
       },
       "type": "ArrowFunction"
     },
     {
-      "props": {
-        "avoidIdentifiers": []
-      },
+      "comment": "Specify a list of variable and function names which are not allowed and should be renamed. Doesn't support regex.",
+      "props": { "avoidIdentifiers": [], "severity": "WARNING" },
       "type": "AvoidIdentifier"
     },
     {
-      "props": {},
+      "comment": "If enabled, prevents imports like 'import flixel.*' from being used.",
+      "props": { "severity": "INFO" },
       "type": "AvoidStarImport"
     },
     {
-      "props": {},
+      "comment": "If enabled, prevents conditional compilation from crossing blocks.",
+      "props": { "severity": "INFO" },
       "type": "BlockBreakingConditional"
     },
     {
+      "comment": "Specifies a specific naming format for the parameter of a catch block.",
       "props": {
-        "format": "^(e|t|ex|[a-z][a-z][a-zA-Z]+)$"
+        "format": "^(e|t|ex|[a-z][a-z][a-zA-Z]+)$",
+        "severity": "INFO"
       },
       "type": "CatchParameterName"
     },
     {
+      "comment": "If enabled, flags when large blocks of similar code should be extracted to a function.",
       "props": {
         "thresholdSimilar": 120,
-        "severityIdentical": "WARNING",
-        "thresholdIdentical": 60
+        "thresholdIdentical": 60,
+        "severityIdentical": "IGNORE"
       },
       "type": "CodeSimilarity"
     },
     {
-      "props": {},
+      "comment": "If enabled, flags Haxe code that is commented out. Unused code should be removed and accessed via version control later if needed.",
+      "props": { "severity": "WARNING" },
       "type": "CommentedOutCode"
     },
     {
+      "comment": "If enabled, flags when conditional compilation blocks are not properly aligned. NOTE:Disabled because it's kinda broken.",
       "props": {
-        "severity": "IGNORE",
         "policy": "aligned",
-        "allowSingleline": true
+        "allowSingleline": true,
+        "severity": "IGNORE"
       },
       "type": "ConditionalCompilation"
     },
     {
+      "comment": "Specifies a specific naming format for constant (static) identifiers.",
       "props": {
         "ignoreExtern": true,
         "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
-        "tokens": ["INLINE", "NOTINLINE"]
+        "tokens": ["INLINE", "NOTINLINE"],
+        "severity": "INFO"
       },
       "type": "ConstantName"
     },
     {
+      "comment": "Calculates the complexity of methods using the McCabe metric, and throws warnings at certain thresholds. Indicates that a function should be refactored or split up.",
       "props": {
         "thresholds": [
-          {
-            "complexity": 20,
-            "severity": "WARNING"
-          },
-          {
-            "complexity": 25,
-            "severity": "ERROR"
-          }
+          { "complexity": 20, "severity": "WARNING" },
+          { "complexity": 25, "severity": "ERROR" }
         ],
         "severity": "IGNORE"
       },
       "type": "CyclomaticComplexity"
     },
     {
-      "props": {},
+      "comment": "If enabled, the default case of a switch statement must be last.",
+      "props": { "severity": "INFO" },
       "type": "DefaultComesLast"
     },
     {
-      "props": {
-        "lineStyle": "onestar",
-        "startStyle": "ignore"
-      },
+      "comment": "Specifies the format for doc-style comments ().",
+      "props": { "lineStyle": "onestar", "startStyle": "ignore" },
       "type": "DocCommentStyle"
     },
     {
+      "comment": "If enabled, prevents the use of the Dynamic type.",
       "props": { "severity": "IGNORE" },
       "type": "Dynamic"
     },
     {
-      "props": {},
+      "comment": "If enabled, ensures ~/.../ is used instead of 'new EReg()'",
+      "props": { "severity": "WARNING" },
       "type": "ERegLiteral"
     },
     {
+      "comment": "If enabled, enforces specific syntax on empty blocks (require only one line, etc.)",
       "props": {
         "tokens": [
           "CLASS_DEF",
@@ -129,11 +142,13 @@
           "TRY",
           "CATCH"
         ],
-        "option": "empty"
+        "option": "empty",
+        "severity": "IGNORE"
       },
       "type": "EmptyBlock"
     },
     {
+      "comment": "If enabled, flags when consecutive empty lines are used.",
       "props": {
         "requireEmptyLineAfterPackage": true,
         "requireEmptyLineAfterInterface": true,
@@ -141,17 +156,18 @@
         "allowEmptyLineAfterSingleLineComment": true,
         "max": 1,
         "requireEmptyLineAfterClass": true,
-        "allowEmptyLineAfterMultiLineComment": true
+        "allowEmptyLineAfterMultiLineComment": true,
+        "severity": "IGNORE"
       },
       "type": "EmptyLines"
     },
     {
-      "props": {
-        "enforceEmptyPackage": true
-      },
+      "comment": "If enabled, mandates the use of 'package;' on root level modules.",
+      "props": { "enforceEmptyPackage": true, "severity": "WARNING" },
       "type": "EmptyPackage"
     },
     {
+      "comment": "If enabled, provides advanced checking for when consecutive empty lines are used.",
       "props": {
         "none": [],
         "upto": [],
@@ -160,11 +176,13 @@
         "max": 1,
         "ignore": [],
         "atleast": [],
-        "skipSingleLineTypes": true
+        "skipSingleLineTypes": true,
+        "severity": "IGNORE"
       },
       "type": "ExtendedEmptyLines"
     },
     {
+      "comment": "If enabled, mandates documentation comments for public fields.",
       "props": {
         "requireParams": true,
         "fieldType": "BOTH",
@@ -172,33 +190,33 @@
         "ignoreOverride": true,
         "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF"],
         "modifier": "PUBLIC",
-        "excludeNames": ["new", "toString"]
+        "excludeNames": ["new", "toString"],
+        "severity": "INFO"
       },
       "type": "FieldDocComment"
     },
     {
-      "props": {
-        "max": 1000,
-        "ignoreEmptyLines": true,
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, warns if files exceed a certain number of lines.",
+      "props": { "max": 1000, "ignoreEmptyLines": true, "severity": "IGNORE" },
       "type": "FileLength"
     },
     {
+      "comment": "If enabled, requires modules match the casing of their file name.",
       "type": "FileNameCase",
-      "props": {}
+      "props": { "severity": "WARNING" }
     },
     {
+      "comment": "If enabled, requires inline/static variables to be declared final.",
       "type": "Final",
-      "props": {}
+      "props": { "severity": "IGNORE" }
     },
     {
-      "props": {
-        "option": "upperCase"
-      },
+      "comment": "If enabled, requires hexadecimal literals to be in upper case. 0xFFFFFF is valid and 0xffffff is invalid.",
+      "props": { "option": "upperCase", "severity": "WARNING" },
       "type": "HexadecimalLiteral"
     },
     {
+      "comment": "If enabled, warns if a local variable or parameter shadows an existing field.",
       "props": {
         "ignoreSetter": true,
         "ignoreFormat": "^(main|run)$",
@@ -207,77 +225,94 @@
       "type": "HiddenField"
     },
     {
-      "props": {
-        "character": "  ",
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, mandates indentation.",
+      "props": { "character": "", "severity": "IGNORE" },
       "type": "Indentation"
     },
     {
+      "comment": "If enabled, mandates characters used for indentation.",
       "props": {
         "character": "space",
-        "severity": "INFO",
+        "severity": "IGNORE",
         "ignorePattern": "^$"
       },
       "type": "IndentationCharacter"
     },
     {
-      "props": {
-        "ignoreReturnAssignments": true,
-        "severity": "WARNING"
-      },
+      "comment": "If enabled, warns about assignments performed within another expression, like 'if (a=b){}'",
+      "props": { "ignoreReturnAssignments": true, "severity": "WARNING" },
       "type": "InnerAssignment"
     },
     {
+      "comment": "If enabled, enforces that interfaces should not contain properties.",
       "props": {
         "allowProperties": false,
-        "allowMarkerInterfaces": true
+        "allowMarkerInterfaces": true,
+        "severity": "WARNING"
       },
       "type": "Interface"
     },
     {
+      "comment": "If enabled, enforces a specific placement for curly braces. TODO:Choose between Allman/K&R and enforce project-wide.",
       "props": {
+        "option": "eol",
+        "ignoreEmptySingleline": true,
+        "tokens": [
+          "CLASS_DEF",
+          "ENUM_DEF",
+          "ABSTRACT_DEF",
+          "TYPEDEF_DEF",
+          "INTERFACE_DEF",
+          "OBJECT_DECL",
+          "FUNCTION",
+          "FOR",
+          "IF",
+          "WHILE",
+          "SWITCH",
+          "TRY",
+          "CATCH",
+          "REIFICATION",
+          "ARRAY_COMPREHENSION"
+        ],
         "severity": "IGNORE"
       },
       "type": "LeftCurly"
     },
     {
+      "comment": "If enabled, warns when lines of code exceed a certain length.",
       "props": {
         "max": 160,
-        "ignorePattern": "^(\\s*['\"][^'\"]*['\"].*)$"
+        "ignorePattern": "^(\\s*['\"][^'\"]*['\"].*)$",
+        "severity": "INFO"
       },
       "type": "LineLength"
     },
     {
+      "comment": "If enabled, mandates a specific naming convention for listener methods.",
       "props": {
         "listeners": ["addEventListener", "addListener", "on", "once"],
-        "format": "^_?[a-z][a-zA-Z0-9]*$"
+        "format": "^_?[a-z][a-zA-Z0-9]*$",
+        "severity": "IGNORE"
       },
       "type": "ListenerName"
     },
     {
+      "comment": "Specifies a specific naming format for local variables.",
       "props": {
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": []
+        "tokens": [],
+        "severity": "IGNORE"
       },
       "type": "LocalVariableName"
     },
     {
-      "props": {
-        "ignoreNumbers": [-1, 0, 1, 2],
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead.",
+      "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "INFO" },
       "type": "MagicNumber"
     },
     {
-      "props": {
-        "format": "^[A-Z][a-zA-Z0-9]*$",
-        "tokens": ["ABSTRACT"]
-      },
-      "type": "MemberName"
-    },
-    {
+      "comment": "Specifies a specific naming format for abstract member fields.",
       "props": {
         "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
         "tokens": ["ABSTRACT"]
@@ -285,6 +320,7 @@
       "type": "MemberName"
     },
     {
+      "comment": "Specifies a specific naming format for class and typedef member fields.",
       "props": {
         "ignoreExtern": true,
         "format": "^[_a-z][a-zA-Z0-9]*$",
@@ -293,22 +329,22 @@
       "type": "MemberName"
     },
     {
+      "comment": "If enabled, enforces that modules should not exceed a certain number of methods.",
       "props": {
         "maxPrivate": 100,
         "maxPublic": 100,
-        "maxTotal": 100
+        "maxTotal": 100,
+        "severity": "IGNORE"
       },
       "type": "MethodCount"
     },
     {
-      "props": {
-        "max": 50,
-        "ignoreEmptyLines": true,
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, enforces that methods should not exceed a certain number of lines of code, excluding empty lines.",
+      "props": { "max": 50, "ignoreEmptyLines": true, "severity": "IGNORE" },
       "type": "MethodLength"
     },
     {
+      "comment": "Specifies a specific naming format for method names.",
       "props": {
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
@@ -318,6 +354,7 @@
       "type": "MethodName"
     },
     {
+      "comment": "Specifies a specific order for modifiers on fields.",
       "props": {
         "modifiers": [
           "PUBLIC_PRIVATE",
@@ -333,57 +370,64 @@
       "type": "ModifierOrder"
     },
     {
+      "comment": "If enabled, complains when a specific string literal is used in the same file multiple times. Use a named constant instead.",
       "props": {
         "minLength": 2,
         "ignore": "^\\s+$",
-        "allowDuplicates": 5
+        "allowDuplicates": 5,
+        "severity": "IGNORE"
       },
       "type": "MultipleStringLiterals"
     },
     {
-      "props": {},
+      "comment": "If enabled, complains when a multiple variables are declared in a single expression. Use individual lines.",
+      "props": { "severity": "WARNING" },
       "type": "MultipleVariableDeclarations"
     },
     {
+      "comment": "If enabled, mandates the use of braces on specific block types, unless they fit on a single line.",
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": ["ELSE_IF", "WHILE", "DO_WHILE"]
+        "tokens": [
+          "FUNCTION",
+          "FOR",
+          "IF",
+          "ELSE_IF",
+          "WHILE",
+          "DO_WHILE",
+          "CATCH"
+        ],
+        "severity": "INFO"
       },
       "type": "NeedBraces"
     },
     {
-      "props": {
-        "max": 3,
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, complains when control flow statements are nested too deep (indicating high complexity).",
+      "props": { "max": 3, "severity": "IGNORE" },
       "type": "NestedControlFlow"
     },
     {
-      "props": {
-        "max": 1,
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, complains when 'for' loops are nested too deep (indicating high complexity).",
+      "props": { "max": 1, "severity": "IGNORE" },
       "type": "NestedForDepth"
     },
     {
-      "props": {
-        "max": 4
-      },
+      "comment": "If enabled, complains when 'if' statements are nested too deep (indicating high complexity).",
+      "props": { "max": 4, "severity": "IGNORE" },
       "type": "NestedIfDepth"
     },
     {
-      "props": {
-        "max": 1
-      },
+      "comment": "If enabled, complains when try/catch statements are nested too deep (indicating high complexity).",
+      "props": { "max": 1, "severity": "INFO" },
       "type": "NestedTryDepth"
     },
     {
-      "props": {
-        "option": "questionMark"
-      },
+      "comment": "If enabled, enforces ?value rather than value = null.",
+      "props": { "option": "questionMark", "severity": "INFO" },
       "type": "NullableParameter"
     },
     {
+      "comment": "If enabled, enforces that operators should be surrounded by whitespace.",
       "props": {
         "oldFunctionTypePolicy": "none",
         "unaryOpPolicy": "none",
@@ -401,6 +445,7 @@
       "type": "OperatorWhitespace"
     },
     {
+      "comment": "If enabled, enforces that most operators should be after a newline rather than before.",
       "props": {
         "tokens": [
           "+",
@@ -443,13 +488,12 @@
       "type": "OperatorWrap"
     },
     {
-      "props": {
-        "tokens": ["="],
-        "option": "eol"
-      },
+      "comment": "If enabled, enforces that assignment operators should be before a newline rather than after.",
+      "props": { "tokens": ["="], "option": "eol" },
       "type": "OperatorWrap"
     },
     {
+      "comment": "Specifies a specific naming format for method parameter names.",
       "props": {
         "ignoreExtern": true,
         "format": "^(_|[a-z][a-zA-Z0-9]*$)",
@@ -458,39 +502,37 @@
       "type": "ParameterName"
     },
     {
-      "props": {
-        "max": 7,
-        "ignoreOverriddenMethods": false
-      },
+      "comment": "If enabled, complains when there are too many parameters on a method.",
+      "props": { "max": 7, "ignoreOverriddenMethods": false },
       "type": "ParameterNumber"
     },
     {
-      "props": {
-        "severity": "WARNING"
-      },
+      "comment": "If enabled, complains when you make a property accessor method public.",
+      "props": { "severity": "WARNING" },
       "type": "PublicAccessor"
     },
     {
-      "props": {
-        "prohibitMeta": false
-      },
+      "comment": "If enabled, complains when an @:access metadata is redundant.",
+      "props": { "prohibitMeta": false, "severity": "INFO" },
       "type": "RedundantAccessMeta"
     },
     {
-      "props": {
-        "prohibitMeta": false
-      },
+      "comment": "If enabled, complains when an @:allow metadata is redundant.",
+      "props": { "prohibitMeta": false, "severity": "INFO" },
       "type": "RedundantAllowMeta"
     },
     {
+      "comment": "If enabled, complains when an access modifier is redundant.",
       "props": {
         "enforcePrivate": false,
         "enforcePublic": true,
-        "enforcePublicPrivate": false
+        "enforcePublicPrivate": false,
+        "severity": "WARNING"
       },
       "type": "RedundantModifier"
     },
     {
+      "comment": "If enabled, enforces that a return type is specified for all methods.",
       "props": {
         "enforceReturnTypeForAnonymous": false,
         "allowEmptyReturn": true,
@@ -499,44 +541,63 @@
       "type": "Return"
     },
     {
-      "props": {
-        "ignoreFormat": "^$",
-        "max": 2,
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, mandates a maximum number of 'return' statements in a method.",
+      "props": { "ignoreFormat": "^$", "max": 2, "severity": "IGNORE" },
       "type": "ReturnCount"
     },
     {
+      "comment": "If enabled, enforces a specific placement for curly braces. TODO:Choose between Allman/K&R and enforce project-wide.",
       "props": {
+        "option": "aloneorsingle",
+        "tokens": [
+          "CLASS_DEF",
+          "ENUM_DEF",
+          "ABSTRACT_DEF",
+          "TYPEDEF_DEF",
+          "INTERFACE_DEF",
+          "OBJECT_DECL",
+          "FUNCTION",
+          "FOR",
+          "IF",
+          "WHILE",
+          "SWITCH",
+          "TRY",
+          "CATCH",
+          "REIFICATION",
+          "ARRAY_COMPREHENSION"
+        ],
         "severity": "IGNORE"
       },
       "type": "RightCurly"
     },
     {
+      "comment": "Enforces specific whitespace around certain separators, such as commas and semicolons.",
       "props": {
         "commaPolicy": "after",
         "semicolonPolicy": "after",
         "allowTrailingComma": false,
-        "dotPolicy": "none"
+        "dotPolicy": "none",
+        "severity": "INFO"
       },
       "type": "SeparatorWhitespace"
     },
     {
-      "props": {
-        "tokens": [","],
-        "option": "eol"
-      },
+      "comment": "Enforces specific line wrapping for certain separators, such as commas and semicolons.",
+      "props": { "tokens": [","], "option": "eol" },
       "type": "SeparatorWrap"
     },
     {
-      "props": {},
+      "comment": "If enabled, complains about overly complicated boolean expressions.",
+      "props": { "severity": "WARNING" },
       "type": "SimplifyBooleanExpression"
     },
     {
-      "props": {},
+      "comment": "If enabled, complains about overly complicated boolean return statements.",
+      "props": { "severity": "WARNING" },
       "type": "SimplifyBooleanReturn"
     },
     {
+      "comment": "If enabled, enforce spacing in and around conditional statements and certain operators.",
       "props": {
         "spaceIfCondition": "should",
         "spaceAroundBinop": true,
@@ -550,6 +611,7 @@
       "type": "Spacing"
     },
     {
+      "comment": "Enforce a specific string literal style (either ' or \"). TODO:Enable this and enforce!",
       "props": {
         "policy": "onlySingle",
         "allowException": true,
@@ -558,86 +620,91 @@
       "type": "StringLiteral"
     },
     {
+      "comment": "Puts a warning on unresolved TODO/FIXME comments.",
       "props": {
-        "format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)"
+        "format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)",
+        "severity": "INFO"
       },
       "type": "TODOComment"
     },
     {
-      "props": {
-        "ignorePattern": "^$"
-      },
+      "comment": "Checks if there are any tabs in the middle of a line.",
+      "props": { "severity": "INFO" },
       "type": "TabForAligning"
     },
     {
-      "props": {
-        "severity": "IGNORE"
-      },
+      "comment": "If enabled, complains whenever trace() gets used in code.",
+      "props": { "severity": "IGNORE" },
       "type": "Trace"
     },
     {
-      "props": {},
+      "comment": "If enabled, complains about trailing whitespaces at the end of lines.",
+      "props": { "severity": "INFO" },
       "type": "TrailingWhitespace"
     },
     {
-      "type": "Type",
-      "props": {
-        "ignoreEnumAbstractValues": true
-      }
+      "comment": "If enabled, requires type be specified on member fields.",
+      "props": { "ignoreEnumAbstractValues": true, "severity": "INFO" },
+      "type": "Type"
     },
     {
+      "comment": "If enabled, mandates documentation comments on classes and interfaces.",
       "props": {
-        "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"]
+        "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"],
+        "severity": "INFO"
       },
       "type": "TypeDocComment"
     },
     {
+      "comment": "Specifies a specific naming format for types. TODO:Tweak this a bit.",
       "props": {
         "ignoreExtern": true,
         "format": "^[A-Z]+[a-zA-Z0-9]*$",
-        "tokens": []
+        "tokens": ["CLASS", "ENUM", "TYPEDEF", "INTERFACE", "ABSTRACT"],
+        "severity": "WARNING"
       },
       "type": "TypeName"
     },
     {
-      "props": {},
+      "comment": "If enabled, complains when a class with only static fields and values has a redundant constructor.",
+      "props": { "severity": "WARNING" },
       "type": "UnnecessaryConstructor"
     },
     {
-      "props": {
-        "moduleTypeMap": {},
-        "ignoreModules": []
-      },
+      "comment": "If enabled, complains when a module contains unused imports. NOTE:Sometimes complains about required imports.",
+      "props": { "moduleTypeMap": {}, "ignoreModules": [], "severity": "INFO" },
       "type": "UnusedImport"
     },
     {
-      "props": {
-        "severity": "WARNING"
-      },
+      "comment": "If enabled, complains when a local variable is unused.",
+      "props": { "severity": "WARNING" },
       "type": "UnusedLocalVar"
     },
     {
-      "type": "VarTypeHint",
+      "comment": "If enabled, requires type hints for certain variables.",
       "props": {
         "typeHintPolicy": "enforce_all",
         "ignoreEnumAbstractValues": true,
         "severity": "IGNORE"
-      }
+      },
+      "type": "VarTypeHint"
     },
     {
+      "comment": "If enabled, complains when a class member variable is initialized at the class level rather than the constructor. TODO:Is this fine to disable?",
       "type": "VariableInitialisation",
-      "props": {
-        "allowFinal": false
-      }
+      "props": { "allowFinal": false, "severity": "INFO" }
     },
     {
+      "comment": "If enabled, mandates whitespace after certain tokens.",
       "props": {
         "tokens": [",", ";"],
-        "allowTrailingComma": false
+        "allowTrailingComma": false,
+        "severity": "INFO"
       },
       "type": "WhitespaceAfter"
     },
     {
+      "comment": "If enabled, mandates whitespace around certain tokens.",
       "props": {
         "tokens": [
           "=",
@@ -672,11 +739,10 @@
           "&=",
           "^=",
           "=>"
-        ]
+        ],
+        "severity": "INFO"
       },
       "type": "WhitespaceAround"
     }
-  ],
-  "exclude": {},
-  "version": 1
+  ]
 }

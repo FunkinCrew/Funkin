@@ -32,13 +32,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.7.5";
+  static final VERSION:String = "0.8.1";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 56;
+  static final BUILD_NUMBER:Int = 70;
 
   /**
    * The game's name. Used as the default window title.
@@ -178,6 +178,15 @@ class Project extends HXProject
   ];
 
   //
+  // ASSET EMBEDDING
+  //
+
+  /**
+   * The songs whose audio files should be embedded inside the executable.
+   */
+  static final EMBED_SONGS_AUDIO:Array<String> = ["spaghetti"];
+
+  //
   // BUILD FLAGS
   // Inverse build flags are automatically populated.
   //
@@ -204,6 +213,13 @@ class Project extends HXProject
    * If this flag is enabled, armv7 won't be compiled when building android.
    */
   static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
+  /**
+   * `-DFORCE_BLEND_SHADER`
+   * If this flag is enabled, the game will force the use of shaders to render
+   * certain blend modes, even if the device supports the needed OpenGL extensions.
+   */
+  static final FORCE_BLEND_SHADER:FeatureFlag = "FORCE_BLEND_SHADER";
 
   /**
    * `-DGITHUB_BUILD`
@@ -648,7 +664,7 @@ class Project extends HXProject
     this.window.hardware = true;
     this.window.vsync = false;
     // force / allow high DPI
-    this.window.allowHighDPI = true;
+    this.window.allowHighDPI = !isMac();
 
     if (isWeb())
     {
@@ -843,6 +859,11 @@ class Project extends HXProject
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
+
+    // Should be true on Android.
+    // Some Android devices support native blends, but it causes issues
+    // with other shaders, so we'll disable it for now.
+    FORCE_BLEND_SHADER.apply(this, isAndroid());
 
     //
     // FEATURE FLAGS
@@ -1314,7 +1335,6 @@ class Project extends HXProject
     addHaxelib('flixel'); // Game engine
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
-    addHaxelib('hscript'); // Scripting
 
     if (FEATURE_HAXEUI.isEnabled(this))
     {
@@ -1450,8 +1470,16 @@ class Project extends HXProject
     // Shared asset libraries
     addAssetLibrary("songs", shouldEmbed, shouldPreload);
     addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed, "assets");
+
+    for (song in EMBED_SONGS_AUDIO)
+    {
+      removeAssetPath('assets/songs/$song');
+      addAssetPath('assets/songs/$song', 'assets/songs/$song', "songs", ["*"], exclude, true, "assets");
+    }
+
     addAssetLibrary("shared", shouldEmbed, shouldPreload);
     addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed, "assets");
+
     if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       var shouldEmbedVideos = false;
@@ -1478,6 +1506,8 @@ class Project extends HXProject
     addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
     addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("sserafim", shouldEmbed, shouldPreload);
+    addAssetPath("assets/sserafim", "assets/sserafim", "sserafim", ["*"], exclude, shouldEmbed, "assets");
 
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
@@ -1524,6 +1554,10 @@ class Project extends HXProject
         if (isAndroid() && !isBundle())
         {
           assetsPath = Path.join([basePath, "app", "src", "main", "assets", "assets"]);
+        }
+        else if (isIOS())
+        {
+          assetsPath = Path.join([exportPath, platform, '${this.app.file}', "assets", "assets"]);
         }
         else
         {
@@ -2069,7 +2103,7 @@ class Project extends HXProject
   @SuppressWarnings('checkstyle:Dynamic')
   function checkLibraries():Void
   {
-    var diffrentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
+    var differentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
 
@@ -2090,11 +2124,11 @@ class Project extends HXProject
         switch (library.type)
         {
           case 'haxelib':
-            diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
+            differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
@@ -2105,18 +2139,18 @@ class Project extends HXProject
           case 'haxelib':
             if (library.version != libraryCurrentVersion)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
+              differentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
             }
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
     }
 
-    if (Lambda.count(diffrentLibraries) > 0)
+    if (Lambda.count(differentLibraries) > 0)
     {
       warn("Some libraries differ from the versions defined in hmm.json.".bold().yellow());
       warn("To ensure consistency, it's recommended to stop the build and run `hmm reinstall [library]`.".bold().yellow());
@@ -2124,9 +2158,9 @@ class Project extends HXProject
 
       Sys.println('');
 
-      for (libraryName in diffrentLibraries.keys())
+      for (libraryName in differentLibraries.keys())
       {
-        var infos:Null<Array<String>> = diffrentLibraries.get(libraryName);
+        var infos:Null<Array<String>> = differentLibraries.get(libraryName);
 
         if (infos == null) continue;
 
@@ -2139,7 +2173,6 @@ class Project extends HXProject
         {
           Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
           Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
-
         }
         else
         {
@@ -2158,7 +2191,7 @@ class Project extends HXProject
   {
     var path = getLibraryCurrentFile(libraryName);
 
-    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path).trim();
 
     return '';
   }
@@ -2167,7 +2200,7 @@ class Project extends HXProject
   {
     var path = getLibraryDevFile(libraryName);
 
-    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path).trim();
 
     return '';
   }

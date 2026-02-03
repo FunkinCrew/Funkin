@@ -8,8 +8,10 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
- * This class represents a handler for a type of song event.
- * It is used by the ScriptedSongEvent class to handle user-defined events.
+ * This class handles song events which change the camera focus.
+ * This lets you center the camera on a character, on a stage prop, or a specific position on the screen,
+ * as well as apply relative offsets, and even determine the speed and manner with which
+ * the camera moves into place.
  *
  * Example: Focus on Boyfriend:
  * ```
@@ -48,8 +50,17 @@ class FocusCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('FocusCamera');
+    super('FocusCamera',
+      {
+        processOldEvents: true
+      });
   }
+
+  static final DEFAULT_X_POSITION:Float = 0.0;
+  static final DEFAULT_Y_POSITION:Float = 0.0;
+  static final DEFAULT_DURATION:Float = 4.0;
+  static final DEFAULT_CAMERA_EASE:String = 'CLASSIC';
+  static final DEFAULT_TARGET:Int = 0; // Boyfriend
 
   public override function handleEvent(data:SongEventData):Void
   {
@@ -60,18 +71,19 @@ class FocusCameraSongEvent extends SongEvent
     if (PlayState.instance.isMinimalMode) return;
 
     var posX:Null<Float> = data.getFloat('x');
-    if (posX == null) posX = 0.0;
+    if (posX == null) posX = DEFAULT_X_POSITION;
     var posY:Null<Float> = data.getFloat('y');
-    if (posY == null) posY = 0.0;
+    if (posY == null) posY = DEFAULT_Y_POSITION;
 
     var char:Null<Int> = data.getInt('char');
 
     if (char == null) char = cast data.value;
+    if (char == null) char = DEFAULT_TARGET;
 
     var duration:Null<Float> = data.getFloat('duration');
-    if (duration == null) duration = 4.0;
+    if (duration == null) duration = DEFAULT_DURATION;
     var ease:Null<String> = data.getString('ease');
-    if (ease == null) ease = 'CLASSIC'; // No linear in defaults lol
+    if (ease == null) ease = DEFAULT_CAMERA_EASE; // No linear in defaults lol
 
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
     if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
@@ -135,10 +147,11 @@ class FocusCameraSongEvent extends SongEvent
         PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
+        var easeFunctionName = '$ease$easeDir';
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
         {
-          trace('Invalid ease function: $ease');
+          trace('Invalid ease function: $easeFunctionName');
           return;
         }
         PlayState.instance.tweenCameraToPosition(targetX, targetY, durSeconds, easeFunction);
@@ -165,14 +178,14 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: "char",
         title: "Target",
-        defaultValue: 0,
+        defaultValue: DEFAULT_TARGET,
         type: SongEventFieldType.ENUM,
         keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
       },
       {
         name: "x",
         title: "X Position",
-        defaultValue: 0,
+        defaultValue: DEFAULT_X_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
         units: "px"
@@ -180,7 +193,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: "y",
         title: "Y Position",
-        defaultValue: 0,
+        defaultValue: DEFAULT_Y_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
         units: "px"
@@ -188,7 +201,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
-        defaultValue: 4.0,
+        defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
@@ -197,7 +210,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
-        defaultValue: 'CLASSIC',
+        defaultValue: DEFAULT_CAMERA_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
@@ -220,7 +233,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
-        defaultValue: 'In',
+        defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       }

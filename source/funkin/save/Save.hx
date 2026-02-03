@@ -171,6 +171,7 @@ class Save implements ConsoleClass
           theme: ChartEditorTheme.Light,
           playtestStartTime: false,
           playtestAudioSettings: false,
+          playtestResultsSettings: false,
           downscroll: false,
           showNoteKinds: true,
           metronomeVolume: 1.0,
@@ -285,6 +286,9 @@ class Save implements ConsoleClass
   @:saveProperty(data.optionsChartEditor.playtestAudioSettings, false)
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
 
+  @:saveProperty(data.optionsChartEditor.playtestResultsSettings, false)
+  public var chartEditorPlaytestResultsSettings:SaveProperty<Bool>;
+
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
 
@@ -312,6 +316,9 @@ class Save implements ConsoleClass
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
+  /**
+   * Marks whether a character has been introduced in the Character Select screen.
+   */
   @:saveProperty(data.unlocks.charactersSeen, ["bf"])
   public var charactersSeen:SaveProperty<Array<String>>;
 
@@ -754,6 +761,36 @@ class Save implements ConsoleClass
         trace('Unknown character ID: ' + characterId);
         return true;
     }
+  }
+
+  /**
+   * Retrieve the mod options object for a given mod ID.
+   * This is a dynamic object that mods can write any values they like to.
+   *
+   * @param modId The mod ID to retrieve
+   * @return The mod options for the given mod ID.
+   */
+  public function getModOptions(modId:String):Dynamic
+  {
+    if (!data.mods.modOptions.exists(modId))
+    {
+      data.mods.modOptions.set(modId, {});
+    }
+
+    return data.mods.modOptions.get(modId);
+  }
+
+  /**
+   * Store the mod options object for a given mod ID.
+   * Call this function to ensure your changes get written to the user's save file.
+   *
+   * @param modId The mod ID to store data for.
+   * @param options The mod options object.
+   */
+  public function setModOptions(modId:String, options:Dynamic):Void
+  {
+    data.mods.modOptions.set(modId, options);
+    Save.system.flush();
   }
 
   /**
@@ -1437,6 +1474,12 @@ typedef SaveDataChartEditorOptions =
    * @default `false`
    */
   var ?playtestAudioSettings:Bool;
+
+  /**
+   * If true, playtest songs will play the results screen on completion.
+   * @default `false`
+   */
+  var ?playtestResultsSettings:Bool;
 
   /**
    * Theme music in the Chart Editor.

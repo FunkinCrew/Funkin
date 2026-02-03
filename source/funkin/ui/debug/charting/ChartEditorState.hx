@@ -61,6 +61,7 @@ import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.MoveItemsCommand;
@@ -988,9 +989,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var noteTooltipsDirty:Bool = true;
 
   /**
-   * Whether the selected charactesr have been modified and the health icons need to be updated.
+   * Whether the selected characters have been modified and the health icons need to be updated.
    */
   var healthIconsDirty:Bool = true;
+
+  /**
+   * Whether the waveforms were modified and need to be updated.
+   */
+  var waveformsDirty:Bool = false;
 
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
@@ -1917,6 +1923,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemFlipNotes:MenuItem;
 
   /**
+   * The `Edit -> Mirror Notes -> X Axis` menu item.
+   */
+  var menubarItemMirrorX:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> Y Axis` menu item.
+   */
+  var menubarItemMirrorY:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> XY Axis` menu item.
+   */
+  var menubarItemMirrorXY:MenuItem;
+
+  /**
+   * The `Edit -> Mirror Notes -> Flip Within Strumline` menu checkbox.
+   */
+  var menubarItemMirrorFlipWithinStrumline:MenuCheckBox;
+
+  /**
    * The `Edit -> Select All` menu item.
    */
   var menubarItemSelectAll:MenuItem;
@@ -2524,6 +2550,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     showSubtitles = save.chartEditorShowSubtitles.value;
     playtestStartTime = save.chartEditorPlaytestStartTime.value;
     playtestAudioSettings = save.chartEditorPlaytestAudioSettings.value;
+    playtestShowResults = save.chartEditorPlaytestResultsSettings.value;
     currentTheme = save.chartEditorTheme.value;
     metronomeVolume = save.chartEditorMetronomeVolume.value;
     hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
@@ -2555,6 +2582,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
     save.chartEditorPlaytestStartTime.value = playtestStartTime;
     save.chartEditorPlaytestAudioSettings.value = playtestAudioSettings;
+    save.chartEditorPlaytestResultsSettings.value = playtestShowResults;
     save.chartEditorTheme.value = currentTheme;
     save.chartEditorMetronomeVolume.value = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
@@ -3226,6 +3254,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemFlipNotes.onClick = _ -> performCommand(new FlipNotesCommand(currentNoteSelection));
 
+    menubarItemMirrorX.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, true, false));
+
+    menubarItemMirrorY.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, false, true));
+
+    menubarItemMirrorXY.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+      !menubarItemMirrorFlipWithinStrumline.selected, true, true));
+
     menubarItemSelectAllNotes.onClick = _ -> performCommand(new SelectAllItemsCommand(true, false));
 
     menubarItemSelectAllEvents.onClick = _ -> performCommand(new SelectAllItemsCommand(false, true));
@@ -3623,6 +3660,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handlePlaybar();
     handleNotePreview();
     handleHealthIcons();
+    handleWaveforms();
 
     handleFileKeybinds();
     handleViewKeybinds();
@@ -3743,7 +3781,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       currentScrollEase = scrollPositionInPixels;
 
-      if (FlxG.keys.pressed.ALT)
+      if (FlxG.keys.pressed.ALT && !FlxG.keys.pressed.CONTROL)
       {
         // If middle mouse panning during song playback, we move ONLY the playhead, without scrolling. Neat!
 
@@ -4630,6 +4668,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
         // Add a new time change at the grid playhead's position.
         performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
+        this.success('New Time Change', '${undoHistory[undoHistory.length - 1].toString()} ms');
       }
     }
 
@@ -5855,6 +5894,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         buttonSelectOpponent.text = _charIconData?.name ?? 'Opponent';
       }
+      waveformsDirty = true;
       healthIconsDirty = false;
       _charIconData = null;
     }
@@ -5863,8 +5903,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (healthIconBF != null)
     {
       // Base X position to the right of the grid.
-      var xOffset = 45 - (healthIconBF.width / 2);
-      healthIconBF.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS + gridTiledSprite.width + xOffset);
+      healthIconBF.x = (gridTiledSprite == null) ? (0) : (gridTiledSprite.x + gridTiledSprite.width);
       var yOffset = 30 - (healthIconBF.height / 2);
       healthIconBF.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
     }
@@ -5872,11 +5911,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Visibly center the Dad health icon.
     if (healthIconDad != null)
     {
-      var xOffset = 75 + (healthIconDad.width / 2);
-      healthIconDad.x = (gridTiledSprite == null) ? (0) : (GRID_X_POS - xOffset);
+      healthIconDad.x = (gridTiledSprite == null) ? (0) : (measureTicks.x - healthIconDad.width);
       var yOffset = 30 - (healthIconDad.height / 2);
       healthIconDad.y = (gridTiledSprite == null) ? (0) : (GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT + 8) + yOffset;
     }
+  }
+
+  /**
+   * Handle waveforms aligning based on the health icons position.
+   */
+  function handleWaveforms()
+  {
+    if (!waveformsDirty) return;
+
+    for (waveform in audioWaveforms.members)
+    {
+      waveform.x = switch (waveform.iconId)
+      {
+        case BF: healthIconBF != null ? healthIconBF.x : 840 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+        case DAD: healthIconDad != null ? healthIconDad.x : 360 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+        default: 0;
+      }
+    }
+
+    waveformsDirty = false;
   }
 
   /**
@@ -5885,7 +5943,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleFileKeybinds():Void
   {
     // CTRL + N = New Chart
-    if (pressingControl() && FlxG.keys.justPressed.N && !isHaxeUIDialogOpen)
+    if (pressingControl()
+      && FlxG.keys.justPressed.N
+      && !isHaxeUIDialogOpen
+      && !FlxG.keys.pressed.SHIFT
+      && !FlxG.keys.pressed.ALT)
     {
       this.openWelcomeDialog(true);
     }
@@ -6043,6 +6105,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Flip selected notes.
       performCommand(new FlipNotesCommand(currentNoteSelection));
+    }
+
+    // CTRL + SHIFT + ALT + M = Mirror Notes along XY axis
+    if (FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, true, true));
+    }
+
+    // CTRL + SHIFT + M = Mirror Notes along X axis
+    if (!FlxG.keys.pressed.ALT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, true, false));
+    }
+
+    // CTRL + ALT + M = Mirror Notes along the Y axis
+    if (!FlxG.keys.pressed.SHIFT && FlxG.keys.pressed.CONTROL && FlxG.keys.pressed.ALT && FlxG.keys.justPressed.M)
+    {
+      performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
+        !menubarItemMirrorFlipWithinStrumline.selected, false, true));
     }
 
     // CTRL + A = Select All Notes
@@ -7104,6 +7187,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
     updateTimeSignature();
+    @:privateAccess measureTicks?.updateMeasureNumbers(true);
 
     this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
     Conductor.instance.currentTimeChange.bpm = currentSongMetadata.timeChanges[0].bpm;
@@ -7199,6 +7283,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (welcomeMusic != null) welcomeMusic.destroy();
     if (audioInstTrack != null) audioInstTrack.destroy();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.destroy();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
   }
 
   function applyCanQuickSave():Void

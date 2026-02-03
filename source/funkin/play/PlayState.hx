@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.play.event.SongEvent;
 import funkin.play.PauseSubState.PauseMode;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.Transition;
@@ -151,6 +152,11 @@ typedef PlayStateParams =
    * Used to persist the position of the `cameraFollowPosition` between levels.
    */
   ?cameraFollowPoint:FlxPoint,
+  /**
+   * Whether the note data should be mirrored horizontally.
+   * @default `false`
+   */
+  ?mirrored:Bool
 }
 
 /**
@@ -347,14 +353,14 @@ class PlayState extends MusicBeatSubState
    * How many beats (quarter notes) between camera zooms.
    * @default One camera zoom per measure (four beats).
    */
-  public var cameraZoomRate:Int = Constants.DEFAULT_ZOOM_RATE;
+  public var cameraZoomRate:Float = Constants.DEFAULT_ZOOM_RATE;
 
   /**
    * How many beats (quarter notes) the zoom rate is offset.
    * For if you want the zoom to happen off-beat.
    * @default Zero beats (on-beat).
    */
-  public var cameraZoomRateOffset:Int = Constants.DEFAULT_ZOOM_OFFSET;
+  public var cameraZoomRateOffset:Float = Constants.DEFAULT_ZOOM_OFFSET;
 
   /**
    * Whether the game is currently in the countdown before the song resumes.
@@ -611,12 +617,12 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, the user interface elements.
    */
-  public var camHUD:FlxCamera;
+  public var camHUD:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, the stage and characters.
    */
-  public var camGame:FlxCamera;
+  public var camGame:FunkinCamera;
 
   /**
    * Simple helper debug variable, to be able to move the camera around for debug purposes
@@ -627,22 +633,22 @@ class PlayState extends MusicBeatSubState
   /**
    * The camera which contains, and controls visibility of, a video cutscene, dialogue.
    */
-  public var camCutscene:FlxCamera;
+  public var camCutscene:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of menus when there are fake cutouts added.
    */
-  public var camCutouts:FlxCamera;
+  public var camCutouts:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, the subtitles.
    */
-  public var camSubtitles:FlxCamera;
+  public var camSubtitles:FunkinCamera;
 
   /**
    * The camera which contains, and controls visibility of, pause menu.
    */
-  public var camPause:FlxCamera;
+  public var camPause:FunkinCamera;
 
   /**
    * The combo popups. Includes the real-time combo counter and the rating.
@@ -744,6 +750,8 @@ class PlayState extends MusicBeatSubState
    */
   static final MUSIC_EASE_RATIO:Float = 42;
 
+  var mirrorSongData:Bool = false;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
   var generatedNoteData:Bool = false;
@@ -783,6 +791,9 @@ class PlayState extends MusicBeatSubState
     playbackRate = params.playbackRate ?? 1.0;
     overrideMusic = params.overrideMusic ?? false;
     previousCameraFollowPoint = params.cameraFollowPoint;
+    mirrorSongData = params.mirrored ?? false;
+
+    trace("Params: " + mirrorSongData + ", " + isBotPlayMode);
 
     // Basic object initialization
 
@@ -804,11 +815,11 @@ class PlayState extends MusicBeatSubState
 
     // Cameras
     camGame = new FunkinCamera('playStateCamGame');
-    camHUD = new FlxCamera();
-    camCutscene = new FlxCamera();
-    camCutouts = new FlxCamera();
-    camSubtitles = new FlxCamera();
-    camPause = new FlxCamera();
+    camHUD = new FunkinCamera('playStateCamHUD');
+    camCutscene = new FunkinCamera('playStateCamCutscene');
+    camCutouts = new FunkinCamera('playStateCamCutouts');
+    camSubtitles = new FunkinCamera('playStateCamSubtitles');
+    camPause = new FunkinCamera('playStateCamPause');
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:Null<String> = currentChart?.noteStyle;
@@ -908,7 +919,7 @@ class PlayState extends MusicBeatSubState
     initPopups();
 
     #if mobile
-    if (!ControlsHandler.usingExternalInputDevice)
+    if (!ControlsHandler.hasExternalInputDevice)
     {
       // Initialize the hitbox for mobile controls
       addHitbox(false);
@@ -1119,7 +1130,13 @@ class PlayState extends MusicBeatSubState
         for (vocalGroupEntry in vocals.voices)
           if (vocalGroupEntry != null) for (track in vocalGroupEntry.members)
           {
-            if (track != null) track.volume = 1;
+            if (track != null)
+            {
+              if (track == vocals.playerVoices) track.volume = playerVocalsVolume;
+              else if (track == vocals.opponentVoices) track.volume = opponentVocalsVolume;
+              else
+                track.volume = 1;
+            }
           }
       }
 
@@ -1519,12 +1536,18 @@ class PlayState extends MusicBeatSubState
           var eventAge:Float = Conductor.instance.songPosition - event.time;
           if (eventAge > 1000)
           {
-            event.activated = true;
-            continue;
+            // Setting `event.processOldEvents = true` allows events to be handled even if they are old.
+            var eventHandler:Null<SongEvent> = SongEventRegistry.getEvent(event.eventKind);
+            if (eventHandler == null || !eventHandler.processOldEvents)
+            {
+              event.activated = true;
+              continue;
+            }
           };
 
           var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
           dispatchEvent(eventEvent);
+
           // Calling event.cancelEvent() skips the event. Neat!
           if (!eventEvent.eventCanceled)
           {
@@ -1537,26 +1560,26 @@ class PlayState extends MusicBeatSubState
 
   public override function dispatchEvent(event:ScriptEvent):Void
   {
-    // ORDER: Module, Stage, Character, Song, Conversation, Note
+    // ORDER: Module, Song, Note, Stage, Conversation, Character
     // Modules should get the first chance to cancel the event.
 
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);
 
-    // Dispatch event to stage script.
-    ScriptEventDispatcher.callEvent(currentStage, event);
-
-    // Dispatch event to character script(s).
-    if (currentStage != null) currentStage.dispatchToCharacters(event);
-
     // Dispatch event to song script.
     ScriptEventDispatcher.callEvent(currentSong, event);
+
+    // Dispatch event to note kind scripts
+    NoteKindManager.callEvent(event);
+
+    // Dispatch event to stage script.
+    ScriptEventDispatcher.callEvent(currentStage, event);
 
     // Dispatch event to conversation script.
     ScriptEventDispatcher.callEvent(currentConversation, event);
 
-    // Dispatch event to note kind scripts
-    NoteKindManager.callEvent(event);
+    // Dispatch event to character script(s).
+    if (currentStage != null) currentStage.dispatchToCharacters(event);
   }
 
   /**
@@ -1869,6 +1892,19 @@ class PlayState extends MusicBeatSubState
     iconP1?.onStepHit(Std.int(Conductor.instance.currentStep));
     iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
 
+    // Only bop camera if zoom level is below 135%
+    if (Preferences.zoomCamera
+      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
+      && cameraZoomRate > 0
+      && (Conductor.instance.currentStep + cameraZoomRateOffset * Constants.STEPS_PER_BEAT) % (cameraZoomRate * Constants.STEPS_PER_BEAT) == 0)
+    {
+      // Set zoom multiplier for camera bop.
+      cameraBopMultiplier = cameraBopIntensity;
+      // HUD camera zoom still uses old system. To change. (+3%)
+      camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
+    }
+    // trace('Not bopping camera: ${FlxG.camera.zoom} < ${(1.35 * defaultCameraZoom)} && ${cameraZoomRate} > 0 && ${Conductor.instance.currentBeat} % ${cameraZoomRate} == ${Conductor.instance.currentBeat % cameraZoomRate}}');
+
     // Try to call hold note haptics each step hit. Works if atleast one note status is NoteStatus.isHoldNotePressed.
     NoteVibrationsHandler.instance.tryHoldNoteVibration();
 
@@ -2006,7 +2042,7 @@ class PlayState extends MusicBeatSubState
   function initHealthBar():Void
   {
     final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !ControlsHandler.usingExternalInputDevice)
+      && !ControlsHandler.hasExternalInputDevice)
       || #end Preferences.downscroll;
 
     var healthBarYPos:Float = isDownscroll ? FlxG.height * 0.1 : FlxG.height * 0.9;
@@ -2043,7 +2079,7 @@ class PlayState extends MusicBeatSubState
     if (Preferences.subtitles)
     {
       final isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-        && !ControlsHandler.usingExternalInputDevice)
+        && !ControlsHandler.hasExternalInputDevice)
         || #end Preferences.downscroll;
 
       final subtitlesAlignment:SubtitlesAlignment = isDownscroll ? SubtitlesAlignment.SUBTITLES_TOP : SubtitlesAlignment.SUBTITLES_BOTTOM;
@@ -2267,7 +2303,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.cameras = [camHUD];
 
     #if mobile
-    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.usingExternalInputDevice)
+    if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
     {
       initNoteHitbox();
     }
@@ -2323,13 +2359,11 @@ class PlayState extends MusicBeatSubState
     pauseButton.updateHitbox();
     pauseButton.animation.play("idle");
     pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
-    @:nullSafety(Off) // AAAAAAA why did camControls have to be nullable AAAAAAAAAA
-    pauseButton.cameras = [camControls];
+    if (camControls != null) pauseButton.cameras = [camControls];
 
     pauseCircle.scale.set(0.84, 0.8);
     pauseCircle.updateHitbox();
-    @:nullSafety(Off)
-    pauseCircle.cameras = [camControls];
+    if (camControls != null) pauseCircle.cameras = [camControls];
     pauseCircle.x = ((pauseButton.x + (pauseButton.width / 2)) - (pauseCircle.width / 2));
     pauseCircle.y = ((pauseButton.y + (pauseButton.height / 2)) - (pauseCircle.height / 2));
     pauseCircle.alpha = 0.1;
@@ -2976,7 +3010,7 @@ class PlayState extends MusicBeatSubState
           // We dropped a hold note.
           holdNote.handledMiss = true;
 
-          if (strumline.canMiss)
+          if (strumline.canMiss && (holdNote.scoreable || !strumline.isPlayer))
           {
             if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
             {
@@ -3785,19 +3819,12 @@ class PlayState extends MusicBeatSubState
       {
         if (isPlaytestResults)
         {
-          var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
-          var clearPercentFloat = talliesToUse.totalNotes == 0 ? 0.0 : (talliesToUse.sick + talliesToUse.good) / talliesToUse.totalNotes * 100;
-          /*
-              Only move to the score screen if more than 30% of the song was successfully hit.
-              While that might sound like a low clear percent, consider the fact that some songs are hard,
-              and the user might be only playtesting one third or half the song.
-             */
-          if (clearPercentFloat >= 30) moveToResultsScreen(false, prevScoreData);
-          else
-            this.close();
+          moveToResultsScreen(false, prevScoreData);
         }
         else
+        {
           this.close();
+        }
       }
       else
       {

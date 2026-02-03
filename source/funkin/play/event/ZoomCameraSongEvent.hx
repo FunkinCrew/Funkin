@@ -8,7 +8,7 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
- * This class represents a handler for camera zoom events.
+ * This class handles song events which change the zoom level of the camera.
  *
  * Example: Zoom to 1.3x:
  * ```
@@ -17,35 +17,15 @@ import funkin.data.event.SongEventSchema.SongEventFieldType;
  *   'v': 1.3
  * }
  * ```
- *
- * Example: Zoom to 1.3x
- * ```
- * {
- *   'e': 'FocusCamera',
- * 	 'v': {
- * 	   'char': 2,
- * 	   'y': -10,
- *   }
- * }
- * ```
- *
- * Example: Focus on (100, 100):
- * ```
- * {
- *   'e': 'FocusCamera',
- *   'v': {
- *     'char': -1,
- *     'x': 100,
- *     'y': 100,
- *   }
- * }
- * ```
  */
 class ZoomCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('ZoomCamera');
+    super('ZoomCamera',
+      {
+        processOldEvents: true
+      });
   }
 
   static final DEFAULT_ZOOM:Float = 1.0;
@@ -79,10 +59,11 @@ class ZoomCameraSongEvent extends SongEvent
         PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
+        var easeFunctionName = '$ease$easeDir';
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
         {
-          trace('Invalid ease function: $ease');
+          trace('Invalid ease function: $easeFunctionName');
           return;
         }
 
@@ -112,7 +93,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'zoom',
         title: 'Zoom Level',
-        defaultValue: 1.0,
+        defaultValue: DEFAULT_ZOOM,
         min: 0,
         step: 0.05,
         type: SongEventFieldType.FLOAT,
@@ -121,7 +102,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
-        defaultValue: 4.0,
+        defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
@@ -130,14 +111,14 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'mode',
         title: 'Mode',
-        defaultValue: 'stage',
+        defaultValue: DEFAULT_MODE,
         type: SongEventFieldType.ENUM,
         keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
       },
       {
         name: 'ease',
         title: 'Easing Type',
-        defaultValue: 'linear',
+        defaultValue: SongEvent.DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
@@ -159,7 +140,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
-        defaultValue: 'In',
+        defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       }

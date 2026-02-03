@@ -1,6 +1,5 @@
 package funkin.ui.title;
 
-import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import funkin.ui.FullScreenScaleMode;
@@ -10,29 +9,17 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
-import flixel.util.typeLimit.NextState;
-import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
-import funkin.graphics.shaders.TitleOutline;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import openfl.Assets;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetStream;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-import funkin.ui.freeplay.FreeplayState;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -45,10 +32,10 @@ class TitleState extends MusicBeatState
    */
   public static var initialized:Bool = false;
 
-  var blackScreen:FlxSprite;
+  var blackScreen:FunkinSprite;
   var credGroup:FlxGroup;
   var textGroup:FlxGroup;
-  var ngSpr:FlxSprite;
+  var ngSpr:FunkinSprite;
 
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
@@ -71,12 +58,10 @@ class TitleState extends MusicBeatState
       startIntro();
   }
 
-  var logoBl:FlxSprite;
-  var outlineShaderShit:TitleOutline;
-
-  var gfDance:FlxSpriteOverlay;
+  var logoBl:FunkinSprite;
+  var gfDance:FunkinSprite;
   var danceLeft:Bool = false;
-  var titleText:FlxSprite;
+  var titleText:FunkinSprite;
   var maskShader = new LeftMaskShader();
 
   var attractTimer:FlxTimer;
@@ -91,39 +76,29 @@ class TitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    logoBl = new FlxSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
+    logoBl = new FunkinSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
     logoBl.shader = swagShader.shader;
     logoBl.updateHitbox();
 
-    outlineShaderShit = new TitleOutline();
-
-    gfDance = new FlxSpriteOverlay((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
+    gfDance = new FunkinSprite((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
     gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
     gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
-    // maskShader.swagSprX = gfDance.x;
-    // maskShader.swagMaskX = gfDance.x + 200;
-    // maskShader.frameUV = gfDance.frame.uv;
-    // gfDance.shader = maskShader;
-
     gfDance.shader = swagShader.shader;
 
-    // gfDance.shader = new TitleOutline();
-
     add(logoBl);
-
     add(gfDance);
 
     #if mobile
     // shift it a bit more to the left on mobile!!
-    titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText = new FunkinSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
     #else
-    titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText = new FunkinSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter');
     #end
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
@@ -131,7 +106,7 @@ class TitleState extends MusicBeatState
     titleText.animation.play('idle');
     titleText.updateHitbox();
     titleText.shader = swagShader.shader;
-    // titleText.screenCenter(X);
+
     add(titleText);
 
     if (!initialized) // Fix an issue where returning to the credits would play a black screen.
@@ -144,7 +119,7 @@ class TitleState extends MusicBeatState
 
     blackScreen = bg.clone();
 
-    ngSpr = new FlxSprite(0, FlxG.height * 0.52);
+    ngSpr = new FunkinSprite(0, FlxG.height * 0.52);
 
     if (FlxG.random.bool(1))
     {
@@ -248,30 +223,6 @@ class TitleState extends MusicBeatState
 
     funkin.input.Cursor.hide();
 
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
-    if (outlineShaderShit != null)
-    {
-      if (FlxG.keys.justPressed.I)
-      {
-        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
-      }
-
-      if (FlxG.keys.pressed.D)
-      {
-        outlineShaderShit.funnyX += 1;
-      }
-
-      // outlineShaderShit.xPos.value[0] += 1;
-    }
-
     if (FlxG.keys.justPressed.Y)
     {
       FlxTween.cancelTweensOf(FlxG.stage.window, ['x', 'y']);
@@ -362,7 +313,7 @@ class TitleState extends MusicBeatState
     if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end) codePress(FlxDirectionFlags.RIGHT.toInt());
   }
 
-  function codePress(input:Int)
+  function codePress(input:Int):Void
   {
     if (input == cheatArray[curCheatPos])
     {
@@ -378,8 +329,6 @@ class TitleState extends MusicBeatState
   function startCheat():Void
   {
     cheatActive = true;
-
-    var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
 
     FunkinSound.playMusic('girlfriendsRingtone',
       {
@@ -397,7 +346,7 @@ class TitleState extends MusicBeatState
     attractTimer.cancel();
   }
 
-  function createCoolText(textArray:Array<String>)
+  function createCoolText(textArray:Array<String>):Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -411,7 +360,7 @@ class TitleState extends MusicBeatState
     }
   }
 
-  function addMoreText(text:String)
+  function addMoreText(text:String):Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -423,7 +372,7 @@ class TitleState extends MusicBeatState
     textGroup.add(coolText);
   }
 
-  function deleteCoolText()
+  function deleteCoolText():Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -492,6 +441,7 @@ class TitleState extends MusicBeatState
       }
       lastBeat = Conductor.instance.currentBeat;
     }
+
     if (skippedIntro)
     {
       if (cheatActive && Conductor.instance.currentBeat % 2 == 0) swagShader.update(0.125);

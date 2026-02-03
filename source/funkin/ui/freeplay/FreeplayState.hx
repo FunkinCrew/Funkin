@@ -4,7 +4,6 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -198,7 +197,7 @@ class FreeplayState extends MusicBeatSubState
     return grpCapsules.members[curSelected];
   }
 
-  var grpCapsules:FlxTypedGroup<SongMenuItem>;
+  var grpCapsules:SongItemGroup;
 
   var dj:Null<BaseFreeplayDJ> = null;
   #if FEATURE_TOUCH_CONTROLS
@@ -335,7 +334,7 @@ class FreeplayState extends MusicBeatSubState
     fpScoreDisplay = new FreeplayScore(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 353), 60, 7, 100, styleData);
     rankCamera = new FunkinCamera('rankCamera', 0, 0, FlxG.width, FlxG.height);
     funnyCam = new FunkinCamera('freeplayFunny', 0, 0, FlxG.width, FlxG.height);
-    grpCapsules = new FlxTypedGroup<SongMenuItem>();
+    grpCapsules = new SongItemGroup();
     grpDifficulties = new FlxTypedSpriteGroup<DifficultySprite>(-300, 80);
 
     difficultyDots = new FlxTypedSpriteGroup<DifficultyDot>(DEFAULT_DOTS_GROUP_POS[0], DEFAULT_DOTS_GROUP_POS[1]);
@@ -511,7 +510,8 @@ class FreeplayState extends MusicBeatSubState
         wait: 0.1
       });
 
-    for (diffId in Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+    var allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
+    for (diffId in allDifficulties)
     {
       var diffSprite:DifficultySprite = new DifficultySprite(diffId);
       diffSprite.visible = diffId == Constants.DEFAULT_DIFFICULTY;
@@ -519,9 +519,9 @@ class FreeplayState extends MusicBeatSubState
       grpDifficulties.add(diffSprite);
     }
 
-    for (i in 0...Constants.DEFAULT_DIFFICULTY_LIST_FULL.length)
+    for (i in 0...allDifficulties.length)
     {
-      var dot:DifficultyDot = new DifficultyDot(Constants.DEFAULT_DIFFICULTY_LIST_FULL[i], i);
+      var dot:DifficultyDot = new DifficultyDot(allDifficulties[i], i);
       difficultyDots.add(dot);
     }
 
@@ -566,7 +566,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
     #if FEATURE_TOUCH_CONTROLS
-    if (ControlsHandler.usingExternalInputDevice)
+    if (ControlsHandler.hasExternalInputDevice)
       charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     else
       charSelectHint.text = 'Tap the DJ to change characters';
@@ -806,8 +806,9 @@ class FreeplayState extends MusicBeatSubState
         albumRoll.skipIntro();
         albumRoll.showStars();
       }
+      var allDifficulties = SongRegistry.instance.listAllDifficulties(currentCharacterId) ?? Constants.DEFAULT_DIFFICULTY_LIST_FULL;
 
-      refreshDots(5, Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty), Constants.DEFAULT_DIFFICULTY_LIST_FULL.indexOf(currentDifficulty));
+      refreshDots(5, allDifficulties.indexOf(currentDifficulty), allDifficulties.indexOf(currentDifficulty));
       fadeDots(true);
 
       #if FEATURE_TOUCH_CONTROLS
@@ -1140,7 +1141,7 @@ class FreeplayState extends MusicBeatSubState
     // capsuleToRank.targetPos.set((FlxG.width / 2) - (capsuleToRank.width / 2),
     //  (FlxG.height / 2) - (capsuleToRank.height / 2));
 
-    capsuleToRank.setPosition((FlxG.width / 2) - (capsuleToRank.width / 2), (FlxG.height / 2) - (capsuleToRank.height / 2));
+    capsuleToRank.setPosition((FlxG.width / 2) - (capsuleToRank.capsule.width / 2), (FlxG.height / 2) - (capsuleToRank.capsule.height / 2));
 
     new FlxTimer().start(0.5, _ -> {
       rankDisplayNew(fromResults, capsuleToRank);
@@ -1730,12 +1731,12 @@ class FreeplayState extends MusicBeatSubState
 
     handleDirectionalInput(elapsed);
 
-    final wheelAmount:Float = #if !html5 FlxG.mouse.wheel #else FlxG.mouse.wheel / 8 #end;
+    final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
 
     if (wheelAmount != 0)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
-      changeSelection(-Math.round(wheelAmount));
+      changeSelection(-wheelAmount);
     }
 
     handleDifficultySwitch();
@@ -2783,6 +2784,7 @@ class FreeplayState extends MusicBeatSubState
 
             #if FEATURE_DEBUG_FUNCTIONS
             botPlayMode: FlxG.keys.pressed.SHIFT,
+            mirrored: FlxG.keys.pressed.CONTROL,
             #else
             botPlayMode: false,
             #end
@@ -2920,9 +2922,13 @@ class FreeplayState extends MusicBeatSubState
       // switchBackingImage(currentCapsule.freeplayData);
     }
 
-    // Small vibrations every selection change.
-    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
-
+    // Clear song previews and add small vibrations every selection change.
+    if (change != 0)
+    {
+      clearPreviews();
+      HapticUtil.vibrate(0, 0.01, 0.5);
+    }
+		
     dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
 

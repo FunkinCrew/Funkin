@@ -845,25 +845,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   function frameBuffersUpdated():Void {}
 
-  /**
-   * Grabs the current screen and returns it as a bitmap data. You can sefely modify it.
-   * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
-   * @return the grabbed screen
-   */
-  function grabScreen(applyFilters:Bool):BitmapData
-  {
-    if (Std.isOfType(FlxG.camera, FunkinCamera))
-    {
-      final cam:FunkinCamera = cast FlxG.camera;
-      return cam.grabScreen(applyFilters);
-    }
-    else
-    {
-      FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
-      return null;
-    }
-  }
-
   public function onScriptEvent(event:ScriptEvent)
   {
     // Ensure all custom events get broadcast to the elements of the stage.

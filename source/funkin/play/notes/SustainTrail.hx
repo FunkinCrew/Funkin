@@ -29,10 +29,22 @@ class SustainTrail extends FlxSprite
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
-  public var noteData:Null<SongNoteData>;
   public var parentStrumline:Strumline;
 
   public var cover:NoteHoldCover = null;
+
+  /**
+   * The note data associated with this hold note sprite.
+   * This is used to store the strum time, length, and other properties.
+   */
+  public var noteData:Null<SongNoteData>;
+
+  /**
+   * Set this to `false` to disable scoring for this note.
+   * The note will no longer count towards ratings, points, or accuracy.
+   * @default `true` to enable scoring.
+   */
+  public var scoreable:Bool = true;
 
   /**
    * The Y Offset of the note.
@@ -210,7 +222,7 @@ class SustainTrail extends FlxSprite
 
     flipY = Preferences.downscroll #if mobile
     || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !funkin.mobile.input.ControlsHandler.usingExternalInputDevice) #end;
+      && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice) #end;
 
     // alpha = 0.6;
     alpha = 1.0;

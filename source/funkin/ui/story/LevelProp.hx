@@ -86,8 +86,15 @@ class LevelProp extends Bopper
       this.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
     }
 
-    this.dance();
-    this.animation.paused = true;
+    if (propData.startingAnimation != "" && this.hasAnimation(propData.startingAnimation))
+    {
+      this.playAnimation(propData.startingAnimation, true);
+    }
+    else
+    {
+      this.dance();
+      this.animation.paused = true;
+    }
   }
 
   public static function build(propData:Null<LevelPropData>):Null<LevelProp>

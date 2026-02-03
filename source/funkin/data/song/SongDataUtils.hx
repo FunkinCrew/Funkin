@@ -146,6 +146,63 @@ class SongDataUtils
   }
 
   /**
+   * Create an array of notes whose note data is mirrored.
+   * Does not mutate the original array.
+   *
+   * @param flip Flip the notes if the notes given are in both strumlines, so that result isn't inverted when mirrored.
+   * @param mirrorX Mirror along the X axis, aka the directions of the notes.
+   * @param mirrorY Mirror along the Y axis, aka the time of the notes.
+   */
+  public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true,
+      mirrorY:Bool = true):Array<SongNoteData>
+  {
+
+    var minTime = notes[0].time;
+    var maxTime = notes[0].time;
+    var minStrumline = notes[0].data;
+    var maxStrumline = notes[0].data;
+    for (note in notes)
+    {
+      // Find the maximum and minimum time and strumline positions
+      // I wish there was a better way of doing this
+      if (flip)
+      {
+        if (note.data < minStrumline) minStrumline = note.data;
+        else if (note.data > maxStrumline) maxStrumline = note.data;
+      }
+      if (note.time < minTime) minTime = note.time;
+      else if (note.time > maxTime) maxTime = note.time;
+    }
+
+    var timeDiff = minTime + (maxTime - minTime) / 2;
+    if (flip && minStrumline < strumlineSize && strumlineSize < maxStrumline)
+    {
+      // Flip the notes if one of the notes is on the other strum
+      // Otherwise they'll be inverted when mirrored
+      notes = flipNotes(notes);
+    }
+
+    return notes.map(function(note:SongNoteData):SongNoteData {
+      var newData = note.data;
+      var newTime = note.time;
+
+      if (mirrorX)
+      {
+        if (newData < strumlineSize) newData = strumlineSize - 1 - newData;
+        else
+          newData = strumlineSize + strumlineSize * 2 - 1 - newData;
+      }
+      if (mirrorY)
+      {
+        if (newTime < timeDiff) newTime += (timeDiff - newTime) * 2;
+        else if (newTime > timeDiff) newTime -= (newTime - timeDiff) * 2;
+      }
+
+      return new SongNoteData(newTime, newData, note.length, note.kind);
+    });
+  }
+
+  /**
    * Prepare an array of notes to be used as the clipboard data.
    *
    * Offset the provided array of notes such that the first note is at 0 milliseconds.

@@ -19,7 +19,6 @@ class SongMetadata implements ICloneable<SongMetadata>
    * A semantic versioning string for the song data format.
    *
    */
-  // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
@@ -53,7 +52,6 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public var playData:SongPlayData;
 
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   @:optional
@@ -352,7 +350,6 @@ class SongMusicData implements ICloneable<SongMusicData>
    * A semantic versioning string for the song data format.
    *
    */
-  // @:default(funkin.data.song.SongRegistry.SONG_METADATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
@@ -463,6 +460,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    */
   @:optional
   @:default(['normal' => 0])
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var ratings:Map<String, Int>;
 
   /**
@@ -568,7 +566,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.opponent = opponent;
     this.instrumental = instrumental;
 
-    this.altInstrumentals = altInstrumentals;
+    this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
 
@@ -595,16 +593,16 @@ class SongCharacterData implements ICloneable<SongCharacterData>
 
 class SongChartData implements ICloneable<SongChartData>
 {
-  @:default(funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION)
   @:jcustomparse(funkin.data.DataParse.semverVersion)
   @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
+  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var notes:Map<String, Array<SongNoteData>>;
 
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   /**
@@ -700,6 +698,10 @@ class SongChartData implements ICloneable<SongChartData>
   }
 }
 
+/**
+ * The raw underlying data for a song event.
+ * This value gets wrapped in an `abstract` to allow operators to be overloaded.
+ */
 class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 {
   /**
@@ -735,7 +737,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   /**
    * Whether this event has been activated.
-   * This is only used internally by the game. It should not be serialized.
+   * This is only used internally by the game during gameplay. It should not be serialized.
    */
   @:jignored
   public var activated:Bool = false;
@@ -747,9 +749,19 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     this.value = value;
   }
 
+  /**
+   * The cached step time of the event. Should not be serialized in case the BPM of the song changes.
+   */
   @:jignored
   var _stepTime:Null<Float> = null;
 
+  /**
+   * Get the position of the event in the song, in steps.
+   * This value is cached for performance. Use `force` to require a recalculation.
+   *
+   * @param force Force the value to be recalculated.
+   * @return The position of the event in the song, in steps.
+   */
   public function getStepTime(force:Bool = false):Float
   {
     if (_stepTime != null && !force) return _stepTime;
@@ -757,6 +769,10 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     return _stepTime = Conductor.instance.getTimeInSteps(this.time);
   }
 
+  /**
+   * Clone this event data, creating an independent instance with identical data.
+   * @return The newly created event data.
+   */
   public function clone():SongEventDataRaw
   {
     return new SongEventDataRaw(this.time, this.eventKind, this.value);
@@ -784,26 +800,49 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     }
   }
 
+  /**
+   * Retrieve the SongEvent handler class for this event.
+   * @return The handler class, or `null` if not found.
+   */
   public function getHandler():Null<SongEvent>
   {
     return SongEventRegistry.getEvent(this.eventKind);
   }
 
+  /**
+   * Retrieve the SongEventSchema for this event.
+   * @return The schema, or `null` if not found.
+   */
   public function getSchema():Null<SongEventSchema>
   {
     return SongEventRegistry.getEventSchema(this.eventKind);
   }
 
+  /**
+   * Retrieve a field from this event's data, as a `Dynamic` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getDynamic(key:String):Null<Dynamic>
   {
     return this.value == null ? null : Reflect.field(this.value, key);
   }
 
+  /**
+   * Retrieve a field from this event's data, as a `Bool` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getBool(key:String):Null<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
+  /**
+   * Retrieve a field from this event's data, as an `Int` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
@@ -814,6 +853,11 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     return cast result;
   }
 
+  /**
+   * Retrieve a field from this event's data, as a `Float` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getFloat(key:String):Null<Float>
   {
     if (this.value == null) return null;
@@ -824,21 +868,60 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     return cast result;
   }
 
+  /**
+   * Retrieve a field from this event's data, as a `String` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getString(key:String):String
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
+  /**
+   * Retrieve a field from this event's data, as an `Array<Dynamic>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getArray(key:String):Array<Dynamic>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
+  /**
+   * Retrieve a field from this event's data, as an `Array<Bool>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
   public function getBoolArray(key:String):Array<Bool>
   {
     return this.value == null ? null : cast Reflect.field(this.value, key);
   }
 
+  /**
+   * Retrieve a field from this event's data, as an `Array<Float>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getFloatArray(key:String):Array<Float>
+  {
+    return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Array<String>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getStringArray(key:String):Array<Float>
+  {
+    return this.value == null ? null : cast Reflect.field(this.value, key);
+  }
+
+  /**
+   * Build the tooltip string for this particular instance of the song event.
+   * @return A tooltip string, containing readable values for the event's data.
+   */
   public function buildTooltip():String
   {
     var eventHandler = getHandler();
@@ -851,15 +934,26 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     var defaultKey = eventSchema.getFirstField()?.name;
     var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
 
+    for (fieldName in eventSchema.listAllFieldNames())
+    {
+      var fieldValue:Dynamic = valueStruct.exists(fieldName) ? valueStruct.get(fieldName) : eventSchema.getDefaultFieldValue(fieldName);
+
+      var title:String = eventSchema.getByName(fieldName)?.title ?? 'UnknownField';
+      var valueStr:String = eventSchema.stringifyFieldValue(fieldName, fieldValue) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
+    }
+
     for (pair in valueStruct.keyValueIterator())
     {
-      var key = pair.key;
-      var value = pair.value;
+      var fieldName:String = pair.key;
+      var fieldValue:Dynamic = pair.value;
 
-      var title = eventSchema.getByName(key)?.title ?? 'UnknownField';
+      // Already populated above.
+      if (eventSchema.hasField(fieldName)) continue;
 
-      // if (eventSchema.stringifyFieldValue(key, value) != null) trace(eventSchema.stringifyFieldValue(key, value));
-      var valueStr = eventSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+      var title:String = eventSchema.getByName(fieldName)?.title ?? 'Unknown Field ($fieldName)';
+      var valueStr:String = eventSchema.stringifyFieldValue(fieldName, fieldValue) ?? 'Unknown Value ($fieldValue)';
 
       result += '\n- ${title}: ${valueStr}';
     }
@@ -880,41 +974,87 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
     this = new SongEventDataRaw(time, eventKind, value);
   }
 
+  /**
+   * Create an independent copy of this event with the same underlying data.
+   * @return The newly created event.
+   */
   public function clone():SongEventData
   {
     return new SongEventData(this.time, this.eventKind, this.value);
   }
 
+  /**
+   * Check whether this event is equal to another event.
+   * Ex. `event1 == event2`
+   *
+   * @param other The other event to compare.
+   * @return Whether the events have the same time, kind, and data.
+   */
   @:op(A == B)
   public function op_equals(other:SongEventData):Bool
   {
     return this.time == other.time && this.eventKind == other.eventKind && this.value == other.value;
   }
 
+  /**
+   * Check whether this event is not equal to another event.
+   * Ex. `event1 != event2`
+   *
+   * @param other The other event to compare.
+   * @return Whether the events have a different same time, kind, or data.
+   */
   @:op(A != B)
   public function op_notEquals(other:SongEventData):Bool
   {
     return this.time != other.time || this.eventKind != other.eventKind || this.value != other.value;
   }
 
+  /**
+   * Check whether this event is later than another event.
+   * Ex. `event1 > event2`
+   *
+   * @param other The other event to compare.
+   * @return Bool
+   */
   @:op(A > B)
   public function op_greaterThan(other:SongEventData):Bool
   {
     return this.time > other.time;
   }
 
+  /**
+   * Check whether this event is earlier than another event.
+   * Ex. `event1 < event2`
+   *
+   * @param other The other event to compare.
+   * @return Whether this event is earlier than the other event.
+   */
   @:op(A < B)
   public function op_lessThan(other:SongEventData):Bool
   {
     return this.time < other.time;
   }
 
+  /**
+   * Check whether this event is later than or at the same time as another event.
+   * Ex. `event1 >= event2`
+   *
+   * @param other The other event to compare.
+   * @return Whether this event is later than or at the same time as the other event.
+   */
   @:op(A >= B)
   public function op_greaterThanOrEquals(other:SongEventData):Bool
   {
     return this.time >= other.time;
   }
 
+  /**
+   * Check whether this event is earlier than or at the same time as another event.
+   * Ex. `event1 <= event2`
+   *
+   * @param other The other event to compare.
+   * @return Whether this event is earlier than or at the same time as the other event.
+   */
   @:op(A <= B)
   public function op_lessThanOrEquals(other:SongEventData):Bool
   {
@@ -922,7 +1062,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   }
 
   /**
-   * Produces a string representation suitable for debugging.
+   * Produces a string representation of this event, suitable for debugging.
    */
   public function toString():String
   {
@@ -930,6 +1070,9 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
   }
 }
 
+/**
+ * The underlying data for a single note.
+ */
 class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 {
   /**
@@ -991,6 +1134,10 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return this.kind = value;
   }
 
+  /**
+   * The parameters for the note.
+   * Used for custom behavior on custom note kinds. Defaults to an empty array.
+   */
   @:alias("p")
   @:default([])
   @:optional
@@ -1010,12 +1157,22 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * Strips the strumline index from the data.
    *
    * 0 = left, 1 = down, 2 = up, 3 = right
+   *
+   * @param strumlineSize The size of the strumline for the current song. Defaults to 4.
+   * @return The direction of the note as an index.
    */
   public inline function getDirection(strumlineSize:Int = 4):Int
   {
     return this.data % strumlineSize;
   }
 
+  /**
+   * The name of the direction of the note, if applicable.
+   * Strips the strumline index from the data.
+   *
+   * @param strumlineSize The size of the strumline for the current song. Defaults to 4.
+   * @return The direction of the note as a name.
+   */
   public function getDirectionName(strumlineSize:Int = 4):String
   {
     return SongNoteData.buildDirectionName(this.data, strumlineSize);
@@ -1026,6 +1183,9 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * Strips the direction from the data.
    *
    * 0 = player, 1 = opponent, etc.
+   *
+   * @param strumlineSize The size of the strumline for the current song. Defaults to 4.
+   * @return The strumline index of the note.
    */
   public function getStrumlineIndex(strumlineSize:Int = 4):Int
   {
@@ -1043,6 +1203,11 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return getStrumlineIndex(strumlineSize) == 0;
   }
 
+  /**
+   * The position of the note in the song, in steps.
+   * Calculated from the time and the BPM.
+   * Cached for performance. Set to `null` to recalculate.
+   */
   @:jignored
   var _stepTime:Null<Float> = null;
 
@@ -1078,6 +1243,10 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     return _stepLength = Conductor.instance.getTimeInSteps(this.time + this.length) - getStepTime();
   }
 
+  /**
+   * Set the length of the hold note, in steps.
+   * @param value The desired length of the hold note, in steps. Use `0` to make this a tap note.
+   */
   public function setStepLength(value:Float):Void
   {
     if (value <= 0)
@@ -1097,16 +1266,24 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
     _stepLength = null;
   }
 
+  /**
+   * Clone the `params` data for this node, creating a new independent instance.
+   * @return A new array of cloned `NoteParamData` instances.
+   */
   public function cloneParams():Array<NoteParamData>
   {
-    var params:Array<NoteParamData> = [];
+    var newParams:Array<NoteParamData> = [];
     for (param in this.params)
     {
-      params.push(param.clone());
+      newParams.push(param.clone());
     }
-    return params;
+    return newParams;
   }
 
+  /**
+   * Clone this song note data, creating a new independent instance with identical data.
+   * @return The newly created song note data.
+   */
   public function clone():SongNoteDataRaw
   {
     return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
@@ -1118,6 +1295,10 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 
+  /**
+   * Build a tooltip string for this note, as seen when hovering in the Chart Editor.
+   * @return The tooltip string to display.
+   */
   public function buildTooltip():String
   {
     if ((this.kind?.length ?? 0) == 0) return "";
@@ -1164,14 +1345,24 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
     }
   }
 
+  /**
+   * Whether this note is a hold note.
+   */
   @:jignored
   public var isHoldNote(get, never):Bool;
 
-  public function get_isHoldNote():Bool
+  function get_isHoldNote():Bool
   {
     return this.length > 0;
   }
 
+  /**
+   * Determine if two notes are equal.
+   * Ex. `note1 == note2`
+   *
+   * @param other The other note to compare.
+   * @return Whether the two notes have equal data.
+   */
   @:op(A == B)
   public function op_equals(other:SongNoteData):Bool
   {

@@ -73,45 +73,23 @@ class AdMobUtil
   public static function init():Void
   {
     Admob.onEvent.add(function(event:AdmobEvent):Void {
-      if (event.name == AdmobEvent.INIT_OK)
+      switch (event.name)
       {
-        if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID != null)
-        {
-          final adUnitID:String = [AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/');
+        case AdmobEvent.INIT_OK:
+          if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID != null)
+          {
+            final adUnitID:String = [AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/');
 
-          Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
-        }
-      }
-      #if ios
-      else if (event.name == AdmobEvent.AVM_WILL_PLAY_AUDIO)
-      {
-        if (FlxG.sound.music != null) FlxG.sound.music.pause();
-
-        for (sound in FlxG.sound.list)
-        {
-          if (sound != null) sound.pause();
-        }
-
-        #if hxvlc
-        @:privateAccess
-        if (VideoCutscene.vid != null) VideoCutscene.vid.pause();
+            Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
+          }
+        #if ios
+        case AdmobEvent.INTERSTITIAL_LOADED:
+          lime.media.AudioManager.suspend();
+        case AdmobEvent.INTERSTITIAL_DISMISSED:
+          lime.media.AudioManager.resume();
         #end
+        default:
       }
-      else if (event.name == AdmobEvent.AVM_DID_STOP_PLAYING_AUDIO)
-      {
-        if (FlxG.sound.music != null) FlxG.sound.music.resume();
-
-        for (sound in FlxG.sound.list)
-        {
-          if (sound != null) sound.resume();
-        }
-
-        #if hxvlc
-        @:privateAccess
-        if (VideoCutscene.vid != null) VideoCutscene.vid.resume();
-        #end
-      }
-      #end
 
       Sys.println(event.toString());
     });

@@ -20,6 +20,7 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stickers.StickerRegistry;
+import funkin.play.event.SongEventHelper;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -138,6 +139,8 @@ class InitState extends FlxState
       // Setup Mobile FNFC launcher.
       funkin.mobile.util.FNFCUtil.init();
       #end
+
+      SongEventHelper.generateEaseGraphsBitmaps();
 
       // This ain't a pixel art game! (most of the time)
       FlxSprite.defaultAntialiasing = true;

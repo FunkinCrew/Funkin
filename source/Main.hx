@@ -173,6 +173,10 @@ class Main extends Sprite
     funkin.util.macro.ConsoleMacro.init();
     #end
 
+    // Force a `FunkinCamera` to be the default camera.
+    // This allows the blend mode shader to work everywhere.
+    untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
+
     #if !html5
     FlxG.scaleMode = new FullScreenScaleMode();
     #end

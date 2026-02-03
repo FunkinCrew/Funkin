@@ -46,7 +46,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = ">=0.6.3 <0.8.0";
+  public static final API_VERSION_RULE:String = ">=0.8.0 <0.9.0";
 
   /**
    * Where relative to the executable that mods are located.
@@ -320,10 +320,6 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `flixel.util.FlxSave`
-    // FlxSave.resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistImport('flixel.util.FlxSave');
-
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
 
@@ -405,6 +401,26 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `flixel.util.FlxSave`
+    // resolveFlixelClasses() can access blacklisted packages
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
+    // Disallow direct manipulation of save data.
+    Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
+
+    // `funkin.save.Save`
+    // Direct access to save data is important for scripts (like checking unlocks),
+    // but we don't want scripts to be able to perform operations like writing scores.
+    Polymod.blacklistInstanceFields(funkin.save.Save, [
+      // No direct field access
+      'data',
+      // LMFAO definitely not
+      'clearData',
+      // No score manipulation please
+      'setLevelScore',
+      'setSongScore',
+      'applySongRank'
+    ]);
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
@@ -483,6 +499,8 @@ class PolymodHandler
   {
     var result = Polymod.getDefaultIgnoreList();
 
+    result.push('.vscode');
+    result.push('.idea');
     result.push('.git');
     result.push('.gitignore');
     result.push('.gitattributes');
@@ -524,6 +542,7 @@ class PolymodHandler
         'week6' => 'week6',
         'week7' => 'week7',
         'weekend1' => 'weekend1',
+        'sserafim' => 'sserafim'
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
