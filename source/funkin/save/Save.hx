@@ -407,7 +407,7 @@ class Save implements ConsoleClass
   @:saveProperty(data.optionsCameraEditor.hasBackup, false)
   public var cameraEditorHasBackup:SaveProperty<Bool>;
 
-  /// UTIL FUNCITONS
+  /// UTIL FUNCTIONS
 
   /**
    * Call this to make sure the save data is written to disk.
