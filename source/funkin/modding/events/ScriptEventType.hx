@@ -47,14 +47,14 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called when the player moves to pause the game.
    *
-   * This event IS cancelable! Canceling the event will prevent the game from pausing.
+   * This event IS cancelable! Cancelling the event will prevent the game from pausing.
    */
   var PAUSE = 'PAUSE';
 
   /**
    * Called when the player moves to unpause the game while paused.
    *
-   * This event IS cancelable! Canceling the event will prevent the game from resuming.
+   * This event IS cancelable! Cancelling the event will prevent the game from resuming.
    */
   var RESUME = 'RESUME';
 
@@ -83,7 +83,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called when a character hits a note.
    * Important information such as judgement/timing, note data, player/opponent, etc. are all provided.
    *
-   * This event IS cancelable! Canceling this event prevents the note from being hit,
+   * This event IS cancelable! Cancelling this event prevents the note from being hit,
    *   and will likely result in a miss later.
    */
   var NOTE_HIT = 'NOTE_HIT';
@@ -92,7 +92,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called when a character misses a note.
    * Important information such as note data, player/opponent, etc. are all provided.
    *
-   * This event IS cancelable! Canceling this event prevents the note from being considered missed,
+   * This event IS cancelable! Cancelling this event prevents the note from being considered missed,
    *   avoiding a combo break and lost health.
    */
   var NOTE_MISS = 'NOTE_MISS';
@@ -109,7 +109,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called when a character presses a note when there was none there, causing them to lose health.
    * Important information such as direction pressed, etc. are all provided.
    *
-   * This event IS cancelable! Canceling this event prevents the note from being considered missed,
+   * This event IS cancelable! Cancelling this event prevents the note from being considered missed,
    *   avoiding lost health/score and preventing the miss animation.
    */
   var NOTE_GHOST_MISS = 'NOTE_GHOST_MISS';
@@ -139,7 +139,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called when the countdown begins. This occurs before the song starts.
    *
-   * This event IS cancelable! Canceling this event will prevent the countdown from starting.
+   * This event IS cancelable! Cancelling this event will prevent the countdown from starting.
    * - The song will not start until you call Countdown.performCountdown() later.
    * - Note that calling performCountdown() will trigger this event again, so be sure to add logic to ignore it.
    */
@@ -149,7 +149,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called when a step of the countdown happens.
    * Includes information about what step of the countdown was hit.
    *
-   * This event IS cancelable! Canceling this event will pause the countdown.
+   * This event IS cancelable! Cancelling this event will pause the countdown.
    * - The countdown will not resume until you call PlayState.resumeCountdown().
    */
   var COUNTDOWN_STEP = 'COUNTDOWN_STEP';
@@ -172,7 +172,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called after the player presses a key to restart the game.
    * This can happen from the pause menu or the game over screen.
    *
-   * This event IS cancelable! Canceling this event will prevent the game from restarting.
+   * This event IS cancelable! Cancelling this event will prevent the game from restarting.
    */
   var SONG_RETRY = 'SONG_RETRY';
 
@@ -327,7 +327,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called to display the next line of conversation.
    *
-   * This event IS cancelable! Canceling this event will prevent the conversation from moving to the next line.
+   * This event IS cancelable! Cancelling this event will prevent the conversation from moving to the next line.
    * - This event is called when the conversation starts, or when the user presses ACCEPT to advance the conversation.
    */
   var DIALOGUE_LINE = 'DIALOGUE_LINE';
@@ -335,7 +335,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called to skip scrolling the current line of conversation.
    *
-   * This event IS cancelable! Canceling this event will prevent the conversation from skipping to the next line.
+   * This event IS cancelable! Cancelling this event will prevent the conversation from skipping to the next line.
    * - This event is called when the user presses ACCEPT to advance the conversation while it is already advancing.
    */
   var DIALOGUE_COMPLETE_LINE = 'DIALOGUE_COMPLETE_LINE';
@@ -343,7 +343,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called to skip the conversation.
    *
-   * This event IS cancelable! Canceling this event will prevent the conversation from skipping.
+   * This event IS cancelable! Cancelling this event will prevent the conversation from skipping.
    */
   var DIALOGUE_SKIP = 'DIALOGUE_SKIP';
 
