@@ -35,10 +35,8 @@ class PolymodErrorHandler
         logError(error.message);
 
         // Last word is the class name.
-        var className:Null<String> = error.message.split(' ').pop();
         var msg:String = 'Import error in ${error.origin}';
-        msg += '\nCould not import unknown class ${className}';
-        msg += '\nCheck to ensure the class exists and is spelled correctly.';
+        msg += '\n${error.message}';
 
         // Notify the user via popup.
         funkin.util.WindowUtil.showError('Polymod Script Import Error', msg);

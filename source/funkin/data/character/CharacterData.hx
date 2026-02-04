@@ -93,7 +93,7 @@ class CharacterDataParser
       {
         try
         {
-          var character:SparrowCharacter = ScriptedSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
+          var character:SparrowCharacter = ScriptedSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -113,7 +113,7 @@ class CharacterDataParser
       {
         try
         {
-          var character:PackerCharacter = ScriptedPackerCharacter.init(charCls, DEFAULT_CHAR_ID);
+          var character:PackerCharacter = ScriptedPackerCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -133,7 +133,7 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.init(charCls, DEFAULT_CHAR_ID);
+          var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -153,7 +153,7 @@ class CharacterDataParser
       {
         try
         {
-          var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.init(charCls, DEFAULT_CHAR_ID);
+          var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -173,7 +173,7 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiAnimateAtlasCharacter = ScriptedMultiAnimateAtlasCharacter.init(charCls, DEFAULT_CHAR_ID);
+          var character:MultiAnimateAtlasCharacter = ScriptedMultiAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -201,7 +201,7 @@ class CharacterDataParser
       log('Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
       for (charCls in scriptedCharClassNames)
       {
-        var character:BaseCharacter = ScriptedBaseCharacter.init(charCls, DEFAULT_CHAR_ID, Custom);
+        var character:BaseCharacter = ScriptedBaseCharacter.scriptInit(charCls, DEFAULT_CHAR_ID, Custom);
         if (character == null)
         {
           log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
@@ -245,18 +245,18 @@ class CharacterDataParser
       if (charData != null) switch (charData.renderType)
       {
         case CharacterRenderType.AnimateAtlas:
-          char = ScriptedAnimateAtlasCharacter.init(charScriptClass, charId);
+          char = ScriptedAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
         case CharacterRenderType.MultiSparrow:
-          char = ScriptedMultiSparrowCharacter.init(charScriptClass, charId);
+          char = ScriptedMultiSparrowCharacter.scriptInit(charScriptClass, charId);
         case CharacterRenderType.Sparrow:
-          char = ScriptedSparrowCharacter.init(charScriptClass, charId);
+          char = ScriptedSparrowCharacter.scriptInit(charScriptClass, charId);
         case CharacterRenderType.Packer:
-          char = ScriptedPackerCharacter.init(charScriptClass, charId);
+          char = ScriptedPackerCharacter.scriptInit(charScriptClass, charId);
         case CharacterRenderType.MultiAnimateAtlas:
-          char = ScriptedMultiAnimateAtlasCharacter.init(charScriptClass, charId);
+          char = ScriptedMultiAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
         default:
           // We're going to assume that the script class does the rendering.
-          char = ScriptedBaseCharacter.init(charScriptClass, charId, CharacterRenderType.Custom);
+          char = ScriptedBaseCharacter.scriptInit(charScriptClass, charId, CharacterRenderType.Custom);
       }
     }
     else

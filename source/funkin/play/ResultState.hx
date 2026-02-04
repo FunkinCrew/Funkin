@@ -241,7 +241,7 @@ class ResultState extends MusicBeatSubState
           var xPos = offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2);
           var yPos = offsets[1];
 
-          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.init(animData.scriptClass, xPos, yPos);
+          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animData.scriptClass, xPos, yPos);
           else
             animation = FunkinSprite.createTextureAtlas(xPos, yPos, animPath, animLibrary);
 
@@ -303,7 +303,7 @@ class ResultState extends MusicBeatSubState
           @:nullSafety(Off)
           var animation:FunkinSprite = null;
 
-          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.init(animData.scriptClass,
+          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animData.scriptClass,
             offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1]);
           else
             animation = FunkinSprite.createSparrow(offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1], animPath);

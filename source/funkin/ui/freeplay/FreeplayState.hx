@@ -317,7 +317,7 @@ class FreeplayState extends MusicBeatSubState
       var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
       for (cardClass in allScriptedCards)
       {
-        var card:BackingCard = ScriptedBackingCard.init(cardClass, "unknown");
+        var card:BackingCard = ScriptedBackingCard.scriptInit(cardClass, "unknown");
         if (card.currentCharacter == currentCharacterId)
         {
           backingCardPrep = card;
@@ -901,13 +901,15 @@ class FreeplayState extends MusicBeatSubState
     switch (renderType)
     {
       case "animateatlas":
-        dj = (scriptClass != "") ? (ScriptedAnimateAtlasFreeplayDJ.init(scriptClass, x, y, characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != "") ? (ScriptedAnimateAtlasFreeplayDJ.scriptInit(scriptClass, x, y,
+          characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
       case "sparrow":
-        dj = (scriptClass != "") ? (ScriptedSparrowFreeplayDJ.init(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != "") ? (ScriptedSparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
       case 'multisparrow':
-        dj = (scriptClass != "") ? (ScriptedMultiSparrowFreeplayDJ.init(scriptClass, x, y, characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != "") ? (ScriptedMultiSparrowFreeplayDJ.scriptInit(scriptClass, x, y,
+          characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
       case 'packer':
-        dj = (scriptClass != "") ? (ScriptedPackerFreeplayDJ.init(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != "") ? (ScriptedPackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
     }
   }
 
@@ -2783,8 +2785,7 @@ class FreeplayState extends MusicBeatSubState
             minimalMode: false,
 
             #if FEATURE_DEBUG_FUNCTIONS
-            botPlayMode: FlxG.keys.pressed.SHIFT,
-            mirrored: FlxG.keys.pressed.CONTROL,
+            botPlayMode: FlxG.keys.pressed.SHIFT, mirrored: FlxG.keys.pressed.CONTROL,
             #else
             botPlayMode: false,
             #end
@@ -2928,7 +2929,7 @@ class FreeplayState extends MusicBeatSubState
       clearPreviews();
       HapticUtil.vibrate(0, 0.01, 0.5);
     }
-		
+
     dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
 

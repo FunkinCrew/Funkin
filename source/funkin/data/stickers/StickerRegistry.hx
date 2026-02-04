@@ -82,7 +82,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
 
   function createScriptedEntry(clsName:String):StickerPack
   {
-    return ScriptedStickerPack.init(clsName, 'unknown');
+    return ScriptedStickerPack.scriptInit(clsName, 'unknown');
   }
 
   function getScriptedClassNames():Array<String>

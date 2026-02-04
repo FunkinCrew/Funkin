@@ -146,7 +146,7 @@ class RegistryMacro
 
     var getScriptedClassName:String = '${scriptedEntryClsName}';
 
-    var createScriptedEntry:String = '${scriptedEntryClsName}.init(clsName, "unknown")';
+    var createScriptedEntry:String = '${scriptedEntryClsName}.scriptInit(clsName, "unknown")';
 
     var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
 

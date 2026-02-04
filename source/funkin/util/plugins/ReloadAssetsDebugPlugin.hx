@@ -80,7 +80,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       if (isScripted)
       {
         trace("Reloading scripted state: " + path);
-        var state:Dynamic = ScriptedMusicBeatState.init(path);
+        var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
         FlxG.switchState(state);
       }
 
