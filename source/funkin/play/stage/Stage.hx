@@ -21,6 +21,7 @@ import funkin.data.stage.StageData.StageDataCharacter;
 import funkin.data.stage.StageRegistry;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
+import funkin.graphics.FunkinSprite;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
@@ -31,6 +32,8 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
  */
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
+  public var vcamPoint:Null<FlxPoint> = null;
+
   public var stageName(get, never):String;
 
   function get_stageName():String
@@ -218,7 +221,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       {
         propSprite = new StageProp();
       }
-
       if (isAnimated)
       {
         // Initalize sprite frames.
@@ -368,6 +370,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function addProp(prop:StageProp, ?name:String = null):Void
   {
+    prop.vcamPoint = this.vcamPoint;
     if (name != null)
     {
       namedProps.set(name, prop);
@@ -392,6 +395,16 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function refresh():Void
   {
+    // loop over and reapply vcam
+    forEachAlive(function(prop:FlxSprite)
+    {
+      if (Std.isOfType(prop, FunkinSprite))
+      {
+        var funkProp:FunkinSprite = cast prop;
+        funkProp.vcamPoint = vcamPoint;
+      }
+    });
+
     sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
@@ -478,6 +491,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // Reset the character before adding it to the stage.
     // This ensures positioning is based on the idle animation.
     character.resetCharacter(true);
+    character.vcamPoint = this.vcamPoint;
 
     if (stageCharData != null)
     {
