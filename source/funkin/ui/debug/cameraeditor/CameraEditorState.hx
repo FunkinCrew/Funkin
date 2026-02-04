@@ -6,10 +6,16 @@ import haxe.ui.containers.Panel;
 import haxe.ui.focus.FocusManager;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxCamera;
+import funkin.graphics.FunkinCamera;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import funkin.data.song.SongData.SongEventData;
+import flixel.FlxObject;
 import flixel.util.FlxTimer;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
+import funkin.data.event.SongEventRegistry;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
@@ -98,6 +104,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
+
+  public var cameraRect:FlxSprite = new FlxSprite();
+
+  public var vcamPoint:Null<FlxPoint> = null;
 
   function get_currentSongMetadata():Null<SongMetadata>
   {
@@ -343,6 +353,9 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   var criticalFailure:Bool = false;
 
+  var songEvents:Array<SongEventData> = [];
+
+
   /**
    * LIFE CYCLE FUNCTIONS
    */
@@ -356,6 +369,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public override function create():Void
   {
+    cameraRect = new FlxSprite();
+    cameraRect.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
+    cameraRect.alpha = 0.5;
+
     WindowManager.instance.reset();
     instance = this;
     FlxG.sound.music?.stop();
@@ -401,17 +418,122 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     this.timeline.cameraEditorState = this;
 
+    add(cameraRect);
+    cameraRect.zIndex = 5999;
+
+    vcamPoint = new FlxPoint();
+
     this.hidePropertiesPanel();
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
+  var cameraFollowPoint:FlxObject = new FlxObject();
+  var lastVCamPoint:FlxPoint = new FlxPoint();
+
+  var previousTime:Float = 0;
+
+  public function setFocusPoint(x:Float, y:Float, force:Bool = false):Void
+  {
+    lastVCamPoint.copyFrom(vcamPoint);
+    vcamPoint.set(lastVCamPoint.x, lastVCamPoint.y);
+    cameraFollowPoint.x = x;
+    cameraFollowPoint.y = y;
+    _scrollTarget.set(cameraFollowPoint.x - cameraRect.width / 2, cameraFollowPoint.y - cameraRect.height / 2);
+    if (force) vcamPoint.copyFrom(_scrollTarget);
+  }
+
+  /**
+   * Process song events for the current chart.
+   * This never removes them as we need to maybe reprocess events depending on the time of the song.
+   * EX: Reversing the song time should re-trigger events that were already triggered.
+   */
+  public function processEvents():Void
+  {
+    if (songEvents == null || songEvents.length == 0) return;
+    var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition);
+    for (eventData in songEventsToActivate)
+    {
+      if (eventData == null || eventData.time < previousTime) continue;
+      trace('Processing event: ' + eventData.eventKind + ' at ' + eventData.time);
+
+      switch (eventData.eventKind)
+      {
+        case "FocusCamera":
+          var x:Null<Float> = eventData.getFloat('x');
+          var y:Null<Float> = eventData.getFloat('y');
+          var char:Null<Int> = eventData.getInt('char');
+          var offsetX:Float = 0;
+          var offsetY:Float = 0;
+          if (x != null && y != null)
+          {
+            offsetX = x;
+            offsetY = y;
+          }
+
+          if (char == null) char = cast eventData.value;
+
+          if (char != null)
+          {
+            if (char == -1)
+            {
+              cameraFollowPoint.x = offsetX;
+              cameraFollowPoint.y = offsetY;
+              break;
+            }
+
+            trace('Focusing camera on character: ' + char + ' with offset: (' + offsetX + ', ' + offsetY + ')');
+
+            switch (char)
+            {
+              case 0:
+                var bf = currentStage.getBoyfriend();
+                if (bf != null)
+                {
+                  setFocusPoint(bf.cameraFocusPoint.x + offsetX, bf.cameraFocusPoint.y + offsetY);
+                }
+              case 1:
+                var dad = currentStage.getDad();
+                if (dad != null)
+                {
+                  setFocusPoint(dad.cameraFocusPoint.x + offsetX, dad.cameraFocusPoint.y + offsetY);
+                }
+              case 2:
+                var gf = currentStage.getGirlfriend();
+                if (gf != null)
+                {
+                  setFocusPoint(gf.cameraFocusPoint.x + offsetX, gf.cameraFocusPoint.y + offsetY);
+                }
+            }
+            trace('    Camera follow point set to: (' + cameraFollowPoint.x + ', ' + cameraFollowPoint.y + ')');
+          }
+      }
+    }
+
+    previousTime = Conductor.instance.songPosition;
+  }
+
+  var _scrollTarget:FlxPoint = new FlxPoint();
 
   public override function update(elapsed:Float):Void
   {
+    if (currentStage != null)
+    {
+      currentStage.vcamPoint = vcamPoint;
+      currentStage.offset.x = FlxG.camera.scroll.x;
+      currentStage.offset.y = FlxG.camera.scroll.y;
+    }
+
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
     {
+      final adjustedLerp = 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60);
+
+      // lerp vcamPoint to cameraFollowPoint
+      vcamPoint.x += (_scrollTarget.x - vcamPoint.x) * adjustedLerp;
+      vcamPoint.y += (_scrollTarget.y - vcamPoint.y) * adjustedLerp;
+
       Conductor.instance.update();
+      processEvents();
       timeline.timelineControls.songPosition = Conductor.instance.songPosition;
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
@@ -441,6 +563,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     super.update(elapsed);
 
     MouseUtil.mouseWheelZoom(0.08);
+
+    // DEBUG!!! enable to move the vcam with the mouse... teehee
+
+    /*if (FlxG.mouse.pressed)
+    {
+      cameraFollowPoint.x += FlxG.mouse.deltaX;
+      cameraFollowPoint.y += FlxG.mouse.deltaY;
+      vcamPoint.set(cameraFollowPoint.x, cameraFollowPoint.y);
+    }*/
 
     if (FlxG.mouse.pressedMiddle)
     {
@@ -476,11 +607,17 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
+    // vcamPoint.copyFrom(camGame.scroll);
+    remove(cameraRect);
     if (currentSongMetadata == null) return;
     var stageID = currentSongMetadata.playData.stage;
 
+    previousTime = 0;
+    songEvents = currentSongChartData.events;
+
     if (currentStage != null)
     {
+      currentStage.onDestroy(null);
       remove(currentStage);
       currentStage = null;
     }
@@ -494,7 +631,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     Paths.setCurrentLevel(campaignId);
 
     add(currentStage);
-
+    currentStage.vcamPoint = vcamPoint;
     currentStage.onCreate(null);
 
     var songCharacterData = currentSongMetadata.playData.characters;
@@ -529,6 +666,23 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
     trace("Built stage: " + stageID);
+    add(cameraRect);
+
+    var camZoom:Float = currentStage.camZoom;
+
+    // Set zoom for camera rect
+    cameraRect.scale.set(1.0 / camZoom, 1.0 / camZoom);
+    trace('Set camera rect zoom to: ' + camZoom);
+
+    resetScrollPosition();
+  }
+
+  function resetScrollPosition()
+  {
+    if (currentStage == null) return;
+
+    var dad = currentStage.getDad();
+    if (dad != null && dad.cameraFocusPoint != null) setFocusPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y, true);
   }
 
   function autosavePerCrash(message:String)
@@ -931,6 +1085,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
     togglePlayback(true);
     setTimePosition(0);
+    resetScrollPosition();
     if (playing) togglePlayback();
   }
 
