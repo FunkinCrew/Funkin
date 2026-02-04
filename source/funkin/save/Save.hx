@@ -393,7 +393,7 @@ class Save implements ConsoleClass
     return data.optionsStageEditor.dadChar;
   }
 
-  /// UTIL FUNCITONS
+  /// UTIL FUNCTIONS
 
   /**
    * Call this to make sure the save data is written to disk.
