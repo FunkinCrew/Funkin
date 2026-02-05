@@ -133,10 +133,10 @@ class Paths implements ConsoleClass
   }
 
   /**
-   * Gets the path to an `Inst.mp3/ogg` song instrumental from songs:assets/songs/`song`/
+   * Gets the path to an `Inst.ogg` song instrumental from songs:assets/songs/`song`/
    * @param song name of the song to get instrumental for
    * @param suffix any suffix to add to end of song name, used for `-erect` variants usually
-   * @param withExtension if it should return with the audio file extension `.mp3` or `.ogg`.
+   * @param withExtension if it should return with the audio file extension `.ogg`.
    * @return String
    */
   public static function inst(song:String, suffix:String = '', withExtension:Bool = true):String
