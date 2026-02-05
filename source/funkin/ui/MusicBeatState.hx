@@ -223,6 +223,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function stepHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return;
+
     var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
@@ -234,6 +236,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function beatHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return;
+
     var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
