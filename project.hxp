@@ -152,12 +152,12 @@ class Project extends HXProject
   /**
    * Asset path globs to exclude on web platforms.
    */
-  static final EXCLUDE_ASSETS_WEB:Array<String> = ["*.ogg"];
+  static final EXCLUDE_ASSETS_WEB:Array<String> = [];
 
   /**
    * Asset path globs to exclude on native platforms.
    */
-  static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
+  static final EXCLUDE_ASSETS_NATIVE:Array<String> = [];
 
   /**
    * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` enabled.

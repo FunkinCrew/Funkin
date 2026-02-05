@@ -615,7 +615,7 @@ class Constants
   /**
    * The file extension used when loading audio files.
    */
-  public static final EXT_SOUND:String = #if web 'mp3' #else 'ogg' #end;
+  public static final EXT_SOUND = "ogg";
 
   /**
    * The file extension used when loading video files.
