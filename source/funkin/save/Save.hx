@@ -804,11 +804,16 @@ class Save implements ConsoleClass
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
     funkin.util.WindowUtil.showError("Save Data Failure", msg);
-    // Don't touch that slot anymore.
-    // Instead, load the next available slot.
-    var nextSlot:Int = slot + 1;
-    if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
-    return loadFromSlot(nextSlot);
+
+    // FIX: If the save data is corrupted, reset it back to it's default values.
+    trace('[SAVE] Save Data Failure in slot ${slot}. Resetting to deafult save data...');
+
+    var freshSave:Save = new Save();
+
+    FlxG.save.mergeData(freshSave.data, true);
+    FlxG.save.flush();
+
+    return freshSave;
   }
 
   public static function debug_queryBadSaveData():Void
