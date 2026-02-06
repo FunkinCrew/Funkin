@@ -474,8 +474,8 @@ class FreeplayState extends MusicBeatSubState
     add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
     // this makes the texture sizes consistent, for the angle shader
-    backingImage.setGraphicSize(0, FlxG.height);
-    blackOverlayBullshitLOLXD.setGraphicSize(0, FlxG.height);
+    backingImage.setGraphicSize(0, FlxG.height + 1);
+    blackOverlayBullshitLOLXD.setGraphicSize(0, FlxG.height + 1);
 
     backingImage.updateHitbox();
     blackOverlayBullshitLOLXD.updateHitbox();
