@@ -38,6 +38,7 @@ class SetHealthIconSongEvent extends SongEvent
   static final DEFAULT_SCALE:Float = 1.0;
   static final DEFAULT_FLIPX:Bool = false;
   static final DEFAULT_ISPIXEL:Bool = false;
+  static final DEFAULT_SHOULDBOP:Bool = true;
 
   static final DEFAULT_X_OFFSET:Float = 0.0;
   static final DEFAULT_Y_OFFSET:Float = 0.0;
@@ -54,6 +55,7 @@ class SetHealthIconSongEvent extends SongEvent
 
     var healthIconData:HealthIconData = {
       id: data.value.id ?? Constants.DEFAULT_HEALTH_ICON,
+      shouldBop: data.value.shouldBop ?? DEFAULT_SHOULDBOP,
       scale: data.value.scale ?? DEFAULT_SCALE,
       flipX: data.value.flipX ?? DEFAULT_FLIPX,
       isPixel: data.value.isPixel ?? DEFAULT_ISPIXEL,
@@ -97,6 +99,11 @@ class SetHealthIconSongEvent extends SongEvent
       title: 'Health Icon ID',
       defaultValue: Constants.DEFAULT_HEALTH_ICON,
       type: SongEventFieldType.STRING,
+    }, {
+      name: 'shouldBop',
+      title: 'Should Bop?',
+      defaultValue: DEFAULT_SHOULDBOP,
+      type: SongEventFieldType.BOOL,
     }, {
       name: 'scale',
       title: 'Scale',

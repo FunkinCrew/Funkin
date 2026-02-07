@@ -460,6 +460,7 @@ class CharacterDataParser
   public static final DEFAULT_NAME:String = 'Untitled Character';
   public static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   public static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  public static final DEFAULT_SHOULDBOP:Bool = true;
   public static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
@@ -532,6 +533,7 @@ class CharacterDataParser
     {
       input.healthIcon = {
         id: null,
+        shouldBop: null,
         scale: null,
         flipX: null,
         isPixel: null,
@@ -542,6 +544,11 @@ class CharacterDataParser
     if (input.healthIcon.id == null)
     {
       input.healthIcon.id = id;
+    }
+
+    if (input.healthIcon.shouldBop == null)
+    {
+      input.healthIcon.shouldBop = DEFAULT_SHOULDBOP;
     }
 
     if (input.healthIcon.scale == null)
@@ -832,6 +839,12 @@ typedef HealthIconData =
    * @default The character's ID
    */
   var id:Null<String>;
+
+  /**
+   * Whether the health icon should bop or not.
+   * @default true
+   */
+  var shouldBop:Null<Bool>;
 
   /**
    * The scale of the health icon.
