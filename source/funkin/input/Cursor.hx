@@ -156,384 +156,87 @@ class Cursor
     if (value != null && cursorMode != value)
     {
       cursorMode = value;
-      setCursorGraphic(cursorMode);
+      loadCursorGraphicSync(cursorMode);
     }
     return cursorMode;
   }
 
   /**
-   * Synchronous.
+   * Loads the cursor graphic synchronously.
+   *
+   * @param value The cursor mode to load. If null, the cursor is unloaded.
    */
-  static function setCursorGraphic(?value:CursorMode = null):Void
+  static function loadCursorGraphicSync(?value:CursorMode = null):Void
   {
-    if (value == null)
-    {
-      FlxG.mouse.unload();
-      return;
-    }
-
-    switch (value)
-    {
-      case Default:
-        if (assetCursorDefault == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
-          assetCursorDefault = bitmapData;
-          applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
-        }
-
-      case Cross:
-        if (assetCursorCross == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSS_PARAMS.graphic);
-          assetCursorCross = bitmapData;
-          applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
-        }
-
-      case Eraser:
-        if (assetCursorEraser == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ERASER_PARAMS.graphic);
-          assetCursorEraser = bitmapData;
-          applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
-        }
-
-      case Grabbing:
-        if (assetCursorGrabbing == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_GRABBING_PARAMS.graphic);
-          assetCursorGrabbing = bitmapData;
-          applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
-        }
-
-      case Hourglass:
-        if (assetCursorHourglass == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
-          assetCursorHourglass = bitmapData;
-          applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
-        }
-
-      case Pointer:
-        if (assetCursorPointer == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_POINTER_PARAMS.graphic);
-          assetCursorPointer = bitmapData;
-          applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
-        }
-
-      case Text:
-        if (assetCursorText == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_TEXT_PARAMS.graphic);
-          assetCursorText = bitmapData;
-          applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
-        }
-
-      case ZoomIn:
-        if (assetCursorZoomIn == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
-          assetCursorZoomIn = bitmapData;
-          applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
-        }
-
-      case ZoomOut:
-        if (assetCursorZoomOut == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
-          assetCursorZoomOut = bitmapData;
-          applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
-        }
-
-      case Crosshair:
-        if (assetCursorCrosshair == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
-          assetCursorCrosshair = bitmapData;
-          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
-        }
-
-      case Cell:
-        if (assetCursorCell == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CELL_PARAMS.graphic);
-          assetCursorCell = bitmapData;
-          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
-        }
-
-      case Scroll:
-        if (assetCursorScroll == null)
-        {
-          var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_SCROLL_PARAMS.graphic);
-          assetCursorScroll = bitmapData;
-          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
-        }
-        else
-        {
-          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
-        }
-
-      default:
-        setCursorGraphic(null);
-    }
+    applyCursorParams(value);
   }
 
   /**
-   * Asynchronous.
+   * Loads the cursor graphic asynchronously.
+   *
+   * @param value The cursor mode to load. If null, the cursor is unloaded.
    */
-  static function loadCursorGraphic(?value:CursorMode = null):Void
+  static function loadCursorGraphicAsync(?value:CursorMode = null):Void
   {
-    if (value == null)
+    applyCursorParams(value, true);
+  }
+
+  static function applyCursorParams(mode:Null<CursorMode>, async:Bool = false)
+  {
+    if (mode == null)
     {
       FlxG.mouse.unload();
       return;
     }
 
-    switch (value)
+    var data = switch (mode)
     {
-      case Default:
-        if (assetCursorDefault == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorDefault = bitmapData;
-            applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
-          });
-          future.onError(onCursorError.bind(Default));
-        }
-        else
-        {
-          applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
-        }
+      case Default: { cache: assetCursorDefault, params: CURSOR_DEFAULT_PARAMS, set: (bmp) -> assetCursorDefault = bmp };
+      case Cross: { cache: assetCursorCross, params: CURSOR_CROSS_PARAMS, set: (bmp) -> assetCursorCross = bmp };
+      case Eraser: { cache: assetCursorEraser, params: CURSOR_ERASER_PARAMS, set: (bmp) -> assetCursorEraser = bmp };
+      case Grabbing: { cache: assetCursorGrabbing, params: CURSOR_GRABBING_PARAMS, set: (bmp) -> assetCursorGrabbing = bmp };
+      case Hourglass: { cache: assetCursorHourglass, params: CURSOR_HOURGLASS_PARAMS, set: (bmp) -> assetCursorHourglass = bmp };
+      case Pointer: { cache: assetCursorPointer, params: CURSOR_POINTER_PARAMS, set: (bmp) -> assetCursorPointer = bmp };
+      case Text: { cache: assetCursorText, params: CURSOR_TEXT_PARAMS, set: (bmp) -> assetCursorText = bmp };
+      case TextVertical: { cache: assetCursorTextVertical, params: CURSOR_TEXT_VERTICAL_PARAMS, set: (bmp) -> assetCursorTextVertical = bmp };
+      case ZoomIn: { cache: assetCursorZoomIn, params: CURSOR_ZOOM_IN_PARAMS, set: (bmp) -> assetCursorZoomIn = bmp };
+      case ZoomOut: { cache: assetCursorZoomOut, params: CURSOR_ZOOM_OUT_PARAMS, set: (bmp) -> assetCursorZoomOut = bmp };
+      case Crosshair: { cache: assetCursorCrosshair, params: CURSOR_CROSSHAIR_PARAMS, set: (bmp) -> assetCursorCrosshair = bmp };
+      case Cell: { cache: assetCursorCell, params: CURSOR_CELL_PARAMS, set: (bmp) -> assetCursorCell = bmp };
+      case Scroll: { cache: assetCursorScroll, params: CURSOR_SCROLL_PARAMS, set: (bmp) -> assetCursorScroll = bmp };
+      default: null;
+    }
 
-      case Cross:
-        if (assetCursorCross == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSS_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorCross = bitmapData;
-            applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
-          });
-          future.onError(onCursorError.bind(Cross));
-        }
-        else
-        {
-          applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
-        }
+    if (data == null)
+    {
+      FlxG.mouse.unload();
+      return;
+    }
 
-      case Eraser:
-        if (assetCursorEraser == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ERASER_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorEraser = bitmapData;
-            applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
-          });
-          future.onError(onCursorError.bind(Eraser));
-        }
-        else
-        {
-          applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
-        }
+    if (data.cache != null)
+    {
+      applyGraphic(data.cache, data.params);
+      return;
+    }
 
-      case Grabbing:
-        if (assetCursorGrabbing == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_GRABBING_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorGrabbing = bitmapData;
-            applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
-          });
-          future.onError(onCursorError.bind(Grabbing));
-        }
-        else
-        {
-          applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
-        }
-
-      case Hourglass:
-        if (assetCursorHourglass == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorHourglass = bitmapData;
-            applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
-          });
-          future.onError(onCursorError.bind(Hourglass));
-        }
-        else
-        {
-          applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
-        }
-
-      case Pointer:
-        if (assetCursorPointer == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_POINTER_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorPointer = bitmapData;
-            applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
-          });
-          future.onError(onCursorError.bind(Pointer));
-        }
-        else
-        {
-          applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
-        }
-
-      case Text:
-        if (assetCursorText == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_TEXT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorText = bitmapData;
-            applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
-          });
-          future.onError(onCursorError.bind(Text));
-        }
-        else
-        {
-          applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
-        }
-
-      case ZoomIn:
-        if (assetCursorZoomIn == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorZoomIn = bitmapData;
-            applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
-          });
-          future.onError(onCursorError.bind(ZoomIn));
-        }
-        else
-        {
-          applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
-        }
-
-      case ZoomOut:
-        if (assetCursorZoomOut == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorZoomOut = bitmapData;
-            applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
-          });
-          future.onError(onCursorError.bind(ZoomOut));
-        }
-        else
-        {
-          applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
-        }
-
-      case Crosshair:
-        if (assetCursorCrosshair == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorCrosshair = bitmapData;
-            applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
-          });
-          future.onError(onCursorError.bind(Crosshair));
-        }
-        else
-        {
-          applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
-        }
-
-      case Cell:
-        if (assetCursorCell == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CELL_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorCell = bitmapData;
-            applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
-          });
-          future.onError(onCursorError.bind(Cell));
-        }
-        else
-        {
-          applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
-        }
-
-      case Scroll:
-        if (assetCursorScroll == null)
-        {
-          var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_SCROLL_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData)
-          {
-            assetCursorScroll = bitmapData;
-            applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
-          });
-          future.onError(onCursorError.bind(Scroll));
-        }
-        else
-        {
-          applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
-        }
-
-      default:
-        loadCursorGraphic(null);
+    if (async)
+    {
+      var future:Future<BitmapData> = Assets.loadBitmapData(data.params.graphic);
+      future.onComplete((bmp:BitmapData) -> {
+        data.set(bmp);
+        applyGraphic(bmp, data.params);
+      });
+      future.onError(onCursorError.bind(mode));
+    }
+    else
+    {
+      var bitmapData:BitmapData = Assets.getBitmapData(data.params.graphic);
+      data.set(bitmapData);
+      applyGraphic(bitmapData, data.params);
     }
   }
 
-  static inline function applyCursorParams(graphic:BitmapData, params:CursorParams):Void
+  private static inline function applyGraphic(graphic:BitmapData, params:CursorParams):Void
   {
     FlxG.mouse.load(graphic, params.scale, params.offsetX, params.offsetY);
   }
@@ -580,6 +283,7 @@ enum CursorMode
   Hourglass;
   Pointer;
   Text;
+  TextVertical;
   ZoomIn;
   ZoomOut;
   Crosshair;
