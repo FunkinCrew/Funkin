@@ -120,6 +120,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     Conductor.stepHit.add(this.stepHit);
 
     initConsoleHelpers();
+    dispatchEvent(new ScriptEvent(SUB_STATE_CREATE));
   }
 
   override public function destroy():Void

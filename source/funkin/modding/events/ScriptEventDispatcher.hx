@@ -40,6 +40,13 @@ class ScriptEventDispatcher
           t.onStateCreate(event);
         }
         return;
+      case SUB_STATE_CREATE:
+        if (Std.isOfType(target, Module))
+        {
+          var t:Module = cast(target, Module);
+          t.onSubStateCreate(event);
+        }
+        return;
       case DESTROY:
         target.onDestroy(event);
         return;
