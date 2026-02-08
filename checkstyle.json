@@ -48,7 +48,7 @@
       "type": "AvoidStarImport"
     },
     {
-      "comment": "If enabled, prevents conditional compilation from crossing blocks.",
+      "comment": "If enabled, prevents conditional compilation from crossing blocks. This prevents the case where conditional compilation could potentially create invalid syntax.",
       "props": { "severity": "INFO" },
       "type": "BlockBreakingConditional"
     },
@@ -253,9 +253,9 @@
       "type": "Interface"
     },
     {
-      "comment": "If enabled, enforces a specific placement for curly braces. TODO:Choose between Allman/K&R and enforce project-wide.",
+      "comment": "If enabled, enforces a newline before the left curly brace of a block.",
       "props": {
-        "option": "eol",
+        "option": "nl",
         "ignoreEmptySingleline": true,
         "tokens": [
           "CLASS_DEF",
@@ -263,7 +263,6 @@
           "ABSTRACT_DEF",
           "TYPEDEF_DEF",
           "INTERFACE_DEF",
-          "OBJECT_DECL",
           "FUNCTION",
           "FOR",
           "IF",
@@ -274,6 +273,16 @@
           "REIFICATION",
           "ARRAY_COMPREHENSION"
         ],
+        "severity": "INFO"
+      },
+      "type": "LeftCurly"
+    },
+    {
+      "comment": "If enabled, enforces the left curly brace occurs on the end of the line, without a newline.",
+      "props": {
+        "option": "eol",
+        "ignoreEmptySingleline": true,
+        "tokens": ["OBJECT_DECL"],
         "severity": "IGNORE"
       },
       "type": "LeftCurly"
@@ -302,29 +311,61 @@
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
         "tokens": [],
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "LocalVariableName"
     },
     {
-      "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead.",
+      "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead to improve code clarity.",
       "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "INFO" },
       "type": "MagicNumber"
     },
     {
-      "comment": "Specifies a specific naming format for abstract member fields.",
+      "comment": "Specifies a specific naming format for public abstract member fields.",
       "props": {
         "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
-        "tokens": ["ABSTRACT"]
+        "tokens": ["PUBLIC", "ABSTRACT"]
       },
       "type": "MemberName"
     },
     {
-      "comment": "Specifies a specific naming format for class and typedef member fields.",
+      "comment": "Specifies a specific naming format for private abstract member fields.",
       "props": {
-        "ignoreExtern": true,
-        "format": "^[_a-z][a-zA-Z0-9]*$",
-        "tokens": ["PUBLIC", "PRIVATE", "CLASS", "TYPEDEF"]
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["PRIVATE", "ABSTRACT"]
+      },
+      "type": "MemberName"
+    },
+
+    {
+      "comment": "Specifies a specific naming format for public class member fields.",
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["PUBLIC", "CLASS"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "comment": "Specifies a specific naming format for private class member fields.",
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["PRIVATE", "CLASS"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "comment": "Specifies a specific naming format for enum member fields.",
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["ENUM"]
+      },
+      "type": "MemberName"
+    },
+    {
+      "comment": "Specifies a specific naming format for typedef member fields.",
+      "props": {
+        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "tokens": ["TYPEDEF"]
       },
       "type": "MemberName"
     },
@@ -497,7 +538,8 @@
       "props": {
         "ignoreExtern": true,
         "format": "^(_|[a-z][a-zA-Z0-9]*$)",
-        "tokens": []
+        "tokens": [],
+        "severity": "INFO"
       },
       "type": "ParameterName"
     },
@@ -611,11 +653,11 @@
       "type": "Spacing"
     },
     {
-      "comment": "Enforce a specific string literal style (either ' or \"). TODO:Enable this and enforce!",
+      "comment": "Enforce a specific string literal style (either ' or \").",
       "props": {
         "policy": "onlySingle",
         "allowException": true,
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "StringLiteral"
     },
@@ -656,11 +698,55 @@
       "type": "TypeDocComment"
     },
     {
-      "comment": "Specifies a specific naming format for types. TODO:Tweak this a bit.",
+      "comment": "Specifies a specific naming format for abstract types.",
       "props": {
         "ignoreExtern": true,
         "format": "^[A-Z]+[a-zA-Z0-9]*$",
-        "tokens": ["CLASS", "ENUM", "TYPEDEF", "INTERFACE", "ABSTRACT"],
+        "tokens": ["ABSTRACT"],
+        "severity": "WARNING"
+      },
+      "type": "TypeName"
+    },
+
+    {
+      "comment": "Specifies a specific naming format for class types.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "tokens": ["CLASS"],
+        "severity": "WARNING"
+      },
+      "type": "TypeName"
+    },
+
+    {
+      "comment": "Specifies a specific naming format for enum types.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "tokens": ["ENUM"],
+        "severity": "WARNING"
+      },
+      "type": "TypeName"
+    },
+
+    {
+      "comment": "Specifies a specific naming format for interface types.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "tokens": ["INTERFACE"],
+        "severity": "WARNING"
+      },
+      "type": "TypeName"
+    },
+
+    {
+      "comment": "Specifies a specific naming format for typedefs.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]+[a-zA-Z0-9]*$",
+        "tokens": ["TYPEDEF"],
         "severity": "WARNING"
       },
       "type": "TypeName"
@@ -690,9 +776,12 @@
       "type": "VarTypeHint"
     },
     {
-      "comment": "If enabled, complains when a class member variable is initialized at the class level rather than the constructor. TODO:Is this fine to disable?",
+      "comment": "If enabled, complains when a class member variable is initialized at the class level rather than the constructor.",
       "type": "VariableInitialisation",
-      "props": { "allowFinal": false, "severity": "INFO" }
+      "props": {
+        "allowFinal": true,
+        "severity": "IGNORE"
+      }
     },
     {
       "comment": "If enabled, mandates whitespace after certain tokens.",
