@@ -397,7 +397,7 @@ class FunkinSprite extends FlxAnimate
     {
       return true;
     }
-    else if (this.isAnimate && !animationList.contains(id))
+    else if (this.library != null && !animationList.contains(id))
     {
       return addAnimationIfMissing(id);
     }
@@ -438,7 +438,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFramesWithKeyword(keyword:String):Array<animate.internal.Frame>
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getFramesWithKeyword() only works on texture atlases!');
       return [];
@@ -528,7 +528,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFrameLabelList():Array<String>
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getFrameLabelList() only works on texture atlases!');
       return [];
@@ -559,7 +559,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFrameLabel(name:String):Null<animate.internal.Frame>
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getFrameLabel() only works on texture atlases!');
       return null;
@@ -584,7 +584,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getDefaultSymbol():String
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getDefaultSymbol() only works on texture atlases!');
       return '';
@@ -601,7 +601,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: replaceSymbolGraphic() only works on texture atlases!');
       return;
@@ -626,7 +626,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFirstElement(symbol:String):Null<Element>
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getFirstElement() only works on texture atlases!');
       return null;
@@ -642,7 +642,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getSymbolElements(symbol:String):Array<Element>
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: getSymbolElements() only works on texture atlases!');
       return [];
@@ -675,7 +675,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function scaleElement(element:Element, scale:Float, positionOffset:Float = 0, scaleEverything:Bool = false):Void
   {
-    if (!this.isAnimate)
+    if (this.library == null)
     {
       trace('WARNING: scaleElement() only works on texture atlases!');
       return;
