@@ -26,6 +26,16 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
     loadTextureAtlas(playableCharData.getAssetPath(), playableCharData.getAtlasSettings());
     loadAnimations();
 
+    if (playableCharData.useApplyStageMatrix() && !this.applyStageMatrix || playableCharData.useAnimatePosition)
+    {
+      this.applyStageMatrix = true;
+
+      if (playableCharData.useAnimatePosition)
+      {
+        resetPosition();
+      }
+    }
+
     animation.onFinish.add(onFinishAnim);
     animation.onLoop.add(onFinishAnim);
   }

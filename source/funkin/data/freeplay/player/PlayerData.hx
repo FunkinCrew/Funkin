@@ -146,6 +146,10 @@ class PlayerFreeplayDJData
   public var scriptClass:Null<String>;
 
   @:optional
+  @:default(false)
+  public var useAnimatePosition:Bool;
+
+  @:optional
   @:default([0, 0])
   var offsets:Array<Float>;
 
