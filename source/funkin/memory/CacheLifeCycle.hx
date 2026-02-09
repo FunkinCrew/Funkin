@@ -13,15 +13,6 @@ import funkin.memory.FunkinMemory.CacheTriplet;
 @:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
 class CacheLifeCycle
 {
-  static function initCache<T>(cache:CacheTriplet<T>):Void
-  {
-    for (k in cache.permanent.keys())
-    {
-      var asset:Null<T> = cache.permanent.get(k);
-      if (asset != null) cache.current.set(k, asset);
-    }
-  }
-
   static function preparePurge<T>(cache:CacheTriplet<T>):Void
   {
     for (k in cache.current.keys())
@@ -29,18 +20,15 @@ class CacheLifeCycle
       var asset:Null<T> = cache.current.get(k);
       if (asset != null) cache.previous.set(k, asset);
     }
+
     cache.current.clear();
+
     for (k in cache.previous.keys())
     {
       if (cache.permanent.exists(k))
       {
         cache.previous.remove(k);
       }
-    }
-    for (k in cache.permanent.keys())
-    {
-      var asset:Null<T> = cache.permanent.get(k);
-      if (asset != null) cache.current.set(k, asset);
     }
   }
 

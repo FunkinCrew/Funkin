@@ -20,6 +20,7 @@ class FunkinMemory
    */
   public static function initialCache():Void
   {
+    BitmapCache.init();
     var allImages:Array<String> = Assets.list();
 
     // Looks for the UI
@@ -47,7 +48,6 @@ class FunkinMemory
     permanentCacheTexture(Paths.image('ui/fonts/bold'));
     permanentCacheTexture(Paths.image('ui/fonts/default'));
     permanentCacheTexture(Paths.image('ui/fonts/freeplay-clear'));
-    BitmapCache.initCache();
 
     // Looks for countdown sounds
     var allSounds:Array<String> = Assets.list(AssetType.SOUND);
@@ -74,7 +74,6 @@ class FunkinMemory
     permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-1'));
     permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-2'));
     permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-3'));
-    SoundCache.initCache();
   }
 
   /**
@@ -120,7 +119,7 @@ class FunkinMemory
    */
   private static function forceRender(graphic:FlxGraphic):Void
   {
-    BitmapCache.forceRender(graphic);
+    BitmapCache.warmGraphic(graphic);
   }
 
   /**
@@ -176,7 +175,6 @@ class FunkinMemory
     cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(UP) ?? 'gameplay/notestyles/funkin/hold-cover-up'));
     cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(DOWN) ?? 'gameplay/notestyles/funkin/hold-cover-down'));
 
-    // cacheTexture(Paths.image(style.buildCountdownSpritePath(THREE) ?? "THREE"));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(TWO) ?? 'gameplay/notestyles/funkin/countdown/graphics/ready'));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(ONE) ?? 'gameplay/notestyles/funkin/countdown/graphics/set'));
     cacheTexture(Paths.image(style.buildCountdownSpritePath(GO) ?? 'gameplay/notestyles/funkin/countdown/graphics/go'));

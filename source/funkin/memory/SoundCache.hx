@@ -21,11 +21,6 @@ class SoundCache
       previous: []
     };
 
-  static function initCache():Void
-  {
-    CacheLifeCycle.initCache(cacheTriplet);
-  }
-
   static function cache(key:String):Void
   {
     if (cacheTriplet.current.exists(key)) return;
