@@ -135,6 +135,9 @@ class PlayerFreeplayDJData
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
   @:optional
+  public var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
+
+  @:optional
   @:default("animateatlas")
   public var renderType:Null<String>;
 
@@ -142,12 +145,16 @@ class PlayerFreeplayDJData
   @:default("")
   public var scriptClass:Null<String>;
 
+  @:optional
+  @:default([0, 0])
+  var offsets:Array<Float>;
+
   public function new()
   {
     animationMap = new Map();
   }
 
-  function mapAnimations()
+  function mapAnimations():Void
   {
     if (animationMap == null) animationMap = new Map();
     if (prefixToOffsetsMap == null) prefixToOffsetsMap = new Map();
@@ -170,6 +177,30 @@ class PlayerFreeplayDJData
   public function useApplyStageMatrix():Bool
   {
     return applyStageMatrix;
+  }
+
+  public function getGlobalOffsets():Array<Float>
+  {
+    return offsets;
+  }
+
+  /**
+   * Normally, we'd let `FunkinSprite` handle the settings validation, but
+   * Freeplay DJs have a special case where the turntable lights use a movieclip
+   * that remains static without SWF mode enabled!
+   * So we have to manually validate the settings to have SWF mode enabled by default.
+   *
+   * @return The configuration for the texture atlas.
+   */
+  public function getAtlasSettings():funkin.graphics.FunkinSprite.AtlasSpriteSettings
+  {
+    return {
+      swfMode: atlasSettings?.swfMode ?? true,
+      cacheOnLoad: atlasSettings?.cacheOnLoad ?? false,
+      filterQuality: cast atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
+      applyStageMatrix: atlasSettings?.applyStageMatrix ?? false,
+      useRenderTexture: atlasSettings?.useRenderTexture ?? false
+    }
   }
 
   public function getFreeplayDJText(index:Int):String

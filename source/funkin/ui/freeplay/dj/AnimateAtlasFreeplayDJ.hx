@@ -1,6 +1,7 @@
 package funkin.ui.freeplay.dj;
 
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * A script that can be tied to a AnimateAtlasFreeplayDJ.
@@ -22,18 +23,21 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
   {
     super(x, y, characterId);
 
-    loadTextureAtlas(playableCharData?.getAssetPath(),
-      {
-        swfMode: true
-      });
-
-    if (playableCharData?.useApplyStageMatrix() ?? false)
-    {
-      this.applyStageMatrix = true;
-    }
+    loadTextureAtlas(playableCharData.getAssetPath(), playableCharData.getAtlasSettings());
+    loadAnimations();
 
     animation.onFinish.add(onFinishAnim);
     animation.onLoop.add(onFinishAnim);
+  }
+
+  function loadAnimations():Void
+  {
+    log('Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
+
+    FlxAnimationUtil.addTextureAtlasAnimations(this, playableCharData.getAnimationsList());
+
+    var animationNames:Array<String> = this.animation.getNameList();
+    log('[ATLASDJ] Successfully loaded ${animationNames.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
@@ -218,5 +222,10 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
       animation.curAnim.looped = Loop;
     }
     applyAnimationOffset();
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' ATLASDJ '.bold().bg_blue() + ' $message');
   }
 }

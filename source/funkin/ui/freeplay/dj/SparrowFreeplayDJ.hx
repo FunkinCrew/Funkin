@@ -36,7 +36,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
     final tex:FlxFramesCollection = Paths.getSparrowAtlas(playableCharData.getAssetPath());
     if (tex == null)
     {
-      trace('Could not load sparrow sprite: ' + playableCharData.getAssetPath());
+      log('Could not load sparrow sprite: ' + playableCharData.getAssetPath());
       return;
     }
     this.frames = tex;
@@ -44,12 +44,12 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
 
   public function loadAnimations():Void
   {
-    trace('[SPARROWDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
+    log('[SPARROWDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
 
     FlxAnimationUtil.addAtlasAnimations(this, playableCharData.getAnimationsList());
 
     var animationList:Array<String> = this.animation.getNameList();
-    trace('[SPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
+    log('[SPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
@@ -221,7 +221,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
     }
     else
     {
-      trace('Finished ${name}');
+      log('Finished ${name}');
     }
   }
 
@@ -234,5 +234,10 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
       animation.curAnim.looped = Loop;
     }
     applyAnimationOffset();
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' SPARROWDJ '.bold().bg_blue() + ' $message');
   }
 }

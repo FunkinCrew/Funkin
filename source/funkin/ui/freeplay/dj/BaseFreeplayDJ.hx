@@ -210,9 +210,14 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
 
   function applyAnimationOffset():Void
   {
+    if (playableCharData == null) return;
+
     var animationName:String = getCurrentAnimation();
-    var animationOffsets:Null<Array<Float>> = playableCharData?.getAnimationOffsetsByPrefix(animationName);
+    var animationOffsets:Null<Array<Float>> = playableCharData.getAnimationOffsetsByPrefix(animationName);
     var globalOffsets:Array<Float> = [this.x, this.y];
+
+    globalOffsets[0] -= playableCharData.getGlobalOffsets()[0];
+    globalOffsets[1] -= playableCharData.getGlobalOffsets()[1];
 
     if (animationOffsets != null)
     {
