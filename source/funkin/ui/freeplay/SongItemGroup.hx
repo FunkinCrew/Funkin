@@ -51,7 +51,7 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
       for (capsule in capsulesToRender)
       {
         var member:FlxSprite = capsule.members[i];
-        if (member == null || !member.visible) continue;
+        if (member == null || !member.visible || !member.alive) continue;
 
         member.draw();
       }
