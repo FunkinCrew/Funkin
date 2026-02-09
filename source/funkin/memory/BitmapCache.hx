@@ -21,26 +21,42 @@ class BitmapCache
       previous: []
     };
 
-  static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
+  static final purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
 
-  static function initCache():Void
+  // helper var
+  static var flixelCache:Map<String, FlxGraphic> = new Map();
+
+  static function init():Void
   {
-    CacheLifeCycle.initCache(cacheTriplet);
+    @:privateAccess
+    if (FlxG.bitmap._cache == null)
+    {
+      @:privateAccess
+      FlxG.bitmap._cache = new Map();
+    }
+
+    @:privateAccess
+    flixelCache = FlxG.bitmap._cache;
   }
 
   /**
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
-  static function cache(key:String):Void
+  static function cache(key:String, warm:Bool = false):Void
   {
     var graphic:Null<FlxGraphic> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? FlxGraphic.fromAssetKey(key, false, null, true);
 
     if (graphic == null) return;
 
     graphic.persist = true;
+    FlxG.bitmap.addGraphic(graphic);
     cacheTriplet.current.set(key, graphic);
-    forceRender(graphic);
+
+    if (warm)
+    {
+      warmGraphic(graphic);
+    }
   }
 
   /**
@@ -56,34 +72,36 @@ class BitmapCache
     if (graphic == null) return;
 
     graphic.persist = true;
+    FlxG.bitmap.addGraphic(graphic);
     cacheTriplet.permanent.set(key, graphic);
-    forceRender(graphic);
+    warmGraphic(graphic);
   }
 
-  /**
-   * Forces the GPU to load and upload a FlxGraphic.
-   */
-  static function forceRender(graphic:FlxGraphic):Void
+  private static function warmGraphic(graphic:FlxGraphic):Void
   {
-    if (graphic == null) return;
+    if (graphic?.bitmap == null) return;
+    try
+    {
+      var bmp:Null<FlxGraphic> = FlxG.bitmap.get(graphic.key);
+      if (bmp != null && bmp.bitmap != null) var _:Int = bmp.bitmap.width;
 
-    var bmp:Null<FlxGraphic> = FlxG.bitmap.get(graphic.key);
-    if (bmp != null && bmp.bitmap != null) var _:Int = bmp.bitmap.width; // Trigger
-
-    // Draws sprite and actually caches it.
-    var sprite = new flixel.FlxSprite();
-    sprite.loadGraphic(graphic);
-    sprite.draw(); // Draw sprite and load it into game's memory.
-    // graphic.bitmap?.getTexture(FlxG.stage.context3D); // Just in case that didn't work...
-    sprite.destroy();
+      // Draws sprite to warm it up for loading to GPU
+      var sprite = new flixel.FlxSprite();
+      sprite.loadGraphic(graphic);
+      sprite.draw();
+      sprite.destroy();
+    }
+    catch (e)
+    {
+      FunkinMemory.log('Failed GPU warmup: ${graphic.key}');
+    }
   }
 
   /**
    * Checks, if graphic with given path cached in memory.
    */
   static function isCached(path:String):Bool
-    return (FlxG.bitmap.get(path) != null)
-      && (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
+    return (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
 
   static function getCachedGraphic(path:String):Null<FlxGraphic>
   {
@@ -127,31 +145,22 @@ class BitmapCache
         Assets.cache.removeBitmapData(key);
       }
     }
-    @:privateAccess
-    if (FlxG.bitmap._cache == null)
-    {
-      @:privateAccess
-      FlxG.bitmap._cache = new Map();
-    }
 
-    @:privateAccess
-    for (key in FlxG.bitmap._cache.keys())
+    for (key in flixelCache.keys())
     {
       var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
-      if (obj == null || (obj.persist && cacheTriplet.permanent.exists(key)) || key.contains("fonts") || obj.useCount <= 0)
-      {
-        continue;
-      }
+      if (obj == null) continue;
+      if (key.contains("fonts")) continue;
+      if (obj.useCount <= 0) continue;
+      if (obj.persist && cacheTriplet.permanent.exists(key)) continue;
 
       for (purgeEntry in purgeFilter)
       {
         if (!key.contains(purgeEntry)) continue;
 
-        FlxG.bitmap.removeKey(key);
+        FlxG.bitmap.removeByKey(key);
         Assets.cache.removeBitmapData(key);
-        obj.persist = false;
-        obj.destroy();
       }
     }
   }
