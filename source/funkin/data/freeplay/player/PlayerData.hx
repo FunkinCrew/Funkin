@@ -129,9 +129,6 @@ class PlayerFreeplayDJData
   var charSelect:Null<PlayerFreeplayDJCharSelectData>;
 
   @:optional
-  var cartoon:Null<PlayerFreeplayDJCartoonData>;
-
-  @:optional
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
   @:optional
@@ -241,33 +238,6 @@ class PlayerFreeplayDJData
   public function getAnimationOffsets(name:String):Array<Float>
   {
     return getAnimationOffsetsByPrefix(getAnimationPrefix(name));
-  }
-
-  // TODO: These should really be frame labels, ehe.
-
-  public function getCartoonSoundClickFrame():Int
-  {
-    return cartoon?.soundClickFrame ?? 80;
-  }
-
-  public function getCartoonSoundCartoonFrame():Int
-  {
-    return cartoon?.soundCartoonFrame ?? 85;
-  }
-
-  public function getCartoonLoopBlinkFrame():Int
-  {
-    return cartoon?.loopBlinkFrame ?? 112;
-  }
-
-  public function getCartoonLoopFrame():Int
-  {
-    return cartoon?.loopFrame ?? 166;
-  }
-
-  public function getCartoonChannelChangeFrame():Int
-  {
-    return cartoon?.channelChangeFrame ?? 60;
   }
 
   public function getFistPumpIntroStartFrame():Int
@@ -439,15 +409,6 @@ typedef PlayerResultsAnimationData =
 typedef PlayerFreeplayDJCharSelectData =
 {
   var transitionDelay:Float;
-}
-
-typedef PlayerFreeplayDJCartoonData =
-{
-  var soundClickFrame:Int;
-  var soundCartoonFrame:Int;
-  var loopBlinkFrame:Int;
-  var loopFrame:Int;
-  var channelChangeFrame:Int;
 }
 
 typedef PlayerFreeplayDJFistPumpData =
