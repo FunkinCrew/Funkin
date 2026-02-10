@@ -4923,8 +4923,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
             {
-              // Control click to select/deselect an individual note.
-              if (isNoteSelected(highlightedNote.noteData))
+              // Control click to select/deselect an individual hold note.
+              // This will NOR if the highlighted note var is passed instead. Please do not change it back!
+              if (isNoteSelected(highlightedHoldNote.noteData))
               {
                 performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
               }
@@ -5216,7 +5217,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
             {
-              if (isNoteSelected(highlightedNote.noteData))
+              // This will NOR if the highlighted note var is passed instead. Please do not change it back!
+              if (isNoteSelected(highlightedHoldNote.noteData))
               {
                 performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
               }
