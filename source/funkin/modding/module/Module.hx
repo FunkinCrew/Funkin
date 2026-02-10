@@ -1,9 +1,6 @@
 package funkin.modding.module;
 
-import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
-import funkin.modding.IScriptedClass.IStateChangingScriptedClass;
-import funkin.modding.IScriptedClass.IFreeplayScriptedClass;
-import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
+import funkin.modding.IScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
@@ -24,7 +21,7 @@ typedef ModuleParams =
  */
 @:nullSafety
 class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
-    implements ICharacterSelectScriptedClass
+    implements ICharacterSelectScriptedClass implements IDialogueScriptedClass
 {
   /**
    * Whether the module is currently active.
@@ -367,4 +364,29 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   public function onCharacterConfirm(event:CharacterSelectScriptEvent):Void
   {
   }
+
+  /**
+   * Called when the dialogue starts, and before the first dialogue text is displayed.
+   */
+  public function onDialogueStart(event:DialogueScriptEvent):Void {}
+
+  /**
+   * Called when the dialogue line is completed.
+   */
+  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void {}
+
+  /**
+   * Called when the next dialogue line starts.
+   */
+  public function onDialogueLine(event:DialogueScriptEvent):Void {}
+
+  /**
+   * Called when the dialogue is skipped.
+   */
+  public function onDialogueSkip(event:DialogueScriptEvent):Void {}
+
+  /**
+   * Called when the dialogue is finished.
+   */
+  public function onDialogueEnd(event:DialogueScriptEvent):Void {}
 }
