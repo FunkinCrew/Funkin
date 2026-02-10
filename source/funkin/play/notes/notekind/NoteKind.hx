@@ -116,6 +116,10 @@ class NoteKind implements INoteScriptedClass
   {
   }
 
+  public function onNoteHoldHit(event:HoldNoteScriptEvent)
+  {
+  }
+
   public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
   }
