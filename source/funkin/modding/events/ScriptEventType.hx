@@ -98,6 +98,15 @@ enum abstract ScriptEventType(String) from String to String
   public var NOTE_MISS = 'NOTE_MISS';
 
   /**
+   * Called when a character holds a hold note.
+   * Important information such as note data, player/opponent, etc. are all provided.
+   *
+   * This event IS cancelable! Canceling this event prevents the hold note from being held,
+   *   and will likely result in a miss later.
+   */
+  var NOTE_HOLD_HIT = 'NOTE_HOLD_HIT';
+
+  /**
    * Called when a character lets go of a hold note.
    * Important information such as note data, player/opponent, etc. are all provided.
    *
