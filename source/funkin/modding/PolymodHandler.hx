@@ -318,6 +318,10 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
+    // `lime.utils.AssetLibrary`
+    // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
+    Polymod.blacklistImport('lime.utils.AssetLibrary');
+
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
 
