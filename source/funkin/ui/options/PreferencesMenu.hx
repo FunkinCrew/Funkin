@@ -170,11 +170,12 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.autoFullscreen);
     #end
 
-    #if web
-    createPrefItemCheckbox('Unlocked Framerate', 'When enabled, the framerate is unlocked.', function(value:Bool):Void {
+    #if !mobile
+    createPrefItemCheckbox('Uncapped FPS', 'When enabled, the framerate cap is raised to 1000.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
-    #else
+    #end
+    #if !web
     // disabled on macos due to "error: Late swap tearing currently unsupported"
     // disable on mobile since it barely has any effect
     #if !(mac || mobile)
@@ -193,9 +194,17 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       });
     #end
     #if !mobile
-    createPrefItemNumber('FPS', 'The maximum framerate that the game targets.', function(value:Float) {
+    createPrefItemNumber('FPS', 'The maximum framerate that the game targets when uncapped is disabled.', function(value:Float) {
       Preferences.framerate = Std.int(value);
-    }, null, Preferences.framerate, 30, 500, 5, 0);
+    }, null, Preferences.framerate, 30, 1000, 5, 0);
+    createPrefItemEnum('Memory Profile', 'Choose how aggressively assets are cached in memory.', [
+      "Auto" => "Auto",
+      "GPU Heavy" => "GPU Heavy",
+      "Balanced" => "Balanced",
+      "RAM Saver" => "RAM Saver",
+    ], function(key:String, value:String):Void {
+      Preferences.memoryProfile = value;
+    }, Preferences.memoryProfile);
     #end
     #end
 

@@ -332,29 +332,38 @@ class Strumline extends FlxSpriteGroup
   }
 
   #if FEATURE_GHOST_TAPPING
-  /**
-   * @return `true` if no notes are in range of the strumline and the player can spam without penalty.
-   */
   public function mayGhostTap():Bool
   {
-    // Any notes in range of the strumline.
-    if (getNotesMayHit().length > 0)
-    {
-      return false;
-    }
-    // Any hold notes in range of the strumline.
-    if (getHoldNotesHitOrMissed().length > 0)
-    {
-      return false;
-    }
-
-    // Note has been hit recently.
     if (ghostTapTimer > 0.0) return false;
+    for (note in notes.members)
+    {
+      if (note != null && note.alive && !note.hasBeenHit && note.mayHit) return false;
+    }
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote)) return false;
+    }
+    return true;
+  }
 
-    // **yippee**
+  public function mayGhostTapDir(dir:NoteDirection):Bool
+  {
+    if (ghostTapTimer > 0.0) return false;
+    for (note in notes.members)
+    {
+      if (note != null && note.alive && !note.hasBeenHit && note.mayHit && note.direction == dir) return false;
+    }
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote != null && holdNote.alive && holdNote.noteDirection == dir && (holdNote.hitNote || holdNote.missedNote)) return false;
+    }
     return true;
   }
   #end
+
+  // Pre-allocated buffers to avoid per-frame allocations.
+  var _notesMayHitBuf:Array<NoteSprite> = [];
+  var _holdNotesHitOrMissedBuf:Array<SustainTrail> = [];
 
   /**
    * Return notes that are within `Constants.HIT_WINDOW` ms of the strumline.
@@ -362,9 +371,14 @@ class Strumline extends FlxSpriteGroup
    */
   public function getNotesMayHit():Array<NoteSprite>
   {
-    return notes.members.filter(function(note:NoteSprite) {
-      return note != null && note.alive && !note.hasBeenHit && note.mayHit;
-    });
+    // Reuse this buffer to avoid allocations, so copy it if you need to keep it.
+    _notesMayHitBuf.resize(0);
+    for (note in notes.members)
+    {
+      if (note != null && note.alive && !note.hasBeenHit && note.mayHit)
+        _notesMayHitBuf.push(note);
+    }
+    return _notesMayHitBuf;
   }
 
   /**
@@ -373,9 +387,14 @@ class Strumline extends FlxSpriteGroup
    */
   public function getHoldNotesHitOrMissed():Array<SustainTrail>
   {
-    return holdNotes.members.filter(function(holdNote:SustainTrail) {
-      return holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote);
-    });
+    // Reuse this buffer to avoid allocations, so copy it if you need to keep it.
+    _holdNotesHitOrMissedBuf.resize(0);
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote != null && holdNote.alive && (holdNote.hitNote || holdNote.missedNote))
+        _holdNotesHitOrMissedBuf.push(holdNote);
+    }
+    return _holdNotesHitOrMissedBuf;
   }
 
   /**
@@ -578,6 +597,10 @@ class Strumline extends FlxSpriteGroup
     var songStart:Float = PlayState.instance?.startTimestamp ?? 0.0;
     var hitWindowStart:Float = conductorInUse.songPosition - Constants.HIT_WINDOW_MS;
     var renderWindowStart:Float = conductorInUse.songPosition + renderDistanceMs;
+    var renderSongPos:Float = conductorInUse.getTimeWithDelta();
+    var scrollMultiplier:Float = Constants.PIXELS_PER_MS * scrollSpeed * (isDownscroll ? 1 : -1);
+    var noteBaseY:Float = this.y - INITIAL_OFFSET;
+    var holdBaseY:Float = noteBaseY + STRUMLINE_SIZE / 2;
 
     for (noteIndex in nextNoteIndex...noteData.length)
     {
@@ -610,10 +633,7 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData) note.y = this.y
-        - INITIAL_OFFSET
-        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-        + note.yOffset;
+      if (!customPositionData) note.y = noteBaseY + (renderSongPos - note.strumTime) * scrollMultiplier + note.yOffset;
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
@@ -692,21 +712,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y
-              - INITIAL_OFFSET
-              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-              - holdNote.height
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = holdBaseY + (renderSongPos - holdNote.strumTime) * scrollMultiplier - holdNote.height + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y
-              - INITIAL_OFFSET
-              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-              + yOffset
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = holdBaseY + (renderSongPos - holdNote.strumTime) * scrollMultiplier + yOffset + holdNote.yOffset;
           }
         }
 
@@ -734,11 +744,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
+            holdNote.y = holdBaseY - holdNote.height;
           }
           else
           {
-            holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+            holdNote.y = holdBaseY;
           }
         }
       }
@@ -751,20 +761,11 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y
-              - INITIAL_OFFSET
-              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-              - holdNote.height
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = holdBaseY + (renderSongPos - holdNote.strumTime) * scrollMultiplier - holdNote.height + holdNote.yOffset;
           }
           else
           {
-            holdNote.y = this.y
-              - INITIAL_OFFSET
-              + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-              + STRUMLINE_SIZE / 2
-              + holdNote.yOffset;
+            holdNote.y = holdBaseY + (renderSongPos - holdNote.strumTime) * scrollMultiplier + holdNote.yOffset;
           }
         }
       }
@@ -794,10 +795,20 @@ class Strumline extends FlxSpriteGroup
   }
 
   #if FEATURE_GHOST_TAPPING
+  function hasNotesOnScreen():Bool
+  {
+    for (note in notes.members)
+    {
+      if (note != null && note.alive && !note.hasBeenHit) return true;
+    }
+
+    return false;
+  }
+
   function updateGhostTapTimer(elapsed:Float):Void
   {
     // If it's still our turn, don't update the ghost tap timer.
-    if (getNotesOnScreen().length > 0) return;
+    if (hasNotesOnScreen()) return;
 
     ghostTapTimer -= elapsed;
 
@@ -824,9 +835,8 @@ class Strumline extends FlxSpriteGroup
    */
   public function onBeatHit():Void
   {
-    // why are we doing this every beat? >:(
+    if ((conductorInUse.currentBeat & 7) != 0) return;
     if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
-
     if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
   }
 

@@ -330,7 +330,7 @@ class Constants
   /**
    * The maximum interval within which a note can be hit, in milliseconds.
    */
-  public static final HIT_WINDOW_MS:Float = 160.0;
+  public static final HIT_WINDOW_MS:Float = 135.0;
 
   /**
    * Constant for the number of seconds in a minute.
@@ -466,7 +466,7 @@ class Constants
   /**
    * The amount of health the player loses upon pressing a key when no note is there.
    */
-  public static final HEALTH_GHOST_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX; // 2.0%
+  public static final HEALTH_GHOST_MISS_PENALTY:Float = -2.0 / 100.0 * HEALTH_MAX;
 
   /**
    * The amount of health the player loses upon letting go of a hold note, per second remaining.
@@ -567,7 +567,7 @@ class Constants
   /**
    * Duration, in seconds, after the player's section ends before the player can spam without penalty.
    */
-  public static final GHOST_TAP_DELAY:Float = 3 / 8;
+  public static final GHOST_TAP_DELAY:Float = 1 / 16;
   #end
 
   #if FEATURE_LOST_FOCUS_VOLUME

@@ -1,6 +1,7 @@
 package funkin.ui.debug;
 
 import flixel.util.FlxStringUtil;
+import funkin.FunkinMemory;
 import funkin.ui.debug.stats.FunkinStatsGraph;
 import funkin.util.MemoryUtil;
 import openfl.display.Shape;
@@ -20,6 +21,7 @@ class FunkinDebugDisplay extends Sprite
   static final INNER_RECT_DIFF:Int = 3;
   static final OUTER_RECT_DIMENSIONS:Array<Int> = [234, 201];
   static final OTHERS_OFFSET:Int = 8;
+  static final ADVANCED_FPS_INFO_HEIGHT:Int = 73;
 
   /**
    * Indicates whether the debug display is in advanced mode.
@@ -34,11 +36,15 @@ class FunkinDebugDisplay extends Sprite
   var currentFPS:Int;
   var deltaTimeout:Float;
   var times:Array<Float>;
+  var timesHead:Int;
   var color:Int;
 
   #if !html5
   var gcMem:Float;
   var gcMemPeak:Float;
+
+  var vramMem:Float;
+  var vramMemPeak:Float;
 
   var taskMem:Float;
   var taskMemPeak:Float;
@@ -48,6 +54,7 @@ class FunkinDebugDisplay extends Sprite
 
   var fpsGraph:FunkinStatsGraph;
   var gcMemGraph:FunkinStatsGraph;
+  var vramMemGraph:FunkinStatsGraph;
   var taskMemGraph:FunkinStatsGraph;
 
   var infoDisplay:TextField;
@@ -63,10 +70,13 @@ class FunkinDebugDisplay extends Sprite
     #if !html5
     this.gcMem = 0.0;
     this.gcMemPeak = 0.0;
+    this.vramMem = 0.0;
+    this.vramMemPeak = 0.0;
     this.taskMem = 0.0;
     this.taskMemPeak = 0.0;
     #end
     this.times = [];
+    this.timesHead = 0;
     this.color = color;
     this.backgroundOpacity = 0;
     this.isAdvanced = false;
@@ -77,21 +87,15 @@ class FunkinDebugDisplay extends Sprite
     removeChildren(0, numChildren);
 
     final BG_WIDTH_MULTIPLIER:Float = #if html5 advanced ? 1 : 0.3 #else 1 #end;
-
-    #if html5
-    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 0.45 : 0.15;
-    #else
-    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
-    #end
+    final backgroundWidth:Float = OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER;
+    final backgroundHeight:Float = calculateBackgroundHeight(advanced);
 
     background = new Shape();
     background.graphics.beginFill(0x3d3f41, 1);
-    background.graphics.drawRect(0, 0, (OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER) + (INNER_RECT_DIFF * 2),
-      (OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER) + (INNER_RECT_DIFF * 2));
+    background.graphics.drawRect(0, 0, backgroundWidth + (INNER_RECT_DIFF * 2), backgroundHeight + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
     background.graphics.beginFill(0x2c2f30, 1);
-    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER,
-      OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
+    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, backgroundWidth, backgroundHeight);
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
     addChild(background);
@@ -108,13 +112,29 @@ class FunkinDebugDisplay extends Sprite
     }
   }
 
+  function calculateBackgroundHeight(advanced:Bool):Float
+  {
+    #if html5
+    return OUTER_RECT_DIMENSIONS[1] * (advanced ? 0.45 : 0.15);
+    #else
+    if (!advanced)
+    {
+      return OUTER_RECT_DIMENSIONS[1] * (MemoryUtil.supportsTaskMem() ? 0.42 : 0.30);
+    }
+
+    var graphCount:Int = 3; // FPS + GC + VRAM.
+    if (MemoryUtil.supportsTaskMem()) graphCount++;
+    return OTHERS_OFFSET + ADVANCED_FPS_INFO_HEIGHT + (graphCount * 25) + ((graphCount - 1) * 22) + OTHERS_OFFSET;
+    #end
+  }
+
   function createAdvancedElements():Void
   {
     final graphsWidth:Int = OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2) - (OTHERS_OFFSET * 3);
     final graphsHeight:Int = 25;
 
-    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 49, graphsWidth, graphsHeight, color);
-    fpsGraph.textDisplay.y = -49;
+    fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + ADVANCED_FPS_INFO_HEIGHT, graphsWidth, graphsHeight, color);
+    fpsGraph.textDisplay.y = -ADVANCED_FPS_INFO_HEIGHT;
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
 
@@ -123,9 +143,13 @@ class FunkinDebugDisplay extends Sprite
     gcMemGraph.minValue = 0;
     addChild(gcMemGraph);
 
+    vramMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), graphsWidth, graphsHeight, color);
+    vramMemGraph.minValue = 0;
+    addChild(vramMemGraph);
+
     if (MemoryUtil.supportsTaskMem())
     {
-      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), graphsWidth, graphsHeight,
+      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (vramMemGraph.y + vramMemGraph.axisHeight) + 22), graphsWidth, graphsHeight,
         color);
       taskMemGraph.minValue = 0;
       addChild(taskMemGraph);
@@ -158,10 +182,13 @@ class FunkinDebugDisplay extends Sprite
     #end
 
     times.push(currentTime);
-
-    while (times[0] < currentTime - 1000)
+    // Use a moving head index to avoid per-frame O(n) shifts.
+    var cutoff:Float = currentTime - 1000;
+    while (timesHead < times.length && times[timesHead] < cutoff) timesHead++;
+    if (timesHead >= 256 && timesHead * 2 >= times.length)
     {
-      times.shift();
+      times = times.slice(timesHead);
+      timesHead = 0;
     }
 
     if (deltaTimeout < UPDATE_DELAY)
@@ -170,12 +197,14 @@ class FunkinDebugDisplay extends Sprite
       return;
     }
 
-    currentFPS = times.length;
+    currentFPS = times.length - timesHead;
 
     #if !html5
     gcMem = MemoryUtil.getGCMemory();
+    vramMem = FunkinMemory.getEstimatedTextureVRAM();
 
     if (gcMem > gcMemPeak) gcMemPeak = gcMem;
+    if (vramMem > vramMemPeak) vramMemPeak = vramMem;
 
     if (MemoryUtil.supportsTaskMem())
     {
@@ -202,21 +231,29 @@ class FunkinDebugDisplay extends Sprite
     updateFPSGraph();
     #if !html5
     updateGcMemGraph();
+    updateVramMemGraph();
     updateTaskMemGraph();
     #end
 
     final info:Array<String> = [];
+    var onePercentLowFPS:Float = fpsGraph.lowPercentileNonZero(0.01);
+    var pointOnePercentLowFPS:Float = fpsGraph.lowPercentileNonZero(0.001);
+    if (onePercentLowFPS <= 0) onePercentLowFPS = currentFPS;
+    if (pointOnePercentLowFPS <= 0) pointOnePercentLowFPS = onePercentLowFPS;
     info.push('FPS: $currentFPS');
-    info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
-    info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
+    info.push('AVG FPS: ${Math.floor(fpsGraph.averageNonZero())}');
+    info.push('1% LOW FPS: ${Math.floor(onePercentLowFPS)}');
+    info.push('0.1% LOW FPS: ${Math.floor(pointOnePercentLowFPS)}');
+    info.push('CACHE: ${FunkinMemory.runtimeCacheProfile}');
     fpsGraph.textDisplay.text = info.join('\n');
 
     #if !html5
     gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
+    vramMemGraph.textDisplay.text = 'VRAM EST: ${FlxStringUtil.formatBytes(vramMem).toLowerCase()} / ${FlxStringUtil.formatBytes(vramMemPeak).toLowerCase()}';
 
     if (taskMemGraph != null)
     {
-      taskMemGraph.textDisplay.text = 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
+      taskMemGraph.textDisplay.text = 'RAM MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
     }
     #end
   }
@@ -230,10 +267,12 @@ class FunkinDebugDisplay extends Sprite
       info.push('FPS: $currentFPS');
 
       #if !html5
+      info.push('CACHE: ${FunkinMemory.runtimeCacheProfile}');
       info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+      info.push('VRAM EST: ${FlxStringUtil.formatBytes(vramMem).toLowerCase()} / ${FlxStringUtil.formatBytes(vramMemPeak).toLowerCase()}');
 
       if (MemoryUtil.supportsTaskMem())
-        info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
+        info.push('RAM MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
       #end
 
       infoDisplay.text = info.join('\n');
@@ -243,7 +282,7 @@ class FunkinDebugDisplay extends Sprite
   function updateFPSGraph(?currentFPS:Int = 0):Void
   {
     fpsGraph.maxValue = FlxG.drawFramerate;
-    fpsGraph.update(times.length);
+    fpsGraph.update(this.currentFPS);
   }
 
   #if !html5
@@ -251,6 +290,15 @@ class FunkinDebugDisplay extends Sprite
   {
     gcMemGraph.maxValue = gcMemPeak;
     gcMemGraph.update(gcMem);
+  }
+
+  function updateVramMemGraph(?currentFPS:Int = 0):Void
+  {
+    if (vramMemGraph != null)
+    {
+      vramMemGraph.maxValue = vramMemPeak;
+      vramMemGraph.update(vramMem);
+    }
   }
 
   function updateTaskMemGraph(?currentFPS:Int = 0):Void

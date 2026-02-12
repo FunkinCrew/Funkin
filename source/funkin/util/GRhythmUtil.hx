@@ -47,6 +47,9 @@ class GRhythmUtil
     };
   }
 
+  // Reuse one result object per call to avoid allocations.
+  static var _result:HitWindowRes = { botplayHit: false, cont: false };
+
   /**
    * Process the hit window for a note.
    * @param note The note to process.
@@ -56,16 +59,18 @@ class GRhythmUtil
   public static function processWindow(note:NoteSprite, isControlled:Bool = true, ?inUseConductor:Conductor = null):HitWindowRes
   {
     if (inUseConductor == null) inUseConductor = Conductor.instance;
+    // Copy fields immediately if you need to keep the returned result.
 
-    var window:HitWindow = getHitWindow(note);
-
-    var windowStart:Float = window.start;
-    var windowCenter:Float = window.center;
-    var windowEnd:Float = window.end;
+    // Inline hit window math to skip creating temporary structs.
+    var windowStart:Float = note.strumTime - Constants.HIT_WINDOW_MS;
+    var windowCenter:Float = note.strumTime;
+    var windowEnd:Float = note.strumTime + Constants.HIT_WINDOW_MS;
 
     if (note.hasMissed || note.hasBeenHit)
     {
-      return {botplayHit: false, cont: false };
+      _result.botplayHit = false;
+      _result.cont = false;
+      return _result;
     }
 
     // Treat notes as not in window if they are greater or less than the hit window
@@ -75,12 +80,18 @@ class GRhythmUtil
       note.hasMissed = true;
       note.mayHit = false;
       if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      return {botplayHit: false, cont: true};
+      _result.botplayHit = false;
+      _result.cont = true;
+      return _result;
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)
     if (!isControlled && inUseConductor.songPosition >= windowCenter)
-      return {botplayHit: true, cont: true };
+    {
+      _result.botplayHit = true;
+      _result.cont = true;
+      return _result;
+    }
 
     if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
 
@@ -89,14 +100,18 @@ class GRhythmUtil
       note.tooEarly = false;
       note.hasMissed = false;
       note.mayHit = true;
-      return {botplayHit: false, cont: true };
+      _result.botplayHit = false;
+      _result.cont = true;
+      return _result;
     }
 
     note.tooEarly = true;
     note.mayHit = false;
     note.hasMissed = false;
 
-    return {botplayHit: false, cont: true };
+    _result.botplayHit = false;
+    _result.cont = true;
+    return _result;
   }
   /**
    * Get the y-position of a note based on its strum time.

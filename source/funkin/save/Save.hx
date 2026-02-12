@@ -118,7 +118,9 @@ class Save implements ConsoleClass
           strumlineBackgroundOpacity: 0,
           autoFullscreen: false,
           globalOffset: 0,
+          laneOffsets: [0, 0, 0, 0],
           audioVisualOffset: 0,
+          memoryProfile: 'Auto',
           unlockedFramerate: false,
           screenshot:
             {
@@ -1187,6 +1189,12 @@ typedef SaveDataOptions =
   var globalOffset:Int;
 
   /**
+   * Offset each input lane by this many ms in [left, down, up, right] order.
+   * @default `[0, 0, 0, 0]`
+   */
+  var laneOffsets:Array<Int>;
+
+  /**
    * Unused !!
    * Affects the delay between the audio and the visuals during gameplay.
    * @default `0`
@@ -1198,6 +1206,9 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  // Runtime memory/cache behavior preference.
+  var memoryProfile:String;
 
   /**
    * Screenshot options

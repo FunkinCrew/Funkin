@@ -294,10 +294,13 @@ class InitState extends FlxState
     ModuleHandler.callOnCreate();
 
     funkin.input.Cursor.hide();
+    funkin.FunkinMemory.configureRuntimeCacheProfile();
 
     #if !html5
+    #if !NO_PRELOAD_ALL
     // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
     funkin.FunkinMemory.initialCache();
+    #end
     #end
   }
 

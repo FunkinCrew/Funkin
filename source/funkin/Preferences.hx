@@ -8,6 +8,7 @@ import funkin.save.Save;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import funkin.play.notes.NoteDirection;
 
 /**
  * A core class which provides a store of user-configurable, globally relevant values.
@@ -33,7 +34,9 @@ class Preferences
 
     return refreshRate;
     #else
-    return Save?.instance?.options?.framerate ?? 60;
+    var value:Int = Save?.instance?.options?.framerate ?? 60;
+    if (Save?.instance?.options?.unlockedFramerate ?? false) return 1000;
+    return Std.int(Math.max(30, Math.min(1000, value)));
     #end
   }
 
@@ -42,12 +45,14 @@ class Preferences
     #if web
     return 60;
     #else
+    var clampedValue:Int = Std.int(Math.max(30, Math.min(1000, value)));
     var save:Save = Save.instance;
-    save.options.framerate = value;
+    save.options.framerate = clampedValue;
     Save.system.flush();
-    FlxG.updateFramerate = value;
-    FlxG.drawFramerate = value;
-    return value;
+    var appliedFramerate:Int = save.options.unlockedFramerate ? 1000 : clampedValue;
+    FlxG.updateFramerate = appliedFramerate;
+    FlxG.drawFramerate = appliedFramerate;
+    return clampedValue;
     #end
   }
 
@@ -306,6 +311,35 @@ class Preferences
     return value;
   }
 
+  public static function getLaneOffset(direction:NoteDirection):Int
+  {
+    var laneOffsets:Array<Int> = Save?.instance?.options?.laneOffsets ?? [0, 0, 0, 0];
+    var laneIndex:Int = cast direction;
+    if (laneIndex < 0 || laneIndex >= laneOffsets.length) return 0;
+    return laneOffsets[laneIndex] ?? 0;
+  }
+
+  public static function setLaneOffset(direction:NoteDirection, value:Int):Int
+  {
+    var save:Save = Save.instance;
+    if (save.options.laneOffsets == null || save.options.laneOffsets.length < 4) save.options.laneOffsets = [0, 0, 0, 0];
+
+    var laneIndex:Int = cast direction;
+    if (laneIndex < 0 || laneIndex >= 4) return 0;
+
+    var laneValue:Int = Std.int(Math.max(-1500, Math.min(1500, value)));
+    save.options.laneOffsets[laneIndex] = laneValue;
+    Save.system.flush();
+    return laneValue;
+  }
+
+  public static function resetLaneOffsets():Void
+  {
+    var save:Save = Save.instance;
+    save.options.laneOffsets = [0, 0, 0, 0];
+    Save.system.flush();
+  }
+
   /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.
    * @default `OFF`
@@ -353,6 +387,37 @@ class Preferences
     return value;
   }
 
+  public static var memoryProfile(get, set):String;
+
+  static function get_memoryProfile():String
+  {
+    var value:String = Save?.instance?.options?.memoryProfile ?? "Auto";
+    return switch (value)
+    {
+      case "GPU Heavy", "Balanced", "RAM Saver", "Auto":
+        value;
+      default:
+        "Auto";
+    };
+  }
+
+  static function set_memoryProfile(value:String):String
+  {
+    var normalized:String = switch (value)
+    {
+      case "GPU Heavy", "Balanced", "RAM Saver", "Auto":
+        value;
+      default:
+        "Auto";
+    };
+
+    var save:Save = Save.instance;
+    save.options.memoryProfile = normalized;
+    Save.system.flush();
+    FunkinMemory.configureRuntimeCacheProfile();
+    return normalized;
+  }
+
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
@@ -362,14 +427,19 @@ class Preferences
 
   static function set_unlockedFramerate(value:Bool):Bool
   {
-    if (value != Save.instance.options.unlockedFramerate)
+    var save:Save = Save.instance;
+    if (value != save.options.unlockedFramerate)
     {
       #if web
       toggleFramerateCap(value);
+      #elseif !mobile
+      var baseFramerate:Int = Std.int(Math.max(30, Math.min(1000, save.options.framerate)));
+      var appliedFramerate:Int = value ? 1000 : baseFramerate;
+      FlxG.updateFramerate = appliedFramerate;
+      FlxG.drawFramerate = appliedFramerate;
       #end
     }
 
-    var save:Save = Save.instance;
     save.options.unlockedFramerate = value;
     Save.system.flush();
     return value;
@@ -486,6 +556,10 @@ class Preferences
 
     #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
+    #else
+    var framerateTarget:Int = Preferences.framerate;
+    FlxG.updateFramerate = framerateTarget;
+    FlxG.drawFramerate = framerateTarget;
     #end
 
     #if mobile

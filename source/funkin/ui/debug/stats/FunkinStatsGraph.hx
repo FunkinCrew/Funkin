@@ -11,7 +11,7 @@ class FunkinStatsGraph extends Sprite
 {
   static inline var AXIS_COLOR:FlxColor = 0xffffff;
   static inline var AXIS_ALPHA:Float = 0.5;
-  static inline var HISTORY_MAX:Int = 100;
+  static inline var HISTORY_MAX:Int = 1000;
 
   public var minValue:Float = FlxMath.MAX_VALUE_FLOAT;
 
@@ -20,6 +20,8 @@ class FunkinStatsGraph extends Sprite
   public var graphColor:FlxColor;
 
   public var history:Array<Float> = [];
+  var sortedHistory:Array<Float> = [];
+  var historyDirty:Bool = true;
 
   public var textDisplay:TextField;
 
@@ -108,6 +110,7 @@ class FunkinStatsGraph extends Sprite
 
     maxValue = Math.max(maxValue, value);
     minValue = Math.min(minValue, value);
+    historyDirty = true;
 
     drawGraph();
   }
@@ -129,24 +132,74 @@ class FunkinStatsGraph extends Sprite
     return sum / history.length;
   }
 
-  public function lowest():Float
+  public function averageNonZero():Float
   {
-    if (history.length == 0)
-    {
-      return 0;
-    }
+    if (history.length == 0) return 0;
 
-    var val:Float = history[0];
-
+    var sum:Float = 0;
+    var count:Int = 0;
     for (v in history)
     {
-      if (v < val)
-      {
-        val = v;
-      }
+      if (v <= 0) continue;
+      sum += v;
+      count++;
     }
+    if (count == 0) return 0;
+    return sum / count;
+  }
 
-    return val;
+  public function lowest():Float
+  {
+    if (history.length == 0) return 0;
+    return getSortedHistory()[0];
+  }
+
+  public function lowPercentile(percent:Float):Float
+  {
+    if (history.length == 0) return 0;
+
+    var clampedPercent:Float = Math.min(1.0, Math.max(0.0, percent));
+    var sorted:Array<Float> = getSortedHistory();
+    var index:Int = Std.int(Math.ceil(sorted.length * clampedPercent)) - 1;
+    if (index < 0) index = 0;
+    if (index >= sorted.length) index = sorted.length - 1;
+    return sorted[index];
+  }
+
+  public function lowPercentileNonZero(percent:Float):Float
+  {
+    if (history.length == 0) return 0;
+
+    var clampedPercent:Float = Math.min(1.0, Math.max(0.0, percent));
+    var filtered:Array<Float> = [];
+    for (value in history)
+    {
+      if (value > 0) filtered.push(value);
+    }
+    if (filtered.length == 0) return 0;
+
+    filtered.sort(sortAscending);
+    var index:Int = Std.int(Math.ceil(filtered.length * clampedPercent)) - 1;
+    if (index < 0) index = 0;
+    if (index >= filtered.length) index = filtered.length - 1;
+    return filtered[index];
+  }
+
+  function getSortedHistory():Array<Float>
+  {
+    // Cache sorted samples so percentile lows do not sort every query.
+    if (historyDirty)
+    {
+      sortedHistory = history.copy();
+      sortedHistory.sort(sortAscending);
+      historyDirty = false;
+    }
+    return sortedHistory;
+  }
+
+  static inline function sortAscending(a:Float, b:Float):Int
+  {
+    return (a < b) ? -1 : (a > b ? 1 : 0);
   }
 
   public function destroy():Void
@@ -158,5 +211,6 @@ class FunkinStatsGraph extends Sprite
     }
 
     history = null;
+    sortedHistory = null;
   }
 }

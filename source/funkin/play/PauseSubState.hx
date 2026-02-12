@@ -61,6 +61,9 @@ class PauseSubState extends MusicBeatSubState
     {text: 'Restart Song', callback: restartPlayState},
     {text: 'Change Difficulty', callback: switchMode.bind(_, Difficulty)},
     {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () -> !(PlayState.instance?.isPracticeMode ?? false)},
+    #if FEATURE_LAG_ADJUSTMENT
+    {text: 'Lag Adjustment', callback: openLagAdjustment},
+    #end
     {text: 'Exit to Menu', callback: quitToMenu},
   ];
 
@@ -207,16 +210,6 @@ class PauseSubState extends MusicBeatSubState
    * Fades to the charter after a period before fading back.
    */
   var metadataArtist:FlxText;
-
-  /**
-   * A text object that displays the current global offset.
-   */
-  var offsetText:FlxText;
-
-  /**
-   * A text object that displays information about the current global offset.
-   */
-  var offsetTextInfo:FlxText;
 
   /**
    * The actual text objects for the menu entries.
@@ -430,7 +423,7 @@ class PauseSubState extends MusicBeatSubState
     var metadataSong:FlxText = new FlxText(20,
       #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
       camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
-    metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataSong.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     if (PlayState.instance?.currentChart != null)
     {
       metadataSong.text = '${PlayState.instance.currentChart.songName}';
@@ -440,7 +433,7 @@ class PauseSubState extends MusicBeatSubState
 
     metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Artist: ${Constants.DEFAULT_ARTIST}');
-    metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataArtist.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     if (PlayState.instance?.currentChart != null)
     {
       metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
@@ -450,7 +443,7 @@ class PauseSubState extends MusicBeatSubState
 
     var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Difficulty: ');
-    metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     if (PlayState.instance?.currentDifficulty != null)
     {
       metadataDifficulty.text += PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
@@ -460,42 +453,21 @@ class PauseSubState extends MusicBeatSubState
 
     metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       '${PlayState.instance?.deathCounter} Blue Balls');
-    metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataDeaths.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
     metadataPractice = new FlxText(20, metadataDeaths.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'PRACTICE MODE');
-    metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataPractice.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
-
-    // Right side
-    offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Global Offset: ${Preferences.globalOffset ?? 0}ms');
-    offsetText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
-    offsetText.scrollFactor.set(0, 0);
-
-    offsetTextInfo = new FlxText(20, offsetText.y + 16, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Hold SHIFT-UP/DOWN,\nto change the offset.');
-    offsetTextInfo.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
-    offsetTextInfo.scrollFactor.set(0, 0);
-
-    offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);
-    offsetTextInfo.y = offsetText.y + offsetText.height + 4;
-
-    #if !mobile
-    metadata.add(offsetText);
-    metadata.add(offsetTextInfo);
-    #end
 
     metadataArtist.alpha = 0;
     metadataPractice.alpha = 0;
     metadataSong.alpha = 0;
     metadataDifficulty.alpha = 0;
     metadataDeaths.alpha = 0;
-    offsetText.alpha = 0;
-    offsetTextInfo.alpha = 0;
 
     updateMetadataText();
   }
@@ -564,7 +536,7 @@ class PauseSubState extends MusicBeatSubState
    */
   function transitionIn():Void
   {
-    FlxTween.tween(background, {alpha: 0.6}, 0.8, {ease: FlxEase.quartOut});
+    FlxTween.tween(background, {alpha: 0.75}, 0.8, {ease: FlxEase.quartOut});
 
     #if mobile
     HapticUtil.vibrate(0, 0.05, 0.5);
@@ -678,48 +650,8 @@ class PauseSubState extends MusicBeatSubState
    */
   function handleModifyingOffsets():Bool
   {
-    #if !mobile
-    var offset:Int = Preferences.globalOffset ?? 0;
-    if (FlxG.keys.pressed.SHIFT && (controls.UI_UP || controls.UI_DOWN))
-    {
-      lastOffsetPress += FlxG.elapsed;
-      if (!fastOffset)
-      {
-        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
-        if (lastOffsetPress > 0.5)
-        {
-          fastOffset = true;
-          lastOffsetPress = 0;
-        }
-
-        if (controls.UI_UP_P || controls.UI_DOWN_P)
-        {
-          offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
-
-          offsetText.text = 'Global Offset: ${offset}ms';
-        }
-      }
-      else
-      {
-        offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
-
-        offsetText.text = 'Global Offset: ${offset}ms';
-      }
-
-      if (offset > 1500) offset = 1500;
-      if (offset < -1500) offset = -1500;
-
-      Preferences.globalOffset = offset;
-
-      return true;
-    }
-    else
-    {
-      // Reset the fast offset if the user is not holding SHIFT.
-      fastOffset = false;
-      lastOffsetPress = 0;
-    }
-    #end
+    fastOffset = false;
+    lastOffsetPress = 0;
     return false;
   }
 
@@ -1084,6 +1016,25 @@ class PauseSubState extends MusicBeatSubState
     PlayState.instance.isPracticeMode = true;
     state.regenerateMenu();
   }
+
+  #if FEATURE_LAG_ADJUSTMENT
+  static function openLagAdjustment(state:PauseSubState):Void
+  {
+    state.allowInput = false;
+    if (state.pauseMusic != null) state.pauseMusic.pause();
+
+    var lagAdjustmentSubState = new PauseLagAdjustmentSubState();
+    lagAdjustmentSubState.closeCallback = function() {
+      state.allowInput = true;
+      if (!(state.lostFocus && Preferences.autoPause) && state.pauseMusic != null)
+      {
+        state.pauseMusic.resume();
+      }
+    };
+
+    state.openSubState(lagAdjustmentSubState);
+  }
+  #end
 
   /**
    * Restart the paused video cutscene, then resume the game.

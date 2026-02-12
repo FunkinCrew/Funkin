@@ -68,6 +68,9 @@ import funkin.util.SerializerUtil;
 import funkin.util.HapticUtil;
 import funkin.util.GRhythmUtil;
 import haxe.Int64;
+#if (cpp || hl || neko)
+import sys.thread.Thread;
+#end
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
@@ -152,6 +155,24 @@ typedef PlayStateParams =
    */
   ?cameraFollowPoint:FlxPoint,
 }
+
+private typedef NotePartitionResult =
+{
+  var playerNotes:Array<SongNoteData>;
+  var opponentNotes:Array<SongNoteData>;
+  var scoreablePlayerNotes:Int;
+}
+
+#if (cpp || hl || neko)
+private typedef NotePartitionWorkerMessage =
+{
+  var token:Int;
+  var slot:Int;
+  var playerNotes:Array<SongNoteData>;
+  var opponentNotes:Array<SongNoteData>;
+  var scoreablePlayerNotes:Int;
+}
+#end
 
 /**
  * The gameplay state, where all the rhythm gaming happens.
@@ -451,6 +472,12 @@ class PlayState extends MusicBeatSubState
    * These are encoded with an OS timestamp, so we can account for input latency.
   **/
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
+  var inputNotesByDirection:Array<Array<NoteSprite>> = [[], [], [], []];
+  var ghostTapBurstCount:Array<Int> = [0, 0, 0, 0];
+  var ghostTapLastPressSongPos:Array<Float> = [-1000000.0, -1000000.0, -1000000.0, -1000000.0];
+  var ghostTapGlobalBurstCount:Int = 0;
+  var ghostTapLaneSampleMask:Int = 0;
+  var ghostTapGlobalLastPressSongPos:Float = -1000000.0;
 
   /**
    * If we just unpaused the game, we shouldn't be able to pause again for one frame.
@@ -501,6 +528,8 @@ class PlayState extends MusicBeatSubState
    * This is used only when a critical error occurs and the game absolutely cannot continue.
    */
   var criticalFailure:Bool = false;
+  var cleanupPerformed:Bool = false;
+  var preciseInputsInitialized:Bool = false;
 
   /**
    * False as long as the countdown has not finished yet.
@@ -706,18 +735,26 @@ class PlayState extends MusicBeatSubState
    * The threshold for resyncing the song.
    * If the vocals deviate from the instrumental by more than this amount, then `resyncVocals()` will be called.
    */
-  static final RESYNC_THRESHOLD:Float = 40;
+  static final RESYNC_THRESHOLD:Float = 20;
 
-  /**
-   * The threshold for how much the conductor lerp can drift from the music.
-   * If the conductor song position deviate from the music by more than this amount, then a normal conductor update is triggered.
-   */
-  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
-
-  /**
-   * The ratio for easing the song positon for smoother notes scrolling.
-   */
-  static final MUSIC_EASE_RATIO:Float = 42;
+  static final MAX_INPUT_QUEUE:Int = 2048;
+  static final GHOST_TAP_SPAM_WINDOW_MS:Float = 240.0;
+  static final GHOST_TAP_SPAM_COUNT:Int = 3;
+  static final GHOST_TAP_GLOBAL_SPAM_COUNT:Int = 4;
+  static final GHOST_TAP_GLOBAL_MIN_SPAM_COUNT:Int = 2;
+  static final GHOST_TAP_SUB_ACCURACY_MS:Float = 6.0;
+  static final WRONG_LANE_LOCKOUT_MS:Float = 18.0;
+  static final GHOST_TAP_PROXIMITY_NONE:Int = 0;
+  static final GHOST_TAP_PROXIMITY_SUB:Int = 1;
+  static final GHOST_TAP_PROXIMITY_HITTABLE:Int = 2;
+  static final HOLD_RELEASE_PERFECT_WINDOW_MS:Float = 36.0;
+  static final HOLD_RELEASE_GOOD_WINDOW_MS:Float = 84.0;
+  static final HOLD_RELEASE_BAD_WINDOW_MS:Float = 132.0;
+  static final HOLD_RELEASE_GOOD_PENALTY_SCALE:Float = 0.35;
+  static final HOLD_RELEASE_BAD_PENALTY_SCALE:Float = 0.7;
+  static final MULTICORE_NOTE_PARTITION_MIN_NOTES:Int = 1024;
+  static final MULTICORE_NOTE_PARTITION_MAX_WORKERS:Int = 4;
+  static var multicoreNotePartitionWorkerCount:Int = -1;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -1029,6 +1066,7 @@ class PlayState extends MusicBeatSubState
   {
     if (criticalFailure) return;
 
+    if (!needsReset) updateConductor(elapsed);
     super.update(elapsed);
 
     updateHealthBar();
@@ -1134,56 +1172,6 @@ class PlayState extends MusicBeatSubState
       needsReset = false;
     }
 
-    // Update the conductor.
-    if (startingSong)
-    {
-      if (isInCountdown)
-      {
-        // Do NOT apply offsets at this point, because they already got applied the previous frame!
-        Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
-        if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
-        {
-          trace("started song at " + Conductor.instance.songPosition);
-          startSong();
-        }
-      }
-    }
-    else
-    {
-      if (Constants.EXT_SOUND == 'mp3')
-      {
-        Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
-      }
-      else
-      {
-        Conductor.instance.formatOffset = 0.0;
-      }
-
-      // Lime has some precision loss when getting the sound current position
-      // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
-      // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
-      // The previous method where it "guessed" the song position based on the elapsed time had some flaws
-      // Somtimes the songPosition would exceed the music length causing issues in other places
-      // And it was frame dependant which we don't like!!
-      if (FlxG.sound.music.playing)
-      {
-        final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
-        if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
-        {
-          // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
-          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
-          Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
-        }
-        else
-        {
-          // Fallback to properly update the conductor incase the lerp messed up
-          // Shouldn't be fallen back to unless you're lagging alot
-          trace(' WARNING '.bg_yellow().bold() + ' Normal Conductor Update!! are you lagging?');
-          Conductor.instance.update();
-        }
-      }
-    }
-
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
     // So the player wouldn't miss when pressing the pause button
@@ -1223,12 +1211,14 @@ class PlayState extends MusicBeatSubState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.pow(decayRate, dt));
     }
 
+    #if FEATURE_DEBUG_FUNCTIONS
     if (currentStage != null && currentStage.getBoyfriend() != null)
     {
       FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
     }
     FlxG.watch.addQuick('health', health);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
+    #end
 
     // TODO: Add a song event for Handle GF dance speed.
 
@@ -1319,12 +1309,12 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    processSongEvents();
-
-    // Handle keybinds.
+    // Handle keybinds first to reduce input latency.
     processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
+
+    processSongEvents();
 
     // Moving notes into position is now done by Strumline.update().
     if (!isInCutscene) processNotes(elapsed);
@@ -1852,6 +1842,7 @@ class PlayState extends MusicBeatSubState
     if (FlxG.sound.music != null)
     {
       var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+      var musicTime:Float = getMusicPlaybackTime();
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
       if (vocals != null && vocals.playing)
@@ -1872,18 +1863,10 @@ class PlayState extends MusicBeatSubState
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > RESYNC_THRESHOLD
+        && (Math.abs(musicTime - correctSync) > RESYNC_THRESHOLD
           || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
           || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
       {
-        trace("VOCALS NEED RESYNC");
-        if (vocals != null)
-        {
-          trace(playerVoicesError);
-          trace(opponentVoicesError);
-        }
-        trace(FlxG.sound.music.time);
-        trace(correctSync);
         resyncVocals();
       }
     }
@@ -2327,25 +2310,11 @@ class PlayState extends MusicBeatSubState
   function initDiscord():Void
   {
     #if FEATURE_DISCORD_RPC
-    // Determine the details strings once and reuse them.
-
-    // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence(
       {
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
 
-        largeImageKey: discordRPCAlbum,
-        smallImageKey: discordRPCIcon
-      });
-    #end
-
-    #if FEATURE_DISCORD_RPC
-    // Updating Discord Rich Presence.
-    DiscordClient.instance.setPresence(
-      {
-        state: buildDiscordRPCState(),
-        details: buildDiscordRPCDetails(),
         largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
@@ -2391,8 +2360,10 @@ class PlayState extends MusicBeatSubState
 
   function initPreciseInputs():Void
   {
+    if (preciseInputsInitialized) return;
     PreciseInputManager.instance.onInputPressed.add(onKeyPress);
     PreciseInputManager.instance.onInputReleased.add(onKeyRelease);
+    preciseInputsInitialized = true;
   }
 
   /**
@@ -2453,41 +2424,155 @@ class PlayState extends MusicBeatSubState
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
 
-    // Reset the notes on each strumline.
+    var notePartitions:NotePartitionResult = partitionNoteData(builtNoteData, startTime);
+    Highscore.tallies.totalNotes = notePartitions.scoreablePlayerNotes;
+
+    playerStrumline.applyNoteData(notePartitions.playerNotes);
+    opponentStrumline.applyNoteData(notePartitions.opponentNotes);
+  }
+
+  function partitionNoteData(noteData:Array<SongNoteData>, startTime:Float):NotePartitionResult
+  {
+    #if (cpp || hl || neko)
+    var workerCount:Int = getMulticoreNotePartitionWorkerCount();
+    // Use workers only for large charts so thread setup overhead stays low.
+    if (workerCount > 1 && noteData.length >= MULTICORE_NOTE_PARTITION_MIN_NOTES)
+    {
+      return partitionNoteDataMulticore(noteData, startTime, workerCount);
+    }
+    #end
+    return partitionNoteDataChunk(noteData, 0, noteData.length, startTime);
+  }
+
+  function partitionNoteDataChunk(noteData:Array<SongNoteData>, startIndex:Int, endIndex:Int, startTime:Float):NotePartitionResult
+  {
     var playerNoteData:Array<SongNoteData> = [];
     var opponentNoteData:Array<SongNoteData> = [];
+    var scoreablePlayerNotes:Int = 0;
 
-    for (songNote in builtNoteData)
+    for (i in startIndex...endIndex)
     {
-      var strumTime:Float = songNote.time;
-      if (strumTime < startTime) continue; // Skip notes that are before the start time.
+      var songNote:Null<SongNoteData> = noteData[i];
+      if (songNote == null) continue;
+      if (songNote.time < startTime) continue;
 
-      var scoreable = true;
+      var scoreable:Bool = true;
       if (songNote.kind != null)
       {
         var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(songNote.kind ?? '');
         if (noteKind != null) scoreable = noteKind.scoreable;
       }
 
-      var noteData:Int = songNote.getDirection();
-      var playerNote:Bool = true;
-
-      if (noteData > 3) playerNote = false;
-
       switch (songNote.getStrumlineIndex())
       {
         case 0:
           playerNoteData.push(songNote);
-          // increment totalNotes for total possible notes able to be hit by the player
-          if (scoreable) Highscore.tallies.totalNotes++;
+          if (scoreable) scoreablePlayerNotes++;
         case 1:
           opponentNoteData.push(songNote);
       }
     }
 
-    playerStrumline.applyNoteData(playerNoteData);
-    opponentStrumline.applyNoteData(opponentNoteData);
+    return {
+      playerNotes: playerNoteData,
+      opponentNotes: opponentNoteData,
+      scoreablePlayerNotes: scoreablePlayerNotes
+    };
   }
+
+  #if (cpp || hl || neko)
+  function partitionNoteDataMulticore(noteData:Array<SongNoteData>, startTime:Float, workerCount:Int):NotePartitionResult
+  {
+    var chunkSize:Int = Std.int(Math.ceil(noteData.length / workerCount));
+    if (chunkSize <= 0) return partitionNoteDataChunk(noteData, 0, noteData.length, startTime);
+
+    var mainThread:Thread = Thread.current();
+    // Tag worker messages so this call reads only its own results.
+    var token:Int = Std.int(haxe.Timer.stamp() * 1000);
+    var pending:Int = 0;
+    var results:Array<Null<NotePartitionResult>> = [];
+
+    for (workerIndex in 0...workerCount)
+    {
+      var chunkStart:Int = workerIndex * chunkSize;
+      if (chunkStart >= noteData.length) break;
+
+      var chunkEnd:Int = Std.int(Math.min(noteData.length, chunkStart + chunkSize));
+      var slot:Int = pending;
+      pending++;
+      results.push(null);
+
+      Thread.create(() -> {
+        var chunk:NotePartitionResult = partitionNoteDataChunk(noteData, chunkStart, chunkEnd, startTime);
+        var message:NotePartitionWorkerMessage =
+          {
+            token: token,
+            slot: slot,
+            playerNotes: chunk.playerNotes,
+            opponentNotes: chunk.opponentNotes,
+            scoreablePlayerNotes: chunk.scoreablePlayerNotes
+          };
+        mainThread.sendMessage(message);
+      });
+    }
+
+    if (pending == 0) return partitionNoteDataChunk(noteData, 0, noteData.length, startTime);
+
+    var received:Int = 0;
+    while (received < pending)
+    {
+      var message:Dynamic = Thread.readMessage(true);
+      // Skip unrelated thread messages.
+      if (message == null) continue;
+      if (!Reflect.hasField(message, "token")) continue;
+      if ((cast message.token : Int) != token) continue;
+
+      var typedMessage:NotePartitionWorkerMessage = cast message;
+      results[typedMessage.slot] =
+        {
+          playerNotes: typedMessage.playerNotes,
+          opponentNotes: typedMessage.opponentNotes,
+          scoreablePlayerNotes: typedMessage.scoreablePlayerNotes
+        };
+      received++;
+    }
+
+    var playerMerged:Array<SongNoteData> = [];
+    var opponentMerged:Array<SongNoteData> = [];
+    var scoreableMerged:Int = 0;
+
+    for (result in results)
+    {
+      if (result == null) continue;
+      playerMerged = playerMerged.concat(result.playerNotes);
+      opponentMerged = opponentMerged.concat(result.opponentNotes);
+      scoreableMerged += result.scoreablePlayerNotes;
+    }
+
+    return {
+      playerNotes: playerMerged,
+      opponentNotes: opponentMerged,
+      scoreablePlayerNotes: scoreableMerged
+    };
+  }
+
+  function getMulticoreNotePartitionWorkerCount():Int
+  {
+    if (multicoreNotePartitionWorkerCount >= 0) return multicoreNotePartitionWorkerCount;
+
+    var processorCount:Int = 1;
+    // NUMBER_OF_PROCESSORS is the cheapest native core-count hint on Windows.
+    var processorCountRaw:Null<String> = Sys.getEnv("NUMBER_OF_PROCESSORS");
+    if (processorCountRaw != null)
+    {
+      var parsed:Null<Int> = Std.parseInt(processorCountRaw);
+      if (parsed != null && parsed > 0) processorCount = parsed;
+    }
+
+    multicoreNotePartitionWorkerCount = Std.int(Math.max(1, Math.min(MULTICORE_NOTE_PARTITION_MAX_WORKERS, processorCount - 1)));
+    return multicoreNotePartitionWorkerCount;
+  }
+  #end
 
   function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
   {
@@ -2649,6 +2734,46 @@ class PlayState extends MusicBeatSubState
   /**
      * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
+  function updateConductor(elapsed:Float):Void
+  {
+    if (startingSong)
+    {
+      if (!isInCountdown) return;
+
+      Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
+      if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
+      {
+        startSong();
+      }
+      return;
+    }
+
+    if (Constants.EXT_SOUND == 'mp3')
+    {
+      Conductor.instance.formatOffset = Constants.MP3_DELAY_MS;
+    }
+    else
+    {
+      Conductor.instance.formatOffset = 0.0;
+    }
+
+    if (FlxG.sound.music != null && FlxG.sound.music.playing)
+    {
+      Conductor.instance.update(getMusicPlaybackTime(), true);
+    }
+  }
+
+  function getMusicPlaybackTime():Float
+  {
+    var music = FlxG.sound.music;
+    if (music == null) return 0.0;
+
+    @:privateAccess
+    if (music._channel != null) return music._channel.position;
+
+    return music.time;
+  }
+
   function resyncVocals():Void
   {
     if (vocals == null) return;
@@ -2711,6 +2836,7 @@ class PlayState extends MusicBeatSubState
     if (isGamePaused) return;
 
     // Do the minimal possible work here.
+    if (inputPressQueue.length >= MAX_INPUT_QUEUE) return;
     inputPressQueue.push(event);
   }
 
@@ -2720,6 +2846,7 @@ class PlayState extends MusicBeatSubState
   function onKeyRelease(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
+    if (inputReleaseQueue.length >= MAX_INPUT_QUEUE) return;
     inputReleaseQueue.push(event);
   }
 
@@ -2729,12 +2856,17 @@ class PlayState extends MusicBeatSubState
   function processNotes(elapsed:Float):Void
   {
     if (playerStrumline.notes?.members == null || opponentStrumline.notes?.members == null) return;
+    var conductor = Conductor.instance;
+    var stage = currentStage;
+    var opponentCharacter = stage?.getOpponent();
+    var dadCharacter = stage?.getDad();
+    var boyfriendCharacter = stage?.getBoyfriend();
 
     // Process notes on the opponent's side.
     for (note in opponentStrumline.notes.members)
     {
       if (note == null || !note.alive) continue;
-      var r = GRhythmUtil.processWindow(note, false);
+      var r = GRhythmUtil.processWindow(note, false, conductor);
       if (r.botplayHit)
       {
         var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
@@ -2763,9 +2895,9 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Make sure the opponent keeps singing while the note is held.
-        if (currentStage != null && currentStage.getDad() != null && currentStage.getDad().isSinging())
+        if (dadCharacter != null && dadCharacter.isSinging())
         {
-          currentStage.getDad().holdTimer = 0;
+          dadCharacter.holdTimer = 0;
         }
       }
 
@@ -2778,7 +2910,7 @@ class PlayState extends MusicBeatSubState
         {
           // We dropped a hold note.
           // Play miss animation, but don't penalize.
-          if (currentStage != null) currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+          if (opponentCharacter != null) opponentCharacter.playSingAnimation(holdNote.noteData.getDirection(), true);
         }
       }
     }
@@ -2787,7 +2919,7 @@ class PlayState extends MusicBeatSubState
     for (note in playerStrumline.notes.members)
     {
       if (note == null || !note.alive) continue;
-      var r = GRhythmUtil.processWindow(note, !isBotPlayMode);
+      var r = GRhythmUtil.processWindow(note, !isBotPlayMode, conductor);
       if (r.botplayHit)
       {
         // We call onHitNote to play the proper animations,
@@ -2854,9 +2986,9 @@ class PlayState extends MusicBeatSubState
         }
 
         // Make sure the player keeps singing while the note is held by the bot.
-        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
+        if (isBotPlayMode && boyfriendCharacter != null && boyfriendCharacter.isSinging())
         {
-          currentStage.getBoyfriend().holdTimer = 0;
+          boyfriendCharacter.holdTimer = 0;
         }
       }
 
@@ -2871,39 +3003,42 @@ class PlayState extends MusicBeatSubState
 
         if (!isBotPlayMode && holdNote.scoreable)
         {
-          if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
+          var releaseRemainingMs:Float = (holdNote.strumTime + holdNote.fullSustainLength) - Conductor.instance.songPosition;
+          if (releaseRemainingMs < 0) releaseRemainingMs = 0;
+          if (releaseRemainingMs <= HOLD_RELEASE_PERFECT_WINDOW_MS) continue;
+
+          var releasePenaltyScale:Float = 1.0;
+          var releaseComboBreak:Bool = true;
+          if (releaseRemainingMs <= HOLD_RELEASE_GOOD_WINDOW_MS)
           {
-            // Penalize the player for letting go of a hold note too early.
-            trace('Player dropped a hold note, penalizing... (has hit: ${holdNote.hitNote})');
-
-            // Different penalty based on whether the note itself was missed,
-            // or the note was hit and then the hold was dropped.
-            var remainingLengthSec = holdNote.sustainLength / Constants.MS_PER_SEC;
-            var healthChangeUncapped = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND;
-            // If the base note of the hold was missed, don't penalize them more on top of that.
-            var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
-            var healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
-            var scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
-
-            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
-            dispatchEvent(event);
-
-            // Calling event.cancelEvent() skips all the other logic! Neat!
-            if (event.eventCanceled) continue;
-
-            trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
-            applyScore(event.score, '', event.healthChange, event.isComboBreak);
-
-            // Play the miss sound.
-            if (event.playSound)
-            {
-              if (vocals != null) vocals.playerVolume = 0;
-              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
-            }
+            releasePenaltyScale = HOLD_RELEASE_GOOD_PENALTY_SCALE;
+            releaseComboBreak = false;
           }
-          else
+          else if (releaseRemainingMs <= HOLD_RELEASE_BAD_WINDOW_MS)
           {
-            trace('Hold note too short, not penalizing...');
+            releasePenaltyScale = HOLD_RELEASE_BAD_PENALTY_SCALE;
+          }
+
+          var remainingLengthSec:Float = releaseRemainingMs / Constants.MS_PER_SEC;
+          var healthChangeUncapped:Float = remainingLengthSec * Constants.HEALTH_HOLD_DROP_PENALTY_PER_SECOND * releasePenaltyScale;
+          var healthChangeMax:Float = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
+          var healthChange:Float = healthChangeUncapped.clamp(healthChangeMax, 0);
+          var scoreChange:Int = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec * releasePenaltyScale);
+
+          var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, releaseComboBreak, Highscore.tallies.combo);
+          event.playSound = releaseComboBreak;
+          dispatchEvent(event);
+
+          // Calling event.cancelEvent() skips all the other logic! Neat!
+          if (event.eventCanceled) continue;
+
+          applyScore(event.score, '', event.healthChange, event.isComboBreak);
+
+          // Play the miss sound.
+          if (event.playSound)
+          {
+            if (vocals != null) vocals.playerVolume = 0;
+            FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
           }
         }
       }
@@ -2938,110 +3073,324 @@ class PlayState extends MusicBeatSubState
   {
     if (inputPressQueue.length + inputReleaseQueue.length == 0) return;
 
-    // Ignore inputs during cutscenes.
     if (isInCutscene || disableKeys)
     {
-      inputPressQueue = [];
-      inputReleaseQueue = [];
+      inputPressQueue.resize(0);
+      inputReleaseQueue.resize(0);
       return;
     }
 
-    // Generate a list of notes within range.
-    var notesInRange:Array<NoteSprite> = playerStrumline.getNotesMayHit();
+    var currentTimestamp:Int64 = PreciseInputManager.getCurrentTimestamp();
+    var currentSongPos:Float = getMusicPlaybackTime() + Conductor.instance.combinedOffset;
+    var currentSongRate:Float = FlxG.sound.music?.pitch ?? playbackRate;
+    if (currentSongRate <= 0) currentSongRate = 1.0;
+    // Expand ghost sub-window a bit so near-edge taps are not frame-order dependent.
+    var ghostTapSubWindowMs:Float = Constants.HIT_WINDOW_MS + GHOST_TAP_SUB_ACCURACY_MS;
 
-    var notesByDirection:Array<Array<NoteSprite>> = [[], [], [], []];
-
-    for (note in notesInRange)
-      notesByDirection[note.direction].push(note);
-
-    while (inputPressQueue.length > 0)
+    var notesByDirection = inputNotesByDirection;
+    for (bucket in notesByDirection)
     {
-      var input:Null<PreciseInputEvent> = inputPressQueue.shift();
-      if (input == null) continue;
+      bucket.resize(0);
+    }
+    for (note in playerStrumline.notes.members)
+    {
+      if (note == null || !note.alive || note.hasBeenHit || note.hasMissed || note.handledMiss) continue;
+      notesByDirection[note.direction].push(note);
+    }
+    // Sort by timestamp so identical input bursts resolve the same way every frame.
+    if (inputPressQueue.length > 1) inputPressQueue.sort(comparePreciseInputEventTimestamp);
 
-      // Whether this direction is already held by another key.
+    for (input in inputPressQueue)
+    {
       var isAlreadyHeld = playerStrumline.isKeyHeld(input.noteDirection);
+      var eventSongPos:Float = mapInputTimestampToSongPosition(input.timestamp, currentTimestamp, currentSongPos, currentSongRate);
+      var laneEventSongPos:Float = eventSongPos + Preferences.getLaneOffset(input.noteDirection);
 
       playerStrumline.pressKey(input.noteDirection, input.keyCode);
 
-      // Don't credit or penalize inputs in Bot Play.
       if (isBotPlayMode) continue;
 
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
-      #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0 && !isAlreadyHeld)
-      #else
-      if (notesInDirection.length == 0 && !isAlreadyHeld)
-      #end
+      if (notesInDirection.length == 0 || !hasHittableNoteInDirectionAt(notesInDirection, laneEventSongPos))
       {
-        // Pressed a wrong key with no notes nearby.
-        // Perform a ghost miss (anti-spam).
-        ghostNoteMiss(input.noteDirection, notesInRange.length > 0);
+        if (!isAlreadyHeld)
+        {
+          var ghostTapProximityAny:Int = classifyGhostTapProximity(notesByDirection, eventSongPos, ghostTapSubWindowMs);
+          var ghostTapProximityDir:Int = classifyGhostTapProximityInDirection(notesInDirection, laneEventSongPos, ghostTapSubWindowMs);
+          var hasPossibleNotes:Bool = ghostTapProximityAny == GHOST_TAP_PROXIMITY_HITTABLE;
+          var hasPossibleNotesInDirection:Bool = ghostTapProximityDir == GHOST_TAP_PROXIMITY_HITTABLE;
+          var hasSubAccuracyNotesInDirection:Bool = ghostTapProximityDir == GHOST_TAP_PROXIMITY_SUB;
+          var wrongLaneLockout:Bool = hasWrongLaneLockoutNote(notesByDirection, input.noteDirection, eventSongPos);
+          if (shouldTriggerGhostMiss(input.noteDirection, hasPossibleNotesInDirection, hasSubAccuracyNotesInDirection, wrongLaneLockout, eventSongPos))
+          {
+            ghostNoteMiss(input.noteDirection, hasPossibleNotes);
+          }
+        }
 
-        // Play the strumline animation.
         playerStrumline.playPress(input.noteDirection);
-        trace('PENALTY Score: ${songScore}');
+        continue;
       }
-    else if (notesInDirection.length == 0)
-    {
-      // Press a key with no penalty.
 
-      // Play the strumline animation.
-      playerStrumline.playPress(input.noteDirection);
-      trace('NO PENALTY Score: ${songScore}');
-    }
-    else
-    {
-      // Choose the first note, deprioritizing low priority notes.
-      var targetNote:Null<NoteSprite> = notesInDirection.find((note) -> !note.lowPriority);
-      if (targetNote == null) targetNote = notesInDirection[0];
-      if (targetNote == null) continue;
+      var targetNote:Null<NoteSprite> = null;
+      var targetAbsDiff:Float = Math.POSITIVE_INFINITY;
+      var windowStart:Float = laneEventSongPos - Constants.HIT_WINDOW_MS;
+      var windowEnd:Float = laneEventSongPos + Constants.HIT_WINDOW_MS;
+      for (note in notesInDirection)
+      {
+        if (note == null || !note.alive || note.hasBeenHit || note.hasMissed || note.handledMiss) continue;
+        if (note.strumTime < windowStart || note.strumTime > windowEnd) continue;
+        var absDiff:Float = Math.abs(laneEventSongPos - note.strumTime);
 
-      // Judge and hit the note.
-      // trace('Hit note! ${targetNote.noteData}');
-      goodNoteHit(targetNote, input);
-      // trace('Score: ${songScore}');
+        if (targetNote == null)
+        {
+          targetNote = note;
+          targetAbsDiff = absDiff;
+          continue;
+        }
+
+        if (!note.lowPriority && targetNote.lowPriority)
+        {
+          targetNote = note;
+          targetAbsDiff = absDiff;
+          continue;
+        }
+
+        if (note.lowPriority == targetNote.lowPriority)
+        {
+          if (absDiff < targetAbsDiff || (absDiff == targetAbsDiff && note.strumTime < targetNote.strumTime))
+          {
+            targetNote = note;
+            targetAbsDiff = absDiff;
+          }
+        }
+      }
+      if (targetNote == null)
+      {
+        if (!isAlreadyHeld)
+        {
+          var ghostTapProximityAny:Int = classifyGhostTapProximity(notesByDirection, eventSongPos, ghostTapSubWindowMs);
+          var ghostTapProximityDir:Int = classifyGhostTapProximityInDirection(notesInDirection, laneEventSongPos, ghostTapSubWindowMs);
+          var hasPossibleNotes:Bool = ghostTapProximityAny == GHOST_TAP_PROXIMITY_HITTABLE;
+          var hasPossibleNotesInDirection:Bool = ghostTapProximityDir == GHOST_TAP_PROXIMITY_HITTABLE;
+          var hasSubAccuracyNotesInDirection:Bool = ghostTapProximityDir == GHOST_TAP_PROXIMITY_SUB;
+          var wrongLaneLockout:Bool = hasWrongLaneLockoutNote(notesByDirection, input.noteDirection, eventSongPos);
+          if (shouldTriggerGhostMiss(input.noteDirection, hasPossibleNotesInDirection, hasSubAccuracyNotesInDirection, wrongLaneLockout, eventSongPos))
+          {
+            ghostNoteMiss(input.noteDirection, hasPossibleNotes);
+          }
+        }
+        playerStrumline.playPress(input.noteDirection);
+        continue;
+      }
+
+      goodNoteHit(targetNote, laneEventSongPos);
 
       notesInDirection.remove(targetNote);
-
-      // Play the strumline animation.
       playerStrumline.playConfirm(input.noteDirection);
     }
-    }
+    inputPressQueue.resize(0);
 
-    while (inputReleaseQueue.length > 0)
+    for (input in inputReleaseQueue)
     {
-      var input:Null<PreciseInputEvent> = inputReleaseQueue.shift();
-      if (input == null) continue;
-
-      // Play the strumline animation.
       playerStrumline.playStatic(input.noteDirection);
-
       playerStrumline.releaseKey(input.noteDirection, input.keyCode);
     }
+    inputReleaseQueue.resize(0);
 
     playerStrumline.noteVibrations.tryNoteVibration();
   }
 
-  function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
+  inline static function comparePreciseInputEventTimestamp(a:PreciseInputEvent, b:PreciseInputEvent):Int
   {
-    // Calculate the input latency (do this as late as possible).
-    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
-    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
-    var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
-    // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
+    // Tie-break key order so same-timestamp presses are deterministic.
+    var aTimestamp:Float = a.timestamp.toFloat();
+    var bTimestamp:Float = b.timestamp.toFloat();
+    if (aTimestamp < bTimestamp) return -1;
+    if (aTimestamp > bTimestamp) return 1;
 
-    // Get the offset and compensate for input latency.
-    // Round inward (trim remainder) for consistency.
-    var diff:Float = Conductor.instance.songPosition - note.noteData.time;
+    var aDirection:Int = cast a.noteDirection;
+    var bDirection:Int = cast b.noteDirection;
+    if (aDirection < bDirection) return -1;
+    if (aDirection > bDirection) return 1;
 
-    var totalDiff:Float = diff;
-    if (diff < 0) totalDiff = diff + inputLatencyMs;
-    else
-      totalDiff = diff - inputLatencyMs;
+    var aKeyCode:Int = cast a.keyCode;
+    var bKeyCode:Int = cast b.keyCode;
+    if (aKeyCode < bKeyCode) return -1;
+    if (aKeyCode > bKeyCode) return 1;
+    return 0;
+  }
 
-    var noteDiff:Int = Std.int(totalDiff);
+  inline function mapInputTimestampToSongPosition(inputTimestamp:Int64, currentTimestamp:Int64, currentSongPos:Float, currentSongRate:Float):Float
+  {
+    var inputAgeMs:Float = Math.max(0.0, (currentTimestamp - inputTimestamp).toFloat() / Constants.NS_PER_MS) * currentSongRate;
+    return currentSongPos - inputAgeMs;
+  }
+
+  function hasHittableNoteInDirectionAt(notes:Array<NoteSprite>, eventSongPos:Float):Bool
+  {
+    var windowStart:Float = eventSongPos - Constants.HIT_WINDOW_MS;
+    var windowEnd:Float = eventSongPos + Constants.HIT_WINDOW_MS;
+
+    for (note in notes)
+    {
+      if (note == null || !note.alive || note.hasBeenHit || note.hasMissed || note.handledMiss) continue;
+      if (note.strumTime < windowStart || note.strumTime > windowEnd) continue;
+      return true;
+    }
+
+    return false;
+  }
+
+  function classifyGhostTapProximity(notesByDirection:Array<Array<NoteSprite>>, eventSongPos:Float, subWindowMs:Float):Int
+  {
+    for (notes in notesByDirection)
+    {
+      var proximity:Int = classifyGhostTapProximityInDirection(notes, eventSongPos, subWindowMs);
+      if (proximity == GHOST_TAP_PROXIMITY_HITTABLE) return GHOST_TAP_PROXIMITY_HITTABLE;
+      if (proximity == GHOST_TAP_PROXIMITY_SUB) return GHOST_TAP_PROXIMITY_SUB;
+    }
+
+    return GHOST_TAP_PROXIMITY_NONE;
+  }
+
+  function classifyGhostTapProximityInDirection(notes:Array<NoteSprite>, eventSongPos:Float, subWindowMs:Float):Int
+  {
+    // Keep protection lane-local so other lanes cannot hide wrong-lane spam.
+    var hitWindowStart:Float = eventSongPos - Constants.HIT_WINDOW_MS;
+    var hitWindowEnd:Float = eventSongPos + Constants.HIT_WINDOW_MS;
+    var subWindowStart:Float = eventSongPos - subWindowMs;
+    var subWindowEnd:Float = eventSongPos + subWindowMs;
+
+    var hasSubAccuracyNote:Bool = false;
+    for (note in notes)
+    {
+      if (note == null || !note.alive || note.hasBeenHit || note.hasMissed || note.handledMiss) continue;
+      if (note.strumTime < subWindowStart || note.strumTime > subWindowEnd) continue;
+      if (note.strumTime >= hitWindowStart && note.strumTime <= hitWindowEnd) return GHOST_TAP_PROXIMITY_HITTABLE;
+      hasSubAccuracyNote = true;
+    }
+
+    return hasSubAccuracyNote ? GHOST_TAP_PROXIMITY_SUB : GHOST_TAP_PROXIMITY_NONE;
+  }
+
+  function hasWrongLaneLockoutNote(notesByDirection:Array<Array<NoteSprite>>, pressedDirection:NoteDirection, eventSongPos:Float):Bool
+  {
+    var lockoutWindowStart:Float = eventSongPos - WRONG_LANE_LOCKOUT_MS;
+    var lockoutWindowEnd:Float = eventSongPos + WRONG_LANE_LOCKOUT_MS;
+    var pressedLaneIndex:Int = cast pressedDirection;
+    for (laneIndex in 0...notesByDirection.length)
+    {
+      if (laneIndex == pressedLaneIndex) continue;
+      for (note in notesByDirection[laneIndex])
+      {
+        if (note == null || !note.alive || note.hasBeenHit || note.hasMissed || note.handledMiss) continue;
+        if (note.strumTime < lockoutWindowStart || note.strumTime > lockoutWindowEnd) continue;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  inline function resetGhostTapDirection(direction:NoteDirection):Void
+  {
+    var index:Int = direction;
+    ghostTapBurstCount[index] = 0;
+  }
+
+  inline static function countGhostTapSampledLanes(mask:Int):Int
+  {
+    // Count active sampled lanes so cross-lane mash can tighten global ghost thresholds.
+    var count:Int = 0;
+    if ((mask & 0x1) != 0) count++;
+    if ((mask & 0x2) != 0) count++;
+    if ((mask & 0x4) != 0) count++;
+    if ((mask & 0x8) != 0) count++;
+    return count;
+  }
+
+  function shouldTriggerGhostMiss(direction:NoteDirection, hasPossibleNotes:Bool, hasSubAccuracyNotes:Bool, wrongLaneLockout:Bool, eventSongPos:Float):Bool
+  {
+    var index:Int = direction;
+
+    if (hasPossibleNotes)
+    {
+      ghostTapBurstCount[index] = 0;
+      ghostTapGlobalBurstCount = 0;
+      ghostTapLaneSampleMask = 0;
+      ghostTapLastPressSongPos[index] = eventSongPos;
+      ghostTapGlobalLastPressSongPos = eventSongPos;
+      return false;
+    }
+    if (hasSubAccuracyNotes)
+    {
+      ghostTapLaneSampleMask = 0;
+      ghostTapLastPressSongPos[index] = eventSongPos;
+      ghostTapGlobalLastPressSongPos = eventSongPos;
+      return false;
+    }
+    if (wrongLaneLockout)
+    {
+      ghostTapLastPressSongPos[index] = eventSongPos;
+      ghostTapGlobalLastPressSongPos = eventSongPos;
+      return false;
+    }
+
+    #if FEATURE_GHOST_TAPPING
+    if (playerStrumline.mayGhostTapDir(direction))
+    {
+      ghostTapBurstCount[index] = 0;
+      ghostTapGlobalBurstCount = 0;
+      ghostTapLaneSampleMask = 0;
+      ghostTapLastPressSongPos[index] = eventSongPos;
+      ghostTapGlobalLastPressSongPos = eventSongPos;
+      return false;
+    }
+    #end
+
+    var elapsedMs:Float = eventSongPos - ghostTapLastPressSongPos[index];
+    var elapsedGlobalMs:Float = eventSongPos - ghostTapGlobalLastPressSongPos;
+    ghostTapLastPressSongPos[index] = eventSongPos;
+    ghostTapGlobalLastPressSongPos = eventSongPos;
+
+    if (elapsedMs < 0 || elapsedMs > GHOST_TAP_SPAM_WINDOW_MS)
+    {
+      ghostTapBurstCount[index] = 0;
+    }
+    if (elapsedGlobalMs < 0 || elapsedGlobalMs > GHOST_TAP_SPAM_WINDOW_MS)
+    {
+      ghostTapGlobalBurstCount = 0;
+      ghostTapLaneSampleMask = 0;
+    }
+
+    ghostTapBurstCount[index]++;
+    ghostTapGlobalBurstCount++;
+    ghostTapLaneSampleMask |= (1 << index);
+
+    var directionExceeded:Bool = ghostTapBurstCount[index] >= GHOST_TAP_SPAM_COUNT;
+    var sampledLaneCount:Int = countGhostTapSampledLanes(ghostTapLaneSampleMask);
+    // Reduce global spam threshold when mashing spans multiple lanes.
+    var dynamicGlobalSpamCount:Int = GHOST_TAP_GLOBAL_SPAM_COUNT - (sampledLaneCount - 1);
+    if (dynamicGlobalSpamCount < GHOST_TAP_GLOBAL_MIN_SPAM_COUNT) dynamicGlobalSpamCount = GHOST_TAP_GLOBAL_MIN_SPAM_COUNT;
+    var globalExceeded:Bool = ghostTapGlobalBurstCount >= dynamicGlobalSpamCount;
+    if (!directionExceeded && !globalExceeded)
+    {
+      return false;
+    }
+
+    if (directionExceeded) ghostTapBurstCount[index] = GHOST_TAP_SPAM_COUNT - 1;
+    if (globalExceeded) ghostTapGlobalBurstCount = dynamicGlobalSpamCount - 1;
+    return true;
+  }
+
+  function goodNoteHit(note:NoteSprite, eventSongPos:Float):Void
+  {
+    resetGhostTapDirection(note.direction);
+    ghostTapGlobalBurstCount = 0;
+    ghostTapLaneSampleMask = 0;
+
+    var noteDiff:Float = eventSongPos - note.noteData.time;
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
@@ -3094,23 +3443,6 @@ class PlayState extends MusicBeatSubState
   {
     // If we are here, we already CALLED the onNoteMiss script hook!
 
-    if (!isPracticeMode)
-    {
-      // messy copy paste rn lol
-      var pressArray:Array<Bool> = [
-        controls.NOTE_LEFT_P,
-        controls.NOTE_DOWN_P,
-        controls.NOTE_UP_P,
-        controls.NOTE_RIGHT_P
-      ];
-
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
-      {
-        if (pressArray[i]) indices.push(i);
-      }
-    }
-
     applyScore(Scoring.getMissScore(), 'miss', healthChange, true);
 
     if (playSound)
@@ -3142,22 +3474,6 @@ class PlayState extends MusicBeatSubState
 
     health += event.healthChange;
     songScore += event.scoreChange;
-
-    if (!isPracticeMode)
-    {
-      var pressArray:Array<Bool> = [
-        controls.NOTE_LEFT_P,
-        controls.NOTE_DOWN_P,
-        controls.NOTE_UP_P,
-        controls.NOTE_RIGHT_P
-      ];
-
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
-      {
-        if (pressArray[i]) indices.push(i);
-      }
-    }
 
     if (event.playSound)
     {
@@ -3676,6 +3992,33 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
+    if (cleanupPerformed) return;
+    cleanupPerformed = true;
+
+    if (preciseInputsInitialized)
+    {
+      PreciseInputManager.instance.onInputPressed.remove(onKeyPress);
+      PreciseInputManager.instance.onInputReleased.remove(onKeyRelease);
+      preciseInputsInitialized = false;
+    }
+
+    if (playerStrumline != null) playerStrumline.onNoteIncoming.remove(onStrumlineNoteIncoming);
+    if (opponentStrumline != null) opponentStrumline.onNoteIncoming.remove(onStrumlineNoteIncoming);
+
+    inputPressQueue.resize(0);
+    inputReleaseQueue.resize(0);
+    ghostTapBurstCount = [0, 0, 0, 0];
+    ghostTapLastPressSongPos = [-1000000.0, -1000000.0, -1000000.0, -1000000.0];
+    ghostTapGlobalBurstCount = 0;
+    ghostTapLaneSampleMask = 0;
+    ghostTapGlobalLastPressSongPos = -1000000.0;
+    for (bucket in inputNotesByDirection)
+    {
+      bucket.resize(0);
+    }
+
+    if (FlxG.sound.music != null) FlxG.sound.music.onComplete = function() {};
+
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 
@@ -3684,8 +4027,10 @@ class PlayState extends MusicBeatSubState
 
     if (currentConversation != null)
     {
+      currentConversation.completeCallback = null;
       remove(currentConversation);
       currentConversation.kill();
+      currentConversation = null;
     }
 
     if (currentChart != null)
@@ -3716,6 +4061,7 @@ class PlayState extends MusicBeatSubState
         remove(vocals);
       }
     }
+    vocals = null;
 
     forEachPausedSound((s) -> s.destroy());
 
@@ -4076,7 +4422,7 @@ class PlayState extends MusicBeatSubState
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
     if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
 
-    Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
+    Conductor.instance.update(getMusicPlaybackTime());
 
     resyncVocals();
   }

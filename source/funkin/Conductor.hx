@@ -106,14 +106,14 @@ class Conductor
    */
   public var songPosition(default, null):Float = 0;
 
-  /**
-   * The offset between frame time and music time.
-   * Used in `getTimeWithDelta()` to get a more accurate music time when on higher framerates.
-   */
+  // Legacy delta field kept for compatibility with existing code paths.
   var songPositionDelta(default, null):Float = 0;
 
   var prevTimestamp:Float = 0;
   var prevTime:Float = 0;
+
+  // Cache the active time-change index so update() doesn't rescan from 0 each frame.
+  var _lastTimeChangeIdx:Int = 0;
 
   /**
    * Beats per minute of the current song at the current time.
@@ -283,7 +283,7 @@ class Conductor
 
   function get_globalOffset():Int
   {
-    return Preferences.globalOffset;
+    return 0;
   }
 
   function get_audioVisualOffset():Int
@@ -437,8 +437,7 @@ class Conductor
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
-      this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, currentLength);
-      this.songPositionDelta += FlxG.elapsed * 1000 * FlxG.sound.music.pitch;
+      this.songPosition = songPos.clamp(Math.min(this.combinedOffset, 0), currentLength);
     }
     else
     {
@@ -448,11 +447,17 @@ class Conductor
     // Set the song position we are at (for purposes of calculating note positions, etc).
 
     currentTimeChange = timeChanges[0];
+    // If we seeked backward, reset the cached index to rescan from the start.
+    if (this.songPosition < prevTime) _lastTimeChangeIdx = 0;
     if (this.songPosition > 0.0)
     {
-      for (i in 0...timeChanges.length)
+      for (i in _lastTimeChangeIdx...timeChanges.length)
       {
-        if (this.songPosition >= timeChanges[i].timeStamp) currentTimeChange = timeChanges[i];
+        if (this.songPosition >= timeChanges[i].timeStamp)
+        {
+          currentTimeChange = timeChanges[i];
+          _lastTimeChangeIdx = i;
+        }
 
         if (this.songPosition < timeChanges[i].timeStamp) break;
       }
@@ -468,7 +473,10 @@ class Conductor
       this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
         + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
-      this.currentMeasureTime = getTimeInMeasures(this.songPosition);
+      // Compute measure time here to avoid an extra time-change scan.
+      var tcStepLengthMs:Float = (((Constants.SECS_PER_MIN / currentTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / currentTimeChange.timeSignatureDen)) / Constants.STEPS_PER_BEAT;
+      var tcStepsPerMeasure:Int = currentTimeChange.timeSignatureNum * Constants.STEPS_PER_BEAT;
+      this.currentMeasureTime = currentStepTime / tcStepsPerMeasure;
       this.currentStep = Math.floor(currentStepTime);
       this.currentBeat = Math.floor(currentBeatTime);
       this.currentMeasure = Math.floor(currentMeasureTime);
@@ -508,7 +516,7 @@ class Conductor
 
       // Update the timestamp for use in-between frames
       prevTime = this.songPosition;
-      prevTimestamp = Std.int(Timer.stamp() * 1000);
+      prevTimestamp = Timer.stamp() * 1000;
     }
 
     if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
@@ -520,7 +528,14 @@ class Conductor
    */
   public function getTimeWithDelta():Float
   {
-    return this.songPosition + this.songPositionDelta;
+    if (FlxG.sound.music == null || !FlxG.sound.music.playing || prevTimestamp <= 0)
+    {
+      return this.songPosition;
+    }
+
+    var now:Float = Timer.stamp() * 1000;
+    var delta:Float = (now - prevTimestamp) * FlxG.sound.music.pitch;
+    return this.songPosition + delta;
   }
 
   /**
@@ -534,9 +549,11 @@ class Conductor
   public function getTimeWithDiff(?soundToCheck:FlxSound):Float
   {
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;
+    // Guard against missing audio channel before reading raw playback position.
+    if (soundToCheck == null || @:privateAccess soundToCheck._channel == null) return this.songPosition;
 
     @:privateAccess
-    this.songPosition = soundToCheck._channel.position;
+    this.songPosition = (soundToCheck._channel.position + combinedOffset).clamp(Math.min(combinedOffset, 0), soundToCheck.length);
     return this.songPosition;
   }
 
@@ -547,6 +564,7 @@ class Conductor
   public function mapTimeChanges(songTimeChanges:Array<SongTimeChange>):Void
   {
     timeChanges = [];
+    _lastTimeChangeIdx = 0;
 
     // Sort in place just in case it's out of order.
     SongDataUtils.sortTimeChanges(songTimeChanges);

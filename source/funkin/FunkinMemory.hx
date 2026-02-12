@@ -3,6 +3,10 @@ package funkin;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.save.Save;
+import funkin.util.HardwareProfileUtil;
+import funkin.util.HardwareProfileUtil.HardwareSnapshot;
+import funkin.util.HardwareProfileUtil.RuntimeCacheProfile;
 import openfl.utils.AssetType;
 import openfl.Assets;
 import openfl.system.System;
@@ -27,13 +31,87 @@ class FunkinMemory
   static var previousCachedSounds:Map<String, Sound> = [];
 
   static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
+  public static var runtimeHardware(default, null):Null<HardwareSnapshot> = null;
+  public static var runtimeCacheProfile(default, null):RuntimeCacheProfile = BALANCED;
+
+  static var shouldWarmGpuTextures:Bool = true;
+  static var aggressivePurge:Bool = false;
+  static var uiTexturePrecacheLimit:Int = 240;
+  static var countdownSoundPrecacheLimit:Int = 40;
+
+  static inline function ensureRuntimeProfileConfigured():Void
+  {
+    if (runtimeHardware == null) configureRuntimeCacheProfile();
+  }
+
+  static function chooseConfiguredCacheProfile(snapshot:HardwareSnapshot):RuntimeCacheProfile
+  {
+    var mode:String = Save?.instance?.options?.memoryProfile ?? "Auto";
+    return switch (mode)
+    {
+      case "GPU Heavy":
+        GPU_HEAVY;
+      case "Balanced":
+        BALANCED;
+      case "RAM Saver":
+        RAM_SAVER;
+      default:
+        HardwareProfileUtil.chooseCacheProfile(snapshot);
+    };
+  }
+
+  public static function configureRuntimeCacheProfile():Void
+  {
+    runtimeHardware = HardwareProfileUtil.snapshot();
+    runtimeCacheProfile = chooseConfiguredCacheProfile(runtimeHardware);
+
+    // Tune cache aggressiveness based on the selected runtime profile.
+    switch (runtimeCacheProfile)
+    {
+      case GPU_HEAVY:
+        shouldWarmGpuTextures = true;
+        aggressivePurge = false;
+        uiTexturePrecacheLimit = -1;
+        countdownSoundPrecacheLimit = -1;
+      case BALANCED:
+        shouldWarmGpuTextures = true;
+        aggressivePurge = false;
+        uiTexturePrecacheLimit = 240;
+        countdownSoundPrecacheLimit = 40;
+      case RAM_SAVER:
+        shouldWarmGpuTextures = false;
+        aggressivePurge = true;
+        uiTexturePrecacheLimit = 96;
+        countdownSoundPrecacheLimit = 16;
+    }
+
+    log('Runtime cache profile: ${runtimeCacheProfile}');
+    log('Renderer: ${runtimeHardware.rendererType} / ${runtimeHardware.driverInfo}');
+  }
+
+  static inline function getLibraryFromKey(key:String):Null<String>
+  {
+    var splitIndex:Int = key.indexOf(':');
+    if (splitIndex <= 0) return null;
+    return key.substring(0, splitIndex);
+  }
+
+  static inline function isLibraryLoadedForKey(key:String):Bool
+  {
+    var library:Null<String> = getLibraryFromKey(key);
+    return library == null || Assets.getLibrary(library) != null;
+  }
 
   /**
    * Caches textures that are always required.
    */
   public static inline function initialCache():Void
   {
+    ensureRuntimeProfileConfigured();
+    var hasSharedLibrary:Bool = Assets.getLibrary("shared") != null;
     var allImages:Array<String> = Assets.list();
+    var cachedUiTextureCount:Int = 0;
+    var cachedCountdownSoundCount:Int = 0;
 
     for (file in allImages)
     {
@@ -45,19 +123,24 @@ class FunkinMemory
       }
 
       file = file.replace(" ", ""); // Handle stray spaces.
+      if (uiTexturePrecacheLimit >= 0 && cachedUiTextureCount >= uiTexturePrecacheLimit) break;
 
-      if (file.contains("shared") || Assets.exists('shared:$file', AssetType.IMAGE))
+      if (file.contains("shared") || (hasSharedLibrary && Assets.exists('shared:$file', AssetType.IMAGE)))
       {
         file = 'shared:$file';
       }
       permanentCacheTexture(file);
+      cachedUiTextureCount++;
     }
 
     permanentCacheTexture(Paths.image("healthBar"));
     permanentCacheTexture(Paths.image("menuDesat"));
-    permanentCacheTexture(Paths.image("notes", "shared"));
-    permanentCacheTexture(Paths.image("noteSplashes", "shared"));
-    permanentCacheTexture(Paths.image("noteStrumline", "shared"));
+    if (hasSharedLibrary)
+    {
+      permanentCacheTexture(Paths.image("notes", "shared"));
+      permanentCacheTexture(Paths.image("noteSplashes", "shared"));
+      permanentCacheTexture(Paths.image("noteStrumline", "shared"));
+    }
     permanentCacheTexture(Paths.image("NOTE_hold_assets"));
     // dude
     permanentCacheTexture(Paths.image("fonts/bold", null));
@@ -71,13 +154,15 @@ class FunkinMemory
       if (!file.endsWith(".ogg") || !file.contains("countdown/")) continue;
 
       file = file.replace(" ", "");
+      if (countdownSoundPrecacheLimit >= 0 && cachedCountdownSoundCount >= countdownSoundPrecacheLimit) break;
 
-      if (file.contains("shared") || Assets.exists('shared:$file', AssetType.SOUND))
+      if (file.contains("shared") || (hasSharedLibrary && Assets.exists('shared:$file', AssetType.SOUND)))
       {
         file = 'shared:$file';
       }
 
       permanentCacheSound(file);
+      cachedCountdownSoundCount++;
     }
 
     permanentCacheSound(Paths.sound("cancelMenu"));
@@ -90,9 +175,12 @@ class FunkinMemory
     permanentCacheSound(Paths.music("freakyMenu/freakyMenu"));
     permanentCacheSound(Paths.music("offsetsLoop/offsetsLoop"));
     permanentCacheSound(Paths.music("offsetsLoop/drumsLoop"));
-    permanentCacheSound(Paths.sound("missnote1", "shared"));
-    permanentCacheSound(Paths.sound("missnote2", "shared"));
-    permanentCacheSound(Paths.sound("missnote3", "shared"));
+    if (hasSharedLibrary)
+    {
+      permanentCacheSound(Paths.sound("missnote1", "shared"));
+      permanentCacheSound(Paths.sound("missnote2", "shared"));
+      permanentCacheSound(Paths.sound("missnote3", "shared"));
+    }
   }
 
   /**
@@ -105,7 +193,7 @@ class FunkinMemory
     preparePurgeSoundCache();
     purgeSoundCache();
     #if (cpp || neko || hl)
-    if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
+    if (callGarbageCollector || aggressivePurge) funkin.util.MemoryUtil.collect(callGarbageCollector);
     #end
   }
 
@@ -127,6 +215,7 @@ class FunkinMemory
    */
   public static function cacheTexture(key:String):Void
   {
+    if (!isLibraryLoadedForKey(key)) return;
     if (currentCachedTextures.exists(key)) return;
 
     if (previousCachedTextures.exists(key))
@@ -148,7 +237,7 @@ class FunkinMemory
     log('Cached asset $key');
     graphic.persist = true;
     currentCachedTextures.set(key, graphic);
-    forceRender(graphic);
+    if (shouldWarmGpuTextures) forceRender(graphic);
   }
 
   /**
@@ -157,6 +246,7 @@ class FunkinMemory
    */
   static function permanentCacheTexture(key:String):Void
   {
+    if (!isLibraryLoadedForKey(key)) return;
     if (permanentCachedTextures.exists(key)) return;
 
     var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
@@ -169,7 +259,7 @@ class FunkinMemory
     log('Cached graphic $key');
     graphic.persist = true;
     permanentCachedTextures.set(key, graphic);
-    forceRender(graphic);
+    if (shouldWarmGpuTextures) forceRender(graphic);
     currentCachedTextures = permanentCachedTextures.copy();
   }
 
@@ -206,11 +296,65 @@ class FunkinMemory
     return null;
   }
 
+  // Estimate VRAM used by loaded textures.
+  public static function getEstimatedTextureVRAM():Float
+  {
+    var seenKeys:Map<String, Bool> = [];
+    var totalBytes:Float = 0.0;
+
+    var addGraphic = function(key:String, graphic:Null<FlxGraphic>):Void {
+      if (seenKeys.exists(key)) return;
+      seenKeys.set(key, true);
+      totalBytes += estimateGraphicVRAMBytes(graphic);
+    };
+
+    for (key in permanentCachedTextures.keys())
+    {
+      addGraphic(key, permanentCachedTextures.get(key));
+    }
+    for (key in currentCachedTextures.keys())
+    {
+      addGraphic(key, currentCachedTextures.get(key));
+    }
+    for (key in previousCachedTextures.keys())
+    {
+      addGraphic(key, previousCachedTextures.get(key));
+    }
+
+    @:privateAccess
+    if (FlxG.bitmap._cache != null)
+    {
+      @:privateAccess
+      for (key in FlxG.bitmap._cache.keys())
+      {
+        addGraphic(key, FlxG.bitmap.get(key));
+      }
+    }
+
+    return totalBytes;
+  }
+
+  static inline function estimateGraphicVRAMBytes(graphic:Null<FlxGraphic>):Float
+  {
+    var bitmap = graphic?.bitmap;
+    if (bitmap == null) return 0.0;
+
+    // Estimate bytes as RGBA plus mip overhead.
+    return bitmap.width * bitmap.height * 4.0 * 1.3333334;
+  }
+
   /**
    * Prepares the cache for purging unused textures.
    */
   public inline static function preparePurgeTextureCache():Void
   {
+    if (aggressivePurge)
+    {
+      previousCachedTextures = [];
+      currentCachedTextures = permanentCachedTextures.copy();
+      return;
+    }
+
     previousCachedTextures = currentCachedTextures.copy();
 
     for (graphicKey in previousCachedTextures.keys())
@@ -327,6 +471,7 @@ class FunkinMemory
 
   public static function cacheSound(key:String):Void
   {
+    if (!isLibraryLoadedForKey(key)) return;
     if (currentCachedSounds.exists(key)) return;
 
     if (previousCachedSounds.exists(key))
@@ -346,6 +491,7 @@ class FunkinMemory
 
   public static function permanentCacheSound(key:String):Void
   {
+    if (!isLibraryLoadedForKey(key)) return;
     if (permanentCachedSounds.exists(key)) return;
 
     var sound:Null<Sound> = Assets.getSound(key, true);
@@ -358,6 +504,13 @@ class FunkinMemory
 
   public static function preparePurgeSoundCache():Void
   {
+    if (aggressivePurge)
+    {
+      previousCachedSounds = [];
+      currentCachedSounds = permanentCachedSounds.copy();
+      return;
+    }
+
     previousCachedSounds = currentCachedSounds.copy();
 
     for (key in previousCachedSounds.keys())
@@ -395,6 +548,7 @@ class FunkinMemory
     Assets.cache.clear("music");
     // Felt lazy.
     var key = Paths.music("freakyMenu/freakyMenu");
+    if (!isLibraryLoadedForKey(key)) return;
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound != null)
     {
