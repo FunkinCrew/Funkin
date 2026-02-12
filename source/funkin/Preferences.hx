@@ -35,7 +35,6 @@ class Preferences
     return refreshRate;
     #else
     var value:Int = Save?.instance?.options?.framerate ?? 60;
-    if (Save?.instance?.options?.unlockedFramerate ?? false) return 1000;
     return Std.int(Math.max(30, Math.min(1000, value)));
     #end
   }
@@ -49,9 +48,8 @@ class Preferences
     var save:Save = Save.instance;
     save.options.framerate = clampedValue;
     Save.system.flush();
-    var appliedFramerate:Int = save.options.unlockedFramerate ? 1000 : clampedValue;
-    FlxG.updateFramerate = appliedFramerate;
-    FlxG.drawFramerate = appliedFramerate;
+    FlxG.updateFramerate = clampedValue;
+    FlxG.drawFramerate = clampedValue;
     return clampedValue;
     #end
   }
@@ -432,11 +430,6 @@ class Preferences
     {
       #if web
       toggleFramerateCap(value);
-      #elseif !mobile
-      var baseFramerate:Int = Std.int(Math.max(30, Math.min(1000, save.options.framerate)));
-      var appliedFramerate:Int = value ? 1000 : baseFramerate;
-      FlxG.updateFramerate = appliedFramerate;
-      FlxG.drawFramerate = appliedFramerate;
       #end
     }
 

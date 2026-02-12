@@ -170,8 +170,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.autoFullscreen);
     #end
 
-    #if !mobile
-    createPrefItemCheckbox('Uncapped FPS', 'When enabled, the framerate cap is raised to 1000.', function(value:Bool):Void {
+    #if html5
+    createPrefItemCheckbox('Uncapped FPS', 'When enabled, the game uncaps the framerate.', function(value:Bool):Void {
       Preferences.unlockedFramerate = value;
     }, Preferences.unlockedFramerate);
     #end
