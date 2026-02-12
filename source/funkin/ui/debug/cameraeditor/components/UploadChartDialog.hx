@@ -93,7 +93,7 @@ class UploadChartDialog extends Dialog
     if (selectedFile == null || selectedFile.bytes == null) return;
 
     var entires = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
-    if (entires == null || entires.length != 5)
+    if (entires == null)
     {
       CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
       this.hideDialog(DialogButton.APPLY);
@@ -102,10 +102,10 @@ class UploadChartDialog extends Dialog
 
     CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
 
-    this.cameraEditorState.songMetadatas = entires[0];
-    this.cameraEditorState.songDatas = entires[1];
-    this.cameraEditorState.audioInstTrackData = entires[3];
-    this.cameraEditorState.audioVocalTrackData = entires[4];
+    this.cameraEditorState.songMetadatas = entires.songMetadatas;
+    this.cameraEditorState.songDatas = entires.songChartDatas;
+    this.cameraEditorState.audioInstTrackData = entires.instrumentals;
+    this.cameraEditorState.audioVocalTrackData = entires.vocals;
     this.cameraEditorState.loadCurrentInstrumentalAndVocals();
     this.cameraEditorState.buildStage();
 
