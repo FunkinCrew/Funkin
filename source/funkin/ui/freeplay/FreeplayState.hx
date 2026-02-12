@@ -2001,6 +2001,7 @@ class FreeplayState extends MusicBeatSubState
       if (touch.pressed && _pressedOnCapsule)
       {
         final delta = touch.deltaViewY * framerateMultiplier;
+        if (!Math.isFinite(delta)) continue;
         if (Math.abs(delta) >= 2)
         {
           var dpiScale = FlxG.stage.window.display.dpi / 160;
