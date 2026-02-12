@@ -213,6 +213,14 @@ class ChartEditorEventSprite extends FlxSprite
     }
   }
 
+  override public function kill()
+  {
+    super.kill();
+
+    // Remove the tooltip to prevent recently deleted events from showing a tooltip.
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+  }
+
   /**
    * Return whether this event is currently visible.
    */
