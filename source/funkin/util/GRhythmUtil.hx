@@ -41,7 +41,9 @@ class GRhythmUtil
    */
   public static function mirrorNoteDirection(noteData:Int):Int
   {
-    return (noteData < Strumline.KEY_COUNT ? Strumline.KEY_COUNT : Strumline.KEY_COUNT * 2) - 1 - noteData % (Strumline.KEY_COUNT);
+    final MAX_KEY_VALUE:Int = (noteData < Strumline.KEY_COUNT ? Strumline.KEY_COUNT : Strumline.KEY_COUNT * 2);
+
+    return (MAX_KEY_VALUE - 1) - (noteData % Strumline.KEY_COUNT);
   }
 
   /**
