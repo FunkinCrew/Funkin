@@ -139,6 +139,7 @@ class ResultState extends MusicBeatSubState
     songName.letterSpacing = -15;
     songName.angle = -4.4;
     songName.zIndex = 1000;
+    songName.visible = false;
 
     difficulty = new FlxSprite(555 + FullScreenScaleMode.gameNotchSize.x);
     difficulty.zIndex = 1000;
@@ -343,7 +344,7 @@ class ResultState extends MusicBeatSubState
 
     blackTopBar.loadGraphic(funkin.util.BitmapUtil.createResultsBar());
     blackTopBar.y = -blackTopBar.height;
-    FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24});
+    FlxTween.tween(blackTopBar, {y: 0}, 7 / 24, {ease: FlxEase.quartOut, startDelay: 3 / 24, onComplete: _ -> songName.visible = true});
     blackTopBar.zIndex = 1010;
     add(blackTopBar);
 
