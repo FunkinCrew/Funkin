@@ -14,12 +14,11 @@ import funkin.memory.CacheLifeCycle;
 @:allow(funkin.memory.FunkinMemory)
 class BitmapCache
 {
-  static var cacheTriplet:CacheTriplet<FlxGraphic> =
-    {
-      permanent: [],
-      current: [],
-      previous: []
-    };
+  static var cacheTriplet:CacheTriplet<FlxGraphic> = {
+    permanent: [],
+    current: [],
+    previous: []
+  };
 
   static final purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
 
@@ -45,6 +44,8 @@ class BitmapCache
    */
   static function cache(key:String, warm:Bool = false):Void
   {
+    if (cacheTriplet.current.exists(key)) return;
+
     var graphic:Null<FlxGraphic> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? FlxGraphic.fromAssetKey(key, false, null, true);
 
     if (graphic == null) return;
@@ -101,7 +102,9 @@ class BitmapCache
    * Checks, if graphic with given path cached in memory.
    */
   static function isCached(path:String):Bool
+  {
     return (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
+  }
 
   static function getCachedGraphic(path:String):Null<FlxGraphic>
   {
@@ -138,9 +141,7 @@ class BitmapCache
       var graphic:Null<FlxGraphic> = cacheTriplet.previous.get(key);
       if (graphic != null)
       {
-        FlxG.bitmap.remove(graphic);
-        graphic.persist = false;
-        graphic.destroy();
+        FlxG.bitmap.removeByKey(key);
         cacheTriplet.previous.remove(key);
         Assets.cache.removeBitmapData(key);
       }

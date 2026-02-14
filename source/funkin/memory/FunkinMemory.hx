@@ -117,7 +117,7 @@ class FunkinMemory
   /**
    * Forces the GPU to load and upload a FlxGraphic.
    */
-  private static function forceRender(graphic:FlxGraphic):Void
+  private static function warmGraphic(graphic:FlxGraphic):Void
   {
     BitmapCache.warmGraphic(graphic);
   }
