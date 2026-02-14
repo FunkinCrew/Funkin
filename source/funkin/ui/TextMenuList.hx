@@ -25,6 +25,7 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
 class TextMenuItem extends TextTypedMenuItem<AtlasText>
 {
   public var atlasText:AtlasText;
+
   public function new(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, available:Bool = true)
   {
     atlasText = new AtlasText(0, 0, name, font);

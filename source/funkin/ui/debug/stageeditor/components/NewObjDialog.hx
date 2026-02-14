@@ -22,7 +22,8 @@ class NewObjDialog extends Dialog
     stageEditorState = state;
     bitmap = img;
 
-    field.onChange = function(_) {
+    field.onChange = function(_)
+    {
       field.removeClasses(["invalid-value", "valid-value"]);
     }
 
@@ -44,12 +45,11 @@ class NewObjDialog extends Dialog
       {
         field.swapClass("invalid-value", "valid-value");
         done = false;
-        NotificationManager.instance.addNotification(
-          {
-            title: "Problem Creating an Object",
-            body: objNames.contains(field.text) ? "Object with the Name " + field.text + " already exists!" : "Invalid Object Name!",
-            type: NotificationType.Error
-          });
+        NotificationManager.instance.addNotification({
+          title: "Problem Creating an Object",
+          body: objNames.contains(field.text) ? "Object with the Name " + field.text + " already exists!" : "Invalid Object Name!",
+          type: NotificationType.Error
+        });
       }
       else
       {
@@ -76,12 +76,11 @@ class NewObjDialog extends Dialog
         stageEditorState.updateArray();
         stageEditorState.saved = false;
 
-        NotificationManager.instance.addNotification(
-          {
-            title: "Object Creating Successful",
-            body: "Successfully created an Object with the Name " + field.text + "!",
-            type: NotificationType.Success
-          });
+        NotificationManager.instance.addNotification({
+          title: "Object Creating Successful",
+          body: "Successfully created an Object with the Name " + field.text + "!",
+          type: NotificationType.Success
+        });
       }
     }
     fn(done);

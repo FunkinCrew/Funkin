@@ -86,113 +86,104 @@ class Save implements ConsoleClass
       version: thx.Dynamics.clone(Save.SAVE_DATA_VERSION),
       volume: 1.0,
       mute: false,
-      api:
-        {
-          newgrounds:
-            {
-              sessionId: null,
-            }
-        },
-      scores:
-        {
-          // No saved scores.
-          levels: [],
-          songs: [],
-        },
-      favoriteSongs: [],
-      options:
-        {
-          // Reasonable defaults.
-          framerate: #if mobile refreshRate #else 60 #end,
-          naughtyness: true,
-          downscroll: false,
-          flashingLights: true,
-          zoomCamera: true,
-          debugDisplay: 'Off',
-          debugDisplayBGOpacity: 50,
-          subtitles: true,
-          hapticsMode: 'All',
-          hapticsIntensityMultiplier: 1,
-          autoPause: true,
-          vsyncMode: 'Off',
-          strumlineBackgroundOpacity: 0,
-          autoFullscreen: false,
-          globalOffset: 0,
-          audioVisualOffset: 0,
-          unlockedFramerate: false,
-          screenshot:
-            {
-              shouldHideMouse: true,
-              fancyPreview: true,
-              previewOnSave: true,
-            },
-          controls:
-            {
-              // Leave controls blank so defaults are loaded.
-              p1:
-                {
-                  keyboard: {},
-                  gamepad: {},
-                },
-              p2:
-                {
-                  keyboard: {},
-                  gamepad: {},
-                },
-            },
-        },
-      #if mobile
-      mobileOptions:
-        {
-          // Reasonable defaults.
-          screenTimeout: false,
-          controlsScheme: FunkinHitboxControlSchemes.Arrows,
-          noAds: false
-        },
-      #end
-      mods:
-        {
-          // No mods enabled.
-          enabledMods: [],
-          modOptions: [],
-        },
-      unlocks:
-        {
-          // Default to having seen the default character.
-          charactersSeen: ["bf"],
-          oldChar: false
-        },
-      optionsChartEditor:
-        {
-          // Reasonable defaults.
-          previousFiles: [],
-          noteQuant: 3,
-          chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
-          theme: ChartEditorTheme.Light,
-          playtestStartTime: false,
-          playtestAudioSettings: false,
-          playtestResultsSettings: false,
-          downscroll: false,
-          showNoteKinds: true,
-          metronomeVolume: 1.0,
-          hitsoundVolumePlayer: 1.0,
-          hitsoundVolumeOpponent: 1.0,
-          instVolume: 1.0,
-          playerVoiceVolume: 1.0,
-          opponentVoiceVolume: 1.0,
-          playbackSpeed: 0.5,
-          themeMusic: true
-        },
-      optionsStageEditor:
-        {
-          previousFiles: [],
-          moveStep: "1px",
-          angleStep: 5,
-          theme: StageEditorTheme.Light,
-          bfChar: "bf",
-          gfChar: "gf",
-          dadChar: "dad"
+      api: {
+        newgrounds: {
+          sessionId: null,
         }
+      },
+      scores: {
+        // No saved scores.
+        levels: [],
+        songs: [],
+      },
+      favoriteSongs: [],
+      options: {
+        // Reasonable defaults.
+        framerate: #if mobile refreshRate #else 60 #end,
+        naughtyness: true,
+        downscroll: false,
+        flashingLights: true,
+        zoomCamera: true,
+        debugDisplay: 'Off',
+        debugDisplayBGOpacity: 50,
+        subtitles: true,
+        hapticsMode: 'All',
+        hapticsIntensityMultiplier: 1,
+        autoPause: true,
+        vsyncMode: 'Off',
+        strumlineBackgroundOpacity: 0,
+        autoFullscreen: false,
+        globalOffset: 0,
+        audioVisualOffset: 0,
+        unlockedFramerate: false,
+        screenshot: {
+          shouldHideMouse: true,
+          fancyPreview: true,
+          previewOnSave: true,
+        },
+        controls: {
+          // Leave controls blank so defaults are loaded.
+          p1: {
+            keyboard: {
+            },
+            gamepad: {
+            },
+          },
+          p2: {
+            keyboard: {
+            },
+            gamepad: {
+            },
+          },
+        },
+      },
+      #if mobile
+      mobileOptions: {
+        // Reasonable defaults.
+        screenTimeout: false,
+        controlsScheme: FunkinHitboxControlSchemes.Arrows,
+        noAds: false
+      },
+      #end
+      mods: {
+        // No mods enabled.
+        enabledMods: [],
+        modOptions: [],
+      },
+      unlocks: {
+        // Default to having seen the default character.
+        charactersSeen: ["bf"],
+        oldChar: false
+      },
+      optionsChartEditor: {
+        // Reasonable defaults.
+        previousFiles: [],
+        noteQuant: 3,
+        chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
+        theme: ChartEditorTheme.Light,
+        playtestStartTime: false,
+        playtestAudioSettings: false,
+        playtestResultsSettings: false,
+        downscroll: false,
+        showNoteKinds: true,
+        metronomeVolume: 1.0,
+        hitsoundVolumePlayer: 1.0,
+        hitsoundVolumeOpponent: 1.0,
+        instVolume: 1.0,
+        playerVoiceVolume: 1.0,
+        opponentVoiceVolume: 1.0,
+        playbackSpeed: 0.5,
+        themeMusic: true
+      },
+      optionsStageEditor: {
+        previousFiles: [],
+        moveStep: "1px",
+        angleStep: 5,
+        theme: StageEditorTheme.Light,
+        bfChar: "bf",
+        gfChar: "gf",
+        dadChar: "dad"
+      }
     };
   }
 
@@ -431,11 +422,10 @@ class Save implements ConsoleClass
     {
       if (data.scores == null)
       {
-        data.scores =
-          {
-            songs: [],
-            levels: []
-          };
+        data.scores = {
+          songs: [],
+          levels: []
+        };
       }
       else
       {
@@ -580,12 +570,11 @@ class Save implements ConsoleClass
       return;
     }
     // Set the high score and the high rank separately.
-    var newScore:SaveScoreData =
-      {
-        score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
-        tallies: (previousRank > newRank
-          || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
-      };
+    var newScore:SaveScoreData = {
+      score: (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score,
+      tallies: (previousRank > newRank
+        || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
+    };
     song.set(difficultyId, newScore);
     Save.system.flush();
   }
@@ -774,7 +763,8 @@ class Save implements ConsoleClass
   {
     if (!data.mods.modOptions.exists(modId))
     {
-      data.mods.modOptions.set(modId, {});
+      data.mods.modOptions.set(modId, {
+      });
     }
 
     return data.mods.modOptions.get(modId);
@@ -949,7 +939,8 @@ class Save implements ConsoleClass
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
 
-    funkin.api.newgrounds.NGSaveSlot.instance.load((data:Dynamic) -> {
+    funkin.api.newgrounds.NGSaveSlot.instance.load((data:Dynamic) ->
+    {
       FlxG.save.bind(Constants.SAVE_NAME + Constants.BASE_SAVE_SLOT, Constants.SAVE_PATH);
 
       if (FlxG.save.status != EMPTY)
@@ -966,14 +957,15 @@ class Save implements ConsoleClass
       FlxG.save.mergeData(gameSave.data, true);
       _instance = gameSave;
       onFinish();
-    }, (error:io.newgrounds.Call.CallError) -> {
-      var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
+    }, (error:io.newgrounds.Call.CallError) ->
+      {
+        var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
-      var msg = 'There was an error loading your save data from Newgrounds.';
-      msg += '\n${errorMsg}';
-      msg += '\nAre you sure you are connected to the internet?';
-      funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
-    });
+        var msg = 'There was an error loading your save data from Newgrounds.';
+        msg += '\n${errorMsg}';
+        msg += '\nAre you sure you are connected to the internet?';
+        funkin.util.WindowUtil.showError("Newgrounds Save Slot Failure", msg);
+      });
   }
   #end
 }

@@ -399,13 +399,13 @@ class SongMenuItem extends FlxSpriteGroup
     evilTrail = new FlxTrail(impactThing, null, 15, 2, 0.01, 0.069);
     evilTrail.blend = BlendMode.ADD;
     evilTrail.zIndex = capsule.zIndex - 5;
-    FlxTween.tween(evilTrail, {alpha: 0}, 0.6,
+    FlxTween.tween(evilTrail, {alpha: 0}, 0.6, {
+      ease: FlxEase.quadOut,
+      onComplete: function(_)
       {
-        ease: FlxEase.quadOut,
-        onComplete: function(_) {
-          remove(evilTrail);
-        }
-      });
+        remove(evilTrail);
+      }
+    });
     add(evilTrail);
 
     evilTrail.color = ranking.rank.getRankingFreeplayColor();
@@ -499,12 +499,14 @@ class SongMenuItem extends FlxSpriteGroup
     songText.scale.x = 1.7;
     songText.scale.y = 0.2;
 
-    new FlxTimer().start(1 / 24, function(_) {
+    new FlxTimer().start(1 / 24, function(_)
+    {
       songText.scale.x = 0.4;
       songText.scale.y = 1.4;
     });
 
-    new FlxTimer().start(2 / 24, function(_) {
+    new FlxTimer().start(2 / 24, function(_)
+    {
       songText.scale.x = songText.scale.y = 1;
     });
   }
@@ -580,7 +582,8 @@ class SongMenuItem extends FlxSpriteGroup
   {
     frameInTypeBeat = 0;
 
-    new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
+    new FlxTimer().start((1 / 24) * maxTimer, function(doShit)
+    {
       doJumpIn = true;
       doLerp = true;
     });
@@ -593,7 +596,8 @@ class SongMenuItem extends FlxSpriteGroup
     }
     else
     {
-      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
+      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_)
+      {
         visible = true;
         capsule.alpha = 1;
         setVisibleGrp(true);

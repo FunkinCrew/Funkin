@@ -519,7 +519,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     if (variationIds.length == 0) return [];
 
-    var diffFiltered:Array<String> = variationIds.map(function(variationId:String):Array<String> {
+    var diffFiltered:Array<String> = variationIds.map(function(variationId:String):Array<String>
+    {
       var metadata = _metadata.get(variationId);
       return metadata?.playData?.difficulties ?? [];
     })
@@ -527,7 +528,8 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       .filterNull()
       .distinct();
 
-    diffFiltered = diffFiltered.filter(function(diffId:String):Bool {
+    diffFiltered = diffFiltered.filter(function(diffId:String):Bool
+    {
       if (showHidden) return true;
       for (targetVariation in variationIds)
       {
@@ -621,49 +623,93 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
-  public function onPause(event:PauseScriptEvent):Void {};
+  public function onPause(event:PauseScriptEvent):Void
+  {
+  };
 
-  public function onResume(event:ScriptEvent):Void {};
+  public function onResume(event:ScriptEvent):Void
+  {
+  };
 
-  public function onSongLoaded(event:SongLoadScriptEvent):Void {};
+  public function onSongLoaded(event:SongLoadScriptEvent):Void
+  {
+  };
 
-  public function onSongStart(event:ScriptEvent):Void {};
+  public function onSongStart(event:ScriptEvent):Void
+  {
+  };
 
-  public function onSongEnd(event:ScriptEvent):Void {};
+  public function onSongEnd(event:ScriptEvent):Void
+  {
+  };
 
-  public function onGameOver(event:ScriptEvent):Void {};
+  public function onGameOver(event:ScriptEvent):Void
+  {
+  };
 
-  public function onSongRetry(event:SongRetryEvent):Void {};
+  public function onSongRetry(event:SongRetryEvent):Void
+  {
+  };
 
-  public function onNoteIncoming(event:NoteScriptEvent) {};
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  };
 
-  public function onNoteHit(event:HitNoteScriptEvent) {};
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  };
 
-  public function onNoteMiss(event:NoteScriptEvent):Void {};
+  public function onNoteMiss(event:NoteScriptEvent):Void
+  {
+  };
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {};
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+  {
+  };
 
-  public function onSongEvent(event:SongEventScriptEvent):Void {};
+  public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+  };
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {};
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  };
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {};
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+  };
 
-  public function onCountdownStart(event:CountdownScriptEvent):Void {};
+  public function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+  };
 
-  public function onCountdownStep(event:CountdownScriptEvent):Void {};
+  public function onCountdownStep(event:CountdownScriptEvent):Void
+  {
+  };
 
-  public function onCountdownEnd(event:CountdownScriptEvent):Void {};
+  public function onCountdownEnd(event:CountdownScriptEvent):Void
+  {
+  };
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  };
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void
+  {
+  };
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  };
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  };
 
   static function _fetchData(id:String):Null<SongMetadata>
   {
@@ -973,7 +1019,8 @@ class SongDifficulty
     }
 
     // Sometimes the sounds don't set their important value to true, so we have to do this manually.
-    result.forEach(function(snd:FunkinSound) {
+    result.forEach(function(snd:FunkinSound)
+    {
       snd.important = true;
     });
 

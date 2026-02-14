@@ -19,8 +19,7 @@ class FFT
     samples from the Discrete-Time Fourier Transform (DTFT) - which is Fs-periodic -
     with a spacing of Fs/N Hz between them and a scaling factor of Fs.
   **/
-  public static function fft(input:Array<Complex>):Array<Complex>
-    return do_fft(input, false);
+  public static function fft(input:Array<Complex>):Array<Complex> return do_fft(input, false);
 
   /**
     Like `fft`, but for a real (Float) sequence input.
@@ -41,8 +40,7 @@ class FFT
     from each other, the result will consist of N data points as sampled
     from a time signal at intervals of 1/Fs with a scaling factor of 1/Fs.
   **/
-  public static function ifft(input:Array<Complex>):Array<Complex>
-    return do_fft(input, true);
+  public static function ifft(input:Array<Complex>):Array<Complex> return do_fft(input, true);
 
   // Handles padding and scaling for forwards and inverse FFTs.
   static function do_fft(input:Array<Complex>, inverse:Bool):Array<Complex>

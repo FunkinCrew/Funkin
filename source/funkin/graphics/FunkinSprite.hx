@@ -256,7 +256,8 @@ class FunkinSprite extends FlxAnimate
     trace('[ASYNC] Start loading image (${key})');
     graphic.persist = true;
     openfl.Assets.loadBitmapData(key)
-      .onComplete(function(bitmapData:openfl.display.BitmapData) {
+      .onComplete(function(bitmapData:openfl.display.BitmapData)
+      {
         trace('[ASYNC] Finished loading image');
         var cache:Bool = false;
         loadBitmapData(bitmapData, cache);
@@ -267,7 +268,8 @@ class FunkinSprite extends FlxAnimate
           FlxTween.tween(this, {alpha: 1.0}, 0.25);
         }
       })
-      .onError(function(error:Dynamic) {
+      .onError(function(error:Dynamic)
+      {
         trace('[ASYNC] Failed to load image: ${error}');
         if (fadeTween != null)
         {
@@ -275,7 +277,8 @@ class FunkinSprite extends FlxAnimate
           this.alpha = 1.0;
         }
       })
-      .onProgress(function(progress:Int, total:Int) {
+      .onProgress(function(progress:Int, total:Int)
+      {
         trace('[ASYNC] Loading image progress: ${progress}/${total}');
       });
   }
@@ -462,8 +465,10 @@ class FunkinSprite extends FlxAnimate
 
     for (symbolItem in symbolItems)
     {
-      symbolItem.timeline.forEachLayer((layer) -> {
-        layer.forEachFrame((frame) -> {
+      symbolItem.timeline.forEachLayer((layer) ->
+      {
+        layer.forEachFrame((frame) ->
+        {
           frames.push(frame);
         });
       });

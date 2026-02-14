@@ -39,13 +39,16 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 
   public function initialize():Void
   {
-    contextmenuCut.onClick = (_) -> {
+    contextmenuCut.onClick = (_) ->
+    {
       chartEditorState.performCommand(new CutItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection));
     };
-    contextmenuCopy.onClick = (_) -> {
+    contextmenuCopy.onClick = (_) ->
+    {
       chartEditorState.copySelection();
     };
-    contextmenuDelete.onClick = (_) -> {
+    contextmenuDelete.onClick = (_) ->
+    {
       if (chartEditorState.currentNoteSelection.length > 0 && chartEditorState.currentEventSelection.length > 0)
       {
         chartEditorState.performCommand(new RemoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection));
@@ -64,32 +67,39 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
       }
     };
 
-    contextmenuFlip.onClick = function(_) {
+    contextmenuFlip.onClick = function(_)
+    {
       chartEditorState.performCommand(new FlipNotesCommand(chartEditorState.currentNoteSelection));
     }
 
-    contextmenuMirrorX.onClick = function(_) {
+    contextmenuMirrorX.onClick = function(_)
+    {
       chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
         !contextmenuMirrorFlipWithinStrumline.selected, true, false));
     }
 
-    contextmenuMirrorY.onClick = function(_) {
+    contextmenuMirrorY.onClick = function(_)
+    {
       chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
         !contextmenuMirrorFlipWithinStrumline.selected, false, true));
     }
 
-    contextmenuMirrorXY.onClick = function(_) {
+    contextmenuMirrorXY.onClick = function(_)
+    {
       chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
         !contextmenuMirrorFlipWithinStrumline.selected, true, true));
     }
 
-    contextmenuSelectAll.onClick = function(_) {
+    contextmenuSelectAll.onClick = function(_)
+    {
       chartEditorState.performCommand(new SelectAllItemsCommand(true, false));
     }
-    contextmenuSelectInverse.onClick = function(_) {
+    contextmenuSelectInverse.onClick = function(_)
+    {
       chartEditorState.performCommand(new InvertSelectedItemsCommand());
     }
-    contextmenuSelectNone.onClick = function(_) {
+    contextmenuSelectNone.onClick = function(_)
+    {
       chartEditorState.performCommand(new DeselectAllItemsCommand());
     }
   }

@@ -34,38 +34,32 @@ class NewCharacterCard extends BackingCard
   {
     super.applyExitMovers(exitMovers, exitMoversCharSel);
     if (exitMovers == null || exitMoversCharSel == null) return;
-    exitMovers.set([friendFoe],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-    exitMovers.set([newUnlock1],
-      {
-        x: -newUnlock1.width * 2,
-        y: newUnlock1.y,
-        speed: 0.4,
-        wait: 0
-      });
-    exitMovers.set([waiting],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-    exitMovers.set([newUnlock2],
-      {
-        x: -newUnlock2.width * 2,
-        speed: 0.5,
-      });
-    exitMovers.set([friendFoe2],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4
-      });
-    exitMovers.set([newUnlock3],
-      {
-        x: -newUnlock3.width * 2,
-        speed: 0.3
-      });
+    exitMovers.set([friendFoe], {
+      x: FlxG.width * 2,
+      speed: 0.4,
+    });
+    exitMovers.set([newUnlock1], {
+      x: -newUnlock1.width * 2,
+      y: newUnlock1.y,
+      speed: 0.4,
+      wait: 0
+    });
+    exitMovers.set([waiting], {
+      x: FlxG.width * 2,
+      speed: 0.4,
+    });
+    exitMovers.set([newUnlock2], {
+      x: -newUnlock2.width * 2,
+      speed: 0.5,
+    });
+    exitMovers.set([friendFoe2], {
+      x: FlxG.width * 2,
+      speed: 0.4
+    });
+    exitMovers.set([newUnlock3], {
+      x: -newUnlock3.width * 2,
+      speed: 0.3
+    });
 
     exitMoversCharSel.set([friendFoe, newUnlock1, waiting, newUnlock2, friendFoe2, newUnlock3, multiplyBar], {
       y: -60,

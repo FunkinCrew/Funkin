@@ -15,12 +15,11 @@ class CharSelectAtlasHandler
   {
     if (framesCache.exists(path)) return framesCache.get(path);
 
-    var result:FlxAnimateFrames = FlxAnimateFrames.fromAnimate(Paths.animateAtlas(path),
-      {
-        swfMode: settings?.swfMode ?? true,
-        filterQuality: settings?.filterQuality ?? MEDIUM,
-        cacheOnLoad: settings?.cacheOnLoad ?? false
-      });
+    var result:FlxAnimateFrames = FlxAnimateFrames.fromAnimate(Paths.animateAtlas(path), {
+      swfMode: settings?.swfMode ?? true,
+      filterQuality: settings?.filterQuality ?? MEDIUM,
+      cacheOnLoad: settings?.cacheOnLoad ?? false
+    });
 
     if (result == null)
     {

@@ -43,7 +43,8 @@ class Nametag extends FlxSprite
   {
     if (playMosaicSequence) shaderEffect();
 
-    new FlxTimer().start(4 / 30, _ -> {
+    new FlxTimer().start(4 / 30, _ ->
+    {
       var path:String = str;
       switch str
       {
@@ -74,20 +75,16 @@ class Nametag extends FlxSprite
 
     if (fadeOut)
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-      ]);
+      currentMosaicSequence = new Sequence([{time: 0 / 30, callback: () -> mosaicShader.setBlockSize(1,
+        1)}, {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 27,
+          height / 26)}, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10,
+          height / 10)}, {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},]);
     }
     else
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-      ]);
+      currentMosaicSequence = new Sequence([{time: 0 / 30, callback: () -> mosaicShader.setBlockSize(width / 10,
+        height / 10)}, {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 73,
+          height / 6)}, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},]);
     }
   }
 
@@ -96,7 +93,8 @@ class Nametag extends FlxSprite
     var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
     var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
 
-    FlxTimer.wait(frame / 30, () -> {
+    FlxTimer.wait(frame / 30, () ->
+    {
       mosaicShader.setBlockSize(daX, daY);
     });
   }

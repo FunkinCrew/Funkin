@@ -159,7 +159,9 @@ class GameOverSubState extends MusicBeatSubState
 
     // Pluck Boyfriend from the PlayState and place him (in the same position) in the GameOverSubState.
     // We can then play the character's `firstDeath` animation.
-    if ((parentPlayState?.isMinimalMode ?? true)) {}
+    if ((parentPlayState?.isMinimalMode ?? true))
+    {
+    }
     else
     {
       boyfriend = parentPlayState?.currentStage?.getBoyfriend(true);
@@ -188,7 +190,8 @@ class GameOverSubState extends MusicBeatSubState
     HapticUtil.vibrate(0, Constants.DEFAULT_VIBRATION_DURATION);
 
     // Allow input a second later to prevent accidental gameover skips.
-    new FlxTimer().start(1, function(tmr:FlxTimer) {
+    new FlxTimer().start(1, function(tmr:FlxTimer)
+    {
       canInput = true;
     });
   }
@@ -339,7 +342,8 @@ class GameOverSubState extends MusicBeatSubState
     // Start music at lower volume
     startDeathMusic(0.2, false);
     boyfriend.playAnimation('deathLoop' + animationSuffix);
-    deathQuoteSound = FunkinSound.playOnce(deathQuote, function() {
+    deathQuoteSound = FunkinSound.playOnce(deathQuote, function()
+    {
       // Once the quote ends, fade in the game over music.
       if (!isEnding && gameOverMusic != null)
       {
@@ -367,7 +371,9 @@ class GameOverSubState extends MusicBeatSubState
 
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
-      if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) {}
+      if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null)
+      {
+      }
       else
       {
         boyfriend.playAnimation('deathConfirm' + animationSuffix, true);
@@ -378,17 +384,21 @@ class GameOverSubState extends MusicBeatSubState
       final FADE_TIMER:Float = (gameOverMusic?.length ?? 0) / 7000;
 
       // After the animation finishes...
-      new FlxTimer().start(FADE_TIMER, function(tmr:FlxTimer) {
+      new FlxTimer().start(FADE_TIMER, function(tmr:FlxTimer)
+      {
         // ...fade out the graphics. Then after that happens...
 
-        var resetPlaying = function(pixel:Bool = false) {
+        var resetPlaying = function(pixel:Bool = false)
+        {
           // ...close the GameOverSubState.
           if (pixel) RetroCameraFade.fadeBlack(FlxG.camera, 10, 1);
           else
             FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
           if (parentPlayState != null) parentPlayState.needsReset = true;
 
-          if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null) {}
+          if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null)
+          {
+          }
           else
           {
             // Readd Boyfriend to the stage.
@@ -407,12 +417,14 @@ class GameOverSubState extends MusicBeatSubState
         if (musicSuffix.contains('-pixel'))
         {
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
-          new FlxTimer().start(2, _ -> {
+          new FlxTimer().start(2, _ ->
+          {
             FlxG.camera.filters = [];
             #if FEATURE_MOBILE_ADVERTISEMENTS
             if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
             {
-              AdMobUtil.loadInterstitial(function():Void {
+              AdMobUtil.loadInterstitial(function():Void
+              {
                 AdMobUtil.PLAYING_COUNTER = 0;
                 resetPlaying(true);
               });
@@ -426,11 +438,13 @@ class GameOverSubState extends MusicBeatSubState
         }
         else
         {
-          FlxG.camera.fade(FlxColor.BLACK, 2, false, function() {
+          FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+          {
             #if FEATURE_MOBILE_ADVERTISEMENTS
             if (AdMobUtil.PLAYING_COUNTER >= AdMobUtil.MAX_BEFORE_AD)
             {
-              AdMobUtil.loadInterstitial(function():Void {
+              AdMobUtil.loadInterstitial(function():Void
+              {
                 AdMobUtil.PLAYING_COUNTER = 0;
                 resetPlaying();
               });
@@ -494,7 +508,8 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        onComplete = function() {
+        onComplete = function()
+        {
           isStarting = false;
           // We need to force to ensure that the non-starting music plays.
           startDeathMusic(1.0, true);

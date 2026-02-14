@@ -10,7 +10,9 @@ import funkin.data.freeplay.player.PlayerRegistry;
  * Create a scripted class that extends MultiSparrowFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedMultiSparrowFreeplayDJ extends MultiSparrowFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedMultiSparrowFreeplayDJ extends MultiSparrowFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * For some Freeplay DJs which use Sparrow atlases, the spritesheets need to be split

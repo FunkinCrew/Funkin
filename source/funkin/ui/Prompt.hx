@@ -92,7 +92,8 @@ class Prompt extends flixel.FlxSubState
   {
     buttons.exists = true;
     // pass anonymous functions rather than the current callbacks, in case they change later
-    var yesButton = buttons.createItem(yes, function() {
+    var yesButton = buttons.createItem(yes, function()
+    {
       if (onYes != null) onYes();
       else
         FlxG.log.warn("onYes function was called without being set");

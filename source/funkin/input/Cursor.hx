@@ -47,121 +47,108 @@ class Cursor
     }
   }
 
-  public static final CURSOR_DEFAULT_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-default.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_DEFAULT_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-default.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorDefault:Null<BitmapData> = null;
 
-  public static final CURSOR_CROSS_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-cross.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_CROSS_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-cross.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorCross:Null<BitmapData> = null;
 
-  public static final CURSOR_ERASER_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-eraser.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_ERASER_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-eraser.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorEraser:Null<BitmapData> = null;
 
-  public static final CURSOR_GRABBING_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-grabbing.png",
-      scale: 1.0,
-      offsetX: -8,
-      offsetY: 0,
-    };
+  public static final CURSOR_GRABBING_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-grabbing.png",
+    scale: 1.0,
+    offsetX: -8,
+    offsetY: 0,
+  };
   static var assetCursorGrabbing:Null<BitmapData> = null;
 
-  public static final CURSOR_HOURGLASS_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-hourglass.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_HOURGLASS_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-hourglass.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorHourglass:Null<BitmapData> = null;
 
-  public static final CURSOR_POINTER_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-pointer.png",
-      scale: 1.0,
-      offsetX: -8,
-      offsetY: 0,
-    };
+  public static final CURSOR_POINTER_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-pointer.png",
+    scale: 1.0,
+    offsetX: -8,
+    offsetY: 0,
+  };
   static var assetCursorPointer:Null<BitmapData> = null;
 
-  public static final CURSOR_TEXT_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-text.png",
-      scale: 0.2,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_TEXT_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-text.png",
+    scale: 0.2,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorText:Null<BitmapData> = null;
 
-  public static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-text-vertical.png",
-      scale: 0.2,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-text-vertical.png",
+    scale: 0.2,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorTextVertical:Null<BitmapData> = null;
 
-  public static final CURSOR_ZOOM_IN_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-zoom-in.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_ZOOM_IN_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-zoom-in.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorZoomIn:Null<BitmapData> = null;
 
-  public static final CURSOR_ZOOM_OUT_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-zoom-out.png",
-      scale: 1.0,
-      offsetX: 0,
-      offsetY: 0,
-    };
+  public static final CURSOR_ZOOM_OUT_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-zoom-out.png",
+    scale: 1.0,
+    offsetX: 0,
+    offsetY: 0,
+  };
   static var assetCursorZoomOut:Null<BitmapData> = null;
 
-  public static final CURSOR_CROSSHAIR_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-crosshair.png",
-      scale: 1.0,
-      offsetX: -16,
-      offsetY: -16,
-    };
+  public static final CURSOR_CROSSHAIR_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-crosshair.png",
+    scale: 1.0,
+    offsetX: -16,
+    offsetY: -16,
+  };
   static var assetCursorCrosshair:Null<BitmapData> = null;
 
-  public static final CURSOR_CELL_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-cell.png",
-      scale: 1.0,
-      offsetX: -16,
-      offsetY: -16,
-    };
+  public static final CURSOR_CELL_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-cell.png",
+    scale: 1.0,
+    offsetX: -16,
+    offsetY: -16,
+  };
   static var assetCursorCell:Null<BitmapData> = null;
 
-  public static final CURSOR_SCROLL_PARAMS:CursorParams =
-    {
-      graphic: "assets/images/cursor/cursor-scroll.png",
-      scale: 0.2,
-      offsetX: -15,
-      offsetY: -15,
-    };
+  public static final CURSOR_SCROLL_PARAMS:CursorParams = {
+    graphic: "assets/images/cursor/cursor-scroll.png",
+    scale: 0.2,
+    offsetX: -15,
+    offsetY: -15,
+  };
   static var assetCursorScroll:Null<BitmapData> = null;
 
   static function set_cursorMode(value:Null<CursorMode>):Null<CursorMode>
@@ -353,7 +340,8 @@ class Cursor
         if (assetCursorDefault == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorDefault = bitmapData;
             applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
           });
@@ -368,7 +356,8 @@ class Cursor
         if (assetCursorCross == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSS_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorCross = bitmapData;
             applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
           });
@@ -383,7 +372,8 @@ class Cursor
         if (assetCursorEraser == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ERASER_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorEraser = bitmapData;
             applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
           });
@@ -398,7 +388,8 @@ class Cursor
         if (assetCursorGrabbing == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_GRABBING_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorGrabbing = bitmapData;
             applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
           });
@@ -413,7 +404,8 @@ class Cursor
         if (assetCursorHourglass == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorHourglass = bitmapData;
             applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
           });
@@ -428,7 +420,8 @@ class Cursor
         if (assetCursorPointer == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_POINTER_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorPointer = bitmapData;
             applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
           });
@@ -443,7 +436,8 @@ class Cursor
         if (assetCursorText == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_TEXT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorText = bitmapData;
             applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
           });
@@ -458,7 +452,8 @@ class Cursor
         if (assetCursorZoomIn == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorZoomIn = bitmapData;
             applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
           });
@@ -473,7 +468,8 @@ class Cursor
         if (assetCursorZoomOut == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorZoomOut = bitmapData;
             applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
           });
@@ -488,7 +484,8 @@ class Cursor
         if (assetCursorCrosshair == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorCrosshair = bitmapData;
             applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
           });
@@ -503,7 +500,8 @@ class Cursor
         if (assetCursorCell == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CELL_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorCell = bitmapData;
             applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
           });
@@ -518,7 +516,8 @@ class Cursor
         if (assetCursorScroll == null)
         {
           var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_SCROLL_PARAMS.graphic);
-          future.onComplete(function(bitmapData:BitmapData) {
+          future.onComplete(function(bitmapData:BitmapData)
+          {
             assetCursorScroll = bitmapData;
             applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
           });

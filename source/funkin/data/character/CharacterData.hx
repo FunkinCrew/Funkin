@@ -57,7 +57,8 @@ class CharacterDataParser
     // UNSCRIPTED CHARACTERS
     //
     var charIdList:Array<String> = DataAssets.listDataFilesInPath('characters/');
-    var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool {
+    var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool
+    {
       return !characterCache.exists(charId);
     });
     log('Fetching data for ${unscriptedCharIds.length} characters...');
@@ -188,7 +189,8 @@ class CharacterDataParser
     // NOTE: Only instantiate the ones not populated above.
     // ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
     var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
-    scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool {
+    scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool
+    {
       return !(scriptedCharClassNames1.contains(charCls)
         || scriptedCharClassNames2.contains(charCls)
         || scriptedCharClassNames3.contains(charCls)
@@ -353,7 +355,8 @@ class CharacterDataParser
     {
       var frames = Paths.getSparrowAtlas(charPath);
 
-      var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool {
+      var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool
+      {
         return frame.name.startsWith('idle');
       });
 
@@ -463,14 +466,13 @@ class CharacterDataParser
   public static final DEFAULT_STARTINGANIM:String = 'idle';
   public static final DEFAULT_APPLYSTAGEMATRIX:Bool = false;
   public static final DEFAULT_ANIMTYPE:String = "framelabel";
-  public static final DEFAULT_ATLASSETTINGS:funkin.data.stage.StageData.TextureAtlasData =
-    {
-      swfMode: true,
-      cacheOnLoad: false,
-      filterQuality: 1,
-      applyStageMatrix: false,
-      useRenderTexture: false
-    };
+  public static final DEFAULT_ATLASSETTINGS:funkin.data.stage.StageData.TextureAtlasData = {
+    swfMode: true,
+    cacheOnLoad: false,
+    filterQuality: 1,
+    applyStageMatrix: false,
+    useRenderTexture: false
+  };
 
   /**
    * Set unspecified parameters to their defaults.
@@ -528,14 +530,13 @@ class CharacterDataParser
 
     if (input.healthIcon == null)
     {
-      input.healthIcon =
-        {
-          id: null,
-          scale: null,
-          flipX: null,
-          isPixel: null,
-          offsets: null
-        };
+      input.healthIcon = {
+        id: null,
+        scale: null,
+        flipX: null,
+        isPixel: null,
+        offsets: null
+      };
     }
 
     if (input.healthIcon.id == null)

@@ -27,7 +27,9 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     switchGF(Constants.DEFAULT_CHARACTER);
   }
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
@@ -127,11 +129,19 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     updateHitbox();
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  };
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void
+  {
+  };
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  };
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  };
 }

@@ -68,7 +68,8 @@ class NoteKind implements INoteScriptedClass
   function getNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
-    return allNotes.filter(function(note:NoteSprite) {
+    return allNotes.filter(function(note:NoteSprite)
+    {
       return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
     });
   }
@@ -81,26 +82,43 @@ class NoteKind implements INoteScriptedClass
   function getOtherNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
-    return allNotes.filter(function(note:NoteSprite) {
+    return allNotes.filter(function(note:NoteSprite)
+    {
       return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  }
 
-  public function onCreate(event:ScriptEvent):Void {}
+  public function onCreate(event:ScriptEvent):Void
+  {
+  }
 
-  public function onDestroy(event:ScriptEvent):Void {}
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent):Void {}
+  public function onNoteIncoming(event:NoteScriptEvent):Void
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent):Void {}
+  public function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent):Void {}
+  public function onNoteMiss(event:NoteScriptEvent):Void
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 }
 
 /**

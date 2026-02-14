@@ -24,4 +24,6 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> imp
   }
 }
 
-typedef AlbumEntryParams = {}
+typedef AlbumEntryParams =
+{
+}

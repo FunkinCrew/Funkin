@@ -72,21 +72,7 @@ class FunkinCamera extends FlxCamera
    *  - `LIGHTEN` is supported natively on desktop, but not other platforms.
    *  - While `DARKEN` is supported natively on desktop, it causes issues with transparency.
    */
-  static final KHR_BLEND_MODES:Array<BlendMode> = [
-    DARKEN,
-    HARDLIGHT,
-    #if !desktop LIGHTEN, #end
-    OVERLAY,
-    DIFFERENCE,
-    COLORDODGE,
-    COLORBURN,
-    SOFTLIGHT,
-    EXCLUSION,
-    HUE,
-    SATURATION,
-    COLOR,
-    LUMINOSITY
-  ];
+  static final KHR_BLEND_MODES:Array<BlendMode> = [DARKEN, HARDLIGHT, #if !desktop LIGHTEN, #end OVERLAY, DIFFERENCE, COLORDODGE, COLORBURN, SOFTLIGHT, EXCLUSION, HUE, SATURATION, COLOR, LUMINOSITY];
 
   /**
    * A list of blend modes that require the shader no matter what.
@@ -179,7 +165,8 @@ class FunkinCamera extends FlxCamera
       this.canvas.graphics.clear();
 
       _blendRenderTexture.init(this.width, this.height);
-      _blendRenderTexture.drawToCamera((camera, frameMatrix) -> {
+      _blendRenderTexture.drawToCamera((camera, frameMatrix) ->
+      {
         var pivotX:Float = width / 2;
         var pivotY:Float = height / 2;
 
@@ -200,7 +187,8 @@ class FunkinCamera extends FlxCamera
       _backgroundFrame.parent.bitmap = _blendRenderTexture.graphic.bitmap;
 
       _backgroundRenderTexture.init(Std.int(this.width * Lib.current.stage.window.scale), Std.int(this.height * Lib.current.stage.window.scale));
-      _backgroundRenderTexture.drawToCamera((camera, matrix) -> {
+      _backgroundRenderTexture.drawToCamera((camera, matrix) ->
+      {
         camera.zoom = this.zoom;
         matrix.scale(Lib.current.stage.window.scale, Lib.current.stage.window.scale);
         camera.drawPixels(_backgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);

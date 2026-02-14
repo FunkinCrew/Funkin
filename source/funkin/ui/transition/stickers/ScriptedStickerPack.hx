@@ -5,4 +5,6 @@ package funkin.ui.transition.stickers;
  * Create a scripted class that extends StickerPack to use this.
  */
 @:hscriptClass
-class ScriptedStickerPack extends funkin.ui.transition.stickers.StickerPack implements polymod.hscript.HScriptedClass {}
+class ScriptedStickerPack extends funkin.ui.transition.stickers.StickerPack implements polymod.hscript.HScriptedClass
+{
+}

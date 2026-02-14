@@ -42,7 +42,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     if (_onVolumeChanged == null)
     {
       _onVolumeChanged = new FlxTypedSignal<Float->Void>();
-      FlxG.sound.onVolumeChange.add(function(volume:Float) {
+      FlxG.sound.onVolumeChange.add(function(volume:Float)
+      {
         _onVolumeChanged.dispatch(volume);
       });
     }
@@ -350,7 +351,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         partialQueue.push(music);
 
         @:nullSafety(Off)
-        music.future.onComplete(function(partialMusic:Null<FunkinSound>) {
+        music.future.onComplete(function(partialMusic:Null<FunkinSound>)
+        {
           FlxG.sound.music = partialMusic;
           FlxG.sound.list.remove(FlxG.sound.music);
 
@@ -496,11 +498,13 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     else
     {
-      promise.future.onError(function(e) {
+      promise.future.onError(function(e)
+      {
         soundRequest.error("Sound loading was errored or cancelled");
       });
 
-      soundRequest.future.onComplete(function(partialSound) {
+      soundRequest.future.onComplete(function(partialSound)
+      {
         var snd = FunkinSound.load(partialSound, volume, looped, autoDestroy, autoPlay, false, onComplete, onLoad);
         promise.complete(snd);
       });

@@ -126,9 +126,13 @@ class ChartEditorToolboxHandler
     }
   }
 
-  public static function rememberOpenToolboxes(state:ChartEditorState):Void {}
+  public static function rememberOpenToolboxes(state:ChartEditorState):Void
+  {
+  }
 
-  public static function openRememberedToolboxes(state:ChartEditorState):Void {}
+  public static function openRememberedToolboxes(state:ChartEditorState):Void
+  {
+  }
 
   public static function hideAllToolboxes(state:ChartEditorState):Void
   {
@@ -234,9 +238,13 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
   static function buildToolboxPlaytestPropertiesLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -245,7 +253,8 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    toolbox.onDialogClosed = function(_) {
+    toolbox.onDialogClosed = function(_)
+    {
       state.menubarItemToggleToolboxPlaytestProperties.selected = false;
     }
 
@@ -254,7 +263,8 @@ class ChartEditorToolboxHandler
 
     checkboxPracticeMode.selected = state.playtestPracticeMode;
 
-    checkboxPracticeMode.onClick = _ -> {
+    checkboxPracticeMode.onClick = _ ->
+    {
       state.playtestPracticeMode = checkboxPracticeMode.selected;
     };
 
@@ -264,7 +274,8 @@ class ChartEditorToolboxHandler
 
     checkboxStartTime.selected = state.playtestStartTime;
 
-    checkboxStartTime.onClick = _ -> {
+    checkboxStartTime.onClick = _ ->
+    {
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
@@ -273,7 +284,8 @@ class ChartEditorToolboxHandler
 
     checkboxBotPlay.selected = state.playtestBotPlayMode;
 
-    checkboxBotPlay.onClick = _ -> {
+    checkboxBotPlay.onClick = _ ->
+    {
       state.playtestBotPlayMode = checkboxBotPlay.selected;
     };
 
@@ -283,7 +295,8 @@ class ChartEditorToolboxHandler
 
     checkboxShowResults.selected = state.playtestShowResults;
 
-    checkboxShowResults.onClick = _ -> {
+    checkboxShowResults.onClick = _ ->
+    {
       state.playtestShowResults = checkboxShowResults.selected;
     };
 
@@ -294,7 +307,8 @@ class ChartEditorToolboxHandler
 
     state.playtestSongScripts = checkboxSongScripts.selected;
 
-    checkboxSongScripts.onClick = _ -> {
+    checkboxSongScripts.onClick = _ ->
+    {
       state.playtestSongScripts = checkboxSongScripts.selected;
     };
 
@@ -305,7 +319,8 @@ class ChartEditorToolboxHandler
 
     state.playtestAudioSettings = checkboxAudioSettings.selected;
 
-    checkboxAudioSettings.onClick = _ -> {
+    checkboxAudioSettings.onClick = _ ->
+    {
       state.playtestAudioSettings = checkboxAudioSettings.selected;
     };
 
@@ -367,7 +382,8 @@ class ChartEditorToolboxHandler
     toolbox.x = 700;
     toolbox.y = 150;
 
-    toolbox.onDialogClosed = function(event:DialogEvent) {
+    toolbox.onDialogClosed = function(event:DialogEvent)
+    {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
     }
 
@@ -382,9 +398,13 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
   static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -396,7 +416,8 @@ class ChartEditorToolboxHandler
     toolbox.x = 200;
     toolbox.y = 150;
 
-    toolbox.onDialogClosed = (event:DialogEvent) -> {
+    toolbox.onDialogClosed = (event:DialogEvent) ->
+    {
       state.menubarItemToggleToolboxOpponentPreview.selected = false;
     }
 
@@ -411,8 +432,12 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 }
 #end

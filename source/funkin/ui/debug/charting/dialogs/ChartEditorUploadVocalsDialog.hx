@@ -39,17 +39,20 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     this.charIds = charIds;
     this.instId = chartEditorState.currentInstrumentalId;
 
-    dialogCancel.onClick = function(_) {
+    dialogCancel.onClick = function(_)
+    {
       hideDialog(DialogButton.CANCEL);
     }
 
-    dialogNoVocals.onClick = function(_) {
+    dialogNoVocals.onClick = function(_)
+    {
       // Dismiss
       chartEditorState.wipeVocalData();
       hideDialog(DialogButton.APPLY);
     };
 
-    dialogContinue.onClick = function(_) {
+    dialogContinue.onClick = function(_)
+    {
       // Dismiss
       hideDialog(DialogButton.APPLY);
     };
@@ -70,7 +73,8 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       var dropHandler:DialogDropTarget = {component: vocalsEntry, handler: null};
 
-      var onDropFile:String->Void = function(pathStr:String) {
+      var onDropFile:String->Void = function(pathStr:String)
+      {
         trace('Selected file: $pathStr');
         var path:Path = new Path(pathStr);
 
@@ -103,42 +107,42 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
         }
       };
 
-      vocalsEntry.onClick = function(_event) {
-        Dialogs.openBinaryFile('Open $charName Vocals', [
-          {label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile) {
-            if (selectedFile != null && selectedFile.bytes != null)
+      vocalsEntry.onClick = function(_event)
+      {
+        Dialogs.openBinaryFile('Open $charName Vocals', [{label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile)
+        {
+          if (selectedFile != null && selectedFile.bytes != null)
+          {
+            trace('Selected file: ' + selectedFile.name);
+
+            if (chartEditorState.loadVocalsFromBytes(selectedFile.bytes, charKey, this.instId, !this.hasClearedVocals))
             {
-              trace('Selected file: ' + selectedFile.name);
+              hasClearedVocals = true;
+              // Tell the user the load was successful.
+              chartEditorState.success('Loaded Vocals', 'Loaded vocals for $charName (${selectedFile.name}), variation ${chartEditorState.selectedVariation}');
 
-              if (chartEditorState.loadVocalsFromBytes(selectedFile.bytes, charKey, this.instId, !this.hasClearedVocals))
-              {
-                hasClearedVocals = true;
-                // Tell the user the load was successful.
-                chartEditorState.success('Loaded Vocals',
-                  'Loaded vocals for $charName (${selectedFile.name}), variation ${chartEditorState.selectedVariation}');
+              #if FEATURE_FILE_DROP
+              vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
+              #else
+              vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${selectedFile.name}';
+              #end
 
-                #if FEATURE_FILE_DROP
-                vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (drag and drop, or click to browse)\nSelected file: ${selectedFile.name}';
-                #else
-                vocalsEntry.vocalsEntryLabel.text = 'Voices for $charName (click to browse)\n${selectedFile.name}';
-                #end
-
-                dialogNoVocals.hidden = true;
-              }
-              else
-              {
-                trace('Failed to load vocal track (${selectedFile.fullPath})');
-
-                chartEditorState.error('Failed to Load Vocals',
-                  'Failed to load vocal track (${selectedFile.name}) for variation (${chartEditorState.selectedVariation})');
-
-                #if FEATURE_FILE_DROP
-                vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
-                #else
-                vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
-                #end
-              }
+              dialogNoVocals.hidden = true;
             }
+            else
+            {
+              trace('Failed to load vocal track (${selectedFile.fullPath})');
+
+              chartEditorState.error('Failed to Load Vocals',
+                'Failed to load vocal track (${selectedFile.name}) for variation (${chartEditorState.selectedVariation})');
+
+              #if FEATURE_FILE_DROP
+              vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
+              #else
+              vocalsEntry.vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
+              #end
+            }
+          }
         });
       }
 
@@ -155,11 +159,10 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
   public static function build(state:ChartEditorState, charIds:Array<String>, ?closable:Bool, ?modal:Bool):ChartEditorUploadVocalsDialog
   {
-    var dialog = new ChartEditorUploadVocalsDialog(state, charIds,
-      {
-        closable: closable ?? false,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorUploadVocalsDialog(state, charIds, {
+      closable: closable ?? false,
+      modal: modal ?? true
+    });
 
     for (dropTarget in dialog.dropHandlers)
     {
@@ -296,13 +299,15 @@ class ChartEditorUploadVocalsEntry extends Box
     vocalsEntryLabel.text = 'Click to browse for vocals for $charName.';
     #end
 
-    this.onMouseOver = function(_event) {
+    this.onMouseOver = function(_event)
+    {
       // if (this.locked) return;
       this.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
 
-    this.onMouseOut = function(_event) {
+    this.onMouseOut = function(_event)
+    {
       this.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }

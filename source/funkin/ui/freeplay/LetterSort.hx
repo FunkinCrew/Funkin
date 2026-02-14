@@ -95,8 +95,7 @@ class LetterSort extends FlxSpriteGroup
 
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   override function update(elapsed:Float):Void
   {
@@ -150,7 +149,8 @@ class LetterSort extends FlxSpriteGroup
     var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
     arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-    new FlxTimer().start(2 / 24, function(_) {
+    new FlxTimer().start(2 / 24, function(_)
+    {
       arrowToMove.offset.x = 0;
     });
     if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
@@ -163,8 +163,10 @@ class LetterSort extends FlxSpriteGroup
    */
   function doLetterChangeAnims(diff:Int):Void
   {
-    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
-      new FlxTimer().start(frameNum / 24, function(_) {
+    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float)
+    {
+      new FlxTimer().start(frameNum / 24, function(_)
+      {
         spr.offset.x = offsetNum;
       });
     };
@@ -186,12 +188,14 @@ class LetterSort extends FlxSpriteGroup
     {
       letter.offset.x = positions[0] * multiPosOrNeg;
 
-      new FlxTimer().start(1 / 24, function(_) {
+      new FlxTimer().start(1 / 24, function(_)
+      {
         letter.offset.x = positions[1] * multiPosOrNeg;
         if (index == 0) letter.visible = false;
       });
 
-      new FlxTimer().start(2 / 24, function(_) {
+      new FlxTimer().start(2 / 24, function(_)
+      {
         letter.offset.x = positions[2] * multiPosOrNeg;
         if (index == 0.) letter.visible = true;
       });
@@ -289,7 +293,8 @@ class FreeplayLetter extends FunkinSprite
         this.anim.pause();
       }
 
-      this.anim.onFinish.add(function(name:String) {
+      this.anim.onFinish.add(function(name:String)
+      {
         this.anim.play(animLetters[curLetter] + " move", true);
       });
     }

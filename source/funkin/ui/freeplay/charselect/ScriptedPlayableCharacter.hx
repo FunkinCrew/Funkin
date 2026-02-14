@@ -5,4 +5,6 @@ package funkin.ui.freeplay.charselect;
  * Create a scripted class that extends PlayableCharacter to use this.
  */
 @:hscriptClass
-class ScriptedPlayableCharacter extends funkin.ui.freeplay.charselect.PlayableCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedPlayableCharacter extends funkin.ui.freeplay.charselect.PlayableCharacter implements polymod.hscript.HScriptedClass
+{
+}

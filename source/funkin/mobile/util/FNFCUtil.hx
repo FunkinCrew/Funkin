@@ -22,7 +22,8 @@ class FNFCUtil
     onFNFCOpen = new FlxTypedSignal<String->Void>();
 
     #if ios
-    FlxG.stage.window.onDropFile.add(function(_) {
+    FlxG.stage.window.onDropFile.add(function(_)
+    {
       final url = queryFNFC();
       if (url != null) getFNFCFromURL(url);
     });

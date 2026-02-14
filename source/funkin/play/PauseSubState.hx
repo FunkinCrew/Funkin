@@ -56,50 +56,35 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Pause menu entries for when the game is paused during a song.
    */
-  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Restart Song', callback: restartPlayState},
-    {text: 'Change Difficulty', callback: switchMode.bind(_, Difficulty)},
-    {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () -> !(PlayState.instance?.isPracticeMode ?? false)},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Restart Song',
+    callback: restartPlayState}, {text: 'Change Difficulty', callback: switchMode.bind(_,
+    Difficulty)}, {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () ->
+      !(PlayState.instance?.isPracticeMode ?? false)}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused in the Chart Editor preview.
    */
-  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Restart Song', callback: restartPlayState},
-    {text: 'Return to Chart Editor', callback: quitToChartEditor},
-  ];
+  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Restart Song',
+    callback: restartPlayState}, {text: 'Return to Chart Editor', callback: quitToChartEditor},];
 
   /**
    * Pause menu entries for when the user selects "Change Difficulty".
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
-    {text: 'Back', callback: switchMode.bind(_, Standard)}
-    // Other entries are added dynamically.
+  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{text: 'Back', callback: switchMode.bind(_,
+    Standard)} // Other entries are added dynamically.
   ];
 
   /**
    * Pause menu entries for when the game is paused during a video cutscene.
    */
-  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Skip Cutscene', callback: skipVideoCutscene},
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Skip Cutscene',
+    callback: skipVideoCutscene}, {text: 'Restart Cutscene', callback: restartVideoCutscene}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused during a conversation.
    */
-  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Skip Dialogue', callback: skipConversation},
-    {text: 'Restart Dialogue', callback: restartConversation},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Skip Dialogue',
+    callback: skipConversation}, {text: 'Restart Dialogue', callback: restartConversation}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Duration for the music to fade in when the pause menu is opened.
@@ -398,9 +383,8 @@ class PauseSubState extends MusicBeatSubState
     pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
     pauseButton.animation.addByIndices('idle', 'pause', [0], "", 24, false);
     pauseButton.animation.addByIndices('hold', 'pause', [5], "", 24, false);
-    pauseButton.animation.addByIndices('confirm', 'pause', [
-      6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-    ], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'pause',
+      [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], "", 24, false);
     pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
     pauseButton.animation.play("confirm");
@@ -504,56 +488,56 @@ class PauseSubState extends MusicBeatSubState
 
   function startCharterTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+      startDelay: CHARTER_FADE_DELAY,
+      ease: FlxEase.quartOut,
+      onComplete: (_) ->
       {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
-          }
-          else
-          {
-            metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startArtistTimer();
-              }
-            });
+        if (PlayState.instance?.currentChart != null)
+        {
+          metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
         }
-      });
+        else
+        {
+          metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
+        }
+
+        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+          ease: FlxEase.quartOut,
+          onComplete: (_) ->
+          {
+            startArtistTimer();
+          }
+        });
+      }
+    });
   }
 
   function startArtistTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+      startDelay: CHARTER_FADE_DELAY,
+      ease: FlxEase.quartOut,
+      onComplete: (_) ->
       {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
-          }
-          else
-          {
-            metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startCharterTimer();
-              }
-            });
+        if (PlayState.instance?.currentChart != null)
+        {
+          metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
         }
-      });
+        else
+        {
+          metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
+        }
+
+        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+          ease: FlxEase.quartOut,
+          onComplete: (_) ->
+          {
+            startCharterTimer();
+          }
+        });
+      }
+    });
   }
 
   var dataFadeTimer = new FlxTimer();
@@ -575,11 +559,13 @@ class PauseSubState extends MusicBeatSubState
     FlxTween.tween(pauseCircle.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});
     FlxTween.tween(pauseCircle, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
 
-    hapticTimer.start(0.2, function(_) {
+    hapticTimer.start(0.2, function(_)
+    {
       HapticUtil.vibrate(0, 0.01, 0.5);
     });
 
-    dataFadeTimer.start(0.3, function(_) {
+    dataFadeTimer.start(0.3, function(_)
+    {
       transitionMetadataIn();
       FlxTween.tween(pauseButton, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
     });
@@ -1016,7 +1002,8 @@ class PauseSubState extends MusicBeatSubState
     {
       state.allowInput = false;
 
-      AdMobUtil.loadInterstitial(function():Void {
+      AdMobUtil.loadInterstitial(function():Void
+      {
         AdMobUtil.PLAYING_COUNTER = 0;
 
         AdMobUtil.removeBanner();
@@ -1052,7 +1039,8 @@ class PauseSubState extends MusicBeatSubState
     {
       state.allowInput = false;
 
-      AdMobUtil.loadInterstitial(function():Void {
+      AdMobUtil.loadInterstitial(function():Void
+      {
         AdMobUtil.PLAYING_COUNTER = 0;
 
         AdMobUtil.removeBanner();

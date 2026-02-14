@@ -188,7 +188,8 @@ class InitState extends FlxState
       FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
         new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
-      FlxG.signals.gameResized.add(function(width:Int, height:Int) {
+      FlxG.signals.gameResized.add(function(width:Int, height:Int)
+      {
         FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
           new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
         FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
@@ -199,10 +200,12 @@ class InitState extends FlxState
       // Since we don't really need VSync on Android we're gonna forcefully disable it on these signals for now
       // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for Android
       #if android
-      FlxG.signals.focusLost.add(function() {
+      FlxG.signals.focusLost.add(function()
+      {
         WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
       });
-      FlxG.signals.focusGained.add(function() {
+      FlxG.signals.focusGained.add(function()
+      {
         WindowUtil.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
       });
       #end
@@ -220,7 +223,8 @@ class InitState extends FlxState
       #if FEATURE_DISCORD_RPC
       DiscordClient.instance.init();
 
-      lime.app.Application.current.onExit.add(function(exitCode) {
+      lime.app.Application.current.onExit.add(function(exitCode)
+      {
         DiscordClient.instance.shutdown();
       });
       #end
@@ -362,37 +366,34 @@ class InitState extends FlxState
     FlxG.switchState(() -> new funkin.ui.debug.stage.StageBuilderState());
     #elseif RESULTS
     // -DRESULTS
-    FlxG.switchState(() -> new funkin.play.ResultState(
-      {
-        storyMode: true,
-        title: "Cum Song Erect by Kawai Sprite",
-        songId: "cum",
-        characterId: "pico",
-        difficultyId: "hard",
-        isNewHighscore: true,
-        scoreData:
-          {
-            score: 1_234_567,
-            tallies:
-              {
-                sick: 130,
-                good: 60,
-                bad: 69,
-                shit: 69,
-                missed: 69,
-                combo: 69,
-                maxCombo: 69,
-                totalNotesHit: 140,
-                totalNotes: 240
-              }
-            // 2400 total notes = 7% = LOSS
-            // 275 total notes = 69% = NICE
-            // 240 total notes = 79% = GOOD
-            // 230 total notes = 82% = GREAT
-            // 210 total notes = 91% = EXCELLENT
-            // 190 total notes = PERFECT
-          },
-      }));
+    FlxG.switchState(() -> new funkin.play.ResultState({
+      storyMode: true,
+      title: "Cum Song Erect by Kawai Sprite",
+      songId: "cum",
+      characterId: "pico",
+      difficultyId: "hard",
+      isNewHighscore: true,
+      scoreData: {
+        score: 1_234_567,
+        tallies: {
+          sick: 130,
+          good: 60,
+          bad: 69,
+          shit: 69,
+          missed: 69,
+          combo: 69,
+          maxCombo: 69,
+          totalNotesHit: 140,
+          totalNotes: 240
+        }
+        // 2400 total notes = 7% = LOSS
+        // 275 total notes = 69% = NICE
+        // 240 total notes = 79% = GOOD
+        // 230 total notes = 82% = GREAT
+        // 210 total notes = 91% = EXCELLENT
+        // 190 total notes = PERFECT
+      },
+    }));
     #elseif ANIMDEBUG
     // -DANIMDEBUG
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
@@ -415,10 +416,9 @@ class InitState extends FlxState
     if (params.chart.shouldLoadChart)
     {
       #if FEATURE_CHART_EDITOR
-      FlxG.switchState(() -> new ChartEditorState(
-        {
-          fnfcTargetPath: params.chart.chartPath,
-        }));
+      FlxG.switchState(() -> new ChartEditorState({
+        fnfcTargetPath: params.chart.chartPath,
+      }));
       #else
       FlxG.switchState(() -> new TitleState());
       #end
@@ -426,10 +426,9 @@ class InitState extends FlxState
     else if (params.stage.shouldLoadStage)
     {
       #if FEATURE_STAGE_EDITOR
-      FlxG.switchState(() -> new StageEditorState(
-        {
-          fnfsTargetPath: params.stage.stagePath,
-        }));
+      FlxG.switchState(() -> new StageEditorState({
+        fnfsTargetPath: params.stage.stagePath,
+      }));
       #else
       FlxG.switchState(() -> new TitleState());
       #end
@@ -446,7 +445,8 @@ class InitState extends FlxState
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       #if mobile
-      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String) {
+      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String)
+      {
         flixel.tweens.FlxTween.globalManager.clear();
         flixel.util.FlxTimer.globalManager.clear();
         @:nullSafety(Off)
@@ -520,11 +520,10 @@ class InitState extends FlxState
     }
 
     @:nullSafety(Off) // Cannot unify?
-    LoadingState.loadPlayState(
-      {
-        targetSong: songData,
-        targetDifficulty: difficultyId,
-      });
+    LoadingState.loadPlayState({
+      targetSong: songData,
+      targetDifficulty: difficultyId,
+    });
   }
 
   /**
@@ -563,11 +562,10 @@ class InitState extends FlxState
     }
 
     @:nullSafety(Off)
-    LoadingState.loadPlayState(
-      {
-        targetSong: targetSong,
-        targetDifficulty: difficultyId,
-      });
+    LoadingState.loadPlayState({
+      targetSong: targetSong,
+      targetDifficulty: difficultyId,
+    });
   }
 
   @:nullSafety(Off) // Meh, remove when flixel.system.debug.log.LogStyle is null safe
@@ -595,7 +593,8 @@ class InitState extends FlxState
 
     // Adds a red button to the debugger.
     // This pauses the game AND the music! This ensures the Conductor stops.
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function() {
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFFCC2233), function()
+    {
       if (FlxG.vcr.paused)
       {
         FlxG.vcr.resume();
@@ -622,7 +621,8 @@ class InitState extends FlxState
 
     // Adds a blue button to the debugger.
     // This skips forward in the song.
-    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function() {
+    FlxG.debugger.addButton(CENTER, new BitmapData(20, 20, true, 0xFF2222CC), function()
+    {
       FlxG.game.debugger.vcr.onStep();
 
       for (snd in FlxG.sound.list)
@@ -639,7 +639,8 @@ class InitState extends FlxState
     // This big obnoxious white button is for MOBILE, so that you can press it
     // easily with your finger when debug bullshit pops up during testing lol!
     #if mobile
-    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
+    {
       FlxG.debugger.visible = false;
 
       // Make errors and warnings less annoying.

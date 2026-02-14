@@ -21,13 +21,13 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 
     super(x, y);
 
-    loadTextureAtlas(DEFAULT_PATH,
-      {
-        applyStageMatrix: true,
-        swfMode: true
-      });
+    loadTextureAtlas(DEFAULT_PATH, {
+      applyStageMatrix: true,
+      swfMode: true
+    });
 
-    anim.onFinish.add(function(animLabel:String) {
+    anim.onFinish.add(function(animLabel:String)
+    {
       switch (animLabel)
       {
         case "slidein":
@@ -59,7 +59,9 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
     });
   }
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
@@ -95,11 +97,19 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
     updateHitbox();
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  };
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void
+  {
+  };
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  };
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  };
 }

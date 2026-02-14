@@ -109,17 +109,16 @@ class StageEditorObject extends FunkinSprite
 
     if (animation.getNameList().contains(name)) // sometimes the animation doesnt add
     {
-      animDatas.set(name,
-        {
-          name: name,
-          prefix: prefix,
-          offsets: offsets,
-          looped: looped,
-          frameRate: frameRate,
-          flipX: flipX,
-          flipY: flipY,
-          frameIndices: indices
-        });
+      animDatas.set(name, {
+        name: name,
+        prefix: prefix,
+        offsets: offsets,
+        looped: looped,
+        frameRate: frameRate,
+        flipX: flipX,
+        flipY: flipY,
+        frameIndices: indices
+      });
     }
   }
 }

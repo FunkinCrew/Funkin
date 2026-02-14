@@ -17,8 +17,7 @@ using StringTools;
 
 class StageDataHandler
 {
-  public static function checkForCharacter(char:BaseCharacter)
-    return char != null;
+  public static function checkForCharacter(char:BaseCharacter) return char != null;
 
   public static function packShitToZip(state:StageEditorState)
   {
@@ -34,26 +33,25 @@ class StageDataHandler
     for (obj in state.spriteArray)
     {
       var data = obj.toData(false);
-      endData.props.push(
-        {
-          name: data.name,
-          assetPath: data.assetPath.startsWith("#") ? data.color : data.assetPath,
-          position: data.position.copy(),
-          zIndex: data.zIndex,
-          isPixel: data.isPixel,
-          scale: data.scale,
-          alpha: data.alpha,
-          danceEvery: data.danceEvery,
-          scroll: data.scroll.copy(),
-          animations: data.animations,
-          startingAnimation: data.startingAnimation,
-          animType: data.animType,
-          flipX: data.flipX,
-          flipY: data.flipY,
-          angle: data.angle,
-          blend: data.blend,
-          color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
-        });
+      endData.props.push({
+        name: data.name,
+        assetPath: data.assetPath.startsWith("#") ? data.color : data.assetPath,
+        position: data.position.copy(),
+        zIndex: data.zIndex,
+        isPixel: data.isPixel,
+        scale: data.scale,
+        alpha: data.alpha,
+        danceEvery: data.danceEvery,
+        scroll: data.scroll.copy(),
+        animations: data.animations,
+        startingAnimation: data.startingAnimation,
+        animType: data.animType,
+        flipX: data.flipX,
+        flipY: data.flipY,
+        angle: data.angle,
+        blend: data.blend,
+        color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
+      });
 
       if (!xmlMap.exists(data.assetPath) && data.animData != "") xmlMap.set(data.assetPath, data.animData);
     }
@@ -83,20 +81,11 @@ class StageDataHandler
     endData.characters.gf.scroll = [state.gf.scrollFactor.x, state.gf.scrollFactor.y];
     endData.characters.dad.scroll = [state.dad.scrollFactor.x, state.dad.scrollFactor.y];
 
-    endData.characters.bf.position = [
-      state.bf.feetPosition.x - state.bf.globalOffsets[0],
-      state.bf.feetPosition.y - state.bf.globalOffsets[1]
-    ];
+    endData.characters.bf.position = [state.bf.feetPosition.x - state.bf.globalOffsets[0], state.bf.feetPosition.y - state.bf.globalOffsets[1]];
 
-    endData.characters.gf.position = [
-      state.gf.feetPosition.x - state.gf.globalOffsets[0],
-      state.gf.feetPosition.y - state.gf.globalOffsets[1]
-    ];
+    endData.characters.gf.position = [state.gf.feetPosition.x - state.gf.globalOffsets[0], state.gf.feetPosition.y - state.gf.globalOffsets[1]];
 
-    endData.characters.dad.position = [
-      state.dad.feetPosition.x - state.dad.globalOffsets[0],
-      state.dad.feetPosition.y - state.dad.globalOffsets[1]
-    ];
+    endData.characters.dad.position = [state.dad.feetPosition.x - state.dad.globalOffsets[0], state.dad.feetPosition.y - state.dad.globalOffsets[1]];
 
     // step 2: saving everything to entryList
     var entryList = new Array<Entry>();
@@ -108,16 +97,15 @@ class StageDataHandler
       var bytes = img?.image?.encode(PNG);
       if (bytes == null) continue;
 
-      var entry:Entry =
-        {
-          fileName: name + ".png",
-          fileSize: bytes.length,
-          fileTime: Date.now(),
-          compressed: false,
-          dataSize: bytes.length,
-          data: bytes,
-          crc32: null // apparently fileutil.hx does not like crc32, idk why but i dont even know what crc32 is
-        }
+      var entry:Entry = {
+        fileName: name + ".png",
+        fileSize: bytes.length,
+        fileTime: Date.now(),
+        compressed: false,
+        dataSize: bytes.length,
+        data: bytes,
+        crc32: null // apparently fileutil.hx does not like crc32, idk why but i dont even know what crc32 is
+      }
 
       entryList.push(entry);
     }
@@ -127,32 +115,30 @@ class StageDataHandler
     {
       var bytes = Bytes.ofString(xml);
 
-      var entry:Entry =
-        {
-          fileName: path + ".xml",
-          fileSize: bytes.length,
-          fileTime: Date.now(),
-          compressed: false,
-          dataSize: bytes.length,
-          data: bytes,
-          crc32: null
-        }
+      var entry:Entry = {
+        fileName: path + ".xml",
+        fileSize: bytes.length,
+        fileTime: Date.now(),
+        compressed: false,
+        dataSize: bytes.length,
+        data: bytes,
+        crc32: null
+      }
 
       entryList.push(entry);
     }
 
     // step 2 phase 3: the main data
     var stageBytes = Bytes.ofString(endData.serialize());
-    entryList.push(
-      {
-        fileName: formatStageId(endData.name) + ".json",
-        fileSize: stageBytes.length,
-        fileTime: Date.now(),
-        compressed: false,
-        dataSize: stageBytes.length,
-        data: stageBytes,
-        crc32: null
-      });
+    entryList.push({
+      fileName: formatStageId(endData.name) + ".json",
+      fileSize: stageBytes.length,
+      fileTime: Date.now(),
+      compressed: false,
+      dataSize: stageBytes.length,
+      data: stageBytes,
+      crc32: null
+    });
 
     var zipFileBytes = FileUtil.createZIPFromEntries(entryList);
     return zipFileBytes;
@@ -206,26 +192,25 @@ class StageDataHandler
     {
       // make the data and roll with it
       var spr = new StageEditorObject();
-      spr.fromData(
-        {
-          name: objData.name ?? "Unnamed",
-          assetPath: objData.assetPath,
-          animations: objData.animations.copy(),
-          scale: objData.scale,
-          position: objData.position,
-          alpha: objData.alpha,
-          angle: objData.angle,
-          zIndex: objData.zIndex,
-          danceEvery: objData.danceEvery,
-          isPixel: objData.isPixel,
-          scroll: objData.scroll.copy(),
-          color: objData.color,
-          blend: objData.blend,
-          flipX: objData.flipX,
-          flipY: objData.flipY,
-          startingAnimation: objData.startingAnimation,
-          animData: xmls[objData.assetPath] ?? ""
-        });
+      spr.fromData({
+        name: objData.name ?? "Unnamed",
+        assetPath: objData.assetPath,
+        animations: objData.animations.copy(),
+        scale: objData.scale,
+        position: objData.position,
+        alpha: objData.alpha,
+        angle: objData.angle,
+        zIndex: objData.zIndex,
+        danceEvery: objData.danceEvery,
+        isPixel: objData.isPixel,
+        scroll: objData.scroll.copy(),
+        color: objData.color,
+        blend: objData.blend,
+        flipX: objData.flipX,
+        flipY: objData.flipY,
+        startingAnimation: objData.startingAnimation,
+        animData: xmls[objData.assetPath] ?? ""
+      });
 
       state.add(spr);
     }
@@ -295,7 +280,8 @@ class StageDataHandler
 
     if (OpenFLAssets.getLibrary(data.directory) == null)
     {
-      OpenFLAssets.loadLibrary(data.directory).onComplete(function(_) {
+      OpenFLAssets.loadLibrary(data.directory).onComplete(function(_)
+      {
         loadFromDataRaw(state, data);
       });
       return;
@@ -316,26 +302,25 @@ class StageDataHandler
       var animPath:String = Paths.file("images/" + objData.assetPath + (usePacker ? ".txt" : ".xml"));
       var animText:String = Assets.exists(animPath) ? Assets.getText(animPath) : "";
 
-      spr.fromData(
-        {
-          name: objData.name ?? "Unnamed",
-          assetPath: objData.assetPath,
-          animations: objData.animations.copy(),
-          scale: objData.scale,
-          position: objData.position,
-          alpha: objData.alpha,
-          angle: objData.angle,
-          zIndex: objData.zIndex,
-          danceEvery: objData.danceEvery,
-          isPixel: objData.isPixel,
-          scroll: objData.scroll.copy(),
-          color: objData.color,
-          blend: objData.blend,
-          flipX: objData.flipX,
-          flipY: objData.flipY,
-          startingAnimation: objData.startingAnimation,
-          animData: animText
-        });
+      spr.fromData({
+        name: objData.name ?? "Unnamed",
+        assetPath: objData.assetPath,
+        animations: objData.animations.copy(),
+        scale: objData.scale,
+        position: objData.position,
+        alpha: objData.alpha,
+        angle: objData.angle,
+        zIndex: objData.zIndex,
+        danceEvery: objData.danceEvery,
+        isPixel: objData.isPixel,
+        scroll: objData.scroll.copy(),
+        color: objData.color,
+        blend: objData.blend,
+        flipX: objData.flipX,
+        flipY: objData.flipY,
+        startingAnimation: objData.startingAnimation,
+        animData: animText
+      });
 
       state.add(spr);
     }

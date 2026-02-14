@@ -91,4 +91,6 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
   }
 }
 
-typedef StickerEntryParams = {}
+typedef StickerEntryParams =
+{
+}

@@ -107,15 +107,14 @@ class CreditsState extends MusicBeatState
     entriesToBuild = [];
     for (entry in CreditsDataHandler.CREDITS_DATA.entries)
     {
-      entriesToBuild.push(
-        {
-          data: entry,
-          lineIndexToBuild: 0,
-          backerIndexToBuild: 0,
-          hasBuiltHeader: (entry.header == null),
-          hasBuiltBody: (entry.body.length == 0),
-          hasBuiltBackers: (!entry.appendBackers || backersToBuild.length == 0)
-        });
+      entriesToBuild.push({
+        data: entry,
+        lineIndexToBuild: 0,
+        backerIndexToBuild: 0,
+        hasBuiltHeader: (entry.header == null),
+        hasBuiltBody: (entry.body.length == 0),
+        hasBuiltBackers: (!entry.appendBackers || backersToBuild.length == 0)
+      });
     }
 
     // Background
@@ -142,13 +141,12 @@ class CreditsState extends MusicBeatState
     add(creditsGroup);
 
     // Music
-    FunkinSound.playMusic('freeplayRandom',
-      {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: true,
-        loop: true
-      });
+    FunkinSound.playMusic('freeplayRandom', {
+      startingVolume: 0.0,
+      overrideExisting: true,
+      restartTrack: true,
+      loop: true
+    });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile
@@ -221,7 +219,8 @@ class CreditsState extends MusicBeatState
 
   function killOffScreenLines():Void
   {
-    creditsGroup.forEachExists(function(creditsLine:FlxSprite) {
+    creditsGroup.forEachExists(function(creditsLine:FlxSprite)
+    {
       if (creditsLine.y + creditsLine.height <= 0)
       {
         creditsLine.kill();

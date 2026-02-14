@@ -56,7 +56,8 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     {
       // if(i.finalDigit == 10) continue;
 
-      new FlxTimer().start((i - 1) / 24, _ -> {
+      new FlxTimer().start((i - 1) / 24, _ ->
+      {
         group.members[i].finalDelay = scoreStart - (i - 1);
         group.members[i].playAnim();
         group.members[i].shuffle();
@@ -145,28 +146,28 @@ class ScoreNum extends FlxSprite
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
-  var numToString:Array<String> = [
-    "ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "DISABLED"
-  ];
+  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "DISABLED"];
 
   function finishShuffleTween():Void
   {
-    var tweenFunction = function(x) {
+    var tweenFunction = function(x)
+    {
       var digitRounded = Math.floor(x);
       // if(digitRounded == finalDigit) glow = true;
       digit = digitRounded;
     };
 
-    finalTween = FlxTween.num(0.0, finalDigit, 23 / 24,
+    finalTween = FlxTween.num(0.0, finalDigit, 23 / 24, {
+      ease: FlxEase.quadOut,
+      onComplete: function(input)
       {
-        ease: FlxEase.quadOut,
-        onComplete: function(input) {
-          new FlxTimer().start((finalDelay) / 24, _ -> {
-            animation.play(animation.curAnim.name, true, false, 0);
-          });
-          // fuck
-        }
-      }, tweenFunction);
+        new FlxTimer().start((finalDelay) / 24, _ ->
+        {
+          animation.play(animation.curAnim.name, true, false, 0);
+        });
+        // fuck
+      }
+    }, tweenFunction);
   }
 
   function shuffleProgress(shuffleTimer:FlxTimer):Void

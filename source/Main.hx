@@ -136,7 +136,8 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.initAsync(function(success:Bool):Void {
+    Handle.initAsync(function(success:Bool):Void
+    {
       if (success)
       {
         trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');

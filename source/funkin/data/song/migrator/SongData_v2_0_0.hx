@@ -49,7 +49,9 @@ class SongMetadata_v2_0_0
 
   public var timeChanges:Array<SongData.SongTimeChange>;
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   /**
    * Produces a string representation suitable for debugging.
@@ -88,7 +90,9 @@ class SongPlayData_v2_0_0
 
   public var stage:String;
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   /**
    * Produces a string representation suitable for debugging.

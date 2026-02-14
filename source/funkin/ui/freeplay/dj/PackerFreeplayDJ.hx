@@ -9,7 +9,9 @@ import funkin.data.freeplay.player.PlayerRegistry;
  * Create a scripted class that extends PackerFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedPackerFreeplayDJ extends PackerFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedPackerFreeplayDJ extends PackerFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A PackerFreeplayDJ is a Freeplay DJ which is rendered by

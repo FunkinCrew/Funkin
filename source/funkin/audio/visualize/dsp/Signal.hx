@@ -86,30 +86,25 @@ class Signal
   /**
     Returns the average value of an array.
   **/
-  public static function mean(y:Array<Float>):Float
-    return sum(y) / y.length;
+  public static function mean(y:Array<Float>):Float return sum(y) / y.length;
 
   /**
     Returns the global maximum.
   **/
-  public static function max(y:Array<Float>):Float
-    return y.fold(Math.max, y[0]);
+  public static function max(y:Array<Float>):Float return y.fold(Math.max, y[0]);
 
   /**
     Returns the global maximum's index.
   **/
-  public static function maxi(y:Array<Float>):Int
-    return y.foldi((yi, m, i) -> yi > y[m] ? i : m, 0);
+  public static function maxi(y:Array<Float>):Int return y.foldi((yi, m, i) -> yi > y[m] ? i : m, 0);
 
   /**
     Returns the global minimum.
   **/
-  public static function min(y:Array<Float>):Float
-    return y.fold(Math.min, y[0]);
+  public static function min(y:Array<Float>):Float return y.fold(Math.min, y[0]);
 
   /**
     Returns the global minimum's index.
   **/
-  public static function mini(y:Array<Float>):Int
-    return y.foldi((yi, m, i) -> yi < y[m] ? i : m, 0);
+  public static function mini(y:Array<Float>):Int return y.foldi((yi, m, i) -> yi < y[m] ? i : m, 0);
 }

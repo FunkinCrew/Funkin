@@ -169,11 +169,9 @@ class PlayerFreeplayDJData
     }
   }
 
-  public inline function getAssetPath():String
-    return assetPath; // return assetPath;
+  public inline function getAssetPath():String return assetPath; // return assetPath;
 
-  public inline function getAnimationsList():Array<AnimationData>
-    return animations;
+  public inline function getAnimationsList():Array<AnimationData> return animations;
 
   public function useApplyStageMatrix():Bool
   {

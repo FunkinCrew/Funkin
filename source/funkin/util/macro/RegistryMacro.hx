@@ -168,7 +168,8 @@ class RegistryMacro
 
         public function listModdedEntryIds():Array<String>
         {
-          return listEntryIds().filter(function(id:String):Bool {
+          return listEntryIds().filter(function(id:String):Bool
+          {
             return listBaseGameEntryIds().indexOf(id) == -1;
           });
         }
@@ -306,30 +307,31 @@ class RegistryMacro
 
     var registry:String = '${registryCls.module}.${registryCls.name}';
 
-    Context.defineType(
-      {
-        pos: Context.currentPos(),
-        pack: ['funkin', 'macro', 'impl'],
-        name: '_${cls.name}_Impl',
-        kind: TypeDefKind.TDClass(null, [], false, false, false),
-        fields: (macro class TempClass
+    Context.defineType({
+      pos: Context.currentPos(),
+      pack: ['funkin', 'macro', 'impl'],
+      name: '_${cls.name}_Impl',
+      kind: TypeDefKind.TDClass(null, [], false, false, false),
+      fields: (macro class TempClass
+        {
+          public static inline function _fetchData(me:$clsType, id:String)
           {
-            public static inline function _fetchData(me:$clsType, id:String)
+            return $
             {
-              return $
-              {
-                Context.parse(registry, Context.currentPos())
-              }.instance.parseEntryDataWithMigration(id, ${Context.parse(registry, Context.currentPos())}.instance.fetchEntryVersion(id));
-            }
+              Context.parse(registry, Context.currentPos())
+            }.instance.parseEntryDataWithMigration(id, ${Context.parse(registry, Context.currentPos())}.instance.fetchEntryVersion(id));
+          }
 
-            public static inline function toString(me:$clsType)
-            {
-              return $v{cls.name} + '(' + me.id + ')';
-            }
+          public static inline function toString(me:$clsType)
+          {
+            return $v{cls.name} + '(' + me.id + ')';
+          }
 
-            public static inline function destroy(me:$clsType) {}
-          }).fields
-      });
+          public static inline function destroy(me:$clsType)
+          {
+          }
+        }).fields
+    });
   }
 
   static function getRegistryDataFilePath(cls:ClassType, fields:Array<Field>):String

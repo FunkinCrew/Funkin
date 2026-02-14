@@ -72,7 +72,8 @@ class AdMobUtil
    */
   public static function init():Void
   {
-    Admob.onEvent.add(function(event:AdmobEvent):Void {
+    Admob.onEvent.add(function(event:AdmobEvent):Void
+    {
       switch (event.name)
       {
         case AdmobEvent.INIT_OK:

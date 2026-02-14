@@ -22,10 +22,9 @@ class ZoomCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('ZoomCamera',
-      {
-        processOldEvents: true
-      });
+    super('ZoomCamera', {
+      processOldEvents: true
+    });
   }
 
   static final DEFAULT_ZOOM:Float = 1.0;
@@ -89,61 +88,40 @@ class ZoomCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: 'zoom',
-        title: 'Zoom Level',
-        defaultValue: DEFAULT_ZOOM,
-        min: 0,
-        step: 0.05,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      },
-      {
-        name: 'duration',
-        title: 'Duration',
-        defaultValue: DEFAULT_DURATION,
-        min: 0,
-        step: 0.5,
-        type: SongEventFieldType.FLOAT,
-        units: 'steps'
-      },
-      {
-        name: 'mode',
-        title: 'Mode',
-        defaultValue: DEFAULT_MODE,
-        type: SongEventFieldType.ENUM,
-        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
-      },
-      {
-        name: 'ease',
-        title: 'Easing Type',
-        defaultValue: SongEvent.DEFAULT_EASE,
-        type: SongEventFieldType.ENUM,
-        keys: [
-          'Linear' => 'linear',
-          'Instant (Ignores duration)' => 'INSTANT',
-          'Sine' => 'sine',
-          'Quad' => 'quad',
-          'Cube' => 'cube',
-          'Quart' => 'quart',
-          'Quint' => 'quint',
-          'Expo' => 'expo',
-          'Smooth Step' => 'smoothStep',
-          'Smoother Step' => 'smootherStep',
-          'Elastic' => 'elastic',
-          'Back' => 'back',
-          'Bounce' => 'bounce',
-          'Circ ' => 'circ',
-        ]
-      },
-      {
-        name: 'easeDir',
-        title: 'Easing Direction',
-        defaultValue: SongEvent.DEFAULT_EASE_DIR,
-        type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-      }
-    ]);
+    return new SongEventSchema([{
+      name: 'zoom',
+      title: 'Zoom Level',
+      defaultValue: DEFAULT_ZOOM,
+      min: 0,
+      step: 0.05,
+      type: SongEventFieldType.FLOAT,
+      units: 'x'
+    }, {
+      name: 'duration',
+      title: 'Duration',
+      defaultValue: DEFAULT_DURATION,
+      min: 0,
+      step: 0.5,
+      type: SongEventFieldType.FLOAT,
+      units: 'steps'
+    }, {
+      name: 'mode',
+      title: 'Mode',
+      defaultValue: DEFAULT_MODE,
+      type: SongEventFieldType.ENUM,
+      keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+    }, {
+      name: 'ease',
+      title: 'Easing Type',
+      defaultValue: SongEvent.DEFAULT_EASE,
+      type: SongEventFieldType.ENUM,
+      keys: ['Linear' => 'linear', 'Instant (Ignores duration)' => 'INSTANT', 'Sine' => 'sine', 'Quad' => 'quad', 'Cube' => 'cube', 'Quart' => 'quart', 'Quint' => 'quint', 'Expo' => 'expo', 'Smooth Step' => 'smoothStep', 'Smoother Step' => 'smootherStep', 'Elastic' => 'elastic', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ ' => 'circ',]
+    }, {
+      name: 'easeDir',
+      title: 'Easing Direction',
+      defaultValue: SongEvent.DEFAULT_EASE_DIR,
+      type: SongEventFieldType.ENUM,
+      keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+    }]);
   }
 }

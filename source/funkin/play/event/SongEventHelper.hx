@@ -8,20 +8,7 @@ class SongEventHelper
 {
   public static var EASE_CANVAS_SIZE:Int = 200;
   public static var easeBitmapMap:Map<String, BitmapData> = new Map<String, BitmapData>();
-  public static var easeDirList:Array<String> = [
-    "sine",
-    "quad",
-    "cube",
-    "quart",
-    "quint",
-    "expo",
-    "smoothStep",
-    "smootherStep",
-    "elastic",
-    "back",
-    "bounce",
-    "circ"
-  ];
+  public static var easeDirList:Array<String> = ["sine", "quad", "cube", "quart", "quint", "expo", "smoothStep", "smootherStep", "elastic", "back", "bounce", "circ"];
   public static var easeDirs:Array<String> = ["In", "Out", "InOut"];
   public static var easeDotCache:Map<String, Array<FlxSprite>> = new Map<String, Array<FlxSprite>>();
 
