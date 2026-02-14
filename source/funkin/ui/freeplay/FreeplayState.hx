@@ -2961,7 +2961,7 @@ class FreeplayState extends MusicBeatSubState
         overrideExisting: true,
         restartTrack: false
       });
-      if (FlxG.sound.music != null) FlxG.sound.music.fadeIn(2, 0, previewVolume);
+      FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else
     {
@@ -2995,8 +2995,8 @@ class FreeplayState extends MusicBeatSubState
         suffix: instSuffix,
         partialParams: {
           loadPartial: true,
-          start: daSongCapsule?.freeplayData?.previewStartTime ?? 0,
-          end: daSongCapsule?.freeplayData?.previewEndTime ?? 0.2
+          start: 0,
+          end: 0.2
         },
         onLoad: function()
         {

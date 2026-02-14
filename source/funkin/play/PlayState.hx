@@ -3425,7 +3425,7 @@ class PlayState extends MusicBeatSubState
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
       var data = {
-        score: Std.int(songScore),
+        score: songScore,
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3474,7 +3474,7 @@ class PlayState extends MusicBeatSubState
 
       // Determine the score rank for this song we just finished.
       var scoreRank:Null<ScoringRank> = Scoring.calculateRank({
-        score: Std.int(songScore),
+        score: songScore,
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3835,7 +3835,7 @@ class PlayState extends MusicBeatSubState
       title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
       prevScoreData: prevScoreData,
       scoreData: {
-        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : Std.int(songScore),
+        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
         tallies: {
           sick: talliesToUse.sick,
           good: talliesToUse.good,
