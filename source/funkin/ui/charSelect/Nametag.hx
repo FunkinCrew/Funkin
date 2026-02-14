@@ -75,16 +75,26 @@ class Nametag extends FlxSprite
 
     if (fadeOut)
     {
-      currentMosaicSequence = new Sequence([{time: 0 / 30, callback: () -> mosaicShader.setBlockSize(1,
-        1)}, {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 27,
-          height / 26)}, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10,
-          height / 10)}, {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(1, 1)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)
+      }, {
+        time: 2 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},]);
     }
     else
     {
-      currentMosaicSequence = new Sequence([{time: 0 / 30, callback: () -> mosaicShader.setBlockSize(width / 10,
-        height / 10)}, {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 73,
-          height / 6)}, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)
+      }, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},]);
     }
   }
 

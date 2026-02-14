@@ -848,7 +848,6 @@ class ResultState extends MusicBeatSubState
         introMusicAudio.onComplete = null;
 
         FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
-
           onComplete: _ ->
           {
             if (introMusicAudio != null)

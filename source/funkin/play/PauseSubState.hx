@@ -56,35 +56,50 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Pause menu entries for when the game is paused during a song.
    */
-  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Restart Song',
-    callback: restartPlayState}, {text: 'Change Difficulty', callback: switchMode.bind(_,
-    Difficulty)}, {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () ->
-      !(PlayState.instance?.isPracticeMode ?? false)}, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Restart Song',
+    callback: restartPlayState
+  }, {
+    text: 'Change Difficulty',
+    callback: switchMode.bind(_, Difficulty)
+  }, {
+    text: 'Enable Practice Mode',
+    callback: enablePracticeMode,
+    filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
+  }, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused in the Chart Editor preview.
    */
-  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Restart Song',
-    callback: restartPlayState}, {text: 'Return to Chart Editor', callback: quitToChartEditor},];
+  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Restart Song',
+    callback: restartPlayState
+  }, {text: 'Return to Chart Editor', callback: quitToChartEditor},];
 
   /**
    * Pause menu entries for when the user selects "Change Difficulty".
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{text: 'Back', callback: switchMode.bind(_,
-    Standard)} // Other entries are added dynamically.
+  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{
+    text: 'Back',
+    callback: switchMode.bind(_, Standard)
+  } // Other entries are added dynamically.
   ];
 
   /**
    * Pause menu entries for when the game is paused during a video cutscene.
    */
-  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Skip Cutscene',
-    callback: skipVideoCutscene}, {text: 'Restart Cutscene', callback: restartVideoCutscene}, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Skip Cutscene',
+    callback: skipVideoCutscene
+  }, {text: 'Restart Cutscene', callback: restartVideoCutscene}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused during a conversation.
    */
-  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {text: 'Skip Dialogue',
-    callback: skipConversation}, {text: 'Restart Dialogue', callback: restartConversation}, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Skip Dialogue',
+    callback: skipConversation
+  }, {text: 'Restart Dialogue', callback: restartConversation}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Duration for the music to fade in when the pause menu is opened.
