@@ -23,4 +23,6 @@ class StageRegistry extends BaseRegistry<Stage, StageData, StageEntryParams> imp
   }
 }
 
-typedef StageEntryParams = {}
+typedef StageEntryParams =
+{
+}

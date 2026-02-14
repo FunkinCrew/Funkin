@@ -8,7 +8,9 @@ import funkin.util.assets.FlxAnimationUtil;
  * Create a scripted class that extends AnimateAtlasFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * An AnimateAtlasFreeplayDJ is a Freeplay DJ which is rendered by

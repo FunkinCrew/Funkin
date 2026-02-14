@@ -79,7 +79,8 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
   {
     cursorDenied.visible = true;
     cursorDenied.animation.play('idle', true);
-    cursorDenied.animation.onFinish.add((_) -> {
+    cursorDenied.animation.onFinish.add((_) ->
+    {
       cursorDenied.visible = false;
     });
   }

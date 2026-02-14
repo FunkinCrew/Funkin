@@ -29,10 +29,9 @@ class ScrollSpeedEvent extends SongEvent
 {
   public function new()
   {
-    super('ScrollSpeed',
-      {
-        processOldEvents: true
-      });
+    super('ScrollSpeed', {
+      processOldEvents: true
+    });
   }
 
   static final DEFAULT_SCROLL:Float = 1;
@@ -111,67 +110,45 @@ class ScrollSpeedEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: 'scroll',
-        title: 'Target Value',
-        defaultValue: DEFAULT_SCROLL,
-        min: 0.1,
-        step: 0.1,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      },
-      {
-        name: 'duration',
-        title: 'Duration',
-        defaultValue: DEFAULT_DURATION,
-        min: 0,
-        step: 0.5,
-        type: SongEventFieldType.FLOAT,
-        units: 'steps'
-      },
-      {
-        name: 'ease',
-        title: 'Easing Type',
-        defaultValue: SongEvent.DEFAULT_EASE,
-        type: SongEventFieldType.ENUM,
-        keys: [
-          'Linear' => 'linear',
-          'Instant (Ignores duration)' => 'INSTANT',
-          'Sine' => 'sine',
-          'Quad' => 'quad',
-          'Cube' => 'cube',
-          'Quart' => 'quart',
-          'Quint' => 'quint',
-          'Expo' => 'expo',
-          'Smooth Step' => 'smoothStep',
-          'Smoother Step' => 'smootherStep',
-          'Elastic' => 'elastic',
-          'Back' => 'back',
-          'Bounce' => 'bounce',
-          'Circ ' => 'circ',
-        ]
-      },
-      {
-        name: 'easeDir',
-        title: 'Easing Direction',
-        defaultValue: SongEvent.DEFAULT_EASE_DIR,
-        type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-      },
-      {
-        name: 'strumline',
-        title: 'Target Strumline',
-        defaultValue: DEFAULT_STRUMLINE,
-        type: SongEventFieldType.ENUM,
-        keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
-      },
-      {
-        name: 'absolute',
-        title: 'Absolute',
-        defaultValue: DEFAULT_ABSOLUTE,
-        type: SongEventFieldType.BOOL,
-      }
-    ]);
+    return new SongEventSchema([{
+      name: 'scroll',
+      title: 'Target Value',
+      defaultValue: DEFAULT_SCROLL,
+      min: 0.1,
+      step: 0.1,
+      type: SongEventFieldType.FLOAT,
+      units: 'x'
+    }, {
+      name: 'duration',
+      title: 'Duration',
+      defaultValue: DEFAULT_DURATION,
+      min: 0,
+      step: 0.5,
+      type: SongEventFieldType.FLOAT,
+      units: 'steps'
+    }, {
+      name: 'ease',
+      title: 'Easing Type',
+      defaultValue: SongEvent.DEFAULT_EASE,
+      type: SongEventFieldType.ENUM,
+      keys: ['Linear' => 'linear', 'Instant (Ignores duration)' => 'INSTANT', 'Sine' => 'sine', 'Quad' => 'quad', 'Cube' => 'cube', 'Quart' => 'quart', 'Quint' => 'quint', 'Expo' => 'expo', 'Smooth Step' => 'smoothStep', 'Smoother Step' => 'smootherStep', 'Elastic' => 'elastic', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ ' => 'circ',]
+    }, {
+      name: 'easeDir',
+      title: 'Easing Direction',
+      defaultValue: SongEvent.DEFAULT_EASE_DIR,
+      type: SongEventFieldType.ENUM,
+      keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+    }, {
+      name: 'strumline',
+      title: 'Target Strumline',
+      defaultValue: DEFAULT_STRUMLINE,
+      type: SongEventFieldType.ENUM,
+      keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
+    }, {
+      name: 'absolute',
+      title: 'Absolute',
+      defaultValue: DEFAULT_ABSOLUTE,
+      type: SongEventFieldType.BOOL,
+    }]);
   }
 }

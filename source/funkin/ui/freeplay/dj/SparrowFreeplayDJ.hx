@@ -9,7 +9,9 @@ import funkin.data.freeplay.player.PlayerRegistry;
  * Create a scripted class that extends SparrowFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedSparrowFreeplayDJ extends SparrowFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedSparrowFreeplayDJ extends SparrowFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A SparrowFreeplayDJ is a Freeplay DJ which is rendered by

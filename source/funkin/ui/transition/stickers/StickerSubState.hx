@@ -76,11 +76,13 @@ class StickerSubState extends MusicBeatSubState
     this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
     // TODO: Make this tied to the sticker pack more closely.
     var assetsInList = Assets.list();
-    var soundFilterFunc = function(a:String) {
+    var soundFilterFunc = function(a:String)
+    {
       return a.startsWith('assets/shared/sounds/stickersounds/');
     };
     soundSelections = assetsInList.filter(soundFilterFunc);
-    soundSelections = soundSelections.map(function(a:String) {
+    soundSelections = soundSelections.map(function(a:String)
+    {
       return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
     });
     grpStickers = new FlxTypedGroup<StickerSprite>();
@@ -94,7 +96,8 @@ class StickerSubState extends MusicBeatSubState
       soundSelections.push(i);
     }
     soundSelection = FlxG.random.getObject(soundSelections);
-    var filterFunc = function(a:String) {
+    var filterFunc = function(a:String)
+    {
       return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
     };
     var assetsInList3 = Assets.list();
@@ -128,7 +131,8 @@ class StickerSubState extends MusicBeatSubState
     transitionSprite?.setupStickers(grpStickers);
     for (ind => sticker in grpStickers.members)
     {
-      new FlxTimer().start(sticker.timing, _ -> {
+      new FlxTimer().start(sticker.timing, _ ->
+      {
         sticker.visible = false;
         var daSound:String = FlxG.random.getObject(sounds);
         FunkinSound.playOnce(Paths.sound(daSound));
@@ -186,7 +190,8 @@ class StickerSubState extends MusicBeatSubState
     for (ind => sticker in grpStickers.members)
     {
       sticker.timing = FlxMath.remapToRange(ind, 0, grpStickers.members.length, 0, 0.9);
-      new FlxTimer().start(sticker.timing, _ -> {
+      new FlxTimer().start(sticker.timing, _ ->
+      {
         if (grpStickers == null) return;
         sticker.visible = true;
         var daSound:String = FlxG.random.getObject(sounds);
@@ -196,7 +201,8 @@ class StickerSubState extends MusicBeatSubState
         var frameTimer:Int = FlxG.random.int(0, 2);
         // always make the last one POP
         if (ind == grpStickers.members.length - 1) frameTimer = 2;
-        new FlxTimer().start((1 / 24) * frameTimer, _ -> {
+        new FlxTimer().start((1 / 24) * frameTimer, _ ->
+        {
           if (sticker == null) return;
           sticker.scale.x = sticker.scale.y = FlxG.random.float(0.97, 1.02);
           if (ind == grpStickers.members.length - 1)
@@ -204,18 +210,18 @@ class StickerSubState extends MusicBeatSubState
             switchingState = true;
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
-            FlxG.signals.preStateSwitch.addOnce(() ->
-              {
-                #if ios
-                trace(DeviceUtil.iPhoneNumber);
-                if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
-                else
-                  funkin.FunkinMemory.purgeCache();
-                #else
-                funkin.FunkinMemory.purgeCache(true);
-                #end
-              });
-            FlxG.switchState(() -> {
+            FlxG.signals.preStateSwitch.addOnce(() -> {
+              #if ios
+              trace(DeviceUtil.iPhoneNumber);
+              if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+              else
+                funkin.FunkinMemory.purgeCache();
+              #else
+              funkin.FunkinMemory.purgeCache(true);
+              #end
+            });
+            FlxG.switchState(() ->
+            {
               // TODO: Rework this asset caching stuff
               // NOTE: This has to come AFTER the state switch,
               // otherwise the game tries to render destroyed sprites!
@@ -226,7 +232,8 @@ class StickerSubState extends MusicBeatSubState
         });
       });
     }
-    grpStickers.sort((ord, a, b) -> {
+    grpStickers.sort((ord, a, b) ->
+    {
       return FlxSort.byValues(ord, a.timing, b.timing);
     });
   }

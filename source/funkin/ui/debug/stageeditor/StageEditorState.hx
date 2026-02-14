@@ -65,17 +65,11 @@ class StageEditorState extends UIState
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
   public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
 
-  public static final DEFAULT_POSITIONS:Map<CharacterType, Array<Float>> = [
-    CharacterType.BF => [989.5, 885],
-    CharacterType.GF => [751.5, 787],
-    CharacterType.DAD => [335, 885]
-  ];
+  public static final DEFAULT_POSITIONS:Map<CharacterType,
+    Array<Float>> = [CharacterType.BF => [989.5, 885], CharacterType.GF => [751.5, 787], CharacterType.DAD => [335, 885]];
 
-  public static final DEFAULT_CAMERA_OFFSETS:Map<CharacterType, Array<Float>> = [
-    CharacterType.BF => [-100, -100],
-    CharacterType.GF => [0, 0],
-    CharacterType.DAD => [150, -100]
-  ];
+  public static final DEFAULT_CAMERA_OFFSETS:Map<CharacterType,
+    Array<Float>> = [CharacterType.BF => [-100, -100], CharacterType.GF => [0, 0], CharacterType.DAD => [150, -100]];
 
   public static final MAX_Z_INDEX:Int = 10000;
   public static final CHARACTER_COLORS:Array<FlxColor> = [FlxColor.RED, FlxColor.PURPLE, FlxColor.CYAN]; // FCUK IVE TURNED INTO AN AMERICAN
@@ -205,7 +199,8 @@ class StageEditorState extends UIState
 
     if (!saved)
     {
-      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
+      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer)
+      {
         saveBackup();
       });
     }
@@ -235,14 +230,11 @@ class StageEditorState extends UIState
   public var bf(get, never):BaseCharacter;
   public var dad(get, never):BaseCharacter;
 
-  function get_gf()
-    return charGroups[CharacterType.GF].getFirst(StageDataHandler.checkForCharacter);
+  function get_gf() return charGroups[CharacterType.GF].getFirst(StageDataHandler.checkForCharacter);
 
-  function get_bf()
-    return charGroups[CharacterType.BF].getFirst(StageDataHandler.checkForCharacter);
+  function get_bf() return charGroups[CharacterType.BF].getFirst(StageDataHandler.checkForCharacter);
 
-  function get_dad()
-    return charGroups[CharacterType.DAD].getFirst(StageDataHandler.checkForCharacter);
+  function get_dad() return charGroups[CharacterType.DAD].getFirst(StageDataHandler.checkForCharacter);
 
   public var charGroups:Map<CharacterType, FlxTypedGroup<BaseCharacter>> = [];
 
@@ -352,11 +344,7 @@ class StageEditorState extends UIState
     bf?.updateHitbox();
 
     // Only one character per group allowed.
-    charGroups = [
-      CharacterType.BF => new FlxTypedGroup<BaseCharacter>(1),
-      CharacterType.GF => new FlxTypedGroup<BaseCharacter>(1),
-      CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)
-    ];
+    charGroups = [CharacterType.BF => new FlxTypedGroup<BaseCharacter>(1), CharacterType.GF => new FlxTypedGroup<BaseCharacter>(1), CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)];
 
     if (gf != null)
     {
@@ -439,7 +427,8 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? "" : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(path:String):Void {
+    FlxG.stage.window.onDropFile.add(function(path:String):Void
+    {
       if (!allowInput || welcomeDialog != null) return;
 
       var data = BitmapData.fromFile(path);
@@ -450,7 +439,8 @@ class StageEditorState extends UIState
         objNameDialog.bitmapName = new haxe.io.Path(path).file;
         objNameDialog.showDialog();
 
-        objNameDialog.onDialogClosed = function(_) {
+        objNameDialog.onDialogClosed = function(_)
+        {
           objNameDialog = null;
         }
 
@@ -543,10 +533,9 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusic('chartEditorLoop',
-      {
-        startingVolume: 0.0
-      });
+    FunkinSound.playMusic('chartEditorLoop', {
+      startingVolume: 0.0
+    });
     FlxG.sound.music.fadeIn(10, 0, 1);
   }
 
@@ -683,8 +672,7 @@ class StageEditorState extends UIState
         FlxG.camera.zoom = 1;
       }
 
-      if (!pressingControl()
-        && (FlxG.keys.pressed.W || FlxG.keys.pressed.S || FlxG.keys.pressed.A || FlxG.keys.pressed.D))
+      if (!pressingControl() && (FlxG.keys.pressed.W || FlxG.keys.pressed.S || FlxG.keys.pressed.A || FlxG.keys.pressed.D))
       {
         if (FlxG.keys.pressed.W) camFollow.velocity.y = -90 * (2 / FlxG.camera.zoom);
         else if (FlxG.keys.pressed.S) camFollow.velocity.y = 90 * (2 / FlxG.camera.zoom);
@@ -712,8 +700,7 @@ class StageEditorState extends UIState
     if (moveMode == "assets")
     {
       if (selectedSprite != null
-        && (!FlxG.mouse.overlaps(selectedSprite)
-        || (FlxG.mouse.overlaps(selectedSprite) && pressingControl()))
+        && (!FlxG.mouse.overlaps(selectedSprite) || (FlxG.mouse.overlaps(selectedSprite) && pressingControl()))
         && FlxG.mouse.justPressed
         && !isCursorOverHaxeUI)
       {
@@ -748,10 +735,7 @@ class StageEditorState extends UIState
         {
           this.createAndPushAction(OBJECT_MOVED);
 
-          moveOffset = [
-            FlxG.mouse.getWorldPosition().x - selectedSprite.x,
-            FlxG.mouse.getWorldPosition().y - selectedSprite.y
-          ];
+          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedSprite.x, FlxG.mouse.getWorldPosition().y - selectedSprite.y];
         }
 
         var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
@@ -787,7 +771,7 @@ class StageEditorState extends UIState
         if (menubarItemViewNameText.selected) nameTxt.visible = true;
         for (char in getCharacters())
         {
-        if (char == null) continue;
+          if (char == null) continue;
           if (char != selectedChar) char.shader = charDeselectShader;
 
           if (char != null && checkCharOverlaps(char)) // flxg.mouse.overlaps crashes the game
@@ -813,10 +797,7 @@ class StageEditorState extends UIState
         {
           this.createAndPushAction(CHARACTER_MOVED);
 
-          moveOffset = [
-            FlxG.mouse.getWorldPosition().x - selectedChar.cornerPosition.x,
-            FlxG.mouse.getWorldPosition().y - selectedChar.cornerPosition.y
-          ];
+          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedChar.cornerPosition.x, FlxG.mouse.getWorldPosition().y - selectedChar.cornerPosition.y];
         }
 
         var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
@@ -910,10 +891,7 @@ class StageEditorState extends UIState
       if (char == null) continue;
       var type = char.characterType;
 
-      charPos.set(type, [
-        char.feetPosition.x - char.globalOffsets[0],
-        char.feetPosition.y - char.globalOffsets[1]
-      ]);
+      charPos.set(type, [char.feetPosition.x - char.globalOffsets[0], char.feetPosition.y - char.globalOffsets[1]]);
 
       floorLines[i].y = charPos.get(type)[1] - floorLines[i].height / 2;
 
@@ -1085,37 +1063,36 @@ class StageEditorState extends UIState
     bottomBarModeText.onClick = function(_) onMenuItemClick("switch mode");
     bottomBarModeText.onRightClick = function(_) onMenuItemClick("switch mode");
 
-    function switchFocus(rightClick:Bool = false)
-      if (testingMode)
+    function switchFocus(rightClick:Bool = false) if (testingMode)
+    {
+      (rightClick) ? curTestChar-- : curTestChar++;
+    }
+    else
+    {
+      if (moveMode == "chars")
       {
-        (rightClick) ? curTestChar-- : curTestChar++;
+        var chars = getCharacters();
+        var index = chars.indexOf(selectedChar);
+        (rightClick) ? index-- : index++;
+
+        if (index >= chars.length) index = 0;
+        else if (index < 0) index = chars.length - 1;
+
+        selectedChar = chars[index];
       }
       else
       {
-        if (moveMode == "chars")
-        {
-          var chars = getCharacters();
-          var index = chars.indexOf(selectedChar);
-          (rightClick) ? index-- : index++;
+        if (selectedSprite == null || FlxG.keys.pressed.SHIFT) return;
 
-          if (index >= chars.length) index = 0;
-          else if (index < 0) index = chars.length - 1;
+        var index = spriteArray.indexOf(selectedSprite);
+        (rightClick) ? index-- : index++;
 
-          selectedChar = chars[index];
-        }
-        else
-        {
-          if (selectedSprite == null || FlxG.keys.pressed.SHIFT) return;
+        if (index >= spriteArray.length) index = 0;
+        else if (index < 0) index = spriteArray.length - 1;
 
-          var index = spriteArray.indexOf(selectedSprite);
-          (rightClick) ? index-- : index++;
-
-          if (index >= spriteArray.length) index = 0;
-          else if (index < 0) index = spriteArray.length - 1;
-
-          selectedSprite = spriteArray[index];
-        }
+        selectedSprite = spriteArray[index];
       }
+    }
 
     bottomBarSelectText.onClick = function(_) switchFocus();
     bottomBarSelectText.onRightClick = function(_) switchFocus(true);
@@ -1123,7 +1100,8 @@ class StageEditorState extends UIState
     var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
     bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep.value) ? Save.instance.stageEditorMoveStep.value : "1px";
 
-    var changeStep = function(change:Int = 0) {
+    var changeStep = function(change:Int = 0)
+    {
       var id = stepOptions.indexOf(bottomBarMoveStepText.text);
       id += change;
 
@@ -1147,7 +1125,8 @@ class StageEditorState extends UIState
     var angleOptions = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
     bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
 
-    var changeAngle = function(change:Int = 0) {
+    var changeAngle = function(change:Int = 0)
+    {
       var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep.value);
       id += change;
 
@@ -1177,12 +1156,14 @@ class StageEditorState extends UIState
     menubarItemWindowCharacter.onChange = function(_) toggleDialog(StageEditorDialogType.CHARACTER, menubarItemWindowCharacter.selected);
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
-    menubarItemThemeLight.onClick = function(_) {
+    menubarItemThemeLight.onClick = function(_)
+    {
       Save.instance.stageEditorTheme.value = StageEditorTheme.Light;
       updateBGColors();
     }
 
-    menubarItemThemeDark.onClick = function(_) {
+    menubarItemThemeDark.onClick = function(_)
+    {
       Save.instance.stageEditorTheme.value = StageEditorTheme.Dark;
       updateBGColors();
     }
@@ -1195,12 +1176,14 @@ class StageEditorState extends UIState
     menubarItemViewNameText.selected = true; // TODO: Remove this when this haxeUI bug is fixed (it starts as false in the code)?
     menubarItemViewCamBounds.onChange = function(_) camFields.visible = menubarItemViewCamBounds.selected;
 
-    menubarItemViewFloorLines.onChange = function(_) {
+    menubarItemViewFloorLines.onChange = function(_)
+    {
       for (awesome in floorLines)
         awesome.visible = menubarItemViewFloorLines.selected;
     }
 
-    menubarItemViewPosMarkers.onChange = function(_) {
+    menubarItemViewPosMarkers.onChange = function(_)
+    {
       for (coolbeans in posCircles)
         coolbeans.visible = menubarItemViewPosMarkers.selected;
     }
@@ -1221,7 +1204,8 @@ class StageEditorState extends UIState
       item.text = filePath.file + "." + filePath.ext;
       item.disabled = !FileUtil.fileExists(file);
 
-      var load = function(file:String) {
+      var load = function(file:String)
+      {
         currentFile = file;
 
         this.unpackShitFromZip(FileUtil.readBytesFromPath(file));
@@ -1229,16 +1213,18 @@ class StageEditorState extends UIState
         reloadRecentFiles();
       }
 
-      item.onClick = function(_) {
+      item.onClick = function(_)
+      {
         if (!saved)
         {
           Dialogs.messageBox("Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?", "Open Stage",
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-              if (btn == DialogButton.YES)
-              {
-                saved = true;
-                load(file);
-              }
+            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+          {
+            if (btn == DialogButton.YES)
+            {
+              saved = true;
+              load(file);
+            }
           });
         }
         else
@@ -1275,7 +1261,8 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String) {
+        FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String)
+        {
           saved = true;
           currentFile = path;
         }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
@@ -1305,18 +1292,20 @@ class StageEditorState extends UIState
         if (!saved)
         {
           Dialogs.messageBox("Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?", "Open Stage",
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-              if (btn == DialogButton.YES)
-              {
-                saved = true;
-                onMenuItemClick("open stage"); // ough
-              }
+            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+          {
+            if (btn == DialogButton.YES)
+            {
+              saved = true;
+              onMenuItemClick("open stage"); // ough
+            }
           });
 
           return;
         }
 
-        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], function(_) {
+        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], function(_)
+        {
           if (_?.fullPath == null) return;
 
           clearAssets();
@@ -1325,7 +1314,8 @@ class StageEditorState extends UIState
           this.unpackShitFromZip(FileUtil.readBytesFromPath(currentFile));
 
           reloadRecentFiles();
-        }, function() {
+        }, function()
+        {
           // This function does nothing, it's there for crash prevention.
         });
 
@@ -1335,13 +1325,14 @@ class StageEditorState extends UIState
           if (exitConfirmDialog == null)
           {
             exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
-              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-                exitConfirmDialog = null;
-                if (btn == DialogButton.YES)
-                {
-                  saveBackup();
-                  onMenuItemClick("exit");
-                }
+              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+            {
+              exitConfirmDialog = null;
+              if (btn == DialogButton.YES)
+              {
+                saveBackup();
+                onMenuItemClick("exit");
+              }
             });
           }
 
@@ -1403,7 +1394,8 @@ class StageEditorState extends UIState
         objNameDialog = new NewObjDialog(this);
         objNameDialog.showDialog();
 
-        objNameDialog.onDialogClosed = function(_) {
+        objNameDialog.onDialogClosed = function(_)
+        {
           objNameDialog = null;
         }
 
@@ -1426,7 +1418,8 @@ class StageEditorState extends UIState
         userGuideDialog = new UserGuideDialog();
         userGuideDialog.showDialog();
 
-        userGuideDialog.onDialogClosed = function(_) {
+        userGuideDialog.onDialogClosed = function(_)
+        {
           userGuideDialog = null;
         }
 
@@ -1459,16 +1452,17 @@ class StageEditorState extends UIState
 
       case "clear assets":
         Dialogs.messageBox("This will destroy all Objects in this Stage.\n\nAre you sure? This cannot be undone.", "Clear Assets", MessageBoxType.TYPE_YESNO,
-          true, function(btn:DialogButton) {
-            if (btn == DialogButton.YES)
-            {
-              clearAssets();
-              saved = false;
+          true, function(btn:DialogButton)
+        {
+          if (btn == DialogButton.YES)
+          {
+            clearAssets();
+            saved = false;
 
-              updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
-              updateDialog(StageEditorDialogType.OBJECT_ANIMS);
-              updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
-            }
+            updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+            updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+            updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+          }
         });
 
       case "center on screen":
@@ -1539,7 +1533,8 @@ class StageEditorState extends UIState
         welcomeDialog = new WelcomeDialog(this);
         welcomeDialog.showDialog();
         welcomeDialog.closable = true;
-        welcomeDialog.onDialogClosed = function(_) {
+        welcomeDialog.onDialogClosed = function(_)
+        {
           updateWindowTitle();
           welcomeDialog = null;
 
@@ -1557,10 +1552,7 @@ class StageEditorState extends UIState
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var data = this.packShitToZip();
-    var path = haxe.io.Path.join([
-      BACKUPS_PATH,
-      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}'
-    ]);
+    var path = haxe.io.Path.join([BACKUPS_PATH, 'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}']);
 
     FileUtil.writeBytesToPath(path, data);
 
@@ -1647,18 +1639,18 @@ class StageEditorState extends UIState
 
   public function notifyChange(change:String, notif:String, isError:Bool = false)
   {
-    NotificationManager.instance.addNotification(
-      {
-        title: change,
-        body: notif,
-        type: isError ? NotificationType.Error : NotificationType.Info
-      });
+    NotificationManager.instance.addNotification({
+      title: change,
+      body: notif,
+      type: isError ? NotificationType.Error : NotificationType.Info
+    });
   }
 
   public function createURLDialog(onComplete:lime.utils.Bytes->Void = null, onFail:String->Void = null)
   {
     loadUrlDialog = new LoadFromUrlDialog(onComplete, onFail);
-    loadUrlDialog.onDialogClosed = function(_) {
+    loadUrlDialog.onDialogClosed = function(_)
+    {
       loadUrlDialog = null;
     }
 

@@ -129,7 +129,8 @@ class DebugMenuSubState extends MusicBeatSubState
 
   function testStickers():Void
   {
-    openSubState(new funkin.ui.transition.stickers.StickerSubState({}));
+    openSubState(new funkin.ui.transition.stickers.StickerSubState({
+    }));
     trace('opened stickers');
   }
 

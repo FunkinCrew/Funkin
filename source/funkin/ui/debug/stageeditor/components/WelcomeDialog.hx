@@ -23,7 +23,8 @@ class WelcomeDialog extends Dialog
 
     stageEditorState = state;
 
-    buttonNew.onClick = function(_) {
+    buttonNew.onClick = function(_)
+    {
       stageEditorState.clearAssets();
       stageEditorState.loadDummyData();
       stageEditorState.currentFile = "";
@@ -41,7 +42,8 @@ class WelcomeDialog extends Dialog
       var fileText = new Link();
       fileText.percentWidth = 100;
       fileText.text = patj.file + "." + patj.ext;
-      fileText.onClick = function(_) {
+      fileText.onClick = function(_)
+      {
         fileText.hide();
         loadFromFilePath(file);
       };
@@ -86,7 +88,8 @@ class WelcomeDialog extends Dialog
     if (!stageEditorState.saved)
     {
       Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+        function(btn:DialogButton)
+        {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;
@@ -108,7 +111,8 @@ class WelcomeDialog extends Dialog
     if (!stageEditorState.saved)
     {
       Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+        function(btn:DialogButton)
+        {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;

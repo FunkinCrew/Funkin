@@ -152,10 +152,7 @@ class CameraEditorImportExportHandler
       {
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
-        targetPath = Path.join([
-          BACKUPS_PATH,
-          'camera-editor-${songId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
-        ]);
+        targetPath = Path.join([BACKUPS_PATH, 'camera-editor-${songId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}']);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         try
@@ -191,7 +188,8 @@ class CameraEditorImportExportHandler
     else
     {
       // Prompt and save.
-      var onSave:Array<String>->Void = function(paths:Array<String>) {
+      var onSave:Array<String>->Void = function(paths:Array<String>)
+      {
         if (paths.length != 1)
         {
           trace(' WARNING '.warning() + ' Could not get save path.');
@@ -206,7 +204,8 @@ class CameraEditorImportExportHandler
         }
       };
 
-      var onCancel:Void->Void = function() {
+      var onCancel:Void->Void = function()
+      {
         trace('Export cancelled.');
         if (onCancelCb != null) onCancelCb();
       };
@@ -217,7 +216,9 @@ class CameraEditorImportExportHandler
         FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${songId}.${Constants.EXT_CHART}');
         state.saved = true;
       }
-      catch (e) {}
+      catch (e)
+      {
+      }
     }
   }
 

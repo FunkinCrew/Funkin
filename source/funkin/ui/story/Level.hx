@@ -68,7 +68,8 @@ class Level implements IRegistryEntry<LevelData>
   public function getSongDisplayNames(difficulty:String):Array<String>
   {
     var songList:Array<String> = getSongs() ?? [];
-    var songNameList:Array<String> = songList.map(function(songId:String) {
+    var songNameList:Array<String> = songList.map(function(songId:String)
+    {
       return getSongDisplayName(songId, difficulty);
     });
     return songNameList;

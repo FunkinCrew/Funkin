@@ -51,8 +51,7 @@ class HorizontalVirtualLayout extends VirtualLayout
     // but since it's all commented out, it might not be relavant
   }
 
-  private function horizontalConstraintModifier():Float
-    return 0;
+  private function horizontalConstraintModifier():Float return 0;
 
   override function calculateRangeVisible():Void
   {

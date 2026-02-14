@@ -37,13 +37,16 @@ class ResultsDebugSubState extends MusicBeatSubState
 
   function createItems():Void
   {
-    createTextItem("TEST RESULTS SCREEN", function() {
+    createTextItem("TEST RESULTS SCREEN", function()
+    {
       // I'm being lazy, and putting a timer here so that when you enter result screen you don't immediately press an input
-      new FlxTimer().start(0.5, function(_) {
+      new FlxTimer().start(0.5, function(_)
+      {
         if (returnToDebugScreen)
         {
           var resultState:funkin.play.ResultState = new funkin.play.ResultState(resultsParams);
-          resultState.closeCallback = function() {
+          resultState.closeCallback = function()
+          {
             FlxTimer.globalManager.clear();
             FlxTween.globalManager.clear();
             FlxG.sound.music?.stop();
@@ -55,15 +58,18 @@ class ResultsDebugSubState extends MusicBeatSubState
           FlxG.switchState(() -> new funkin.play.ResultState(resultsParams));
       });
     });
-    createToggleListItem("Character", PlayerRegistry.instance.listEntryIds(), function(result:String) {
+    createToggleListItem("Character", PlayerRegistry.instance.listEntryIds(), function(result:String)
+    {
       var playableCharacter:PlayableCharacter = PlayerRegistry.instance.fetchEntry(result);
       resultsParams.characterId = playableCharacter.getOwnedCharacterIds()[0];
     });
-    createToggleListItem("Results Mode", ["Debug", "Story", "Freeplay"], function(result:String) {
+    createToggleListItem("Results Mode", ["Debug", "Story", "Freeplay"], function(result:String)
+    {
       returnToDebugScreen = result == "Debug"; // We will create the ResultsState as a Substate, that we will just close and return back to here
       resultsParams.storyMode = result == "Story"; // Debug overrides this, but if not using Debug, we will return to either Freeplay or Story menus
     });
-    createToggleListItem("Ranking", DebugTallies.DEBUG_RANKS, function(result:String) {
+    createToggleListItem("Ranking", DebugTallies.DEBUG_RANKS, function(result:String)
+    {
       resultsParams.scoreData.tallies = DebugTallies.getTallyForRank(result);
     });
   }
@@ -84,7 +90,8 @@ class ResultsDebugSubState extends MusicBeatSubState
   {
     var toggle:Bool = false;
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
-    menuItem.callback = function() {
+    menuItem.callback = function()
+    {
       menuItem.label.text = name + ": " + (toggle ? "on" : "off");
       toggle = !toggle;
       onChange(toggle);
@@ -104,13 +111,15 @@ class ResultsDebugSubState extends MusicBeatSubState
     var menuItem:MenuTypedItem<FlxText> = createTextItem(name);
 
     // We create and call the labelCallback here to initalize it
-    var labelCallback:Void->Void = function() {
+    var labelCallback:Void->Void = function()
+    {
       menuItem.label.text = name + ":" + toggleList[toggleCounter];
       onChange(toggleList[toggleCounter]);
     };
     labelCallback();
 
-    menuItem.callback = function() {
+    menuItem.callback = function()
+    {
       toggleCounter = (toggleCounter + 1) % toggleList.length;
       labelCallback();
     };
@@ -120,33 +129,30 @@ class ResultsDebugSubState extends MusicBeatSubState
 
   function initResultsParams():Void
   {
-    resultsParams =
-      {
-        storyMode: false,
-        title: "Cum Song Erect by Kawai Sprite",
-        songId: "cum",
-        characterId: "bf",
-        difficultyId: "nightmare",
-        variationId: "erect",
-        isNewHighscore: true,
-        isPracticeMode: true, // Invalidates achievements/scores.
-        isBotPlayMode: true, // Invalidates achievements/scores.
-        scoreData:
-          {
-            score: 1_234_567_890,
-            tallies:
-              {
-                sick: 130,
-                good: 60,
-                bad: 69,
-                shit: 69,
-                missed: 69,
-                combo: 69,
-                maxCombo: 69,
-                totalNotesHit: 140,
-                totalNotes: 190
-              }
-          },
-      };
+    resultsParams = {
+      storyMode: false,
+      title: "Cum Song Erect by Kawai Sprite",
+      songId: "cum",
+      characterId: "bf",
+      difficultyId: "nightmare",
+      variationId: "erect",
+      isNewHighscore: true,
+      isPracticeMode: true, // Invalidates achievements/scores.
+      isBotPlayMode: true, // Invalidates achievements/scores.
+      scoreData: {
+        score: 1_234_567_890,
+        tallies: {
+          sick: 130,
+          good: 60,
+          bad: 69,
+          shit: 69,
+          missed: 69,
+          combo: 69,
+          maxCombo: 69,
+          totalNotesHit: 140,
+          totalNotes: 190
+        }
+      },
+    };
   }
 }

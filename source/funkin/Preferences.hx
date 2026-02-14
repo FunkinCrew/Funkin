@@ -384,7 +384,8 @@ class Preferences
   {
     var currTime = Date.now().getTime();
     var timeToCall = 0;
-    var id = js.Browser.window.setTimeout(function() {
+    var id = js.Browser.window.setTimeout(function()
+    {
       callback(currTime + timeToCall);
     }, timeToCall);
     return id;

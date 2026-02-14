@@ -25,4 +25,6 @@ class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleDat
   }
 }
 
-typedef FreeplayStyleEntryParams = {}
+typedef FreeplayStyleEntryParams =
+{
+}

@@ -81,10 +81,8 @@ class CharSelectSubState extends MusicBeatSubState
   var introSound:FunkinSound = new FunkinSound();
   var staticSound:FunkinSound = new FunkinSound();
 
-  var selectedBizz:Array<BitmapFilter> = [
-    new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false, false),
-    new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
-  ];
+  var selectedBizz:Array<BitmapFilter> = [new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false,
+    false), new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)];
 
   var bopInfo:Null<Null<FramesJSFLInfo>>;
 
@@ -174,19 +172,17 @@ class CharSelectSubState extends MusicBeatSubState
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "charSelect/crowd",
-      {
-        applyStageMatrix: true
-      });
+    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "charSelect/crowd", {
+      applyStageMatrix: true
+    });
     crowd.anim.play('');
     crowd.anim.curAnim.looped = true;
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, "charSelect/charSelectStage",
-      {
-        applyStageMatrix: true
-      });
+    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, "charSelect/charSelectStage", {
+      applyStageMatrix: true
+    });
     stageSpr.anim.play('');
     stageSpr.anim.curAnim.looped = true;
     add(stageSpr);
@@ -196,10 +192,9 @@ class CharSelectSubState extends MusicBeatSubState
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
-    barthing.loadTextureAtlas("charSelect/barThing",
-      {
-        applyStageMatrix: true
-      });
+    barthing.loadTextureAtlas("charSelect/barThing", {
+      applyStageMatrix: true
+    });
     barthing.anim.play('');
     barthing.anim.curAnim.looped = true;
     barthing.blend = BlendMode.MULTIPLY;
@@ -252,10 +247,9 @@ class CharSelectSubState extends MusicBeatSubState
       setCursorPosition(DEFAULT_CURSOR_INDEX, true);
     }
 
-    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "charSelect/charSelectSpeakers",
-      {
-        applyStageMatrix: true
-      });
+    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "charSelect/charSelectSpeakers", {
+      applyStageMatrix: true
+    });
     speakers.anim.play('');
     speakers.anim.curAnim.looped = true;
     speakers.scrollFactor.set(1.8, 1.8);
@@ -342,12 +336,11 @@ class CharSelectSubState extends MusicBeatSubState
 
     // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
     // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
-    FunkinSound.playMusic('stayFunky',
-      {
-        startingVolume: 0,
-        overrideExisting: true,
-        restartTrack: true,
-      });
+    FunkinSound.playMusic('stayFunky', {
+      startingVolume: 0,
+      overrideExisting: true,
+      restartTrack: true,
+    });
 
     initLocks();
 
@@ -380,13 +373,13 @@ class CharSelectSubState extends MusicBeatSubState
       backButton.cameras = [FlxG.camera];
     }
 
-    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5,
+    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5, {
+      ease: FlxEase.expoOut,
+      onComplete: (_) ->
       {
-        ease: FlxEase.expoOut,
-        onComplete: (_) -> {
-          if (backButton != null) backButton.enabled = true;
-        }
-      });
+        if (backButton != null) backButton.enabled = true;
+      }
+    });
     #end
 
     transitionGradient.loadGraphic(Paths.image('freeplay/transitionGradient'));
@@ -399,21 +392,21 @@ class CharSelectSubState extends MusicBeatSubState
     camFollow.screenCenter();
     camFollow.y -= 150;
     FlxG.camera.filtersEnabled = true;
-    fadeShader.fade(0.0, 1.0, 0.8,
+    fadeShader.fade(0.0, 1.0, 0.8, {
+      ease: FlxEase.quadOut,
+      onComplete: (twn) ->
       {
-        ease: FlxEase.quadOut,
-        onComplete: (twn) -> {
-          FlxG.camera.filtersEnabled = false;
-        }
-      });
-    FlxTween.tween(camFollow, {y: camFollow.y + 150}, 1.5,
+        FlxG.camera.filtersEnabled = false;
+      }
+    });
+    FlxTween.tween(camFollow, {y: camFollow.y + 150}, 1.5, {
+      ease: FlxEase.expoOut,
+      onComplete: function(_)
       {
-        ease: FlxEase.expoOut,
-        onComplete: function(_) {
-          autoFollow = true;
-          FlxG.camera.follow(camFollow, LOCKON, 0.01);
-        }
-      });
+        autoFollow = true;
+        FlxG.camera.follow(camFollow, LOCKON, 0.01);
+      }
+    });
 
     var blackScreen = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
     blackScreen.x = -(FlxG.width * 0.5);
@@ -429,7 +422,8 @@ class CharSelectSubState extends MusicBeatSubState
 
     openSubState(new IntroSubState());
 
-    subStateClosed.addOnce((_) -> {
+    subStateClosed.addOnce((_) ->
+    {
       remove(blackScreen);
       if (!Save.instance.oldChar.value)
       {
@@ -452,7 +446,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   function checkNewChar():Void
   {
-    if (nonLocks.length > 0) selectTimer.start(2, (_) -> {
+    if (nonLocks.length > 0) selectTimer.start(2, (_) ->
+    {
       unLock();
     });
     else
@@ -462,24 +457,24 @@ class CharSelectSubState extends MusicBeatSubState
       if (availableChars.size() > 1) Medals.award(CharSelect);
       #end
 
-      FunkinSound.playMusic('stayFunky',
+      FunkinSound.playMusic('stayFunky', {
+        startingVolume: 1,
+        overrideExisting: true,
+        restartTrack: true,
+        onLoad: function()
         {
-          startingVolume: 1,
-          overrideExisting: true,
-          restartTrack: true,
-          onLoad: function() {
-            allowInput = true;
+          allowInput = true;
 
-            @:privateAccess
-            gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if sys
-            // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-            // So we want to manually change it!
-            @:privateAccess
-            gfChill.analyzer.fftN = 512;
-            #end
-          }
-        });
+          @:privateAccess
+          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+          #if sys
+          // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+          // So we want to manually change it!
+          @:privateAccess
+          gfChill.analyzer.fftN = 512;
+          #end
+        }
+      });
     }
   }
 
@@ -514,11 +509,10 @@ class CharSelectSubState extends MusicBeatSubState
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
         if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
 
-        var temp:Lock = new Lock(0, 0, i,
-          {
-            swfMode: true,
-            uniqueInCache: true
-          });
+        var temp:Lock = new Lock(0, 0, i, {
+          swfMode: true,
+          uniqueInCache: true
+        });
 
         temp.ID = 1;
 
@@ -560,11 +554,13 @@ class CharSelectSubState extends MusicBeatSubState
 
     nonLocks.shift();
 
-    selectTimer.start(0.5, function(_) {
+    selectTimer.start(0.5, function(_)
+    {
       var lock:Lock = cast grpIcons.group.members[index];
 
       lock.anim.play("unlock");
-      lock.anim.onFrameChange.add(function(animName:String, frame:Int, index:Int) {
+      lock.anim.onFrameChange.add(function(animName:String, frame:Int, index:Int)
+      {
         if (frame == 40)
         {
           playerChillOut.anim.play("death");
@@ -574,7 +570,8 @@ class CharSelectSubState extends MusicBeatSubState
       unlockSound.volume = 0.7;
       unlockSound.play(true);
 
-      lock.anim.onFinish.addOnce(function(_) {
+      lock.anim.onFinish.addOnce(function(_)
+      {
         var char:String = availableChars.get(index) ?? Constants.DEFAULT_CHARACTER;
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.anim.play("unlock");
@@ -617,24 +614,24 @@ class CharSelectSubState extends MusicBeatSubState
 
           staticSound.stop();
 
-          FunkinSound.playMusic('stayFunky',
+          FunkinSound.playMusic('stayFunky', {
+            startingVolume: 1,
+            overrideExisting: true,
+            restartTrack: true,
+            onLoad: function()
             {
-              startingVolume: 1,
-              overrideExisting: true,
-              restartTrack: true,
-              onLoad: function() {
-                allowInput = true;
+              allowInput = true;
 
-                @:privateAccess
-                gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                #if sys
-                // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-                // So we want to manually change it!
-                @:privateAccess
-                gfChill.analyzer.fftN = 512;
-                #end
-              }
-            });
+              @:privateAccess
+              gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+              #if sys
+              // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
+              // So we want to manually change it!
+              @:privateAccess
+              gfChill.analyzer.fftN = 512;
+              #end
+            }
+          });
         }
         else
           playerChill.anim.onFinish.addOnce((_) -> unLock());
@@ -709,19 +706,18 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(transitionGradient, {y: -150}, 0.8, {ease: FlxEase.backIn});
     FlxG.camera.filtersEnabled = true;
     fadeShader.fade(1.0, 0, 0.8, {ease: FlxEase.quadIn});
-    FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8,
+    FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8, {
+      ease: FlxEase.backIn,
+      onComplete: function(_)
       {
-        ease: FlxEase.backIn,
-        onComplete: function(_) {
-          FlxG.switchState(() -> FreeplayState.build(
-            {
-              {
-                character: wentBackToFreeplay ? rememberedChar : curChar,
-                fromCharSelect: true
-              }
-            }));
-        }
-      });
+        FlxG.switchState(() -> FreeplayState.build({
+          {
+            character: wentBackToFreeplay ? rememberedChar : curChar,
+            fromCharSelect: true
+          }
+        }));
+      }
+    });
   }
 
   var holdTmrUp:Float = 0;
@@ -875,19 +871,19 @@ class CharSelectSubState extends MusicBeatSubState
         playerChill.anim.play("deselect");
         gfChill.anim.play("deselect");
         pressedSelect = false;
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1,
+        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1, {
+          ease: FlxEase.quartInOut,
+          onComplete: (_) ->
           {
-            ease: FlxEase.quartInOut,
-            onComplete: (_) -> {
-              if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
-              {
-                playerChill.anim.play("idle", true);
-                playerChill.anim.curAnim.looped = true;
-                gfChill.anim.play("idle", true);
-                gfChill.anim.curAnim.looped = true;
-              }
+            if (playerChill.getCurrentAnimation() == "deselect loop start" || playerChill.getCurrentAnimation() == "deselect")
+            {
+              playerChill.anim.play("idle", true);
+              playerChill.anim.curAnim.looped = true;
+              gfChill.anim.play("idle", true);
+              gfChill.anim.curAnim.looped = true;
             }
-          });
+          }
+        });
         selectTimer.cancel();
       }
 
@@ -917,7 +913,8 @@ class CharSelectSubState extends MusicBeatSubState
         gfChill.anim.curAnim.looped = true;
 
         pressedSelect = true;
-        selectTimer.start(1.5, (_) -> {
+        selectTimer.start(1.5, (_) ->
+        {
           goToFreeplay();
         });
       }
@@ -1103,7 +1100,8 @@ class CharSelectSubState extends MusicBeatSubState
             if (autoFollow && !pressedSelect && memb.animation.curAnim?.name != 'idle')
             {
               memb.animation.play("confirm", false, true);
-              var onFinish:String->Void = (_) -> {
+              var onFinish:String->Void = (_) ->
+              {
                 member.animation.play('idle');
                 member.animation.onFinish.removeAll();
               };
@@ -1175,7 +1173,8 @@ class CharSelectSubState extends MusicBeatSubState
     playerChillOut.anim.play("slideout");
 
     playerChillOut.anim.onFrameChange.removeAll();
-    playerChillOut.anim.onFrameChange.add(function(animName:String, frameNumber:Int, index:Int) {
+    playerChillOut.anim.onFrameChange.add(function(animName:String, frameNumber:Int, index:Int)
+    {
       if (!playerChill.visible)
       {
         playerChill.visible = true;
@@ -1185,7 +1184,8 @@ class CharSelectSubState extends MusicBeatSubState
       }
     });
 
-    playerChillOut.anim.onFinish.addOnce(function(animName:String) {
+    playerChillOut.anim.onFinish.addOnce(function(animName:String)
+    {
       playerChillOut.switchChar(value);
       playerChillOut.visible = false;
       playerChillOut.anim.onFrameChange.removeAll();

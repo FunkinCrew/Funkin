@@ -94,7 +94,8 @@ class StageBuilderState extends MusicBeatState
     hudGrp.add(saveSceneBtn);
 
     #if desktop
-    FlxG.stage.window.onDropFile.add(function(path:String) {
+    FlxG.stage.window.onDropFile.add(function(path:String)
+    {
       trace("DROPPED FILE FROM: " + Std.string(path));
 
       var fileName:String = path.split('\\').pop();
@@ -112,7 +113,8 @@ class StageBuilderState extends MusicBeatState
 
       fo.write(sys.io.File.getBytes(path));
 
-      new FlxTimer().start(0.2, function(tmr) {
+      new FlxTimer().start(0.2, function(tmr)
+      {
         var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y, sprDragShitFunc);
         awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
@@ -207,10 +209,7 @@ class StageBuilderState extends MusicBeatState
 
     if (curTool == GRABBING && FlxG.mouse.justReleased)
     {
-      moveSprPos([
-        curSelectedSpr.x - curSelectedSpr.oldPos.x,
-        curSelectedSpr.y - curSelectedSpr.oldPos.y
-      ]);
+      moveSprPos([curSelectedSpr.x - curSelectedSpr.oldPos.x, curSelectedSpr.y - curSelectedSpr.oldPos.y]);
     }
 
     if (FlxG.keys.justPressed.Z && actionQueue.length > 0)

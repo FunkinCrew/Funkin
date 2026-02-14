@@ -23,7 +23,9 @@ class CameraEditorPropertiesPanelHandler
    * @param state The CameraEditorState to target.
    * @param elapsed The elapsed time in seconds since the last frame.
    */
-  public static function updatePropertiesPanel(state:CameraEditorState, elapsed:Float):Void {}
+  public static function updatePropertiesPanel(state:CameraEditorState, elapsed:Float):Void
+  {
+  }
 
   /**
    * Hides the Properties panel and disables input.

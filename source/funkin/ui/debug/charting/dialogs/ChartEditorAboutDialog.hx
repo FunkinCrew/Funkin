@@ -13,11 +13,10 @@ class ChartEditorAboutDialog extends ChartEditorBaseDialog
 
   public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorAboutDialog
   {
-    var dialog = new ChartEditorAboutDialog(chartEditorState,
-      {
-        closable: closable ?? true,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorAboutDialog(chartEditorState, {
+      closable: closable ?? true,
+      modal: modal ?? true
+    });
 
     dialog.showDialog(modal ?? true);
 

@@ -40,7 +40,8 @@ class VisShit
 
     // helpers, note that spectrum indexes suppose non-negative frequencies
     final binSize = fs / fftN;
-    final indexToFreq = function(k:Int) {
+    final indexToFreq = function(k:Int)
+    {
       var powShit:Float = FlxMath.remapToRange(k, 0, halfN, 0, MathUtil.logBase(10, halfN)); // 4.3 is almost the log of 20Khz or so. Close enuf lol
 
       return 1.0 * (Math.pow(10, powShit)); // we need the `1.0` to avoid overflows
@@ -49,7 +50,8 @@ class VisShit
     // "melodic" band-pass filter
     final minFreq = 20.70;
     final maxFreq = 4000.01;
-    final melodicBandPass = function(k:Int, s:Float) {
+    final melodicBandPass = function(k:Int, s:Float)
+    {
       final freq = indexToFreq(k);
       final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
       return s;
@@ -62,10 +64,7 @@ class VisShit
     while (c < samples.length)
     {
       // take a chunk (zero-padded if needed) and apply the window
-      final chunk = [
-        for (n in 0...fftN)
-          (c + n < samples.length ? samples[c + n] : 0.0) * window(n)
-      ];
+      final chunk = [for (n in 0...fftN) (c + n < samples.length ? samples[c + n] : 0.0) * window(n)];
 
       // compute positive spectrum with sampling correction and BP filter
       final freqs = FFT.rfft(chunk).map(z -> z.scale(1 / fftN).magnitude).mapi(melodicBandPass);

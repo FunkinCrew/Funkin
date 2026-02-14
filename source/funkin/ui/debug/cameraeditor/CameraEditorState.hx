@@ -52,13 +52,11 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
-
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.stage.StageRegistry;
 import funkin.play.stage.Stage;
-
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 
@@ -153,7 +151,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (previousWorkingFilePaths.contains(null))
     {
       // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool
+      {
         return x != null;
       });
     }
@@ -200,7 +199,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         autoSaveTimer.cancel();
       }
 
-      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
+      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer)
+      {
         saveBackup();
       });
     }
@@ -380,10 +380,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Save.instance.cameraEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusic('chartEditorLoop',
-      {
-        startingVolume: 0.0
-      });
+    FunkinSound.playMusic('chartEditorLoop', {
+      startingVolume: 0.0
+    });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
     this.hidePropertiesPanel();
@@ -496,7 +495,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     FlxG.camera.filters = [];
 
-    var buildChar:Null<BaseCharacter>->CharacterType->Void = (char, charType) -> {
+    var buildChar:Null<BaseCharacter>->CharacterType->Void = (char, charType) ->
+    {
       if (char == null) return;
 
       char.currentStage = currentStage;
@@ -627,9 +627,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String) {
+    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String)
+    {
       notifyChange("Auto-Save", "A Backup of this Chart has been made.");
-    }, function() {
+    }, function()
+    {
       // Failed to save backup?
     });
   }
@@ -673,12 +675,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public function notifyChange(change:String, notif:String, isError:Bool = false)
   {
-    NotificationManager.instance.addNotification(
-      {
-        title: change,
-        body: notif,
-        type: isError ? NotificationType.Error : NotificationType.Info
-      });
+    NotificationManager.instance.addNotification({
+      title: change,
+      body: notif,
+      type: isError ? NotificationType.Error : NotificationType.Info
+    });
   }
 
   /**
@@ -709,7 +710,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     trace('Loading vocals');
 
-    var buildVocal:Null<String>->Null<Array<String>>->Void = function(character, vocals) {
+    var buildVocal:Null<String>->Null<Array<String>>->Void = function(character, vocals)
+    {
       var vocal = character;
       if (vocals != null && vocals.length > 0) vocal = vocals[0];
 
@@ -826,9 +828,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String) {
+      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String)
+      {
         notifyChange("Chart Save", 'This chart has been saved to ${path}');
-      }, function() {
+      }, function()
+      {
         // Failed to save backup?
       });
     }
@@ -841,10 +845,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String) {
+    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String)
+    {
       notifyChange("Chart Save", 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
-    }, function() {
+    }, function()
+    {
       // Failed to save backup?
     });
   }
@@ -857,13 +863,14 @@ class CameraEditorState extends UIState implements ConsoleClass
       if (exitConfirmDialog == null)
       {
         exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
-          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-            exitConfirmDialog = null;
-            if (btn == DialogButton.YES)
-            {
-              saveBackup();
-              onMenubarExit(null);
-            }
+          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+        {
+          exitConfirmDialog = null;
+          if (btn == DialogButton.YES)
+          {
+            saveBackup();
+            onMenubarExit(null);
+          }
         });
       }
 

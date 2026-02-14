@@ -31,18 +31,7 @@ class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> imp
   {
     // This MUST be hard-coded (overriding the auto-generated method)
     // because the auto-generated method spits out values in alphabetical order.
-    return [
-      'tutorial',
-      'week1',
-      'week2',
-      'week3',
-      'week4',
-      'week5',
-      'week6',
-      'week7',
-      'weekend1',
-      'sserafim'
-    ];
+    return ['tutorial', 'week1', 'week2', 'week3', 'week4', 'week5', 'week6', 'week7', 'weekend1', 'sserafim'];
   }
 
   /**
@@ -58,4 +47,6 @@ class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> imp
   }
 }
 
-typedef LevelEntryParams = {}
+typedef LevelEntryParams =
+{
+}

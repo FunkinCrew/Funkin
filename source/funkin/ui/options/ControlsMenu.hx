@@ -27,20 +27,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
    * if the player sets Back to Z it also set ACCEPT to X. This prevents the player from setting the controls in
    * a way the prevents them from changing more controls or exiting the menu.
    */
-  static var controlGroups:Array<Array<Control>> = [
-    [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
-    [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
-    [CUTSCENE_ADVANCE],
-    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
-    [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
-    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
-    [
-      #if FEATURE_DEBUG_MENU DEBUG_MENU, #end
-      #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
-      #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
-      DEBUG_DISPLAY
-    ]
-  ];
+  static var controlGroups:Array<Array<Control>> = [[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT], [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK], [CUTSCENE_ADVANCE], [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT], [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end], [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE], [#if FEATURE_DEBUG_MENU DEBUG_MENU, #end#if FEATURE_CHART_EDITOR DEBUG_CHART, #end#if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end DEBUG_DISPLAY]];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
 
@@ -175,7 +162,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     var margin = 100;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
-    controlGrid.onChange.add(function(selected) {
+    controlGrid.onChange.add(function(selected)
+    {
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);
@@ -197,7 +185,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     add(popup);
 
     #if FEATURE_TOUCH_CONTROLS
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, function():Void {
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, function():Void
+    {
       if (controlGrid.enabled && deviceList != null && deviceListSelected == false)
       {
         goToDeviceList();

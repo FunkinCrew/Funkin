@@ -49,7 +49,9 @@ private class SongPositionBehaviour extends DataBehaviour
     _value = clampedValue;
 
     // Convert ms to seconds for display
-    timelineControls.lblTime.text = FlxStringUtil.formatTime(timelineControls.songPosition / 1000, true) + "/" + FlxStringUtil.formatTime(timelineControls.songLength / 1000, true);
+    timelineControls.lblTime.text = FlxStringUtil.formatTime(timelineControls.songPosition / 1000, true)
+      + "/"
+      + FlxStringUtil.formatTime(timelineControls.songLength / 1000, true);
   }
 }
 
@@ -64,6 +66,8 @@ private class SongLengthBehaviour extends DataBehaviour
     timelineControls.songPosition = _value.toFloat().clamp(0, timelineControls.songLength);
 
     // Convert ms to seconds for display
-    timelineControls.lblTime.text = FlxStringUtil.formatTime(timelineControls.songPosition / 1000, true) + "/" + FlxStringUtil.formatTime(timelineControls.songLength / 1000, true);
+    timelineControls.lblTime.text = FlxStringUtil.formatTime(timelineControls.songPosition / 1000, true)
+      + "/"
+      + FlxStringUtil.formatTime(timelineControls.songLength / 1000, true);
   }
 }

@@ -19,7 +19,9 @@ using StringTools;
 // Polymod can't override this, so we can't use this technique elsewhere.
 #if FEATURE_TOUCH_HERE_TO_PLAY
 @:bitmap('art/touchHereToPlay.png')
-class TouchHereToPlayImage extends BitmapData {}
+class TouchHereToPlayImage extends BitmapData
+{
+}
 #end
 
 /**
@@ -246,7 +248,8 @@ class FunkinPreloader extends FlxBasePreloader
     vfdBitmap.shader = vfdShader;
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
-    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
+    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap)
+    {
       // Scale and center the touch to start image.
       // We have to do this inside the async call, after the image size is known.
       bmp.scaleX = bmp.scaleY = ratio * 0.5;

@@ -251,7 +251,6 @@ class MathUtil
       t = m;
       m = n;
       n = t % m;
-    }
-    while (true);
+    } while (true);
   }
 }

@@ -4,5 +4,7 @@ package funkin.ui.debug.cameraeditor.components;
 import haxe.ui.containers.dialogs.Dialog;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/dialogs/user-guide.xml"))
-class UserGuideDialog extends Dialog {}
+class UserGuideDialog extends Dialog
+{
+}
 #end

@@ -33,14 +33,16 @@ class UploadChartDialog extends Dialog
 
     this.dialogCancel.onClick = (_) -> this.hideDialog(DialogButton.CANCEL);
 
-    this.chartBox.onMouseOver = (_) -> {
+    this.chartBox.onMouseOver = (_) ->
+    {
       if (locked) return;
       this.chartBox.swapClass('upload-bg', 'upload-bg-hover');
 
       Cursor.cursorMode = Pointer;
     }
 
-    this.chartBox.onMouseOut = (_) -> {
+    this.chartBox.onMouseOut = (_) ->
+    {
       if (locked) return;
       this.chartBox.swapClass('upload-bg-hover', 'upload-bg');
 

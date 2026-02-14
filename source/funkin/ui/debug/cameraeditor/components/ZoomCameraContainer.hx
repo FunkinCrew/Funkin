@@ -101,7 +101,8 @@ class ZoomCameraContainer extends VBox
     zoomCameraEaseDot.resource = _easeDotSprites[0].frame;
 
     var frameCallback:Dynamic = null;
-    frameCallback = (tmr:FlxTimer) -> {
+    frameCallback = (tmr:FlxTimer) ->
+    {
       if (_dotTimer == null || _easeDotSprites.length == 0) return;
 
       _dotIndex++;
@@ -109,7 +110,8 @@ class ZoomCameraContainer extends VBox
       {
         _dotTimer?.cancel();
         _pauseTimer ??= new FlxTimer();
-        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void {
+        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void
+        {
           if (_pauseTimer == null || _easeDotSprites.length == 0) return;
 
           if (zoomCameraEaseDot != null)

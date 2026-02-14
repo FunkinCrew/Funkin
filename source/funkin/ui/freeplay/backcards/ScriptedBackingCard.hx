@@ -5,4 +5,6 @@ package funkin.ui.freeplay.backcards;
  * Create a scripted class that extends BackingCard to use this.
  */
 @:hscriptClass
-class ScriptedBackingCard extends funkin.ui.freeplay.backcards.BackingCard implements polymod.hscript.HScriptedClass {}
+class ScriptedBackingCard extends funkin.ui.freeplay.backcards.BackingCard implements polymod.hscript.HScriptedClass
+{
+}

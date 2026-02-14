@@ -50,10 +50,9 @@ class FocusCameraSongEvent extends SongEvent
 {
   public function new()
   {
-    super('FocusCamera',
-      {
-        processOldEvents: true
-      });
+    super('FocusCamera', {
+      processOldEvents: true
+    });
   }
 
   static final DEFAULT_X_POSITION:Float = 0.0;
@@ -174,69 +173,46 @@ class FocusCameraSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: "char",
-        title: "Target",
-        defaultValue: DEFAULT_TARGET,
-        type: SongEventFieldType.ENUM,
-        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
-      },
-      {
-        name: "x",
-        title: "X Position",
-        defaultValue: DEFAULT_X_POSITION,
-        step: 10.0,
-        type: SongEventFieldType.FLOAT,
-        units: "px"
-      },
-      {
-        name: "y",
-        title: "Y Position",
-        defaultValue: DEFAULT_Y_POSITION,
-        step: 10.0,
-        type: SongEventFieldType.FLOAT,
-        units: "px"
-      },
-      {
-        name: 'duration',
-        title: 'Duration',
-        defaultValue: DEFAULT_DURATION,
-        min: 0,
-        step: 0.5,
-        type: SongEventFieldType.FLOAT,
-        units: 'steps'
-      },
-      {
-        name: 'ease',
-        title: 'Easing Type',
-        defaultValue: DEFAULT_CAMERA_EASE,
-        type: SongEventFieldType.ENUM,
-        keys: [
-          'Linear' => 'linear',
-          'Instant (Ignores duration)' => 'INSTANT',
-          'Classic (Ignores duration)' => 'CLASSIC',
-          'Sine' => 'sine',
-          'Quad' => 'quad',
-          'Cube' => 'cube',
-          'Quart' => 'quart',
-          'Quint' => 'quint',
-          'Expo' => 'expo',
-          'Smooth Step' => 'smoothStep',
-          'Smoother Step' => 'smootherStep',
-          'Elastic' => 'elastic',
-          'Back' => 'back',
-          'Bounce' => 'bounce',
-          'Circ ' => 'circ',
-        ]
-      },
-      {
-        name: 'easeDir',
-        title: 'Easing Direction',
-        defaultValue: SongEvent.DEFAULT_EASE_DIR,
-        type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-      }
-    ]);
+    return new SongEventSchema([{
+      name: "char",
+      title: "Target",
+      defaultValue: DEFAULT_TARGET,
+      type: SongEventFieldType.ENUM,
+      keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
+    }, {
+      name: "x",
+      title: "X Position",
+      defaultValue: DEFAULT_X_POSITION,
+      step: 10.0,
+      type: SongEventFieldType.FLOAT,
+      units: "px"
+    }, {
+      name: "y",
+      title: "Y Position",
+      defaultValue: DEFAULT_Y_POSITION,
+      step: 10.0,
+      type: SongEventFieldType.FLOAT,
+      units: "px"
+    }, {
+      name: 'duration',
+      title: 'Duration',
+      defaultValue: DEFAULT_DURATION,
+      min: 0,
+      step: 0.5,
+      type: SongEventFieldType.FLOAT,
+      units: 'steps'
+    }, {
+      name: 'ease',
+      title: 'Easing Type',
+      defaultValue: DEFAULT_CAMERA_EASE,
+      type: SongEventFieldType.ENUM,
+      keys: ['Linear' => 'linear', 'Instant (Ignores duration)' => 'INSTANT', 'Classic (Ignores duration)' => 'CLASSIC', 'Sine' => 'sine', 'Quad' => 'quad', 'Cube' => 'cube', 'Quart' => 'quart', 'Quint' => 'quint', 'Expo' => 'expo', 'Smooth Step' => 'smoothStep', 'Smoother Step' => 'smootherStep', 'Elastic' => 'elastic', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ ' => 'circ',]
+    }, {
+      name: 'easeDir',
+      title: 'Easing Direction',
+      defaultValue: SongEvent.DEFAULT_EASE_DIR,
+      type: SongEventFieldType.ENUM,
+      keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+    }]);
   }
 }
