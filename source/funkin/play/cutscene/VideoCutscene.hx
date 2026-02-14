@@ -157,7 +157,8 @@ class VideoCutscene
 
       vid.active = false;
 
-      vid.bitmap.onFormatSetup.add(function():Void {
+      vid.bitmap.onFormatSetup.add(function():Void
+      {
         if (vid.bitmap != null && vid.bitmap.bitmapData != null)
         {
           final scale:Float = Math.min(FlxG.width / vid.bitmap.bitmapData.width, FlxG.height / vid.bitmap.bitmapData.height);
@@ -168,7 +169,8 @@ class VideoCutscene
         }
       });
 
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void
+      {
         finishVideo(0.5);
       });
 
@@ -337,22 +339,22 @@ class VideoCutscene
 
     PlayState.instance.camHUD.visible = true;
 
-    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime,
+    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime, {
+      ease: FlxEase.quadInOut,
+      onComplete: function(twn:FlxTween)
       {
-        ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
-          PlayState.instance.remove(blackScreen);
-          blackScreen = null;
-        }
-      });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime,
+        PlayState.instance.remove(blackScreen);
+        blackScreen = null;
+      }
+    });
+    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime, {
+      ease: FlxEase.quadInOut,
+      onComplete: function(twn:FlxTween)
       {
-        ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
-          onVideoEnded.dispatch();
-          onCutsceneFinish(cutsceneType);
-        }
-      });
+        onVideoEnded.dispatch();
+        onCutsceneFinish(cutsceneType);
+      }
+    });
   }
 
   /**

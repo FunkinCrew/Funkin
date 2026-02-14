@@ -10,7 +10,6 @@ typedef StepManiaData =
       var Credit:String;
       var Banner:String;
       var Background:String;
-
       var Offset:Float;
       var SampleStart:Float;
     };
@@ -19,13 +18,15 @@ typedef StepManiaData =
   var Difficulties:Array<StepDifficulty>;
 }
 
-enum StepManiaChartType {
+enum StepManiaChartType
+{
   DanceSingle;
   DanceDouble;
   Unknown;
 }
 
-enum StepManiaNoteType {
+enum StepManiaNoteType
+{
   Tap;
   Head;
   Tail;
@@ -44,7 +45,8 @@ class StepNote
   {
     this.beat = beat;
     this.column = column;
-    switch (t) {
+    switch (t)
+    {
       case "2":
         this.type = StepManiaNoteType.Head;
       case "3":
@@ -72,7 +74,8 @@ class StepDifficulty
 
   public function parseChartType(chartTypeStr:String):StepManiaChartType
   {
-    switch (chartTypeStr) {
+    switch (chartTypeStr)
+    {
       case "dance-single":
         return StepManiaChartType.DanceSingle;
       case "dance-double":

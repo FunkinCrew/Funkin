@@ -115,73 +115,91 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
-    offsetPlayerVolume.onChange = (_) -> {
+    offsetPlayerVolume.onChange = (_) ->
+    {
       var targetVolume = offsetPlayerVolume.value * 2 / 100;
       setTrackVolume(PLAYER, targetVolume);
     };
-    offsetPlayerMute.onClick = (_) -> {
+    offsetPlayerMute.onClick = (_) ->
+    {
       toggleMuteTrack(PLAYER);
     };
-    offsetPlayerSolo.onClick = (_) -> {
+    offsetPlayerSolo.onClick = (_) ->
+    {
       soloTrack(PLAYER);
     };
-    offsetOpponentVolume.onChange = (_) -> {
+    offsetOpponentVolume.onChange = (_) ->
+    {
       var targetVolume = offsetOpponentVolume.value * 2 / 100;
       setTrackVolume(OPPONENT, targetVolume);
     };
-    offsetOpponentMute.onClick = (_) -> {
+    offsetOpponentMute.onClick = (_) ->
+    {
       toggleMuteTrack(OPPONENT);
     };
-    offsetOpponentSolo.onClick = (_) -> {
+    offsetOpponentSolo.onClick = (_) ->
+    {
       soloTrack(OPPONENT);
     };
-    offsetInstrumentalVolume.onChange = (_) -> {
+    offsetInstrumentalVolume.onChange = (_) ->
+    {
       var targetVolume = offsetInstrumentalVolume.value * 2 / 100;
       setTrackVolume(INSTRUMENTAL, targetVolume);
     };
-    offsetInstrumentalMute.onClick = (_) -> {
+    offsetInstrumentalMute.onClick = (_) ->
+    {
       toggleMuteTrack(INSTRUMENTAL);
     };
-    offsetInstrumentalSolo.onClick = (_) -> {
+    offsetInstrumentalSolo.onClick = (_) ->
+    {
       soloTrack(INSTRUMENTAL);
     };
-    offsetButtonZoomIn.onClick = (_) -> {
+    offsetButtonZoomIn.onClick = (_) ->
+    {
       zoomWaveformIn();
     };
-    offsetButtonZoomOut.onClick = (_) -> {
+    offsetButtonZoomOut.onClick = (_) ->
+    {
       zoomWaveformOut();
     };
-    offsetButtonPause.onClick = (_) -> {
+    offsetButtonPause.onClick = (_) ->
+    {
       pauseAudioPreview();
     };
-    offsetButtonPlay.onClick = (_) -> {
+    offsetButtonPlay.onClick = (_) ->
+    {
       playAudioPreview();
     };
-    offsetButtonStop.onClick = (_) -> {
+    offsetButtonStop.onClick = (_) ->
+    {
       stopAudioPreview();
     };
-    offsetStepperPlayer.onChange = (event:UIEvent) -> {
+    offsetStepperPlayer.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentVocalOffsetPlayer) return;
       if (dragWaveform != null) return;
 
       chartEditorState.performCommand(new SetAudioOffsetCommand(PLAYER, event.value));
       refresh();
     }
-    offsetStepperOpponent.onChange = (event:UIEvent) -> {
+    offsetStepperOpponent.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentVocalOffsetOpponent) return;
       if (dragWaveform != null) return;
 
       chartEditorState.performCommand(new SetAudioOffsetCommand(OPPONENT, event.value));
       refresh();
     }
-    offsetStepperInstrumental.onChange = (event:UIEvent) -> {
+    offsetStepperInstrumental.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentInstrumentalOffset) return;
       if (dragWaveform != null) return;
 
       chartEditorState.performCommand(new SetAudioOffsetCommand(INSTRUMENTAL, event.value));
       refresh();
     }
-    waveformScrollview.onScroll = (_) -> {
+    waveformScrollview.onScroll = (_) ->
+    {
       if (!audioPreviewTracks.playing)
       {
         // Move the playhead if it would go out of view.
@@ -215,17 +233,21 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     refresh();
     refreshTicks();
 
-    waveformPlayer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    waveformPlayer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragWaveform(PLAYER);
     });
-    waveformOpponent.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    waveformOpponent.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragWaveform(OPPONENT);
     });
-    waveformInstrumental.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    waveformInstrumental.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragWaveform(INSTRUMENTAL);
     });
 
-    offsetTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    offsetTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragPlayhead();
     });
   }
@@ -337,7 +359,9 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  function buildTickLabel():Void {}
+  function buildTickLabel():Void
+  {
+  }
 
   public function onStartDragPlayhead():Void
   {

@@ -66,7 +66,7 @@ class SongEventRegistry
 
     for (eventCls in scriptedEventClassNames)
     {
-      var event:SongEvent = ScriptedSongEvent.init(eventCls, "UKNOWN");
+      var event:SongEvent = ScriptedSongEvent.scriptInit(eventCls, "UKNOWN");
 
       if (event != null)
       {
@@ -139,7 +139,8 @@ class SongEventRegistry
    */
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
   {
-    var result:Array<SongEventData> = events.filter(function(event:SongEventData):Bool {
+    var result:Array<SongEventData> = events.filter(function(event:SongEventData):Bool
+    {
       // If the event is already activated, don't activate it again.
       if (event.activated) return false;
 

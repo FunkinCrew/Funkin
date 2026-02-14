@@ -139,21 +139,18 @@ class CLIUtil
     return {
       args: [],
 
-      chart:
-        {
-          shouldLoadChart: false,
-          chartPath: null
-        },
-      stage:
-        {
-          shouldLoadStage: false,
-          stagePath: null
-        },
-      song:
-        {
-          shouldLoadSong: false,
-          songPath: null
-        }
+      chart: {
+        shouldLoadChart: false,
+        chartPath: null
+      },
+      stage: {
+        shouldLoadStage: false,
+        stagePath: null
+      },
+      song: {
+        shouldLoadSong: false,
+        songPath: null
+      }
     };
   }
 
@@ -168,11 +165,13 @@ class CLIUtil
 
     if (args == null || args.length == 0) return result;
 
-    return args.map(function(arg:String):String {
+    return args.map(function(arg:String):String
+    {
       if (arg == null) return '';
 
       return arg.trim();
-    }).filter(function(arg:String):Bool {
+    }).filter(function(arg:String):Bool
+    {
       return arg != null && arg != '';
     });
   }

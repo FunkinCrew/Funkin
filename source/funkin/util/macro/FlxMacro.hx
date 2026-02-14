@@ -34,13 +34,12 @@ class FlxMacro
       // Here, we add the zIndex attribute to all FlxBasic objects.
       // This has no functional code tied to it, but it can be used as a target value
       // for the FlxTypedGroup.sort method, to rearrange the objects in the scene.
-      fields.push(
-        {
-          name: "zIndex", // Field name.
-          access: [haxe.macro.Expr.Access.APublic], // Access level
-          kind: haxe.macro.Expr.FieldType.FVar(macro :Int, macro $v{0}), // Variable type and default value
-          pos: pos, // The field's position in code.
-        });
+      fields.push({
+        name: "zIndex", // Field name.
+        access: [haxe.macro.Expr.Access.APublic], // Access level
+        kind: haxe.macro.Expr.FieldType.FVar(macro :Int, macro $v{0}), // Variable type and default value
+        pos: pos, // The field's position in code.
+      });
     }
 
     return fields;

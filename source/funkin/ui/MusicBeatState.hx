@@ -33,8 +33,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;

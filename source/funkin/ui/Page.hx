@@ -24,8 +24,7 @@ class Page<T:PageName> extends FlxGroup
 
   var controls(get, never):Controls;
 
-  inline function get_controls()
-    return PlayerSettings.player1.controls;
+  inline function get_controls() return PlayerSettings.player1.controls;
 
   var subState:FlxSubState;
 
@@ -63,7 +62,8 @@ class Page<T:PageName> extends FlxGroup
   function openPrompt(prompt:Prompt, onClose:Void->Void)
   {
     enabled = false;
-    prompt.closeCallback = function() {
+    prompt.closeCallback = function()
+    {
       enabled = true;
       if (onClose != null) onClose();
     }
@@ -81,4 +81,6 @@ class Page<T:PageName> extends FlxGroup
 /**
  * For you to fill in your own page name stuff, see OptionsState.hx and it's OptionsMenuPageName
  */
-enum abstract PageName(String) from String to String {}
+enum abstract PageName(String) from String to String
+{
+}

@@ -476,7 +476,7 @@ class SongLoadScriptEvent extends ScriptEvent
 }
 
 /**
- * AAn event that is fired when the player retries the song.
+ * An event that is fired when the player retries the song.
  */
 class SongRetryEvent extends ScriptEvent
 {

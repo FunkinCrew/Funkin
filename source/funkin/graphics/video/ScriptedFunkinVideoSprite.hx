@@ -6,5 +6,7 @@ package funkin.graphics.video;
  */
 #if hxvlc
 @:hscriptClass
-class ScriptedFunkinVideoSprite extends funkin.graphics.video.FunkinVideoSprite implements polymod.hscript.HScriptedClass {}
+class ScriptedFunkinVideoSprite extends funkin.graphics.video.FunkinVideoSprite implements polymod.hscript.HScriptedClass
+{
+}
 #end

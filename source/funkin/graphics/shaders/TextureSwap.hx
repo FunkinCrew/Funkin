@@ -11,7 +11,8 @@ class TextureSwap extends FlxShader
   public function loadSwapImage(path:String)
   {
     #if html5
-    BitmapData.loadFromFile(path).onComplete(function(bmp:BitmapData) {
+    BitmapData.loadFromFile(path).onComplete(function(bmp:BitmapData)
+    {
       swappedImage = bmp;
     });
     #else

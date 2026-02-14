@@ -79,8 +79,7 @@ class MemoryUtil
           return 0.0;
         }
         line = input.readLine();
-      }
-      while (!regex.match(line));
+      } while (!regex.match(line));
 
       input.close();
 
@@ -91,7 +90,9 @@ class MemoryUtil
         return kb * 1024.0;
       }
     }
-    catch (e:Dynamic) {}
+    catch (e:Dynamic)
+    {
+    }
     #end
 
     return 0.0;

@@ -101,24 +101,24 @@ class FNFCUtil
     }
 
     // Transition to the play state.
-    LoadingState.loadPlayState(
-      {
-        targetSong: targetSong,
-        targetDifficulty: difficulty,
-        targetVariation: variation,
-        practiceMode: false,
-        botPlayMode: false,
-        minimalMode: false,
-        startTimestamp: 0,
-        playbackRate: 1,
-        overrideMusic: true,
-      }, false, true, function(targetState) {
-        // Apply the instrumental and the vocals manually after the state loads.
-        // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
-        @:nullSafety(Off)
-        FlxG.sound.music = audioInstTrack;
-        targetState.vocals = audioVocalTrackGroup;
-      });
+    LoadingState.loadPlayState({
+      targetSong: targetSong,
+      targetDifficulty: difficulty,
+      targetVariation: variation,
+      practiceMode: false,
+      botPlayMode: false,
+      minimalMode: false,
+      startTimestamp: 0,
+      playbackRate: 1,
+      overrideMusic: true,
+    }, false, true, function(targetState)
+    {
+      // Apply the instrumental and the vocals manually after the state loads.
+      // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
+      @:nullSafety(Off)
+      FlxG.sound.music = audioInstTrack;
+      targetState.vocals = audioVocalTrackGroup;
+    });
   }
 
   static function loadSoundFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, soundName:String):FunkinSound

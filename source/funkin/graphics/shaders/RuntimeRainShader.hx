@@ -133,14 +133,12 @@ class RuntimeRainShader extends RuntimePostEffectShader
     super.__processGLData(source, storageType);
     if (storageType == 'uniform')
     {
-      lights = [
-        for (i in 0...MAX_LIGHTS)
-          {
-            position: addFloatUniform('lights[$i].position', 2),
-            color: addFloatUniform('lights[$i].color', 3),
-            radius: addFloatUniform('lights[$i].radius', 1),
-          }
-      ];
+      lights = [for (i in 0...MAX_LIGHTS)
+        {
+          position: addFloatUniform('lights[$i].position', 2),
+          color: addFloatUniform('lights[$i].color', 3),
+          radius: addFloatUniform('lights[$i].radius', 1),
+        }];
     }
   }
 

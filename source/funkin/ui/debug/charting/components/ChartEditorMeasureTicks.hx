@@ -140,12 +140,14 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     measureTicksSprite.loadGraphic(measureTickBitmap);
 
     // Destroy these so they get rebuilt with the right theme later.
-    measureNumbers.forEach(function(measureNumber:FlxText) {
+    measureNumbers.forEach(function(measureNumber:FlxText)
+    {
       measureNumber.destroy();
     });
     measureNumbers.clear();
     // Destroy these so they get rebuilt with the right theme later.
-    measureDividers.forEach(function(measureDivider:FlxSprite) {
+    measureDividers.forEach(function(measureDivider:FlxSprite)
+    {
       measureDivider.destroy();
     });
     measureDividers.clear();
@@ -167,10 +169,12 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       previousMeasure = currentMeasure;
 
     // Remove existing measure numbers.
-    measureNumbers.forEachAlive(function(measureNumber:FlxText) {
+    measureNumbers.forEachAlive(function(measureNumber:FlxText)
+    {
       measureNumber.kill();
     });
-    measureDividers.forEachAlive(function(measureDivider:FlxSprite) {
+    measureDividers.forEachAlive(function(measureDivider:FlxSprite)
+    {
       measureDivider.kill();
     });
 

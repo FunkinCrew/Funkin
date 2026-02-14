@@ -23,4 +23,6 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryPar
   }
 }
 
-typedef SpeakerEntryParams = {}
+typedef SpeakerEntryParams =
+{
+}

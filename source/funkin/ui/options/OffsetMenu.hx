@@ -121,12 +121,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     arrow.cameras = [menuCamera];
     add(arrow);
 
-    arrows.push(
-      {
-        sprite: arrow,
-        beat: beat,
-        direction: 0
-      });
+    arrows.push({
+      sprite: arrow,
+      beat: beat,
+      direction: 0
+    });
   }
 
   /**
@@ -162,7 +161,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         closest = arrow;
       }
     }
-
 
     return closest;
   }
@@ -244,14 +242,17 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     add(items = new TextMenuList());
     add(preferenceItems = new FlxTypedSpriteGroup<FlxSprite>());
 
-    offsetItem = createPrefItemNumber('Offset (Global)', 'Offset (Global)', function(value:Float) {
+    offsetItem = createPrefItemNumber('Offset (Global)', 'Offset (Global)', function(value:Float)
+    {
       Preferences.globalOffset = Std.int(value);
     }, null, Preferences.globalOffset, -1500, 1500, 1.0, 2, 5);
-    createButtonItem('Reset Offset', function() {
+    createButtonItem('Reset Offset', function()
+    {
       Preferences.globalOffset = 0;
       offsetItem.currentValue = Preferences.globalOffset;
     });
-    createButtonItem('Offset Calibration', function() {
+    createButtonItem('Offset Calibration', function()
+    {
       // Reset calibration state and start another one.
 
       testStrumline.alpha = 0;
@@ -291,7 +292,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       _gotMad = false;
     });
-    createButtonItem('Test', function() {
+    createButtonItem('Test', function()
+    {
       // Reset testing state and start another one.
       // We do not reset the offset here, so the player can test their current offset.
       @:privateAccess
@@ -663,8 +665,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
           if (Math.abs(actualMs) < 45) jumpInText.text = 'Great job';
           else
             jumpInText.text = 'Nice job';
-          if (differences.length < 8)
-            jumpInText.text += ", keep going!";
+          if (differences.length < 8) jumpInText.text += ", keep going!";
           else
             jumpInText.text += "!";
         }
@@ -791,7 +792,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     var ind = 0;
     // Indent the selected item.
-    items.forEach(function(daItem:TextMenuItem) {
+    items.forEach(function(daItem:TextMenuItem)
+    {
       // Initializing thy text width (if thou text present)
       var thyTextWidth:Int = 0;
       switch (Type.typeof(daItem))

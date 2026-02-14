@@ -148,11 +148,10 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     }
     else if (TouchUtil.pressed)
     {
+      final menuCamera = this.camera;
       for (i in 0...members.length)
       {
         final item = members[i];
-        final menuCamera = FlxG.cameras.list[1];
-
         final itemOverlaps:Bool = !_isMainMenuState && TouchUtil.overlaps(item, menuCamera);
         final itemPixelOverlap:Bool = _isMainMenuState && FlxG.pixelPerfectOverlap(touchBuddy, item, 0);
 
@@ -288,7 +287,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_)
+      {
         busy = false;
         menuItem.callback();
       });
@@ -370,8 +370,7 @@ class MenuListItem extends FlxSprite
 
   public var selected(get, never):Bool;
 
-  function get_selected()
-    return alpha == 1.0;
+  function get_selected() return alpha == 1.0;
 
   public function new(x = 0.0, y = 0.0, name:String, callback, available:Bool = true)
   {

@@ -168,7 +168,8 @@ class ChartEditorImportExportHandler
         affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
 
         // Delay it so it doesn't overlap other notifications
-        flixel.util.FlxTimer.wait(delay, () -> {
+        flixel.util.FlxTimer.wait(delay, () ->
+        {
           state.warning('Stacked Notes Detected',
             'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
             'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
@@ -358,7 +359,8 @@ class ChartEditorImportExportHandler
 
     var files:Array<String> = sys.FileSystem.readDirectory(BACKUPS_PATH);
     // Filter to only the backups for the chart editor
-    files = files.filter((file:String) -> {
+    files = files.filter((file:String) ->
+    {
       return file.endsWith(Constants.EXT_CHART);
     });
     if (files.length == 0) return null; // No backups.
@@ -366,7 +368,8 @@ class ChartEditorImportExportHandler
 
     // Get the stats for each file so we can compare timestamps.
     // Sort the list of files by their timestamp (newest first)
-    files.sort((a:String, b:String) -> {
+    files.sort((a:String, b:String) ->
+    {
       var aStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, a]));
       var bStat:sys.FileStat = sys.FileSystem.stat(haxe.io.Path.join([BACKUPS_PATH, b]));
       return aStat.mtime.getTime() < bStat.mtime.getTime() ? 1 : -1;
@@ -481,10 +484,7 @@ class ChartEditorImportExportHandler
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
         if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
-        targetPath = Path.join([
-          BACKUPS_PATH,
-          'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
-        ]);
+        targetPath = Path.join([BACKUPS_PATH, 'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}']);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         try
@@ -520,7 +520,8 @@ class ChartEditorImportExportHandler
     else
     {
       // Prompt and save.
-      var onSave:Array<String>->Void = function(paths:Array<String>) {
+      var onSave:Array<String>->Void = function(paths:Array<String>)
+      {
         if (paths.length != 1)
         {
           trace(' WARNING '.warning() + ' Could not get save path.');
@@ -535,7 +536,8 @@ class ChartEditorImportExportHandler
         }
       };
 
-      var onCancel:Void->Void = function() {
+      var onCancel:Void->Void = function()
+      {
         trace('Export cancelled.');
         if (onCancelCb != null) onCancelCb();
       };
@@ -546,7 +548,9 @@ class ChartEditorImportExportHandler
         FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${state.currentSongId}.${Constants.EXT_CHART}');
         state.saveDataDirty = false;
       }
-      catch (e) {}
+      catch (e)
+      {
+      }
     }
   }
 }

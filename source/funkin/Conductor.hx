@@ -381,7 +381,9 @@ class Conductor
   /**
    * The constructor.
    */
-  public function new() {}
+  public function new()
+  {
+  }
 
   /**
    * Forcibly defines the current BPM of the song.

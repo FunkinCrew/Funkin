@@ -100,7 +100,9 @@ class SongPlayData_v2_1_0
   public var characters:SongData.SongCharacterData;
   public var stage:String;
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   /**
    * Produces a string representation suitable for debugging.

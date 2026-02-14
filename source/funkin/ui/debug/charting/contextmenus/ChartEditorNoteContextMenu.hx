@@ -29,19 +29,23 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
   public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
-    contextmenuFlip.onClick = function(_) {
+    contextmenuFlip.onClick = function(_)
+    {
       chartEditorState.performCommand(new FlipNotesCommand([data]));
     }
 
-    contextmenuMirrorX.onClick = function(_) {
+    contextmenuMirrorX.onClick = function(_)
+    {
       chartEditorState.performCommand(new MirrorNotesCommand([data], true, false, true, true));
     }
 
-    contextmenuAddHold.onClick = function(_) {
+    contextmenuAddHold.onClick = function(_)
+    {
       chartEditorState.performCommand(new ExtendNoteLengthCommand(data, 4, STEPS));
     }
 
-    contextmenuDelete.onClick = function(_) {
+    contextmenuDelete.onClick = function(_)
+    {
       chartEditorState.performCommand(new RemoveNotesCommand([data]));
     }
   }

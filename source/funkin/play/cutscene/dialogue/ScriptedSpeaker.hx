@@ -6,4 +6,6 @@ package funkin.play.cutscene.dialogue;
  * This allows you to customize how a specific conversation speaker appears.
  */
 @:hscriptClass
-class ScriptedSpeaker extends funkin.play.cutscene.dialogue.Speaker implements polymod.hscript.HScriptedClass {}
+class ScriptedSpeaker extends funkin.play.cutscene.dialogue.Speaker implements polymod.hscript.HScriptedClass
+{
+}

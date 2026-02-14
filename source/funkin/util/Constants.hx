@@ -127,8 +127,7 @@ class Constants
   /**
    * The base colors used by notes.
    */
-  public static var COLOR_NOTES:Array<FlxColor> = [
-    0xFFFF22AA, // left (0)
+  public static var COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, // left (0)
     0xFF00EEFF, // down (1)
     0xFF00CC00, // up (2)
     0xFFCC1111 // right (3)

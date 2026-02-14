@@ -370,7 +370,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
       // Update the value of the event data without modifying
       input.pauseEvent(UIEvent.CHANGE, true);
-      input.onChange = function(event:UIEvent) {
+      input.onChange = function(event:UIEvent)
+      {
         if (field.type == FRAME) return;
 
         var value = event.target.value;
@@ -521,13 +522,15 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     easeDotImage.resource = _easeDotSprites[0].frame;
 
     var frameCallback:Dynamic = null;
-    frameCallback = (tmr:FlxTimer) -> {
+    frameCallback = (tmr:FlxTimer) ->
+    {
       _dotIndex++;
       if (_dotIndex >= _easeDotSprites.length)
       {
         _dotTimer?.cancel();
         _pauseTimer ??= new FlxTimer();
-        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void {
+        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void
+        {
           if (easeDotImage != null && !_initializing)
           {
             _dotIndex = 0;

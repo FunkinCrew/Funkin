@@ -41,7 +41,8 @@ class Sequence
 
     for (event in events)
     {
-      timers.push(new FlxTimer().start(event.time * mult, function(timer:FlxTimer) {
+      timers.push(new FlxTimer().start(event.time * mult, function(timer:FlxTimer)
+      {
         event.callback();
         timers.remove(timer);
       }));
@@ -131,7 +132,8 @@ class SongSequence
       this.events.push(event);
     }
 
-    ArraySort.sort(this.events, function(a:SequenceEvent, b:SequenceEvent):Int {
+    ArraySort.sort(this.events, function(a:SequenceEvent, b:SequenceEvent):Int
+    {
       if (a.time < b.time) return -1;
       if (a.time > b.time) return 1;
       return 0;

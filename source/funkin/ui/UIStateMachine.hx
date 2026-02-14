@@ -33,14 +33,7 @@ class UIStateMachine
   public function new(?transitions:Map<UIState, Array<UIState>>)
   {
     // Default valid transitions if none provided
-    validTransitions = transitions != null ? transitions : [
-      Idle => [Interacting, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled],
-      EnteringMainMenu => [Idle, Exiting, Disabled, Interacting],
-      Interacting => [Idle, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled],
-      Exiting => [Idle],
-      Disabled => [Idle],
-      EnteringFreeplay => [Idle]
-    ];
+    validTransitions = transitions != null ? transitions : [Idle => [Interacting, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled], EnteringMainMenu => [Idle, Exiting, Disabled, Interacting], Interacting => [Idle, EnteringMainMenu, EnteringFreeplay, Exiting, Disabled], Exiting => [Idle], Disabled => [Idle], EnteringFreeplay => [Idle]];
   }
 
   public function canTransition(from:UIState, to:UIState):Bool

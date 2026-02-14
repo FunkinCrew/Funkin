@@ -136,11 +136,10 @@ class UndoRedoHandler
         finalAction.data = {ID: state.selectedSprite.ID}
 
       case OBJECT_DELETED:
-        finalAction.data =
-          {
-            ID: state.selectedSprite.ID,
-            data: state.selectedSprite.toData(true)
-          }
+        finalAction.data = {
+          ID: state.selectedSprite.ID,
+          data: state.selectedSprite.toData(true)
+        }
 
       case OBJECT_ROTATED:
         finalAction.data = {ID: state.selectedSprite.ID, angle: state.selectedSprite.angle}

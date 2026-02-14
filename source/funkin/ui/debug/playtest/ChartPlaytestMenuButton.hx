@@ -45,7 +45,9 @@ class ChartPlaytestMenuButtonBase extends FlxText
     }
   }
 
-  function onButtonPressed():Void {}
+  function onButtonPressed():Void
+  {
+  }
 }
 
 class ChartPlaytestMenuButton extends ChartPlaytestMenuButtonBase

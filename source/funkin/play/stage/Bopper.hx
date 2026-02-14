@@ -169,7 +169,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }
   }
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   /**
    * Called every `danceEvery` beats of the song.
@@ -260,7 +262,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if ((!canPlayOtherAnims))
     {
       var id = name;
-      if (getCurrentAnimation() == id && restart) {}
+      if (getCurrentAnimation() == id && restart)
+      {
+      }
       else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
       {
         var detected:Bool = false;
@@ -310,7 +314,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     applyAnimationOffsets(correctName);
 
     canPlayOtherAnims = false;
-    forceAnimationTimer.start(duration, (timer) -> {
+    forceAnimationTimer.start(duration, (timer) ->
+    {
       canPlayOtherAnims = true;
     }, 1);
   }
@@ -335,35 +340,67 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return output;
   }
 
-  public function onPause(event:PauseScriptEvent) {}
+  public function onPause(event:PauseScriptEvent)
+  {
+  }
 
-  public function onResume(event:ScriptEvent) {}
+  public function onResume(event:ScriptEvent)
+  {
+  }
 
-  public function onSongStart(event:ScriptEvent) {}
+  public function onSongStart(event:ScriptEvent)
+  {
+  }
 
-  public function onSongEnd(event:ScriptEvent) {}
+  public function onSongEnd(event:ScriptEvent)
+  {
+  }
 
-  public function onGameOver(event:ScriptEvent) {}
+  public function onGameOver(event:ScriptEvent)
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent) {}
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent) {}
+  public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
 
-  public function onSongEvent(event:SongEventScriptEvent) {}
+  public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+  {
+  }
 
-  public function onCountdownStart(event:CountdownScriptEvent) {}
+  public function onCountdownStart(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownStep(event:CountdownScriptEvent) {}
+  public function onCountdownStep(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownEnd(event:CountdownScriptEvent) {}
+  public function onCountdownEnd(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onSongLoaded(event:SongLoadScriptEvent) {}
+  public function onSongLoaded(event:SongLoadScriptEvent)
+  {
+  }
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:SongRetryEvent)
+  {
+  }
 }

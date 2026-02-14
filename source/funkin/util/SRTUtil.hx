@@ -22,11 +22,7 @@ class SubtitleEntry
 
   public function toString():String
   {
-    return FlxStringUtil.getDebugString([
-      LabelValuePair.weak("index", id),
-      LabelValuePair.weak("range", [start, end]),
-      LabelValuePair.weak("text", text)
-    ]);
+    return FlxStringUtil.getDebugString([LabelValuePair.weak("index", id), LabelValuePair.weak("range", [start, end]), LabelValuePair.weak("text", text)]);
   }
 }
 
@@ -114,7 +110,8 @@ class SRTParser
    */
   static final timeArrowPatterns = ["-->", "->", "—>", "–>"];
 
-  public static function parseTimeLine(line:String):{start:Float, end:Float}
+  public static function parseTimeLine(line:String):
+    {start:Float, end:Float}
   {
     var left:String = null;
     var right:String = null;

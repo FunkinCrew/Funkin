@@ -30,11 +30,8 @@ class AttractState extends MusicBeatState
    * @param path The path to the video to play.
    * This used
    */
-  static final VIDEO_PATHS:Array<{path:String}> = [
-    {path: Paths.videos('riftCollabTrailer')},
-    {path: Paths.videos('mobileRelease')},
-    {path: Paths.videos('boyfriendEverywhere')}
-  ];
+  static final VIDEO_PATHS:Array<
+    {path:String}> = [{path: Paths.videos('riftCollabTrailer')}, {path: Paths.videos('mobileRelease')}, {path: Paths.videos('boyfriendEverywhere')}];
 
   static var nextVideoToPlay:Int = 0;
 
@@ -127,13 +124,15 @@ class AttractState extends MusicBeatState
     {
       vid.zIndex = 0;
       vid.active = false;
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void
+      {
         trace('[VLC] Encountered an error: $msg');
 
         onAttractEnd();
       });
       vid.bitmap.onEndReached.add(onAttractEnd);
-      vid.bitmap.onFormatSetup.add(() -> {
+      vid.bitmap.onFormatSetup.add(() ->
+      {
         vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
         vid.updateHitbox();
         vid.screenCenter();

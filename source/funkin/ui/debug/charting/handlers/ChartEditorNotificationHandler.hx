@@ -139,27 +139,28 @@ class ChartEditorNotificationHandler
   {
     var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
 
-    var notif = NotificationManager.instance.addNotification(
-      {
-        title: title,
-        body: body,
-        type: type ?? NotificationType.Default,
-        expiryMs: Constants.NOTIFICATION_DISMISS_TIME,
-        actions: actions
-      });
+    var notif = NotificationManager.instance.addNotification({
+      title: title,
+      body: body,
+      type: type ?? NotificationType.Default,
+      expiryMs: Constants.NOTIFICATION_DISMISS_TIME,
+      actions: actions
+    });
 
     if (actions != null && actions.length > 0)
     {
       // TODO: Tell Ian that this is REALLY dumb.
       var actionsContainer:HBox = notif.findComponent('actionsContainer', HBox);
-      actionsContainer.walkComponents(function(component) {
+      actionsContainer.walkComponents(function(component)
+      {
         if (Std.isOfType(component, Button))
         {
           var button:Button = cast component;
           var action:Null<NotificationActionData> = actions.find(action -> action.text == button.text);
           if (action != null && action.callback != null)
           {
-            button.onClick = function(_) {
+            button.onClick = function(_)
+            {
               // Don't allow actions to be clicked while the playtest is open.
               if (state.subState != null) return;
               action.callback(action);

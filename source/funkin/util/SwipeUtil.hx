@@ -195,8 +195,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_swipeAny():Bool
-    return swipeDown || swipeLeft || swipeRight || swipeUp;
+  inline static function get_swipeAny():Bool return swipeDown || swipeLeft || swipeRight || swipeUp;
 
   @:noCompletion
   inline static function get_justSwipedUp():Bool
@@ -243,8 +242,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_justSwipedAny():Bool
-    return justSwipedDown || justSwipedLeft || justSwipedRight || justSwipedUp;
+  inline static function get_justSwipedAny():Bool return justSwipedDown || justSwipedLeft || justSwipedRight || justSwipedUp;
 
   @:noCompletion
   inline static function get_flickUp():Bool

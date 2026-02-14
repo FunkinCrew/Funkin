@@ -1,13 +1,16 @@
 package funkin.ui.freeplay.dj;
 
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * A script that can be tied to a AnimateAtlasFreeplayDJ.
  * Create a scripted class that extends AnimateAtlasFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * An AnimateAtlasFreeplayDJ is a Freeplay DJ which is rendered by
@@ -22,18 +25,31 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
   {
     super(x, y, characterId);
 
-    loadTextureAtlas(playableCharData?.getAssetPath(),
-      {
-        swfMode: true
-      });
+    loadTextureAtlas(playableCharData.getAssetPath(), playableCharData.getAtlasSettings());
+    loadAnimations();
 
-    if (playableCharData?.useApplyStageMatrix() ?? false)
+    if (playableCharData.useApplyStageMatrix() && !this.applyStageMatrix || playableCharData.useAnimatePosition)
     {
       this.applyStageMatrix = true;
+
+      if (playableCharData.useAnimatePosition)
+      {
+        resetPosition();
+      }
     }
 
     animation.onFinish.add(onFinishAnim);
     animation.onLoop.add(onFinishAnim);
+  }
+
+  function loadAnimations():Void
+  {
+    log('Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
+
+    FlxAnimationUtil.addTextureAtlasAnimations(this, playableCharData.getAnimationsList());
+
+    var animationNames:Array<String> = this.animation.getNameList();
+    log('[ATLASDJ] Successfully loaded ${animationNames.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
@@ -218,5 +234,10 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
       animation.curAnim.looped = Loop;
     }
     applyAnimationOffset();
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' ATLASDJ '.bold().bg_blue() + ' $message');
   }
 }

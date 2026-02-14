@@ -103,7 +103,8 @@ class FunkinBackButton extends FunkinButton
 
     onConfirmStart.dispatch();
 
-    animation.onFinish.addOnce(function(name:String) {
+    animation.onFinish.addOnce(function(name:String)
+    {
       if (name != 'confirm') return;
       _confirming = false;
       held = false;
@@ -119,13 +120,13 @@ class FunkinBackButton extends FunkinButton
     HapticUtil.vibrate(0, 0.01, 0.2);
     animation.play('idle');
 
-    FlxTween.tween(this, {alpha: restingOpacity}, 0.5,
+    FlxTween.tween(this, {alpha: restingOpacity}, 0.5, {
+      ease: FlxEase.expoOut,
+      onComplete: function(tween:FlxTween):Void
       {
-        ease: FlxEase.expoOut,
-        onComplete: function(tween:FlxTween):Void {
-          held = false;
-        }
-      });
+        held = false;
+      }
+    });
   }
 
   public function resetCallbacks():Void

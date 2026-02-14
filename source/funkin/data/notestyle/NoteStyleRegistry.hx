@@ -31,4 +31,6 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyle
   }
 }
 
-typedef NoteStyleEntryParams = {}
+typedef NoteStyleEntryParams =
+{
+}
