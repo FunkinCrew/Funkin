@@ -238,8 +238,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
       if (ratioAxis == X)
       {
-        bitmap.x = (i == 0) ? -bitmap.width : FlxG.scaleMode.gameSize.x;
-        targetX = (i == 0) ? 0 : FlxG.scaleMode.gameSize.x - bitmap.width;
+        bitmap.x = instance.offset.x + ((i == 0) ? -bitmap.width : FlxG.scaleMode.gameSize.x);
+        targetX = instance.offset.x + ((i == 0) ? 0 : FlxG.scaleMode.gameSize.x - bitmap.width);
         bitmap.y = 0;
         targetY = 0;
       }
@@ -247,8 +247,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       {
         bitmap.x = 0;
         targetX = 0;
-        bitmap.y = (i == 0) ? -bitmap.height : FlxG.scaleMode.gameSize.y;
-        targetY = (i == 0) ? 0 : FlxG.scaleMode.gameSize.y - bitmap.height;
+        bitmap.y = instance.offset.y + ((i == 0) ? -bitmap.height : FlxG.scaleMode.gameSize.y);
+        targetY = instance.offset.y + ((i == 0) ? 0 : FlxG.scaleMode.gameSize.y - bitmap.height);
       }
 
       bitmap.alpha = 0;
@@ -283,8 +283,8 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         continue;
       }
 
-      final targetX:Float = (i == 0 || ratioAxis == Y) ? ratioAxis == Y ? 0 : -bitmap.width : FlxG.scaleMode.gameSize.x;
-      final targetY:Float = (i == 0 || ratioAxis == X) ? ratioAxis == X ? 0 : -bitmap.height : FlxG.scaleMode.gameSize.y;
+      final targetX:Float = (ratioAxis == Y) ? 0 : instance.offset.x + ((i == 0) ? -bitmap.width : FlxG.scaleMode.gameSize.x);
+      final targetY:Float = (ratioAxis == X) ? 0 : instance.offset.y + ((i == 0) ? -bitmap.height : FlxG.scaleMode.gameSize.y);
 
       if (tweenDuration > 0.0)
       {
