@@ -322,8 +322,6 @@ class TitleState extends MusicBeatState
     }
     else
       curCheatPos = 0;
-
-    trace(input);
   }
 
   function startCheat():Void
