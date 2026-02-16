@@ -45,7 +45,6 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
         case "slidein idle point", "cannot select Label", "unlock":
           anim.play("idle", true);
         case "idle":
-          trace('Waiting for onBeatHit');
 
           // TODO: once char select data is refactored, add a `shouldBop` field or something IDK
           if (currentBFPath != null)

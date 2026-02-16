@@ -2663,7 +2663,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (shouldPlayWelcomeMusic)
       {
-        trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Starting welcome music!');
         this.welcomeMusic.play();
         this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
       }
@@ -2678,7 +2677,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function stopWelcomeMusic():Void
   {
-    trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Stopping welcome music.');
     if (bgMusicTimer != null)
     {
       bgMusicTimer.cancel();
@@ -4041,8 +4039,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
-
-          trace(holdNoteSprite.x + ', ' + holdNoteSprite.y + ', ' + holdNoteSprite.width + ', ' + holdNoteSprite.height);
         }
       }
 
@@ -4750,7 +4746,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else if (overlapsSelection)
       {
         // Do nothing
-        trace('Clicked on a selected note!');
       }
     }
 
@@ -5153,7 +5148,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Play a sound as we drag.
           this.playSound(Paths.sound('chartingSounds/noteLay'));
 
-          trace('Dragged ${dragDistanceColumns} X and ${dragDistanceSteps} Y.');
           dragTargetCurrentStep = dragDistanceSteps;
           dragTargetCurrentColumn = dragDistanceColumns;
 
