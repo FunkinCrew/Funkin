@@ -134,6 +134,10 @@ class ZoomCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  public function loadCurrentEventData():Void
+  {
+  }
+
   /**
    * Called when the Zoom Level field is changed.
    */

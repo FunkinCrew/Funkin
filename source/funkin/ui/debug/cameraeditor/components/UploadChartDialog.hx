@@ -106,8 +106,7 @@ class UploadChartDialog extends Dialog
     this.cameraEditorState.songDatas = entires.songChartDatas;
     this.cameraEditorState.audioInstTrackData = entires.instrumentals;
     this.cameraEditorState.audioVocalTrackData = entires.vocals;
-    this.cameraEditorState.loadCurrentInstrumentalAndVocals();
-    this.cameraEditorState.buildStage();
+    this.cameraEditorState.onChartLoaded();
 
     this.hideDialog(DialogButton.APPLY);
   }

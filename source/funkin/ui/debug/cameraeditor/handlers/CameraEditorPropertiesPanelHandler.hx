@@ -73,6 +73,29 @@ class CameraEditorPropertiesPanelHandler
   }
 
   /**
+   * Load the selected song event into the Properties panel.
+   * @param state The CameraEditorState to target.
+   */
+  public static function loadSelectedSongEvent(state:CameraEditorState):Void
+  {
+    if (state.selectedSongEvent == null)
+    {
+      hidePropertiesPanel(state);
+      return;
+    }
+
+    switch (state.selectedSongEvent.eventKind)
+    {
+      case 'ZoomCamera':
+        useZoomCameraContainer(state);
+      case 'FocusCamera':
+        useFocusCameraContainer(state);
+      default:
+        hidePropertiesPanel(state);
+    }
+  }
+
+  /**
    * Update the Properties panel to display the Zoom Camera event fields..
    * @param state The CameraEditorState to target.
    */
@@ -83,6 +106,9 @@ class CameraEditorPropertiesPanelHandler
 
     var zoomCameraContainer = new ZoomCameraContainer(state);
     state.propertiesPanel.addComponent(zoomCameraContainer);
+
+    // Load current values.
+    zoomCameraContainer.loadCurrentEventData();
 
     state.setPropertiesContainerTitle('Zoom Camera');
   }
@@ -98,6 +124,9 @@ class CameraEditorPropertiesPanelHandler
 
     var focusCameraContainer = new FocusCameraContainer(state);
     state.propertiesPanel.addComponent(focusCameraContainer);
+
+    // Load current values.
+    focusCameraContainer.loadCurrentEventData();
 
     state.setPropertiesContainerTitle('Focus Camera');
   }

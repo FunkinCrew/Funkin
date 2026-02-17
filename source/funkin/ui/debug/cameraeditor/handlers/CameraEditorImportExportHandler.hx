@@ -38,7 +38,7 @@ class CameraEditorImportExportHandler
     state.songManifestData = entries.manifest;
     state.audioInstTrackData = entries.instrumentals;
     state.audioVocalTrackData = entries.vocals;
-    state.buildStage();
+    state.onChartLoaded();
 
     trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals.');
 
