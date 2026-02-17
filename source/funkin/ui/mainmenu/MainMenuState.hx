@@ -624,7 +624,6 @@ class MainMenuState extends MusicBeatState
 
   function goBack():Void
   {
-    trace("BACK: Interact complete.");
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));

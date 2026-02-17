@@ -414,7 +414,6 @@ class InitState extends FlxState
   function startGameNormally():Void
   {
     var params:CLIParams = CLIUtil.processArgs();
-    trace('Command line args: ${params}');
 
     if (params.chart.shouldLoadChart)
     {
