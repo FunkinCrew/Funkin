@@ -134,6 +134,15 @@ class FocusCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  public function loadCurrentEventData():Void
+  {
+    var eventTarget = cameraEditorState.selectedSongEvent.getInt('char');
+    focusCameraTarget.selectItemBy(function(data):Bool
+    {
+      return data.id == eventTarget;
+    });
+  }
+
   /**
    * Called when the Focus Camera Target field is changed.
    */
