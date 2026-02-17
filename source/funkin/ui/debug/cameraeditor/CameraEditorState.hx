@@ -4,6 +4,7 @@ package funkin.ui.debug.cameraeditor;
 import haxe.ui.containers.Panel;
 import haxe.ui.containers.Panel;
 import haxe.ui.focus.FocusManager;
+import funkin.data.song.SongData.SongEventData;
 import flixel.FlxCamera;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -114,6 +115,18 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var songManifestData:Null<ChartManifestData> = null;
   public var audioInstTrackData:Map<String, Bytes> = [];
   public var audioVocalTrackData:Map<String, Bytes> = [];
+
+  public var selectedSongEvent(default, set):Null<SongEventData> = null;
+
+  function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
+  {
+    if (value == selectedSongEvent) return value;
+
+    selectedSongEvent = value;
+    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+
+    return value;
+  }
 
   /**
    * A list of previous working file paths.
@@ -386,6 +399,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
+    this.timeline.cameraEditorState = this;
+
     this.hidePropertiesPanel();
   }
 
@@ -409,7 +424,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.F4)
     {
       @:privateAccess
-      if (!autoSaveTimer.finished) autoSaveTimer.onLoopFinished();
+      if (autoSaveTimer != null && !autoSaveTimer.finished) autoSaveTimer.onLoopFinished();
       resetWindowTitle();
 
       WindowUtil.windowExit.remove(windowClose);
@@ -446,11 +461,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     // DEBUG
     if (FlxG.keys.justPressed.ONE)
     {
-      this.useFocusCameraContainer();
     }
     if (FlxG.keys.justPressed.TWO)
     {
-      this.useZoomCameraContainer();
     }
     if (FlxG.keys.justPressed.ZERO)
     {
@@ -673,6 +686,35 @@ class CameraEditorState extends UIState implements ConsoleClass
         body: notif,
         type: isError ? NotificationType.Error : NotificationType.Info
       });
+  }
+
+  /**
+   * Select a song event from the current chart data by its index.
+   * @param index The index of the event to select.
+   */
+  public function selectSongEventByIndex(index:Int):Void
+  {
+    var selectedEvent:SongEventData = currentSongChartData.events[index];
+    this.selectedSongEvent = selectedEvent;
+  }
+
+  /**
+   * Ensure everything gets populated once the `songData` is loaded from a chart.
+   */
+  public function onChartLoaded():Void
+  {
+    loadCurrentInstrumentalAndVocals();
+    buildStage();
+    updateWindowTitle();
+    loadTimeline();
+  }
+
+  /**
+   * Loads all the events into the timeline so it can display and edit them.
+   */
+  public function loadTimeline():Void
+  {
+    timeline.populateEventList(currentSongChartData.events);
   }
 
   /**
