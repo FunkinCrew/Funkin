@@ -2533,17 +2533,11 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnOpenRandom(randomCapsule:SongMenuItem):Void
   {
-    trace('RANDOM SELECTED');
-
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem)
     {
       // Dead capsules are ones which were removed from the list when changing filters.
       return cap.alive && cap.freeplayData != null;
     });
-
-    trace('Available songs: ${availableSongCapsules.map(function(cap) {
-      return cap?.freeplayData?.data.songName;
-    })}');
 
     if (availableSongCapsules.length == 0)
     {
@@ -2641,7 +2635,6 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     var targetSong:Song = targetSongNullable;
-    trace('target song: ${targetSongId} (${targetVariation})');
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 
@@ -2723,8 +2716,6 @@ class FreeplayState extends MusicBeatSubState
     }
     var targetSong:Song = targetSongNullable;
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
-
-    trace('target song: ${targetSongId} (${targetVariation})');
 
     PlayStatePlaylist.campaignId = targetLevelId ?? null;
 

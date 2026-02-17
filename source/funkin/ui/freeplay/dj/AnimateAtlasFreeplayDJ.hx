@@ -49,7 +49,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
     FlxAnimationUtil.addTextureAtlasAnimations(this, playableCharData.getAnimationsList());
 
     var animationNames:Array<String> = this.animation.getNameList();
-    log('[ATLASDJ] Successfully loaded ${animationNames.length} animations for ${characterId}');
+    log('Successfully loaded ${animationNames.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
