@@ -146,7 +146,7 @@ class FunkinSprite extends FlxAnimate
             path = path.replace('$lib:assets/$lib/images/', '');
           }
 
-          this.loadTextureAtlas(path, lib, atlasSettings);
+          this.loadTextureAtlas(path, atlasSettings);
 
         default:
           FlxG.log.warn('Texture path $path is not a valid path. Make sure the path points to either an image or a folder with the texture atlas files!');
@@ -213,10 +213,10 @@ class FunkinSprite extends FlxAnimate
    * @param key The key of the texture to load.
    * @return The new FunkinSprite.
    */
-  public static function createTextureAtlas(x:Float = 0.0, y:Float = 0.0, key:String, ?assetLibrary:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
+  public static function createTextureAtlas(x:Float = 0.0, y:Float = 0.0, key:String, ?settings:AtlasSpriteSettings):FunkinSprite
   {
     var sprite:FunkinSprite = new FunkinSprite(x, y);
-    sprite.loadTextureAtlas(key, assetLibrary ?? "", settings);
+    sprite.loadTextureAtlas(key, settings);
     return sprite;
   }
 
@@ -327,7 +327,7 @@ class FunkinSprite extends FlxAnimate
    * @param settings Additional settings for loading the atlas.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?assetLibrary:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
   {
     if (key == null)
     {
@@ -342,7 +342,7 @@ class FunkinSprite extends FlxAnimate
     this.applyStageMatrix = settings.applyStageMatrix ?? false;
     this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    frames = Paths.getAnimateAtlas(key, assetLibrary, settings);
+    frames = Paths.getAnimateAtlas(key, settings);
 
     return this;
   }

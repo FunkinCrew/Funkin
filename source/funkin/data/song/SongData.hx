@@ -327,6 +327,7 @@ class SongOffsets implements ICloneable<SongOffsets>
     var result:SongOffsets = new SongOffsets(this.instrumental);
     result.altInstrumentals = this.altInstrumentals.clone();
     result.vocals = this.vocals.clone();
+    result.altVocals = this.altVocals.clone();
 
     return result;
   }

@@ -290,13 +290,22 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   {
     if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
 
+    var pathsFunction = params.pathsFunction ?? MUSIC;
+    var suffix = params.suffix ?? '';
+    var pathToUse = switch (pathsFunction)
+    {
+      case MUSIC: Paths.music('$key');
+      case INST: Paths.inst('$key', suffix);
+      default: Paths.music('$key');
+    }
+
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
     {
       if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
       {
         var existingSound:FunkinSound = cast FlxG.sound.music;
         // Stop here if we would play a matching music track.
-        if (existingSound._label == Paths.music('$key/$key'))
+        if (existingSound._label == pathToUse)
         {
           return false;
         }
@@ -324,14 +333,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
       {
         FlxG.log.warn('Tried and failed to find music metadata for $key');
       }
-    }
-    var pathsFunction = params.pathsFunction ?? MUSIC;
-    var suffix = params.suffix ?? '';
-    var pathToUse = switch (pathsFunction)
-    {
-      case MUSIC: Paths.music('$key/$key');
-      case INST: Paths.inst('$key', suffix);
-      default: Paths.music('$key/$key');
     }
 
     var shouldLoadPartial = params.partialParams?.loadPartial ?? false;

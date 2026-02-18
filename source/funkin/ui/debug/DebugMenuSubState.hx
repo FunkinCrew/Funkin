@@ -36,7 +36,7 @@ class DebugMenuSubState extends MusicBeatSubState
     FlxG.camera.follow(camFocusPoint, null, 0.06);
 
     // Create the green background.
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-desat'));
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1 * FullScreenScaleMode.wideScale.x));
     menuBG.updateHitbox();
@@ -92,7 +92,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
     if (controls.BACK_P)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       exitDebugMenu();
     }
   }

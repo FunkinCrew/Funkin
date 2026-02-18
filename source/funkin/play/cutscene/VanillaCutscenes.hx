@@ -44,12 +44,13 @@ class VanillaCutscenes
 
       // Play the Sound effect.
       HapticUtil.vibrate(0.1, 0.5, 1, 1);
-      FunkinSound.playOnce(Paths.sound('Lights_Turn_On'), function()
+      FunkinSound.playOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-on'), function()
       {
         // Fade in the HUD.
         trace('SFX done...');
         PlayState.instance.camHUD.visible = true;
         PlayState.instance.camHUD.alpha = 0.0; // Use alpha rather than visible to let us fade it in.
+        PlayState.instance.cameraFollowPoint.setPosition(400, 400);
         FlxTween.tween(PlayState.instance.camHUD, {alpha: 1.0}, TWEEN_DURATION, {ease: FlxEase.quadInOut});
 
         // Start the countdown.

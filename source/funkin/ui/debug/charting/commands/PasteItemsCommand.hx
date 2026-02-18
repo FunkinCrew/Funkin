@@ -83,7 +83,7 @@ class PasteItemsCommand implements ChartEditorCommand
 
   public function undo(state:ChartEditorState):Void
   {
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, addedNotes).concat(removedNotes);
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, addedEvents);

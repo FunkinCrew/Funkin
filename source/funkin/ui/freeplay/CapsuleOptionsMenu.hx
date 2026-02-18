@@ -43,7 +43,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     this.parent = parent;
     this.instrumentalIds = instIds;
 
-    capsuleMenuBG = FunkinSprite.createSparrow(0, 0, 'freeplay/instBox/instBox');
+    capsuleMenuBG = FunkinSprite.createSparrow(0, 0, 'ui/freeplay/interface/freeplay-capsule/box-inst');
 
     capsuleMenuBG.animation.addByPrefix('open', 'open0', 24, false);
     capsuleMenuBG.animation.addByPrefix('idle', 'idle0', 24, true);
@@ -171,7 +171,7 @@ class InstrumentalSelector extends FunkinSprite
 
     whiteShader = new PureColor(FlxColor.WHITE);
 
-    frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
+    frames = Paths.getSparrowAtlas('ui/freeplay/interface/difficulty-selector');
     animation.addByPrefix('shine', 'arrow pointer loop', 24);
     animation.play('shine');
 

@@ -14,7 +14,7 @@ import haxe.ui.events.UIEvent;
 using StringTools;
 
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-anims.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-anims.xml"))
 class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;

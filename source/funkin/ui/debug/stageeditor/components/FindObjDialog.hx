@@ -5,7 +5,7 @@ import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.components.TextField;
 import haxe.ui.components.CheckBox;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/find-object.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/dialogs/find-object.xml"))
 class FindObjDialog extends Dialog
 {
   var stageEditorState:StageEditorState;

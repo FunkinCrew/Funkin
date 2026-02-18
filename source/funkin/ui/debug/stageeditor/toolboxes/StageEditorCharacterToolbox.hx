@@ -19,7 +19,7 @@ import haxe.ui.events.UIEvent;
 using StringTools;
 
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/character-properties.xml"))
 class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 {
   public var charPosX:NumberStepper;

@@ -134,7 +134,7 @@ class ResultState extends MusicBeatSubState
     // This prevents having to do `null` checks everywhere.
 
     var fontLetters:String = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890().-";
-    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("resultScreen/tardlingSpritesheet"), fontLetters, FlxPoint.get(49, 61)));
+    songName = new FlxBitmapText(FlxBitmapFont.fromMonospace(Paths.image("ui/fonts/tardling"), fontLetters, FlxPoint.get(49, 61)));
     songName.text = params.title;
     songName.letterSpacing = -15;
     songName.angle = -4.4;
@@ -150,11 +150,11 @@ class ResultState extends MusicBeatSubState
 
     bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFF1A6, 0xFFFFF1BE], 90);
 
-    resultsAnim = FunkinSprite.createSparrow(FlxG.width - (1480 + (FullScreenScaleMode.gameCutoutSize.x / 2)), -10, "resultScreen/results");
+    resultsAnim = FunkinSprite.createSparrow(FlxG.width - (1480 + (FullScreenScaleMode.gameCutoutSize.x / 2)), -10, "ui/results/interface/results");
 
-    ratingsPopin = FunkinSprite.createSparrow(-135 + FullScreenScaleMode.gameNotchSize.x, 135, "resultScreen/ratingsPopin");
+    ratingsPopin = FunkinSprite.createSparrow(-135 + FullScreenScaleMode.gameNotchSize.x, 135, "ui/results/interface/ratings-popin");
 
-    scorePopin = FunkinSprite.createSparrow(-180 + FullScreenScaleMode.gameNotchSize.x, 515, "resultScreen/scorePopin");
+    scorePopin = FunkinSprite.createSparrow(-180 + FullScreenScaleMode.gameNotchSize.x, 515, "ui/results/interface/score-popin");
 
     highscoreNew = new FlxSprite(44 + FullScreenScaleMode.gameNotchSize.x, 557);
 
@@ -197,11 +197,10 @@ class ResultState extends MusicBeatSubState
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
-    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'resultScreen/soundSystem');
+    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'ui/results/interface/sound-system');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
-    new FlxTimer().start(8 / 24, _ ->
-    {
+    new FlxTimer().start(8 / 24, _ -> {
       soundSystem.animation.play("idle");
       soundSystem.visible = true;
     });
@@ -226,12 +225,10 @@ class ResultState extends MusicBeatSubState
       }
 
       var animPath:String = "";
-      var animLibrary:String = "";
 
       if (animData.assetPath != null)
       {
-        animPath = Paths.stripLibrary(animData.assetPath);
-        animLibrary = Paths.getLibrary(animData.assetPath);
+        animPath = animData.assetPath;
       }
       var offsets = animData.offsets ?? [0, 0];
       switch (animData.renderType)
@@ -245,7 +242,7 @@ class ResultState extends MusicBeatSubState
 
           if (animData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animData.scriptClass, xPos, yPos);
           else
-            animation = FunkinSprite.createTextureAtlas(xPos, yPos, animPath, animLibrary);
+            animation = FunkinSprite.createTextureAtlas(xPos, yPos, animPath);
 
           if (animation == null) continue;
 
@@ -261,8 +258,7 @@ class ResultState extends MusicBeatSubState
           if (!(animData.looped ?? true))
           {
             // Animation is not looped.
-            animation.anim.onFinish.add((_name:String) ->
-            {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.pause();
@@ -271,8 +267,7 @@ class ResultState extends MusicBeatSubState
           }
           else if (animData.loopFrameLabel != null)
           {
-            animation.anim.onFinish.add((_name:String) ->
-            {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.play(animData.loopFrameLabel ?? '', true); // unpauses this anim, since it's on PlayOnce!
@@ -282,8 +277,7 @@ class ResultState extends MusicBeatSubState
           }
           else if (animData.loopFrame != null)
           {
-            animation.anim.onFinish.add((_name:String) ->
-            {
+            animation.anim.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.anim.play("", true, false, animData.loopFrame ?? 0); // unpauses this anim, since it's on PlayOnce!
@@ -294,13 +288,14 @@ class ResultState extends MusicBeatSubState
           // Hide until ready to play.
           animation.visible = false;
           // Queue to play.
-          characterAtlasAnimations.push({
-            sprite: animation,
-            delay: animData.delay ?? 0.0,
-            forceLoop: (animData.loopFrame ?? -1) == 0,
-            startFrameLabel: (animData.startFrameLabel ?? ""),
-            sound: (animData.sound ?? "")
-          });
+          characterAtlasAnimations.push(
+            {
+              sprite: animation,
+              delay: animData.delay ?? 0.0,
+              forceLoop: (animData.loopFrame ?? -1) == 0,
+              startFrameLabel: (animData.startFrameLabel ?? ""),
+              sound: (animData.sound ?? "")
+            });
           // Add to the scene.
           add(animation);
         case 'sparrow':
@@ -318,8 +313,7 @@ class ResultState extends MusicBeatSubState
 
           if (animData.loopFrame != null)
           {
-            animation.animation.onFinish.add((_name:String) ->
-            {
+            animation.animation.onFinish.add((_name:String) -> {
               if (animation != null)
               {
                 animation.animation.play('idle', true, false, animData.loopFrame ?? 0);
@@ -330,17 +324,17 @@ class ResultState extends MusicBeatSubState
           // Hide until ready to play.
           animation.visible = false;
           // Queue to play.
-          characterSparrowAnimations.push({
-            sprite: animation,
-            delay: animData.delay ?? 0.0
-          });
+          characterSparrowAnimations.push(
+            {
+              sprite: animation,
+              delay: animData.delay ?? 0.0
+            });
           // Add to the scene.
           add(animation);
       }
     }
 
-    var diffSpr:String = 'diff_${params?.difficultyId ?? Constants.DEFAULT_DIFFICULTY}';
-    difficulty.loadGraphic(Paths.image("resultScreen/" + diffSpr));
+    difficulty.loadGraphic(Paths.image("ui/results/difficulty/" + (params?.difficultyId ?? Constants.DEFAULT_DIFFICULTY)));
     add(difficulty);
 
     add(songName);
@@ -370,8 +364,7 @@ class ResultState extends MusicBeatSubState
     resultsAnim.visible = false;
     resultsAnim.zIndex = 1200;
     add(resultsAnim);
-    new FlxTimer().start(6 / 24, _ ->
-    {
+    new FlxTimer().start(6 / 24, _ -> {
       resultsAnim.visible = true;
       resultsAnim.animation.play("result");
     });
@@ -380,8 +373,7 @@ class ResultState extends MusicBeatSubState
     ratingsPopin.visible = false;
     ratingsPopin.zIndex = 1200;
     add(ratingsPopin);
-    new FlxTimer().start(21 / 24, _ ->
-    {
+    new FlxTimer().start(21 / 24, _ -> {
       ratingsPopin.visible = true;
       ratingsPopin.animation.play("idle");
     });
@@ -390,32 +382,27 @@ class ResultState extends MusicBeatSubState
     scorePopin.visible = false;
     scorePopin.zIndex = 1200;
     add(scorePopin);
-    new FlxTimer().start(36 / 24, _ ->
-    {
+    new FlxTimer().start(36 / 24, _ -> {
       scorePopin.visible = true;
       scorePopin.animation.play("score");
-      scorePopin.animation.onFinish.add(anim -> {
-      });
+      scorePopin.animation.onFinish.add(anim -> {});
     });
 
-    new FlxTimer().start(37 / 24, _ ->
-    {
+    new FlxTimer().start(37 / 24, _ -> {
       score.visible = true;
       score.animateNumbers();
       startRankTallySequence();
     });
 
-    new FlxTimer().start(rank.getBFDelay(), _ ->
-    {
+    new FlxTimer().start(rank.getBFDelay(), _ -> {
       afterRankTallySequence();
     });
 
-    new FlxTimer().start(rank.getFlashDelay(), _ ->
-    {
+    new FlxTimer().start(rank.getFlashDelay(), _ -> {
       displayRankText();
     });
 
-    highscoreNew.frames = Paths.getSparrowAtlas("resultScreen/highscoreNew");
+    highscoreNew.frames = Paths.getSparrowAtlas("ui/results/interface/highscore-new");
     highscoreNew.animation.addByPrefix("new", "highscoreAnim0", 24, false);
     highscoreNew.visible = false;
     // highscoreNew.setGraphicSize(Std.int(highscoreNew.width * 0.8));
@@ -423,8 +410,7 @@ class ResultState extends MusicBeatSubState
     highscoreNew.zIndex = 1200;
     add(highscoreNew);
 
-    new FlxTimer().start(rank.getHighscoreDelay(), _ ->
-    {
+    new FlxTimer().start(rank.getHighscoreDelay(), _ -> {
       if (params.isNewHighscore ?? false)
       {
         highscoreNew.visible = true;
@@ -491,8 +477,7 @@ class ResultState extends MusicBeatSubState
     for (ind => rating in ratingGrp.members)
     {
       rating.visible = false;
-      new FlxTimer().start((0.3 * ind) + 1.20, _ ->
-      {
+      new FlxTimer().start((0.3 * ind) + 1.20, _ -> {
         rating.visible = true;
         FlxTween.tween(rating, {curNumber: rating.neededNumber}, 0.5, {ease: FlxEase.quartOut});
       });
@@ -509,22 +494,20 @@ class ResultState extends MusicBeatSubState
     //   highscoreNew.visible = false;
     // }
 
-    new FlxTimer().start(rank.getMusicDelay(), _ ->
-    {
+    new FlxTimer().start(rank.getMusicDelay(), _ -> {
       var musicPath = getMusicPath(playerCharacter, rank);
-      var introMusic:String = Paths.music('$musicPath/$musicPath-intro');
+      var introMusic:String = Paths.music('$musicPath-intro');
 
       if (Assets.exists(introMusic))
       {
-        var mainMusic:String = Paths.music('$musicPath/$musicPath'); // wraps how FunkinSound load audios
+        var mainMusic:String = Paths.music('$musicPath'); // wraps how FunkinSound load audios
 
         // preload the loop music
         @:nullSafety(Off)
         var musicLoop:FunkinSound = FunkinSound.load(mainMusic, 1.0, true, true, false, false, null, null, true);
 
         // Play the intro music.
-        introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () ->
-        {
+        introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () -> {
           introMusicAudio = null;
           musicLoop.play();
           if (!isChartingMode) // Don't override the music and cause problems on the chart editor
@@ -538,14 +521,15 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        if (!isChartingMode) FunkinSound.playMusic(musicPath, {
-          startingVolume: 1.0,
-          overrideExisting: true,
-          restartTrack: true
-        });
+        if (!isChartingMode) FunkinSound.playMusic(musicPath,
+          {
+            startingVolume: 1.0,
+            overrideExisting: true,
+            restartTrack: true
+          });
         else
         {
-          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
+          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
         }
       }
     });
@@ -561,9 +545,9 @@ class ResultState extends MusicBeatSubState
     super.create();
   }
 
-  function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank):String
+  function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank, suffix:String = ''):String
   {
-    return playerCharacter?.getResultsMusicPath(rank) ?? 'resultsNORMAL';
+    return (playerCharacter?.getResultsMusicPath(rank) ?? 'gameplay/playable-characters/bf/results/music/results-normal/results-normal') + suffix;
   }
 
   var rankTallyTimer:Null<FlxTimer> = null;
@@ -585,64 +569,61 @@ class ResultState extends MusicBeatSubState
 
     var clearPercentCounter:ClearPercentCounter = new ClearPercentCounter((FlxG.width / 2 + 190) + (FullScreenScaleMode.gameCutoutSize.x / 2),
       FlxG.height / 2 - 70, clearPercentLerp);
-    FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 58 / 24, {
-      ease: FlxEase.quartOut,
-      onUpdate: _ ->
+    FlxTween.tween(clearPercentCounter, {curNumber: clearPercentTarget}, 58 / 24,
       {
-        clearPercentLerp = Math.round(clearPercentLerp);
-        clearPercentCounter.curNumber = Math.round(clearPercentCounter.curNumber);
-        // Only play the tick sound if the number increased.
-        if (clearPercentLerp != clearPercentCounter.curNumber)
-        {
-          // trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
-          clearPercentLerp = clearPercentCounter.curNumber;
-          FunkinSound.playOnce(Paths.sound('scrollMenu'));
+        ease: FlxEase.quartOut,
+        onUpdate: _ -> {
+          clearPercentLerp = Math.round(clearPercentLerp);
+          clearPercentCounter.curNumber = Math.round(clearPercentCounter.curNumber);
+          // Only play the tick sound if the number increased.
+          if (clearPercentLerp != clearPercentCounter.curNumber)
+          {
+            // trace('$clearPercentLerp and ${clearPercentCounter.curNumber}');
+            clearPercentLerp = clearPercentCounter.curNumber;
+            FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'));
 
-          // Weak vibration each number increase.
-          HapticUtil.vibrate(0, 0.01);
-        }
-      },
-      onComplete: _ ->
-      {
-        // Strong vibration when rank number tween ends.
-        HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
+            // Weak vibration each number increase.
+            HapticUtil.vibrate(0, 0.01);
+          }
+        },
+        onComplete: _ -> {
+          // Strong vibration when rank number tween ends.
+          HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION * 5, Constants.MAX_VIBRATION_AMPLITUDE);
 
-        // Play confirm sound.
-        FunkinSound.playOnce(Paths.sound('confirmMenu'));
+          // Play confirm sound.
+          FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
-        // Just to be sure that the lerp didn't mess things up.
-        clearPercentCounter.curNumber = clearPercentTarget;
+          // Just to be sure that the lerp didn't mess things up.
+          clearPercentCounter.curNumber = clearPercentTarget;
 
-        #if FEATURE_NEWGROUNDS
-        var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
-        // This is the easiest spot to do the medal calculation lol.
-        if (isScoreValid && clearPercentTarget == 69) Medals.award(Nice);
-        #end
+          #if FEATURE_NEWGROUNDS
+          var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
+          // This is the easiest spot to do the medal calculation lol.
+          if (isScoreValid && clearPercentTarget == 69) Medals.award(Nice);
+          #end
 
-        clearPercentCounter.flash(true);
-        new FlxTimer().start(0.4, _ ->
-        {
-          clearPercentCounter.flash(false);
-        });
-
-        // displayRankText();
-
-        // previously 2.0 seconds
-        new FlxTimer().start(0.25, _ ->
-        {
-          FlxTween.tween(clearPercentCounter, {alpha: 0}, 0.5, {
-            startDelay: 0.5,
-            ease: FlxEase.quartOut,
-            onComplete: _ ->
-            {
-              remove(clearPercentCounter);
-            }
+          clearPercentCounter.flash(true);
+          new FlxTimer().start(0.4, _ -> {
+            clearPercentCounter.flash(false);
           });
 
-          // afterRankTallySequence();
-        });
-      }
-    });
+          // displayRankText();
+
+          // previously 2.0 seconds
+          new FlxTimer().start(0.25, _ -> {
+            FlxTween.tween(clearPercentCounter, {alpha: 0}, 0.5,
+              {
+                startDelay: 0.5,
+                ease: FlxEase.quartOut,
+                onComplete: _ -> {
+                  remove(clearPercentCounter);
+                }
+              });
+
+            // afterRankTallySequence();
+          });
+        }
+      });
     clearPercentCounter.zIndex = 450;
     add(clearPercentCounter);
 
@@ -655,11 +636,12 @@ class ResultState extends MusicBeatSubState
       // ratingsPopin.animation.play("idle");
       // ratingsPopin.visible = true;
 
-      ratingsPopin.animation.onFinish.add(anim -> {
-        // scorePopin.animation.play("score");
+      ratingsPopin.animation.onFinish.add(anim ->
+        {
+          // scorePopin.animation.play("score");
 
-        // scorePopin.visible = true;
-      });
+          // scorePopin.visible = true;
+        });
     }
 
     refresh();
@@ -671,7 +653,7 @@ class ResultState extends MusicBeatSubState
     bgFlash.alpha = 1;
     FlxTween.tween(bgFlash, {alpha: 0}, 14 / 24);
 
-    var rankTextVert:FlxBackdrop = new FlxBackdrop(Paths.image(rank.getVerTextAsset()), Y, 0, 30);
+    var rankTextVert:FlxBackdrop = new FlxBackdrop(rank.getVerTextAsset(), Y, 0, 30);
     rankTextVert.x = FlxG.width - 44;
     rankTextVert.y = 100;
     rankTextVert.zIndex = 990;
@@ -680,14 +662,13 @@ class ResultState extends MusicBeatSubState
     FlxFlicker.flicker(rankTextVert, 2 / 24 * 3, 2 / 24, true);
 
     // Scrolling.
-    new FlxTimer().start(30 / 24, _ ->
-    {
+    new FlxTimer().start(30 / 24, _ -> {
       rankTextVert.velocity.y = -80;
     });
 
     for (i in 0...12)
     {
-      var rankTextBack:FlxBackdrop = new FlxBackdrop(Paths.image(rank.getHorTextAsset()), X, 10, 0);
+      var rankTextBack:FlxBackdrop = new FlxBackdrop(rank.getHorTextAsset(), X, 10, 0);
       rankTextBack.x = FlxG.width / 2 - 320;
       rankTextBack.y = 50 + (135 * i / 2) + 10;
       // rankTextBack.angle = -3.8;
@@ -708,8 +689,7 @@ class ResultState extends MusicBeatSubState
 
     for (atlas in characterAtlasAnimations)
     {
-      new FlxTimer().start(atlas.delay, _ ->
-      {
+      new FlxTimer().start(atlas.delay, _ -> {
         if (atlas.sprite == null) return;
         atlas.sprite.visible = true;
         atlas.sprite.anim.play(atlas.startFrameLabel);
@@ -725,8 +705,7 @@ class ResultState extends MusicBeatSubState
 
     for (sprite in characterSparrowAnimations)
     {
-      new FlxTimer().start(sprite.delay, _ ->
-      {
+      new FlxTimer().start(sprite.delay, _ -> {
         if (sprite.sprite == null) return;
         sprite.sprite.visible = true;
         sprite.sprite.animation.play('idle', true);
@@ -757,8 +736,7 @@ class ResultState extends MusicBeatSubState
     FlxTween.tween(songName, {y: (diffYTween - 25 - fuckedupnumber) + ((blackTopBar.height - 148) / 1)}, 0.5, {ease: FlxEase.expoOut, startDelay: 0.9});
     songName.x = clearPercentSmall.x + 94;
 
-    new FlxTimer().start(timerLength, _ ->
-    {
+    new FlxTimer().start(timerLength, _ -> {
       var tempSpeed = FlxPoint.get(speedOfTween.x, speedOfTween.y);
 
       speedOfTween.set(0, 0);
@@ -775,8 +753,7 @@ class ResultState extends MusicBeatSubState
       add(clearPercentSmall);
       clearPercentSmall.visible = true;
       clearPercentSmall.flash(true);
-      new FlxTimer().start(0.4, _ ->
-      {
+      new FlxTimer().start(0.4, _ -> {
         clearPercentSmall.flash(false);
       });
 
@@ -785,8 +762,7 @@ class ResultState extends MusicBeatSubState
       refresh();
     }
 
-    new FlxTimer().start(2.5, _ ->
-    {
+    new FlxTimer().start(2.5, _ -> {
       movingSongStuff = true;
     });
   }
@@ -847,39 +823,40 @@ class ResultState extends MusicBeatSubState
         @:nullSafety(Off)
         introMusicAudio.onComplete = null;
 
-        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8, {
-          onComplete: _ ->
+        FlxTween.tween(introMusicAudio, {volume: 0}, 0.8,
+
           {
-            if (introMusicAudio != null)
-            {
-              introMusicAudio.stop();
-              introMusicAudio.destroy();
-              introMusicAudio = null;
+            onComplete: _ -> {
+              if (introMusicAudio != null)
+              {
+                introMusicAudio.stop();
+                introMusicAudio.destroy();
+                introMusicAudio = null;
+              }
             }
-          }
-        });
-        FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1, {
-          onComplete: _ ->
+          });
+        FlxTween.tween(introMusicAudio, {pitch: 3}, 0.1,
           {
-            FlxTween.tween(introMusicAudio, {pitch: 0.5}, 0.4);
-          }
-        });
+            onComplete: _ -> {
+              FlxTween.tween(introMusicAudio, {pitch: 0.5}, 0.4);
+            }
+          });
       }
       else if (FlxG.sound.music != null)
       {
-        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8, {
-          onComplete: _ ->
+        FlxTween.tween(FlxG.sound.music, {volume: 0}, 0.8,
           {
-            FlxG.sound.music.stop();
-            FlxG.sound.music.destroy();
-          }
-        });
-        FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1, {
-          onComplete: _ ->
+            onComplete: _ -> {
+              FlxG.sound.music.stop();
+              FlxG.sound.music.destroy();
+            }
+          });
+        FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1,
           {
-            FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
-          }
-        });
+            onComplete: _ -> {
+              FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.4);
+            }
+          });
       }
 
       // Determining the target state(s) to go to.
@@ -891,9 +868,10 @@ class ResultState extends MusicBeatSubState
 
       var stickerPackId:Null<String> = null;
 
-      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId, {
-        variation: params?.variationId
-      });
+      var song:Null<Song> = params.songId == null ? null : SongRegistry.instance.fetchEntry(params.songId,
+        {
+          variation: params?.variationId
+        });
 
       if (song != null)
       {
@@ -930,10 +908,11 @@ class ResultState extends MusicBeatSubState
           //     targetState: (sticker) -> new StoryMenuState(sticker),
           //     stickerPack: stickerPackId
           //   });
-          targetStateFactory = () -> new StickerSubState({
-            targetState: (sticker) -> new StoryMenuState(sticker),
-            stickerPack: stickerPackId
-          });
+          targetStateFactory = () -> new StickerSubState(
+            {
+              targetState: (sticker) -> new StoryMenuState(sticker),
+              stickerPack: stickerPackId
+            });
         }
       }
       else
@@ -956,18 +935,20 @@ class ResultState extends MusicBeatSubState
             this.close();
             return;
           }
-          targetState = FreeplayState.build({
+          targetState = FreeplayState.build(
             {
-              character: playerCharacterId ?? "bf",
-              fromResults: {
-                oldRank: Scoring.calculateRank(params?.prevScoreData),
-                newRank: rank,
-                songId: params.songId,
-                difficultyId: params.difficultyId,
-                playRankAnim: true
+              {
+                character: playerCharacterId ?? "bf",
+                fromResults:
+                  {
+                    oldRank: Scoring.calculateRank(params?.prevScoreData),
+                    newRank: rank,
+                    songId: params.songId,
+                    difficultyId: params.difficultyId,
+                    playRankAnim: true
+                  }
               }
-            }
-          });
+            });
         }
         else
         {
@@ -983,10 +964,11 @@ class ResultState extends MusicBeatSubState
           }
           shouldTween = false;
           shouldUseSubstate = true;
-          targetStateFactory = () -> new StickerSubState({
-            targetState: (sticker) -> FreeplayState.build(null, sticker),
-            stickerPack: stickerPackId
-          });
+          targetStateFactory = () -> new StickerSubState(
+            {
+              targetState: (sticker) -> FreeplayState.build(null, sticker),
+              stickerPack: stickerPackId
+            });
         }
       }
 
@@ -996,8 +978,7 @@ class ResultState extends MusicBeatSubState
       {
         busy = true;
 
-        AdMobUtil.loadInterstitial(function():Void
-        {
+        AdMobUtil.loadInterstitial(function():Void {
           AdMobUtil.PLAYING_COUNTER = 0;
 
           busy = false;
@@ -1021,38 +1002,37 @@ class ResultState extends MusicBeatSubState
   {
     if (shouldTween)
     {
-      FlxTween.tween(rankBg, {alpha: 1}, 0.5, {
-        ease: FlxEase.expoOut,
-        onComplete: function(_)
+      FlxTween.tween(rankBg, {alpha: 1}, 0.5,
         {
-          requestReview();
+          ease: FlxEase.expoOut,
+          onComplete: function(_) {
+            requestReview();
 
-          if (targetStateFactory != null)
-          {
-            targetState = targetStateFactory();
-          }
-
-          if (shouldUseSubstate && targetState is FlxSubState)
-          {
-            openSubState(cast targetState);
-          }
-          else
-          {
-            FlxG.signals.preStateSwitch.addOnce(function()
+            if (targetStateFactory != null)
             {
-              #if ios
-              trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
-              else
-                funkin.FunkinMemory.purgeCache();
-              #else
-              funkin.FunkinMemory.purgeCache(true);
-              #end
-            });
-            FlxG.switchState(() -> targetState);
+              targetState = targetStateFactory();
+            }
+
+            if (shouldUseSubstate && targetState is FlxSubState)
+            {
+              openSubState(cast targetState);
+            }
+            else
+            {
+              FlxG.signals.preStateSwitch.addOnce(function() {
+                #if ios
+                trace(DeviceUtil.iPhoneNumber);
+                if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);
+                else
+                  funkin.FunkinMemory.purgeCache();
+                #else
+                funkin.FunkinMemory.purgeCache(true);
+                #end
+              });
+              FlxG.switchState(() -> targetState);
+            }
           }
-        }
-      });
+        });
     }
     else
     {
@@ -1069,8 +1049,7 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FlxG.signals.preStateSwitch.addOnce(function()
-        {
+        FlxG.signals.preStateSwitch.addOnce(function() {
           #if ios
           trace(DeviceUtil.iPhoneNumber);
           if (DeviceUtil.iPhoneNumber > 12) funkin.FunkinMemory.purgeCache(true);

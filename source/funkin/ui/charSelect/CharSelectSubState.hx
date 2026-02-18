@@ -56,7 +56,6 @@ class CharSelectSubState extends MusicBeatSubState
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
-
   var playerChill:CharSelectPlayer;
   var playerChillOut:CharSelectPlayer;
   var gfChill:CharSelectGF;
@@ -142,7 +141,7 @@ class CharSelectSubState extends MusicBeatSubState
       trace('Placing player ${playerId} at position ${targetPosition}');
       availableChars.set(targetPosition, playerId);
 
-      CharSelectAtlasHandler.loadAtlas('charSelect/${playerId}Chill');
+      CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/${playerId}');
 
       var gfPath:Null<String> = playerData.gf?.assetPath;
       if (gfPath != null)
@@ -152,7 +151,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     // Mr. Static also needs some caching...
-    CharSelectAtlasHandler.loadAtlas('charSelect/lockedChill', {filterQuality: LOW, cacheOnLoad: true});
+    CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/locked', {filterQuality: LOW, cacheOnLoad: true});
   }
 
   override public function create():Void
@@ -161,40 +160,40 @@ class CharSelectSubState extends MusicBeatSubState
 
     loadAvailableCharacters();
 
-    bopInfo = FramesJSFLParser.parse(Paths.file("images/charSelect/iconBopInfo/iconBopInfo.txt"));
+    bopInfo = FramesJSFLParser.parse(Paths.file("ui/character-select/interface/icon-bop/info.txt"));
     if (bopInfo == null)
     {
       trace(" ERROR ".bg_red().bold() + " Failed to load data for bopInfo, is the path provided correct?");
     }
 
     var bg:FunkinSprite = new FunkinSprite(cutoutSize + -153, -140);
-    bg.loadGraphic(Paths.image('charSelect/charSelectBG'));
+    bg.loadGraphic(Paths.image('ui/character-select/interface/char-select-bg'));
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "charSelect/crowd", {
-      applyStageMatrix: true
-    });
+    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "ui/character-select/interface/crowd", {
+        applyStageMatrix: true
+      });
     crowd.anim.play('');
     crowd.anim.curAnim.looped = true;
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, "charSelect/charSelectStage", {
-      applyStageMatrix: true
-    });
+    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, "ui/character-select/interface/char-select-stage", {
+        applyStageMatrix: true
+      });
     stageSpr.anim.play('');
     stageSpr.anim.curAnim.looped = true;
     add(stageSpr);
 
     var curtains:FunkinSprite = new FunkinSprite(cutoutSize + -212, -99);
-    curtains.loadGraphic(Paths.image('charSelect/curtains'));
+    curtains.loadGraphic(Paths.image('ui/character-select/interface/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
-    barthing.loadTextureAtlas("charSelect/barThing", {
-      applyStageMatrix: true
-    });
+    barthing.loadTextureAtlas("ui/character-select/interface/bar-thing", {
+        applyStageMatrix: true
+      });
     barthing.anim.play('');
     barthing.anim.curAnim.looped = true;
     barthing.blend = BlendMode.MULTIPLY;
@@ -206,11 +205,11 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
 
     var charLight:FunkinSprite = new FunkinSprite(cutoutSize + 800, 250);
-    charLight.loadGraphic(Paths.image('charSelect/charLight'));
+    charLight.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
     add(charLight);
 
     var charLightGF:FunkinSprite = new FunkinSprite(cutoutSize + 180, 240);
-    charLightGF.loadGraphic(Paths.image('charSelect/charLight'));
+    charLightGF.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
     add(charLightGF);
 
     function setupPlayerChill(character:String)
@@ -247,9 +246,9 @@ class CharSelectSubState extends MusicBeatSubState
       setCursorPosition(DEFAULT_CURSOR_INDEX, true);
     }
 
-    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "charSelect/charSelectSpeakers", {
-      applyStageMatrix: true
-    });
+    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "ui/character-select/interface/speakers", {
+        applyStageMatrix: true
+      });
     speakers.anim.play('');
     speakers.anim.curAnim.looped = true;
     speakers.scrollFactor.set(1.8, 1.8);
@@ -257,17 +256,17 @@ class CharSelectSubState extends MusicBeatSubState
     add(speakers);
 
     var fgBlur:FunkinSprite = new FunkinSprite(cutoutSize + -125, 170);
-    fgBlur.loadGraphic(Paths.image('charSelect/foregroundBlur'));
+    fgBlur.loadGraphic(Paths.image('ui/character-select/interface/foreground-blur'));
     fgBlur.blend = BlendMode.MULTIPLY;
     add(fgBlur);
 
-    dipshitBlur.frames = Paths.getSparrowAtlas("charSelect/dipshitBlur");
+    dipshitBlur.frames = Paths.getSparrowAtlas("ui/character-select/interface/dipshit-blur");
     dipshitBlur.animation.addByPrefix('idle', "CHOOSE vertical offset instance 1", 24, true);
     dipshitBlur.blend = BlendMode.ADD;
     dipshitBlur.animation.play("idle");
     add(dipshitBlur);
 
-    dipshitBacking.frames = Paths.getSparrowAtlas("charSelect/dipshitBacking");
+    dipshitBacking.frames = Paths.getSparrowAtlas("ui/character-select/interface/dipshit-backing");
     dipshitBacking.animation.addByPrefix('idle', "CHOOSE horizontal offset instance 1", 24, true);
     dipshitBacking.blend = BlendMode.ADD;
     dipshitBacking.animation.play("idle");
@@ -276,7 +275,7 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
-    chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
+    chooseDipshit.loadGraphic(Paths.image('ui/character-select/interface/choose-your-dipshit'));
     add(chooseDipshit);
 
     chooseDipshit.y += 200;
@@ -308,26 +307,26 @@ class CharSelectSubState extends MusicBeatSubState
     charHitbox.active = false;
     charHitbox.scrollFactor.set();
 
-    selectSound.loadEmbedded(Paths.sound('CS_select'));
+    selectSound.loadEmbedded(Paths.sound('ui/character-select/sounds/select'));
     selectSound.volume = 0.7;
 
     FlxG.sound.defaultSoundGroup.add(selectSound);
     FlxG.sound.list.add(selectSound);
 
-    unlockSound.loadEmbedded(Paths.sound('CS_unlock'));
+    unlockSound.loadEmbedded(Paths.sound('ui/character-select/sounds/unlock'));
     unlockSound.volume = 0;
     unlockSound.play(true);
 
     FlxG.sound.defaultSoundGroup.add(unlockSound);
     FlxG.sound.list.add(unlockSound);
 
-    lockedSound.loadEmbedded(Paths.sound('CS_locked'));
+    lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked'));
     lockedSound.volume = 1.;
 
     FlxG.sound.defaultSoundGroup.add(lockedSound);
     FlxG.sound.list.add(lockedSound);
 
-    staticSound.loadEmbedded(Paths.sound('static loop'));
+    staticSound.loadEmbedded(Paths.sound('ui/character-select/sounds/static'));
     staticSound.looped = true;
     staticSound.volume = 0.6;
 
@@ -336,11 +335,11 @@ class CharSelectSubState extends MusicBeatSubState
 
     // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
     // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
-    FunkinSound.playMusic('stayFunky', {
-      startingVolume: 0,
-      overrideExisting: true,
-      restartTrack: true,
-    });
+    FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
+        startingVolume: 0,
+        overrideExisting: true,
+        restartTrack: true,
+      });
 
     initLocks();
 
@@ -362,7 +361,6 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.camera.filters = [fadeShaderFilter];
 
     Conductor.stepHit.add(spamOnStep);
-    // FlxG.debugger.track(temp, "tempBG");
 
     #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
@@ -382,7 +380,7 @@ class CharSelectSubState extends MusicBeatSubState
     });
     #end
 
-    transitionGradient.loadGraphic(Paths.image('freeplay/transitionGradient'));
+    transitionGradient.loadGraphic(Paths.image('ui/freeplay/interface/transition-gradient'));
     transitionGradient.scale.set(1280, 1);
     transitionGradient.flipY = true;
     transitionGradient.updateHitbox();
@@ -414,7 +412,7 @@ class CharSelectSubState extends MusicBeatSubState
     add(blackScreen);
 
     introSound = new FunkinSound();
-    introSound.loadEmbedded(Paths.sound('CS_Lights'));
+    introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights'));
     introSound.volume = 0;
 
     FlxG.sound.defaultSoundGroup.add(introSound);
@@ -457,7 +455,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (availableChars.size() > 1) Medals.award(CharSelect);
       #end
 
-      FunkinSound.playMusic('stayFunky', {
+      FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
         startingVolume: 1,
         overrideExisting: true,
         restartTrack: true,
@@ -614,7 +612,7 @@ class CharSelectSubState extends MusicBeatSubState
 
           staticSound.stop();
 
-          FunkinSound.playMusic('stayFunky', {
+          FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
             startingVolume: 1,
             overrideExisting: true,
             restartTrack: true,
@@ -894,7 +892,7 @@ class CharSelectSubState extends MusicBeatSubState
 
         cursors.confirm();
 
-        FunkinSound.playOnce(Paths.sound('CS_confirm'));
+        FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
 
@@ -970,7 +968,7 @@ class CharSelectSubState extends MusicBeatSubState
     #end
 
     wentBackToFreeplay = true;
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
     FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
     goToFreeplay();
   }
@@ -1166,8 +1164,6 @@ class CharSelectSubState extends MusicBeatSubState
     if (value == "locked") staticSound.play();
     else
       staticSound.stop();
-
-    dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_SELECTED, value));
 
     nametag.switchChar(value);
     gfChill.visible = false;

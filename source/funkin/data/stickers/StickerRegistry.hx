@@ -3,9 +3,11 @@ package funkin.data.stickers;
 import funkin.data.stickers.StickerData;
 import funkin.ui.transition.stickers.StickerPack;
 import funkin.ui.transition.stickers.ScriptedStickerPack;
+import funkin.util.tools.ISingleton;
+import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntryParams>
+class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the sticker pack data format.
@@ -16,11 +18,15 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
 
   public static final STICKER_DATA_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
 
-  public static final instance:StickerRegistry = new StickerRegistry();
-
   public function new()
   {
-    super('STICKER', 'stickerpacks', STICKER_DATA_VERSION_RULE);
+    super(
+      {
+        registryId: 'STICKER',
+        dataFilePath: 'ui/loading/stickers/stickerpacks',
+        // nestedEntries: true, // This registry uses custom parsing.
+        versionRule: STICKER_DATA_VERSION_RULE
+      });
   }
 
   public function fetchDefault():StickerPack
@@ -80,7 +86,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):StickerPack
+  override function createScriptedEntry(clsName:String):StickerPack
   {
     return ScriptedStickerPack.scriptInit(clsName, 'unknown');
   }

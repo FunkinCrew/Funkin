@@ -145,6 +145,16 @@
       "args": ["-debug", "-DLATENCY", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
+      "label": "Windows / Debug (No Asset Redirect)",
+      "target": "windows",
+      "args": ["-debug", "-DNO_REDIRECT_ASSETS_FOLDER"]
+    },
+    {
+      "label": "HashLink / Debug (Latency Test)",
+      "target": "hl",
+      "args": ["-debug", "-DLATENCY"]
+    },
+    {
       "label": "Windows / Debug (Waveform Test)",
       "target": "windows",
       "args": ["-debug", "-DWAVEFORM", "-DFEATURE_DEBUG_FUNCTIONS"]

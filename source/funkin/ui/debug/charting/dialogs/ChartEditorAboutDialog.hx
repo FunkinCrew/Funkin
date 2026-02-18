@@ -3,7 +3,7 @@ package funkin.ui.debug.charting.dialogs;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/about.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/about.xml"))
 class ChartEditorAboutDialog extends ChartEditorBaseDialog
 {
   public function new(chartEditorState2:ChartEditorState, params2:DialogParams)

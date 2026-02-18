@@ -52,7 +52,7 @@ class GameOverSubState extends MusicBeatSubState
    * Which alternate game over music to use.
    * You can set this via script.
    * For example, the bf-pixel script sets this to `-pixel`
-   * and the pico-playable script sets this to `Pico`.
+   * and the 2hot script sets this to `-explode`.
    */
   public static var musicSuffix:String = '';
 
@@ -473,11 +473,13 @@ class GameOverSubState extends MusicBeatSubState
    */
   function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
   {
-    var basePath:String = 'gameplay/gameover/gameOver';
-    if (ending) basePath += 'End';
-    else if (starting) basePath += 'Start';
+    final soundName:String = 'game-over' + suffix;
+    var basePath:String = getDeathAudioPath(soundName + '/' + soundName);
 
-    var musicPath:String = Paths.music(basePath + suffix);
+    if (ending) basePath += '-end';
+    else if (starting) basePath += '-start';
+
+    var musicPath:String = Paths.music(basePath);
     while (!Assets.exists(musicPath) && suffix.length > 0)
     {
       suffix = suffix.split('-').slice(0, -1).join('-');
@@ -600,18 +602,28 @@ class GameOverSubState extends MusicBeatSubState
    * Play the sound effect that occurs when
    * boyfriend's testicles get utterly annihilated.
    */
-  public static function playBlueBalledSFX():Void
+  public function playBlueBalledSFX():Void
   {
     blueballed = true;
 
-    if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
+    final soundPath:String = Paths.sound(getDeathAudioPath('loss-sfx' + blueBallSuffix));
+    if (Assets.exists(soundPath))
     {
-      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      FunkinSound.playOnce(soundPath);
     }
     else
     {
-      FlxG.log.error('Missing blue ball sound effect: ' + Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      trace('[GAMEOVER] Could not find blue balled SFX at path ($soundPath)!');
     }
+  }
+
+  function getDeathAudioPath(location:String):String
+  {
+    final charID:String = boyfriend?.characterId ?? 'bf';
+    final playerID:String = charID.split('-')[0];
+
+    final audioPath:String = 'gameplay/playable-characters/$playerID/game-over/$location';
+    return audioPath;
   }
 
   var hasPlayedDeathQuote:Bool = false;

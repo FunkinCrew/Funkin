@@ -8,7 +8,7 @@ import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/hold-note.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/hold-note.xml"))
 class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuFlip:MenuItem;

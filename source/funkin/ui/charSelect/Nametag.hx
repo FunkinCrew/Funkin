@@ -43,16 +43,8 @@ class Nametag extends FlxSprite
   {
     if (playMosaicSequence) shaderEffect();
 
-    new FlxTimer().start(4 / 30, _ ->
-    {
-      var path:String = str;
-      switch str
-      {
-        case "bf":
-          path = "boyfriend";
-      }
-
-      loadGraphic(Paths.image('charSelect/' + path + "Nametag"));
+    new FlxTimer().start(4 / 30, _ -> {
+      loadGraphic(Paths.image('ui/character-select/characters/nametag-$str'));
       updateHitbox();
       scale.x = scale.y = 0.77;
 

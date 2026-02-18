@@ -22,7 +22,7 @@ import haxe.ui.events.UIEvent;
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/offsets.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml"))
 class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;

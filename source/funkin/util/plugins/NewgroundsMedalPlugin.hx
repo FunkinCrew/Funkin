@@ -46,7 +46,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, "ui/medal", {
+    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, "ui/medals/medal-popup", {
       swfMode: true,
       filterQuality: HIGH
     });
@@ -63,7 +63,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     pointsLabel.scrollFactor.set();
 
     nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
-    nameLabel.font = Paths.font("ShareTechMono-Regular.ttf");
+    nameLabel.font = Paths.font("ui/fonts/ShareTechMono-Regular.ttf");
     nameLabel.letterSpacing = -2;
 
     nameLabel.text = "Ono Boners Deluxe";
@@ -89,7 +89,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
             moveText = true;
           }
         case "fade":
-          FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
+          FunkinSound.playOnce(Paths.sound('ui/medals/ng-fade-out'), 1.0);
         case "hide":
           pointsLabel.visible = false;
           nameLabel.visible = false;
@@ -173,7 +173,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.nameLabel.text = name;
       instance.updatePositions();
 
-      FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
+      FunkinSound.playOnce(Paths.sound('ui/medals/ng-fade-in'), 1.0);
       instance.medal.anim.play("");
 
       instance.medal.visible = true;

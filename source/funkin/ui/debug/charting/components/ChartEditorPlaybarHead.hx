@@ -7,7 +7,7 @@ import haxe.ui.containers.Box;
  * The component which contains the playhead for the chart editor.
  * This is in a separate component so it can be positioned independently.
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/components/playbar-head.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/components/playbar-head.xml"))
 class ChartEditorPlaybarHead extends Box
 {
   // Auto-populated

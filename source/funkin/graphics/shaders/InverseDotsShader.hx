@@ -12,7 +12,7 @@ class InverseDotsShader extends FlxRuntimeShader
 
   public function new(amount:Float = 1.0)
   {
-    super(Assets.getText(Paths.frag("InverseDots")));
+    super(Assets.getText(Paths.frag("ui/shaders/inverse-dots")));
     setAmount(amount);
   }
 

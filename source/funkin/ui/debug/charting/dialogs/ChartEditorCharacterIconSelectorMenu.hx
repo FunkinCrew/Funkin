@@ -17,7 +17,7 @@ import haxe.ui.components.Button;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/character-icon-selector.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/character-icon-selector.xml"))
 class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;

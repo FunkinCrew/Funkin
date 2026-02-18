@@ -28,8 +28,8 @@ class StageEditorDefaultToolbox extends CollapsibleDialog
    */
   public function toggle(on:Bool)
   {
-    if (!dialogVisible && on) FunkinSound.playOnce(Paths.sound('chartingSounds/openWindow'));
-    else if (dialogVisible && !on) FunkinSound.playOnce(Paths.sound('chartingSounds/exitWindow'));
+    if (!dialogVisible && on) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
+    else if (dialogVisible && !on) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit'));
 
     if (on) showDialog(false);
     else

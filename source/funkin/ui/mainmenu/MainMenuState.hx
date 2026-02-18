@@ -83,7 +83,7 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(EnteringMainMenu);
 
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
-    magenta = new FlxSprite(Paths.image('menuBGMagenta'));
+    magenta = new FlxSprite(Paths.image('ui/main-menu/menu-bg-magenta'));
     camFollow = new FlxObject(0, 0, 1, 1);
 
     // TODO: enabling and disabling keys is a lil quirky,
@@ -118,7 +118,7 @@ class MainMenuState extends MusicBeatState
     persistentUpdate = true;
     persistentDraw = true;
 
-    bg = new FlxSprite(Paths.image('menuBG'));
+    bg = new FlxSprite(Paths.image('ui/main-menu/menu-bg'));
     bg.scrollFactor.x = #if !mobile 0 #else 0.17 #end; // we want a lil x scroll on mobile
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(FlxG.width * 1.2));
@@ -147,19 +147,17 @@ class MainMenuState extends MusicBeatState
       uiStateMachine.transition(Interacting);
     });
 
-    menuItems.enabled = true;
-
-    createMenuItem('storymode', 'mainmenu/storymode', () ->
+    menuItems.enabled = true; // can move on intro
+    createMenuItem('storymode', 'ui/main-menu/items/story-mode', function()
     {
-      FlxG.signals.preStateSwitch.addOnce(() ->
+      FlxG.signals.preStateSwitch.addOnce(function()
       {
         funkin.FunkinMemory.clearFreeplay();
         funkin.FunkinMemory.purgeCache();
       });
       startExitState(() -> new StoryMenuState());
     });
-
-    createMenuItem('freeplay', 'mainmenu/freeplay', function()
+    createMenuItem('freeplay', 'ui/main-menu/items/freeplay', function()
     {
       persistentDraw = true;
       persistentUpdate = false;
@@ -197,15 +195,15 @@ class MainMenuState extends MusicBeatState
       // In order to prevent popup blockers from triggering,
       // we need to open the link as an immediate result of a keypress event,
       // so we can't wait for the flicker animation to complete.
-      var hasPopupBlocker:Bool = #if web true #else false #end;
-      createMenuItem('merch', 'mainmenu/merch', selectMerch, hasPopupBlocker);
+      var hasPopupBlocker = #if web true #else false #end;
+      createMenuItem('merch', 'ui/main-menu/items/merch', selectMerch, hasPopupBlocker);
       #end
     }
     else
     {
       add(upgradeSparkles);
 
-      createMenuItem('upgrade', 'mainmenu/upgrade', function()
+      createMenuItem('upgrade', 'mui/main-menu/items/upgrade', function()
       {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
@@ -216,13 +214,13 @@ class MainMenuState extends MusicBeatState
 
     if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
     {
-      createMenuItem('options', 'mainmenu/options', function()
+      createMenuItem('options', 'ui/main-menu/items/options', function()
       {
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
     }
 
-    createMenuItem('credits', 'mainmenu/credits', function()
+    createMenuItem('credits', 'ui/main-menu/items/credits', function()
     {
       startExitState(() -> new funkin.ui.credits.CreditsState());
     });
@@ -333,7 +331,7 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu', {
+    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
       overrideExisting: true,
       restartTrack: false,
       // Continue playing this music between states, until a different music track gets played.
@@ -537,7 +535,7 @@ class MainMenuState extends MusicBeatState
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))
     {
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
       // Give the user a score of 1 point on Weekend 1 story mode (Easy difficulty).
       // This makes the level count as cleared and displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy', {
@@ -558,7 +556,7 @@ class MainMenuState extends MusicBeatState
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, M]))
     {
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
       // Give the user a score of 0 points on Weekend 1 story mode (all difficulties).
       // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       for (diff in ['easy', 'normal', 'hard'])
@@ -629,7 +627,7 @@ class MainMenuState extends MusicBeatState
     trace("BACK: Interact complete.");
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
     FlxG.switchState(() -> new TitleState());
   }

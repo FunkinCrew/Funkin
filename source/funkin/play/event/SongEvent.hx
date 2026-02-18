@@ -82,7 +82,7 @@ class SongEvent
    */
   public function getIconPath():String
   {
-    return 'ui/chart-editor/events/default';
+    return 'ui/editors/chart-editor/events/default';
   }
 
   /**

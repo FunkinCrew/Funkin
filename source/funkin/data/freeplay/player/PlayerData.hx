@@ -165,18 +165,31 @@ class PlayerFreeplayDJData
     for (anim in animations)
     {
       animationMap.set(anim.name, anim);
-      prefixToOffsetsMap.set(anim.prefix, anim.offsets);
+
+      if (this.renderType != "animateatlas")
+      {
+        prefixToOffsetsMap.set(anim.name, anim.offsets);
+      }
+      else
+      {
+        prefixToOffsetsMap.set(anim.prefix, anim.offsets);
+      }
     }
   }
 
-  public inline function getAssetPath():String return assetPath; // return assetPath;
-
-  public inline function getAnimationsList():Array<AnimationData> return animations;
+  public function getAtlasPath():String
+  {
+    return assetPath;
+  }
 
   public function useApplyStageMatrix():Bool
   {
     return applyStageMatrix;
   }
+
+  public inline function getAssetPath():String return assetPath; // return assetPath;
+
+  public inline function getAnimationsList():Array<AnimationData> return animations;
 
   public function getGlobalOffsets():Array<Float>
   {
@@ -223,7 +236,17 @@ class PlayerFreeplayDJData
 
     var anim = animationMap.get(name);
     if (anim == null) return null;
-    return anim.prefix;
+
+    // For render types other than `animateatlas`, we can just return the name.
+    // Sparrows, for example, use the name instead of the prefix.
+    if (renderType != "animateatlas")
+    {
+      return anim.name;
+    }
+    else
+    {
+      return anim.prefix;
+    }
   }
 
   public function getAnimationOffsetsByPrefix(?prefix:String):Array<Float>
@@ -286,6 +309,12 @@ class PlayerFreeplayDJData
 
 class PlayerCharSelectData
 {
+  /**
+   * The asset path to use for this character (the one on the right).
+   * This should point to an Animate atlas folder. TODO: Allow sparrow atlases one day.
+   */
+  public var assetPath:String;
+
   /**
    * A zero-indexed number for the character's preferred position in the grid.
    * 0 = top left, 4 = center, 8 = bottom right

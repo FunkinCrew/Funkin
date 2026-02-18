@@ -4,6 +4,33 @@ import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Constraints.Constructible;
 
+typedef RegistryParams =
+{
+  /**
+   * The internal ID of this entry. Used when logging.
+   */
+  var registryId:String;
+
+  /**
+   * The path where data files for this registry can be found.
+   */
+  var dataFilePath:String;
+
+  /**
+   * Whether data files are expected to be nested.
+   * If `false`, files will be at `<dataFilePath>/<id>.json`
+   * If `true`, files will be at `<dataFilePath>/<id>/<id>.json`
+   * @default `false`
+   */
+  var ?nestedEntries:Bool;
+
+  /**
+   * (Optional) Define a version rule for validating entries.
+   * @default Any version
+   */
+  var ?versionRule:thx.semver.VersionRule;
+}
+
 /**
  * The entry's constructor function takes 2 arguments, the entry ID and optional parameters.
  */
@@ -28,6 +55,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   final dataFilePath:String;
 
+  final nestedEntries:Bool;
+
   /**
    * A map of entry IDs to entries.
    */
@@ -44,19 +73,24 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   final versionRule:thx.semver.VersionRule;
 
+  final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
+
   // public abstract static final instance:BaseRegistry<T, J> = new BaseRegistry<>();
 
   /**
    * @param registryId A readable ID for this registry, used when logging.
    * @param dataFilePath The path (relative to `assets/data`) to search for JSON files.
    */
-  public function new(registryId:String, dataFilePath:String, ?versionRule:thx.semver.VersionRule)
+  public function new(params:RegistryParams)
   {
-    this.registryId = registryId;
-    this.dataFilePath = dataFilePath;
-    this.versionRule = versionRule == null ? '1.0.x' : versionRule;
+    final DEFAULT_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
 
-    this.entries = new Map<String, T>();
+    this.registryId = params.registryId;
+    this.dataFilePath = params.dataFilePath;
+    this.nestedEntries = params.nestedEntries ?? false;
+    this.versionRule = params.versionRule ?? DEFAULT_VERSION_RULE;
+
+    this.entries = [];
     this.scriptedEntryIds = [];
 
     // Lazy initialization of singletons should let this get called,
@@ -68,10 +102,12 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   }
 
   /**
-   * TODO: Create a `loadEntriesAsync(onProgress, onComplete)` function.
+   * Loads all JSON files, constructs the appropriate entries, and adds them to the registry.
+   * This function operates synchronously and only returns once all entries have been loaded.
    */
   public function loadEntries():Void
   {
+    var perf = new funkin.util.logging.Perf('loadEntriesSync(${registryId})');
     clearEntries();
 
     //
@@ -108,7 +144,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('${dataFilePath}/');
+    var entryIdList:Array<String> = fetchEntryIdsFromFiles();
     var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
     {
       return !entries.exists(entryId);
@@ -133,6 +169,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         continue;
       }
     }
+
+    perf.print();
   }
 
   /**
@@ -142,6 +180,14 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   public function listEntryIds():Array<String>
   {
     return entries.keys().array();
+  }
+
+  /**
+   * Retrieve a list of all entry IDs available in the data directory.
+   */
+  function fetchEntryIdsFromFiles():Array<String>
+  {
+    return DataAssets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries);
   }
 
   /**
@@ -230,10 +276,10 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function loadEntryFile(id:String):JsonFile
   {
-    var entryFilePath:String = Paths.json('${dataFilePath}/${id}');
-    var rawJson:String = openfl.Assets.getText(entryFilePath).trim();
+    var entryFilePath:String = Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
+    var rawJson:String = Assets.getText(entryFilePath).trim();
     return {
-      fileName: entryFilePath,
+      fileName: entryFilePath.toString(),
       contents: rawJson
     };
   }
@@ -330,7 +376,10 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * Create a entry, attached to a scripted class, from the given class name.
    * @param clsName
    */
-  abstract function createScriptedEntry(clsName:String):Null<T>;
+  function createScriptedEntry(clsName:String):Null<T>
+  {
+    throw 'createScriptedEntry() not implemented for registry: ${registryId}';
+  }
 
   function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
   {

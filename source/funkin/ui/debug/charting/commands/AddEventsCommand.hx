@@ -37,7 +37,7 @@ class AddEventsCommand implements ChartEditorCommand
       state.currentEventSelection = events;
     }
 
-    state.playSound(Paths.sound('chartingSounds/noteLay'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

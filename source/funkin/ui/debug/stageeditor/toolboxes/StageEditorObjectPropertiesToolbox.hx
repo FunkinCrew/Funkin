@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 import haxe.ui.events.UIEvent;
 
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-properties.xml"))
 class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;

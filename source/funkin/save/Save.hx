@@ -664,12 +664,15 @@ class Save implements ConsoleClass
   {
     if (difficultyList == null)
     {
-      difficultyList = ['easy', 'normal', 'hard'];
+      difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
     }
+
     if (variation == null) variation = '';
+
     for (difficulty in difficultyList)
     {
       if (variation != '') difficulty = '${difficulty}-${variation}';
+
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {

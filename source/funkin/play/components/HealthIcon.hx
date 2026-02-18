@@ -407,14 +407,14 @@ class HealthIcon extends FunkinSprite
     }
   }
 
-  function iconExists(charId:String):Bool
+  static function iconExists(charId:String):Bool
   {
-    return Assets.exists(Paths.image('icons/icon-$charId'));
+    return Assets.exists(Paths.image('gameplay/characters/$charId/icon-$charId'));
   }
 
-  function isNewSpritesheet(charId:String):Bool
+  static function isNewSpritesheet(charId:String):Bool
   {
-    return Assets.exists(Paths.file('images/icons/icon-$characterId.xml'));
+    return Assets.exists(Paths.xml('gameplay/characters/$charId/icon-$charId'));
   }
 
   function loadCharacter(charId:Null<String>):Void
@@ -432,13 +432,14 @@ class HealthIcon extends FunkinSprite
 
     if (!isLegacyStyle)
     {
-      loadSparrow('icons/icon-$charId');
+      loadSparrow('gameplay/characters/$charId/icon-$charId');
 
       loadAnimationNew();
     }
     else
     {
-      loadGraphic(Paths.image('icons/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      loadGraphic(Paths.image('gameplay/characters/$charId/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE,
+        isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
 
       loadAnimationOld();
     }

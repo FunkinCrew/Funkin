@@ -8,6 +8,6 @@ class PuddleShader extends FlxRuntimeShader
 {
   public function new()
   {
-    super(Assets.getText(Paths.frag('puddle')));
+    super(Assets.getText(Paths.frag('ui/shaders/puddle')));
   }
 }

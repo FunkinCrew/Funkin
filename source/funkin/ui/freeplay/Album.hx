@@ -47,7 +47,7 @@ class Album implements IRegistryEntry<AlbumData>
    */
   public function getAlbumArtAssetKey():String
   {
-    return _data?.albumArtAsset ?? 'freeplay/albumRoll/volume1"';
+    return _data?.albumArtAsset ?? 'ui/freeplay/albums/volume1"';
   }
 
   /**
@@ -64,7 +64,7 @@ class Album implements IRegistryEntry<AlbumData>
    */
   public function getAlbumTitleAssetKey():String
   {
-    return _data?.albumTitleAsset ?? "freeplay/albumRoll/volume1-text";
+    return _data?.albumTitleAsset ?? "ui/freeplay/albums/volume1-text";
   }
 
   /**

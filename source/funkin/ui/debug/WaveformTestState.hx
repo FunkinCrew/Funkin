@@ -32,7 +32,7 @@ class WaveformTestState extends MusicBeatState
     super.create();
 
     var testSprite = new FlxSprite(0, 0);
-    testSprite.loadGraphic(Paths.image('funkay'));
+    testSprite.loadGraphic(Paths.image('ui/loading/funkay'));
     testSprite.updateHitbox();
     testSprite.clipRect = new FlxRect(0, 0, FlxG.width, FlxG.height);
     // add(testSprite);

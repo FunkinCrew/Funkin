@@ -44,7 +44,7 @@ class FunkinBackButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas("backButton");
+    frames = Paths.getSparrowAtlas("ui/back-button");
     animation.addByIndices('idle', 'back', [0], "", 24, false);
     animation.addByIndices('hold', 'back', [5], "", 24, false);
     animation.addByIndices('confirm', 'back', [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], "", 24, false);
@@ -99,7 +99,7 @@ class FunkinBackButton extends FunkinButton
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
 
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
     onConfirmStart.dispatch();
 

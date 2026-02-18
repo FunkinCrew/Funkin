@@ -110,7 +110,7 @@ class Medals
    */
   public static function loadMedalJSON():Void
   {
-    var jsonPath = Paths.json('medals');
+    var jsonPath = Paths.json('gameplay/medals/medals');
 
     var jsonString = Assets.getText(jsonPath);
 

@@ -18,7 +18,7 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import funkin.ui.debug.charting.util.FNFCData;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/camera-editor/dialogs/upload-chart.xml"))
 class UploadChartDialog extends Dialog
 {
   var locked:Bool = false;

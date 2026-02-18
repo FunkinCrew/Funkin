@@ -66,7 +66,7 @@ class StageBuilderState extends MusicBeatState
 
     // snd.addEventListener(SampleDataEvent.SAMPLE_DATA, sineShit);
     // snd.__buffer.
-    // snd = Assets.getSound(Paths.music('freakyMenu/freakyMenu'));
+    // snd = Assets.getSound(Paths.music('ui/main-menu/freaky-menu/freaky-menu'));
     // for (thing in snd.load)
     // thing = Std.int(thing / 2);
     // snd.play();
@@ -83,7 +83,7 @@ class StageBuilderState extends MusicBeatState
     add(hudGrp);
 
     textInfo = new FlxText(10, 80, 0, "", 24);
-    textInfo.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    textInfo.setFormat(Paths.font("ui/fonts/vcr.ttf"), 20, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     textInfo.scrollFactor.set();
     hudGrp.add(textInfo);
 
@@ -101,13 +101,12 @@ class StageBuilderState extends MusicBeatState
       var fileName:String = path.split('\\').pop();
       var fileNameNoExt:String = fileName.split('.')[0];
 
-      var newPath = './' + Paths.image('stageBuild/' + fileNameNoExt);
+      var newPath = './' + Paths.image('assets/ui/editors/stage-editor/' + fileNameNoExt);
       // sys.io.File.copy(path, newPath);
       // trace(sys.io.File.getBytes(Std.string(path)).toString());
 
       // FlxG.bitmap.add('assets/preload/images/stageBuild/eltonJohn.png');
-
-      sys.io.File.copy(path, './' + Paths.image('stageBuild/stageTempImg'));
+      sys.io.File.copy(path, './' + Paths.image('assets/ui/editors/stage-editor/stage-temp-img'));
 
       var fo = sys.io.File.write(newPath);
 
@@ -116,7 +115,7 @@ class StageBuilderState extends MusicBeatState
       new FlxTimer().start(0.2, function(tmr)
       {
         var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y, sprDragShitFunc);
-        awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
+        awesomeImg.loadGraphic(Paths.image('assets/ui/editors/stage-editor/stage-temp-img'), false, 0, 0, true);
 
         awesomeImg.layer = sprGrp.members.length;
         awesomeImg.imgName = fileName;
@@ -306,11 +305,11 @@ class StageBuilderState extends MusicBeatState
     {
       // redo this later so it doesn't create brand new FlxSprites into memory or someshit??? this was lazy 3AM way
       case SELECT:
-        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorSelect')).pixels);
+        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('ui/editors/stage-editor/cursor-select')).pixels);
       case GRABBING:
-        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorGrabbing')).pixels);
+        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('ui/editors/stage-editor/cursor-grabbing')).pixels);
       case GRAB:
-        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorGrab')).pixels);
+        FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('ui/editors/stage-editor/cursor-grab')).pixels);
       default:
         trace('swag');
     }

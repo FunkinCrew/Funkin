@@ -128,19 +128,19 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     switch (rank)
     {
       case PERFECT_GOLD:
-        return _data?.results?.music?.PERFECT_GOLD ?? "resultsPERFECT";
+        return _data?.results?.music?.PERFECT_GOLD ?? "results-perfect";
       case PERFECT:
-        return _data?.results?.music?.PERFECT ?? "resultsPERFECT";
+        return _data?.results?.music?.PERFECT ?? "results-perfect";
       case EXCELLENT:
-        return _data?.results?.music?.EXCELLENT ?? "resultsEXCELLENT";
+        return _data?.results?.music?.EXCELLENT ?? "results-excellent";
       case GREAT:
-        return _data?.results?.music?.GREAT ?? "resultsNORMAL";
+        return _data?.results?.music?.GREAT ?? "results-normal";
       case GOOD:
-        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+        return _data?.results?.music?.GOOD ?? "results-normal";
       case SHIT:
-        return _data?.results?.music?.SHIT ?? "resultsSHIT";
+        return _data?.results?.music?.SHIT ?? "results-shit";
       default:
-        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+        return _data?.results?.music?.GOOD ?? "results-normal";
     }
   }
 
@@ -149,6 +149,10 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
    */
   public function isUnlocked():Bool
   {
+    #if UNLOCK_EVERYTHING
+    return true;
+    #end
+
     return _data?.unlocked ?? true;
   }
 }

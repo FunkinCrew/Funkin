@@ -46,7 +46,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = ">=0.8.0 <0.9.0";
+  public static final API_VERSION_RULE:String = ">=0.9.0 <0.10.0";
 
   /**
    * Where relative to the executable that mods are located.
@@ -534,7 +534,7 @@ class PolymodHandler
   static inline function buildFrameworkParams():polymod.Polymod.FrameworkParams
   {
     return {
-      assetLibraryPaths: ['default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1', 'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1', 'sserafim' => 'sserafim'],
+      assetLibraryPaths: ['default' => ''],
       coreAssetRedirect: CORE_FOLDER,
     }
   }

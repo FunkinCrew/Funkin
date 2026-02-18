@@ -35,7 +35,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     this.small = small;
 
-    var clearPercentText:FunkinSprite = FunkinSprite.create(0, 0, 'resultScreen/clearPercent/clearPercentText${small ? 'Small' : ''}');
+    var clearPercentText:FunkinSprite = FunkinSprite.create(0, 0, 'ui/results/clear-percent/percent${small ? '-small' : ''}');
     clearPercentText.x = small ? 40 : 0;
     add(clearPercentText);
 
@@ -122,7 +122,7 @@ class ClearPercentNumber extends FlxSprite
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas('resultScreen/clearPercent/clearPercentNumber${small ? 'Small' : variant ? 'Right' : 'Left'}');
+    frames = Paths.getSparrowAtlas('ui/results/clear-percent/number-${small ? 'small' : variant ? 'right' : 'left'}');
 
     for (i in 0...10)
     {

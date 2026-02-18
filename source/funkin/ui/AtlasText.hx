@@ -240,7 +240,7 @@ private class AtlasFontData
 
   public function new(name:AtlasFont)
   {
-    atlas = Paths.getSparrowAtlas('fonts/${name}');
+    atlas = Paths.getSparrowAtlas('ui/fonts/${name}');
     if (atlas == null)
     {
       FlxG.log.warn('Could not find font atlas for font "${name}".');

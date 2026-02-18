@@ -32,7 +32,7 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.1";
+  static final VERSION:String = "0.9.0";
 
   /**
    * The build's number and version code.
@@ -151,7 +151,7 @@ class Project extends HXProject
   /**
    * Asset path globs to always exclude from asset libraries.
    */
-  static final EXCLUDE_ASSETS:Array<String> = [".*", "cvs", "thumbs.db", "desktop.ini", "*.hash", "*.md"];
+  static final EXCLUDE_ASSETS:Array<String> = [".*", "cvs", "thumbs.db", "desktop.ini", "*.hash", "*.md", "*.fla", "*/.git*"];
 
   /**
    * Asset path globs to exclude on web platforms.
@@ -294,10 +294,10 @@ class Project extends HXProject
   static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
 
   /**
-   * `-DFEATURE_RESULTS_DEBUG`
-   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   * `-FEATURE_DEBUG_MENU`
+   * If this flag is enabled, a debug menu will be accessible.
    */
-  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
+  static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
 
   /**
    * `-DFEATURE_DEBUG_TRACY`
@@ -342,6 +342,12 @@ class Project extends HXProject
    * Misses are still counted when the player has notes to hit.
    */
   static final FEATURE_GHOST_TAPPING:FeatureFlag = "FEATURE_GHOST_TAPPING";
+
+  /**
+   * `-DFEATURE_GPU_TEXTURES`
+   * Enables experimental GPU-only textures which improve memory usage.
+   */
+  static final FEATURE_GPU_TEXTURES:FeatureFlag = "FEATURE_GPU_TEXTURES";
 
   /**
    * `-DFEATURE_HAPTICS`
@@ -389,6 +395,13 @@ class Project extends HXProject
    * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
    */
   static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
+
+  /**
+   * `-DFEATURE_MULTITHREADING`
+   * If this flag is enabled, the game will create additional child processes to optimize performance.
+   * This functions even on web builds, so only disable it if you are experiencing stability issues.
+   */
+  static final FEATURE_MULTITHREADING:FeatureFlag = "FEATURE_MULTITHREADING";
 
   /**
    * `-DFEATURE_MOBILE_WEBVIEW`
@@ -459,6 +472,12 @@ class Project extends HXProject
   static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
 
   /**
+   * `-DFEATURE_RESULTS_DEBUG`
+   * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
+   */
+  static final FEATURE_RESULTS_DEBUG:FeatureFlag = "FEATURE_RESULTS_DEBUG";
+
+  /**
    * `-DFEATURE_SCREENSHOTS`
    * If this flag is enabled, the game will support the screenshots feature.
    */
@@ -470,12 +489,6 @@ class Project extends HXProject
    * This can be used to provide menus, dialogs, and other UI components via HaxeUI.
    */
   static final FEATURE_HAXEUI:FeatureFlag = "FEATURE_HAXEUI";
-
-  /**
-   * `-FEATURE_DEBUG_MENU`
-   * If this flag is enabled, a debug menu will be accessible.
-   */
-  static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
 
   /**
    * `-FEATURE_ANIMATION_EDITOR`
@@ -494,6 +507,13 @@ class Project extends HXProject
    * If this flag is enabled, the Stage Editor will be accessible from the debug menu.
    */
   static final FEATURE_STAGE_EDITOR:FeatureFlag = "FEATURE_STAGE_EDITOR";
+
+  /**
+   * `-DFEATURE_STRICT_ASSET_CACHING`
+   * If this flag is enabled, trying to load an asset that wasn't cached in the loading screen will crash the game.
+   * If this flag is disabled, the game will attempt to load the asset anyway (which can cause stuttering and texture corruption).
+   */
+  static final FEATURE_STRICT_ASSET_CACHING:FeatureFlag = "FEATURE_STRICT_ASSET_CACHING";
 
   /**
    * `-DFEATURE_CAMERA_EDITOR`
@@ -850,6 +870,9 @@ class Project extends HXProject
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
+
+    // Should be true unless explicitly requested.
+    // Disable this once we rework the unlock progression system.
     UNLOCK_EVERYTHING.apply(this, true);
 
     // Should be true only on web builds.
@@ -859,9 +882,6 @@ class Project extends HXProject
 
     // Should default to true on workspace builds and false on release builds.
     REDIRECT_ASSETS_FOLDER.apply(this, isDebug() && isDesktop());
-
-    // Should be true only on debug mobile builds.
-    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
@@ -875,10 +895,7 @@ class Project extends HXProject
     // FEATURE FLAGS
     //
 
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-
+    // Should be true on all builds.
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
     FEATURE_DEBUG_FILE_LOGGING.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
@@ -898,6 +915,10 @@ class Project extends HXProject
     FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
     FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
 
+    // Should be true on debug builds or if GITHUB_BUILD is enabled.
+    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
+
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
     FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
@@ -911,7 +932,7 @@ class Project extends HXProject
     FEATURE_NEWGROUNDS_AUTOLOGIN.apply(this, FEATURE_NEWGROUNDS.isEnabled(this) && isWeb());
     FEATURE_NEWGROUNDS_EVENTS.apply(this, FEATURE_NEWGROUNDS.isEnabled(this));
 
-    // Should be true except on web and mobile builds.
+    // Should be true only on desktop builds.
     // Debug editors aren't built to work on web or mobile right now.
     FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
     FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
@@ -926,15 +947,16 @@ class Project extends HXProject
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
 
-    // Should be true except on web and mobile builds.
-    // Screenshots doesn't work there, and mobile has its own screenshots anyway.
-    FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
+    // Should be true only on Desktop builds.
+    // Screenshots doesn't work on web, and mobile has its own screenshots anyway.
+    FEATURE_SCREENSHOTS.apply(this, isDesktop());
 
     // Should be true except on MacOS and mobile builds.
     // Dragging and dropping files onto the window doesn't work there.
     FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
 
-    // Audio context issues only exist on web builds.
+    // The audio context issues which require the user to click before playing
+    // only exist on web builds.
     FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
     // Should be true only on mobile builds.
@@ -946,6 +968,9 @@ class Project extends HXProject
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
     FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease() && !isIOSSimulator());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
+
+    // Should be true only on debug mobile builds which have ads enabled.
+    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
 
     // The coveted ghost tapping feature.
     // Essential on mobile but delayed on desktop.
@@ -1437,11 +1462,10 @@ class Project extends HXProject
   function configureAssets()
   {
     // Delete the assets folder from the export folder before adding anything.
-    clearAssets();
+    // TODO: neko FUCKING SUCKS!! this keeps throwing an error on neko. find a way to fix it later. - Abnormal
+    // clearAssets();
 
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
-    var shouldPreload = PRELOAD_ALL.isEnabled(this);
-    var shouldEmbed = EMBED_ASSETS.isEnabled(this);
 
     if (CENSOR_EXPLETIVES.isEnabled(this))
     {
@@ -1452,78 +1476,29 @@ class Project extends HXProject
       exclude = exclude.concat(EXCLUDE_ASSETS_UNCENSORED);
     }
 
-    if (shouldEmbed)
-    {
-      info('Embedding assets into executable...');
-    }
-    else
-    {
-      info('Including assets alongside executable...');
-    }
-
     // Default asset library
-    var shouldPreloadDefault = true;
-    addAssetLibrary("default", shouldEmbed, shouldPreloadDefault);
-    addAssetPath("assets/preload", "assets", "default", ["*"], exclude, shouldEmbed, "assets");
+    var shouldPreloadDefault = !isWeb();
+    var shouldEmbedDefault = false;
+    // removeAssetPath("assets/", "default");
+    addAssetLibrary("default", shouldEmbedDefault, shouldPreloadDefault);
+    addAssetPath("assets", "assets", "default", ["*"], exclude, shouldEmbedDefault);
 
     if (!HARDCODED_CREDITS.isEnabled(this))
     {
-      addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
+      addAsset("assets/exclude/ui/credits/credits.json", "assets/ui/credits/credits.json", "default", shouldEmbedDefault);
     }
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
+    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/animation-editor', "default");
 
-    if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
+    if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/chart-editor', "default");
 
-    // if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/camera-editor', "default");
+    if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/stage-editor', "default");
 
-    if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/stage-editor', "default");
+    // if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/camera-editor', "default");
 
     // Font assets
     var shouldEmbedFonts = true;
-    addAssetPath("assets/fonts", null, "default", ["*"], exclude, shouldEmbedFonts, "assets");
-
-    // Shared asset libraries
-    addAssetLibrary("songs", shouldEmbed, shouldPreload);
-    addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed, "assets");
-
-    for (song in EMBED_SONGS_AUDIO)
-    {
-      removeAssetPath('assets/songs/$song');
-      addAssetPath('assets/songs/$song', 'assets/songs/$song', "songs", ["*"], exclude, true, "assets");
-    }
-
-    addAssetLibrary("shared", shouldEmbed, shouldPreload);
-    addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed, "assets");
-
-    if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
-    {
-      var shouldEmbedVideos = false;
-      addAssetLibrary("videos", shouldEmbedVideos, shouldPreload);
-      addAssetPath("assets/videos", "assets/videos", "videos", ["*"], exclude, shouldEmbedVideos, "assets");
-    }
-
-    // Level asset libraries
-    addAssetLibrary("tutorial", shouldEmbed, shouldPreload);
-    addAssetPath("assets/tutorial", "assets/tutorial", "tutorial", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week1", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week1", "assets/week1", "week1", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week2", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week2", "assets/week2", "week2", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week3", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week3", "assets/week3", "week3", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week4", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week4", "assets/week4", "week4", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week5", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week5", "assets/week5", "week5", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week6", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week6", "assets/week6", "week6", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("week7", shouldEmbed, shouldPreload);
-    addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
-    addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
-    addAssetLibrary("sserafim", shouldEmbed, shouldPreload);
-    addAssetPath("assets/sserafim", "assets/sserafim", "sserafim", ["*"], exclude, shouldEmbed, "assets");
+    addAssetPath("assets/ui/fonts", null, "default", ["*"], exclude, shouldEmbedFonts);
 
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
@@ -1531,9 +1506,12 @@ class Project extends HXProject
     addAssetLibrary("art", shouldEmbedArt, shouldPreloadArt);
     addAsset("art/readme.txt", "do NOT readme.txt", "art", shouldEmbedArt);
     addAsset("LICENSE.md", "LICENSE.md", "art", shouldEmbedArt);
-    addAsset("CHANGELOG.md", "CHANGELOG.md", "art", shouldEmbedArt);
 
-    if (shouldEmbed)
+    // Exclude assets in the "exclude" folder
+    // This must be done explicitly now that the "default" library contains the whole assets folder.
+    removeAssetPath("assets/exclude");
+
+    if (shouldEmbedDefault)
     {
       info('Done embedding assets.');
     }

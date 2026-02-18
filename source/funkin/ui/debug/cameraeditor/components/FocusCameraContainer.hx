@@ -11,7 +11,7 @@ import openfl.display.BitmapData;
 /**
  * The contents of the Properties panel, while a Focus Camera event is selected.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/focus-camera.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/camera-editor/components/properties/focus-camera.xml"))
 class FocusCameraContainer extends VBox
 {
   /**

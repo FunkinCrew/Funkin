@@ -47,7 +47,7 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = FunkinSprite.createTextureAtlas((FlxG.width + -360) - FullScreenScaleMode.gameNotchSize.x, 220, "freeplay/albumRoll/freeplayAlbum");
+    newAlbumArt = FunkinSprite.createTextureAtlas((FlxG.width + -360) - FullScreenScaleMode.gameNotchSize.x, 220, "ui/freeplay/interface/freeplay-album");
     newAlbumArt.visible = false;
 
     difficultyStars = new DifficultyStars((FlxG.width - 330) - FullScreenScaleMode.gameNotchSize.x, 209);
@@ -56,7 +56,7 @@ class AlbumRoll extends FlxSpriteGroup
     add(newAlbumArt);
     add(difficultyStars);
 
-    buildAlbumTitle("freeplay/albumRoll/volume1-text");
+    buildAlbumTitle("ui/freeplay/albums/volume1-text");
     if (albumTitle != null) albumTitle.visible = false;
 
     newAlbumArt.anim.onFinish.add(onAlbumFinish);

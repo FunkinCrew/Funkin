@@ -20,7 +20,13 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyle
 
   public function new()
   {
-    super('NOTESTYLE', 'notestyles', NOTE_STYLE_DATA_VERSION_RULE);
+    super(
+      {
+        registryId: 'NOTESTYLE',
+        dataFilePath: 'gameplay/notestyles',
+        nestedEntries: true,
+        versionRule: NOTE_STYLE_DATA_VERSION_RULE
+      });
   }
 
   public function fetchDefault():NoteStyle

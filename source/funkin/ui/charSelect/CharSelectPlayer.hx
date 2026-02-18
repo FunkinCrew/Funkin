@@ -7,7 +7,7 @@ import funkin.modding.events.ScriptEvent;
 @:nullSafety
 class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 {
-  static final DEFAULT_PATH = "charSelect/bfChill";
+  static final DEFAULT_PATH = "ui/character-select/characters/bf";
 
   var initialX:Float = 0;
   var initialY:Float = 0;
@@ -78,7 +78,7 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 
   public function switchChar(str:String, playSlideAnim:Bool = true):Void
   {
-    var texture:Null<animate.FlxAnimateFrames> = CharSelectAtlasHandler.loadAtlas('charSelect/${str}Chill');
+    var texture:Null<animate.FlxAnimateFrames> = CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/${str}');
 
     if (texture != null)
     {

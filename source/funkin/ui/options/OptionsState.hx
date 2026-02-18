@@ -55,9 +55,9 @@ class OptionsState extends MusicBeatState
 
     persistentUpdate = true;
 
-    drumsBG = FunkinSound.load(Paths.music('offsetsLoop/drumsLoop'), 0, true, false, false, false);
+    drumsBG = FunkinSound.load(Paths.music('ui/input-offsets/drums-loop/drums-loop'), 0, true, false, false, false);
 
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('menuBG'));
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-bg'));
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
     menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
@@ -117,7 +117,7 @@ class OptionsState extends MusicBeatState
     }
     FlxG.sound.music.fadeOut(0.5, 0, function(tw)
     {
-      FunkinSound.playMusic('freakyMenu', {
+      FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
         startingVolume: 0,
         overrideExisting: true,
         restartTrack: true,
@@ -183,7 +183,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     {
       FlxG.sound.music.fadeOut(0.5, 0, function(tw)
       {
-        FunkinSound.playMusic('offsetsLoop', {
+        FunkinSound.playMusic('ui/input-offsets/offsets-loop/offsets-loop', {
           startingVolume: 0,
           overrideExisting: true,
           restartTrack: true,
@@ -334,6 +334,31 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   public function hasMultipleOptions():Bool
   {
     return items.length > 2;
+  }
+
+  var prompt:Prompt;
+
+  function promptClearSaveData():Void
+  {
+    if (prompt != null) return;
+    prompt = new Prompt("This will delete
+      /nALL your save data.
+      /nAre you sure?
+    ", Custom("Delete", "Cancel"));
+    prompt.create();
+    prompt.createBgFromMargin(100, 0xFFFAFD6D);
+    prompt.back.scrollFactor.set(0, 0);
+    add(prompt);
+    prompt.onYes = function() {
+      // Clear the save data.
+      funkin.save.Save.clearData();
+      FlxG.switchState(() -> new funkin.InitState());
+    };
+    prompt.onNo = function() {
+      prompt.close();
+      prompt.destroy();
+      prompt = null;
+    };
   }
 }
 

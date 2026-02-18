@@ -153,9 +153,10 @@ class MacroUtil
   /**
    * If we are in a build macro, return whether a field already exists on the current class.
    * @param name The name of the field to check for.
+   * @param checkSuper Whether to check the superclass as well.
    * @return Whether the field already exists.
    */
-  public static function fieldAlreadyExists(name:String):Bool
+  public static function fieldAlreadyExists(name:String, checkSuper:Bool = true):Bool
   {
     for (field in Context.getBuildFields())
     {
@@ -164,6 +165,8 @@ class MacroUtil
         return true;
       }
     }
+
+    if (!checkSuper) return false;
 
     function fieldAlreadyExistsSuper(name:String, superClass:Null<ClassType>)
     {

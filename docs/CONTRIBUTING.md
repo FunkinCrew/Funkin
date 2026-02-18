@@ -401,7 +401,7 @@ Be sure to choose `develop` as the base branch for `funkin.assets` PRs, just as 
 ### Charting PRs
 Charting PRs make changes such as **adjusting chart metadata**.
 
-This involves modifying one or several of the `funkin.assets` repository's `*-metadata.json` files, found in the `preload/data/songs/` directory.
+This involves modifying one or several of the `funkin.assets` repository's `*-metadata.json` files, found in the `assets/gameplay/songs/` directory.
 
 > [!CAUTION]
 > We **do not** accept changes to the chart `.json` file itself.

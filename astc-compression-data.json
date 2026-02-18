@@ -6,197 +6,223 @@
   "colorprofile": "cl",
   "custom": [
     {
-      "asset": "assets/preload/images/NOTE_assets.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-perfect/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/preload/images/NOTE_hold_assets.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-great/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/preload/images/StrumlineNotes.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-good/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/preload/images/alphabet.png",
+      "asset": "assets/gameplay/playable-characters/bf/results/graphics/results-excellent/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/preload/images/charSelect/gfChill/spritemap1.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-shit/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/gameplay/notestyles/funkin/notes.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/gameplay/notestyles/funkin/note-holds.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/gameplay/notestyles/funkin/note-strumline.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/ui/character-select/characters/gf/spritemap.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/shared/images/NOTE_hold_assets.png",
+      "asset": "assets/gameplay/notestyles/funkin/note-holds.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/characters/nene-dark/spritemap1.png",
+      "asset": "assets/gameplay/characters/nene-dark/nene-dark/spritemap1.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/shared/images/characters/otis/muzzle-flashes/otis_flashes.png",
+      "asset": "assets/gameplay/characters/otis-speaker/otis_flashes.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/characters/sserafim/chaewon/spritemap1.png",
+      "asset": "assets/gameplay/characters/sserafim-chaewon/sserafim-chaewon/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/characters/pico-dark/spritemap1.png",
+      "asset": "assets/gameplay/characters/pico-dark/pico-dark/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/characters/pico/basic-animations/spritemap1.png",
+      "asset": "assets/gameplay/characters/pico/pico-basic-animations/spritemap1.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/shared/images/characters/pico/explosion-death/spritemap1.png",
+      "asset": "assets/gameplay/characters/pico-playable/pico-death-explosion/spritemap1.png",
       "blocksize": "8x8"
     },
     {
-      "asset": "assets/shared/images/characters/pico/playable-animations/spritemap1.png",
+      "asset": "assets/gameplay/characters/pico-playable/pico-playable-animations/spritemap1.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/shared/images/holdCoverBlue.png",
+      "asset": "assets/gameplay/notestyles/funkin/hold-cover-left.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/holdCoverGreen.png",
+      "asset": "assets/gameplay/notestyles/funkin/hold-cover-up.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/holdCoverPurple.png",
+      "asset": "assets/gameplay/notestyles/funkin/hold-cover-down.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/holdCoverRed.png",
+      "asset": "assets/gameplay/notestyles/funkin/hold-cover-right.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/latencyArrow.png",
+      "asset": "assets/ui/input-offsets/arrow.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/latencyReceptor.png",
+      "asset": "assets/ui/input-offsets/receptor.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/noteSplashes.png",
+      "asset": "assets/gameplay/notestyles/funkin/note-splashes.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/noteStrumline.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-good/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/notes.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-great/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/resultScreen/results-pico/resultsGOOD/spritemap1.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-perfect/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/resultScreen/results-pico/resultsGREAT/spritemap1.png",
+      "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-shit/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/resultScreen/results-pico/resultsPERFECT/spritemap1.png",
+      "asset": "assets/gameplay/stages/sserafim/sserafim-lipsync-yunjin/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
+      "asset": "assets/gameplay/stages/sserafim/sserafim-lipsync/spritemap1.png",
       "blocksize": "4x4"
     },
     {
-      "asset": "assets/sserafim/images/sserafim-lipsync-yunjin/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "assets/sserafim/images/sserafim-lipsync/spritemap1.png",
-      "blocksize": "4x4"
-    },
-    {
-      "asset": "assets/week1/image/erect/bg.png",
+      "asset": "assets/gameplay/stages/mainStageErect/bg.png",
       "blocksize": "8x8"
     },
     {
-      "asset": "assets/week1/image/erect/lights.png",
+      "asset": "assets/gameplay/stages/mainStageErect/lights.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/shared/images/characters/pico/death/spritemap1.png",
+      "asset": "assets/gameplay/characters/pico-playable/pico-death/spritemap1.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/week1/images/erect/crowd.png",
+      "asset": "assets/gameplay/stages/mainStageErect/crowd.png",
       "blocksize": "8x8"
     },
     {
-      "asset": "assets/week1/images/erect/server.png",
+      "asset": "assets/gameplay/stages/mainStageErect/server.png",
       "blocksize": "8x8"
     },
     {
-      "asset": "assets/week7/images/erect/rando/spritemap1.png",
+      "asset": "assets/gameplay/stages/tankmanBattlefieldErect/rando/spritemap1.png",
       "blocksize": "6x6"
     },
     {
-      "asset": "assets/week7/images/erect/sniper/spritemap1.png",
+      "asset": "assets/gameplay/stages/tankmanBattlefieldErect/sniper/spritemap1.png",
       "blocksize": "6x6"
     }
   ],
   "excludes": [
-    "assets/preload/images/cursor/",
-    "assets/preload/images/fonts/",
-    "assets/preload/images/freeplay/",
-    "assets/preload/images/icons/",
-    "assets/preload/images/soundtray/",
-    "assets/preload/images/stageBuild/",
-    "assets/preload/images/storymenu/titles/",
-    "assets/preload/images/title-screen-text/spritemap1.png",
-    "assets/preload/images/title-screen-text-mobile/spritemap1.png",
-    "assets/preload/images/ui/popup/pixel/*",
-    "assets/shared/images/characters/abotPixel/*",
-    "assets/shared/images/characters/bfPixel.png",
-    "assets/shared/images/characters/bfPixelsDEAD.png",
-    "assets/shared/images/characters/gf-christmas/spritemap1.png",
-    "assets/shared/images/characters/gf-dark/spritemap1.png",
-    "assets/shared/images/characters/gf/spritemap1.png",
-    "assets/shared/images/characters/gfCar/spritemap1.png",
-    "assets/shared/images/characters/gfPixel.png",
-    "assets/shared/images/characters/nene/spritemap1.png",
-    "assets/shared/images/characters/nenePixel/*",
-    "assets/shared/images/characters/pico-holding-nene/spritemap1.png",
-    "assets/shared/images/characters/picoPixel/*",
-    "assets/shared/images/characters/senpai.png",
-    "assets/shared/images/characters/spirit.png",
-    "assets/shared/images/characters/sserafim/eunchae/spritemap1.png",
-    "assets/shared/images/characters/sserafim/kazuha/spritemap1.png",
-    "assets/shared/images/characters/sserafim/sserafim-gf/spritemap1.png",
-    "assets/shared/images/characters/sserafim/yunjin/spritemap1.png",
-    "assets/shared/images/characters/sserafim/sakura/spritemap1.png",
-    "assets/shared/images/healthBar.png",
-    "assets/shared/images/resultScreen/*",
-    "assets/shared/images/resultScreen/clearPercent/",
-    "assets/shared/images/resultScreen/rankText/",
-    "assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png",
-    "assets/shared/images/resultScreen/results-bf/resultsGOOD/resultGirlfriendGOOD.png",
-    "assets/shared/images/resultScreen/results-bf/resultsGREAT/gf/spritemap1.png",
-    "assets/shared/images/resultScreen/results-bf/resultsSHIT/gf/spritemap1.png",
-    "assets/shared/images/ui/chart-editor/",
-    "assets/shared/images/ui/countdown/pixel/*",
-    "assets/sserafim/images/cutscene/cutsceneMain/spritemap1.png",
-    "assets/sserafim/images/cutscene/ref.png",
-    "assets/sserafim/images/ref.png",
-    "assets/week1/*",
-    "assets/week1/images/erect/brightLightSmall.png",
-    "assets/week1/images/erect/lightAbove.png",
-    "assets/week1/images/erect/lightgreen.png",
-    "assets/week1/images/erect/lightred.png",
-    "assets/week1/images/erect/orangeLight.png",
-    "assets/week2/images/erect/stairsDark.png",
-    "assets/week2/images/erect/stairsLight.png",
-    "assets/week6/"
+    "assets/ui/cursor/",
+    "assets/ui/fonts/",
+    "assets/ui/freeplay/",
+    "assets/gameplay/characters/bf/icon-bf.png",
+    "assets/gameplay/characters/bf-old/icon-bf-old.png",
+    "assets/gameplay/characters/bf-pixel/icon-bf-pixel.png",
+    "assets/gameplay/characters/dad/icon-dad.png",
+    "assets/gameplay/characters/darnell/icon-darnell.png",
+    "assets/gameplay/characters/face/icon-face.png",
+    "assets/gameplay/characters/gf/icon-gf.png",
+    "assets/gameplay/characters/mom/icon-mom.png",
+    "assets/gameplay/characters/monster/icon-monster.png",
+    "assets/gameplay/characters/parents-christmas/icon-parents.png",
+    "assets/gameplay/characters/parents-christmas/icon-parents-christmas.png",
+    "assets/gameplay/characters/pico/icon-pico.png",
+    "assets/gameplay/characters/senpai/icon-senpai.png",
+    "assets/gameplay/characters/spirit/icon-spirit.png",
+    "assets/gameplay/characters/spooky/icon-spooky.png",
+    "assets/gameplay/characters/tankman/icon-tankman.png",
+    "assets/gameplay/characters/tankman/icon-tankman-bloody.png",
+    "assets/gameplay/characters/sserafim-chaewon/icon-sserafim-chaewon.png",
+    "assets/gameplay/characters/sserafim-eunchae/icon-sserafim-eunchae.png",
+    "assets/gameplay/characters/sserafim-kazuha/icon-sserafim-kazuha.png",
+    "assets/gameplay/characters/sserafim-sakura/icon-sserafim-sakura.png",
+    "assets/gameplay/characters/sserafim-yunjin/icon-sserafim-yunjin.png",
+    "assets/ui/soundtray/",
+    "assets/ui/story-mode/levels",
+    "assets/ui/title/title-screen-text/spritemap1.png",
+    "assets/ui/title/title-screen-text-mobile/spritemap1.png",
+    "assets/ui/editors/",
+    "assets/gameplay/dialogue/",
+    "assets/gameplay/notestyles/pixel/",
+    "assets/gameplay/characters/bf-pixel/",
+    "assets/gameplay/characters/gf/",
+    "assets/gameplay/characters/gf-car/",
+    "assets/gameplay/characters/gf-christmas/",
+    "assets/gameplay/characters/gf-dark/",
+    "assets/gameplay/characters/gf-pixel/",
+    "assets/gameplay/characters/nene/nene/spritemap1.png",
+    "assets/gameplay/characters/nene-pixel/",
+    "assets/gameplay/characters/pico-holding-nene/pico-holding-nene/spritemap1.png/",
+    "assets/gameplay/characters/pico-pixel/",
+    "assets/gameplay/characters/senpai/",
+    "assets/gameplay/characters/spirit/",
+    "assets/gameplay/characters/sserafim-eunchae/sserafim-eunchae/spritemap1.png",
+    "assets/gameplay/characters/sserafim-kazuha/sserafim-kazuha/spritemap1.png",
+    "assets/gameplay/characters/sserafim-akura/sserafim-sakura/spritemap1.png",
+    "assets/gameplay/characters/sserafim-gf/sserafim-gf/spritemap1.png",
+    "assets/gameplay/characters/sserafim-yunjin/sserafim-yunjin/spritemap1.png",
+    "assets/gameplay/general/health-bar.png",
+    "assets/ui/results/clear-percent/",
+    "assets/ui/results/rank-text/",
+    "assets/gameplay/playable-characters/bf/results/graphics/results-excellent/spritemap1.png",
+    "assets/gameplay/playable-characters/bf/results/graphics/results-good/gf.png",
+    "assets/gameplay/playable-characters/bf/results/graphics/results-great/gf/spritemap1.png",
+    "assets/gameplay/playable-characters/bf/results/graphics/results-shit/spritemap1.png",
+    "assets/gameplay/stages/mainStage/",
+    "assets/gameplay/stages/mainStageErect/bright-light.png",
+    "assets/gameplay/stages/mainStageErect/light-above.png",
+    "assets/gameplay/stages/mainStageErect/light-green.png",
+    "assets/gameplay/stages/mainStageErect/light-red.png",
+    "assets/gameplay/stages/mainStageErect/light-orange.png",
+    "assets/gameplay/stages/spookyMansionErect/stairs-dark.png",
+    "assets/gameplay/stages/spookyMansionErect/stairs-light.png",
+    "assets/gameplay/stages/school/",
+    "assets/gameplay/stages/schoolErect/",
+    "assets/gameplay/stages/schoolEvil/",
+    "assets/gameplay/stages/schoolEvilErect/",
+    "assets/gameplay/stages/sserafim/cutscene/cutscene-main/spritemap1.png"
   ]
 }

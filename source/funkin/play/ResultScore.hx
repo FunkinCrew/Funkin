@@ -199,7 +199,7 @@ class ScoreNum extends FlxSprite
     baseY = y;
     baseX = x;
 
-    frames = Paths.getSparrowAtlas('resultScreen/score-digital-numbers');
+    frames = Paths.getSparrowAtlas('ui/results/interface/score-digital-numbers');
 
     for (i in 0...10)
     {

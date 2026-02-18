@@ -21,7 +21,13 @@ class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleDat
 
   public function new()
   {
-    super('FREEPLAYSTYLE', 'ui/freeplay/styles', FREEPLAYSTYLE_DATA_VERSION_RULE);
+    super(
+      {
+        registryId: 'FREEPLAYSTYLE',
+        dataFilePath: 'ui/freeplay/styles',
+        nestedEntries: true,
+        versionRule: FREEPLAYSTYLE_DATA_VERSION_RULE
+      });
   }
 }
 

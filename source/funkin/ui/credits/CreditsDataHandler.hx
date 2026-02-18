@@ -11,9 +11,9 @@ class CreditsDataHandler
   public static final BACKER_PUBLIC_URL:String = 'https://funkin.me/backers';
 
   #if HARDCODED_CREDITS
-  static final CREDITS_DATA_PATH:String = "assets/exclude/data/credits.json";
+  static final CREDITS_DATA_PATH:String = "assets/exclude/ui/credits/credits.json";
   #else
-  static final CREDITS_DATA_PATH:String = "assets/data/credits.json";
+  static final CREDITS_DATA_PATH:String = "assets/ui/credits/credits.json";
   #end
 
   #if macro

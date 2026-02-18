@@ -130,7 +130,7 @@ using Lambda;
  */
 // @:nullSafety
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/main-view.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/main-view.xml"))
 class ChartEditorState extends UIState // UIState derives from MusicBeatState
 {
   /**
@@ -138,16 +138,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('chart-editor/toolbox/difficulty');
+  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/difficulty');
 
-  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/player-preview');
-  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('chart-editor/toolbox/opponent-preview');
-  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/metadata');
-  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('chart-editor/toolbox/offsets');
-  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/note-data');
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('chart-editor/toolbox/event-data');
-  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.ui('chart-editor/toolbox/freeplay');
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
+  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/player-preview');
+  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/opponent-preview');
+  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/metadata');
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/offsets');
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/note-data');
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/event-data');
+  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/freeplay');
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/playtest-properties');
 
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = #if sys ['ogg'] #else ['mp3'] #end;
@@ -296,6 +296,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     updateGridHeight();
 
     return this.songLengthInMs;
+  }
+
+  inline function clamp(value:Float, min:Float, max:Float):Float
+  {
+    return Math.max(min, Math.min(value, max));
   }
 
   /**
@@ -2467,7 +2472,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})\n${result.join("\n")}');
+          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})/n${result.join("/n")}');
         }
       }
       else
@@ -2521,7 +2526,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function setupWelcomeMusic()
   {
-    this.welcomeMusic.loadEmbedded(Paths.music('chartEditorLoop/chartEditorLoop'));
+    this.welcomeMusic.loadEmbedded(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'));
     FlxG.sound.list.add(this.welcomeMusic);
     this.welcomeMusic.looped = true;
   }
@@ -2616,7 +2621,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
           else
           {
-            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
+            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})/n${result.join("/n")}');
           }
         }
         else
@@ -2702,7 +2707,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function buildBackground():Void
   {
-    menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+    menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-desat'));
     add(menuBG);
 
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -3047,7 +3052,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectOpponent.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT;
     buttonSelectOpponent.width = GRID_SIZE * 4;
     buttonSelectOpponent.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectOpponent.tooltip = "Click to set selection to all notes on this side.\nShift-click to add all notes on this side to selection.";
+    buttonSelectOpponent.tooltip = "Click to set selection to all notes on this side./nShift-click to add all notes on this side to selection.";
     buttonSelectOpponent.zIndex = 110;
     add(buttonSelectOpponent);
 
@@ -3072,7 +3077,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectPlayer.y = buttonSelectOpponent.y;
     buttonSelectPlayer.width = GRID_SIZE * 4;
     buttonSelectPlayer.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectPlayer.tooltip = "Click to set selection to all notes on this side.\nShift-click to add all notes on this side to selection.";
+    buttonSelectPlayer.tooltip = "Click to set selection to all notes on this side./nShift-click to add all notes on this side to selection.";
     buttonSelectPlayer.zIndex = 110;
     add(buttonSelectPlayer);
 
@@ -3092,13 +3097,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     buttonSelectEvent = new Button();
     buttonSelectEvent.allowFocus = false;
-    buttonSelectEvent.icon = Paths.image('ui/chart-editor/events/Default');
+    buttonSelectEvent.icon = Paths.image('ui/editors/chart-editor/events/Default');
     buttonSelectEvent.iconPosition = "top";
     buttonSelectEvent.x = buttonSelectPlayer.x + buttonSelectPlayer.width;
     buttonSelectEvent.y = buttonSelectPlayer.y;
     buttonSelectEvent.width = GRID_SIZE;
     buttonSelectEvent.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectEvent.tooltip = "Click to set selection to all events.\nShift-click to add all events to selection.";
+    buttonSelectEvent.tooltip = "Click to set selection to all events./nShift-click to add all events to selection.";
     buttonSelectEvent.zIndex = 110;
     add(buttonSelectEvent);
 
@@ -3493,7 +3498,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
-    // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
+    // registerContextMenu(null, Paths.xml('ui/editors/chart-editor/context/test'));
   }
 
   function copySelection():Void
@@ -4572,8 +4577,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
@@ -5146,7 +5151,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
         {
           // Play a sound as we drag.
-          this.playSound(Paths.sound('chartingSounds/noteLay'));
+          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
           dragTargetCurrentStep = dragDistanceSteps;
           dragTargetCurrentColumn = dragDistanceColumns;
@@ -5171,7 +5176,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (dragLengthCurrent != dragLengthSteps)
           {
             stretchySounds = !stretchySounds;
-            this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-' + (stretchySounds ? '1' : '2')));
 
             dragLengthCurrent = dragLengthSteps;
           }
@@ -5197,7 +5202,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (dragLengthSteps > 0)
         {
-          this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
           // Apply the new length.
           performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
         }
@@ -5206,7 +5211,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Apply the new (zero) length if we are changing the length.
           if (currentPlaceNoteData.length > 0)
           {
-            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
           }
         }
@@ -5415,7 +5420,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else
           {
             // Right click removes hold from the note.
-            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
             performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
           }
         }
@@ -5849,7 +5854,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (playheadDragLengthCurrent[column] != targetNoteLengthStepsInt)
         {
           stretchySounds = !stretchySounds;
-          this.playSound(Paths.sound('chartingSounds/stretch' + (stretchySounds ? '1' : '2') + '_UI'));
+          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-' + (stretchySounds ? '1' : '2')));
           playheadDragLengthCurrent[column] = targetNoteLengthStepsInt;
         }
         ghostHold.visible = true;
@@ -5891,7 +5896,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Extend the note to the playhead position.
       trace('Extending note. ${column}');
-      this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+      this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
@@ -6415,7 +6420,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     catch (e)
     {
-      this.error('Could Not Playtest', 'Got an error trying to playtest the song.\n${e}');
+      this.error('Could Not Playtest', 'Got an error trying to playtest the song./n${e}');
       return;
     }
 
@@ -6591,7 +6596,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function playMetronomeTick(high:Bool = false):Void
   {
-    this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'), metronomeVolume);
+    this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/metronome-${high ? '1' : '2'}'), metronomeVolume);
   }
 
   function switchToCurrentInstrumental():Void
@@ -7105,9 +7110,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (hitsoundsEnabled) switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer);
         case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
       }
     }
     // Clearing memory before next event call.
@@ -7225,7 +7230,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function loadSubtitles():Void
   {
-    var subtitlesFile:String = 'songs/${currentSongId}/subtitles/song-lyrics';
+    var subtitlesFile:String = 'gameplay/songs/${currentSongId}/subtitles/song-lyrics';
     if (selectedVariation != Constants.DEFAULT_VARIATION)
     {
       subtitlesFile += '-${selectedVariation}';
@@ -7341,12 +7346,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       inner += '*';
     }
-    WindowUtil.setWindowTitle('Friday Night Funkin\' Chart Editor - ${inner}');
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Chart Editor - ${inner} ');
   }
 
   function resetWindowTitle():Void
   {
-    WindowUtil.setWindowTitle('Friday Night Funkin\'');
+    WindowUtil.setWindowTitle(' Friday Night Funkin\'');
   }
 
   /**

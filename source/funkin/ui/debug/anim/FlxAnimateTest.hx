@@ -24,7 +24,7 @@ class FlxAnimateTest extends MusicBeatState implements ConsoleClass
   {
     super.create();
 
-    sprite = FunkinSprite.createTextureAtlas(0, 0, "charSelect/bfChill", {
+    sprite = FunkinSprite.createTextureAtlas(0, 0, "ui/character-select/characters/bf", {
       swfMode: false, // If to render like in a SWF file, rather than the Animate editor.
       cacheOnLoad: true, // If to precache all animation filters and masks at once, rather than at runtime.
       filterQuality: MEDIUM // Level of quality used to render filters. (HIGH, MEDIUM, LOW, RUDY)

@@ -3,7 +3,7 @@ package funkin.ui.debug.stageeditor.components;
 #if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/exit-confirm.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/dialogs/exit-confirm.xml"))
 class ExitConfirmDialog extends Dialog
 {
   var onComplete:Void->Void = null;

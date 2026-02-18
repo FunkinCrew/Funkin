@@ -199,7 +199,7 @@ class StoryMenuState extends MusicBeatState
 
     final useNotch:Bool = Math.max(35, FullScreenScaleMode.gameNotchSize.x) != 35;
     leftDifficultyArrow = new FlxSprite(FlxG.width - (useNotch ? (FullScreenScaleMode.gameNotchSize.x) + 410 : 410), 480);
-    leftDifficultyArrow.frames = Paths.getSparrowAtlas('storymenu/ui/arrows');
+    leftDifficultyArrow.frames = Paths.getSparrowAtlas('ui/story-mode/arrows');
     leftDifficultyArrow.animation.addByPrefix('idle', 'leftIdle0');
     leftDifficultyArrow.animation.addByPrefix('press', 'leftConfirm0');
     leftDifficultyArrow.animation.play('idle');
@@ -250,7 +250,7 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu', {
+    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
       overrideExisting: true,
       restartTrack: false,
       // Continue playing this music between states, until a different music track gets played.
@@ -274,15 +274,15 @@ class StoryMenuState extends MusicBeatState
     {
       difficultySprite = new FlxSprite(leftDifficultyArrow.x + leftDifficultyArrow.width + 10, leftDifficultyArrow.y);
 
-      if (Assets.exists(Paths.file('images/storymenu/difficulties/${diff}.xml')))
+      if (Assets.exists(Paths.file('ui/story-mode/difficulties/${diff}.xml')))
       {
-        difficultySprite.frames = Paths.getSparrowAtlas('storymenu/difficulties/${diff}');
+        difficultySprite.frames = Paths.getSparrowAtlas('ui/story-mode/difficulties/${diff}');
         difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
         if (Preferences.flashingLights) difficultySprite.animation.play('idle');
       }
       else
       {
-        difficultySprite.loadGraphic(Paths.image('storymenu/difficulties/${diff}'));
+        difficultySprite.loadGraphic(Paths.image('ui/story-mode/difficulties/${diff}'));
       }
 
       difficultySprites.set(diff, difficultySprite);
@@ -490,7 +490,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
     repositionTitles();
     updateText();
@@ -536,7 +536,7 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
@@ -578,7 +578,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!currentLevel.isUnlocked())
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       return;
     }
 
@@ -586,7 +586,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
     currentLevelTitle.isFlashing = true;
 
@@ -595,8 +595,6 @@ class StoryMenuState extends MusicBeatState
       prop.playConfirm();
     }
 
-    Paths.setCurrentLevel(currentLevel.id);
-
     PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();
     PlayStatePlaylist.isStoryMode = true;
     PlayStatePlaylist.campaignScore = 0;
@@ -604,6 +602,12 @@ class StoryMenuState extends MusicBeatState
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
     var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
+
+    if (targetSong == null)
+    {
+      FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
+      return;
+    }
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
@@ -729,7 +733,7 @@ class StoryMenuState extends MusicBeatState
     exitingMenu = true;
     FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
   }
 
   /**

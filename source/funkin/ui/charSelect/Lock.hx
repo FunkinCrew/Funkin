@@ -20,7 +20,7 @@ class Lock extends FunkinSprite
 
     super(x, y);
 
-    loadTextureAtlas("charSelect/lock", {
+    loadTextureAtlas("ui/character-select/interface/lock", {
       swfMode: settings.swfMode,
       uniqueInCache: settings.uniqueInCache,
       onSymbolCreate: (symbol) ->

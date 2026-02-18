@@ -26,7 +26,7 @@ class RemoveEventsCommand implements ChartEditorCommand
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
     state.currentEventSelection = [];
 
-    state.playSound(Paths.sound('chartingSounds/noteErase'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -44,7 +44,7 @@ class RemoveEventsCommand implements ChartEditorCommand
       state.currentSongChartEventData.push(event);
     }
     state.currentEventSelection = events;
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

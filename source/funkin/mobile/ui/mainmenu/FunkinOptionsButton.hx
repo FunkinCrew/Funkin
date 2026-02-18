@@ -37,7 +37,7 @@ class FunkinOptionsButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas("mainmenu/optionsButton");
+    frames = Paths.getSparrowAtlas("ui/main-menu/items/options-button");
     animation.addByIndices('idle', 'options', [0], "", 24, false);
     animation.addByIndices('hold', 'options', [3], "", 24, false);
     animation.addByIndices('confirm', 'options', [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], "", 24, false);
@@ -85,7 +85,7 @@ class FunkinOptionsButton extends FunkinButton
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
 
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
 
     new FlxTimer().start(0.05, function(_)
     {

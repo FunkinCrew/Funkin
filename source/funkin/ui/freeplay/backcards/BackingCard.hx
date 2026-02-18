@@ -44,20 +44,22 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
 
     this.currentCharacter = currentCharacter;
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/cardGlow')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow')), FreeplayState.CUTOUT_WIDTH);
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
-    confirmGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30, 240).loadGraphic(Paths.image('freeplay/confirmGlow'));
-    confirmTextGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8, 115).loadGraphic(Paths.image('freeplay/glowingText'));
+    confirmGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30,
+      240).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-1'));
+    confirmTextGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8,
+      115).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('freeplay/pinkBack')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back')), FreeplayState.CUTOUT_WIDTH);
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
-    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('freeplay/confirmGlow2'));
-    backingTextYeah = FunkinSprite.createTextureAtlas((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320, 120, "freeplay/backing-text-yeah",);
+    confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
+    backingTextYeah = FunkinSprite.createTextureAtlas((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320, 120, "ui/freeplay/styles/bf/backing-card",);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
     pinkBack.x -= pinkBack.width;

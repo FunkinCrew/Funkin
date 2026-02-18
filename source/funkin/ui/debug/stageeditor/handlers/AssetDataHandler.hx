@@ -99,7 +99,8 @@ class AssetDataHandler
     }
     else
     {
-      if (data.animations != null && data.animations.length > 0) // considering we're unpacking we might as well just do this instead of switch
+      // considering we're unpacking we might as well just do this instead of switch
+      if (data.animations != null && data.animations.length > 0 && data.animData != "")
       {
         if (data.animData.contains("</TextureAtlas>"))
         {

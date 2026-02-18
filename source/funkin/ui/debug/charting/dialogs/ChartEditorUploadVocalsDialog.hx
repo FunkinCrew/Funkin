@@ -17,7 +17,7 @@ import haxe.ui.core.Component;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-vocals.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml"))
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 {
@@ -280,7 +280,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
   }
 }
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-vocals-entry.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals-entry.xml"))
 class ChartEditorUploadVocalsEntry extends Box
 {
   public var vocalsEntryLabel:Label;

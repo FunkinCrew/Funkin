@@ -619,19 +619,19 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD:
-        return 'resultScreen/rankText/rankScrollPERFECT';
+        return Paths.image('ui/results/rank-text/scroll-perfect');
       case PERFECT:
-        return 'resultScreen/rankText/rankScrollPERFECT';
+        return Paths.image('ui/results/rank-text/scroll-perfect');
       case EXCELLENT:
-        return 'resultScreen/rankText/rankScrollEXCELLENT';
+        return Paths.image('ui/results/rank-text/scroll-excellent');
       case GREAT:
-        return 'resultScreen/rankText/rankScrollGREAT';
+        return Paths.image('ui/results/rank-text/scroll-great');
       case GOOD:
-        return 'resultScreen/rankText/rankScrollGOOD';
+        return Paths.image('ui/results/rank-text/scroll-good');
       case SHIT:
-        return 'resultScreen/rankText/rankScrollLOSS';
+        return Paths.image('ui/results/rank-text/scroll-loss');
       default:
-        return 'resultScreen/rankText/rankScrollGOOD';
+        return Paths.image('ui/results/rank-text/scroll-good');
     }
   }
 
@@ -640,19 +640,19 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD:
-        return 'resultScreen/rankText/rankTextPERFECT';
+        return Paths.image('ui/results/rank-text/text-perfect');
       case PERFECT:
-        return 'resultScreen/rankText/rankTextPERFECT';
+        return Paths.image('ui/results/rank-text/text-perfect');
       case EXCELLENT:
-        return 'resultScreen/rankText/rankTextEXCELLENT';
+        return Paths.image('ui/results/rank-text/text-excellent');
       case GREAT:
-        return 'resultScreen/rankText/rankTextGREAT';
+        return Paths.image('ui/results/rank-text/text-great');
       case GOOD:
-        return 'resultScreen/rankText/rankTextGOOD';
+        return Paths.image('ui/results/rank-text/text-good');
       case SHIT:
-        return 'resultScreen/rankText/rankTextLOSS';
+        return Paths.image('ui/results/rank-text/text-loss');
       default:
-        return 'resultScreen/rankText/rankTextGOOD';
+        return Paths.image('ui/results/rank-text/text-good');
     }
   }
 

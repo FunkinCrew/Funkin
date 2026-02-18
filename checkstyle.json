@@ -226,7 +226,7 @@
     },
     {
       "comment": "If enabled, mandates indentation.",
-      "props": { "character": "", "severity": "IGNORE" },
+      "props": { "character": " ", "severity": "IGNORE" },
       "type": "Indentation"
     },
     {

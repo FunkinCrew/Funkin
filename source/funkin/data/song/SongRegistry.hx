@@ -22,18 +22,12 @@ using funkin.data.song.migrator.SongDataMigrator;
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.4";
-
-  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.2.x";
-
-  public static final SONG_CHART_DATA_VERSION:thx.semver.Version = "2.0.0";
-
-  public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
-
-  public static final SONG_MUSIC_DATA_VERSION:thx.semver.Version = "2.0.0";
-
-  public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
-
+  public static final SONG_METADATA_VERSION:thx.semver.Version = '2.2.8';
+  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = '2.2.x';
+  public static final SONG_CHART_DATA_VERSION:thx.semver.Version = '2.0.0';
+  public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
+  public static final SONG_MUSIC_DATA_VERSION:thx.semver.Version = '2.0.0';
+  public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
   public static var DEFAULT_GENERATEDBY(get, never):String;
 
   public var scriptedSongVariations:Map<String, Song> = new Map<String, Song>();
@@ -45,7 +39,13 @@ using funkin.data.song.migrator.SongDataMigrator;
 
   public function new()
   {
-    super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
+    super(
+      {
+        registryId: 'SONG',
+        dataFilePath: 'gameplay/songs',
+        // nestedEntries: true, // This registry uses custom parsing.
+        versionRule: SONG_METADATA_VERSION_RULE
+      });
   }
 
   public override function loadEntries():Void
@@ -85,12 +85,8 @@ using funkin.data.song.migrator.SongDataMigrator;
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String
-    {
-      return songDataPath.split('/')[0];
-    });
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
-    {
+    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('gameplay/songs/', '-metadata.json', true);
+    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
@@ -465,6 +461,11 @@ using funkin.data.song.migrator.SongDataMigrator;
     }
   }
 
+  override function fetchEntryIdsFromFiles():Array<String>
+  {
+    return DataAssets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', true);
+  }
+
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
@@ -483,7 +484,7 @@ using funkin.data.song.migrator.SongDataMigrator;
   function loadMusicDataFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
+    var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
     if (!openfl.Assets.exists(entryFilePath)) return null;
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
@@ -494,7 +495,7 @@ using funkin.data.song.migrator.SongDataMigrator;
   function hasMusicDataFile(id:String, ?variation:String):Bool
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
+    var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
     return openfl.Assets.exists(entryFilePath);
   }
 

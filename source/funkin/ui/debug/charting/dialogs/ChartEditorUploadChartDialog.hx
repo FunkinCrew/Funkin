@@ -11,7 +11,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-chart.xml"))
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 {

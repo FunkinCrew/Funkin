@@ -497,28 +497,28 @@ class InitState extends FlxState
     switch (songId)
     {
       case 'tutorial' | 'bopeebo' | 'fresh' | 'dadbattle':
-        Paths.setCurrentLevel('week1');
+        // Paths.setCurrentLevel('week1');
         PlayStatePlaylist.campaignId = 'week1';
       case 'spookeez' | 'south' | 'monster':
-        Paths.setCurrentLevel('week2');
+        // Paths.setCurrentLevel('week2');
         PlayStatePlaylist.campaignId = 'week2';
       case 'pico' | 'philly-nice' | 'blammed':
-        Paths.setCurrentLevel('week3');
+        // Paths.setCurrentLevel('week3');
         PlayStatePlaylist.campaignId = 'week3';
       case 'high' | 'satin-panties' | 'milf':
-        Paths.setCurrentLevel('week4');
+        // Paths.setCurrentLevel('week4');
         PlayStatePlaylist.campaignId = 'week4';
       case 'cocoa' | 'eggnog' | 'winter-horrorland':
-        Paths.setCurrentLevel('week5');
+        // Paths.setCurrentLevel('week5');
         PlayStatePlaylist.campaignId = 'week5';
       case 'senpai' | 'roses' | 'thorns':
-        Paths.setCurrentLevel('week6');
+        // Paths.setCurrentLevel('week6');
         PlayStatePlaylist.campaignId = 'week6';
       case 'ugh' | 'guns' | 'stress':
-        Paths.setCurrentLevel('week7');
+        // Paths.setCurrentLevel('week7');
         PlayStatePlaylist.campaignId = 'week7';
       case 'darnell' | 'lit-up' | '2hot' | 'blazin':
-        Paths.setCurrentLevel('weekend1');
+        // Paths.setCurrentLevel('weekend1');
         PlayStatePlaylist.campaignId = 'weekend1';
     }
 
@@ -544,8 +544,6 @@ class InitState extends FlxState
       return;
     }
 
-    // TODO: Rework loading behavior so we don't have to do this.
-    Paths.setCurrentLevel(levelId);
     PlayStatePlaylist.campaignId = levelId;
 
     PlayStatePlaylist.playlistSongIds = currentLevel.getSongs();

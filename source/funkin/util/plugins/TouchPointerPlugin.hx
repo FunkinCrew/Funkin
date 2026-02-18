@@ -266,7 +266,7 @@ class TouchPointer extends FlxSprite
   public function initialize(touchId:Int):Void
   {
     this.touchId = touchId;
-    loadGraphic("assets/images/cursor/michael.png");
+    loadGraphic("assets/ui/cursor/mobile/michael.png");
   }
 
   /**
@@ -296,12 +296,12 @@ class TouchPointer extends FlxSprite
     {
       var angle = FlxAngle.angleBetweenPoint(this, lastPosition, true);
       this.angle = angle;
-      loadGraphic("assets/images/cursor/kevin.png");
+      loadGraphic("assets/ui/cursor/mobile/kevin.png");
     }
     else
     {
       angle = 0;
-      loadGraphic("assets/images/cursor/michael.png");
+      loadGraphic("assets/ui/cursor/mobile/michael.png");
     }
 
     lastPosition.copyFrom(viewPoint);

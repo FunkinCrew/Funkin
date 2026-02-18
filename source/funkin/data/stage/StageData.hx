@@ -20,6 +20,7 @@ class StageData
   @:optional
   public var cameraZoom:Null<Float>;
 
+  @:deprecated("This is no longer used.")
   @:default("shared")
   @:optional
   public var directory:Null<String>;

@@ -460,11 +460,7 @@ class Conductor
       }
     }
 
-    if (currentTimeChange == null && bpmOverride == null && FlxG.sound.music != null)
-    {
-      log(' WARNING '.warning() + 'Conductor is broken, timeChanges is empty.');
-    }
-    else if (currentTimeChange != null && this.songPosition > 0.0)
+    if (currentTimeChange != null && this.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
       this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)

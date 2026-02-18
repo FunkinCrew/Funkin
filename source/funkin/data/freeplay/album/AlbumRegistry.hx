@@ -20,7 +20,13 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> imp
 
   public function new()
   {
-    super('ALBUM', 'ui/freeplay/albums', ALBUM_DATA_VERSION_RULE);
+    super(
+      {
+        registryId: 'ALBUM',
+        dataFilePath: 'ui/freeplay/albums',
+        nestedEntries: false,
+        versionRule: ALBUM_DATA_VERSION_RULE
+      });
   }
 }
 

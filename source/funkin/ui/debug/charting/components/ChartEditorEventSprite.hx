@@ -80,7 +80,7 @@ class ChartEditorEventSprite extends FlxSprite
     if (eventFrames == null) throw 'Failed to initialize empty event frames.';
 
     // Push the default event as a frame.
-    var defaultFrames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$DEFAULT_EVENT');
+    var defaultFrames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/editors/chart-editor/events/$DEFAULT_EVENT');
     defaultFrames.parent.persist = true;
     for (frame in defaultFrames.frames)
     {
@@ -90,10 +90,10 @@ class ChartEditorEventSprite extends FlxSprite
     // Push all the other events as frames.
     for (eventName in SongEventRegistry.listEventIds())
     {
-      var exists:Bool = Assets.exists(Paths.image('ui/chart-editor/events/$eventName'));
+      var exists:Bool = Assets.exists(Paths.image('ui/editors/chart-editor/events/$eventName'));
       if (!exists) continue; // No graphic for this event.
 
-      var frames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/chart-editor/events/$eventName');
+      var frames:FlxAtlasFrames = Paths.getSparrowAtlas('ui/editors/chart-editor/events/$eventName');
       if (frames == null) continue; // Could not load graphic for this event.
 
       frames.parent.persist = true;

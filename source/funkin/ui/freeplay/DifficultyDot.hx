@@ -51,13 +51,13 @@ class DifficultyDot extends FlxSpriteGroup
 
     difficultyId = id;
 
-    dot = new FlxSprite().loadGraphic(Paths.image('freeplay/seperator'));
+    dot = new FlxSprite().loadGraphic(Paths.image('ui/freeplay/interface/separator'));
     add(dot);
 
     dot.alpha = 0;
 
     pulse = new FlxSprite(0, 0);
-    pulse.frames = Paths.getSparrowAtlas('freeplay/dotPulse');
+    pulse.frames = Paths.getSparrowAtlas('ui/freeplay/interface/dot-pulse');
     pulse.animation.addByPrefix('pulse', 'pulse', 12, true);
     pulse.animation.play('pulse', true, false, FlxMath.wrap(num * -2, 0, 11));
     pulse.visible = false;

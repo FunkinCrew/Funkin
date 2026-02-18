@@ -42,12 +42,12 @@ class LetterSort extends FlxSpriteGroup
     grpSeperators = new FlxSpriteGroup();
     add(grpSeperators);
 
-    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("ui/freeplay/interface/mini-arrow"));
     // leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
 
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("ui/freeplay/interface/mini-arrow"));
     // rightArrow.animation.play("arrow");
     add(rightArrow);
 
@@ -72,11 +72,11 @@ class LetterSort extends FlxSpriteGroup
 
       letter.color = letter.color.getDarkened(darkness);
 
-      // don't put the last seperator
+      // don't put the last separator
       if (i == 4) continue;
 
-      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("freeplay/seperator"));
-      // sep.animation.play("seperator");
+      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("ui/freeplay/interface/separator"));
+      // sep.animation.play("separator");
       sep.color = letter.color.getDarkened(darkness);
       grpSeperators.add(sep);
     }
@@ -153,11 +153,11 @@ class LetterSort extends FlxSpriteGroup
     {
       arrowToMove.offset.x = 0;
     });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
   }
 
   /**
-   * Buncho timers and stuff to move the letters and seperators
+   * Buncho timers and stuff to move the letters and separators
    * Seperated out so we can call it again on letters with songs within them
    * @param diff
    */
@@ -265,7 +265,7 @@ class FreeplayLetter extends FunkinSprite
   {
     super(x, y);
 
-    loadTextureAtlas("freeplay/sortedLetters");
+    loadTextureAtlas("ui/freeplay/interface/sorted-letters");
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's

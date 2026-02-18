@@ -105,7 +105,7 @@ class ScoreNum extends FlxSprite
 
     if (styleData == null)
     {
-      frames = Paths.getSparrowAtlas('digital_numbers');
+      frames = Paths.getSparrowAtlas('ui/freeplay/styles/bf/digital-numbers');
     }
     else
     {

@@ -114,7 +114,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   public function createArrow(beat:Float):Void
   {
     var arrow = new FunkinSprite(0, 0);
-    arrow.loadGraphic(Paths.image('latencyArrow'));
+    arrow.loadGraphic(Paths.image('ui/input-offsets/arrow'));
     arrow.origin.set(0.5, 0.5);
     arrow.setPosition(FlxG.width / 2, FlxG.height + arrow.height); // Below the screen
     arrow.updateHitbox();
@@ -185,7 +185,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     add(blackRect);
 
     receptor = new FunkinSprite(0, 0);
-    receptor.loadGraphic(Paths.image('latencyReceptor'));
+    receptor.loadGraphic(Paths.image('ui/input-offsets/receptor'));
     receptor.origin.set(0.5, 0.5);
     add(receptor);
 
@@ -214,7 +214,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     receptor.updateHitbox();
 
     jumpInText = new FlxText(0, 0);
-    jumpInText.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    jumpInText.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     jumpInText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 4);
     add(jumpInText);
 
@@ -224,7 +224,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     // below receptor
 
     countText = new FlxText(0, 0);
-    countText.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    countText.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     countText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 4);
     add(countText);
 
@@ -421,11 +421,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (calibrating) Preferences.globalOffset = savedOffset;
       #if !mobile
       // mobile would play this twice
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       #end
     }
     else
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
     offsetItem.currentValue = Preferences.globalOffset;
     OptionsState.instance.drumsBG.fadeOut(1, 0);
   }
@@ -541,17 +541,20 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     // Resync logic
     var diff:Float = Math.abs((FlxG.sound.music.time + localConductor.combinedOffset) - localConductor.songPosition);
     var diffBg:Float = Math.abs(FlxG.sound.music.time - OptionsState.instance.drumsBG.time);
-    if (diff > 50 || diffBg > 50)
+    if (FlxG.sound.music.playing)
     {
-      trace('Resyncing conductor: ' + (diff > diffBg ? diff : diffBg) + 'ms difference');
+      if (diff > 50 || diffBg > 50)
+      {
+        trace('Resyncing conductor: ' + (diff > diffBg ? diff : diffBg) + 'ms difference');
 
-      // If the difference is greater than 50ms, we resync the conductor.
-      localConductor.update(FlxG.sound.music.time, true);
-      OptionsState.instance.drumsBG.pause();
-      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
-      OptionsState.instance.drumsBG.resume();
-      b = localConductor.currentBeatTime;
-      _lastBeat = b;
+        // If the difference is greater than 50ms, we resync the conductor.
+        localConductor.update(FlxG.sound.music.time, true);
+        OptionsState.instance.drumsBG.pause();
+        OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
+        OptionsState.instance.drumsBG.resume();
+        b = localConductor.currentBeatTime;
+        _lastBeat = b;
+      }
     }
 
     _lastTime = FlxG.sound.music.time;

@@ -82,7 +82,7 @@ class LevelTitle extends FlxSpriteGroup
 
   function buildLevelLock():Void
   {
-    lock = new FlxSprite(0, 0).loadGraphic(Paths.image('storymenu/ui/lock'));
+    lock = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/story-mode/lock'));
     lock.x = title.x + title.width + LOCK_PAD;
     lock.visible = false;
     add(lock);

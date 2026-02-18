@@ -18,11 +18,11 @@ class UpgradeSparkle extends FlxSprite
     bounds = FlxRect.get(_x, _y, _width, _height);
     if (big)
     {
-      loadGraphic(Paths.image('mainmenu/upgradeshine_big'));
+      loadGraphic(Paths.image('ui/main-menu/items/upgrade-shine-big'));
     }
     else
     {
-      loadGraphic(Paths.image('mainmenu/upgradeshine_small'));
+      loadGraphic(Paths.image('ui/main-menu/items/upgrade-shine-small'));
     }
     sparkleTimer = new FlxTimer().start(FlxG.random.float(2, 7), sparkleEffect);
     visible = false;

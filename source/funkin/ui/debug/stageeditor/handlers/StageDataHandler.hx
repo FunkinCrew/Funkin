@@ -25,7 +25,6 @@ class StageDataHandler
     var endData:StageData = new StageData();
     endData.name = state.stageName;
     endData.cameraZoom = state.stageZoom;
-    endData.directory = state.stageFolder;
 
     // step 1 phase 1: object data
     var xmlMap:Map<String, String> = [];
@@ -182,7 +181,6 @@ class StageDataHandler
     // actual data unpacking
     state.stageName = stageData.name;
     state.stageZoom = stageData.cameraZoom;
-    state.stageFolder = stageData.directory ?? "shared";
 
     // chars
     state.loadCharDatas(stageData);
@@ -269,27 +267,9 @@ class StageDataHandler
       loadDummyData(state);
       return;
     }
-    @:privateAccess
-    if (!LimeAssets.libraryPaths.exists(data.directory))
-    {
-      loadDummyData(state);
-      return;
-    }
-
-    Paths.setCurrentLevel(data.directory);
-
-    if (OpenFLAssets.getLibrary(data.directory) == null)
-    {
-      OpenFLAssets.loadLibrary(data.directory).onComplete(function(_)
-      {
-        loadFromDataRaw(state, data);
-      });
-      return;
-    }
 
     state.stageName = data.name;
     state.stageZoom = data.cameraZoom;
-    state.stageFolder = data.directory ?? "shared";
 
     state.loadCharDatas(data);
 
@@ -299,7 +279,7 @@ class StageDataHandler
       if (!objData.assetPath.startsWith("#")) state.bitmaps.set(objData.assetPath, Assets.getBitmapData(Paths.image(objData.assetPath)));
 
       var usePacker:Bool = objData.animType == "packer";
-      var animPath:String = Paths.file("images/" + objData.assetPath + (usePacker ? ".txt" : ".xml"));
+      var animPath:String = usePacker ? Paths.txt(objData.assetPath) : Paths.xml(objData.assetPath);
       var animText:String = Assets.exists(animPath) ? Assets.getText(animPath) : "";
 
       spr.fromData({
@@ -335,7 +315,6 @@ class StageDataHandler
 
     state.stageName = "Unnamed";
     state.stageZoom = 1.0;
-    state.stageFolder = "shared";
 
     state.charCamOffsets = StageEditorState.DEFAULT_CAMERA_OFFSETS.copy();
     state.charPos = StageEditorState.DEFAULT_POSITIONS.copy();

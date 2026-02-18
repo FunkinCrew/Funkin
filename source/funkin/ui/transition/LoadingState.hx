@@ -95,11 +95,6 @@ class LoadingState extends MusicBeatSubState
         }
       }
 
-      checkLibrary('shared');
-      checkLibrary('videos');
-      checkLibrary(stageDirectory);
-      checkLibrary('tutorial');
-
       var fadeTime:Float = 0.5;
       FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
       new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
@@ -214,8 +209,6 @@ class LoadingState extends MusicBeatSubState
     return Paths.inst(PlayState.instance?.currentSong.id ?? throw 'Cannot retrieve song path');
   }
 
-  static var stageDirectory:String = "shared";
-
   /**
    * Starts the transition to a new `PlayState` to start a new song.
    * First switches to the `LoadingState` if assets need to be loaded.
@@ -228,9 +221,7 @@ class LoadingState extends MusicBeatSubState
     var daChart:Null<SongDifficulty> = params.targetSong?.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
       params.targetVariation ?? Constants.DEFAULT_VARIATION);
 
-    var daStage:Null<Stage> = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
-    stageDirectory = daStage?._data?.directory ?? "shared";
-    Paths.setCurrentLevel(stageDirectory);
+    var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
 
     if (funkin.ui.FullScreenScaleMode.instance != null) funkin.ui.FullScreenScaleMode.instance.onMeasurePostAwait();
 
@@ -300,15 +291,29 @@ class LoadingState extends MusicBeatSubState
       // TODO: This sucks lol.
       if (params.targetSong.songName == "2hot")
       {
-        var spritesToCache = ["wked1_cutscene_1_can", "spraypaintExplosionEZ", "SpraypaintExplosion", "CanImpactParticle", "spraycanAtlas/spritemap1"];
+        var spritesToCache = ["gameplay/songs/darnell/cutscene/cutscene-can", "gameplay/songs/2hot/graphics/spraycan-explosion-ez", "gameplay/songs/2hot/graphics/can-impact"];
 
-        var soundsToCache = ["Darnell_Lighter", "fuse_burning", "Gun_Prep", "Kick_Can_FORWARD", "Kick_Can_UP", "Lightning1", "Lightning2", "Lightning3", "Pico_Bonk", "Shoot_1", "shot1", "shot2", "shot3", "shot4"];
+        var soundsToCache = [
+          "gameplay/songs/2hot/sounds/darnell-lighter",
+          "gameplay/characters/pico-playable/sounds/gun-prep",
+          "gameplay/songs/2hot/sounds/kick-can-forward",
+          "gameplay/songs/2hot/sounds/kick-can-up",
+          "gameplay/songs/2hot/spraycan/spritemap1",
+          "gameplay/stages/phillyBlazin/sounds/lightning-1",
+          "gameplay/stages/phillyBlazin/sounds/lightning-2",
+          "gameplay/stages/phillyBlazin/sounds/lightning-3",
+          "gameplay/characters/pico-playable/sounds/bonk",
+          "gameplay/characters/pico-playable/sounds/shot-1",
+          "gameplay/characters/pico-playable/sounds/shot-2",
+          "gameplay/characters/pico-playable/sounds/shot-3",
+          "gameplay/characters/pico-playable/sounds/shot-4"
+        ];
 
         for (sprite in spritesToCache)
         {
           trace('Queueing $sprite to preload.');
           // new Future<String>(function() {
-          var path = Paths.image(sprite, "weekend1");
+          var path = Paths.image(sprite);
           funkin.FunkinMemory.cacheTexture(path);
           // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
           // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
@@ -326,7 +331,7 @@ class LoadingState extends MusicBeatSubState
           trace('Queueing $sound to preload.');
           new Future<String>(function()
           {
-            var path = Paths.sound(sound, "weekend1");
+            var path = Paths.sound(sound);
             funkin.FunkinMemory.cacheSound(path);
             return '${path} successfuly loaded.';
           }, true);
@@ -369,12 +374,6 @@ class LoadingState extends MusicBeatSubState
     // funkin.FunkinMemory.purgeSoundCache();
 
     // List all image assets in the level's library.
-
-    // This is crude and I want to remove it when we have a proper asset caching system.
-    // TODO: Get rid of this junk!
-    // var library = PlayStatePlaylist.campaignId != null ? openfl.utils.Assets.getLibrary(PlayStatePlaylist.campaignId) : null;
-
-    // if (library == null) return; // We don't need to do anymore precaching.
 
     // var assets = library.list(lime.utils.AssetType.IMAGE);
     // trace('Got ${assets.length} assets: ${assets}');

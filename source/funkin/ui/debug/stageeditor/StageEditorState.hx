@@ -56,7 +56,7 @@ import funkin.graphics.FunkinCamera;
  * Da Stage Editor woo!!
  * made by Kolo NEVER FORGET
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/main-view.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/stage-editor/main-view.xml"))
 class StageEditorState extends UIState
 {
   // i aint documenting allat
@@ -179,7 +179,6 @@ class StageEditorState extends UIState
 
   public var stageZoom:Float = 1.0;
   public var stageName:String = "Unnamed";
-  public var stageFolder:String = "shared";
 
   public var autoSaveTimer:FlxTimer = new FlxTimer();
 
@@ -412,7 +411,7 @@ class StageEditorState extends UIState
     add(camMarker);
 
     nameTxt = new FlxText(0, 0, 0, "", 24);
-    nameTxt.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    nameTxt.setFormat(Paths.font("ui/fonts/vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     nameTxt.cameras = [camHUD];
     add(nameTxt);
 
@@ -533,7 +532,7 @@ class StageEditorState extends UIState
     Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusic('chartEditorLoop', {
+    FunkinSound.playMusic('ui/editors/chart-editor/artistic-expression/artistic-expression', {
       startingVolume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
@@ -585,8 +584,8 @@ class StageEditorState extends UIState
 
     super.update(elapsed);
 
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));
 
     // testmode
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = testingMode;

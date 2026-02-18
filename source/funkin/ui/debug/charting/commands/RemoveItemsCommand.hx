@@ -32,7 +32,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
 
-    state.playSound(Paths.sound('chartingSounds/noteErase'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -58,7 +58,7 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

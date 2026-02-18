@@ -75,8 +75,6 @@ class DebugBoundingState extends FlxState
 
   override function create():Void
   {
-    Paths.setCurrentLevel('week1');
-
     hudCam = new FlxCamera();
     hudCam.bgColor.alpha = 0;
 
@@ -86,8 +84,10 @@ class DebugBoundingState extends FlxState
     // we are setting this as the default draw camera only temporarily, to trick haxeui
     FlxG.cameras.add(hudCam);
 
-    var str = Paths.xml('ui/animation-editor/offset-editor-view');
+    var str = Paths.xml('ui/editors/animation-editor/offset-editor-view');
     offsetEditorDialog = cast RuntimeComponentBuilder.fromAsset(str);
+
+    if (offsetEditorDialog == null) throw "Could not build editor UI, check the layout file.";
 
     // offsetEditorDialog.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
     var viewDropdown:DropDown = offsetEditorDialog.findComponent("swapper", DropDown);
@@ -131,7 +131,7 @@ class DebugBoundingState extends FlxState
     spriteSheetView = new FlxGroup();
     add(spriteSheetView);
 
-    var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
+    var tex = Paths.getSparrowAtlas('gameplay/characters/bf-pixel/bf-pixel');
     // tex.frames[0].uv
 
     bf = new FlxSprite();
@@ -204,7 +204,7 @@ class DebugBoundingState extends FlxState
     add(offsetView);
 
     txtOffsetShit = new FlxText(20, 20, 0, "", 20);
-    txtOffsetShit.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    txtOffsetShit.setFormat(Paths.font("ui/fonts/vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     txtOffsetShit.cameras = [hudCam];
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     offsetView.add(txtOffsetShit);
@@ -265,7 +265,7 @@ class DebugBoundingState extends FlxState
   function addInfo(str:String, value:Dynamic)
   {
     var swagText:FlxText = new FlxText(10, FlxG.height - 32);
-    swagText.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    swagText.setFormat(Paths.font("ui/fonts/vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     swagText.scrollFactor.set();
 
     for (text in txtGrp.members)
@@ -506,10 +506,42 @@ class DebugBoundingState extends FlxState
   {
     var charData:CharacterData = Reflect.copy(swagChar._data);
 
+    if (charData.renderType == CharacterDataParser.DEFAULT_RENDERTYPE) Reflect.deleteField(charData, "renderType");
+    if (charData.offsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData, "offsets");
+    if (charData.cameraOffsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData, "cameraOffsets");
+
+    if (charData.healthIcon.id == swagChar.characterId) Reflect.deleteField(charData.healthIcon, "id");
+    if (charData.healthIcon.scale == CharacterDataParser.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
+    if (charData.healthIcon.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
+    if (charData.healthIcon.isPixel == CharacterDataParser.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
+    if (charData.healthIcon.offsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
+
+    if (charData.healthIcon.id == null && charData.healthIcon.scale == null && charData.healthIcon.flipX == null && charData.healthIcon.isPixel == null
+      && charData.healthIcon.offsets == null)
+    {
+      Reflect.deleteField(charData, "healthIcon");
+    }
+
+    if (charData.startingAnimation == CharacterDataParser.DEFAULT_STARTINGANIM) Reflect.deleteField(charData, "startingAnimation");
+    if (charData.scale == CharacterDataParser.DEFAULT_SCALE) Reflect.deleteField(charData, "scale");
+    if (charData.isPixel == CharacterDataParser.DEFAULT_ISPIXEL) Reflect.deleteField(charData, "isPixel");
+    if (charData.danceEvery == CharacterDataParser.DEFAULT_DANCEEVERY) Reflect.deleteField(charData, "danceEvery");
+    if (charData.singTime == CharacterDataParser.DEFAULT_SINGTIME) Reflect.deleteField(charData, "singTime");
+    if (charData.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charData, "flipX");
+    if (charData.applyStageMatrix == CharacterDataParser.DEFAULT_APPLYSTAGEMATRIX) Reflect.deleteField(charData, "applyStageMatrix");
+    if (charData.atlasSettings == CharacterDataParser.DEFAULT_ATLASSETTINGS) Reflect.deleteField(charData, "atlasSettings");
+
     for (charDataAnim in charData.animations)
     {
       var animName:String = charDataAnim.name;
       charDataAnim.offsets = swagChar.animationOffsets.get(animName);
+
+      if (charDataAnim.animType == CharacterDataParser.DEFAULT_ANIMTYPE) Reflect.deleteField(charDataAnim, "animType");
+      if (charDataAnim.frameRate == CharacterDataParser.DEFAULT_FRAMERATE) Reflect.deleteField(charDataAnim, "frameRate");
+      if (charDataAnim.offsets[0] == 0 && charDataAnim.offsets[1] == 0) Reflect.deleteField(charDataAnim, "offsets");
+      if (charDataAnim.looped == CharacterDataParser.DEFAULT_LOOP) Reflect.deleteField(charDataAnim, "looped");
+      if (charDataAnim.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charDataAnim, "flipX");
+      if (charDataAnim.flipY == CharacterDataParser.DEFAULT_FLIPY) Reflect.deleteField(charDataAnim, "flipY");
     }
 
     return SerializerUtil.toJSON(charData, true);

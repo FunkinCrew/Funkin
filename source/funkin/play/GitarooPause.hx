@@ -35,25 +35,25 @@ class GitarooPause extends MusicBeatState
       FlxG.sound.music = null;
     }
 
-    var bg:FunkinSprite = FunkinSprite.create('pauseAlt/pauseBG');
+    var bg:FunkinSprite = FunkinSprite.create('ui/pause/music/alternate/pause-bg');
     bg.setGraphicSize(Std.int(FlxG.width));
     bg.updateHitbox();
     bg.screenCenter();
     add(bg);
 
-    var bf:FunkinSprite = FunkinSprite.createSparrow(0, 30, 'pauseAlt/bfLol');
+    var bf:FunkinSprite = FunkinSprite.createSparrow(0, 30, 'ui/pause/music/alternate/bf-lol');
     bf.animation.addByPrefix('lol', "funnyThing", 13);
     bf.animation.play('lol');
     bf.screenCenter(X);
     add(bf);
 
-    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.25, FlxG.height * 0.7, 'pauseAlt/pauseUI');
+    replayButton = FunkinSprite.createSparrow(FlxG.width * 0.25, FlxG.height * 0.7, 'ui/pause/music/alternate/pause-ui');
     replayButton.animation.addByPrefix('selected', 'bluereplay', 0, false);
     replayButton.animation.appendByPrefix('selected', 'yellowreplay');
     replayButton.animation.play('selected');
     add(replayButton);
 
-    cancelButton = FunkinSprite.createSparrow(FlxG.width * 0.58, replayButton.y, 'pauseAlt/pauseUI');
+    cancelButton = FunkinSprite.createSparrow(FlxG.width * 0.58, replayButton.y, 'ui/pause/music/alternate/pause-ui');
     cancelButton.animation.addByPrefix('selected', 'bluecancel', 0, false);
     cancelButton.animation.appendByPrefix('selected', 'cancelyellow');
     cancelButton.animation.play('selected');

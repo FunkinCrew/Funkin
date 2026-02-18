@@ -38,10 +38,9 @@ class AnimateAtlasCharacter extends BaseCharacter
   function loadAtlas():Void
   {
     log('Loading sprite atlas for ${characterId}.');
-    var assetLibrary:String = Paths.getLibrary(_data.assetPath);
     var assetPath:String = Paths.stripLibrary(_data.assetPath);
 
-    loadTextureAtlas(assetPath, assetLibrary, getAtlasSettings());
+    loadTextureAtlas(assetPath, getAtlasSettings());
 
     if (_data.isPixel)
     {

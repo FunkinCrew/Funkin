@@ -8,12 +8,11 @@ import funkin.util.SortUtil;
 import haxe.ui.events.UIEvent;
 
 @:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/stage-settings.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/stage-settings.xml"))
 class StageEditorStageToolbox extends StageEditorDefaultToolbox
 {
   var stageNameText:TextField;
   var stageZoomStepper:NumberStepper;
-  var stageLibraryDrop:DropDown;
 
   override public function new(state:StageEditorState)
   {
@@ -33,26 +32,6 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
     }
 
     final EXCLUDE_LIBS = ["art", "default", "vlc", "videos", "songs", "libvlc"];
-    var allLibs = [];
-
-    @:privateAccess
-    {
-      for (lib => idk in lime.utils.Assets.libraryPaths)
-      {
-        if (!EXCLUDE_LIBS.contains(lib)) allLibs.push(lib);
-      }
-    }
-    allLibs.sort(SortUtil.alphabetically); // this system is VERY stupid, it relies on the possibility that the future libraries will be named week(end)[x]
-
-    for (lib in allLibs)
-    {
-      stageLibraryDrop.dataSource.add({text: lib});
-    }
-
-    stageLibraryDrop.onChange = function(_)
-    {
-      state.stageFolder = stageLibraryDrop.selectedItem.text;
-    }
 
     refresh();
 
@@ -68,7 +47,6 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
   {
     stageNameText.text = stageEditorState.stageName;
     stageZoomStepper.pos = stageEditorState.stageZoom;
-    stageLibraryDrop.selectedItem = stageEditorState.stageFolder;
   }
 }
 #end

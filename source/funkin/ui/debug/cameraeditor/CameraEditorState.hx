@@ -64,7 +64,7 @@ import funkin.data.song.SongData.SongMetadata;
 /**
  * The EYES OF GOD......
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/camera-editor/main-view.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/camera-editor/main-view.xml"))
 class CameraEditorState extends UIState implements ConsoleClass
 {
   /**

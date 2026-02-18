@@ -47,16 +47,16 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getBgAssetKey():String
   {
-    return _data?.bgAsset ?? "freeplay/freeplayBGweek1-bf";
+    return _data?.bgAsset ?? "ui/freeplay/backgrounds/bf/week1";
   }
 
   /**
-   * Get the asset key for the background.
+   * Get the asset key for the difficulty selector.
    * @return The asset key
    */
   public function getSelectorAssetKey():String
   {
-    return _data?.selectorAsset ?? "freeplay/freeplaySelector/freeplaySelector";
+    return _data?.selectorAsset ?? "ui/freeplay/interface/difficulty-selector";
   }
 
   /**
@@ -65,7 +65,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getCapsuleAssetKey():String
   {
-    return _data?.capsuleAsset ?? "freeplay/freeplayCapsule/capsule/freeplayCapsule";
+    return _data?.capsuleAsset ?? "ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf";
   }
 
   /**

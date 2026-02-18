@@ -32,9 +32,9 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
     cursorConfirmed = new FunkinSprite(0, 0);
     cursorDenied = new FunkinSprite(0, 0);
 
-    darkBlue.loadGraphic(Paths.image('charSelect/charSelector'));
-    lightBlue.loadGraphic(Paths.image('charSelect/charSelector'));
-    main.loadGraphic(Paths.image('charSelect/charSelector'));
+    darkBlue.loadGraphic(Paths.image('ui/character-select/interface/char-selector'));
+    lightBlue.loadGraphic(Paths.image('ui/character-select/interface/char-selector'));
+    main.loadGraphic(Paths.image('ui/character-select/interface/char-selector'));
 
     darkBlue.color = 0xFF3C74F7;
     lightBlue.color = 0xFF3EBBFF;
@@ -48,12 +48,12 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
     add(lightBlue);
     add(main);
 
-    cursorConfirmed.frames = Paths.getSparrowAtlas("charSelect/charSelectorConfirm");
+    cursorConfirmed.frames = Paths.getSparrowAtlas("ui/character-select/interface/char-selector-confirm");
     cursorConfirmed.animation.addByPrefix("idle", "cursor ACCEPTED instance 1", 24, true);
     cursorConfirmed.visible = false;
     add(cursorConfirmed);
 
-    cursorDenied.frames = Paths.getSparrowAtlas("charSelect/charSelectorDenied");
+    cursorDenied.frames = Paths.getSparrowAtlas("ui/character-select/interface/char-selector-denied");
     cursorDenied.animation.addByPrefix("idle", "cursor DENIED instance 1", 24, false);
     cursorDenied.visible = false;
     add(cursorDenied);

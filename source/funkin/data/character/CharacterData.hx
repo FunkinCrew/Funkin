@@ -42,6 +42,8 @@ class CharacterDataParser
 
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
 
+  static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
+
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
    *
@@ -56,7 +58,7 @@ class CharacterDataParser
     //
     // UNSCRIPTED CHARACTERS
     //
-    var charIdList:Array<String> = DataAssets.listDataFilesInPath('characters/');
+    var charIdList:Array<String> = DataAssets.listDataFilesInPath('gameplay/characters/', ASSET_BLACKLIST, true);
     var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool
     {
       return !characterCache.exists(charId);
@@ -323,7 +325,7 @@ class CharacterDataParser
    */
   public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
   {
-    var charPath:String = "freeplay/icons/";
+    var charPath:String = "ui/freeplay/characters/";
 
     final charIDParts:Array<String> = char.split("-");
     var iconName:String = "";
@@ -332,7 +334,7 @@ class CharacterDataParser
     {
       iconName += charIDParts[i];
 
-      if (Assets.exists(Paths.image(charPath + '${iconName}pixel')))
+      if (Assets.exists(Paths.image(charPath + '${iconName}')))
       {
         lastValidIconName = iconName;
       }
@@ -340,7 +342,7 @@ class CharacterDataParser
       if (i < charIDParts.length - 1) iconName += '-';
     }
 
-    charPath += '${lastValidIconName}pixel';
+    charPath += '${lastValidIconName}';
 
     if (!Assets.exists(Paths.image(charPath)))
     {
@@ -348,7 +350,7 @@ class CharacterDataParser
       return null;
     }
 
-    var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
+    var isAnimated = Assets.exists(Paths.xml(charPath));
     var frame:Null<FlxFrame> = null;
 
     if (isAnimated)
@@ -414,7 +416,8 @@ class CharacterDataParser
 
   static function loadCharacterFile(charPath:String):String
   {
-    var charFilePath:String = Paths.json('characters/${charPath}');
+    // Nested.
+    var charFilePath:String = Paths.json('gameplay/characters/$charPath/$charPath');
     var rawJson = Assets.getText(charFilePath).trim();
 
     while (!StringTools.endsWith(rawJson, '}'))

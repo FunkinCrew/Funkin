@@ -68,7 +68,7 @@ class WiggleEffectRuntime extends FlxRuntimeShader
 
   public function new(speed:Float, freq:Float, amplitude:Float, ?effect:WiggleEffectType = DREAMY):Void
   {
-    super(Assets.getText(Paths.frag('wiggle')));
+    super(Assets.getText(Paths.frag('ui/shaders/wiggle')));
 
     // These values may not propagate to the shader until later.
     this.waveSpeed = speed;

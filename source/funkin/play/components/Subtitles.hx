@@ -33,7 +33,7 @@ class Subtitles extends FlxSpriteGroup
     background.alpha = 0.5;
     add(background);
 
-    subtitleText = new SubtitlesText(0, 0, 30, 'VCR OSD Mono');
+    subtitleText = new SubtitlesText(0, 0, 30, Paths.font('ui/fonts/vcr.ttf'));
     add(subtitleText);
 
     setText([], true);

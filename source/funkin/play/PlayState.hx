@@ -805,7 +805,7 @@ class PlayState extends MusicBeatSubState
     opponentStrumline = new Strumline(noteStyle, false, currentChart?.scrollSpeed);
 
     // Healthbar
-    healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
+    healthBarBG = FunkinSprite.create(0, 0, 'gameplay/general/health-bar');
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
     scoreText = new FlxText(0, 0, 0, '', 20);
 
@@ -814,8 +814,8 @@ class PlayState extends MusicBeatSubState
 
     // Pause sprites
     #if mobile
-    pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
-    pauseCircle = FunkinSprite.create(0, 0, 'pauseCircle');
+    pauseButton = FunkinSprite.createSparrow(0, 0, "ui/pause-button");
+    pauseCircle = FunkinSprite.create(0, 0, 'ui/pause-circle');
     #end
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
@@ -2006,7 +2006,7 @@ class PlayState extends MusicBeatSubState
     // The score text below the health bar.
     scoreText.x = healthBarBG.x + healthBarBG.width - 190;
     scoreText.y = healthBarBG.y + 30;
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreText.setFormat(Paths.font('ui/fonts/vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
@@ -2043,7 +2043,7 @@ class PlayState extends MusicBeatSubState
   function initMinimalMode():Void
   {
     // Create the green background.
-    var menuBG = FunkinSprite.create('menuDesat');
+    var menuBG = FunkinSprite.create('ui/main-menu/menu-desat');
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
@@ -2603,7 +2603,7 @@ class PlayState extends MusicBeatSubState
 
     if (Preferences.subtitles)
     {
-      var subtitlesFile:String = 'songs/${currentSong.id}/subtitles/song-lyrics';
+      var subtitlesFile:String = 'gameplay/songs/${currentSong.id}/subtitles/song-lyrics';
       if (currentVariation != Constants.DEFAULT_VARIATION)
       {
         subtitlesFile += '-${currentVariation}';
@@ -2913,7 +2913,7 @@ class PlayState extends MusicBeatSubState
             if (event.playSound)
             {
               if (vocals != null) vocals.playerVolume = 0;
-              FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+              FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.5, 0.6));
             }
           }
           else
@@ -3126,7 +3126,7 @@ class PlayState extends MusicBeatSubState
     if (playSound)
     {
       if (vocals != null) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.5, 0.6));
+      FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.5, 0.6));
     }
   }
 
@@ -3167,7 +3167,7 @@ class PlayState extends MusicBeatSubState
     if (event.playSound)
     {
       if (vocals != null) vocals.playerVolume = 0;
-      FunkinSound.playOnce(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+      FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.1, 0.2));
     }
   }
 
@@ -3587,7 +3587,7 @@ class PlayState extends MusicBeatSubState
           camHUD.visible = false;
           isInCutscene = true;
 
-          FunkinSound.playOnce(Paths.sound('Lights_Shut_off'), function()
+          FunkinSound.playOnce(Paths.sound('gameplay/stages/mallEvil/sounds/lights-off'), function()
           {
             // no camFollow so it centers on horror tree
             var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with the ID $targetSongId';

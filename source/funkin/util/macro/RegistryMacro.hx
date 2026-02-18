@@ -38,7 +38,11 @@ typedef RegistryTypeParams =
  */
 class RegistryMacro
 {
-  static final DATA_FILE_BASE_PATH:String = "assets/preload/data";
+  #if ios
+  static final DATA_FILE_BASE_PATH:String = "../../../../../assets";
+  #else
+  static final DATA_FILE_BASE_PATH:String = "assets";
+  #end
 
   /**
    * Builds the registry class.
@@ -159,7 +163,7 @@ class RegistryMacro
 
     var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${dataPath}/${dataFilePath}/');
 
-    return (macro class TempClass
+    var result:Array<Field> = (macro class TempClass
       {
         public function listBaseGameEntryIds():Array<String>
         {
@@ -179,7 +183,7 @@ class RegistryMacro
           return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
         }
 
-        function createScriptedEntry(clsName:String)
+        override function createScriptedEntry(clsName:String)
         {
           return ${Context.parse(createScriptedEntry, Context.currentPos())};
         }
@@ -221,7 +225,13 @@ class RegistryMacro
           }
           return parser.value;
         }
-      }).fields.filter((field) -> return !MacroUtil.fieldAlreadyExists(field.name));
+      }).fields.filter(function(field:Field):Bool {
+        // Exclude fields which already exist on the CURRENT class
+        // (use override for the superclass)
+        return !MacroUtil.fieldAlreadyExists(field.name, false);
+      });
+
+    return result;
   }
 
   /**
@@ -354,11 +364,25 @@ class RegistryMacro
                 {
                   // Inside the super() call.
                   case ECall(_, args):
-                    // var registryId:String = args[0].toString();
-                    var dataPath:String = args[1].toString().replace('"', '').replace("'", '');
-                    // var versionRule = args[2].toString();
+                    var params:Expr = args[0];
+                    switch (params.expr)
+                    {
+                      case EObjectDecl(fields):
+                        for (field in fields)
+                        {
+                          switch (field.field)
+                          {
+                            // case "registryId":
+                            // case "versionRule":
+                            case "dataFilePath":
+                              var fieldValue:Expr = field.expr;
+                              return fieldValue.toString().replace('"', '').replace("'", '');
+                          }
+                        }
 
-                    return dataPath;
+                      default:
+                        Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
+                    }
                   default:
                     Context.error('${cls.name}.new: RegistryMacro expected super call', field.pos);
                 }

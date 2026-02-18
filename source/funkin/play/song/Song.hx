@@ -821,28 +821,33 @@ class SongDifficulty
     return cast events;
   }
 
-  public function getInstPath(instrumental = ''):String
+  /**
+   * Get the asset path for the
+   * @param instId = ''
+   * @return String
+   */
+  public function getInstPath(instId = ''):String
   {
-    if (characters != null)
+    var suffix = if (instId != '')
     {
-      if (instrumental != '' && characters.altInstrumentals.contains(instrumental))
-      {
-        var instId = '-$instrumental';
-        return Paths.inst(this.song.id, instId);
-      }
-      else
-      {
-        // Fallback to default instrumental.
-        var instId = (characters.instrumental ?? '') != '' ? '-${characters.instrumental}' : '';
-        return Paths.inst(this.song.id, instId);
-      }
+      '-$instId';
+    }
+    else if (characters != null && (characters.instrumental ?? '') != '')
+    {
+      '-${characters?.instrumental ?? ''}';
     }
     else
     {
-      return Paths.inst(this.song.id);
-    }
+      '';
+    };
+
+    return Paths.inst(this.song.id, suffix);
   }
 
+  /**
+   * Cache the instrumental for a given song variation.
+   * @param instrumental = ''
+   */
   public function cacheInst(instrumental = ''):Void
   {
     funkin.FunkinMemory.cacheSound(getInstPath(instrumental));
@@ -860,9 +865,9 @@ class SongDifficulty
 
   /**
    * Cache the vocals for a given character.
-   * @param id The character we are about to play.
+   * @param i
    */
-  public function cacheVocals():Void
+  public function cacheVocals(instrumental = ''):Void
   {
     for (voice in buildVoiceList())
     {

@@ -160,6 +160,11 @@ class BaseCharacter extends Bopper
     return super.set_y(value);
   }
 
+  /**
+   * The render type of the character.
+   */
+  public var renderType(default, null):CharacterRenderType;
+
   public function new(id:String, renderType:CharacterRenderType)
   {
     super(CharacterDataParser.DEFAULT_DANCEEVERY);
@@ -185,6 +190,7 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
+      this.renderType = renderType;
     }
 
     if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;

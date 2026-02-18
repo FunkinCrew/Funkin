@@ -137,6 +137,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+
+      // TODO: This causes issues with pixel and animate atlas characters!!
+      if (!(getBoyfriend().isPixel || getBoyfriend().isAnimate)) getBoyfriend().offset.set(0, 0);
     }
     else
     {
@@ -152,6 +155,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+
+      // TODO: This causes issues with pixel and animate atlas characters!!
+      if (!(getGirlfriend().isPixel || getGirlfriend().isAnimate)) getGirlfriend().offset.set(0, 0);
     }
     if (getDad() != null)
     {
@@ -163,6 +169,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
       getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
+
+      // TODO: This causes issues with pixel and animate atlas characters!!
+      if (!(getDad().isPixel || getDad().isAnimate)) getDad().offset.set(0, 0);
     }
 
     // Reset positions of named props.
@@ -218,7 +227,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
           case 'animateatlas':
-            propSprite.loadTextureAtlas(dataProp.assetPath, _data.directory, cast dataProp.atlasSettings);
+            propSprite.loadTextureAtlas(dataProp.assetPath, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
@@ -251,7 +260,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        log(' ERROR '.error() + ' Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        log(' ERROR '.error() + ' Could not build texture for prop. Check the asset path (assets/${dataProp.assetPath}).');
         continue;
       }
 

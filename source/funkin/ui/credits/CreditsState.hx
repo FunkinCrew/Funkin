@@ -118,7 +118,7 @@ class CreditsState extends MusicBeatState
     }
 
     // Background
-    var bg = new FlxSprite(Paths.image('menuDesat'));
+    var bg = new FlxSprite(Paths.image('ui/main-menu/menu-desat'));
     bg.scrollFactor.x = 0;
     bg.scrollFactor.y = 0;
     bg.setGraphicSize(Std.int(FlxG.width));
@@ -141,12 +141,12 @@ class CreditsState extends MusicBeatState
     add(creditsGroup);
 
     // Music
-    FunkinSound.playMusic('freeplayRandom', {
-      startingVolume: 0.0,
-      overrideExisting: true,
-      restartTrack: true,
-      loop: true
-    });
+    FunkinSound.playMusic('ui/freeplay/freeplay-random/freeplay-random', {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: true,
+        loop: true
+      });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile

@@ -119,7 +119,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   public function new()
   {
-    super(Assets.getText(Paths.frag('rain')));
+    super(Assets.getText(Paths.frag('ui/shaders/rain')));
     this.rainColor = 0xFF6680cc;
   }
 

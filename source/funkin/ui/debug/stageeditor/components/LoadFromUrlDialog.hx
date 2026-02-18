@@ -11,7 +11,7 @@ import openfl.events.IOErrorEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/load-url.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/dialogs/load-url.xml"))
 class LoadFromUrlDialog extends Dialog
 {
   var urlField:TextField;

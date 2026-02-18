@@ -30,7 +30,7 @@ class FunkinMemory
   /**
    * Caches textures that are always required.
    */
-  public static inline function initialCache():Void
+  public static function initialCache():Void
   {
     var allImages:Array<String> = Assets.list();
 
@@ -52,16 +52,16 @@ class FunkinMemory
       permanentCacheTexture(file);
     }
 
-    permanentCacheTexture(Paths.image("healthBar"));
-    permanentCacheTexture(Paths.image("menuDesat"));
-    permanentCacheTexture(Paths.image("notes", "shared"));
-    permanentCacheTexture(Paths.image("noteSplashes", "shared"));
-    permanentCacheTexture(Paths.image("noteStrumline", "shared"));
-    permanentCacheTexture(Paths.image("NOTE_hold_assets"));
+    permanentCacheTexture(Paths.image("gameplay/general/health-bar"));
+    permanentCacheTexture(Paths.image("ui/main-menu/menu-desat"));
+    permanentCacheTexture(Paths.image("gameplay/notestyles/funkin/notes"));
+    permanentCacheTexture(Paths.image("gameplay/notestyles/funkin/note-splashes"));
+    permanentCacheTexture(Paths.image("gameplay/notestyles/funkin/note-strumline"));
+    permanentCacheTexture(Paths.image("gameplay/notestyles/funkin/note-holds"));
     // dude
-    permanentCacheTexture(Paths.image("fonts/bold", null));
-    permanentCacheTexture(Paths.image("fonts/default", null));
-    permanentCacheTexture(Paths.image("fonts/freeplay-clear", null));
+    permanentCacheTexture(Paths.image("ui/fonts/bold"));
+    permanentCacheTexture(Paths.image("ui/fonts/default"));
+    permanentCacheTexture(Paths.image("ui/fonts/freeplay-clear"));
 
     var allSounds:Array<String> = Assets.list(AssetType.SOUND);
 
@@ -79,19 +79,19 @@ class FunkinMemory
       permanentCacheSound(file);
     }
 
-    permanentCacheSound(Paths.sound("cancelMenu"));
-    permanentCacheSound(Paths.sound("confirmMenu"));
-    permanentCacheSound(Paths.sound("screenshot"));
-    permanentCacheSound(Paths.sound("scrollMenu"));
-    permanentCacheSound(Paths.sound("soundtray/Voldown"));
-    permanentCacheSound(Paths.sound("soundtray/VolMAX"));
-    permanentCacheSound(Paths.sound("soundtray/Volup"));
-    permanentCacheSound(Paths.music("freakyMenu/freakyMenu"));
-    permanentCacheSound(Paths.music("offsetsLoop/offsetsLoop"));
-    permanentCacheSound(Paths.music("offsetsLoop/drumsLoop"));
-    permanentCacheSound(Paths.sound("missnote1", "shared"));
-    permanentCacheSound(Paths.sound("missnote2", "shared"));
-    permanentCacheSound(Paths.sound("missnote3", "shared"));
+    permanentCacheSound(Paths.sound("ui/main-menu/cancel-menu"));
+    permanentCacheSound(Paths.sound("ui/main-menu/confirm-menu"));
+    permanentCacheSound(Paths.sound("ui/main-menu/screenshot"));
+    permanentCacheSound(Paths.sound("ui/main-menu/scroll-menu"));
+    permanentCacheSound(Paths.sound("ui/soundtray/volume-down"));
+    permanentCacheSound(Paths.sound("ui/soundtray/volume-max"));
+    permanentCacheSound(Paths.sound("ui/soundtray/volume-up"));
+    permanentCacheSound(Paths.music("ui/main-menu/freaky-menu/freaky-menu"));
+    permanentCacheSound(Paths.music("ui/input-offsets/offsets-loop/offsets-loop"));
+    permanentCacheSound(Paths.music("ui/input-offsets/drums-loop/drums-loop"));
+    permanentCacheSound(Paths.sound("gameplay/general/sounds/miss-note-1"));
+    permanentCacheSound(Paths.sound("gameplay/general/sounds/miss-note-2"));
+    permanentCacheSound(Paths.sound("gameplay/general/sounds/miss-note-3"));
   }
 
   /**
@@ -286,41 +286,47 @@ class FunkinMemory
   public static function cacheNoteStyle(style:NoteStyle):Void
   {
     // TODO: Texture paths should fall back to the default values.
-    cacheTexture(Paths.image(style.getNoteAssetPath() ?? "note"));
-    cacheTexture(style.getHoldNoteAssetPath() ?? "noteHold");
-    cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? "strumline"));
-    cacheTexture(Paths.image(style.getSplashAssetPath() ?? "noteSplash"));
+    cacheTexture(Paths.image(style.getNoteAssetPath() ?? "gameplay/notestyles/funkin/notes"));
+    cacheTexture(style.getHoldNoteAssetPath() ?? "gameplay/notestyles/funkin/note-holds");
+    cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? "gameplay/notestyles/funkin/note-strumline"));
+    cacheTexture(Paths.image(style.getSplashAssetPath() ?? "gameplay/notestyles/funkin/note-splashes"));
 
-    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(LEFT) ?? "LEFT"));
-    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(RIGHT) ?? "RIGHT"));
-    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(UP) ?? "UP"));
-    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(DOWN) ?? "DOWN"));
+    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(LEFT) ?? "gameplay/notestyles/funkin/hold-cover-left"));
+    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(RIGHT) ?? "gameplay/notestyles/funkin/hold-cover-right"));
+    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(UP) ?? "gameplay/notestyles/funkin/hold-cover-up"));
+    cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(DOWN) ?? "gameplay/notestyles/funkin/hold-cover-down"));
 
     // cacheTexture(Paths.image(style.buildCountdownSpritePath(THREE) ?? "THREE"));
-    cacheTexture(Paths.image(style.buildCountdownSpritePath(TWO) ?? "TWO"));
-    cacheTexture(Paths.image(style.buildCountdownSpritePath(ONE) ?? "ONE"));
-    cacheTexture(Paths.image(style.buildCountdownSpritePath(GO) ?? "GO"));
+    cacheTexture(Paths.image(style.buildCountdownSpritePath(TWO) ?? "gameplay/notestyles/funkin/countdown/graphics/ready"));
+    cacheTexture(Paths.image(style.buildCountdownSpritePath(ONE) ?? "gameplay/notestyles/funkin/countdown/graphics/set"));
+    cacheTexture(Paths.image(style.buildCountdownSpritePath(GO) ?? "gameplay/notestyles/funkin/countdown/graphics/go"));
 
-    cacheSound(style.getCountdownSoundPath(THREE) ?? "THREE");
-    cacheSound(style.getCountdownSoundPath(TWO) ?? "TWO");
-    cacheSound(style.getCountdownSoundPath(ONE) ?? "ONE");
-    cacheSound(style.getCountdownSoundPath(GO) ?? "GO");
+    cacheSound(style.getCountdownSoundPath(THREE) ?? "gameplay/notestyles/funkin/countdown/sound/intro-three");
+    cacheSound(style.getCountdownSoundPath(TWO) ?? "gameplay/notestyles/funkin/countdown/sound/intro-two");
+    cacheSound(style.getCountdownSoundPath(ONE) ?? "gameplay/notestyles/funkin/countdown/sound/intro-one");
+    cacheSound(style.getCountdownSoundPath(GO) ?? "gameplay/notestyles/funkin/countdown/sound/intro-go");
 
-    cacheTexture(Paths.image(style.buildJudgementSpritePath("sick") ?? 'sick'));
-    cacheTexture(Paths.image(style.buildJudgementSpritePath("good") ?? 'good'));
-    cacheTexture(Paths.image(style.buildJudgementSpritePath("bad") ?? 'bad'));
-    cacheTexture(Paths.image(style.buildJudgementSpritePath("shit") ?? 'shit'));
+    cacheTexture(Paths.image(style.buildJudgementSpritePath("sick") ?? "gameplay/notestyles/funkin/popup/sick"));
+    cacheTexture(Paths.image(style.buildJudgementSpritePath("good") ?? "gameplay/notestyles/funkin/popup/good"));
+    cacheTexture(Paths.image(style.buildJudgementSpritePath("bad") ?? "gameplay/notestyles/funkin/popup/bad"));
+    cacheTexture(Paths.image(style.buildJudgementSpritePath("shit") ?? "gameplay/notestyles/funkin/popup/shit"));
 
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(0) ?? '0'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(1) ?? '1'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(2) ?? '2'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(3) ?? '3'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(4) ?? '4'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(5) ?? '5'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(6) ?? '6'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(7) ?? '7'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(8) ?? '8'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(9) ?? '9'));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(0) ?? "gameplay/notestyles/funkin/popup/digit-0"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(1) ?? "gameplay/notestyles/funkin/popup/digit-1"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(2) ?? "gameplay/notestyles/funkin/popup/digit-2"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(3) ?? "gameplay/notestyles/funkin/popup/digit-3"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(4) ?? "gameplay/notestyles/funkin/popup/digit-4"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(5) ?? "gameplay/notestyles/funkin/popup/digit-5"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(6) ?? "gameplay/notestyles/funkin/popup/digit-6"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(7) ?? "gameplay/notestyles/funkin/popup/digit-7"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(8) ?? "gameplay/notestyles/funkin/popup/digit-8"));
+    cacheTexture(Paths.image(style.buildComboNumSpritePath(9) ?? "gameplay/notestyles/funkin/popup/digit-9"));
+
+    @:privateAccess
+    {
+      style.buildHoldCoverFrames();
+      style.buildSplashFrames();
+    }
   }
 
   ///// SOUND //////
@@ -342,6 +348,11 @@ class FunkinMemory
       return;
     }
 
+    if (!Assets.exists(key))
+    {
+      trace('WARNING: Tried to cache a sound that does not exist: $key');
+      return;
+    }
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
     else
@@ -355,6 +366,11 @@ class FunkinMemory
   public static function permanentCacheSound(key:String):Void
   {
     if (permanentCachedSounds.exists(key)) return;
+
+    if (!Assets.exists(key))
+    {
+      trace('WARNING: Tried to cache a sound that does not exist: $key');
+    }
 
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound == null) return;
@@ -405,7 +421,7 @@ class FunkinMemory
     Assets.cache.clear("songs");
     Assets.cache.clear("music");
     // Felt lazy.
-    var key = Paths.music("freakyMenu/freakyMenu");
+    var key = Paths.music("ui/main-menu/freaky-menu/freaky-menu");
     var sound:Null<Sound> = Assets.getSound(key, true);
     if (sound != null)
     {

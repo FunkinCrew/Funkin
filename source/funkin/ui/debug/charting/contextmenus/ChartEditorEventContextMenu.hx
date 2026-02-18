@@ -6,7 +6,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/event.xml"))
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/event.xml"))
 class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuEdit:MenuItem;

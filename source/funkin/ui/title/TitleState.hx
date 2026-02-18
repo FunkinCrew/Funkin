@@ -47,7 +47,7 @@ class TitleState extends MusicBeatState
     swagShader = new ColorSwap();
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
-    funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+    funkin.FunkinMemory.cacheSound(Paths.music('ui/title/girlfriends-ringtone/girlfriends-ringtone'));
 
     // DEBUG BULLSHIT
 
@@ -78,14 +78,14 @@ class TitleState extends MusicBeatState
     add(bg);
 
     logoBl = new FunkinSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
-    logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+    logoBl.frames = Paths.getSparrowAtlas('ui/title/logo-bumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
     logoBl.shader = swagShader.shader;
     logoBl.updateHitbox();
 
     gfDance = new FunkinSprite((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
-    gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
+    gfDance.frames = Paths.getSparrowAtlas('ui/title/gf-dance-title');
     gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
     gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
@@ -94,7 +94,7 @@ class TitleState extends MusicBeatState
     add(logoBl);
     add(gfDance);
 
-    var titleTextPath:String = 'title-screen-text' #if mobile + '-mobile' #end;
+    var titleTextPath:String = 'ui/title/title-screen-text' #if mobile + '-mobile' #end;
 
     // On mobile, the text is shifted more to the left to center it properly.
     titleText = FunkinSprite.createTextureAtlas(#if mobile 50 #else 100 #end + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8, titleTextPath, {
@@ -122,11 +122,11 @@ class TitleState extends MusicBeatState
 
     if (FlxG.random.bool(1))
     {
-      ngSpr.loadGraphic(Paths.image('newgrounds_logo_classic'));
+      ngSpr.loadGraphic(Paths.image('ui/title/newgrounds-logo-classic'));
     }
     else if (FlxG.random.bool(30))
     {
-      ngSpr.loadGraphic(Paths.image('newgrounds_logo_animated'), true, 600);
+      ngSpr.loadGraphic(Paths.image('ui/title/newgrounds-logo-animated'), true, 600);
       ngSpr.animation.add('idle', [0, 1], 4);
       ngSpr.animation.play('idle');
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.55));
@@ -134,7 +134,7 @@ class TitleState extends MusicBeatState
     }
     else
     {
-      ngSpr.loadGraphic(Paths.image('newgrounds_logo'));
+      ngSpr.loadGraphic(Paths.image('ui/title/newgrounds-logo'));
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
     }
 
@@ -175,7 +175,7 @@ class TitleState extends MusicBeatState
   {
     var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu', {
+    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
       startingVolume: 0.0,
       overrideExisting: true,
       restartTrack: false,
@@ -188,7 +188,7 @@ class TitleState extends MusicBeatState
 
   function getIntroTextShit():Array<Array<String>>
   {
-    var fullText:String = Assets.getText(Paths.txt('introText'));
+    var fullText:String = Assets.getText(Paths.txt('ui/title/intro-text'));
 
     // Split into lines and remove empty lines
     var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
@@ -252,7 +252,7 @@ class TitleState extends MusicBeatState
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
       FlxG.camera.flash(FlxColor.WHITE, 1);
-      FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'), 0.7);
       transitioning = true;
 
       #if FEATURE_HAPTICS
@@ -328,7 +328,7 @@ class TitleState extends MusicBeatState
   {
     cheatActive = true;
 
-    FunkinSound.playMusic('girlfriendsRingtone', {
+    FunkinSound.playMusic('ui/title/girlfriends-ringtone', {
       startingVolume: 0.0,
       overrideExisting: true,
       restartTrack: true
@@ -337,7 +337,7 @@ class TitleState extends MusicBeatState
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
-    FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'), 0.7);
 
     // Stop the attract timer so you can listen to the whole song!
     attractTimer.cancel();

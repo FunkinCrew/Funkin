@@ -48,107 +48,107 @@ class Cursor
   }
 
   public static final CURSOR_DEFAULT_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-default.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-default"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorDefault:Null<BitmapData> = null;
 
   public static final CURSOR_CROSS_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-cross.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-cross"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorCross:Null<BitmapData> = null;
 
   public static final CURSOR_ERASER_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-eraser.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-eraser"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorEraser:Null<BitmapData> = null;
 
   public static final CURSOR_GRABBING_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-grabbing.png",
-    scale: 1.0,
-    offsetX: -8,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-grabbing"),
+      scale: 1.0,
+      offsetX: -8,
+      offsetY: 0,
+    };
   static var assetCursorGrabbing:Null<BitmapData> = null;
 
   public static final CURSOR_HOURGLASS_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-hourglass.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-hourglass"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorHourglass:Null<BitmapData> = null;
 
   public static final CURSOR_POINTER_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-pointer.png",
-    scale: 1.0,
-    offsetX: -8,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-pointer"),
+      scale: 1.0,
+      offsetX: -8,
+      offsetY: 0,
+    };
   static var assetCursorPointer:Null<BitmapData> = null;
 
   public static final CURSOR_TEXT_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-text.png",
-    scale: 0.2,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-text"),
+      scale: 0.2,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorText:Null<BitmapData> = null;
 
   public static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-text-vertical.png",
-    scale: 0.2,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-text-vertical"),
+      scale: 0.2,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorTextVertical:Null<BitmapData> = null;
 
   public static final CURSOR_ZOOM_IN_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-zoom-in.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-zoom-in"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorZoomIn:Null<BitmapData> = null;
 
   public static final CURSOR_ZOOM_OUT_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-zoom-out.png",
-    scale: 1.0,
-    offsetX: 0,
-    offsetY: 0,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-zoom-out"),
+      scale: 1.0,
+      offsetX: 0,
+      offsetY: 0,
+    };
   static var assetCursorZoomOut:Null<BitmapData> = null;
 
   public static final CURSOR_CROSSHAIR_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-crosshair.png",
-    scale: 1.0,
-    offsetX: -16,
-    offsetY: -16,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-crosshair"),
+      scale: 1.0,
+      offsetX: -16,
+      offsetY: -16,
+    };
   static var assetCursorCrosshair:Null<BitmapData> = null;
 
   public static final CURSOR_CELL_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-cell.png",
-    scale: 1.0,
-    offsetX: -16,
-    offsetY: -16,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-cell"),
+      scale: 1.0,
+      offsetX: -16,
+      offsetY: -16,
+    };
   static var assetCursorCell:Null<BitmapData> = null;
 
   public static final CURSOR_SCROLL_PARAMS:CursorParams = {
-    graphic: "assets/images/cursor/cursor-scroll.png",
-    scale: 0.2,
-    offsetX: -15,
-    offsetY: -15,
-  };
+      graphic: Paths.image("ui/cursor/desktop/cursor-scroll"),
+      scale: 0.2,
+      offsetX: -15,
+      offsetY: -15,
+    };
   static var assetCursorScroll:Null<BitmapData> = null;
 
   static function set_cursorMode(value:Null<CursorMode>):Null<CursorMode>

@@ -11,7 +11,7 @@ import openfl.display.BitmapData;
 /**
  * The contents of the Properties panel, while a Zoom Camera event is selected.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/zoom-camera.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/camera-editor/components/properties/zoom-camera.xml"))
 class ZoomCameraContainer extends VBox
 {
   /**
