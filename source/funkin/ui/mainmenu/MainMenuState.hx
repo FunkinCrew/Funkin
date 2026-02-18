@@ -203,7 +203,7 @@ class MainMenuState extends MusicBeatState
     {
       add(upgradeSparkles);
 
-      createMenuItem('upgrade', 'mui/main-menu/items/upgrade', function()
+      createMenuItem('upgrade', 'ui/main-menu/items/upgrade', function()
       {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
