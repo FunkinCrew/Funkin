@@ -309,7 +309,7 @@
       "comment": "Specifies a specific naming format for local variables.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
+        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
         "tokens": [],
         "severity": "INFO"
       },
@@ -323,7 +323,7 @@
     {
       "comment": "Specifies a specific naming format for public abstract member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
         "tokens": ["PUBLIC", "ABSTRACT"]
       },
       "type": "MemberName"
@@ -340,7 +340,7 @@
     {
       "comment": "Specifies a specific naming format for public class member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[a-zA-Z][a-z][a-zA-Z0-9]*$",
         "tokens": ["PUBLIC", "CLASS"]
       },
       "type": "MemberName"
@@ -348,7 +348,7 @@
     {
       "comment": "Specifies a specific naming format for private class member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[_a-zA-Z][_a-zA-Z0-9]*$",
         "tokens": ["PRIVATE", "CLASS"]
       },
       "type": "MemberName"
@@ -356,8 +356,8 @@
     {
       "comment": "Specifies a specific naming format for enum member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
-        "tokens": ["ENUM"]
+        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
+        "tokens": ["PUBLIC", "ENUM"]
       },
       "type": "MemberName"
     },
@@ -388,9 +388,9 @@
       "comment": "Specifies a specific naming format for method names.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
+        "format": "^[a-z][_a-zA-Z0-9]*$",
         "tokens": [],
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "MethodName"
     },
