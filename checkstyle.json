@@ -692,7 +692,13 @@
     {
       "comment": "If enabled, mandates documentation comments on classes and interfaces.",
       "props": {
-        "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"],
+        "tokens": [
+          "CLASS_DEF",
+          "INTERFACE_DEF",
+          "TYPEDEF_DEF",
+          "ABSTRACT_DEF",
+          "ENUM_DEF"
+        ],
         "severity": "INFO"
       },
       "type": "TypeDocComment"
