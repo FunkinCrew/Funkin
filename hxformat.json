@@ -327,7 +327,45 @@
     "mapWrap": {
       "defaultWrap": "noWrap",
       "defaultLocation": "afterLast",
-      "defaultAdditionalIndent": 0
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "anyItemLength >= n",
+              "value": 32
+            }
+          ]
+        },
+        {
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "itemCount >= n",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "hasMultilineItems",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "totalItemLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
     },
 
     "typeParameter": {
