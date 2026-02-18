@@ -638,10 +638,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     currentStage.revive();
 
-    var campaignId:String = Stage.getCampaignID(stageID);
-
-    Paths.setCurrentLevel(campaignId);
-
     add(currentStage);
     currentStage.vcamPoint = vcamPoint;
     currentStage.onCreate(null);

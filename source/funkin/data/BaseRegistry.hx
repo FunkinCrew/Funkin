@@ -1,6 +1,5 @@
 package funkin.data;
 
-import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Constraints.Constructible;
 
@@ -187,7 +186,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   function fetchEntryIdsFromFiles():Array<String>
   {
-    return DataAssets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries);
+    return funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries);
   }
 
   /**

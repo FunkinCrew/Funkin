@@ -15,20 +15,6 @@ using StringTools;
 @:nullSafety
 class Paths implements ConsoleClass
 {
-  static var currentLevel:Null<String> = null;
-
-  public static function setCurrentLevel(name:Null<String>):Void
-  {
-    if (name == null)
-    {
-      currentLevel = null;
-    }
-    else
-    {
-      currentLevel = name.toLowerCase();
-    }
-  }
-
   /**
    * Remove a library from an asset path string.
    * @param path The asset path string to remove the library from.

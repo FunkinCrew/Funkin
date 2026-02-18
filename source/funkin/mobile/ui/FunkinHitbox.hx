@@ -43,8 +43,10 @@ class FunkinHint extends FunkinButton
    * - The second value corresponds to the alpha when the hint is not pressed.
    * - The third value corresponds to the duratuon it'll take to tween between the two values.
    */
-  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle,
-    Array<Float>> = [INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01], VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]];
+  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
+    INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],
+    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]
+  ];
 
   /**
    * Indicates whether the hint is pixel.

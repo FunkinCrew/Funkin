@@ -6489,8 +6489,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     PlayStatePlaylist.reset();
 
-    Paths.setCurrentLevel(Stage.getCampaignID(currentSongStage));
-
     subStateClosed.add(reviveUICamera);
     subStateClosed.add(resetConductorAfterTest);
 

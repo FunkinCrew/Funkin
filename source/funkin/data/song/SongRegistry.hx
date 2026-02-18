@@ -8,7 +8,6 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
-import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
@@ -39,13 +38,12 @@ using funkin.data.song.migrator.SongDataMigrator;
 
   public function new()
   {
-    super(
-      {
-        registryId: 'SONG',
-        dataFilePath: 'gameplay/songs',
-        // nestedEntries: true, // This registry uses custom parsing.
-        versionRule: SONG_METADATA_VERSION_RULE
-      });
+    super({
+      registryId: 'SONG',
+      dataFilePath: 'gameplay/songs',
+      // nestedEntries: true, // This registry uses custom parsing.
+      versionRule: SONG_METADATA_VERSION_RULE
+    });
   }
 
   public override function loadEntries():Void
@@ -85,8 +83,9 @@ using funkin.data.song.migrator.SongDataMigrator;
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('gameplay/songs/', '-metadata.json', true);
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var entryIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('gameplay/songs/', '-metadata.json', true);
+    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
@@ -463,7 +462,7 @@ using funkin.data.song.migrator.SongDataMigrator;
 
   override function fetchEntryIdsFromFiles():Array<String>
   {
-    return DataAssets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', true);
+    return funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', true);
   }
 
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>

@@ -15,7 +15,6 @@ import funkin.play.character.SparrowCharacter;
 import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.MultiAnimateAtlasCharacter;
 import funkin.play.character.PackerCharacter;
-import funkin.util.assets.DataAssets;
 import funkin.util.VersionUtil;
 import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
@@ -58,7 +57,7 @@ class CharacterDataParser
     //
     // UNSCRIPTED CHARACTERS
     //
-    var charIdList:Array<String> = DataAssets.listDataFilesInPath('gameplay/characters/', ASSET_BLACKLIST, true);
+    var charIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('gameplay/characters/', ASSET_BLACKLIST, true);
     var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool
     {
       return !characterCache.exists(charId);

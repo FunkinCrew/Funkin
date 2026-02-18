@@ -80,37 +80,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   /**
-   * Get the campaign ID associated with this stage.
-   * @param stageName The name of the stage.
-   * @return String The campaign ID.
-   */
-  public static function getCampaignID(stageName:String):String
-  {
-    // Should probably be data driven?
-    return switch (stageName)
-    {
-      case 'mainStage' | 'mainStageErect':
-        'week1';
-      case 'spookyMansion' | 'spookyMansionErect':
-        'week2';
-      case 'phillyTrain' | 'phillyTrainErect':
-        'week3';
-      case 'limoRide' | 'limoRideErect':
-        'week4';
-      case 'mallXmas' | 'mallXmasErect' | 'mallEvil':
-        'week5';
-      case 'school' | 'schoolEvil' | 'schoolEvilErect':
-        'week6';
-      case 'tankmanBattlefield' | 'tankmanBattlefieldErect':
-        'week7';
-      case 'phillyStreets' | 'phillyStreetsErect' | 'phillyBlazin' | 'phillyBlazin2':
-        'weekend1';
-      default:
-        stageName;
-    }
-  }
-
-  /**
    * Called when the player is moving into the PlayState where the song will be played.
    */
   public function onCreate(event:ScriptEvent):Void

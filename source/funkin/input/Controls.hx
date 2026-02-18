@@ -924,8 +924,36 @@ class Controls extends FlxActionSet
 
   public function addDefaultGamepad(id:Int):Void
   {
-    addGamepadLiteral(id,
-      [Control.ACCEPT => getDefaultGamepadBinds(Control.ACCEPT), Control.BACK => getDefaultGamepadBinds(Control.BACK), Control.UI_UP => getDefaultGamepadBinds(Control.UI_UP), Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN), Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT), Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT), Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP), Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN), Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT), Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT), Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE), Control.RESET => getDefaultGamepadBinds(Control.RESET), Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN), #if FEATURE_SCREENSHOTS Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT), #end Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE), Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE), Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT), Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT), Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT), Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP), Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM), Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP), Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN), Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE), #if FEATURE_DEBUG_MENU Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU), #end#if FEATURE_CHART_EDITOR Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART), #end#if FEATURE_STAGE_EDITOR Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE), #end Control.DEBUG_DISPLAY => getDefaultGamepadBinds(Control.DEBUG_DISPLAY),]);
+    addGamepadLiteral(id, [
+      Control.ACCEPT => getDefaultGamepadBinds(Control.ACCEPT),
+      Control.BACK => getDefaultGamepadBinds(Control.BACK),
+      Control.UI_UP => getDefaultGamepadBinds(Control.UI_UP),
+      Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN),
+      Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT),
+      Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT),
+      Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP),
+      Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN),
+      Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
+      Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
+      Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
+      Control.RESET => getDefaultGamepadBinds(Control.RESET),
+      Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN),
+      #if FEATURE_SCREENSHOTS Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT), #end
+      Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE),
+      Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE),
+      Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
+      Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
+      Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
+      Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP),
+      Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM),
+      Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
+      Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
+      Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
+      #if FEATURE_DEBUG_MENU Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU), #end
+      #if FEATURE_CHART_EDITOR Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART), #end
+      #if FEATURE_STAGE_EDITOR Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE), #end
+      Control.DEBUG_DISPLAY => getDefaultGamepadBinds(Control.DEBUG_DISPLAY),
+    ]);
   }
 
   function getDefaultGamepadBinds(control:Control):Array<FlxGamepadInputID>
