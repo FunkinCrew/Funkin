@@ -158,6 +158,10 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
+    // Force a `FunkinCamera` to be the default camera.
+    // This allows the blend mode shader to work everywhere.
+    untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
+
     var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
       (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
 
@@ -173,10 +177,6 @@ class Main extends Sprite
     game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil());
     funkin.util.macro.ConsoleMacro.init();
     #end
-
-    // Force a `FunkinCamera` to be the default camera.
-    // This allows the blend mode shader to work everywhere.
-    untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
 
     #if !html5
     FlxG.scaleMode = new FullScreenScaleMode();
