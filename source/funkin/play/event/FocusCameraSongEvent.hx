@@ -55,11 +55,11 @@ class FocusCameraSongEvent extends SongEvent
     });
   }
 
-  static final DEFAULT_X_POSITION:Float = 0.0;
-  static final DEFAULT_Y_POSITION:Float = 0.0;
-  static final DEFAULT_DURATION:Float = 4.0;
-  static final DEFAULT_CAMERA_EASE:String = 'CLASSIC';
-  static final DEFAULT_TARGET:Int = 0; // Boyfriend
+  public static final DEFAULT_X_POSITION:Float = 0.0;
+  public static final DEFAULT_Y_POSITION:Float = 0.0;
+  public static final DEFAULT_DURATION:Float = 4.0;
+  public static final DEFAULT_CAMERA_EASE:String = 'CLASSIC';
+  public static final DEFAULT_TARGET:Int = 0; // Boyfriend
 
   public override function handleEvent(data:SongEventData):Void
   {
