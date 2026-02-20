@@ -355,7 +355,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var songEvents:Array<SongEventData> = [];
 
-
   /**
    * LIFE CYCLE FUNCTIONS
    */
@@ -410,7 +409,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Save.instance.cameraEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusic('chartEditorLoop', {
+    FunkinSound.playMusic('ui/editors/chart-editor/artistic-expression/artistic-expression', {
       startingVolume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
@@ -566,10 +565,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     // DEBUG!!! enable to move the vcam with the mouse... teehee
 
     /*if (FlxG.mouse.pressed)
-    {
-      cameraFollowPoint.x += FlxG.mouse.deltaX;
-      cameraFollowPoint.y += FlxG.mouse.deltaY;
-      vcamPoint.set(cameraFollowPoint.x, cameraFollowPoint.y);
+      {
+        cameraFollowPoint.x += FlxG.mouse.deltaX;
+        cameraFollowPoint.y += FlxG.mouse.deltaY;
+        vcamPoint.set(cameraFollowPoint.x, cameraFollowPoint.y);
     }*/
 
     if (FlxG.mouse.pressedMiddle)
@@ -583,8 +582,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
 
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
 
     this.updatePropertiesPanel(elapsed);
 
