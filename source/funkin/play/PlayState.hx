@@ -628,6 +628,11 @@ class PlayState extends MusicBeatSubState
   public var camPause:FunkinCamera;
 
   /**
+   * The camera which contains, and controls visibility of, the fade out to the results screen.
+   */
+  public var camTransition:FunkinCamera;
+
+  /**
    * The combo popups. Includes the real-time combo counter and the rating.
    */
   public var comboPopUps:PopUpStuff;
@@ -795,6 +800,7 @@ class PlayState extends MusicBeatSubState
     camCutouts = new FunkinCamera('playStateCamCutouts');
     camSubtitles = new FunkinCamera('playStateCamSubtitles');
     camPause = new FunkinCamera('playStateCamPause');
+    camTransition = new FunkinCamera('playStateCamTransition');
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:Null<String> = currentChart?.noteStyle;
@@ -1360,7 +1366,7 @@ class PlayState extends MusicBeatSubState
      */
   function pause(mode:PauseMode = Standard, lostFocus:Bool = false):Void
   {
-    if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying) return;
+    if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying || isSongEnd) return;
 
     switch (mode)
     {
@@ -1965,12 +1971,14 @@ class PlayState extends MusicBeatSubState
     camCutouts.bgColor.alpha = 0; // Show the game scene behind the camera.
     if (Preferences.subtitles) camSubtitles.bgColor.alpha = 0; // Show the game scene behind the camera.
     camPause.bgColor.alpha = 0; // Show the game scene behind the camera.
+    camTransition.bgColor.alpha = 0;
 
     FlxG.cameras.reset(camGame);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.add(camCutscene, false);
     FlxG.cameras.add(camCutouts, false);
     if (Preferences.subtitles) FlxG.cameras.add(camSubtitles, false);
+    FlxG.cameras.add(camTransition, false);
     FlxG.cameras.add(camPause, false);
 
     // Configure camera follow point.
@@ -3775,13 +3783,10 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.targetOffset.x += 20;
 
     // Replace zoom animation with a fade out for now.
-    FlxG.camera.fade(FlxColor.BLACK, 0.6);
+    FlxTween.tween(camHUD, {alpha: 0}, 0.6);
 
-    FlxTween.tween(camHUD, {alpha: 0}, 0.6, {
-      onComplete: function(_)
-      {
-        moveToResultsScreen(isNewHighscore, prevScoreData);
-      }
+    camTransition.fade(FlxColor.BLACK, 0.6, false, function() {
+      moveToResultsScreen(isNewHighscore, prevScoreData);
     });
 
     // Zoom in on Girlfriend (or BF if no GF)
