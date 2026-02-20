@@ -176,10 +176,10 @@ class ZoomCameraContainer extends VBox
   /**
    * Called when the Zoom Camera Ease Type field is changed.
    */
-  @:bind(zoomCameraEaseType, UIEvent.CHANGE)
-  function onChange_zoomCameraEaseType(_):Void
+  @:bind(zoomCameraEase, UIEvent.CHANGE)
+  function onChange_zoomCameraEase(_):Void
   {
-    var value:String = zoomCameraEaseType.selectedItem.text;
+    var value:String = zoomCameraEase.selectedItem.text;
 
     trace('Zoom Camera: Ease Type changed to ' + value);
   }
