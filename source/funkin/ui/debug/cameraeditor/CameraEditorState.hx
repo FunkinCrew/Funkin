@@ -247,6 +247,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     return value;
   }
 
+  @:bind(menubarItemRelativeView.selected)
+  var isCameraRelative:Bool = false;
+
   /**
    * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
    * If the user clicks off the input, focus will leave.
@@ -513,6 +516,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var _scrollTarget:FlxPoint = new FlxPoint();
+  var _cameraTarget:FlxPoint = new FlxPoint();
 
   public override function update(elapsed:Float):Void
   {
@@ -577,9 +581,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       goToPoint.x -= FlxG.mouse.deltaX;
       goToPoint.y -= FlxG.mouse.deltaY;
-      FlxG.camera.scroll.x = FlxMath.lerp(FlxG.camera.scroll.x, goToPoint.x, 0.8);
-      FlxG.camera.scroll.y = FlxMath.lerp(FlxG.camera.scroll.y, goToPoint.y, 0.8);
+      _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
+      _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
     }
+
+    FlxG.camera.scroll.copyFrom(_cameraTarget);
+
+    if (!isCameraRelative)
+    {
+      // subtract the vcam point since it moves everything
+      FlxG.camera.scroll.x -= vcamPoint.x;
+      FlxG.camera.scroll.y -= vcamPoint.y;
+    }
+
 
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
