@@ -49,7 +49,8 @@ class StageOffsetSubState extends HaxeUISubState
 
     var playState = PlayState.instance;
 
-    FlxG.mouse.visible = true;
+    funkin.input.Cursor.show();
+
     playState.pauseMusic();
     playState.cancelAllCameraTweens();
     FlxG.camera.target = null;
@@ -251,7 +252,7 @@ class StageOffsetSubState extends HaxeUISubState
       if (FlxG.keys.justPressed.DOWN) performCommand(new MovePropCommand(0, zoomShitLol));
     }
 
-    FlxG.mouse.visible = true;
+    funkin.input.Cursor.show();
 
     MouseUtil.mouseCamDrag();
 
@@ -272,7 +273,7 @@ class StageOffsetSubState extends HaxeUISubState
       // uiStuff = null;
       PlayState.instance.disableKeys = false;
       PlayState.instance.resetCamera();
-      FlxG.mouse.visible = false;
+      funkin.input.Cursor.hide();
       close();
     }
   }

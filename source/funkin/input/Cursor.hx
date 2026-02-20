@@ -16,11 +16,16 @@ class Cursor
   public static var cursorMode(default, set):Null<CursorMode> = null;
 
   /**
+   * Whether the cursor is forced to stay visible, even after cursor movement.
+   */
+  public static var visible:Bool = false;
+
+  /**
    * Show the cursor.
    */
   public static inline function show():Void
   {
-    FlxG.mouse.visible = true;
+    Cursor.visible = true;
     // Reset the cursor mode.
     Cursor.cursorMode = Default;
   }
@@ -28,16 +33,22 @@ class Cursor
   /**
    * Hide the cursor.
    */
-  public static inline function hide():Void
+  public static inline function hide(force:Bool = false):Void
   {
-    FlxG.mouse.visible = false;
+    Cursor.visible = false;
     // Reset the cursor mode.
-    Cursor.cursorMode = null;
+    Cursor.cursorMode = Default;
+
+    if (force)
+    {
+      funkin.util.plugins.CursorVisibilityPlugin.showTimer = 0;
+      funkin.util.plugins.CursorVisibilityPlugin.hideTimer = 0;
+    }
   }
 
   public static inline function toggle():Void
   {
-    if (FlxG.mouse.visible)
+    if (Cursor.visible)
     {
       hide();
     }

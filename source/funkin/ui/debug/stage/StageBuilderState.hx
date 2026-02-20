@@ -35,7 +35,7 @@ class StageBuilderState extends MusicBeatState
 
     super.create();
 
-    FlxG.mouse.visible = true;
+    funkin.input.Cursor.show();
 
     // snd = new Sound();
 

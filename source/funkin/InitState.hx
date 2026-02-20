@@ -169,6 +169,8 @@ class InitState extends FlxState
       // Makes Flixel use frame times instead of locked movements per frame for things like tweens
       FlxG.fixedTimestep = false;
 
+      FlxG.mouse.visible = false;
+
       setupFlixelDebug();
 
       //
@@ -260,6 +262,7 @@ class InitState extends FlxState
       funkin.util.plugins.ReloadAssetsDebugPlugin.initialize();
       #if !mobile
       funkin.util.plugins.VolumePlugin.initialize();
+      funkin.util.plugins.CursorVisibilityPlugin.initialize();
       #end
       funkin.util.plugins.WatchPlugin.initialize();
       #if mobile

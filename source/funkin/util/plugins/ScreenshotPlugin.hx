@@ -190,10 +190,10 @@ class ScreenshotPlugin extends FlxBasic
         openScreenshotsFolder();
         return; // We're only opening the screenshots folder (we don't want to accidentally take a screenshot after this)
       }
-      if (Preferences.shouldHideMouse && !wasMouseHidden && FlxG.mouse.visible)
+      if (Preferences.shouldHideMouse && !wasMouseHidden)
       {
-        wasMouseHidden = true;
-        Cursor.hide();
+        if (Cursor.visible) wasMouseHidden = true;
+        Cursor.hide(true);
       }
       for (sprite in [flashSprite, previewSprite])
       {
@@ -208,7 +208,7 @@ class ScreenshotPlugin extends FlxBasic
           // The player's stopped spamming shots, so we can stop the screenshot spam mode too
           screenshotBeingSpammed = false;
           if (screenshotBuffer[0] != null) saveBufferedScreenshots(screenshotBuffer, screenshotNameBuffer);
-          if (!Preferences.fancyPreview && wasMouseHidden && !FlxG.mouse.visible)
+          if (!Preferences.fancyPreview && wasMouseHidden && !Cursor.visible)
           {
             wasMouseHidden = false;
             Cursor.show();
@@ -288,7 +288,7 @@ class ScreenshotPlugin extends FlxBasic
         throw "You've tried taking more than 100 screenshots at a time. Give the game a funkin break! Jeez. If you wanted those screenshots, well too bad!";
       }
       showCaptureFeedback();
-      if (wasMouseHidden && !FlxG.mouse.visible && Preferences.flashingLights) // Just in case
+      if (wasMouseHidden && !Cursor.visible && Preferences.flashingLights) // Just in case
       {
         wasMouseHidden = false;
         Cursor.show();
@@ -301,7 +301,7 @@ class ScreenshotPlugin extends FlxBasic
       saveScreenshot(shot, 'screenshot-${DateUtil.generateTimestamp()}', 1, false);
       // Show some feedback.
       showCaptureFeedback();
-      if (wasMouseHidden && !FlxG.mouse.visible)
+      if (wasMouseHidden && !Cursor.visible)
       {
         wasMouseHidden = false;
         Cursor.show();
@@ -348,7 +348,7 @@ class ScreenshotPlugin extends FlxBasic
 
     // ermmm stealing this??
 
-    if (!wasMouseShown && !wasMouseHidden && !FlxG.mouse.visible)
+    if (!wasMouseShown && !wasMouseHidden && !Cursor.visible)
     {
       wasMouseShown = true;
       Cursor.show();
@@ -403,12 +403,12 @@ class ScreenshotPlugin extends FlxBasic
               ease: FlxEase.quartInOut,
               onComplete: function(_)
               {
-                if (wasMouseShown && FlxG.mouse.visible)
+                if (wasMouseShown && Cursor.visible)
                 {
                   wasMouseShown = false;
-                  Cursor.hide();
+                  Cursor.hide(true);
                 }
-                else if (wasMouseHidden && !FlxG.mouse.visible)
+                else if (wasMouseHidden && !Cursor.visible)
                 {
                   wasMouseHidden = false;
                   Cursor.show();
@@ -605,12 +605,12 @@ class ScreenshotPlugin extends FlxBasic
     }
 
     // Undo the mouse stuff - we don't know what the next state will do with it
-    if (wasMouseShown && FlxG.mouse.visible)
+    if (wasMouseShown && Cursor.visible)
     {
       wasMouseShown = false;
-      Cursor.hide();
+      Cursor.hide(true);
     }
-    else if (wasMouseHidden && !FlxG.mouse.visible)
+    else if (wasMouseHidden && !Cursor.visible)
     {
       wasMouseHidden = false;
       Cursor.show();

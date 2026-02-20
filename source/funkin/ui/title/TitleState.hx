@@ -149,8 +149,6 @@ class TitleState extends MusicBeatState
     ngSpr.updateHitbox();
     ngSpr.screenCenter(X);
 
-    FlxG.mouse.visible = false;
-
     if (initialized) skipIntro();
     else
       initialized = true;
