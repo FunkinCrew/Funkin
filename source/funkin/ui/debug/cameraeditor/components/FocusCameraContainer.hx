@@ -3,7 +3,9 @@ package funkin.ui.debug.cameraeditor.components;
 #if FEATURE_CAMERA_EDITOR
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
+import funkin.play.event.SongEvent;
 import funkin.play.event.SongEventHelper;
+import funkin.play.event.FocusCameraSongEvent;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
 import openfl.display.BitmapData;
@@ -11,7 +13,7 @@ import openfl.display.BitmapData;
 /**
  * The contents of the Properties panel, while a Focus Camera event is selected.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/focus-camera.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/components/properties/focus-camera.xml'))
 class FocusCameraContainer extends VBox
 {
   /**
@@ -39,16 +41,18 @@ class FocusCameraContainer extends VBox
   {
     if (focusCameraEaseGraph == null || focusCameraEaseDot == null)
     {
-      throw "Could not find ease graph or ease dot!";
+      throw 'Could not find ease graph or ease dot!';
     }
 
-    // TODO: Fetch this correctly.
-    final easeStr:String = "elastic";
-    final easeDirStr:String = "InOut";
-    final key:String = easeStr + (easeDirStr == "" ? "" : easeDirStr);
+    // var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    // var easeDirStr:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    var easeDirStr:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+
+    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
 
     // Hide preview when easing indicates a non-visual/legacy type such as "classic"
-    if (easeStr != null && easeStr.toLowerCase().indexOf("classic") != -1)
+    if (easeStr != null && easeStr.toLowerCase().indexOf('classic') != -1)
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();
@@ -134,13 +138,35 @@ class FocusCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  /**
+   * Loads the data for the currently selected event into the UI.
+   */
   public function loadCurrentEventData():Void
   {
-    var eventTarget = cameraEditorState.selectedSongEvent.getInt('char');
+    var eventTarget = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
     focusCameraTarget.selectItemBy(function(data):Bool
     {
-      return data.id == eventTarget;
+      trace('${data.value} == ${eventTarget}');
+      return '${data.value}' == '${eventTarget}';
     });
+
+    focusCameraXPos.value = cameraEditorState.selectedSongEvent.getFloat('x') ?? FocusCameraSongEvent.DEFAULT_X_POSITION;
+    focusCameraYPos.value = cameraEditorState.selectedSongEvent.getFloat('y') ?? FocusCameraSongEvent.DEFAULT_Y_POSITION;
+    focusCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? FocusCameraSongEvent.DEFAULT_DURATION;
+
+    var eventEase:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    focusCameraEase.selectItemBy(function(data):Bool
+    {
+      return '${data.value}' == '${eventEase}';
+    });
+
+    var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    focusCameraEaseDir.selectItemBy(function(data):Bool
+    {
+      return '${data.value}' == '${eventEaseDir}';
+    });
+
+    updateEasePreview();
   }
 
   /**
@@ -149,9 +175,12 @@ class FocusCameraContainer extends VBox
   @:bind(focusCameraTarget, UIEvent.CHANGE)
   function onChange_focusCameraTarget(_):Void
   {
-    var value:String = focusCameraTarget.selectedItem.text;
+    var label:String = focusCameraTarget.selectedItem.text;
+    var value:Int = focusCameraTarget.selectedItem.value;
 
-    trace('Focus Camera: Target changed to ' + value);
+    trace('Focus Camera: Target changed to $label ($value)');
+
+    cameraEditorState.selectedSongEvent.set('char', value);
   }
 
   /**
@@ -163,6 +192,8 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraXPos.value;
 
     trace('Focus Camera: X Position changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('x', value);
   }
 
   /**
@@ -174,6 +205,8 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraYPos.value;
 
     trace('Focus Camera: Y Position changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('y', value);
   }
 
   /**
@@ -185,17 +218,31 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraDuration.value;
 
     trace('Focus Camera: Duration changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('duration', value);
   }
 
   /**
    * Called when the Focus Camera Ease Type field is changed.
    */
-  @:bind(focusCameraEaseType, UIEvent.CHANGE)
-  function onChange_focusCameraEaseType(_):Void
+  @:bind(focusCameraEase, UIEvent.CHANGE)
+  function onChange_focusCameraEase(_):Void
   {
-    var value:String = focusCameraEaseType.selectedItem.text;
+    if (focusCameraEaseDir.selectedItem == null)
+    {
+      trace('Focus Camera: No ease type selected!');
+      cameraEditorState.selectedSongEvent.set('ease', FocusCameraSongEvent.DEFAULT_CAMERA_EASE);
+      return
+    }
+
+    var label:String = focusCameraEase.selectedItem.text;
+    var value:String = focusCameraEase.selectedItem.value;
 
     trace('Focus Camera: Ease Type changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('ease', value);
+
+    updateEasePreview();
   }
 
   /**
@@ -204,9 +251,21 @@ class FocusCameraContainer extends VBox
   @:bind(focusCameraEaseDir, UIEvent.CHANGE)
   function onChange_focusCameraEaseDir(_):Void
   {
-    var value:String = focusCameraEaseDir.selectedItem.text;
+    if (focusCameraEaseDir.selectedItem == null)
+    {
+      trace('Focus Camera: No ease direction selected!');
+      cameraEditorState.selectedSongEvent.set('easeDir', SongEvent.DEFAULT_EASE_DIR);
+      return;
+    }
+
+    var label:String = focusCameraEaseDir.selectedItem.text;
+    var value:String = focusCameraEaseDir.selectedItem.value;
 
     trace('Focus Camera: Ease Dir changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('easeDir', value);
+
+    updateEasePreview();
   }
 
   public override function destroy():Void

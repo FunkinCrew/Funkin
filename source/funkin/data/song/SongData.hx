@@ -830,11 +830,19 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
     return new SongEventDataRaw(this.time, this.eventKind, this.value, this.editorLayer);
   }
 
+  /**
+   * If the value is an anonymous structure, return it as a struct.
+   * Otherwise, return the value as a struct with the current value as a default key.
+   * Good for compatibility with older charts, where event values were a single number.
+   * @param defaultKey The default key to use if the value is not a struct.
+   * @return The value as a struct.
+   */
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
     if (this.value == null) return
     {
     };
+
     if (Std.isOfType(this.value, Array))
     {
       var result:haxe.DynamicAccess<Dynamic> = {};
@@ -879,7 +887,11 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getDynamic(key:String):Null<Dynamic>
   {
-    return this.value == null ? null : Reflect.field(this.value, key);
+    if (this.value == null) return null;
+
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(key);
+
+    return valueStruct.get(key);
   }
 
   /**
@@ -889,7 +901,14 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getBool(key:String):Null<Bool>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+
+    if (result == null) return null;
+    if (Std.isOfType(result, Bool)) return result;
+    if (result == 'true') return true;
+    if (result == 'false') return false;
+
+    return cast result;
   }
 
   /**
@@ -899,11 +918,11 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getInt(key:String):Null<Int>
   {
-    if (this.value == null) return null;
-    var result:Any = Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
     if (result == null) return null;
     if (Std.isOfType(result, Int)) return result;
     if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+
     return cast result;
   }
 
@@ -914,11 +933,11 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getFloat(key:String):Null<Float>
   {
-    if (this.value == null) return null;
-    var result:Any = Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
     if (result == null) return null;
     if (Std.isOfType(result, Float)) return result;
     if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+
     return cast result;
   }
 
@@ -929,7 +948,11 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getString(key:String):String
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+    if (result == null) return null;
+    if (Std.isOfType(result, String)) return result;
+
+    return '${result}';
   }
 
   /**
@@ -939,7 +962,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getArray(key:String):Array<Dynamic>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+    if (result == null) return null;
+    return cast result;
   }
 
   /**
@@ -949,7 +974,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getBoolArray(key:String):Array<Bool>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+    if (result == null) return null;
+    return cast result;
   }
 
   /**
@@ -959,7 +986,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getFloatArray(key:String):Array<Float>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+    if (result == null) return null;
+    return cast result;
   }
 
   /**
@@ -969,7 +998,21 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function getStringArray(key:String):Array<Float>
   {
-    return this.value == null ? null : cast Reflect.field(this.value, key);
+    var result:Dynamic = getDynamic(key);
+    if (result == null) return null;
+    return cast result;
+  }
+
+  /**
+   * Assign a field from this event's data.
+   * @param key The name of the field to assign.
+   * @param newValue The new value to assign.
+   */
+  public function set(key:String, newValue:Dynamic):Void
+  {
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(key);
+    valueStruct.set(key, newValue);
+    this.value = valueStruct;
   }
 
   /**
@@ -1020,7 +1063,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
  * Wrap SongEventData in an abstract so we can overload operators.
  */
 @:forward(time, eventKind, value, activated, getStepTime, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
-  getBoolArray, buildTooltip, valueAsStruct)
+  getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
   public function new(time:Float, eventKind:String, value:Dynamic = null)
