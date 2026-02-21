@@ -2961,7 +2961,7 @@ class FreeplayState extends MusicBeatSubState
         overrideExisting: true,
         restartTrack: false
       });
-      FlxG.sound.music.fadeIn(2, 0, previewVolume);
+      if (FlxG.sound.music != null) FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else
     {
