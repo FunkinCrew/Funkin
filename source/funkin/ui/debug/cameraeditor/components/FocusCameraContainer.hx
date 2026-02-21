@@ -146,8 +146,8 @@ class FocusCameraContainer extends VBox
     var eventTarget = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
     focusCameraTarget.selectItemBy(function(data):Bool
     {
-      trace('${data.value} == ${eventTarget}');
-      return '${data.value}' == '${eventTarget}';
+      trace('${data.id} == ${eventTarget}');
+      return '${data.id}' == '${eventTarget}';
     });
 
     focusCameraXPos.value = cameraEditorState.selectedSongEvent.getFloat('x') ?? FocusCameraSongEvent.DEFAULT_X_POSITION;
@@ -157,13 +157,13 @@ class FocusCameraContainer extends VBox
     var eventEase:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
     focusCameraEase.selectItemBy(function(data):Bool
     {
-      return '${data.value}' == '${eventEase}';
+      return '${data.id}' == '${eventEase}';
     });
 
     var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
     focusCameraEaseDir.selectItemBy(function(data):Bool
     {
-      return '${data.value}' == '${eventEaseDir}';
+      return '${data.id}' == '${eventEaseDir}';
     });
 
     updateEasePreview();
@@ -175,8 +175,15 @@ class FocusCameraContainer extends VBox
   @:bind(focusCameraTarget, UIEvent.CHANGE)
   function onChange_focusCameraTarget(_):Void
   {
+    if (focusCameraTarget.selectedItem == null)
+    {
+      trace('Focus Camera: No target selected!');
+      cameraEditorState.selectedSongEvent.set('char', FocusCameraSongEvent.DEFAULT_TARGET);
+      return;
+    }
+
     var label:String = focusCameraTarget.selectedItem.text;
-    var value:Int = focusCameraTarget.selectedItem.value;
+    var value:Int = focusCameraTarget.selectedItem.id;
 
     trace('Focus Camera: Target changed to $label ($value)');
 
@@ -228,19 +235,29 @@ class FocusCameraContainer extends VBox
   @:bind(focusCameraEase, UIEvent.CHANGE)
   function onChange_focusCameraEase(_):Void
   {
-    if (focusCameraEaseDir.selectedItem == null)
+    if (focusCameraEase.selectedItem == null)
     {
       trace('Focus Camera: No ease type selected!');
       cameraEditorState.selectedSongEvent.set('ease', FocusCameraSongEvent.DEFAULT_CAMERA_EASE);
-      return
+      return;
     }
 
     var label:String = focusCameraEase.selectedItem.text;
-    var value:String = focusCameraEase.selectedItem.value;
+    var value:String = focusCameraEase.selectedItem.id;
 
-    trace('Focus Camera: Ease Type changed to ' + value);
+    trace('Focus Camera: Ease Type changed to $label ($value)');
 
     cameraEditorState.selectedSongEvent.set('ease', value);
+
+    // If the ease type is classic or instant, don't display ease direction
+    if (value.toLowerCase().indexOf('classic') != -1 || value.toLowerCase().indexOf('instant') != -1)
+    {
+      focusCameraEaseDir.visible = false;
+    }
+    else
+    {
+      focusCameraEaseDir.visible = true;
+    }
 
     updateEasePreview();
   }
@@ -259,9 +276,9 @@ class FocusCameraContainer extends VBox
     }
 
     var label:String = focusCameraEaseDir.selectedItem.text;
-    var value:String = focusCameraEaseDir.selectedItem.value;
+    var value:String = focusCameraEaseDir.selectedItem.id;
 
-    trace('Focus Camera: Ease Dir changed to ' + value);
+    trace('Focus Camera: Ease Dir changed to $label ($value)');
 
     cameraEditorState.selectedSongEvent.set('easeDir', value);
 
