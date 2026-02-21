@@ -52,6 +52,7 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
+    state.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
