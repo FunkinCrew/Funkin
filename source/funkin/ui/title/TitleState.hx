@@ -328,7 +328,7 @@ class TitleState extends MusicBeatState
   {
     cheatActive = true;
 
-    FunkinSound.playMusic('ui/title/girlfriends-ringtone', {
+    FunkinSound.playMusic('ui/title/girlfriends-ringtone/girlfriends-ringtone', {
       startingVolume: 0.0,
       overrideExisting: true,
       restartTrack: true
