@@ -52,6 +52,11 @@ class FunkinPreloader extends FlxBasePreloader
   // Ratio between window size and BASE_WIDTH
   var ratio:Float = 0;
 
+  /**
+   * Check whether or not the `touchHereToPlay` sprite has been pressed.
+   */
+  var _isPressed:Bool = false;
+
   var currentState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
 
   // private var downloadingAssetsStartTime:Float = -1;
@@ -800,19 +805,24 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   #if FEATURE_TOUCH_HERE_TO_PLAY
-  function overTouchHereToPlay(e:MouseEvent):Void
-  {
-    scaleAndCenter(touchHereToPlay, ratio * 1.1 * 0.5);
-  }
-
-  function outTouchHereToPlay(e:MouseEvent):Void
-  {
-    scaleAndCenter(touchHereToPlay, ratio * 0.5);
-  }
+  /**
+   * These functions are left blank intentionally.
+   * @see #updateGraphics
+   */
+  function overTouchHereToPlay(e:MouseEvent):Void { }
+  function outTouchHereToPlay(e:MouseEvent):Void { }
 
   function mouseDownTouchHereToPlay(e:MouseEvent):Void
   {
-    touchHereToPlay.y += 10;
+    _isPressed = true;
+
+    // Wait 100ms for the `touchHereToPlay` sprite to return to its original scale.
+    // Start the game immediately after (wait another 550ms).
+    haxe.Timer.delay(function() {
+      _isPressed = false; // Reset to prevent double-clicking.
+
+      haxe.Timer.delay(immediatelyStartGame, 550);
+    }, 100);
   }
 
   function onTouchHereToPlay(e:MouseEvent):Void
@@ -823,9 +833,6 @@ class FunkinPreloader extends FlxBasePreloader
     touchHereSprite.removeEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
     touchHereSprite.removeEventListener(MouseEvent.MOUSE_OUT, outTouchHereToPlay);
     touchHereSprite.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
-
-    // This is the actual thing that makes the game load.
-    immediatelyStartGame();
   }
 
   function scaleAndCenter(bmp:Bitmap, scale:Float)
@@ -882,6 +889,24 @@ class FunkinPreloader extends FlxBasePreloader
     {
       trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
     }
+
+    // Scale the `touchHereToPlay` sprite.
+    #if FEATURE_TOUCH_HERE_TO_PLAY
+    if (currentState == FunkinPreloaderState.TouchHereToPlay)
+    {
+      var targetScale:Float = ratio * 0.5;
+
+      if (touchHereSprite.hitTestPoint(mouseX, mouseY))
+      {
+        // Scale the sprite down slighty if the mouse is pressed, otherwise scale it up a bit.
+        targetScale = _isPressed ? ratio * 0.45 : ratio * 0.55;
+      }
+
+      // Lerp the sprites current scale to the targets scale.
+      var lerpValue:Float = touchHereToPlay.scaleX + (targetScale - touchHereToPlay.scaleX) * 0.15;
+      scaleAndCenter(touchHereToPlay, lerpValue);
+    }
+    #end
 
     super.update(percent);
   }
