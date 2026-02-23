@@ -15,8 +15,7 @@ class Codex<T:PageName> extends FlxGroup
   public var currentName:T;
   public var currentPage(get, never):Page<T>;
 
-  inline function get_currentPage():Page<T>
-    return pages[currentName];
+  inline function get_currentPage():Page<T> return pages[currentName];
 
   public function new(initPage:T)
   {

@@ -69,271 +69,219 @@ class Controls extends FlxActionSet
 
   public var UI_UP(get, never):Bool;
 
-  inline function get_UI_UP()
-    return _ui_up.checkPressed();
+  inline function get_UI_UP() return _ui_up.checkPressed();
 
   public var UI_LEFT(get, never):Bool;
 
-  inline function get_UI_LEFT()
-    return _ui_left.checkPressed();
+  inline function get_UI_LEFT() return _ui_left.checkPressed();
 
   public var UI_RIGHT(get, never):Bool;
 
-  inline function get_UI_RIGHT()
-    return _ui_right.checkPressed();
+  inline function get_UI_RIGHT() return _ui_right.checkPressed();
 
   public var UI_DOWN(get, never):Bool;
 
-  inline function get_UI_DOWN()
-    return _ui_down.checkPressed();
+  inline function get_UI_DOWN() return _ui_down.checkPressed();
 
   public var UI_UP_P(get, never):Bool;
 
-  inline function get_UI_UP_P()
-    return _ui_up.checkJustPressed();
+  inline function get_UI_UP_P() return _ui_up.checkJustPressed();
 
   public var UI_LEFT_P(get, never):Bool;
 
-  inline function get_UI_LEFT_P()
-    return _ui_left.checkJustPressed();
+  inline function get_UI_LEFT_P() return _ui_left.checkJustPressed();
 
   public var UI_RIGHT_P(get, never):Bool;
 
-  inline function get_UI_RIGHT_P()
-    return _ui_right.checkJustPressed();
+  inline function get_UI_RIGHT_P() return _ui_right.checkJustPressed();
 
   public var UI_DOWN_P(get, never):Bool;
 
-  inline function get_UI_DOWN_P()
-    return _ui_down.checkJustPressed();
+  inline function get_UI_DOWN_P() return _ui_down.checkJustPressed();
 
   public var UI_UP_R(get, never):Bool;
 
-  inline function get_UI_UP_R()
-    return _ui_up.checkJustReleased();
+  inline function get_UI_UP_R() return _ui_up.checkJustReleased();
 
   public var UI_LEFT_R(get, never):Bool;
 
-  inline function get_UI_LEFT_R()
-    return _ui_left.checkJustReleased();
+  inline function get_UI_LEFT_R() return _ui_left.checkJustReleased();
 
   public var UI_RIGHT_R(get, never):Bool;
 
-  inline function get_UI_RIGHT_R()
-    return _ui_right.checkJustReleased();
+  inline function get_UI_RIGHT_R() return _ui_right.checkJustReleased();
 
   public var UI_DOWN_R(get, never):Bool;
 
-  inline function get_UI_DOWN_R()
-    return _ui_down.checkJustReleased();
+  inline function get_UI_DOWN_R() return _ui_down.checkJustReleased();
 
   public var NOTE_UP(get, never):Bool;
 
-  inline function get_NOTE_UP()
-    return _note_up.checkPressed();
+  inline function get_NOTE_UP() return _note_up.checkPressed();
 
   public var NOTE_LEFT(get, never):Bool;
 
-  inline function get_NOTE_LEFT()
-    return _note_left.checkPressed();
+  inline function get_NOTE_LEFT() return _note_left.checkPressed();
 
   public var NOTE_RIGHT(get, never):Bool;
 
-  inline function get_NOTE_RIGHT()
-    return _note_right.checkPressed();
+  inline function get_NOTE_RIGHT() return _note_right.checkPressed();
 
   public var NOTE_DOWN(get, never):Bool;
 
-  inline function get_NOTE_DOWN()
-    return _note_down.checkPressed();
+  inline function get_NOTE_DOWN() return _note_down.checkPressed();
 
   public var NOTE_UP_P(get, never):Bool;
 
-  inline function get_NOTE_UP_P()
-    return _note_up.checkJustPressed();
+  inline function get_NOTE_UP_P() return _note_up.checkJustPressed();
 
   public var NOTE_LEFT_P(get, never):Bool;
 
-  inline function get_NOTE_LEFT_P()
-    return _note_left.checkJustPressed();
+  inline function get_NOTE_LEFT_P() return _note_left.checkJustPressed();
 
   public var NOTE_RIGHT_P(get, never):Bool;
 
-  inline function get_NOTE_RIGHT_P()
-    return _note_right.checkJustPressed();
+  inline function get_NOTE_RIGHT_P() return _note_right.checkJustPressed();
 
   public var NOTE_DOWN_P(get, never):Bool;
 
-  inline function get_NOTE_DOWN_P()
-    return _note_down.checkJustPressed();
+  inline function get_NOTE_DOWN_P() return _note_down.checkJustPressed();
 
   public var NOTE_UP_R(get, never):Bool;
 
-  inline function get_NOTE_UP_R()
-    return _note_up.checkJustReleased();
+  inline function get_NOTE_UP_R() return _note_up.checkJustReleased();
 
   public var NOTE_LEFT_R(get, never):Bool;
 
-  inline function get_NOTE_LEFT_R()
-    return _note_left.checkJustReleased();
+  inline function get_NOTE_LEFT_R() return _note_left.checkJustReleased();
 
   public var NOTE_RIGHT_R(get, never):Bool;
 
-  inline function get_NOTE_RIGHT_R()
-    return _note_right.checkJustReleased();
+  inline function get_NOTE_RIGHT_R() return _note_right.checkJustReleased();
 
   public var NOTE_DOWN_R(get, never):Bool;
 
-  inline function get_NOTE_DOWN_R()
-    return _note_down.checkJustReleased();
+  inline function get_NOTE_DOWN_R() return _note_down.checkJustReleased();
 
   public var ACCEPT(get, never):Bool;
 
-  inline function get_ACCEPT()
-    return _accept.checkPressed();
+  inline function get_ACCEPT() return _accept.checkPressed();
 
   public var ACCEPT_P(get, never):Bool;
 
-  inline function get_ACCEPT_P()
-    return _accept.checkJustPressed();
+  inline function get_ACCEPT_P() return _accept.checkJustPressed();
 
   public var ACCEPT_R(get, never):Bool;
 
-  inline function get_ACCEPT_R()
-    return _accept.checkJustReleased();
+  inline function get_ACCEPT_R() return _accept.checkJustReleased();
 
   public var BACK(get, never):Bool;
 
-  inline function get_BACK()
-    return _back.checkPressed();
+  inline function get_BACK() return _back.checkPressed();
 
   public var BACK_P(get, never):Bool;
 
-  inline function get_BACK_P()
-    return _back.checkJustPressed();
+  inline function get_BACK_P() return _back.checkJustPressed();
 
   public var BACK_R(get, never):Bool;
 
-  inline function get_BACK_R()
-    return _back.checkJustReleased();
+  inline function get_BACK_R() return _back.checkJustReleased();
 
   public var PAUSE(get, never):Bool;
 
-  inline function get_PAUSE()
-    return _pause.checkPressed();
+  inline function get_PAUSE() return _pause.checkPressed();
 
   public var PAUSE_P(get, never):Bool;
 
-  inline function get_PAUSE_P()
-    return _pause.checkJustPressed();
+  inline function get_PAUSE_P() return _pause.checkJustPressed();
 
   public var PAUSE_R(get, never):Bool;
 
-  inline function get_PAUSE_R()
-    return _pause.checkJustReleased();
+  inline function get_PAUSE_R() return _pause.checkJustReleased();
 
   public var RESET(get, never):Bool;
 
-  inline function get_RESET()
-    return _reset.checkPressed();
+  inline function get_RESET() return _reset.checkPressed();
 
   public var RESET_P(get, never):Bool;
 
-  inline function get_RESET_P()
-    return _reset.checkJustPressed();
+  inline function get_RESET_P() return _reset.checkJustPressed();
 
   public var RESET_R(get, never):Bool;
 
-  inline function get_RESET_R()
-    return _reset.checkJustReleased();
+  inline function get_RESET_R() return _reset.checkJustReleased();
 
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
-  inline function get_WINDOW_FULLSCREEN()
-    return _window_fullscreen.check();
+  inline function get_WINDOW_FULLSCREEN() return _window_fullscreen.check();
 
   #if FEATURE_SCREENSHOTS
   public var WINDOW_SCREENSHOT(get, never):Bool;
 
-  inline function get_WINDOW_SCREENSHOT()
-    return _window_screenshot.check();
+  inline function get_WINDOW_SCREENSHOT() return _window_screenshot.check();
   #end
 
   public var FREEPLAY_FAVORITE(get, never):Bool;
 
-  inline function get_FREEPLAY_FAVORITE()
-    return _freeplay_favorite.check();
+  inline function get_FREEPLAY_FAVORITE() return _freeplay_favorite.check();
 
   public var FREEPLAY_LEFT(get, never):Bool;
 
-  inline function get_FREEPLAY_LEFT()
-    return _freeplay_left.check();
+  inline function get_FREEPLAY_LEFT() return _freeplay_left.check();
 
   public var FREEPLAY_RIGHT(get, never):Bool;
 
-  inline function get_FREEPLAY_RIGHT()
-    return _freeplay_right.check();
+  inline function get_FREEPLAY_RIGHT() return _freeplay_right.check();
 
   public var FREEPLAY_CHAR_SELECT(get, never):Bool;
 
-  inline function get_FREEPLAY_CHAR_SELECT()
-    return _freeplay_char_select.check();
+  inline function get_FREEPLAY_CHAR_SELECT() return _freeplay_char_select.check();
 
   public var FREEPLAY_JUMP_TO_TOP(get, never):Bool;
 
-  inline function get_FREEPLAY_JUMP_TO_TOP()
-    return _freeplay_jump_to_top.check();
+  inline function get_FREEPLAY_JUMP_TO_TOP() return _freeplay_jump_to_top.check();
 
   public var FREEPLAY_JUMP_TO_BOTTOM(get, never):Bool;
 
-  inline function get_FREEPLAY_JUMP_TO_BOTTOM()
-    return _freeplay_jump_to_bottom.check();
+  inline function get_FREEPLAY_JUMP_TO_BOTTOM() return _freeplay_jump_to_bottom.check();
 
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
-  inline function get_CUTSCENE_ADVANCE()
-    return _cutscene_advance.check();
+  inline function get_CUTSCENE_ADVANCE() return _cutscene_advance.check();
 
   #if FEATURE_DEBUG_MENU
   public var DEBUG_MENU(get, never):Bool;
 
-  inline function get_DEBUG_MENU()
-    return _debug_menu.check();
+  inline function get_DEBUG_MENU() return _debug_menu.check();
   #end
 
   #if FEATURE_CHART_EDITOR
   public var DEBUG_CHART(get, never):Bool;
 
-  inline function get_DEBUG_CHART()
-    return _debug_chart.check();
+  inline function get_DEBUG_CHART() return _debug_chart.check();
   #end
 
   #if FEATURE_STAGE_EDITOR
   public var DEBUG_STAGE(get, never):Bool;
 
-  inline function get_DEBUG_STAGE()
-    return _debug_stage.check();
+  inline function get_DEBUG_STAGE() return _debug_stage.check();
   #end
 
   public var DEBUG_DISPLAY(get, never):Bool;
 
-  inline function get_DEBUG_DISPLAY()
-    return _debug_display.check();
+  inline function get_DEBUG_DISPLAY() return _debug_display.check();
 
   public var VOLUME_UP(get, never):Bool;
 
-  inline function get_VOLUME_UP()
-    return _volume_up.check();
+  inline function get_VOLUME_UP() return _volume_up.check();
 
   public var VOLUME_DOWN(get, never):Bool;
 
-  inline function get_VOLUME_DOWN()
-    return _volume_down.check();
+  inline function get_VOLUME_DOWN() return _volume_down.check();
 
   public var VOLUME_MUTE(get, never):Bool;
 
-  inline function get_VOLUME_MUTE()
-    return _volume_mute.check();
+  inline function get_VOLUME_MUTE() return _volume_mute.check();
 
   public function new(name, ?scheme:KeyboardScheme)
   {
@@ -976,44 +924,8 @@ class Controls extends FlxActionSet
 
   public function addDefaultGamepad(id:Int):Void
   {
-    addGamepadLiteral(id, [
-      Control.ACCEPT => getDefaultGamepadBinds(Control.ACCEPT),
-      Control.BACK => getDefaultGamepadBinds(Control.BACK),
-      Control.UI_UP => getDefaultGamepadBinds(Control.UI_UP),
-      Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN),
-      Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT),
-      Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT),
-      Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP),
-      Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN),
-      Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT),
-      Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT),
-      Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE),
-      Control.RESET => getDefaultGamepadBinds(Control.RESET),
-      Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN),
-      #if FEATURE_SCREENSHOTS
-      Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT),
-      #end
-      Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE),
-      Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE),
-      Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT),
-      Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT),
-      Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT),
-      Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP),
-      Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM),
-      Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP),
-      Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN),
-      Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
-      #if FEATURE_DEBUG_MENU
-      Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU),
-      #end
-      #if FEATURE_CHART_EDITOR
-      Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART),
-      #end
-      #if FEATURE_STAGE_EDITOR
-      Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE),
-      #end
-      Control.DEBUG_DISPLAY => getDefaultGamepadBinds(Control.DEBUG_DISPLAY),
-    ]);
+    addGamepadLiteral(id,
+      [Control.ACCEPT => getDefaultGamepadBinds(Control.ACCEPT), Control.BACK => getDefaultGamepadBinds(Control.BACK), Control.UI_UP => getDefaultGamepadBinds(Control.UI_UP), Control.UI_DOWN => getDefaultGamepadBinds(Control.UI_DOWN), Control.UI_LEFT => getDefaultGamepadBinds(Control.UI_LEFT), Control.UI_RIGHT => getDefaultGamepadBinds(Control.UI_RIGHT), Control.NOTE_UP => getDefaultGamepadBinds(Control.NOTE_UP), Control.NOTE_DOWN => getDefaultGamepadBinds(Control.NOTE_DOWN), Control.NOTE_LEFT => getDefaultGamepadBinds(Control.NOTE_LEFT), Control.NOTE_RIGHT => getDefaultGamepadBinds(Control.NOTE_RIGHT), Control.PAUSE => getDefaultGamepadBinds(Control.PAUSE), Control.RESET => getDefaultGamepadBinds(Control.RESET), Control.WINDOW_FULLSCREEN => getDefaultGamepadBinds(Control.WINDOW_FULLSCREEN), #if FEATURE_SCREENSHOTS Control.WINDOW_SCREENSHOT => getDefaultGamepadBinds(Control.WINDOW_SCREENSHOT), #end Control.CUTSCENE_ADVANCE => getDefaultGamepadBinds(Control.CUTSCENE_ADVANCE), Control.FREEPLAY_FAVORITE => getDefaultGamepadBinds(Control.FREEPLAY_FAVORITE), Control.FREEPLAY_LEFT => getDefaultGamepadBinds(Control.FREEPLAY_LEFT), Control.FREEPLAY_RIGHT => getDefaultGamepadBinds(Control.FREEPLAY_RIGHT), Control.FREEPLAY_CHAR_SELECT => getDefaultGamepadBinds(Control.FREEPLAY_CHAR_SELECT), Control.FREEPLAY_JUMP_TO_TOP => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_TOP), Control.FREEPLAY_JUMP_TO_BOTTOM => getDefaultGamepadBinds(Control.FREEPLAY_JUMP_TO_BOTTOM), Control.VOLUME_UP => getDefaultGamepadBinds(Control.VOLUME_UP), Control.VOLUME_DOWN => getDefaultGamepadBinds(Control.VOLUME_DOWN), Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE), #if FEATURE_DEBUG_MENU Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU), #end#if FEATURE_CHART_EDITOR Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART), #end#if FEATURE_STAGE_EDITOR Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE), #end Control.DEBUG_DISPLAY => getDefaultGamepadBinds(Control.DEBUG_DISPLAY),]);
   }
 
   function getDefaultGamepadBinds(control:Control):Array<FlxGamepadInputID>
@@ -1267,7 +1179,8 @@ class FunkinAction extends FlxActionDigital
   public var namePressed(default, null):Null<String>;
   public var nameReleased(default, null):Null<String>;
 
-  var cache:Map<String, {timestamp:Int, value:Bool}> = [];
+  var cache:Map<String,
+    {timestamp:Int, value:Bool}> = [];
 
   public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
   {

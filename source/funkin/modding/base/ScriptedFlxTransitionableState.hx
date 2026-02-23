@@ -5,4 +5,6 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxTransitionableState to use this.
  */
 @:hscriptClass
-class ScriptedFlxTransitionableState extends flixel.addons.transition.FlxTransitionableState implements HScriptedClass {}
+class ScriptedFlxTransitionableState extends flixel.addons.transition.FlxTransitionableState implements HScriptedClass
+{
+}

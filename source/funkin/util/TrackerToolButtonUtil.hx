@@ -19,8 +19,10 @@ class TrackerToolButtonUtil extends Tool
     _name = "Add Tracker";
     setButton(GraphicCursorCross);
 
-    button.upHandler = function() {
-      brain.selectedItems.forEach(function(item) {
+    button.upHandler = function()
+    {
+      brain.selectedItems.forEach(function(item)
+      {
         FlxG.debugger.track(item);
       });
     };

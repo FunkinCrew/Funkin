@@ -9,9 +9,14 @@ import funkin.graphics.FlxFilteredSprite;
 @:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
 {
+  public var char:String;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
+
+    this.char = '';
+
     this.makeGraphic(32, 32, 0x00000000);
     this.antialiasing = false;
     this.active = false;
@@ -19,6 +24,9 @@ class PixelatedIcon extends FlxFilteredSprite
 
   public function setCharacter(char:String):Void
   {
+    if (this.char == char) return;
+    this.char = char;
+
     var charPath:String = "freeplay/icons/";
 
     final charIDParts:Array<String> = char.split("-");
@@ -80,7 +88,8 @@ class PixelatedIcon extends FlxFilteredSprite
       this.animation.addByPrefix('confirm', 'confirm0', 10, false);
       this.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
 
-      this.animation.onFinish.add(function(name:String):Void {
+      this.animation.onFinish.add(function(name:String):Void
+      {
         if (name == 'confirm') this.animation.play('confirm-hold');
       });
 

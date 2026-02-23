@@ -6,4 +6,6 @@ package funkin.data;
  * @see `funkin.data.BaseRegistry`
  */
 @:autoBuild(funkin.util.macro.RegistryMacro.buildRegistry())
-interface DefaultRegistryImpl {}
+interface DefaultRegistryImpl
+{
+}

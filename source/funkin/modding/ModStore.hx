@@ -24,7 +24,8 @@ class ModStore
   public static function register(id:String, ?data:Dynamic):Dynamic
   {
     if (stores.exists(id)) return stores.get(id);
-    stores.set(id, data ??= {});
+    stores.set(id, data ??= {
+    });
     return data;
   }
 

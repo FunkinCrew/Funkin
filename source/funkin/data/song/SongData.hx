@@ -566,7 +566,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.opponent = opponent;
     this.instrumental = instrumental;
 
-    this.altInstrumentals = altInstrumentals;
+    this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
 
@@ -780,7 +780,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
-    if (this.value == null) return {};
+    if (this.value == null) return
+    {
+    };
     if (Std.isOfType(this.value, Array))
     {
       var result:haxe.DynamicAccess<Dynamic> = {};

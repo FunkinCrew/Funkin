@@ -1,20 +1,18 @@
 package funkin.util;
 
-import flixel.util.FlxTimer;
-import haxe.io.Path;
 import haxe.zip.Entry;
-import lime.ui.FileDialog;
 import lime.utils.Bytes;
+import lime.ui.FileDialog;
+import openfl.net.FileFilter;
+import haxe.io.Path;
+import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.net.FileFilter;
-import openfl.net.FileReference;
 #if FEATURE_HAXEUI
-import haxe.ui.backend.OpenFileDialogBase.OpenFileDialogOptions;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
+import haxe.ui.containers.dialogs.Dialogs.FileDialogExtensionInfo;
 #end
 
 using StringTools;
@@ -32,27 +30,23 @@ class FileUtil
   public static final FILE_FILTER_FNFS:FileFilter = new FileFilter("Friday Night Funkin' Stage (.fnfs)", "*.fnfs");
 
   #if FEATURE_HAXEUI
-  public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo =
-    {
-      extension: 'fnfc',
-      label: 'Friday Night Funkin\' Chart',
-    };
-  public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo =
-    {
-      extension: 'zip',
-      label: 'ZIP Archive',
-    };
-  public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo =
-    {
-      extension: 'png',
-      label: 'PNG Image',
-    };
+  public static final FILE_EXTENSION_INFO_FNFC:FileDialogExtensionInfo = {
+    extension: 'fnfc',
+    label: 'Friday Night Funkin\' Chart',
+  };
+  public static final FILE_EXTENSION_INFO_ZIP:FileDialogExtensionInfo = {
+    extension: 'zip',
+    label: 'ZIP Archive',
+  };
+  public static final FILE_EXTENSION_INFO_PNG:FileDialogExtensionInfo = {
+    extension: 'png',
+    label: 'PNG Image',
+  };
 
-  public static final FILE_EXTENSION_INFO_FNFS:FileDialogExtensionInfo =
-    {
-      extension: 'fnfs',
-      label: 'Friday Night Funkin\' Stage',
-    };
+  public static final FILE_EXTENSION_INFO_FNFS:FileDialogExtensionInfo = {
+    extension: 'fnfs',
+    label: 'Friday Night Funkin\' Stage',
+  };
   #end
 
   /**
@@ -62,25 +56,7 @@ class FileUtil
 
   public static function get_PROTECTED_PATHS():Array<String>
   {
-    final protected:Array<String> = [
-      '',
-      '.',
-      'assets',
-      'assets/*',
-      'backups',
-      'backups/*',
-      'manifest',
-      'manifest/*',
-      'plugins',
-      'plugins/*',
-      'Funkin.exe',
-      'Funkin',
-      'icon.ico',
-      'libvlc.dll',
-      'libvlccore.dll',
-      'lime.ndll',
-      'scores.json'
-    ];
+    final protected:Array<String> = ['', '.', 'assets', 'assets/*', 'backups', 'backups/*', 'manifest', 'manifest/*', 'plugins', 'plugins/*', 'Funkin.exe', 'Funkin', 'icon.ico', 'libvlc.dll', 'libvlccore.dll', 'lime.ndll', 'scores.json'];
 
     #if sys
     for (i in 0...protected.length)
@@ -125,7 +101,8 @@ class FileUtil
   public static function browseForBinaryFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
       ?onCancel:() -> Void)
   {
-    var onComplete = function(button, selectedFiles) {
+    var onComplete = function(button, selectedFiles)
+    {
       if (button == DialogButton.OK && selectedFiles.length > 0)
       {
         onSelect(selectedFiles[0]);
@@ -136,14 +113,13 @@ class FileUtil
       }
     };
 
-    openBrowseDialog(onComplete,
-      {
-        readContents: true,
-        readAsBinary: true, // Binary
-        multiple: false,
-        extensions: typeFilter ?? new Array<FileDialogExtensionInfo>(),
-        title: dialogTitle,
-      });
+    Dialogs.openFile(onComplete, {
+      readContents: true,
+      readAsBinary: true, // Binary
+      multiple: false,
+      extensions: typeFilter ?? new Array<FileDialogExtensionInfo>(),
+      title: dialogTitle,
+    });
   }
 
   /**
@@ -158,7 +134,8 @@ class FileUtil
   public static function browseForTextFile(dialogTitle:String, ?typeFilter:Array<FileDialogExtensionInfo>, onSelect:(SelectedFileInfo) -> Void,
       ?onCancel:() -> Void):Void
   {
-    var onComplete = function(button, selectedFiles) {
+    var onComplete = function(button, selectedFiles)
+    {
       if (button == DialogButton.OK && selectedFiles.length > 0)
       {
         onSelect(selectedFiles[0]);
@@ -169,30 +146,12 @@ class FileUtil
       }
     };
 
-    openBrowseDialog(onComplete,
-      {
-        readContents: true,
-        readAsBinary: false, // Text
-        multiple: false,
-        extensions: typeFilter ?? new Array<FileDialogExtensionInfo>(),
-        title: dialogTitle,
-      });
-  }
-
-  static function openBrowseDialog(onComplete:DialogButton->Array<SelectedFileInfo>->Void, options:OpenFileDialogOptions):Void
-  {
-    // Resolve an issue where the game failed to handle focus loss during the browse dialog.
-    // We do this by forcing autoPause on, waiting a bit before opening the dialog, then restoring the value after the dialog closes.
-
-    FlxG.autoPause = true;
-
-    var callback:DialogButton->Array<SelectedFileInfo>->Void = function(button, selectedFiles) {
-      FlxG.autoPause = Preferences.autoPause;
-      onComplete(button, selectedFiles);
-    };
-
-    FlxTimer.wait(0.2, function() {
-      Dialogs.openFile(callback, options);
+    Dialogs.openFile(onComplete, {
+      readContents: true,
+      readAsBinary: false, // Text
+      multiple: false,
+      extensions: typeFilter ?? new Array<FileDialogExtensionInfo>(),
+      title: dialogTitle,
     });
   }
   #end
@@ -364,7 +323,8 @@ class FileUtil
   {
     #if desktop
     // Prompt the user for a directory, then write all of the files to there.
-    var onSelectDir:(String) -> Void = function(targetPath:String):Void {
+    var onSelectDir:(String) -> Void = function(targetPath:String):Void
+    {
       var paths:Array<String> = new Array<String>();
       for (resource in resources)
       {
@@ -437,7 +397,8 @@ class FileUtil
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-    var onSave:(String) -> Void = function(path:String) {
+    var onSave:(String) -> Void = function(path:String)
+    {
       trace('Saved ${resources.length} files to ZIP at "$path"');
 
       if (onSave != null)
@@ -459,7 +420,8 @@ class FileUtil
   {
     // Create a ZIP file.
     var zipBytes:Bytes = createZIPFromEntries(resources);
-    var onSave:(String) -> Void = function(path:String) {
+    var onSave:(String) -> Void = function(path:String)
+    {
       trace('Saved FNFC file to "$path"');
 
       if (onSave != null)
@@ -532,11 +494,13 @@ class FileUtil
   public static function browseFileReference(callback:(FileReference) -> Void):Void
   {
     var file = new FileReference();
-    file.addEventListener(Event.SELECT, function(e) {
+    file.addEventListener(Event.SELECT, function(e)
+    {
       var selectedFileRef:FileReference = e.target;
       trace('Selected file: ' + selectedFileRef.name);
 
-      selectedFileRef.addEventListener(Event.COMPLETE, function(e) {
+      selectedFileRef.addEventListener(Event.COMPLETE, function(e)
+      {
         var loadedFileRef:FileReference = e.target;
         trace('Loaded file: ' + loadedFileRef.name);
 
@@ -556,17 +520,20 @@ class FileUtil
   {
     var file = new FileReference();
 
-    file.addEventListener(Event.COMPLETE, function(e:Event) {
+    file.addEventListener(Event.COMPLETE, function(e:Event)
+    {
       trace('Successfully wrote file: "$path"');
       callback("success");
     });
 
-    file.addEventListener(Event.CANCEL, function(e:Event) {
+    file.addEventListener(Event.CANCEL, function(e:Event)
+    {
       trace('Cancelled writing file: "$path"');
       callback("info");
     });
 
-    file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent) {
+    file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent)
+    {
       trace('IO error writing file: "$path"');
       callback("error");
     });
@@ -1201,16 +1168,7 @@ class FileUtil
     #elseif linux
     var exitCode = Sys.command("xdg-open", [pathFolder]);
     if (exitCode == 0) return;
-    var fileManagers:Array<String> = [
-      "dolphin",
-      "nautilus",
-      "nemo",
-      "thunar",
-      "caja",
-      "konqueror",
-      "spacefm",
-      "pcmanfm"
-    ];
+    var fileManagers:Array<String> = ["dolphin", "nautilus", "nemo", "thunar", "caja", "konqueror", "spacefm", "pcmanfm"];
 
     for (fm in fileManagers)
     {

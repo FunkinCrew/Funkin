@@ -149,24 +149,19 @@ class TouchUtil
   // weird mix between "looks weird" and "looks neat" but i'll keep it for now -Zack
 
   @:noCompletion
-  inline static function get_justMoved():Bool
-    return touch != null && touch.justMoved;
+  inline static function get_justMoved():Bool return touch != null && touch.justMoved;
 
   @:noCompletion
-  inline static function get_pressed():Bool
-    return touch != null && touch.pressed;
+  inline static function get_pressed():Bool return touch != null && touch.pressed;
 
   @:noCompletion
-  inline static function get_justPressed():Bool
-    return touch != null && touch.justPressed;
+  inline static function get_justPressed():Bool return touch != null && touch.justPressed;
 
   @:noCompletion
-  inline static function get_justReleased():Bool
-    return touch != null && touch.justReleased;
+  inline static function get_justReleased():Bool return touch != null && touch.justReleased;
 
   @:noCompletion
-  static function get_released():Bool
-    return touch != null && touch.released;
+  static function get_released():Bool return touch != null && touch.released;
 
   #if mobile
   @:noCompletion

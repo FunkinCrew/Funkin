@@ -47,8 +47,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   #if mobile
   public var hitbox:Null<FunkinHitbox>;
@@ -168,7 +167,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
   }
 
-  public function initConsoleHelpers():Void {}
+  public function initConsoleHelpers():Void
+  {
+  }
 
   function reloadAssets()
   {

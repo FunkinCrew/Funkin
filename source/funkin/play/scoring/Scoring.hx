@@ -420,7 +420,8 @@ class Scoring
   public static function tallyCompletion(?tallies:SaveScoreTallyData):Float
   {
     if (tallies == null) return 0.0;
-    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0, 1); // Needs to be clamped to make sure Perfect ranks are saved properly
+    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0,
+      1); // Needs to be clamped to make sure Perfect ranks are saved properly
   }
 }
 

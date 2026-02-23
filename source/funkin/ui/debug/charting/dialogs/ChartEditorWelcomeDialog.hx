@@ -58,11 +58,10 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
    */
   public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorWelcomeDialog
   {
-    var dialog = new ChartEditorWelcomeDialog(chartEditorState,
-      {
-        closable: closable ?? false,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorWelcomeDialog(chartEditorState, {
+      closable: closable ?? false,
+      modal: modal ?? true
+    });
 
     dialog.showDialog(modal ?? true);
 
@@ -93,7 +92,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     linkRecentChart.tooltip += "\n" + lastModified;
     #end
 
-    linkRecentChart.onClick = function(_event) {
+    linkRecentChart.onClick = function(_event)
+    {
       linkRecentChart.hide();
 
       this.hideDialog(DialogButton.CANCEL);
@@ -153,7 +153,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
         continue;
       }
 
-      this.addTemplateSong(songName, targetSongId, (_) -> {
+      this.addTemplateSong(songName, targetSongId, (_) ->
+      {
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template

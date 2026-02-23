@@ -89,44 +89,35 @@ extern class Native_TracyProfiler
 class Cppia_TracyProfiler
 {
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.frameMark)
-  public static function frameMark()
-    Native_TracyProfiler.frameMark();
+  public static function frameMark() Native_TracyProfiler.frameMark();
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.frameMarkNamed)
-  public static function frameMarkNamed(_name:String)
-    Native_TracyProfiler.frameMarkNamed(_name);
+  public static function frameMarkNamed(_name:String) Native_TracyProfiler.frameMarkNamed(_name);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.frameMarkStart)
-  public static function frameMarkStart(_name:String)
-    Native_TracyProfiler.frameMarkStart(_name);
+  public static function frameMarkStart(_name:String) Native_TracyProfiler.frameMarkStart(_name);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.frameMarkEnd)
-  public static function frameMarkEnd(_name:String)
-    Native_TracyProfiler.frameMarkEnd(_name);
+  public static function frameMarkEnd(_name:String) Native_TracyProfiler.frameMarkEnd(_name);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.message)
-  public static function message(_msg:String, ?_color:Int = 0x000000)
-    Native_TracyProfiler.message(_msg, _color);
+  public static function message(_msg:String, ?_color:Int = 0x000000) Native_TracyProfiler.message(_msg, _color);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.messageAppInfo)
-  public static function messageAppInfo(_info:String)
-    Native_TracyProfiler.messageAppInfo(_info);
+  public static function messageAppInfo(_info:String) Native_TracyProfiler.messageAppInfo(_info);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.plot)
-  public static function plot(_name:String, _val:Float)
-    Native_TracyProfiler.plot(_name, _val);
+  public static function plot(_name:String, _val:Float) Native_TracyProfiler.plot(_name, _val);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.plotConfig)
-  public static function plotConfig(_name:String, _format:PlotFormatType, ?_step:Bool = false, ?_fill:Bool = false, ?_color:Int = 0x000000)
-    Native_TracyProfiler.plotConfig(_name, _format, _step, _fill, _color);
+  public static function plotConfig(_name:String, _format:PlotFormatType, ?_step:Bool = false, ?_fill:Bool = false,
+      ?_color:Int = 0x000000) Native_TracyProfiler.plotConfig(_name, _format, _step, _fill, _color);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.setThreadName)
-  public static function setThreadName(_name:String, ?_groupHint:Int = 1)
-    Native_TracyProfiler.setThreadName(_name, _groupHint);
+  public static function setThreadName(_name:String, ?_groupHint:Int = 1) Native_TracyProfiler.setThreadName(_name, _groupHint);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.zoneScoped)
-  public static function zoneScoped(_name:String)
-    Native_TracyProfiler.zoneScoped(_name);
+  public static function zoneScoped(_name:String) Native_TracyProfiler.zoneScoped(_name);
 }
 
 typedef TracyProfiler = Cppia_TracyProfiler;

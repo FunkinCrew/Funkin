@@ -88,7 +88,7 @@ class NoteKindManager
       {
         try
         {
-          var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
+          var script:NoteKind = ScriptedNoteKind.scriptInit(scriptedClass, "unknown");
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
           #if FEATURE_CHART_EDITOR

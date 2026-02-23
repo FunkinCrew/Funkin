@@ -58,7 +58,8 @@ class NGSaveSlot
 
     try
     {
-      ngSaveSlot?.save(encodedData, function(outcome:Outcome<CallError>) {
+      ngSaveSlot?.save(encodedData, function(outcome:Outcome<CallError>)
+      {
         switch (outcome)
         {
           case SUCCESS:
@@ -80,7 +81,8 @@ class NGSaveSlot
   {
     try
     {
-      ngSaveSlot?.load(function(outcome:SaveSlotOutcome):Void {
+      ngSaveSlot?.load(function(outcome:SaveSlotOutcome):Void
+      {
         switch (outcome)
         {
           case SUCCESS(value):
@@ -122,7 +124,8 @@ class NGSaveSlot
   {
     try
     {
-      ngSaveSlot?.clear(function(outcome:Outcome<CallError>) {
+      ngSaveSlot?.clear(function(outcome:Outcome<CallError>)
+      {
         switch (outcome)
         {
           case SUCCESS:

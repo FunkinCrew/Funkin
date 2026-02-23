@@ -1,30 +1,306 @@
 {
   "disableFormatting": false,
 
+  "emptyLines": {
+    "finalNewline": true,
+
+    "maxAnywhereInFile": 1,
+
+    "beforePackage": 0,
+    "afterPackage": 1,
+
+    "importAndUsing": {
+      "betweenImports": 0,
+      "betweenImportsLevel": "firstLevelPackage",
+      "beforeUsing": 1,
+      "beforeType": 1
+    },
+
+    "betweenTypes": 1,
+
+    "lineCommentsBetweenTypes": "keep",
+    "lineCommentsBetweenFunctions": "keep",
+
+    "betweenSingleLineTypes": 0,
+
+    "beforeRightCurly": "remove",
+    "afterLeftCurly": "remove",
+    "afterReturn": "remove",
+
+    "beforeBlocks": "remove",
+    "afterBlocks": "remove",
+
+    "enumAbstractEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenVars": 0,
+      "afterVars": 1,
+      "betweenFunctions": 1,
+      "existingBetweenFields": "keep"
+    },
+
+    "classEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenStaticVars": 0,
+      "afterStaticVars": 1,
+      "afterPrivateVars": 1,
+      "betweenVars": 0,
+      "afterVars": 1,
+      "afterStaticFunctions": 1,
+      "betweenStaticFunctions": 1,
+      "afterPrivateFunctions": 1,
+      "betweenFunctions": 1,
+
+      "existingBetweenFields": "keep"
+    },
+
+    "macroClassEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenStaticVars": 0,
+      "afterStaticVars": 1,
+      "afterPrivateVars": 1,
+      "betweenVars": 0,
+      "afterVars": 1,
+      "afterStaticFunctions": 1,
+      "betweenStaticFunctions": 1,
+      "afterPrivateFunctions": 1,
+      "betweenFunctions": 1,
+
+      "existingBetweenFields": "keep"
+    },
+
+    "externClassEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenVars": 0,
+      "afterVars": 0,
+      "betweenFunctions": 0,
+      "existingBetweenFields": "keep"
+    },
+
+    "abstractEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenStaticVars": 0,
+      "afterStaticVars": 1,
+      "afterPrivateVars": 1,
+      "betweenVars": 0,
+      "afterVars": 1,
+      "afterStaticFunctions": 1,
+      "betweenStaticFunctions": 1,
+      "afterPrivateFunctions": 1,
+      "betweenFunctions": 1,
+
+      "existingBetweenFields": "keep"
+    },
+
+    "interfaceEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenVars": 0,
+      "afterVars": 0,
+      "betweenFunctions": 0,
+      "existingBetweenFields": "keep"
+    },
+
+    "enumEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenFields": 0,
+      "existingBetweenFields": "keep"
+    },
+
+    "typedefEmptyLines": {
+      "beginType": 0,
+      "endType": 0,
+
+      "betweenFields": 0,
+      "existingBetweenFields": "keep"
+    },
+
+    "conditionalsEmptyLines": {
+      "afterIf": 0,
+      "beforeElse": 0,
+      "afterElse": 0,
+      "beforeEnd": 0,
+      "beforeError": 0,
+      "afterError": 0
+    },
+
+    "beforeDocCommentEmptyLines": "one",
+    "afterFieldsWithDocComments": "one",
+
+    "afterFileHeaderComment": 1,
+    "betweenMultilineComments": 0
+  },
+
   "indentation": {
+    "conditionalPolicy": "aligned",
+
     "character": "  ",
     "tabWidth": 2,
+
+    "trailingWhitespace": false,
+
+    "indentObjectLiteral": true,
+    "indentComplexValueExpressions": false,
     "indentCaseLabels": true
   },
+
   "lineEnds": {
+    "lineEndCharacter": "auto",
+
+    "metadataType": "none",
+    "metadataVar": "none",
+    "metadataFunction": "none",
+    "metadataOther": "none",
+
+    "caseColon": "after",
+    "sharp": "after",
+
+    "leftCurly": "both",
+    "rightCurly": "both",
+    "emptyCurly": "noBreak",
+
+    "blockCurly": {
+      "emptyCurly": "break",
+      "leftCurly": "both",
+      "rightCurly": "both"
+    },
+
     "anonFunctionCurly": {
+      "emptyCurly": "break",
+      "leftCurly": "both",
+      "rightCurly": "both"
+    },
+
+    "anonTypeCurly": {
+      "emptyCurly": "break",
+      "leftCurly": "both",
+      "rightCurly": "both"
+    },
+
+    "objectLiteralCurly": {
       "emptyCurly": "break",
       "leftCurly": "after",
       "rightCurly": "both"
     },
-    "leftCurly": "both",
-    "rightCurly": "both"
+
+    "typedefCurly": {
+      "emptyCurly": "break",
+      "leftCurly": "both",
+      "rightCurly": "both"
+    }
   },
 
   "sameLine": {
     "ifBody": "same",
+    "elseBody": "next",
+
     "ifElse": "next",
-    "doWhile": "next",
+
+    "elseIf": "same",
+    "ifElseSemicolonNextLine": true,
+
+    "expressionIf": "same",
+    "expressionIfWithBlocks": false,
+
+    "forBody": "next",
+
+    "comprehensionFor": "same",
+
+    "whileBody": "next",
+    "doWhileBody": "next",
+
+    "doWhile": "same",
+
     "tryBody": "next",
-    "tryCatch": "next"
+    "catchBody": "next",
+
+    "tryCatch": "next",
+
+    "caseBody": "next",
+    "expressionCase": "keep",
+    "expressionTry": "same",
+
+    "functionBody": "same",
+    "anonFunctionBody": "same",
+    "returnBody": "same",
+    "returnBodySingleLine": "same",
+
+    "untypedBody": "same"
   },
 
   "whitespace": {
-    "switchPolicy": "around"
-  }
+    "parenConfig": {},
+    "bracesConfig": {},
+    "bracketConfig": {},
+
+    "typeParamOpenPolicy": "none",
+    "typeParamClosePolicy": "none",
+
+    "typeExtensionPolicy": "after",
+
+    "commaPolicy": "onlyAfter",
+    "dotPolicy": "none",
+    "colonPolicy": "none",
+    "caseColonPolicy": "onlyAfter",
+    "objectFieldColonPolicy": "after",
+    "typeHintColonPolicy": "none",
+    "typeCheckColonPolicy": "around",
+    "ternaryPolicy": "around",
+    "semicolonPolicy": "onlyAfter",
+    "ifPolicy": "after",
+    "doPolicy": "after",
+    "whilePolicy": "after",
+    "forPolicy": "after",
+    "switchPolicy": "around",
+    "tryPolicy": "after",
+    "catchPolicy": "after",
+    "binopPolicy": "around",
+    "intervalPolicy": "none",
+    "arrowFunctionsPolicy": "around",
+    "functionTypeHaxe3Policy": "none",
+    "functionTypeHaxe4Policy": "around",
+
+    "compressSuccessiveParenthesis": true,
+    "formatStringInterpolation": true,
+    "addLineCommentSpace": true
+  },
+
+  "wrapping": {
+    "maxLineLength": 160,
+
+    "arrayWrap": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "mapWrap": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "typeParameter": {
+      "defaultWrap": "noWrap"
+    }
+  },
+
+  "excludes": [
+    "_Provide a list of regular expressions to exclude from formatting.",
+    ".haxelib",
+    ".git",
+    "node_modules"
+  ]
 }

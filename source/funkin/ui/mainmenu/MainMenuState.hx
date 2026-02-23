@@ -141,22 +141,26 @@ class MainMenuState extends MusicBeatState
     add(menuItems);
 
     menuItems.onChange.add(onMenuItemChange);
-    menuItems.onAcceptPress.add(_ -> {
+    menuItems.onAcceptPress.add(_ ->
+    {
       FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
       uiStateMachine.transition(Interacting);
     });
 
     menuItems.enabled = true;
 
-    createMenuItem('storymode', 'mainmenu/storymode', () -> {
-      FlxG.signals.preStateSwitch.addOnce(() -> {
+    createMenuItem('storymode', 'mainmenu/storymode', () ->
+    {
+      FlxG.signals.preStateSwitch.addOnce(() ->
+      {
         funkin.FunkinMemory.clearFreeplay();
         funkin.FunkinMemory.purgeCache();
       });
       startExitState(() -> new StoryMenuState());
     });
 
-    createMenuItem('freeplay', 'mainmenu/freeplay', function() {
+    createMenuItem('freeplay', 'mainmenu/freeplay', function()
+    {
       persistentDraw = true;
       persistentUpdate = false;
       rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
@@ -182,10 +186,9 @@ class MainMenuState extends MusicBeatState
         }
       }
 
-      openSubState(new FreeplayState(
-        {
-          character: targetCharacter
-        }));
+      openSubState(new FreeplayState({
+        character: targetCharacter
+      }));
     });
 
     if (hasUpgraded)
@@ -202,7 +205,8 @@ class MainMenuState extends MusicBeatState
     {
       add(upgradeSparkles);
 
-      createMenuItem('upgrade', 'mainmenu/upgrade', function() {
+      createMenuItem('upgrade', 'mainmenu/upgrade', function()
+      {
         #if FEATURE_MOBILE_IAP
         InAppPurchasesUtil.purchase(InAppPurchasesUtil.UPGRADE_PRODUCT_ID, FlxG.resetState);
         uiStateMachine.transition(Idle);
@@ -212,12 +216,14 @@ class MainMenuState extends MusicBeatState
 
     if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end)
     {
-      createMenuItem('options', 'mainmenu/options', function() {
+      createMenuItem('options', 'mainmenu/options', function()
+      {
         startExitState(() -> new funkin.ui.options.OptionsState());
       });
     }
 
-    createMenuItem('credits', 'mainmenu/credits', function() {
+    createMenuItem('credits', 'mainmenu/credits', function()
+    {
       startExitState(() -> new funkin.ui.credits.CreditsState());
     });
 
@@ -252,7 +258,8 @@ class MainMenuState extends MusicBeatState
         sparkle.scrollFactor.y = 0.4;
       }
 
-      subStateClosed.add(_ -> {
+      subStateClosed.add(_ ->
+      {
         for (i in 0...upgradeSparkles.length)
         {
           upgradeSparkles.members[i].restartSparkle();
@@ -265,10 +272,12 @@ class MainMenuState extends MusicBeatState
     // reset camera when debug menu is closed
     subStateClosed.add(_ -> resetCamStuff(false));
 
-    subStateOpened.add((sub:FlxSubState) -> {
+    subStateOpened.add((sub:FlxSubState) ->
+    {
       if (Std.isOfType(sub, FreeplayState))
       {
-        FlxTimer.wait(0.5, () -> {
+        FlxTimer.wait(0.5, () ->
+        {
           magenta.visible = false;
         });
       }
@@ -289,12 +298,14 @@ class MainMenuState extends MusicBeatState
       addOptionsButton(35, FlxG.height - 210, goOptions);
     }
 
-    backButton?.onConfirmStart.add(() -> {
+    backButton?.onConfirmStart.add(() ->
+    {
       uiStateMachine.transition(Interacting);
       trace('BACK: Interact Start');
     });
 
-    optionsButton?.onConfirmStart.add(() -> {
+    optionsButton?.onConfirmStart.add(() ->
+    {
       uiStateMachine.transition(Interacting);
       trace('OPTIONS: Interact Start');
     });
@@ -322,13 +333,12 @@ class MainMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu',
-      {
-        overrideExisting: true,
-        restartTrack: false,
-        // Continue playing this music between states, until a different music track gets played.
-        persist: true
-      });
+    FunkinSound.playMusic('freakyMenu', {
+      overrideExisting: true,
+      restartTrack: false,
+      // Continue playing this music between states, until a different music track gets played.
+      persist: true
+    });
   }
 
   function resetCamStuff(snap:Bool = true):Void
@@ -412,7 +422,8 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(Interacting);
     persistentUpdate = false;
 
-    prompt.closeCallback = function() {
+    prompt.closeCallback = function()
+    {
       // in our closeSubstate override, we set the uiStateMachine, so no need to set here
       if (onClose != null) onClose();
     }
@@ -429,7 +440,8 @@ class MainMenuState extends MusicBeatState
 
     // the fadeout duration for the initial alpha tweens, not the screen wipe fadeout!
     var fadeOutDuration:Float = 0.4;
-    menuItems.forEach(item -> {
+    menuItems.forEach(item ->
+    {
       if (rememberedSelectedIndex != item.ID) FlxTween.tween(item, {alpha: 0}, fadeOutDuration, {ease: FlxEase.quadOut});
       else
         item.visible = false;
@@ -440,7 +452,8 @@ class MainMenuState extends MusicBeatState
     if (backButton != null) FlxTween.tween(backButton, {alpha: 0}, fadeOutDuration, {ease: FlxEase.quadOut});
     #end
 
-    FlxTimer.wait(fadeOutDuration, () -> {
+    FlxTimer.wait(fadeOutDuration, () ->
+    {
       trace('Exiting MainMenuState...');
       FlxG.switchState(state);
     });
@@ -527,22 +540,20 @@ class MainMenuState extends MusicBeatState
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
       // Give the user a score of 1 point on Weekend 1 story mode (Easy difficulty).
       // This makes the level count as cleared and displays the songs in Freeplay.
-      funkin.save.Save.instance.setLevelScore('weekend1', 'easy',
-        {
-          score: 1,
-          tallies:
-            {
-              sick: 0,
-              good: 0,
-              bad: 0,
-              shit: 0,
-              missed: 0,
-              combo: 0,
-              maxCombo: 0,
-              totalNotesHit: 0,
-              totalNotes: 0,
-            }
-        });
+      funkin.save.Save.instance.setLevelScore('weekend1', 'easy', {
+        score: 1,
+        tallies: {
+          sick: 0,
+          good: 0,
+          bad: 0,
+          shit: 0,
+          missed: 0,
+          combo: 0,
+          maxCombo: 0,
+          totalNotesHit: 0,
+          totalNotes: 0,
+        }
+      });
     }
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, M]))
@@ -552,22 +563,20 @@ class MainMenuState extends MusicBeatState
       // This makes the level count as uncleared and no longer displays the songs in Freeplay.
       for (diff in ['easy', 'normal', 'hard'])
       {
-        funkin.save.Save.instance.setLevelScore('weekend1', diff,
-          {
-            score: 0,
-            tallies:
-              {
-                sick: 0,
-                good: 0,
-                bad: 0,
-                shit: 0,
-                missed: 0,
-                combo: 0,
-                maxCombo: 0,
-                totalNotesHit: 0,
-                totalNotes: 0,
-              }
-          });
+        funkin.save.Save.instance.setLevelScore('weekend1', diff, {
+          score: 0,
+          tallies: {
+            sick: 0,
+            good: 0,
+            bad: 0,
+            shit: 0,
+            missed: 0,
+            combo: 0,
+            maxCombo: 0,
+            totalNotesHit: 0,
+            totalNotes: 0,
+          }
+        });
       }
     }
 
@@ -575,22 +584,20 @@ class MainMenuState extends MusicBeatState
     {
       // Give the user a hypothetical overridden score,
       // and see if we can maintain that golden P rank.
-      funkin.save.Save.instance.setSongScore('tutorial', 'easy',
-        {
-          score: 1234567,
-          tallies:
-            {
-              sick: 0,
-              good: 0,
-              bad: 0,
-              shit: 1,
-              missed: 0,
-              combo: 0,
-              maxCombo: 0,
-              totalNotesHit: 1,
-              totalNotes: 10,
-            }
-        });
+      funkin.save.Save.instance.setSongScore('tutorial', 'easy', {
+        score: 1234567,
+        tallies: {
+          sick: 0,
+          good: 0,
+          bad: 0,
+          shit: 1,
+          missed: 0,
+          combo: 0,
+          maxCombo: 0,
+          totalNotesHit: 1,
+          totalNotes: 10,
+        }
+      });
     }
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, N]))

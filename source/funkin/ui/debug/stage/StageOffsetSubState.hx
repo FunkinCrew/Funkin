@@ -78,15 +78,15 @@ class StageOffsetSubState extends HaxeUISubState
       var prop:StageProp = cast thing;
       if (prop != null && prop.name != null)
       {
-        layerList.dataSource.add(
-          {
-            item: prop.name,
-            complete: true,
-            id: 'swag'
-          });
+        layerList.dataSource.add({
+          item: prop.name,
+          complete: true,
+          id: 'swag'
+        });
       }
 
-      FlxMouseEvent.add(thing, spr -> {
+      FlxMouseEvent.add(thing, spr ->
+      {
         // onMouseClick
 
         trace(spr);
@@ -96,7 +96,8 @@ class StageOffsetSubState extends HaxeUISubState
         {
           if (FlxG.keys.pressed.CONTROL && char != dyn) selectProp(dyn.name);
         }
-      }, null, spr -> {
+      }, null, spr ->
+      {
         // onMouseHover
         // ID tag is to see if currently overlapping hold basically!, a bit more reliable than checking transparency!
         // used for bug where you can click, and if you click on NO sprite, it snaps the thing to position! unintended!
@@ -111,7 +112,8 @@ class StageOffsetSubState extends HaxeUISubState
           spr.ID = 0;
           spr.alpha = 1;
         }
-      }, spr -> {
+      }, spr ->
+      {
         // onOut
         // this if statement is for when u move ur mouse too fast... figure out how to proper lock it to mouse!
         if (char != spr)
@@ -160,7 +162,8 @@ class StageOffsetSubState extends HaxeUISubState
     //   trace(event.data);
     // });
 
-    addUIChangeListener('propXPos', (event:UIEvent) -> {
+    addUIChangeListener('propXPos', (event:UIEvent) ->
+    {
       if (char != null)
       {
         char.x = event.value;
@@ -169,7 +172,8 @@ class StageOffsetSubState extends HaxeUISubState
       }
     });
 
-    addUIChangeListener('propYPos', (event:UIEvent) -> {
+    addUIChangeListener('propYPos', (event:UIEvent) ->
+    {
       if (char != null)
       {
         char.y = event.value;
@@ -178,7 +182,8 @@ class StageOffsetSubState extends HaxeUISubState
       }
     });
 
-    addUIChangeListener('prop-layers', (event:UIEvent) -> {
+    addUIChangeListener('prop-layers', (event:UIEvent) ->
+    {
       trace(event.value);
       trace(event.type);
       trace(event.target);

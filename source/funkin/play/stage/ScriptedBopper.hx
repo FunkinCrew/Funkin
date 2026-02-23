@@ -5,4 +5,6 @@ package funkin.play.stage;
  * Create a scripted class that extends Bopper to use this.
  */
 @:hscriptClass
-class ScriptedBopper extends funkin.play.stage.Bopper implements polymod.hscript.HScriptedClass {}
+class ScriptedBopper extends funkin.play.stage.Bopper implements polymod.hscript.HScriptedClass
+{
+}

@@ -91,7 +91,8 @@ class DebugBoundingState extends FlxState
 
     // offsetEditorDialog.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
     var viewDropdown:DropDown = offsetEditorDialog.findComponent("swapper", DropDown);
-    viewDropdown.onChange = function(e:UIEvent) {
+    viewDropdown.onChange = function(e:UIEvent)
+    {
       trace(e.type);
       curView = cast e?.data?.curView;
       trace(e.data);
@@ -217,7 +218,8 @@ class DebugBoundingState extends FlxState
       charDropdown.dataSource.add({text: char});
     }
 
-    charDropdown.onChange = function(e:UIEvent) {
+    charDropdown.onChange = function(e:UIEvent)
+    {
       loadAnimShit(e.data.text);
     };
   }
@@ -289,7 +291,8 @@ class DebugBoundingState extends FlxState
       if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
 
       // var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_) {
+      Assets.loadLibrary(library).onComplete(function(_)
+      {
         trace('LOADED... awesomeness...');
         // callback();
       });
@@ -354,6 +357,11 @@ class DebugBoundingState extends FlxState
 
     // Hide the mouse cursor on other states.
     Cursor.hide();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
   }
 
   function offsetControls():Void
@@ -546,6 +554,7 @@ class DebugBoundingState extends FlxState
       trace('ERROR: Failed to load character ${char}!');
     }
 
+    updateOnionSkin();
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 
@@ -575,7 +584,8 @@ class DebugBoundingState extends FlxState
 
     trace('Added ${offsetAnimationDropdown.dataSource.size} to HaxeUI dropdown');
 
-    offsetAnimationDropdown.onChange = function(event:UIEvent) {
+    offsetAnimationDropdown.onChange = function(event:UIEvent)
+    {
       if (event.data != null)
       {
         trace('Selected animation ${event.data.id}');

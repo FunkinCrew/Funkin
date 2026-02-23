@@ -70,7 +70,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
-    inputSongId.onChange = function(event:UIEvent) {
+    inputSongId.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.target.text != null && event.target.text != '' && !ChartManifestData.invalidIdRegex.match(event.target.text);
 
       if (valid)
@@ -84,7 +85,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputSongName.onChange = function(event:UIEvent) {
+    inputSongName.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -98,7 +100,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputSongArtist.onChange = function(event:UIEvent) {
+    inputSongArtist.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -112,7 +115,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputSongCharter.onChange = function(event:UIEvent) {
+    inputSongCharter.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.target.text != null && event.target.text != '';
 
       if (valid)
@@ -126,7 +130,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputStage.onChange = function(event:UIEvent) {
+    inputStage.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -137,7 +142,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueStage = ChartEditorDropdowns.populateDropdownWithStages(inputStage, chartEditorState.currentSongMetadata.playData.stage);
     inputStage.value = startingValueStage;
 
-    inputNoteStyle.onChange = function(event:UIEvent) {
+    inputNoteStyle.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -148,7 +154,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    inputTimeChange.onChange = function(event:UIEvent) {
+    inputTimeChange.onChange = function(event:UIEvent)
+    {
       var currentTimeChange = refreshTimeChangeInputs();
       var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
       // Set the step of the timestamp to the step.
@@ -178,7 +185,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputTimeChange.selectedIndex = Std.parseInt(startingTimeChange.id);
     inputTimeChange.value = startingTimeChange;
 
-    inputBPM.onChange = function(event:UIEvent) {
+    inputBPM.onChange = function(event:UIEvent)
+    {
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
@@ -193,7 +201,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputTimeStamp.onChange = function(event:UIEvent) {
+    inputTimeStamp.onChange = function(event:UIEvent)
+    {
       if (event.value == null || event.value <= 0) return;
 
       // Use a command so we can undo/redo this action.
@@ -208,7 +217,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       }
     };
 
-    inputTSNum.onChange = function(event:UIEvent) {
+    inputTSNum.onChange = function(event:UIEvent)
+    {
       var numerator:Null<Int> = Std.parseInt(event?.data?.text);
       if (numerator == null) return;
       var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
@@ -221,7 +231,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
 
-    inputTSDen.onChange = function(event:UIEvent) {
+    inputTSDen.onChange = function(event:UIEvent)
+    {
       var denominator:Null<Int> = Std.parseInt(event?.data?.text);
       if (denominator == null) return;
       var currentTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex];
@@ -234,17 +245,20 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       tcDropdownItemRenderer.data = inputTimeChange.value;
     }
 
-    createTimeChange.onClick = function(_:UIEvent) {
+    createTimeChange.onClick = function(_:UIEvent)
+    {
       var currentTimeChangeIndex = chartEditorState.currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
       chartEditorState.performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex,
         chartEditorState.scrollPositionInMs + chartEditorState.playheadPositionInMs));
     }
 
-    removeTimeChange.onClick = function(_:UIEvent) {
+    removeTimeChange.onClick = function(_:UIEvent)
+    {
       chartEditorState.performCommand(new RemoveTimeChangeCommand(inputTimeChange.selectedIndex));
     }
 
-    inputScrollSpeed.onChange = function(event:UIEvent) {
+    inputScrollSpeed.onChange = function(event:UIEvent)
+    {
       var valid:Bool = event.target.value != null && event.target.value > 0;
 
       if (valid)
@@ -259,19 +273,23 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     };
 
-    inputDifficultyRating.onChange = function(event:UIEvent) {
+    inputDifficultyRating.onChange = function(event:UIEvent)
+    {
       chartEditorState.currentSongChartDifficultyRating = event.target.value;
     };
 
-    buttonCharacterOpponent.onClick = function(_) {
+    buttonCharacterOpponent.onClick = function(_)
+    {
       chartEditorState.openCharacterDropdown(CharacterType.DAD, false);
     };
 
-    buttonCharacterGirlfriend.onClick = function(_) {
+    buttonCharacterGirlfriend.onClick = function(_)
+    {
       chartEditorState.openCharacterDropdown(CharacterType.GF, false);
     };
 
-    buttonCharacterPlayer.onClick = function(_) {
+    buttonCharacterPlayer.onClick = function(_)
+    {
       chartEditorState.openCharacterDropdown(CharacterType.BF, false);
     };
 
@@ -331,18 +349,14 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stage != null) ?
-        {id: stage.id, text: stage.stageName} :
-          {id: "mainStage", text: "Main Stage"};
+      inputStage.value = (stage != null) ? {id: stage.id, text: stage.stageName} : {id: "mainStage", text: "Main Stage"};
     }
 
     var noteStyleId:String = chartEditorState.currentSongNoteStyle;
     var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (inputNoteStyle != null)
     {
-      inputNoteStyle.value = (noteStyle != null) ?
-        {id: noteStyle.id, text: noteStyle.getName()} :
-          {id: "Funkin", text: "Funkin'"};
+      inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: "Funkin", text: "Funkin'"};
     }
 
     var LIMIT = 6;

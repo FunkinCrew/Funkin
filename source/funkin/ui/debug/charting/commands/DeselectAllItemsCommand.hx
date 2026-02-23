@@ -14,7 +14,9 @@ class DeselectAllItemsCommand implements ChartEditorCommand
   var previousNoteSelection:Array<SongNoteData> = [];
   var previousEventSelection:Array<SongEventData> = [];
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function execute(state:ChartEditorState):Void
   {

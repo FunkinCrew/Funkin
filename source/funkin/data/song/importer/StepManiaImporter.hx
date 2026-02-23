@@ -5,7 +5,6 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
-
 import funkin.data.song.importer.StepManiaData.StepTimingPoint;
 import funkin.data.song.importer.StepManiaData.StepDifficulty;
 import funkin.data.song.importer.StepManiaData.StepManiaChartType;
@@ -223,7 +222,6 @@ class StepManiaImporter
             tp.endTimestamp = tp.startTimestamp;
             tpIndex++;
           }
-
         }
       }
       else
@@ -324,7 +322,7 @@ class StepManiaImporter
         SampleStart: 0
       },
       TimingPoints: [],
-        Stops: [],
+      Stops: [],
       Difficulties: []
     };
 
@@ -430,7 +428,6 @@ class StepManiaImporter
             measure.push(line);
           }
       }
-
     }
 
     if (workingDiff != null && workingDiff.notes.length > 0)
@@ -484,8 +481,8 @@ class StepManiaImporter
     return (time * 1000) - (offset * 1000); // convert to ms
   }
 
-  static function convertStepNotes(offset:Float, type:StepManiaChartType, stepNotes:Array<StepNote>,
-    stepTimingPoints:Array<StepTimingPoint>, stepStops:Array<StepStop>):Array<SongNoteData>
+  static function convertStepNotes(offset:Float, type:StepManiaChartType, stepNotes:Array<StepNote>, stepTimingPoints:Array<StepTimingPoint>,
+      stepStops:Array<StepStop>):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
     var holdArray:Array<Float> = [];
@@ -539,7 +536,6 @@ class StepManiaImporter
       result.push(snd);
     }
     return result;
-
   }
 
   /**
@@ -592,7 +588,8 @@ class StepManiaImporter
    * @param songData The StepManiaData to migrate.
    * @return SongChartData The migrated SongChartData.
    */
-  public static function migrateChartData(songData:StepManiaData):SongChartData {
+  public static function migrateChartData(songData:StepManiaData):SongChartData
+  {
     var scrollsMap:Map<String, Float> = new Map<String, Float>();
     var stepNoteMap:Map<String, Array<SongNoteData>> = new Map<String, Array<SongNoteData>>();
 

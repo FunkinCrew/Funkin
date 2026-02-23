@@ -141,39 +141,38 @@ class PolymodHandler
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
-    var loadedModList:Array<ModMetadata> = polymod.Polymod.init(
-      {
-        // Root directory for all mods.
-        modRoot: MOD_FOLDER,
-        // The directories for one or more mods to load.
-        dirs: ids,
-        // Framework being used to load assets.
-        framework: OPENFL,
-        // The current version of our API.
-        apiVersionRule: API_VERSION_RULE,
-        // Call this function any time an error occurs.
-        errorCallback: PolymodErrorHandler.onPolymodError,
-        // Enforce semantic version patterns for each mod.
-        // modVersions: null,
-        // A map telling Polymod what the asset type is for unfamiliar file extensions.
-        // extensionMap: [],
+    var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
+      // Root directory for all mods.
+      modRoot: MOD_FOLDER,
+      // The directories for one or more mods to load.
+      dirs: ids,
+      // Framework being used to load assets.
+      framework: OPENFL,
+      // The current version of our API.
+      apiVersionRule: API_VERSION_RULE,
+      // Call this function any time an error occurs.
+      errorCallback: PolymodErrorHandler.onPolymodError,
+      // Enforce semantic version patterns for each mod.
+      // modVersions: null,
+      // A map telling Polymod what the asset type is for unfamiliar file extensions.
+      // extensionMap: [],
 
-        customFilesystem: modFileSystem,
+      customFilesystem: modFileSystem,
 
-        frameworkParams: buildFrameworkParams(),
+      frameworkParams: buildFrameworkParams(),
 
-        // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
-        ignoredFiles: buildIgnoreList(),
+      // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
+      ignoredFiles: buildIgnoreList(),
 
-        // Parsing rules for various data formats.
-        parseRules: buildParseRules(),
+      // Parsing rules for various data formats.
+      parseRules: buildParseRules(),
 
-        skipDependencyErrors: true,
+      skipDependencyErrors: true,
 
-        // Parse hxc files and register the scripted classes in them.
-        useScriptedClasses: true,
-        loadScriptsAsync: #if html5 true #else false #end,
-      });
+      // Parse hxc files and register the scripted classes in them.
+      useScriptedClasses: true,
+      loadScriptsAsync: #if html5 true #else false #end,
+    });
 
     if (loadedModList == null)
     {
@@ -239,18 +238,27 @@ class PolymodHandler
   static function buildFileSystem():polymod.fs.ZipFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
-    return new ZipFileSystem(
-      {
-        modRoot: MOD_FOLDER,
-        autoScan: true
-      });
+    return new ZipFileSystem({
+      modRoot: MOD_FOLDER,
+      autoScan: true
+    });
   }
 
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    Polymod.addDefaultImport(funkin.Assets);
-    Polymod.addDefaultImport(funkin.Paths);
+    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
+      funkin.Assets,
+      funkin.Paths,
+      funkin.Preferences,
+      funkin.util.Constants,
+      flixel.FlxG
+    ];
+
+    for (cls in DEFAULT_IMPORTS)
+    {
+      Polymod.addDefaultImport(cls);
+    }
 
     // Add import aliases for certain classes.
     // NOTE: Scripted classes are automatically aliased to their parent class.
@@ -320,9 +328,9 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `flixel.util.FlxSave`
-    // FlxSave.resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistImport('flixel.util.FlxSave');
+    // `lime.utils.AssetLibrary`
+    // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
+    Polymod.blacklistImport('lime.utils.AssetLibrary');
 
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
@@ -405,6 +413,20 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `flixel.util.FlxSave`
+    // resolveFlixelClasses() can access blacklisted packages
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
+    // Disallow direct manipulation of save data.
+    Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
+
+    // `funkin.save.Save`
+    // Direct access to save data is important for scripts (like checking unlocks),
+    // but we don't want scripts to be able to perform operations like writing scores.
+    Polymod.blacklistInstanceFields(funkin.save.Save, [ // No direct field access
+      'data', // LMFAO definitely not
+      'clearData', // No score manipulation please
+      'setLevelScore', 'setSongScore', 'applySongRank']);
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
@@ -483,6 +505,8 @@ class PolymodHandler
   {
     var result = Polymod.getDefaultIgnoreList();
 
+    result.push('.vscode');
+    result.push('.idea');
     result.push('.git');
     result.push('.gitignore');
     result.push('.gitattributes');
@@ -510,22 +534,7 @@ class PolymodHandler
   static inline function buildFrameworkParams():polymod.Polymod.FrameworkParams
   {
     return {
-      assetLibraryPaths: [
-        'default' => 'preload',
-        'shared' => 'shared',
-        'songs' => 'songs',
-        'videos' => 'videos',
-        'tutorial' => 'tutorial',
-        'week1' => 'week1',
-        'week2' => 'week2',
-        'week3' => 'week3',
-        'week4' => 'week4',
-        'week5' => 'week5',
-        'week6' => 'week6',
-        'week7' => 'week7',
-        'weekend1' => 'weekend1',
-        'sserafim' => 'sserafim'
-      ],
+      assetLibraryPaths: ['default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1', 'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1', 'sserafim' => 'sserafim'],
       coreAssetRedirect: CORE_FOLDER,
     }
   }
@@ -540,13 +549,12 @@ class PolymodHandler
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
-    var modMetadata:Array<ModMetadata> = Polymod.scan(
-      {
-        modRoot: MOD_FOLDER,
-        apiVersionRule: API_VERSION_RULE,
-        fileSystem: modFileSystem,
-        errorCallback: PolymodErrorHandler.onPolymodError
-      });
+    var modMetadata:Array<ModMetadata> = Polymod.scan({
+      modRoot: MOD_FOLDER,
+      apiVersionRule: API_VERSION_RULE,
+      fileSystem: modFileSystem,
+      errorCallback: PolymodErrorHandler.onPolymodError
+    });
     trace('Found ${modMetadata.length} mods when scanning.');
     return modMetadata;
   }

@@ -56,15 +56,15 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
 
-    FlxTween.tween(rating, {alpha: 0}, 0.2,
+    FlxTween.tween(rating, {alpha: 0}, 0.2, {
+      onComplete: function(tween:FlxTween)
       {
-        onComplete: function(tween:FlxTween) {
-          remove(rating, true);
-          rating.destroy();
-        },
-        startDelay: Conductor.instance.beatLengthMs * 0.001,
-        ease: fadeEase
-      });
+        remove(rating, true);
+        rating.destroy();
+      },
+      startDelay: Conductor.instance.beatLengthMs * 0.001,
+      ease: fadeEase
+    });
   }
 
   public function displayCombo(combo:Int = 0):Void
@@ -105,15 +105,15 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;
 
-      FlxTween.tween(numScore, {alpha: 0}, 0.2,
+      FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+        onComplete: function(tween:FlxTween)
         {
-          onComplete: function(tween:FlxTween) {
-            remove(numScore, true);
-            numScore.destroy();
-          },
-          startDelay: Conductor.instance.beatLengthMs * 0.002,
-          ease: fadeEase
-        });
+          remove(numScore, true);
+          numScore.destroy();
+        },
+        startDelay: Conductor.instance.beatLengthMs * 0.002,
+        ease: fadeEase
+      });
 
       daLoop++;
     }

@@ -95,8 +95,7 @@ class LetterSort extends FlxSpriteGroup
 
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   override function update(elapsed:Float):Void
   {
@@ -104,12 +103,14 @@ class LetterSort extends FlxSpriteGroup
     if (!instance.uiStateMachine.canInteract()) return;
 
     #if FEATURE_TOUCH_CONTROLS
+    @:privateAccess
+    var pressedOnCapsule:Bool = instance._pressedOnCapsule == true;
+
     if (TouchUtil.pressAction())
     {
       for (index => letter in letterHitboxes)
       {
-        @:privateAccess
-        if (!TouchUtil.overlaps(letter, instance.funnyCam)) continue;
+        if (!TouchUtil.overlaps(letter, instance.funnyCam) || pressedOnCapsule) continue;
 
         if (index == 2 || index == 5) continue;
 
@@ -131,14 +132,11 @@ class LetterSort extends FlxSpriteGroup
     }
     #end
 
-    @:privateAccess
-    {
-      if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
-        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft) #end) changeSelection(-1);
+    if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
+      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft && !pressedOnCapsule) #end) changeSelection(-1);
 
-      if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
-        || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight) #end) changeSelection(1);
-    }
+    if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
+      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight && !pressedOnCapsule) #end) changeSelection(1);
   }
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void
@@ -151,7 +149,8 @@ class LetterSort extends FlxSpriteGroup
     var arrowToMove:FlxSprite = diff < 0 ? leftArrow : rightArrow;
     arrowToMove.offset.x = 3 * multiPosOrNeg;
 
-    new FlxTimer().start(2 / 24, function(_) {
+    new FlxTimer().start(2 / 24, function(_)
+    {
       arrowToMove.offset.x = 0;
     });
     if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
@@ -164,8 +163,10 @@ class LetterSort extends FlxSpriteGroup
    */
   function doLetterChangeAnims(diff:Int):Void
   {
-    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float) {
-      new FlxTimer().start(frameNum / 24, function(_) {
+    var ezTimer:Int->FlxSprite->Float->Void = function(frameNum:Int, spr:FlxSprite, offsetNum:Float)
+    {
+      new FlxTimer().start(frameNum / 24, function(_)
+      {
         spr.offset.x = offsetNum;
       });
     };
@@ -187,12 +188,14 @@ class LetterSort extends FlxSpriteGroup
     {
       letter.offset.x = positions[0] * multiPosOrNeg;
 
-      new FlxTimer().start(1 / 24, function(_) {
+      new FlxTimer().start(1 / 24, function(_)
+      {
         letter.offset.x = positions[1] * multiPosOrNeg;
         if (index == 0) letter.visible = false;
       });
 
-      new FlxTimer().start(2 / 24, function(_) {
+      new FlxTimer().start(2 / 24, function(_)
+      {
         letter.offset.x = positions[2] * multiPosOrNeg;
         if (index == 0.) letter.visible = true;
       });
@@ -290,7 +293,8 @@ class FreeplayLetter extends FunkinSprite
         this.anim.pause();
       }
 
-      this.anim.onFinish.add(function(name:String) {
+      this.anim.onFinish.add(function(name:String)
+      {
         this.anim.play(animLetters[curLetter] + " move", true);
       });
     }

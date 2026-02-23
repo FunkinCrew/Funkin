@@ -113,14 +113,16 @@ class NewgroundsClient
       return;
     }
 
-    var passportHandler:String->Void = function(passportUrl:String) {
+    var passportHandler:String->Void = function(passportUrl:String)
+    {
       // This exists so we can create a popup on mobile but with a WebView instead.
       #if FEATURE_MOBILE_WEBVIEW
       if (passportUrl != null)
       {
         NG.core.logVerbose('Loading passport from WebView: ${passportUrl}');
 
-        WebViewUtil.openURL(passportUrl, function():Void {
+        WebViewUtil.openURL(passportUrl, function():Void
+        {
           NG.core.cancelLoginRequest();
         });
 
@@ -151,7 +153,8 @@ class NewgroundsClient
       return;
     }
 
-    var dummyPassport:String->Void = function(_) {
+    var dummyPassport:String->Void = function(_)
+    {
       // just a dummy passport, so we don't create a popup
       // otherwise `NG.core.requestLogin()` will automatically attempt to open a tab at the beginning of the game
       // users should go to the Options Menu to login to NG

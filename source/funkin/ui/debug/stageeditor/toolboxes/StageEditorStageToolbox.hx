@@ -19,12 +19,14 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
   {
     super(state);
 
-    stageNameText.onChange = function(_) {
+    stageNameText.onChange = function(_)
+    {
       state.stageName = stageNameText.text;
       state.saved = false;
     }
 
-    stageZoomStepper.onChange = function(_) {
+    stageZoomStepper.onChange = function(_)
+    {
       state.stageZoom = stageZoomStepper.pos;
       state.updateMarkerPos();
       state.saved = false;
@@ -47,7 +49,8 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
       stageLibraryDrop.dataSource.add({text: lib});
     }
 
-    stageLibraryDrop.onChange = function(_) {
+    stageLibraryDrop.onChange = function(_)
+    {
       state.stageFolder = stageLibraryDrop.selectedItem.text;
     }
 

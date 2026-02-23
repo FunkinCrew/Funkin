@@ -49,7 +49,8 @@ class NumberPreferenceItem extends TextMenuItem
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
       ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
   {
-    super(x, y, name, function() {
+    super(x, y, name, function()
+    {
       callback(this.currentValue);
     });
     lefthandText = new AtlasText(x + 15, y, formatted(defaultValue), AtlasFont.DEFAULT);

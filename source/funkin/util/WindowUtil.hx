@@ -102,12 +102,14 @@ class WindowUtil
   public static function initWindowEvents():Void
   {
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
+    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int)
+    {
       windowExit.dispatch(exitCode);
     });
 
     #if (desktop || html5)
-    openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
+    openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) ->
+    {
       #if FEATURE_HAXEUI
       if (haxe.ui.focus.FocusManager.instance.focus != null)
       {

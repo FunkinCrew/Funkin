@@ -78,19 +78,23 @@ class ControlsHandler
       switch (hint.noteDirection)
       {
         case NoteDirection.LEFT:
-          controls.forEachBound(Control.NOTE_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          controls.forEachBound(Control.NOTE_LEFT, function(action:FlxActionDigital, state:FlxInputState):Void
+          {
             addButton(action, hint, state, cachedInput);
           });
         case NoteDirection.DOWN:
-          controls.forEachBound(Control.NOTE_DOWN, function(action:FlxActionDigital, state:FlxInputState):Void {
+          controls.forEachBound(Control.NOTE_DOWN, function(action:FlxActionDigital, state:FlxInputState):Void
+          {
             addButton(action, hint, state, cachedInput);
           });
         case NoteDirection.UP:
-          controls.forEachBound(Control.NOTE_UP, function(action:FlxActionDigital, state:FlxInputState):Void {
+          controls.forEachBound(Control.NOTE_UP, function(action:FlxActionDigital, state:FlxInputState):Void
+          {
             addButton(action, hint, state, cachedInput);
           });
         case NoteDirection.RIGHT:
-          controls.forEachBound(Control.NOTE_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void {
+          controls.forEachBound(Control.NOTE_RIGHT, function(action:FlxActionDigital, state:FlxInputState):Void
+          {
             addButton(action, hint, state, cachedInput);
           });
       }
@@ -128,7 +132,9 @@ class ControlsHandler
   @:noCompletion
   private static function get_hasExternalInputDevice():Bool
   {
-    return FlxG.gamepads.numActiveGamepads > 0 #if android || KeyboardUtil.keyboardConnected || extension.androidtools.Tools.isChromebook() #end;
+    return FlxG.gamepads.numActiveGamepads > 0 #if android
+    || KeyboardUtil.keyboardConnected
+    || extension.androidtools.Tools.isChromebook() #end;
   }
 
   @:noCompletion

@@ -6,4 +6,6 @@ package funkin.ui.freeplay;
  * This allows you to customize how a specific album appears.
  */
 @:hscriptClass
-class ScriptedAlbum extends funkin.ui.freeplay.Album implements polymod.hscript.HScriptedClass {}
+class ScriptedAlbum extends funkin.ui.freeplay.Album implements polymod.hscript.HScriptedClass
+{
+}

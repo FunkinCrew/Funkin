@@ -4,6 +4,7 @@ package funkin.ui.debug.charting.contextmenus;
 import haxe.ui.containers.menus.MenuItem;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 
@@ -12,6 +13,7 @@ import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuFlip:MenuItem;
+  var contextmenuMirrorX:MenuItem;
   var contextmenuDelete:MenuItem;
 
   public var data:SongNoteData;
@@ -27,15 +29,23 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
   public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
-    contextmenuFlip.onClick = function(_) {
+    contextmenuFlip.onClick = function(_)
+    {
       chartEditorState.performCommand(new FlipNotesCommand([data]));
     }
 
-    contextmenuAddHold.onClick = function(_) {
+    contextmenuMirrorX.onClick = function(_)
+    {
+      chartEditorState.performCommand(new MirrorNotesCommand([data], true, false, true, true));
+    }
+
+    contextmenuAddHold.onClick = function(_)
+    {
       chartEditorState.performCommand(new ExtendNoteLengthCommand(data, 4, STEPS));
     }
 
-    contextmenuDelete.onClick = function(_) {
+    contextmenuDelete.onClick = function(_)
+    {
       chartEditorState.performCommand(new RemoveNotesCommand([data]));
     }
   }

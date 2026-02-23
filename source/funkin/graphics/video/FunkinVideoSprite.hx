@@ -16,7 +16,8 @@ class FunkinVideoSprite extends FlxVideoSprite
 
     if (bitmap != null)
     {
-      bitmap.onOpening.add(function():Void {
+      bitmap.onOpening.add(function():Void
+      {
         if (bitmap != null)
         {
           if (PlayState.instance != null)

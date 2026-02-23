@@ -25,11 +25,10 @@ class CutItemsCommand implements ChartEditorCommand
   public function execute(state:ChartEditorState):Void
   {
     // Copy the notes.
-    SongDataUtils.writeItemsToClipboard(
-      {
-        notes: SongDataUtils.buildNoteClipboard(notes),
-        events: SongDataUtils.buildEventClipboard(events)
-      });
+    SongDataUtils.writeItemsToClipboard({
+      notes: SongDataUtils.buildNoteClipboard(notes),
+      events: SongDataUtils.buildEventClipboard(events)
+    });
 
     // Delete the notes.
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
