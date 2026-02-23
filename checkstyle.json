@@ -399,13 +399,18 @@
         "modifiers": [
           "PUBLIC_PRIVATE",
           "STATIC",
-          "MACRO",
+          "ABSTRACT",
+
           "OVERRIDE",
+          "OVERLOAD",
+          "EXTERN",
           "INLINE",
+
           "DYNAMIC",
+          "MACRO",
           "FINAL"
         ],
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "ModifierOrder"
     },
