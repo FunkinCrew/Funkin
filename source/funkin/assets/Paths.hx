@@ -1,5 +1,6 @@
 package funkin.assets;
 
+import funkin.assets.Assets.AssetType;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import haxe.io.Path;
 
@@ -53,9 +54,6 @@ class Paths implements ConsoleClass
     {
       case 'haxeui-flixel':
         prefix = 'haxeui-flixel/';
-        library = 'default';
-      case 'flxanimate':
-        prefix = 'flxanimate/';
         library = 'default';
       case 'flixel':
         prefix = 'flixel/';
@@ -587,7 +585,7 @@ class SpritesheetAssetPath
 }
 
 /**
- * Represents a path to an FlxAnimate texture atlas.
+ * Represents a path to an Adobe Animate texture atlas.
  * Provides access to methods for various file extensions.
  */
 @:nullSafety
@@ -614,47 +612,36 @@ class AnimateAtlasAssetPath
   }
 
   /**
-   * Retrieve the spritemap texture at this atlas's asset path.
-   * @return The AssetPath for the image.
+   * Retrieve the spritemap texture(s) at this atlas's asset path.
+   * @return The AssetPath for the image. May be empty but will never be `null`.
    */
-  public function image():AssetPath
+  public function image():Array<AssetPath>
   {
-    // TODO: Change this to support multiple spritemaps.
-    return Paths.image('${id}/spritemap1');
+    var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.IMAGE, true);
+
+    return assetPaths;
   }
 
   /**
    * Retrieve the list of JSON files at this spritesheet's asset path.
-   * @return The AssetPath for the JSON file.
+   * @return The AssetPath for the JSON file. May be empty but will never be `null`.
    */
   public function json():Array<AssetPath>
   {
-    return [Paths.json('${id}/Animation'), Paths.json('${id}/spritemap1')];
+    var assetPaths:Array<AssetPath> = Assets.listInPath('${id}/', AssetType.JSON, true);
+
+    return assetPaths;
   }
 
   /**
-   * Checks if the image file for this texture atlas exist.
-   * @return Whether the image file exists.
+   * Checks if the image files for this texture atlas exist.
+   * @return Whether the image files exist.
    */
   public function imageExists():Bool
   {
-    return Paths.image('${id}/spritemap1', false).exists();
-  }
-
-  /**
-   * Checks if the `.json` files for this texture atlas exist.
-   * @return Whether the `.json` files exist.
-   */
-  public function jsonsExist():Bool
-  {
-    var assetPaths:Array<AssetPath> = [
-      Paths.json('${id}/Animation', false),
-      Paths.json('${id}/spritemap1', false)
-    ];
-
-    for (assetPath in assetPaths)
+    for (image in this.image())
     {
-      if (!assetPath.exists())
+      if (!image.exists())
       {
         return false;
       }
@@ -664,28 +651,32 @@ class AnimateAtlasAssetPath
   }
 
   /**
-   * Validates that the image for this path exists.
-   * @return The AssetPath if it exists, otherwise `null`.
+   * Checks if the `.json` files for this texture atlas exist.
+   * @return Whether the `.json` files exist.
    */
-  public function imageOrNull():Null<AssetPath>
+  public function jsonExists():Bool
   {
-    return this.imageExists() ? this.image() : null;
+    for (json in this.json())
+    {
+      if (!json.exists())
+      {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
-   * Validates whether the FlxAnimate texture atlas at this path exists.
+   * Validates whether the Adobe Animate texture atlas at this path exists.
    * @return `true` if the image and all required JSON files exist.
    */
   public function exists():Bool
   {
     // Validate textures.
-    if (!this.image().exists()) return false;
-
-    // Validate data.
-    for (path in this.json())
-    {
-      if (!path.exists()) return false;
-    }
+    if (!this.imageExists()) return false;
+    // Validate JSON files.
+    if (!this.jsonExists()) return false;
 
     return true;
   }
