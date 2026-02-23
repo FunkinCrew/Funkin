@@ -139,11 +139,11 @@ class ValidatedPaths
 
     if (staticPath != null)
     {
-      var suffix:String = MacroUtil.extractStringConstant(key) ?? '';
+      var suffix:String = MacroUtil.extractStringConstant(suffix) ?? '';
 
       var parts:Array<String> = staticPath.split('/');
       var staticId:String = parts[parts.length - 1];
-      var staticDir:String = parts.slice(0, parts.length - 1).join('/');
+      var staticDir:String = parts.slice(0, (parts.length - 1)).join('/');
 
       var audioPath:String = '$staticDir/$staticId/$staticId$suffix';
       validateAssetPath(audioPath, ['ogg'], key.pos);
