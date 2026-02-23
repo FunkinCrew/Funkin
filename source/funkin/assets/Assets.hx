@@ -1,13 +1,15 @@
 package funkin.assets;
 
+import animate.FlxAnimateFrames;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.math.FlxPoint;
-import funkin.assets.Paths;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPath;
 import funkin.assets.Paths.SpritesheetAssetPath;
+import funkin.assets.Paths;
+import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import lime.app.Future;
 import lime.app.Promises;
@@ -185,6 +187,47 @@ class Assets implements ConsoleClass
     #end
   }
 
+  /**
+   * Fetch an Adobe Animate texture atlas's sprite frames, and parse and load them.
+   * @param assetPath The asset path to the texture atlas. Use `Paths.animateAtlas` to build this.
+   * @param settings Additional settings to use when loading the atlas sprite.
+   * @return The generated FlxAnimateFrames
+   */
+  public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPath, settings:AtlasSpriteSettings):FlxAnimateFrames
+  {
+    if (assetPath == null) throw 'Input is not a valid AnimateAtlasAssetPath, did you call Paths.animateAtlas()?';
+
+    var validatedSettings:AtlasSpriteSettings = {
+      swfMode: settings?.swfMode ?? false,
+      cacheOnLoad: settings?.cacheOnLoad ?? false,
+      filterQuality: settings?.filterQuality ?? MEDIUM,
+      spritemaps: settings?.spritemaps ?? null,
+      metadataJson: settings?.metadataJson ?? null,
+      cacheKey: settings?.cacheKey ?? null,
+      uniqueInCache: settings?.uniqueInCache ?? false,
+      onSymbolCreate: settings?.onSymbolCreate ?? null,
+      applyStageMatrix: settings?.applyStageMatrix ?? false,
+      useRenderTexture: settings?.useRenderTexture ?? false
+    };
+
+    // Validate asset path.
+    if (!assetPath.jsonExists())
+    {
+      throw 'No data file exists at the specified path (${assetPath})';
+    }
+
+    if (!assetPath.imageExists())
+    {
+      throw 'No texture exists at the specified path (${assetPath})';
+    }
+
+    return FlxAnimateFrames.fromAnimate(assetPath.toString(), validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache, {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
+      });
   }
 
   /**
