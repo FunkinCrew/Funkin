@@ -621,10 +621,10 @@ class Assets implements ConsoleClass
           Paths.image('ui/soundtray/bars-07'),
           Paths.image('ui/soundtray/bars-08'),
           Paths.image('ui/soundtray/bars-09'),
-          Paths.image('ui/soundtray/bars-10'), // Medals
-
-          Paths.animateAtlas('ui/medals/medal-popup').image(),
+          Paths.image('ui/soundtray/bars-10'), // Medals,
         ]);
+
+        results = results.concat(Paths.animateAtlas('ui/medals/medal-popup').image());
 
       case SOUND:
         results = results.concat([
