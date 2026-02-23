@@ -11,7 +11,8 @@ import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
-import flixel.text.FlxText;
+import flixel.text.FlxBitmapFont;
+import flixel.text.FlxBitmapText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.ui.FlxBar;
@@ -548,9 +549,9 @@ class PlayState extends MusicBeatSubState
    * RENDER OBJECTS
    */
   /**
-   * The FlxText which displays the current score.
+   * The FlxBitmapText which displays the current score.
    */
-  var scoreText:FlxText;
+  var scoreText:FlxBitmapText;
 
   /**
    * The bar which displays the player's health.
@@ -807,7 +808,7 @@ class PlayState extends MusicBeatSubState
     // Healthbar
     healthBarBG = FunkinSprite.create(0, 0, 'healthBar');
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
-    scoreText = new FlxText(0, 0, 0, '', 20);
+    scoreText = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("vcr-bmp.png"), Paths.font("vcr-bmp.fnt")));
 
     // Combo & Pop Up
     comboPopUps = new PopUpStuff(noteStyle);
@@ -2006,7 +2007,10 @@ class PlayState extends MusicBeatSubState
     // The score text below the health bar.
     scoreText.x = healthBarBG.x + healthBarBG.width - 190;
     scoreText.y = healthBarBG.y + 30;
-    scoreText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    scoreText.alignment = RIGHT;
+    scoreText.borderStyle = OUTLINE;
+    scoreText.borderColor = FlxColor.BLACK;
+    scoreText.letterSpacing = -1;
     scoreText.scrollFactor.set();
     scoreText.zIndex = 802;
     add(scoreText);
