@@ -171,7 +171,20 @@ class Assets implements ConsoleClass
   public static function getPackerAtlas(assetPath:SpritesheetAssetPath):FlxAtlasFrames
   {
     if (assetPath == null) throw 'Input is not a valid SpritesheetAssetPath, did you call Paths.spritesheet()?';
+    #if FEATURE_STRICT_ASSET_CACHING
+    if (isFlxGraphicCached(assetPath.image()))
+    {
+      return FunkinAssetCache.instance.getPackerAtlas(assetPath);
+    }
+    else
+    {
+      throw 'Asset not cached, cannot load synchronously: ${assetPath.image()}';
+    }
+    #else
     return FunkinAssetCache.instance.getPackerAtlas(assetPath);
+    #end
+  }
+
   }
 
   /**
