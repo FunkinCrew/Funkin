@@ -27,9 +27,9 @@ class ZoomCameraSongEvent extends SongEvent
     });
   }
 
-  static final DEFAULT_ZOOM:Float = 1.0;
-  static final DEFAULT_DURATION:Float = 4.0;
-  static final DEFAULT_MODE:String = 'direct';
+  public static final DEFAULT_ZOOM:Float = 1.0;
+  public static final DEFAULT_DURATION:Float = 4.0;
+  public static final DEFAULT_MODE:String = 'direct';
 
   public override function handleEvent(data:SongEventData):Void
   {
