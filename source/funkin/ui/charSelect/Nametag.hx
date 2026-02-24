@@ -41,29 +41,36 @@ class Nametag extends FlxSprite
 
   public function switchChar(str:String, playMosaicSequence:Bool = true):Void
   {
-    if (playMosaicSequence) shaderEffect();
+    var path:String = (str == "bf") ? "boyfriend" : "bf";
+    if (str != "bf") path = str;
 
-    new FlxTimer().start(4 / 30, _ ->
+    loadGraphic(Paths.image("charSelect/" + path + "Nametag"));
+    updateHitbox();
+    scale.set(0.77, 0.77);
+    updatePosition();
+
+    // Reset shader to ensure the nametag doesn't get stuck
+    if (playMosaicSequence)
     {
-      var path:String = str;
-      switch str
-      {
-        case "bf":
-          path = "boyfriend";
-      }
+      mosaicShader.setBlockSize(1, 1);
+      shaderEffect();
 
-      loadGraphic(Paths.image('charSelect/' + path + "Nametag"));
-      updateHitbox();
-      scale.x = scale.y = 0.77;
-
-      updatePosition();
-
-      if (playMosaicSequence) shaderEffect(true);
-    });
+      // Delay the shader effect by a bit to prevent lag.
+      new FlxTimer().start(2 / 30, _ -> {
+        shaderEffect(true);
+      });
+    }
+    else
+    {
+      mosaicShader.setBlockSize(1, 1);
+    }
   }
 
   function shaderEffect(fadeOut:Bool = false):Void
   {
+    // Skip the shader effect if the width is too small.
+    if (width <= 1) return;
+
     if (currentMosaicSequence != null)
     {
       // Forcibly reset the shader to prevent overlapping blur sequences
