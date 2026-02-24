@@ -159,9 +159,9 @@
   "lineEnds": {
     "lineEndCharacter": "auto",
 
-    "metadataType": "none",
-    "metadataVar": "none",
-    "metadataFunction": "none",
+    "metadataType": "forceAfterLast",
+    "metadataVar": "forceAfterLast",
+    "metadataFunction": "forceAfterLast",
     "metadataOther": "none",
 
     "caseColon": "after",
@@ -229,7 +229,7 @@
     "tryCatch": "next",
 
     "caseBody": "next",
-    "expressionCase": "keep",
+    "expressionCase": "next",
     "expressionTry": "same",
 
     "functionBody": "same",
@@ -241,7 +241,14 @@
   },
 
   "whitespace": {
-    "parenConfig": {},
+    "parenConfig": {
+      "metadataParens": {
+        "openingPolicy": "none",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      }
+    },
+
     "bracesConfig": {},
     "bracketConfig": {},
 
