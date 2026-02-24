@@ -18,8 +18,8 @@
 
     "betweenTypes": 1,
 
-    "lineCommentsBetweenTypes": "keep",
-    "lineCommentsBetweenFunctions": "keep",
+    "lineCommentsBetweenTypes": "one",
+    "lineCommentsBetweenFunctions": "one",
 
     "betweenSingleLineTypes": 0,
 
@@ -37,7 +37,7 @@
       "betweenVars": 0,
       "afterVars": 1,
       "betweenFunctions": 1,
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "classEmptyLines": {
@@ -54,7 +54,7 @@
       "afterPrivateFunctions": 1,
       "betweenFunctions": 1,
 
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "macroClassEmptyLines": {
@@ -71,7 +71,7 @@
       "afterPrivateFunctions": 1,
       "betweenFunctions": 1,
 
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "externClassEmptyLines": {
@@ -81,7 +81,7 @@
       "betweenVars": 0,
       "afterVars": 0,
       "betweenFunctions": 0,
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "abstractEmptyLines": {
@@ -98,7 +98,7 @@
       "afterPrivateFunctions": 1,
       "betweenFunctions": 1,
 
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "interfaceEmptyLines": {
@@ -108,7 +108,7 @@
       "betweenVars": 0,
       "afterVars": 0,
       "betweenFunctions": 0,
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "enumEmptyLines": {
@@ -116,7 +116,7 @@
       "endType": 0,
 
       "betweenFields": 0,
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "typedefEmptyLines": {
@@ -124,7 +124,7 @@
       "endType": 0,
 
       "betweenFields": 0,
-      "existingBetweenFields": "keep"
+      "existingBetweenFields": "remove"
     },
 
     "conditionalsEmptyLines": {
