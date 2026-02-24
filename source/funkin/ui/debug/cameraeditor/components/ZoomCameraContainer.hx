@@ -1,5 +1,7 @@
 package funkin.ui.debug.cameraeditor.components;
 
+import funkin.play.event.SongEvent;
+import funkin.play.event.ZoomCameraSongEvent;
 #if FEATURE_CAMERA_EDITOR
 import flixel.FlxSprite;
 import flixel.util.FlxTimer;
@@ -39,16 +41,16 @@ class ZoomCameraContainer extends VBox
   {
     if (zoomCameraEaseGraph == null || zoomCameraEaseDot == null)
     {
-      throw "Could not find ease graph or ease dot!";
+      throw 'Could not find ease graph or ease dot!';
     }
 
     // TODO: Fetch this correctly.
-    final easeStr:String = "elastic";
-    final easeDirStr:String = "InOut";
-    final key:String = easeStr + (easeDirStr == "" ? "" : easeDirStr);
+    final easeStr:String = 'elastic';
+    final easeDirStr:String = 'InOut';
+    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
 
     // Hide preview when easing indicates a non-visual/legacy type such as "classic"
-    if (easeStr != null && easeStr.toLowerCase().indexOf("classic") != -1)
+    if (easeStr != null && (easeStr == 'CLASSIC' || easeStr == 'INSTANT'))
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();
@@ -73,8 +75,10 @@ class ZoomCameraContainer extends VBox
     _easeDotSprites = [];
     _dotIndex = 0;
 
+    final EASE_GRAPH_SIZE:Int = 100;
+
     final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(key);
-    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, 100, 100);
+    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
     zoomCameraEaseGraph.resource = _easeGraphSprite?.frame;
     if (_graphBd == null || zoomCameraEaseGraph.resource == null)
     {
@@ -134,8 +138,33 @@ class ZoomCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  /**
+   * Loads the data for the currently selected event into the UI.
+   */
   public function loadCurrentEventData():Void
   {
+    var eventMode = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
+    zoomCameraMode.selectItemBy(function(data):Bool
+    {
+      return data.id == eventMode;
+    });
+
+    zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
+    zoomCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? ZoomCameraSongEvent.DEFAULT_DURATION;
+
+    var eventEase:String = cameraEditorState.selectedSongEvent.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    zoomCameraEase.selectItemBy(function(data):Bool
+    {
+      return data.id == eventEase;
+    });
+
+    var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    zoomCameraEaseDir.selectItemBy(function(data):Bool
+    {
+      return data.id == eventEaseDir;
+    });
+
+    updateEasePreview();
   }
 
   /**
@@ -148,7 +177,7 @@ class ZoomCameraContainer extends VBox
 
     trace('Zoom Camera: Zoom Level changed to ' + value);
 
-    // cameraEditorState.currentCameraEvent.zoomLevel = value;
+    cameraEditorState.selectedSongEvent.set('zoom', value);
   }
 
   /**
@@ -157,9 +186,17 @@ class ZoomCameraContainer extends VBox
   @:bind(zoomCameraMode, UIEvent.CHANGE)
   function onChange_zoomCameraMode(_):Void
   {
-    var value:String = zoomCameraMode.value;
+    if (zoomCameraMode.selectedItem == null)
+    {
+      cameraEditorState.selectedSongEvent.set('char', ZoomCameraSongEvent.DEFAULT_MODE);
+      return;
+    }
+
+    var value:String = zoomCameraMode.selectedItem.id;
 
     trace('Zoom Camera: Mode changed to ' + value);
+
+    cameraEditorState.selectedSongEvent.set('mode', value);
   }
 
   /**
@@ -170,7 +207,7 @@ class ZoomCameraContainer extends VBox
   {
     var value:Float = zoomCameraDuration.value;
 
-    trace('Zoom Camera: Duration changed to ' + value);
+    cameraEditorState.selectedSongEvent.set('duration', value);
   }
 
   /**
@@ -179,9 +216,30 @@ class ZoomCameraContainer extends VBox
   @:bind(zoomCameraEase, UIEvent.CHANGE)
   function onChange_zoomCameraEase(_):Void
   {
-    var value:String = zoomCameraEase.selectedItem.text;
+    if (zoomCameraEase.selectedItem == null)
+    {
+      cameraEditorState.selectedSongEvent.set('ease', SongEvent.DEFAULT_EASE);
+      return;
+    }
 
-    trace('Zoom Camera: Ease Type changed to ' + value);
+    var label:String = zoomCameraEase.selectedItem.text;
+    var value:String = zoomCameraEase.selectedItem.id;
+
+    trace('Zoom Camera: Ease Type changed to $label ($value)');
+
+    cameraEditorState.selectedSongEvent.set('ease', value);
+
+    // If the ease type is instant, don't display ease direction
+    if (value.toLowerCase().indexOf('INSTANT') != -1)
+    {
+      zoomCameraEaseDir.visible = false;
+    }
+    else
+    {
+      zoomCameraEaseDir.visible = true;
+    }
+
+    updateEasePreview();
   }
 
   /**
@@ -190,9 +248,21 @@ class ZoomCameraContainer extends VBox
   @:bind(zoomCameraEaseDir, UIEvent.CHANGE)
   function onChange_zoomCameraEaseDir(_):Void
   {
-    var value:String = zoomCameraEaseDir.selectedItem.text;
+    if (zoomCameraEaseDir.selectedItem == null)
+    {
+      trace('Zoom Camera: No ease direction selected!');
+      cameraEditorState.selectedSongEvent.set('easeDir', SongEvent.DEFAULT_EASE_DIR);
+      return;
+    }
 
-    trace('Zoom Camera: Ease Dir changed to ' + value);
+    var label:String = zoomCameraEaseDir.selectedItem.text;
+    var value:String = zoomCameraEaseDir.selectedItem.id;
+
+    trace('Zoom Camera: Ease Dir changed to $label ($value)');
+
+    cameraEditorState.selectedSongEvent.set('easeDir', value);
+
+    updateEasePreview();
   }
 
   override public function destroy():Void
