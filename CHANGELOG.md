@@ -4,6 +4,15 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.3] - 2026-02-23
+
+### Fixed
+
+- [HTML5] Hitting a can in 2hot no longer creates a script error. (Thanks NotHyper-474!)
+- The game no longer consistently lag spikes during gameplay. ([823120c](https://github.com/FunkinCrew/Funkin/commit/823120cdef7bfbb2d3ec37c7085878fcbeebcb30)) - by @ACrazyTown in [#6970](https://github.com/FunkinCrew/Funkin/pull/6970)
+
+
+
 ## [0.8.2] - 2026-02-23
 
 ### Added
@@ -22,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Scripted classes can now extend other scripted classes. (Thanks KoloInDaCrib!)
   - Tweaked some error messages to be more verbose.
   - Added `scriptHas` and `staticScriptHas` functions to check if a script has a specific variable/function.
-  - The `is` operator is now more accurate to regular Haxe. (Thanks NotHyper-474!)
+  - The `is` operator is now more accurate to regular Haxe. (Thanks Starexify!)
   - Static functions can now use static extensions (`using`s). (Thanks NotHyper-474!)
   - `interface`s can now be properly parsed. (Thanks Starexify!)
   - Optional fields and extensions can now be used in `typedef`s. (Thanks Starexify!)
@@ -88,7 +97,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [DESKTOP] The game display no longer sometimes becomes offset from the window.
 - [MOBILE] Selecting a song using touch controls when a keyboard is connected no longer disables the keyboard strumline layout.
 - [ANDROID] Improved Freeplay scrolling behavior on high framerate displays.
-- Ctrl-clicking on a hold note no longer crashes the Chart Editor.
 - [WINDOWS] Chart Editor save dialog windows no longer freeze the game.
 - The Chart Editor Results Screen playtest option now consistently shows the Results Screen after each playtest.
 - Scrolling really quickly in Freeplay no longer crashes the game. ([76699b2](https://github.com/FunkinCrew/Funkin/commit/76699b235cd5b359bc34e6950cd05bbbb13918f8)) - by @ComedyLost in [#6962](https://github.com/FunkinCrew/Funkin/pull/6962)
