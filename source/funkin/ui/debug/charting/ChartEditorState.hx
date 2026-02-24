@@ -6479,6 +6479,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
     {
+      if (playbarHeadDragging) playbarHeadDragging = false;
       // Apply volume settings.
       if (playtestAudioSettings)
       {
