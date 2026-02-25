@@ -9,6 +9,8 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -186,37 +188,46 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
-  public static final NOTE_KINDS:Map<String, String> = [ // Base
-    "" => "Default", "~CUSTOM~" => "Custom", "noanim" => "No Animation", "non_scoreable" => "Non-scoreable", // Weeks 1-7
-    "censor" => "[UH-OH!] Censor Bar", "mom" => "Mom Sings (Week 5)", "ugh" => "Tankman Ugh (Week 7)", "hehPrettyGood" => "Tankman Heh, Pretty Good (Week 7)", // Weekend 1
-    "weekend-1-lightcan" => "Darnell Light Can (2hot)", "weekend-1-kneecan" => "Darnell Knee Can (2hot)", "weekend-1-kickcan" => "Darnell Kick Can (2hot)", "weekend-1-cockgun" => "Pico Cock Gun (2hot)", "weekend-1-firegun" => "Pico Fire Gun (2hot)", "weekend-1-punchhigh" => "Punch High (Blazin')", "weekend-1-punchhighdodged" => "Punch High (Dodge) (Blazin')", "weekend-1-punchhighblocked" => "Punch High (Block) (Blazin')", "weekend-1-punchhighspin" => "Punch High (Spin) (Blazin')", "weekend-1-punchlow" => "Punch Low (Blazin')", "weekend-1-punchlowdodged" => "Punch Low (Dodge) (Blazin')", "weekend-1-punchlowblocked" => "Punch Low (Block) (Blazin')", "weekend-1-punchlowspin" => "Punch High (Spin) (Blazin')", "weekend-1-picouppercutprep" => "Pico Uppercut (Prep) (Blazin')", "weekend-1-picouppercut" => "Pico Uppercut (Blazin')", "weekend-1-blockhigh" => "Block High (Blazin')", "weekend-1-blocklow" => "Block Low (Blazin')", "weekend-1-blockspin" => "Block High (Spin) (Blazin')", "weekend-1-dodgehigh" => "Dodge High (Blazin')", "weekend-1-dodgelow" => "Dodge Low (Blazin')", "weekend-1-dodgespin" => "Dodge High (Spin) (Blazin')", "weekend-1-hithigh" => "Hit High (Blazin')", "weekend-1-hitlow" => "Hit Low (Blazin')", "weekend-1-hitspin" => "Hit High (Spin) (Blazin')", "weekend-1-darnelluppercutprep" => "Darnell Uppercut (Prep) (Blazin')", "weekend-1-darnelluppercut" => "Darnell Uppercut (Blazin')", "weekend-1-idle" => "Idle (Blazin')", "weekend-1-fakeout" => "Fakeout (Blazin')", "weekend-1-taunt" => "Taunt (If Fakeout) (Blazin')", "weekend-1-tauntforce" => "Taunt (Forced) (Blazin')", "weekend-1-reversefakeout" => "Fakeout (Reverse) (Blazin')",];
-
+  /**
+   * Populate the provided dropdown with the list of available note kinds.
+   * @param dropDown The dropdown to populate
+   * @param startingKindId The note kind to pre-select.
+   * @return The dropdown entry for the pre-selected note kind.
+   */
   public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind(startingKindId);
+    dropDown.dataSource.add({id: '', text: 'Default'});
+    dropDown.dataSource.add({id: '~CUSTOM~', text: 'Custom'});
 
-    for (noteKindId in NOTE_KINDS.keys())
+    var customNoteKinds:Array<String> = NoteKindManager.listNoteKinds();
+
+    for (noteKindId in customNoteKinds)
     {
-      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Unknown';
-
-      var value:DropDownEntry = {id: noteKindId, text: noteKind};
-      if (startingKindId == noteKindId) returnValue = value;
-
-      dropDown.dataSource.add(value);
+      dropDown.dataSource.add(lookupNoteKind(noteKindId));
     }
 
     dropDown.dataSource.sort('id', ASCENDING);
 
-    return returnValue;
+    return lookupNoteKind(startingKindId);
   }
 
+  /**
+   * Generates the dropdown entry for the provided note kind ID.
+   * @param noteKindId The note kind ID
+   * @return The dropdown entry
+   */
   public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
   {
     if (noteKindId == null) return lookupNoteKind('');
-    if (noteKindId != '' && !NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
-    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
+    if (noteKindId == '') return {id: '', text: 'Default'};
+
+    var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(noteKindId);
+    var noteKindDesc:Null<String> = noteKind?.description ?? noteKindId;
+    if (noteKind != null) return {id: noteKindId ?? 'unknown', text: noteKindDesc ?? 'unknown'};
+
+    return {id: '~CUSTOM~', text: 'Custom'};
   }
 
   /**
