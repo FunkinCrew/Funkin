@@ -139,8 +139,8 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
   public function repositionCharacter()
   {
     if (stageEditorState.selectedChar == null) return;
-    stageEditorState.selectedChar.x = charPosX.pos - stageEditorState.selectedChar.characterOrigin.x + stageEditorState.selectedChar.globalOffsets[0];
-    stageEditorState.selectedChar.y = charPosY.pos - stageEditorState.selectedChar.characterOrigin.y + stageEditorState.selectedChar.globalOffsets[1];
+    stageEditorState.selectedChar.x = charPosX.pos - stageEditorState.selectedChar.characterOrigin.x;
+    stageEditorState.selectedChar.y = charPosY.pos - stageEditorState.selectedChar.characterOrigin.y;
 
     stageEditorState.selectedChar.setScale(stageEditorState.selectedChar.getBaseScale() * charScale.pos);
     stageEditorState.updateMarkerPos();

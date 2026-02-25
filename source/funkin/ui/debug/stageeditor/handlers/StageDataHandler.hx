@@ -243,8 +243,8 @@ class StageDataHandler
 
       if (charData == null) continue;
 
-      char.x = charData.position[0] - char.characterOrigin.x + char.globalOffsets[0];
-      char.y = charData.position[1] - char.characterOrigin.y + char.globalOffsets[1];
+      char.x = charData.position[0] - char.characterOrigin.x;
+      char.y = charData.position[1] - char.characterOrigin.y;
       state.charGroups[char.characterType].zIndex = charData.zIndex;
 
       char.setScale(char.getBaseScale() * charData.scale);

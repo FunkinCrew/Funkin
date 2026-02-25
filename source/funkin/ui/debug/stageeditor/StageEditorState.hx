@@ -797,13 +797,13 @@ class StageEditorState extends UIState
         {
           this.createAndPushAction(CHARACTER_MOVED);
 
-          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedChar.cornerPosition.x, FlxG.mouse.getWorldPosition().y - selectedChar.cornerPosition.y];
+          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedChar.x, FlxG.mouse.getWorldPosition().y - selectedChar.y];
         }
 
-        var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
+        var posBros:FlxPoint = FlxPoint.get(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
 
-        selectedChar.cornerPosition = new FlxPoint(Math.floor(posBros.x) - Math.floor(posBros.x) % moveStep,
-          Math.floor(posBros.y) - Math.floor(posBros.y) % moveStep);
+        selectedChar.x = Math.floor(posBros.x) - Math.floor(posBros.x) % moveStep;
+        selectedChar.y = Math.floor(posBros.y) - Math.floor(posBros.y) % moveStep;
       }
 
       arrowMovement(selectedChar);
@@ -1714,6 +1714,7 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
+
   /**
    * If non-null, load this character as Boyfriend.
    */
