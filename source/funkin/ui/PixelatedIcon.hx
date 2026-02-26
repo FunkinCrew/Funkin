@@ -4,7 +4,7 @@ import funkin.graphics.FlxFilteredSprite;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
- * NOT to be confused with the CharIcon class, which is for the in-game icons
+ * NOT to be confused with the HealthIcon class, which is for the in-game icons
  */
 @:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
@@ -25,7 +25,6 @@ class PixelatedIcon extends FlxFilteredSprite
   public function setCharacter(char:String):Void
   {
     if (this.char == char) return;
-    this.char = char;
 
     var charPath:String = "freeplay/icons/";
 
@@ -52,10 +51,9 @@ class PixelatedIcon extends FlxFilteredSprite
       this.visible = false;
       return;
     }
-    else
-    {
-      this.visible = true;
-    }
+
+    this.visible = true;
+    this.char = char; // if we went past this its safe to assume the icon exists so we can assign it
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
 
