@@ -1845,8 +1845,11 @@ class PlayState extends MusicBeatSubState
     iconP2?.onStepHit(Std.int(Conductor.instance.currentStep));
 
     // Only bop camera if zoom level is below 135%
+    // This is an arbitrary number chosen so that the camera doesn't move insanely far in when the bop speed is fast.
+    final MAX_RELATIVE_CAM_ZOOM:Float = 1.35;
+
     if (Preferences.zoomCamera
-      && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom)
+      && camHUD.zoom < (MAX_RELATIVE_CAM_ZOOM * defaultHUDCameraZoom)
       && cameraZoomRate > 0
       && (Conductor.instance.currentStep + cameraZoomRateOffset * Constants.STEPS_PER_BEAT) % (cameraZoomRate * Constants.STEPS_PER_BEAT) == 0)
     {
