@@ -11,6 +11,7 @@ import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/hold-note.xml"))
 class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
 {
+  var contextmenuEdit:MenuItem;
   var contextmenuFlip:MenuItem;
   var contextmenuDelete:MenuItem;
 
@@ -27,6 +28,11 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
   public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
+    contextmenuEdit.onClick = function(_)
+    {
+      chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+    }
+
     contextmenuFlip.onClick = function(_)
     {
       chartEditorState.performCommand(new FlipNotesCommand([data]));
