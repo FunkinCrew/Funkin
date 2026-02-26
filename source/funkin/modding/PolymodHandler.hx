@@ -485,6 +485,9 @@ class PolymodHandler
     Polymod.blacklistImport('funkin.external.android.CallbackUtil');
     Polymod.blacklistImport('funkin.external.android.DataFolderUtil');
     Polymod.blacklistImport('funkin.external.android.JNIUtil');
+
+    // Blacklists accessing the interp for polymod hscript
+    Polymod.blacklistInstanceFields(polymod.hscript._internal.PolymodScriptClass.PolymodScriptClass, ['_interp']);
   }
 
   /**
