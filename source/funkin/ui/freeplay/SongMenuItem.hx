@@ -431,7 +431,7 @@ class SongMenuItem extends FlxSpriteGroup
     {
       songText.text = freeplayData.fullSongName;
       if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
-      pixelIcon.visible = true;
+      if (pixelIcon.char != freeplayData.songCharacter) pixelIcon.visible = false;
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
       if (updateRank) updateScoringRank(freeplayData.scoringRank);
