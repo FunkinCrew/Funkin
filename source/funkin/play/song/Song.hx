@@ -1018,11 +1018,25 @@ class SongDifficulty
       result.addOpponentVoice(FunkinSound.load(opponentVoice, 1.0, false, false, false, false, null, null, true));
     }
 
-    // Sometimes the sounds don't set their important value to true, so we have to do this manually.
-    result.forEach(function(snd:FunkinSound)
+    if (result.members.length == 0)
     {
-      snd.important = true;
-    });
+      var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
+      // Try to use `Voices.ogg` if no other voices are found.
+      var legacyPath = Paths.voices(this.song.id, '$suffix');
+      if (Assets.exists(legacyPath))
+      {
+        result.addPlayerVoice(FunkinSound.load(legacyPath, 1.0, false, false, false, false, null, null, true));
+      }
+    }
+
+    if (result.members.length == 1) // It's legacy'ing somewhere and i can prove it
+    {
+      result.legacyVoiceSystem = true;
+      result.legacyVoiceUsesPlayer = result.getPlayerVoice(0) != null;
+    }
+
+    // Sometimes the sounds don't set their important value to true, so we have to do this manually.
+    result.forEach((snd:FunkinSound) -> snd.important = true);
 
     result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
     result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);

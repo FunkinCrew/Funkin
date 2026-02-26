@@ -92,6 +92,14 @@ class ChartEditorImportExportHandler
           state.loadVocalsFromAsset(voice, diff.characters.opponent, instId);
         }
 
+        if (playerVoiceList.length == 0 && opponentVoiceList.length == 0) // Legacy support...
+        {
+          var suffix:String = (instId != null && instId != '' && instId != 'default') ? '-$instId' : '';
+          state.loadVocalsFromAsset(Paths.voices(diff.song.id, suffix), diff.characters.player, instId);
+          state.audioVocalTrackGroup.legacyVoiceSystem = true;
+          state.audioVocalTrackGroup.legacyVoiceUsesPlayer = true;
+        }
+
         // Set the difficulty of the song if one was passed in the params, and it isn't the default
         if (targetSongDifficulty != null
           && targetSongDifficulty != state.selectedDifficulty

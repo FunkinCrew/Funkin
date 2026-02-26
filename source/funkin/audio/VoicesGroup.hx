@@ -6,6 +6,13 @@ import funkin.audio.waveform.WaveformData;
 @:nullSafety
 class VoicesGroup extends SoundGroup
 {
+  /**
+   * Whenever or not the game is using the legacy vocals system (shared Voices.ogg)
+   */
+  public var legacyVoiceSystem:Bool = false;
+
+  public var legacyVoiceUsesPlayer:Bool = false;
+
   var playerVoices:Null<FlxTypedGroup<FunkinSound>>;
   var opponentVoices:Null<FlxTypedGroup<FunkinSound>>;
 
