@@ -281,6 +281,38 @@ class ChartEditorAudioHandler
     snd.volume = volume;
   }
 
+  /**
+   * Play one of two stretchy sounds.
+   * Since some configurations can play this frequently, we
+   * @param state
+   * @param volume
+   */
+  public static function playStretchySound(state:ChartEditorState, volume:Float = 1.0):Void
+  {
+    if (state.stretchySounds)
+    {
+      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.load(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-1'));
+      if (state.stretchySound1 == null) return;
+
+      // Prevent spam playing that could cause issues.
+      if (state.stretchySound1.isPlaying) return;
+
+      state.stretchySound1.play(true);
+      state.stretchySound1.volume = volume;
+    }
+    else
+    {
+      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.load(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-2'));
+      if (state.stretchySound2 == null) return;
+
+      // Prevent spam playing that could cause issues.
+      if (state.stretchySound2.isPlaying) return;
+
+      state.stretchySound2.play(true);
+      state.stretchySound2.volume = volume;
+    }
+  }
+
   public static function wipeInstrumentalData(state:ChartEditorState):Void
   {
     state.audioInstTrackData.clear();

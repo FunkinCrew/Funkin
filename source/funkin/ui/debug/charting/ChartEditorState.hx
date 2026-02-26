@@ -795,6 +795,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return hitsoundVolumePlayer + hitsoundVolumeOpponent > 0;
   }
 
+  var stretchySound1:Null<FunkinSound> = null;
+  var stretchySound2:Null<FunkinSound> = null;
+
   // Auto-save
 
   /**
@@ -5180,7 +5183,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           if (dragLengthCurrent != dragLengthSteps)
           {
             stretchySounds = !stretchySounds;
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-' + (stretchySounds ? '1' : '2')));
+            this.playStretchySound();
 
             dragLengthCurrent = dragLengthSteps;
           }
@@ -5858,7 +5861,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (playheadDragLengthCurrent[column] != targetNoteLengthStepsInt)
         {
           stretchySounds = !stretchySounds;
-          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-' + (stretchySounds ? '1' : '2')));
+          this.playStretchySound();
           playheadDragLengthCurrent[column] = targetNoteLengthStepsInt;
         }
         ghostHold.visible = true;
