@@ -159,6 +159,8 @@ class ChartEditorAudioHandler
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
 
+    instTrack.important = true;
+
     stopExistingInstrumental(state);
     state.audioInstTrack = instTrack;
     state.postLoadInstrumental();
@@ -190,6 +192,8 @@ class ChartEditorAudioHandler
 
     // early return
     if (vocalTrack == null) return false;
+
+    vocalTrack.important = true;
 
     switch (charType)
     {
