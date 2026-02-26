@@ -2764,6 +2764,16 @@ class PlayState extends MusicBeatSubState
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
 
+        if (vocals != null)
+        {
+          if (vocals.legacyVoiceSystem)
+          {
+            if (vocals.legacyVoiceUsesPlayer) vocals.playerVolume = playerVocalsVolume;
+            else
+              vocals.opponentVolume = opponentVocalsVolume;
+          }
+        }
+
         // Command the opponent to hit the note on time.
         // NOTE: This is what handles the strumline and cleaning up the note itself!
         opponentStrumline.hitNote(note);
@@ -2918,7 +2928,11 @@ class PlayState extends MusicBeatSubState
             // Play the miss sound.
             if (event.playSound)
             {
-              if (vocals != null) vocals.playerVolume = 0;
+              if (vocals != null)
+              {
+                if (vocals.legacyVoiceSystem && !vocals.legacyVoiceUsesPlayer) vocals.opponentVolume = 0;
+                vocals.playerVolume = 0;
+              }
               FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.5, 0.6));
             }
           }
@@ -3094,7 +3108,11 @@ class PlayState extends MusicBeatSubState
     playerStrumline.hitNote(note, !event.isComboBreak);
     if (event.doesNotesplash) playerStrumline.playNoteSplash(note.noteData.getDirection());
     if (note.isHoldNote && note.holdNoteSprite != null) playerStrumline.playNoteHoldCover(note.holdNoteSprite);
-    if (vocals != null) vocals.playerVolume = playerVocalsVolume;
+    if (vocals != null)
+    {
+      if (vocals.legacyVoiceSystem && !vocals.legacyVoiceUsesPlayer) vocals.opponentVolume = opponentVocalsVolume;
+      vocals.playerVolume = playerVocalsVolume;
+    }
 
     // Display the combo meter and add the calculation to the score.
     if (note.scoreable)
