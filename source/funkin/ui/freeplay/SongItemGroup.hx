@@ -38,14 +38,21 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
 
     final capsulesToRender:Array<SongMenuItem> = [];
 
+    var hasTrail = false;
     for (capsule in this.members)
     {
-      if (capsule != null && capsule.exists && capsule.visible) capsulesToRender.push(capsule);
+      if (capsule != null && capsule.exists && capsule.visible)
+      {
+        if (capsule.hasTrail) hasTrail = true;
+        capsulesToRender.push(capsule);
+      }
     }
 
     if (capsulesToRender.length == 0) return;
 
-    final memberCount:Int = capsulesToRender[0].length; // Capsules always have a constant number of members to render.
+    var firstCapsule = capsulesToRender[0];
+    var memberCount:Int = firstCapsule.length;
+    if (hasTrail && !firstCapsule.hasTrail) memberCount += 2;
     for (i in 0...memberCount)
     {
       for (capsule in capsulesToRender)

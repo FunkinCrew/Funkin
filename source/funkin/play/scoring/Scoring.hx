@@ -529,7 +529,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 2 / 24;
       default:
-        return 3.5;
+        return 2 / 24;
     }
   }
 
@@ -549,7 +549,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 95 / 24;
       default:
-        return 3.5;
+        return 95 / 24;
     }
   }
 
@@ -569,7 +569,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 186 / 24;
       default:
-        return 3.5;
+        return 186 / 24;
     }
   }
 
@@ -589,7 +589,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 207 / 24;
       default:
-        return 3.5;
+        return 207 / 24;
     }
   }
 
@@ -631,7 +631,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return Paths.image('ui/results/rank-text/scroll-loss');
       default:
-        return Paths.image('ui/results/rank-text/scroll-good');
+        return Paths.image('ui/results/rank-text/scroll-loss');
     }
   }
 
@@ -652,7 +652,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return Paths.image('ui/results/rank-text/text-loss');
       default:
-        return Paths.image('ui/results/rank-text/text-good');
+        return Paths.image('ui/results/rank-text/text-loss');
     }
   }
 
@@ -672,6 +672,8 @@ enum abstract ScoringRank(String)
         0xFFFF58B4;
       case PERFECT_GOLD:
         0xFFFFB619;
+      default:
+        0xFF6044FF;
     }
   }
 
