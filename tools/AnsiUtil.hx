@@ -153,6 +153,13 @@ class AnsiUtil
    */
   public static inline function info(str:String):String return AnsiUtil.bold(AnsiUtil.bg_blue(str));
 
+  /**
+   * Makes the string display as DEBUG text.
+   * @param str The input string to format.
+   * @return The formatted string.
+   */
+  public static inline function debug(str:String):String return AnsiUtil.bold(AnsiUtil.bg_lime(str));
+
   // Text styles
 
   /**
@@ -340,6 +347,13 @@ class AnsiUtil
    * @return The formatted string.
    */
   public static inline function bg_bright_lilac(str:String):String return apply(str, AnsiCode.BG_BRIGHT_LILAC);
+
+  /**
+   * Sets the background color to lime green (256-color mode).
+   * @param str The input string to format.
+   * @return The formatted string.
+   */
+  public static inline function bg_lime(str:String):String return apply(str, AnsiCode.BG_LIME);
 
   /**
    * Sets the background color to the color of a Left note.

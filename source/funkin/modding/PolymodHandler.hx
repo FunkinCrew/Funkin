@@ -46,7 +46,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = ">=0.9.0 <0.10.0";
+  public static final API_VERSION_RULE:String = '>=0.9.0 <0.10.0';
 
   /**
    * Where relative to the executable that mods are located.
@@ -69,6 +69,9 @@ class PolymodHandler
     null
     #end;
 
+  /**
+   * Populated with the IDs of mods once they're successfully loaded.
+   */
   public static var loadedModIds:Array<String> = [];
 
   // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
@@ -247,13 +250,7 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
-      funkin.Assets,
-      funkin.Paths,
-      funkin.Preferences,
-      funkin.util.Constants,
-      flixel.FlxG
-    ];
+    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [funkin.Assets, funkin.Paths, funkin.Preferences, funkin.util.Constants, flixel.FlxG];
 
     for (cls in DEFAULT_IMPORTS)
     {
