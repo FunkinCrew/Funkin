@@ -72,6 +72,10 @@ class ResultsDebugSubState extends MusicBeatSubState
     {
       resultsParams.scoreData.tallies = DebugTallies.getTallyForRank(result);
     });
+    createToggleListItem("Force Rank Slam (Freeplay Only)", ["No", "Yes"], function(result:String)
+    {
+      resultsParams.forceRankSlam = result == "Yes";
+    });
   }
 
   function createTextItem(name:String, ?onChange:Void->Void):MenuTypedItem<FlxText>

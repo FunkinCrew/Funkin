@@ -941,7 +941,7 @@ class ResultState extends MusicBeatSubState
         var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
         var isPersonalBest = rank > Scoring.calculateRank(params?.prevScoreData);
 
-        if (isScoreValid && isPersonalBest)
+        if ((isScoreValid && isPersonalBest) || params.forceRankSlam)
         {
           trace('THE RANK IS Higher.....');
 
@@ -1158,4 +1158,9 @@ typedef ResultsStateParams =
    * The previous score data, used for rank comparision.
    */
   var ?prevScoreData:SaveScoreData;
+
+  /**
+   * Forces to do the rank slamming animation in freeplay for debug purposes
+   */
+  var ?forceRankSlam:Bool;
 };

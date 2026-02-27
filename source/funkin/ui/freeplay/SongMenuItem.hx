@@ -381,8 +381,30 @@ class SongMenuItem extends FlxSpriteGroup
 
   var evilTrail:FlxTrail;
 
-  public function fadeAnim():Void
+  public var hasTrail:Bool = false;
+
+  function clearUpTrail()
   {
+    if (impactThing != null)
+    {
+      FlxTween.cancelTweensOf(impactThing);
+      remove(impactThing);
+      impactThing.destroy();
+      impactThing = null;
+    }
+    if (evilTrail != null)
+    {
+      FlxTween.cancelTweensOf(evilTrail);
+      remove(evilTrail);
+      evilTrail.destroy();
+      evilTrail = null;
+    }
+  }
+
+  public function fadeAnim(?newRank:ScoringRank):Void
+  {
+    if (hasTrail) clearUpTrail();
+    hasTrail = true;
     impactThing = new FunkinSprite(0, 0);
     impactThing.frames = capsule.frames;
     impactThing.frame = capsule.frame;
@@ -403,12 +425,13 @@ class SongMenuItem extends FlxSpriteGroup
       ease: FlxEase.quadOut,
       onComplete: function(_)
       {
-        remove(evilTrail);
+        clearUpTrail();
+        hasTrail = false;
       }
     });
     add(evilTrail);
 
-    evilTrail.color = ranking.rank.getRankingFreeplayColor();
+    evilTrail.color = (newRank ?? ranking.rank).getRankingFreeplayColor();
   }
 
   public function getTrailColor():FlxColor
