@@ -571,9 +571,9 @@ class Constants
 
   #if FEATURE_LOST_FOCUS_VOLUME
   /**
-   * How much volume should be reduced on Application Focus Lost.
+   * The level the volume should be reduced to when the game loses focus.
    */
-  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.5;
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.25;
   #end
 
   /**
