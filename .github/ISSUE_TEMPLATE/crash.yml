@@ -55,13 +55,13 @@ body:
     attributes:
       label: Mobile OS Version
       description: (Mobile users only) What version is your Operating System?
-      placeholder: ex. iOS 26.2, Android 16, iPadOS 26.2
+      placeholder: ex. iOS 26.3, Android 16, iPadOS 26.3
 
   - type: input
     attributes:
       label: Version
       description: Which version are you playing on? The game version is in the bottom left corner of the main menu.
-      placeholder: ex. 0.8.1
+      placeholder: ex. 0.8.3
     validations:
       required: true
 

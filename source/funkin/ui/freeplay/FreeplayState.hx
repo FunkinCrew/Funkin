@@ -2937,12 +2937,8 @@ class FreeplayState extends MusicBeatSubState
       // switchBackingImage(currentCapsule.freeplayData);
     }
 
-    // Clear song previews and add small vibrations every selection change.
-    if (change != 0)
-    {
-      clearPreviews();
-      HapticUtil.vibrate(0, 0.01, 0.5);
-    }
+    // Small vibrations every selection change.
+    if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
 
     dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
   }
@@ -2965,7 +2961,7 @@ class FreeplayState extends MusicBeatSubState
         overrideExisting: true,
         restartTrack: false
       });
-      FlxG.sound.music.fadeIn(2, 0, previewVolume);
+      if (FlxG.sound.music != null) FlxG.sound.music.fadeIn(2, 0, previewVolume);
     }
     else
     {

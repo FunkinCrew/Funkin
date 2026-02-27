@@ -838,7 +838,6 @@ class PauseSubState extends MusicBeatSubState
         if (PlayState.instance.currentChart != null)
         {
           var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
-          trace('DIFFICULTIES: ${difficultiesInVariation}');
           for (difficulty in difficultiesInVariation)
           {
             entries.push({text: difficulty.toTitleCase(), callback: (state) -> changeDifficulty(state, difficulty)});

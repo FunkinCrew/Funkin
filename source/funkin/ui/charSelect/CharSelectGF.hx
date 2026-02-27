@@ -40,7 +40,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     // danceEvery isn't necessary if that gets fixed.
     if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
     {
-      trace('GF beat hit');
       anim.play("idle", true);
     }
   };
@@ -98,7 +97,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     currentGFPath = assetPath;
 
     // We don't need to update any anims if we didn't change GF
-    trace('currentGFPath(${currentGFPath})');
     if (currentGFPath == "")
     {
       this.visible = false;
