@@ -53,7 +53,7 @@ class TitleState extends MusicBeatState
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
 
-    Assets.cacheSound(Paths.music('ui/title/girlfriends-ringtone/girlfriends-ringtone').audio());
+    Assets.cacheSound(Paths.music('ui/title/girlfriends-ringtone').audio());
 
     // DEBUG BULLSHIT
 
@@ -94,41 +94,8 @@ class TitleState extends MusicBeatState
 
     gfDance = new FunkinSprite((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
     gfDance.frames = Assets.getSparrowAtlas(Paths.spritesheet('ui/title/gf-dance-title'));
-    gfDance.animation.addByIndices('danceLeft', 'gfDance', [
-      30,
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14
-    ], "", 24, false);
-    gfDance.animation.addByIndices('danceRight', 'gfDance', [
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29
-    ], "", 24, false);
+    gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+    gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
     gfDance.shader = swagShader.shader;
 
