@@ -3635,7 +3635,7 @@ class PlayState extends MusicBeatSubState
     {
       if (isSubState)
       {
-        if (isPlaytestResults)
+        if (isPlaytestResults && !isBotPlayMode)
         {
           moveToResultsScreen(false, prevScoreData);
         }
