@@ -5,4 +5,6 @@ package funkin.ui;
  * Create a scripted class that extends MusicBeatSubState to use this.
  */
 @:hscriptClass
-class ScriptedMusicBeatSubState extends funkin.ui.MusicBeatSubState implements polymod.hscript.HScriptedClass {}
+class ScriptedMusicBeatSubState extends funkin.ui.MusicBeatSubState implements polymod.hscript.HScriptedClass
+{
+}

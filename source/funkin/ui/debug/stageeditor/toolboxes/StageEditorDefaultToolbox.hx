@@ -41,6 +41,8 @@ class StageEditorDefaultToolbox extends CollapsibleDialog
   /**
    * Override to implement this.
    */
-  public function refresh() {}
+  public function refresh()
+  {
+  }
 }
 #end

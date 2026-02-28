@@ -58,7 +58,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   {
     var error:Float = 0;
 
-    forEachAlive(function(snd) {
+    forEachAlive(function(snd)
+    {
       if (targetTime == null) targetTime = snd.time;
       else
       {
@@ -85,7 +86,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     // result.pause();
     result.time = this.time;
 
-    result.onComplete = function() {
+    result.onComplete = function()
+    {
       this.onComplete();
     }
 
@@ -96,14 +98,17 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     return result;
   }
 
-  public dynamic function onComplete():Void {}
+  public dynamic function onComplete():Void
+  {
+  }
 
   /**
    * Pause all the sounds in the group.
    */
   public function pause()
   {
-    forEachAlive(function(sound:FunkinSound) {
+    forEachAlive(function(sound:FunkinSound)
+    {
       sound.pause();
     });
   }
@@ -113,7 +118,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
-    forEachAlive(function(sound:FunkinSound) {
+    forEachAlive(function(sound:FunkinSound)
+    {
       if (sound.length < startTime)
       {
         // trace('Queuing sound (${sound.toString()} past its length! Skipping...)');
@@ -128,7 +134,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function resume()
   {
-    forEachAlive(function(sound:FunkinSound) {
+    forEachAlive(function(sound:FunkinSound)
+    {
       sound.resume();
     });
   }
@@ -139,7 +146,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   @:nullSafety(Off)
   public function fadeIn(duration:Float, ?from:Float = 0.0, ?to:Float = 1.0, ?onComplete:FlxTween->Void):Void
   {
-    forEachAlive(function(sound:FunkinSound) {
+    forEachAlive(function(sound:FunkinSound)
+    {
       sound.fadeIn(duration, from, to, onComplete);
     });
   }
@@ -150,7 +158,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   @:nullSafety(Off)
   public function fadeOut(duration:Float, ?to:Float = 0.0, ?onComplete:FlxTween->Void):Void
   {
-    forEachAlive(function(sound:FunkinSound) {
+    forEachAlive(function(sound:FunkinSound)
+    {
       sound.fadeOut(duration, to, onComplete);
     });
   }
@@ -162,7 +171,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   {
     if (members != null)
     {
-      forEachAlive(function(sound:FunkinSound) {
+      forEachAlive(function(sound:FunkinSound)
+      {
         sound.stop();
       });
     }
@@ -198,7 +208,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function set_time(time:Float):Float
   {
-    forEachAlive(function(snd:FunkinSound) {
+    forEachAlive(function(snd:FunkinSound)
+    {
       // account for different offsets per sound?
       snd.time = time;
     });
@@ -233,7 +244,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   // in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
   function set_volume(volume:Float):Float
   {
-    forEachAlive(function(snd:FunkinSound) {
+    forEachAlive(function(snd:FunkinSound)
+    {
       snd.volume = volume;
     });
 
@@ -249,7 +261,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function set_muted(muted:Bool):Bool
   {
-    forEachAlive(function(snd:FunkinSound) {
+    forEachAlive(function(snd:FunkinSound)
+    {
       snd.muted = muted;
     });
 
@@ -269,7 +282,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   {
     #if FLX_PITCH
     trace('Setting audio pitch to ' + val);
-    forEachAlive(function(snd:FunkinSound) {
+    forEachAlive(function(snd:FunkinSound)
+    {
       snd.pitch = val;
     });
     #end

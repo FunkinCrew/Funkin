@@ -6,4 +6,6 @@ package funkin.play.cutscene.dialogue;
  * This allows you to customize how a specific dialogue box appears.
  */
 @:hscriptClass
-class ScriptedDialogueBox extends DialogueBox implements polymod.hscript.HScriptedClass {}
+class ScriptedDialogueBox extends DialogueBox implements polymod.hscript.HScriptedClass
+{
+}

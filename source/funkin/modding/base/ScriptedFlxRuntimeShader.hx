@@ -5,4 +5,6 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxRuntimeShader to use this.
  */
 @:hscriptClass
-class ScriptedFlxRuntimeShader extends flixel.addons.display.FlxRuntimeShader implements HScriptedClass {}
+class ScriptedFlxRuntimeShader extends flixel.addons.display.FlxRuntimeShader implements HScriptedClass
+{
+}

@@ -6,6 +6,8 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * Data containing information about a song.
@@ -566,7 +568,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.opponent = opponent;
     this.instrumental = instrumental;
 
-    this.altInstrumentals = altInstrumentals;
+    this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
 
@@ -780,7 +782,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
-    if (this.value == null) return {};
+    if (this.value == null) return
+    {
+    };
     if (Std.isOfType(this.value, Array))
     {
       var result:haxe.DynamicAccess<Dynamic> = {};
@@ -1301,12 +1305,15 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    */
   public function buildTooltip():String
   {
-    if ((this.kind?.length ?? 0) == 0) return "";
+    if ((this.kind?.length ?? 0) == 0) return '';
 
-    var result:String = 'Kind: ${this.kind}';
+    var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(this.kind);
+    var noteKindDesc:String = noteKind?.description ?? this.kind;
+
+    var result:String = 'Kind: $noteKindDesc';
     if (this.params.length == 0) return result;
 
-    result += "\nParams:";
+    result += '\nParams:';
 
     for (param in params)
     {

@@ -25,13 +25,15 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
     this.chartBox.onClick = (_) -> this.onClickChartBox();
 
-    this.chartBox.onMouseOver = function(_event) {
+    this.chartBox.onMouseOver = function(_event)
+    {
       if (this.locked) return;
       this.chartBox.swapClass('upload-bg', 'upload-bg-hover');
       Cursor.cursorMode = Pointer;
     }
 
-    this.chartBox.onMouseOut = function(_event) {
+    this.chartBox.onMouseOut = function(_event)
+    {
       this.chartBox.swapClass('upload-bg-hover', 'upload-bg');
       Cursor.cursorMode = Default;
     }
@@ -41,11 +43,10 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
   public static function build(state:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorUploadChartDialog
   {
-    var dialog = new ChartEditorUploadChartDialog(state,
-      {
-        closable: closable ?? false,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorUploadChartDialog(state, {
+      closable: closable ?? false,
+      modal: modal ?? true
+    });
 
     for (dropTarget in dialog.dropHandlers)
     {

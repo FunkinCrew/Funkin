@@ -9,7 +9,9 @@ import funkin.data.freeplay.player.PlayerRegistry;
  * Create a scripted class that extends PackerFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedPackerFreeplayDJ extends PackerFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedPackerFreeplayDJ extends PackerFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A PackerFreeplayDJ is a Freeplay DJ which is rendered by
@@ -36,7 +38,7 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
     final tex:FlxFramesCollection = Paths.getPackerAtlas(playableCharData.getAssetPath());
     if (tex == null)
     {
-      trace('Could not load sparrow sprite: ' + playableCharData.getAssetPath());
+      log('Could not load sparrow sprite: ' + playableCharData.getAssetPath());
       return;
     }
     this.frames = tex;
@@ -44,12 +46,12 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
 
   public function loadAnimations():Void
   {
-    trace('[PACKERDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
+    log('[PACKERDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
 
     FlxAnimationUtil.addAtlasAnimations(this, playableCharData.getAnimationsList());
 
     var animationList:Array<String> = this.animation.getNameList();
-    trace('[PACKERDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
+    log('[PACKERDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
@@ -221,7 +223,7 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
     }
     else
     {
-      trace('Finished ${name}');
+      log('Finished ${name}');
     }
   }
 
@@ -234,5 +236,10 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
       animation.curAnim.looped = Loop;
     }
     applyAnimationOffset();
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' PACKERDJ '.bold().bg_blue() + ' $message');
   }
 }

@@ -222,7 +222,7 @@ class SustainTrail extends FlxSprite
 
     flipY = Preferences.downscroll #if mobile
     || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-      && !funkin.mobile.input.ControlsHandler.usingExternalInputDevice) #end;
+      && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice) #end;
 
     // alpha = 0.6;
     alpha = 1.0;

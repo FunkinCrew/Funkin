@@ -85,7 +85,8 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
     FlxG.cameras.cameraAdded.add(moveCameraToTop);
 
-    FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera) {
+    FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera)
+    {
       if (camera == pointerCamera)
       {
         if (!camera.exists) // The camera got destroyed, we make a new one!
@@ -106,7 +107,8 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       }
     });
 
-    FlxG.signals.preStateSwitch.add(function() {
+    FlxG.signals.preStateSwitch.add(function()
+    {
       instance.removeAll();
     });
   }
@@ -139,13 +141,13 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       if (pointer.touchId != -2)
       {
         pointer.alpha = 0.8;
-        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9),
+        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9), {
+          ease: FlxEase.cubeIn,
+          onComplete: function(_)
           {
-            ease: FlxEase.cubeIn,
-            onComplete: function(_) {
-              remove(pointer, true);
-            }
-          });
+            remove(pointer, true);
+          }
+        });
         pointer.touchId = -2;
       }
     }
@@ -210,13 +212,13 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       }
 
       pointer.alpha = 0.8;
-      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1),
+      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1), {
+        ease: FlxEase.quadIn,
+        onComplete: function(_)
         {
-          ease: FlxEase.quadIn,
-          onComplete: function(_) {
-            remove(pointer, true);
-          }
-        });
+          remove(pointer, true);
+        }
+      });
     }
   }
 }

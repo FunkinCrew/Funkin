@@ -136,7 +136,8 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.initAsync(function(success:Bool):Void {
+    Handle.initAsync(function(success:Bool):Void
+    {
       if (success)
       {
         trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');
@@ -156,6 +157,10 @@ class Main extends Sprite
     #end
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
+
+    // Force a `FunkinCamera` to be the default camera.
+    // This allows the blend mode shader to work everywhere.
+    untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
 
     var game:FunkinGame = new FunkinGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
       (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));

@@ -148,4 +148,6 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
   }
 }
 
-typedef PlayerEntryParams = {}
+typedef PlayerEntryParams =
+{
+}

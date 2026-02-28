@@ -14,7 +14,8 @@ class RetroCameraFade
     var steps:Int = 0;
     var stepsTotal:Int = camSteps;
 
-    new FlxTimer().start(time / stepsTotal, _ -> {
+    new FlxTimer().start(time / stepsTotal, _ ->
+    {
       var V:Float = (1 / stepsTotal) * steps;
       if (steps == stepsTotal) V = 1;
 
@@ -42,7 +43,8 @@ class RetroCameraFade
     ];
     camera.filters = [new ColorMatrixFilter(matrixDerp)];
 
-    new FlxTimer().start(time / stepsTotal, _ -> {
+    new FlxTimer().start(time / stepsTotal, _ ->
+    {
       var V:Float = (1 / stepsTotal) * steps;
       if (steps == stepsTotal) V = 1;
 
@@ -62,7 +64,8 @@ class RetroCameraFade
     var steps:Int = 0;
     var stepsTotal:Int = camSteps;
 
-    new FlxTimer().start(time / stepsTotal, _ -> {
+    new FlxTimer().start(time / stepsTotal, _ ->
+    {
       var V:Float = (1 / stepsTotal) * steps;
       if (steps == stepsTotal) V = 1;
 
@@ -90,7 +93,8 @@ class RetroCameraFade
     ];
     camera.filters = [new ColorMatrixFilter(matrixDerp)];
 
-    new FlxTimer().start(time / stepsTotal, _ -> {
+    new FlxTimer().start(time / stepsTotal, _ ->
+    {
       var V:Float = (1 / stepsTotal) * steps;
       if (steps == stepsTotal) V = 1;
 

@@ -11,4 +11,6 @@ import polymod.hscript.HScriptedClass;
  * - Override `getEventSchema()` to return a schema for the event data, used to build a form in the chart editor.
  */
 @:hscriptClass
-class ScriptedSongEvent extends SongEvent implements HScriptedClass {}
+class ScriptedSongEvent extends SongEvent implements HScriptedClass
+{
+}

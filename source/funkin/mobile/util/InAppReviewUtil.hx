@@ -29,13 +29,16 @@ class InAppReviewUtil
     #if android
     trace('[IAR] Initializing callbacks...');
 
-    IAR.onLog.add(function(message:String):Void {
+    IAR.onLog.add(function(message:String):Void
+    {
       trace('[IAR] Error occurred: "$message"');
     });
-    IAR.onReviewCompleted.add(function(success:Bool):Void {
+    IAR.onReviewCompleted.add(function(success:Bool):Void
+    {
       trace('[IAR] Review completed: "${success ? 'Success' : 'Failure'}"');
     });
-    IAR.onReviewError.add(function(message:String):Void {
+    IAR.onReviewError.add(function(message:String):Void
+    {
       trace('[IAR] Review failed: "$message"');
     });
     #end

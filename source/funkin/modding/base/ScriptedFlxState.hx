@@ -5,4 +5,6 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxState to use this.
  */
 @:hscriptClass
-class ScriptedFlxState extends flixel.FlxState implements HScriptedClass {}
+class ScriptedFlxState extends flixel.FlxState implements HScriptedClass
+{
+}

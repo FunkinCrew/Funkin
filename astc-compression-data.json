@@ -42,6 +42,22 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/characters/pico-dark/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/basic-animations/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/explosion-death/spritemap1.png",
+      "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/shared/images/characters/pico/playable-animations/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
       "asset": "assets/shared/images/holdCoverBlue.png",
       "blocksize": "4x4"
     },
@@ -110,6 +126,10 @@
       "blocksize": "6x6"
     },
     {
+      "asset": "assets/shared/images/characters/pico/death/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
       "asset": "assets/week1/images/erect/crowd.png",
       "blocksize": "8x8"
     },
@@ -127,6 +147,7 @@
     }
   ],
   "excludes": [
+    "assets/fonts/vcr-bmp.png",
     "assets/preload/images/cursor/",
     "assets/preload/images/fonts/",
     "assets/preload/images/freeplay/",
@@ -134,8 +155,8 @@
     "assets/preload/images/soundtray/",
     "assets/preload/images/stageBuild/",
     "assets/preload/images/storymenu/titles/",
-    "assets/preload/images/titleEnter.png",
-    "assets/preload/images/titleEnter_mobile.png",
+    "assets/preload/images/title-screen-text/spritemap1.png",
+    "assets/preload/images/title-screen-text-mobile/spritemap1.png",
     "assets/preload/images/ui/popup/pixel/*",
     "assets/shared/images/characters/abotPixel/*",
     "assets/shared/images/characters/bfPixel.png",

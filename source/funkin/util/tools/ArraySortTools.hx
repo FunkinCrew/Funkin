@@ -89,15 +89,13 @@ class ArraySortTools
       do
       {
         i++;
-      }
-      while (compare(input[i], pivot) < 0);
+      } while (compare(input[i], pivot) < 0);
 
         // Move the right pointer to the left until it finds an element less than the pivot.
       do
       {
         j--;
-      }
-      while (compare(input[j], pivot) > 0);
+      } while (compare(input[j], pivot) > 0);
 
         // If i and j have crossed, the array has been partitioned, and the pivot will be at the index j.
       if (i >= j) return j;

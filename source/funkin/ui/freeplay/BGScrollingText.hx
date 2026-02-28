@@ -19,8 +19,7 @@ class BGScrollingText extends FlxText
   @:deprecated("Use color instead")
   public var funnyColor(get, set):FlxColor;
 
-  function get_funnyColor():FlxColor
-    return color;
+  function get_funnyColor():FlxColor return color;
 
   function set_funnyColor(c:FlxColor):FlxColor
   {
@@ -105,7 +104,8 @@ class BGScrollingText extends FlxText
 
   function sortTextShit():Void
   {
-    _textPositions.sort(function(Obj1:FlxPoint, Obj2:FlxPoint) {
+    _textPositions.sort(function(Obj1:FlxPoint, Obj2:FlxPoint)
+    {
       return FlxSort.byValues(FlxSort.ASCENDING, Obj1.x, Obj2.x);
     });
   }

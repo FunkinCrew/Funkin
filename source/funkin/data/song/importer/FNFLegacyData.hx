@@ -27,7 +27,9 @@ class LegacySongData
   public var notes:Either<Array<LegacyNoteSection>, LegacyNoteData>;
   public var song:String; // Song name
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function toString():String
   {

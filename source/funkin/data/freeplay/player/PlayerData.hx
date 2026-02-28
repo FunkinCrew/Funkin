@@ -129,10 +129,10 @@ class PlayerFreeplayDJData
   var charSelect:Null<PlayerFreeplayDJCharSelectData>;
 
   @:optional
-  var cartoon:Null<PlayerFreeplayDJCartoonData>;
+  var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
   @:optional
-  var fistPump:Null<PlayerFreeplayDJFistPumpData>;
+  public var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
 
   @:optional
   @:default("animateatlas")
@@ -142,12 +142,20 @@ class PlayerFreeplayDJData
   @:default("")
   public var scriptClass:Null<String>;
 
+  @:optional
+  @:default(false)
+  public var useAnimatePosition:Bool;
+
+  @:optional
+  @:default([0, 0])
+  var offsets:Array<Float>;
+
   public function new()
   {
     animationMap = new Map();
   }
 
-  function mapAnimations()
+  function mapAnimations():Void
   {
     if (animationMap == null) animationMap = new Map();
     if (prefixToOffsetsMap == null) prefixToOffsetsMap = new Map();
@@ -161,15 +169,37 @@ class PlayerFreeplayDJData
     }
   }
 
-  public inline function getAssetPath():String
-    return assetPath; // return assetPath;
+  public inline function getAssetPath():String return assetPath; // return assetPath;
 
-  public inline function getAnimationsList():Array<AnimationData>
-    return animations;
+  public inline function getAnimationsList():Array<AnimationData> return animations;
 
   public function useApplyStageMatrix():Bool
   {
     return applyStageMatrix;
+  }
+
+  public function getGlobalOffsets():Array<Float>
+  {
+    return offsets;
+  }
+
+  /**
+   * Normally, we'd let `FunkinSprite` handle the settings validation, but
+   * Freeplay DJs have a special case where the turntable lights use a movieclip
+   * that remains static without SWF mode enabled!
+   * So we have to manually validate the settings to have SWF mode enabled by default.
+   *
+   * @return The configuration for the texture atlas.
+   */
+  public function getAtlasSettings():funkin.graphics.FunkinSprite.AtlasSpriteSettings
+  {
+    return {
+      swfMode: atlasSettings?.swfMode ?? true,
+      cacheOnLoad: atlasSettings?.cacheOnLoad ?? false,
+      filterQuality: cast atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
+      applyStageMatrix: atlasSettings?.applyStageMatrix ?? false,
+      useRenderTexture: atlasSettings?.useRenderTexture ?? false
+    }
   }
 
   public function getFreeplayDJText(index:Int):String
@@ -206,33 +236,6 @@ class PlayerFreeplayDJData
   public function getAnimationOffsets(name:String):Array<Float>
   {
     return getAnimationOffsetsByPrefix(getAnimationPrefix(name));
-  }
-
-  // TODO: These should really be frame labels, ehe.
-
-  public function getCartoonSoundClickFrame():Int
-  {
-    return cartoon?.soundClickFrame ?? 80;
-  }
-
-  public function getCartoonSoundCartoonFrame():Int
-  {
-    return cartoon?.soundCartoonFrame ?? 85;
-  }
-
-  public function getCartoonLoopBlinkFrame():Int
-  {
-    return cartoon?.loopBlinkFrame ?? 112;
-  }
-
-  public function getCartoonLoopFrame():Int
-  {
-    return cartoon?.loopFrame ?? 166;
-  }
-
-  public function getCartoonChannelChangeFrame():Int
-  {
-    return cartoon?.channelChangeFrame ?? 60;
   }
 
   public function getFistPumpIntroStartFrame():Int
@@ -404,15 +407,6 @@ typedef PlayerResultsAnimationData =
 typedef PlayerFreeplayDJCharSelectData =
 {
   var transitionDelay:Float;
-}
-
-typedef PlayerFreeplayDJCartoonData =
-{
-  var soundClickFrame:Int;
-  var soundCartoonFrame:Int;
-  var loopBlinkFrame:Int;
-  var loopFrame:Int;
-  var channelChangeFrame:Int;
 }
 
 typedef PlayerFreeplayDJFistPumpData =

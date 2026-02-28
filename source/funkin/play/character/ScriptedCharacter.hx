@@ -8,7 +8,9 @@ package funkin.play.character;
  * and can't use one of the built-in render modes.
  */
 @:hscriptClass
-class ScriptedBaseCharacter extends BaseCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedBaseCharacter extends BaseCharacter implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A script that can be tied to a SparrowCharacter, which persists across states.
@@ -16,7 +18,9 @@ class ScriptedBaseCharacter extends BaseCharacter implements polymod.hscript.HSc
  * then call `super('charId')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedSparrowCharacter extends SparrowCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedSparrowCharacter extends SparrowCharacter implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A script that can be tied to a MultiSparrowCharacter, which persists across states.
@@ -24,7 +28,9 @@ class ScriptedSparrowCharacter extends SparrowCharacter implements polymod.hscri
  * then call `super('charId')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedMultiSparrowCharacter extends MultiSparrowCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedMultiSparrowCharacter extends MultiSparrowCharacter implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A script that can be tied to a MultiAnimateAtlasCharacter, which persists across states.
@@ -32,7 +38,9 @@ class ScriptedMultiSparrowCharacter extends MultiSparrowCharacter implements pol
  * then call `super('charId')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedMultiAnimateAtlasCharacter extends MultiAnimateAtlasCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedMultiAnimateAtlasCharacter extends MultiAnimateAtlasCharacter implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A script that can be tied to a PackerCharacter, which persists across states.
@@ -40,7 +48,9 @@ class ScriptedMultiAnimateAtlasCharacter extends MultiAnimateAtlasCharacter impl
  * then call `super('charId')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedPackerCharacter extends PackerCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedPackerCharacter extends PackerCharacter implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * A script that can be tied to an AnimateAtlasCharacter, which persists across states.
@@ -48,4 +58,6 @@ class ScriptedPackerCharacter extends PackerCharacter implements polymod.hscript
  * then call `super('charId')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedAnimateAtlasCharacter extends AnimateAtlasCharacter implements polymod.hscript.HScriptedClass {}
+class ScriptedAnimateAtlasCharacter extends AnimateAtlasCharacter implements polymod.hscript.HScriptedClass
+{
+}

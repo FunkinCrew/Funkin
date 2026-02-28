@@ -85,10 +85,12 @@ using funkin.data.song.migrator.SongDataMigrator;
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String {
+    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String
+    {
       return songDataPath.split('/')[0];
     });
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
@@ -562,6 +564,8 @@ using funkin.data.song.migrator.SongDataMigrator;
         if (!allDifficulties.contains(diff)) allDifficulties.push(diff);
       }
     }
+
+    allDifficulties.sort(funkin.util.SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     if (allDifficulties.length == 0)
     {
