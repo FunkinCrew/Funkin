@@ -74,6 +74,7 @@ class FunkinSoundTray extends FlxSoundTray
   {
     y = MathUtil.smoothLerpPrecision(y, lerpYPos, ms / 1000, 0.768);
     alpha = MathUtil.smoothLerpPrecision(alpha, alphaTarget, ms / 1000, 0.307);
+    screenCenter();
 
     // If it has volume, we want to auto-hide after 1 second (1000ms), we simply decrement a timer
     var hasVolume:Bool = (!FlxG.sound.muted && FlxG.sound.volume > 0);

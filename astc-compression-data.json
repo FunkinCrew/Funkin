@@ -147,6 +147,7 @@
     }
   ],
   "excludes": [
+    "assets/fonts/vcr-bmp.png",
     "assets/preload/images/cursor/",
     "assets/preload/images/fonts/",
     "assets/preload/images/freeplay/",

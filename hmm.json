@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "4c69bb43f1fb89fd6003dc98d2f3a9d75c5364b6",
+      "ref": "a6e5c3d46155c23f17db1b9cce7369192cf020ca",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -97,7 +97,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "088b153b35985f8e4419ef710057ebd5b3749513",
+      "ref": "09f2512564b45e92229e21433e6dd482391f7b7d",
       "url": "https://github.com/FunkinCrew/haxeui-core"
     },
     {
@@ -190,7 +190,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "d8f036378c4ff472f1922ad623b8800b6a061c1a",
+      "ref": "5d47a5c7c6b4e0cb94bd8fd45d012ca93bde9ab7",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
