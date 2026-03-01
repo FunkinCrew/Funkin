@@ -87,6 +87,26 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
+    #if (sys && !html5)
+    // Force-kill the game to prevent background processing.
+    Lib.current.stage.window.onClose.add(function()
+    {
+      trace(' EXITING '.bold().bg_red + ' Game is exiting, cleaning up resources...');
+
+      #if hxvlc
+      // Clean up VLC threads to prevent memory leaks.
+      hxvlc.util.Handle.dispose();
+      #end
+
+      #if discord_rpc
+      // Just incase you have `discord_rpc` enabled, dispose of the RPC manager.
+      funkin.util.discord.RichPresenceManager.dispose();
+      #end
+
+      Sys.exit(0);
+    });
+    #end
+
     // Manually crash the game when using a software renderer in order to give a nicer error message.
     var context = stage.window.context.type;
     if (context != WEBGL && context != OPENGL && context != OPENGLES)
