@@ -488,6 +488,11 @@ class Constants
   // ==============================
 
   /**
+   * The amount of score the player loses for pressing a key when no note is there.
+   */
+  public static final SCORE_GHOST_MISS_PENALTY:Float = -10.0;
+
+  /**
    * The amount of score the player gains for every second they hold a hold note.
    * A fraction of this value is granted every frame.
    */

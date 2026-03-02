@@ -240,9 +240,10 @@ class PlayState extends MusicBeatSubState
 
   /**
    * The player's current score.
-   * TODO: Move this to its own class.
+   * This needs to be a float because you gain partial points as you hold a hold note,
+   * possibly less than one point each update depending on your framerate.
    */
-  public var songScore:Int = 0;
+  public var songScore:Float = 0;
 
   /**
    * Start at this point in the song once the countdown is done.
@@ -1120,7 +1121,7 @@ class PlayState extends MusicBeatSubState
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
-      songScore = 0;
+      songScore = 0.0;
       Highscore.tallies.combo = 0;
 
       // so the song doesn't start too early :D
@@ -1446,7 +1447,7 @@ class PlayState extends MusicBeatSubState
 
     vwooshTimer.cancel();
 
-    songScore = 0;
+    songScore = 0.0;
     updateScoreText();
 
     health = Constants.HEALTH_STARTING;
@@ -2705,9 +2706,9 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      // TODO: Add an option for this maybe?
-      var commaSeparated:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, false, commaSeparated)}';
+      final SHOW_DECIMALS:Bool = false;
+      final COMMA_SEPARATED:Bool = true;
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, SHOW_DECIMALS, COMMA_SEPARATED)}';
     }
   }
 
@@ -2873,7 +2874,7 @@ class PlayState extends MusicBeatSubState
         if (!isBotPlayMode && holdNote.scoreable)
         {
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-          songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
+          songScore += Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
         }
 
         // Make sure the player keeps singing while the note is held by the bot.
@@ -2906,7 +2907,7 @@ class PlayState extends MusicBeatSubState
             // If the base note of the hold was missed, don't penalize them more on top of that.
             var healthChangeMax = Constants.HEALTH_HOLD_DROP_PENALTY_MAX - (holdNote.hitNote ? -Constants.HEALTH_MISS_PENALTY : 0);
             var healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
-            var scoreChange = Std.int(Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec);
+            var scoreChange:Float = Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec;
 
             var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
             dispatchEvent(event);
@@ -3022,9 +3023,7 @@ class PlayState extends MusicBeatSubState
       if (targetNote == null) continue;
 
       // Judge and hit the note.
-      // trace('Hit note! ${targetNote.noteData}');
       goodNoteHit(targetNote, input);
-      // trace('Score: ${songScore}');
 
       notesInDirection.remove(targetNote);
 
@@ -3151,7 +3150,7 @@ class PlayState extends MusicBeatSubState
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
       Constants.HEALTH_GHOST_MISS_PENALTY, // How much health to add (negative).
-      - 10 // Amount of score to add (negative).
+      Constants.SCORE_GHOST_MISS_PENALTY // Amount of score to add (negative).
     );
     dispatchEvent(event);
 
@@ -3270,7 +3269,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Handles applying health, score, and ratings.
      */
-  function applyScore(score:Int, daRating:String, healthChange:Float, isComboBreak:Bool)
+  function applyScore(score:Float, daRating:String, healthChange:Float, isComboBreak:Bool)
   {
     switch (daRating)
     {
@@ -3427,7 +3426,7 @@ class PlayState extends MusicBeatSubState
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
       var data = {
-        score: songScore,
+        score: Std.int(songScore),
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3445,7 +3444,7 @@ class PlayState extends MusicBeatSubState
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, songScore);
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, Std.int(songScore));
       #end
 
       if (!isPracticeMode && !isBotPlayMode)
@@ -3476,7 +3475,7 @@ class PlayState extends MusicBeatSubState
 
       // Determine the score rank for this song we just finished.
       var scoreRank:Null<ScoringRank> = Scoring.calculateRank({
-        score: songScore,
+        score: Std.int(songScore),
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3511,7 +3510,7 @@ class PlayState extends MusicBeatSubState
     {
       isNewHighscore = false;
 
-      PlayStatePlaylist.campaignScore += songScore;
+      PlayStatePlaylist.campaignScore += Std.int(songScore);
 
       // Pop the next song ID from the list.
       // Returns null if the list is empty.
@@ -3837,7 +3836,7 @@ class PlayState extends MusicBeatSubState
       title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
       prevScoreData: prevScoreData,
       scoreData: {
-        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : songScore,
+        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : Std.int(songScore),
         tallies: {
           sick: talliesToUse.sick,
           good: talliesToUse.good,
