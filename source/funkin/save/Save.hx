@@ -245,7 +245,7 @@ class Save implements ConsoleClass
   /// MODS
   ///
   @:saveProperty(data.mods.enabledMods)
-  public var enabledModIds:SaveProperty<Array<String>>;
+  public var enabledModDirs:SaveProperty<Array<String>>;
 
   ///
   /// CHART EDITOR OPTIONS
