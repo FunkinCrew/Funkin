@@ -95,7 +95,7 @@
       "type": "ConditionalCompilation"
     },
     {
-      "comment": "Specifies a specific naming format for constant (static) identifiers.",
+      "comment": "Specifies a specific naming format for static var identifiers.",
       "props": {
         "ignoreExtern": true,
         "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
@@ -326,11 +326,21 @@
       "type": "ListenerName"
     },
     {
-      "comment": "Specifies a specific naming format for local variables.",
+      "comment": "Specifies a specific naming format for local var variables.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
-        "tokens": [],
+        "format": "^[a-z][a-zA-Z0-9]*$",
+        "tokens": ["NOTFINAL"],
+        "severity": "INFO"
+      },
+      "type": "LocalVariableName"
+    },
+    {
+      "comment": "Specifies a specific naming format for local final variables.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z][_A-Z0-9]*$",
+        "tokens": ["FINAL"],
         "severity": "INFO"
       },
       "type": "LocalVariableName"
