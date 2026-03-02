@@ -51,6 +51,14 @@
       "type": "AvoidStarImport"
     },
     {
+      "comment": "If enabled, prevents ternary operators from being nested.",
+      "props": {
+        "severity": "INFO",
+        "maxDepth": 1
+      },
+      "type": "AvoidTernaryOperator"
+    },
+    {
       "comment": "If enabled, prevents conditional compilation from crossing blocks. This prevents the case where conditional compilation could potentially create invalid syntax.",
       "props": { "severity": "INFO" },
       "type": "BlockBreakingConditional"
