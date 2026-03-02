@@ -448,7 +448,8 @@ class DebugBoundingState extends FlxState
     // Plays the idle animation
     if (FlxG.keys.justPressed.SPACE)
     {
-      offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
+      if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {id: 'danceLeft', text: 'danceLeft'};
+      else offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
 
       playCharacterAnimation(currentAnimationName, true);
     }
