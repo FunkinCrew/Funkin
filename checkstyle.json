@@ -634,7 +634,11 @@
     },
     {
       "comment": "If enabled, complains about overly complicated boolean expressions.",
-      "props": { "severity": "WARNING" },
+      "props": {
+        "severity": "WARNING",
+
+        "allowEqualsFalse": false
+      },
       "type": "SimplifyBooleanExpression"
     },
     {
