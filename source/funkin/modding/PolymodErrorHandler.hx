@@ -15,6 +15,12 @@ class PolymodErrorHandler
       //
 
       case MOD_MISSING_DIRECTORY:
+        // A mod directory was included in the list of mods to load, but it isn't installed.
+        trace(' WARNING '.warning() + 'Tried to load a mod that was not installed: ${error.message}');
+        // Notify the user via popup.
+        funkin.util.WindowUtil.showError('Mod Load Error', error.message);
+
+      case MOD_MISSING_ID:
         // A mod ID was included in the list of mods to load, but it isn't installed.
         trace(' WARNING '.warning() + ' Tried to load a mod that was not installed: ${error.message}');
         // Notify the user via popup.
