@@ -132,7 +132,13 @@
     },
     {
       "comment": "Specifies the format for doc-style comments ().",
-      "props": { "lineStyle": "onestar", "startStyle": "ignore" },
+      "props": {
+        "startStyle": "twostars",
+        "endStyle": "onestar",
+        "lineStyle": "onestar",
+
+        "severity": "INFO"
+      },
       "type": "DocCommentStyle"
     },
     {
