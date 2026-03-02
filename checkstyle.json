@@ -692,7 +692,7 @@
       "type": "Trace"
     },
     {
-      "comment": "If enabled, complains about trailing whitespaces at the end of lines.",
+      "comment": "If enabled, complains about trailing commas at the end of array and object literals.",
       "props": {
         "severity": "INFO",
         "enforceArrayComprehension": false,
