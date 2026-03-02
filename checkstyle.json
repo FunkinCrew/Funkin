@@ -476,15 +476,16 @@
       "comment": "If enabled, mandates the use of braces on specific block types, unless they fit on a single line.",
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": [
-          "FUNCTION",
-          "FOR",
-          "IF",
-          "ELSE_IF",
-          "WHILE",
-          "DO_WHILE",
-          "CATCH"
-        ],
+        "tokens": ["FUNCTION", "FOR", "IF", "IF_WITH_ELSE", "ELSE"],
+        "severity": "INFO"
+      },
+      "type": "NeedBraces"
+    },
+    {
+      "comment": "If enabled, mandates the use of braces on specific block types, and prevent them from being placed on a single line.",
+      "props": {
+        "allowSingleLineStatement": false,
+        "tokens": ["IF_WITH_ELSE", "CATCH", "WHILE", "DO_WHILE", "ELSE_IF"],
         "severity": "INFO"
       },
       "type": "NeedBraces"
