@@ -33,6 +33,9 @@
         "allowReturn": true,
         "allowFunction": true,
         "allowCurlyBody": true,
+
+        "enforceArrowForNonMemberFunctions": true,
+
         "severity": "INFO"
       },
       "type": "ArrowFunction"
