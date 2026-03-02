@@ -28,6 +28,12 @@ import funkin.play.character.BaseCharacter;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
+import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
+import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
+import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
+import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
@@ -130,7 +136,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
   {
-    if (value == selectedSongEvent) return value;
+    if (value == null && selectedSongEvent == null) return value;
+    if (value != null && selectedSongEvent != null && value == selectedSongEvent) return value;
 
     selectedSongEvent = value;
     CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
@@ -218,6 +225,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (!saved)
     {
+      if (autoSaveTimer == null) autoSaveTimer = new FlxTimer();
+
       if (!autoSaveTimer.finished)
       {
         autoSaveTimer.cancel();
@@ -419,7 +428,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
-    this.timeline.cameraEditorState = this;
+    registerTimelineEvents();
 
     add(cameraRect);
     cameraRect.zIndex = 5999;
@@ -538,7 +547,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       Conductor.instance.update();
       processEvents();
-      timeline.timelineControls.songPosition = Conductor.instance.songPosition;
+      timeline.songPosition = Conductor.instance.songPosition;
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
     {
@@ -566,7 +575,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
-    MouseUtil.mouseWheelZoom(0.08);
+    // MouseUtil.mouseWheelZoom(0.08);
 
     // DEBUG!!! enable to move the vcam with the mouse... teehee
 
@@ -882,7 +891,38 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function loadTimeline():Void
   {
-    timeline.populateEventList(currentSongChartData.events);
+    timeline.setEvents(currentSongChartData.events);
+    timeline.setStepLengthMs(Conductor.instance.stepLengthMs);
+  }
+
+  function registerTimelineEvents():Void
+  {
+    timeline.viewport.registerEvent(TimelineEvent.EVENT_SELECTED, (e:TimelineEvent) -> selectedSongEvent = e.eventData);
+    timeline.viewport.registerEvent(TimelineEvent.SEEK, (e:TimelineEvent) -> setTimePosition(e.seekPositionMs));
+
+    timeline.viewport.registerEvent(TimelineEvent.EVENT_MOVED, function(e:TimelineEvent)
+    {
+      var cmd = new MoveResizeEventCommand(
+        e.eventData,
+        e.oldTime, TimelineUtil.getEventDurationSteps(e.eventData), e.oldLayerName,
+        e.newTime, TimelineUtil.getEventDurationSteps(e.eventData), e.newLayerName
+      );
+      CameraEditorCommandHandler.performCommand(this, cmd);
+    });
+
+    timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
+    {
+      var raw:SongEventDataRaw = e.eventData;
+      var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
+      var cmd = new MoveResizeEventCommand(
+        e.eventData,
+        e.eventData.time, e.oldDuration, layerName,
+        e.eventData.time, e.newDuration, layerName
+      );
+      CameraEditorCommandHandler.performCommand(this, cmd);
+    });
+
+    timeline.toolbar.findComponent("btnTogglePlayback").registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
   }
 
   /**
@@ -943,8 +983,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     Conductor.instance.forceBPM(null);
     Conductor.instance.instrumentalOffset = currentSongMetadata.offsets.instrumental;
     Conductor.instance.mapTimeChanges(currentSongMetadata.timeChanges);
-    timeline.timelineControls.songLength = currentInstrumental.length;
-    timeline.timelineControls.songPosition = 0;
+    timeline.songLength = currentInstrumental.length;
+    timeline.songPosition = 0;
+    timeline.setStepLengthMs(Conductor.instance.stepLengthMs);
   }
 
   /**
@@ -971,6 +1012,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       vocal.time = currentInstrumental.time;
       vocal.play();
     }
+    timeline.isPlaying = true;
   }
 
   function pauseAudioPlayback():Void
@@ -982,6 +1024,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       vocal.pause();
     }
+    timeline.isPlaying = false;
   }
 
   /**
@@ -998,7 +1041,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     Conductor.instance.update(currentInstrumental.time);
-    timeline.timelineControls.songPosition = Conductor.instance.songPosition;
+    timeline.songPosition = Conductor.instance.songPosition;
   }
 
   // ui function bindings
@@ -1086,7 +1129,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.sound.music.stop();
   }
 
-  @:bind(timeline.timelineControls.btnTogglePlayback, MouseEvent.CLICK)
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
   function onPlayPause(_)
   {
