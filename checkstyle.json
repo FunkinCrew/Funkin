@@ -99,7 +99,17 @@
       "props": {
         "ignoreExtern": true,
         "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
-        "tokens": ["INLINE", "NOTINLINE"],
+        "tokens": ["INLINE", "NOTINLINE", "NOTFINAL"],
+        "severity": "INFO"
+      },
+      "type": "ConstantName"
+    },
+    {
+      "comment": "Specifies a specific naming format for static final identifiers.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]([_A-Z0-9]+)*$",
+        "tokens": ["INLINE", "NOTINLINE", "FINAL"],
         "severity": "INFO"
       },
       "type": "ConstantName"
