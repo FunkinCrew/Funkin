@@ -693,6 +693,16 @@
     },
     {
       "comment": "If enabled, complains about trailing whitespaces at the end of lines.",
+      "props": {
+        "severity": "INFO",
+        "enforceArrayComprehension": false,
+        "enforceArrayLiterals": false,
+        "enforceObjectLiterals": false
+      },
+      "type": "TrailingComma"
+    },
+    {
+      "comment": "If enabled, complains about trailing whitespaces at the end of lines.",
       "props": { "severity": "INFO" },
       "type": "TrailingWhitespace"
     },
