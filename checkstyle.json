@@ -346,6 +346,18 @@
       "type": "LocalVariableName"
     },
     {
+      "comment": "Puts a warning on long numbers without separators. 1000000 is invalid and 1_000_000 is valid.",
+      "props": {
+        "severity": "INFO",
+
+        "ignoreNumbers": [],
+
+        "checkBinary": false,
+        "checkHexadecimal": false
+      },
+      "type": "LongNumber"
+    },
+    {
       "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead to improve code clarity.",
       "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "INFO" },
       "type": "MagicNumber"
