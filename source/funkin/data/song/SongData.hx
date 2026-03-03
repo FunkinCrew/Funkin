@@ -123,6 +123,7 @@ class SongMetadata implements ICloneable<SongMetadata>
     updateVersionToLatest();
 
     // This might not be a very wise hack, but it works.
+    #if FEATURE_CHART_EDITOR
     if (Std.isOfType(FlxG.state, ChartEditorState))
     {
       var state:ChartEditorState = cast(FlxG.state, ChartEditorState);
@@ -131,6 +132,7 @@ class SongMetadata implements ICloneable<SongMetadata>
       if (playData.previewStart > 1) playData.previewStart /= songLength;
       if (playData.previewEnd > 1) playData.previewEnd /= songLength;
     }
+    #end
 
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
