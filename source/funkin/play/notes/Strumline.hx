@@ -972,7 +972,8 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
 
-      note.holdNoteSprite.sustainLength = (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition;
+      note.holdNoteSprite.sustainLength = Math.min(note.holdNoteSprite.fullSustainLength,
+        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition);
     }
 
     #if FEATURE_GHOST_TAPPING

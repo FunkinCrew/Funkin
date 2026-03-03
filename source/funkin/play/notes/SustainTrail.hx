@@ -120,13 +120,13 @@ class SustainTrail extends FlxSprite
   {
     super(0, 0);
 
+    setupHoldNoteGraphic(noteStyle);
+    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
+
     // BASIC SETUP
     this.sustainLength = sustainLength;
     this.fullSustainLength = sustainLength;
     this.noteDirection = noteDirection;
-
-    setupHoldNoteGraphic(noteStyle);
-    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
 
     setIndices(TRIANGLE_VERTEX_INDICES);
 
@@ -262,7 +262,6 @@ class SustainTrail extends FlxSprite
   {
     if (s < 0.0) s = 0.0;
 
-    if (sustainLength == s) return s;
     this.sustainLength = s;
     triggerRedraw();
     return this.sustainLength;
