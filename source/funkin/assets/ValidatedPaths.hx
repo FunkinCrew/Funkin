@@ -185,25 +185,6 @@ class ValidatedPaths
   }
 
   /**
-   * Constructs an asset path for a Sparrow or Packer spritesheet.
-   * @param key The path to the spritesheet, without file extension.
-   * @return A SpritesheetAssetPath pointing to the spritesheet file.
-   */
-  public static macro function spritesheet(key:Expr, ?validate:Expr):Expr
-  {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null)
-    {
-      validateAssetPath(staticPath, ['png'], key.pos);
-      // Sparrow OR Packer is valid.
-      validateAssetPath(staticPath, ['xml', 'txt'], key.pos);
-    }
-
-    // This expression gets inserted at the location that `ValidatedPaths.spritesheet(key)` got called.
-    return macro funkin.assets.Paths.spritesheet($e{key});
-  }
-
-  /**
    * Constructs an asset path for an Adobe Animate texture atlas.
    * @param key The path to the texture atlas, without file extension.
    * @return A AnimateAtlasAssetPath pointing to the spritesheet file.

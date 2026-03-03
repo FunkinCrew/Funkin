@@ -2,6 +2,7 @@ package funkin.assets;
 
 import funkin.assets.Assets.AssetType;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
+import funkin.util.assets.AssetsUtil;
 import haxe.io.Path;
 
 using StringTools;
@@ -98,11 +99,11 @@ class Paths implements ConsoleClass
    * @param path The path to the texture atlas, without extension
    * @param validate Whether to validate the file exists, and throw a warning if it doesn't.
    * @param library The asset path that the file is in
-   * @return AnimateAtlasAssetPath
+   * @return AnimateAtlasAssetPathBuilder
    */
-  public static function animateAtlas(path:String, validate:Bool = true):AnimateAtlasAssetPath
+  public static function animateAtlas(path:String, validate:Bool = true):AnimateAtlasAssetPathBuilder
   {
-    return new AnimateAtlasAssetPath(path);
+    return new AnimateAtlasAssetPathBuilder(path);
   }
 
   /**
@@ -217,9 +218,9 @@ class Paths implements ConsoleClass
    * @param validate Whether to validate the file exists, and throw a warning if it doesn't.
    * @return The constructed asset path.
    */
-  public static function music(key:String, ?suffix:String, validate:Bool = true):MusicAssetPath
+  public static function music(key:String, ?suffix:String, validate:Bool = true):MusicAssetPathBuilder
   {
-    return new MusicAssetPath(key, suffix);
+    return new MusicAssetPathBuilder(key, suffix);
   }
 
   /**
@@ -256,17 +257,6 @@ class Paths implements ConsoleClass
     if (suffix == null) suffix = ''; // no suffix, for a sorta backwards compatibility with older-ish voice files
 
     return file('gameplay/songs/${song.toLowerCase()}/Voices$suffix', Constants.EXT_SOUND, validate);
-  }
-
-  /**
-   * Constructs an asset path for a Sparrow or Packer spritesheet.
-   * @param key The path to the spritesheet, without file extension.
-   * @param validate Whether to validate that the file exists
-   * @return A SpritesheetAssetPath pointing to the spritesheet file.
-   */
-  public static function spritesheet(key:String, validate:Bool = true):SpritesheetAssetPath
-  {
-    return new SpritesheetAssetPath(key);
   }
 
   /**
@@ -358,11 +348,20 @@ class AssetPath
   }
 
   // Only construct from Paths.hx
-  function new(id:String, ext:String)
+  function new(id:String, ext:String, library:String = 'default')
   {
-    this.library = library ?? 'default';
     this.id = id;
     this.ext = ext;
+    this.library = library;
+  }
+
+  /**
+   * Determine the AssetType for this AssetPath.
+   * @return The AssetType corresponding to the file extension of this AssetPath.
+   */
+  public function getAssetType():AssetType
+  {
+    return AssetsUtil.guessTypeByExtension(this.path);
   }
 
   /**
@@ -411,12 +410,73 @@ class AssetPath
   }
 
   /**
-   * Whether this asset exists on the file system.
-   * @return Bool
+   * @return Whether this asset exists on the file system.
    */
   public function exists():Bool
   {
     return Assets.assetExists(this);
+  }
+
+  /**
+   * Determine if this AssetPath is of the given AssetType.
+   *
+   * @param type The AssetType to compare with.
+   * @return Whether this AssetPath is of the given AssetType.
+   */
+  public function isAssetType(type:AssetType):Bool
+  {
+    return type == this.getAssetType();
+  }
+
+  /**
+   * Constructs a new AssetPath with the given extension.
+   *
+   * @param ext The file extension to use, without the `.`
+   * @return The resulting AssetPath
+   */
+  public function withExt(ext:String):AssetPath
+  {
+    return new AssetPath(this.id, ext, this.library);
+  }
+
+  /**
+   * Constructs a new AssetPath with the given AssetType.
+   *
+   * @param type The AssetType to use
+   * @return The resulting AssetPath
+   */
+  public function withAssetType(type:AssetType):AssetPath
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return this.withExt('png');
+      case SOUND:
+        return this.withExt('ogg');
+      case VIDEO:
+        return this.withExt('mp4');
+      case TEXT:
+        return this.withExt('txt');
+      case JSON:
+        return this.withExt('json');
+      case SHADER:
+        return this.withExt('frag');
+      case SCRIPT:
+        return this.withExt('hx');
+      case SCRIPTED_CLASS:
+        return this.withExt('hxc');
+      case CHART:
+        return this.withExt('fnfc');
+      case STAGE:
+        return this.withExt('fnfs');
+      case XML:
+        return this.withExt('xml');
+      case FONT:
+        return this.withExt('ttf');
+
+      default:
+        return this;
+    }
   }
 
   /**
@@ -450,148 +510,13 @@ class AssetPath
 }
 
 /**
- * Represents a path to a Sparrow/Packer spritesheet.
- * Provides access to methods for various file extensions.
+ * Holds the directory containing an Adobe Animate texture atlas,
+ * and provides methods to construct asset paths for the texture and animation data.
  */
 @:nullSafety
 @:allow(funkin.assets.Paths)
 @:access(funkin.assets.Paths)
-class SpritesheetAssetPath
-{
-  /**
-   * The unique identifier for this asset.
-   * This is the path to the asset without its extension.
-   */
-  public var id(default, null):String;
-
-  // Only construct from Paths.hx
-  function new(id:String)
-  {
-    this.id = id;
-  }
-
-  /**
-   * Retrieve the image at this spritesheet's asset path.
-   * @return The AssetPath for the image.
-   */
-  public function image():AssetPath
-  {
-    return Paths.image(this.id);
-  }
-
-  /**
-   * Retrieve the JSON file at this spritesheet's asset path.
-   * @return The AssetPath for the JSON file.
-   */
-  public function json():AssetPath
-  {
-    return Paths.json(this.id);
-  }
-
-  /**
-   * Retrieve the XML file at this spritesheet's asset path.
-   * @return The AssetPath for the XML file.
-   */
-  public function xml():AssetPath
-  {
-    return Paths.xml(this.id);
-  }
-
-  /**
-   * Retrieve the TXT file at this spritesheet's asset path.
-   * @return The AssetPath for the TXT file.
-   */
-  public function txt():AssetPath
-  {
-    return Paths.txt(this.id);
-  }
-
-  /**
-   * Checks if the image file for this spritesheet path exists.
-   * @return Whether the image file exists.
-   */
-  public function imageExists():Bool
-  {
-    return Paths.image(this.id, false).exists();
-  }
-
-  /**
-   * Checks if the `.json` file for this spritesheet path exists.
-   * @return Whether the `.json` file exists.
-   */
-  public function jsonExists():Bool
-  {
-    return Paths.json(this.id, false).exists();
-  }
-
-  /**
-   * Checks if the `.xml` file for this spritesheet path exists.
-   * @return Whether the `.xml` file exists.
-   */
-  public function xmlExists():Bool
-  {
-    return Paths.xml(this.id, false).exists();
-  }
-
-  /**
-   * Checks if the `.txt` file for this spritesheet path exists.
-   * @return Whether the `.txt` file exists.
-   */
-  public function txtExists():Bool
-  {
-    return Paths.txt(this.id, false).exists();
-  }
-
-  /**
-   * Validates that the image for this path exists.
-   * @return The AssetPath if it exists, otherwise `null`.
-   */
-  public function imageOrNull():Null<AssetPath>
-  {
-    return this.imageExists() ? this.image() : null;
-  }
-
-  /**
-   * Validates that the `.json` file for this path exists.
-   * @return The AssetPath if it exists, otherwise `null`.
-   */
-  public function jsonOrNull():Null<AssetPath>
-  {
-    return this.jsonExists() ? this.json() : null;
-  }
-
-  /**
-   * Validates that the `.xml` file for this path exists.
-   * @return The AssetPath if it exists, otherwise `null`.
-   */
-  public function xmlOrNull():Null<AssetPath>
-  {
-    return this.xmlExists() ? this.xml() : null;
-  }
-
-  /**
-   * Validates that the `.txt` file for this path exists.
-   * @return The AssetPath if it exists, otherwise `null`.
-   */
-  public function txtOrNull():Null<AssetPath>
-  {
-    return this.txtExists() ? this.txt() : null;
-  }
-
-  public function toString():String
-  {
-    return '${this.id}';
-  }
-}
-
-/**
- * Represents a path to an Adobe Animate texture atlas.
- * Provides access to methods for various file extensions.
- */
-@:nullSafety
-@:allow(funkin.assets.Paths)
-@:access(funkin.assets.Paths)
-class AnimateAtlasAssetPath
+class AnimateAtlasAssetPathBuilder
 {
   /**
    * The ID for this Animate Atlas.
@@ -689,13 +614,13 @@ class AnimateAtlasAssetPath
 }
 
 /**
- * Represents a path to a music track.
- * Provides access to methods for retrieving the paths for the audio and the metadata.
+ * Holds the directory containing a music track,
+ * and provides methods to construct asset paths for the audio and the metadata.
  */
 @:nullSafety
 @:allow(funkin.assets.Paths)
 @:access(funkin.assets.Paths)
-class MusicAssetPath
+class MusicAssetPathBuilder
 {
   /**
    * The ID of the music track. Dictates where the audio and metadata are.
@@ -783,9 +708,9 @@ class MusicAssetPath
    * @param newSuffix The new suffix to use.
    * @return The constructed Music asset path.
    */
-  public function withSuffix(newSuffix:String):MusicAssetPath
+  public function withSuffix(newSuffix:String):MusicAssetPathBuilder
   {
-    return new MusicAssetPath('$dir/$id', newSuffix);
+    return new MusicAssetPathBuilder('$dir/$id', newSuffix);
   }
 
   public function toString():String

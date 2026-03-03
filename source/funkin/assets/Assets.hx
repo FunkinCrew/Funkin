@@ -6,8 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.math.FlxPoint;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPath;
-import funkin.assets.Paths.SpritesheetAssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.Paths;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
@@ -28,22 +27,7 @@ class Assets implements ConsoleClass
 {
   static var initialized:Bool = false;
 
-  static final ASSET_TYPES:Array<Null<AssetType>> = [
-    null,
-    IMAGE,
-    SOUND,
-    VIDEO,
-    TEXT,
-    JSON,
-    SHADER,
-    SCRIPT,
-    SCRIPTED_CLASS,
-    CHART,
-    STAGE,
-    XML,
-    FONT,
-    UNKNOWN
-  ];
+  static final ASSET_TYPES:Array<Null<AssetType>> = [null, IMAGE, SOUND, VIDEO, TEXT, JSON, SHADER, SCRIPT, SCRIPTED_CLASS, CHART, STAGE, XML, FONT, UNKNOWN];
 
   /**
    * Perform functions to initialize internal asset management.
@@ -144,12 +128,16 @@ class Assets implements ConsoleClass
   /**
    * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object.
    * Throws an ERROR if the asset isn't cached already.
-   * @param assetPath The path of the spritesheet, created with `Paths.spritesheet`.
+   *
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the XML is next to it.
    * @return The generated FlxAtlasFrames.
    */
-  public static function getSparrowAtlas(assetPath:SpritesheetAssetPath):FlxAtlasFrames
+  public static function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
-    if (assetPath == null) throw 'Input is not a valid SpritesheetAssetPath, did you call Paths.spritesheet()?';
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+    if (!assetPath.isAssetType(IMAGE)) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
     #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath.image()))
     {
@@ -167,12 +155,15 @@ class Assets implements ConsoleClass
   /**
    * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object.
    * Throws an ERROR if the asset isn't cached already.
-   * @param assetPath The path of the spritesheet, created with `Paths.spritesheet`.
+   *
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the TXT is next to it.
    * @return The generated FlxAtlasFrames.
    */
-  public static function getPackerAtlas(assetPath:SpritesheetAssetPath):FlxAtlasFrames
+  public static function getPackerAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
-    if (assetPath == null) throw 'Input is not a valid SpritesheetAssetPath, did you call Paths.spritesheet()?';
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
     #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath.image()))
     {
@@ -193,9 +184,9 @@ class Assets implements ConsoleClass
    * @param settings Additional settings to use when loading the atlas sprite.
    * @return The generated FlxAnimateFrames
    */
-  public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPath, settings:AtlasSpriteSettings):FlxAnimateFrames
+  public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPathBuilder, settings:AtlasSpriteSettings):FlxAnimateFrames
   {
-    if (assetPath == null) throw 'Input is not a valid AnimateAtlasAssetPath, did you call Paths.animateAtlas()?';
+    if (assetPath == null) throw 'Input is not a valid texture atlas AssetPath, did you call Paths.animateAtlas()?';
 
     var validatedSettings:AtlasSpriteSettings = {
       swfMode: settings?.swfMode ?? false,
@@ -296,9 +287,9 @@ class Assets implements ConsoleClass
    * @param assetPath The asset path to load from
    * @return The loaded sound
    */
-  public static function getMusic(assetPath:MusicAssetPath):openfl.media.Sound
+  public static function getMusic(assetPath:MusicAssetPathBuilder):openfl.media.Sound
   {
-    if (assetPath == null) throw 'Input is not a valid MusicAssetPath, did you call Paths.music()?';
+    if (assetPath == null) throw 'Input is not a valid Music AssetPath, did you call Paths.music()?';
 
     return getSound(assetPath.audio());
   }
@@ -368,21 +359,22 @@ class Assets implements ConsoleClass
    * @param assetPath The asset path to load from
    * @return A future which promises to return the loaded sound
    */
-  public static function loadMusic(assetPath:MusicAssetPath):Future<openfl.media.Sound>
+  public static function loadMusic(assetPath:MusicAssetPathBuilder):Future<openfl.media.Sound>
   {
-    if (assetPath == null) throw 'Input is not a valid MusicAssetPath, did you call Paths.music()?';
+    if (assetPath == null) throw 'Input is not a valid Music AssetPath, did you call Paths.music()?';
 
     return FunkinAssetCache.instance.fetchSound(assetPath.audio());
   }
 
   /**
    * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object asynchronously.
-   * @param assetPath The path of the spritesheet, created with `Paths.spritesheet`.
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the XML is next to it.
    * @return A future representing the promise of generated FlxAtlasFrames.
    */
-  public static function loadSparrowAtlas(assetPath:SpritesheetAssetPath):Future<FlxAtlasFrames>
+  public static function loadSparrowAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
-    if (assetPath == null) throw 'Input is not a valid SpritesheetAssetPath, did you call Paths.spritesheet()?';
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     return FunkinAssetCache.instance.fetchSparrowAtlas(assetPath);
   }
@@ -390,12 +382,13 @@ class Assets implements ConsoleClass
   /**
    * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object asynchronously.
    * May take time to load the assets.
-   * @param assetPath The path of the spritesheet, created with `Paths.spritesheet`.
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the TXT is next to it.
    * @return A future representing the promise of generated FlxAtlasFrames.
    */
-  public static function loadPackerAtlas(assetPath:SpritesheetAssetPath):Future<FlxAtlasFrames>
+  public static function loadPackerAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
-    if (assetPath == null) throw 'Input is not a valid SpritesheetAssetPath, did you call Paths.spritesheet()?';
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     return FunkinAssetCache.instance.fetchPackerAtlas(assetPath);
   }
@@ -604,54 +597,32 @@ class Assets implements ConsoleClass
     switch (type)
     {
       case IMAGE:
-        results = results.concat([
-          // Built-in
+        results = results.concat([ // Built-in
           Paths.file('images/logo/default', 'png', 'flixel'), // Fonts
 
-          Paths.image('ui/fonts/default'),
-          Paths.image('ui/fonts/bold'), // Soundtray
+          Paths.image('ui/fonts/default'), Paths.image('ui/fonts/bold'), // Soundtray
 
-          Paths.image('ui/soundtray/volume-box'),
-          Paths.image('ui/soundtray/bars-01'),
-          Paths.image('ui/soundtray/bars-02'),
-          Paths.image('ui/soundtray/bars-03'),
-          Paths.image('ui/soundtray/bars-04'),
-          Paths.image('ui/soundtray/bars-05'),
-          Paths.image('ui/soundtray/bars-06'),
-          Paths.image('ui/soundtray/bars-07'),
-          Paths.image('ui/soundtray/bars-08'),
-          Paths.image('ui/soundtray/bars-09'),
-          Paths.image('ui/soundtray/bars-10'), // Medals,
+          Paths.image('ui/soundtray/volume-box'), Paths.image('ui/soundtray/bars-01'), Paths.image('ui/soundtray/bars-02'), Paths.image('ui/soundtray/bars-03'), Paths.image('ui/soundtray/bars-04'), Paths.image('ui/soundtray/bars-05'), Paths.image('ui/soundtray/bars-06'), Paths.image('ui/soundtray/bars-07'), Paths.image('ui/soundtray/bars-08'), Paths.image('ui/soundtray/bars-09'), Paths.image('ui/soundtray/bars-10'), // Medals,
         ]);
 
         results = results.concat(Paths.animateAtlas('ui/medals/medal-popup').image());
 
       case SOUND:
-        results = results.concat([
-          // Built-in
+        results = results.concat([ // Built-in
           Paths.file('sounds/beep', 'ogg', 'flixel'), // Menus
 
-          Paths.sound('ui/main-menu/scroll-menu'),
-          Paths.sound('ui/main-menu/confirm-menu'),
-          Paths.sound('ui/main-menu/cancel-menu'), // Soundtray
+          Paths.sound('ui/main-menu/scroll-menu'), Paths.sound('ui/main-menu/confirm-menu'), Paths.sound('ui/main-menu/cancel-menu'), // Soundtray
 
-          Paths.sound('ui/soundtray/volume-up'),
-          Paths.sound('ui/soundtray/volume-down'),
-          Paths.sound('ui/soundtray/volume-max'), // Screenshots
+          Paths.sound('ui/soundtray/volume-up'), Paths.sound('ui/soundtray/volume-down'), Paths.sound('ui/soundtray/volume-max'), // Screenshots
 
-          Paths.sound('ui/main-menu/screenshot'),
-        ]);
+          Paths.sound('ui/main-menu/screenshot'),]);
 
       case XML:
-        results = results.concat([
-          // Fonts
-          Paths.xml('ui/fonts/default'),
-          Paths.xml('ui/fonts/bold'),
-        ]);
+        results = results.concat([ // Fonts
+          Paths.xml('ui/fonts/default'), Paths.xml('ui/fonts/bold'),]);
 
       case SHADER:
-        results = results.concat([
-          Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+        results = results.concat([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
         ]);
 
       default:

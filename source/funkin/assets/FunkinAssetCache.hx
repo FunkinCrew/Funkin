@@ -6,9 +6,8 @@ import flixel.util.FlxDestroyUtil;
 import funkin.assets.Assets.AssetType as FunkinAssetType;
 import funkin.assets.Paths;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPath;
-import funkin.assets.Paths.SpritesheetAssetPath;
-import funkin.assets.Paths.AnimateAtlasAssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.util.assets.AssetsUtil;
 import funkin.util.MemoryUtil;
 import funkin.util.SortUtil;
@@ -521,27 +520,35 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Get a Sparrow Atlas, if its graphic exists in the cache.
-   * @param assetPath The asset path of the spritesheet.
+   *
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the XML is next to it.
    * @throws error If the graphic does not exist in the cache and strict asset caching is enabled.
    * @return The atlas frames, if available.
    */
-  public function getSparrowAtlas(assetPath:SpritesheetAssetPath):FlxAtlasFrames
+  public function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
-    var graphic:FlxGraphic = getFlxGraphic(assetPath.image().toString());
-    var data:String = getText(assetPath.xml().toString());
+    var xmlAssetPath = assetPath.withAssetType(XML);
+
+    var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+    var data:String = getText(xmlAssetPath.toString());
     return FlxAtlasFrames.fromSparrow(graphic, data);
   }
 
   /**
    * Get a Packer Atlas, if its graphic exists in the cache.
-   * @param assetPath The asset path of the spritesheet.
+   *
+   * @param assetPath The path to the image, created with `Paths.image`.
+   *   We automatically assume the TXT is next to it.
    * @throws error If the graphic does not exist in the cache and strict asset caching is enabled.
    * @return The atlas frames, if available.
    */
-  public function getPackerAtlas(assetPath:SpritesheetAssetPath):FlxAtlasFrames
+  public function getPackerAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
-    var graphic:FlxGraphic = getFlxGraphic(assetPath.image().toString());
-    var data:String = getText(assetPath.txt().toString());
+    var txtAssetPath = assetPath.withAssetType(TEXT);
+
+    var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+    var data:String = getText(txtAssetPath.toString());
     return FlxAtlasFrames.fromSpriteSheetPacker(graphic, data);
   }
 
@@ -922,14 +929,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * If the graphic exists in the cache, it will be returned immediately.
    * If it's not in the cache, it will be loaded and cached, then returned.
    *
-   * @param assetPath The path of the asset to fetch.
+   * @param assetPath The path of the image asset to fetch.
+   *   The XML asset can be inferred from the image path.
    * @return The atlas frames, if fetched.
    */
-  public function fetchSparrowAtlas(assetPath:SpritesheetAssetPath):Future<FlxAtlasFrames>
+  public function fetchSparrowAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
+    var xmlAssetPath:AssetPath = assetPath.withAssetType(XML);
+
     var result:Promise<FlxAtlasFrames> = new Promise();
-    var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath.image());
-    var data:Future<String> = fetchText(assetPath.xml());
+    var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath);
+    var data:Future<String> = fetchText(xmlAssetPath);
     var onBothComplete:Void->Void = () ->
     {
       var graphicResult:Null<FlxGraphic> = graphic.value;
@@ -965,14 +975,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * If the graphic exists in the cache, it will be returned immediately.
    * If it's not in the cache, it will be loaded and cached, then returned.
    *
-   * @param assetPath The path of the asset to fetch.
+   * @param assetPath The path of the image asset to fetch.
+   *   The TXT asset can be inferred from the image path.
    * @return The atlas frames, if fetched.
    */
-  public function fetchPackerAtlas(assetPath:SpritesheetAssetPath):Future<FlxAtlasFrames>
+  public function fetchPackerAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
+    var txtAssetPath:AssetPath = assetPath.withAssetType(XML);
+
     var result:Promise<FlxAtlasFrames> = new Promise();
-    var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath.image());
-    var data:Future<String> = fetchText(assetPath.txt());
+    var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath);
+    var data:Future<String> = fetchText(txtAssetPath);
     var onBothComplete:Void->Void = () ->
     {
       var graphicResult:Null<FlxGraphic> = graphic.value;
