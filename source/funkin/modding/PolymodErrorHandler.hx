@@ -65,7 +65,7 @@ class PolymodErrorHandler
           // var apiVersion:String = regex.matched(2);
           var modVersion:String = regex.matched(3);
 
-          var message:String = 'Installed mod "$modId" uses an older API version $modVersion which is not supported by the current API version ${Constants.VERSION.substr(1)}, and must be skipped.'
+          var message:String = 'Installed mod "$modId" was built for modding version "v$modVersion". It is not compatible with game version ${Constants.GENERATED_BY}, and must be skipped.'
             + '\n\nPlease inform the mod developer that "$modId" must be updated for compatibility.';
 
           funkin.util.WindowUtil.showError('Mod Outdated', message);
