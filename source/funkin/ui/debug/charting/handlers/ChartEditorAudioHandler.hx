@@ -287,7 +287,7 @@ class ChartEditorAudioHandler
 
   /**
    * Play one of two stretchy sounds.
-   * Since some configurations can play this frequently, we
+   * Since some configurations can play this frequently, we limit to one of each of the two alternating sounds at a time.
    * @param state
    * @param volume
    */
@@ -299,8 +299,9 @@ class ChartEditorAudioHandler
       if (state.stretchySound1 == null) return;
 
       // Prevent spam playing that could cause issues.
-      if (state.stretchySound1.isPlaying) return;
+      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
 
+      state.stretchySounds = !state.stretchySounds;
       state.stretchySound1.play(true);
       state.stretchySound1.volume = volume;
     }
@@ -310,8 +311,9 @@ class ChartEditorAudioHandler
       if (state.stretchySound2 == null) return;
 
       // Prevent spam playing that could cause issues.
-      if (state.stretchySound2.isPlaying) return;
+      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
 
+      state.stretchySounds = !state.stretchySounds;
       state.stretchySound2.play(true);
       state.stretchySound2.volume = volume;
     }
