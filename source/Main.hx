@@ -87,7 +87,7 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
-    #if (sys && !html5)
+    #if (sys && !mobile)
     // Force-kill the game to prevent background processing.
     Lib.current.stage.window.onClose.add(function()
     {
