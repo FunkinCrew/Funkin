@@ -64,6 +64,7 @@ class FunkinSoundTray extends FlxSoundTray
     }
 
     screenCenter();
+    y = -height - 10;
 
     volumeUpSound = Paths.sound("soundtray/Volup");
     volumeDownSound = Paths.sound("soundtray/Voldown");
@@ -72,9 +73,7 @@ class FunkinSoundTray extends FlxSoundTray
 
   override public function update(ms:Float):Void
   {
-    y = MathUtil.smoothLerpPrecision(y, lerpYPos, ms / 1000, 0.768);
-    alpha = MathUtil.smoothLerpPrecision(alpha, alphaTarget, ms / 1000, 0.307);
-    screenCenter();
+    var elapsed = ms / 1000.0;
 
     // If it has volume, we want to auto-hide after 1 second (1000ms), we simply decrement a timer
     var hasVolume:Bool = (!FlxG.sound.muted && FlxG.sound.volume > 0);
@@ -84,21 +83,27 @@ class FunkinSoundTray extends FlxSoundTray
       // Animate sound tray thing
       if (_timer > 0)
       {
-        _timer -= (ms / 1000);
+        _timer -= elapsed;
+        if (_timer <= 0)
+        {
+          lerpYPos = -height - 10;
+          alphaTarget = 0;
+        }
       }
-      else if (y >= -height)
-      {
-        lerpYPos = -height - 10;
-        alphaTarget = 0;
-      }
-
-      if (y <= -height)
+      else if (y <= -height)
       {
         visible = false;
         active = false;
       }
     }
-    else if (!visible) moveTrayMakeVisible();
+    else if (!visible)
+    {
+      showTray();
+    }
+
+    y = MathUtil.smoothLerpPrecision(y, lerpYPos, elapsed, 0.768);
+    alpha = MathUtil.smoothLerpPrecision(alpha, alphaTarget, elapsed, 0.307);
+    screenCenter();
   }
 
   override function showIncrement():Void
@@ -115,32 +120,32 @@ class FunkinSoundTray extends FlxSoundTray
 
   function moveTrayMakeVisible(up:Bool = false):Void
   {
+    showTray();
+
+    if (!silent)
+    {
+      // This is a String currently, but there is or was a Flixel PR to change this to a FlxSound or a Sound bject
+      var sound:Null<String> = FlxG.sound.volume == 1 ? volumeMaxSound : (up ? volumeUpSound : volumeDownSound);
+      if (sound != null) FlxG.sound.play(sound);
+    }
+  }
+
+  function showTray():Void
+  {
     _timer = 1;
     lerpYPos = 10;
     visible = true;
     active = true;
     alphaTarget = 1;
 
-    for (i in 0..._bars.length)
-      _bars[i].visible = i < getGlobalVolume(up);
+    updateBars();
   }
 
-  function getGlobalVolume(up:Bool = false):Int
+  function updateBars():Void
   {
-    var globalVolume:Int = Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
+    var globalVolume:Int = FlxG.sound.muted || FlxG.sound.volume == 0 ? 0 : Math.round(FlxG.sound.logToLinear(FlxG.sound.volume) * 10);
 
-    if (FlxG.sound.muted || FlxG.sound.volume == 0) globalVolume = 0;
-
-    if (!silent)
-    {
-      // This is a String currently, but there is or was a Flixel PR to change this to a FlxSound or a Sound bject
-      var sound:String = up ? volumeUpSound : volumeDownSound;
-
-      if (globalVolume == 10) sound = volumeMaxSound;
-      if (sound != null) FlxG.sound.load(sound).play().volume = 0.3;
-    }
-
-    return globalVolume;
+    for (i in 0..._bars.length) _bars[i].visible = i < globalVolume;
   }
 
   function saveVolumePreferences():Void
