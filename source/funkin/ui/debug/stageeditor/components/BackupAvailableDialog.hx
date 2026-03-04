@@ -19,7 +19,7 @@ using StringTools;
 		<hbox width="100%">
 			<button text="No Thanks" id="dialogCancel" />
 			<spacer width="100%" />
-			<button text="Take Me There" id="buttonGoToFolder" />
+			<button text="Open In Folder" id="buttonGoToFolder" />
 			<spacer width="100%" />
 			<button text="Open It" id="buttonOpenBackup" />
 		</hbox>
