@@ -12,7 +12,7 @@ using StringTools;
 @:xml('
 <dialog id="backupAvailableDialog" width="475" height="200" title="Hey! Listen!">
 	<vbox width="100%" height="100%">
-		<label text="There is a stage backup available, would you like to open it?\n" width="100%" textAlign="center" />
+		<label text="There is a stage backup available, would you like to load it?\n" width="100%" textAlign="center" />
 		<spacer height="6" />
 		<label id="backupTimeLabel" text="Jan 1, 1970 0:00" width="100%" textAlign="center" />
 		<spacer height="100%" />
@@ -21,7 +21,7 @@ using StringTools;
 			<spacer width="100%" />
 			<button text="Open In Folder" id="buttonGoToFolder" />
 			<spacer width="100%" />
-			<button text="Open It" id="buttonOpenBackup" />
+			<button text="Load Backup" id="buttonOpenBackup" />
 		</hbox>
 	</vbox>
 </dialog>
