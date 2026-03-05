@@ -223,6 +223,8 @@
     "assets/gameplay/stages/schoolErect/",
     "assets/gameplay/stages/schoolEvil/",
     "assets/gameplay/stages/schoolEvilErect/",
+    "assets/gameplay/stages/tankmanBattlefield/bricks-ground.png",
+    "assets/gameplay/stages/tankmanBattlefieldErect/bricks-ground.png",
     "assets/gameplay/stages/sserafim/cutscene/cutscene-main/spritemap1.png"
   ]
 }
