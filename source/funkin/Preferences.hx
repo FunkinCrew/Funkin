@@ -540,6 +540,25 @@ class Preferences
     return value;
   }
 
+  /**
+   * If enabled, cutscenes and dialogue sequences will be played on freeplay.
+   * @default `true`
+   */
+  public static var freeplayCutscenes(get, set):Bool;
+
+  static function get_freeplayCutscenes():Bool
+  {
+    return Save?.instance?.options?.freeplayCutscenes ?? true;
+  }
+
+  static function set_freeplayCutscenes(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.freeplayCutscenes = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.

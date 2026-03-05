@@ -154,6 +154,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.subtitles = value;
     }, Preferences.subtitles);
+    createPrefItemCheckbox('Cutscenes on Freeplay', 'When enabled, cutscenes on start and dialogue sequences will be played on freeplay.',
+      function(value:Bool):Void
+      {
+        Preferences.freeplayCutscenes = value;
+      }, Preferences.freeplayCutscenes);
     #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.',

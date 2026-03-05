@@ -107,6 +107,7 @@ class Save implements ConsoleClass
         debugDisplay: 'Off',
         debugDisplayBGOpacity: 50,
         subtitles: true,
+        freeplayCutscenes: true,
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
         autoPause: true,
@@ -1171,6 +1172,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var subtitles:Bool;
+
+  /**
+   * If enabled, cutscenes and dialogue sequences will be played on freeplay.
+   * @default `true`
+   */
+  var freeplayCutscenes:Bool;
 
   /**
    * If enabled, haptic feedback will be enabled.
