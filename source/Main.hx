@@ -91,7 +91,7 @@ class Main extends Sprite
     // Force-kill the game to prevent background processing.
     Lib.current.stage.window.onClose.add(function()
     {
-      trace(' EXITING '.bold().bg_red + ' Game is exiting, cleaning up resources...');
+      trace(' EXITING '.bold().bg_red() + ' Game is exiting, cleaning up resources...');
 
       #if hxvlc
       // Clean up VLC threads to prevent memory leaks.
