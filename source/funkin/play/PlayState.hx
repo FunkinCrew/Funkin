@@ -3932,9 +3932,11 @@ class PlayState extends MusicBeatSubState
       @:nullSafety(Off)
       FlxG.camera.target = null;
 
+      var adjustedDuration:Float = duration * playbackRate;
+
       // Follow tween! Caching it so we can cancel/pause it later if needed.
       var followPos:FlxPoint = cameraFollowPoint.getPosition() - FlxPoint.weak(FlxG.camera.width * 0.5, FlxG.camera.height * 0.5);
-      cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, duration, {
+      cameraFollowTween = FlxTween.tween(FlxG.camera.scroll, {x: followPos.x, y: followPos.y}, adjustedDuration, {
         ease: ease,
         onComplete: function(_)
         {
