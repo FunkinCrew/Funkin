@@ -4001,7 +4001,7 @@ class PlayState extends MusicBeatSubState
   /**
      * The magical function that shall tween the scroll speed.
      */
-  public function tweenScrollSpeed(?speed:Float, ?duration:Float, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
+  public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
   {
     // Cancel the current tween if it's active.
     cancelScrollSpeedTweens();
