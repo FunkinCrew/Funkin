@@ -98,11 +98,6 @@ class Main extends Sprite
       hxvlc.util.Handle.dispose();
       #end
 
-      #if discord_rpc
-      // Just incase you have `discord_rpc` enabled, dispose of the RPC manager.
-      funkin.util.discord.RichPresenceManager.dispose();
-      #end
-
       Sys.exit(0);
     });
     #end
