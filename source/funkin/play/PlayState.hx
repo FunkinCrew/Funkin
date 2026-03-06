@@ -4028,9 +4028,11 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
+        var adjustedDuration:Float = duration * playbackRate;
+
         scrollSpeedTweens.push(FlxTween.tween(strum, {
           'scrollSpeed': value
-        }, duration, {ease: ease}));
+        }, adjustedDuration, {ease: ease}));
       }
       // make sure charts dont break if the charter is dumb and stupid
       prevScrollTargets.push([value, i]);
