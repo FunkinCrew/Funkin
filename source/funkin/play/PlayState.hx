@@ -3974,7 +3974,8 @@ class PlayState extends MusicBeatSubState
     else
     {
       // Zoom tween! Caching it so we can cancel/pause it later if needed.
-      cameraZoomTween = FlxTween.tween(this, {currentCameraZoom: targetZoom}, duration, {ease: ease});
+      var adjustedDuration:Float = duration * playbackRate;
+      cameraZoomTween = FlxTween.tween(this, {currentCameraZoom: targetZoom}, adjustedDuration, {ease: ease});
     }
   }
 
