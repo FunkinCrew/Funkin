@@ -3036,7 +3036,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (!isCursorOverHaxeUI && !isPlaytesting)
       {
-        this.openCharacterDropdown(CharacterType.DAD, true);
+        if (pressingControl())
+        {
+          this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, true);
+        }
+        else
+        {
+          this.openCharacterDropdown(CharacterType.DAD, true);
+        }
       }
     });
 
@@ -3044,7 +3051,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (!isCursorOverHaxeUI && !isPlaytesting)
       {
-        this.openCharacterDropdown(CharacterType.BF, true);
+        if (pressingControl())
+        {
+          this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, true);
+        }
+        else
+        {
+          this.openCharacterDropdown(CharacterType.BF, true);
+        }
       }
     });
 
