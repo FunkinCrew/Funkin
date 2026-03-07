@@ -626,6 +626,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     }
   }
 
+  public function isDiscordRPCAnonymous():Bool
+  {
+    return false;
+  }
+
   public function onPause(event:PauseScriptEvent):Void
   {
   };

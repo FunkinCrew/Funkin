@@ -2180,8 +2180,16 @@ class PlayState extends MusicBeatSubState
       iconP2.cameras = [camHUD];
 
       #if FEATURE_DISCORD_RPC
-      discordRPCAlbum = 'album-${currentChart?.album}';
-      discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+      if (currentSong.isDiscordRPCAnonymous())
+      {
+        discordRPCAlbum = 'album-volume1';
+        discordRPCIcon = 'icon-face';
+      }
+      else
+      {
+        discordRPCAlbum = 'album-${currentChart?.album}';
+        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+      }
       #end
     }
 
@@ -2425,6 +2433,11 @@ class PlayState extends MusicBeatSubState
 
   function buildDiscordRPCDetails():String
   {
+    if (currentSong.isDiscordRPCAnonymous())
+    {
+      return 'In Game';
+    }
+
     if (PlayStatePlaylist.isStoryMode)
     {
       return 'Story Mode: ${PlayStatePlaylist.campaignTitle}';
@@ -2452,6 +2465,11 @@ class PlayState extends MusicBeatSubState
 
   function buildDiscordRPCState():String
   {
+    if (currentSong.isDiscordRPCAnonymous())
+    {
+      return '??? [???]';
+    }
+
     if (currentChart == null)
     {
       trace('WARNING: Difficulty data for RPC is null.');
