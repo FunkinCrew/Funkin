@@ -356,10 +356,10 @@
       "props": {
         "severity": "INFO",
 
-        "ignoreNumbers": [],
-
-        "checkBinary": false,
-        "checkHexadecimal": false
+        "decimalGroupSize": 3,
+        "fractionalGroupSize": -1,
+        "binaryGroupSize": 8,
+        "hexadecimalGroupSize": 8
       },
       "type": "LongNumber"
     },
