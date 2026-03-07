@@ -220,7 +220,10 @@ class InitState extends FlxState
       // DISCORD API SETUP
       //
       #if FEATURE_DISCORD_RPC
-      DiscordClient.instance.init();
+      if (Preferences.enabledDiscordRPC)
+      {
+        DiscordClient.instance.init();
+      }
 
       lime.app.Application.current.onExit.add(function(exitCode)
       {

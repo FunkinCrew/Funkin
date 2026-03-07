@@ -230,6 +230,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
     #end
+
+    #if FEATURE_DISCORD_RPC
+    createPrefItemCheckbox('Discord RPC', 'Toggles Discord RPC.', function(value:Bool):Void
+    {
+      Preferences.enabledDiscordRPC = value;
+    }, Preferences.enabledDiscordRPC);
+    #end
   }
 
   override function update(elapsed:Float):Void
