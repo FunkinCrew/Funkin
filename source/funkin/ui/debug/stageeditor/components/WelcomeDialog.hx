@@ -87,7 +87,7 @@ class WelcomeDialog extends Dialog
 
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
         function(btn:DialogButton)
         {
           if (btn == DialogButton.YES)
@@ -110,7 +110,7 @@ class WelcomeDialog extends Dialog
   {
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
         function(btn:DialogButton)
         {
           if (btn == DialogButton.YES)
