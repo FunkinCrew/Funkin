@@ -242,6 +242,11 @@ class Constants
   public static final DEFAULT_ZOOM_OFFSET:Int = 0;
 
   /**
+   * The default rate for characters or props (in beats per dance).
+   */
+  public static final DEFAULT_PROP_RATE:Int = 1;
+
+  /**
    * The default BPM for charts, so things don't break if none is specified.
    */
   public static final DEFAULT_BPM:Float = 100.0;

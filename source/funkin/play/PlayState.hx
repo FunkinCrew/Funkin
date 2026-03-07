@@ -1248,8 +1248,6 @@ class PlayState extends MusicBeatSubState
     FlxG.watch.addQuick('health', health);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
-    // TODO: Add a song event for Handle GF dance speed.
-
     // Handle player death.
     if (!isInCutscene && !disableKeys)
     {

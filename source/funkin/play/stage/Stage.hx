@@ -189,6 +189,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         prop.x = dataProp.position[0];
         prop.y = dataProp.position[1];
         prop.zIndex = dataProp.zIndex;
+
+        // Reset danceEvery value.
+        if (Std.isOfType(prop, Bopper))
+        {
+          cast(prop, Bopper).danceEvery = dataProp.danceEvery;
+        }
       }
     }
 
