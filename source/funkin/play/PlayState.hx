@@ -56,6 +56,7 @@ import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+import funkin.util.MathUtil;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
 #end
@@ -1041,7 +1042,7 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
-    updateHealthBar();
+    updateHealthBar(elapsed);
     updateScoreText();
 
     // Handle restarting the song when needed (player death or pressing Retry)
@@ -1117,7 +1118,7 @@ class PlayState extends MusicBeatSubState
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
-      health = Constants.HEALTH_STARTING;
+      resetHealth(false);
       songScore = 0.0;
       Highscore.tallies.combo = 0;
 
@@ -1447,10 +1448,7 @@ class PlayState extends MusicBeatSubState
     songScore = 0.0;
     updateScoreText();
 
-    health = Constants.HEALTH_STARTING;
-    healthLerp = health;
-
-    healthBar.value = healthLerp;
+    resetHealth();
 
     if (!isMinimalMode)
     {
@@ -2711,7 +2709,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Updates the values of the health bar.
      */
-  function updateHealthBar():Void
+  function updateHealthBar(elapsed:Float):Void
   {
     if (isBotPlayMode)
     {
@@ -2719,8 +2717,19 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
-      healthLerp = FlxMath.lerp(healthLerp, health, 0.15);
+      healthLerp = MathUtil.smoothLerpDecay(healthLerp, health, elapsed, Constants.HEALTH_BAR_HALF_LIFE);
+      if (Math.abs(healthLerp - health) < 0.01) healthLerp = health;
     }
+  }
+
+  /**
+   * Reset the player's health and health bar to their starting values.
+   */
+  function resetHealth(ignoreLerp:Bool = true):Void
+  {
+    health = Constants.HEALTH_STARTING;
+    if (ignoreLerp) healthLerp = health;
+    healthBar.value = 0;
   }
 
   /**

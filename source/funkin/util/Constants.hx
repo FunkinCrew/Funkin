@@ -418,13 +418,18 @@ class Constants
   /**
    * The player's starting health.
    */
-  public static final HEALTH_STARTING = HEALTH_MAX / 2.0;
+  public static final HEALTH_STARTING:Float = HEALTH_MAX / 2.0;
 
   /**
    * The player's minimum health.
    * If the player is at or below this value, they lose.
    */
   public static final HEALTH_MIN:Float = 0.0;
+
+  /**
+   * The smoothness of the health bar value during lerping.
+   */
+  public static final HEALTH_BAR_HALF_LIFE:Float = 0.03;
 
   /**
    * The amount of health the player gains when hitting a note with the KILLER rating.
