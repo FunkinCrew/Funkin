@@ -320,8 +320,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           input.percentWidth = 100;
           if (field.collapsible != null)
           {
-            var targetFrame:Frame = cast parent;
-            targetFrame.collapsible = field.collapsible;
+            var targetFrame:Frame = cast(input, Frame);
+            if (targetFrame != null) targetFrame.collapsible = field.collapsible;
           }
 
           var frameVBox:VBox = new VBox();
