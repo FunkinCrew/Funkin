@@ -281,7 +281,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   override function update(percent:Float):Void
   {
-    var elapsed:Float = (Date.now().getTime() - this._startTime) / 1000.0;
+    var elapsed:Float = (#if hl Sys.time() * 1000.0 #else Date.now().getTime() #end - this._startTime) / 1000.0;
 
     vfdShader.update(elapsed * 100);
 
@@ -767,7 +767,7 @@ class FunkinPreloader extends FlxBasePreloader
           }
         }
       case FunkinPreloaderState.Complete:
-        if (completeTime < 0)
+        if (completeTime <= 0)
         {
           completeTime = elapsed;
         }
