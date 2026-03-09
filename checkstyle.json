@@ -446,12 +446,13 @@
       "comment": "Specifies a specific order for modifiers on fields.",
       "props": {
         "modifiers": [
+          "OVERRIDE",
+          "OVERLOAD",
+
           "PUBLIC_PRIVATE",
           "STATIC",
           "ABSTRACT",
 
-          "OVERRIDE",
-          "OVERLOAD",
           "EXTERN",
           "INLINE",
 
