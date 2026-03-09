@@ -38,7 +38,7 @@ class CreditsState extends MusicBeatState
    * Choose something that will render Unicode properly.
    */
   #if windows
-  static final CREDITS_FONT = 'Consolas';
+  static final CREDITS_FONT = 'Inconsolata Black';
   #elseif mac
   static final CREDITS_FONT = 'Menlo';
   #else
@@ -142,11 +142,11 @@ class CreditsState extends MusicBeatState
 
     // Music
     FunkinSound.playMusic('ui/freeplay/freeplay-random/freeplay-random', {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: true,
-        loop: true
-      });
+      startingVolume: 0.0,
+      overrideExisting: true,
+      restartTrack: true,
+      loop: true
+    });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
     #if mobile
