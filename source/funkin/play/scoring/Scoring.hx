@@ -176,15 +176,15 @@ class Scoring
 
     return switch (absTiming)
     {
-      // case(_ < PBOT1_KILLER_THRESHOLD) => true:
+      // case(_ <= PBOT1_KILLER_THRESHOLD) => true:
       //   'killer';
-      case(_ < PBOT1_SICK_THRESHOLD) => true:
+      case(_ <= PBOT1_SICK_THRESHOLD) => true:
         'sick';
-      case(_ < PBOT1_GOOD_THRESHOLD) => true:
+      case(_ <= PBOT1_GOOD_THRESHOLD) => true:
         'good';
-      case(_ < PBOT1_BAD_THRESHOLD) => true:
+      case(_ <= PBOT1_BAD_THRESHOLD) => true:
         'bad';
-      case(_ < PBOT1_SHIT_THRESHOLD) => true:
+      case(_ <= PBOT1_SHIT_THRESHOLD) => true:
         'shit';
       default:
         FlxG.log.warn('Missed note: Bad timing ($absTiming < $PBOT1_SHIT_THRESHOLD)');
@@ -272,13 +272,13 @@ class Scoring
 
     return switch (absTiming)
     {
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
         'sick';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
         'good';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
         'bad';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
         'shit';
       default:
         FlxG.log.warn('Missed note: Bad timing ($absTiming < $LEGACY_SHIT_THRESHOLD)');
@@ -344,19 +344,19 @@ class Scoring
   static function judgeNoteWEEK7(msTiming:Float):String
   {
     var absTiming = Math.abs(msTiming);
-    if (absTiming < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
+    if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
     {
       return 'sick';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD)
+    else if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD)
     {
       return 'good';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD)
+    else if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD)
     {
       return 'bad';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW)
+    else if (absTiming <= WEEK7_HIT_WINDOW)
     {
       return 'shit';
     }
