@@ -52,6 +52,8 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     rating.velocity.y -= FlxG.random.int(140, 175);
     rating.velocity.x -= FlxG.random.int(0, 10);
 
+    rating.graphic.destroyOnNoUse = false;
+
     add(rating);
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;
@@ -100,6 +102,8 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       numScore.acceleration.y = FlxG.random.int(250, 300);
       numScore.velocity.y -= FlxG.random.int(130, 150);
       numScore.velocity.x = FlxG.random.float(-5, 5);
+
+      numScore.graphic.destroyOnNoUse = false;
 
       add(numScore);
 
