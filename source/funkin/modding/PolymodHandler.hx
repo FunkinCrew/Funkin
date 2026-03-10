@@ -264,12 +264,6 @@ class PolymodHandler
       Polymod.addDefaultImport(cls);
     }
 
-    // Add import aliases for certain classes.
-    // NOTE: Scripted classes are automatically aliased to their parent class.
-    Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
-
-    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
-
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
