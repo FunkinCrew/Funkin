@@ -2889,6 +2889,8 @@ class FreeplayState extends MusicBeatSubState
     curSelected = grpCapsules.members.indexOf(targetSongCap);
     changeSelection(); // Trigger an update. This will also fix the target variation.
 
+    rememberedSongId = null; // Go back to the random capsule when you reopen the menu.
+
     var targetSongId:String = targetSongCap?.freeplayData?.data.id ?? 'unknown';
     var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId);
     if (targetSongNullable == null)
