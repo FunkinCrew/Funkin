@@ -287,6 +287,11 @@ class Constants
   public static final DEFAULT_ALBUM_ID:String = 'volume1';
 
   /**
+   * The default name for the OST in Freeplay.
+   */
+  public static final DEFAULT_OST_NAME:String = 'OFFICIAL OST';
+
+  /**
    * The default timing format for songs.
    */
   public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;

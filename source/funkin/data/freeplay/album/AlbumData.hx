@@ -49,4 +49,10 @@ typedef AlbumData =
   @:optional
   @:default([])
   public var albumTitleAnimations:Array<AnimationData>;
+
+  /**
+   * An optional override for the Freeplay OST text.
+   */
+  @:optional
+  public var albumOSTName:String;
 }

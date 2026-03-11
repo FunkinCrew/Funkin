@@ -352,7 +352,7 @@ class FreeplayState extends MusicBeatSubState
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 95), 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FlxText(8 - FullScreenScaleMode.gameNotchSize.x, 8, FlxG.width - 8 - 8, 'OFFICIAL OST', 48);
+    ostName = new FlxText(8 - FullScreenScaleMode.gameNotchSize.x, 8, FlxG.width - 8 - 8, Constants.DEFAULT_OST_NAME, 48);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     // ui/freeplay/backgrounds/charId/levelId
@@ -566,6 +566,7 @@ class FreeplayState extends MusicBeatSubState
     ostName.font = 'VCR OSD Mono';
     ostName.alignment = RIGHT;
     ostName.visible = false;
+    ostName.shader = new StrokeShader(0xFFFFFFFF, 2, 2);
 
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
@@ -600,7 +601,6 @@ class FreeplayState extends MusicBeatSubState
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     topLeftCornerText.shader = sillyStroke;
     freeplayArrow.shader = sillyStroke;
-    ostName.shader = sillyStroke;
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 420), 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('ui/freeplay/interface/highscore');
@@ -767,6 +767,7 @@ class FreeplayState extends MusicBeatSubState
         freeplayTxtBg.visible = true;
         if (freeplayArrow != null) freeplayArrow.visible = true;
         ostName.visible = true;
+        updateOSTName(true);
         fpScoreDisplay.visible = true;
         fpScoreDisplay.updateScore(0);
 
@@ -1462,6 +1463,26 @@ class FreeplayState extends MusicBeatSubState
     }
 
     prevDotAmount = amount;
+  }
+
+  /**
+   * Updates the OST text according to the album data for the current song and performs an outline animation.
+   * @param forceAnimation Whether to force the animation to play even if the text is the same.
+   */
+  function updateOSTName(forceAnimation:Bool = false):Void
+  {
+    var newName:String = albumRoll.getOSTNameOverride() ?? '';
+    if (forceAnimation || ostName.text != newName)
+    {
+      ostName.text = newName;
+
+      var sillyStroke:StrokeShader = cast ostName.shader;
+      sillyStroke.width = sillyStroke.height = 2;
+      FlxTimer.wait(1.5 / 24, () ->
+      {
+        sillyStroke.width = sillyStroke.height = 0;
+      });
+    }
   }
 
   function tryOpenCharSelect():Void
@@ -2515,6 +2536,7 @@ class FreeplayState extends MusicBeatSubState
       albumRoll.albumId = newAlbumId;
       albumRoll.skipIntro();
     }
+    updateOSTName();
 
     // Set difficulty star count.
     albumRoll.setDifficultyStars(daSong?.data.getDifficulty(currentDifficulty, currentVariation)?.difficultyRating ?? 0);
