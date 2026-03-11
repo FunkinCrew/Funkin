@@ -18,6 +18,7 @@ import animate.internal.FilterRenderer;
 @:access(openfl.display.OpenGLRenderer)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.display.BitmapData)
+@:nullSafety
 class FunkinFilterRenderer implements IFlxDestroyable
 {
   /**
