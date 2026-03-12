@@ -400,6 +400,11 @@ class PolymodHandler
     // Disallow direct manipulation of save data.
     Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
 
+    // `haxe.Unserializer`
+    // Just to be double-sure, lets blacklist some fields of the Unserializer to make it harder to use if you DO get one.
+    Polymod.blacklistStaticFields(haxe.Unserializer, ['run']);
+    Polymod.blacklistInstanceFields(haxe.Unserializer, ['unserialize']);
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
