@@ -3101,6 +3101,7 @@ class FreeplayState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/favorite'), 1);
         selectedCapsule.checkClip();
         selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
+        selectedCapsule.updateSelected();
         uiStateMachine.transition(Interacting);
 
         selectedCapsule.doLerp = false;
@@ -3127,6 +3128,7 @@ class FreeplayState extends MusicBeatSubState
           selectedCapsule.favIconBlurred.visible = false;
           selectedCapsule.checkClip();
           selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
+          selectedCapsule.updateSelected();
         });
 
         uiStateMachine.transition(Interacting);
