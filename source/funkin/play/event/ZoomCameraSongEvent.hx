@@ -1,9 +1,7 @@
 package funkin.play.event;
 
-import flixel.tweens.FlxEase;
-// Data from the chart
-import funkin.data.song.SongData.SongEventData;
-// Data from the event schema
+import flixel.tweens.FlxEase; // Data from the chart
+import funkin.data.song.SongData.SongEventData; // Data from the event schema
 import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
@@ -105,12 +103,6 @@ class ZoomCameraSongEvent extends SongEvent
       type: SongEventFieldType.FLOAT,
       units: 'steps'
     }, {
-      name: 'mode',
-      title: 'Mode',
-      defaultValue: DEFAULT_MODE,
-      type: SongEventFieldType.ENUM,
-      keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
-    }, {
       name: 'ease',
       title: 'Easing Type',
       defaultValue: SongEvent.DEFAULT_EASE,
@@ -122,6 +114,18 @@ class ZoomCameraSongEvent extends SongEvent
       defaultValue: SongEvent.DEFAULT_EASE_DIR,
       type: SongEventFieldType.ENUM,
       keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+    }, {
+      name: 'advanced',
+      title: 'Advanced',
+      type: SongEventFieldType.FRAME,
+      collapsible: true,
+      children: [{
+        name: 'mode',
+        title: 'Mode',
+        defaultValue: DEFAULT_MODE,
+        type: SongEventFieldType.ENUM,
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+      }]
     }]);
   }
 }
