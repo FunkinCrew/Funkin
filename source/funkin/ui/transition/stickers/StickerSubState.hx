@@ -17,6 +17,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerPack;
 import funkin.FunkinMemory;
 import funkin.util.DeviceUtil;
+import funkin.Preferences;
 
 using Lambda;
 using StringTools;
@@ -115,6 +116,10 @@ class StickerSubState extends MusicBeatSubState
     }
     else
     {
+      #if !mobile
+      // Re-enable autoPause if it was disabled
+      FlxG.autoPause = Preferences.autoPause;
+      #end  
       regenStickers();
     }
   }
