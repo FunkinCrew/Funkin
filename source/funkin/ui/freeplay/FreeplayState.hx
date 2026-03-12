@@ -551,7 +551,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
-    topLeftCornerText.font = 'VCR OSD Mono';
+    topLeftCornerText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
     topLeftCornerText.visible = false;
 
     var freeplayTxtBg:FlxSprite = new FlxSprite().makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16),
@@ -560,10 +560,10 @@ class FreeplayState extends MusicBeatSubState
     freeplayTxtBg.visible = false;
 
     freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---', 48);
-    freeplayArrow.font = 'VCR OSD Mono';
+    freeplayArrow.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
     freeplayArrow.visible = false;
 
-    ostName.font = 'VCR OSD Mono';
+    ostName.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
     ostName.alignment = RIGHT;
     ostName.visible = false;
     ostName.shader = new StrokeShader(0xFFFFFFFF, 2, 2);
@@ -908,12 +908,11 @@ class FreeplayState extends MusicBeatSubState
       case 'packer':
         dj = (scriptClass != "") ? (ScriptedPackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
-        dj = (scriptClass != "") ? (ScriptedBaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) :
-          {
-            // force-skip intro only in fallback, since you can specify onIntroDone.dispatch in ScriptedBaseFreeplayDJ, and this is goddamn fallback
-            forceSkipIntro = true;
-            new BaseFreeplayDJ(x, y, characterId);
-          }; // We can't fallback on any other types, since the assets may be unspecified
+        dj = (scriptClass != "") ? (ScriptedBaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : {
+          // force-skip intro only in fallback, since you can specify onIntroDone.dispatch in ScriptedBaseFreeplayDJ, and this is goddamn fallback
+          forceSkipIntro = true;
+          new BaseFreeplayDJ(x, y, characterId);
+        }; // We can't fallback on any other types, since the assets may be unspecified
     }
   }
 

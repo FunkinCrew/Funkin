@@ -59,14 +59,25 @@ class ValidatedPaths
   }
 
   /**
-   * Constructs an asset path for a `.ttf` font file.
+   * Constructs an asset path for a font file.
    * @param key The path to the font file, without file extension.
+   * @param ext An optional file extension to validate against. Defaults to `ttf`.
+   * @param validate Whether to validate
    * @return An AssetPath pointing to the font file.
    */
-  public static macro function font(key:Expr):Expr
+  public static macro function font(key:Expr, ?ext:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['ttf'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      var staticExt:Null<String> = MacroUtil.extractStringConstant(ext);
+      if (staticPath != null) validateAssetPath(staticPath, [staticExt ?? 'ttf'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.font(key)` got called.
     return macro funkin.assets.Paths.font($e{key});

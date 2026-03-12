@@ -33,7 +33,7 @@ class Subtitles extends FlxSpriteGroup
     background.alpha = 0.5;
     add(background);
 
-    subtitleText = new SubtitlesText(0, 0, 30, Paths.font('ui/fonts/vcr.ttf'));
+    subtitleText = new SubtitlesText(0, 0, 30, Paths.font('ui/fonts/VCR OSD Mono'));
     add(subtitleText);
 
     setText([], true);
@@ -142,13 +142,11 @@ class Subtitles extends FlxSpriteGroup
  */
 class SubtitlesText extends FlxText
 {
-  public function new(x:Float = 0, y:Float = 0, size:Int, font:String)
+  public function new(x:Float = 0, y:Float = 0, size:Int, fontPath:String)
   {
     super(x, y, 0, '', size);
 
-    this.font = font;
-    this.size = size;
-    this.alignment = FlxTextAlign.CENTER;
+    setFormat(fontPath, size, FlxColor.WHITE, FlxTextAlign.CENTER);
   }
 
   /**

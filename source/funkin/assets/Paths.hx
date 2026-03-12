@@ -285,6 +285,9 @@ class Paths implements ConsoleClass
 
   /**
    * Constructs an asset path for a font file in the `fonts` folder.
+   * Since `setFormat` directly requires a string, we don't use an AssetPath for this.
+   * We still provide validation though.
+   *
    * @param key The path to the font file, without file extension
    * @param ext The file extension of the font, defaults to `ttf`
    * @param validate Whether to validate that the file exists

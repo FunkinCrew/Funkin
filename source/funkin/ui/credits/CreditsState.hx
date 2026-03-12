@@ -33,19 +33,6 @@ class CreditsState extends MusicBeatState
   final FULL_WIDTH = FlxG.width - (SCREEN_PAD * 2);
 
   /**
-   * The font to use to display the text.
-   * To use a font from the `assets` folder, use `Paths.font(...)`.
-   * Choose something that will render Unicode properly.
-   */
-  #if windows
-  static final CREDITS_FONT = 'Inconsolata Black';
-  #elseif mac
-  static final CREDITS_FONT = 'Menlo';
-  #else
-  static final CREDITS_FONT = "Courier New";
-  #end
-
-  /**
    * The size of the font.
    */
   static final CREDITS_FONT_SIZE = 24;
@@ -212,7 +199,8 @@ class CreditsState extends MusicBeatState
     creditsLine.fieldWidth = width;
     creditsLine.text = text;
     creditsLine.bold = header;
-    creditsLine.setFormat(CREDITS_FONT, size, CREDITS_FONT_COLOR, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, CREDITS_FONT_STROKE_COLOR, true);
+    creditsLine.setFormat(Paths.font('ui/fonts/Inconsolata Black'), size, CREDITS_FONT_COLOR, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE,
+      CREDITS_FONT_STROKE_COLOR, true);
 
     return creditsLine;
   }

@@ -813,14 +813,14 @@ class PlayState extends MusicBeatSubState
     // Healthbar
     healthBarBG = FunkinSprite.create(0, 0, 'gameplay/general/health-bar');
     healthBar = new FlxBar(0, 0, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), null, 0, 2);
-    scoreText = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("ui/fonts/vcr-bmp.png"), Paths.font("ui/fonts/vcr-bmp.fnt")));
+    scoreText = new FlxBitmapText(0, 0, '', funkin.assets.Assets.getAngelBitmapFont(funkin.assets.Paths.image('ui/fonts/vcr-bmp')));
 
     // Combo & Pop Up
     comboPopUps = new PopUpStuff(noteStyle);
 
     // Pause sprites
     #if mobile
-    pauseButton = FunkinSprite.createSparrow(0, 0, "ui/pause-button");
+    pauseButton = FunkinSprite.createSparrow(0, 0, 'ui/pause-button');
     pauseCircle = FunkinSprite.create(0, 0, 'ui/pause-circle');
     #end
 

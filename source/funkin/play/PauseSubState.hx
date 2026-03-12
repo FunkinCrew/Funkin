@@ -429,7 +429,7 @@ class PauseSubState extends MusicBeatSubState
     var metadataSong:FlxText = new FlxText(20,
       #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
       camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
-    metadataSong.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataSong.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
       metadataSong.text = '${PlayState.instance.currentChart.songName}';
@@ -439,7 +439,7 @@ class PauseSubState extends MusicBeatSubState
 
     metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Artist: ${Constants.DEFAULT_ARTIST}');
-    metadataArtist.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataArtist.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
       metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
@@ -449,7 +449,7 @@ class PauseSubState extends MusicBeatSubState
 
     var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Difficulty: ');
-    metadataDifficulty.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataDifficulty.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
       metadataDifficulty.text += PlayState.instance.currentDifficulty.replace('-', ' ').toTitleCase();
@@ -459,12 +459,12 @@ class PauseSubState extends MusicBeatSubState
 
     metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       '${PlayState.instance?.deathCounter} Blue Balls');
-    metadataDeaths.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataDeaths.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
 
     metadataPractice = new FlxText(20, metadataDeaths.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'PRACTICE MODE');
-    metadataPractice.setFormat(Paths.font('ui/fonts/vcr.ttf'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    metadataPractice.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
     metadataPractice.scrollFactor.set(0, 0);
     metadata.add(metadataPractice);
@@ -472,12 +472,12 @@ class PauseSubState extends MusicBeatSubState
     // Right side
     offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Global Offset: ${Preferences.globalOffset ?? 0}ms');
-    offsetText.setFormat(Paths.font('ui/fonts/vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    offsetText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetText.scrollFactor.set(0, 0);
 
     offsetTextInfo = new FlxText(20, offsetText.y + 16, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Hold SHIFT-UP/DOWN,\nto change the offset.');
-    offsetTextInfo.setFormat(Paths.font('ui/fonts/vcr.ttf'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
+    offsetTextInfo.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetTextInfo.scrollFactor.set(0, 0);
 
     offsetText.y = FlxG.height - (offsetText.height + offsetText.height + 40);

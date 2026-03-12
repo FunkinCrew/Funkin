@@ -222,24 +222,54 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Builds a monospace bitmap font from the given asset path.
+   * Builds a monospace Bitmap font from the given asset path.
+   *
    * @param assetPath The asset path to load the texture from
-   * @param fontLetters The letters to use in the font
-   * @param letterSize The size of each letter
-   * @return FlxBitmapFont
+   * @param fontLetters The letters to use in the font, in order
+   * @param letterSize The width and height of each letter, in pixels
+   * @return The generated FlxBitmapFont
    */
   public static function getMonospaceBitmapFont(assetPath:AssetPath, fontLetters:String, letterSize:FlxPoint):FlxBitmapFont
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
+    #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath))
     {
-      return FlxBitmapFont.fromMonospace(cast assetPath.toFlxGraphicAsset(), fontLetters, letterSize);
+      return FlxBitmapFont.fromMonospace(assetPath.toFlxBitmapFontGraphicAsset(), fontLetters, letterSize);
     }
     else
     {
       throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
     }
+    #else
+    return FlxBitmapFont.fromMonospace(assetPath.toFlxBitmapFontGraphicAsset(), fontLetters, letterSize);
+    #end
+  }
+
+  /**
+   * Builds a Bitmap font from the given asset path.
+   *
+   * @param assetPath The asset path to load the texture from.
+   *   Assume there is a corresponding `.fnt` file to locate each letter.
+   * @return The generated FlxBitmapFont
+   */
+  public static function getAngelBitmapFont(assetPath:AssetPath):FlxBitmapFont
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    if (isFlxGraphicCached(assetPath))
+    {
+      return FlxBitmapFont.fromAngelCode(assetPath.toFlxBitmapFontGraphicAsset(), assetPath.withExt('fnt').toString());
+    }
+    else
+    {
+      throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
+    }
+    #else
+    return FlxBitmapFont.fromAngelCode(assetPath.toFlxBitmapFontGraphicAsset(), assetPath.withExt('fnt').toString());
+    #end
   }
 
   /**

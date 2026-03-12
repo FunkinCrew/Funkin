@@ -50,7 +50,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     capsuleMenuBG.animation.addByPrefix('open', 'open0', 24, false);
 
     currentInstrumental = new FlxText(0, 36, capsuleMenuBG.width, '');
-    currentInstrumental.setFormat('VCR OSD Mono', 40, FlxTextAlign.CENTER, true);
+    currentInstrumental.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 40, FlxTextAlign.CENTER, true);
 
     final PAD = 4;
 
@@ -60,7 +60,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     rightArrow = new InstrumentalSelector(parent, capsuleMenuBG.width - leftArrow.width - PAD, 30, true, parent.controls);
 
     var label:FlxText = new FlxText(0, 5, capsuleMenuBG.width, 'INSTRUMENTAL');
-    label.setFormat('VCR OSD Mono', 24, FlxTextAlign.CENTER, true);
+    label.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxTextAlign.CENTER, true);
 
     add(capsuleMenuBG);
     add(leftArrow);

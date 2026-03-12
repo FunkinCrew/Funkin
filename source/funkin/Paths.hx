@@ -164,10 +164,7 @@ class Paths implements ConsoleClass
     return getPath('$key.png', IMAGE, library);
   }
 
-  public static function font(key:String):String
-  {
-    return 'default:assets/$key';
-  }
+  public static var font:(String, ?String, ?Bool) -> String = funkin.assets.Paths.font;
 
   public static function ui(key:String, ?library:String):String
   {

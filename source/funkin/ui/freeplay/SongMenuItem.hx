@@ -276,7 +276,7 @@ class SongMenuItem extends FlxSpriteGroup
   {
     if (FlxG.bitmap.checkCache(text)) return;
 
-    var weekTextBase:FlxText = new FlxText(0, 0, 0, text).setFormat("YoureGone-Regular", 20, 0xFF21242E);
+    var weekTextBase:FlxText = new FlxText(0, 0, 0, text).setFormat(Paths.font('ui/fonts/YoureGone-Regular', 'otf'), 20, 0xFF21242E);
     @:privateAccess weekTextBase.regenGraphic();
 
     FlxG.bitmap.add(weekTextBase.pixels.clone(), false, text);
