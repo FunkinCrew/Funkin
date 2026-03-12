@@ -5,6 +5,7 @@ import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
 import funkin.util.TimerUtil;
 
+@:nullSafety
 class Nametag extends FlxSprite
 {
   @:allow(funkin.ui.charSelect.CharSelectSubState)
@@ -13,7 +14,7 @@ class Nametag extends FlxSprite
   var midpointY(default, set):Float = 100;
   var mosaicShader:MosaicEffect;
 
-  var currentMosaicSequence:Sequence;
+  var currentMosaicSequence:Null<Sequence>;
 
   public function new(?x:Float = 0, ?y:Float = 0, character:String)
   {
@@ -42,7 +43,8 @@ class Nametag extends FlxSprite
   {
     if (playMosaicSequence) shaderEffect();
 
-    new FlxTimer().start(4 / 30, _ -> {
+    new FlxTimer().start(4 / 30, _ ->
+    {
       var path:String = str;
       switch str
       {
@@ -67,25 +69,32 @@ class Nametag extends FlxSprite
       // Forcibly reset the shader to prevent overlapping blur sequences
       mosaicShader.setBlockSize(1, 1);
       currentMosaicSequence.destroy();
+      @:nullSafety(Off)
       currentMosaicSequence = null;
     }
 
     if (fadeOut)
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-      ]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(1, 1)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)
+      }, {
+        time: 2 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},]);
     }
     else
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-      ]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)
+      }, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},]);
     }
   }
 
@@ -94,7 +103,8 @@ class Nametag extends FlxSprite
     var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
     var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
 
-    FlxTimer.wait(frame / 30, () -> {
+    FlxTimer.wait(frame / 30, () ->
+    {
       mosaicShader.setBlockSize(daX, daY);
     });
   }

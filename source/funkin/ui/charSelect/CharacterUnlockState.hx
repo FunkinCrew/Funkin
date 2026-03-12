@@ -24,6 +24,7 @@ using flixel.util.FlxSpriteUtil;
  * When you want the player to unlock a character, call `CharacterUnlockState.unlock(characterName)`.
  * It handles both the act of unlocking the character and displaying the dialog.
  */
+@:nullSafety
 class CharacterUnlockState extends MusicBeatState
 {
   public var targetCharacterId:String = "";
@@ -78,11 +79,11 @@ class CharacterUnlockState extends MusicBeatState
 
     // HealthIcon handles getting the right frames for us,
     // but it has a bunch of overhead in it that makes it gross to work with outside the health bar.
-    var healthIconCharacterId = targetCharacterData.getOwnedCharacterIds()[0];
-    var baseCharacter = CharacterDataParser.fetchCharacter(healthIconCharacterId);
+    var healthIconCharacterId = targetCharacterData?.getOwnedCharacterIds()[0];
+    var baseCharacter = CharacterDataParser.fetchCharacter(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
     var healthIcon:HealthIcon = new HealthIcon(healthIconCharacterId);
     @:privateAccess
-    healthIcon.configure(baseCharacter._data.healthIcon);
+    healthIcon.configure(baseCharacter?._data.healthIcon);
     healthIcon.autoUpdate = false;
     healthIcon.bopEvery = 0; // You can increase this number later once the animation is done.
     healthIcon.size.set(0.5, 0.5);
@@ -93,13 +94,13 @@ class CharacterUnlockState extends MusicBeatState
     dialogContainer.add(healthIcon);
 
     dialogContainer.scale.set(0, 0);
-    FlxTween.num(0.0, 1.0, 0.75,
-      {
-        ease: FlxEase.elasticOut,
-      }, function(curScale) {
-        dialogContainer.scale.set(curScale, curScale);
-        healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
-      });
+    FlxTween.num(0.0, 1.0, 0.75, {
+      ease: FlxEase.elasticOut,
+    }, function(curScale)
+    {
+      dialogContainer.scale.set(curScale, curScale);
+      healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
+    });
 
     // performUnlock();
   }
@@ -114,7 +115,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT || controls.BACK #if mobile || TouchUtil.pressAction() #end && !busy)
+    if (controls.ACCEPT_P || controls.BACK_P #if mobile || TouchUtil.pressAction() #end && !busy)
     {
       busy = true;
       startClose();
@@ -124,7 +125,8 @@ class CharacterUnlockState extends MusicBeatState
   function startClose():Void
   {
     // Fade to black, then switch state.
-    FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
+    FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () ->
+    {
       funkin.FunkinMemory.clearFreeplay();
       #if ios
       trace(DeviceUtil.iPhoneNumber);

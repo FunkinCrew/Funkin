@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxSliceSprite;
 import flixel.math.FlxRect;
 import funkin.data.song.SongData.SongEventData;
@@ -30,3 +31,4 @@ class ChartEditorSelectionSquareSprite extends FlxSliceSprite
       32, 32);
   }
 }
+#end

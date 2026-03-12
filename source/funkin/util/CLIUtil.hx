@@ -21,7 +21,7 @@ class CLIUtil
     gameDir = Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir());
     #elseif ios
     // Why? Because for some reason lime.system.System.documentsDirectory is returning a directory that's different and we're unable to read or write from, so it's disabled and no solution is found...
-    trace('[WARN]: Reseting the Current Working Directory is unavailable on iOS targets');
+    trace(' WARNING '.warning() + ' : Reseting the Current Working Directory is unavailable on iOS targets');
     gameDir = cwd;
     #elseif mac
     gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
@@ -139,21 +139,18 @@ class CLIUtil
     return {
       args: [],
 
-      chart:
-        {
-          shouldLoadChart: false,
-          chartPath: null
-        },
-      stage:
-        {
-          shouldLoadStage: false,
-          stagePath: null
-        },
-      song:
-        {
-          shouldLoadSong: false,
-          songPath: null
-        }
+      chart: {
+        shouldLoadChart: false,
+        chartPath: null
+      },
+      stage: {
+        shouldLoadStage: false,
+        stagePath: null
+      },
+      song: {
+        shouldLoadSong: false,
+        songPath: null
+      }
     };
   }
 
@@ -168,11 +165,13 @@ class CLIUtil
 
     if (args == null || args.length == 0) return result;
 
-    return args.map(function(arg:String):String {
+    return args.map(function(arg:String):String
+    {
       if (arg == null) return '';
 
       return arg.trim();
-    }).filter(function(arg:String):Bool {
+    }).filter(function(arg:String):Bool
+    {
       return arg != null && arg != '';
     });
   }

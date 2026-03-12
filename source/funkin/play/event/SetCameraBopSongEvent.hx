@@ -7,7 +7,7 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
- * This class represents a handler for configuring camera bop intensity and rate.
+ * This class handles song events which change how the camera bops to the beat of the song.
  *
  * Example: Bop the camera twice as hard, once per beat (rather than once every four beats).
  * ```
@@ -32,7 +32,9 @@ class SetCameraBopSongEvent extends SongEvent
 {
   public function new()
   {
-    super('SetCameraBop');
+    super('SetCameraBop', {
+      processOldEvents: true
+    });
   }
 
   public override function handleEvent(data:SongEventData):Void
@@ -40,12 +42,9 @@ class SetCameraBopSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null) return;
 
-    var rate:Null<Int> = data.getInt('rate');
-    if (rate == null) rate = Constants.DEFAULT_ZOOM_RATE;
-    var offset:Null<Int> = data.getInt('offset');
-    if (rate == null) offset = Constants.DEFAULT_ZOOM_OFFSET;
-    var intensity:Null<Float> = data.getFloat('intensity');
-    if (intensity == null) intensity = 1.0;
+    var rate:Float = data.getFloat('rate') ?? Constants.DEFAULT_ZOOM_RATE;
+    var offset:Float = data.getFloat('offset') ?? Constants.DEFAULT_ZOOM_OFFSET;
+    var intensity:Float = data.getFloat('intensity') ?? 1.0;
 
     PlayState.instance.cameraBopIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity + 1.0;
     PlayState.instance.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity * 2.0;
@@ -70,33 +69,29 @@ class SetCameraBopSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: 'intensity',
-        title: 'Intensity',
-        defaultValue: 1.0,
-        min: 0,
-        step: 0.1,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      },
-      {
-        name: 'offset',
-        title: 'Offset',
-        defaultValue: 0,
-        step: 1,
-        type: SongEventFieldType.INTEGER,
-        units: 'beats'
-      },
-      {
-        name: 'rate',
-        title: 'Rate',
-        defaultValue: 4,
-        min: 0,
-        step: 1,
-        type: SongEventFieldType.INTEGER,
-        units: 'beats/zoom'
-      }
-    ]);
+    return new SongEventSchema([{
+      name: 'intensity',
+      title: 'Intensity',
+      defaultValue: Constants.DEFAULT_BOP_INTENSITY,
+      min: 0,
+      step: 0.1,
+      type: SongEventFieldType.FLOAT,
+      units: 'x'
+    }, {
+      name: 'offset',
+      title: 'Offset',
+      defaultValue: Constants.DEFAULT_ZOOM_OFFSET,
+      step: 0.25,
+      type: SongEventFieldType.FLOAT,
+      units: 'beats'
+    }, {
+      name: 'rate',
+      title: 'Rate',
+      defaultValue: Constants.DEFAULT_ZOOM_RATE,
+      min: 0,
+      step: 0.25,
+      type: SongEventFieldType.FLOAT,
+      units: 'beats/zoom'
+    }]);
   }
 }

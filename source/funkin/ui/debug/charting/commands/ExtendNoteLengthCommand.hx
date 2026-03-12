@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 
 /**
@@ -82,3 +83,4 @@ enum Unit
   MILLISECONDS;
   STEPS;
 }
+#end

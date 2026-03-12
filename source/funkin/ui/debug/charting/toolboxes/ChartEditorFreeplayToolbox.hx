@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import flixel.addons.display.FlxTiledSprite;
 import flixel.math.FlxMath;
 import funkin.audio.SoundGroup;
@@ -164,45 +165,56 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
-    freeplayMusicVolume.onChange = (_) -> {
+    freeplayMusicVolume.onChange = (_) ->
+    {
       setTrackVolume(freeplayPreviewVolume);
     };
-    freeplayMusicMute.onClick = (_) -> {
+    freeplayMusicMute.onClick = (_) ->
+    {
       toggleMuteTrack();
     };
-    freeplayButtonZoomIn.onClick = (_) -> {
+    freeplayButtonZoomIn.onClick = (_) ->
+    {
       zoomWaveformIn();
     };
-    freeplayButtonZoomOut.onClick = (_) -> {
+    freeplayButtonZoomOut.onClick = (_) ->
+    {
       zoomWaveformOut();
     };
-    freeplayButtonPause.onClick = (_) -> {
+    freeplayButtonPause.onClick = (_) ->
+    {
       pauseAudioPreview();
     };
-    freeplayButtonPlay.onClick = (_) -> {
+    freeplayButtonPlay.onClick = (_) ->
+    {
       playAudioPreview();
     };
-    freeplayButtonStop.onClick = (_) -> {
+    freeplayButtonStop.onClick = (_) ->
+    {
       stopAudioPreview();
     };
-    testPreview.onClick = (_) -> {
+    testPreview.onClick = (_) ->
+    {
       performPreview();
     };
-    freeplayPreviewStart.onChange = (event:UIEvent) -> {
+    freeplayPreviewStart.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentSongFreeplayPreviewStart) return;
       if (waveformDragStartPos != null) return; // The values are changing because we are dragging the preview.
 
       chartEditorState.performCommand(new SetFreeplayPreviewCommand(event.value, null));
       refresh();
     }
-    freeplayPreviewEnd.onChange = (event:UIEvent) -> {
+    freeplayPreviewEnd.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentSongFreeplayPreviewEnd) return;
       if (waveformDragStartPos != null) return; // The values are changing because we are dragging the preview.
 
       chartEditorState.performCommand(new SetFreeplayPreviewCommand(null, event.value));
       refresh();
     }
-    waveformScrollview.onScroll = (_) -> {
+    waveformScrollview.onScroll = (_) ->
+    {
       if (!audioPreviewTracks.playing)
       {
         // Move the playhead if it would go out of view.
@@ -237,11 +249,13 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     refresh();
     refreshTicks();
 
-    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragWaveform();
     });
 
-    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragPlayhead();
     });
   }
@@ -346,7 +360,9 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  function buildTickLabel():Void {}
+  function buildTickLabel():Void
+  {
+  }
 
   public function onStartDragPlayhead():Void
   {
@@ -603,7 +619,8 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       if (!isFadingOutPreview && audioPreviewTracks.time >= startFadeOutTime)
       {
         isFadingOutPreview = true;
-        audioPreviewTracks.fadeOut(FreeplayState.FADE_OUT_DURATION, FreeplayState.FADE_OUT_END_VOLUME * freeplayPreviewVolume, (_) -> {
+        audioPreviewTracks.fadeOut(FreeplayState.FADE_OUT_DURATION, FreeplayState.FADE_OUT_END_VOLUME * freeplayPreviewVolume, (_) ->
+        {
           trace('Stop performing preview! ${audioPreviewTracks.time}');
           stopPerformingPreview();
         });
@@ -683,3 +700,4 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return new ChartEditorFreeplayToolbox(chartEditorState);
   }
 }
+#end

@@ -36,6 +36,15 @@ class NoteKindManager
   }
 
   /**
+   * Retrieve a list of known valid note kinds.
+   * @return A list of note kinds
+   */
+  public static function listNoteKinds():Array<String>
+  {
+    return noteKinds.keyValues();
+  }
+
+  /**
    * Initialize custom behavior for note kinds.
    */
   public static function initialize():Void
@@ -61,16 +70,16 @@ class NoteKindManager
       if (noteKindClsName == 'funkin.play.notes.notekind.NoteKind'
         || noteKindClsName == 'funkin.play.notes.notekind.ScriptedNoteKind') continue;
 
-      var kind:NoteKind = Type.createInstance(noteKindCls, ["UNKNOWN"]);
+      var kind:NoteKind = Type.createInstance(noteKindCls, ['UNKNOWN']);
 
       if (kind != null)
       {
-        trace('  Loaded built-in note kind: ${kind.noteKind}');
+        trace(' Loaded built-in note kind: ${kind.noteKind}');
         noteKinds.set(kind.noteKind, kind);
       }
       else
       {
-        trace('  Failed to load built-in note kind: ${noteKindClsName}');
+        trace(' Failed to load built-in note kind: ${noteKindClsName}');
       }
     }
   }
@@ -88,10 +97,9 @@ class NoteKindManager
       {
         try
         {
-          var script:NoteKind = ScriptedNoteKind.init(scriptedClass, "unknown");
+          var script:NoteKind = ScriptedNoteKind.scriptInit(scriptedClass, 'unknown');
           trace(' Initialized scripted note kind: ${script.noteKind}');
           noteKinds.set(script.noteKind, script);
-          ChartEditorDropdowns.NOTE_KINDS.set(script.noteKind, script.description);
         }
         catch (e)
         {

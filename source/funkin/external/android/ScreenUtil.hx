@@ -7,7 +7,6 @@ import lime.system.JNI;
 /**
  * A Utility class to get Android screen related informations.
  */
-@:unreflective
 class ScreenUtil
 {
   /**

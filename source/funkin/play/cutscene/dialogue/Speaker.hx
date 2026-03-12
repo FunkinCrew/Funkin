@@ -201,12 +201,6 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     applyAnimationOffsets(correctName);
   }
 
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
-  }
-
   /**
    * Ensure that a given animation exists before playing it.
    * Will gracefully check for name, then name with stripped suffixes, then 'idle', then fail to play.
@@ -272,17 +266,29 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     }
   }
 
-  public function onDialogueStart(event:DialogueScriptEvent):Void {}
+  public function onDialogueStart(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void {}
+  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueLine(event:DialogueScriptEvent):Void {}
+  public function onDialogueLine(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueSkip(event:DialogueScriptEvent):Void {}
+  public function onDialogueSkip(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueEnd(event:DialogueScriptEvent):Void {}
+  public function onDialogueEnd(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
 
   public function onDestroy(event:ScriptEvent):Void
   {
@@ -296,5 +302,7 @@ class Speaker extends FlxSprite implements IDialogueScriptedClass implements IRe
     this.kill();
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  }
 }

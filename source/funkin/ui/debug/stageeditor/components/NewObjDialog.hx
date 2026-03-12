@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import openfl.display.BitmapData;
@@ -9,6 +10,8 @@ import haxe.ui.notifications.NotificationManager;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/new-object.xml"))
 class NewObjDialog extends Dialog
 {
+  public var bitmapName:Null<String> = null;
+
   var stageEditorState:StageEditorState;
   var bitmap:BitmapData;
 
@@ -19,7 +22,8 @@ class NewObjDialog extends Dialog
     stageEditorState = state;
     bitmap = img;
 
-    field.onChange = function(_) {
+    field.onChange = function(_)
+    {
       field.removeClasses(["invalid-value", "valid-value"]);
     }
 
@@ -41,12 +45,11 @@ class NewObjDialog extends Dialog
       {
         field.swapClass("invalid-value", "valid-value");
         done = false;
-        NotificationManager.instance.addNotification(
-          {
-            title: "Problem Creating an Object",
-            body: objNames.contains(field.text) ? "Object with the Name " + field.text + " already exists!" : "Invalid Object Name!",
-            type: NotificationType.Error
-          });
+        NotificationManager.instance.addNotification({
+          title: "Problem Creating an Object",
+          body: objNames.contains(field.text) ? "Object with the Name " + field.text + " already exists!" : "Invalid Object Name!",
+          type: NotificationType.Error
+        });
       }
       else
       {
@@ -54,7 +57,7 @@ class NewObjDialog extends Dialog
 
         if (bitmap != null)
         {
-          var bitToLoad = stageEditorState.addBitmap(bitmap);
+          var bitToLoad = stageEditorState.addBitmap(bitmap, bitmapName);
           spr.loadGraphic(stageEditorState.bitmaps[bitToLoad]);
         }
         else
@@ -73,14 +76,14 @@ class NewObjDialog extends Dialog
         stageEditorState.updateArray();
         stageEditorState.saved = false;
 
-        NotificationManager.instance.addNotification(
-          {
-            title: "Object Creating Successful",
-            body: "Successfully created an Object with the Name " + field.text + "!",
-            type: NotificationType.Success
-          });
+        NotificationManager.instance.addNotification({
+          title: "Object Creating Successful",
+          body: "Successfully created an Object with the Name " + field.text + "!",
+          type: NotificationType.Success
+        });
       }
     }
     fn(done);
   }
 }
+#end

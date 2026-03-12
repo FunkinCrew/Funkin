@@ -7,8 +7,8 @@ import flixel.util.FlxTimer;
 @:nullSafety
 class FreeplayFlames extends FlxSpriteGroup
 {
-  var flameX(default, set):Float = (FlxG.width - 363) - funkin.ui.FullScreenScaleMode.gameNotchSize.x;
-  var flameY(default, set):Float = 103;
+  var flameX(default, set):Float = (FlxG.width - 367) - funkin.ui.FullScreenScaleMode.gameNotchSize.x;
+  var flameY(default, set):Float = 91;
   var flameSpreadX(default, set):Float = 29;
   var flameSpreadY(default, set):Float = 6;
 
@@ -30,7 +30,8 @@ class FreeplayFlames extends FlxSpriteGroup
       flameCount = 0;
 
       // sets the loop... maybe better way to do this lol!
-      flame.animation.onFinish.add(function(_) {
+      flame.animation.onFinish.add(function(_)
+      {
         flame.animation.play("flame", true, false, 2);
       });
       add(flame);
@@ -75,7 +76,8 @@ class FreeplayFlames extends FlxSpriteGroup
       {
         if (!flame.visible)
         {
-          var nextTimer:FlxTimer = new FlxTimer().start(flameTimer * visibleCount, function(currentTimer:FlxTimer) {
+          var nextTimer:FlxTimer = new FlxTimer().start(flameTimer * visibleCount, function(currentTimer:FlxTimer)
+          {
             if (i >= this.flameCount)
             {
               trace('EARLY EXIT');

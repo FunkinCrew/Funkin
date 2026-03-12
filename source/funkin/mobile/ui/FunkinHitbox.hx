@@ -43,10 +43,8 @@ class FunkinHint extends FunkinButton
    * - The second value corresponds to the alpha when the hint is not pressed.
    * - The third value corresponds to the duratuon it'll take to tween between the two values.
    */
-  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
-    INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],
-    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]
-  ];
+  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle,
+    Array<Float>> = [INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01], VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]];
 
   /**
    * Indicates whether the hint is pixel.
@@ -388,7 +386,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   public function getFirstHintByDirection(direction:NoteDirection):Null<FunkinHint>
   {
     var result:Null<FunkinHint> = null;
-    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+    forEachOfType(FunkinHint, function(hint:FunkinHint):Void
+    {
       @:privateAccess
       if (hint.noteDirection == direction) result = hint;
     });
@@ -497,19 +496,22 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     hint.animation.play('static', true);
 
-    hint.onDown.add(() -> {
+    hint.onDown.add(() ->
+    {
       hint.animation.play('press', true);
       hint.centerOrigin();
       hint.centerOffsets();
     });
 
-    hint.onUp.add(() -> {
+    hint.onUp.add(() ->
+    {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
     });
 
-    hint.onOut.add(() -> {
+    hint.onOut.add(() ->
+    {
       hint.animation.play('static', true);
       hint.centerOrigin();
       hint.centerOffsets();
@@ -537,11 +539,11 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     {
       final matrix:Matrix = new Matrix();
       matrix.createGradientBox(width, height, 0, 0, 0);
-      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
+      shape.graphics.beginGradientFill(RADIAL, [baseColor.rgb, baseColor.rgb], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
     }
     else
     {
-      shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
+      shape.graphics.beginFill(baseColor.rgb, baseColor.alphaFloat);
     }
 
     shape.graphics.drawRect(0, 0, width, height);
@@ -561,13 +563,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     final matrix:Matrix = new Matrix();
     matrix.createGradientBox(width, labelHeight, Math.PI / 2, 0, 0);
-    shape.graphics.beginGradientFill(LINEAR, [baseColor.to24Bit(), baseColor.to24Bit()], [baseColor.alphaFloat, 0], [0, 255], matrix);
+    shape.graphics.beginGradientFill(LINEAR, [baseColor.rgb, baseColor.rgb], [baseColor.alphaFloat, 0], [0, 255], matrix);
     shape.graphics.drawRect(0, 0, width, labelHeight);
     shape.graphics.endFill();
 
     final matrix:Matrix = new Matrix();
     matrix.createGradientBox(width, labelHeight, Math.PI / 2, 0, height - labelHeight);
-    shape.graphics.beginGradientFill(LINEAR, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [0, 255], matrix);
+    shape.graphics.beginGradientFill(LINEAR, [baseColor.rgb, baseColor.rgb], [0, baseColor.alphaFloat], [0, 255], matrix);
     shape.graphics.drawRect(0, height - labelHeight, width, labelHeight);
     shape.graphics.endFill();
 
@@ -592,11 +594,11 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     {
       final matrix:Matrix = new Matrix();
       matrix.createGradientBox(width, height, 0, 0, 0);
-      shape.graphics.beginGradientFill(RADIAL, [baseColor.to24Bit(), baseColor.to24Bit()], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
+      shape.graphics.beginGradientFill(RADIAL, [baseColor.rgb, baseColor.rgb], [0, baseColor.alphaFloat], [60, 255], matrix, PAD, RGB, 0);
     }
     else
     {
-      shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
+      shape.graphics.beginFill(baseColor.rgb, baseColor.alphaFloat);
     }
 
     shape.graphics.drawRect(width / 2, height / 2, width / 2, height / 2);
@@ -624,8 +626,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
     if (baseColor.brightness >= 0.75) baseColor.alphaFloat -= baseColor.brightness * 0.35;
 
     final shape:Shape = new Shape();
-    shape.graphics.beginFill(baseColor.to24Bit(), baseColor.alphaFloat);
-    shape.graphics.lineStyle(outlineThickness, brightColor.to24Bit(), brightColor.alpha);
+    shape.graphics.beginFill(baseColor.rgb, baseColor.alphaFloat);
+    shape.graphics.lineStyle(outlineThickness, brightColor.rgb, brightColor.alpha);
     shape.graphics.drawCircle(radius, radius, radius);
     shape.graphics.endFill();
 
@@ -675,7 +677,8 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   function set_isPixel(value:Bool):Bool
   {
     isPixel = value;
-    forEachOfType(FunkinHint, function(hint:FunkinHint):Void {
+    forEachOfType(FunkinHint, function(hint:FunkinHint):Void
+    {
       hint.isPixel = value;
     });
     return value;

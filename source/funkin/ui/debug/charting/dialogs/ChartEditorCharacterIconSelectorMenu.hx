@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import flixel.math.FlxPoint;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
@@ -32,16 +33,16 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     initialize(charType, lockPosition);
     this.alpha = 0;
     this.y -= 10;
-    FlxTween.tween(this, {alpha: 1, y: this.y + 10}, 0.2,
+    FlxTween.tween(this, {alpha: 1, y: this.y + 10}, 0.2, {
+      ease: FlxEase.quartOut,
+      onComplete: function(_)
       {
-        ease: FlxEase.quartOut,
-        onComplete: function(_) {
-          // Just focus the button FFS. Idk why, but the scrollbar doesn't update until after the tween finishes with this????
-          if (currentCharButton != null) currentCharButton.focus = true;
-          else
-            chartEditorState.error('Failure', 'Could not find character of ${currentCharId} in registry (Is the character in the registry?)');
-        }
-      });
+        // Just focus the button FFS. Idk why, but the scrollbar doesn't update until after the tween finishes with this????
+        if (currentCharButton != null) currentCharButton.focus = true;
+        else
+          chartEditorState.error('Failure', 'Could not find character of ${currentCharId} in registry (Is the character in the registry?)');
+      }
+    });
   }
 
   function initialize(charType:CharacterType, lockPosition:Bool)
@@ -112,24 +113,32 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
       charButton.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(charId));
       charButton.text = (charId != "") ? (charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}') : 'None';
 
-      charButton.onClick = _ -> {
+      charButton.onClick = _ ->
+      {
         switch (charType)
         {
-          case BF: chartEditorState.currentSongMetadata.playData.characters.player = charId;
+          case BF:
+            chartEditorState.currentSongMetadata.playData.characters.player = charId;
+            chartEditorState.playerPreviewDirty = true;
           case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
-          case DAD: chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
+          case DAD:
+            chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
+            chartEditorState.opponentPreviewDirty = true;
           default: throw 'Invalid charType: ' + charType;
         };
 
         defaultText = (charId != "") ? '${charData.name} [${charId}]' : 'None';
         chartEditorState.healthIconsDirty = true;
+
         chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
       };
 
-      charButton.onMouseOver = _ -> {
+      charButton.onMouseOver = _ ->
+      {
         charIconName.text = (charId != "") ? '${charData.name} [${charId}]' : 'None';
       };
-      charButton.onMouseOut = _ -> {
+      charButton.onMouseOut = _ ->
+      {
         charIconName.text = defaultText;
       };
       charGrid.addComponent(charButton);
@@ -147,3 +156,4 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     return menu;
   }
 }
+#end

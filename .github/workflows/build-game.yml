@@ -35,14 +35,14 @@ jobs:
             docker:
               - '.github/workflows/build-game.yml'
               - '**/Dockerfile'
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v8
         id: should-trigger
         with:
           result-encoding: string
           script: |
             const { payload } = context
             const changes = ${{ steps.filter.outputs.changes }}
-            const manual = payload.commits
+            const manual = payload?.commits
               .some(c => c.message.toLowerCase().replace(/\W/g, " ").includes("docker rebuild"))
 
             console.log({ payload, changes, manual, commits: payload.commits })
@@ -167,6 +167,11 @@ jobs:
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game (windows)
         if: ${{ matrix.target == 'windows' }}
         run: |
@@ -246,6 +251,11 @@ jobs:
           path: /usr/share/hxcpp
           key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+      - name: Populate .env
+        run: |
+          touch .env
+          grep API_NG_APP_ID .env || echo API_NG_APP_ID=${{ secrets.API_NG_APP_ID }} >> .env
+          grep API_NG_ENC_KEY .env || echo API_NG_ENC_KEY=${{ secrets.API_NG_ENC_KEY }} >> .env
       - name: Build game
         run: |
           haxelib run lime build ${{ matrix.target }} -v -release --times $BUILD_DEFINES

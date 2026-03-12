@@ -1,6 +1,6 @@
 package funkin.util;
 
-import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
+import funkin.ui.debug.GraphicCursorCross;
 import flixel.system.debug.interaction.Interaction;
 import flixel.system.debug.interaction.tools.Tool;
 
@@ -19,8 +19,10 @@ class TrackerToolButtonUtil extends Tool
     _name = "Add Tracker";
     setButton(GraphicCursorCross);
 
-    button.upHandler = function() {
-      brain.selectedItems.forEach(function(item) {
+    button.upHandler = function()
+    {
+      brain.selectedItems.forEach(function(item)
+      {
         FlxG.debugger.track(item);
       });
     };

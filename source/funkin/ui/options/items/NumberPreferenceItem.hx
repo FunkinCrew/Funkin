@@ -1,5 +1,6 @@
 package funkin.ui.options.items;
 
+import flixel.math.FlxMath;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
@@ -48,7 +49,8 @@ class NumberPreferenceItem extends TextMenuItem
   public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
       ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
   {
-    super(x, y, name, function() {
+    super(x, y, name, function()
+    {
       callback(this.currentValue);
     });
     lefthandText = new AtlasText(x + 15, y, formatted(defaultValue), AtlasFont.DEFAULT);
@@ -121,12 +123,16 @@ class NumberPreferenceItem extends TextMenuItem
     {
       var isBelowMin:Bool = currentValue - step * valueChangeMultiplier < min;
       currentValue = (currentValue - step * valueChangeMultiplier).clamp(min, max);
+      if (precision != 0) currentValue = FlxMath.roundDecimal(currentValue, precision);
+
       if (onChangeCallback != null && !isBelowMin) onChangeCallback(currentValue);
     }
     else if (shouldIncrease)
     {
       var isAboveMax:Bool = currentValue + step * valueChangeMultiplier > max;
       currentValue = (currentValue + step * valueChangeMultiplier).clamp(min, max);
+      if (precision != 0) currentValue = FlxMath.roundDecimal(currentValue, precision);
+
       if (onChangeCallback != null && !isAboveMax) onChangeCallback(currentValue);
     }
   }

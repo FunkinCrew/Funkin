@@ -105,9 +105,9 @@ class NoteSprite extends FunkinSprite
   public var noteData:SongNoteData;
 
   /**
-   * If this note kind is scoreable (i.e., counted towards score and accuracy)
-   * Only accessible in scripts
-   * Defaults to true
+   * Set this to `false` to disable scoring for this note.
+   * The note will no longer count towards ratings, points, or accuracy.
+   * @default `true` to enable scoring.
    */
   public var scoreable:Bool = true;
 

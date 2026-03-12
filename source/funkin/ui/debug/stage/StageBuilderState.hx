@@ -1,5 +1,6 @@
 package funkin.ui.debug.stage;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -93,7 +94,8 @@ class StageBuilderState extends MusicBeatState
     hudGrp.add(saveSceneBtn);
 
     #if desktop
-    FlxG.stage.window.onDropFile.add(function(path:String) {
+    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float)
+    {
       trace("DROPPED FILE FROM: " + Std.string(path));
 
       var fileName:String = path.split('\\').pop();
@@ -111,7 +113,8 @@ class StageBuilderState extends MusicBeatState
 
       fo.write(sys.io.File.getBytes(path));
 
-      new FlxTimer().start(0.2, function(tmr) {
+      new FlxTimer().start(0.2, function(tmr)
+      {
         var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y, sprDragShitFunc);
         awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
@@ -206,10 +209,7 @@ class StageBuilderState extends MusicBeatState
 
     if (curTool == GRABBING && FlxG.mouse.justReleased)
     {
-      moveSprPos([
-        curSelectedSpr.x - curSelectedSpr.oldPos.x,
-        curSelectedSpr.y - curSelectedSpr.oldPos.y
-      ]);
+      moveSprPos([curSelectedSpr.x - curSelectedSpr.oldPos.x, curSelectedSpr.y - curSelectedSpr.oldPos.y]);
     }
 
     if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
@@ -430,3 +430,4 @@ enum TOOLS
   GRABBING;
   BOYFRIEND;
 }
+#end

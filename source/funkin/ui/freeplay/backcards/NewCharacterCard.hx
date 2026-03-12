@@ -6,15 +6,12 @@ import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.modding.events.ScriptEvent;
 import openfl.display.BlendMode;
 import funkin.util.BitmapUtil;
 
 class NewCharacterCard extends BackingCard
 {
-  var confirmAtlas:FlxAtlasSprite;
-
   var darkBg:FlxSprite;
   var lightLayer:FlxSprite;
   var multiply1:FlxSprite;
@@ -37,38 +34,32 @@ class NewCharacterCard extends BackingCard
   {
     super.applyExitMovers(exitMovers, exitMoversCharSel);
     if (exitMovers == null || exitMoversCharSel == null) return;
-    exitMovers.set([friendFoe],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-    exitMovers.set([newUnlock1],
-      {
-        x: -newUnlock1.width * 2,
-        y: newUnlock1.y,
-        speed: 0.4,
-        wait: 0
-      });
-    exitMovers.set([waiting],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4,
-      });
-    exitMovers.set([newUnlock2],
-      {
-        x: -newUnlock2.width * 2,
-        speed: 0.5,
-      });
-    exitMovers.set([friendFoe2],
-      {
-        x: FlxG.width * 2,
-        speed: 0.4
-      });
-    exitMovers.set([newUnlock3],
-      {
-        x: -newUnlock3.width * 2,
-        speed: 0.3
-      });
+    exitMovers.set([friendFoe], {
+      x: FlxG.width * 2,
+      speed: 0.4,
+    });
+    exitMovers.set([newUnlock1], {
+      x: -newUnlock1.width * 2,
+      y: newUnlock1.y,
+      speed: 0.4,
+      wait: 0
+    });
+    exitMovers.set([waiting], {
+      x: FlxG.width * 2,
+      speed: 0.4,
+    });
+    exitMovers.set([newUnlock2], {
+      x: -newUnlock2.width * 2,
+      speed: 0.5,
+    });
+    exitMovers.set([friendFoe2], {
+      x: FlxG.width * 2,
+      speed: 0.4
+    });
+    exitMovers.set([newUnlock3], {
+      x: -newUnlock3.width * 2,
+      speed: 0.3
+    });
 
     exitMoversCharSel.set([friendFoe, newUnlock1, waiting, newUnlock2, friendFoe2, newUnlock3, multiplyBar], {
       y: -60,
@@ -134,27 +125,27 @@ class NewCharacterCard extends BackingCard
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
     add(darkBg);
 
-    friendFoe.funnyColor = 0xFF139376;
+    friendFoe.color = 0xFF139376;
     friendFoe.speed = -4;
     add(friendFoe);
 
-    newUnlock1.funnyColor = 0xFF99BDF2;
+    newUnlock1.color = 0xFF99BDF2;
     newUnlock1.speed = 2;
     add(newUnlock1);
 
-    waiting.funnyColor = 0xFF40EA84;
+    waiting.color = 0xFF40EA84;
     waiting.speed = -2;
     add(waiting);
 
-    newUnlock2.funnyColor = 0xFF99BDF2;
+    newUnlock2.color = 0xFF99BDF2;
     newUnlock2.speed = 2;
     add(newUnlock2);
 
-    friendFoe2.funnyColor = 0xFF139376;
+    friendFoe2.color = 0xFF139376;
     friendFoe2.speed = -4;
     add(friendFoe2);
 
-    newUnlock3.funnyColor = 0xFF99BDF2;
+    newUnlock3.color = 0xFF99BDF2;
     newUnlock3.speed = 2;
     add(newUnlock3);
 
@@ -260,11 +251,5 @@ class NewCharacterCard extends BackingCard
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
     FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
-  }
-
-  override public function confirm():Void
-  {
-    // confirmAtlas.visible = true;
-    // confirmAtlas.anim.play("");
   }
 }

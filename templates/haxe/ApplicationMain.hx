@@ -7,8 +7,16 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
+#if cpp
+import hxgamemode.GamemodeClient;
+#end
+
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
+#end
+
+#if (windows && cpp)
+using funkin.util.WindowUtil;
 #end
 
 @:access(lime.app.Application)
@@ -19,8 +27,17 @@ class ApplicationIcon extends lime.graphics.Image {}
 class ApplicationMain
 {
   #if !macro
-  public static function main()
+
+  public static function main():Void
   {
+    #if (windows && cpp)
+    // Disable the Windows "ghosting" effect that dims unresponsive windows.
+    funkin.external.windows.WinAPI.disableWindowsGhosting();
+
+    // Disable Windows error reporting (avoids sending bug reports to Microsoft).
+    funkin.external.windows.WinAPI.disableErrorReporting();
+    #end
+
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
     #if (js && html5)
@@ -34,6 +51,14 @@ class ApplicationMain
 
   public static function create(config):Void
   {
+    #if (linux && cpp)
+    GamemodeClient.request_start();
+    #end
+
+    ::if (WIN_ORIENTATION != "auto")::
+    lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
+    ::end::
+
     final appMeta:Map<String, String> = [];
 
     appMeta.set("build", "::meta.buildNumber::");
@@ -66,6 +91,7 @@ class ApplicationMain
     var attributes:lime.ui.WindowAttributes = {
       allowHighDPI: ::allowHighDPI::,
       alwaysOnTop: ::alwaysOnTop::,
+      transparent: ::transparent::,
       borderless: ::borderless::,
       // display: ::display::,
       element: null,
@@ -125,20 +151,6 @@ class ApplicationMain
     app.window.frameRate = ::WIN_FPS::;
     #end
 
-    #if (windows && cpp)
-    // Disable the Windows "ghosting" effect that dims unresponsive windows.
-    funkin.external.windows.WinAPI.disableWindowsGhosting();
-
-    // Disable Windows error reporting (avoids sending bug reports to Microsoft).
-    funkin.external.windows.WinAPI.disableErrorReporting();
-
-    // Enable dark mode if the system theme is set to dark.
-    if (funkin.external.windows.WinAPI.isSystemDarkMode())
-    {
-      funkin.external.windows.WinAPI.setDarkMode(true);
-    }
-    #end
-
     var preloader = getPreloader();
     app.preloader.onProgress.add (function(loaded, total)
     {
@@ -169,6 +181,10 @@ class ApplicationMain
 
     #if (sys && !ios && !nodejs && !emscripten)
     lime.system.System.exit(result);
+    #end
+
+    #if (linux && cpp)
+    GamemodeClient.request_end();
     #end
   }
 

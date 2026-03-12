@@ -46,11 +46,13 @@ class InAppPurchasesUtil
   public static function init():Void
   {
     #if android
-    IAPAndroid.onLog.add(function(message:String):Void {
+    IAPAndroid.onLog.add(function(message:String):Void
+    {
       trace(message);
     });
 
-    IAPAndroid.onBillingSetupFinished.add(function(result:IAPResult):Void {
+    IAPAndroid.onBillingSetupFinished.add(function(result:IAPResult):Void
+    {
       if (result.getResponseCode() != IAPResponseCode.OK)
       {
         trace('Billing setup failed "$result"!');
@@ -62,11 +64,13 @@ class InAppPurchasesUtil
       IAPAndroid.queryProductDetails([UPGRADE_PRODUCT_ID]);
     });
 
-    IAPAndroid.onBillingServiceDisconnected.add(function():Void {
+    IAPAndroid.onBillingServiceDisconnected.add(function():Void
+    {
       trace("Billing service disconnected!");
     });
 
-    IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void {
+    IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void
+    {
       if (result.getResponseCode() == IAPResponseCode.OK)
       {
         hasInitialized = true;
@@ -79,7 +83,8 @@ class InAppPurchasesUtil
       }
     });
 
-    IAPAndroid.onQueryPurchasesResponse.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void {
+    IAPAndroid.onQueryPurchasesResponse.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void
+    {
       if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
       else
       {
@@ -87,7 +92,8 @@ class InAppPurchasesUtil
       }
     });
 
-    IAPAndroid.onPurchasesUpdated.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void {
+    IAPAndroid.onPurchasesUpdated.add(function(result:IAPResult, purchases:Array<IAPPurchase>):Void
+    {
       if (result.getResponseCode() == IAPResponseCode.OK) handlePurchases(purchases);
       else
       {
@@ -95,7 +101,8 @@ class InAppPurchasesUtil
       }
     });
 
-    IAPAndroid.onAcknowledgePurchaseResponse.add(function(result:IAPResult):Void {
+    IAPAndroid.onAcknowledgePurchaseResponse.add(function(result:IAPResult):Void
+    {
       if (result.getResponseCode() == IAPResponseCode.OK) trace('Purchase acknowledged successfully!');
       else
       {
@@ -107,18 +114,21 @@ class InAppPurchasesUtil
 
     IAPAndroid.startConnection();
     #else
-    IAPIOS.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void {
+    IAPIOS.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void
+    {
       if (productDetails != null)
       {
         currentProductDetails = productDetails;
       }
     });
 
-    IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void {
+    IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void
+    {
       hasInitialized = false;
     });
 
-    IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
+    IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void
+    {
       handlePurchases(purchases);
       trace("iOS purchases updated: " + purchases.length);
       hasInitialized = true;

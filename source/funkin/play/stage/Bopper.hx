@@ -2,6 +2,7 @@ package funkin.play.stage;
 
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -168,7 +169,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     }
   }
 
-  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   /**
    * Called every `danceEvery` beats of the song.
@@ -201,13 +204,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     {
       playAnimation('idle$idleSuffix', forceRestart);
     }
-  }
-
-  public function hasAnimation(id:String):Bool
-  {
-    if (this.animation == null) return false;
-
-    return this.animation.getByName(id) != null;
   }
 
   /**
@@ -266,7 +262,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if ((!canPlayOtherAnims))
     {
       var id = name;
-      if (getCurrentAnimation() == id && restart) {}
+      if (getCurrentAnimation() == id && restart)
+      {
+      }
       else if (ignoreExclusionPref != null && ignoreExclusionPref.length > 0)
       {
         var detected:Bool = false;
@@ -316,7 +314,8 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     applyAnimationOffsets(correctName);
 
     canPlayOtherAnims = false;
-    forceAnimationTimer.start(duration, (timer) -> {
+    forceAnimationTimer.start(duration, (timer) ->
+    {
       canPlayOtherAnims = true;
     }, 1);
   }
@@ -327,25 +326,9 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     this.animOffsets = offsets;
   }
 
-  public function isAnimationFinished():Bool
-  {
-    return this.animation?.finished ?? false;
-  }
-
   public function setAnimationOffsets(name:String, xOffset:Float, yOffset:Float):Void
   {
     animationOffsets.set(name, [xOffset, yOffset]);
-  }
-
-  /**
-   * Returns the name of the animation that is currently playing.
-   * If no animation is playing (usually this means the character is BROKEN!),
-   *   returns an empty string to prevent NPEs.
-   */
-  public function getCurrentAnimation():String
-  {
-    if (this.animation == null || this.animation.curAnim == null) return "";
-    return this.animation.curAnim.name;
   }
 
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
@@ -357,35 +340,67 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     return output;
   }
 
-  public function onPause(event:PauseScriptEvent) {}
+  public function onPause(event:PauseScriptEvent)
+  {
+  }
 
-  public function onResume(event:ScriptEvent) {}
+  public function onResume(event:ScriptEvent)
+  {
+  }
 
-  public function onSongStart(event:ScriptEvent) {}
+  public function onSongStart(event:ScriptEvent)
+  {
+  }
 
-  public function onSongEnd(event:ScriptEvent) {}
+  public function onSongEnd(event:ScriptEvent)
+  {
+  }
 
-  public function onGameOver(event:ScriptEvent) {}
+  public function onGameOver(event:ScriptEvent)
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent) {}
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent) {}
+  public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
 
-  public function onSongEvent(event:SongEventScriptEvent) {}
+  public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+  {
+  }
 
-  public function onCountdownStart(event:CountdownScriptEvent) {}
+  public function onCountdownStart(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownStep(event:CountdownScriptEvent) {}
+  public function onCountdownStep(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownEnd(event:CountdownScriptEvent) {}
+  public function onCountdownEnd(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onSongLoaded(event:SongLoadScriptEvent) {}
+  public function onSongLoaded(event:SongLoadScriptEvent)
+  {
+  }
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:SongRetryEvent)
+  {
+  }
 }

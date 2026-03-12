@@ -14,6 +14,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.input.Controls;
+import funkin.ui.FullScreenScaleMode;
 #if mobile
 import funkin.graphics.FunkinCamera;
 import funkin.mobile.ui.FunkinHitbox;
@@ -32,8 +33,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
@@ -55,6 +55,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function new()
   {
+    if (FullScreenScaleMode.instance != null) FullScreenScaleMode.instance.onMeasurePostAwait();
+
     super();
 
     initCallbacks();

@@ -6,4 +6,6 @@ package funkin.play.stage;
  * and call `super('stageID')` in the constructor.
  */
 @:hscriptClass
-class ScriptedStage extends funkin.play.stage.Stage implements polymod.hscript.HScriptedClass {}
+class ScriptedStage extends funkin.play.stage.Stage implements polymod.hscript.HScriptedClass
+{
+}

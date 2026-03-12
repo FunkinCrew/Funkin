@@ -5,27 +5,40 @@ import io.newgrounds.objects.Medal as MedalData;
 import funkin.util.plugins.NewgroundsMedalPlugin;
 import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
-import io.newgrounds.utils.MedalList;
-import haxe.Json;
 
+/**
+ * Handles interactions with the medals on the Newgrounds website.
+ */
 @:nullSafety
 class Medals
 {
+  /**
+   * A cache for the medal data fetched from the local `medals.json`.
+   */
   public static var medalJSON:Array<MedalJSON> = [];
 
+  /**
+   * Retrieve the leaderboard data via the Newgrounds API.
+   * @return The leaderboard data.
+   */
   public static function listMedalData():Map<Medal, MedalData>
   {
     var medalList = NewgroundsClient.instance.medals;
 
     if (medalList == null)
     {
-      trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
       return [];
     }
 
     return @:privateAccess medalList._map?.copy() ?? [];
   }
 
+  /**
+   * Awards the player a specific medal, updating their Newgrounds account and
+   * displaying the corresponding popup.
+   * @param medal The medal to be awarded.
+   */
   public static function award(medal:Medal):Void
   {
     if (NewgroundsClient.instance.isLoggedIn())
@@ -34,18 +47,19 @@ class Medals
       @:privateAccess
       if (medalData == null || medalData._data == null)
       {
-        trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Could not retrieve data for medal: ${medal}');
         return;
       }
       else if (!medalData.unlocked)
       {
-        trace('[NEWGROUNDS] Awarding medal (${medal}).');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' Awarding medal (${medal}).');
         medalData.sendUnlock();
 
         // Play the medal unlock animation, but only if the user has not already unlocked it.
         #if html5
         // Web builds support parsing the bitmap data from the URL directly.
-        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData)
+        {
           var medalGraphic = FlxGraphic.fromBitmapData(bmp);
           medalGraphic.persist = true;
           NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
@@ -55,7 +69,8 @@ class Medals
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         // TODO: Wait, don't they give us the medal icon?
 
-        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal) {
+        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal)
+        {
           #if FEATURE_NEWGROUNDS_TESTING_MEDALS
           return medal == jsonMedal.idTest;
           #else
@@ -81,15 +96,18 @@ class Medals
       }
       else
       {
-        trace('[NEWGROUNDS] User already has medal (${medal}).');
+        trace(' NEWGROUNDS '.bold().bg_orange() + ' User already has medal (${medal}).');
       }
     }
     else
     {
-      trace('[NEWGROUNDS] Attempted to award medal (${medal}), but not logged into Newgrounds.');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Attempted to award medal (${medal}), but not logged into Newgrounds.');
     }
   }
 
+  /**
+   * Loads the full medal data from local JSON data.
+   */
   public static function loadMedalJSON():Void
   {
     var jsonPath = Paths.json('medals');
@@ -98,12 +116,12 @@ class Medals
 
     var parser = new json2object.JsonParser<Array<MedalJSON>>();
     parser.ignoreUnknownVariables = false;
-    trace('[NEWGROUNDS] Parsing local medal data...');
+    trace(' NEWGROUNDS '.bold().bg_orange() + ' Parsing local medal data...');
     parser.fromJson(jsonString, jsonPath);
 
     if (parser.errors.length > 0)
     {
-      trace('[NEWGROUNDS] Failed to parse local medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to parse local medal data!');
       for (error in parser.errors)
         funkin.data.DataError.printError(error);
       medalJSON = [];
@@ -114,13 +132,18 @@ class Medals
     }
   }
 
+  /**
+   * Fetches the data for a medal from the Newgrounds API.
+   * @param medal The ID of the medal to fetch.
+   * @return The fetched medal data.
+   */
   public static function fetchMedalData(medal:Medal):Null<FetchedMedalData>
   {
     var medalData:Null<MedalData> = listMedalData().get(medal.getId());
     @:privateAccess
     if (medalData == null || medalData._data == null)
     {
-      trace('[NEWGROUNDS] Could not retrieve data for medal: ${medal}');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Could not retrieve data for medal: ${medal}');
       return null;
     }
 
@@ -136,12 +159,16 @@ class Medals
     }
   }
 
+  /**
+   * Awards the player a medal for completing a specific story level.
+   * @param id The level ID for the story level that was completed.
+   */
   public static function awardStoryLevel(id:String):Void
   {
     var medal:Medal = Medal.getMedalByStoryLevel(id);
     if (medal == Medal.Unknown)
     {
-      trace('[NEWGROUNDS] Story level does not have a medal! (${id}).');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Story level does not have a medal! (${id}).');
       return;
     }
     Medals.award(medal);
@@ -153,16 +180,30 @@ class Medals
  */
 class MedalsSandboxed
 {
+  /**
+   * Fetches the data for a medal from the Newgrounds API.
+   * @param medal The ID of the medal to fetch.
+   * @return The fetched medal data.
+   */
   public static function fetchMedalData(medal:Medal):Null<FetchedMedalData>
   {
     return Medals.fetchMedalData(medal);
   }
 
+  /**
+   * Retrieves the medal for completing a specific story level.
+   * @param id The ID for the story level that was completed.
+   * @return The medal to award.
+   */
   public static function getMedalByStoryLevel(id:String):Medal
   {
     return Medal.getMedalByStoryLevel(id);
   }
 
+  /**
+   * Lists all medals aside from the `Unknown` one.
+   * @return An array of all medals.
+   */
   public static function getAllMedals():Array<Medal>
   {
     return Medal.getAllMedals();
@@ -211,140 +252,157 @@ typedef MedalJSON =
   var icon:String;
 }
 
+/**
+ * An enumeration of all the game's medals.
+ */
 enum abstract Medal(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid medal.
    */
-  var Unknown = -1;
+  public var Unknown = -1;
 
   /**
    * I Said Funkin'!
    * Start the game for the first time.
    */
-  var StartGame = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80894 #else 60960 #end;
+  public var StartGame = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80894 #else 60960 #end;
 
   /**
    * That's How You Do It!
-   * Beat Tutoria l in Story Mode (on any difficulty).
+   * Beat Tutorial in Story Mode (on any difficulty).
    */
-  var StoryTutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80906 #else 83647 #end;
+  public var StoryTutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80906 #else 83647 #end;
 
   /**
    * More Like Daddy Queerest
    * Beat Week 1 in Story Mode (on any difficulty).
    */
-  var StoryWeek1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80899 #else 60961 #end;
+  public var StoryWeek1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80899 #else 60961 #end;
 
   /**
    * IT IS THE SPOOKY MONTH
    * Beat Week 2 in Story Mode (on any difficulty).
    */
-  var StoryWeek2 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80900 #else 83648 #end;
+  public var StoryWeek2 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80900 #else 83648 #end;
 
   /**
    * Pico Funny
    * Beat Week 3 in Story Mode (on any difficulty).
    */
-  var StoryWeek3 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80901 #else 83649 #end;
+  public var StoryWeek3 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80901 #else 83649 #end;
 
   /**
    * Mommy Must Murder
    * Beat Week 4 in Story Mode (on any difficulty).
    */
-  var StoryWeek4 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80902 #else 83650 #end;
+  public var StoryWeek4 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80902 #else 83650 #end;
 
   /**
    * Yule Tide Joy
    * Beat Week 5 in Story Mode (on any difficulty).
    */
-  var StoryWeek5 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80903 #else 83651 #end;
+  public var StoryWeek5 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80903 #else 83651 #end;
 
   /**
    * A Visual Novelty
    * Beat Week 6 in Story Mode (on any difficulty).
    */
-  var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80904 #else 83652 #end;
+  public var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80904 #else 83652 #end;
 
   /**
    * I <3 JohnnyUtah
    * Beat Week 7 in Story Mode (on any difficulty).
    */
-  var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80905 #else 83653 #end;
+  public var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80905 #else 83653 #end;
 
   /**
    * Yo, Really Think So?
    * Beat Weekend 1 in Story Mode (on any difficulty).
    */
-  var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80907 #else 83654 #end;
+  public var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80907 #else 83654 #end;
+
+  /**
+   * Eat It Up!
+   * Beat Collab 1 in Story Mode (on any difficulty).
+   */
+  public var StoryCollab1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 87697 #else 87714 #end;
 
   /**
    * Stay Funky
    * Press TAB in Freeplay and unlock your first character.
    */
-  var CharSelect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83633 #else 83655 #end;
+  public var CharSelect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83633 #else 83655 #end;
 
   /**
    * A Challenger Appears
    * Beat any Pico remix in Freeplay (on any difficulty).
    */
-  var FreeplayPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80910 #else 83656 #end;
+  public var FreeplayPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80910 #else 83656 #end;
 
   /**
    * De-Stressing
    * Beat Stress (Pico Mix) in Freeplay (on Normal difficulty or higher).
    */
-  var FreeplayStressPico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83629 #else 83657 #end;
+  public var FreeplayStressPico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 83629 #else 83657 #end;
 
   /**
    * L
    * Earn a Loss rating on any song (on any difficulty).
    */
-  var LossRating = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80915 #else 83658 #end;
+  public var LossRating = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80915 #else 83658 #end;
 
   /**
    * Getting Freaky
    * Earn a Perfect rating on any song on Hard difficulty or higher.
    * NOTE: Should also be awarded for a Gold Perfect because otherwise that would be annoying.
    */
-  var PerfectRatingHard = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80908 #else 83659 #end;
+  public var PerfectRatingHard = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80908 #else 83659 #end;
 
   /**
    * You Should Drink More Water
    * Earn a Golden Perfect rating on any song on Hard difficulty or higher.
    */
-  var GoldPerfectRatingHard = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80909 #else 83660 #end;
+  public var GoldPerfectRatingHard = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80909 #else 83660 #end;
 
   /**
    * Harder Than Hard
    * Beat any Erect remix in Freeplay on Erect or Nightmare difficulty.
    */
-  var ErectDifficulty = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80911 #else 83661 #end;
+  public var ErectDifficulty = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80911 #else 83661 #end;
 
   /**
    * The Rap God
    * Earn a Gold Perfect rating on any song on Nightmare difficulty.
    */
-  var GoldPerfectRatingNightmare = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80912 #else 83662 #end;
+  public var GoldPerfectRatingNightmare = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80912 #else 83662 #end;
 
   /**
    * Just like the game!
    * Get freaky on a Friday.
    * NOTE: You must beat at least one song on any difficulty.
    */
-  var FridayNight = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80913 #else 61034 #end;
+  public var FridayNight = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80913 #else 61034 #end;
 
   /**
    * Nice
    * Earn a rating of EXACTLY 69% (good luck).
    */
-  var Nice = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80914 #else 83646 #end;
+  public var Nice = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 80914 #else 83646 #end;
 
+  /**
+   * @return The internal ID for the medal.
+   */
   public function getId():Int
   {
     return this;
   }
 
+  /**
+   * Retrieves the medal for completing a specific story level.
+   * @param levelId The ID for the story level that was completed.
+   * @return The medal to award.
+   */
   public static function getMedalByStoryLevel(levelId:String):Medal
   {
     switch (levelId)
@@ -367,6 +425,8 @@ enum abstract Medal(Int) from Int to Int
         return StoryWeek7;
       case "weekend1":
         return StoryWeekend1;
+      case "sserafim":
+        return StoryCollab1;
       default:
         return Unknown;
     }
@@ -374,30 +434,11 @@ enum abstract Medal(Int) from Int to Int
 
   /**
    * Lists all medals aside from the `Unknown` one.
+   * @return An array of all medals.
    */
-  public static function getAllMedals()
+  public static function getAllMedals():Array<Medal>
   {
-    return [
-      StartGame,
-      StoryTutorial,
-      StoryWeek1,
-      StoryWeek2,
-      StoryWeek3,
-      StoryWeek4,
-      StoryWeek5,
-      StoryWeek6,
-      StoryWeek7,
-      StoryWeekend1,
-      CharSelect,
-      FreeplayPicoMix,
-      FreeplayStressPico,
-      LossRating,
-      PerfectRatingHard,
-      GoldPerfectRatingHard,
-      ErectDifficulty,
-      GoldPerfectRatingNightmare,
-      FridayNight,
-      Nice
-    ];
+    return
+      [StartGame, StoryTutorial, StoryWeek1, StoryWeek2, StoryWeek3, StoryWeek4, StoryWeek5, StoryWeek6, StoryWeek7, StoryWeekend1, CharSelect, FreeplayPicoMix, FreeplayStressPico, LossRating, PerfectRatingHard, GoldPerfectRatingHard, ErectDifficulty, GoldPerfectRatingNightmare, FridayNight, Nice];
   }
 }

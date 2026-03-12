@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import haxe.ui.RuntimeComponentBuilder;
 import funkin.ui.haxeui.components.CharacterPlayer;
@@ -113,10 +114,7 @@ class ChartEditorToolboxHandler
   {
     var toolbox:Null<ChartEditorBaseToolbox> = cast state.activeToolboxes.get(id);
 
-    if (toolbox == null)
-    {
-      toolbox = cast initToolbox(state, id);
-    }
+    if (toolbox == null) return;
 
     if (toolbox != null)
     {
@@ -128,9 +126,13 @@ class ChartEditorToolboxHandler
     }
   }
 
-  public static function rememberOpenToolboxes(state:ChartEditorState):Void {}
+  public static function rememberOpenToolboxes(state:ChartEditorState):Void
+  {
+  }
 
-  public static function openRememberedToolboxes(state:ChartEditorState):Void {}
+  public static function openRememberedToolboxes(state:ChartEditorState):Void
+  {
+  }
 
   public static function hideAllToolboxes(state:ChartEditorState):Void
   {
@@ -203,14 +205,14 @@ class ChartEditorToolboxHandler
    * @param id The asset ID of the toolbox layout.
    * @return The toolbox.
    */
-  public static function getToolbox_OLD(state:ChartEditorState, id:String):Null<CollapsibleDialog>
+  public static function getToolboxUnCast(state:ChartEditorState, id:String):Null<CollapsibleDialog>
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
 
     // Initialize the toolbox without showing it.
     if (toolbox == null) toolbox = initToolbox(state, id);
 
-    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolbox_OLD() - Could not retrieve or build toolbox: $id';
+    if (toolbox == null) throw 'ChartEditorToolboxHandler.getToolboxUnCast() - Could not retrieve or build toolbox: $id';
 
     return toolbox;
   }
@@ -236,9 +238,13 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxPlaytestProperties(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
   static function buildToolboxPlaytestPropertiesLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -247,7 +253,8 @@ class ChartEditorToolboxHandler
 
     if (toolbox == null) return null;
 
-    toolbox.onDialogClosed = function(_) {
+    toolbox.onDialogClosed = function(_)
+    {
       state.menubarItemToggleToolboxPlaytestProperties.selected = false;
     }
 
@@ -256,7 +263,8 @@ class ChartEditorToolboxHandler
 
     checkboxPracticeMode.selected = state.playtestPracticeMode;
 
-    checkboxPracticeMode.onClick = _ -> {
+    checkboxPracticeMode.onClick = _ ->
+    {
       state.playtestPracticeMode = checkboxPracticeMode.selected;
     };
 
@@ -266,7 +274,8 @@ class ChartEditorToolboxHandler
 
     checkboxStartTime.selected = state.playtestStartTime;
 
-    checkboxStartTime.onClick = _ -> {
+    checkboxStartTime.onClick = _ ->
+    {
       state.playtestStartTime = checkboxStartTime.selected;
     };
 
@@ -275,8 +284,20 @@ class ChartEditorToolboxHandler
 
     checkboxBotPlay.selected = state.playtestBotPlayMode;
 
-    checkboxBotPlay.onClick = _ -> {
+    checkboxBotPlay.onClick = _ ->
+    {
       state.playtestBotPlayMode = checkboxBotPlay.selected;
+    };
+
+    var checkboxShowResults:Null<CheckBox> = toolbox.findComponent('playtestShowResultsCheckbox', CheckBox);
+    if (checkboxShowResults == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestShowResultsCheckbox component.';
+
+    checkboxShowResults.selected = state.playtestShowResults;
+
+    checkboxShowResults.onClick = _ ->
+    {
+      state.playtestShowResults = checkboxShowResults.selected;
     };
 
     var checkboxSongScripts:Null<CheckBox> = toolbox.findComponent('playtestSongScriptsCheckbox', CheckBox);
@@ -286,8 +307,21 @@ class ChartEditorToolboxHandler
 
     state.playtestSongScripts = checkboxSongScripts.selected;
 
-    checkboxSongScripts.onClick = _ -> {
+    checkboxSongScripts.onClick = _ ->
+    {
       state.playtestSongScripts = checkboxSongScripts.selected;
+    };
+
+    var checkboxAudioSettings:Null<CheckBox> = toolbox.findComponent('playtestAudioSettingsCheckbox', CheckBox);
+
+    if (checkboxAudioSettings == null)
+      throw 'ChartEditorToolboxHandler.buildToolboxPlaytestPropertiesLayout() - Could not find playtestAudioSettingsCheckbox component.';
+
+    state.playtestAudioSettings = checkboxAudioSettings.selected;
+
+    checkboxAudioSettings.onClick = _ ->
+    {
+      state.playtestAudioSettings = checkboxAudioSettings.selected;
     };
 
     return toolbox;
@@ -345,10 +379,11 @@ class ChartEditorToolboxHandler
     if (toolbox == null) return null;
 
     // Starting position.
-    toolbox.x = 200;
-    toolbox.y = 350;
+    toolbox.x = 700;
+    toolbox.y = 150;
 
-    toolbox.onDialogClosed = function(event:DialogEvent) {
+    toolbox.onDialogClosed = function(event:DialogEvent)
+    {
       state.menubarItemToggleToolboxPlayerPreview.selected = false;
     }
 
@@ -363,9 +398,13 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxPlayerPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
   static function buildToolboxOpponentPreviewLayout(state:ChartEditorState):Null<CollapsibleDialog>
   {
@@ -375,14 +414,15 @@ class ChartEditorToolboxHandler
 
     // Starting position.
     toolbox.x = 200;
-    toolbox.y = 350;
+    toolbox.y = 150;
 
-    toolbox.onDialogClosed = (event:DialogEvent) -> {
+    toolbox.onDialogClosed = (event:DialogEvent) ->
+    {
       state.menubarItemToggleToolboxOpponentPreview.selected = false;
     }
 
-    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charPlayer');
-    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charPlayer component.';
+    var charPlayer:Null<CharacterPlayer> = toolbox.findComponent('charOpponent');
+    if (charPlayer == null) throw 'ChartEditorToolboxHandler.buildToolboxOpponentPreviewLayout() - Could not find charOpponent component.';
     // TODO: We need to implement character swapping in ChartEditorState.
     charPlayer.loadCharacter('dad');
     charPlayer.characterType = CharacterType.DAD;
@@ -392,7 +432,12 @@ class ChartEditorToolboxHandler
     return toolbox;
   }
 
-  static function onShowToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onShowToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 
-  static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void {}
+  static function onHideToolboxOpponentPreview(state:ChartEditorState, toolbox:CollapsibleDialog):Void
+  {
+  }
 }
+#end

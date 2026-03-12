@@ -14,7 +14,7 @@ import funkin.ui.FullScreenScaleMode;
 import flixel.FlxG;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import flixel.addons.display.FlxPieDial;
+import flixel.addons.display.FlxRadialGauge;
 
 /**
  * After 40 seconds of inactivity on the title screen,
@@ -30,10 +30,8 @@ class AttractState extends MusicBeatState
    * @param path The path to the video to play.
    * This used
    */
-  static final VIDEO_PATHS:Array<{path:String}> = [
-    {path: Paths.videos('mobileRelease')},
-    {path: Paths.videos('boyfriendEverywhere')},
-  ];
+  static final VIDEO_PATHS:Array<
+    {path:String}> = [{path: Paths.videos('riftCollabTrailer')}, {path: Paths.videos('mobileRelease')}, {path: Paths.videos('boyfriendEverywhere')}];
 
   static var nextVideoToPlay:Int = 0;
 
@@ -42,7 +40,7 @@ class AttractState extends MusicBeatState
    */
   static final HOLD_TIME:Float = 1.5;
 
-  var pie:FlxPieDial;
+  var pie:FlxRadialGauge;
   var holdDelta:Float = 0;
 
   public override function create():Void
@@ -66,11 +64,12 @@ class AttractState extends MusicBeatState
     playVideoNative(videoPath);
     #end
 
-    pie = new FlxPieDial(0, 0, 40, FlxColor.WHITE, 45, CIRCLE, true, 20);
+    pie = new FlxRadialGauge();
+    pie.makeShapeGraphic(CIRCLE, 40, 20, FlxColor.WHITE);
+    pie.replaceColor(FlxColor.BLACK, 0x8AC5C4C4);
     pie.x = FlxG.width - ((pie.width * 1.5) + FullScreenScaleMode.gameNotchSize.x);
     pie.y = FlxG.height - (pie.height * 1.5);
     pie.amount = 0;
-    pie.replaceColor(FlxColor.BLACK, 0x8AC5C4C4);
     add(pie);
   }
 
@@ -125,13 +124,15 @@ class AttractState extends MusicBeatState
     {
       vid.zIndex = 0;
       vid.active = false;
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void
+      {
         trace('[VLC] Encountered an error: $msg');
 
         onAttractEnd();
       });
       vid.bitmap.onEndReached.add(onAttractEnd);
-      vid.bitmap.onFormatSetup.add(() -> {
+      vid.bitmap.onFormatSetup.add(() ->
+      {
         vid.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
         vid.updateHitbox();
         vid.screenCenter();
@@ -157,19 +158,15 @@ class AttractState extends MusicBeatState
       || TouchUtil.touch != null && TouchUtil.touch.pressed #end)
     {
       holdDelta += elapsed;
-      holdDelta = holdDelta.clamp(0, HOLD_TIME);
-
-      pie.scale.x = pie.scale.y = FlxMath.lerp(pie.scale.x, 1.3, Math.exp(-elapsed * 140.0));
     }
     else
     {
       holdDelta = FlxMath.lerp(holdDelta, -0.1, (elapsed * 3).clamp(0, 1));
-      holdDelta = holdDelta.clamp(0, HOLD_TIME);
-      pie.scale.x = pie.scale.y = FlxMath.lerp(pie.scale.x, 1, Math.exp(-elapsed * 160.0));
     }
-
+    holdDelta = holdDelta.clamp(0, HOLD_TIME);
     pie.amount = Math.min(1, Math.max(0, (holdDelta / HOLD_TIME) * 1.025));
-    pie.alpha = FlxMath.remapToRange(pie.amount, 0.025, 1, 0, 1);
+    pie.scale.x = pie.scale.y = FlxMath.lerp(1, 1.3, pie.amount).clamp(1, 1.3);
+    pie.alpha = FlxMath.lerp(0, 1, pie.amount).clamp(0, 1);
 
     // If the dial is full, skip the video.
     if (pie.amount >= 1) onAttractEnd();

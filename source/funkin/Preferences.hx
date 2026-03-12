@@ -41,12 +41,23 @@ class Preferences
   {
     #if web
     return 60;
+    #elseif mobile
+    var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
+
+    if (refreshRate < 60) refreshRate = 60;
+
+    return refreshRate;
     #else
     var save:Save = Save.instance;
     save.options.framerate = value;
-    save.flush();
-    FlxG.updateFramerate = value;
-    FlxG.drawFramerate = value;
+    Save.system.flush();
+
+    if (!unlockedFramerate)
+    {
+      FlxG.updateFramerate = value;
+      FlxG.drawFramerate = value;
+    }
+
     return value;
     #end
   }
@@ -69,13 +80,13 @@ class Preferences
   static function set_naughtyness(value:Bool):Bool
   {
     #if NO_FEATURE_NAUGHTYNESS
-    value = false;
-    #end
-
+    return false;
+    #else
     var save:Save = Save.instance;
     save.options.naughtyness = value;
-    save.flush();
+    Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -93,7 +104,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.downscroll = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -112,7 +123,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.flashingLights = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -131,34 +142,48 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.zoomCamera = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
   /**
    * If enabled, an FPS and memory counter will be displayed even if this is not a debug build.
-   * Always disabled on mobile.
+   * Always disabled on release mobile builds.
    * @default `Off`
    */
   public static var debugDisplay(get, set):DebugDisplayMode;
 
   static function get_debugDisplay():DebugDisplayMode
   {
-    #if mobile
+    #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
+    #else
+    #if hl
+    // Account for when debugDisplay used to be a boolean
+    var options:Null<SaveDataOptions> = Save.instance?.options;
+    if (options != null && Std.isOfType(options.debugDisplay, Bool))
+    {
+      var convertedDebugDisplay = cast(options.debugDisplay, Bool) ? DebugDisplayMode.Simple : DebugDisplayMode.Off;
+      options.debugDisplay = convertedDebugDisplay;
+      Save.system.flush();
+    }
     #end
-
     return Save?.instance?.options?.debugDisplay ?? 'Off';
+    #end
   }
 
   static function set_debugDisplay(value:DebugDisplayMode):DebugDisplayMode
   {
+    #if NO_FEATURE_DEBUG_DISPLAY
+    return DebugDisplayMode.Off;
+    #else
     if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
     save.options.debugDisplay = value;
-    save.flush();
+    Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -178,7 +203,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.debugDisplayBGOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -219,7 +244,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.hapticsMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -238,7 +263,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.hapticsIntensityMultiplier = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -252,19 +277,24 @@ class Preferences
   static function get_autoPause():Bool
   {
     #if mobile
-    return true;
-    #end
+    return false;
+    #else
     return Save?.instance?.options?.autoPause ?? true;
+    #end
   }
 
   static function set_autoPause(value:Bool):Bool
   {
+    #if mobile
+    return false;
+    #else
     if (value != Save.instance.options.autoPause) FlxG.autoPause = value;
 
     var save:Save = Save.instance;
     save.options.autoPause = value;
-    save.flush();
+    Save.system.flush();
     return value;
+    #end
   }
 
   /**
@@ -282,7 +312,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.autoFullscreen = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -302,7 +332,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.globalOffset = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -314,6 +344,9 @@ class Preferences
 
   static function get_vsyncMode():lime.ui.WindowVSyncMode
   {
+    #if mobile
+    return lime.ui.WindowVSyncMode.OFF;
+    #else
     var value = Save?.instance?.options?.vsyncMode ?? "Off";
 
     return switch (value)
@@ -327,10 +360,14 @@ class Preferences
       default:
         lime.ui.WindowVSyncMode.OFF;
     };
+    #end
   }
 
   static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
   {
+    #if mobile
+    return lime.ui.WindowVSyncMode.OFF;
+    #else
     var string;
 
     switch (value)
@@ -349,30 +386,37 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.vsyncMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
+    #end
   }
 
   public static var unlockedFramerate(get, set):Bool;
 
   static function get_unlockedFramerate():Bool
   {
+    #if mobile
+    return false;
+    #else
     return Save?.instance?.options?.unlockedFramerate ?? false;
+    #end
   }
 
   static function set_unlockedFramerate(value:Bool):Bool
   {
+    #if mobile
+    return false;
+    #else
     if (value != Save.instance.options.unlockedFramerate)
     {
-      #if web
       toggleFramerateCap(value);
-      #end
     }
 
     var save:Save = Save.instance;
     save.options.unlockedFramerate = value;
-    save.flush();
+    Save.system.flush();
     return value;
+    #end
   }
 
   #if web
@@ -384,7 +428,8 @@ class Preferences
   {
     var currTime = Date.now().getTime();
     var timeToCall = 0;
-    var id = js.Browser.window.setTimeout(function() {
+    var id = js.Browser.window.setTimeout(function()
+    {
       callback(currTime + timeToCall);
     }, timeToCall);
     return id;
@@ -411,7 +456,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.strumlineBackgroundOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -430,7 +475,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.shouldHideMouse = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -449,7 +494,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.fancyPreview = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -468,7 +513,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.previewOnSave = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -484,9 +529,7 @@ class Preferences
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
 
-    #if web
     toggleFramerateCap(Preferences.unlockedFramerate);
-    #end
 
     #if mobile
     // Apply the allowScreenTimeout setting.
@@ -499,10 +542,13 @@ class Preferences
     #if web
     var framerateFunction = unlocked ? unlockedFramerateFunction : lockedFramerateFunction;
     untyped js.Syntax.code("window.requestAnimationFrame = framerateFunction;");
+    #else
+    FlxG.drawFramerate = unlocked ? 0 : framerate;
+    FlxG.updateFramerate = unlocked ? 0 : framerate;
     #end
   }
 
-  static function setDebugDisplayMode(mode:DebugDisplayMode):Void
+  public static function setDebugDisplayMode(mode:DebugDisplayMode):Void
   {
     if (FlxG.game.parent.contains(Main.debugDisplay)) FlxG.game.parent.removeChild(Main.debugDisplay);
 
@@ -518,6 +564,25 @@ class Preferences
     if (Main.debugDisplay == null) return;
 
     Main.debugDisplay.backgroundOpacity = value;
+  }
+
+  /**
+   * If enabled, subtitles will appear during some songs and cutscenes.
+   * @default `true`
+   */
+  public static var subtitles(get, set):Bool;
+
+  static function get_subtitles():Bool
+  {
+    return Save?.instance?.options?.subtitles ?? true;
+  }
+
+  static function set_subtitles(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.subtitles = value;
+    Save.system.flush();
+    return value;
   }
 
   #if mobile
@@ -538,7 +603,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.mobileOptions.screenTimeout = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -557,7 +622,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.controlsScheme = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -582,7 +647,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.noAds = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
   #end

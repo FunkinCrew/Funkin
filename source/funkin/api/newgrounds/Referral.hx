@@ -23,7 +23,8 @@ class Referral
     {
       NG.core?.calls.loader.loadReferral(false)
         .addComponentParameter("referral_name", referralName)
-        .addResponseHandler(response -> {
+        .addResponseHandler(response ->
+        {
           trace(response);
           if (response.success)
           {

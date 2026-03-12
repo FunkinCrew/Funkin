@@ -41,7 +41,7 @@ class VersionUtil
     if (thx.Types.isAnonymousObject(versionData.version))
     {
       // This is bad! versionData.version should be an array!
-      trace('[SAVE] Version data repair required! (got ${versionData.version})');
+      trace(' SAVE '.bold().bg_note_down() + 'Version data repair required! (got ${versionData.version})');
       // Turn the objects back into arrays.
       // I'd use DynamicsT.values but IDK if it maintains order
       versionData.version = [versionData.version[0], versionData.version[1], versionData.version[2]];
@@ -57,12 +57,12 @@ class VersionUtil
       versionData.pre = preDataFixed;
 
       var fixedVersion:thx.semver.Version = versionData;
-      trace('[SAVE] Fixed version: ${fixedVersion}');
+      trace(' SAVE '.bold().bg_note_down() + 'Resolved version: ${fixedVersion}');
       return fixedVersion;
     }
     else
     {
-      trace('[SAVE] Version data repair not required (got ${version})');
+      trace(' SAVE '.bold().bg_note_down() + 'Save data migration/repair not required (got ${version})');
       // No need for repair.
       return version;
     }

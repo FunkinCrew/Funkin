@@ -1,6 +1,7 @@
 package funkin.util;
 
 import funkin.play.notes.NoteSprite;
+import funkin.play.notes.Strumline;
 import funkin.Conductor;
 
 /**
@@ -34,6 +35,18 @@ typedef HitWindowRes =
 class GRhythmUtil
 {
   /**
+   * Mirror the note direction.
+   * @param noteData The original note direction.
+   * @return The mirrored note direction.
+   */
+  public static function mirrorNoteDirection(noteData:Int):Int
+  {
+    final MAX_KEY_VALUE:Int = (noteData < Strumline.KEY_COUNT ? Strumline.KEY_COUNT : Strumline.KEY_COUNT * 2);
+
+    return (MAX_KEY_VALUE - 1) - (noteData % Strumline.KEY_COUNT);
+  }
+
+  /**
    * Get the current hit window for a note.
    * @param note The note to get the hit window for.
    * @return A HitWindow object containing the start, center, and end times of the hit window.
@@ -65,7 +78,7 @@ class GRhythmUtil
 
     if (note.hasMissed || note.hasBeenHit)
     {
-      return {botplayHit: false, cont: false };
+      return {botplayHit: false, cont: false};
     }
 
     // Treat notes as not in window if they are greater or less than the hit window
@@ -79,8 +92,7 @@ class GRhythmUtil
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)
-    if (!isControlled && inUseConductor.songPosition >= windowCenter)
-      return {botplayHit: true, cont: true };
+    if (!isControlled && inUseConductor.songPosition >= windowCenter) return {botplayHit: true, cont: true};
 
     if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
 
@@ -89,15 +101,16 @@ class GRhythmUtil
       note.tooEarly = false;
       note.hasMissed = false;
       note.mayHit = true;
-      return {botplayHit: false, cont: true };
+      return {botplayHit: false, cont: true};
     }
 
     note.tooEarly = true;
     note.mayHit = false;
     note.hasMissed = false;
 
-    return {botplayHit: false, cont: true };
+    return {botplayHit: false, cont: true};
   }
+
   /**
    * Get the y-position of a note based on its strum time.
    * @param strumTime The strum time of the note.

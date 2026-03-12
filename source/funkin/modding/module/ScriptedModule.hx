@@ -7,4 +7,6 @@ import polymod.hscript.HScriptedClass;
  * Create a scripted class that extends Module to use this.
  */
 @:hscriptClass
-class ScriptedModule extends Module implements HScriptedClass {}
+class ScriptedModule extends Module implements HScriptedClass
+{
+}

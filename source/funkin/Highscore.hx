@@ -49,20 +49,19 @@ abstract Tallies(RawTallies)
 {
   public function new()
   {
-    this =
-      {
-        combo: 0,
-        missed: 0,
-        shit: 0,
-        bad: 0,
-        good: 0,
-        sick: 0,
-        totalNotes: 0,
-        totalNotesHit: 0,
-        maxCombo: 0,
-        score: 0,
-        isNewHighscore: false
-      }
+    this = {
+      combo: 0,
+      missed: 0,
+      shit: 0,
+      bad: 0,
+      good: 0,
+      sick: 0,
+      totalNotes: 0,
+      totalNotesHit: 0,
+      maxCombo: 0,
+      score: 0,
+      isNewHighscore: false
+    }
   }
 }
 

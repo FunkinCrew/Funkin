@@ -68,7 +68,8 @@ class Level implements IRegistryEntry<LevelData>
   public function getSongDisplayNames(difficulty:String):Array<String>
   {
     var songList:Array<String> = getSongs() ?? [];
-    var songNameList:Array<String> = songList.map(function(songId:String) {
+    var songNameList:Array<String> = songList.map(function(songId:String)
+    {
       return getSongDisplayName(songId, difficulty);
     });
     return songNameList;
@@ -176,7 +177,7 @@ class Level implements IRegistryEntry<LevelData>
 
       if (song == null) continue;
 
-      for (difficulty in difficulties)
+      for (difficulty in difficulties.copy())
       {
         if (!song.hasDifficulty(difficulty, [Constants.DEFAULT_VARIATION, 'erect']))
         {
@@ -201,10 +202,13 @@ class Level implements IRegistryEntry<LevelData>
 
     if (_data.props.length == 0) return props;
 
-    var hiddenProps:Array<LevelProp> = props.splice(_data.props.length - 1, props.length - 1);
-    for (hiddenProp in hiddenProps)
+    // Hides unused props
+    if (_data.props.length < props.length)
     {
-      hiddenProp.visible = false;
+      for (i in _data.props.length...props.length)
+      {
+        props[i].visible = false;
+      }
     }
 
     for (propIndex in 0..._data.props.length)

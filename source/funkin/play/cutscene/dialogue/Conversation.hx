@@ -301,7 +301,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     }
     else
     {
-      trace('[WARNING] Unexpected state transition from ${this.state}');
+      trace(' WARNING '.bg_yellow().bold() + ' Unexpected state transition from ${this.state}');
       this.state = ConversationState.Idle;
     }
   }
@@ -407,13 +407,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     switch (_data?.outro)
     {
       case FADE(outroData):
-        outroTween = FlxTween.tween(this, {alpha: 0.0}, outroData.fadeTime,
-          {
-            type: ONESHOT, // holy shit like the game no way
-            startDelay: 0,
-            onComplete: (_) -> endOutro(),
-            ease: EaseUtil.stepped(8)
-          });
+        outroTween = FlxTween.tween(this, {alpha: 0.0}, outroData.fadeTime, {
+          type: ONESHOT, // holy shit like the game no way
+          startDelay: 0,
+          onComplete: (_) -> endOutro(),
+          ease: EaseUtil.stepped(8)
+        });
 
         if (this.music != null) FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);
       case NONE(_):

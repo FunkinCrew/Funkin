@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 @:access(funkin.ui.debug.charting.ChartEditorState)
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/default.xml"))
 class ChartEditorDefaultContextMenu extends ChartEditorBaseContextMenu
@@ -9,3 +10,4 @@ class ChartEditorDefaultContextMenu extends ChartEditorBaseContextMenu
     super(chartEditorState2, xPos2, yPos2);
   }
 }
+#end

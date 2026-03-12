@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.components;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
@@ -22,14 +23,15 @@ class WelcomeDialog extends Dialog
 
     stageEditorState = state;
 
-    buttonNew.onClick = function(_) {
+    buttonNew.onClick = function(_)
+    {
       stageEditorState.clearAssets();
       stageEditorState.loadDummyData();
       stageEditorState.currentFile = "";
       killDaDialog();
     }
 
-    for (file in Save.instance.stageEditorPreviousFiles)
+    for (file in Save.instance.stageEditorPreviousFiles.value)
     {
       trace(file);
 
@@ -40,9 +42,10 @@ class WelcomeDialog extends Dialog
       var fileText = new Link();
       fileText.percentWidth = 100;
       fileText.text = patj.file + "." + patj.ext;
-      fileText.onClick = function(_) {
+      fileText.onClick = function(_)
+      {
         fileText.hide();
-        loadFromFilePath(file);
+        loadFromFilePath(file, null, 0, 0);
       };
 
       #if sys
@@ -55,7 +58,8 @@ class WelcomeDialog extends Dialog
       contentRecent.addComponent(fileText);
     }
 
-    boxDrag.onClick = function(_) FileUtil.browseForSaveFile([FileUtil.FILE_FILTER_FNFS], loadFromFilePath, null, null, "Open Stage Data");
+    boxDrag.onClick = function(_) FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS],
+      (fileInfo) -> loadFromFilePath(fileInfo.fullPath, null, 0, 0));
 
     var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
@@ -83,8 +87,9 @@ class WelcomeDialog extends Dialog
 
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+        function(btn:DialogButton)
+        {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;
@@ -101,16 +106,17 @@ class WelcomeDialog extends Dialog
     killDaDialog();
   }
 
-  public function loadFromFilePath(file:String)
+  public function loadFromFilePath(file:String, state:String, x:Float, y:Float)
   {
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("This will destroy all of your Unsaved Work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
-        function(btn:DialogButton) {
+      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+        function(btn:DialogButton)
+        {
           if (btn == DialogButton.YES)
           {
             stageEditorState.saved = true;
-            loadFromFilePath(file);
+            loadFromFilePath(file, state, x, y);
           }
         });
 
@@ -143,3 +149,4 @@ class WelcomeDialog extends Dialog
     destroy();
   }
 }
+#end

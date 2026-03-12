@@ -4,14 +4,19 @@ import funkin.graphics.FlxFilteredSprite;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
- * NOT to be confused with the CharIcon class, which is for the in-game icons
+ * NOT to be confused with the HealthIcon class, which is for the in-game icons
  */
 @:nullSafety
 class PixelatedIcon extends FlxFilteredSprite
 {
+  public var char:String;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
+
+    this.char = '';
+
     this.makeGraphic(32, 32, 0x00000000);
     this.antialiasing = false;
     this.active = false;
@@ -19,6 +24,8 @@ class PixelatedIcon extends FlxFilteredSprite
 
   public function setCharacter(char:String):Void
   {
+    if (this.char == char) return;
+
     var charPath:String = "freeplay/icons/";
 
     final charIDParts:Array<String> = char.split("-");
@@ -40,14 +47,13 @@ class PixelatedIcon extends FlxFilteredSprite
 
     if (!Assets.exists(Paths.image(charPath)))
     {
-      trace('[WARN] Character ${char} has no freeplay icon.');
+      trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       this.visible = false;
       return;
     }
-    else
-    {
-      this.visible = true;
-    }
+
+    this.visible = true;
+    this.char = char; // if we went past this its safe to assume the icon exists so we can assign it
 
     var isAnimated = Assets.exists(Paths.file('images/$charPath.xml'));
 
@@ -62,10 +68,13 @@ class PixelatedIcon extends FlxFilteredSprite
 
     this.scale.x = this.scale.y = 2;
 
+    // TODO: Move this to JSON later!! (This code pisses me off) - Abnormal
     switch (char)
     {
       case 'parents-christmas':
         this.origin.x = 140;
+      case 'sserafim-kazuha':
+        this.origin.x = 195;
       default:
         this.origin.x = 100;
     }
@@ -77,8 +86,8 @@ class PixelatedIcon extends FlxFilteredSprite
       this.animation.addByPrefix('confirm', 'confirm0', 10, false);
       this.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
 
-      this.animation.onFinish.add(function(name:String):Void {
-        trace('Finish pixel animation: ${name}');
+      this.animation.onFinish.add(function(name:String):Void
+      {
         if (name == 'confirm') this.animation.play('confirm-hold');
       });
 

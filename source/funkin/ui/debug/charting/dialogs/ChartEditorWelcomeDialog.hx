@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongRegistry;
 import funkin.play.song.Song;
 import funkin.ui.debug.charting.ChartEditorState;
@@ -32,7 +33,9 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.splashCreateFromSongBasicOnly.onClick = _ -> onClickLinkCreateBasicOnly();
     this.splashCreateFromSongErectOnly.onClick = _ -> onClickLinkCreateErectOnly();
     this.splashCreateFromSongBasicErect.onClick = _ -> onClickLinkCreateBasicErect();
-    this.splashImportChartLegacy.onClick = _ -> onClickLinkImportChartLegacy();
+    this.splashImportChartLegacy.onClick = _ -> onClickLinkImport("legacy");
+    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImport("osumania");
+    this.splashImportChartStepMania.onClick = _ -> onClickLinkImport('stepmania');
 
     // Add items to the Recent Charts list
     #if sys
@@ -55,11 +58,10 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
    */
   public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorWelcomeDialog
   {
-    var dialog = new ChartEditorWelcomeDialog(chartEditorState,
-      {
-        closable: closable ?? false,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorWelcomeDialog(chartEditorState, {
+      closable: closable ?? false,
+      modal: modal ?? true
+    });
 
     dialog.showDialog(modal ?? true);
 
@@ -86,11 +88,20 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     linkRecentChart.tooltip = chartPath;
 
     #if sys
-    var lastModified:String = "Last Modified: " + sys.FileSystem.stat(chartPath).mtime.toString();
-    linkRecentChart.tooltip += "\n" + lastModified;
+    if (!FileUtil.fileExists(chartPath))
+    {
+      trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+      linkRecentChart.disabled = true;
+    }
+    else
+    {
+      var lastModified:String = "Last Modified: " + sys.FileSystem.stat(chartPath).mtime.toString();
+      linkRecentChart.tooltip += "\n" + lastModified;
+    }
     #end
 
-    linkRecentChart.onClick = function(_event) {
+    linkRecentChart.onClick = function(_event)
+    {
       linkRecentChart.hide();
 
       this.hideDialog(DialogButton.CANCEL);
@@ -106,12 +117,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       {
         chartEditorState.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()})');
       }
-    }
-
-    if (!FileUtil.fileExists(chartPath))
-    {
-      trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
-      linkRecentChart.disabled = true;
     }
 
     splashRecentContainer.addComponent(linkRecentChart);
@@ -146,11 +151,12 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       if (songName == null) songName = songData.getDifficulty()?.songName;
       if (songName == null) // Still null?
       {
-        trace('[WARN] Could not fetch song name for ${targetSongId}');
+        trace(' WARNING '.warning() + ' Could not fetch song name for ${targetSongId}');
         continue;
       }
 
-      this.addTemplateSong(songName, targetSongId, (_) -> {
+      this.addTemplateSong(songName, targetSongId, (_) ->
+      {
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template
@@ -230,15 +236,16 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   }
 
   /**
-   * Called when the user clicks the "Import Chart: FNF Legacy" link in the dialog.
+   * Called when the user clicks on any "Import Chart" link in the dialog.
    * Reassign this function to change the behavior.
    */
-  public function onClickLinkImportChartLegacy():Void
+  public function onClickLinkImport(format:String):Void
   {
     // Hide the welcome dialog
     this.hideDialog(DialogButton.CANCEL);
 
-    // Open the "Import Chart" dialog
-    chartEditorState.openImportChartWizard('legacy', false);
+    // Open the "Import Chart" dialog for specified format
+    chartEditorState.openImportChartWizard(format, false);
   }
 }
+#end

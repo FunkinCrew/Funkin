@@ -90,7 +90,6 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     debugIconGroup = new FlxSpriteGroup();
     debugIconGroup.visible = false;
     debugIconGroup.zIndex = 1000000;
-    // add(debugIconGroup);
   }
 
   public function resetStage():Void
@@ -98,35 +97,38 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // Reset positions of characters.
     if (getBoyfriend() != null)
     {
-      getBoyfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.bf;
       var finalScale:Float = getBoyfriend().getBaseScale() * stageCharData.scale;
       getBoyfriend().setScale(finalScale);
+      getBoyfriend().resetCharacter(true);
+
       getBoyfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getBoyfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
     else
     {
-      trace('STAGE RESET: No boyfriend found.');
+      log(' WARNING '.warning() + ' No boyfriend found while resetting stage.');
     }
     if (getGirlfriend() != null)
     {
-      getGirlfriend().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.gf;
       var finalScale:Float = getGirlfriend().getBaseScale() * stageCharData.scale;
       getGirlfriend().setScale(finalScale);
+      getGirlfriend().resetCharacter(true);
+
       getGirlfriend().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getGirlfriend().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
     if (getDad() != null)
     {
-      getDad().resetCharacter(true);
       // Reapply the camera offsets.
       var stageCharData:StageDataCharacter = _data.characters.dad;
       var finalScale:Float = getDad().getBaseScale() * stageCharData.scale;
       getDad().setScale(finalScale);
+      getDad().resetCharacter(true);
+
       getDad().cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       getDad().cameraFocusPoint.y += stageCharData.cameraOffsets[1];
     }
@@ -143,6 +145,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         prop.x = dataProp.position[0];
         prop.y = dataProp.position[1];
         prop.zIndex = dataProp.zIndex;
+
+        // Reset danceEvery value.
+        if (Std.isOfType(prop, Bopper))
+        {
+          cast(prop, Bopper).danceEvery = dataProp.danceEvery;
+        }
       }
     }
 
@@ -155,19 +163,19 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   function buildStage():Void
   {
-    trace('Building stage for display: ${this.id}');
+    log('Building stage "${this.id}" for display...');
 
     this.debugIconGroup = new FlxSpriteGroup();
 
     for (dataProp in _data.props)
     {
-      trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
+      log('Placing prop ${dataProp.name} (${dataProp.assetPath})');
 
       var isSolidColor = dataProp.assetPath.startsWith('#');
       var isAnimated = dataProp.animations.length > 0;
 
       var propSprite:StageProp;
-      if (dataProp.danceEvery != 0)
+      if (dataProp.danceEvery != 0 || isAnimated)
       {
         propSprite = new Bopper(dataProp.danceEvery);
       }
@@ -183,6 +191,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         {
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
+          case 'animateatlas':
+            propSprite.loadTextureAtlas(dataProp.assetPath, _data.directory, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
@@ -215,7 +225,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       if (propSprite.frames == null || propSprite.frames.numFrames == 0)
       {
         @:privateAccess
-        trace('    ERROR: Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
+        log(' ERROR '.error() + ' Could not build texture for prop. Check the asset path (${Paths.currentLevel ?? 'default'}, ${dataProp.assetPath}).');
         continue;
       }
 
@@ -268,6 +278,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
               cast(propSprite, Bopper).setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
             }
           }
+        case 'animateatlas':
+          FlxAnimationUtil.addTextureAtlasAnimations(propSprite, dataProp.animations);
         default: // 'sparrow'
           FlxAnimationUtil.addAtlasAnimations(propSprite, dataProp.animations);
           if (Std.isOfType(propSprite, Bopper))
@@ -293,9 +305,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         }
       }
 
-      if (dataProp.startingAnimation != null)
+      if (dataProp.startingAnimation != null && propSprite is Bopper)
       {
-        propSprite.animation.play(dataProp.startingAnimation);
+        cast(propSprite, Bopper).playAnimation(dataProp.startingAnimation);
       }
 
       if (Std.isOfType(propSprite, BaseCharacter))
@@ -354,7 +366,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function setShader(shader:FlxShader):Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       prop.shader = shader;
     });
   }
@@ -442,10 +455,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       character.x = stageCharData.position[0] - character.characterOrigin.x;
       character.y = stageCharData.position[1] - character.characterOrigin.y;
 
-      character.originalPosition.set(character.x, character.y);
-
       var finalScale = character.getBaseScale() * stageCharData.scale;
       character.setScale(finalScale); // Don't use scale.set for characters!
+      character.originalPosition.set(character.x, character.y);
+
+      // Reset the camera focus point to be based on the new original position.
+      character.resetCameraFocusPoint();
+
       character.cameraFocusPoint.x += stageCharData.cameraOffsets[0];
       character.cameraFocusPoint.y += stageCharData.cameraOffsets[1];
 
@@ -620,7 +636,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function pause():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       if (prop.animation != null) prop.animation.pause();
     });
   }
@@ -630,7 +647,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function resume():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       if (prop.animation != null) prop.animation.resume();
     });
   }
@@ -776,15 +794,21 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * A function that gets called once per step in the song.
    * @param curStep The current step number.
    */
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   /**
    * A function that gets called once per beat in the song (once every four steps).
    * @param curStep The current beat number.
    */
-  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent) {}
+  public function onUpdate(event:UpdateScriptEvent)
+  {
+  }
 
   public override function kill()
   {
@@ -826,7 +850,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Called when the frame buffer manager is ready.
    * Create frame buffers inside this method.
    */
-  function setupFrameBuffers():Void {}
+  function setupFrameBuffers():Void
+  {
+  }
 
   /**
    * Called when all the frame buffers are updated. If you need any
@@ -834,25 +860,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * grab the screen inside this method since it immediately uses the
    * frame buffers.
    */
-  function frameBuffersUpdated():Void {}
-
-  /**
-   * Grabs the current screen and returns it as a bitmap data. You can sefely modify it.
-   * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
-   * @return the grabbed screen
-   */
-  function grabScreen(applyFilters:Bool):BitmapData
+  function frameBuffersUpdated():Void
   {
-    if (Std.isOfType(FlxG.camera, FunkinCamera))
-    {
-      final cam:FunkinCamera = cast FlxG.camera;
-      return cam.grabScreen(applyFilters);
-    }
-    else
-    {
-      FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
-      return null;
-    }
   }
 
   public function onScriptEvent(event:ScriptEvent)
@@ -865,35 +874,72 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public function onPause(event:PauseScriptEvent) {}
+  public function onPause(event:PauseScriptEvent)
+  {
+  }
 
-  public function onResume(event:ScriptEvent) {}
+  public function onResume(event:ScriptEvent)
+  {
+  }
 
-  public function onSongStart(event:ScriptEvent) {}
+  public function onSongStart(event:ScriptEvent)
+  {
+  }
 
-  public function onSongEnd(event:ScriptEvent) {}
+  public function onSongEnd(event:ScriptEvent)
+  {
+  }
 
-  public function onGameOver(event:ScriptEvent) {}
+  public function onGameOver(event:ScriptEvent)
+  {
+  }
 
-  public function onCountdownStart(event:CountdownScriptEvent) {}
+  public function onCountdownStart(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownStep(event:CountdownScriptEvent) {}
+  public function onCountdownStep(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownEnd(event:CountdownScriptEvent) {}
+  public function onCountdownEnd(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent) {}
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent) {}
+  public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 
-  public function onSongEvent(event:SongEventScriptEvent) {}
+  public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+  {
+  }
 
-  public function onSongLoaded(event:SongLoadScriptEvent) {}
+  public function onSongLoaded(event:SongLoadScriptEvent)
+  {
+  }
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:SongRetryEvent)
+  {
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' STAGE '.bold().bg_red() + ' $message');
+  }
 }

@@ -1,11 +1,14 @@
 package funkin.ui.debug.charting.contextmenus;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuCheckBox;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
+import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
@@ -19,6 +22,10 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
   var contextmenuPaste:MenuItem;
   var contextmenuDelete:MenuItem;
   var contextmenuFlip:MenuItem;
+  var contextmenuMirrorX:MenuItem;
+  var contextmenuMirrorY:MenuItem;
+  var contextmenuMirrorXY:MenuItem;
+  var contextmenuMirrorFlipWithinStrumline:MenuCheckBox;
   var contextmenuSelectAll:MenuItem;
   var contextmenuSelectInverse:MenuItem;
   var contextmenuSelectNone:MenuItem;
@@ -32,13 +39,16 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 
   public function initialize():Void
   {
-    contextmenuCut.onClick = (_) -> {
+    contextmenuCut.onClick = (_) ->
+    {
       chartEditorState.performCommand(new CutItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection));
     };
-    contextmenuCopy.onClick = (_) -> {
+    contextmenuCopy.onClick = (_) ->
+    {
       chartEditorState.copySelection();
     };
-    contextmenuDelete.onClick = (_) -> {
+    contextmenuDelete.onClick = (_) ->
+    {
       if (chartEditorState.currentNoteSelection.length > 0 && chartEditorState.currentEventSelection.length > 0)
       {
         chartEditorState.performCommand(new RemoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection));
@@ -57,18 +67,41 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
       }
     };
 
-    contextmenuFlip.onClick = function(_) {
+    contextmenuFlip.onClick = function(_)
+    {
       chartEditorState.performCommand(new FlipNotesCommand(chartEditorState.currentNoteSelection));
     }
 
-    contextmenuSelectAll.onClick = function(_) {
+    contextmenuMirrorX.onClick = function(_)
+    {
+      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
+        !contextmenuMirrorFlipWithinStrumline.selected, true, false));
+    }
+
+    contextmenuMirrorY.onClick = function(_)
+    {
+      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
+        !contextmenuMirrorFlipWithinStrumline.selected, false, true));
+    }
+
+    contextmenuMirrorXY.onClick = function(_)
+    {
+      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
+        !contextmenuMirrorFlipWithinStrumline.selected, true, true));
+    }
+
+    contextmenuSelectAll.onClick = function(_)
+    {
       chartEditorState.performCommand(new SelectAllItemsCommand(true, false));
     }
-    contextmenuSelectInverse.onClick = function(_) {
+    contextmenuSelectInverse.onClick = function(_)
+    {
       chartEditorState.performCommand(new InvertSelectedItemsCommand());
     }
-    contextmenuSelectNone.onClick = function(_) {
+    contextmenuSelectNone.onClick = function(_)
+    {
       chartEditorState.performCommand(new DeselectAllItemsCommand());
     }
   }
 }
+#end

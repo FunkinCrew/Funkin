@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+#if FEATURE_CHART_EDITOR
 import flixel.system.FlxAssets.FlxSoundAsset;
 import funkin.audio.VoicesGroup;
 import funkin.audio.FunkinSound;
@@ -35,7 +36,7 @@ class ChartEditorAudioHandler
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadVocalsFromBytes(state, fileBytes, charId, instId, wipeFirst);
     #else
-    trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    trace(" WARNING '.bold().bg_yellow() + ' This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
     #end
   }
@@ -87,7 +88,7 @@ class ChartEditorAudioHandler
     var fileBytes:Bytes = sys.io.File.getBytes(path.toString());
     return loadInstFromBytes(state, fileBytes, instId, wipeFirst);
     #else
-    trace("[WARN] This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
+    trace(" WARNING '.bold().bg_yellow() + ' This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
     #end
   }
@@ -143,6 +144,8 @@ class ChartEditorAudioHandler
 
     state.hardRefreshFreeplayToolbox();
 
+    state.loadSubtitles();
+
     return true;
   }
 
@@ -155,6 +158,8 @@ class ChartEditorAudioHandler
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
+
+    instTrack.important = true;
 
     stopExistingInstrumental(state);
     state.audioInstTrack = instTrack;
@@ -185,69 +190,70 @@ class ChartEditorAudioHandler
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
-    if (vocalTrack != null)
+    // early return
+    if (vocalTrack == null) return false;
+
+    vocalTrack.important = true;
+
+    switch (charType)
     {
-      switch (charType)
-      {
-        case BF:
-          state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+      case BF:
+        state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-          if (waveformData != null)
-          {
-            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
-            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-            waveformSprite.x = 840;
-            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-            waveformSprite.time = 0;
-            waveformSprite.duration = duration;
-            state.audioWaveforms.add(waveformSprite);
-          }
-          else
-          {
-            trace('[WARN] Failed to parse waveform data for vocal track.');
-          }
+        if (waveformData != null)
+        {
+          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state, charType);
+          state.audioWaveforms.add(waveformSprite);
+        }
+        else
+        {
+          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
+        }
 
-          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
-          return true;
-        case DAD:
-          state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+        state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
+        return true;
+      case DAD:
+        state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-          if (waveformData != null)
-          {
-            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
-            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
-            waveformSprite.x = 360;
-            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-            waveformSprite.time = 0;
-            waveformSprite.duration = duration;
-            state.audioWaveforms.add(waveformSprite);
-          }
-          else
-          {
-            trace('[WARN] Failed to parse waveform data for vocal track.');
-          }
+        if (waveformData != null)
+        {
+          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state, charType);
+          state.audioWaveforms.add(waveformSprite);
+        }
+        else
+        {
+          trace(' WARNING '.warning() + ' Failed to parse waveform data for vocal track.');
+        }
 
-          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
+        state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
-          return true;
-        case OTHER:
-          state.audioVocalTrackGroup.add(vocalTrack);
-          // TODO: Add offset for other characters.
-          return true;
-        default:
-          // Do nothing.
-      }
+        return true;
+      case OTHER:
+        state.audioVocalTrackGroup.add(vocalTrack);
+        // TODO: Add offset for other characters.
+        return true;
+      default:
+        // Do nothing.
     }
 
     return false;
+  }
+
+  // initializes a waveform sprite with buncho non-charType specific things
+  static function initWaveformSprite(waveformData:WaveformData, state:ChartEditorState, charType:CharacterType):WaveformSprite
+  {
+    var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+    waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+    waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+    waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+    waveformSprite.time = 0;
+    waveformSprite.duration = Conductor.instance.getStepTimeInMs(16) * 0.001;
+    waveformSprite.iconId = charType;
+    return waveformSprite;
   }
 
   public static function stopExistingVocals(state:ChartEditorState):Void
@@ -279,6 +285,40 @@ class ChartEditorAudioHandler
     snd.volume = volume;
   }
 
+  /**
+   * Play one of two stretchy sounds.
+   * Since some configurations can play this frequently, we limit to one of each of the two alternating sounds at a time.
+   * @param state
+   * @param volume
+   */
+  public static function playStretchySound(state:ChartEditorState, volume:Float = 1.0):Void
+  {
+    if (state.stretchySounds)
+    {
+      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.load(Paths.sound('chartingSounds/stretch1_UI'));
+      if (state.stretchySound1 == null) return;
+
+      // Prevent spam playing that could cause issues.
+      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
+
+      state.stretchySounds = !state.stretchySounds;
+      state.stretchySound1.play(true);
+      state.stretchySound1.volume = volume;
+    }
+    else
+    {
+      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.load(Paths.sound('chartingSounds/stretch2_UI'));
+      if (state.stretchySound2 == null) return;
+
+      // Prevent spam playing that could cause issues.
+      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
+
+      state.stretchySounds = !state.stretchySounds;
+      state.stretchySound2.play(true);
+      state.stretchySound2.volume = volume;
+    }
+  }
+
   public static function wipeInstrumentalData(state:ChartEditorState):Void
   {
     state.audioInstTrackData.clear();
@@ -308,7 +348,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get('default');
         if (data == null)
         {
-          trace('[WARN] Failed to access inst track ($key)');
+          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
@@ -318,7 +358,7 @@ class ChartEditorAudioHandler
         var data:Null<Bytes> = state.audioInstTrackData.get(key);
         if (data == null)
         {
-          trace('[WARN] Failed to access inst track ($key)');
+          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
           continue;
         }
         zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
@@ -343,7 +383,7 @@ class ChartEditorAudioHandler
       var data:Null<Bytes> = state.audioVocalTrackData.get(key);
       if (data == null)
       {
-        trace('[WARN] Failed to access vocal track ($key)');
+        trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
         continue;
       }
       zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
@@ -352,3 +392,4 @@ class ChartEditorAudioHandler
     return zipEntries;
   }
 }
+#end

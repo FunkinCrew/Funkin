@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.components.DropDown;
 import haxe.ui.components.TextField;
 import haxe.ui.components.Label;
@@ -57,7 +58,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxNotesNoteKind.onChange = function(event:UIEvent) {
+    toolboxNotesNoteKind.onChange = function(event:UIEvent)
+    {
       var noteKind:Null<String> = event?.data?.id ?? null;
       if (noteKind == '') noteKind = null;
 
@@ -67,13 +69,12 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
       if (noteKind == '~CUSTOM~')
       {
         showCustom();
-        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+        chartEditorState.noteKindToPlace = toolboxNotesCustomKind.value;
       }
       else
       {
         hideCustom();
         chartEditorState.noteKindToPlace = noteKind;
-        toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
       }
 
       createNoteKindParams(noteKind);
@@ -111,14 +112,21 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
-    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, '');
+    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
+
+    var startingValueNoteKind = ChartEditorDropdowns.populateDropdownWithNoteKinds(toolboxNotesNoteKind, chartEditorState.noteKindToPlace);
     toolboxNotesNoteKind.value = startingValueNoteKind;
 
-    toolboxNotesCustomKind.onChange = function(event:UIEvent) {
+    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
+
+    toolboxNotesCustomKind.onChange = function(event:UIEvent)
+    {
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
-      if (chartEditorState.currentEventSelection.length > 0)
+      if (toolboxNotesNoteKind.value.id != '~CUSTOM~') return;
+
+      if (!_initializing && chartEditorState.currentNoteSelection.length > 0)
       {
         // Edit the note data of any selected notes.
         for (note in chartEditorState.currentNoteSelection)
@@ -130,17 +138,34 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         chartEditorState.notePreviewDirty = true;
       }
     };
+    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
+
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+
+    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   public override function refresh():Void
   {
     super.refresh();
 
-    toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
+    toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
+    toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
+
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
+    toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
+    if (toolboxNotesNoteKind.value.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
+    {
+      showCustom();
+    }
+    else
+    {
+      hideCustom();
+    }
 
     createNoteKindParams(chartEditorState.noteKindToPlace);
+    toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
+    toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
   function showCustom():Void
@@ -222,7 +247,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         continue;
       }
 
-      paramComponent.onChange = function(event:UIEvent) {
+      paramComponent.onChange = function(event:UIEvent)
+      {
         chartEditorState.noteParamsToPlace[i].value = paramComponent.value;
 
         for (note in chartEditorState.currentNoteSelection)
@@ -301,3 +327,4 @@ typedef ToolboxNoteKindParam =
   var label:Label;
   var component:Component;
 }
+#end

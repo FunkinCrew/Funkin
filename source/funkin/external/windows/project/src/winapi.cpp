@@ -11,26 +11,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-void WINAPI_ShowError(const char *message, const char *title)
-{
-  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONERROR);
-}
-
-void WINAPI_ShowWarning(const char *message, const char *title)
-{
-  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONWARNING);
-}
-
-void WINAPI_ShowInformation(const char *message, const char *title)
-{
-  MessageBox(GetActiveWindow(), message, title, MB_OK | MB_ICONINFORMATION);
-}
-
-void WINAPI_ShowQuestion(const char *message, const char *title)
-{
-  MessageBox(GetActiveWindow(), message, title, MB_OKCANCEL | MB_ICONQUESTION);
-}
-
 void WINAPI_DisableErrorReporting()
 {
   SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
@@ -49,37 +29,4 @@ size_t WINAPI_GetProcessMemoryWorkingSetSize()
 		return pmc.WorkingSetSize;
 
 	return 0;
-}
-
-void WINAPI_SetDarkMode(bool enable)
-{
-  HWND window = GetActiveWindow();
-
-  int darkMode = enable ? 1 : 0;
-
-  if (DwmSetWindowAttribute(window, 20, &darkMode, sizeof(darkMode)) != S_OK)
-    DwmSetWindowAttribute(window, 19, &darkMode, sizeof(darkMode));
-
-  UpdateWindow(window);
-}
-
-bool WINAPI_IsSystemDarkMode()
-{
-  HKEY hKey;
-  DWORD dwValue = 0;
-  DWORD dwSize = sizeof(DWORD);
-  DWORD dwType = REG_DWORD;
-
-  if (RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
-  {
-    if (RegQueryValueEx(hKey, "AppsUseLightTheme", NULL, &dwType, (LPBYTE)&dwValue, &dwSize) == ERROR_SUCCESS)
-    {
-      RegCloseKey(hKey);
-      return dwValue == 0;
-    }
-
-    RegCloseKey(hKey);
-  }
-
-  return false;
 }

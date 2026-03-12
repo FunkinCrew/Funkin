@@ -80,7 +80,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       if (isScripted)
       {
         trace("Reloading scripted state: " + path);
-        var state:Dynamic = ScriptedMusicBeatState.init(path);
+        var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
         FlxG.switchState(state);
       }
 
@@ -91,9 +91,9 @@ class ReloadAssetsDebugPlugin extends FlxBasic
 
   #if android
   @:noCompletion
-  function onActivityResult(resultCode:Int, requestCode:Int):Void
+  function onActivityResult(requestCode:Int, resultCode:Int):Void
   {
-    if (resultCode == CallbackUtil.DATA_FOLDER_CLOSED)
+    if (requestCode == CallbackUtil.DATA_FOLDER_CLOSED)
     {
       reload();
     }

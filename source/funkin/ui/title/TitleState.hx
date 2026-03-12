@@ -1,6 +1,5 @@
 package funkin.ui.title;
 
-import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import funkin.ui.FullScreenScaleMode;
@@ -10,29 +9,17 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
-import flixel.util.typeLimit.NextState;
-import funkin.audio.visualize.SpectogramSprite;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
-import funkin.graphics.shaders.TitleOutline;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import openfl.Assets;
-import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
-import openfl.media.Video;
-import openfl.net.NetStream;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-import funkin.ui.freeplay.FreeplayState;
-import openfl.display.BlendMode;
-import funkin.save.Save;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
@@ -45,10 +32,10 @@ class TitleState extends MusicBeatState
    */
   public static var initialized:Bool = false;
 
-  var blackScreen:FlxSprite;
+  var blackScreen:FunkinSprite;
   var credGroup:FlxGroup;
   var textGroup:FlxGroup;
-  var ngSpr:FlxSprite;
+  var ngSpr:FunkinSprite;
 
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
@@ -64,22 +51,23 @@ class TitleState extends MusicBeatState
 
     // DEBUG BULLSHIT
 
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
+    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer)
+    {
       startIntro();
     });
     else
       startIntro();
   }
 
-  var logoBl:FlxSprite;
-  var outlineShaderShit:TitleOutline;
-
-  var gfDance:FlxSpriteOverlay;
+  var logoBl:FunkinSprite;
+  var gfDance:FunkinSprite;
   var danceLeft:Bool = false;
-  var titleText:FlxSprite;
+  var titleText:FunkinSprite;
   var maskShader = new LeftMaskShader();
 
+  #if FEATURE_VIDEO_PLAYBACK
   var attractTimer:FlxTimer;
+  #end
 
   function startIntro():Void
   {
@@ -91,47 +79,35 @@ class TitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    logoBl = new FlxSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
+    logoBl = new FunkinSprite(-150 + (FullScreenScaleMode.gameCutoutSize.x / 2.5), -100);
     logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
     logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
     logoBl.animation.play('bump');
     logoBl.shader = swagShader.shader;
     logoBl.updateHitbox();
 
-    outlineShaderShit = new TitleOutline();
-
-    gfDance = new FlxSpriteOverlay((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
+    gfDance = new FunkinSprite((FlxG.width * 0.4) + FullScreenScaleMode.gameCutoutSize.x / 2.5, FlxG.height * 0.07);
     gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
     gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
     gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
-    // maskShader.swagSprX = gfDance.x;
-    // maskShader.swagMaskX = gfDance.x + 200;
-    // maskShader.frameUV = gfDance.frame.uv;
-    // gfDance.shader = maskShader;
-
     gfDance.shader = swagShader.shader;
 
-    // gfDance.shader = new TitleOutline();
-
     add(logoBl);
-
     add(gfDance);
 
-    #if mobile
-    // shift it a bit more to the left on mobile!!
-    titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
-    titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
-    #else
-    titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
-    titleText.frames = Paths.getSparrowAtlas('titleEnter');
-    #end
-    titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-    titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+    var titleTextPath:String = 'title-screen-text' #if mobile + '-mobile' #end;
+
+    // On mobile, the text is shifted more to the left to center it properly.
+    titleText = FunkinSprite.createTextureAtlas(#if mobile 50 #else 100 #end + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8, titleTextPath, {
+      cacheOnLoad: true
+    });
+    titleText.anim.addByFrameLabel('idle', "Idle", 24);
+    titleText.anim.addByFrameLabel('press', "Confirm", 24);
     titleText.animation.play('idle');
     titleText.updateHitbox();
     titleText.shader = swagShader.shader;
-    // titleText.screenCenter(X);
+
     add(titleText);
 
     if (!initialized) // Fix an issue where returning to the credits would play a black screen.
@@ -143,13 +119,8 @@ class TitleState extends MusicBeatState
     textGroup = new FlxGroup();
 
     blackScreen = bg.clone();
-    if (credGroup != null)
-    {
-      credGroup.add(blackScreen);
-      credGroup.add(textGroup);
-    }
 
-    ngSpr = new FlxSprite(0, FlxG.height * 0.52);
+    ngSpr = new FunkinSprite(0, FlxG.height * 0.52);
 
     if (FlxG.random.bool(1))
     {
@@ -169,8 +140,13 @@ class TitleState extends MusicBeatState
       ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
     }
 
-    add(ngSpr);
     ngSpr.visible = false;
+    if (credGroup != null)
+    {
+      credGroup.add(blackScreen);
+      credGroup.add(ngSpr);
+      credGroup.add(textGroup);
+    }
 
     ngSpr.updateHitbox();
     ngSpr.screenCenter(X);
@@ -181,8 +157,10 @@ class TitleState extends MusicBeatState
     else
       initialized = true;
 
-    trace('Starting attract timer');
+    #if FEATURE_VIDEO_PLAYBACK
+    trace('Opening Attract state in ${Constants.TITLE_ATTRACT_DELAY} seconds...');
     attractTimer = new FlxTimer().start(Constants.TITLE_ATTRACT_DELAY, (_:FlxTimer) -> moveToAttract());
+    #end
   }
 
   /**
@@ -191,7 +169,8 @@ class TitleState extends MusicBeatState
   function moveToAttract():Void
   {
     FlxG.sound.music.fadeOut(2.0, 0);
-    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function() {
+    FlxG.camera.fade(FlxColor.BLACK, 2.0, false, function()
+    {
       FlxG.switchState(() -> new AttractState());
     });
   }
@@ -200,14 +179,13 @@ class TitleState extends MusicBeatState
   {
     var shouldFadeIn:Bool = (FlxG.sound.music == null);
     // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu',
-      {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: false,
-        // Continue playing this music between states, until a different music track gets played.
-        persist: true
-      });
+    FunkinSound.playMusic('freakyMenu', {
+      startingVolume: 0.0,
+      overrideExisting: true,
+      restartTrack: false,
+      // Continue playing this music between states, until a different music track gets played.
+      persist: true
+    });
     // Fade from 0.0 to 1 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
@@ -238,7 +216,7 @@ class TitleState extends MusicBeatState
     // Pressing BACK on the title screen should close the game.
     // This lets you exit without leaving fullscreen mode.
     // Only applicable on desktop and Android.
-    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK)
+    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK_P)
     {
       openfl.Lib.application.window.close();
     }
@@ -247,30 +225,6 @@ class TitleState extends MusicBeatState
     Conductor.instance.update();
 
     funkin.input.Cursor.hide();
-
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
-    if (outlineShaderShit != null)
-    {
-      if (FlxG.keys.justPressed.I)
-      {
-        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
-      }
-
-      if (FlxG.keys.pressed.D)
-      {
-        outlineShaderShit.funnyX += 1;
-      }
-
-      // outlineShaderShit.xPos.value[0] += 1;
-    }
 
     if (FlxG.keys.justPressed.Y)
     {
@@ -305,13 +259,18 @@ class TitleState extends MusicBeatState
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
 
+      #if FEATURE_HAPTICS
+      HapticUtil.vibrate(0.1, 0.5, 0.5);
+      #end
+
       #if FEATURE_NEWGROUNDS
       // Award the "Start Game" medal.
       Medals.award(Medal.StartGame);
       funkin.api.newgrounds.Events.logStartGame();
       #end
 
-      new FlxTimer().start(2, function(tmr:FlxTimer) {
+      new FlxTimer().start(2, function(tmr:FlxTimer)
+      {
         moveToMainMenu();
       });
     }
@@ -331,11 +290,13 @@ class TitleState extends MusicBeatState
 
   function moveToMainMenu():Void
   {
+    #if FEATURE_VIDEO_PLAYBACK
     if (attractTimer != null)
     {
       attractTimer.cancel();
       attractTimer = null;
     }
+    #end
 
     funkin.FunkinMemory.purgeCache();
     FlxG.switchState(() -> new MainMenuState());
@@ -358,7 +319,7 @@ class TitleState extends MusicBeatState
     if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end) codePress(FlxDirectionFlags.RIGHT.toInt());
   }
 
-  function codePress(input:Int)
+  function codePress(input:Int):Void
   {
     if (input == cheatArray[curCheatPos])
     {
@@ -367,30 +328,30 @@ class TitleState extends MusicBeatState
     }
     else
       curCheatPos = 0;
-
-    trace(input);
   }
 
   function startCheat():Void
   {
     cheatActive = true;
 
-    var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
-
-    FunkinSound.playMusic('girlfriendsRingtone',
-      {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: true
-      });
+    FunkinSound.playMusic('girlfriendsRingtone', {
+      startingVolume: 0.0,
+      overrideExisting: true,
+      restartTrack: true
+    });
 
     FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+
+    #if FEATURE_VIDEO_PLAYBACK
+    // Stop the attract timer so you can listen to the whole song!
+    attractTimer.cancel();
+    #end
   }
 
-  function createCoolText(textArray:Array<String>)
+  function createCoolText(textArray:Array<String>):Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -404,7 +365,7 @@ class TitleState extends MusicBeatState
     }
   }
 
-  function addMoreText(text:String)
+  function addMoreText(text:String):Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -416,7 +377,7 @@ class TitleState extends MusicBeatState
     textGroup.add(coolText);
   }
 
-  function deleteCoolText()
+  function deleteCoolText():Void
   {
     if (credGroup == null || textGroup == null) return;
 
@@ -485,6 +446,7 @@ class TitleState extends MusicBeatState
       }
       lastBeat = Conductor.instance.currentBeat;
     }
+
     if (skippedIntro)
     {
       if (cheatActive && Conductor.instance.currentBeat % 2 == 0) swagShader.update(0.125);

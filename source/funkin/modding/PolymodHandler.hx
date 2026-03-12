@@ -46,13 +46,13 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = ">=0.6.3 <0.8.0";
+  public static final API_VERSION_RULE:String = '>=0.8.0 <0.9.0';
 
   /**
    * Where relative to the executable that mods are located.
    */
   static final MOD_FOLDER:String =
-    #if (REDIRECT_ASSETS_FOLDER && macos)
+    #if (REDIRECT_ASSETS_FOLDER && mac)
     '../../../../../../../example_mods'
     #elseif REDIRECT_ASSETS_FOLDER
     '../../../../example_mods'
@@ -61,7 +61,7 @@ class PolymodHandler
     #end;
 
   static final CORE_FOLDER:Null<String> =
-    #if (REDIRECT_ASSETS_FOLDER && macos)
+    #if (REDIRECT_ASSETS_FOLDER && mac)
     '../../../../../../../assets'
     #elseif REDIRECT_ASSETS_FOLDER
     '../../../../assets'
@@ -69,6 +69,14 @@ class PolymodHandler
     null
     #end;
 
+  /**
+   * Populated with the directories of mods once they're successfully loaded.
+   */
+  public static var loadedModDirs:Array<String> = [];
+
+  /**
+   * Populated with the IDs of mods once they're successfully loaded.
+   */
   public static var loadedModIds:Array<String> = [];
 
   // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
@@ -92,7 +100,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using all mods)...');
-    loadModsById(getAllModIds());
+    loadModsByDir(getAllModDirs());
   }
 
   /**
@@ -105,7 +113,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds);
+    loadModsByDir(Save.instance.enabledModDirs.value);
   }
 
   /**
@@ -119,61 +127,60 @@ class PolymodHandler
     #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
-    loadModsById([]);
+    loadModsByDir([]);
   }
 
   /**
-   * Load all the mods with the given ids.
-   * @param ids The ORDERED list of mod ids to load.
+   * Load all the mods with the directories they're in.
+   * @param dirs The ORDERED list of mod ids to load.
    */
-  public static function loadModsById(ids:Array<String>):Void
+  public static function loadModsByDir(dirs:Array<String>):Void
   {
-    if (ids.length == 0)
+    if (dirs.length == 0)
     {
       trace('You attempted to load zero mods.');
     }
     else
     {
-      trace('Attempting to load ${ids.length} mods...');
+      trace('Attempting to load ${dirs.length} mods...');
     }
 
     buildImports();
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
-    var loadedModList:Array<ModMetadata> = polymod.Polymod.init(
-      {
-        // Root directory for all mods.
-        modRoot: MOD_FOLDER,
-        // The directories for one or more mods to load.
-        dirs: ids,
-        // Framework being used to load assets.
-        framework: OPENFL,
-        // The current version of our API.
-        apiVersionRule: API_VERSION_RULE,
-        // Call this function any time an error occurs.
-        errorCallback: PolymodErrorHandler.onPolymodError,
-        // Enforce semantic version patterns for each mod.
-        // modVersions: null,
-        // A map telling Polymod what the asset type is for unfamiliar file extensions.
-        // extensionMap: [],
+    var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
+      // Root directory for all mods.
+      modRoot: MOD_FOLDER,
+      // The directories for one or more mods to load.
+      dirs: dirs,
+      // Framework being used to load assets.
+      framework: OPENFL,
+      // The current version of our API.
+      apiVersionRule: API_VERSION_RULE,
+      // Call this function any time an error occurs.
+      errorCallback: PolymodErrorHandler.onPolymodError,
+      // Enforce semantic version patterns for each mod.
+      // modVersions: null,
+      // A map telling Polymod what the asset type is for unfamiliar file extensions.
+      // extensionMap: [],
 
-        customFilesystem: modFileSystem,
+      customFilesystem: modFileSystem,
 
-        frameworkParams: buildFrameworkParams(),
+      frameworkParams: buildFrameworkParams(),
 
-        // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
-        ignoredFiles: buildIgnoreList(),
+      // List of filenames to ignore in mods. Use the default list to ignore the metadata file, etc.
+      ignoredFiles: buildIgnoreList(),
 
-        // Parsing rules for various data formats.
-        parseRules: buildParseRules(),
+      // Parsing rules for various data formats.
+      parseRules: buildParseRules(),
 
-        skipDependencyErrors: true,
+      skipDependencyErrors: true,
 
-        // Parse hxc files and register the scripted classes in them.
-        useScriptedClasses: true,
-        loadScriptsAsync: #if html5 true #else false #end,
-      });
+      // Parse hxc files and register the scripted classes in them.
+      useScriptedClasses: true,
+      loadScriptsAsync: #if html5 true #else false #end,
+    });
 
     if (loadedModList == null)
     {
@@ -183,18 +190,20 @@ class PolymodHandler
     {
       if (loadedModList.length == 0)
       {
-        trace('Mod loading complete. We loaded no mods / ${ids.length} mods.');
+        trace('Mod loading complete. We loaded no mods / ${dirs.length} mods.');
       }
       else
       {
-        trace('Mod loading complete. We loaded ${loadedModList.length} / ${ids.length} mods.');
+        trace('Mod loading complete. We loaded ${loadedModList.length} / ${dirs.length} mods.');
       }
     }
 
     loadedModIds = [];
+    loadedModDirs = [];
     for (mod in loadedModList)
     {
-      trace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
+      trace(' * ${mod.title} v${mod.modVersion} [${mod.id}]');
+      loadedModDirs.push(mod.dirName);
       loadedModIds.push(mod.id);
     }
 
@@ -203,35 +212,35 @@ class PolymodHandler
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.TEXT);
     trace('Installed mods have added/replaced ${fileList.length} text files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_MUSIC);
     trace('Installed mods have replaced ${fileList.length} music files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_SOUND);
     trace('Installed mods have replaced ${fileList.length} sound files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
 
     fileList = Polymod.listModFiles(PolymodAssetType.AUDIO_GENERIC);
     trace('Installed mods have replaced ${fileList.length} generic audio files.');
     for (item in fileList)
     {
-      trace('  * $item');
+      trace(' * $item');
     }
     #end
   }
@@ -239,24 +248,21 @@ class PolymodHandler
   static function buildFileSystem():polymod.fs.ZipFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
-    return new ZipFileSystem(
-      {
-        modRoot: MOD_FOLDER,
-        autoScan: true
-      });
+    return new ZipFileSystem({
+      modRoot: MOD_FOLDER,
+      autoScan: true
+    });
   }
 
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    Polymod.addDefaultImport(funkin.Assets);
-    Polymod.addDefaultImport(funkin.Paths);
+    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [funkin.Assets, funkin.Paths, funkin.Preferences, funkin.util.Constants, flixel.FlxG];
 
-    // Add import aliases for certain classes.
-    // NOTE: Scripted classes are automatically aliased to their parent class.
-    Polymod.addImportAlias('flixel.math.FlxPoint', flixel.math.FlxPoint.FlxBasePoint);
-
-    Polymod.addImportAlias('funkin.data.event.SongEventSchema', funkin.data.event.SongEventSchema.SongEventSchemaRaw);
+    for (cls in DEFAULT_IMPORTS)
+    {
+      Polymod.addDefaultImport(cls);
+    }
 
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
@@ -273,6 +279,11 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
     Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
     Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+
+    // `FlxAtlasSprite` was merged into `FunkinSprite` and then removed.
+    // We add the import alias here so mods don't error out as much.
+    Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.ScriptedFunkinSprite);
 
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
@@ -315,9 +326,9 @@ class PolymodHandler
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
 
-    // `flixel.util.FlxSave`
-    // FlxSave.resolveFlixelClasses() can access blacklisted packages
-    Polymod.blacklistImport('flixel.util.FlxSave');
+    // `lime.utils.AssetLibrary`
+    // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
+    Polymod.blacklistImport('lime.utils.AssetLibrary');
 
     // Disable access to AdMob Util
     Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
@@ -325,16 +336,27 @@ class PolymodHandler
     // Disable access to In-App Purchases Util
     Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
 
-    // Disable access to Admob Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
+    // Disable access to In-App Reviews Util
+    Polymod.blacklistImport('funkin.mobile.util.InAppReviewUtil');
+
+    // Disable access to AndroidTools Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to AndroidTools Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.androidtools'))
+    // Disable access to Haptics Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to Admob Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.admob'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -349,8 +371,16 @@ class PolymodHandler
       Polymod.blacklistImport(className);
     }
 
-    // Disable access to Haptics Extension
-    for (cls in ClassMacro.listClassesInPackage('extension.haptics'))
+    // Disable access to IARCore Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.iarcore'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
+
+    // Disable access to WebViewCore Extension
+    for (cls in ClassMacro.listClassesInPackage('extension.webviewcore'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -381,6 +411,20 @@ class PolymodHandler
     // Can load native processes on the host operating system.
     Polymod.blacklistImport('openfl.desktop.NativeProcess');
 
+    // `flixel.util.FlxSave`
+    // resolveFlixelClasses() can access blacklisted packages
+    Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
+    // Disallow direct manipulation of save data.
+    Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
+
+    // `funkin.save.Save`
+    // Direct access to save data is important for scripts (like checking unlocks),
+    // but we don't want scripts to be able to perform operations like writing scores.
+    Polymod.blacklistInstanceFields(funkin.save.Save, [ // No direct field access
+      'data', // LMFAO definitely not
+      'clearData', // No score manipulation please
+      'setLevelScore', 'setSongScore', 'applySongRank']);
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
@@ -403,15 +447,6 @@ class PolymodHandler
     // `hscript.*
     // Contains functions which may allow for interpreting unsanitized strings.
     for (cls in ClassMacro.listClassesInPackage('hscript'))
-    {
-      if (cls == null) continue;
-      var className:String = Type.getClassName(cls);
-      Polymod.blacklistImport(className);
-    }
-
-    // `funkin.api.newgrounds.*`
-    // Contains functions which allow for cheating medals and leaderboards.
-    for (cls in ClassMacro.listClassesInPackage('funkin.api.newgrounds'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);
@@ -445,6 +480,11 @@ class PolymodHandler
       var className:String = Type.getClassName(cls);
       Polymod.blacklistImport(className);
     }
+
+    // External classes for android that bridge to private JNI methods & callbacks
+    Polymod.blacklistImport('funkin.external.android.CallbackUtil');
+    Polymod.blacklistImport('funkin.external.android.DataFolderUtil');
+    Polymod.blacklistImport('funkin.external.android.JNIUtil');
   }
 
   /**
@@ -454,6 +494,8 @@ class PolymodHandler
   {
     var result = Polymod.getDefaultIgnoreList();
 
+    result.push('.vscode');
+    result.push('.idea');
     result.push('.git');
     result.push('.gitignore');
     result.push('.gitattributes');
@@ -481,21 +523,7 @@ class PolymodHandler
   static inline function buildFrameworkParams():polymod.Polymod.FrameworkParams
   {
     return {
-      assetLibraryPaths: [
-        'default' => 'preload',
-        'shared' => 'shared',
-        'songs' => 'songs',
-        'videos' => 'videos',
-        'tutorial' => 'tutorial',
-        'week1' => 'week1',
-        'week2' => 'week2',
-        'week3' => 'week3',
-        'week4' => 'week4',
-        'week5' => 'week5',
-        'week6' => 'week6',
-        'week7' => 'week7',
-        'weekend1' => 'weekend1',
-      ],
+      assetLibraryPaths: ['default' => 'preload', 'shared' => 'shared', 'songs' => 'songs', 'videos' => 'videos', 'tutorial' => 'tutorial', 'week1' => 'week1', 'week2' => 'week2', 'week3' => 'week3', 'week4' => 'week4', 'week5' => 'week5', 'week6' => 'week6', 'week7' => 'week7', 'weekend1' => 'weekend1', 'sserafim' => 'sserafim'],
       coreAssetRedirect: CORE_FOLDER,
     }
   }
@@ -510,13 +538,12 @@ class PolymodHandler
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
-    var modMetadata:Array<ModMetadata> = Polymod.scan(
-      {
-        modRoot: MOD_FOLDER,
-        apiVersionRule: API_VERSION_RULE,
-        fileSystem: modFileSystem,
-        errorCallback: PolymodErrorHandler.onPolymodError
-      });
+    var modMetadata:Array<ModMetadata> = Polymod.scan({
+      modRoot: MOD_FOLDER,
+      apiVersionRule: API_VERSION_RULE,
+      fileSystem: modFileSystem,
+      errorCallback: PolymodErrorHandler.onPolymodError
+    });
     trace('Found ${modMetadata.length} mods when scanning.');
     return modMetadata;
   }
@@ -532,17 +559,27 @@ class PolymodHandler
   }
 
   /**
+   * Retrieve a list of ALL mod directory names, including disabled mods.
+   * @return An array of mod direcotry names
+   */
+  public static function getAllModDirs():Array<String>
+  {
+    var modDirs:Array<String> = [for (i in getAllMods()) i.dirName];
+    return modDirs;
+  }
+
+  /**
    * Retrieve a list of metadata for all enabled mods.
    * @return An array of mod metadata
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds:Array<String> = Save.instance.enabledModIds;
+    var modDirs:Array<String> = Save.instance.enabledModDirs.value;
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = [];
     for (item in modMetadata)
     {
-      if (modIds.indexOf(item.id) != -1)
+      if (modDirs.indexOf(item.dirName) != -1)
       {
         enabledMods.push(item);
       }

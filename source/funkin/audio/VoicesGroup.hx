@@ -6,6 +6,13 @@ import funkin.audio.waveform.WaveformData;
 @:nullSafety
 class VoicesGroup extends SoundGroup
 {
+  /**
+   * Whenever or not the game is using the legacy vocals system (shared Voices.ogg)
+   */
+  public var legacyVoiceSystem:Bool = false;
+
+  public var legacyVoiceUsesPlayer:Bool = false;
+
   var playerVoices:Null<FlxTypedGroup<FunkinSound>>;
   var opponentVoices:Null<FlxTypedGroup<FunkinSound>>;
 
@@ -47,7 +54,8 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVolume(volume:Float):Float
   {
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.volume = volume;
     });
     return playerVolume = volume;
@@ -55,15 +63,18 @@ class VoicesGroup extends SoundGroup
 
   override function set_time(time:Float):Float
   {
-    forEachAlive(function(snd) {
+    forEachAlive(function(snd)
+    {
       // account for different offsets per sound?
       snd.time = time;
     });
 
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.time -= playerVoicesOffset;
     });
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.time -= opponentVoicesOffset;
     });
 
@@ -72,7 +83,8 @@ class VoicesGroup extends SoundGroup
 
   function set_playerVoicesOffset(offset:Float):Float
   {
-    playerVoices?.forEachAlive(function(voice:FunkinSound) {
+    playerVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.time += playerVoicesOffset;
       voice.time -= offset;
     });
@@ -81,7 +93,8 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVoicesOffset(offset:Float):Float
   {
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.time += opponentVoicesOffset;
       voice.time -= offset;
     });
@@ -99,7 +112,8 @@ class VoicesGroup extends SoundGroup
 
   function set_opponentVolume(volume:Float):Float
   {
-    opponentVoices?.forEachAlive(function(voice:FunkinSound) {
+    opponentVoices?.forEachAlive(function(voice:FunkinSound)
+    {
       voice.volume = volume;
     });
     return opponentVolume = volume;

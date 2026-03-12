@@ -86,6 +86,9 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
     target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
 
+    var noteOffsets:Array<Float> = getNoteOffsets();
+    target.offset.set(noteOffsets[0], noteOffsets[1]);
+
     // Apply the animations.
     buildNoteAnimations(target);
 
@@ -115,7 +118,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(noteAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(noteAssetPath)))
     {
       FlxG.log.warn('Note texture is not cached: ${noteAssetPath}');
     }
@@ -178,6 +181,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   public function getNoteScale():Float
   {
     return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
+  }
+
+  public function getNoteOffsets():Array<Float>
+  {
+    return _data?.assets?.note?.offsets ?? fallback?.getNoteOffsets() ?? [0.0, 0.0];
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
@@ -271,30 +279,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var result:Array<Null<AnimationData>> = switch (dir)
     {
       case NoteDirection.LEFT:
-        [
-          _data.assets.noteStrumline?.data?.leftStatic?.toNamed('static'),
-          _data.assets.noteStrumline?.data?.leftPress?.toNamed('press'),
-          _data.assets.noteStrumline?.data?.leftConfirm?.toNamed('confirm'),
-          _data.assets.noteStrumline?.data?.leftConfirmHold?.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.DOWN: [
-          _data.assets.noteStrumline?.data?.downStatic?.toNamed('static'),
-          _data.assets.noteStrumline?.data?.downPress?.toNamed('press'),
-          _data.assets.noteStrumline?.data?.downConfirm?.toNamed('confirm'),
-          _data.assets.noteStrumline?.data?.downConfirmHold?.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.UP: [
-          _data.assets.noteStrumline?.data?.upStatic?.toNamed('static'),
-          _data.assets.noteStrumline?.data?.upPress?.toNamed('press'),
-          _data.assets.noteStrumline?.data?.upConfirm?.toNamed('confirm'),
-          _data.assets.noteStrumline?.data?.upConfirmHold?.toNamed('confirm-hold'),
-        ];
-      case NoteDirection.RIGHT: [
-          _data.assets.noteStrumline?.data?.rightStatic?.toNamed('static'),
-          _data.assets.noteStrumline?.data?.rightPress?.toNamed('press'),
-          _data.assets.noteStrumline?.data?.rightConfirm?.toNamed('confirm'),
-          _data.assets.noteStrumline?.data?.rightConfirmHold?.toNamed('confirm-hold'),
-        ];
+        [_data.assets.noteStrumline?.data?.leftStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.leftPress?.toNamed('press'), _data.assets.noteStrumline?.data?.leftConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.leftConfirmHold?.toNamed('confirm-hold'),];
+      case NoteDirection.DOWN: [_data.assets.noteStrumline?.data?.downStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.downPress?.toNamed('press'), _data.assets.noteStrumline?.data?.downConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.downConfirmHold?.toNamed('confirm-hold'),];
+      case NoteDirection.UP: [_data.assets.noteStrumline?.data?.upStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.upPress?.toNamed('press'), _data.assets.noteStrumline?.data?.upConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.upConfirmHold?.toNamed('confirm-hold'),];
+      case NoteDirection.RIGHT: [_data.assets.noteStrumline?.data?.rightStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.rightPress?.toNamed('press'), _data.assets.noteStrumline?.data?.rightConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.rightConfirmHold?.toNamed('confirm-hold'),];
       default: [];
     };
 
@@ -510,7 +498,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // library:path
     var parts = getCountdownSoundPath(step, true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length == 0) return null;
-    if (parts.length == 1) return Paths.image(parts[0]);
+    if (parts.length == 1) return Paths.sound(parts[0]);
     return Paths.sound(parts[1], parts[0]);
   }
 
@@ -896,7 +884,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(splashAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(splashAssetPath)))
     {
       FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
     }
@@ -934,7 +922,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   function buildSplashAnimations(target:NoteSplash):Void
   {
-    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection) {
+    final addSplashAnim:NoteDirection->Void = function(dir:NoteDirection)
+    {
       var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
       if (animData != null)
       {
@@ -1046,7 +1035,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinSprite.isTextureCached(Paths.image(holdCoverAssetPath)))
+    if (!FunkinMemory.isTextureCached(Paths.image(holdCoverAssetPath)))
     {
       FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
     }
@@ -1078,26 +1067,10 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var noteColor:String = dir.colorName.toTitleCase();
     var result:Array<Null<AnimationData>> = switch (dir)
     {
-      case LEFT: [
-          _data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case DOWN: [
-          _data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case UP: [
-          _data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
-      case RIGHT: [
-          _data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'),
-          _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'),
-          _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),
-        ];
+      case LEFT: [_data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),];
+      case DOWN: [_data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),];
+      case UP: [_data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),];
+      case RIGHT: [_data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),];
       default: [];
     };
 
@@ -1157,7 +1130,9 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data?.assets?.holdNoteCover?.offsets ?? fallback?.getHoldCoverOffsets() ?? [0.0, 0.0];
   }
 
-  public function destroy():Void {}
+  public function destroy():Void
+  {
+  }
 
   /**
    * Returns a string of the library name for the given asset id

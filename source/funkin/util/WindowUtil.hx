@@ -96,31 +96,26 @@ class WindowUtil
   public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
   /**
-   * Has `initWindowEvents()` been called already?
-   * This is to prevent multiple instances of the same function.
-   */
-  private static var _initializedWindowEvents:Bool = false;
-
-  /**
    * Wires up FlxSignals that happen based on window activity.
    * For example, we can run a callback when the window is closed.
    */
   public static function initWindowEvents():Void
   {
-    if (_initializedWindowEvents) return; // Fix that annoying
-    // onUpdate is called every frame just before rendering.
-
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int) {
+    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int)
+    {
       windowExit.dispatch(exitCode);
     });
 
     #if (desktop || html5)
-    openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
+    openfl.Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) ->
+    {
+      #if FEATURE_HAXEUI
       if (haxe.ui.focus.FocusManager.instance.focus != null)
       {
         return;
       }
+      #end
 
       for (key in PlayerSettings.player1.controls.getKeysForAction(WINDOW_FULLSCREEN))
       {
@@ -142,7 +137,6 @@ class WindowUtil
       }
     });
     #end
-    _initializedWindowEvents = true;
   }
 
   /**
@@ -161,11 +155,7 @@ class WindowUtil
    */
   public static function showError(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    funkin.external.windows.WinAPI.showError(desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name);
   }
 
   /**
@@ -175,11 +165,7 @@ class WindowUtil
    */
   public static function showWarning(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    funkin.external.windows.WinAPI.showWarning(desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.WARNING, desc, name);
   }
 
   /**
@@ -189,31 +175,11 @@ class WindowUtil
    */
   public static function showInformation(name:String, desc:String):Void
   {
-    #if (windows && cpp)
-    funkin.external.windows.WinAPI.showInformation(desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
-  }
-
-  /**
-   * Shows a question dialog with a question icon and OK/Cancel buttons.
-   * @param name The title of the dialog window.
-   * @param desc The question message to display.
-   */
-  public static function showQuestion(name:String, desc:String):Void
-  {
-    #if (windows && cpp)
-    funkin.external.windows.WinAPI.showQuestion(desc, name);
-    #else
-    lime.app.Application.current.window.alert(desc, name);
-    #end
+    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.INFORMATION, desc, name);
   }
 
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
-    // vsync crap dont worky on mac rn derp
-    #if !mac
     var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
 
     // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
@@ -223,6 +189,5 @@ class WindowUtil
       trace('Failed to set VSync mode to ' + value);
       FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
     }
-    #end
   }
 }

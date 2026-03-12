@@ -19,7 +19,9 @@ using StringTools;
 // Polymod can't override this, so we can't use this technique elsewhere.
 #if FEATURE_TOUCH_HERE_TO_PLAY
 @:bitmap('art/touchHereToPlay.png')
-class TouchHereToPlayImage extends BitmapData {}
+class TouchHereToPlayImage extends BitmapData
+{
+}
 #end
 
 /**
@@ -120,8 +122,7 @@ class FunkinPreloader extends FlxBasePreloader
   {
     super(Constants.PRELOADER_MIN_STAGE_TIME);
 
-    // We can't even call trace() yet, until Flixel loads.
-    trace('Initializing custom preloader...');
+    trace(' PRELOADER '.bold().bg_note_left() + ' Starting custom preloader...');
   }
 
   override function create():Void
@@ -143,12 +144,12 @@ class FunkinPreloader extends FlxBasePreloader
     this._width = Lib.current.stage.stageWidth;
     this._height = Lib.current.stage.stageHeight;
 
-    trace('Preloader size: ' + this._width + 'x' + this._height);
+    trace(' PRELOADER '.bold().bg_note_left() + ' Resolution: ${this._width}x${this._height}');
 
     // Scale assets to the screen size.
     // Desktop is always 1:1 scale, mobile needs DPI normalization for consistent positioning
     #if mobile
-    var display = lime.system.System.getDisplay(0);
+    var display = Lib.current.stage.window.display;
     var dpiScale = display.dpi / 160.0; // 160 is Android's baseline DPI
     var normalizedWidth = this._width / dpiScale;
     ratio = normalizedWidth / BASE_WIDTH;
@@ -247,7 +248,8 @@ class FunkinPreloader extends FlxBasePreloader
     vfdBitmap.shader = vfdShader;
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
-    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap) {
+    touchHereToPlay = createBitmap(TouchHereToPlayImage, function(bmp:Bitmap)
+    {
       // Scale and center the touch to start image.
       // We have to do this inside the async call, after the image size is known.
       bmp.scaleX = bmp.scaleY = ratio * 0.5;
@@ -279,7 +281,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   override function update(percent:Float):Void
   {
-    var elapsed:Float = (Date.now().getTime() - this._startTime) / 1000.0;
+    var elapsed:Float = (#if hl Sys.time() * 1000.0 #else Date.now().getTime() #end - this._startTime) / 1000.0;
 
     vfdShader.update(elapsed * 100);
 
@@ -765,7 +767,7 @@ class FunkinPreloader extends FlxBasePreloader
           }
         }
       case FunkinPreloaderState.Complete:
-        if (completeTime < 0)
+        if (completeTime <= 0)
         {
           completeTime = elapsed;
         }
@@ -879,7 +881,10 @@ class FunkinPreloader extends FlxBasePreloader
     var percentage:Int = Math.floor(percent * 100);
     progressRightText.text = '$percentage%';
 
-    if (currentState.getProgressLeftText() != null) trace('Preloader state: ' + currentState + ' (' + percentage + '%, ' + elapsed + 's)');
+    if (currentState.getProgressLeftText() != null)
+    {
+      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
+    }
 
     super.update(percent);
   }
@@ -920,7 +925,7 @@ class FunkinPreloader extends FlxBasePreloader
    */
   function isLandscapeFlipped():Bool
   {
-    return lime.system.System.getDisplayOrientation(0) == DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED;
+    return lime.system.System.getDisplayOrientation(lime.app.Application.current.window.display) == DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED;
   }
 
   function immediatelyStartGame():Void

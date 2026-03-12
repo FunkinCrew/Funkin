@@ -70,6 +70,11 @@ class MeshRender extends FlxStrip
     add_tri(a, c, d);
   }
 
+  public override function draw():Void
+  {
+    super.draw();
+  }
+
   /**
    * Build a quad from four points.
    *

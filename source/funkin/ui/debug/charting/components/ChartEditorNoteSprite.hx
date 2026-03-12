@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components;
 
+#if FEATURE_CHART_EDITOR
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxObject;
@@ -258,6 +259,14 @@ class ChartEditorNoteSprite extends FlxSprite
     kindIndicator.draw();
   }
 
+  override public function kill()
+  {
+    super.kill();
+
+    // Remove the tooltip to prevent recently deleted notes from showing a tooltip.
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+  }
+
   function get_noteStyle():Null<String>
   {
     if (this.noteStyle == null)
@@ -337,3 +346,4 @@ class ChartEditorNoteSprite extends FlxSprite
     return !aboveViewArea && !belowViewArea;
   }
 }
+#end

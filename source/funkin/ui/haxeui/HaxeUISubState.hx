@@ -1,5 +1,6 @@
 package funkin.ui.haxeui;
 
+#if FEATURE_HAXEUI
 import haxe.ui.RuntimeComponentBuilder;
 import haxe.ui.components.CheckBox;
 import haxe.ui.containers.menus.MenuCheckBox;
@@ -179,3 +180,4 @@ class HaxeUISubState extends MusicBeatSubState
     component = null;
   }
 }
+#end

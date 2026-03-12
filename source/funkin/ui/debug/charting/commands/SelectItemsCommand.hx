@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
@@ -46,7 +47,7 @@ class SelectItemsCommand implements ChartEditorCommand
       var defaultKey = null;
       if (eventSchema == null)
       {
-        trace('[WARNING] Event schema not found for event ${eventSelected.eventKind}.');
+        trace(' WARNING '.bg_yellow().bold() + ' Event schema not found for event ${eventSelected.eventKind}.');
       }
       else
       {
@@ -72,6 +73,7 @@ class SelectItemsCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -81,6 +83,7 @@ class SelectItemsCommand implements ChartEditorCommand
 
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -119,3 +122,4 @@ class SelectItemsCommand implements ChartEditorCommand
     return 'Select ${len} Items';
   }
 }
+#end

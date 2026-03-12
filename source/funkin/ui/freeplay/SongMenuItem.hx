@@ -150,7 +150,6 @@ class SongMenuItem extends FlxSpriteGroup
     add(fakeRanking);
 
     fakeBlurredRanking = new FreeplayRank(fakeRanking.x, fakeRanking.y);
-    fakeBlurredRanking.shader = new GaussianBlurShader(1);
     add(fakeBlurredRanking);
 
     fakeRanking.visible = false;
@@ -162,7 +161,6 @@ class SongMenuItem extends FlxSpriteGroup
     add(ranking);
 
     blurredRanking = new FreeplayRank(ranking.x, ranking.y);
-    blurredRanking.shader = new GaussianBlurShader(1);
     add(blurredRanking);
 
     sparkle = new FlxSprite(ranking.x, ranking.y);
@@ -218,7 +216,6 @@ class SongMenuItem extends FlxSpriteGroup
 
     favIconBlurred.setGraphicSize(50, 50);
     favIconBlurred.blend = BlendMode.ADD;
-    favIconBlurred.shader = new GaussianBlurShader(1.2);
     favIconBlurred.visible = false;
     add(favIconBlurred);
 
@@ -371,6 +368,8 @@ class SongMenuItem extends FlxSpriteGroup
           }
         case 2:
           bpmNumbers[i].digit = newBPM % 10;
+
+          if (Math.floor(newBPM) % 10 == 1) tempShift -= 4;
         default:
           trace('why the fuck is this being called');
       }
@@ -382,8 +381,30 @@ class SongMenuItem extends FlxSpriteGroup
 
   var evilTrail:FlxTrail;
 
-  public function fadeAnim():Void
+  public var hasTrail:Bool = false;
+
+  function clearUpTrail()
   {
+    if (impactThing != null)
+    {
+      FlxTween.cancelTweensOf(impactThing);
+      remove(impactThing);
+      impactThing.destroy();
+      impactThing = null;
+    }
+    if (evilTrail != null)
+    {
+      FlxTween.cancelTweensOf(evilTrail);
+      remove(evilTrail);
+      evilTrail.destroy();
+      evilTrail = null;
+    }
+  }
+
+  public function fadeAnim(?newRank:ScoringRank):Void
+  {
+    if (hasTrail) clearUpTrail();
+    hasTrail = true;
     impactThing = new FunkinSprite(0, 0);
     impactThing.frames = capsule.frames;
     impactThing.frame = capsule.frame;
@@ -400,16 +421,17 @@ class SongMenuItem extends FlxSpriteGroup
     evilTrail = new FlxTrail(impactThing, null, 15, 2, 0.01, 0.069);
     evilTrail.blend = BlendMode.ADD;
     evilTrail.zIndex = capsule.zIndex - 5;
-    FlxTween.tween(evilTrail, {alpha: 0}, 0.6,
+    FlxTween.tween(evilTrail, {alpha: 0}, 0.6, {
+      ease: FlxEase.quadOut,
+      onComplete: function(_)
       {
-        ease: FlxEase.quadOut,
-        onComplete: function(_) {
-          remove(evilTrail);
-        }
-      });
+        clearUpTrail();
+        hasTrail = false;
+      }
+    });
     add(evilTrail);
 
-    evilTrail.color = ranking.rank.getRankingFreeplayColor();
+    evilTrail.color = (newRank ?? ranking.rank).getRankingFreeplayColor();
   }
 
   public function getTrailColor():FlxColor
@@ -432,7 +454,7 @@ class SongMenuItem extends FlxSpriteGroup
     {
       songText.text = freeplayData.fullSongName;
       if (freeplayData.songCharacter != null) pixelIcon.setCharacter(freeplayData.songCharacter);
-      pixelIcon.visible = true;
+      if (pixelIcon.char != freeplayData.songCharacter) pixelIcon.visible = false;
       updateBPM(Std.int(freeplayData.songStartingBpm) ?? 0);
       updateDifficultyRating(freeplayData.difficultyRating ?? 0);
       if (updateRank) updateScoringRank(freeplayData.scoringRank);
@@ -500,12 +522,14 @@ class SongMenuItem extends FlxSpriteGroup
     songText.scale.x = 1.7;
     songText.scale.y = 0.2;
 
-    new FlxTimer().start(1 / 24, function(_) {
+    new FlxTimer().start(1 / 24, function(_)
+    {
       songText.scale.x = 0.4;
       songText.scale.y = 1.4;
     });
 
-    new FlxTimer().start(2 / 24, function(_) {
+    new FlxTimer().start(2 / 24, function(_)
+    {
       songText.scale.x = songText.scale.y = 1;
     });
   }
@@ -558,7 +582,7 @@ class SongMenuItem extends FlxSpriteGroup
     initData(null, styleData, 1);
     y = intendedY(0) + 10;
     targetPos.x = x;
-    alpha = 0.5;
+    alpha = 0;
     songText.visible = false;
     favIcon.visible = false;
     favIconBlurred.visible = false;
@@ -581,7 +605,8 @@ class SongMenuItem extends FlxSpriteGroup
   {
     frameInTypeBeat = 0;
 
-    new FlxTimer().start((1 / 24) * maxTimer, function(doShit) {
+    new FlxTimer().start((1 / 24) * maxTimer, function(doShit)
+    {
       doJumpIn = true;
       doLerp = true;
     });
@@ -594,7 +619,8 @@ class SongMenuItem extends FlxSpriteGroup
     }
     else
     {
-      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_) {
+      new FlxTimer().start((xFrames.length / 24) * 2.5, function(_)
+      {
         visible = true;
         capsule.alpha = 1;
         setVisibleGrp(true);
@@ -723,9 +749,13 @@ class SongMenuItem extends FlxSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    // cute one liners, lol!
+    final wasSelected:Bool = selected;
+
     selected = value;
-    updateSelected();
+    if (wasSelected != selected)
+    {
+      updateSelected();
+    }
     return selected;
   }
 

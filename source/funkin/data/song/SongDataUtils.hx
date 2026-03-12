@@ -24,7 +24,8 @@ class SongDataUtils
    */
   public static function offsetSongNoteData(notes:Array<SongNoteData>, offset:Float):Array<SongNoteData>
   {
-    var offsetNote = function(note:SongNoteData):SongNoteData {
+    var offsetNote = function(note:SongNoteData):SongNoteData
+    {
       var time:Float = note.time + offset;
       var data:Int = note.data;
       var length:Float = note.length;
@@ -46,7 +47,8 @@ class SongDataUtils
    */
   public static function offsetSongEventData(events:Array<SongEventData>, offset:Float):Array<SongEventData>
   {
-    return events.map(function(event:SongEventData):SongEventData {
+    return events.map(function(event:SongEventData):SongEventData
+    {
       return new SongEventData(event.time + offset, event.eventKind, event.value);
     });
   }
@@ -61,7 +63,8 @@ class SongDataUtils
    */
   public static function clampSongNoteData(notes:Array<SongNoteData>, startTime:Float, endTime:Float):Array<SongNoteData>
   {
-    return notes.filter(function(note:SongNoteData):Bool {
+    return notes.filter(function(note:SongNoteData):Bool
+    {
       return note.time >= startTime && note.time <= endTime;
     });
   }
@@ -76,7 +79,8 @@ class SongDataUtils
    */
   public static function clampSongEventData(events:Array<SongEventData>, startTime:Float, endTime:Float):Array<SongEventData>
   {
-    return events.filter(function(event:SongEventData):Bool {
+    return events.filter(function(event:SongEventData):Bool
+    {
       return event.time >= startTime && event.time <= endTime;
     });
   }
@@ -92,7 +96,8 @@ class SongDataUtils
   {
     if (notes.length == 0 || subtrahend.length == 0) return notes;
 
-    var result = notes.filter(function(note:SongNoteData):Bool {
+    var result = notes.filter(function(note:SongNoteData):Bool
+    {
       for (x in subtrahend)
       {
         // The currently iterated note is in the subtrahend array.
@@ -117,7 +122,8 @@ class SongDataUtils
   {
     if (events.length == 0 || subtrahend.length == 0) return events;
 
-    return events.filter(function(event:SongEventData):Bool {
+    return events.filter(function(event:SongEventData):Bool
+    {
       for (x in subtrahend)
       {
         // The currently iterated event is in the subtrahend array.
@@ -134,7 +140,8 @@ class SongDataUtils
    */
   public static function flipNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4):Array<SongNoteData>
   {
-    return notes.map(function(note:SongNoteData):SongNoteData {
+    return notes.map(function(note:SongNoteData):SongNoteData
+    {
       var newData = note.data;
 
       if (newData < strumlineSize) newData += strumlineSize;
@@ -142,6 +149,63 @@ class SongDataUtils
         newData -= strumlineSize;
 
       return new SongNoteData(note.time, newData, note.length, note.kind);
+    });
+  }
+
+  /**
+   * Create an array of notes whose note data is mirrored.
+   * Does not mutate the original array.
+   *
+   * @param flip Flip the notes if the notes given are in both strumlines, so that result isn't inverted when mirrored.
+   * @param mirrorX Mirror along the X axis, aka the directions of the notes.
+   * @param mirrorY Mirror along the Y axis, aka the time of the notes.
+   */
+  public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true,
+      mirrorY:Bool = true):Array<SongNoteData>
+  {
+    var minTime = notes[0].time;
+    var maxTime = notes[0].time;
+    var minStrumline = notes[0].data;
+    var maxStrumline = notes[0].data;
+    for (note in notes)
+    {
+      // Find the maximum and minimum time and strumline positions
+      // I wish there was a better way of doing this
+      if (flip)
+      {
+        if (note.data < minStrumline) minStrumline = note.data;
+        else if (note.data > maxStrumline) maxStrumline = note.data;
+      }
+      if (note.time < minTime) minTime = note.time;
+      else if (note.time > maxTime) maxTime = note.time;
+    }
+
+    var timeDiff = minTime + (maxTime - minTime) / 2;
+    if (flip && minStrumline < strumlineSize && strumlineSize < maxStrumline)
+    {
+      // Flip the notes if one of the notes is on the other strum
+      // Otherwise they'll be inverted when mirrored
+      notes = flipNotes(notes);
+    }
+
+    return notes.map(function(note:SongNoteData):SongNoteData
+    {
+      var newData = note.data;
+      var newTime = note.time;
+
+      if (mirrorX)
+      {
+        if (newData < strumlineSize) newData = strumlineSize - 1 - newData;
+        else
+          newData = strumlineSize + strumlineSize * 2 - 1 - newData;
+      }
+      if (mirrorY)
+      {
+        if (newTime < timeDiff) newTime += (timeDiff - newTime) * 2;
+        else if (newTime > timeDiff) newTime -= (newTime - timeDiff) * 2;
+      }
+
+      return new SongNoteData(newTime, newData, note.length, note.kind);
     });
   }
 
@@ -175,7 +239,8 @@ class SongDataUtils
   public static function sortNotes(notes:Array<SongNoteData>, desc:Bool = false):Array<SongNoteData>
   {
     // TODO: Modifies the array in place. Is this okay?
-    notes.sort(function(a:SongNoteData, b:SongNoteData):Int {
+    notes.sort(function(a:SongNoteData, b:SongNoteData):Int
+    {
       return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
     });
     return notes;
@@ -187,7 +252,8 @@ class SongDataUtils
   public static function sortEvents(events:Array<SongEventData>, desc:Bool = false):Array<SongEventData>
   {
     // TODO: Modifies the array in place. Is this okay?
-    events.sort(function(a:SongEventData, b:SongEventData):Int {
+    events.sort(function(a:SongEventData, b:SongEventData):Int
+    {
       return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.time, b.time);
     });
     return events;
@@ -199,7 +265,8 @@ class SongDataUtils
   public static function sortTimeChanges(timeChanges:Array<SongTimeChange>, desc:Bool = false):Array<SongTimeChange>
   {
     // TODO: Modifies the array in place. Is this okay?
-    timeChanges.sort(function(a:SongTimeChange, b:SongTimeChange):Int {
+    timeChanges.sort(function(a:SongTimeChange, b:SongTimeChange):Int
+    {
       return FlxSort.byValues(desc ? FlxSort.DESCENDING : FlxSort.ASCENDING, a.timeStamp, b.timeStamp);
     });
     return timeChanges;
@@ -212,7 +279,7 @@ class SongDataUtils
   {
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongClipboardItems>(ignoreNullOptionals);
-    var dataString:String = writer.write(data, '  ');
+    var dataString:String = writer.write(data, ' ');
 
     ClipboardUtil.setClipboard(dataString);
 
@@ -256,7 +323,8 @@ class SongDataUtils
    */
   public static function getNotesInTimeRange(notes:Array<SongNoteData>, start:Float, end:Float):Array<SongNoteData>
   {
-    return notes.filter(function(note:SongNoteData):Bool {
+    return notes.filter(function(note:SongNoteData):Bool
+    {
       return note.time >= start && note.time <= end;
     });
   }
@@ -266,7 +334,8 @@ class SongDataUtils
    */
   public static function getEventsInTimeRange(events:Array<SongEventData>, start:Float, end:Float):Array<SongEventData>
   {
-    return events.filter(function(event:SongEventData):Bool {
+    return events.filter(function(event:SongEventData):Bool
+    {
       return event.time >= start && event.time <= end;
     });
   }
@@ -276,7 +345,8 @@ class SongDataUtils
    */
   public static function getNotesInDataRange(notes:Array<SongNoteData>, start:Int, end:Int):Array<SongNoteData>
   {
-    return notes.filter(function(note:SongNoteData):Bool {
+    return notes.filter(function(note:SongNoteData):Bool
+    {
       return note.data >= start && note.data <= end;
     });
   }
@@ -286,7 +356,8 @@ class SongDataUtils
    */
   public static function getNotesWithData(notes:Array<SongNoteData>, data:Array<Int>):Array<SongNoteData>
   {
-    return notes.filter(function(note:SongNoteData):Bool {
+    return notes.filter(function(note:SongNoteData):Bool
+    {
       return data.indexOf(note.data) != -1;
     });
   }
@@ -296,7 +367,8 @@ class SongDataUtils
    */
   public static function getEventsWithKind(events:Array<SongEventData>, kinds:Array<String>):Array<SongEventData>
   {
-    return events.filter(function(event:SongEventData):Bool {
+    return events.filter(function(event:SongEventData):Bool
+    {
       return kinds.indexOf(event.eventKind) != -1;
     });
   }

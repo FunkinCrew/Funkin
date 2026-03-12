@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting.toolboxes;
 
+import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongRegistry;
@@ -62,21 +64,35 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
-    difficultyToolboxAddVariation.onClick = function(_:UIEvent) {
+    difficultyToolboxAddVariation.onClick = function(_:UIEvent)
+    {
       chartEditorState.openAddVariationDialog(true);
     };
 
-    difficultyToolboxAddDifficulty.onClick = function(_:UIEvent) {
+    difficultyToolboxAddDifficulty.onClick = function(_:UIEvent)
+    {
       chartEditorState.openAddDifficultyDialog(true);
     };
 
-    difficultyToolboxRemoveDifficulty.onClick = function(_:UIEvent) {
+    difficultyToolboxCloneDifficulty.onClick = function(_:UIEvent)
+    {
+      chartEditorState.openCloneDifficultyDialog(false, true);
+    };
+
+    difficultyToolboxMoveDifficulty.onClick = function(_:UIEvent)
+    {
+      chartEditorState.openCloneDifficultyDialog(true, true);
+    };
+
+    difficultyToolboxRemoveDifficulty.onClick = function(_:UIEvent)
+    {
       var currentVariation:String = chartEditorState.selectedVariation;
       var currentDifficulty:String = chartEditorState.selectedDifficulty;
 
       trace('Removing difficulty "$currentVariation:$currentDifficulty"');
 
-      var callback = (button) -> {
+      var callback = (button) ->
+      {
         switch (button)
         {
           case DialogButton.YES:
@@ -91,10 +107,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
       Dialogs.messageBox("Are you sure? This cannot be undone.", "Remove Difficulty", MessageBoxType.TYPE_YESNO, callback);
     };
 
-    difficultyToolboxSaveMetadata.onClick = function(_:UIEvent) {
+    difficultyToolboxSaveMetadata.onClick = function(_:UIEvent)
+    {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
       FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-metadata.json', chartEditorState.currentSongMetadata.serialize(),
-        function(notification:String) {
+        function(notification:String)
+        {
           switch (notification)
           {
             case "success":
@@ -107,10 +125,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         });
     };
 
-    difficultyToolboxSaveChart.onClick = function(_:UIEvent) {
+    difficultyToolboxSaveChart.onClick = function(_:UIEvent)
+    {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
       FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-chart.json', chartEditorState.currentSongChartData.serialize(),
-        function(notification:String) {
+        function(notification:String)
+        {
           switch (notification)
           {
             case "success":
@@ -123,9 +143,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         });
     };
 
-    difficultyToolboxLoadMetadata.onClick = function(_:UIEvent) {
+    difficultyToolboxLoadMetadata.onClick = function(_:UIEvent)
+    {
       // Replace metadata for current variation.
-      FileUtil.browseFileReference(function(fileReference:FileReference) {
+      FileUtil.browseFileReference(function(fileReference:FileReference)
+      {
         var data = fileReference.data.toString();
 
         if (data == null) return;
@@ -141,6 +163,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           chartEditorState.currentSongMetadata = songMetadata;
           chartEditorState.healthIconsDirty = true;
+          chartEditorState.playerPreviewDirty = true;
+          chartEditorState.opponentPreviewDirty = true;
+
           chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
           chartEditorState.success('Replaced Metadata', 'Replaced metadata with file (${fileReference.name})');
         }
@@ -151,9 +176,11 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
       });
     };
 
-    difficultyToolboxLoadChart.onClick = function(_:UIEvent) {
+    difficultyToolboxLoadChart.onClick = function(_:UIEvent)
+    {
       // Replace chart data for current variation.
-      FileUtil.browseFileReference(function(fileReference:FileReference) {
+      FileUtil.browseFileReference(function(fileReference:FileReference)
+      {
         var data = fileReference.data.toString();
 
         if (data == null) return;
@@ -198,7 +225,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxTree.clearNodes();
 
     // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.currentSongName}'});
+    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.songMetadata.get('default').songName}'});
     treeSong.expanded = true;
 
     for (curVariation in chartEditorState.availableVariations)
@@ -206,22 +233,20 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
       var variationMetadata:Null<SongMetadata> = chartEditorState.songMetadata.get(curVariation);
       if (variationMetadata == null) continue;
 
-      var treeVariation:TreeViewNode = treeSong.addNode(
-        {
-          id: 'stv_variation_$curVariation',
-          text: 'V: ${curVariation.toTitleCase()}'
-        });
+      var treeVariation:TreeViewNode = treeSong.addNode({
+        id: 'stv_variation_$curVariation',
+        text: 'V: ${curVariation.toTitleCase()}'
+      });
       treeVariation.expanded = true;
 
       var difficultyList:Array<String> = variationMetadata.playData.difficulties;
 
       for (difficulty in difficultyList)
       {
-        var _treeDifficulty:TreeViewNode = treeVariation.addNode(
-          {
-            id: 'stv_difficulty_${curVariation}_$difficulty',
-            text: 'D: ${difficulty.toTitleCase()}'
-          });
+        var _treeDifficulty:TreeViewNode = treeVariation.addNode({
+          id: 'stv_difficulty_${curVariation}_$difficulty',
+          text: 'D: ${difficulty.toTitleCase()}'
+        });
       }
     }
 
@@ -276,9 +301,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         if (variation != null && difficulty != null)
         {
           trace('Changing difficulty to "$variation:$difficulty"');
-          chartEditorState.selectedVariation = variation;
-          chartEditorState.selectedDifficulty = difficulty;
-          chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
+          chartEditorState.performCommand(new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation,
+            variation));
+
           refreshTreeSelection();
         }
       // case 'song':
@@ -303,3 +329,4 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     return new ChartEditorDifficultyToolbox(chartEditorState);
   }
 }
+#end

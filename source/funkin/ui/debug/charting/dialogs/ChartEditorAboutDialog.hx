@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/about.xml"))
@@ -12,14 +13,14 @@ class ChartEditorAboutDialog extends ChartEditorBaseDialog
 
   public static function build(chartEditorState:ChartEditorState, ?closable:Bool, ?modal:Bool):ChartEditorAboutDialog
   {
-    var dialog = new ChartEditorAboutDialog(chartEditorState,
-      {
-        closable: closable ?? true,
-        modal: modal ?? true
-      });
+    var dialog = new ChartEditorAboutDialog(chartEditorState, {
+      closable: closable ?? true,
+      modal: modal ?? true
+    });
 
     dialog.showDialog(modal ?? true);
 
     return dialog;
   }
 }
+#end

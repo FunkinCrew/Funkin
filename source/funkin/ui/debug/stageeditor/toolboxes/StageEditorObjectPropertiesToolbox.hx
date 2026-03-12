@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.VBox;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
@@ -42,16 +43,19 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     DropDownBuilder.HANDLER_MAP.set("objTint", Type.getClassName(ObjectTintHandler));
 
     // Numeric callbacks.
-    objPosX.onChange = function(_) {
+    objPosX.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.x = objPosX.pos;
     }
 
-    objPosY.onChange = function(_) {
+    objPosY.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.y = objPosY.pos;
     }
 
     objZIdx.max = StageEditorState.MAX_Z_INDEX;
-    objZIdx.onChange = function(_) {
+    objZIdx.onChange = function(_)
+    {
       if (linkedObj != null)
       {
         linkedObj.zIndex = Std.int(objZIdx.pos);
@@ -59,15 +63,18 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objAlpha.onChange = function(_) {
+    objAlpha.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.alpha = objAlpha.pos;
     }
 
-    objAngle.onChange = function(_) {
+    objAngle.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.angle = objAngle.pos;
     }
 
-    objScaleX.onChange = function(_) {
+    objScaleX.onChange = function(_)
+    {
       if (linkedObj != null)
       {
         linkedObj.scale.x = objScaleX.pos;
@@ -75,7 +82,8 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objScaleY.onChange = function(_) {
+    objScaleY.onChange = function(_)
+    {
       if (linkedObj != null)
       {
         linkedObj.scale.y = objScaleY.pos;
@@ -83,39 +91,47 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       }
     }
 
-    objScrollX.onChange = function(_) {
+    objScrollX.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.scrollFactor.x = objScrollX.pos;
     }
 
-    objScrollY.onChange = function(_) {
+    objScrollY.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.scrollFactor.y = objScrollY.pos;
     }
 
-    objDance.onChange = function(_) {
+    objDance.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.danceEvery = Std.int(objDance.pos);
     }
 
     // Boolean callbacks.
-    objPixel.onChange = function(_) {
+    objPixel.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.antialiasing = objPixel.selected; // Kind of misleading, but objPixel has the 'Antialiasing' label attached to it!
     }
 
-    objFlipX.onChange = function(_) {
+    objFlipX.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.flipX = objFlipX.selected;
     }
 
-    objFlipY.onChange = function(_) {
+    objFlipY.onChange = function(_)
+    {
       if (linkedObj != null) linkedObj.flipY = objFlipY.selected;
     }
 
-    objBlend.onChange = function(_) {
+    objBlend.onChange = function(_)
+    {
       if (linkedObj != null)
       {
         linkedObj.blend = (objBlend.selectedItem?.text ?? "NONE") == "NONE" ? null : AssetDataHandler.blendFromString(objBlend.selectedItem.text);
       }
     }
 
-    objTint.onChange = function(_) {
+    objTint.onChange = function(_)
+    {
       if (linkedObj != null)
       {
         linkedObj.color = FlxColor.fromString(_.value) ?? 0xFFFFFFFF;
@@ -136,7 +152,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 
     objPosX.step = stageEditorState.moveStep;
     objPosY.step = stageEditorState.moveStep;
-    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep;
+    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
 
     if (linkedObj == null)
     {
@@ -293,3 +309,4 @@ private class ObjectTintView extends VBox
     dropdown.dispatch(event);
   }
 }
+#end

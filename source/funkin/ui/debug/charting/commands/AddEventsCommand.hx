@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
@@ -41,6 +42,7 @@ class AddEventsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }
@@ -51,10 +53,12 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
+    state.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }
@@ -71,3 +75,4 @@ class AddEventsCommand implements ChartEditorCommand
     return 'Add $len Events';
   }
 }
+#end

@@ -219,9 +219,17 @@ typedef NoteStyleData_Countdown =
   var audioPath:String;
 }
 
-typedef NoteStyleData_HoldNote = {}
-typedef NoteStyleData_Judgement = {}
-typedef NoteStyleData_ComboNum = {}
+typedef NoteStyleData_HoldNote =
+{
+}
+
+typedef NoteStyleData_Judgement =
+{
+}
+
+typedef NoteStyleData_ComboNum =
+{
+}
 
 /**
  * Data on animations for each direction of the strumline.

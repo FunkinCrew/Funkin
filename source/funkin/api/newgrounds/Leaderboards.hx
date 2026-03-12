@@ -2,22 +2,29 @@ package funkin.api.newgrounds;
 
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.Call.CallError;
-import io.newgrounds.components.ScoreBoardComponent;
+import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard as LeaderboardData;
 import io.newgrounds.objects.User;
 import io.newgrounds.objects.events.Outcome;
 import io.newgrounds.utils.ScoreBoardList;
 
+/**
+ * Handles interactions with the leaderboards on the Newgrounds website.
+ */
 @:nullSafety
 class Leaderboards
 {
+  /**
+   * Retrieve the leaderboard data via the Newgrounds API.
+   * @return The leaderboard data.
+   */
   public static function listLeaderboardData():Map<Leaderboard, LeaderboardData>
   {
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace('[NEWGROUNDS] Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
       return [];
     }
 
@@ -33,21 +40,26 @@ class Leaderboards
   public static function submitScore(leaderboard:Leaderboard, score:Int, ?tag:String):Void
   {
     // Silently reject submissions for unknown leaderboards.
-    if (leaderboard == Leaderboard.Unknown) return;
+    if (leaderboard == Leaderboard.Unknown)
+    {
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Unknown leaderboard, skipping score submission...');
+      return;
+    }
 
     if (NewgroundsClient.instance.isLoggedIn())
     {
       var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
       if (leaderboardData != null)
       {
-        leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void {
+        leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void
+        {
           switch (outcome)
           {
             case SUCCESS:
-              trace('[NEWGROUNDS] Submitted score!');
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitted leaderboard score!');
             case FAIL(error):
-              trace('[NEWGROUNDS] Failed to submit score!');
-              trace(error);
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' ERROR '.error() + ' Failed to submit leaderboard score!');
+              trace(' ERROR '.error() + error);
           }
         });
       }
@@ -71,16 +83,17 @@ class Leaderboards
     if ((params?.useCurrentUser ?? false) && NewgroundsClient.instance.isLoggedIn()) user = NewgroundsClient.instance.user;
 
     leaderboardData.requestScores(params?.limit ?? 10, params?.skip ?? 0, params?.period ?? ALL, params?.social ?? false, params?.tag, user,
-      function(outcome:Outcome<CallError>):Void {
+      function(outcome:Outcome<CallError>):Void
+      {
         switch (outcome)
         {
           case SUCCESS:
-            trace('[NEWGROUNDS] Fetched scores!');
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' Fetched scores!');
             if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
 
           case FAIL(error):
-            trace('[NEWGROUNDS] Failed to fetch scores!');
-            trace(error);
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' ERROR '.error() + ' Failed to fetch scores!');
+            trace(' ERROR '.error() + error);
             if (params != null && params.onFail != null) params.onFail();
         }
       });
@@ -88,19 +101,29 @@ class Leaderboards
 
   /**
    * Submit a score for a Story Level to Newgrounds.
+   *
+   * @param levelId The ID for the story level.
+   * @param difficultyId The current difficulty.
+   * @param score The score to submit.
    */
   public static function submitLevelScore(levelId:String, difficultyId:String, score:Int):Void
   {
     var tag = '${difficultyId}';
+    trace(' NEWGROUNDS '.bold().bg_orange() + 'Submitting score for level "${levelId}"...');
     Leaderboards.submitScore(Leaderboard.getLeaderboardByLevel(levelId), score, tag);
   }
 
   /**
    * Submit a score for a song to Newgrounds.
+   *
+   * @param songId The ID for the song.
+   * @param difficultyId The current difficulty.
+   * @param score The score to submit.
    */
   public static function submitSongScore(songId:String, difficultyId:String, score:Int):Void
   {
     var tag = '${difficultyId}';
+    trace(' NEWGROUNDS '.bold().bg_orange() + 'Submitting score for song "${songId}" (${difficultyId})...');
     Leaderboards.submitScore(Leaderboard.getLeaderboardBySong(songId, difficultyId), score, tag);
   }
 }
@@ -111,16 +134,33 @@ class Leaderboards
 @:nullSafety
 class LeaderboardsSandboxed
 {
-  public static function getLeaderboardBySong(songId:String, difficultyId:String)
+  /**
+   * Get the leaderboard for a given song and difficulty.
+   *
+   * @param songId The ID for the song.
+   * @param difficultyId The current difficulty, suffixed with the variation, like `easy-pico` or `nightmare`.
+   * @return The Leaderboard ID for the given level and difficulty.
+   */
+  public static function getLeaderboardBySong(songId:String, difficultyId:String):Leaderboard
   {
     return Leaderboard.getLeaderboardBySong(songId, difficultyId);
   }
 
-  public static function getLeaderboardByLevel(levelId:String)
+  /**
+   * Get the leaderboard for a given story level and difficulty.
+   * @param levelId The ID for the story level.
+   * @return The Leaderboard ID for the given level and difficulty.
+   */
+  public static function getLeaderboardByLevel(levelId:String):Leaderboard
   {
     return Leaderboard.getLeaderboardByLevel(levelId);
   }
 
+  /**
+   * Request to receive scores from Newgrounds.
+   * @param leaderboard The leaderboard to fetch scores from.
+   * @param params Additional parameters for fetching the score.
+   */
   public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
   {
     Leaderboards.requestScores(leaderboard, params);
@@ -174,106 +214,118 @@ typedef RequestScoresParams =
 }
 #end
 
+/**
+ * An enumeration of Newgrounds leaderboards for the game's levels and songs.
+ */
 enum abstract Leaderboard(Int) from Int to Int
 {
   /**
    * Represents an undefined or invalid leaderboard.
    */
-  var Unknown = -1;
+  public var Unknown = -1;
 
   //
   // STORY LEVELS
   //
-  var StoryWeek1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14239 #else 9615 #end;
-  var StoryWeek2 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14240 #else 9616 #end;
-  var StoryWeek3 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14242 #else 9767 #end;
-  var StoryWeek4 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14241 #else 9866 #end;
-  var StoryWeek5 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14243 #else 9956 #end;
-  var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14244 #else 9957 #end;
-  var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14245 #else 14682 #end;
-  var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14237 #else 14683 #end;
+  // Tutorial only has one song.
+  public var StoryWeek1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14239 #else 9615 #end;
+  public var StoryWeek2 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14240 #else 9616 #end;
+  public var StoryWeek3 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14242 #else 9767 #end;
+  public var StoryWeek4 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14241 #else 9866 #end;
+  public var StoryWeek5 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14243 #else 9956 #end;
+  public var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14244 #else 9957 #end;
+  public var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14245 #else 14682 #end;
+  public var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14237 #else 14683 #end;
 
+  // Collab 1 only has one song.
   //
   // SONGS
   //
   // Tutorial
-  var Tutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14249 #else 14684 #end;
+  public var Tutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14249 #else 14684 #end;
 
   // Week 1
-  var Bopeebo = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14246 #else 9603 #end;
-  var BopeeboErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14685 #end;
-  var BopeeboPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14686 #end;
-  var Fresh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14247 #else 9602 #end;
-  var FreshErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14687 #end;
-  var FreshPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14688 #end;
-  var DadBattle = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14248 #else 9605 #end;
-  var DadBattleErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14689 #end;
-  var DadBattlePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14690 #end;
+  public var Bopeebo = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14246 #else 9603 #end;
+  public var BopeeboErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14685 #end;
+  public var BopeeboPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14686 #end;
+  public var Fresh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14247 #else 9602 #end;
+  public var FreshErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14687 #end;
+  public var FreshPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14688 #end;
+  public var DadBattle = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14248 #else 9605 #end;
+  public var DadBattleErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14689 #end;
+  public var DadBattlePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14690 #end;
 
   // Week 2
-  var Spookeez = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9604 #end;
-  var SpookeezErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14691 #end;
-  var SpookeezPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14692 #end;
-  var South = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9606 #end;
-  var SouthErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14693 #end;
-  var SouthPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14694 #end;
-  var Monster = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14703 #end;
+  public var Spookeez = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9604 #end;
+  public var SpookeezErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14691 #end;
+  public var SpookeezPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14692 #end;
+  public var South = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9606 #end;
+  public var SouthErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14693 #end;
+  public var SouthPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14694 #end;
+  public var Monster = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14703 #end;
 
   // Week 3
-  var Pico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9766 #end;
-  var PicoErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14695 #end;
-  var PicoPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14696 #end;
-  var PhillyNice = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9769 #end;
-  var PhillyNiceErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14697 #end;
-  var PhillyNicePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14698 #end;
-  var Blammed = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9768 #end;
-  var BlammedErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14704 #end;
-  var BlammedPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14705 #end;
+  public var Pico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9766 #end;
+  public var PicoErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14695 #end;
+  public var PicoPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14696 #end;
+  public var PhillyNice = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9769 #end;
+  public var PhillyNiceErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14697 #end;
+  public var PhillyNicePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14698 #end;
+  public var Blammed = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9768 #end;
+  public var BlammedErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14704 #end;
+  public var BlammedPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14705 #end;
 
   // Week 4
-  var SatinPanties = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9869 #end;
-  var SatinPantiesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14701 #end;
-  var High = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9867 #end;
-  var HighErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14699 #end;
-  var MILF = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9868 #end;
+  public var SatinPanties = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9869 #end;
+  public var SatinPantiesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14701 #end;
+  public var High = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9867 #end;
+  public var HighErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14699 #end;
+  public var MILF = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9868 #end;
 
   // Week 5
-  var Cocoa = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14706 #end;
-  var CocoaErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14707 #end;
-  var CocoaPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14708 #end;
-  var Eggnog = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14709 #end;
-  var EggnogErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14711 #end;
-  var EggnogPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14710 #end;
-  var WinterHorrorland = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14712 #end;
+  public var Cocoa = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14706 #end;
+  public var CocoaErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14707 #end;
+  public var CocoaPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14708 #end;
+  public var Eggnog = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14709 #end;
+  public var EggnogErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14711 #end;
+  public var EggnogPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14710 #end;
+  public var WinterHorrorland = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14712 #end;
 
   // Week 6
-  var Senpai = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9958 #end;
-  var SenpaiErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14713 #end;
-  var SenpaiPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14716 #end;
-  var Roses = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9959 #end;
-  var RosesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14714 #end;
-  var RosesPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14717 #end;
-  var Thorns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9960 #end;
-  var ThornsErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14715 #end;
+  public var Senpai = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9958 #end;
+  public var SenpaiErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14713 #end;
+  public var SenpaiPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14716 #end;
+  public var Roses = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9959 #end;
+  public var RosesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14714 #end;
+  public var RosesPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14717 #end;
+  public var Thorns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9960 #end;
+  public var ThornsErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14715 #end;
 
   // Week 7
-  var Ugh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14718 #end;
-  var UghErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14722 #end;
-  var UghPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14721 #end;
-  var Guns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14719 #end;
-  var GunsPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14723 #end;
-  var Stress = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14720 #end;
-  var StressPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14724 #end;
+  public var Ugh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14718 #end;
+  public var UghErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14722 #end;
+  public var UghPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14721 #end;
+  public var Guns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14719 #end;
+  public var GunsPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14723 #end;
+  public var Stress = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14720 #end;
+  public var StressPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14724 #end;
 
   // Weekend 1
-  var Darnell = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14725 #end;
-  var DarnellErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14727 #end;
-  var DarnellBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14726 #end;
-  var LitUp = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14728 #end;
-  var LitUpBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14729 #end;
-  var TwoHot = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14730 #end; // Variable names can't start with a number!
-  var Blazin = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14731 #end;
+  public var Darnell = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14725 #end;
+  public var DarnellErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14727 #end;
+  public var DarnellBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14726 #end;
+  public var LitUp = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14728 #end;
+  public var LitUpBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14729 #end;
+  public var TwoHot = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14730 #end; // Variable names can't start with a number!
+  public var Blazin = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14731 #end;
 
+  // Collab 1
+  public var Spaghetti = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 15448 #else 15451 #end;
+
+  /**
+   * Get the numeric ID for the leaderboard on the Newgrounds site.
+   * @return The numeric ID for the leaderboard.
+   */
   public function getId():Int
   {
     return this;
@@ -282,7 +334,6 @@ enum abstract Leaderboard(Int) from Int to Int
   /**
    * Get the leaderboard for a given level and difficulty.
    * @param levelId The ID for the story level.
-   * @param difficulty The current difficulty.
    * @return The Leaderboard ID for the given level and difficulty.
    */
   public static function getLeaderboardByLevel(levelId:String):Leaderboard
@@ -305,14 +356,16 @@ enum abstract Leaderboard(Int) from Int to Int
         return StoryWeek7;
       case "weekend1":
         return StoryWeekend1;
+      // Collab 1 has only one song.
       default:
         return Unknown;
     }
   }
 
   /**
-   * Get the leaderboard for a given level and difficulty.
-   * @param levelId The ID for the story level.
+   * Get the leaderboard for a given song and difficulty.
+   *
+   * @param songId The ID for the song.
    * @param difficulty The current difficulty, suffixed with the variation, like `easy-pico` or `nightmare`.
    * @return The Leaderboard ID for the given level and difficulty.
    */
@@ -473,6 +526,8 @@ enum abstract Leaderboard(Int) from Int to Int
             return TwoHot;
           case "blazin":
             return Blazin;
+          case "spaghetti":
+            return Spaghetti;
           default:
             return Unknown;
         }

@@ -78,6 +78,7 @@ class LevelProp extends Bopper
     this.alpha = propData.alpha;
     this.x = propData.offsets[0];
     this.y = propData.offsets[1];
+    this.flipX = propData.flipX;
 
     FlxAnimationUtil.addAtlasAnimations(this, propData.animations);
     for (propAnim in propData.animations)
@@ -85,8 +86,15 @@ class LevelProp extends Bopper
       this.setAnimationOffsets(propAnim.name, propAnim.offsets[0], propAnim.offsets[1]);
     }
 
-    this.dance();
-    this.animation.paused = true;
+    if (propData.startingAnimation != "" && this.hasAnimation(propData.startingAnimation))
+    {
+      this.playAnimation(propData.startingAnimation, true);
+    }
+    else
+    {
+      this.dance();
+      this.animation.paused = true;
+    }
   }
 
   public static function build(propData:Null<LevelPropData>):Null<LevelProp>

@@ -1,5 +1,6 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
+#if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import haxe.ui.components.Button;
@@ -38,14 +39,17 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Callback for loading the image from the local hard drive.
-    objLoad.onClick = function(_) {
+    objLoad.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
-      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, function(selectedFile) {
+      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, function(selectedFile)
+      {
         if (selectedFile == null) return;
         objImage.resource = null;
 
-        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, function(imageInfo) {
+        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, function(imageInfo)
+        {
           if (imageInfo == null) return;
 
           objImage.resource = imageInfo.data;
@@ -53,7 +57,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 
           // This checks if the same image had already been loaded, so that we don't add it twice.
           // Kind of hacky but it is what it is.
-          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels());
+          var name:String = haxe.io.Path.withoutExtension(selectedFile.name);
+          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels(), name);
           linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
           linkedObj.updateHitbox();
 
@@ -69,11 +74,13 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the image from the internet.
-    objLoadNet.onClick = function(_) {
+    objLoadNet.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
-      state.createURLDialog(function(bytes:lime.utils.Bytes) {
-        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes));
+      state.createURLDialog(function(bytes:lime.utils.Bytes)
+      {
+        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes), linkedObj.name);
         linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
         linkedObj.updateHitbox();
 
@@ -87,7 +94,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting the image.
-    objReset.onClick = function(_) {
+    objReset.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(AssetDataHandler.getDefaultGraphic());
@@ -102,7 +110,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting frames.
-    objResetFrames.onClick = function(_) {
+    objResetFrames.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic);
@@ -111,8 +120,10 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the text for the Frame Data.
-    objLoadFrames.onClick = function(_) {
-      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, function(selectedFile) {
+    objLoadFrames.onClick = function(_)
+    {
+      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, function(selectedFile)
+      {
         if (selectedFile.text == null || (!selectedFile.name.endsWith(".xml") && !selectedFile.name.endsWith(".txt"))) return;
 
         objFrameTxt.text = selectedFile.text;
@@ -128,7 +139,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     objSetPacker.onClick = function(_) setObjFrames(true);
 
     // Callback for splitting the graphic into frames.
-    objSplit.onClick = function(_) {
+    objSplit.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic, true, Std.int(objImageWidth.pos), Std.int(objImageHeight.pos));
@@ -208,3 +220,4 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     stageEditorState.updateDialog(OBJECT_ANIMS);
   }
 }
+#end

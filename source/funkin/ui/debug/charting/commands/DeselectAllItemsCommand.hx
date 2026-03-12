@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 
@@ -13,7 +14,9 @@ class DeselectAllItemsCommand implements ChartEditorCommand
   var previousNoteSelection:Array<SongNoteData> = [];
   var previousEventSelection:Array<SongEventData> = [];
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function execute(state:ChartEditorState):Void
   {
@@ -24,6 +27,7 @@ class DeselectAllItemsCommand implements ChartEditorCommand
     state.currentEventSelection = [];
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -32,6 +36,7 @@ class DeselectAllItemsCommand implements ChartEditorCommand
     state.currentEventSelection = previousEventSelection;
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -45,3 +50,4 @@ class DeselectAllItemsCommand implements ChartEditorCommand
     return 'Deselect All Items';
   }
 }
+#end

@@ -1,13 +1,14 @@
 package funkin;
 
 import openfl.utils.Future;
+import funkin.util.macro.ConsoleMacro;
 
 /**
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions.
  * Later we'll add Funkin-specific caching to this.
  */
 @:nullSafety
-class Assets
+class Assets implements ConsoleClass
 {
   /**
    * The assets cache.
@@ -114,9 +115,9 @@ class Assets
    * @param path The asset path to load from
    * @return The loaded Bitmap image
    */
-  public static function getBitmapData(path:String):openfl.display.BitmapData
+  public static function getBitmapData(path:String, useCache:Bool = true):openfl.display.BitmapData
   {
-    return openfl.utils.Assets.getBitmapData(path);
+    return openfl.utils.Assets.getBitmapData(path, useCache);
   }
 
   /**

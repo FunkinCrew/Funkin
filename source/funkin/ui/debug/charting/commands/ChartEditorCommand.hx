@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 /**
  * Actions in the chart editor are backed by the Command pattern
  * (see Bob Nystrom's book "Game Programming Patterns" for more info)
@@ -39,3 +40,4 @@ interface ChartEditorCommand
    */
   public function toString():String;
 }
+#end

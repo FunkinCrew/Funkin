@@ -73,7 +73,9 @@ class StickerPack implements IRegistryEntry<StickerData>
     return 'StickerPack($id)';
   }
 
-  public function destroy():Void {}
+  public function destroy():Void
+  {
+  }
 
   static function _fetchData(id:String):Null<StickerData>
   {

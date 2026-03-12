@@ -39,11 +39,11 @@ class NoteKind implements INoteScriptedClass
   public var params:Array<NoteKindParam>;
 
   /**
-   * If this note kind is scoreable (ie, counted towards score and accuracy)
-   * Only accessible in scripts
-   * Defaults to true
+   * Set this to `false` to disable scoring for this note.
+   * The note will no longer count towards ratings, points, or accuracy.
+   * @default `true` to enable scoring.
    */
-  public var scoreable:Bool = true;
+  public var scoreable(default, default):Bool = true;
 
   public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
   {
@@ -62,31 +62,63 @@ class NoteKind implements INoteScriptedClass
 
   /**
    * Retrieve all notes of this kind
+   * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
-  function getNotes():Array<NoteSprite>
+  function getNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
-    return allNotes.filter(function(note:NoteSprite) {
-      return note != null && note.noteData.kind == this.noteKind;
+    return allNotes.filter(function(note:NoteSprite)
+    {
+      return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  /**
+   * Retrieve all notes NOT of this kind
+   * @param visibleCheck If true, only visible notes will be returned
+   * @return Array<NoteSprite>
+   */
+  function getOtherNotes(visibleCheck:Bool = false):Array<NoteSprite>
+  {
+    var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
+    return allNotes.filter(function(note:NoteSprite)
+    {
+      return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
+    });
+  }
 
-  public function onCreate(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  }
 
-  public function onDestroy(event:ScriptEvent):Void {}
+  public function onCreate(event:ScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent):Void {}
+  public function onNoteIncoming(event:NoteScriptEvent):Void
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent):Void {}
+  public function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteMiss(event:NoteScriptEvent):Void
+  {
+  }
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 }
 
 /**

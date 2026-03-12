@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.commands;
 
+#if FEATURE_CHART_EDITOR
 /**
  * Command that copies a given set of notes and song events to the clipboard,
  * without deleting them from the chart editor.
@@ -105,3 +106,4 @@ enum AudioOffsetType
   PLAYER;
   OPPONENT;
 }
+#end

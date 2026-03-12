@@ -243,11 +243,10 @@ class DataParse
     switch (json.value)
     {
       case JObject(fields):
-        var result:LegacyNoteSection =
-          {
-            mustHitSection: false,
-            sectionNotes: [],
-          };
+        var result:LegacyNoteSection = {
+          mustHitSection: false,
+          sectionNotes: [],
+        };
         for (field in fields)
         {
           switch (field.name)

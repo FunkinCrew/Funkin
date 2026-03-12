@@ -6,4 +6,6 @@ package funkin.ui.story;
  * This allows you to customize how a specific level appears.
  */
 @:hscriptClass
-class ScriptedLevel extends funkin.ui.story.Level implements polymod.hscript.HScriptedClass {}
+class ScriptedLevel extends funkin.ui.story.Level implements polymod.hscript.HScriptedClass
+{
+}

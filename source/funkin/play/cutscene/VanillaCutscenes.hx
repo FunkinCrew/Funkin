@@ -32,7 +32,8 @@ class VanillaCutscenes
     blackScreen.zIndex = 1000000;
     PlayState.instance.add(blackScreen);
 
-    new FlxTimer().start(0.1, function(_) {
+    new FlxTimer().start(0.1, function(_)
+    {
       trace('Playing horrorland cutscene...');
       PlayState.instance.remove(blackScreen);
 
@@ -43,7 +44,8 @@ class VanillaCutscenes
 
       // Play the Sound effect.
       HapticUtil.vibrate(0.1, 0.5, 1, 1);
-      FunkinSound.playOnce(Paths.sound('Lights_Turn_On'), function() {
+      FunkinSound.playOnce(Paths.sound('Lights_Turn_On'), function()
+      {
         // Fade in the HUD.
         trace('SFX done...');
         PlayState.instance.camHUD.visible = true;

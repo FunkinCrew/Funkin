@@ -114,4 +114,19 @@ typedef LevelPropData =
   @:default([])
   @:optional
   var animations:Array<AnimationData>;
+
+  /**
+   * If animations are used, this is the name of the animation to play first.
+   * @default idle
+   */
+  @:default('')
+  @:optional
+  var startingAnimation:String;
+
+  /**
+   * Flips the sprite on X axis.
+   */
+  @:default(false)
+  @:optional
+  var flipX:Null<Bool>;
 }

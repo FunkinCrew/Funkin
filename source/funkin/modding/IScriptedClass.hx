@@ -177,6 +177,63 @@ interface IPlayStateScriptedClass extends INoteScriptedClass extends IBPMSyncedS
 }
 
 /**
+ * Defines a set of callbacks activated in Freeplay.
+ */
+interface IFreeplayScriptedClass extends IScriptedClass
+{
+  /**
+   * Called when a capsule is selected.
+   */
+  public function onCapsuleSelected(event:CapsuleScriptEvent):Void;
+
+  /**
+   * Called when the current difficulty is changed.
+   */
+  public function onDifficultySwitch(event:CapsuleScriptEvent):Void;
+
+  /**
+   * Called when a song is selected.
+   */
+  public function onSongSelected(event:CapsuleScriptEvent):Void;
+
+  /**
+   * Called when the intro for Freeplay finishes.
+   */
+  public function onFreeplayIntroDone(event:FreeplayScriptEvent):Void;
+
+  /**
+   * Called when the Freeplay outro begins.
+   */
+  public function onFreeplayOutro(event:FreeplayScriptEvent):Void;
+
+  /**
+   * Called when Freeplay is closed.
+   */
+  public function onFreeplayClose(event:FreeplayScriptEvent):Void;
+}
+
+/**
+ * Defines a set of callbacks activated in Character Select.
+ */
+interface ICharacterSelectScriptedClass extends IScriptedClass
+{
+  /**
+   * Called when a character is selected.
+   */
+  public function onCharacterSelect(event:CharacterSelectScriptEvent):Void;
+
+  /**
+   * Called when the user presses BACK after confirming a character.
+   */
+  public function onCharacterDeselect(event:CharacterSelectScriptEvent):Void;
+
+  /**
+   * Called when a character has been confirmed.
+   */
+  public function onCharacterConfirm(event:CharacterSelectScriptEvent):Void;
+}
+
+/**
  * Defines a set of callbacks activated during a dialogue conversation.
  */
 interface IDialogueScriptedClass extends IScriptedClass

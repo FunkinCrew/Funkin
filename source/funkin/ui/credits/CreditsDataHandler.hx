@@ -2,6 +2,7 @@ package funkin.ui.credits;
 
 import funkin.data.JsonFile;
 
+using funkin.util.AnsiUtil;
 using StringTools;
 
 @:nullSafety
@@ -20,13 +21,13 @@ class CreditsDataHandler
   {
     if (data == null)
     {
-      Sys.println('[INFO] CreditsData(NULL)');
+      Sys.println(' INFO '.info() + ' CreditsData(NULL)');
       return;
     }
 
     if (data.entries == null || data.entries.length == 0)
     {
-      Sys.println('[INFO] CreditsData(EMPTY)');
+      Sys.println(' INFO '.info() + ' CreditsData(EMPTY)');
       return;
     }
 
@@ -37,7 +38,7 @@ class CreditsDataHandler
       lineCount += entry?.body?.length ?? 0;
     }
 
-    Sys.println('[INFO] CreditsData($entryCount entries containing $lineCount lines)');
+    Sys.println(' INFO '.info() + ' CreditsData($entryCount entries containing $lineCount lines)');
   }
   #end
 
@@ -50,17 +51,10 @@ class CreditsDataHandler
   public static inline function getFallback():CreditsData
   {
     return {
-      entries: [
-        {
-          header: 'Founders',
-          body: [
-            {line: 'ninjamuffin99'},
-            {line: 'PhantomArcade'},
-            {line: 'Kawai Sprite'},
-            {line: 'evilsk8r'},
-          ]
-        }
-      ]
+      entries: [{
+        header: 'Founders',
+        body: [{line: 'ninjamuffin99'}, {line: 'PhantomArcade'}, {line: 'Kawai Sprite'}, {line: 'evilsk8r'},]
+      }]
     };
   }
 

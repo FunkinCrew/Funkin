@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.dialogs;
 
+#if FEATURE_CHART_EDITOR
 import haxe.ui.containers.menus.Menu;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
@@ -17,3 +18,4 @@ class ChartEditorBaseMenu extends Menu
     // this.destroyOnClose = true;
   }
 }
+#end

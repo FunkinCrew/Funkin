@@ -28,7 +28,7 @@ class MathUtil
     if (x <= 0.0) return 0.0;
     if (x >= 1.0) return 1.0;
     var result:Float = (x < 0.5) ? (1 - Math.sqrt(1 - 4 * x * x)) / 2 : (Math.sqrt(1 - 4 * (1 - x) * (1 - x)) + 1) / 2;
-    return (result == Math.NaN) ? 1.0 : result;
+    return Math.isNaN(result) ? 1.0 : result;
   }
 
   public static function easeInOutBack(x:Float, c:Float = 1.70158):Float
@@ -36,7 +36,7 @@ class MathUtil
     if (x <= 0.0) return 0.0;
     if (x >= 1.0) return 1.0;
     var result:Float = (x < 0.5) ? (2 * x * x * ((c + 1) * 2 * x - c)) / 2 : (1 - 2 * (1 - x) * (1 - x) * ((c + 1) * 2 * (1 - x) - c)) / 2;
-    return (result == Math.NaN) ? 1.0 : result;
+    return Math.isNaN(result) ? 1.0 : result;
   }
 
   public static function easeInBack(x:Float, c:Float = 1.70158):Float
@@ -65,13 +65,13 @@ class MathUtil
 
   /**
    * Performs a modulo operation to calculate the remainder of `a` divided by `b`.
-   * 
+   *
    * The definition of "remainder" varies by implementation;
    * this one is similar to GLSL or Python in that it uses Euclidean division, which always returns positive,
    * while Haxe's `%` operator uses signed truncated division.
-   * 
+   *
    * For example, `-5 % 3` returns `-2` while `FlxMath.mod(-5, 3)` returns `1`.
-   * 
+   *
    * @param a The dividend.
    * @param b The divisor.
    * @return `a mod b`.
@@ -251,7 +251,6 @@ class MathUtil
       t = m;
       m = n;
       n = t % m;
-    }
-    while (true);
+    } while (true);
   }
 }

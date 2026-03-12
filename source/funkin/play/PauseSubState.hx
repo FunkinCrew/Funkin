@@ -37,6 +37,11 @@ typedef PauseSubStateParams =
    * Which mode to start in. Dictates what entries are displayed.
    */
   ?mode:PauseMode,
+
+  /**
+   * Whether the game paused because the window lost focus.
+   */
+  ?lostFocus:Bool
 };
 
 /**
@@ -51,50 +56,50 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Pause menu entries for when the game is paused during a song.
    */
-  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Restart Song', callback: restartPlayState},
-    {text: 'Change Difficulty', callback: switchMode.bind(_, Difficulty)},
-    {text: 'Enable Practice Mode', callback: enablePracticeMode, filter: () -> !(PlayState.instance?.isPracticeMode ?? false)},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Restart Song',
+    callback: restartPlayState
+  }, {
+    text: 'Change Difficulty',
+    callback: switchMode.bind(_, Difficulty)
+  }, {
+    text: 'Enable Practice Mode',
+    callback: enablePracticeMode,
+    filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
+  }, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused in the Chart Editor preview.
    */
-  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Restart Song', callback: restartPlayState},
-    {text: 'Return to Chart Editor', callback: quitToChartEditor},
-  ];
+  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Restart Song',
+    callback: restartPlayState
+  }, {text: 'Return to Chart Editor', callback: quitToChartEditor},];
 
   /**
    * Pause menu entries for when the user selects "Change Difficulty".
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
-    {text: 'Back', callback: switchMode.bind(_, Standard)}
-    // Other entries are added dynamically.
+  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{
+    text: 'Back',
+    callback: switchMode.bind(_, Standard)
+  } // Other entries are added dynamically.
   ];
 
   /**
    * Pause menu entries for when the game is paused during a video cutscene.
    */
-  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Skip Cutscene', callback: skipVideoCutscene},
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Skip Cutscene',
+    callback: skipVideoCutscene
+  }, {text: 'Restart Cutscene', callback: restartVideoCutscene}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Pause menu entries for when the game is paused during a conversation.
    */
-  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
-    {text: 'Skip Dialogue', callback: skipConversation},
-    {text: 'Restart Dialogue', callback: restartConversation},
-    {text: 'Exit to Menu', callback: quitToMenu},
-  ];
+  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
+    text: 'Skip Dialogue',
+    callback: skipConversation
+  }, {text: 'Restart Dialogue', callback: restartConversation}, {text: 'Exit to Menu', callback: quitToMenu},];
 
   /**
    * Duration for the music to fade in when the pause menu is opened.
@@ -150,6 +155,11 @@ class PauseSubState extends MusicBeatSubState
    * The mode that the pause menu is currently in.
    */
   var currentMode:PauseMode;
+
+  /**
+   * Whether the game paused because the window lost focus.
+   */
+  var lostFocus:Bool = false;
 
   // ===============
   // Graphics Variables
@@ -231,6 +241,7 @@ class PauseSubState extends MusicBeatSubState
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+    this.lostFocus = params?.lostFocus ?? false;
     this.onPause = onPause;
   }
 
@@ -255,6 +266,8 @@ class PauseSubState extends MusicBeatSubState
     super.create();
 
     startPauseMusic();
+
+    if (lostFocus && Preferences.autoPause) pauseMusic.pause();
 
     buildBackground();
 
@@ -338,7 +351,7 @@ class PauseSubState extends MusicBeatSubState
   function startPauseMusic():Void
   {
     var pauseMusicPath:String = Paths.music('breakfast$musicSuffix/breakfast$musicSuffix');
-    pauseMusic = FunkinSound.load(pauseMusicPath, true, true);
+    pauseMusic = FunkinSound.load(pauseMusicPath, 0, true, true);
 
     if (pauseMusic == null)
     {
@@ -348,6 +361,24 @@ class PauseSubState extends MusicBeatSubState
     // Start playing at a random point in the song.
     pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
     pauseMusic.fadeIn(MUSIC_FADE_IN_TIME, 0, MUSIC_FINAL_VOLUME);
+  }
+
+  /**
+   * Called when the game loses focus. Used to temporarily pause the sound.
+   */
+  public override function onFocusLost():Void
+  {
+    super.onFocusLost();
+    if (Preferences.autoPause) pauseMusic.pause();
+  }
+
+  /**
+   * Called when the game loses focus. Used to temporarily pause the sound.
+   */
+  public override function onFocus():Void
+  {
+    super.onFocus();
+    if (Preferences.autoPause) pauseMusic.resume();
   }
 
   /**
@@ -367,9 +398,8 @@ class PauseSubState extends MusicBeatSubState
     pauseButton = FunkinSprite.createSparrow(0, 0, "pauseButton");
     pauseButton.animation.addByIndices('idle', 'pause', [0], "", 24, false);
     pauseButton.animation.addByIndices('hold', 'pause', [5], "", 24, false);
-    pauseButton.animation.addByIndices('confirm', 'pause', [
-      6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-    ], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'pause',
+      [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], "", 24, false);
     pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
     pauseButton.animation.play("confirm");
@@ -473,56 +503,56 @@ class PauseSubState extends MusicBeatSubState
 
   function startCharterTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+      startDelay: CHARTER_FADE_DELAY,
+      ease: FlxEase.quartOut,
+      onComplete: (_) ->
       {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
-          }
-          else
-          {
-            metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startArtistTimer();
-              }
-            });
+        if (PlayState.instance?.currentChart != null)
+        {
+          metadataArtist.text = 'Charter: ${PlayState.instance.currentChart.charter ?? 'Unknown'}';
         }
-      });
+        else
+        {
+          metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
+        }
+
+        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+          ease: FlxEase.quartOut,
+          onComplete: (_) ->
+          {
+            startArtistTimer();
+          }
+        });
+      }
+    });
   }
 
   function startArtistTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION,
+    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+      startDelay: CHARTER_FADE_DELAY,
+      ease: FlxEase.quartOut,
+      onComplete: (_) ->
       {
-        startDelay: CHARTER_FADE_DELAY,
-        ease: FlxEase.quartOut,
-        onComplete: (_) -> {
-          if (PlayState.instance?.currentChart != null)
-          {
-            metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
-          }
-          else
-          {
-            metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
-          }
-
-          FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION,
-            {
-              ease: FlxEase.quartOut,
-              onComplete: (_) -> {
-                startCharterTimer();
-              }
-            });
+        if (PlayState.instance?.currentChart != null)
+        {
+          metadataArtist.text = 'Artist: ${PlayState.instance.currentChart.songArtist}';
         }
-      });
+        else
+        {
+          metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
+        }
+
+        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+          ease: FlxEase.quartOut,
+          onComplete: (_) ->
+          {
+            startCharterTimer();
+          }
+        });
+      }
+    });
   }
 
   var dataFadeTimer = new FlxTimer();
@@ -544,11 +574,13 @@ class PauseSubState extends MusicBeatSubState
     FlxTween.tween(pauseCircle.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});
     FlxTween.tween(pauseCircle, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
 
-    hapticTimer.start(0.2, function(_) {
+    hapticTimer.start(0.2, function(_)
+    {
       HapticUtil.vibrate(0, 0.01, 0.5);
     });
 
-    dataFadeTimer.start(0.3, function(_) {
+    dataFadeTimer.start(0.3, function(_)
+    {
       transitionMetadataIn();
       FlxTween.tween(pauseButton, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
     });
@@ -581,66 +613,44 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    // Doing this just so it'd look better i guess.
-    final upP:Bool = controls.UI_UP_P;
-    final downP:Bool = controls.UI_DOWN_P;
+    // early return here if we are modifying our offsets stuff w/ shift + up/down
+    if (handleModifyingOffsets()) return;
 
-    #if !mobile
-    final up:Bool = controls.UI_UP;
-    final down:Bool = controls.UI_DOWN;
-    var offset:Int = Preferences.globalOffset ?? 0;
-    if (FlxG.keys.pressed.SHIFT && (up || down))
-    {
-      lastOffsetPress += FlxG.elapsed;
-      if (!fastOffset)
-      {
-        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
-        if (lastOffsetPress > 0.5)
-        {
-          fastOffset = true;
-          lastOffsetPress = 0;
-        }
+    handleDebugInputs();
 
-        if (upP || downP)
-        {
-          offset += (upP || up) ? 1 : -1;
-
-          offsetText.text = 'Global Offset: ${offset}ms';
-        }
-      }
-      else
-      {
-        offset += (upP || up) ? 1 : -1;
-
-        offsetText.text = 'Global Offset: ${offset}ms';
-      }
-
-      if (offset > 1500) offset = 1500;
-      if (offset < -1500) offset = -1500;
-
-      Preferences.globalOffset = offset;
-
-      return;
-    }
-    else
-    {
-      // Reset the fast offset if the user is not holding SHIFT.
-      fastOffset = false;
-      lastOffsetPress = 0;
-    }
-    #end
-
-    if (upP)
+    if (controls.UI_UP_P)
     {
       changeSelection(-1);
     }
-    if (downP)
+    if (controls.UI_DOWN_P)
     {
       changeSelection(1);
     }
 
+    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
+    // we early return here so we don't need to check `if (!justOpened)` everywhere
+    if (justOpened)
+    {
+      justOpened = false;
+      return;
+    }
+
+    handleTouchInputs();
+
+    if (controls.ACCEPT_P && currentMenuEntries.length > 0)
+    {
+      currentMenuEntries[currentEntry].callback(this);
+    }
+    else if (controls.PAUSE_P)
+    {
+      resume(this);
+    }
+  }
+
+  function handleTouchInputs():Void
+  {
     #if FEATURE_TOUCH_CONTROLS
-    if (!SwipeUtil.justSwipedAny && !justOpened && currentMenuEntries.length > 0)
+    if (!SwipeUtil.justSwipedAny && currentMenuEntries.length > 0)
     {
       for (i in 0...menuEntryText.members.length)
       {
@@ -660,17 +670,62 @@ class PauseSubState extends MusicBeatSubState
       }
     }
     #end
+  }
 
-    if (controls.ACCEPT && currentMenuEntries.length > 0)
+  /**
+   * used to both modify/change offsets, but also to early return so we don't interfere with other inputs while doing so
+   * TODO: refactor to use state design pattern to handle inputs, see MainMenuState
+   * @return Bool true if we are currently modifying our offsets (by holding shift and pressing UP or DOWN)
+   */
+  function handleModifyingOffsets():Bool
+  {
+    #if !mobile
+    var offset:Int = Preferences.globalOffset ?? 0;
+    if (FlxG.keys.pressed.SHIFT && (controls.UI_UP || controls.UI_DOWN))
     {
-      currentMenuEntries[currentEntry].callback(this);
+      lastOffsetPress += FlxG.elapsed;
+      if (!fastOffset)
+      {
+        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
+        if (lastOffsetPress > 0.5)
+        {
+          fastOffset = true;
+          lastOffsetPress = 0;
+        }
+
+        if (controls.UI_UP_P || controls.UI_DOWN_P)
+        {
+          offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
+
+          offsetText.text = 'Global Offset: ${offset}ms';
+        }
+      }
+      else
+      {
+        offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
+
+        offsetText.text = 'Global Offset: ${offset}ms';
+      }
+
+      if (offset > 1500) offset = 1500;
+      if (offset < -1500) offset = -1500;
+
+      Preferences.globalOffset = offset;
+
+      return true;
     }
-    else if (controls.PAUSE && !justOpened)
+    else
     {
-      resume(this);
+      // Reset the fast offset if the user is not holding SHIFT.
+      fastOffset = false;
+      lastOffsetPress = 0;
     }
-    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
-    justOpened = false;
+    #end
+    return false;
+  }
+
+  function handleDebugInputs():Void
+  {
     #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
@@ -783,7 +838,6 @@ class PauseSubState extends MusicBeatSubState
         if (PlayState.instance.currentChart != null)
         {
           var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
-          trace('DIFFICULTIES: ${difficultiesInVariation}');
           for (difficulty in difficultiesInVariation)
           {
             entries.push({text: difficulty.toTitleCase(), callback: (state) -> changeDifficulty(state, difficulty)});
@@ -944,12 +998,14 @@ class PauseSubState extends MusicBeatSubState
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.
-    PlayStatePlaylist.campaignScore = 0;
-    PlayStatePlaylist.campaignDifficulty = difficulty;
-    PlayState.instance.previousDifficulty = PlayState.instance.currentDifficulty;
-    PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
-
-    FreeplayState.rememberedDifficulty = difficulty;
+    if (difficulty != PlayState.instance.currentDifficulty)
+    {
+      PlayStatePlaylist.campaignScore = 0;
+      PlayStatePlaylist.campaignDifficulty = difficulty;
+      PlayState.instance.previousDifficulty = PlayState.instance.currentDifficulty;
+      PlayState.instance.currentDifficulty = PlayStatePlaylist.campaignDifficulty;
+      FreeplayState.rememberedDifficulty = difficulty;
+    }
 
     PlayState.instance.needsReset = true;
 
@@ -960,7 +1016,8 @@ class PauseSubState extends MusicBeatSubState
     {
       state.allowInput = false;
 
-      AdMobUtil.loadInterstitial(function():Void {
+      AdMobUtil.loadInterstitial(function():Void
+      {
         AdMobUtil.PLAYING_COUNTER = 0;
 
         AdMobUtil.removeBanner();
@@ -996,7 +1053,8 @@ class PauseSubState extends MusicBeatSubState
     {
       state.allowInput = false;
 
-      AdMobUtil.loadInterstitial(function():Void {
+      AdMobUtil.loadInterstitial(function():Void
+      {
         AdMobUtil.PLAYING_COUNTER = 0;
 
         AdMobUtil.removeBanner();

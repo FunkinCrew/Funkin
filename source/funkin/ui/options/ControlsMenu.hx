@@ -27,19 +27,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
    * if the player sets Back to Z it also set ACCEPT to X. This prevents the player from setting the controls in
    * a way the prevents them from changing more controls or exiting the menu.
    */
-  static var controlGroups:Array<Array<Control>> = [
-    [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
-    [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK],
-    [CUTSCENE_ADVANCE],
-    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
-    [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end],
-    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
-    [
-      #if FEATURE_DEBUG_MENU DEBUG_MENU, #end
-      #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
-      #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
-    ]
-  ];
+  static var controlGroups:Array<Array<Control>> = [[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT], [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK], [CUTSCENE_ADVANCE], [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT], [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end], [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE], [#if FEATURE_DEBUG_MENU DEBUG_MENU, #end#if FEATURE_CHART_EDITOR DEBUG_CHART, #end#if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end DEBUG_DISPLAY]];
 
   var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
 
@@ -106,6 +94,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       var control = controlList[i];
       var name = control.getName();
+      // Don't spoil that you can play different characters until the player has unlocked one
+      if (control == FREEPLAY_CHAR_SELECT && funkin.data.freeplay.player.PlayerRegistry.instance.countUnlockedCharacters() <= 1)
+      {
+        continue;
+      }
+
       if (currentHeader != "UI_" && name.indexOf("UI_") == 0)
       {
         currentHeader = "UI_";
@@ -174,7 +168,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     var margin = 100;
     menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
     menuCamera.minScrollY = 0;
-    controlGrid.onChange.add(function(selected) {
+    controlGrid.onChange.add(function(selected)
+    {
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);
@@ -196,7 +191,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     add(popup);
 
     #if FEATURE_TOUCH_CONTROLS
-    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, function():Void {
+    var backButton:FunkinBackButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, function():Void
+    {
       if (controlGrid.enabled && deviceList != null && deviceListSelected == false)
       {
         goToDeviceList();
@@ -453,7 +449,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     // Shift left on the grid if the item on the right is bound and the item on the left is unbound.
     if (controlGrid.selectedIndex % 2 == 1)
     {
-      trace('Modified item on right side of grid');
       if (leftItem != null && input != FlxKey.NONE && leftItem.input == FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
@@ -468,7 +463,6 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     }
     else
     {
-      trace('Modified item on left side of grid');
       if (rightItem != null && input == FlxKey.NONE && rightItem.input != FlxKey.NONE)
       {
         trace('Left item is unbound and right item is not!');
