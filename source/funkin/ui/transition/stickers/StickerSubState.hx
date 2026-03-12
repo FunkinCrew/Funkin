@@ -38,6 +38,11 @@ typedef StickerSubStateParams =
    * An existing set of stickers to transition out with.
    */
   ?oldStickers:Array<StickerSprite>,
+
+  /**
+   *
+   */
+  ?lostFocus:Bool
 }
 
 @:nullSafety
@@ -65,9 +70,12 @@ class StickerSubState extends MusicBeatSubState
   var soundSelection:String = "";
   var sounds:Array<String> = [];
 
+  var lostFocus:Bool = false;
+
   public function new(params:StickerSubStateParams):Void
   {
     super();
+    this.lostFocus = params?.lostFocus ?? false;
     transitionSprite ??= new StickerTransitionSprite();
     // Define the target state, with a default fallback.
     this.targetState = params?.targetState ?? (sticker) -> FreeplayState.build(null, sticker);
@@ -134,8 +142,13 @@ class StickerSubState extends MusicBeatSubState
       new FlxTimer().start(sticker.timing, _ ->
       {
         sticker.visible = false;
+
         var daSound:String = FlxG.random.getObject(sounds);
-        FunkinSound.playOnce(Paths.sound(daSound));
+        if (daSound != null && (!Preferences.autoPause))
+        {
+          FunkinSound.playOnce(Paths.sound(daSound));
+        }
+
         // Do the small vibration each time sticker disappears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
         if (grpStickers == null || ind == grpStickers.members.length - 1)
@@ -194,8 +207,14 @@ class StickerSubState extends MusicBeatSubState
       {
         if (grpStickers == null) return;
         sticker.visible = true;
+
         var daSound:String = FlxG.random.getObject(sounds);
-        FunkinSound.playOnce(Paths.sound(daSound));
+        @:privateAccess
+        if (daSound != null && (!Preferences.autoPause || !FlxG.game._lostFocus))
+        {
+          FunkinSound.playOnce(Paths.sound(daSound));
+        }
+
         // Do the small vibration each time sticker appears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
         var frameTimer:Int = FlxG.random.int(0, 2);
@@ -238,6 +257,18 @@ class StickerSubState extends MusicBeatSubState
     });
   }
 
+  public override function onFocusLost():Void
+  {
+    super.onFocusLost();
+    if (Preferences.autoPause) FlxG.sound.pause();
+  }
+
+  public override function onFocus():Void
+  {
+    super.onFocus();
+    if (Preferences.autoPause) FlxG.sound.resume();
+  }
+
   override public function onResize(width:Int, height:Int):Void
   {
     transitionSprite?.onResize();
@@ -261,6 +292,7 @@ class StickerSubState extends MusicBeatSubState
   override public function destroy():Void
   {
     transitionSprite?.clear();
+
     if (switchingState) return;
     super.destroy();
   }
