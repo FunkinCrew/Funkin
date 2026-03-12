@@ -19,7 +19,7 @@ class ChartPlaytestMenuButtonBase extends FlxText
   {
     super(x, y, 0, text, 30);
 
-    setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 50, FlxColor.WHITE, FlxTextAlign.CENTER);
+    setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 50, FlxColor.WHITE, FlxTextAlign.CENTER);
   }
 
   override function update(elapsed:Float)

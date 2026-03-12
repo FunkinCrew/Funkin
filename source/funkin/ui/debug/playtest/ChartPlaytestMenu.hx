@@ -55,7 +55,7 @@ class ChartPlaytestMenu extends MusicBeatState
     this.filePath = filePath;
 
     songName = new FlxText(0, FlxG.height * 0.1, 0, 'Loaded Song: ${targetSong.songName}',
-      30).setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 50, FlxColor.WHITE, FlxTextAlign.CENTER);
+      30).setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 50, FlxColor.WHITE, FlxTextAlign.CENTER);
     songName.screenCenter(X);
     songName.cameras = [playtestCam];
     add(songName);

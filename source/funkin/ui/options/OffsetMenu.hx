@@ -214,7 +214,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     receptor.updateHitbox();
 
     jumpInText = new FlxText(0, 0);
-    jumpInText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    jumpInText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     jumpInText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 4);
     add(jumpInText);
 
@@ -224,7 +224,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     // below receptor
 
     countText = new FlxText(0, 0);
-    countText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    countText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     countText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 4);
     add(countText);
 

@@ -551,7 +551,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
-    topLeftCornerText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
+    topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
     topLeftCornerText.visible = false;
 
     var freeplayTxtBg:FlxSprite = new FlxSprite().makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16),
@@ -560,10 +560,10 @@ class FreeplayState extends MusicBeatSubState
     freeplayTxtBg.visible = false;
 
     freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---', 48);
-    freeplayArrow.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
+    freeplayArrow.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
     freeplayArrow.visible = false;
 
-    ostName.setFormat(Paths.font('ui/fonts/VCR OSD Mono'));
+    ostName.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
     ostName.alignment = RIGHT;
     ostName.visible = false;
     ostName.shader = new StrokeShader(0xFFFFFFFF, 2, 2);

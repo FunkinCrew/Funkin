@@ -62,7 +62,7 @@ class CharacterUnlockState extends MusicBeatState
     var charName:String = targetCharacterData != null ? targetCharacterData.getName() : targetCharacterId.toTitleCase();
     // var dialogText:FlxText = new FlxText(0, 0, 0, 'You can now play as     $charName.\n\nCheck it out in Freeplay!');
     var dialogText:FlxText = new FlxText(0, 0, 0, 'You can now play as     $charName.');
-    dialogText.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 32, DIALOG_FONT_COLOR, LEFT);
+    dialogText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, DIALOG_FONT_COLOR, LEFT);
 
     // THEN we can size the dialog to match...
     var dialogBG:FlxSprite = new FlxSprite(0, 0);

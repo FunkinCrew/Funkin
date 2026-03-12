@@ -411,7 +411,7 @@ class StageEditorState extends UIState
     add(camMarker);
 
     nameTxt = new FlxText(0, 0, 0, "", 24);
-    nameTxt.setFormat(Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    nameTxt.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     nameTxt.cameras = [camHUD];
     add(nameTxt);
 
