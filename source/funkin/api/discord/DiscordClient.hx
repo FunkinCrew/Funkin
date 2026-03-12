@@ -33,6 +33,11 @@ class DiscordClient
 
   var handlers:DiscordEventHandlers;
 
+  /**
+   * Latest passed parameters for the presence.
+   */
+  public static var presenceParamsCache:Null<DiscordClientPresenceParams>;
+
   private function new()
   {
     trace(' DISCORD '.bold().bg_blue() + ' Initializing event handlers...');
@@ -99,6 +104,8 @@ class DiscordClient
 
   public function setPresence(params:DiscordClientPresenceParams):Void
   {
+    presenceParamsCache = params;
+
     var presence:DiscordRichPresence = new DiscordRichPresence();
 
     // Presence should always be playing the game.

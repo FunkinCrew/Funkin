@@ -431,7 +431,7 @@ class Preferences
 
   static function get_enabledDiscordRPC():Bool
   {
-    return Save?.instance?.options?.enabledDiscordRPC ?? false;
+    return Save?.instance?.options?.enabledDiscordRPC ?? true;
   }
 
   static function set_enabledDiscordRPC(value:Bool):Bool
@@ -454,6 +454,11 @@ class Preferences
     if (enable)
     {
       DiscordClient.instance.init();
+
+      if (DiscordClient.presenceParamsCache != null)
+      {
+        DiscordClient.instance.setPresence(DiscordClient.presenceParamsCache);
+      }
     }
     else
     {
