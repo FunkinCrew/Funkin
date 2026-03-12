@@ -80,6 +80,7 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumId == null)
     {
       this.visible = false;
+      albumData = null;
       return;
     }
     else
