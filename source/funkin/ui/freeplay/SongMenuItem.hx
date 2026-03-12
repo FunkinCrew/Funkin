@@ -758,7 +758,7 @@ class SongMenuItem extends FlxSpriteGroup
     return forceHighlight;
   }
 
-  function updateSelected():Void
+  public function updateSelected():Void
   {
     final isSelected:Bool = (this.selected || this.forceHighlight);
 
