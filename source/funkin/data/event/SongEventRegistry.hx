@@ -204,10 +204,6 @@ class SongEventRegistry
     {
       ScriptEventDispatcher.callEvent(eventHandler, scriptEvent);
     }
-    else
-    {
-      trace('WARNING: No event handler for event with kind: ${eventKind}');
-    }
   }
 
   public static inline function callEvent(events:Array<SongEventData>, scriptEvent:ScriptEvent):Void
