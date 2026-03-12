@@ -18,4 +18,24 @@
 		<class package="funkin.ui.haxeui.components" loadAll="true" />
 		<class package="funkin.ui.haxeui.components.editors.camera" loadAll="true" />
 	</components>
+
+	<resources>
+        <resource path="assets/exclude/data/ui/chart-editor/style" prefix="style" />
+  </resources>
+
+	<themes>
+		<funkin-dark parent="dark">
+			<!-- Be careful when editing these priorities! It can mess up how the style looks. -->
+			<style resource="style/buttons.css" priority="10" />
+			<style resource="style/compact.css" priority="10" />
+			<style resource="style/dialogs.css" priority="10" />
+			<style resource="style/notifs.css" priority="10" />
+			<style resource="style/text.css" priority="10" />
+			<style resource="style/general.css" priority="15" />
+
+			<!-- These take a higher priorities due to being chart editor specific. -->
+			<style resource="style/playbar.css" priority="20" />
+			<style resource="style/toolbox.css" priority="20" />
+		</funkin-dark>
+	</themes>
 </module>
