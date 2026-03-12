@@ -559,6 +559,16 @@ class ResultState extends MusicBeatSubState
     super.create();
   }
 
+  override public function destroy():Void
+  {
+    // Kill all music types to prevent audio overlap into new states.
+    if (resultsMusic != null) resultsMusic.stop();
+    if (introMusicAudio != null) introMusicAudio.stop();
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
+    super.destroy();
+  }
+
   function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank, suffix:String = ''):String
   {
     return (playerCharacter?.getResultsMusicPath(rank) ?? 'gameplay/playable-characters/bf/results/music/results-normal/results-normal') + suffix;
