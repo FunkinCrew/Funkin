@@ -68,7 +68,7 @@ class SerializerUtil
   /**
    * Customize how certain types are serialized when converting to JSON.
    */
-  static function replacer(key:String, value:Dynamic):Dynamic
+  static function replacer(key:Dynamic, value:Dynamic):Dynamic
   {
     // Hacky because you can't use `isOfType` on a struct.
     if (key == "version")

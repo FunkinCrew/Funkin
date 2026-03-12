@@ -25,11 +25,10 @@ class CutItemsCommand implements ChartEditorCommand
   public function execute(state:ChartEditorState):Void
   {
     // Copy the notes.
-    SongDataUtils.writeItemsToClipboard(
-      {
-        notes: SongDataUtils.buildNoteClipboard(notes),
-        events: SongDataUtils.buildEventClipboard(events)
-      });
+    SongDataUtils.writeItemsToClipboard({
+      notes: SongDataUtils.buildNoteClipboard(notes),
+      events: SongDataUtils.buildEventClipboard(events)
+    });
 
     // Delete the notes.
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
@@ -40,6 +39,9 @@ class CutItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
+    state.clipboardDirty = true;
+    state.clipboardValid = true;
     state.sortChartData();
   }
 
@@ -54,6 +56,7 @@ class CutItemsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
     state.sortChartData();
   }
 

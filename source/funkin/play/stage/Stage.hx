@@ -145,6 +145,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
         prop.x = dataProp.position[0];
         prop.y = dataProp.position[1];
         prop.zIndex = dataProp.zIndex;
+
+        // Reset danceEvery value.
+        if (Std.isOfType(prop, Bopper))
+        {
+          cast(prop, Bopper).danceEvery = dataProp.danceEvery;
+        }
       }
     }
 
@@ -360,7 +366,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function setShader(shader:FlxShader):Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       prop.shader = shader;
     });
   }
@@ -629,7 +636,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function pause():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       if (prop.animation != null) prop.animation.pause();
     });
   }
@@ -639,7 +647,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function resume():Void
   {
-    forEachAlive(function(prop:FlxSprite) {
+    forEachAlive(function(prop:FlxSprite)
+    {
       if (prop.animation != null) prop.animation.resume();
     });
   }
@@ -785,15 +794,21 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * A function that gets called once per step in the song.
    * @param curStep The current step number.
    */
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   /**
    * A function that gets called once per beat in the song (once every four steps).
    * @param curStep The current beat number.
    */
-  public function onBeatHit(event:SongTimeScriptEvent):Void {}
+  public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent) {}
+  public function onUpdate(event:UpdateScriptEvent)
+  {
+  }
 
   public override function kill()
   {
@@ -835,7 +850,9 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * Called when the frame buffer manager is ready.
    * Create frame buffers inside this method.
    */
-  function setupFrameBuffers():Void {}
+  function setupFrameBuffers():Void
+  {
+  }
 
   /**
    * Called when all the frame buffers are updated. If you need any
@@ -843,25 +860,8 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * grab the screen inside this method since it immediately uses the
    * frame buffers.
    */
-  function frameBuffersUpdated():Void {}
-
-  /**
-   * Grabs the current screen and returns it as a bitmap data. You can sefely modify it.
-   * @param applyFilters if this is `true`, the filters set to the camera will be applied to the resulting bitmap
-   * @return the grabbed screen
-   */
-  function grabScreen(applyFilters:Bool):BitmapData
+  function frameBuffersUpdated():Void
   {
-    if (Std.isOfType(FlxG.camera, FunkinCamera))
-    {
-      final cam:FunkinCamera = cast FlxG.camera;
-      return cam.grabScreen(applyFilters);
-    }
-    else
-    {
-      FlxG.log.error('cannot grab the screen: the main camera is not grabbable');
-      return null;
-    }
   }
 
   public function onScriptEvent(event:ScriptEvent)
@@ -874,37 +874,69 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     }
   }
 
-  public function onPause(event:PauseScriptEvent) {}
+  public function onPause(event:PauseScriptEvent)
+  {
+  }
 
-  public function onResume(event:ScriptEvent) {}
+  public function onResume(event:ScriptEvent)
+  {
+  }
 
-  public function onSongStart(event:ScriptEvent) {}
+  public function onSongStart(event:ScriptEvent)
+  {
+  }
 
-  public function onSongEnd(event:ScriptEvent) {}
+  public function onSongEnd(event:ScriptEvent)
+  {
+  }
 
-  public function onGameOver(event:ScriptEvent) {}
+  public function onGameOver(event:ScriptEvent)
+  {
+  }
 
-  public function onCountdownStart(event:CountdownScriptEvent) {}
+  public function onCountdownStart(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownStep(event:CountdownScriptEvent) {}
+  public function onCountdownStep(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onCountdownEnd(event:CountdownScriptEvent) {}
+  public function onCountdownEnd(event:CountdownScriptEvent)
+  {
+  }
 
-  public function onNoteIncoming(event:NoteScriptEvent) {}
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHit(event:HitNoteScriptEvent) {}
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  }
 
-  public function onNoteMiss(event:NoteScriptEvent) {}
+  public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
 
-  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {}
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
 
-  public function onSongEvent(event:SongEventScriptEvent) {}
+  public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
 
-  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent) {}
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+  {
+  }
 
-  public function onSongLoaded(event:SongLoadScriptEvent) {}
+  public function onSongLoaded(event:SongLoadScriptEvent)
+  {
+  }
 
-  public function onSongRetry(event:SongRetryEvent) {}
+  public function onSongRetry(event:SongRetryEvent)
+  {
+  }
 
   static function log(message:String):Void
   {

@@ -32,12 +32,10 @@ class LinkerMacro
 
     includeElement.set('name', fileToInclude);
 
-    cls.meta.add(':buildXml', [
-      {
-        expr: EConst(CString(haxe.xml.Printer.print(includeElement, true))),
-        pos: pos
-      }
-    ], pos);
+    cls.meta.add(':buildXml', [{
+      expr: EConst(CString(haxe.xml.Printer.print(includeElement, true))),
+      pos: pos
+    }], pos);
 
     return fields;
   }

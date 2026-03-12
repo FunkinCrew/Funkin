@@ -299,12 +299,15 @@ class HealthIcon extends FunkinSprite
       bopTween?.cancel();
       setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
       bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x,
-        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> bopTween = null}, value -> {
-          setGraphicSize(Std.int(value), 0);
-          // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
-          this.updateHitbox();
-          this.updatePosition();
-        });
+        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {
+          onComplete: _ -> bopTween = null
+        }, value ->
+      {
+        setGraphicSize(Std.int(value), 0);
+        // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
+        this.updateHitbox();
+        this.updatePosition();
+      });
       // Ensure the icon is positioned correctly after updating the hitbox.
       this.updateHitbox();
       this.updatePosition();

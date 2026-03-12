@@ -19,9 +19,11 @@ class SprStage extends FlxSprite
   {
     super(x, y);
 
-    FlxMouseEvent.add(this, dragShitFunc, null, function(spr:SprStage) {
+    FlxMouseEvent.add(this, dragShitFunc, null, function(spr:SprStage)
+    {
       if (isSelected() || StageBuilderState.curTool == SELECT) alpha = 0.5;
-    }, function(spr:SprStage) {
+    }, function(spr:SprStage)
+    {
       alpha = 1;
     }, false, true, true);
   }

@@ -16,7 +16,9 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
   var previousNoteSelection:Array<SongNoteData> = [];
   var previousEventSelection:Array<SongEventData> = [];
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function execute(state:ChartEditorState):Void
   {
@@ -27,6 +29,7 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
     state.currentEventSelection = SongDataUtils.subtractEvents(state.currentSongChartEventData, previousEventSelection);
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -35,6 +38,7 @@ class InvertSelectedItemsCommand implements ChartEditorCommand
     state.currentEventSelection = previousEventSelection;
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

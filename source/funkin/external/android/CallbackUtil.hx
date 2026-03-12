@@ -66,7 +66,9 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
   }
 
   @:noCompletion
-  private function new() {}
+  private function new()
+  {
+  }
 
   @:noCompletion
   @:keep

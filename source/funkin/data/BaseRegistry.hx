@@ -109,7 +109,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // UNSCRIPTED ENTRIES
     //
     var entryIdList:Array<String> = DataAssets.listDataFilesInPath('${dataFilePath}/');
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    {
       return !entries.exists(entryId);
     });
     log(' INFO '.info() + 'Parsing ${unscriptedEntryIds.length} unscripted entries...');

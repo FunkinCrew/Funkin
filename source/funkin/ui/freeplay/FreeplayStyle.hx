@@ -111,7 +111,9 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
     return FlxColor.fromString(_data?.capsuleTextColors[1] ?? "#00ccff") ?? 0x00CCFF;
   }
 
-  public function destroy():Void {}
+  public function destroy():Void
+  {
+  }
 
   static function _fetchData(id:String):Null<FreeplayStyleData>
   {

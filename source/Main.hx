@@ -87,6 +87,21 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
+    #if (sys && !mobile)
+    // Force-kill the game to prevent background processing.
+    Lib.current.stage.window.onClose.add(function()
+    {
+      trace(' EXITING '.bold().bg_red() + ' Game is exiting, cleaning up resources...');
+
+      #if hxvlc
+      // Clean up VLC threads to prevent memory leaks.
+      hxvlc.util.Handle.dispose();
+      #end
+
+      Sys.exit(0);
+    });
+    #end
+
     // Manually crash the game when using a software renderer in order to give a nicer error message.
     var context = stage.window.context.type;
     if (context != WEBGL && context != OPENGL && context != OPENGLES)
@@ -136,7 +151,8 @@ class Main extends Sprite
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.initAsync(function(success:Bool):Void {
+    Handle.initAsync(function(success:Bool):Void
+    {
       if (success)
       {
         trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');
@@ -157,7 +173,13 @@ class Main extends Sprite
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, Preferences.framerate, Preferences.framerate, skipSplash,
+    // Force a `FunkinCamera` to be the default camera.
+    // This allows the blend mode shader to work everywhere.
+    untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
+
+    var framerate:Int = Preferences.unlockedFramerate ? 0 : Preferences.framerate;
+
+    var game:FlxGame = new FlxGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash,
       (FlxG.stage.window.fullscreen || Preferences.autoFullscreen));
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
@@ -231,14 +253,7 @@ class Main extends Sprite
   function repositionCounters(lerp:Bool):Void
   {
     // Calling this so it gets scaled based on the resolution of the game and device's resolution.
-    var scale:Float = Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height);
-
-    #if android
-    scale = Math.max(scale, 1);
-    #else
-    scale = Math.min(scale, 1);
-    #end
-    final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+    var scale:Float = Math.max(Math.min(FlxG.stage.stageWidth / FlxG.width, FlxG.stage.stageHeight / FlxG.height), 1);
 
     if (debugDisplay != null)
     {
@@ -246,13 +261,15 @@ class Main extends Sprite
 
       if (FlxG.game != null)
       {
+        final thypos:Float = Math.max(FullScreenScaleMode.notchSize.x, 10);
+
         if (lerp)
         {
           debugDisplay.x = flixel.math.FlxMath.lerp(debugDisplay.x, FlxG.game.x + thypos, FlxG.elapsed * 3);
         }
         else
         {
-          debugDisplay.x = FlxG.game.x + FullScreenScaleMode.notchSize.x + 10;
+          debugDisplay.x = FlxG.game.x + thypos;
         }
 
         debugDisplay.y = FlxG.game.y + (3 * scale);

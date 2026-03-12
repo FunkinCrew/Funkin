@@ -37,14 +37,13 @@ class FramesJSFLParser
       if (frameInfo[3] != null) scaleX = Std.parseFloat(frameInfo[4]);
       if (frameInfo[4] != null) scaleY = Std.parseFloat(frameInfo[4]);
 
-      var shit:FramesJSFLFrame =
-        {
-          x: x,
-          y: y,
-          alpha: alpha,
-          scaleX: scaleX,
-          scaleY: scaleY
-        };
+      var shit:FramesJSFLFrame = {
+        x: x,
+        y: y,
+        alpha: alpha,
+        scaleX: scaleX,
+        scaleY: scaleY
+      };
       output.frames.push(shit);
     }
 

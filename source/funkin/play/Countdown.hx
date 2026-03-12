@@ -67,7 +67,8 @@ class Countdown
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
 
-    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer) {
+    countdownTimer.start(Conductor.instance.beatLengthMs / 1000, function(tmr:FlxTimer)
+    {
       if (PlayState.instance == null)
       {
         tmr.cancel();
@@ -229,13 +230,13 @@ class Countdown
     if (noteStyle.isCountdownSpritePixel(index)) fadeEase = EaseUtil.stepped(8);
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000,
+    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / 1000, {
+      ease: fadeEase,
+      onComplete: function(twn:FlxTween)
       {
-        ease: fadeEase,
-        onComplete: function(twn:FlxTween) {
-          countdownSprite.destroy();
-        }
-      });
+        countdownSprite.destroy();
+      }
+    });
 
     countdownSprite.cameras = [PlayState.instance.camHUD];
     PlayState.instance.add(countdownSprite);

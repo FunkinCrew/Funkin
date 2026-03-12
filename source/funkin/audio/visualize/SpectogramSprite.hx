@@ -69,7 +69,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
       default:
     }
 
-    forEach(spr -> {
+    forEach(spr ->
+    {
       spr.visible = spr.ID % wavOptimiz == 0;
     });
 

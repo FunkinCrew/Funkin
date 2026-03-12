@@ -2,6 +2,8 @@ package source; // Yeah, I know...
 
 import sys.io.File;
 
+using tools.AnsiUtil;
+
 /**
  * A script which executes before the game is built.
  */
@@ -12,13 +14,13 @@ class Prebuild
   static function main():Void
   {
     var start:Float = Sys.time();
-    // Sys.println('[INFO] Performing pre-build tasks...');
+    Sys.println(' INFO '.bold().bg_blue() + " Performing pre-build tasks...");
 
     saveBuildTime();
 
     var end:Float = Sys.time();
     var duration:Float = end - start;
-    // Sys.println('[INFO] Finished pre-build tasks in $duration seconds.');
+    Sys.println(' INFO '.bold().bg_blue() + ' Finished pre-build tasks in $duration seconds.');
   }
 
   static function saveBuildTime():Void

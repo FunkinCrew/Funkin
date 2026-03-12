@@ -6,4 +6,6 @@ package funkin.play.notes.notekind;
  * then call `super('noteKind')` in the constructor to use this.
  */
 @:hscriptClass
-class ScriptedNoteKind extends NoteKind implements polymod.hscript.HScriptedClass {}
+class ScriptedNoteKind extends NoteKind implements polymod.hscript.HScriptedClass
+{
+}

@@ -36,13 +36,14 @@ class CopyItemsCommand implements ChartEditorCommand
       }
     }
 
-    SongDataUtils.writeItemsToClipboard(
-      {
-        notes: SongDataUtils.buildNoteClipboard(state.currentNoteSelection, timeOffset),
-        events: SongDataUtils.buildEventClipboard(state.currentEventSelection, timeOffset),
-      });
+    SongDataUtils.writeItemsToClipboard({
+      notes: SongDataUtils.buildNoteClipboard(state.currentNoteSelection, timeOffset),
+      events: SongDataUtils.buildEventClipboard(state.currentEventSelection, timeOffset),
+    });
 
     performVisuals(state);
+    state.clipboardDirty = true;
+    state.clipboardValid = true;
   }
 
   function performVisuals(state:ChartEditorState):Void
@@ -71,13 +72,13 @@ class CopyItemsCommand implements ChartEditorCommand
           note.angle = FlxG.random.bool() ? -10 : 10;
           FlxTween.tween(note, {"angle": 0}, 0.8, {ease: FlxEase.elasticOut});
 
-          FlxTween.tween(note.scale, {"y": prevX, "x": prevY}, 0.7,
+          FlxTween.tween(note.scale, {"y": prevX, "x": prevY}, 0.7, {
+            ease: FlxEase.elasticOut,
+            onComplete: function(_)
             {
-              ease: FlxEase.elasticOut,
-              onComplete: function(_) {
-                note.playNoteAnimation();
-              }
-            });
+              note.playNoteAnimation();
+            }
+          });
         }
       }
     }
@@ -103,13 +104,13 @@ class CopyItemsCommand implements ChartEditorCommand
           event.angle = FlxG.random.bool() ? -10 : 10;
           FlxTween.tween(event, {"angle": 0}, 0.8, {ease: FlxEase.elasticOut});
 
-          FlxTween.tween(event.scale, {"y": prevX, "x": prevY}, 0.7,
+          FlxTween.tween(event.scale, {"y": prevX, "x": prevY}, 0.7, {
+            ease: FlxEase.elasticOut,
+            onComplete: function(_)
             {
-              ease: FlxEase.elasticOut,
-              onComplete: function(_) {
-                event.playAnimation();
-              }
-            });
+              event.playAnimation();
+            }
+          });
         }
       }
     }
@@ -139,14 +140,14 @@ class CopyItemsCommand implements ChartEditorCommand
       state.txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
       state.txtCopyNotif.x = FlxG.mouse.x - (state.txtCopyNotif.width / 2);
       state.txtCopyNotif.y = FlxG.mouse.y - 16;
-      FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5,
+      FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5, {
+        type: FlxTweenType.ONESHOT,
+        ease: FlxEase.quadOut,
+        onComplete: function(_)
         {
-          type: FlxTweenType.ONESHOT,
-          ease: FlxEase.quadOut,
-          onComplete: function(_) {
-            state.txtCopyNotif.visible = false;
-          }
-        });
+          state.txtCopyNotif.visible = false;
+        }
+      });
     }
   }
 

@@ -27,7 +27,9 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     switchGF(Constants.DEFAULT_CHARACTER);
   }
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
@@ -38,7 +40,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     // danceEvery isn't necessary if that gets fixed.
     if (getCurrentAnimation() == "idle" && (event.beat % danceEvery == 0))
     {
-      trace('GF beat hit');
       anim.play("idle", true);
     }
   };
@@ -96,7 +97,6 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     currentGFPath = assetPath;
 
     // We don't need to update any anims if we didn't change GF
-    trace('currentGFPath(${currentGFPath})');
     if (currentGFPath == "")
     {
       this.visible = false;
@@ -127,11 +127,19 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     updateHitbox();
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {};
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  };
 
-  public function onCreate(event:ScriptEvent):Void {};
+  public function onCreate(event:ScriptEvent):Void
+  {
+  };
 
-  public function onDestroy(event:ScriptEvent):Void {};
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  };
 
-  public function onUpdate(event:UpdateScriptEvent):Void {};
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  };
 }

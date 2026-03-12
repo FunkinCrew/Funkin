@@ -9,7 +9,9 @@ import flixel.util.FlxSave;
  */
 class SaveSystem
 {
-  public function new():Void {}
+  public function new():Void
+  {
+  }
 
   /**
    * Call this to make sure the save data is written to disk.

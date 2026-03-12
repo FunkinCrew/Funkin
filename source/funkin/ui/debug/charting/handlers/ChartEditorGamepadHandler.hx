@@ -99,9 +99,13 @@ class ChartEditorGamepadActionInputSource implements IActionInputSource
 {
   public static var instance:ChartEditorGamepadActionInputSource = new ChartEditorGamepadActionInputSource();
 
-  public function new() {}
+  public function new()
+  {
+  }
 
-  public function start():Void {}
+  public function start():Void
+  {
+  }
 
   /**
    * Handle HaxeUI-specific binds for the gamepad.

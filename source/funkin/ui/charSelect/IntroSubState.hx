@@ -48,6 +48,10 @@ class IntroSubState extends MusicBeatSubState
     playVideoNative(LIGHTS_VIDEO_PATH);
     #end
 
+    #if NO_FEATURE_VIDEO_PLAYBACK
+    onLightsEnd();
+    #end
+
     // // Im TOO lazy to even care, so uh, yep
     // FlxG.camera.zoom = 0.66666666666666666666666666666667;
     // vid.x = -(FlxG.width - (FlxG.width * FlxG.camera.zoom));
@@ -92,13 +96,15 @@ class IntroSubState extends MusicBeatSubState
     {
       vid.zIndex = 0;
       vid.active = false;
-      vid.bitmap?.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap?.onEncounteredError.add(function(msg:String):Void
+      {
         trace('[VLC] Encountered an error: $msg');
 
         onLightsEnd();
       });
       vid.bitmap?.onEndReached.add(onLightsEnd);
-      vid.bitmap?.onFormatSetup.add(() -> {
+      vid.bitmap?.onFormatSetup.add(() ->
+      {
         vid?.setGraphicSize(FlxG.initialWidth, FlxG.initialHeight);
         vid?.updateHitbox();
         vid.screenCenter();

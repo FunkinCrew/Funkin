@@ -46,11 +46,10 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     FlxGraphic.defaultPersist = true;
 
-    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, "ui/medal",
-      {
-        swfMode: true,
-        filterQuality: HIGH
-      });
+    medal = FunkinSprite.createTextureAtlas((MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), MEDAL_Y, "ui/medal", {
+      swfMode: true,
+      filterQuality: HIGH
+    });
 
     pointsLabel = new FlxText((171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 17 + MEDAL_Y, 50, 12, false);
     pointsLabel.fieldHeight = 18;
@@ -76,7 +75,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     medal.scrollFactor.set();
     medal.visible = false;
 
-    medal.anim.onFrameLabel.add(function(label:String) {
+    medal.anim.onFrameLabel.add(function(label:String)
+    {
       switch (label)
       {
         case "show":
@@ -100,7 +100,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       }
     });
 
-    medal.anim.onFinish.add(function(name:String) {
+    medal.anim.onFinish.add(function(name:String)
+    {
       medal.visible = false;
     });
 
@@ -145,7 +146,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
 
     // instance is defined above so there's no need to worry about null safety here
     @:nullSafety(Off)
-    instance.medal.anim.onFinish.add(function(name:String) {
+    instance.medal.anim.onFinish.add(function(name:String)
+    {
       if (instance.medalQueue.length > 0)
       {
         instance.medalQueue.shift()();
@@ -163,7 +165,8 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
   {
     if (instance == null) return;
 
-    var playMedal:Void->Void = function() {
+    var playMedal:Void->Void = function()
+    {
       instance.pointsLabel.visible = false;
       instance.nameLabel.visible = false;
       instance.pointsLabel.text = Std.string(points);

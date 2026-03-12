@@ -1,6 +1,5 @@
 package funkin.play.notes.notekind;
 
-import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.NoteScriptEvent;
 
 /**
@@ -10,7 +9,7 @@ class NonScoreableNoteKind extends NoteKind
 {
   public function new()
   {
-    super("non_scoreable", "Non-scoreable");
+    super('non_scoreable', 'Non-scoreable');
     scoreable = false;
   }
 

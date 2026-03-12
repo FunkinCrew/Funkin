@@ -33,27 +33,24 @@ class StageData
   function makeDefaultCharacters():StageDataCharacters
   {
     return {
-      bf:
-        {
-          zIndex: 0,
-          scale: 1,
-          position: [0, 0],
-          cameraOffsets: [-100, -100]
-        },
-      dad:
-        {
-          zIndex: 0,
-          scale: 1,
-          position: [0, 0],
-          cameraOffsets: [100, -100]
-        },
-      gf:
-        {
-          zIndex: 0,
-          scale: 1,
-          position: [0, 0],
-          cameraOffsets: [0, 0]
-        }
+      bf: {
+        zIndex: 0,
+        scale: 1,
+        position: [0, 0],
+        cameraOffsets: [-100, -100]
+      },
+      dad: {
+        zIndex: 0,
+        scale: 1,
+        position: [0, 0],
+        cameraOffsets: [100, -100]
+      },
+      gf: {
+        zIndex: 0,
+        scale: 1,
+        position: [0, 0],
+        cameraOffsets: [0, 0]
+      }
     };
   }
 

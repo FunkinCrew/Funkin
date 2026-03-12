@@ -32,13 +32,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.1";
+  static final VERSION:String = "0.8.3";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 70;
+  static final BUILD_NUMBER:Int = 77;
 
   /**
    * The game's name. Used as the default window title.
@@ -114,11 +114,7 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = [
-    "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFCExtension",
-    "funkin.extensions.AudioSession"
-  ];
+  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension", "funkin.extensions.AudioSession"];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -171,11 +167,7 @@ class Project extends HXProject
   /**
    * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` disabled.
    */
-  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = [
-    "stressCutscene-censored.mp4",
-    "stressPicoCutscene-censored.mp4",
-    "darnellCutscene-censored.mp4"
-  ];
+  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = ["stressCutscene-censored.mp4", "stressPicoCutscene-censored.mp4", "darnellCutscene-censored.mp4"];
 
   //
   // ASSET EMBEDDING
@@ -184,9 +176,7 @@ class Project extends HXProject
   /**
    * The songs whose audio files should be embedded inside the executable.
    */
-  static final EMBED_SONGS_AUDIO:Array<String> = [
-    "spaghetti"
-  ];
+  static final EMBED_SONGS_AUDIO:Array<String> = ["spaghetti"];
 
   //
   // BUILD FLAGS
@@ -215,6 +205,13 @@ class Project extends HXProject
    * If this flag is enabled, armv7 won't be compiled when building android.
    */
   static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
+
+  /**
+   * `-DFORCE_BLEND_SHADER`
+   * If this flag is enabled, the game will force the use of shaders to render
+   * certain blend modes, even if the device supports the needed OpenGL extensions.
+   */
+  static final FORCE_BLEND_SHADER:FeatureFlag = "FORCE_BLEND_SHADER";
 
   /**
    * `-DGITHUB_BUILD`
@@ -659,7 +656,7 @@ class Project extends HXProject
     this.window.hardware = true;
     this.window.vsync = false;
     // force / allow high DPI
-    this.window.allowHighDPI = true;
+    this.window.allowHighDPI = !isMac();
 
     if (isWeb())
     {
@@ -855,6 +852,11 @@ class Project extends HXProject
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
 
+    // Should be true on Android.
+    // Some Android devices support native blends, but it causes issues
+    // with other shaders, so we'll disable it for now.
+    FORCE_BLEND_SHADER.apply(this, isAndroid());
+
     //
     // FEATURE FLAGS
     //
@@ -884,7 +886,7 @@ class Project extends HXProject
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && !isHashLink());
 
     FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
 
@@ -1133,8 +1135,9 @@ class Project extends HXProject
    */
   function configureCustomMacros()
   {
-    // This macro allows addition of new functionality to existing Flixel. -->
+    // These macros allow additions of new functionality to existing Flixel. -->
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
+    addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')");
   }
 
   function configureOutputDir()
@@ -1218,21 +1221,12 @@ class Project extends HXProject
       intentFilter.addChild(category);
     }
 
-    final intentFilterDatas:Map<String, Array<String>> = [
-      "android:mimeType" => ["application/zip"],
-      // When this is added, it makes the game show up only when it's a FNFC file.
+    final intentFilterDatas:Map<String,
+      Array<String>> = ["android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
       // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
       // "android:host"        => ["*"],
-      "android:scheme" => ["file", "content"],
-      // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
-      "android:pathPattern" => [
-        ".*\\.fnfc",
-        ".*\\..*\\.fnfc",
-        ".*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\..*\\.fnfc"
-      ]
-    ];
+      "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
+      "android:pathPattern" => [".*\\.fnfc", ".*\\..*\\.fnfc", ".*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\..*\\.fnfc"]];
 
     for (key => values in intentFilterDatas)
     {
@@ -1325,7 +1319,6 @@ class Project extends HXProject
     addHaxelib('flixel'); // Game engine
 
     addHaxelib('flixel-addons'); // Additional utilities for Flixel
-    addHaxelib('hscript'); // Scripting
 
     if (FEATURE_HAXEUI.isEnabled(this))
     {
@@ -1342,12 +1335,12 @@ class Project extends HXProject
     addHaxelib('thx.core'); // General utility library, "the lodash of Haxe"
     addHaxelib('thx.semver'); // Version string handling
 
-    if (isDebug())
+    if (isDebug() && isCPP())
     {
       addHaxelib('hxcpp-debug-server'); // VSCode debug support
     }
 
-    if (isDesktop() || isMobile() && !isHashLink() && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       // hxvlc doesn't function on HashLink or non-desktop platforms
       // It's also unnecessary if video playback is disabled
@@ -1500,8 +1493,6 @@ class Project extends HXProject
     addAssetLibrary("sserafim", shouldEmbed, shouldPreload);
     addAssetPath("assets/sserafim", "assets/sserafim", "sserafim", ["*"], exclude, shouldEmbed, "assets");
 
-
-
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
     var shouldPreloadArt = false;
@@ -1547,6 +1538,10 @@ class Project extends HXProject
         if (isAndroid() && !isBundle())
         {
           assetsPath = Path.join([basePath, "app", "src", "main", "assets", "assets"]);
+        }
+        else if (isIOS())
+        {
+          assetsPath = Path.join([exportPath, platform, '${this.app.file}', "assets", "assets"]);
         }
         else
         {
@@ -2092,7 +2087,7 @@ class Project extends HXProject
   @SuppressWarnings('checkstyle:Dynamic')
   function checkLibraries():Void
   {
-    var diffrentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
+    var differentLibraries:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var hmmData:Dynamic = haxe.Json.parse(sys.io.File.getContent(#if ios '../../../../../' + #end 'hmm.json'));
 
@@ -2113,11 +2108,11 @@ class Project extends HXProject
         switch (library.type)
         {
           case 'haxelib':
-            diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
+            differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
@@ -2128,18 +2123,18 @@ class Project extends HXProject
           case 'haxelib':
             if (library.version != libraryCurrentVersion)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
+              differentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
             }
           case 'git':
             if (libraryCurrentCommitHash != library.ref)
             {
-              diffrentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
+              differentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
             }
         }
       }
     }
 
-    if (Lambda.count(diffrentLibraries) > 0)
+    if (Lambda.count(differentLibraries) > 0)
     {
       warn("Some libraries differ from the versions defined in hmm.json.".bold().yellow());
       warn("To ensure consistency, it's recommended to stop the build and run `hmm reinstall [library]`.".bold().yellow());
@@ -2147,9 +2142,9 @@ class Project extends HXProject
 
       Sys.println('');
 
-      for (libraryName in diffrentLibraries.keys())
+      for (libraryName in differentLibraries.keys())
       {
-        var infos:Null<Array<String>> = diffrentLibraries.get(libraryName);
+        var infos:Null<Array<String>> = differentLibraries.get(libraryName);
 
         if (infos == null) continue;
 
@@ -2162,7 +2157,6 @@ class Project extends HXProject
         {
           Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
           Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
-
         }
         else
         {
@@ -2181,7 +2175,7 @@ class Project extends HXProject
   {
     var path = getLibraryCurrentFile(libraryName);
 
-    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path).trim();
 
     return '';
   }
@@ -2190,7 +2184,7 @@ class Project extends HXProject
   {
     var path = getLibraryDevFile(libraryName);
 
-    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
+    if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path).trim();
 
     return '';
   }

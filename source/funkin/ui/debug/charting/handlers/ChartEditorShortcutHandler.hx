@@ -23,12 +23,16 @@ class ChartEditorShortcutHandler
     state.menubarItemCopy.shortcutText = ctrlOrCmd('C');
     state.menubarItemPaste.shortcutText = ctrlOrCmd('V');
 
+    state.menubarItemMirrorX.shortcutText = ctrlOrCmd(shift('M'));
+    state.menubarItemMirrorY.shortcutText = ctrlOrCmd(alt('M'));
+    state.menubarItemMirrorXY.shortcutText = ctrlOrCmd(shift(alt('M')));
+
     state.menubarItemSelectAllNotes.shortcutText = ctrlOrCmd('A');
     state.menubarItemSelectAllEvents.shortcutText = ctrlOrCmd(alt('A'));
     state.menubarItemSelectInverse.shortcutText = ctrlOrCmd('I');
     state.menubarItemSelectNone.shortcutText = ctrlOrCmd('D');
-    state.menubarItemSelectBeforeCursor.shortcutText = shift('Home');
-    state.menubarItemSelectAfterCursor.shortcutText = shift('End');
+    state.menubarItemSelectBeforePlayhead.shortcutText = shift('Home');
+    state.menubarItemSelectAfterPlayhead.shortcutText = shift('End');
 
     state.menubarItemDifficultyDown.shortcutText = ctrlOrCmd('←');
     state.menubarItemDifficultyUp.shortcutText = ctrlOrCmd('→');

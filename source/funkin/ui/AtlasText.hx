@@ -21,18 +21,15 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   public var atlas(get, never):FlxAtlasFrames;
 
-  inline function get_atlas():FlxAtlasFrames
-    return font.atlas;
+  inline function get_atlas():FlxAtlasFrames return font.atlas;
 
   public var caseAllowed(get, never):Case;
 
-  inline function get_caseAllowed():Case
-    return font.caseAllowed;
+  inline function get_caseAllowed():Case return font.caseAllowed;
 
   public var maxHeight(get, never):Float;
 
-  inline function get_maxHeight():Float
-    return font.maxHeight;
+  inline function get_maxHeight():Float return font.maxHeight;
 
   public function new(x = 0.0, y = 0.0, text:String = "", fontName:AtlasFont = AtlasFont.DEFAULT)
   {
@@ -169,11 +166,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   override function toString():String
   {
-    return "InputItem, " + FlxStringUtil.getDebugString([
-      LabelValuePair.weak("x", x),
-      LabelValuePair.weak("y", y),
-      LabelValuePair.weak("text", text)
-    ]);
+    return "InputItem, " + FlxStringUtil.getDebugString([LabelValuePair.weak("x", x), LabelValuePair.weak("y", y), LabelValuePair.weak("text", text)]);
   }
 }
 

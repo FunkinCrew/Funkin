@@ -1,9 +1,13 @@
 package funkin.data.event;
 
-import funkin.play.event.SongEvent;
+import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventData;
-import funkin.util.macro.ClassMacro;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.event.ScriptedSongEvent;
+import funkin.play.event.SongEvent;
+import funkin.util.SortUtil;
+import funkin.util.macro.ClassMacro;
 
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
@@ -64,7 +68,7 @@ class SongEventRegistry
 
     for (eventCls in scriptedEventClassNames)
     {
-      var event:SongEvent = ScriptedSongEvent.init(eventCls, "UKNOWN");
+      var event:SongEvent = ScriptedSongEvent.scriptInit(eventCls, "UKNOWN");
 
       if (event != null)
       {
@@ -108,8 +112,7 @@ class SongEventRegistry
 
   public static function handleEvent(data:SongEventData):Void
   {
-    var eventKind:String = data.eventKind;
-    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
+    var eventHandler:Null<SongEvent> = getEvent(data.eventKind);
 
     if (eventHandler != null)
     {
@@ -117,7 +120,7 @@ class SongEventRegistry
     }
     else
     {
-      trace('WARNING: No event handler for event with kind: ${eventKind}');
+      trace('WARNING: No event handler for event with kind: ${data.eventKind}');
     }
 
     data.activated = true;
@@ -132,12 +135,14 @@ class SongEventRegistry
   }
 
   /**
-   * Given a list of song events and the current timestamp,
-   * return a list of events that should be handled.
+   * @param events The list of available song events.
+   * @param currentTime The current time in milliseconds.
+   * @return The list of events which haven't been handled yet.
    */
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
   {
-    return events.filter(function(event:SongEventData):Bool {
+    var result:Array<SongEventData> = events.filter(function(event:SongEventData):Bool
+    {
       // If the event is already activated, don't activate it again.
       if (event.activated) return false;
 
@@ -146,6 +151,10 @@ class SongEventRegistry
 
       return true;
     });
+
+    result.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+
+    return result;
   }
 
   /**
@@ -180,6 +189,32 @@ class SongEventRegistry
     {
       event.activated = false;
       // TODO: Add an onReset() method to SongEvent?
+    }
+  }
+
+  /**
+   * Dispatches a ScriptEvent to an event.
+   */
+  public static function callEventForEvent(data:SongEventData, scriptEvent:ScriptEvent):Void
+  {
+    var eventKind:String = data.eventKind;
+    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
+
+    if (eventHandler != null)
+    {
+      ScriptEventDispatcher.callEvent(eventHandler, scriptEvent);
+    }
+    else
+    {
+      trace('WARNING: No event handler for event with kind: ${eventKind}');
+    }
+  }
+
+  public static inline function callEvent(events:Array<SongEventData>, scriptEvent:ScriptEvent):Void
+  {
+    for (event in events)
+    {
+      callEventForEvent(event, scriptEvent);
     }
   }
 }

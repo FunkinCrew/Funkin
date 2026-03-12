@@ -42,6 +42,7 @@ class AddEventsCommand implements ChartEditorCommand
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }
@@ -52,10 +53,12 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
+    state.playSound(Paths.sound('chartingSounds/undo'));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
+    state.editButtonsDirty = true;
 
     state.sortChartData();
   }

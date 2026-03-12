@@ -5,4 +5,6 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxTypedGroup to use this.
  */
 @:hscriptClass
-class ScriptedFlxTypedGroup extends flixel.group.FlxGroup.FlxTypedGroup<Dynamic> implements HScriptedClass {}
+class ScriptedFlxTypedGroup extends flixel.group.FlxGroup.FlxTypedGroup<Dynamic> implements HScriptedClass
+{
+}

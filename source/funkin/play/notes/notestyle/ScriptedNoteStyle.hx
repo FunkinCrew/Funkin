@@ -6,4 +6,6 @@ package funkin.play.notes.notestyle;
  * This allows you to customize how a specific note style appears.
  */
 @:hscriptClass
-class ScriptedNoteStyle extends funkin.play.notes.notestyle.NoteStyle implements polymod.hscript.HScriptedClass {}
+class ScriptedNoteStyle extends funkin.play.notes.notestyle.NoteStyle implements polymod.hscript.HScriptedClass
+{
+}

@@ -94,13 +94,13 @@ class CharacterUnlockState extends MusicBeatState
     dialogContainer.add(healthIcon);
 
     dialogContainer.scale.set(0, 0);
-    FlxTween.num(0.0, 1.0, 0.75,
-      {
-        ease: FlxEase.elasticOut,
-      }, function(curScale) {
-        dialogContainer.scale.set(curScale, curScale);
-        healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
-      });
+    FlxTween.num(0.0, 1.0, 0.75, {
+      ease: FlxEase.elasticOut,
+    }, function(curScale)
+    {
+      dialogContainer.scale.set(curScale, curScale);
+      healthIcon.size.set(0.5 * curScale, 0.5 * curScale);
+    });
 
     // performUnlock();
   }
@@ -125,7 +125,8 @@ class CharacterUnlockState extends MusicBeatState
   function startClose():Void
   {
     // Fade to black, then switch state.
-    FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () -> {
+    FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () ->
+    {
       funkin.FunkinMemory.clearFreeplay();
       #if ios
       trace(DeviceUtil.iPhoneNumber);

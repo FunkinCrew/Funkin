@@ -1,7 +1,6 @@
 package funkin.ui.freeplay;
 
 import funkin.data.freeplay.album.AlbumData;
-import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.animation.AnimationData;
 import funkin.data.IRegistryEntry;
 import flixel.graphics.FlxGraphic;
@@ -24,8 +23,7 @@ class Album implements IRegistryEntry<AlbumData>
   }
 
   /**
-   * Return the name of the album.
-   * @
+   * @return The name of the album.
    */
   public function getAlbumName():String
   {
@@ -84,5 +82,13 @@ class Album implements IRegistryEntry<AlbumData>
   public function getAlbumTitleAnimations():Array<AnimationData>
   {
     return _data?.albumTitleAnimations ?? [];
+  }
+
+  /**
+   * @return A name to display for the OST in Freeplay. Will be `null` if not set.
+   */
+  public function getAlbumOSTName():Null<String>
+  {
+    return _data?.albumOSTName;
   }
 }

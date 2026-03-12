@@ -91,11 +91,9 @@ class DebugBoundingState extends FlxState
 
     // offsetEditorDialog.findComponent("btnViewSpriteSheet").onClick = _ -> curView = SPRITESHEET;
     var viewDropdown:DropDown = offsetEditorDialog.findComponent("swapper", DropDown);
-    viewDropdown.onChange = function(e:UIEvent) {
-      trace(e.type);
+    viewDropdown.onChange = function(e:UIEvent)
+    {
       curView = cast e?.data?.curView;
-      trace(e.data);
-      // trace(e.data);
     };
 
     offsetAnimationDropdown = offsetEditorDialog.findComponent("animationDropdown", DropDown);
@@ -217,7 +215,8 @@ class DebugBoundingState extends FlxState
       charDropdown.dataSource.add({text: char});
     }
 
-    charDropdown.onChange = function(e:UIEvent) {
+    charDropdown.onChange = function(e:UIEvent)
+    {
       loadAnimShit(e.data.text);
     };
   }
@@ -289,7 +288,8 @@ class DebugBoundingState extends FlxState
       if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
 
       // var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_) {
+      Assets.loadLibrary(library).onComplete(function(_)
+      {
         trace('LOADED... awesomeness...');
         // callback();
       });
@@ -354,6 +354,11 @@ class DebugBoundingState extends FlxState
 
     // Hide the mouse cursor on other states.
     Cursor.hide();
+
+    // Reset the sounds used by some playables.
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+    funkin.play.Countdown.reset();
   }
 
   function offsetControls():Void
@@ -443,7 +448,8 @@ class DebugBoundingState extends FlxState
     // Plays the idle animation
     if (FlxG.keys.justPressed.SPACE)
     {
-      offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
+      if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {id: 'danceLeft', text: 'danceLeft'};
+      else offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
 
       playCharacterAnimation(currentAnimationName, true);
     }
@@ -546,6 +552,7 @@ class DebugBoundingState extends FlxState
       trace('ERROR: Failed to load character ${char}!');
     }
 
+    updateOnionSkin();
     generateOutlines(swagChar.frames.frames);
     bf.pixels = swagChar.pixels;
 
@@ -559,23 +566,21 @@ class DebugBoundingState extends FlxState
     for (i in swagChar.animationOffsets.keys())
     {
       characterAnimNames.push(i);
-      trace(i);
-      trace(swagChar.animationOffsets[i]);
     }
 
     offsetAnimationDropdown.dataSource.clear();
 
     for (charAnim in characterAnimNames)
     {
-      trace('Adding ${charAnim} to HaxeUI dropdown');
       offsetAnimationDropdown.dataSource.add({id: charAnim, text: charAnim});
     }
 
     offsetAnimationDropdown.selectedIndex = 0;
 
-    trace('Added ${offsetAnimationDropdown.dataSource.size} to HaxeUI dropdown');
+    trace('Added ${offsetAnimationDropdown.dataSource.size} animations to HaxeUI dropdown');
 
-    offsetAnimationDropdown.onChange = function(event:UIEvent) {
+    offsetAnimationDropdown.onChange = function(event:UIEvent)
+    {
       if (event.data != null)
       {
         trace('Selected animation ${event.data.id}');
@@ -597,7 +602,6 @@ class DebugBoundingState extends FlxState
     // var animName = characterAnimNames[Std.parseInt(str)];
     var animName = str;
     swagChar.playAnimation(animName, true); // trace();
-    trace(swagChar.animationOffsets.get(animName));
 
     txtOffsetShit.text = 'Offset: ' + swagChar.animOffsets;
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
