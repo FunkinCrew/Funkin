@@ -425,6 +425,12 @@ class PolymodHandler
       'clearData', // No score manipulation please
       'setLevelScore', 'setSongScore', 'applySongRank']);
 
+    // `openfl.filesystem.FileStream`, `openfl.net.Socket`, `openfl.utils.ByteArray.ByteArrayData`
+    // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
+    Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']);
+    Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
+    Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
+
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
     for (cls in ClassMacro.listClassesInPackage('funkin.api'))
