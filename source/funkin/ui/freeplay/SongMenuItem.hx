@@ -244,6 +244,8 @@ class SongMenuItem extends FlxSpriteGroup
 
   function checkWeek():Void
   {
+    weekText.offset.set(0, 0);
+
     if (this.freeplayData?.levelId == null)
     {
       // Make the text invisible for random levels.
@@ -253,30 +255,43 @@ class SongMenuItem extends FlxSpriteGroup
 
     weekText.visible = true;
 
-    // Format the level id to contain a space between differently capitalized letters and numbers.
-    // E.g. "bonusWeek2" -> "bonus Week 2"
     var levelId:String = this.freeplayData.levelId;
+    var levelIdData:Level = LevelRegistry.instance.fetchEntry(levelId);
     var levelIdClean:String = "";
-    for (i in 0...levelId.length)
+
+    if (levelIdData.getCapsuleTitle() != null)
     {
-      if (i == 0)
+      // If the specified level contains a capsule title field.
+      levelIdClean = levelIdData.getCapsuleTitle();
+    }
+    else
+    {
+      // Otherwise, use the level id and format it to contain a space between differently capitalized letters and numbers.
+      // E.g. "bonusWeek2" -> "bonus Week 2"
+      for (i in 0...levelId.length)
       {
-        levelIdClean += levelId.charAt(i);
-        continue;
+        if (i == 0)
+        {
+          levelIdClean += levelId.charAt(i);
+          continue;
+        }
+
+        var previousChar:String = levelId.charAt(i - 1);
+        var currentChar:String = levelId.charAt(i);
+
+        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
+        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
+        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
+
+        levelIdClean += currentChar;
       }
-
-      var previousChar:String = levelId.charAt(i - 1);
-      var currentChar:String = levelId.charAt(i);
-
-      if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
-      if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
-      if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
-
-      levelIdClean += currentChar;
     }
 
     createWeekTextGraphic(levelIdClean);
     weekText.loadGraphic(FlxG.bitmap.get(levelIdClean));
+
+    var weekTextOffsets:Array<Float> = levelIdData.getCapsuleTitleOffsets();
+    weekText.offset.set(weekTextOffsets[0], weekTextOffsets[1]);
   }
 
   function createWeekTextGraphic(text:String)
