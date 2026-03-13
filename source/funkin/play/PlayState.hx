@@ -1502,7 +1502,7 @@ class PlayState extends MusicBeatSubState
           dispatchEvent(eventEvent);
 
           // Calling event.cancelEvent() skips the event. Neat!
-          if (!eventEvent.eventCanceled)
+          if (!eventEvent.eventCanceled && !shouldSubstatePause)
           {
             SongEventRegistry.handleEvent(event);
           }
