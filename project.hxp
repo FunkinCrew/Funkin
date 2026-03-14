@@ -1017,6 +1017,9 @@ class Project extends HXProject
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
 
+    // Enable OpenFL's experimental event-pooling flag. Fixes the broken event allocation.
+    setHaxedef("openfl_pool_events");
+
     // Disable a macro in Lime that generates a random number for Assets.cache.version every build.
     // This doesn't seem to be of any use and it causes lime.utils.AssetCache to be re-compiled on every build.
     setHaxedef("lime_disable_assets_version");
