@@ -3025,8 +3025,8 @@ class FreeplayState extends MusicBeatSubState
         suffix: instSuffix,
         partialParams: {
           loadPartial: true,
-          start: daSongCapsule?.freeplayData?.previewStartTime ?? 0,
-          end: daSongCapsule?.freeplayData?.previewEndTime ?? 0.2
+          start: daSongCapsule?.freeplayData?.previewStartTime,
+          end: daSongCapsule?.freeplayData?.previewEndTime
         },
         onLoad: function()
         {
@@ -3410,16 +3410,32 @@ class FreeplaySongData
 
   function get_previewStartTime():Float
   {
-    var prevStartTime = @:privateAccess data._metadata.get(curVariation)?.playData?.previewStart ?? 0.0;
+    @:privateAccess final _metadata = data._metadata;
 
-    return prevStartTime > 1 ? 0 : prevStartTime;
+    var prevStart:Float = _metadata.get(curVariation)?.playData?.previewStart ?? Constants.DEFAULT_PREVIEW_START_TIME;
+    final prevEnd:Float = _metadata.get(curVariation)?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME;
+
+    if (prevStart >= prevEnd || prevStart > 1)
+    {
+      prevStart = Constants.DEFAULT_PREVIEW_START_TIME;
+    }
+
+    return prevStart;
   }
 
   function get_previewEndTime():Float
   {
-    var prevEndTime = @:privateAccess data._metadata.get(curVariation)?.playData?.previewEnd ?? 0.2;
+    @:privateAccess final _metadata = data._metadata;
 
-    return prevEndTime > 1 ? 0.2 : prevEndTime;
+    final prevStart:Float = _metadata.get(curVariation)?.playData?.previewStart ?? Constants.DEFAULT_PREVIEW_START_TIME;
+    var prevEnd:Float = _metadata.get(curVariation)?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME;
+
+    if (prevStart >= prevEnd || prevEnd > 1)
+    {
+      prevEnd = Constants.DEFAULT_PREVIEW_END_TIME;
+    }
+
+    return prevEnd;
   }
 
   function get_isNew():Bool

@@ -91,26 +91,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * The start time of this song's preview in Freeplay (in range 0 - 1)
-   */
-  public var previewStartTime(get, never):Float;
-
-  function get_previewStartTime():Float
-  {
-    return _data?.playData?.previewStart ?? 0;
-  }
-
-  /**
-   * The end time of this song's preview in Freeplay (in range 0 - 1)
-   */
-  public var previewEndTime(get, never):Float;
-
-  function get_previewEndTime():Float
-  {
-    return _data?.playData?.previewEnd ?? 0.2;
-  }
-
-  /**
    * Set to false if the song was edited in the charter and should not be saved as a high score.
    */
   public var validScore:Bool = true;

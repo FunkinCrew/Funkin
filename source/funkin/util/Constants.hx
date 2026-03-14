@@ -292,6 +292,16 @@ class Constants
   public static final DEFAULT_OST_NAME:String = 'OFFICIAL OST';
 
   /**
+   * The default preview start time for the songs in Freeplay.
+   */
+  public static final DEFAULT_PREVIEW_START_TIME:Float = 0;
+
+  /**
+   * The default preview end time for the songs in Freeplay.
+   */
+  public static final DEFAULT_PREVIEW_END_TIME:Float = 0.2;
+
+  /**
    * The default timing format for songs.
    */
   public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
