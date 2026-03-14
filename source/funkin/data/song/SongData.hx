@@ -499,7 +499,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    * @since `2.2.2`
    */
   @:optional
-  @:default(0)
+  @:default(funkin.util.Constants.DEFAULT_PREVIEW_START_TIME)
   public var previewStart:Float;
 
   /**
@@ -508,7 +508,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    * @since `2.2.2`
    */
   @:optional
-  @:default(0.2)
+  @:default(funkin.util.Constants.DEFAULT_PREVIEW_END_TIME)
   public var previewEnd:Float;
 
   public function new()

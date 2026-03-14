@@ -295,6 +295,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     this.songLengthInMs = value;
 
+    resetPreviewTimes();
     updateGridHeight();
 
     return this.songLengthInMs;
@@ -1441,8 +1442,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     songMetadata.set(selectedVariation, value);
 
-    if (value.playData.previewStart <= 1) value.playData.previewStart *= songLengthInMs;
-    if (value.playData.previewEnd <= 1) value.playData.previewEnd *= songLengthInMs;
+    resetPreviewTimes();
 
     return value;
   }
@@ -1598,7 +1598,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_currentSongFreeplayPreviewStart(value:Float):Float
   {
-    return currentSongMetadata.playData.previewStart = value;
+    return currentSongMetadata.playData.previewStart = value * (value < 1 ? songLengthInMs : 1);
   }
 
   var currentSongFreeplayPreviewEnd(get, set):Float;
@@ -1610,7 +1610,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_currentSongFreeplayPreviewEnd(value:Float):Float
   {
-    return currentSongMetadata.playData.previewEnd = value;
+    return currentSongMetadata.playData.previewEnd = value * (value < 1 ? songLengthInMs : 1);
   }
 
   var currentSongStage(get, set):String;
@@ -2554,6 +2554,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.welcomeMusic.loadEmbedded(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'));
     FlxG.sound.list.add(this.welcomeMusic);
     this.welcomeMusic.looped = true;
+  }
+
+  public function resetPreviewTimes() {
+    currentSongFreeplayPreviewStart = (currentSongMetadata?.playData?.previewStart ?? Constants.DEFAULT_PREVIEW_START_TIME);
+    currentSongFreeplayPreviewEnd = (currentSongMetadata?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME);
   }
 
   public function loadPreferences():Void

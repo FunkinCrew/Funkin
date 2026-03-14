@@ -245,6 +245,10 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     initializeTicks();
 
+    chartEditorState.resetPreviewTimes();
+    freeplayPreviewStart.value = chartEditorState.currentSongFreeplayPreviewStart;
+    freeplayPreviewEnd.value = chartEditorState.currentSongFreeplayPreviewEnd;
+
     refreshAudioPreview();
     refresh();
     refreshTicks();
