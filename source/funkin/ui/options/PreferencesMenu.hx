@@ -177,8 +177,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.autoFullscreen);
     #end
 
-    // disable on mobile since it barely has any effect
-    #if !mobile
+    // disable on mobile and web since it barely has any effect
+    #if !(mobile || web)
     createPrefItemEnum('VSync', "When enabled, the game attempts to match the framerate with your monitor's refresh rate.",
       ["Off" => WindowVSyncMode.OFF, "On" => WindowVSyncMode.ON, "Adaptive" => WindowVSyncMode.ADAPTIVE,], function(key:String, value:WindowVSyncMode):Void
     {

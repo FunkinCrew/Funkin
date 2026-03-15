@@ -164,13 +164,6 @@ class Main extends Sprite
     });
     #end
 
-    // Don't call anything from the preferences until the save is loaded!
-    #if web
-    // set this variable (which is a function) from the lime version at lime/_internal/backend/html5/HTML5Application.hx
-    // The framerate cap will more thoroughly initialize via Preferences in InitState.hx
-    funkin.Preferences.lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
-    #end
-
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
     // Force a `FunkinCamera` to be the default camera.

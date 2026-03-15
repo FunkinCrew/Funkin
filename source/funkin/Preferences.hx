@@ -344,7 +344,7 @@ class Preferences
 
   static function get_vsyncMode():lime.ui.WindowVSyncMode
   {
-    #if mobile
+    #if (mobile || web)
     return lime.ui.WindowVSyncMode.OFF;
     #else
     var value = Save?.instance?.options?.vsyncMode ?? "Off";
@@ -365,7 +365,7 @@ class Preferences
 
   static function set_vsyncMode(value:lime.ui.WindowVSyncMode):lime.ui.WindowVSyncMode
   {
-    #if mobile
+    #if (mobile || web)
     return lime.ui.WindowVSyncMode.OFF;
     #else
     var string;
@@ -395,7 +395,7 @@ class Preferences
 
   static function get_unlockedFramerate():Bool
   {
-    #if mobile
+    #if (mobile || web)
     return false;
     #else
     return Save?.instance?.options?.unlockedFramerate ?? false;
@@ -404,7 +404,7 @@ class Preferences
 
   static function set_unlockedFramerate(value:Bool):Bool
   {
-    #if mobile
+    #if (mobile || web)
     return false;
     #else
     if (value != Save.instance.options.unlockedFramerate)
@@ -418,27 +418,6 @@ class Preferences
     return value;
     #end
   }
-
-  #if web
-  // We create a haxe version of this just for readability.
-  // We use these to override `window.requestAnimationFrame` in Javascript to uncap the framerate / "animation" request rate
-  // Javascript is crazy since u can just do stuff like that lol
-
-  public static function unlockedFramerateFunction(callback, element)
-  {
-    var currTime = Date.now().getTime();
-    var timeToCall = 0;
-    var id = js.Browser.window.setTimeout(function()
-    {
-      callback(currTime + timeToCall);
-    }, timeToCall);
-    return id;
-  }
-
-  // Lime already implements their own little framerate cap, so we can just use that
-  // This also gets set in the init function in Main.hx, since we need to definitely override it
-  public static var lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
-  #end
 
   /**
    * If >0, the game will display a semi-opaque background under the notes.
@@ -539,10 +518,7 @@ class Preferences
 
   static function toggleFramerateCap(unlocked:Bool):Void
   {
-    #if web
-    var framerateFunction = unlocked ? unlockedFramerateFunction : lockedFramerateFunction;
-    untyped js.Syntax.code("window.requestAnimationFrame = framerateFunction;");
-    #else
+    #if !(mobile || web)
     FlxG.drawFramerate = unlocked ? 0 : framerate;
     FlxG.updateFramerate = unlocked ? 0 : framerate;
     #end
