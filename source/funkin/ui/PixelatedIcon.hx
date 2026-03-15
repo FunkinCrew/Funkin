@@ -1,13 +1,13 @@
 package funkin.ui;
 
-import funkin.graphics.FlxFilteredSprite;
+import funkin.graphics.FunkinSprite;
 
 /**
  * The icon that gets used for Freeplay capsules and char select
  * NOT to be confused with the HealthIcon class, which is for the in-game icons
  */
 @:nullSafety
-class PixelatedIcon extends FlxFilteredSprite
+class PixelatedIcon extends FunkinSprite
 {
   public var char:String;
 
