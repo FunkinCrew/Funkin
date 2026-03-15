@@ -5,7 +5,6 @@ import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
-import funkin.graphics.FlxFilteredSprite;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
@@ -70,7 +69,7 @@ class SongMenuItem extends FlxSpriteGroup
   // var diffRatingSprite:FlxSprite;
   public var bpmText:FlxSprite;
   public var difficultyText:FlxSprite;
-  public var weekText:FlxFilteredSprite;
+  public var weekText:FunkinSprite;
 
   public var newText:FlxSprite;
 
@@ -108,7 +107,7 @@ class SongMenuItem extends FlxSpriteGroup
     difficultyText.setGraphicSize(Std.int(difficultyText.width * 0.9));
     add(difficultyText);
 
-    weekText = new FlxFilteredSprite(291, 88);
+    weekText = new FunkinSprite(291, 88);
     weekText.scale.set(0.9, 0.9);
     weekText.visible = false;
     weekText.active = false;
