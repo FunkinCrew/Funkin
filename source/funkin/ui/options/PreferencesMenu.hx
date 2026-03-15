@@ -190,7 +190,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case WindowVSyncMode.ON: "On";
         case WindowVSyncMode.ADAPTIVE: "Adaptive";
       });
-    createPrefItemCheckbox('Unlocked Framerate', 'When enabled, the framerate is unlocked.\nThis setting is mutually exclusive with FPS.',
+    createPrefItemCheckbox('Unlocked Framerate', 'When enabled, the framerate is unlocked.\nIgnores the FPS cap. Warning: May cause instability!',
       function(value:Bool):Void
       {
         Preferences.unlockedFramerate = value;
