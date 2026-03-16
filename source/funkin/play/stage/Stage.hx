@@ -22,6 +22,7 @@ import funkin.data.stage.StageRegistry;
 import funkin.util.SortUtil;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.graphics.FunkinSprite;
+import funkin.group.FunkinGroup;
 
 typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 
@@ -399,6 +400,20 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
       {
         var funkProp:FunkinSprite = cast prop;
         funkProp.vcamPoint = vcamPoint;
+      }
+      if (Std.isOfType(prop, FunkinGroup))
+      {
+        var funkGroup:FunkinGroup<FlxSprite> = cast prop;
+        funkGroup.vcamPoint = vcamPoint;
+        // go through children
+        for (child in funkGroup.children)
+        {
+          if (Std.isOfType(child, FunkinSprite))
+          {
+            var funkChild:FunkinSprite = cast child;
+            funkChild.vcamPoint = vcamPoint;
+          }
+        }
       }
     });
 
