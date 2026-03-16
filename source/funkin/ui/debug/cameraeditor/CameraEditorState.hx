@@ -1,18 +1,25 @@
 package funkin.ui.debug.cameraeditor;
 
 #if FEATURE_CAMERA_EDITOR
+import haxe.ui.containers.Panel;
+import haxe.ui.containers.Panel;
+import haxe.ui.focus.FocusManager;
 import flixel.FlxCamera;
 import funkin.graphics.FunkinCamera;
 import flixel.math.FlxMath;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
+import funkin.play.event.SongEvent;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.event.SongEventRegistry;
@@ -31,6 +38,7 @@ import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
 import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
@@ -109,9 +117,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
 
-  public var cameraRect:FlxSprite = new FlxSprite();
+  public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
 
-  public var vcamPoint:Null<FlxPoint> = null;
+  public var vCamDebug:FunkinSprite = null;
 
   function get_currentSongMetadata():Null<SongMetadata>
   {
@@ -301,6 +309,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   var camGame:FlxCamera;
 
   /**
+   * The default zoom level of the stage's camera, used for calculating relative zoom levels for events like ZoomCamera. Updated whenever a new stage is built.
+   */
+  var defaultStageZoom:Float = 1.0;
+
+  /**
    * HAXEUI COMPONENTS
    */
   // ==============================
@@ -380,9 +393,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public override function create():Void
   {
-    cameraRect = new FlxSprite();
-    cameraRect.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
-    cameraRect.alpha = 0.5;
+    vCamDebug = new FunkinSprite(0, 0);
+    vCamDebug.makeGraphic(32, 32, FlxColor.RED);
+    vCamDebug.origin.set(16, 16);
 
     WindowManager.instance.reset();
     instance = this;
@@ -439,28 +452,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     });
 
     add(cameraRect);
-    cameraRect.zIndex = 5999;
-
-    vcamPoint = new FlxPoint();
+    add(vCamDebug);
+    vCamDebug.zIndex = cameraRect.zIndex + 1;
 
     this.hidePropertiesPanel();
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
-  var cameraFollowPoint:FlxObject = new FlxObject();
-  var lastVCamPoint:FlxPoint = new FlxPoint();
 
   var previousTime:Float = 0;
-
-  public function setFocusPoint(x:Float, y:Float, force:Bool = false):Void
-  {
-    lastVCamPoint.copyFrom(vcamPoint);
-    vcamPoint.set(lastVCamPoint.x, lastVCamPoint.y);
-    cameraFollowPoint.x = x;
-    cameraFollowPoint.y = y;
-    _scrollTarget.set(cameraFollowPoint.x - cameraRect.width / 2, cameraFollowPoint.y - cameraRect.height / 2);
-    if (force) vcamPoint.copyFrom(_scrollTarget);
-  }
+  var completedEvents:Array<SongEventData> = [];
 
   /**
    * Process song events for the current chart.
@@ -470,69 +471,29 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function processEvents():Void
   {
     if (songEvents == null || songEvents.length == 0) return;
-    var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition);
+    var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition + 1000);
     for (eventData in songEventsToActivate)
     {
-      if (eventData == null || eventData.time < previousTime) continue;
+      if (completedEvents.contains(eventData)) continue;
+      if (eventData == null || eventData.time > Conductor.instance.songPosition || eventData.time < previousTime) continue;
       trace('Processing event: ' + eventData.eventKind + ' at ' + eventData.time);
 
       switch (eventData.eventKind)
       {
         case "FocusCamera":
-          var x:Null<Float> = eventData.getFloat('x');
-          var y:Null<Float> = eventData.getFloat('y');
-          var char:Null<Int> = eventData.getInt('char');
-          var offsetX:Float = 0;
-          var offsetY:Float = 0;
-          if (x != null && y != null)
-          {
-            offsetX = x;
-            offsetY = y;
-          }
-
-          if (char == null) char = cast eventData.value;
-
-          if (char != null)
-          {
-            if (char == -1)
-            {
-              cameraFollowPoint.x = offsetX;
-              cameraFollowPoint.y = offsetY;
-              break;
-            }
-
-            trace('Focusing camera on character: ' + char + ' with offset: (' + offsetX + ', ' + offsetY + ')');
-
-            switch (char)
-            {
-              case 0:
-                var bf = currentStage.getBoyfriend();
-                if (bf != null)
-                {
-                  setFocusPoint(bf.cameraFocusPoint.x + offsetX, bf.cameraFocusPoint.y + offsetY);
-                }
-              case 1:
-                var dad = currentStage.getDad();
-                if (dad != null)
-                {
-                  setFocusPoint(dad.cameraFocusPoint.x + offsetX, dad.cameraFocusPoint.y + offsetY);
-                }
-              case 2:
-                var gf = currentStage.getGirlfriend();
-                if (gf != null)
-                {
-                  setFocusPoint(gf.cameraFocusPoint.x + offsetX, gf.cameraFocusPoint.y + offsetY);
-                }
-            }
-            trace('    Camera follow point set to: (' + cameraFollowPoint.x + ', ' + cameraFollowPoint.y + ')');
-          }
+          cameraRect.handleFocusCamera(currentStage, eventData);
+          break;
+        case "ZoomCamera":
+          cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+          break;
       }
+
+      completedEvents.push(eventData);
     }
 
     previousTime = Conductor.instance.songPosition;
   }
 
-  var _scrollTarget:FlxPoint = new FlxPoint();
   var _cameraTarget:FlxPoint = new FlxPoint();
 
   public override function update(elapsed:Float):Void
@@ -547,7 +508,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentStage != null)
     {
-      currentStage.vcamPoint = vcamPoint;
+      currentStage.vcamPoint = cameraRect.vCamPoint;
+      vCamDebug.x = cameraRect.vCamPoint.x;
+      vCamDebug.y = cameraRect.vCamPoint.y;
       currentStage.offset.x = FlxG.camera.scroll.x;
       currentStage.offset.y = FlxG.camera.scroll.y;
     }
@@ -555,12 +518,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
     {
-      final adjustedLerp = 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60);
-
-      // lerp vcamPoint to cameraFollowPoint
-      vcamPoint.x += (_scrollTarget.x - vcamPoint.x) * adjustedLerp;
-      vcamPoint.y += (_scrollTarget.y - vcamPoint.y) * adjustedLerp;
-
       Conductor.instance.update();
       processEvents();
       timeline.songPosition = Conductor.instance.songPosition;
@@ -577,15 +534,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     // MouseUtil.mouseWheelZoom(0.08);
 
-    // DEBUG!!! enable to move the vcam with the mouse... teehee
-
-    /*if (FlxG.mouse.pressed)
-    {
-      cameraFollowPoint.x += FlxG.mouse.deltaX;
-      cameraFollowPoint.y += FlxG.mouse.deltaY;
-      vcamPoint.set(cameraFollowPoint.x, cameraFollowPoint.y);
-    }*/
-
     if (FlxG.mouse.pressedMiddle)
     {
       goToPoint.x -= FlxG.mouse.deltaX;
@@ -599,8 +547,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (!isCameraRelative)
     {
       // subtract the vcam point since it moves everything
-      FlxG.camera.scroll.x -= vcamPoint.x;
-      FlxG.camera.scroll.y -= vcamPoint.y;
+      FlxG.camera.scroll.x -= cameraRect.vCamPoint.x;
+      FlxG.camera.scroll.y -= cameraRect.vCamPoint.y;
     }
 
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
@@ -637,7 +585,6 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
-    // vcamPoint.copyFrom(camGame.scroll);
     remove(cameraRect);
     if (currentSongMetadata == null) return;
     var stageID = currentSongMetadata.playData.stage;
@@ -670,9 +617,53 @@ class CameraEditorState extends UIState implements ConsoleClass
     ScriptEventDispatcher.callEvent(currentStage, event);
 
     add(currentStage);
-    currentStage.vcamPoint = vcamPoint;
+    currentStage.vcamPoint = cameraRect.vCamPoint;
+    currentStage.onCreate(null);
 
+    var songCharacterData = currentSongMetadata.playData.characters;
 
+    if (songCharacterData == null) return;
+
+    var gf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.girlfriend);
+
+    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.opponent);
+
+    var bf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.player);
+
+    FlxG.camera.filters = [];
+
+    var buildChar:Null<BaseCharacter>->CharacterType->Void = (char, charType) ->
+    {
+      if (char == null) return;
+
+      char.currentStage = currentStage;
+      char.debug = true;
+      currentStage.addCharacter(char, charType);
+
+      char.onCreate(null);
+      char.onUpdate(null);
+      char.onAdd(null);
+    };
+
+    buildChar(gf, GF);
+    buildChar(bf, BF);
+    buildChar(dad, DAD);
+
+    currentStage.resetStage();
+    currentStage.refresh();
+
+    goToPoint.x = 0;
+    goToPoint.y = 0;
+
+    FlxG.camera.scroll.x = 0;
+    FlxG.camera.scroll.y = 0;
+
+    trace("Built stage: " + stageID);
+    add(cameraRect);
+
+    cameraRect.zoom = currentStage.camZoom;
+    defaultStageZoom = currentStage.camZoom;
+    resetScrollPosition();
   }
 
   function resetScrollPosition()
@@ -680,7 +671,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (currentStage == null) return;
 
     var dad = currentStage.getDad();
-    if (dad != null && dad.cameraFocusPoint != null) setFocusPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y, true);
+    if (dad != null && dad.cameraFocusPoint != null) cameraRect.setFocusPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y, true);
   }
 
   function autosavePerCrash(message:String)
@@ -1138,6 +1129,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
     togglePlayback(true);
+    completedEvents = [];
     setTimePosition(0);
     resetScrollPosition();
     if (playing) togglePlayback();
