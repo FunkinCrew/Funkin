@@ -40,19 +40,7 @@ class SelectItemsCommand implements ChartEditorCommand
 
       state.eventKindToPlace = eventSelected.eventKind;
 
-      // This code is here to parse event data that's not built as a struct for some reason.
-      // TODO: Clean this up or get rid of it.
-      var eventSchema = eventSelected.getSchema();
-      var defaultKey = null;
-      if (eventSchema == null)
-      {
-        trace(' WARNING '.bg_yellow().bold() + ' Event schema not found for event ${eventSelected.eventKind}.');
-      }
-      else
-      {
-        defaultKey = eventSchema.getFirstField()?.name;
-      }
-      var eventData = eventSelected.valueAsStruct(defaultKey);
+      var eventData = eventSelected.valueAsStruct();
 
       state.eventDataToPlace = eventData;
 
