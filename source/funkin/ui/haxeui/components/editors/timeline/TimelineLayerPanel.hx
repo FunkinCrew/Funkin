@@ -50,6 +50,7 @@ class TimelineLayerPanel extends VBox
       field.addClass("no-background");
       field.addClass("no-padding");
       field.addClass("layer-name-field");
+      field.customStyle.fontName = "Inconsolata";
       field.customStyle.fontSize = 13;
       field.customStyle.color = 0xCCCCCC;
       field.customStyle.filter = null;
