@@ -772,7 +772,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   /**
    * The data for the event.
    * This can allow the event to include information used for custom behavior.
-   * Data type depends on the event kind. It can be anything that's JSON serializable.
+   * This is usually a struct containing multiple fields as defined in the event schema.
    */
   @:alias("v") @:optional
   public var value:Dynamic = null;
@@ -832,40 +832,34 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   /**
    * If the value is an anonymous structure, return it as a struct.
-   * Otherwise, return the value as a struct with the current value as a default key.
+   * Otherwise, return the value as a struct with the current value as the value of
+   *   the first key in the event schema.
    * Good for compatibility with older charts, where event values were a single number.
-   * @param defaultKey The default key to use if the value is not a struct.
+   *
    * @return The value as a struct.
    */
-  public function valueAsStruct(?defaultKey:String = "key"):Dynamic
+  public function valueAsStruct():Dynamic
   {
-    if (this.value == null) return
-    {
-    };
+    if (this.value == null) return ({
+    });
 
-    if (Std.isOfType(this.value, Array))
-    {
-      var result:haxe.DynamicAccess<Dynamic> = {};
-      result.set(defaultKey, this.value);
-      return cast result;
-    }
-    else if (Reflect.isObject(this.value))
+    if (!Std.isOfType(this.value, Array) && Reflect.isObject(this.value))
     {
       // We enter this case if the value is a struct.
       return cast this.value;
     }
     else
     {
+      // Value is not a struct, it must be converted.
+      var defaultKey:String = getSchema().getFirstField()?.name;
+
       var result:haxe.DynamicAccess<Dynamic> = {};
       result.set(defaultKey, this.value);
+
       return cast result;
     }
   }
 
-  /**
-   * Retrieve the SongEvent handler class for this event.
-   * @return The handler class, or `null` if not found.
-   */
   public function getHandler():Null<SongEvent>
   {
     return SongEventRegistry.getEvent(this.eventKind);
@@ -889,7 +883,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   {
     if (this.value == null) return null;
 
-    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(key);
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct();
 
     return valueStruct.get(key);
   }
@@ -1010,7 +1004,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    */
   public function set(key:String, newValue:Dynamic):Void
   {
-    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(key);
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct();
     valueStruct.set(key, newValue);
     this.value = valueStruct;
   }
@@ -1028,8 +1022,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
     var result = '${eventHandler.getTitle()}';
 
-    var defaultKey = eventSchema.getFirstField()?.name;
-    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct(defaultKey);
+    var valueStruct:haxe.DynamicAccess<Dynamic> = valueAsStruct();
 
     for (fieldName in eventSchema.listAllFieldNames())
     {
