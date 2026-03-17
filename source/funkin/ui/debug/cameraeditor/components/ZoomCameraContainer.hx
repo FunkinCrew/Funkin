@@ -37,6 +37,10 @@ class ZoomCameraContainer extends VBox
   static final _dotInterval:Float = 1.0 / 30.0;
   static final _loopPause:Float = 0.15;
 
+  /**
+   * Redraws the custom easing preview graph.
+   * TODO: Code is heavily shared with the Chart Editor event window and FocusCameraContainer
+   */
   function updateEasePreview():Void
   {
     if (zoomCameraEaseGraph == null || zoomCameraEaseDot == null)
@@ -44,9 +48,9 @@ class ZoomCameraContainer extends VBox
       throw 'Could not find ease graph or ease dot!';
     }
 
-    // TODO: Fetch this correctly.
-    final easeStr:String = 'elastic';
-    final easeDirStr:String = 'InOut';
+    var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    var easeDirStr:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+
     final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
 
     // Hide preview when easing indicates a non-visual/legacy type such as "classic"
@@ -105,16 +109,18 @@ class ZoomCameraContainer extends VBox
     zoomCameraEaseDot.resource = _easeDotSprites[0].frame;
 
     var frameCallback:Dynamic = null;
-    frameCallback = (tmr:FlxTimer) -> {
-      if (_dotTimer == null || _easeDotSprites.length == 0) return;
+    frameCallback = (tmr:FlxTimer) ->
+    {
+      if (_dotTimer == null) return;
 
       _dotIndex++;
       if (_dotIndex >= _easeDotSprites.length)
       {
         _dotTimer?.cancel();
         _pauseTimer ??= new FlxTimer();
-        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void {
-          if (_pauseTimer == null || _easeDotSprites.length == 0) return;
+        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void
+        {
+          if (_pauseTimer == null) return;
 
           if (zoomCameraEaseDot != null)
           {
@@ -157,6 +163,15 @@ class ZoomCameraContainer extends VBox
     {
       return data.id == eventEase;
     });
+
+    if (eventEase == 'CLASSIC' || eventEase == 'INSTANT')
+    {
+      zoomCameraEaseDir.visible = false;
+    }
+    else
+    {
+      zoomCameraEaseDir.visible = true;
+    }
 
     var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
     zoomCameraEaseDir.selectItemBy(function(data):Bool
@@ -229,8 +244,8 @@ class ZoomCameraContainer extends VBox
 
     cameraEditorState.selectedSongEvent.set('ease', value);
 
-    // If the ease type is instant, don't display ease direction
-    if (value.toLowerCase().indexOf('INSTANT') != -1)
+    // If the ease type is classic or instant, don't display ease direction
+    if (value == 'CLASSIC' || value == 'INSTANT')
     {
       zoomCameraEaseDir.visible = false;
     }
