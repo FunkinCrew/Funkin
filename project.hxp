@@ -1441,9 +1441,11 @@ class Project extends HXProject
 
   function configureAssets()
   {
-    // Delete the assets folder from the export folder before adding anything.
-    // TODO: neko FUCKING SUCKS!! this keeps throwing an error on neko. find a way to fix it later. - Abnormal
-    // clearAssets();
+    if (!isDisplay())
+    {
+      // Delete the assets folder from the export folder before adding anything.
+      clearAssets();
+    }
 
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
 
