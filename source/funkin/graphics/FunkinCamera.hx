@@ -186,11 +186,15 @@ class FunkinCamera extends FlxCamera
 
       _backgroundFrame.parent.bitmap = _blendRenderTexture.graphic.bitmap;
 
-      _backgroundRenderTexture.init(Std.int(this.width * Lib.current.stage.window.scale), Std.int(this.height * Lib.current.stage.window.scale));
+      // On some displays, the DPI can be less than 1, which causes the blend shader to look bad
+      // We just clamp the scale to 1 to avoid this!
+      var clampedScale:Float = Math.max(1, Lib.current.stage.window.scale);
+
+      _backgroundRenderTexture.init(Std.int(this.width * clampedScale), Std.int(this.height * clampedScale));
       _backgroundRenderTexture.drawToCamera((camera, matrix) ->
       {
         camera.zoom = this.zoom;
-        matrix.scale(Lib.current.stage.window.scale, Lib.current.stage.window.scale);
+        matrix.scale(clampedScale, clampedScale);
         camera.drawPixels(_backgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);
       });
 
@@ -198,7 +202,7 @@ class FunkinCamera extends FlxCamera
 
       // Resize the frame so it always fills the screen
       _cameraMatrix.identity();
-      _cameraMatrix.scale(1 / (this.scaleX * Lib.current.stage.window.scale), 1 / (this.scaleY * Lib.current.stage.window.scale));
+      _cameraMatrix.scale(1 / (this.scaleX * clampedScale), 1 / (this.scaleY * clampedScale));
       _cameraMatrix.translate(((width - width / this.scaleX) * 0.5), ((height - height / this.scaleY) * 0.5));
 
       super.drawPixels(_backgroundRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
