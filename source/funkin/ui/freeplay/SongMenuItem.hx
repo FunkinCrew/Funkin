@@ -5,7 +5,6 @@ import funkin.ui.freeplay.FreeplayState.FreeplaySongData;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.shaders.HSVShader;
 import funkin.graphics.shaders.GaussianBlurShader;
-import funkin.graphics.FlxFilteredSprite;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
@@ -70,7 +69,7 @@ class SongMenuItem extends FlxSpriteGroup
   // var diffRatingSprite:FlxSprite;
   public var bpmText:FlxSprite;
   public var difficultyText:FlxSprite;
-  public var weekText:FlxFilteredSprite;
+  public var weekText:FunkinSprite;
 
   public var newText:FlxSprite;
 
@@ -108,7 +107,7 @@ class SongMenuItem extends FlxSpriteGroup
     difficultyText.setGraphicSize(Std.int(difficultyText.width * 0.9));
     add(difficultyText);
 
-    weekText = new FlxFilteredSprite(291, 88);
+    weekText = new FunkinSprite(291, 88);
     weekText.scale.set(0.9, 0.9);
     weekText.visible = false;
     weekText.active = false;
@@ -244,6 +243,8 @@ class SongMenuItem extends FlxSpriteGroup
 
   function checkWeek():Void
   {
+    weekText.offset.set(0, 0);
+
     if (this.freeplayData?.levelId == null)
     {
       // Make the text invisible for random levels.
@@ -253,30 +254,43 @@ class SongMenuItem extends FlxSpriteGroup
 
     weekText.visible = true;
 
-    // Format the level id to contain a space between differently capitalized letters and numbers.
-    // E.g. "bonusWeek2" -> "bonus Week 2"
     var levelId:String = this.freeplayData.levelId;
+    var levelIdData:Level = LevelRegistry.instance.fetchEntry(levelId);
     var levelIdClean:String = "";
-    for (i in 0...levelId.length)
+
+    if (levelIdData.getCapsuleTitle() != null)
     {
-      if (i == 0)
+      // If the specified level contains a capsule title field.
+      levelIdClean = levelIdData.getCapsuleTitle();
+    }
+    else
+    {
+      // Otherwise, use the level id and format it to contain a space between differently capitalized letters and numbers.
+      // E.g. "bonusWeek2" -> "bonus Week 2"
+      for (i in 0...levelId.length)
       {
-        levelIdClean += levelId.charAt(i);
-        continue;
+        if (i == 0)
+        {
+          levelIdClean += levelId.charAt(i);
+          continue;
+        }
+
+        var previousChar:String = levelId.charAt(i - 1);
+        var currentChar:String = levelId.charAt(i);
+
+        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
+        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
+        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
+
+        levelIdClean += currentChar;
       }
-
-      var previousChar:String = levelId.charAt(i - 1);
-      var currentChar:String = levelId.charAt(i);
-
-      if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
-      if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
-      if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
-
-      levelIdClean += currentChar;
     }
 
     createWeekTextGraphic(levelIdClean);
     weekText.loadGraphic(FlxG.bitmap.get(levelIdClean));
+
+    var weekTextOffsets:Array<Float> = levelIdData.getCapsuleTitleOffsets();
+    weekText.offset.set(weekTextOffsets[0], weekTextOffsets[1]);
   }
 
   function createWeekTextGraphic(text:String)

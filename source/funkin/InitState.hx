@@ -588,7 +588,7 @@ class InitState extends FlxState
     //
     // FLIXEL DEBUG SETUP
     //
-    #if FEATURE_DEBUG_FUNCTIONS
+    #if (FEATURE_DEBUG_FUNCTIONS && !FLX_NO_DEBUG)
     trace('Initializing Flixel debugger...');
 
     #if !debug

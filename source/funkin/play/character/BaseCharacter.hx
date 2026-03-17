@@ -542,12 +542,12 @@ class BaseCharacter extends Bopper
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
+      this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix ?? '');
       holdTimer = 0;
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
-      this.playSingAnimation(event.note.noteData.getDirection(), false);
+      this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix ?? '');
       holdTimer = 0;
     }
     else if (characterType == GF && event.note.noteData.getMustHitNote())
