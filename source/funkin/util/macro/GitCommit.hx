@@ -28,8 +28,6 @@ class GitCommit
 
     process.close();
 
-    Sys.println(' INFO '.bold().bg_blue() + ' Git Commit ID: ${commitHashSplice}');
-
     // Generates a string expression
     return macro $v{commitHashSplice};
     #else
@@ -58,7 +56,6 @@ class GitCommit
 
     var branchName:String = branchProcess.stdout.readLine();
     branchProcess.close();
-    Sys.println(' INFO '.bold().bg_blue() + ' Git Branch Name: ${branchName}');
 
     // Generates a string expression
     return macro $v{branchName};
