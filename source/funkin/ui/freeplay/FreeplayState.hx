@@ -352,7 +352,7 @@ class FreeplayState extends MusicBeatSubState
     sparksADD = new FlxSprite(0, 0);
     txtCompletion = new AtlasText(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 95), 87, '69', AtlasFont.FREEPLAY_CLEAR);
 
-    ostName = new FlxText(8 - FullScreenScaleMode.gameNotchSize.x, 8, FlxG.width - 8 - 8, Constants.DEFAULT_OST_NAME, 48);
+    ostName = new FlxText(8 - FullScreenScaleMode.gameNotchSize.x, 8, FlxG.width - 8 - 8, Constants.DEFAULT_OST_NAME);
     charSelectHint = new FlxText(-40, 18, FlxG.width - 8 - 8, 'Press [ LOL ] to change characters', 32);
 
     // ui/freeplay/backgrounds/charId/levelId
@@ -550,8 +550,8 @@ class FreeplayState extends MusicBeatSubState
       FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
     }
 
-    var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY', 48);
-    topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
+    var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY');
+    topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     topLeftCornerText.visible = false;
 
     var freeplayTxtBg:FlxSprite = new FlxSprite().makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16),
@@ -559,11 +559,11 @@ class FreeplayState extends MusicBeatSubState
     freeplayTxtBg.x = topLeftCornerText.x - 8;
     freeplayTxtBg.visible = false;
 
-    freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---', 48);
-    freeplayArrow.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
+    freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---');
+    freeplayArrow.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     freeplayArrow.visible = false;
 
-    ostName.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'));
+    ostName.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     ostName.alignment = RIGHT;
     ostName.visible = false;
     ostName.shader = new StrokeShader(0xFFFFFFFF, 2, 2);
