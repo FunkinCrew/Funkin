@@ -134,6 +134,8 @@ class SongEventRegistry
     }
   }
 
+  private static var nextEventIndex:Int = -1;
+
   /**
    * @param events The list of available song events.
    * @param currentTime The current time in milliseconds.
@@ -141,18 +143,20 @@ class SongEventRegistry
    */
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
   {
-    var result:Array<SongEventData> = events.filter(function(event:SongEventData):Bool
+    var result:Array<SongEventData> = [];
+
+    for (i in nextEventIndex...events.length)
     {
-      // If the event is already activated, don't activate it again.
-      if (event.activated) return false;
+      if (events[i].activated) continue;
 
-      // If the event is in the future, don't activate it.
-      if (event.time > currentTime) return false;
+      if (events[i].time > currentTime)
+      {
+        nextEventIndex = i;
+        return result;
+      }
 
-      return true;
-    });
-
-    result.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+      result.push(events[i]);
+    }
 
     return result;
   }
@@ -185,6 +189,9 @@ class SongEventRegistry
    */
   public static function resetEvents(events:Array<SongEventData>):Void
   {
+    events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+    nextEventIndex = 0;
+
     for (event in events)
     {
       event.activated = false;
