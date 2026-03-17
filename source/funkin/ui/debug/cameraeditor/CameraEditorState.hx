@@ -8,6 +8,7 @@ import funkin.data.song.SongData.SongEventData;
 import flixel.FlxCamera;
 import funkin.graphics.FunkinCamera;
 import flixel.math.FlxMath;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
@@ -31,6 +32,7 @@ import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.ui.debug.cameraeditor.commands.AddEventCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
@@ -367,6 +369,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var songEvents:Array<SongEventData> = [];
 
+  var addEventMenu:AddEventMenu;
 
   /**
    * LIFE CYCLE FUNCTIONS
@@ -429,6 +432,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.sound.music.fadeIn(10, 0, 1);
 
     registerTimelineEvents();
+
+    addEventMenu = new AddEventMenu(function(eventData)
+    {
+      var cmd = new AddEventCommand(eventData);
+      CameraEditorCommandHandler.performCommand(this, cmd);
+      selectedSongEvent = eventData;
+    });
 
     add(cameraRect);
     cameraRect.zIndex = 5999;
@@ -606,6 +616,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show(FlxG.mouse.viewX, FlxG.mouse.viewY);
 
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
