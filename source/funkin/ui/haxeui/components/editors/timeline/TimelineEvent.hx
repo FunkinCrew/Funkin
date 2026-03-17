@@ -13,6 +13,7 @@ class TimelineEvent extends UIEvent
   public static inline var EVENT_SELECTED:EventType<TimelineEvent> = "timelineEventSelected";
   public static inline var SEEK:EventType<TimelineEvent> = "timelineSeek";
   public static inline var ZOOM_CHANGED:EventType<TimelineEvent> = "timelineZoomChanged";
+  public static inline var ADD_EVENT_REQUESTED:EventType<TimelineEvent> = "timelineAddEventRequested";
 
   public var eventData:Null<SongEventData>;
   public var oldTime:Float = 0;
