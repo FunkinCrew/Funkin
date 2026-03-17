@@ -191,33 +191,24 @@ class SongEventRegistry
   {
     events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
     nextEventIndex = 0;
+    allEventHandlers.resize(0);
 
     for (event in events)
     {
       event.activated = false;
-      // TODO: Add an onReset() method to SongEvent?
+
+      var handler:Null<SongEvent> = getEvent(event.eventKind);
+      if (handler != null && !allEventHandlers.contains(handler)) allEventHandlers.push(handler);
     }
   }
 
-  /**
-   * Dispatches a ScriptEvent to an event.
-   */
-  public static function callEventForEvent(data:SongEventData, scriptEvent:ScriptEvent):Void
-  {
-    var eventKind:String = data.eventKind;
-    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
+  private static var allEventHandlers:Array<SongEvent> = [];
 
-    if (eventHandler != null)
-    {
-      ScriptEventDispatcher.callEvent(eventHandler, scriptEvent);
-    }
-  }
-
-  public static inline function callEvent(events:Array<SongEventData>, scriptEvent:ScriptEvent):Void
+  public static inline function callEvent(scriptEvent:ScriptEvent):Void
   {
-    for (event in events)
+    for (event in allEventHandlers)
     {
-      callEventForEvent(event, scriptEvent);
+      ScriptEventDispatcher.callEvent(event, scriptEvent);
     }
   }
 }
