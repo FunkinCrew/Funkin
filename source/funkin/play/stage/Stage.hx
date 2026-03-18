@@ -868,6 +868,14 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     if (group != null) group.kill();
   }
 
+  public override function destroy():Void
+  {
+    trace(' WARNING '.warning() + ' Tried to destroy the singleton Stage instance! This will break the level.');
+
+    // Don't call the super function to prevent breaking the level.
+    // super.destroy();
+  }
+
   public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
   {
     if (Sprite == null) return Sprite;
