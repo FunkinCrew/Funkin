@@ -102,6 +102,7 @@ class VirtualCameraRectangle extends FunkinSprite
     }
     else
     {
+      cameraFollowTween = Conductor.instance.songPosition;
       cameraFollowStart.copyFrom(lastVCamPoint);
       cameraFollowDuration = duration;
       cameraFollowEase = ease;
@@ -126,7 +127,7 @@ class VirtualCameraRectangle extends FunkinSprite
     if (duration == 0) zoom = targetZoom;
     else
     {
-      cameraZoomTween = 0;
+      cameraZoomTween = Conductor.instance.songPosition;
       cameraZoomStart = zoom;
       cameraZoomEnd = targetZoom;
       cameraZoomDuration = duration;
@@ -286,12 +287,10 @@ class VirtualCameraRectangle extends FunkinSprite
   {
     super.update(elapsed);
 
-    if (!FlxG.sound.music.playing) return;
-
     x = vCamPoint.x - width / 2;
     y = vCamPoint.y - height / 2;
 
-    scrollTarget.set(cameraFollowPoint.x, cameraFollowPoint.y);
+    scrollTarget.set(cameraFollowPoint.x - width / 2, cameraFollowPoint.y - height / 2);
 
     if (isClassicEase)
     {
@@ -302,21 +301,31 @@ class VirtualCameraRectangle extends FunkinSprite
     else
     {
       // Handle camera follow tweening
-      if (cameraFollowDuration > 0 && cameraFollowEase != null)
+      if (cameraFollowEase != null)
       {
-        vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase(cameraFollowTween / cameraFollowDuration));
-        vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase(cameraFollowTween / cameraFollowDuration));
+        var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
+        vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
+        vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
 
-        cameraFollowTween += elapsed;
-        if (cameraFollowTween >= cameraFollowDuration) cameraFollowDuration = 0;
+        if (cameraFollowElapsed >= cameraFollowDuration * 1000)
+        {
+          cameraFollowEase = null;
+          vCamPoint.copyFrom(scrollTarget);
+        }
+
       }
     }
     // Handle camera zoom tweening
-    if (cameraZoomDuration > 0 && cameraZoomEase != null)
+    if (cameraZoomEase != null)
     {
-      zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, cameraZoomEase(cameraZoomTween / cameraZoomDuration));
-      cameraZoomTween += elapsed;
-      if (cameraZoomTween >= cameraZoomDuration) cameraZoomDuration = 0;
+      var cameraZoomElapsed = Conductor.instance.songPosition - cameraZoomTween;
+      zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, cameraZoomEase(cameraZoomElapsed / (cameraZoomDuration * 1000)));
+
+      if (cameraZoomElapsed >= cameraZoomDuration * 1000)
+      {
+        cameraZoomEase = null;
+        zoom = cameraZoomEnd;
+      }
     }
   }
 }
