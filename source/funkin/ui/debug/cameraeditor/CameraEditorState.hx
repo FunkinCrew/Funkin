@@ -532,6 +532,14 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
+    if (FlxG.keys.pressed.C)
+    {
+      MouseUtil.mouseWheelZoom(0.08, 0.02);
+    }
+    else if (FlxG.keys.pressed.V)
+    {
+      MouseUtil.mouseWheelZoom(0.08, -0.02);
+    }
     // MouseUtil.mouseWheelZoom(0.08);
 
     if (FlxG.mouse.pressedMiddle)
