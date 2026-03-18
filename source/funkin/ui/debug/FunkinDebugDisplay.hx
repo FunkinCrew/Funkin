@@ -35,12 +35,10 @@ class FunkinDebugDisplay extends Sprite
 
   var fps:Int;
   var fpsPeak:Int;
-  #if !html5
   var gcMem:Float;
   var gcMemPeak:Float;
   var taskMem:Float;
   var taskMemPeak:Float;
-  #end
 
   var background:Shape;
 
@@ -63,12 +61,10 @@ class FunkinDebugDisplay extends Sprite
 
     this.fps = 0;
     this.fpsPeak = 0;
-    #if !html5
     this.gcMem = 0.0;
     this.gcMemPeak = 0.0;
     this.taskMem = 0.0;
     this.taskMemPeak = 0.0;
-    #end
 
     this.backgroundOpacity = 0;
     this.isAdvanced = false;
@@ -78,13 +74,23 @@ class FunkinDebugDisplay extends Sprite
   {
     removeChildren(0, numChildren);
 
-    final BG_WIDTH_MULTIPLIER:Float = #if html5 advanced ? 1 : 0.3 #else 1 #end;
+    var BG_WIDTH_MULTIPLIER:Float = advanced ? 1 : 0.3;
 
-    #if html5
-    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 0.45 : 0.15;
-    #else
-    final BG_HEIGHT_MULTIPLIER:Float = advanced ? 1 : (MemoryUtil.supportsTaskMem()) ? 0.3 : 0.2;
-    #end
+    if (MemoryUtil.supportsGCMem() || MemoryUtil.supportsTaskMem())
+    {
+      BG_WIDTH_MULTIPLIER = 1;
+    }
+
+    var BG_HEIGHT_MULTIPLIER:Float = advanced ? 0.45 : 0.15;
+
+    if (MemoryUtil.supportsGCMem() && MemoryUtil.supportsTaskMem())
+    {
+      BG_HEIGHT_MULTIPLIER = advanced ? 1 : 0.3;
+    }
+    else if (MemoryUtil.supportsGCMem() || MemoryUtil.supportsTaskMem())
+    {
+      BG_HEIGHT_MULTIPLIER = advanced ? 0.7 : 0.2;
+    }
 
     background = new Shape();
     background.graphics.beginFill(0x3d3f41, 1);
@@ -120,10 +126,12 @@ class FunkinDebugDisplay extends Sprite
     fpsGraph.minValue = 0;
     addChild(fpsGraph);
 
-    #if !html5
-    gcMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (fpsGraph.y + fpsGraph.axisHeight) + 22), graphsWidth, graphsHeight, color);
-    gcMemGraph.minValue = 0;
-    addChild(gcMemGraph);
+    if (MemoryUtil.supportsGCMem())
+    {
+      gcMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (fpsGraph.y + fpsGraph.axisHeight) + 22), graphsWidth, graphsHeight, color);
+      gcMemGraph.minValue = 0;
+      addChild(gcMemGraph);
+    }
 
     if (MemoryUtil.supportsTaskMem())
     {
@@ -132,7 +140,6 @@ class FunkinDebugDisplay extends Sprite
       taskMemGraph.minValue = 0;
       addChild(taskMemGraph);
     }
-    #end
   }
 
   function createSimpleElements():Void
@@ -170,10 +177,12 @@ class FunkinDebugDisplay extends Sprite
 
     if (fps > fpsPeak) fpsPeak = fps;
 
-    #if !html5
-    gcMem = MemoryUtil.getGCMemory();
+    if (MemoryUtil.supportsGCMem())
+    {
+      gcMem = MemoryUtil.getGCMemory();
 
-    if (gcMem > gcMemPeak) gcMemPeak = gcMem;
+      if (gcMem > gcMemPeak) gcMemPeak = gcMem;
+    }
 
     if (MemoryUtil.supportsTaskMem())
     {
@@ -181,7 +190,6 @@ class FunkinDebugDisplay extends Sprite
 
       if (taskMem > taskMemPeak) taskMemPeak = taskMem;
     }
-    #end
 
     if (isAdvanced)
     {
@@ -198,10 +206,8 @@ class FunkinDebugDisplay extends Sprite
   function updateAdvancedDisplay():Void
   {
     updateFPSGraph();
-    #if !html5
     updateGcMemGraph();
     updateTaskMemGraph();
-    #end
 
     final info:Array<String> = [];
     info.push('FPS: $fps');
@@ -209,14 +215,15 @@ class FunkinDebugDisplay extends Sprite
     info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
     fpsGraph.textDisplay.text = info.join('\n');
 
-    #if !html5
-    gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
+    if (gcMemGraph != null)
+    {
+      gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
+    }
 
     if (taskMemGraph != null)
     {
       taskMemGraph.textDisplay.text = 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
     }
-    #end
   }
 
   function updateSimpleDisplay():Void
@@ -227,12 +234,15 @@ class FunkinDebugDisplay extends Sprite
 
       info.push('FPS: $fps');
 
-      #if !html5
-      info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+      if (MemoryUtil.supportsGCMem())
+      {
+        info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+      }
 
       if (MemoryUtil.supportsTaskMem())
+      {
         info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
-      #end
+      }
 
       infoDisplay.text = info.join('\n');
     }
@@ -244,11 +254,13 @@ class FunkinDebugDisplay extends Sprite
     fpsGraph.update(fps);
   }
 
-  #if !html5
   function updateGcMemGraph():Void
   {
-    gcMemGraph.maxValue = gcMemPeak;
-    gcMemGraph.update(gcMem);
+    if (gcMemGraph != null)
+    {
+      gcMemGraph.maxValue = gcMemPeak;
+      gcMemGraph.update(gcMem);
+    }
   }
 
   function updateTaskMemGraph():Void
@@ -259,7 +271,6 @@ class FunkinDebugDisplay extends Sprite
       taskMemGraph.update(taskMem);
     }
   }
-  #end
 
   function set_isAdvanced(value:Bool):Bool
   {
