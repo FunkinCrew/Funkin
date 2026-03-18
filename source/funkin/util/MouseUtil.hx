@@ -47,8 +47,9 @@ class MouseUtil
    * @param intensityMult The intensity multiplier, defaults to 0.1
    * @param customWheel If specified, use a custom override value for the scroll wheel.
    */
-  public static function mouseWheelZoom(intensityMult:Float = 0.1):Void
+  public static function mouseWheelZoom(intensityMult:Float = 0.1, customWheel:Float = 0):Void
   {
-    if (FlxG.mouse.wheel != 0) FlxG.camera.zoom += FlxG.mouse.wheel * (intensityMult * FlxG.camera.zoom);
+    if (customWheel == 0) customWheel = FlxG.mouse.wheel;
+    if (customWheel != 0) FlxG.camera.zoom += customWheel * (intensityMult * FlxG.camera.zoom);
   }
 }
