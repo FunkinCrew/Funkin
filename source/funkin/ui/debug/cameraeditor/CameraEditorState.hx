@@ -1,10 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
 #if FEATURE_CAMERA_EDITOR
-import haxe.ui.containers.Panel;
-import haxe.ui.containers.Panel;
-import haxe.ui.focus.FocusManager;
-import funkin.data.song.SongData.SongEventData;
 import flixel.FlxCamera;
 import funkin.graphics.FunkinCamera;
 import flixel.math.FlxMath;
@@ -12,18 +8,25 @@ import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
-import flixel.util.FlxTimer;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.data.event.SongEventRegistry;
 import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongEventData;
+import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinCamera;
 import funkin.input.Cursor;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
 import funkin.play.stage.Stage;
@@ -35,13 +38,15 @@ import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.debug.cameraeditor.commands.AddEventCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
-import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
+import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.FileUtil;
 import funkin.util.MouseUtil;
@@ -67,15 +72,6 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
-
-import funkin.play.PlayState;
-import funkin.play.character.BaseCharacter;
-import funkin.data.character.CharacterData.CharacterDataParser;
-import funkin.data.stage.StageRegistry;
-import funkin.play.stage.Stage;
-
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongData.SongMetadata;
 
 /**
  * The EYES OF GOD......
@@ -541,6 +537,14 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public override function update(elapsed:Float):Void
   {
+    // Save the stage if exiting through the F4 keybind.
+    // Soon the EvacuateDebugPlugin will move us to the new state.
+    if (FlxG.keys.justPressed.F4)
+    {
+      performCleanup();
+      return;
+    }
+
     if (currentStage != null)
     {
       currentStage.vcamPoint = vcamPoint;
@@ -565,13 +569,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       for (vocal in currentVocals)
         if (vocal.playing) vocal.pause();
-    }
-
-    // Save the stage if exiting through the F4 keybind, as it moves you to the Main Menu.
-    if (FlxG.keys.justPressed.F4)
-    {
-      performCleanup();
-      return;
     }
 
     conductorInUse.update();
@@ -650,6 +647,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentStage != null)
     {
+      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
       remove(currentStage);
       currentStage.kill();
       currentStage = null;
@@ -1146,9 +1144,10 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   function performCleanup():Void
   {
-    // Remove reference to stage and remove sprites from it to save memory.
+    // Remove reference to stage and remove sprites from it to save memory and prevent crashes.
     if (currentStage != null)
     {
+      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
       remove(currentStage);
       currentStage.kill();
       currentStage = null;
