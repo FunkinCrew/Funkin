@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "87272a2278ab3d4ce6eea0b794974126bfeebaa8",
+      "ref": "6ffdaadcadb4e764fb306823bf9c5ddb39c75633",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -183,7 +183,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "9e47e0051f1240ca1af9df24bee82370aa74b6e9",
+      "ref": "88534506595a32c3f02b21b3987e789a24074ae7",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
