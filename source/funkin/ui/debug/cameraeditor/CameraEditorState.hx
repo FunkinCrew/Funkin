@@ -570,16 +570,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Save the stage if exiting through the F4 keybind, as it moves you to the Main Menu.
     if (FlxG.keys.justPressed.F4)
     {
-      @:privateAccess
-      if (autoSaveTimer != null && !autoSaveTimer.finished) autoSaveTimer.onLoopFinished();
-      resetWindowTitle();
-
-      WindowUtil.windowExit.remove(windowClose);
-      CrashHandler.errorSignal.remove(autosavePerCrash);
-      CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
-
-      Cursor.hide();
-      FlxG.sound.music.stop();
+      performCleanup();
       return;
     }
 
@@ -614,7 +605,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       FlxG.camera.scroll.x -= vcamPoint.x;
       FlxG.camera.scroll.y -= vcamPoint.y;
     }
-
 
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
@@ -660,12 +650,17 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentStage != null)
     {
-      currentStage.onDestroy(null);
       remove(currentStage);
+      currentStage.kill();
       currentStage = null;
     }
 
     currentStage = StageRegistry.instance.fetchEntry(stageID);
+
+    if (currentStage == null)
+    {
+      throw 'Could not retrieve stage: $stageID';
+    }
 
     currentStage.revive();
 
@@ -928,11 +923,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_MOVED, function(e:TimelineEvent)
     {
-      var cmd = new MoveResizeEventCommand(
-        e.eventData,
-        e.oldTime, TimelineUtil.getEventDurationSteps(e.eventData), e.oldLayerName,
-        e.newTime, TimelineUtil.getEventDurationSteps(e.eventData), e.newLayerName
-      );
+      var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, TimelineUtil.getEventDurationSteps(e.eventData), e.oldLayerName, e.newTime,
+        TimelineUtil.getEventDurationSteps(e.eventData), e.newLayerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
@@ -940,11 +932,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var raw:SongEventDataRaw = e.eventData;
       var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
-      var cmd = new MoveResizeEventCommand(
-        e.eventData,
-        e.eventData.time, e.oldDuration, layerName,
-        e.eventData.time, e.newDuration, layerName
-      );
+      var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
@@ -1143,6 +1131,29 @@ class CameraEditorState extends UIState implements ConsoleClass
       return;
     }
 
+    performCleanup();
+    FlxG.switchState(() -> new MainMenuState());
+  }
+
+  override function reloadAssets():Void
+  {
+    performCleanup();
+    super.reloadAssets();
+  }
+
+  /**
+   * Called before we exit the editor to perform any necessary cleanup.
+   */
+  function performCleanup():Void
+  {
+    // Remove reference to stage and remove sprites from it to save memory.
+    if (currentStage != null)
+    {
+      remove(currentStage);
+      currentStage.kill();
+      currentStage = null;
+    }
+
     writePreferences(!saved);
     resetWindowTitle();
 
@@ -1151,7 +1162,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
     Cursor.hide();
-    FlxG.switchState(() -> new MainMenuState());
     FlxG.sound.music.stop();
   }
 
