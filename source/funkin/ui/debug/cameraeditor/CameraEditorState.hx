@@ -617,6 +617,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show(FlxG.mouse.viewX, FlxG.mouse.viewY);
 
+    if ((FlxG.keys.justPressed.DELETE || FlxG.keys.justPressed.BACKSPACE) && selectedSongEvent != null && !isHaxeUIFocused)
+    {
+      var cmd = new RemoveEventCommand(selectedSongEvent);
+      CameraEditorCommandHandler.performCommand(this, cmd);
+      selectedSongEvent = null;
+    }
+
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
 
