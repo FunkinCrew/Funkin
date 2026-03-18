@@ -285,7 +285,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case ENUM:
           var dropDown:DropDown = new DropDown();
           dropDown.id = field.name;
-          dropDown.width = 147.0;
+          dropDown.width = 150.0;
           dropDown.dropdownSize = 10;
           dropDown.dropdownWidth = 157;
           dropDown.searchable = true;
