@@ -1511,7 +1511,7 @@ class Project extends HXProject
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
-    var platform:String = (!isMac() ? Std.string(this.target) : (isHashLink() ? 'hl' : 'macos'));
+    var platform:String = isHashLink() ? 'hl' : (!isMac() ? Std.string(this.target) : 'macos');
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
