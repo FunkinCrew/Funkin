@@ -431,6 +431,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
+    populateOpenRecentMenu();
+
     registerTimelineEvents();
 
     addEventMenu = new AddEventMenu(function(eventData)
@@ -762,6 +764,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     #if sys
     menubarOpenRecent.removeAllComponents();
 
+    var hasRecentFiles:Bool = false;
+
     for (chartPath in previousWorkingFilePaths)
     {
       if (chartPath == null) continue;
@@ -781,7 +785,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
 
       menubarOpenRecent.addComponent(menuItemRecentChart);
+
+      hasRecentFiles = true;
     }
+
+    menubarOpenRecent.disabled = !hasRecentFiles;
     #else
     menubarOpenRecent.hide();
     #end
