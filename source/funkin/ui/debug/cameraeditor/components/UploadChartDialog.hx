@@ -102,6 +102,12 @@ class UploadChartDialog extends Dialog
 
     CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
 
+    if (selectedFile.fullPath != null)
+    {
+      this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
+      this.cameraEditorState.saved = true; // Just loaded file!
+    }
+
     this.cameraEditorState.songMetadatas = entires.songMetadatas;
     this.cameraEditorState.songDatas = entires.songChartDatas;
     this.cameraEditorState.audioInstTrackData = entires.instrumentals;
