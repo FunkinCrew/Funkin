@@ -1050,13 +1050,18 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
     return result;
   }
+
+  public function toString():String
+  {
+    return 'SongEventData(${this.time}ms, ${this.eventKind} [${this.value}])';
+  }
 }
 
 /**
  * Wrap SongEventData in an abstract so we can overload operators.
  */
-@:forward(time, eventKind, value, activated, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
-  getBoolArray, set, buildTooltip, valueAsStruct)
+@:forward(time, eventKind, value, activated, editorLayer, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat,
+  getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
   public function new(time:Float, eventKind:String, value:Dynamic = null)

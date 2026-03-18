@@ -61,6 +61,7 @@ import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
+import funkin.ui.debug.cameraeditor.components.AutoGenDialog;
 import funkin.ui.debug.cameraeditor.components.WelcomeDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
@@ -1865,6 +1866,13 @@ class CameraEditorState extends UIState implements ConsoleClass
       return;
     }
     FlxG.camera.zoom = 1.0;
+  }
+
+  @:bind(menubarItemAutoGen, MouseEvent.CLICK)
+  function onMenubarAutoGen(_)
+  {
+    var autoGenDialog = new AutoGenDialog(this);
+    autoGenDialog.showDialog();
   }
 
   function onViewportZoom(e:CameraViewportEvent):Void
