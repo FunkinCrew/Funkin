@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor.components;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongEventDataRaw;
 import haxe.ui.components.Image;
@@ -119,3 +120,4 @@ class AddEventMenu
     return new SongEventDataRaw(time, eventKind, value);
   }
 }
+#end
