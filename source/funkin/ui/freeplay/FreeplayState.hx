@@ -664,9 +664,14 @@ class FreeplayState extends MusicBeatSubState
       }
     };
 
-    exitMovers.set([fpScoreDisplay, txtCompletion, fnfHighscoreSpr, clearBoxSprite], {
+    exitMovers.set([fpScoreDisplay, fnfHighscoreSpr, clearBoxSprite], {
       x: FlxG.width,
       speed: 0.3
+    });
+
+    exitMovers.set([txtCompletion], {
+      x: FlxG.width * 1.05,
+      speed: 0.315
     });
 
     exitMoversCharSel.set([fpScoreDisplay, txtCompletion, fnfHighscoreSpr, clearBoxSprite], {
