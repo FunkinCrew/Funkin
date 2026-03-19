@@ -1,7 +1,7 @@
 package funkin.mobile.util;
 
 #if ios
-import funkin.external.apple.FNFCUtil as NativeFNFCUtil;
+import funkin.external.apple.FNFCExtern;
 #end
 #if android
 import funkin.external.android.JNIUtil;
@@ -13,7 +13,7 @@ import flixel.util.FlxSignal;
 /**
  * A class for handling the flow of loading FNFC song packs on mobile.
  */
-class FNFCUtil
+class FNFCProvider
 {
   public static var onFNFCOpen:FlxTypedSignal<String->Void>;
 
@@ -24,8 +24,7 @@ class FNFCUtil
     #if ios
     FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float):Void
     {
-      final url = queryFNFC();
-      if (url != null) getFNFCFromURL(url);
+      queryFNFC();
     });
     #elseif android
     CallbackUtil.onFNFCOpen.add(onFNFCOpen.dispatch);
@@ -52,7 +51,7 @@ class FNFCUtil
   private static function getFNFCFromURL(url:String):Void
   {
     var cURL:cpp.ConstCharStar = cast url;
-    NativeFNFCUtil.copyFNFCIntoCache(cURL, cpp.Callable.fromStaticFunction(fnfcCallback));
+    FNFCExtern.copyFNFCIntoCache(cURL, cpp.Callable.fromStaticFunction(fnfcCallback));
   }
 
   @:noCompletion

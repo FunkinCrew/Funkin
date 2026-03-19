@@ -14,4 +14,4 @@ typedef void (*FNFCCallback)(const char* event, const char* value);
  * @param url The URL of the FNFC resource to copy into the cache.
  * @param callback A function to be called when the copy operation completes.
  */
-void Apple_FNFCUtil_CopyFNFCIntoCache(const char *url, FNFCCallback callback);
+void Apple_FNFCExtern_CopyFNFCIntoCache(const char *url, FNFCCallback callback);
