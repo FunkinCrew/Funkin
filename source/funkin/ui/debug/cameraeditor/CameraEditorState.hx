@@ -1109,7 +1109,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (currentStage != null)
     {
       currentStage.vcamPoint = null;
-      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, true));
+      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
       remove(currentStage);
       currentStage.kill();
       currentStage = null;
