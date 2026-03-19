@@ -666,51 +666,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     Paths.setCurrentLevel(campaignId);
 
+    var event:ScriptEvent = new ScriptEvent(CREATE, false);
+    ScriptEventDispatcher.callEvent(currentStage, event);
+
     add(currentStage);
     currentStage.vcamPoint = vcamPoint;
-    currentStage.onCreate(null);
 
-    var songCharacterData = currentSongMetadata.playData.characters;
 
-    if (songCharacterData == null) return;
-
-    var gf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.girlfriend);
-
-    var dad:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.opponent);
-
-    var bf:Null<BaseCharacter> = CharacterDataParser.fetchCharacter(songCharacterData.player);
-
-    FlxG.camera.filters = [];
-
-    var buildChar:Null<BaseCharacter>->CharacterType->Void = (char, charType) -> {
-      if (char == null) return;
-
-      char.currentStage = currentStage;
-      char.debug = true;
-      currentStage.addCharacter(char, charType);
-      char.onCreate(null);
-      char.onUpdate(null);
-    };
-
-    buildChar(gf, GF);
-    buildChar(bf, BF);
-    buildChar(dad, DAD);
-
-    currentStage.refresh();
-    goToPoint.x = 0;
-    goToPoint.y = 0;
-    FlxG.camera.scroll.x = 0;
-    FlxG.camera.scroll.y = 0;
-    trace("Built stage: " + stageID);
-    add(cameraRect);
-
-    var camZoom:Float = currentStage.camZoom;
-
-    // Set zoom for camera rect
-    cameraRect.scale.set(1.0 / camZoom, 1.0 / camZoom);
-    trace('Set camera rect zoom to: ' + camZoom);
-
-    resetScrollPosition();
   }
 
   function resetScrollPosition()
@@ -1147,7 +1109,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Remove reference to stage and remove sprites from it to save memory and prevent crashes.
     if (currentStage != null)
     {
-      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, false));
+      currentStage.vcamPoint = null;
+      ScriptEventDispatcher.callEvent(currentStage, new ScriptEvent(DESTROY, true));
       remove(currentStage);
       currentStage.kill();
       currentStage = null;
