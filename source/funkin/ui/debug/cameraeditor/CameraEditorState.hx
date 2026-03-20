@@ -52,6 +52,7 @@ import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
+import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
@@ -455,6 +456,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
 
+    mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
+
     this.hidePropertiesPanel();
   }
 
@@ -534,19 +537,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
-    if (FlxG.keys.pressed.C)
-    {
-      MouseUtil.mouseWheelZoom(0.08, 0.02);
-    }
-    else if (FlxG.keys.pressed.V)
-    {
-      MouseUtil.mouseWheelZoom(0.08, -0.02);
-    }
-    // MouseUtil.mouseWheelZoom(0.08);
 
     MouseUtil.mouseCamDrag(goToPoint);
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
+
 
     FlxG.camera.scroll.copyFrom(_cameraTarget);
 
@@ -1202,6 +1197,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   function onResetCameraZoom(_)
   {
     FlxG.camera.zoom = 1.0;
+  }
+
+  function onViewportZoom(e:CameraViewportEvent):Void
+  {
+    // TODO: make this wheel zoom sensitivity configurable
+    MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
   }
 
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)
