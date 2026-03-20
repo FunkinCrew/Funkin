@@ -16,5 +16,6 @@
 		<class package="haxe.ui.core" loadAll="true" />
 		<!-- Custom components. -->
 		<class package="funkin.ui.haxeui.components" loadAll="true" />
+		<class package="funkin.ui.haxeui.components.editors.camera" loadAll="true" />
 	</components>
 </module>
