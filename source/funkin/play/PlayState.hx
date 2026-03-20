@@ -1127,17 +1127,24 @@ class PlayState extends MusicBeatSubState
         vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
 
         vocals.volume = 1;
-        for (vocalGroupEntry in vocals.voices)
-          if (vocalGroupEntry != null) for (track in vocalGroupEntry.members)
-          {
-            if (track != null)
+        for (vocalGroupEntry in vocals.voices) {
+          if (vocalGroupEntry != null) {
+            var newVolume:Float = 1;
+            if (vocalGroupEntry == vocals.playerVoices) {
+              newVolume = playerVocalsVolume;
+            }
+            else if (vocalGroupEntry == vocals.opponentVoices) {
+              newVolume = opponentVocalsVolume;
+            }
+            for (track in vocalGroupEntry.members)
             {
-              if (track == vocals.playerVoices) track.volume = playerVocalsVolume;
-              else if (track == vocals.opponentVoices) track.volume = opponentVocalsVolume;
-              else
-                track.volume = 1;
+              if (track != null)
+              {
+                track.volume = newVolume;
+              }
             }
           }
+        }
       }
 
       if (!fromDeathState)
@@ -2907,16 +2914,18 @@ class PlayState extends MusicBeatSubState
               if (track != null) track.volume = 1;
             }
 
-          // Command the bot to hit the note on time.
-          // NOTE: This is what handles the strumline and cleaning up the note itself!
-          strumline.hitNote(note);
           // Update strumline.heldKeys as a surprise tool to help us later.
+          strumline.pressKey(note.direction, 0);
+          // Command the bot to hit the note on time.
+          // NOTE: This is what handles cleaning up the note itself!
+          strumline.hitNote(note);
+          // Play the correct animation.
           strumline.playConfirm(note.direction);
 
           // Try vibrations in case any botted strumlines have them enabled.
           NoteVibrationsHandler.instance.tryNoteVibration();
 
-          if (note.holdNoteSprite != null)
+          if (note.holdNoteSprite != null && note.holdNoteSprite.alive)
           {
             strumline.playNoteHoldCover(note.holdNoteSprite);
           }

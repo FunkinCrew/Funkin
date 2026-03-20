@@ -8,6 +8,7 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.play.notes.Strumline;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.stage.Stage;

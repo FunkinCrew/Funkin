@@ -230,6 +230,18 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     // Clear the frame.
     target.removeAllComponents();
 
+    recursiveChildAdd(target, schema);
+
+    _initializing = false;
+  }
+
+  function recursiveChildAdd(parent:Component, schema:SongEventSchema)
+  {
+    // Ensure we have a cleared preview reference for rebuilt form
+    easeGraphImage = null;
+    easeDotImage = null;
+    var _needEasePreview:Bool = false;
+
     for (field in schema)
     {
       if (field == null) continue;
