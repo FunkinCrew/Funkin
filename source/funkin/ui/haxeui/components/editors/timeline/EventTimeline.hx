@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.behaviours.DataBehaviour;
 import haxe.ui.behaviours.DefaultBehaviour;
@@ -50,7 +51,7 @@ class EventTimeline extends VBox
   {
     haxe.ui.Toolkit.styleSheet.parse('
       .timeline-viewport {
-        background-color: #1E1E1E;
+        background-color: #FFFFFF;
         clip: true;
         overflow: hidden;
       }
@@ -102,8 +103,7 @@ class EventTimeline extends VBox
             break;
           }
         }
-        if (!found)
-          viewport.layers.push(nl);
+        if (!found) viewport.layers.push(nl);
       }
     }
 
@@ -214,20 +214,18 @@ private class EventTimelineEvents extends Events
 
   override public function register():Void
   {
-    if (!_timeline.layerPanel.btnAddLayer.hasEvent(MouseEvent.CLICK, _onAddLayer))
-      _timeline.layerPanel.btnAddLayer.registerEvent(MouseEvent.CLICK, _onAddLayer);
-    if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(MouseEvent.CLICK, _onRemoveLayer))
-      _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
-    if (!_timeline.scrollbar.hasEvent(UIEvent.CHANGE, _onScrollbarChange))
-      _timeline.scrollbar.registerEvent(UIEvent.CHANGE, _onScrollbarChange);
-    if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE, _onAutoScrollChange))
-      _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
+    if (!_timeline.layerPanel.btnAddLayer.hasEvent(MouseEvent.CLICK,
+      _onAddLayer)) _timeline.layerPanel.btnAddLayer.registerEvent(MouseEvent.CLICK, _onAddLayer);
+    if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(MouseEvent.CLICK,
+      _onRemoveLayer)) _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
+    if (!_timeline.scrollbar.hasEvent(UIEvent.CHANGE, _onScrollbarChange)) _timeline.scrollbar.registerEvent(UIEvent.CHANGE, _onScrollbarChange);
+    if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
+      _onAutoScrollChange)) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
 
     _timeline.viewport.onRefresh = _updateScrollbar;
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider");
-    if (zoomSlider != null && !zoomSlider.hasEvent(UIEvent.CHANGE, _onZoomChange))
-      zoomSlider.registerEvent(UIEvent.CHANGE, _onZoomChange);
+    if (zoomSlider != null && !zoomSlider.hasEvent(UIEvent.CHANGE, _onZoomChange)) zoomSlider.registerEvent(UIEvent.CHANGE, _onZoomChange);
   }
 
   override public function unregister():Void
@@ -238,17 +236,13 @@ private class EventTimelineEvents extends Events
     _timeline.toolbar.ddAutoScroll.unregisterEvent(UIEvent.CHANGE, _onAutoScrollChange);
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider");
-    if (zoomSlider != null)
-      zoomSlider.unregisterEvent(UIEvent.CHANGE, _onZoomChange);
+    if (zoomSlider != null) zoomSlider.unregisterEvent(UIEvent.CHANGE, _onZoomChange);
   }
 
   function _onAddLayer(_:MouseEvent):Void
   {
     var colorIdx = _timeline.viewport.layers.length % TimelineLayerData.DEFAULT_LAYER_COLORS.length;
-    var newLayer = new TimelineLayerData(
-      'Layer ${_timeline.viewport.layers.length + 1}',
-      TimelineLayerData.DEFAULT_LAYER_COLORS[colorIdx]
-    );
+    var newLayer = new TimelineLayerData('Layer ${_timeline.viewport.layers.length + 1}', TimelineLayerData.DEFAULT_LAYER_COLORS[colorIdx]);
     _timeline.viewport.layers.push(newLayer);
     _timeline.layerPanel.rebuildLayers(_timeline.viewport.layers);
     _timeline.viewport.refreshLayout();
@@ -307,10 +301,28 @@ private class EventTimelineEvents extends Events
     }
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider", Slider);
-    if (zoomSlider != null && zoomSlider.pos != _timeline.viewport.zoomLevel)
-      zoomSlider.pos = _timeline.viewport.zoomLevel;
+    if (zoomSlider != null && zoomSlider.pos != _timeline.viewport.zoomLevel) zoomSlider.pos = _timeline.viewport.zoomLevel;
+
+    _updateTimelineVisuals();
 
     _updatingScrollbar = false;
+  }
+
+  function _updateTimelineVisuals():Void
+  {
+    // i dont wanna be doing this every time but checking the width/height fucked up for me when i tried doing it after creating the timeline
+    _timeline.viewport.timelineShader.setViewSize(_timeline.viewport.width, _timeline.viewport.height);
+
+    var pxPerBeat = _timeline.viewport.pixelsPerBeat * _timeline.viewport.zoomLevel;
+    _timeline.viewport.timelineShader.beatLength = pxPerBeat;
+
+    var correctedOffset = _timeline.viewport.scrollOffsetMs * _timeline.viewport.pixelsPerMs * _timeline.viewport.zoomLevel;
+    _timeline.viewport.timelineShader.setOffset(correctedOffset, 0);
+
+    var lengthInBeats = (_timeline.viewport.songLengthMs / _timeline.viewport.stepLengthMs) / 4;
+    _timeline.viewport.timelineShader.beatCount = lengthInBeats;
+
+    _timeline.viewport.timelineShader.layerCount = _timeline.viewport.layers.length;
   }
 }
 
