@@ -20,7 +20,7 @@
 	</components>
 
 	<resources>
-        <resource path="assets/exclude/data/ui/chart-editor/style" prefix="style" />
+        <resource path="assets/exclude/ui/editors/style" prefix="style" />
   </resources>
 
 	<themes>
