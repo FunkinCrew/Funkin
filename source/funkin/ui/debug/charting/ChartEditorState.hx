@@ -5960,6 +5960,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (healthIconBF != null)
       {
         healthIconBF.configure(_charIconData?.healthIcon);
+        healthIconBF.iconOffset.set();
         healthIconBF.size *= 0.5; // Make the icon smaller in Chart Editor.
         healthIconBF.flipX = !healthIconBF.flipX; // BF faces the other way.
       }
@@ -5974,6 +5975,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (healthIconDad != null)
       {
         healthIconDad.configure(_charIconData?.healthIcon);
+        healthIconDad.iconOffset.set();
         healthIconDad.size *= 0.5; // Make the icon smaller in Chart Editor.
       }
       if (buttonSelectOpponent != null)
