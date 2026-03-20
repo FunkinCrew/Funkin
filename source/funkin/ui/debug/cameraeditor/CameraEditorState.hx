@@ -472,7 +472,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public function processEvents():Void
   {
     if (songEvents == null || songEvents.length == 0) return;
-    var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEvents(songEvents, Conductor.instance.songPosition + 1000);
+    var songEventsToActivate:Array<SongEventData> = SongEventRegistry.queryEventsRaw(songEvents, Conductor.instance.songPosition + 1000);
     for (eventData in songEventsToActivate)
     {
       if (completedEvents.contains(eventData)) continue;

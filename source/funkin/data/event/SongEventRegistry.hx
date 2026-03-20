@@ -143,9 +143,20 @@ class SongEventRegistry
    */
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
   {
+    return queryEventsRaw(events, currentTime, nextEventIndex);
+  }
+
+  /**
+   * @param events The list of available song events.
+   * @param currentTime The current time in milliseconds.
+   * @param index The index to start querying from.
+   * @return The list of events which haven't been handled yet.
+   */
+  public static function queryEventsRaw(events:Array<SongEventData>, currentTime:Float, index:Int = 0):Array<SongEventData>
+  {
     var result:Array<SongEventData> = [];
 
-    for (i in nextEventIndex...events.length)
+    for (i in index...events.length)
     {
       if (events[i].activated) continue;
 
