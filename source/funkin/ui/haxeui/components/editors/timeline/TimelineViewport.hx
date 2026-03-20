@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock.TimelineBlockHitZone;
@@ -15,6 +16,9 @@ import haxe.ui.layouts.DefaultLayout;
 @:composite(TimelineViewportEvents, TimelineViewportBuilder, TimelineViewportLayout)
 class TimelineViewport extends Box
 {
+  public var timelineShader:TimelineShader;
+
+  public static inline var TOP_BAR_HEIGHT:Int = 30;
   public static inline var LAYER_HEIGHT:Int = 48;
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
@@ -45,6 +49,14 @@ class TimelineViewport extends Box
     return PIXELS_PER_STEP_BASE / stepLengthMs;
   }
 
+  public var pixelsPerBeat(get, never):Float;
+
+  function get_pixelsPerBeat():Float
+  {
+    if (stepLengthMs <= 0) return 0;
+    return PIXELS_PER_STEP_BASE * 4;
+  }
+
   public function msToPixelX(ms:Float):Float
   {
     return (ms - scrollOffsetMs) * pixelsPerMs * zoomLevel;
@@ -68,8 +80,7 @@ class TimelineViewport extends Box
 
   public function refreshLayout():Void
   {
-    if (songLengthMs > 0 && scrollOffsetMs > songLengthMs)
-      scrollOffsetMs = songLengthMs;
+    if (songLengthMs > 0 && scrollOffsetMs > songLengthMs) scrollOffsetMs = songLengthMs;
     invalidateComponentLayout();
     if (onRefresh != null) onRefresh();
   }
@@ -82,8 +93,7 @@ class TimelineViewport extends Box
 
     for (event in events)
     {
-      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera")
-        continue;
+      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") continue;
 
       var block = new TimelineEventBlock();
       block.eventData = event;
@@ -92,8 +102,7 @@ class TimelineViewport extends Box
       var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
       block.layerIndex = getLayerIndex(layerName);
 
-      if (block.layerIndex >= 0 && block.layerIndex < layers.length)
-        block.applyColor(layers[block.layerIndex].color);
+      if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
 
       addComponent(block);
 
@@ -101,8 +110,7 @@ class TimelineViewport extends Box
       if (icon != null)
       {
         var iconRes = TimelineEventBlock.getIconResource(event.eventKind);
-        if (iconRes != null)
-          icon.resource = iconRes;
+        if (iconRes != null) icon.resource = iconRes;
         block._cachedIcon = icon;
       }
 
@@ -116,18 +124,17 @@ class TimelineViewport extends Box
   {
     for (i in 0...layers.length)
     {
-      if (layers[i].name == layerName)
-        return i;
+      if (layers[i].name == layerName) return i;
     }
     return 0;
   }
 
   public static function getBlockTopPositionFromLayerIndex(layerIndex:Int):Float
   {
-    return layerIndex * TimelineViewport.LAYER_HEIGHT
-      + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2;
+    return (layerIndex * TimelineViewport.LAYER_HEIGHT
+      + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2)
+      + TimelineViewport.TOP_BAR_HEIGHT;
   }
-
 }
 
 @:dox(hide) @:noCompletion
@@ -144,6 +151,11 @@ private class TimelineViewportBuilder extends CompositeBuilder
   override public function create():Void
   {
     _viewport.addClass("timeline-viewport");
+
+    // is this the best place to put this????? sorry if it isnt
+    _viewport.timelineShader = new TimelineShader(1);
+    // also there HAS to be a better way to do this. i REFUSE to believe its this stupid. let me put shaders on haxeui!!!!!!!!!!!!!!!!!!!!
+    @:privateAccess _viewport._surface.shader = _viewport.timelineShader;
 
     var playhead = new Box();
     playhead.id = "timeline-playhead";
@@ -187,8 +199,7 @@ private class TimelineViewportLayout extends DefaultLayout
 
       var isOffscreen = (blockLeftPos + blockWidthVal < 0) || (blockLeftPos > w);
 
-      if (isOffscreen != block.hidden)
-        block.hidden = isOffscreen;
+      if (isOffscreen != block.hidden) block.hidden = isOffscreen;
 
       if (isOffscreen) continue;
 
@@ -201,8 +212,7 @@ private class TimelineViewportLayout extends DefaultLayout
       block.blockTop = blockTopPos;
       block.blockWidth = blockWidthVal;
 
-      if (block._cachedIcon == null)
-        block._cachedIcon = block.findComponent("block-icon", Image);
+      if (block._cachedIcon == null) block._cachedIcon = block.findComponent("block-icon", Image);
 
       var icon = block._cachedIcon;
       if (icon != null)
@@ -243,14 +253,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   override public function register():Void
   {
-    if (!hasEvent(MouseEvent.MOUSE_DOWN, _onMouseDown))
-      registerEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
-    if (!hasEvent(MouseEvent.MOUSE_MOVE, _onMouseMove))
-      registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
-    if (!hasEvent(MouseEvent.MOUSE_UP, _onMouseUp))
-      registerEvent(MouseEvent.MOUSE_UP, _onMouseUp);
-    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel))
-      registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+    if (!hasEvent(MouseEvent.MOUSE_DOWN, _onMouseDown)) registerEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
+    if (!hasEvent(MouseEvent.MOUSE_MOVE, _onMouseMove)) registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    if (!hasEvent(MouseEvent.MOUSE_UP, _onMouseUp)) registerEvent(MouseEvent.MOUSE_UP, _onMouseUp);
+    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
   }
 
   override public function unregister():Void
@@ -268,8 +274,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     {
       var block = _viewport.eventBlocks[i];
       if (block.hidden) continue;
-      if (localX >= block.blockLeft && localX <= block.blockLeft + block.blockWidth
-        && localY >= block.blockTop && localY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT)
+      if (localX >= block.blockLeft
+        && localX <= block.blockLeft + block.blockWidth
+        && localY >= block.blockTop
+        && localY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT)
       {
         return block;
       }
@@ -281,8 +289,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     _deselectAll();
     block.selected = true;
-    if (block.layerIndex >= 0 && block.layerIndex < _viewport.layers.length)
-      block.applyColor(_viewport.layers[block.layerIndex].color);
+    if (block.layerIndex >= 0 && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
 
     var selectEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
     selectEvent.eventData = block.eventData;
@@ -296,8 +303,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       if (block.selected)
       {
         block.selected = false;
-        if (block.layerIndex >= 0 && block.layerIndex < _viewport.layers.length)
-          block.applyColor(_viewport.layers[block.layerIndex].color);
+        if (block.layerIndex >= 0
+          && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
       }
     }
   }
@@ -355,8 +362,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (_ghost == null) return;
     var color = 0x888888;
-    if (_ghostLayerIndex >= 0 && _ghostLayerIndex < _viewport.layers.length)
-      color = _viewport.layers[_ghostLayerIndex].color;
+    if (_ghostLayerIndex >= 0 && _ghostLayerIndex < _viewport.layers.length) color = _viewport.layers[_ghostLayerIndex].color;
     _ghost.customStyle.backgroundColor = color;
     _ghost.customStyle.backgroundOpacity = 0.4;
     _ghost.customStyle.borderColor = color;
@@ -402,10 +408,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         moveEvent.eventData = _dragTarget.eventData;
         moveEvent.oldTime = _dragOriginalTime;
         moveEvent.newTime = _ghostTimeMs;
-        if (_dragOriginalLayerIndex < _viewport.layers.length)
-          moveEvent.oldLayerName = _viewport.layers[_dragOriginalLayerIndex].name;
-        if (_ghostLayerIndex < _viewport.layers.length)
-          moveEvent.newLayerName = _viewport.layers[_ghostLayerIndex].name;
+        if (_dragOriginalLayerIndex < _viewport.layers.length) moveEvent.oldLayerName = _viewport.layers[_dragOriginalLayerIndex].name;
+        if (_ghostLayerIndex < _viewport.layers.length) moveEvent.newLayerName = _viewport.layers[_ghostLayerIndex].name;
         _viewport.dispatch(moveEvent);
       }
     }
@@ -469,7 +473,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   function _onMouseMove(e:MouseEvent):Void
   {
     var localX = e.screenX - _viewport.screenLeft;
-    var localY = e.screenY - _viewport.screenTop;
+    var localY = e.screenY - _viewport.screenTop - TimelineViewport.TOP_BAR_HEIGHT;
 
     switch (_dragMode)
     {
@@ -493,10 +497,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseUp(e:MouseEvent):Void
   {
-    if (_dragMode == SEEKING)
-      _dragMode = NONE;
-    else if (_dragMode != NONE)
-      _endDrag();
+    if (_dragMode == SEEKING) _dragMode = NONE;
+    else if (_dragMode != NONE) _endDrag();
   }
 
   function _onMouseWheel(e:MouseEvent):Void
@@ -511,8 +513,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       _viewport.zoomLevel = newZoom;
 
       var pxPerMs = _viewport.pixelsPerMs * newZoom;
-      if (pxPerMs > 0)
-        _viewport.scrollOffsetMs = mouseMs - (localX / pxPerMs);
+      if (pxPerMs > 0) _viewport.scrollOffsetMs = mouseMs - (localX / pxPerMs);
       if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
     }
     else
@@ -597,11 +598,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       if (_ghost != null) _updateGhostColor();
     }
 
-    if (moved && _ghost == null)
-      _createGhost();
+    if (moved && _ghost == null) _createGhost();
 
-    if (_ghost != null)
-      _positionGhost();
+    if (_ghost != null) _positionGhost();
   }
 
   function _handleDragResizeRight(mouseX:Float, snapToGrid:Bool):Void
@@ -615,8 +614,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var minSteps = TimelineUtil.getMinDurationSteps(_dragTarget.eventData);
     if (newDurationSteps < minSteps) newDurationSteps = minSteps;
 
-    if (snapToGrid)
-      newDurationSteps = Math.fround(newDurationSteps);
+    if (snapToGrid) newDurationSteps = Math.fround(newDurationSteps);
 
     TimelineUtil.setEventDurationSteps(_dragTarget.eventData, newDurationSteps);
     _viewport.refreshLayout();
@@ -648,6 +646,4 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     TimelineUtil.setEventDurationSteps(_dragTarget.eventData, newDurationSteps);
     _viewport.refreshLayout();
   }
-
-
 }
