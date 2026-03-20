@@ -8,14 +8,21 @@ class DataAssets
     return 'assets/data/${path}';
   }
 
+  static var textAssetsCache:Null<Array<String>>;
+
+  public inline static function clearTextAssetsCache():Void
+  {
+    textAssetsCache = null;
+  }
+
   public static function listDataFilesInPath(path:String, suffix:String = '.json'):Array<String>
   {
-    var textAssets = openfl.utils.Assets.list(TEXT);
+    textAssetsCache ??= openfl.utils.Assets.list(TEXT);
 
     var queryPath = buildDataPath(path);
 
     var results:Array<String> = [];
-    for (textPath in textAssets)
+    for (textPath in textAssetsCache)
     {
       if (textPath.startsWith(queryPath) && textPath.endsWith(suffix))
       {
