@@ -200,7 +200,7 @@ class SongEventRegistry
   public static function resetEvents(events:Array<SongEventData>):Void
   {
     events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
-    nextEventIndex = -1;
+    nextEventIndex = 0;
     allEventHandlers.resize(0);
 
     for (event in events)
