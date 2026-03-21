@@ -39,10 +39,11 @@ class VirtualCameraRectangle extends FunkinSprite
   var cameraZoomEase:Null<Float->Float> = null;
 
   var scrollTarget:FlxPoint = new FlxPoint();
+
   function set_zoom(value:Float):Float
   {
     zoom = value;
-    scale.set(1.0 / zoom, 1.0 / zoom);
+    setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
     updateHitbox();
     return zoom;
   }
@@ -206,7 +207,8 @@ class VirtualCameraRectangle extends FunkinSprite
     if (duration == null) duration = 4.0;
     var ease:Null<String> = eventData.getString('ease');
     if (ease == null) ease = 'CLASSIC';
-    if (ease == 'CLASSIC') {
+    if (ease == 'CLASSIC')
+    {
       isClassicEase = true;
       vCamPoint.set(lastVCamPoint.x, lastVCamPoint.y);
       cancelCameraFollowTween();
@@ -225,15 +227,15 @@ class VirtualCameraRectangle extends FunkinSprite
         var easeDir:String = eventData.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
         if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
 
-          var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-          var easeFunctionName = '$ease$easeDir';
-          var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
-          if (easeFunction == null)
-          {
-            trace('Invalid ease function: $easeFunctionName');
-            return;
-          }
-          tweenCameraToFollowPoint(durSeconds, easeFunction);
+        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var easeFunctionName = '$ease$easeDir';
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
+        if (easeFunction == null)
+        {
+          trace('Invalid ease function: $easeFunctionName');
+          return;
+        }
+        tweenCameraToFollowPoint(durSeconds, easeFunction);
     }
   }
 
@@ -276,21 +278,18 @@ class VirtualCameraRectangle extends FunkinSprite
 
   public function new(x:Float, y:Float)
   {
-      super(x, y);
-      makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
-      alpha = 0.5;
-      zIndex = 5999;
-      updateHitbox();
+    super(x, y);
+    makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
+    alpha = 0.5;
+    zIndex = 5999;
+    updateHitbox();
   }
 
   public override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    x = vCamPoint.x - width / 2;
-    y = vCamPoint.y - height / 2;
-
-    scrollTarget.set(cameraFollowPoint.x - width / 2, cameraFollowPoint.y - height / 2);
+    scrollTarget.set(cameraFollowPoint.x - (FlxG.width / 2), cameraFollowPoint.y - (FlxG.height / 2));
 
     if (isClassicEase)
     {
@@ -312,7 +311,6 @@ class VirtualCameraRectangle extends FunkinSprite
           cameraFollowEase = null;
           vCamPoint.copyFrom(scrollTarget);
         }
-
       }
     }
     // Handle camera zoom tweening
@@ -327,5 +325,8 @@ class VirtualCameraRectangle extends FunkinSprite
         zoom = cameraZoomEnd;
       }
     }
+
+    x = (vCamPoint.x + (FlxG.width / 2)) - width / 2;
+    y = (vCamPoint.y + (FlxG.height / 2)) - height / 2;
   }
 }
