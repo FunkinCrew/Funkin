@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import haxe.ui.components.Image;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
@@ -113,3 +114,4 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel.addComponent(_panel._layerContainer);
   }
 }
+#end
