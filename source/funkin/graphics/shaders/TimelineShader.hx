@@ -170,8 +170,9 @@ uniform sampler2D font;
 
 // text rendering code from https://www.shadertoy.com/view/43t3WX (I DIDNT MAKE THIS!!! its super fucking cool though and it saved me so thank you)
 
-// #define print_char(i) texture(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0))).a
-#define print_char(i) texture2D_bilinear(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0)), vec2(1024.)).a
+float print_char(int i, int x, vec2 u) {
+    return texture2D_bilinear(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0)), vec2(1024.)).a;
+}
 
 int log10_but_not_gay(float x){
     return int(ceil(.4342944819 * log(x + x*1e-5)));
@@ -185,25 +186,25 @@ float printFloat(vec2 u, float num, int dec, int shift) {
 
     const int l1 = str1.length() - 1;
     int x = int(u.x * 16. * FONT_SPACING);
-    if (x < l1) return print_char(str1[x]);
+    if (x < l1) return print_char(str1[x], x, u);
     int neg = 0;
     if (num < 0.) {
         if (x == l1)
-        return print_char(45);
+        return print_char(45, x, u);
         num = abs(num); neg = 1;
     }
-    int pre = neg + max(1, log10_but_not_gay(num));
+    int pre = neg + int(max(1, log10_but_not_gay(num)));
     int s2 = l1 + pre + dec + 1;
     if (x >= s2) {
         if (x >= s2+str2.length()-1) return 0.;
         int n2 = str2[x - s2];
-        return print_char(n2);
+        return print_char(n2, x, u);
     }
     float d = float(l1 + pre - x);
-    if (d == 0.) return print_char(10);
+    if (d == 0.) return print_char(10, x, u);
     d = pow(10., d < 0.  ? ++d : d);
     int n = shift + int(10.*fract(num/.999999/d));
-    return print_char(n);
+    return print_char(n, x, u);
 }
 
 float printInt(vec2 u, int num_i, int shift)   {
@@ -216,25 +217,25 @@ float printInt(vec2 u, int num_i, int shift)   {
 
     const int l1 = str1.length() - 1;
     int x = int(u.x * 16. * FONT_SPACING);
-    if (x < l1) return print_char(str1[x]);
+    if (x < l1) return print_char(str1[x], x, u);
     int neg = 0;
     if (num < 0.) {
         if (x == l1)
-        return print_char(45);
+        return print_char(45, x, u);
         num = abs(num); neg = 1;
     }
-    int pre = neg + max(1, log10_but_not_gay(num));
+    int pre = neg + int(max(1, log10_but_not_gay(num)));
     int s2 = l1 + pre + dec + 1;
     if (x >= s2) {
         if (x >= s2+str2.length()-1) return 0.;
         int n2 = str2[x - s2];
-        return print_char(n2);
+        return print_char(n2, x, u);
     }
     float d = float(l1 + pre - x);
-    if (d == 0.) return print_char(10);
+    if (d == 0.) return print_char(10, x, u);
     d = pow(10., d < 0.  ? ++d : d);
     int n = shift + int(10.*fract(num/.999999/d));
-    return print_char(n);
+    return print_char(n, x, u);
 }
 
 uniform float areaWidth;
