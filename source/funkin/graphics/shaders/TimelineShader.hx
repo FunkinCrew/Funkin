@@ -173,7 +173,9 @@ uniform sampler2D font;
 // #define print_char(i) texture(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0))).a
 #define print_char(i) texture2D_bilinear(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0)), vec2(1024.)).a
 
-#define log10(x) int(ceil(.4342944819 * log(x + x*1e-5)))
+int log10_but_not_gay(float x){
+    return int(ceil(.4342944819 * log(x + x*1e-5)));
+}
 
 // fuck you mac glsl i thought the on the fly code stuff was cool
 float printFloat(vec2 u, float num, int dec, int shift) {
@@ -190,7 +192,7 @@ float printFloat(vec2 u, float num, int dec, int shift) {
         return print_char(45);
         num = abs(num); neg = 1;
     }
-    int pre = neg + max(1, log10(num));
+    int pre = neg + max(1, log10_but_not_gay(num));
     int s2 = l1 + pre + dec + 1;
     if (x >= s2) {
         if (x >= s2+str2.length()-1) return 0.;
@@ -221,7 +223,7 @@ float printInt(vec2 u, int num_i, int shift)   {
         return print_char(45);
         num = abs(num); neg = 1;
     }
-    int pre = neg + max(1, log10(num));
+    int pre = neg + max(1, log10_but_not_gay(num));
     int s2 = l1 + pre + dec + 1;
     if (x >= s2) {
         if (x >= s2+str2.length()-1) return 0.;
