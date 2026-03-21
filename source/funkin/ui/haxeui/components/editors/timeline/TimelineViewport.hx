@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
@@ -647,3 +648,4 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     _viewport.refreshLayout();
   }
 }
+#end

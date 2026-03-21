@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.events.EventType;
 import haxe.ui.events.UIEvent;
@@ -49,3 +50,4 @@ class TimelineEvent extends UIEvent
     return c;
   }
 }
+#end
