@@ -481,7 +481,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       switch (eventData.eventKind)
       {
         case "FocusCamera":
-          cameraRect.handleFocusCamera(currentStage, eventData);
+          cameraRect.handleFocusCamera(eventData);
           break;
         case "ZoomCamera":
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
@@ -666,6 +666,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     trace("Built stage: " + stageID);
     add(cameraRect);
+    cameraRect.currentStage = currentStage;
 
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
@@ -674,10 +675,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function resetScrollPosition()
   {
-    if (currentStage == null) return;
-
-    var dad = currentStage.getDad();
-    if (dad != null && dad.cameraFocusPoint != null) cameraRect.setFocusPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y, true);
+    cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
   }
 
   function autosavePerCrash(message:String)
@@ -999,7 +997,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
-   * Sets the time position of the current instrumental and vocal tracks.
+   * Sets the time position of the current instrumental and vocal tracks. Replays any song events that should be active at the new time position.
+   * @param position The time position to set, in milliseconds.
    */
   public function setTimePosition(position:Float):Void
   {
@@ -1011,8 +1010,57 @@ class CameraEditorState extends UIState implements ConsoleClass
       vocal.time = position;
     }
 
-    Conductor.instance.update(currentInstrumental.time);
+    replayCameraTimeline(position);
     timeline.songPosition = Conductor.instance.songPosition;
+  }
+
+  function replayCameraTimeline(position:Float):Void
+  {
+    if (cameraRect == null) return;
+
+    cameraRect.cancelAllTweens();
+    cameraRect.zoom = defaultStageZoom;
+    cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+
+    Conductor.instance.update(0);
+    cameraRect.update(0);
+
+    completedEvents = [];
+
+    if (songEvents != null && songEvents.length > 0)
+    {
+      var replayEvents:Array<SongEventData> = songEvents.filter(function(eventData:SongEventData):Bool
+      {
+        return eventData != null && eventData.time <= position;
+      });
+
+      replayEvents.sort(function(a:SongEventData, b:SongEventData):Int
+      {
+        if (a.time < b.time) return -1;
+        if (a.time > b.time) return 1;
+        return 0;
+      });
+
+      for (eventData in replayEvents)
+      {
+        Conductor.instance.update(eventData.time);
+        cameraRect.update(0);
+
+        switch (eventData.eventKind)
+        {
+          case "FocusCamera":
+            cameraRect.handleFocusCamera(eventData);
+          case "ZoomCamera":
+            cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+        }
+
+        completedEvents.push(eventData);
+      }
+    }
+
+    Conductor.instance.update(position);
+    cameraRect.update(0);
+    previousTime = Conductor.instance.songPosition;
   }
 
   // ui function bindings
