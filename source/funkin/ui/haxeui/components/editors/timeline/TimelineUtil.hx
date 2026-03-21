@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.play.event.FocusCameraSongEvent;
 
@@ -45,3 +46,4 @@ class TimelineUtil
     event.value = cast struct;
   }
 }
+#end
