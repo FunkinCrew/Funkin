@@ -101,10 +101,12 @@ class FunkinCamera extends FlxCamera
    */
   public var renderBuffer:Bool = false;
 
-  /**
-   * If `true`, the camera will not render the camera buffer.
-   */
-  public var skipRenderBuffer:Bool = false;
+  var skipRenderBuffer:Bool = false;
+
+  var bufferBaseZoom:Float = -1;
+
+  var bufferDelay:Float = 0;
+  var _bufferTimer:Float = 0;
 
   var _blendShader:RuntimeCustomBlendShader;
   var _backgroundFrame:FlxFrame;
@@ -296,10 +298,37 @@ class FunkinCamera extends FlxCamera
   {
     if (renderBuffer && !skipRenderBuffer)
     {
-      _previousFrameTexture.drawCameraScreen(this);
+      if (bufferDelay > 0)
+      {
+        _bufferTimer += FlxG.elapsed;
+
+        if (_bufferTimer > bufferDelay)
+        {
+          _bufferTimer = 0;
+          _drawPreviousFrame();
+        }
+      }
+      else
+      {
+        _drawPreviousFrame();
+      }
     }
 
     super.clearDrawStack();
+  }
+
+  function _drawPreviousFrame():Void
+  {
+    if (bufferBaseZoom > 0)
+    {
+      this.setScale(bufferBaseZoom, bufferBaseZoom);
+      _previousFrameTexture.drawCameraScreen(this);
+      this.setScale(this.zoom, this.zoom);
+    }
+    else
+    {
+      _previousFrameTexture.drawCameraScreen(this);
+    }
   }
 
   override function destroy():Void

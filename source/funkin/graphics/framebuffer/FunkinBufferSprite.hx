@@ -3,6 +3,7 @@ package funkin.graphics.framebuffer;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -15,6 +16,41 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(funkin.graphics.FunkinCamera)
 class FunkinBufferSprite extends FunkinSprite
 {
+  /**
+   * The base zoom of the camera.
+   * The buffer will always be rendered at this zoom.
+   * If set to `-1`, the buffer will be rendered at whatever zoom the camera was on the previous frame.
+   */
+  public var baseZoom(get, set):Float;
+
+  function get_baseZoom():Float
+  {
+    return _usedCamera.bufferBaseZoom;
+  }
+
+  function set_baseZoom(value:Float):Float
+  {
+    return _usedCamera.bufferBaseZoom = value;
+  }
+
+  /**
+   * The delay before the buffer is rendered.
+   * If set to `0`, the buffer will be rendered immediately.
+   *
+   * Could be useful for performance.
+   */
+  public var bufferDelay(get, set):Float;
+
+  function get_bufferDelay():Float
+  {
+    return _usedCamera.bufferDelay;
+  }
+
+  function set_bufferDelay(value:Float):Float
+  {
+    return _usedCamera.bufferDelay = value;
+  }
+
   var _cameraBufferFrame:FlxFrame;
   var _usedCamera:FunkinCamera;
 
@@ -28,7 +64,7 @@ class FunkinBufferSprite extends FunkinSprite
     return _usedCamera._previousFrameTexture.height;
   }
 
-  public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera)
+  public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0)
   {
     super(x, y);
 
@@ -36,6 +72,8 @@ class FunkinBufferSprite extends FunkinSprite
 
     // We need the previous frame from the camera
     _usedCamera.renderBuffer = true;
+    _usedCamera.bufferBaseZoom = baseZoom;
+    _usedCamera.bufferDelay = bufferDelay;
 
     @:privateAccess
     _cameraBufferFrame = new FlxFrame(new FlxGraphic('', null));

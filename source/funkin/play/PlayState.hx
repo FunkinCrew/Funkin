@@ -1058,12 +1058,14 @@ class PlayState extends MusicBeatSubState
 
       resetCamera();
 
-      camGame.skipRenderBuffer = false;
-      camHUD.skipRenderBuffer = false;
-      camCutscene.skipRenderBuffer = false;
-      camCutouts.skipRenderBuffer = false;
-      camSubtitles.skipRenderBuffer = false;
-      camPause.skipRenderBuffer = false;
+      @:privateAccess {
+        camGame.skipRenderBuffer = false;
+        camHUD.skipRenderBuffer = false;
+        camCutscene.skipRenderBuffer = false;
+        camCutouts.skipRenderBuffer = false;
+        camSubtitles.skipRenderBuffer = false;
+        camPause.skipRenderBuffer = false;
+      }
 
       var fromDeathState = isPlayerDying;
 
@@ -1478,12 +1480,14 @@ class PlayState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
-    camGame.skipRenderBuffer = true;
-    camHUD.skipRenderBuffer = true;
-    camCutscene.skipRenderBuffer = true;
-    camCutouts.skipRenderBuffer = true;
-    camSubtitles.skipRenderBuffer = true;
-    camPause.skipRenderBuffer = true;
+    @:privateAccess {
+      camGame.skipRenderBuffer = true;
+      camHUD.skipRenderBuffer = true;
+      camCutscene.skipRenderBuffer = true;
+      camCutouts.skipRenderBuffer = true;
+      camSubtitles.skipRenderBuffer = true;
+      camPause.skipRenderBuffer = true;
+    }
 
     openSubState(gameOverSubState);
   }
@@ -3707,12 +3711,14 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
-    camGame.skipRenderBuffer = true;
-    camHUD.skipRenderBuffer = true;
-    camCutscene.skipRenderBuffer = true;
-    camCutouts.skipRenderBuffer = true;
-    camSubtitles.skipRenderBuffer = true;
-    camPause.skipRenderBuffer = true;
+    @:privateAccess {
+      camGame.skipRenderBuffer = true;
+      camHUD.skipRenderBuffer = true;
+      camCutscene.skipRenderBuffer = true;
+      camCutouts.skipRenderBuffer = true;
+      camSubtitles.skipRenderBuffer = true;
+      camPause.skipRenderBuffer = true;
+    }
 
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
