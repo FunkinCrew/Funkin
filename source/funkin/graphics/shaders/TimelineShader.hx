@@ -169,22 +169,71 @@ vec4 texture2D_bilinear(sampler2D t, vec2 uv, vec2 size){
 uniform sampler2D font;
 
 // text rendering code from https://www.shadertoy.com/view/43t3WX (I DIDNT MAKE THIS!!! its super fucking cool though and it saved me so thank you)
-// i also had to compress them into singular lines cause for some reason using them how they did in shadertoy made the compiler angry sorry compiler
 
 // #define print_char(i) texture(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0))).a
 #define print_char(i) texture2D_bilinear(font, mod(u + vec2(float(i)-float(x)/FONT_SPACING + FONT_SPACING/8., (i)/16) / 16., vec2(1.0, 1.0)), vec2(1024.)).a
 
 #define log10(x) int(ceil(.4342944819 * log(x + x*1e-5)))
-#define _num_ 0); const int[] str2 = int[](
 
-// makeStrFloat() start
-#define makeStrF(func_name) float func_name(vec2 u, float num, int dec, int shift) { if (u.x < 0. || abs(u.y - .03) > .03) return 0.; const int[] str1 = int[](
+// fuck you mac glsl i thought the on the fly code stuff was cool
+float printFloat(vec2 u, float num, int dec, int shift) {
+    if (u.x < 0. || abs(u.y - .03) > .03) return 0.;
+    const int[] str1 = int[](0);
+    const int[] str2 = int[](0);
 
-// makeStrInt() start
-#define makeStrI(func_name) float func_name(vec2 u, int num_i, int shift) { if (u.x < 0. || abs(u.y - .03) > .03) return 0.; float num = float(num_i); const int dec = -1; const int[] str1 = int[](
+    const int l1 = str1.length() - 1;
+    int x = int(u.x * 16. * FONT_SPACING);
+    if (x < l1) return print_char(str1[x]);
+    int neg = 0;
+    if (num < 0.) {
+        if (x == l1)
+        return print_char(45);
+        num = abs(num); neg = 1;
+    }
+    int pre = neg + max(1, log10(num));
+    int s2 = l1 + pre + dec + 1;
+    if (x >= s2) {
+        if (x >= s2+str2.length()-1) return 0.;
+        int n2 = str2[x - s2];
+        return print_char(n2);
+    }
+    float d = float(l1 + pre - x);
+    if (d == 0.) return print_char(10);
+    d = pow(10., d < 0.  ? ++d : d);
+    int n = shift + int(10.*fract(num/.999999/d));
+    return print_char(n);
+}
 
-// makeStrFloat & makeStrInt end
-#define _endNum  0); const int l1 = str1.length() - 1; int x = int(u.x * 16. * FONT_SPACING); if (x < l1) return print_char(str1[x]); int neg = 0; if (num < 0.) { if (x == l1) return print_char(45); num = abs(num); neg = 1; } int pre = neg + max(1, log10(num)); int s2 = l1 + pre + dec + 1; if (x >= s2) { if (x >= s2+str2.length()-1) return 0.; int n2 = str2[x - s2]; return print_char(n2); } float d = float(l1 + pre - x); if (d == 0.) return print_char(10); d = pow(10., d < 0.  ? ++d : d); int n = shift + int(10.*fract(num/.999999/d)); return print_char(n); }
+float printInt(vec2 u, int num_i, int shift)   {
+    if (u.x < 0. || abs(u.y - .03) > .03)
+        return 0.;
+    float num = float(num_i);
+    const int dec = -1;
+    const int[] str1 = int[](0);
+    const int[] str2 = int[](0);
+
+    const int l1 = str1.length() - 1;
+    int x = int(u.x * 16. * FONT_SPACING);
+    if (x < l1) return print_char(str1[x]);
+    int neg = 0;
+    if (num < 0.) {
+        if (x == l1)
+        return print_char(45);
+        num = abs(num); neg = 1;
+    }
+    int pre = neg + max(1, log10(num));
+    int s2 = l1 + pre + dec + 1;
+    if (x >= s2) {
+        if (x >= s2+str2.length()-1) return 0.;
+        int n2 = str2[x - s2];
+        return print_char(n2);
+    }
+    float d = float(l1 + pre - x);
+    if (d == 0.) return print_char(10);
+    d = pow(10., d < 0.  ? ++d : d);
+    int n = shift + int(10.*fract(num/.999999/d));
+    return print_char(n);
+}
 
 uniform float areaWidth;
 uniform float areaHeight;
@@ -205,9 +254,6 @@ uniform float timeSigDenominator;
 const float MAX_DETAIL = 2;
 const float MIN_DETAIL = -1;
 uniform float detail;
-
-makeStrI(writeBar)  _num_ _endNum
-makeStrF(writeBeat)   _num_ _endNum
 
 // find amount of times to split bars based on detail level
 // change lets you specify a higher or lower detail level, if supported.
@@ -361,12 +407,12 @@ vec3 createTopBar(vec3 col, vec2 uv, float factor, float barLength)
 
             if(mod(float(curBeat) - 1.0, timeSigNumerator) == 0.0){
                 // kinda nasty, but if we are on the first measure we dont want the decimal.
-                textMult = writeBar(textUV, curMeasure, 0);
+                textMult = printInt(textUV, curMeasure, 0);
             }else{
-                textMult = writeBeat(textUV, float(curMeasure) + decimalText.x, int(decimalText.y), 16) / 2.;
+                textMult = printFloat(textUV, float(curMeasure) + decimalText.x, int(decimalText.y), 16) / 2.;
             }
         }else{
-            textMult = writeBar(textUV, curMeasure, 0);
+            textMult = printInt(textUV, curMeasure, 0);
         }
 
     }
