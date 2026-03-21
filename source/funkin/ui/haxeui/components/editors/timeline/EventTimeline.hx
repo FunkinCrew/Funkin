@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.behaviours.DataBehaviour;
@@ -379,3 +380,4 @@ private class SongLengthBehaviour extends DataBehaviour
     tl.toolbar.songLength = _value;
   }
 }
+#end

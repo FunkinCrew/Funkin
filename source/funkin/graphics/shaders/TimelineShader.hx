@@ -1,5 +1,6 @@
 package funkin.graphics.shaders;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.ui.haxeui.components.editors.timeline.TimelineViewport;
 import flixel.system.FlxAssets.FlxShader;
 import openfl.display.BitmapData;
@@ -548,3 +549,4 @@ void main()
     fontTexture = BitmapData.fromFile("assets/shared/images/ui/camera-editor/timelineFont.png");
   }
 }
+#end
