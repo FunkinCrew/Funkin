@@ -752,7 +752,7 @@ class FunkinSprite extends FlxAnimate
     result.set(x, y);
     if (pixelPerfectPosition) result.floor();
 
-    if (vcamPoint != null) return result.subtract(vcamPoint.x * scrollFactor.x, vcamPoint.y * scrollFactor.y);
+    if (vcamPoint != null) return result.subtract((vcamPoint.x * scrollFactor.x) + camera.scroll.x, (vcamPoint.y * scrollFactor.y) + camera.scroll.y);
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
   }
