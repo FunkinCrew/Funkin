@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import flixel.util.FlxStringUtil;
 import haxe.ui.behaviours.DataBehaviour;
 import haxe.ui.containers.HBox;
@@ -70,3 +71,4 @@ private class SongLengthBehaviour extends DataBehaviour
       + FlxStringUtil.formatTime(len / 1000, true);
   }
 }
+#end
