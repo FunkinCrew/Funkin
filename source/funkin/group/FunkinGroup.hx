@@ -244,7 +244,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
     return children[index];
   }
 
- /**
+  /**
    * Gets the screen position of the sprite, taking into account the camera scroll and the `vcamPoint` if it exists.
    * @param result An optional `FlxPoint` to store the result in. If null, a new `FlxPoint` will be created.
    * @param camera The camera to calculate the screen position relative to. If null, the default camera will be used.
@@ -257,7 +257,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
     result.set(x, y);
     if (pixelPerfectPosition) result.floor();
 
-    if (vcamPoint != null) return result.subtract(vcamPoint.x * scrollFactor.x, vcamPoint.y * scrollFactor.y);
+    if (vcamPoint != null) return result.subtract((vcamPoint.x * scrollFactor.x) + camera.scroll.x, (vcamPoint.y * scrollFactor.y) + camera.scroll.y);
 
     return result.subtract(camera.scroll.x * scrollFactor.x, camera.scroll.y * scrollFactor.y);
   }
