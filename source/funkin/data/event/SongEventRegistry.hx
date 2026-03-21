@@ -138,7 +138,7 @@ class SongEventRegistry
    * Caching the index for the next event to query greatly reduces lag.
    * Kinda nasty that it's tied to a static class though.
    */
-  static var nextEventIndex:Int = -1;
+  static var nextEventIndex:Int = 0;
 
   /**
    * Retrieve the list of events to activate this frame.
