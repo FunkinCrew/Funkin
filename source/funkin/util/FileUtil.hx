@@ -49,9 +49,9 @@ class FileUtil
   public static final FILE_FILTER_ZIP:FileFilter = new FileFilter('ZIP Archive', '*.zip');
 
   /**
-   * File filter for OGG audio files.
+   * File filter for all supported audio files.
    */
-  public static final FILE_FILTER_OGG:FileFilter = new FileFilter('OGG Audio File', '*.ogg');
+  public static final FILE_FILTER_AUDIO:FileFilter = new FileFilter('Audio File', '*.ogg; *.mp3; *.wav; *.opus; *.flac');
 
   /**
    * File filter for PNG image files.
@@ -1268,7 +1268,7 @@ class FileUtilSandboxed
   public static final FILE_FILTER_TXT:FileFilter = FileUtil.FILE_FILTER_TXT;
   public static final FILE_FILTER_XML:FileFilter = FileUtil.FILE_FILTER_XML;
   public static final FILE_FILTER_ZIP:FileFilter = FileUtil.FILE_FILTER_ZIP;
-  public static final FILE_FILTER_OGG:FileFilter = FileUtil.FILE_FILTER_OGG;
+  public static final FILE_FILTER_AUDIO:FileFilter = FileUtil.FILE_FILTER_AUDIO;
   public static final FILE_FILTER_PNG:FileFilter = FileUtil.FILE_FILTER_PNG;
   public static final FILE_FILTER_SM:FileFilter = FileUtil.FILE_FILTER_SM;
   public static final FILE_FILTER_OSU:FileFilter = FileUtil.FILE_FILTER_OSU;

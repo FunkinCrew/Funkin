@@ -39,6 +39,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   var hudCamera:FlxCamera;
   var camFollow:FlxObject;
 
+  #if desktop
+  var audioDeviceItem:EnumPreferenceItem<String>;
+  #end
+
   public function new()
   {
     super();
@@ -177,6 +181,25 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.autoFullscreen);
     #end
 
+    #if desktop
+    audioDeviceItem = createPrefItemEnum('Audio Device', 'What audio device should the game playbacks sounds to.', generateAudioDeviceEnums(),
+      (key:String, value:String) ->
+    {
+      Preferences.audioDevice = value;
+    }, Preferences.audioDevice);
+    FlxG.sound.onDefaultDeviceChanged.add(refreshAudioDeviceItem);
+    FlxG.sound.onDeviceAdded.add(refreshAudioDeviceItem);
+    FlxG.sound.onDeviceRemoved.add(refreshAudioDeviceItem);
+    #end
+
+    #if native
+    createPrefItemCheckbox('Music Streaming', 'Turn this off if your hardware can\'t handle it and freezes the song every few seconds.',
+      function(value:Bool):Void
+    {
+      Preferences.streamedMusic = value;
+    }, Preferences.streamedMusic);
+    #end
+
     // disable on mobile and web since it barely has any effect
     #if !(mobile || web)
     createPrefItemEnum('VSync', "When enabled, the game attempts to match the framerate with your monitor's refresh rate.",
@@ -267,7 +290,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param onChange Gets called every time the player changes the value; use this to apply the value
    * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
    */
-  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool, available:Bool = true):Void
+  function createPrefItemCheckbox(prefName:String, prefDesc:String, onChange:Bool->Void, defaultValue:Bool, available:Bool = true):CheckboxPreferenceItem
   {
     var checkbox:CheckboxPreferenceItem = new CheckboxPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, 120 * (items.length - 1 + 1),
       defaultValue, available);
@@ -281,6 +304,8 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
     preferenceItems.add(checkbox);
     preferenceDesc.push(prefDesc);
+
+    return checkbox;
   }
 
   /**
@@ -294,13 +319,16 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float,
-      max:Float, step:Float = 0.1, precision:Int):Void
+      max:Float, step:Float = 0.1, precision:Int):NumberPreferenceItem
   {
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
       precision, onChange, valueFormatter);
+
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+
+    return item;
   }
 
   /**
@@ -310,7 +338,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param min Minimum value (default = 0)
    * @param max Maximum value (default = 100)
    */
-  function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100):Void
+  function createPrefItemPercentage(prefName:String, prefDesc:String, onChange:Int->Void, defaultValue:Int, min:Int = 0, max:Int = 100):NumberPreferenceItem
   {
     var newCallback = function(value:Float)
     {
@@ -320,11 +348,15 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       return '${value}%';
     };
+
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, 10, 0,
       newCallback, formatter);
+
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+
+    return item;
   }
 
   /**
@@ -333,18 +365,46 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param onChange Gets called every time the player changes the value; use this to apply the value
    * @param defaultValue The value that is loaded in when the pref item is created (usually your Preferences.settingVariable)
    */
-  function createPrefItemEnum<T>(prefName:String, prefDesc:String, values:Map<String, T>, onChange:String->T->Void, defaultKey:String):Void
+  function createPrefItemEnum<T>(prefName:String, prefDesc:String, values:Map<String, T>, onChange:String->T->Void, defaultKey:String):EnumPreferenceItem<T>
   {
     var item = new EnumPreferenceItem<T>(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, values, defaultKey, onChange);
+
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+
+    return item;
   }
+
+  #if desktop
+  function generateAudioDeviceEnums():Map<String, String>
+  {
+    var enums = ['Default' => 'Default'];
+    var devices = lime.media.AudioManager.getPlaybackDeviceNames();
+
+    for (device in devices)
+    {
+      enums.set(device, device);
+    }
+
+    return enums;
+  }
+
+  function refreshAudioDeviceItem(deviceName:String):Void
+  {
+    audioDeviceItem.changeEnums(generateAudioDeviceEnums(), Preferences.audioDevice);
+  }
+  #end
 
   override function exit():Void
   {
     camFollow.setPosition(640, 30);
     menuCamera.snapToTarget();
+    #if desktop
+    FlxG.sound.onDefaultDeviceChanged.remove(refreshAudioDeviceItem);
+    FlxG.sound.onDeviceAdded.remove(refreshAudioDeviceItem);
+    FlxG.sound.onDeviceRemoved.remove(refreshAudioDeviceItem);
+    #end
     super.exit();
   }
 }

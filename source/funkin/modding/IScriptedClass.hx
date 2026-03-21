@@ -248,3 +248,24 @@ interface IDialogueScriptedClass extends IScriptedClass
   public function onDialogueSkip(event:DialogueScriptEvent):Void;
   public function onDialogueEnd(event:DialogueScriptEvent):Void;
 }
+
+/**
+ * Defines a set of callbacks activated in a Game Over screen.
+ */
+interface IGameOverScriptedClass extends IScriptedClass
+{
+  /**
+   * Called when the game has entered to game over screen.
+   */
+  public function onGameOverStart(event:ScriptEvent):Void;
+
+  /**
+   * Called when the game is continuing to gameplay from game over screen.
+   */
+  public function onGameOverConfirm(event:ScriptEvent):Void;
+
+  /**
+   * Called when the game is about to start the game over music.
+   */
+  public function onGameOverMusicStart(event:ScriptEvent):Void;
+}

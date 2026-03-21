@@ -1,14 +1,15 @@
 package funkin.audio;
 
-import flash.media.Sound;
+import lime.media.AudioBuffer;
+import openfl.Assets;
+import openfl.media.Sound;
+import openfl.utils.AssetType;
 import flixel.sound.FlxSound;
 import flixel.system.FlxAssets.FlxSoundAsset;
-import openfl.Assets;
-#if (openfl >= "8.0.0")
-import openfl.utils.AssetType;
-#end
 
 /**
+ * USE flixel.sound.FlxSoundData or FlxSound.loadStreamed instead!
+ * 
  * a FlxSound that just overrides loadEmbedded to allow for "streamed" sounds to load with better performance!
  */
 @:nullSafety
@@ -19,29 +20,16 @@ class FlxStreamSound extends FlxSound
     super();
   }
 
-  override public function loadEmbedded(EmbeddedSound:Null<FlxSoundAsset>, Looped:Bool = false, AutoDestroy:Bool = false, ?OnComplete:Void->Void):FlxSound
+  override public function loadEmbedded(asset:FlxSoundAsset, ?looped:Bool, ?loopTime:Float, ?endTime:Float, autoDestroy = false, ?onComplete:Void->Void):FlxStreamSound
   {
-    if (EmbeddedSound == null) return this;
-
-    cleanup(true);
-
-    if ((EmbeddedSound is Sound))
+    if ((asset is String))
     {
-      _sound = EmbeddedSound;
+      super.loadStreamed(asset, looped, loopTime, endTime, autoDestroy, onComplete);
     }
-    else if ((EmbeddedSound is Class))
+    else
     {
-      _sound = Type.createInstance(EmbeddedSound, []);
+      super.loadEmbedded(asset, looped, loopTime, endTime, autoDestroy, onComplete);
     }
-    else if ((EmbeddedSound is String))
-    {
-      if (Assets.exists(EmbeddedSound, AssetType.SOUND)
-        || Assets.exists(EmbeddedSound, AssetType.MUSIC)) _sound = Assets.getMusic(EmbeddedSound);
-      else
-        FlxG.log.error('Could not find a Sound asset with an ID of \'$EmbeddedSound\'.');
-    }
-
-    // NOTE: can't pull ID3 info from embedded sound currently
-    return init(Looped, AutoDestroy, OnComplete);
+    return this;
   }
 }

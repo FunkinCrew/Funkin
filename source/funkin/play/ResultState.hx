@@ -520,7 +520,7 @@ class ResultState extends MusicBeatSubState
 
         // preload the loop music
         @:nullSafety(Off)
-        var musicLoop:FunkinSound = FunkinSound.load(mainMusic, 1.0, true, true, false, false, null, null, true);
+        var musicLoop:FunkinSound = FunkinSound.load(mainMusic, 1.0, true, true, false, false, null, null);
 
         // Play the intro music.
         introMusicAudio = FunkinSound.load(introMusic, 1.0, false, true, true, () ->

@@ -65,7 +65,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     if (snd == null) return;
 
     @:privateAccess
-    analyzer = new SpectralAnalyzer(snd._channel.__audioSource, BAR_COUNT, 0.1, 40);
+    analyzer = new SpectralAnalyzer(snd.source, BAR_COUNT, 0.1, 40);
     // A-Bot tuning...
     analyzer.minDb = -65;
     analyzer.maxDb = -25;

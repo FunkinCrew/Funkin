@@ -144,6 +144,8 @@ class GameOverSubState extends MusicBeatSubState
 
     parentPlayState = cast _parentState;
 
+    gameOverMusic = FunkinSound.load(null);
+
     //
     // Set up the visuals
     //
@@ -194,6 +196,9 @@ class GameOverSubState extends MusicBeatSubState
     {
       canInput = true;
     });
+
+    var event:ScriptEvent = new ScriptEvent(GAME_OVER_START, false);
+    dispatchEvent(event);
   }
 
   function setCameraTarget():Void
@@ -359,6 +364,11 @@ class GameOverSubState extends MusicBeatSubState
   {
     if (!isEnding)
     {
+      var event:ScriptEvent = new ScriptEvent(GAME_OVER_CONFIRM, true);
+      dispatchEvent(event);
+
+      if (event.eventCanceled) return;
+
       isEnding = true;
 
       // Stop death quotes immediately.
@@ -464,6 +474,11 @@ class GameOverSubState extends MusicBeatSubState
   {
     super.dispatchEvent(event);
 
+    if (parentPlayState != null)
+    {
+      ScriptEventDispatcher.callEvent(parentPlayState.currentSong, event);
+    }
+
     ScriptEventDispatcher.callEvent(boyfriend, event);
   }
 
@@ -495,6 +510,11 @@ class GameOverSubState extends MusicBeatSubState
    */
   public function startDeathMusic(startingVolume:Float = 1, force:Bool = false):Void
   {
+    var event:ScriptEvent = new ScriptEvent(GAME_OVER_MUSIC_START, true);
+    dispatchEvent(event);
+
+    if (event.eventCanceled) return;
+
     var musicPath:Null<String> = resolveMusicPath(musicSuffix, isStarting, isEnding);
     var onComplete:Void->Void = () -> {};
 
@@ -524,10 +544,11 @@ class GameOverSubState extends MusicBeatSubState
     }
     else if (gameOverMusic == null || !gameOverMusic.playing || force)
     {
-      if (gameOverMusic != null) gameOverMusic.stop();
-
-      gameOverMusic = FunkinSound.load(musicPath);
-      if (gameOverMusic == null) return;
+      if (gameOverMusic == null) gameOverMusic = FunkinSound.load(musicPath);
+      {
+        gameOverMusic.stop();
+        gameOverMusic.loadEmbedded(musicPath);
+      }
 
       gameOverMusic.volume = startingVolume;
       gameOverMusic.looped = !(isEnding || isStarting);
@@ -537,7 +558,7 @@ class GameOverSubState extends MusicBeatSubState
     else
     {
       @:privateAccess
-      trace('Music already playing! ${gameOverMusic?._label}');
+      trace('Music already playing! ${gameOverMusic?.data?.key}');
     }
   }
 

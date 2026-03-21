@@ -292,6 +292,11 @@ class Constants
   public static final DEFAULT_OST_NAME:String = 'OFFICIAL OST';
 
   /**
+   * The default random capsule music to play in freeplay.
+   */
+  public static final DEFAULT_RANDOM_CAPSULE_MUSIC:String = 'freeplayRandom';
+
+  /**
    * The default preview start time for the songs in Freeplay.
    */
   public static final DEFAULT_PREVIEW_START_TIME:Float = 0;
@@ -578,6 +583,11 @@ class Constants
    * The file extension used when loading data files.
    */
   public static final EXT_DATA = "json";
+
+  /**
+   * The file extensions supported for loading audio files.
+   */
+  public static final EXT_SOUNDS = ["ogg", "mp3", "wav", "opus", "flac"];
 
   /**
    * OTHER

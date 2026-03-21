@@ -109,7 +109,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       vocalsEntry.onClick = function(_event)
       {
-        FileUtil.browseForFile('Open $charName Vocals', [FileUtil.FILE_FILTER_OGG], function(selectedFile)
+        FileUtil.browseForFile('Open $charName Vocals', [FileUtil.FILE_FILTER_AUDIO], function(selectedFile)
         {
           if (selectedFile != null && selectedFile.bytes != null)
           {

@@ -1,12 +1,14 @@
 package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.sound.FlxSound;
 import flixel.tweens.FlxTween;
 
 /**
  * A group of FunkinSounds that are all synced together.
  * Unlike FlxSoundGroup, you can also control their time and pitch.
  */
+@:access(funkin.audio.FunkinSound)
 @:nullSafety
 class SoundGroup extends FlxTypedGroup<FunkinSound>
 {
@@ -60,10 +62,10 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
     forEachAlive(function(snd)
     {
-      if (targetTime == null) targetTime = snd.time;
+      if (targetTime == null) targetTime = snd.getActualTime();
       else
       {
-        var diff:Float = snd.time - targetTime;
+        var diff:Float = snd.getActualTime() - targetTime;
         if (Math.abs(diff) > Math.abs(error)) error = diff;
       }
     });
@@ -107,10 +109,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function pause()
   {
-    forEachAlive(function(sound:FunkinSound)
-    {
-      sound.pause();
-    });
+    if (members != null) FlxSound.pauseSounds(cast members);
   }
 
   /**
@@ -118,15 +117,20 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
+    var sounds:Array<FlxSound> = [];
+
     forEachAlive(function(sound:FunkinSound)
     {
-      if (sound.length < startTime)
+      if (sound.playing && !forceRestart || sound.length < startTime)
       {
-        // trace('Queuing sound (${sound.toString()} past its length! Skipping...)');
         return;
       }
-      sound.play(forceRestart, startTime, endTime);
+
+      sound.prepare(startTime, endTime);
+      sounds.push(sound);
     });
+
+    FlxSound.playSounds(sounds);
   }
 
   /**
@@ -134,10 +138,20 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function resume()
   {
+    var sounds:Array<FlxSound> = [];
+
     forEachAlive(function(sound:FunkinSound)
     {
-      sound.resume();
+      if (sound.playing || !sound._paused)
+      {
+        return;
+      }
+
+      sound.prepare(sound.time);
+      sounds.push(sound);
     });
+
+    FlxSound.playSounds(sounds);
   }
 
   /**
@@ -169,13 +183,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
    */
   public function stop():Void
   {
-    if (members != null)
-    {
-      forEachAlive(function(sound:FunkinSound)
-      {
-        sound.stop();
-      });
-    }
+    if (members != null) FlxSound.stopSounds(cast members);
   }
 
   public override function destroy():Void
@@ -194,6 +202,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     super.clear();
   }
 
+  @:nullSafety(Off)
   function get_time():Float
   {
     if (getFirstAlive() != null)
@@ -208,15 +217,27 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
 
   function set_time(time:Float):Float
   {
-    forEachAlive(function(snd:FunkinSound)
+    // account for different offsets per sound?
+
+    var sounds:Array<FlxSound> = [];
+
+    forEachAlive(function(sound:FunkinSound)
     {
-      // account for different offsets per sound?
-      snd.time = time;
+      if (!sound.loaded || sound.length < time || !sound.playing)
+      {
+        return;
+      }
+
+      sound.prepare(time);
+      sounds.push(sound);
     });
+
+    FlxSound.playSounds(sounds);
 
     return time;
   }
 
+  @:nullSafety(Off)
   function get_playing():Bool
   {
     if (getFirstAlive() != null)
@@ -229,6 +250,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     }
   }
 
+  @:nullSafety(Off)
   function get_volume():Float
   {
     if (getFirstAlive() != null)
@@ -252,11 +274,17 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     return volume;
   }
 
+  @:nullSafety(Off)
   function get_muted():Bool
   {
-    if (getFirstAlive() != null) return getFirstAlive()?.muted ?? false;
+    if (getFirstAlive() != null)
+    {
+      return getFirstAlive().muted;
+    }
     else
+    {
       return false;
+    }
   }
 
   function set_muted(muted:Bool):Bool
@@ -269,6 +297,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     return muted;
   }
 
+  @:nullSafety(Off)
   function get_pitch():Float
   {
     #if FLX_PITCH

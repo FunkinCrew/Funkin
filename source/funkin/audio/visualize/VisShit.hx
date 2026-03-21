@@ -115,8 +115,7 @@ class VisShit
       if (!setBuffer)
       {
         // Math.pow3
-        @:privateAccess
-        var buf = snd._channel.__audioSource.buffer;
+        var buf = snd.data.buffer;
 
         // @:privateAccess
         audioData = cast buf.data; // jank and hacky lol! kinda busted on HTML5 also!!

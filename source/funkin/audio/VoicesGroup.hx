@@ -1,8 +1,10 @@
 package funkin.audio;
 
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.sound.FlxSound;
 import funkin.audio.waveform.WaveformData;
 
+@:access(funkin.audio.FunkinSound)
 @:nullSafety
 class VoicesGroup extends SoundGroup
 {
@@ -61,22 +63,48 @@ class VoicesGroup extends SoundGroup
     return playerVolume = volume;
   }
 
-  override function set_time(time:Float):Float
+  override function play(forceRestart:Bool = false, startTime:Float = 0.0, ?endTime:Float)
   {
-    forEachAlive(function(snd)
-    {
-      // account for different offsets per sound?
-      snd.time = time;
+    var sounds:Array<FlxSound> = [];
+
+    forEachAlive(function(sound:FunkinSound) {
+      var localTime = startTime;
+
+      if (playerVoices?.members.contains(sound) ?? false) localTime -= playerVoicesOffset;
+      else if (opponentVoices?.members.contains(sound) ?? false) localTime -= opponentVoicesOffset;
+
+      if (sound.playing && !forceRestart || sound.length < localTime)
+      {
+        return;
+      }
+
+      sound.prepare(localTime, endTime);
+      sounds.push(sound);
     });
 
-    playerVoices?.forEachAlive(function(voice:FunkinSound)
+    FlxSound.playSounds(sounds);
+  }
+
+  override function set_time(time:Float):Float
+  {
+    // account for different offsets per sound?
+
+    var sounds:Array<FlxSound> = [];
+
+    forEachAlive(function(sound:FunkinSound)
     {
-      voice.time -= playerVoicesOffset;
+      var localTime = time;
+
+      if (playerVoices?.members.contains(sound) ?? false) localTime -= playerVoicesOffset;
+      else if (opponentVoices?.members.contains(sound) ?? false) localTime -= opponentVoicesOffset;
+
+      if (!sound.loaded || sound.length < localTime || !sound.playing) return;
+
+      sound.prepare(localTime);
+      sounds.push(sound);
     });
-    opponentVoices?.forEachAlive(function(voice:FunkinSound)
-    {
-      voice.time -= opponentVoicesOffset;
-    });
+
+    FlxSound.playSounds(sounds);
 
     return time;
   }
@@ -85,8 +113,7 @@ class VoicesGroup extends SoundGroup
   {
     playerVoices?.forEachAlive(function(voice:FunkinSound)
     {
-      voice.time += playerVoicesOffset;
-      voice.time -= offset;
+      voice.time += playerVoicesOffset - offset;
     });
     return playerVoicesOffset = offset;
   }
@@ -95,8 +122,7 @@ class VoicesGroup extends SoundGroup
   {
     opponentVoices?.forEachAlive(function(voice:FunkinSound)
     {
-      voice.time += opponentVoicesOffset;
-      voice.time -= offset;
+      voice.time += opponentVoicesOffset - offset;
     });
     return opponentVoicesOffset = offset;
   }

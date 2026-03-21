@@ -74,7 +74,7 @@ class WaveformTestState extends MusicBeatState
 
     if (FlxG.keys.justPressed.SPACE)
     {
-      if (waveformAudio.isPlaying)
+      if (waveformAudio.playing)
       {
         waveformAudio.stop();
       }
@@ -98,7 +98,7 @@ class WaveformTestState extends MusicBeatState
       // }
     }
 
-    if (waveformAudio.isPlaying)
+    if (waveformAudio.playing)
     {
       // waveformSprite takes a time in fractional seconds, not milliseconds.
       var timeSeconds = waveformAudio.time / 1000;

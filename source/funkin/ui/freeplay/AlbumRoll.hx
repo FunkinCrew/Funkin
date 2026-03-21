@@ -23,7 +23,7 @@ class AlbumRoll extends FlxSpriteGroup
 
   function set_albumId(value:Null<String>):Null<String>
   {
-    if (this.albumId != value || value == null)
+    if (this.albumId != value)
     {
       this.albumId = value;
       updateAlbum();
@@ -77,7 +77,7 @@ class AlbumRoll extends FlxSpriteGroup
    */
   function updateAlbum():Void
   {
-    if (albumId == null)
+    if (albumId == null || albumId == "random")
     {
       this.visible = false;
       albumData = null;

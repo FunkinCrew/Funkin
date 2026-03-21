@@ -415,6 +415,9 @@ class InitState extends FlxState
     #elseif LATENCY
     // -DLATENCY
     FlxG.switchState(() -> new funkin.LatencyState());
+    #elseif AUDIO
+    // -DAUDIO
+    FlxG.switchState(() -> new funkin.ui.debug.AudioTestState());
     #else
     startGameNormally();
     #end

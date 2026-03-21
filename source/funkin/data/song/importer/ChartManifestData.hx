@@ -1,5 +1,7 @@
 package funkin.data.song.importer;
 
+import haxe.io.Path;
+
 /**
  * A helper JSON blob found in `.fnfc` files.
  */
@@ -47,18 +49,32 @@ class ChartManifestData
     return '$songId-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_DATA}';
   }
 
-  public function getInstFileName(?variation:String):String
+  public function getInstFileName(?variation:String, fileEntries:Array<haxe.zip.Entry>):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
-    return 'Inst${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    var instFile = fileEntries.filter(function(file:haxe.zip.Entry):Bool
+    {
+      return Path.withoutExtension(file.fileName) == 'Inst${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+    });
+
+    if (instFile[0] == null) return 'Inst${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    else
+      return instFile[0].fileName;
   }
 
-  public function getVocalsFileName(charId:String, ?variation:String):String
+  public function getVocalsFileName(charId:String, ?variation:String, fileEntries:Array<haxe.zip.Entry>):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
-    return 'Voices-$charId${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    var vocalFile = fileEntries.filter(function(file:haxe.zip.Entry):Bool
+    {
+      return Path.withoutExtension(file.fileName) == 'Voices-$charId${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+    });
+
+    if (vocalFile[0] == null) return 'Voices-$charId${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    else
+      return vocalFile[0].fileName;
   }
 
   /**

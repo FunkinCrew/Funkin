@@ -466,7 +466,7 @@ class CharSelectSubState extends MusicBeatSubState
           allowInput = true;
 
           @:privateAccess
-          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+          gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music.source, 7, 0.1);
           #if sys
           // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
           // So we want to manually change it!
@@ -623,7 +623,7 @@ class CharSelectSubState extends MusicBeatSubState
               allowInput = true;
 
               @:privateAccess
-              gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
+              gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music.source, 7, 0.1);
               #if sys
               // On native it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
               // So we want to manually change it!

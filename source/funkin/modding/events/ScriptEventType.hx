@@ -355,6 +355,27 @@ enum abstract ScriptEventType(String) from String to String
   var DIALOGUE_END = 'DIALOGUE_END';
 
   /**
+   * Called when the game has entered to game over screen.
+   * 
+   * This event is not cancelable.
+   */
+  var GAME_OVER_START = 'GAME_OVER_START';
+
+  /**
+   * Called when the game is continuing to gameplay from game over screen.
+   * 
+   * This event IS cancelable! Canceling this event will prevent continuing to play from the game over screen.
+   */
+  var GAME_OVER_CONFIRM = 'GAME_OVER_CONFIRM';
+
+  /**
+   * Called when the game is about to start the game over music.
+   * 
+   * This event IS cancelable! Canceling this event will prevent playing the game over music.
+   */
+  var GAME_OVER_MUSIC_START = 'GAME_OVER_MUSIC_START';
+
+  /**
    * Allow for comparing `ScriptEventType` to `String`.
    */
   @:op(A == B) private static inline function equals(a:ScriptEventType, b:String):Bool

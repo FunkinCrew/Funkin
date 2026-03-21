@@ -62,11 +62,11 @@ class LoadingState extends MusicBeatSubState
 
     add(loadBar);
 
+    callbacks = new MultiCallback(onLoad);
+    var introComplete = callbacks.add('introComplete');
+
     initSongsManifest().onComplete(function(lib)
     {
-      callbacks = new MultiCallback(onLoad);
-      var introComplete = callbacks.add('introComplete');
-
       if (playParams != null)
       {
         // Load and cache the song's charts.
@@ -97,17 +97,20 @@ class LoadingState extends MusicBeatSubState
 
       checkLibrary('shared');
       checkLibrary('videos');
-      checkLibrary(stageDirectory);
       checkLibrary('tutorial');
-
-      var fadeTime:Float = 0.5;
-      FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-      new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+      checkLibrary(stageDirectory);
     });
+
+    var fadeTime:Float = 0.5;
+    FlxG.camera.fade(fadeTime, true, true);
+    FlxTimer.wait(fadeTime + MIN_TIME, function() introComplete());
   }
 
   function checkLoadSong(path:String):Void
   {
+    trace(path, OpenFLAssets.cache.hasSound(path));
+    var callback = callbacks?.add('song:' + path);
+
     if (!OpenFLAssets.cache.hasSound(path))
     {
       var library = Assets.getLibrary('songs');
@@ -116,27 +119,35 @@ class LoadingState extends MusicBeatSubState
       // library.types.set(symbolPath, SOUND);
       // @:privateAccess
       // library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
-      var callback = callbacks?.add('song:' + path);
       Assets.loadSound(path).onComplete(function(_)
       {
         if (callback != null) callback();
       });
     }
+    else if (callback != null)
+    {
+      callback();
+    }
   }
 
   function checkLibrary(library:String):Void
   {
-    trace(Assets.hasLibrary(library));
+    trace(library, Assets.hasLibrary(library), Assets.getLibrary(library) != null);
+    var callback = callbacks?.add('library:' + library);
+
     if (Assets.getLibrary(library) == null)
     {
       @:privateAccess
       if (!LimeAssets.libraryPaths.exists(library)) throw 'Missing library: ' + library;
 
-      var callback = callbacks?.add('library:' + library);
       Assets.loadLibrary(library).onComplete(function(_)
       {
         if (callback != null) callback();
       });
+    }
+    else if (callback != null)
+    {
+      callback();
     }
   }
 
@@ -189,24 +200,28 @@ class LoadingState extends MusicBeatSubState
 
   function onLoad():Void
   {
-    // Stop the instrumental.
-    @:nullSafety(Off)
-    if (stopMusic && FlxG.sound.music != null)
+    FlxG.camera.fade(0.25, false, true);
+    FlxTimer.wait(0.25, function()
     {
-      FlxG.sound.music.destroy();
-      FlxG.sound.music = null;
-    }
+      // Stop the instrumental.
+      @:nullSafety(Off)
+      if (stopMusic && FlxG.sound.music != null)
+      {
+        FlxG.sound.music.destroy();
+        FlxG.sound.music = null;
+      }
 
-    if (asSubState)
-    {
-      this.close();
-      // We will assume the target is a valid substate.
-      FlxG.state.openSubState(cast target);
-    }
-    else
-    {
-      FlxG.switchState(target);
-    }
+      if (asSubState)
+      {
+        this.close();
+        // We will assume the target is a valid substate.
+        FlxG.state.openSubState(cast target);
+      }
+      else
+      {
+        FlxG.switchState(target);
+      }
+    });
   }
 
   static var stageDirectory:String = "shared";

@@ -132,6 +132,11 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     return 1;
   }
 
+  public function getRandomCapsuleMusicPath():String
+  {
+    return Paths.music(playableCharData?.randomCapsuleMusic ?? Constants.DEFAULT_RANDOM_CAPSULE_MUSIC);
+  }
+
   public function onConfirm():Void
   {
     // We really don't want to play anything but the new character animation here.

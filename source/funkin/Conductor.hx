@@ -112,9 +112,6 @@ class Conductor
    */
   var songPositionDelta(default, null):Float = 0;
 
-  var prevTimestamp:Float = 0;
-  var prevTime:Float = 0;
-
   /**
    * Beats per minute of the current song at the current time.
    */
@@ -421,16 +418,7 @@ class Conductor
    */
   public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false):Void
   {
-    var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
-    var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
-
-    if (songPos == null)
-    {
-      songPos = currentTime;
-    }
-
-    // Take into account instrumental and file format song offsets.
-    songPos += applyOffsets ? (combinedOffset) : 0;
+    if (songPos == null) songPos = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
 
     var oldMeasure:Float = this.currentMeasure;
     var oldBeat:Float = this.currentBeat;
@@ -439,11 +427,16 @@ class Conductor
     // If the song is playing, limit the song position to the length of the song or beginning of the song.
     if (FlxG.sound.music != null && FlxG.sound.music.playing)
     {
-      this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, currentLength);
-      this.songPositionDelta += FlxG.elapsed * 1000 * FlxG.sound.music.pitch;
+      // Take into account instrumental and file format song offsets.
+      songPos += applyOffsets ? (combinedOffset * FlxG.sound.music.pitch) : 0;
+
+      this.songPosition = Math.min(this.combinedOffset, 0).clamp(songPos, FlxG.sound.music.length);
     }
     else
     {
+      // Take into account instrumental and file format song offsets.
+      songPos += applyOffsets ? (combinedOffset) : 0;
+
       this.songPosition = songPos;
     }
 
@@ -502,17 +495,6 @@ class Conductor
       this.onMeasureHit.dispatch();
     }
 
-    // only update the timestamp if songPosition actually changed
-    // which it doesn't do every frame!
-    if (prevTime != this.songPosition)
-    {
-      this.songPositionDelta = 0;
-
-      // Update the timestamp for use in-between frames
-      prevTime = this.songPosition;
-      prevTimestamp = Std.int(Timer.stamp() * 1000);
-    }
-
     if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();
   }
 
@@ -522,7 +504,7 @@ class Conductor
    */
   public function getTimeWithDelta():Float
   {
-    return this.songPosition + this.songPositionDelta;
+    return this.songPosition;
   }
 
   /**
@@ -536,10 +518,10 @@ class Conductor
   public function getTimeWithDiff(?soundToCheck:FlxSound):Float
   {
     if (soundToCheck == null) soundToCheck = FlxG.sound.music;
-
-    @:privateAccess
-    this.songPosition = soundToCheck._channel.position;
-    return this.songPosition;
+    return soundToCheck.getActualTime();
+    //@:privateAccess
+    //this.songPosition = soundToCheck.getActualTime();
+    //return this.songPosition;
   }
 
   /**

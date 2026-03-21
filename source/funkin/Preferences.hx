@@ -439,6 +439,55 @@ class Preferences
     return value;
   }
 
+  #if desktop
+  /**
+   * What audio device should it playback sounds to.
+   * @default Default
+   */
+  public static var audioDevice(get, set):String;
+
+  static function get_audioDevice():String
+  {
+    return Save?.instance?.options?.audioDevice ?? "Default";
+  }
+
+  static function set_audioDevice(value:String):String
+  {
+    var save:Save = Save.instance;
+    if (value == save.options.audioDevice) return value;
+
+    FlxG.sound.automaticDefaultDevice = value == "Default" || (FlxG.sound.deviceName = value) != value;
+
+    save.options.audioDevice = FlxG.sound.automaticDefaultDevice ? "Default" : value;
+    Save.system.flush();
+
+    return value;
+  }
+  #end
+
+  #if native
+  /**
+   * Should the musics be loaded as streamable instead of static.
+   * @default `true`
+   */
+  public static var streamedMusic(get, set):Bool;
+
+  static function get_streamedMusic():Bool
+  {
+    return Save?.instance?.options?.streamedMusic ?? true;
+  }
+
+  static function set_streamedMusic(value:Bool):Bool
+  {
+    flixel.sound.FlxSoundData.allowStreaming = value;
+
+    var save:Save = Save.instance;
+    save.options.streamedMusic = value;
+    Save.system.flush();
+    return value;
+  }
+  #end
+
   /**
    * If enabled, the game will hide the mouse when taking a screenshot.
    * @default `true`
@@ -507,6 +556,24 @@ class Preferences
     // Apply the debugDisplay setting (enables the FPS and RAM display).
     setDebugDisplayMode(Preferences.debugDisplay);
     setDebugDisplayBGOpacity(Preferences.debugDisplayBGOpacity / 100);
+
+    #if desktop
+    // Apply audio device preference, if failed, fallback to Default.
+    FlxG.sound.deviceName = Preferences.audioDevice;
+    if (FlxG.sound.deviceName == Preferences.audioDevice)
+    {
+      FlxG.sound.automaticDefaultDevice = false;
+    }
+    else
+    {
+      Preferences.audioDevice = "Default";
+      FlxG.sound.automaticDefaultDevice = true;
+    }
+    #end
+
+    #if native
+    flixel.sound.FlxSoundData.allowStreaming = Preferences.streamedMusic;
+    #end
 
     toggleFramerateCap(Preferences.unlockedFramerate);
 

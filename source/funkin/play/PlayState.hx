@@ -1166,30 +1166,11 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.formatOffset = 0.0;
       }
 
-      // Lime has some precision loss when getting the sound current position
-      // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
-      // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
-      // The previous method where it "guessed" the song position based on the elapsed time had some flaws
-      // Somtimes the songPosition would exceed the music length causing issues in other places
-      // And it was frame dependant which we don't like!!
       if (FlxG.sound.music.playing)
       {
-        final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
-        if (audioDiff <= CONDUCTOR_DRIFT_THRESHOLD)
-        {
-          // Only do neat & smooth lerps as long as the lerp doesn't fuck up and go WAY behind the music time triggering false resyncs
-          final easeRatio:Float = 1.0 - Math.exp(-(MUSIC_EASE_RATIO * playbackRate) * elapsed);
-          Conductor.instance.update(FlxMath.lerp(Conductor.instance.songPosition, FlxG.sound.music.time + Conductor.instance.combinedOffset, easeRatio), false);
-        }
-        else
-        {
-          // Fallback to properly update the conductor incase the lerp messed up
-          // Shouldn't be fallen back to unless you're lagging alot
-          trace(' WARNING '.bg_yellow().bold() + ' Normal Conductor Update!! are you lagging?');
           Conductor.instance.update();
         }
       }
-    }
 
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
@@ -1553,6 +1534,7 @@ class PlayState extends MusicBeatSubState
           FlxG.sound.music.pause();
           musicPausedBySubState = true;
         }
+        vocals?.pause();
 
         // Pause any sounds that are playing and keep track of them.
         // Vocals are also paused here but are not included as they are handled separately.
@@ -1560,26 +1542,12 @@ class PlayState extends MusicBeatSubState
         {
           FlxG.sound.list.forEachAlive(function(sound:FlxSound)
           {
-            if (!sound.active || sound == FlxG.sound.music) return;
-            // In case it's a scheduled sound
-            if (Std.isOfType(sound, FunkinSound))
-            {
-              var funkinSound:FunkinSound = cast sound;
-              if (funkinSound != null && !funkinSound.isPlaying) return;
-            }
-            if (!sound.playing && sound.time >= 0) return;
-            sound.pause();
+            if (!sound.playing || !sound.active || sound == FlxG.sound.music) return;
             soundsPausedBySubState.add(sound);
           });
+          vocals?.forEach(function(voice:FunkinSound) soundsPausedBySubState.remove(voice));
 
-          vocals?.forEach(function(voice:FunkinSound)
-          {
-            soundsPausedBySubState.remove(voice);
-          });
-        }
-        else
-        {
-          vocals?.pause();
+          for (sound in soundsPausedBySubState) sound.pause();
         }
       }
 
@@ -1633,47 +1601,11 @@ class PlayState extends MusicBeatSubState
 
       if (event.eventCanceled) return;
 
-      // Pause any sounds that are playing and keep track of them.
-      // Vocals are also paused here but are not included as they are handled separately.
-      if (!isGameOverState)
-      {
-        FlxG.sound.list.forEachAlive(function(sound:FlxSound)
-        {
-          if (!sound.active || sound == FlxG.sound.music) return;
-          // In case it's a scheduled sound
-          if (Std.isOfType(sound, FunkinSound))
-          {
-            var funkinSound:FunkinSound = cast sound;
-            if (funkinSound != null && !funkinSound.isPlaying) return;
-          }
-          if (!sound.playing && sound.time >= 0) return;
-          sound.pause();
-          soundsPausedBySubState.add(sound);
-        });
-
-        vocals?.forEach(function(voice:FunkinSound)
-        {
-          soundsPausedBySubState.remove(voice);
-        });
-      }
-      else
-      {
-        vocals?.pause();
-      }
-
       // Resume vwooshTimer
       if (!vwooshTimer.finished) vwooshTimer.active = true;
 
-      // Resume music if we paused it.
-      if (musicPausedBySubState)
-      {
-        if (FlxG.sound.music != null) FlxG.sound.music.play();
-        musicPausedBySubState = false;
-      }
-
-      // The logic here is that if this sound doesn't auto-destroy
-      // then it's gonna be reused somewhere, so we just stop it instead.
-      forEachPausedSound(s -> needsReset ? (s.autoDestroy ? s.destroy() : s.stop()) : s.resume());
+      // Stopping a sound will kills itself anyway if s.autoDestroy is true.
+      forEachPausedSound(s -> needsReset ? s.stop() : s.resume());
 
       // Resume camera tweens if we paused any.
       for (camTween in cameraTweensPausedBySubState)
@@ -1693,8 +1625,10 @@ class PlayState extends MusicBeatSubState
         currentConversation.resumeMusic();
       }
 
-      // Re-sync vocals.
-      if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals();
+      // If we have started the song, resync it instead that plays the song, else resume music if we paused it.
+      if (FlxG.sound.music != null && !startingSong && !isInCutscene) resyncVocals(true);
+      else if (musicPausedBySubState) FlxG.sound.music?.play();
+      musicPausedBySubState = false;
 
       // Resume the countdown.
       Countdown.resumeCountdown();
@@ -1885,7 +1819,7 @@ class PlayState extends MusicBeatSubState
 
     if (FlxG.sound.music != null)
     {
-      var correctSync:Float = Math.min(FlxG.sound.music.length, Math.max(0, Conductor.instance.songPosition - Conductor.instance.combinedOffset));
+      var correctSync:Float = FlxG.sound.music.getActualTime();
       var playerVoicesError:Float = 0;
       var opponentVoicesError:Float = 0;
       if (vocals != null && vocals.playing)
@@ -1895,22 +1829,22 @@ class PlayState extends MusicBeatSubState
         {
           vocals.playerVoices?.forEachAlive(function(voice:FunkinSound)
           {
-            var currentRawVoiceTime:Float = voice.time + vocals.playerVoicesOffset;
-            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError)) playerVoicesError = currentRawVoiceTime - correctSync;
+            var currentRawVoiceTime:Float = voice.getActualTime() + vocals.playerVoicesOffset + Conductor.instance.instrumentalOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(playerVoicesError) && voice.playing) playerVoicesError = currentRawVoiceTime - correctSync;
           });
 
           vocals.opponentVoices?.forEachAlive(function(voice:FunkinSound)
           {
-            var currentRawVoiceTime:Float = voice.time + vocals.opponentVoicesOffset;
-            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError)) opponentVoicesError = currentRawVoiceTime - correctSync;
+            var currentRawVoiceTime:Float = voice.getActualTime() + vocals.opponentVoicesOffset + Conductor.instance.instrumentalOffset;
+            if (Math.abs(currentRawVoiceTime - correctSync) > Math.abs(opponentVoicesError) && voice.playing) opponentVoicesError = currentRawVoiceTime - correctSync;
           });
         }
       }
 
       if (!startingSong
-        && (Math.abs(FlxG.sound.music.time - correctSync) > RESYNC_THRESHOLD
-          || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
-          || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
+        && (Math.abs(FlxG.sound.music.getActualTime() - correctSync) / FlxG.sound.music.pitch > RESYNC_THRESHOLD
+          || Math.abs(playerVoicesError) / FlxG.sound.music.pitch > RESYNC_THRESHOLD
+          || Math.abs(opponentVoicesError) / FlxG.sound.music.pitch > RESYNC_THRESHOLD))
       {
         trace("VOCALS NEED RESYNC");
         if (vocals != null)
@@ -1918,7 +1852,6 @@ class PlayState extends MusicBeatSubState
           trace(playerVoicesError);
           trace(opponentVoicesError);
         }
-        trace(FlxG.sound.music.time);
         trace(correctSync);
         resyncVocals();
       }
@@ -2595,7 +2528,7 @@ class PlayState extends MusicBeatSubState
 
     if (!overrideMusic && !isGamePaused && currentChart != null)
     {
-      currentChart?.playInst(1.0, currentInstrumental, false);
+      currentChart?.buildInst(1.0, currentInstrumental, false);
     }
 
     if (FlxG.sound.music == null)
@@ -2603,15 +2536,6 @@ class PlayState extends MusicBeatSubState
       FlxG.log.error('PlayState failed to initialize instrumental!');
       return;
     }
-
-    FlxG.sound.music.onComplete = function()
-    {
-      if (mayPauseGame) endSong(skipEndingTransition);
-    };
-
-    FlxG.sound.music.pause();
-    FlxG.sound.music.time = startTimestamp;
-    FlxG.sound.music.pitch = playbackRate;
 
     if (Preferences.subtitles)
     {
@@ -2623,27 +2547,26 @@ class PlayState extends MusicBeatSubState
       if (subtitles != null) subtitles.assignSubtitles(subtitlesFile, FlxG.sound.music);
     }
 
-    // Prevent the volume from being wrong.
+    FlxG.sound.music.onComplete = function()
+    {
+      if (mayPauseGame) endSong(skipEndingTransition);
+    };
+
+    FlxG.sound.music.pitch = playbackRate;
     FlxG.sound.music.volume = instrumentalVolume;
-    if (FlxG.sound.music.fadeTween != null) FlxG.sound.music.fadeTween.cancel();
+    FlxG.sound.music.fadeTween?.cancel();
 
     if (vocals != null)
     {
       add(vocals);
 
-      vocals.time = startTimestamp - Conductor.instance.instrumentalOffset;
       vocals.pitch = playbackRate;
       vocals.playerVolume = playerVocalsVolume;
       vocals.opponentVolume = opponentVocalsVolume;
-
-      // trace('STARTING SONG AT:');
-      // trace('${FlxG.sound.music.time}');
-      // trace('${vocals.time}');
-
-      vocals.play();
     }
 
-    FlxG.sound.music.play();
+    Conductor.instance.update(startTimestamp, true);
+    resyncVocals(true);
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence (with Time Left)
@@ -2668,32 +2591,38 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_NEWGROUNDS
     Events.logStartSong(currentSong.id, currentVariation);
     #end
-
-    resyncVocals();
   }
 
   /**
      * Resynchronize the vocal tracks if they have become offset from the instrumental.
      */
-  function resyncVocals():Void
+  function resyncVocals(force = false):Void
   {
-    if (vocals == null) return;
+    if (FlxG.sound.music != null && (force || vocals != null && FlxG.sound.music.playing))
+    {
+      var timeToPlayAt:Float = (Conductor.instance.songPosition - Conductor.instance.combinedOffset).clamp(0, FlxG.sound.music.length);
+      trace('Resyncing vocals to ${timeToPlayAt}');
 
-    // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
-    if (!(FlxG.sound.music?.playing ?? false)) return;
+      //FlxG.sound.music.play(true, timeToPlayAt);
+      //vocals?.play(true, timeToPlayAt - Conductor.instance.instrumentalOffset);
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
-      Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
-    trace('Resyncing vocals to ${timeToPlayAt}');
+      // Use FlxSound.prepare and FlxSound.playSounds so every sounds is played at the same time in hardware.
 
-    FlxG.sound.music.pause();
-    vocals.pause();
+      var sounds:Array<FlxSound> = [FlxG.sound.music];
 
-    FlxG.sound.music.time = timeToPlayAt;
-    FlxG.sound.music.play(false, timeToPlayAt);
+      FlxG.sound.music.prepare(timeToPlayAt);
+      if (vocals != null)
+      {
+        var vocalsTimeToPlayAt:Float = timeToPlayAt - Conductor.instance.instrumentalOffset;
+        vocals.forEachAlive(function(sound:FunkinSound)
+        {
+          sounds.push(sound);
+          sound.prepare(vocalsTimeToPlayAt);
+        });
+      }
 
-    vocals.time = timeToPlayAt;
-    vocals.play(false, timeToPlayAt);
+      FlxSound.playSounds(sounds);
+    }
   }
 
   /**
@@ -3414,8 +3343,9 @@ class PlayState extends MusicBeatSubState
      */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
-    if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
-    if (vocals != null) vocals.volume = 0;
+    FlxG.sound.music?.stop();
+    vocals?.stop();
+
     mayPauseGame = false;
     isSongEnd = true;
 
@@ -3843,7 +3773,6 @@ class PlayState extends MusicBeatSubState
     }
 
     persistentUpdate = false;
-    vocals?.stop();
     camHUD.alpha = 1;
 
     var talliesToUse:Tallies = PlayStatePlaylist.isStoryMode ? Highscore.talliesLevel : Highscore.tallies;
@@ -4088,7 +4017,7 @@ class PlayState extends MusicBeatSubState
 
     handleSkippedNotes();
     SongEventRegistry.handleSkippedEvents(songEvents, Conductor.instance.songPosition);
-    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.time);
+    if (FlxG.sound.music != null && FlxG.sound.music.playing && preventDeath) regenNoteData(FlxG.sound.music.getActualTime());
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
 

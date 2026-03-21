@@ -116,6 +116,8 @@ class Save implements ConsoleClass
         globalOffset: 0,
         audioVisualOffset: 0,
         unlockedFramerate: false,
+        audioDevice: 'Default',
+        streamedMusic: true,
         screenshot: {
           shouldHideMouse: true,
           fancyPreview: true,
@@ -1227,6 +1229,18 @@ typedef SaveDataOptions =
    * @default `false`
    */
   var unlockedFramerate:Bool;
+
+  /**
+   * What audio device should it playback sounds to.
+   * @default 'Default'
+   */
+  var audioDevice:String;
+
+  /**
+   * Should the musics be loaded as streamable instead of static.
+   * @default 'true'
+   */
+  var streamedMusic:Bool;
 
   /**
    * Screenshot options

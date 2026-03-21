@@ -288,6 +288,33 @@ class ScriptEventDispatcher
       if ([ScriptEventType.CHARACTER_SELECTED, ScriptEventType.CHARACTER_DESELECTED, ScriptEventType.CHARACTER_CONFIRMED].contains(event.type)) return;
     }
 
+    if (Std.isOfType(target, IGameOverScriptedClass))
+    {
+      var t:IGameOverScriptedClass = cast target;
+      switch (event.type)
+      {
+        case GAME_OVER_START:
+          t.onGameOverStart(cast event);
+          return;
+        case GAME_OVER_CONFIRM:
+          t.onGameOverConfirm(cast event);
+          return;
+        case GAME_OVER_MUSIC_START:
+          t.onGameOverMusicStart(cast event);
+          return;
+        default: // Continue;
+      }
+    }
+    else
+    {
+      // If the target doesn't support the event, stop trying to dispatch.
+      if ([
+        ScriptEventType.GAME_OVER_START,
+        ScriptEventType.GAME_OVER_CONFIRM,
+        ScriptEventType.GAME_OVER_MUSIC_START
+      ].contains(event.type)) return;
+    }
+
     // If we reach this line, it means a script event was dispatched while not being properly handled.
     // Throw an error so we know to add additional fallbacks.
     throw 'No corresponding function called for dispatched event type: ${event.type}';

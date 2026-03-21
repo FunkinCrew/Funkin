@@ -13,6 +13,7 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongTimeFormat;
 import funkin.data.song.SongRegistry;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+import funkin.modding.IScriptedClass.IGameOverScriptedClass;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
@@ -28,7 +29,7 @@ import funkin.util.SortUtil;
  * can be used to perform custom gameplay behaviors only on specific songs.
  */
 @:nullSafety
-class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
+class Song implements IPlayStateScriptedClass implements IGameOverScriptedClass implements IRegistryEntry<SongMetadata>
 {
   /**
    * The default value for the song's name
@@ -711,6 +712,18 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
   };
 
+  public function onGameOverStart(event:ScriptEvent):Void
+  {
+  };
+
+  public function onGameOverConfirm(event:ScriptEvent):Void
+  {
+  };
+
+  public function onGameOverMusicStart(event:ScriptEvent):Void
+  {
+  };
+
   static function _fetchData(id:String):Null<SongMetadata>
   {
     var version:Null<thx.semver.Version> = SongRegistry.instance.fetchEntryMetadataVersion(id);
@@ -850,12 +863,17 @@ class SongDifficulty
 
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
+    buildInst(volume, instId, looped).play(true, 0);
+  }
+
+  public function buildInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):FunkinSound
+  {
     var suffix:String = (instId != '') ? '-$instId' : '';
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true, false, null, null, true);
+    var snd = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, false, false, null, null);
+    FunkinSound.setMusic(snd);
 
-    // Workaround for a bug where FlxG.sound.music.update() was being called twice.
-    FlxG.sound.list.remove(FlxG.sound.music);
+    return snd;
   }
 
   /**
@@ -1008,14 +1026,14 @@ class SongDifficulty
     for (playerVoice in playerVoiceList)
     {
       if (!Assets.exists(playerVoice)) continue;
-      result.addPlayerVoice(FunkinSound.load(playerVoice, 1.0, false, false, false, false, null, null, true));
+      result.addPlayerVoice(FunkinSound.load(playerVoice, 1.0, false, false, false, false, null, null));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
       if (!Assets.exists(opponentVoice)) continue;
-      result.addOpponentVoice(FunkinSound.load(opponentVoice, 1.0, false, false, false, false, null, null, true));
+      result.addOpponentVoice(FunkinSound.load(opponentVoice, 1.0, false, false, false, false, null, null));
     }
 
     if (result.members.length == 0)
@@ -1025,7 +1043,7 @@ class SongDifficulty
       var legacyPath = Paths.voices(this.song.id, '$suffix');
       if (Assets.exists(legacyPath))
       {
-        result.addPlayerVoice(FunkinSound.load(legacyPath, 1.0, false, false, false, false, null, null, true));
+        result.addPlayerVoice(FunkinSound.load(legacyPath, 1.0, false, false, false, false, null, null));
       }
     }
 
@@ -1034,9 +1052,6 @@ class SongDifficulty
       result.legacyVoiceSystem = true;
       result.legacyVoiceUsesPlayer = result.getPlayerVoice(0) != null;
     }
-
-    // Sometimes the sounds don't set their important value to true, so we have to do this manually.
-    result.forEach((snd:FunkinSound) -> snd.important = true);
 
     result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
     result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);

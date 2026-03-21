@@ -10,9 +10,11 @@ import funkin.util.assets.SoundUtil;
 import funkin.audio.waveform.WaveformData;
 import funkin.audio.waveform.WaveformDataParser;
 import funkin.audio.waveform.WaveformSprite;
+import flixel.sound.FlxSoundData;
 import flixel.util.FlxColor;
 import haxe.io.Bytes;
 import haxe.io.Path;
+import lime.media.AudioBuffer;
 
 /**
  * Functions for loading audio for the chart editor.
@@ -69,6 +71,7 @@ class ChartEditorAudioHandler
    */
   public static function loadVocalsFromBytes(state:ChartEditorState, bytes:Bytes, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
   {
+    if (AudioBuffer.getCodec(bytes) == null) return false;
     var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
     if (wipeFirst) wipeVocalData(state);
     state.audioVocalTrackData.set(trackId, bytes);
@@ -119,6 +122,7 @@ class ChartEditorAudioHandler
    */
   public static function loadInstFromBytes(state:ChartEditorState, bytes:Bytes, instId:String = '', wipeFirst:Bool = false):Bool
   {
+    if (AudioBuffer.getCodec(bytes) == null) return false;
     if (instId == '') instId = 'default';
     if (wipeFirst) wipeInstrumentalData(state);
     state.audioInstTrackData.set(instId, bytes);
@@ -159,8 +163,6 @@ class ChartEditorAudioHandler
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
 
-    instTrack.important = true;
-
     stopExistingInstrumental(state);
     state.audioInstTrack = instTrack;
     state.postLoadInstrumental();
@@ -192,8 +194,6 @@ class ChartEditorAudioHandler
 
     // early return
     if (vocalTrack == null) return false;
-
-    vocalTrack.important = true;
 
     switch (charType)
     {
@@ -272,7 +272,7 @@ class ChartEditorAudioHandler
    */
   public static function playSound(_state:ChartEditorState, path:String, volume:Float = 1.0):Void
   {
-    var asset:Null<FlxSoundAsset> = FlxG.sound.cache(path);
+    var asset:Null<FlxSoundAsset> = FlxSoundData.fromAssetKey(path);
     if (asset == null)
     {
       trace('WARN: Failed to play sound $path, asset not found.');
@@ -299,7 +299,7 @@ class ChartEditorAudioHandler
       if (state.stretchySound1 == null) return;
 
       // Prevent spam playing that could cause issues.
-      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
+      if (state.stretchySound1?.playing ?? false || state.stretchySound2?.playing ?? false) return;
 
       state.stretchySounds = !state.stretchySounds;
       state.stretchySound1.play(true);
@@ -311,7 +311,7 @@ class ChartEditorAudioHandler
       if (state.stretchySound2 == null) return;
 
       // Prevent spam playing that could cause issues.
-      if (state.stretchySound1?.isPlaying ?? false || state.stretchySound2?.isPlaying ?? false) return;
+      if (state.stretchySound1?.playing ?? false || state.stretchySound2?.playing ?? false) return;
 
       state.stretchySounds = !state.stretchySounds;
       state.stretchySound2.play(true);
@@ -343,26 +343,14 @@ class ChartEditorAudioHandler
     var instTrackIds = state.audioInstTrackData.keys().array();
     for (key in instTrackIds)
     {
-      if (key == 'default')
+      var data:Null<Bytes> = state.audioInstTrackData.get(key);
+      if (data == null)
       {
-        var data:Null<Bytes> = state.audioInstTrackData.get('default');
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
+        trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
+        continue;
       }
-      else
-      {
-        var data:Null<Bytes> = state.audioInstTrackData.get(key);
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
-      }
+      var extension = AudioBuffer.getCodec(data).toFormat();
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes(key == 'default' ? 'Inst.${extension}' : 'Inst-${key}.${extension}', data));
     }
 
     return zipEntries;
@@ -385,7 +373,8 @@ class ChartEditorAudioHandler
         trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
         continue;
       }
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
+      var extension = AudioBuffer.getCodec(data).toFormat();
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.${extension}', data));
     }
 
     return zipEntries;

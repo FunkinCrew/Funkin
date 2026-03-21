@@ -359,7 +359,7 @@ class PauseSubState extends MusicBeatSubState
     }
 
     // Start playing at a random point in the song.
-    pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+    pauseMusic.play(true, FlxG.random.float(0, pauseMusic.length / 2));
     pauseMusic.fadeIn(MUSIC_FADE_IN_TIME, 0, MUSIC_FINAL_VOLUME);
   }
 

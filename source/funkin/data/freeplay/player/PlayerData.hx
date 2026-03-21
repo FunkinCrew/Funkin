@@ -150,6 +150,10 @@ class PlayerFreeplayDJData
   @:default([0, 0])
   var offsets:Array<Float>;
 
+  @:optional
+  @:default(funkin.util.Constants.DEFAULT_RANDOM_CAPSULE_MUSIC)
+  public var randomCapsuleMusic:String;
+
   public function new()
   {
     animationMap = new Map();
