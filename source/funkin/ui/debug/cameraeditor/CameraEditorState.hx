@@ -511,8 +511,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage.vcamPoint = cameraRect.vCamPoint;
       vCamDebug.x = cameraRect.vCamPoint.x;
       vCamDebug.y = cameraRect.vCamPoint.y;
-      currentStage.offset.x = FlxG.camera.scroll.x;
-      currentStage.offset.y = FlxG.camera.scroll.y;
+
+      // they need to be part of the stage! but probably set this somewhere else!!!!
+      cameraRect.vcamPoint = cameraRect.vCamPoint;
+      vCamDebug.vcamPoint = cameraRect.vCamPoint;
     }
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
@@ -542,13 +544,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     // MouseUtil.mouseWheelZoom(0.08);
 
-    if (FlxG.mouse.pressedMiddle)
-    {
-      goToPoint.x -= FlxG.mouse.deltaX;
-      goToPoint.y -= FlxG.mouse.deltaY;
-      _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
-      _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
-    }
+    MouseUtil.mouseCamDrag(goToPoint);
+    _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
+    _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
 
     FlxG.camera.scroll.copyFrom(_cameraTarget);
 
