@@ -93,6 +93,19 @@ class FunkinCamera extends FlxCamera
    */
   public var crossCameraBlending:Bool;
 
+  /**
+   * If `true` the camera will render the previous frame to a buffer before rendering the current frame.
+   * This buffer can then be accessed via `_previousFrameTexture`.
+   *
+   * Disabled by default since this can impact performance.
+   */
+  public var renderBuffer:Bool = false;
+
+  /**
+   * If `true`, the camera will not render the camera buffer.
+   */
+  public var skipRenderBuffer:Bool = false;
+
   var _blendShader:RuntimeCustomBlendShader;
   var _backgroundFrame:FlxFrame;
 
@@ -101,6 +114,8 @@ class FunkinCamera extends FlxCamera
 
   var _cameraTexture:FixedBitmapData;
   var _cameraMatrix:FlxMatrix;
+
+  var _previousFrameTexture:FixedBitmapData;
 
   @:nullSafety(Off)
   public function new(id:String = 'unknown', x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
@@ -119,6 +134,7 @@ class FunkinCamera extends FlxCamera
 
     _cameraMatrix = new FlxMatrix();
     _cameraTexture = FixedBitmapData.create(this.width, this.height);
+    _previousFrameTexture = FixedBitmapData.create(this.width, this.height);
 
     crossCameraBlending = false;
   }
@@ -276,13 +292,26 @@ class FunkinCamera extends FlxCamera
     return super.startTrianglesBatch(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
   }
 
+  override function clearDrawStack():Void
+  {
+    if (renderBuffer && !skipRenderBuffer)
+    {
+      _previousFrameTexture.drawCameraScreen(this);
+    }
+
+    super.clearDrawStack();
+  }
+
   override function destroy():Void
   {
+    renderBuffer = false;
+
     super.destroy();
 
     _blendRenderTexture.destroy();
     _backgroundRenderTexture.destroy();
 
     _cameraTexture.dispose();
+    _previousFrameTexture.dispose();
   }
 }

@@ -77,7 +77,7 @@ class BitmapDataUtil
    * @param bitmap The bitmap to draw onto.
    * @param camera The camera to grab the screen from.
    * @param clearBitmap Whether to clear the bitmap before drawing.
-   * @param drawFlashSprite Whether to draw the camera's flash sprite instead of the canvas.
+   * @param drawFlashSprite Whether to draw the camera's flash sprite instead of the canvas. WARNING: This is very slow ESPECIALLY if the camera has filters!!!
    *
    * @return The camera screen as a `BitmapData`.
    */

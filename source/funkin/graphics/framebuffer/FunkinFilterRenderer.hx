@@ -38,12 +38,12 @@ class FunkinFilterRenderer implements IFlxDestroyable
    * Apply filters to the current frame.
    * The result will be contained in the `graphic` variable.
    */
-  public function applyFilters():Void
+  public function applyFilters(?textureToUse:BitmapData):Void
   {
     parent.filtered = false;
     if (parent.filters == null || parent.filters.length < 1) return;
 
-    var textureBitmap:BitmapData = parent._renderTexture.graphic.bitmap;
+    var textureBitmap:BitmapData = textureToUse ?? parent._renderTexture.graphic.bitmap;
 
     var bounds:FlxRect = FlxRect.get().copyFromFlash(textureBitmap.rect);
     FilterRenderer.expandFilterBounds(bounds, parent.filters);
