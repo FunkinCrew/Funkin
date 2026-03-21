@@ -22,6 +22,23 @@ class VirtualCameraRectangle extends FunkinSprite
    */
   public var vCamPoint:FlxPoint = new FlxPoint();
 
+  /**
+   * Reference to the current stage, used to access character positions for camera focus events.
+   */
+  public var currentStage:Stage;
+
+  /**
+   * The default position of the camera in the stage.
+   */
+  public var defaultPosition(get, never):FlxPoint;
+
+  function get_defaultPosition():FlxPoint
+  {
+    if (currentStage == null) return new FlxPoint();
+    var dad = currentStage.getDad();
+    return new FlxPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+  }
+
   var isClassicEase:Bool = false;
 
   var lastVCamPoint:FlxPoint = new FlxPoint();
@@ -55,6 +72,8 @@ class VirtualCameraRectangle extends FunkinSprite
   {
     cameraFollowTween = 0;
     cameraFollowDuration = 0;
+    cameraFollowEase = null;
+    isClassicEase = false;
   }
 
   /**
@@ -64,6 +83,7 @@ class VirtualCameraRectangle extends FunkinSprite
   {
     cameraZoomTween = 0;
     cameraZoomDuration = 0;
+    cameraZoomEase = null;
   }
 
   /**
@@ -136,6 +156,8 @@ class VirtualCameraRectangle extends FunkinSprite
     }
   }
 
+  var forceNextFocus:Bool = false;
+
   /**
    * Sets the camera follow point to the specified coordinates. If force is true, the camera will immediately snap to the new follow point.
    * @param x The x-coordinate of the new camera follow point.
@@ -147,15 +169,16 @@ class VirtualCameraRectangle extends FunkinSprite
     lastVCamPoint.copyFrom(vCamPoint);
     cameraFollowPoint.x = x;
     cameraFollowPoint.y = y;
-    if (force) vCamPoint.copyFrom(scrollTarget);
+    if (force) {
+      forceNextFocus = true;
+    }
   }
 
   /**
    * Handles a camera focus event, updating the camera follow point based on the event data.
-   * @param currentStage The current stage, used to get the positions of the characters if a character focus is specified.
    * @param eventData The event data containing the focus information. Expected fields:
    */
-  public function handleFocusCamera(currentStage:Stage, eventData:SongEventData):Void
+  public function handleFocusCamera(eventData:SongEventData):Void
   {
     var x:Null<Float> = eventData.getFloat('x');
     var y:Null<Float> = eventData.getFloat('y');
@@ -207,11 +230,15 @@ class VirtualCameraRectangle extends FunkinSprite
     if (duration == null) duration = 4.0;
     var ease:Null<String> = eventData.getString('ease');
     if (ease == null) ease = 'CLASSIC';
+
     if (ease == 'CLASSIC')
     {
       isClassicEase = true;
-      vCamPoint.set(lastVCamPoint.x, lastVCamPoint.y);
-      cancelCameraFollowTween();
+      cameraFollowTween = Conductor.instance.songPosition;
+      cameraFollowStart.copyFrom(lastVCamPoint);
+      cameraFollowDuration = 0;
+      cameraFollowEase = null;
+      trace('    Ease: CLASSIC (exponential decay)');
       return;
     }
 
@@ -291,26 +318,40 @@ class VirtualCameraRectangle extends FunkinSprite
 
     scrollTarget.set(cameraFollowPoint.x - (FlxG.width / 2), cameraFollowPoint.y - (FlxG.height / 2));
 
+    if (forceNextFocus)
+    {
+      vCamPoint.copyFrom(scrollTarget);
+      forceNextFocus = false;
+    }
+
     if (isClassicEase)
     {
-      final adjustedLerp = 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60);
-      vCamPoint.x += (scrollTarget.x - vCamPoint.x) * adjustedLerp;
-      vCamPoint.y += (scrollTarget.y - vCamPoint.y) * adjustedLerp;
-    }
-    else
-    {
-      // Handle camera follow tweening
-      if (cameraFollowEase != null)
-      {
-        var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
-        vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
-        vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
+      var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
 
-        if (cameraFollowElapsed >= cameraFollowDuration * 1000)
-        {
-          cameraFollowEase = null;
-          vCamPoint.copyFrom(scrollTarget);
-        }
+      // Apply classic ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
+      final adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
+      final easeProgress = 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed);
+
+      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, easeProgress);
+      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, easeProgress);
+
+      if (easeProgress >= 0.9999)
+      {
+        vCamPoint.copyFrom(scrollTarget);
+        isClassicEase = false;
+      }
+    }
+    else if (cameraFollowEase != null)
+    {
+      // Handle regular easing
+      var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
+      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
+      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
+
+      if (cameraFollowElapsed >= cameraFollowDuration * 1000)
+      {
+        cameraFollowEase = null;
+        vCamPoint.copyFrom(scrollTarget);
       }
     }
     // Handle camera zoom tweening
