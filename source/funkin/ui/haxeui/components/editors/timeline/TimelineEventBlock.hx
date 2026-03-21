@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.behaviours.DefaultBehaviour;
 import haxe.ui.components.Image;
@@ -92,3 +93,4 @@ enum TimelineDragMode
   RESIZE_RIGHT;
   SEEKING;
 }
+#end
