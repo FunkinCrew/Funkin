@@ -407,7 +407,12 @@ class BaseCharacter extends Bopper
     // Reset hold timer for each note pressed.
     if (justPressedNote() && this.characterType == BF)
     {
-      holdTimer = 0;
+      // If the `noanim` noteKind is active, don't reset the holdTimer.
+      if (curNoteKind != null && curNoteKind.noanim) return;
+      else
+      {
+        holdTimer = 0;
+      }
     }
 
     if (isDead)
@@ -573,39 +578,20 @@ class BaseCharacter extends Bopper
    */
   public function playNoteSingAnimation(noteData:SongNoteData, judgement:Null<String> = null, comboCount:Int = 0):Void
   {
-    curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
+     curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
+    // Let the character naturally transition back to their idle/dance animation
+    // if the notekind is set to noanim.
+    if (curNoteKind != null && curNoteKind.noanim) return;
 
     if (noteData.getMustHitNote() && characterType == BF)
     {
-      if (curNoteKind != null)
-      {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(noteData.getDirection(), false);
-        holdTimer = 0;
-      }
+      this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix ?? '');
+      holdTimer = 0;
     }
     else if (!noteData.getMustHitNote() && characterType == DAD)
     {
-      if (curNoteKind != null)
-      {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(noteData.getDirection(), false);
-        holdTimer = 0;
-      }
+      this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix ?? '');
+      holdTimer = 0;
     }
     else if (characterType == GF && noteData.getMustHitNote() && judgement != null)
     {
@@ -647,11 +633,13 @@ class BaseCharacter extends Bopper
     {
       // If the note is from the same strumline, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
+      holdTimer = 0;
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
+      holdTimer = 0;
     }
     else if (event.note.noteData.getMustHitNote() && characterType == GF)
     {
@@ -670,11 +658,13 @@ class BaseCharacter extends Bopper
     {
       // If the note is from the same strumline, play the miss animation.
       this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
+      holdTimer = 0;
     }
     else if (!event.holdNote.noteData.getMustHitNote() && characterType == DAD)
     {
       // If the note is from the same strumline, play the miss animation.
       this.playSingAnimation(event.holdNote.noteData.getDirection(), true);
+      holdTimer = 0;
     }
     else if (event.holdNote.noteData.getMustHitNote() && event.isComboBreak && characterType == GF)
     {
@@ -750,6 +740,7 @@ class BaseCharacter extends Bopper
     var anim:String = 'sing${dir.nameUpper}${miss ? 'miss' : ''}${suffix != '' ? '-${suffix}' : ''}';
 
     // restart even if already playing, because the character might sing the same note twice.
+    holdTimer = 0;
 
     playAnimation(anim, true);
   }
