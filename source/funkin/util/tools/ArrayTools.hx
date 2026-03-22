@@ -65,13 +65,9 @@ class ArrayTools
    *
    * @param array The array to clear.
    */
-  public static function clear<T>(array:Array<T>):Void
+  public static inline function clear<T>(array:Array<T>):Void
   {
-    // This method is faster than array.splice(0, array.length)
-    while (array.length > 0)
-    {
-      array.pop();
-    }
+    array.resize(0);
   }
 
   /**
