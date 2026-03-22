@@ -17,7 +17,6 @@ import lime.utils.ArrayBufferView;
 import lime.utils.ArrayBufferView.ArrayBufferIO;
 import lime.utils.Int8Array;
 import lime.utils.Int16Array;
-import lime.utils.Int32Array;
 #elseif web
 import js.html.audio.AudioBuffer as JSAudioBuffer;
 import lime.utils.Float32Array;
@@ -216,10 +215,8 @@ private class PreviewMusicDecoder extends AudioDecoder
   var fadeEndSamples:Int64;
   var fadeEndStartSampleOffset:Int64;
   var fadeEndEndSampleOffset:Int64;
-  var bufferView:ArrayBufferView;
   var bufferInt8View:Int8Array;
   var bufferInt16View:Int16Array;
-  var bufferInt32View:Int32Array;
   var mutex:Mutex;
 
   public function new(parent:PreviewMusicData)
@@ -250,16 +247,10 @@ private class PreviewMusicDecoder extends AudioDecoder
       var realTotal = decoder.total();
       if (realTotal < totalSamples) totalSamples = realTotal;
 
-      bytePerSample = bitsPerSample >> 3;
       fadeStartSamples = Int64.fromFloat(PreviewMusicData.FADE_IN_DURATION * sampleRate);
       fadeEndEndSampleOffset = endSamples - startSamples;
       fadeEndSamples = Int64.fromFloat(PreviewMusicData.FADE_OUT_DURATION * sampleRate);
       fadeEndStartSampleOffset = fadeEndEndSampleOffset - fadeEndSamples;
-
-      // 24 bitsPerSample are incompatible, nor it should be in openal too.
-      if (bytePerSample == 1) bufferView = bufferInt8View = new Int8Array(0);
-      else if (bytePerSample == 2) bufferView = bufferInt16View = new Int16Array(0);
-      else if (bytePerSample == 4) bufferView = bufferInt32View = new Int32Array(0);
 
       rewind();
     }
@@ -275,71 +266,78 @@ private class PreviewMusicDecoder extends AudioDecoder
   override function dispose():Void
   {
     super.dispose();
+
+    bufferInt16View = null;
+    bufferInt8View = null;
   }
 
-  override function decode(buffer:ArrayBuffer, pos:Int, len:Int):Int
+  override function decode(buffer:ArrayBuffer, pos:Int, len:Int, word:Int):Int
   {
     if (decoder == null) return 0;
 
     mutex.acquire();
 
     var currentSampleOffset = decoder.tell() - startSamples;
-    var remainingBytes = (endSamples - currentSampleOffset) * channels * bytePerSample;
+    var remainingBytes = (endSamples - currentSampleOffset) * channels * word;
 
     var result:Int;
     if (remainingBytes < len)
     {
-      result = decoder.decode(buffer, pos, Int64.toInt(remainingBytes));
+      result = decoder.decode(buffer, pos, Int64.toInt(remainingBytes), word);
       eof = true;
     }
     else
     {
-      result = decoder.decode(buffer, pos, len);
+      result = decoder.decode(buffer, pos, len, word);
       eof = decoder.eof;
     }
 
-    if (bytePerSample == 3)
+    // 24 and 32 bits per sample are incompatible, and never get decoded with for playbacks.
+    if (word > 2)
     {
       mutex.release();
       return result;
     }
+    else if (word == 2)
+    {
+      if (bufferInt16View == null) bufferInt16View = new Int16Array(buffer);
+      else if (bufferInt16View.buffer != buffer) bufferInt16View.initBuffer(buffer);
+    }
+    else if (word == 1)
+    {
+      if (bufferInt8View == null) bufferInt8View = new Int8Array(buffer);
+      else if (bufferInt8View.buffer != buffer) bufferInt8View.initBuffer(buffer);
+    }
 
-    // Fading processing
-    if (bufferView.buffer != buffer) bufferView.initBuffer(buffer);
+    // Fading processing starts here
+    pos = Std.int(pos / word);
+    len = pos + Std.int(result / word);
 
-    pos = Std.int(pos / bytePerSample);
-    len = pos + Std.int(result / bytePerSample);
     var channel = 0, b:Int;
     while (pos < len)
     {
       if (currentSampleOffset < fadeStartSamples)
       {
-        switch (bytePerSample)
+        switch (word)
         {
           case 1:
             bufferInt8View[pos] = Std.int(bufferInt8View[pos] *
               PreviewMusicData.FADE_IN_EASE_FUNCTION(currentSampleOffset.low / fadeStartSamples.low).clamp(0, 1));
           case 2:
             bufferInt16View[pos] = Std.int(bufferInt16View[pos] *
-              PreviewMusicData.FADE_IN_EASE_FUNCTION(currentSampleOffset.low / fadeStartSamples.low).clamp(0, 1));
-          case 4:
-            bufferInt32View[pos] = Std.int(bufferInt32View[pos] *
               PreviewMusicData.FADE_IN_EASE_FUNCTION(currentSampleOffset.low / fadeStartSamples.low).clamp(0, 1));
           default:
         }
       }
       else if (currentSampleOffset > fadeEndStartSampleOffset)
       {
-        switch (bytePerSample)
+        switch (word)
         {
           case 1:
             bufferInt8View[pos] = Std.int(bufferInt8View[pos] *
               PreviewMusicData.FADE_OUT_EASE_FUNCTION((fadeEndEndSampleOffset - currentSampleOffset).low / fadeEndSamples.low).clamp(0, 1));
           case 2:
             bufferInt16View[pos] = Std.int(bufferInt16View[pos] *
-              PreviewMusicData.FADE_OUT_EASE_FUNCTION((fadeEndEndSampleOffset - currentSampleOffset).low / fadeEndSamples.low).clamp(0, 1));
-          case 4:
-            bufferInt32View[pos] = Std.int(bufferInt32View[pos] *
               PreviewMusicData.FADE_OUT_EASE_FUNCTION((fadeEndEndSampleOffset - currentSampleOffset).low / fadeEndSamples.low).clamp(0, 1));
           default:
         }

@@ -66,6 +66,9 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_RESULTS_DEBUG
     createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
     #end
+    #if AUDIO
+    createItem("AUDIO TEST DEBUG", openAudioTest);
+    #end
     #if sys
     createItem("OPEN CRASH LOG FOLDER", openLogFolder);
     #end
@@ -143,6 +146,13 @@ class DebugMenuSubState extends MusicBeatSubState
   function openTestResultsScreen():Void
   {
     FlxG.switchState(() -> new funkin.ui.debug.results.ResultsDebugSubState());
+  }
+  #end
+
+  #if AUDIO
+  function openAudioTest():Void
+  {
+    FlxG.switchState(() -> new funkin.ui.debug.AudioTestState());
   }
   #end
 

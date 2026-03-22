@@ -58,7 +58,11 @@ class AudioTestState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.SPACE)
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+      FlxG.switchState(() -> new funkin.ui.mainmenu.MainMenuState());
+    }
+    else if (FlxG.keys.justPressed.SPACE)
     {
       if (audio.playing) audio.pause();
       else audio.play();
