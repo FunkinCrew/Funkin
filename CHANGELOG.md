@@ -4,6 +4,132 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.4] - 2026-03-26
+
+### Added
+
+- Added several new features to Polymod:
+  - Added FULL support for abstracts! (Previously, only `FlxColor` was supported)
+  - Added support for getting the code of a single character string (i.e `’h’.code`) (Thanks NotHyper-474!)
+  - Added support for import defaults (`import.hx`/`import.hxc`), allowing scripted classes with the same package to share imports. (Thanks KoloInDaCrib!)
+  - Added `scriptInit` and `listScriptClasses` functions to scripted classes. (Thanks KoloInDaCrib!)
+  - `.hx` files can now be parsed. (Thanks Starexify!)
+  - Added support for preprocessing (`#if`/`#else` syntax), allowing for platform-specific code to be implemented in an easier way. (Thanks KoloInDaCrib!)
+  - Added support for mod IDs. (Thanks Starexify!)
+  - Implemented `_merge` support for scripts. (Thanks KoloInDaCrib!)
+    - Please refer to the Cookbook to learn how to use this.
+- Added widescreen scale properties to the Zoom Camera event in the Chart Editor to account for widescreen resolutions.
+- Added a flipY field for Story Mode level props. ([48ed659](https://github.com/FunkinCrew/Funkin/commit/48ed65980005366371fda7a66c04f73bb5b86200)) - by @ExtraCode75 in [#6340](https://github.com/FunkinCrew/Funkin/pull/6340)
+- Implemented working start and end times for Freeplay song previews. ([40eab2e](https://github.com/FunkinCrew/Funkin/commit/40eab2e4618ebb6dc67a06ef67df817920773c56)) - by @ADA-Funni in [#6725](https://github.com/FunkinCrew/Funkin/pull/6725)
+- Added a new albumOSTName property to Freeplay album data to make the "OFFICIAL OST" text moddable. ([67d2a98](https://github.com/FunkinCrew/Funkin/commit/67d2a9811b5c92409bdc76e287c984d5777d8621)) - by @NotHyper-474 in [#6578](https://github.com/FunkinCrew/Funkin/pull/6578)
+- Added an optional 'capsule' field to level data to display any week label on Freeplay capsules. ([528e9e4](https://github.com/FunkinCrew/Funkin/commit/528e9e4f03c40e59f3932d8b4c522b6eeb66783b)) - by @Trayfellow in [#7149](https://github.com/FunkinCrew/Funkin/pull/7149)
+- Implemented ScriptedBaseFreeplayDJ, allowing modders to customize how custom Freeplay DJs are rendered. ([423ccfa](https://github.com/FunkinCrew/Funkin/commit/423ccfab98a29646e4998dacedaf403319d956ff)) - by @PurSnake in [#6806](https://github.com/FunkinCrew/Funkin/pull/6806)
+- Added a new FunkinGroup class to make groups of sprites easier to modify. ([4f31600](https://github.com/FunkinCrew/Funkin/commit/4f316003af9a6ca46c77bf4971059e20543cbd7b)) - by @MightyTheArmiddilo in [#6758](https://github.com/FunkinCrew/Funkin/pull/6758)
+- Added `Reflect.makeVarArgs` to allow modders to create functions with a variable number of arguments. ([3633df3](https://github.com/FunkinCrew/Funkin/commit/3633df3fdc6dc0af4f9886fcb1e1d4a8d2b8d5aa)) - by @Starexify in [#6738](https://github.com/FunkinCrew/Funkin/pull/6738)
+- Added script event support for song events. ([15bef89](https://github.com/FunkinCrew/Funkin/commit/15bef89d71982c5685f4ce6f6d7e6e4d8321508c)) - by @KoloInDaCrib in [#4130](https://github.com/FunkinCrew/Funkin/pull/4130)
+- Added a new Chart Editor event type: Set Target Bop Speed. ([1893f2b](https://github.com/FunkinCrew/Funkin/commit/1893f2b2f679d8a4d262052793dde24e94719ee6)) - by @roma-perec-bp in [#6769](https://github.com/FunkinCrew/Funkin/pull/6769)
+- Added shortcuts to select all notes above or below the playhead in the Chart Editor. ([08b3af9](https://github.com/FunkinCrew/Funkin/commit/08b3af959d6657511bfe8418da545731050cb24a)) - by @Lasercar in [#4306](https://github.com/FunkinCrew/Funkin/pull/4306)
+- Added the ability to view and edit the timing of a note or event through the Chart Editor context menu. ([a782b3f](https://github.com/FunkinCrew/Funkin/commit/a782b3f9e8498634babb864341fd1437bb2c01f6)) - by @Lasercar in [#4200](https://github.com/FunkinCrew/Funkin/pull/4200)
+- Added an "Edit Note" option to the Chart Editor context menu that opens the Notes window. ([e710198](https://github.com/FunkinCrew/Funkin/commit/e710198afec9a0fe19effe4cd196ab3a247f4784)) - by @Honton129 in [#7010](https://github.com/FunkinCrew/Funkin/pull/7010)
+- Added the ability to Ctrl-click on health icons in the Chart Editor to open character previews. ([011f154](https://github.com/FunkinCrew/Funkin/commit/011f1541b197fd4f962ab8a910cbd417f78c2d09)) - by @Trofem in [#7089](https://github.com/FunkinCrew/Funkin/pull/7089)
+
+### Changed
+
+- Upgraded the input handling system from SDL2 to SDL3!
+  - Added an “Unlocked Framerate” preference to Desktop platforms.
+  - The input system is now much more responsive and accurate down to the nanosecond.
+  - The game now properly supports more controllers and input devices.
+- The game now shows popups when installed mods have issues, such as when the API version is incorrect.
+- Unfocusing the game now reduces the game’s volume to 25% (down from 50%).
+- The notekinds dropdown are no longer hardcoded in the Chart Editor.
+- The Character Select key is now hidden in the Controls menu until a new character is unlocked. ([6c13444](https://github.com/FunkinCrew/Funkin/commit/6c134442118d3f5f61b9e3faa631512d210422fb)) - by @Lasercar in [#4882](https://github.com/FunkinCrew/Funkin/pull/4882)
+- The Story Mode level score now displays with commas. ([04fffe8](https://github.com/FunkinCrew/Funkin/commit/04fffe8ade4c4b236d59a236f08534e8eede179f)) - by @JVNpixels in [#4965](https://github.com/FunkinCrew/Funkin/pull/4965)
+- Freeplay capsule week labels are now softcoded and rendered using a font. ([48752e4](https://github.com/FunkinCrew/Funkin/commit/48752e444cc5f1b8cd0a3b579f843e9ab6580c46)) - by @KoloInDaCrib in [#5249](https://github.com/FunkinCrew/Funkin/pull/5249)
+- The Freeplay change character hint now changes when a gamepad is connected. ([0f7859b](https://github.com/FunkinCrew/Funkin/commit/0f7859bfb6b829290804efab9d5c67fbdbec0903)) - by @MrMadera in [#6609](https://github.com/FunkinCrew/Funkin/pull/6609)
+- Moved the Winter Horrorland intro cutscene logic into a script. ([9bbe73b](https://github.com/FunkinCrew/funkin.assets/commit/9bbe73b21ccbea29a5d5187709f91b4822bf7e31)) - by @mario64thane in [funkin.assets#63](https://github.com/FunkinCrew/funkin.assets/pull/63)
+- Merged FlxFilteredSprite functionality into FunkinSprite. ([22736b2](https://github.com/FunkinCrew/Funkin/commit/22736b27da7d8de8b11ab6cc6c2a622e5579dccd)) - by @TechnikTil in [#7114](https://github.com/FunkinCrew/Funkin/pull/7114)
+- Adjusted some wording in the Chart/Stage Editor backup window to be clearer. ([a607396](https://github.com/FunkinCrew/Funkin/commit/a607396d04f24388691ee23bd04022681ca54756)) - by @Marcosayfi in [#7071](https://github.com/FunkinCrew/Funkin/pull/7071)
+
+### Fixed
+
+- Conjoined string interpolation `$a$b` now parses properly in Polymod.
+- Video cutscenes are no longer muted at volumes of 3 or lower.
+- Video cutscenes no longer occasionally show glitches at the beginning.
+- [MOBILE] Loading a cloud save from Newgrounds no longer carries over the volume level from Desktop.
+- [HTML5] Scrolling the game out of view now pauses the game instead of allowing gameplay to continue processing.
+- The Boyfriend Freeplay DJ new rank animation now transitions smoothly back to its idle animation.
+- Hold notes now score much more consistently across different framerate values.
+- The bricks in Week 7 stages are now better quality.
+- Trimmed out the silent beat at the beginning of Ugh Erect.
+- Camera bopping no longer stops at zoom values of 1.35x or higher.
+- Charting many hold notes in a row no longer breaks audio handling.
+- Adding collapsible frames in event schemas no longer crashes the game.
+- Some event properties have been grouped under Advanced frames.
+- Chart Editor dropdowns no longer refocus when a tooltip appears.
+- Focus and Zoom Camera event durations now account for playback speed.
+- [WINDOWS] Exiting the game no longer leaves it running as a background process. ([881aba3](https://github.com/FunkinCrew/Funkin/commit/881aba3b03a26764374441cab244cd2d360a30b9)) - by @AnimatingLegend in [#6885](https://github.com/FunkinCrew/Funkin/pull/6885)
+- Story Mode now only shows difficulties that all of a level's songs have. ([365f8dc](https://github.com/FunkinCrew/Funkin/commit/365f8dcfea9569f2edba1ebfceb3d49819ad2b57)) - by @Starexify in [#7046](https://github.com/FunkinCrew/Funkin/pull/7046)
+- The Girlfriend Story Mode prop now bops continuously when scrolling through levels. ([84b2d5b](https://github.com/FunkinCrew/Funkin/commit/84b2d5b48d9eb76c918fdba6987ccc1f5da76133)) - by @Redar13 in [#6830](https://github.com/FunkinCrew/Funkin/pull/6830)
+- The Freeplay new rank slam animation now properly plays its glow effect. ([fcbce0a](https://github.com/FunkinCrew/Funkin/commit/fcbce0a66b75b0c1224c6a0e2907c170b71998ad)) - by @FuroYT in [#7015](https://github.com/FunkinCrew/Funkin/pull/7015)
+- The Freeplay Random capsule no longer displays BPM and difficulty numbers. ([0ad2d50](https://github.com/FunkinCrew/Funkin/commit/0ad2d507efa9dcb577184e28bfd04091b3424bfb)) - by @Lasercar in [#4927](https://github.com/FunkinCrew/Funkin/pull/4927)
+- Favoriting a song in Freeplay no longer breaks capsule text cycling. ([ce493a0](https://github.com/FunkinCrew/Funkin/commit/ce493a03c9ffb4c43c2c27885ed0fab0c1c3531d)) - by @VirtuGuy in [#7134](https://github.com/FunkinCrew/Funkin/pull/7134)
+- Freeplay songs with invalid pixel icons no longer duplicate the icon from the previous song in the list. ([b3eb709](https://github.com/FunkinCrew/Funkin/commit/b3eb709f4ed535ed2544f3bb530ff3724e07be3f)) - by @FuroYT in [#7006](https://github.com/FunkinCrew/Funkin/pull/7006)
+- A Freeplay clear percent of 100% now properly exits to the right when returning to the Main Menu. ([5974c1a](https://github.com/FunkinCrew/Funkin/commit/5974c1a48293f3185c5f249acb9130ebd6b35ae4)) - by @Trayfellow in [#7183](https://github.com/FunkinCrew/Funkin/pull/7183)
+- Nudged the Freeplay backing image down by one pixel to align with the bottom of the screen. ([b8c2854](https://github.com/FunkinCrew/Funkin/commit/b8c2854007f36ac7a2b6897eead3f979e11f0ad7)) - by @SuperEric1 in [#6893](https://github.com/FunkinCrew/Funkin/pull/6893)
+- Improved performance for songs that use a lot of events. ([3b27ec5](https://github.com/FunkinCrew/Funkin/commit/3b27ec5b66b2fa00d59a77f6ec07aff68e440860)) - by @KoloInDaCrib in [#7171](https://github.com/FunkinCrew/Funkin/pull/7171)
+- Adjusted hit window logic to accurately reflect threshold values for all judgments. ([dcb5b3a](https://github.com/FunkinCrew/Funkin/commit/dcb5b3a9358a9bb126153b57aa2d38dc0684c39d)) - by @Rudyrue in [#7104](https://github.com/FunkinCrew/Funkin/pull/7104)
+- Adjusted offsets for all health icons to be more consistent. ([83d8134](https://github.com/FunkinCrew/funkin.assets/commit/83d8134f9d0b3cf3b59e9e1d972fa1e200a98ba1)) - by @LeGooeyy in [funkin.assets#278](https://github.com/FunkinCrew/funkin.assets/pull/278)
+- Hold notes no longer shift upward when hit early. ([d62c8af](https://github.com/FunkinCrew/Funkin/commit/d62c8af20c90ec3d6e4274aba8ddbfb378ab0256)) - by @VirtuGuy in [#7060](https://github.com/FunkinCrew/Funkin/pull/7060)
+- The opponent no longer stops singing upon missing if Boyfriend has no vocals file. ([cea54e3](https://github.com/FunkinCrew/Funkin/commit/cea54e394c78544dd0ec0339721faaac140caa65)) - by @FuroYT in [#7007](https://github.com/FunkinCrew/Funkin/pull/7007)
+- onPause script functions now properly trigger when pausing during a cutscene or dialogue. ([5a0b431](https://github.com/FunkinCrew/Funkin/commit/5a0b4310a2c39b033989e0e36b8f456bdac65a5b)) - by @MightyTheArmiddilo in [#6804](https://github.com/FunkinCrew/Funkin/pull/6804)
+- Camera events now consistently pause when the Pause Menu is opened. ([e623439](https://github.com/FunkinCrew/Funkin/commit/e6234397f57d2af37035a0ff2504b8241e23949d)) - by @VirtuGuy in [#7145](https://github.com/FunkinCrew/Funkin/pull/7145)
+- The Pause Menu global offset value now adjusts at the same rate across all framerates. ([348647f](https://github.com/FunkinCrew/Funkin/commit/348647f48629a24ee3bd2b759bbfc1bff168fb81)) - by @KolzeYT in [#7147](https://github.com/FunkinCrew/Funkin/pull/7147)
+- Spirit's trail effect now renders consistently across all framerates. ([75506f7](https://github.com/FunkinCrew/Funkin/commit/75506f71a97d468f516a0232c8be5560afb0682e)) - by @KolzeYT in [#7179](https://github.com/FunkinCrew/Funkin/pull/7179)
+- The sound tray now appears consistently and plays sound effects at the right volume. ([2b9906d](https://github.com/FunkinCrew/Funkin/commit/2b9906df29660057410d3054e897012896896d6a)) - by @Raltyro in [#7068](https://github.com/FunkinCrew/Funkin/pull/7068)
+- The sticker transition now properly pauses when losing focus with Pause on Unfocus enabled. ([8a1d74b](https://github.com/FunkinCrew/Funkin/commit/8a1d74b82cceab97e777dc49e7a2117b8d27e59b)) - by @ComedyLost in [#7129](https://github.com/FunkinCrew/Funkin/pull/7129)
+- [HTML5] Rimlight alt masks now render properly. ([0613e9d](https://github.com/FunkinCrew/Funkin/commit/0613e9d295179e66d30db3d2f6805870eac847d6)) - by @VirtuGuy in [#6900](https://github.com/FunkinCrew/Funkin/pull/6900)
+- The Week 2 Erect stage lightning strike fade now pauses and cancels appropriately. ([cd05267](https://github.com/FunkinCrew/funkin.assets/commit/cd05267023859d04cc8920c787b8280682e5f0f5)) - by @ComedyLost in [funkin.assets#390](https://github.com/FunkinCrew/funkin.assets/pull/390)
+- A-Bot (Dark)'s frame no longer renders as completely dark in Week 2 Erect. ([a142530](https://github.com/FunkinCrew/funkin.assets/commit/a142530cae6198ca17b560ff73e36d50f1582768)) - by @ComedyLost in [funkin.assets#368](https://github.com/FunkinCrew/funkin.assets/pull/368)
+- Dying on the same frame as a lightning strike in Week 2 Erect no longer throws a script error. ([ef89bde](https://github.com/FunkinCrew/funkin.assets/commit/ef89bde19c397f15a53b0fda2f64ba93ff96f56f)) - by @KoloInDaCrib in [funkin.assets#363](https://github.com/FunkinCrew/funkin.assets/pull/363)
+- Pico (Dark) and Nene (Dark) no longer throw script errors in debug editors. ([b16ce44](https://github.com/FunkinCrew/funkin.assets/commit/b16ce44beb43d4511c61418c824929fb4dfabb63)) - by @ComedyLost in [funkin.assets#367](https://github.com/FunkinCrew/funkin.assets/pull/367)
+- Girlfriend's hair no longer falls when restarting the song in a Week 3 stage. ([ade80ab](https://github.com/FunkinCrew/funkin.assets/commit/ade80ab72915ddd47724c380bb41d6df4c1b79bd)) - by @AnimatingLegend in [funkin.assets#370](https://github.com/FunkinCrew/funkin.assets/pull/370)
+- The camera transition to Results no longer reveals the edges of stage art in the Week 6 Erect stage. ([ecf4c54](https://github.com/FunkinCrew/funkin.assets/commit/ecf4c5458a2e1fadba7db31c3272cea485d22b2f)) - by @ComedyLost in [funkin.assets#383](https://github.com/FunkinCrew/funkin.assets/pull/383)
+- Fine-tuned offsets for pixel characters. ([8b3c268](https://github.com/FunkinCrew/funkin.assets/commit/8b3c2680a6a966e81b62598e783c60f46355c759)) - by @CEliuxJV in [funkin.assets#376](https://github.com/FunkinCrew/funkin.assets/pull/376)
+- Tankman's game over lines now properly play during game overs in Ugh (Pico Mix) and Guns (Pico Mix). ([b900208](https://github.com/FunkinCrew/funkin.assets/commit/b900208143f980adee25d70db247e0b176dd659c)) - by @hucks5 in [funkin.assets#373](https://github.com/FunkinCrew/funkin.assets/pull/373)
+- Restarting during the mid-song animation in Stress (Pico Mix) now properly resets the characters' animations. ([2ca92de](https://github.com/FunkinCrew/funkin.assets/commit/2ca92de46eced3f53d305579704fcb7e8c051f3a)) - by @requazar in [funkin.assets#364](https://github.com/FunkinCrew/funkin.assets/pull/364)
+- The rain shader now properly fades out with the transition to the Results Screen. ([a0caa41](https://github.com/FunkinCrew/Funkin/commit/a0caa41edcb26298e4f8c243a5eed0b4fe93fcf7)) - by @VirtuGuy in [#6776](https://github.com/FunkinCrew/Funkin/pull/6776)
+- Exiting a Chart Editor playtest while using the pixel notestyle no longer crashes the game. ([6c1f380](https://github.com/FunkinCrew/Funkin/commit/6c1f3800dbc9b13fb4b409abce53c1dafc9bbe8f)) - by @Starexify and @KoloInDaCrib in [#7108](https://github.com/FunkinCrew/Funkin/pull/7108)
+- Chart Editor Edit buttons are now appropriately disabled when nothing is selected. ([6b1fc03](https://github.com/FunkinCrew/Funkin/commit/6b1fc0372bca202d80f4ccf316580b13a5a80879)) - by @Lasercar in [#4386](https://github.com/FunkinCrew/Funkin/pull/4386)
+- Undoing a Chart Editor event now plays the undo sound. ([f7fd7a5](https://github.com/FunkinCrew/Funkin/commit/f7fd7a57c36f0461f56c2ab627a17d752cb82320)) - by @VirtuGuy in [#6963](https://github.com/FunkinCrew/Funkin/pull/6963)
+- The playback speed audio setting no longer rounds incorrectly upon reopening the Chart Editor. ([3b15873](https://github.com/FunkinCrew/Funkin/commit/3b15873fc7d0c20840c313f1d2cfed91014c664f)) - by @AnimatingLegend in [#7023](https://github.com/FunkinCrew/Funkin/pull/7023)
+- The Chart Editor easing preview graph now properly displays tweens that exceed start/end values. ([7626700](https://github.com/FunkinCrew/Funkin/commit/7626700495743862caddbf50a7dafef51529a2a6)) - by @echolotl in [#7152](https://github.com/FunkinCrew/Funkin/pull/7152)
+- The Chart Editor playbar head is no longer draggable during a playtest. ([ccb874e](https://github.com/FunkinCrew/Funkin/commit/ccb874e97a121859c26a8a71b394743d27f6ed37)) - by @ComedyLost in [#6987](https://github.com/FunkinCrew/Funkin/pull/6987)
+- The Results Screen no longer shows up after a Chart Editor playtest with Bot Play enabled. ([786f19c](https://github.com/FunkinCrew/Funkin/commit/786f19c57d999dba9309cae28d912b080968670d)) - by @ComedyLost in [#7022](https://github.com/FunkinCrew/Funkin/pull/7022)
+- The Osu!Mania Chart Editor importer no longer accepts non-Osu!Mania beatmaps. ([456b2ff](https://github.com/FunkinCrew/Funkin/commit/456b2ff6c4a127733120cef3d03d6102bdd7522f)) - by @FuroYT in [#6624](https://github.com/FunkinCrew/Funkin/pull/6624)
+- Characters in the Stage Editor no longer fly away when clicking and dragging them. ([0389af2](https://github.com/FunkinCrew/Funkin/commit/0389af2202aa4dc6a21ce9b7eea95944bfaa6946)) - by @KoloInDaCrib in [#7002](https://github.com/FunkinCrew/Funkin/pull/7002)
+- Characters with alternating idle animations now properly play danceLeft when pressing Space in the Animation Editor. ([05032e3](https://github.com/FunkinCrew/Funkin/commit/05032e3126eda78a2bbf70e8c975bcb04eed201b)) - by @ComedyLost in [#7056](https://github.com/FunkinCrew/Funkin/pull/7056)
+- [LINUX] Paths are now properly sanitized as they are on other platforms. ([219143c](https://github.com/FunkinCrew/Funkin/commit/219143c02dcf65e68aec80701a82023ca0d70db6)) - by @NotHyper-474 in [#6395](https://github.com/FunkinCrew/Funkin/pull/6395)
+- OpenFL and some Lime classes are now accessible to modders. ([56a56db](https://github.com/FunkinCrew/Funkin/commit/56a56dbfaa3f62a3f684df49c682f69a496e45f4)) - by @FuroYT in [#7115](https://github.com/FunkinCrew/Funkin/pull/7115)
+- Sandboxed API classes can now be accessed by mods. ([03930a2](https://github.com/FunkinCrew/Funkin/commit/03930a29c3d8aa6a310147a7131c6b7cddefd475)) - by @MightyTheArmiddilo in [#6952](https://github.com/FunkinCrew/Funkin/pull/6952)
+- Blacklisted some more classes for security.
+- And even more fixes!
+
+## New Contributors for 0.8.4
+
+* @roma-perec-bp made their first contribution in [#6769](https://github.com/FunkinCrew/Funkin/pull/6769)
+* @Redar13 made their first contribution in [#6830](https://github.com/FunkinCrew/Funkin/pull/6830)
+* @SuperEric1 made their first contribution in [#6893](https://github.com/FunkinCrew/Funkin/pull/6893)
+* @AnimatingLegend made their first contribution in [#7023](https://github.com/FunkinCrew/Funkin/pull/7023)
+* @Marcosayfi made their first contribution in [#7071](https://github.com/FunkinCrew/Funkin/pull/7071)
+* @Rudyrue made their first contribution in [#7104](https://github.com/FunkinCrew/Funkin/pull/7104)
+* @KolzeYT made their first contribution in [#7147](https://github.com/FunkinCrew/Funkin/pull/7147)
+* @echolotl made their first contribution in [#7152](https://github.com/FunkinCrew/Funkin/pull/7152)
+* @mario64thane made their first contribution in [funkin.assets#63](https://github.com/FunkinCrew/funkin.assets/pull/63)
+* @LeGooeyy made their first contribution in [funkin.assets#278](https://github.com/FunkinCrew/funkin.assets/pull/278)
+* @requazar made their first contribution in [funkin.assets#364](https://github.com/FunkinCrew/funkin.assets/pull/364)
+
+
+
 ## [0.8.3] - 2026-02-23
 
 ### Fixed
