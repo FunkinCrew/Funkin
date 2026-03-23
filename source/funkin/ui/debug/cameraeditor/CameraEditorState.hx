@@ -554,7 +554,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
-    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show();
 
     if ((FlxG.keys.justPressed.DELETE || FlxG.keys.justPressed.BACKSPACE) && selectedSongEvent != null && !isHaxeUIFocused)
     {
