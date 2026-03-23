@@ -868,6 +868,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function registerTimelineEvents():Void
   {
+    timeline.viewport.registerEvent(MouseEvent.RIGHT_MOUSE_DOWN, _ -> addEventMenu.show());
     timeline.viewport.registerEvent(TimelineEvent.EVENT_SELECTED, (e:TimelineEvent) -> selectedSongEvent = e.eventData);
     timeline.viewport.registerEvent(TimelineEvent.SEEK, (e:TimelineEvent) -> setTimePosition(e.seekPositionMs));
 
