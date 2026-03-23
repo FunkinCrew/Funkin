@@ -9,6 +9,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuSeparator;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MenuEvent;
+import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.events.UIEvent;
 
 class AddEventMenu
@@ -30,9 +31,12 @@ class AddEventMenu
     this.onEventSelected = onEventSelected;
   }
 
-  public function show(screenX:Float, screenY:Float):Void
+  public function show():Void
   {
     close();
+
+    var screenX:Float = MouseHelper.currentWorldX;
+    var screenY:Float = MouseHelper.currentWorldY;
 
     var header = new MenuItem();
     header.text = "Add Event";
