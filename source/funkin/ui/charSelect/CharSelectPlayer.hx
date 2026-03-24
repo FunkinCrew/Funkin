@@ -37,14 +37,7 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
         case 'slideIn':
           if (hasAnimation('slideInPoint'))
           {
-
-            if (pressedSelect)
-            {
-              animation.play("select");
-              pressedSelect = false;
-            }
-            else
-              animation.play('slideInPoint', true);
+            animation.play('slideInPoint', true);
           }
           else
           {
@@ -85,9 +78,8 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
       return;
     }
 
-    this.pressedSelect = pressedSelect;
-
-    final animName:String = playSlideAnim ? 'slideIn' : 'idle';
+    // If select was pressed while switching character, play the confirm animation instead
+    final animName:String = pressedSelect ? "select" : (playSlideAnim ? "slidein" : "idle");
     animation.play(animName, true);
 
     updateHitbox();
