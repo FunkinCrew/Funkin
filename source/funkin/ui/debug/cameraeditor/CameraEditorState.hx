@@ -441,6 +441,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
+    populateLoadVariationMenu();
     populateOpenRecentMenu();
 
     registerTimelineEvents();
@@ -537,11 +538,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
-
     MouseUtil.mouseCamDrag(goToPoint);
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
-
 
     FlxG.camera.scroll.copyFrom(_cameraTarget);
 
@@ -741,6 +740,48 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
+   * Updates the list of variations in the `File->Load Variation` menu.
+   */
+  public function populateLoadVariationMenu():Void
+  {
+    if (menubarLoadVariation == null) return;
+    if (songMetadatas == null || songMetadatas.size() == 0)
+    {
+      menubarLoadVariation.disabled = true;
+      return;
+    };
+
+    menubarLoadVariation.removeAllComponents();
+
+    var variations:Array<String> = songMetadatas.keyValues();
+    var hasAdditionalVariations = variations.length > 1;
+
+    if (hasAdditionalVariations)
+    {
+      variations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
+      for (variation in variations)
+      {
+        var menuItemVariation:MenuItem = new MenuItem();
+        menuItemVariation.text = variation.toTitleCase();
+        menuItemVariation.onClick = function(_:MouseEvent):Void
+        {
+          switchVariation(variation);
+        }
+        menubarLoadVariation.addComponent(menuItemVariation);
+      }
+    }
+
+    menubarLoadVariation.disabled = !hasAdditionalVariations;
+  }
+
+  public function switchVariation(target:String):Void
+  {
+    this.currentVariation = target;
+
+    onChartLoaded();
+  }
+
+  /**
    * Modify the title of the game window to reflect the current state of the editor.
    */
   public function updateWindowTitle()
@@ -851,6 +892,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function onChartLoaded():Void
   {
+    populateLoadVariationMenu();
     loadCurrentInstrumentalAndVocals();
     buildStage();
     updateWindowTitle();
