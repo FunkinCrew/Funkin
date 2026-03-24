@@ -6,6 +6,9 @@ import haxe.ui.events.UIEvent;
 class CameraViewportEvent extends UIEvent
 {
   public static inline var ZOOM:EventType<CameraViewportEvent> = "cameraViewportZoom";
+  public static inline var PAN_START:EventType<CameraViewportEvent> = "cameraViewportPanStart";
+  public static inline var PAN:EventType<CameraViewportEvent> = "cameraViewportPan";
+  public static inline var PAN_END:EventType<CameraViewportEvent> = "cameraViewportPanEnd";
 
   public var zoomDelta:Float = 0;
 
