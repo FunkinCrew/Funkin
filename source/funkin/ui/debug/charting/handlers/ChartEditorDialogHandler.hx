@@ -1147,8 +1147,7 @@ class ChartEditorDialogHandler
         [FileUtil.FILE_FILTER_SM];
       case 'osumania':
         [FileUtil.FILE_FILTER_OSU];
-      default:
-        null;
+      default: null;
     }
 
     var fileExt:String = switch (format)
