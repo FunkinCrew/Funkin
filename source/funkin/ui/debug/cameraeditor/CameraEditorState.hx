@@ -577,6 +577,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     vCamDebug.zIndex = cameraRect.zIndex + 1;
 
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
+    mainView.registerEvent(CameraViewportEvent.PAN_START, onViewportPanStart);
+    mainView.registerEvent(CameraViewportEvent.PAN, onViewportPan);
 
     CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
 
@@ -775,7 +777,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (isCameraRelative) FlxG.camera.zoom = cameraRect.zoom * relativeZoom;
 
-    MouseUtil.mouseCamDrag(goToPoint);
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
 
@@ -1871,6 +1872,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     // TODO: make this wheel zoom sensitivity configurable
     MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+  }
+
+  function onViewportPanStart(_:CameraViewportEvent):Void
+  {
+    MouseUtil.mouseCamDrag(goToPoint, true, true);
+  }
+
+  function onViewportPan(_:CameraViewportEvent):Void
+  {
+    MouseUtil.mouseCamDrag(goToPoint, false, true);
   }
 
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)
