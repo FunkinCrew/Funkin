@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
+import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
 import haxe.ui.containers.Panel;
 import haxe.ui.containers.Panel;
