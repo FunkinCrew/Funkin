@@ -402,7 +402,20 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * Whether the undo/redo histories have changed since the last time the UI was updated.
    */
-  var commandHistoryDirty:Bool = true;
+  var commandHistoryDirty(default, set):Bool = true;
+
+  function set_commandHistoryDirty(value:Bool):Bool
+  {
+    commandHistoryDirty = value;
+
+    if (value)
+    {
+      updateUndoRedoMenuItems();
+      commandHistoryDirty = false;
+    }
+
+    return commandHistoryDirty;
+  }
 
   /**
    * If true, we are currently in the process of quitting the chart editor.
@@ -495,6 +508,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     this.hidePropertiesPanel();
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
+
+    // TODO: Reuse ChartEditorShortcutHandler.applyPlatformShortcutText() when more shortcuts are added.
+    #if mac
+    menubarItemUndo.shortcutText = '⌘+Z';
+    menubarItemRedo.shortcutText = '⌘+Y';
+    #end
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
@@ -1210,6 +1229,18 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.switchState(() -> new MainMenuState());
   }
 
+  @:bind(menubarItemUndo, MouseEvent.CLICK)
+  function onMenubarUndo(_)
+  {
+    CameraEditorCommandHandler.undoLastCommand(this);
+  }
+
+  @:bind(menubarItemRedo, MouseEvent.CLICK)
+  function onMenubarRedo(_)
+  {
+    CameraEditorCommandHandler.redoLastCommand(this);
+  }
+
   override function reloadAssets():Void
   {
     performCleanup();
@@ -1242,6 +1273,31 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     Cursor.hide();
     FlxG.sound.music.stop();
+  }
+
+  function updateUndoRedoMenuItems():Void
+  {
+    if (undoHistory.length == 0)
+    {
+      menubarItemUndo.disabled = true;
+      menubarItemUndo.text = 'Undo';
+    }
+    else
+    {
+      menubarItemUndo.disabled = false;
+      menubarItemUndo.text = 'Undo ${undoHistory[undoHistory.length - 1].toString()}';
+    }
+
+    if (redoHistory.length == 0)
+    {
+      menubarItemRedo.disabled = true;
+      menubarItemRedo.text = 'Redo';
+    }
+    else
+    {
+      menubarItemRedo.disabled = false;
+      menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
+    }
   }
 
   function onScreenKeyDown(event:KeyboardEvent):Void
