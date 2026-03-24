@@ -1,6 +1,6 @@
 package funkin.ui.debug.cameraeditor.commands;
 
-#if FEATURE_CHART_EDITOR
+#if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
