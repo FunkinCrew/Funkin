@@ -218,11 +218,29 @@ private class TimelineViewportLayout extends DefaultLayout
       var icon = block._cachedIcon;
       if (icon != null)
       {
-        var iconSize = TimelineEventBlock.BLOCK_HEIGHT - 4;
+        var maxIconSize = TimelineEventBlock.BLOCK_HEIGHT - 4;
+        var preferredPadding = maxIconSize * 0.05;
+        var iconSize:Float;
+        var iconLeft:Float;
+
+        if (blockWidthVal >= maxIconSize + preferredPadding * 2)
+        {
+          // Block is wide enough: full-size icon with padding
+          iconSize = maxIconSize;
+          iconLeft = preferredPadding;
+        }
+        else
+        {
+          // Block is too narrow: fill the block and center
+          iconSize = Math.max(16, blockWidthVal);
+          iconLeft = (blockWidthVal - iconSize) / 2;
+        }
+
         if (icon.width != iconSize) icon.width = iconSize;
         if (icon.height != iconSize) icon.height = iconSize;
-        if (icon.top != 2) icon.top = 2;
-        if (icon.left != 2) icon.left = 2;
+        var iconTop = (TimelineEventBlock.BLOCK_HEIGHT - iconSize) / 2;
+        if (icon.top != iconTop) icon.top = iconTop;
+        if (icon.left != iconLeft) icon.left = iconLeft;
       }
     }
   }
