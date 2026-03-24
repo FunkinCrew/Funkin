@@ -1,6 +1,6 @@
 package funkin.ui.debug.cameraeditor.commands;
 
-#if FEATURE_CHART_EDITOR
+#if FEATURE_CAMERA_EDITOR
 /**
  * Actions in the chart editor are backed by the Command pattern
  * (see Bob Nystrom's book "Game Programming Patterns" for more info)
@@ -14,7 +14,7 @@ interface CameraEditorCommand
 {
   /**
    * Calling this function should perform the action that this command represents.
-   * @param state The ChartEditorState to perform the action on.
+   * @param state The CameraEditorState to perform the action on.
    */
   public function execute(state:CameraEditorState):Void;
 
