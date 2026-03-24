@@ -18,7 +18,7 @@ class RemoveEventCommand implements CameraEditorCommand
   {
     index = state.currentSongChartData.events.indexOf(event);
     state.currentSongChartData.events.remove(event);
-    if (state.selectedSongEvent == event)
+    if (state.selectedSongEvent != null && state.selectedSongEvent == event)
       state.selectedSongEvent = null;
     state.saved = false;
     state.loadTimeline();
@@ -30,6 +30,7 @@ class RemoveEventCommand implements CameraEditorCommand
       state.currentSongChartData.events.insert(index, event);
     else
       state.currentSongChartData.events.push(event);
+    state.selectedSongEvent = event;
     state.saved = false;
     state.loadTimeline();
   }
