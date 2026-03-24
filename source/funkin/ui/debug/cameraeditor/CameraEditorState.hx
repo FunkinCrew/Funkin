@@ -78,6 +78,7 @@ import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
@@ -492,6 +493,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
 
     this.hidePropertiesPanel();
+
+    Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
@@ -586,13 +589,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
     if (FlxG.keys.justPressed.R) onStopPlayback(null);
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show();
-
-    if ((FlxG.keys.justPressed.DELETE || FlxG.keys.justPressed.BACKSPACE) && selectedSongEvent != null && !isHaxeUIFocused)
-    {
-      var cmd = new RemoveEventCommand(selectedSongEvent);
-      CameraEditorCommandHandler.performCommand(this, cmd);
-      selectedSongEvent = null;
-    }
 
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
@@ -1242,8 +1238,33 @@ class CameraEditorState extends UIState implements ConsoleClass
     CrashHandler.errorSignal.remove(autosavePerCrash);
     CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
 
+    Screen.instance.unregisterEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
+
     Cursor.hide();
     FlxG.sound.music.stop();
+  }
+
+  function onScreenKeyDown(event:KeyboardEvent):Void
+  {
+    if (isHaxeUIFocused) return;
+
+    if (event.ctrlKey)
+    {
+      switch (event.keyCode)
+      {
+        case 90: // Z
+          CameraEditorCommandHandler.undoLastCommand(this);
+        case 89: // Y
+          CameraEditorCommandHandler.redoLastCommand(this);
+      }
+    }
+
+    if ((event.keyCode == 46 /* DELETE */ || event.keyCode == 8 /* BACKSPACE */) && selectedSongEvent != null)
+    {
+      var cmd = new RemoveEventCommand(selectedSongEvent);
+      CameraEditorCommandHandler.performCommand(this, cmd);
+      selectedSongEvent = null;
+    }
   }
 
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
