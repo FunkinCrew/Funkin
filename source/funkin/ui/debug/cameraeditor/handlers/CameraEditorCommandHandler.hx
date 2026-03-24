@@ -22,7 +22,7 @@ class CameraEditorCommandHandler
    */
   public static function performCommand(state:CameraEditorState, command:CameraEditorCommand, purgeRedoStack:Bool = true):Void
   {
-    trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Performing command: ' + command.toString());
+    trace(' CAMERA EDITOR '.bold().bg_bright_yellow() + 'Performing command: ' + command.toString());
     command.execute(state);
     if (command.shouldAddToHistory(state))
     {
