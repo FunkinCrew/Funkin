@@ -15,7 +15,6 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
-import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import funkin.ui.debug.charting.util.FNFCData;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/camera-editor/dialogs/upload-chart.xml"))
@@ -78,13 +77,13 @@ class UploadChartDialog extends Dialog
 
     this.lock();
 
-    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
+    FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
   }
 
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
     this.unlock();
 

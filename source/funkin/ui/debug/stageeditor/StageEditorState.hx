@@ -495,7 +495,7 @@ class StageEditorState extends UIState
         var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          while (!files[files.length - 1].endsWith(FileUtil.FILE_EXTENSION_INFO_FNFS.extension)
+          while (!files[files.length - 1].endsWith(FileUtil.FILE_FILTER_FNFS.extension)
             || !files[files.length - 1].startsWith("stage-editor-"))
           {
             if (files.length == 0) break;
@@ -1260,11 +1260,11 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.saveFile(bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String)
+        FileUtil.saveFile('Save stage as FNFS...', bytes, [FileUtil.FILE_FILTER_FNFS], function(path:String)
         {
           saved = true;
           currentFile = path;
-        }, null, stageName + "." + FileUtil.FILE_EXTENSION_INFO_FNFS.extension);
+        }, null, stageName + "." + FileUtil.FILE_FILTER_FNFS.extension);
 
       case "save stage":
         if (currentFile == "")
@@ -1303,7 +1303,7 @@ class StageEditorState extends UIState
           return;
         }
 
-        FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS], function(_)
+        FileUtil.browseForFile("Open Stage Data", [FileUtil.FILE_FILTER_FNFS], function(_)
         {
           if (_?.fullPath == null) return;
 
@@ -1551,7 +1551,7 @@ class StageEditorState extends UIState
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var data = this.packShitToZip();
-    var path = haxe.io.Path.join([BACKUPS_PATH, 'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_EXTENSION_INFO_FNFS.extension}']);
+    var path = haxe.io.Path.join([BACKUPS_PATH, 'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_FILTER_FNFS.extension}']);
 
     FileUtil.writeBytesToPath(path, data);
 

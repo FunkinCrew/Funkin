@@ -532,7 +532,7 @@ class ChartEditorDialogHandler
 
     instrumentalBox.onClick = function(_)
     {
-      Dialogs.openBinaryFile('Open Instrumental', [{label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile:SelectedFileInfo)
+      FileUtil.browseForFile('Open Instrumental', [FileUtil.FILE_FILTER_OGG], function(selectedFile:SelectedFileData)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {
@@ -944,7 +944,7 @@ class ChartEditorDialogHandler
 
     onClickMetadataVariation = function(variation:String, label:Label, _:UIEvent)
     {
-      Dialogs.openBinaryFile('Open Chart ($variation) Metadata', [{label: 'JSON File (.json)', extension: 'json'}], function(selectedFile)
+      FileUtil.browseForFile('Open Chart ($variation) Metadata', [FileUtil.FILE_FILTER_JSON], function(selectedFile)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {
@@ -1030,7 +1030,7 @@ class ChartEditorDialogHandler
 
     onClickChartDataVariation = function(variation:String, label:Label, _:UIEvent)
     {
-      Dialogs.openBinaryFile('Open Chart ($variation) Metadata', [{label: 'JSON File (.json)', extension: 'json'}], function(selectedFile)
+      FileUtil.browseForFile('Open Chart ($variation) Metadata', [FileUtil.FILE_FILTER_JSON], function(selectedFile)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {
@@ -1120,11 +1120,11 @@ class ChartEditorDialogHandler
     var fileFilter = switch (format)
     {
       case 'legacy':
-        [{label: 'JSON Data File (.json)', extension: 'json'}];
+        [FileUtil.FILE_FILTER_JSON];
       case 'stepmania':
-        [{label: 'StepMania File (.sm)', extension: 'sm'}];
+        [FileUtil.FILE_FILTER_SM];
       case 'osumania':
-        [{label: 'OSU! Beatmap File (.osu)', extension: 'osu'}];
+        [FileUtil.FILE_FILTER_OSU];
       default: null;
     }
 
@@ -1136,18 +1136,6 @@ class ChartEditorDialogHandler
         "sm";
       default: "json";
     }
-
-    var fileFilterLabel:String = switch (fileExt)
-    {
-      case 'json':
-        'JSON Data File';
-      case 'sm':
-        'StepMania File';
-      case 'osu':
-        'osu! Beatmap File';
-      default: "Unknown File Type";
-    };
-    fileFilterLabel += ' (.$fileExt)';
 
     dialog.title = 'Import Chart - ${prettyFormat}';
 
@@ -1268,7 +1256,7 @@ class ChartEditorDialogHandler
     importBox.onClick = function(_)
     {
       // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-      Dialogs.openBinaryFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileInfo)
+      FileUtil.browseForFile('Import Chart - ${prettyFormat}', fileFilter ?? [], function(selectedFile:SelectedFileData)
       {
         if (selectedFile != null && selectedFile.bytes != null)
         {

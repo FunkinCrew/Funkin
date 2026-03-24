@@ -109,7 +109,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       vocalsEntry.onClick = function(_event)
       {
-        Dialogs.openBinaryFile('Open $charName Vocals', [{label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile)
+        FileUtil.browseForFile('Open $charName Vocals', [FileUtil.FILE_FILTER_OGG], function(selectedFile)
         {
           if (selectedFile != null && selectedFile.bytes != null)
           {
@@ -211,7 +211,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
     this.lock();
 
-    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
+    FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
   }
 
   /**
@@ -245,7 +245,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
     this.unlock();
 

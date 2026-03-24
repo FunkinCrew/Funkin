@@ -3,6 +3,7 @@ package funkin.ui.debug.stageeditor.toolboxes;
 #if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.util.FileUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.Image;
 import haxe.ui.components.NumberStepper;
@@ -43,7 +44,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     {
       if (linkedObj == null) return;
 
-      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, function(selectedFile)
+      FileUtil.browseForFile("Open Image File", [FileUtil.FILE_FILTER_PNG], function(selectedFile)
       {
         if (selectedFile == null) return;
         objImage.resource = null;
@@ -122,13 +123,14 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     // Callback for loading the text for the Frame Data.
     objLoadFrames.onClick = function(_)
     {
-      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, function(selectedFile)
+      FileUtil.browseForFile("Open Text File", [FileUtil.FILE_FILTER_XML, FileUtil.FILE_FILTER_TXT], function(selectedFile)
       {
-        if (selectedFile.text == null || (!selectedFile.name.endsWith(".xml") && !selectedFile.name.endsWith(".txt"))) return;
+        if (selectedFile != null && selectedFile.bytes != null)
+        {
+          objFrameTxt.text = selectedFile.bytes.toString();
 
-        objFrameTxt.text = selectedFile.text;
-
-        state.notifyChange("Frame Text Loaded", "The Text File " + selectedFile.name + " has been loaded.");
+          state.notifyChange("Frame Text Loaded", "The Text File " + selectedFile.name + " has been loaded.");
+        }
       });
     }
 

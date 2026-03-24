@@ -935,7 +935,7 @@ class Save implements ConsoleClass
 
   public function debug_dumpSaveJsonSave():Void
   {
-    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serializeJson()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+    FileUtil.saveFile('Write save data as JSON...', haxe.io.Bytes.ofString(this.serializeJson()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json');
   }
 
   public function debug_dumpSaveJsonPrint():Void
