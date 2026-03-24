@@ -52,7 +52,7 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "f7b94eebf7dbb452a929d0c67ab31a9cbd71d3a0",
+      "ref": "622bb65e7f49f0e1a03826b6593369d3ad5e54fa",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -169,7 +169,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "842f6904d25d58b7c443c9fcc1b204e8ff3f1a7e",
+      "ref": "89cef3a2283e364e3ec175d567beb3e6ff2adfbe",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -183,7 +183,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "98d90a22a98fdc6819b2de48bc57fc5c49a664a8",
+      "ref": "aa7209d704d40b4c44b9a72593dc59496854da4c",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
