@@ -33,6 +33,7 @@ class CameraEditorImportExportHandler
       return false;
     }
 
+    state.currentVariation = Constants.DEFAULT_VARIATION;
     state.songMetadatas = entries.songMetadatas;
     state.songDatas = entries.songChartDatas;
     state.songManifestData = entries.manifest;
