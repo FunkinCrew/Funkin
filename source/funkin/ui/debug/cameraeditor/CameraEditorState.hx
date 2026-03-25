@@ -25,6 +25,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinAnimationController;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -86,6 +87,8 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
+
+using StringTools;
 
 /**
  * The EYES OF GOD......
@@ -555,35 +558,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     previousTime = Conductor.instance.songPosition;
   }
 
-  override function stepHit():Bool
+  public override function dispatchEvent(event:ScriptEvent):Void
   {
-    if (!FlxG.sound.music.playing) return false;
-    if (!super.stepHit()) return false;
+    super.dispatchEvent(event);
 
     if (currentStage != null)
     {
-      var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
+      ScriptEventDispatcher.callEvent(currentStage, event);
 
       currentStage.dispatchToCharacters(event);
     }
-
-
-    return true;
-  }
-
-  override function beatHit():Bool
-  {
-    if (!FlxG.sound.music.playing) return false;
-    if (!super.beatHit()) return false;
-
-    if (currentStage != null)
-    {
-      var event = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
-
-      currentStage.dispatchToCharacters(event);
-    }
-
-    return true;
   }
 
   var previousNoteTime:Float = 0;
@@ -610,7 +594,7 @@ class CameraEditorState extends UIState implements ConsoleClass
           char.holdTimer = 0;
           continue;
         }
-        char.playNoteSingAnimation(note);
+        playSingAnimation(note);
       }
     }
 
@@ -635,26 +619,15 @@ class CameraEditorState extends UIState implements ConsoleClass
       vCamDebug.x = cameraRect.vCamPoint.x;
       vCamDebug.y = cameraRect.vCamPoint.y;
 
-      // they need to be part of the stage! but probably set this somewhere else!!!!
-      cameraRect.vcamPoint = cameraRect.vCamPoint;
+      cameraRect.vCamPoint = cameraRect.vCamPoint;
       vCamDebug.vcamPoint = cameraRect.vCamPoint;
-
-      var dad:BaseCharacter = currentStage.getDad();
-      var bf:BaseCharacter = currentStage.getBoyfriend();
-      var gf:BaseCharacter = currentStage.getGirlfriend();
-
-      var updateEvent = new UpdateScriptEvent(elapsed);
-
-      if (dad != null) dad.onUpdate(updateEvent);
-      if (bf != null) bf.onUpdate(updateEvent);
-      if (gf != null) gf.onUpdate(updateEvent);
-
     }
+
+    conductorInUse.update();
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
     {
-      Conductor.instance.update();
       processEvents();
       processNotes();
       timeline.songPosition = Conductor.instance.songPosition;
@@ -664,8 +637,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       for (vocal in currentVocals)
         if (vocal.playing) vocal.pause();
     }
-
-    conductorInUse.update();
 
     super.update(elapsed);
 
@@ -771,6 +742,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       char.onUpdate(null);
       char.onAdd(null);
+      cast(char.animation, FunkinAnimationController).shouldUseConductorSync = true;
     };
 
     buildChar(gf, GF);
@@ -1180,6 +1152,21 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.songPosition = Conductor.instance.songPosition;
   }
 
+  function playSingAnimation(note:SongNoteData):Void
+  {
+    var isPlayer = note.getStrumlineIndex() == 0;
+    var char:BaseCharacter = isPlayer ? currentStage.getBoyfriend() : currentStage.getDad();
+
+    if (char != null)
+    {
+      var noteSprite = new NoteSprite(null);
+      noteSprite.noteData = note;
+      noteSprite.kind = note.kind;
+      var event:HitNoteScriptEvent = new HitNoteScriptEvent(noteSprite, 0.0, 0, 'perfect', false, 0);
+      currentStage.dispatchToCharacters(event);
+    }
+  }
+
   function replayCameraTimeline(position:Float):Void
   {
     if (cameraRect == null) return;
@@ -1195,7 +1182,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     completedEvents = [];
     previousNoteTime = 0;
-
 
     if (songEvents != null && songEvents.length > 0)
     {
@@ -1228,8 +1214,72 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
+    var notes:Array<SongNoteData> = currentSongChartData.notes["hard"];
+    var dad:BaseCharacter = currentStage != null ? currentStage.getDad() : null;
+    var bf:BaseCharacter = currentStage != null ? currentStage.getBoyfriend() : null;
+    var dadShouldKeepSinging:Bool = false;
+    var bfShouldKeepSinging:Bool = false;
+
+    var dadSingTime = dad.singTimeSteps * (Conductor.instance.stepLengthMs / Constants.MS_PER_SEC);
+    var bfSingTime = bf.singTimeSteps * (Conductor.instance.stepLengthMs / Constants.MS_PER_SEC);
+
+    // replay notes
+    if (notes != null)
+    {
+      var latestDadNote:SongNoteData = null;
+      var latestBFNote:SongNoteData = null;
+
+      for (note in notes)
+      {
+        if (note == null) continue;
+        if (note.time > position) continue;
+
+        var isPlayer = note.getStrumlineIndex() == 0;
+        if (isPlayer)
+        {
+          if (latestBFNote == null || note.time >= latestBFNote.time) latestBFNote = note;
+        }
+        else
+        {
+          if (latestDadNote == null || note.time >= latestDadNote.time) latestDadNote = note;
+        }
+      }
+
+      if (latestDadNote != null)
+      {
+        Conductor.instance.update(latestDadNote.time);
+        playSingAnimation(latestDadNote);
+        if (latestDadNote.length == 0) dadShouldKeepSinging = latestDadNote.time + 300 > position;
+        else if (latestDadNote.length > 0) dadShouldKeepSinging = latestDadNote.time + latestDadNote.length > position;
+      }
+
+      if (latestBFNote != null)
+      {
+        Conductor.instance.update(latestBFNote.time);
+        playSingAnimation(latestBFNote);
+        if (latestBFNote.length == 0) bfShouldKeepSinging = latestBFNote.time + 300 > position;
+        else if (latestBFNote.length > 0) bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
+      }
+    }
+    trace('Latest Dad Note: ' + (dadShouldKeepSinging ? 'Keeping singing' : 'Not singing') + ' | Latest BF Note: ' + (bfShouldKeepSinging ? 'Keeping singing' : 'Not singing'));
+
+    if (dad != null) dad.animation.update(0);
+    if (bf != null) bf.animation.update(0);
+
+    if (!dadShouldKeepSinging && dad != null)
+    {
+      trace(dad.animation.curAnim.name);
+      if (!StringTools.startsWith(dad.animation.curAnim.name, "idle")) dad.dance(true);
+    }
+    if (!bfShouldKeepSinging && bf != null)
+    {
+      if (!StringTools.startsWith(bf.animation.curAnim.name, "idle")) bf.dance(true);
+    }
+
     Conductor.instance.update(position);
+
     cameraRect.update(0);
+
     previousTime = Conductor.instance.songPosition;
   }
 
