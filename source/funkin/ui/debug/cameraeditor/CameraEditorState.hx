@@ -267,6 +267,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemRelativeView.selected)
   var isCameraRelative:Bool = false;
 
+  @:bind(menubarItemExtendedBounds.selected)
+  public var showCameraExtendedBounds(default, set):Bool = false;
+
+  function set_showCameraExtendedBounds(val:Bool):Bool
+  {
+    showCameraExtendedBounds = val;
+    cameraRect.showExtendedBounds = val;
+    return val;
+  }
+
   /**
    * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
    * If the user clicks off the input, focus will leave.
@@ -455,7 +465,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     });
 
     add(cameraRect);
-    add(vCamDebug);
+    // add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
 
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
@@ -518,8 +528,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       vCamDebug.y = cameraRect.vCamPoint.y;
 
       // they need to be part of the stage! but probably set this somewhere else!!!!
-      cameraRect.vcamPoint = cameraRect.vCamPoint;
-      vCamDebug.vcamPoint = cameraRect.vCamPoint;
+      // cameraRect.vcamPoint = cameraRect.vCamPoint;
+      // vCamDebug.vcamPoint = cameraRect.vCamPoint;
     }
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
