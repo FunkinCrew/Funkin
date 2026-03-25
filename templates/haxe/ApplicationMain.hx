@@ -115,6 +115,9 @@ class ApplicationMain
       colorDepth: ::colorDepth::,
       depth: ::depthBuffer::,
       hardware: ::hardware::,
+      #if (html5 && FEATURE_SCREENSHOTS)
+      preserveDrawingBuffer: true,
+      #end
       stencil: ::stencilBuffer::,
       type: null,
       vsync: ::vsync::

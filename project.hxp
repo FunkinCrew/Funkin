@@ -936,7 +936,8 @@ class Project extends HXProject
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
 
     // Should be true only on Desktop builds.
-    // Screenshots doesn't work on web, and mobile has its own screenshots anyway.
+    // Mobile has its own screenshot methods.
+    // Web has it disabled due to performance cost of `preserveDrawingBuffer`.
     FEATURE_SCREENSHOTS.apply(this, isDesktop());
 
     // Should be true except on mobile builds.

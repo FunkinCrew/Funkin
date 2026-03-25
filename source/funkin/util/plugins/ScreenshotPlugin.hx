@@ -466,6 +466,7 @@ class ScreenshotPlugin extends FlxBasic
     return state;
   }
 
+  #if !web
   static function getScreenshotPath():String
   {
     return '$SCREENSHOT_FOLDER/';
@@ -475,6 +476,7 @@ class ScreenshotPlugin extends FlxBasic
   {
     FileUtil.createDirIfNotExists(SCREENSHOT_FOLDER);
   }
+  #end
 
   /**
    * Convert a Bitmap to a PNG ByteArray to save to a file.
@@ -497,12 +499,19 @@ class ScreenshotPlugin extends FlxBasic
    */
   function saveScreenshot(bitmap:Bitmap, targetPath = "image", screenShotNum:Int = 0, delaySave:Bool = true):Void
   {
+    #if !web
     makeScreenshotPath();
+    #end
+
     // Check that we're not overriding a previous image, and keep making a unique path until we can
     if (previousScreenshotName != targetPath && previousScreenshotName != (targetPath + ' (${previousScreenshotCopyNum})'))
     {
       previousScreenshotName = targetPath;
+      #if !web
       targetPath = getScreenshotPath() + targetPath + '.png';
+      #else
+      targetPath = targetPath + '.png';
+      #end
       previousScreenshotCopyNum = 2;
     }
     else
@@ -514,56 +523,81 @@ class ScreenshotPlugin extends FlxBasic
         newTargetPath = targetPath + ' (${previousScreenshotCopyNum})';
       }
       previousScreenshotName = newTargetPath;
+      #if !web
       targetPath = getScreenshotPath() + newTargetPath + '.png';
+      #else
+      targetPath = newTargetPath + '.png';
+      #end
     }
-
-    // TODO: Make screenshot saving work on browser.
-    // Maybe save the images into a buffer that you can download as a zip or something? That'd work
-    // Shouldn't be too hard to do something similar to the chart editor saving
 
     if (delaySave)
-    { // Save the images with a delay (a timer)
+    {
+      // Save the images with a delay (a timer)
       new FlxTimer().start(screenShotNum, function(_)
       {
-        var pngData:ByteArray = encode(bitmap);
-
-        if (pngData == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to encode PNG data');
-          previousScreenshotName = null;
-          // Just in case
-          unsavedScreenshotBuffer.shift();
-          unsavedScreenshotNameBuffer.shift();
-          return;
-        }
-        else
-        {
-          trace('Saving screenshot to: ' + targetPath);
-          FileUtil.writeBytesToPath(targetPath, pngData);
-          // Remove the screenshot from the unsaved buffer because we literally just saved it
-          unsavedScreenshotBuffer.shift();
-          unsavedScreenshotNameBuffer.shift();
-          if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
-        }
+        writeScreenshotFromBitmap(targetPath, bitmap, true);
       });
     }
-    else // Save the screenshot immediately
+    else
     {
-      var pngData:ByteArray = encode(bitmap);
-
-      if (pngData == null)
-      {
-        trace(' WARNING '.warning() + ' Failed to encode PNG data');
-        previousScreenshotName = null;
-        return;
-      }
-      else
-      {
-        trace('Saving screenshot to: ' + targetPath);
-        FileUtil.writeBytesToPath(targetPath, pngData);
-        if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
-      }
+      // Save the screenshot immediately
+      writeScreenshotFromBitmap(targetPath, bitmap, false);
     }
+  }
+
+  function writeScreenshotFromBitmap(targetPath:String, bitmap:Bitmap, dequeue:Bool):Void
+  {
+    #if web
+    trace('Saving screenshot as: ' + targetPath);
+
+    var a:js.html.AnchorElement = cast js.Browser.document.createElement('a');
+    js.Browser.document.body.appendChild(a);
+    a.style.display = 'none';
+    a.href = bitmap.bitmapData.image.src.toDataURL("image/png");
+    a.download = targetPath;
+    a.click();
+
+    if (dequeue)
+    {
+      // Remove the screenshot from the unsaved buffer because we literally just saved it
+      unsavedScreenshotBuffer.shift();
+      unsavedScreenshotNameBuffer.shift();
+    }
+
+    if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+    #else
+    var pngData:ByteArray = encode(bitmap);
+
+    if (pngData == null)
+    {
+      trace(' WARNING '.warning() + ' Failed to encode PNG data');
+      previousScreenshotName = null;
+
+      if (dequeue)
+      {
+        // Just in case
+        unsavedScreenshotBuffer.shift();
+        unsavedScreenshotNameBuffer.shift();
+      }
+
+      return;
+    }
+    else
+    {
+      trace('Saving screenshot to: ' + targetPath);
+
+      FileUtil.writeBytesToPath(targetPath, pngData);
+
+      if (dequeue)
+      {
+        // Remove the screenshot from the unsaved buffer because we literally just saved it
+        unsavedScreenshotBuffer.shift();
+        unsavedScreenshotNameBuffer.shift();
+      }
+
+      if (Preferences.previewOnSave) showFancyPreview(bitmap); // Only show the preview after a screenshot is saved
+    }
+    #end
   }
 
   // I' m very happy with this code, all of it just works
