@@ -2912,6 +2912,9 @@ class FreeplayState extends MusicBeatSubState
       #end
     }
 
+    // Reset `prepForNewRank` flag on change to prevent song previews from not updating.
+    if (change != 0 && prepForNewRank) prepForNewRank = false;
+
     if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
 
     var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule.freeplayData?.data.id ?? '', currentDifficulty, currentVariation);
