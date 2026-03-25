@@ -359,7 +359,9 @@
         "decimalGroupSize": 3,
         "fractionalGroupSize": -1,
         "binaryGroupSize": 8,
-        "hexadecimalGroupSize": 8
+        "hexadecimalGroupSize": 8,
+
+        "decimalMinimum": 10000
       },
       "type": "LongNumber"
     },
