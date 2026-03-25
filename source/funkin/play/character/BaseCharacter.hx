@@ -11,6 +11,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.stage.Stage;
+import funkin.graphics.FunkinAnimationController;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -75,7 +76,10 @@ class BaseCharacter extends Bopper
 
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
   final _data:CharacterData;
-  final singTimeSteps:Float;
+  /**
+   * The amount of time, in seconds, that the character's singing animations should last for.
+   */
+  public final singTimeSteps:Float;
 
   /**
    * When set to true, the next animation to play will temporarily force the character's vocals to play.
@@ -436,6 +440,9 @@ class BaseCharacter extends Bopper
       // Without this check here, the player character would only play the `sing` animation
       // for one beat, as opposed to holding it as long as the player is holding the button.
       var shouldStopSinging:Bool = (this.characterType == BF) ? !isHoldingNote() : true;
+
+      var controller = cast(animation, FunkinAnimationController);
+      if (controller.shouldUseConductorSync && shouldStopSinging) shouldStopSinging = FlxG.sound.music != null && FlxG.sound.music.playing;
 
       FlxG.watch.addQuick('singTimeSec-${characterId}', singTimeSec);
       if (holdTimer > singTimeSec && shouldStopSinging)
