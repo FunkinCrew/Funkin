@@ -7,6 +7,7 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.stage.Stage;
@@ -541,6 +542,58 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Play the appropriate singing animation based on the given note data.
+   * @param noteData The note data of the note.
+   */
+  public function playNoteSingAnimation(noteData:SongNoteData, judgement:Null<String> = null, comboCount:Int = 0):Void
+  {
+    curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
+
+    if (noteData.getMustHitNote() && characterType == BF)
+    {
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(noteData.getDirection(), false);
+        holdTimer = 0;
+      }
+    }
+    else if (!noteData.getMustHitNote() && characterType == DAD)
+    {
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(noteData.getDirection(), false);
+        holdTimer = 0;
+      }
+    }
+    else if (characterType == GF && noteData.getMustHitNote() && judgement != null)
+    {
+      switch (judgement)
+      {
+        case 'sick' | 'good':
+          playComboAnimation(comboCount);
+        default:
+          playComboDropAnimation(comboCount);
+      }
+    }
+  }
+
+  /**
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
@@ -549,50 +602,8 @@ class BaseCharacter extends Bopper
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
-    curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
 
-    if (event.note.noteData.getMustHitNote() && characterType == BF)
-    {
-      if (curNoteKind != null)
-      {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(event.note.noteData.getDirection(), false);
-        holdTimer = 0;
-      }
-    }
-    else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
-    {
-      if (curNoteKind != null)
-      {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(event.note.noteData.getDirection(), false);
-        holdTimer = 0;
-      }
-    }
-    else if (characterType == GF && event.note.noteData.getMustHitNote())
-    {
-      switch (event.judgement)
-      {
-        case 'sick' | 'good':
-          playComboAnimation(event.comboCount);
-        default:
-          playComboDropAnimation(event.comboCount);
-      }
-    }
+    playNoteSingAnimation(event.note.noteData, event.judgement, event.comboCount);
   }
 
   /**
