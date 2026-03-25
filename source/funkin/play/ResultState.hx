@@ -204,125 +204,129 @@ class ResultState extends MusicBeatSubState
     playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId);
 
     trace('Got playable character: ${playerCharacter?.getName()}');
+
     // Query JSON data based on the rank, then use that to build the animation(s) the player sees.
     var playerAnimationDatas:Array<PlayerResultsAnimationData> = playerCharacter != null ? playerCharacter.getResultsAnimationDatas(rank) : [];
 
-    for (animData in playerAnimationDatas)
+    for (animationData in playerAnimationDatas)
     {
-      if (animData == null) continue;
+      if (animationData == null) continue;
 
-      if (animData.filter != "both")
+      if (animationData.filter != "both")
       {
-        if (Preferences.naughtyness && animData.filter != "naughty" || !Preferences.naughtyness && animData.filter != "safe") continue;
+        if (Preferences.naughtyness && animationData.filter != "naughty" || !Preferences.naughtyness && animationData.filter != "safe") continue;
       }
 
-      var animPath:String = "";
+      var assetPath:String = "";
+      var offsets:Array<Float> = animationData.offsets ?? [0, 0];
 
-      if (animData.assetPath != null)
+      var xPosition:Float = offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2);
+      var yPosition:Float = offsets[1];
+
+      var animation:Null<FunkinSprite> = null;
+
+      if (animationData.assetPath != null)
       {
-        animPath = animData.assetPath;
+        assetPath = animationData.assetPath;
       }
-      var offsets = animData.offsets ?? [0, 0];
-      switch (animData.renderType)
+
+      switch (animationData.renderType)
       {
         case 'animateatlas':
-          @:nullSafety(Off)
-          var animation:FunkinSprite = null;
-
-          var xPos = offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2);
-          var yPos = offsets[1];
-
-          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animData.scriptClass, xPos, yPos);
+          if (animationData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
           else
-            animation = FunkinSprite.createTextureAtlas(xPos, yPos, animPath);
+            animation = FunkinSprite.createTextureAtlas(xPosition, yPosition, assetPath);
 
           if (animation == null) continue;
 
-          if (animData?.applyStageMatrix ?? false)
+          if (animationData?.applyStageMatrix ?? false)
           {
             animation.applyStageMatrix = true;
           }
 
-          animation.zIndex = animData.zIndex ?? 500;
+          animation.zIndex = animationData.zIndex ?? 500;
+          animation.scale.set(animationData.scale ?? 1.0, animationData.scale ?? 1.0);
 
-          animation.scale.set(animData.scale ?? 1.0, animData.scale ?? 1.0);
+          animation.anim.addBySymbol('wholeTimeline', animation.getDefaultSymbol(), animation.library.frameRate, false);
 
-          if (!(animData.looped ?? true))
+          if (animationData.startFrameLabel != null && animationData.startFrameLabel != '')
+          {
+            animation.anim.addByFrameLabel('startLabel', animationData.startFrameLabel, animation.library.frameRate, false);
+          }
+
+          if (animationData.loopFrameLabel != null)
+          {
+            animation.anim.addByFrameLabel('loopLabel', animationData.loopFrameLabel, animation.library.frameRate);
+          }
+
+          if (!(animationData.looped ?? true))
           {
             // Animation is not looped.
-            animation.anim.onFinish.add((_name:String) ->
+            animation.animation.onFinish.add((_name:String) ->
             {
               if (animation != null)
               {
-                animation.anim.pause();
+                animation.animation.pause();
               }
             });
           }
-          else if (animData.loopFrameLabel != null)
+          else if (animationData.loopFrameLabel != null)
           {
-            animation.anim.onFinish.add((_name:String) ->
-            {
-              if (animation != null)
-              {
-                animation.anim.play(animData.loopFrameLabel ?? '', true); // unpauses this anim, since it's on PlayOnce!
-                animation.anim.curAnim.looped = true;
-              }
-            });
+            animation.animation.onFinish.add((_name:String) -> animation.animation.play('loopLabel', true));
           }
-          else if (animData.loopFrame != null)
+          else if (animationData.loopFrame != null)
           {
-            animation.anim.onFinish.add((_name:String) ->
-            {
-              if (animation != null)
-              {
-                animation.anim.play("", true, false, animData.loopFrame ?? 0); // unpauses this anim, since it's on PlayOnce!
-              }
-            });
+            animation.animation.onFinish.add((_name:String) -> animation.animation.play('wholeTimeline', true, false, animationData.loopFrame ?? 0));
           }
 
           // Hide until ready to play.
           animation.visible = false;
+
           // Queue to play.
           characterAtlasAnimations.push({
             sprite: animation,
-            delay: animData.delay ?? 0.0,
-            forceLoop: (animData.loopFrame ?? -1) == 0,
-            startFrameLabel: (animData.startFrameLabel ?? ""),
-            sound: (animData.sound ?? "")
+            delay: animationData.delay ?? 0.0,
+            forceLoop: (animationData.loopFrame ?? -1) == 0,
+            startFrameLabel: (animationData.startFrameLabel ?? ""),
+            sound: (animationData.sound ?? "")
           });
+
           // Add to the scene.
           add(animation);
         case 'sparrow':
-          @:nullSafety(Off)
-          var animation:FunkinSprite = null;
-
-          if (animData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animData.scriptClass,
-            offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1]);
+          if (animationData.scriptClass != null)
+          {
+            animation = ScriptedFunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
+          }
           else
-            animation = FunkinSprite.createSparrow(offsets[0] + (FullScreenScaleMode.gameCutoutSize.x / 2), offsets[1], animPath);
+          {
+            animation = FunkinSprite.createSparrow(xPosition, yPosition, assetPath);
+          }
 
           if (animation == null) continue;
 
           animation.animation.addByPrefix('idle', '', 24, false, false, false);
 
-          if (animData.loopFrame != null)
+          if (animationData.loopFrame != null)
           {
             animation.animation.onFinish.add((_name:String) ->
             {
               if (animation != null)
               {
-                animation.animation.play('idle', true, false, animData.loopFrame ?? 0);
+                animation.animation.play('idle', true, false, animationData.loopFrame ?? 0);
               }
             });
           }
 
           // Hide until ready to play.
           animation.visible = false;
+
           // Queue to play.
           characterSparrowAnimations.push({
             sprite: animation,
-            delay: animData.delay ?? 0.0
+            delay: animationData.delay ?? 0.0
           });
+
           // Add to the scene.
           add(animation);
       }
@@ -486,17 +490,6 @@ class ResultState extends MusicBeatSubState
       });
     }
 
-    // if (params.isNewHighscore ?? false)
-    // {
-    //   highscoreNew.visible = true;
-    //   highscoreNew.animation.play("new");
-    //   //FlxTween.tween(highscoreNew, {y: highscoreNew.y + 10}, 0.8, {ease: FlxEase.quartOut});
-    // }
-    // else
-    // {
-    //   highscoreNew.visible = false;
-    // }
-
     new FlxTimer().start(rank.getMusicDelay(), _ ->
     {
       var musicPath = getMusicPath(playerCharacter, rank);
@@ -647,17 +640,6 @@ class ResultState extends MusicBeatSubState
     {
       trace("Could not build ratingsPopin!");
     }
-    else
-    {
-      // ratingsPopin.animation.play("idle");
-      // ratingsPopin.visible = true;
-
-      ratingsPopin.animation.onFinish.add(anim -> {
-        // scorePopin.animation.play("score");
-
-        // scorePopin.visible = true;
-      });
-    }
 
     refresh();
   }
@@ -708,8 +690,18 @@ class ResultState extends MusicBeatSubState
       new FlxTimer().start(atlas.delay, _ ->
       {
         if (atlas.sprite == null) return;
+
         atlas.sprite.visible = true;
-        atlas.sprite.anim.play(atlas.startFrameLabel);
+
+        if (atlas.sprite.hasAnimation('startLabel'))
+        {
+          atlas.sprite.animation.play('startLabel');
+        }
+        else
+        {
+          atlas.sprite.animation.play('wholeTimeline');
+        }
+
         if (atlas.sound != "")
         {
           var sndPath:String = Paths.stripLibrary(atlas.sound);
@@ -725,6 +717,7 @@ class ResultState extends MusicBeatSubState
       new FlxTimer().start(sprite.delay, _ ->
       {
         if (sprite.sprite == null) return;
+
         sprite.sprite.visible = true;
         sprite.sprite.animation.play('idle', true);
       });

@@ -7,7 +7,7 @@ import funkin.modding.events.ScriptEvent;
 @:nullSafety
 class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 {
-  static final DEFAULT_PATH = "ui/character-select/characters/bf";
+  static final DEFAULT_PATH = 'ui/character-select/characters/bf';
 
   var initialX:Float = 0;
   var initialY:Float = 0;
@@ -25,33 +25,25 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
       swfMode: true
     });
 
-    anim.onFinish.add(function(animLabel:String)
+    loadAnimations(false);
+
+    animation.onFinish.add(function(animLabel:String)
     {
       switch (animLabel)
       {
-        case "slidein":
-          if (hasAnimation("slidein idle point"))
+        case 'slideIn':
+          if (hasAnimation('slideInPoint'))
           {
-            anim.play("slidein idle point", true);
+            animation.play('slideInPoint', true);
           }
           else
           {
-            anim.play("idle", true);
-            anim.curAnim.looped = true;
+            animation.play('idle', true);
           }
-        case "deselect":
-          anim.play("deselect loop start", true);
-        case "slidein idle point", "cannot select Label", "unlock":
-          anim.play("idle", true);
-        case "idle":
-          // TODO: once char select data is refactored, add a `shouldBop` field or something IDK
-          if (currentBFPath != null)
-          {
-            if (currentBFPath.endsWith("locked"))
-            {
-              anim.curAnim.looped = true;
-            }
-          }
+        case 'deselect':
+          animation.play('deselect-loop', true);
+        case 'slideInPoint', 'cannotSelect', 'unlock':
+          animation.play('idle', true);
       }
     });
   }
@@ -62,15 +54,9 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
-    // TODO: There's a minor visual bug where there's a little stutter.
-    // This happens because the animation is getting restarted while it's already playing.
-    // I tried make this not interrupt an existing idle,
-    // but isAnimationFinished() and isLoopComplete() both don't work! What the hell?
-    // danceEvery isn't necessary if that gets fixed.
-    //
-    if (getCurrentAnimation() == "idle" && isAnimationFinished())
+    if (getCurrentAnimation() == 'idle' && isAnimationFinished())
     {
-      anim.play("idle", true);
+      animation.play('idle', true);
     }
   };
 
@@ -81,6 +67,7 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
     if (texture != null)
     {
       frames = texture;
+      loadAnimations(str == 'locked');
     }
     else
     {
@@ -88,10 +75,33 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
       return;
     }
 
-    final animName:String = playSlideAnim ? "slidein" : "idle";
-    anim.play(animName, true);
+    final animName:String = playSlideAnim ? 'slideIn' : 'idle';
+    animation.play(animName, true);
 
     updateHitbox();
+  }
+
+  function loadAnimations(locked:Bool):Void
+  {
+    anim.addByFrameLabel('slideIn', 'slidein', 24, false);
+    anim.addByFrameLabel('slideInPoint', 'slidein idle point', 24, false);
+    anim.addByFrameLabel('slideout', 'slideout', 24, false);
+
+    if (locked)
+    {
+      anim.addByFrameLabel('idle', 'idle', 24);
+      anim.addByFrameLabel('cannotSelect', 'cannot select Label', 24, false);
+      anim.addByFrameLabel('death', 'death', 24, false);
+    }
+    else
+    {
+      // TODO: Refactor Character Select data so these animations can be defined from JSON
+      anim.addByFrameLabel('idle', 'idle', 24, false);
+      anim.addByFrameLabel('unlock', 'unlock', 24, false);
+      anim.addByFrameLabel('select', 'select', 24, false);
+      anim.addByFrameLabel('deselect', 'deselect', 24, false);
+      anim.addByFrameLabel('deselect-loop', 'deselect loop start', 24);
+    }
   }
 
   public function onScriptEvent(event:ScriptEvent):Void

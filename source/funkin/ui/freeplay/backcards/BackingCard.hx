@@ -59,8 +59,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     orangeBackShit = new FunkinSprite(84, 440).makeSolidColor(Std.int(pinkBack.width), 75, 0xFFFEDA00);
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
+
     backingTextYeah = FunkinSprite.createTextureAtlas((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320, 120,
-      "ui/freeplay/styles/bf/backing-card",);
+      'ui/freeplay/styles/bf/backing-card');
+    backingTextYeah.anim.addBySymbol('wholeTimeline', backingTextYeah.getDefaultSymbol(), backingTextYeah.library.frameRate, false);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
     pinkBack.x -= pinkBack.width;
@@ -133,7 +135,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     orangeBackShit.visible = true;
     alsoOrangeLOL.visible = true;
     cardGlow.visible = true;
-    FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.45, {ease: FlxEase.sineOut});
   }
 
   /**
@@ -148,7 +150,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     confirmGlow.visible = true;
     confirmGlow2.visible = true;
 
-    backingTextYeah.anim.play("");
+    backingTextYeah.animation.play('wholeTimeline');
     confirmGlow2.alpha = 0;
     confirmGlow.alpha = 0;
 
@@ -203,7 +205,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     cardGlow.visible = true;
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
-    FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.25, {ease: FlxEase.sineOut});
 
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;

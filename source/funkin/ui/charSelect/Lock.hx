@@ -20,14 +20,14 @@ class Lock extends FunkinSprite
 
     super(x, y);
 
-    loadTextureAtlas("ui/character-select/interface/lock", {
+    loadTextureAtlas('ui/character-select/interface/lock', {
       swfMode: settings.swfMode,
       uniqueInCache: settings.uniqueInCache,
       onSymbolCreate: (symbol) ->
       {
-        if (symbol.timeline.getLayer("color") != null)
+        if (symbol.timeline.getLayer('color') != null)
         {
-          var colorSymbol:Null<animate.internal.elements.SymbolInstance> = symbol.timeline.getLayer("color")?.getFrameAtIndex(0)?.convertToSymbol(0, 1) ?? null;
+          var colorSymbol:Null<animate.internal.elements.SymbolInstance> = symbol.timeline.getLayer('color')?.getFrameAtIndex(0)?.convertToSymbol(0, 1) ?? null;
 
           if (colorSymbol != null)
           {
@@ -37,7 +37,17 @@ class Lock extends FunkinSprite
       }
     });
 
-    anim.play("idle");
+    loadAnimations();
+
+    animation.play('idle');
     offset.set(230, 110);
+  }
+
+  function loadAnimations():Void
+  {
+    anim.addByFrameLabel('idle', 'idle', 24, false);
+    anim.addByFrameLabel('selected', 'selected', 24, false);
+    anim.addByFrameLabel('clicked', 'clicked', 24, false);
+    anim.addByFrameLabel('unlock', 'unlock', 24, false);
   }
 }

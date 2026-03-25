@@ -59,13 +59,8 @@ class FunkinAnimationController extends FlxAnimateController
     curAnim.update(adjustedElapsed);
   }
 
-  /**
-   * We override `FlxAnimationController`'s `play` method to account for texture atlases.
-   */
   override public function play(animName:String, force = false, reversed = false, frame = 0):Void
   {
-    if (animName == null || animName == '') animName = _parentSprite.getDefaultSymbol();
-
     if (!_parentSprite.hasAnimation(animName))
     {
       // Skip if the animation doesn't exist

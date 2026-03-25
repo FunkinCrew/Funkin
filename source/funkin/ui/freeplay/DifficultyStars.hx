@@ -31,8 +31,9 @@ class DifficultyStars extends FlxSpriteGroup
 
     flames = new FreeplayFlames(0, 0);
 
-    stars = FunkinSprite.createTextureAtlas(0, 0, "ui/freeplay/difficulty/freeplay-stars");
-    stars.anim.play("diff stars");
+    stars = FunkinSprite.createTextureAtlas(0, 0, 'ui/freeplay/difficulty/freeplay-stars');
+    stars.anim.addBySymbol('STARS_ANIM', 'diff stars', 24, false);
+    stars.animation.play('STARS_ANIM');
 
     add(flames);
     add(stars);
@@ -46,7 +47,7 @@ class DifficultyStars extends FlxSpriteGroup
   {
     super.update(elapsed);
 
-    // "loops" the current animation
+    // 'loops' the current animation
     // for clarity, the animation file looks like
     // frame : stars
     // 0-99: 1 star
@@ -54,9 +55,9 @@ class DifficultyStars extends FlxSpriteGroup
     // ......
     // 1300-1499: 15 stars
     // 1500 : 0 stars
-    if (curDifficulty < 15 && stars.anim.curAnim.curFrame >= (curDifficulty + 1) * 100)
+    if (curDifficulty < 15 && stars.animation.curAnim.curFrame >= (curDifficulty + 1) * 100)
     {
-      stars.anim.play("diff stars", true, false, curDifficulty * 100);
+      stars.animation.play('STARS_ANIM', true, false, curDifficulty * 100);
     }
   }
 
@@ -98,13 +99,12 @@ class DifficultyStars extends FlxSpriteGroup
 
     if (curDifficulty == 15)
     {
-      stars.anim.play("diff stars", true, false, 1500);
-      stars.anim.pause();
+      stars.animation.play('STARS_ANIM', true, false, 1500);
+      stars.animation.pause();
     }
     else
     {
-      stars.anim.curAnim.curFrame = Std.int(curDifficulty * 100);
-      stars.anim.play("diff stars", true, false, curDifficulty * 100);
+      stars.animation.play('STARS_ANIM', true, false, Std.int(curDifficulty * 100));
     }
 
     return curDifficulty;

@@ -37,15 +37,15 @@ class FlxAnimateTest extends MusicBeatState implements ConsoleClass
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.SPACE) (!(sprite.isAnimationFinished()) ? sprite.anim.pause() : sprite.anim.resume());
+    if (FlxG.keys.justPressed.SPACE) (!(sprite.isAnimationFinished()) ? sprite.animation.pause() : sprite.anim.resume());
 
-    if (FlxG.keys.anyJustPressed([A, LEFT])) sprite.anim.curAnim.curFrame--;
-    if (FlxG.keys.anyJustPressed([D, RIGHT])) sprite.anim.curAnim.curFrame++;
+    if (FlxG.keys.anyJustPressed([A, LEFT])) sprite.animation.curAnim.curFrame--;
+    if (FlxG.keys.anyJustPressed([D, RIGHT])) sprite.animation.curAnim.curFrame++;
 
-    if (FlxG.keys.justPressed.Q) sprite.anim.play('slidein idle point', true);
-    if (FlxG.keys.justPressed.W) sprite.anim.play('slidein', true);
-    if (FlxG.keys.justPressed.E) sprite.anim.play('death', true);
-    if (FlxG.keys.justPressed.R) sprite.anim.play('cannot select Label', true);
-    if (FlxG.keys.justPressed.T) sprite.anim.play('idle', true);
+    if (FlxG.keys.justPressed.Q) sprite.animation.play('slidein idle point', true);
+    if (FlxG.keys.justPressed.W) sprite.animation.play('slidein', true);
+    if (FlxG.keys.justPressed.E) sprite.animation.play('death', true);
+    if (FlxG.keys.justPressed.R) sprite.animation.play('cannot select Label', true);
+    if (FlxG.keys.justPressed.T) sprite.animation.play('idle', true);
   }
 }

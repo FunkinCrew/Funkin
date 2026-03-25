@@ -214,16 +214,7 @@ class PlayerFreeplayDJData
     var anim = animationMap.get(name);
     if (anim == null) return null;
 
-    // For render types other than `animateatlas`, we can just return the name.
-    // Sparrows, for example, use the name instead of the prefix.
-    if (renderType != 'animateatlas')
-    {
-      return anim.name;
-    }
-    else
-    {
-      return anim.prefix;
-    }
+    return anim.name;
   }
 
   public function getAnimationOffsetsByPrefix(?prefix:String):Array<Float>

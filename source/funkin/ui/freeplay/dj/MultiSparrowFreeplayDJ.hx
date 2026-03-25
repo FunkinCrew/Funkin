@@ -124,7 +124,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpIntroEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpIntroStartFrame());
           }
@@ -132,7 +132,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpIntroBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpIntroBadStartFrame());
           }
@@ -149,7 +149,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         if (getCurrentAnimation() == animPrefixA)
         {
           var endFrame = playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixA, true, false, false, playableCharData?.getFistPumpLoopStartFrame());
           }
@@ -157,7 +157,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         else if (getCurrentAnimation() == animPrefixB)
         {
           var endFrame = playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && anim.curAnim.curFrame >= endFrame)
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
             playFlashAnimation(animPrefixB, true, false, false, playableCharData?.getFistPumpLoopBadStartFrame());
           }
