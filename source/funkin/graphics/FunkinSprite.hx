@@ -411,36 +411,6 @@ class FunkinSprite extends FlxAnimate
     {
       return true;
     }
-    else if (this.anim.hasAnimateAtlas && !animationList.contains(id))
-    {
-      return addAnimationIfMissing(id);
-    }
-
-    return false;
-  }
-
-  /**
-   * Adds an animation if it doesn't exist.
-   * @param id The animation ID to check.
-   */
-  function addAnimationIfMissing(id:String):Bool
-  {
-    @:privateAccess
-    var symbols:Array<String> = this.library.dictionary.keys().array();
-    var frameLabels:Array<String> = listAnimations();
-
-    if (frameLabels.contains(id))
-    {
-      // Animation exists as a frame label but wasn't added, so we add it
-      anim.addByFrameLabel(id, id, this.library.frameRate, false);
-      return true;
-    }
-    else if (symbols.contains(id))
-    {
-      // Animation exists as a symbol but wasn't added, so we add it
-      anim.addBySymbol(id, id, this.library.frameRate, false);
-      return true;
-    }
 
     return false;
   }
