@@ -13,8 +13,11 @@ import flixel.math.FlxPoint;
 import funkin.play.event.SongEvent;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.play.character.BaseCharacter;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
+import funkin.play.notes.NoteSprite;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -552,6 +555,68 @@ class CameraEditorState extends UIState implements ConsoleClass
     previousTime = Conductor.instance.songPosition;
   }
 
+  override function stepHit():Bool
+  {
+    if (!FlxG.sound.music.playing) return false;
+    if (!super.stepHit()) return false;
+
+    if (currentStage != null)
+    {
+      var event = new SongTimeScriptEvent(SONG_STEP_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
+
+      currentStage.dispatchToCharacters(event);
+    }
+
+
+    return true;
+  }
+
+  override function beatHit():Bool
+  {
+    if (!FlxG.sound.music.playing) return false;
+    if (!super.beatHit()) return false;
+
+    if (currentStage != null)
+    {
+      var event = new SongTimeScriptEvent(SONG_BEAT_HIT, Conductor.instance.currentBeat, Conductor.instance.currentStep);
+
+      currentStage.dispatchToCharacters(event);
+    }
+
+    return true;
+  }
+
+  var previousNoteTime:Float = 0;
+
+  function processNotes():Void
+  {
+    var notes:Array<SongNoteData> = currentSongChartData.notes["hard"];
+    if (notes == null) return;
+
+    var dad:BaseCharacter = currentStage.getDad();
+    var bf:BaseCharacter = currentStage.getBoyfriend();
+
+    for (note in notes)
+    {
+      if (note.time > Conductor.instance.songPosition || note.time + note.length < previousNoteTime) continue;
+
+      var isPlayer = note.getStrumlineIndex() == 0;
+      var char:BaseCharacter = isPlayer ? bf : dad;
+
+      if (char != null)
+      {
+        if (note.length > 0 && note.time < previousNoteTime)
+        {
+          char.holdTimer = 0;
+          continue;
+        }
+        char.playNoteSingAnimation(note);
+      }
+    }
+
+    previousNoteTime = Conductor.instance.songPosition;
+  }
+
   var _cameraTarget:FlxPoint = new FlxPoint();
 
   public override function update(elapsed:Float):Void
@@ -571,8 +636,19 @@ class CameraEditorState extends UIState implements ConsoleClass
       vCamDebug.y = cameraRect.vCamPoint.y;
 
       // they need to be part of the stage! but probably set this somewhere else!!!!
-      // cameraRect.vcamPoint = cameraRect.vCamPoint;
-      // vCamDebug.vcamPoint = cameraRect.vCamPoint;
+      cameraRect.vcamPoint = cameraRect.vCamPoint;
+      vCamDebug.vcamPoint = cameraRect.vCamPoint;
+
+      var dad:BaseCharacter = currentStage.getDad();
+      var bf:BaseCharacter = currentStage.getBoyfriend();
+      var gf:BaseCharacter = currentStage.getGirlfriend();
+
+      var updateEvent = new UpdateScriptEvent(elapsed);
+
+      if (dad != null) dad.onUpdate(updateEvent);
+      if (bf != null) bf.onUpdate(updateEvent);
+      if (gf != null) gf.onUpdate(updateEvent);
+
     }
 
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
@@ -580,6 +656,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       Conductor.instance.update();
       processEvents();
+      processNotes();
       timeline.songPosition = Conductor.instance.songPosition;
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
@@ -1107,6 +1184,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (cameraRect == null) return;
 
+    if (currentSongChartData == null) return;
+
     cameraRect.cancelAllTweens();
     cameraRect.zoom = defaultStageZoom;
     cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
@@ -1115,6 +1194,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.update(0);
 
     completedEvents = [];
+    previousNoteTime = 0;
+
 
     if (songEvents != null && songEvents.length > 0)
     {
