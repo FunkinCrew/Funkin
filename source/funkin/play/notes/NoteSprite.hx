@@ -173,8 +173,7 @@ class NoteSprite extends FunkinSprite
     this.hsvShader = new HSVShader();
 
     this.alpha = 1;
-
-    setupNoteGraphic(noteStyle);
+    if (noteStyle != null) setupNoteGraphic(noteStyle);
   }
 
   /**
