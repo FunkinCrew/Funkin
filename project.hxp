@@ -941,7 +941,7 @@ class Project extends HXProject
 
     // Should be true except on MacOS and mobile builds.
     // Dragging and dropping files onto the window doesn't work there.
-    FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
+    FEATURE_FILE_DROP.apply(this, !isMobile());
 
     // The audio context issues which require the user to click before playing
     // only exist on web builds.
