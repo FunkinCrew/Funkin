@@ -639,9 +639,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       char.currentStage = currentStage;
       char.debug = true;
-      currentStage.addCharacter(char, charType);
 
       char.onCreate(null);
+
+      // Needs to come AFTER `onCreate()` so that stuff in scripts work properly!!!
+      // Examples include Nene's A-Bot and the Week 7 rimlight shader.
+      currentStage.addCharacter(char, charType);
+
       char.onUpdate(null);
       char.onAdd(null);
     };
