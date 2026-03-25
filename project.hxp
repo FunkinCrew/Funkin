@@ -939,8 +939,7 @@ class Project extends HXProject
     // Screenshots doesn't work on web, and mobile has its own screenshots anyway.
     FEATURE_SCREENSHOTS.apply(this, isDesktop());
 
-    // Should be true except on MacOS and mobile builds.
-    // Dragging and dropping files onto the window doesn't work there.
+    // Should be true except on mobile builds.
     FEATURE_FILE_DROP.apply(this, !isMobile());
 
     // The audio context issues which require the user to click before playing
