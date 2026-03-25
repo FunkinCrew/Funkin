@@ -9,8 +9,12 @@ import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.FlxObject;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxRect;
+import funkin.graphics.FunkinSliceSprite;
+import funkin.ui.FullScreenScaleMode;
 
-class VirtualCameraRectangle extends FunkinSprite
+class VirtualCameraRectangle extends FlxSpriteGroup
 {
   /**
    * The zoom level of the virtual camera. Setting this will adjust the scale of the rectangle accordingly.
@@ -60,9 +64,26 @@ class VirtualCameraRectangle extends FunkinSprite
   function set_zoom(value:Float):Float
   {
     zoom = value;
-    setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
-    updateHitbox();
+
+    mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+    mainView.updateHitbox();
+
+    camSlice.width = mainView.width;
+    camSlice.height = mainView.height;
+
     return zoom;
+  }
+
+  public var showExtendedBounds(default, set):Bool = false;
+
+  function set_showExtendedBounds(val:Bool):Bool
+  {
+    showExtendedBounds = val;
+    for (obj in [leftExt, rightExt, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineLSmall, lineRSmall])
+    {
+      obj.visible = val;
+    }
+    return val;
   }
 
   /**
@@ -169,7 +190,8 @@ class VirtualCameraRectangle extends FunkinSprite
     lastVCamPoint.copyFrom(vCamPoint);
     cameraFollowPoint.x = x;
     cameraFollowPoint.y = y;
-    if (force) {
+    if (force)
+    {
       forceNextFocus = true;
     }
   }
@@ -303,13 +325,148 @@ class VirtualCameraRectangle extends FunkinSprite
     }
   }
 
+  // the underlying sprite that makes up the view
+  var mainView:FunkinSprite;
+
+  // the visual slice sprites that show the camera bounds
+  var camSlice:FunkinSliceSprite;
+  var camSliceOverlay:FunkinSliceSprite;
+
+  var cornerTL:FunkinSprite;
+  var cornerBR:FunkinSprite;
+  var cornerTR:FunkinSprite;
+  var cornerBL:FunkinSprite;
+
+  var lineT:FunkinSprite;
+  var lineL:FunkinSprite;
+  var lineR:FunkinSprite;
+  var lineB:FunkinSprite;
+
+  var cornerTLSmall:FunkinSprite;
+  var cornerBRSmall:FunkinSprite;
+  var cornerTRSmall:FunkinSprite;
+  var cornerBLSmall:FunkinSprite;
+
+  var lineLSmall:FunkinSprite;
+  var lineRSmall:FunkinSprite;
+
+  var middle:FunkinSprite;
+
+  // extension pieces for when showExtendedBounds is true
+  var leftExt:FunkinSliceSprite;
+  var rightExt:FunkinSliceSprite;
+
+  var pieceSize:Float = 0;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
-    makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
-    alpha = 0.5;
-    zIndex = 5999;
-    updateHitbox();
+    mainView = new FunkinSprite(0, 0);
+    mainView.vcamPoint = vCamPoint;
+    mainView.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
+    mainView.updateHitbox();
+    mainView.visible = false;
+
+    add(mainView);
+
+    pieceSize = ((FlxG.width / 16 * FullScreenScaleMode.maxAspectRatio.x) - FlxG.width) / 2;
+
+    leftExt = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_left'), new FlxRect(30, 30, 30, 30), 0, 0);
+    leftExt.vcamPoint = vCamPoint;
+    leftExt.alpha = 0.3;
+    leftExt.zIndex = 5999;
+    leftExt.updateHitbox();
+
+    add(leftExt);
+
+    // flipping x doesnt work.... i HAVE to use another image.... ewwwwwww
+    rightExt = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_right'), new FlxRect(30, 30, 30, 30), 0, 0);
+    rightExt.vcamPoint = vCamPoint;
+    rightExt.alpha = 0.3;
+    rightExt.zIndex = 5999;
+    rightExt.updateHitbox();
+
+    add(rightExt);
+
+    camSliceOverlay = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_solid'), new FlxRect(30, 30, 30, 30), 0, 0);
+    camSliceOverlay.vcamPoint = vCamPoint;
+    camSliceOverlay.blend = OVERLAY;
+    camSliceOverlay.alpha = 0.2;
+    camSliceOverlay.zIndex = 6000;
+    camSliceOverlay.updateHitbox();
+
+    add(camSliceOverlay);
+
+    camSlice = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice'), new FlxRect(30, 30, 30, 30), 0, 0);
+    camSlice.vcamPoint = vCamPoint;
+    camSlice.alpha = 0.5;
+    camSlice.zIndex = 6001;
+    camSlice.updateHitbox();
+
+    add(camSlice);
+
+    middle = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_center');
+
+    cornerTR = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
+    cornerBR = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
+    cornerTL = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
+    cornerBL = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
+
+    cornerTRSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner_small');
+    cornerBRSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner_small');
+    cornerTLSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner_small');
+    cornerBLSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner_small');
+
+    lineT = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_horizontal');
+    lineB = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_horizontal');
+
+    lineL = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_vertical');
+    lineR = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_vertical');
+
+    lineLSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_small');
+    lineRSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_small');
+
+    // no fucking way im doing this manually
+    for (obj in [middle, cornerTR, cornerBR, cornerTL, cornerBL, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineT, lineB, lineL, lineR, lineLSmall, lineRSmall])
+    {
+      obj.vcamPoint = vCamPoint;
+      obj.zIndex = 6002;
+      add(obj);
+    }
+
+    cornerTR.flipX = true;
+    cornerBR.flipX = true;
+    cornerBR.flipY = true;
+    cornerBL.flipY = true;
+
+    cornerTRSmall.flipX = true;
+    cornerBRSmall.flipX = true;
+    cornerBRSmall.flipY = true;
+    cornerBLSmall.flipY = true;
+
+    cornerTRSmall.alpha = 0.7;
+    cornerBRSmall.alpha = 0.7;
+    cornerTLSmall.alpha = 0.7;
+    cornerBLSmall.alpha = 0.7;
+    lineLSmall.alpha = 0.7;
+    lineRSmall.alpha = 0.7;
+
+    // just cause a little variation is cute
+    lineB.flipX = true;
+    lineR.flipY = true;
+    lineRSmall.flipY = true;
+
+    camSliceOverlay.color = 0xFF7ABFBC;
+    camSlice.color = 0xFF7ABFBC;
+
+    leftExt.color = 0xFF7ABF9B;
+    rightExt.color = 0xFF7ABF9B;
+
+    // just so the editor doesnt freak out at first
+    camSlice.width = mainView.width;
+    camSlice.height = mainView.height;
+
+    showExtendedBounds = false;
   }
 
   public override function update(elapsed:Float):Void
@@ -367,7 +524,51 @@ class VirtualCameraRectangle extends FunkinSprite
       }
     }
 
-    x = (vCamPoint.x + (FlxG.width / 2)) - width / 2;
-    y = (vCamPoint.y + (FlxG.height / 2)) - height / 2;
+    updateVisuals();
+  }
+
+  function updateVisuals():Void
+  {
+    mainView.x = (vCamPoint.x + (FlxG.width / 2)) - mainView.width / 2;
+    mainView.y = (vCamPoint.y + (FlxG.height / 2)) - mainView.height / 2;
+
+    camSlice.x = (vCamPoint.x + (FlxG.width / 2)) - camSlice.width / 2;
+    camSlice.y = (vCamPoint.y + (FlxG.height / 2)) - camSlice.height / 2;
+
+    cornerTL.setPosition(mainView.x, mainView.y);
+    cornerBR.setPosition(mainView.x + mainView.width - cornerBR.width, mainView.y + mainView.height - cornerBR.height);
+
+    cornerTR.setPosition(mainView.x + mainView.width - cornerTR.width, mainView.y);
+    cornerBL.setPosition(mainView.x, mainView.y + mainView.height - cornerBR.height);
+
+    lineT.setPosition(mainView.x + (mainView.width / 2) - lineT.width / 2, mainView.y);
+    lineB.setPosition(mainView.x + (mainView.width / 2) - lineT.width / 2, mainView.y + mainView.height - lineB.height);
+
+    lineL.setPosition(mainView.x, mainView.y + (mainView.height / 2) - lineL.height / 2);
+    lineR.setPosition(mainView.x + mainView.width - lineR.width, mainView.y + (mainView.height / 2) - lineL.height / 2);
+
+    middle.setPosition(mainView.x + (mainView.width / 2) - middle.width / 2, mainView.y + (mainView.height / 2) - middle.height / 2);
+
+    camSliceOverlay.width = camSlice.width;
+    camSliceOverlay.height = camSlice.height;
+    camSliceOverlay.setPosition(camSlice.x, camSlice.y);
+
+    leftExt.width = pieceSize / zoom;
+    leftExt.height = camSlice.height;
+    leftExt.setPosition(camSlice.x - leftExt.width, camSlice.y);
+
+    rightExt.width = pieceSize / zoom;
+    rightExt.height = camSlice.height;
+    rightExt.setPosition(camSlice.x + camSlice.width, camSlice.y);
+
+    cornerTLSmall.setPosition(leftExt.x, leftExt.y);
+    cornerBLSmall.setPosition(leftExt.x, leftExt.y + leftExt.height - cornerBRSmall.height);
+
+    cornerBRSmall.setPosition(rightExt.x + rightExt.width - cornerBRSmall.width, rightExt.y + rightExt.height - cornerBRSmall.height);
+    cornerTRSmall.setPosition(rightExt.x + rightExt.width - cornerTRSmall.width, rightExt.y);
+
+    lineLSmall.setPosition(leftExt.x, leftExt.y + (leftExt.height / 2) - lineLSmall.height / 2);
+
+    lineRSmall.setPosition(rightExt.x + rightExt.width - lineRSmall.width, rightExt.y + (rightExt.height / 2) - lineLSmall.height / 2);
   }
 }
