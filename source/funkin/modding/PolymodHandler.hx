@@ -430,6 +430,10 @@ class PolymodHandler
       'clearData', // No score manipulation please
       'setLevelScore', 'setSongScore', 'applySongRank']);
 
+    // `funkin.Assets`
+    // getLibrary() can use libraries to get blacklisted packages
+    Polymod.blacklistStaticFields(funkin.Assets, ['getLibrary']);
+
     // `openfl.filesystem.FileStream`, `openfl.net.Socket`, `openfl.utils.ByteArray.ByteArrayData`
     // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
     #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
