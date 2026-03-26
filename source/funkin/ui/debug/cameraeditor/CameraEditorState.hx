@@ -277,6 +277,27 @@ class CameraEditorState extends UIState implements ConsoleClass
     return val;
   }
 
+  @:bind(menubarItemPassepartout.selected)
+  public var showCameraPassepartout(default, set):Bool = false;
+
+  function set_showCameraPassepartout(val:Bool):Bool
+  {
+    showCameraPassepartout = val;
+    cameraRect.showPassepartout = val;
+    menubarSliderPassepartoutTransparency.disabled = !val;
+    return val;
+  }
+
+  @:bind(menubarSliderPassepartoutTransparency.pos)
+  public var cameraPassepartoutTransparency(default, set):Float = 50;
+
+  function set_cameraPassepartoutTransparency(val:Float):Float
+  {
+    cameraPassepartoutTransparency = val;
+    cameraRect.passepartoutTransparency = val / 100;
+    return val;
+  }
+
   /**
    * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
    * If the user clicks off the input, focus will leave.
