@@ -2,7 +2,7 @@ package funkin.ui;
 
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
-import funkin.group.FunkinGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxStringUtil;
 
 /**
@@ -10,7 +10,7 @@ import flixel.util.FlxStringUtil;
  * It supports animations on the letters, and is less buggy than Alphabet.
  */
 @:nullSafety
-class AtlasText extends FunkinGroup<AtlasChar>
+class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
   static var fonts:Map<AtlasFont, AtlasFontData> = new Map<AtlasFont, AtlasFontData>();
   static var casesAllowed:Map<AtlasFont, Case> = new Map<AtlasFont, Case>();
@@ -60,7 +60,7 @@ class AtlasText extends FunkinGroup<AtlasChar>
 
     value = caseValue;
 
-    this.kill();
+    group.kill();
 
     if (value == "") return this.text;
 
@@ -101,16 +101,16 @@ class AtlasText extends FunkinGroup<AtlasChar>
    */
   function appendTextCased(str:String):Void
   {
-    var charCount:Int = countLiving();
+    var charCount:Int = group.countLiving();
     var xPos:Float = 0;
     var yPos:Float = 0;
     // `countLiving` returns -1 if group is empty
     if (charCount == -1) charCount = 0;
     else if (charCount > 0)
     {
-      var lastChar:AtlasChar = children[charCount - 1];
-      xPos = lastChar.localX + lastChar.width - x;
-      yPos = lastChar.localY + lastChar.height - maxHeight - y;
+      var lastChar:AtlasChar = group.members[charCount - 1];
+      xPos = lastChar.x + lastChar.width - x;
+      yPos = lastChar.y + lastChar.height - maxHeight - y;
     }
 
     for (splitStr in str.split(""))
@@ -124,16 +124,16 @@ class AtlasText extends FunkinGroup<AtlasChar>
           yPos += maxHeight;
         case char:
           var charSprite:AtlasChar;
-          if (children.length <= charCount) charSprite = new AtlasChar(atlas, char);
+          if (group.members.length <= charCount) charSprite = new AtlasChar(atlas, char);
           else
           {
-            charSprite = children[charCount];
+            charSprite = group.members[charCount];
             charSprite.revive();
             charSprite.char = char;
             charSprite.alpha = 1; // gets multiplied when added
           }
-          charSprite.localX = xPos;
-          charSprite.localY = yPos + maxHeight - charSprite.height;
+          charSprite.x = xPos;
+          charSprite.y = yPos + maxHeight - charSprite.height;
           add(charSprite);
 
           xPos += charSprite.width;
