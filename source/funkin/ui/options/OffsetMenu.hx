@@ -28,6 +28,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.sound.FlxSound;
 
 /**
  * Data structure for an arrow in the offset calibration/testing screen.
@@ -274,10 +275,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
       calibrating = true;
       MenuTypedList.pauseInput = true;
-      OptionsState.instance.drumsBG.pause();
-      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
-      OptionsState.instance.drumsBG.resume();
-      OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
       canExit = false;
       differences = [];
       offsetLerp = 0;
@@ -291,6 +288,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       receptor.angle = 0;
 
       _gotMad = false;
+
+      FlxG.sound.music.prepare(FlxG.sound.music.time);
+      OptionsState.instance.drumsBG.prepare(FlxG.sound.music.time);
+
+      OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
+      FlxSound.playSounds([FlxG.sound.music, OptionsState.instance.drumsBG]);
     });
     createButtonItem('Test', function()
     {
@@ -304,9 +307,6 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
 
-      OptionsState.instance.drumsBG.pause();
-      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
-      OptionsState.instance.drumsBG.resume();
       localConductor.update(FlxG.sound.music.time, true);
 
       var floored = Math.floor(localConductor.currentBeatTime);
@@ -358,7 +358,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       }
       #end
       MenuTypedList.pauseInput = true;
+
+      FlxG.sound.music.prepare(FlxG.sound.music.time);
+      OptionsState.instance.drumsBG.prepare(FlxG.sound.music.time);
+
       OptionsState.instance.drumsBG.fadeIn(1, 0, 1);
+      FlxSound.playSounds([FlxG.sound.music, OptionsState.instance.drumsBG]);
+
       canExit = false;
       differences = [];
 
@@ -426,6 +432,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     }
     else
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
     offsetItem.currentValue = Preferences.globalOffset;
     OptionsState.instance.drumsBG.fadeOut(1, 0);
   }
@@ -500,16 +507,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    localConductor.update(localConductor.songPosition + elapsed * 1000, false);
+    localConductor.update(FlxG.sound.music.time, false);
 
     var b:Float = localConductor.currentBeatTime;
 
     // Restart logic
     if (FlxG.sound.music.time < _lastTime)
     {
-      localConductor.update(FlxG.sound.music.time, !calibrating);
-      b = localConductor.currentBeatTime;
-
       // Update arrows to be the correct distance away from the receptor.
       var lastArrowBeat:Float = 0;
       for (i in 0...arrows.length)
@@ -538,20 +542,18 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
     _lastBeat = b;
 
-    // Resync logic
-    var diff:Float = Math.abs((FlxG.sound.music.time + localConductor.combinedOffset) - localConductor.songPosition);
-    var diffBg:Float = Math.abs(FlxG.sound.music.time - OptionsState.instance.drumsBG.time);
-    if (diff > 50 || diffBg > 50)
+    // Resync music
+    if (FlxG.sound.music.playing && OptionsState.instance.drumsBG.playing)
     {
-      trace('Resyncing conductor: ' + (diff > diffBg ? diff : diffBg) + 'ms difference');
+      var diffBg:Float = Math.abs(FlxG.sound.music.getActualTime() - OptionsState.instance.drumsBG.getActualTime());
+      if (diffBg > 50)
+      {
+        trace('Resyncing music: ' + diffBg + 'ms difference');
 
-      // If the difference is greater than 50ms, we resync the conductor.
-      localConductor.update(FlxG.sound.music.time, true);
-      OptionsState.instance.drumsBG.pause();
-      OptionsState.instance.drumsBG.time = FlxG.sound.music.time;
-      OptionsState.instance.drumsBG.resume();
-      b = localConductor.currentBeatTime;
-      _lastBeat = b;
+        FlxG.sound.music.prepare(FlxG.sound.music.time);
+        OptionsState.instance.drumsBG.prepare(FlxG.sound.music.time);
+        FlxSound.playSounds([FlxG.sound.music, OptionsState.instance.drumsBG]);
+      }
     }
 
     _lastTime = FlxG.sound.music.time;

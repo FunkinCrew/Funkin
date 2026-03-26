@@ -1168,9 +1168,9 @@ class PlayState extends MusicBeatSubState
 
       if (FlxG.sound.music.playing)
       {
-          Conductor.instance.update();
-        }
+        Conductor.instance.update();
       }
+    }
 
     var pauseButtonCheck:Bool = false;
     var androidPause:Bool = false;
