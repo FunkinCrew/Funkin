@@ -195,7 +195,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
    */
   public function stepHit():Bool
   {
-    if (this.subState != null && !persistentUpdate) return;
+    if (this.subState != null && !persistentUpdate) return false;
 
     var event:ScriptEvent = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
@@ -213,7 +213,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
    */
   public function beatHit():Bool
   {
-    if (this.subState != null && !persistentUpdate) return;
+    if (this.subState != null && !persistentUpdate) return false;
 
     var event:ScriptEvent = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
