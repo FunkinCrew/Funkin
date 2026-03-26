@@ -79,9 +79,50 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   function set_showExtendedBounds(val:Bool):Bool
   {
     showExtendedBounds = val;
+
     for (obj in [leftExt, rightExt, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineLSmall, lineRSmall])
     {
       obj.visible = val;
+    }
+
+    return val;
+  }
+
+  public var showPassepartout(default, set):Bool = false;
+  public var passepartoutTransparency(default, set):Float = 0;
+
+  function set_showPassepartout(val:Bool):Bool
+  {
+    showPassepartout = val;
+    for (obj in [passeT, passeB, passeL, passeR])
+    {
+      obj.visible = val;
+    }
+    for (obj in [camSliceOverlay])
+    {
+      obj.visible = !val;
+    }
+    for (obj in [cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineLSmall, lineRSmall, cornerTL, cornerBR, cornerTR, cornerBL, lineT, lineL, lineR, lineB])
+    {
+      obj.color = val ? 0xFFFFFFFF : 0xFF000000;
+    }
+
+    leftExt.loadGraphic(val ? Paths.image('ui/camera-editor/vcam/vcam_slice_cutout_left') : Paths.image('ui/camera-editor/vcam/vcam_slice_left'));
+    rightExt.loadGraphic(val ? Paths.image('ui/camera-editor/vcam/vcam_slice_cutout_right') : Paths.image('ui/camera-editor/vcam/vcam_slice_right'));
+    camSlice.loadGraphic(val ? Paths.image('ui/camera-editor/vcam/vcam_slice_cutout') : Paths.image('ui/camera-editor/vcam/vcam_slice'));
+
+    // make extended bounds visible again if needed
+    showExtendedBounds = showExtendedBounds;
+
+    return val;
+  }
+
+  function set_passepartoutTransparency(val:Float):Float
+  {
+    passepartoutTransparency = val;
+    for (obj in [passeT, passeB, passeL, passeR])
+    {
+      obj.alpha = val;
     }
     return val;
   }
@@ -358,9 +399,28 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   var pieceSize:Float = 0;
 
+  var passeT:FunkinSprite;
+  var passeB:FunkinSprite;
+  var passeL:FunkinSprite;
+  var passeR:FunkinSprite;
+
   public function new(x:Float, y:Float)
   {
     super(x, y);
+    passeT = new FunkinSprite(0, 0);
+    passeB = new FunkinSprite(0, 0);
+    passeL = new FunkinSprite(0, 0);
+    passeR = new FunkinSprite(0, 0);
+
+    for (obj in [passeT, passeB, passeL, passeR])
+    {
+      obj.vcamPoint = vCamPoint;
+      obj.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+      obj.zIndex = 10000;
+      obj.updateHitbox();
+      add(obj);
+    }
+
     mainView = new FunkinSprite(0, 0);
     mainView.vcamPoint = vCamPoint;
     mainView.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
@@ -406,6 +466,9 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     add(camSlice);
 
     middle = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_center');
+    middle.vcamPoint = vCamPoint;
+    middle.zIndex = 6002;
+    add(middle);
 
     cornerTR = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
     cornerBR = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_corner');
@@ -427,9 +490,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     lineRSmall = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_line_small');
 
     // no fucking way im doing this manually
-    for (obj in [middle, cornerTR, cornerBR, cornerTL, cornerBL, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineT, lineB, lineL, lineR, lineLSmall, lineRSmall])
+    for (obj in [cornerTR, cornerBR, cornerTL, cornerBL, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineT, lineB, lineL, lineR, lineLSmall, lineRSmall])
     {
       obj.vcamPoint = vCamPoint;
+      obj.color = 0xFF000000;
       obj.zIndex = 6002;
       add(obj);
     }
@@ -467,6 +531,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     camSlice.height = mainView.height;
 
     showExtendedBounds = false;
+    showPassepartout = false;
+    passepartoutTransparency = 0.5;
   }
 
   public override function update(elapsed:Float):Void
@@ -570,5 +636,25 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     lineLSmall.setPosition(leftExt.x, leftExt.y + (leftExt.height / 2) - lineLSmall.height / 2);
 
     lineRSmall.setPosition(rightExt.x + rightExt.width - lineRSmall.width, rightExt.y + (rightExt.height / 2) - lineLSmall.height / 2);
+
+    if (!showPassepartout) return;
+
+    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vCamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
+    var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
+
+    passeT.setGraphicSize(scaleAmt, scaleAmt);
+    passeB.setGraphicSize(scaleAmt, scaleAmt);
+    passeL.setGraphicSize(scaleAmt, mainView.height);
+    passeR.setGraphicSize(scaleAmt, mainView.height);
+
+    passeT.updateHitbox();
+    passeB.updateHitbox();
+    passeL.updateHitbox();
+    passeR.updateHitbox();
+
+    passeT.setPosition(mainView.x + (mainView.width / 2) - passeT.width / 2, mainView.y - passeT.height);
+    passeB.setPosition(mainView.x + (mainView.width / 2) - passeT.width / 2, mainView.y + mainView.height);
+    passeL.setPosition((mainView.x - passeL.width) - extraSize, mainView.y + (mainView.height / 2) - passeL.height / 2);
+    passeR.setPosition(mainView.x + mainView.width + extraSize, mainView.y + (mainView.height / 2) - passeL.height / 2);
   }
 }
