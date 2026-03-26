@@ -87,6 +87,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   // Graphics
   #if FEATURE_TOUCH_HERE_TO_PLAY
+  var touchedHereToPlay:Bool = false;
   var touchHereToPlay:Bitmap;
   var touchHereSprite:Sprite;
   #end
@@ -794,10 +795,7 @@ class FunkinPreloader extends FlxBasePreloader
           touchHereToPlay.alpha = 1.0;
           removeChild(vfdBitmap);
 
-          addEventListener(MouseEvent.CLICK, onTouchHereToPlay);
-          touchHereSprite.addEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
           touchHereSprite.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
-          touchHereSprite.addEventListener(MouseEvent.MOUSE_OUT, outTouchHereToPlay);
         }
 
         return 1.0;
@@ -811,32 +809,21 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   #if FEATURE_TOUCH_HERE_TO_PLAY
-  function overTouchHereToPlay(e:MouseEvent):Void
-  {
-    scaleAndCenter(touchHereToPlay, ratio * 1.1 * 0.5);
-  }
-
-  function outTouchHereToPlay(e:MouseEvent):Void
-  {
-    scaleAndCenter(touchHereToPlay, ratio * 0.5);
-  }
-
   function mouseDownTouchHereToPlay(e:MouseEvent):Void
   {
-    touchHereToPlay.y += 10;
-  }
+    if (touchedHereToPlay)
+    {
+      return;
+    }
 
-  function onTouchHereToPlay(e:MouseEvent):Void
-  {
-    scaleAndCenter(touchHereToPlay, ratio * 0.5);
+    touchedHereToPlay = true;
 
-    removeEventListener(MouseEvent.CLICK, onTouchHereToPlay);
-    touchHereSprite.removeEventListener(MouseEvent.MOUSE_OVER, overTouchHereToPlay);
-    touchHereSprite.removeEventListener(MouseEvent.MOUSE_OUT, outTouchHereToPlay);
-    touchHereSprite.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
+    haxe.Timer.delay(function():Void
+    {
+      touchHereSprite.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDownTouchHereToPlay);
 
-    // This is the actual thing that makes the game load.
-    immediatelyStartGame();
+      immediatelyStartGame();
+    }, 1000);
   }
 
   function scaleAndCenter(bmp:Bitmap, scale:Float)
@@ -891,6 +878,29 @@ class FunkinPreloader extends FlxBasePreloader
     {
       trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
     }
+
+    #if FEATURE_TOUCH_HERE_TO_PLAY
+    // Handle the size of the `touchHereToPlay` sprite.
+    if (currentState == FunkinPreloaderState.TouchHereToPlay)
+    {
+      // Normal size based on screen ratio.
+      var targetScale:Float = ratio * 0.5;
+
+      if (touchedHereToPlay)
+      {
+        // Make it smaller when pressed.
+        targetScale = ratio * 0.45;
+      }
+      else if (touchHereSprite.hitTestPoint(mouseX, mouseY))
+      {
+        // Make it bigger when mouse is over it.
+        targetScale = ratio * 0.55;
+      }
+
+      // Smoothly move current size to target size.
+      scaleAndCenter(touchHereToPlay, touchHereToPlay.scaleX + (targetScale - touchHereToPlay.scaleX) * 0.15);
+    }
+    #end
 
     super.update(percent);
   }
