@@ -46,7 +46,7 @@ class LoadingState extends MusicBeatSubState
     this.stopMusic = stopMusic;
 
     this.loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
-    this.funkay = FunkinSprite.create('funkay');
+    this.funkay = FunkinSprite.create('ui/loading/funkay');
   }
 
   override function create():Void
@@ -62,43 +62,40 @@ class LoadingState extends MusicBeatSubState
 
     add(loadBar);
 
-    initSongsManifest().onComplete(function(lib)
+    callbacks = new MultiCallback(onLoad);
+    var introComplete = callbacks.add('introComplete');
+
+    if (playParams != null)
     {
-      callbacks = new MultiCallback(onLoad);
-      var introComplete = callbacks.add('introComplete');
-
-      if (playParams != null)
+      // Load and cache the song's charts.
+      if (playParams.targetSong == null)
       {
-        // Load and cache the song's charts.
-        if (playParams.targetSong == null)
-        {
-          throw 'Invalid parameter: Target song should not be null';
-        }
-
-        playParams.targetSong.cacheCharts(true);
-
-        // Preload the song for the play state.
-        var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
-        var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
-        var targetChart:Null<SongDifficulty> = playParams.targetSong.getDifficulty(difficulty, variation);
-        if (targetChart == null)
-        {
-          throw 'Couldn\'t retrieve chart data for song "${playParams.targetSong.songName}" on difficulty "$difficulty" and variation "$variation"';
-        }
-        var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
-        var voicesPaths:Array<String> = targetChart.buildVoiceList();
-
-        checkLoadSong(instPath);
-        for (voicePath in voicesPaths)
-        {
-          checkLoadSong(voicePath);
-        }
+        throw 'Invalid parameter: Target song should not be null';
       }
 
-      var fadeTime:Float = 0.5;
-      FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-      new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-    });
+      playParams.targetSong.cacheCharts(true);
+
+      // Preload the song for the play state.
+      var difficulty:String = playParams.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY;
+      var variation:String = playParams.targetVariation ?? Constants.DEFAULT_VARIATION;
+      var targetChart:Null<SongDifficulty> = playParams.targetSong.getDifficulty(difficulty, variation);
+      if (targetChart == null)
+      {
+        throw 'Couldn\'t retrieve chart data for song "${playParams.targetSong.songName}" on difficulty "$difficulty" and variation "$variation"';
+      }
+      var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
+      var voicesPaths:Array<String> = targetChart.buildVoiceList();
+
+      checkLoadSong(instPath);
+      for (voicePath in voicesPaths)
+      {
+        checkLoadSong(voicePath);
+      }
+    }
+
+    var fadeTime:Float = 0.5;
+    FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+    new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
   }
 
   function checkLoadSong(path:String):Void
@@ -182,10 +179,10 @@ class LoadingState extends MusicBeatSubState
     }
   }
 
+  @:nullSafety(Off) // why isn't FlxG.sound.music nullable
   function onLoad():Void
   {
     // Stop the instrumental.
-    @:nullSafety(Off)
     if (stopMusic && FlxG.sound.music != null)
     {
       FlxG.sound.music.destroy();
@@ -400,72 +397,6 @@ class LoadingState extends MusicBeatSubState
     super.destroy();
 
     callbacks = null;
-  }
-
-  static function initSongsManifest():Future<AssetLibrary>
-  {
-    var id = 'songs';
-    var promise = new Promise<AssetLibrary>();
-
-    var library = LimeAssets.getLibrary(id);
-
-    if (library != null)
-    {
-      return Future.withValue(library);
-    }
-
-    var path = id;
-    var rootPath = null;
-
-    @:privateAccess
-    var libraryPaths = LimeAssets.libraryPaths;
-    if (libraryPaths.exists(id))
-    {
-      path = libraryPaths[id] ?? path;
-      rootPath = Path.directory(path);
-    }
-    else
-    {
-      if (path.endsWith('.bundle'))
-      {
-        rootPath = path;
-        path += '/library.json';
-      }
-      else
-      {
-        rootPath = Path.directory(path);
-      }
-      @:privateAccess
-      path = LimeAssets.__cacheBreak(path);
-    }
-
-    AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest)
-    {
-      if (manifest == null)
-      {
-        promise.error('Cannot parse asset manifest for library \'' + id + '\'');
-        return;
-      }
-
-      var library = AssetLibrary.fromManifest(manifest);
-
-      if (library == null)
-      {
-        promise.error('Cannot open library \'' + id + '\'');
-      }
-      else
-      {
-        @:privateAccess
-        LimeAssets.libraries.set(id, library);
-        library.onChange.add(LimeAssets.onChange.dispatch);
-        promise.completeWith(Future.withValue(library));
-      }
-    }).onError(function(_)
-    {
-        promise.error('There is no asset library with an ID of \'' + id + '\'');
-    });
-
-    return promise.future;
   }
 
   public static function transitionToState(state:NextState, stopMusic:Bool = false):Void
