@@ -202,6 +202,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     return value;
   }
 
+  // simple getter to remove bunch of `if (selectedSongEvent != null)` esque checks
+  var isSelectingSongEvent(get, never):Bool;
+  inline function get_isSelectingSongEvent():Bool
+    return selectedSongEvent != null;
+
+
   /**
    * A list of previous working file paths.
    * Also known as the "recent files" list.
@@ -1485,56 +1491,57 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (isHaxeUIFocused) return;
 
-    if (event.ctrlKey)
+    // see: https://haxe.org/manual/lf-pattern-matching-tuples.html
+    // for how this multiple pattern matching works
+    switch ([event.keyCode, event.ctrlKey, isSelectingSongEvent])
     {
-      // note: we can use FlxKey here since they just resolve to Int's, that correspond to their keycode
-      switch (event.keyCode)
-      {
-        case FlxKey.Z:
-          CameraEditorCommandHandler.undoLastCommand(this);
-        case FlxKey.Y: // Y
-          CameraEditorCommandHandler.redoLastCommand(this);
-        case FlxKey.C: // C — Copy
-          if (selectedSongEvent != null)
-          {
-            _clipboardEvent = selectedSongEvent.clone();
-          }
-        case FlxKey.X: // X — Cut
-          if (selectedSongEvent != null)
-          {
-            _clipboardEvent = selectedSongEvent.clone();
-            CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
-            selectedSongEvent = null;
-          }
-        case FlxKey.V: // V — Paste
-          if (_clipboardEvent != null)
-          {
-            var localX = MouseHelper.currentWorldX - timeline.viewport.screenLeft;
-            var mouseMs = timeline.viewport.pixelXToMs(localX);
+      case [FlxKey.Z, true, _]: // ctrl + z -> undo
+        CameraEditorCommandHandler.undoLastCommand(this);
+      case [FlxKey.Y, true, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
+        CameraEditorCommandHandler.redoLastCommand(this);
+      case [FlxKey.C, true, true]: // ctrl + c -> copy
+        SongDataUtils.writeItemsToClipboard({
+          notes: [],
+          events: [selectedSongEvent]
+        });
+        hasClipboardEvent = true;
+      case [FlxKey.X, true, true]: // ctrl + x -> cut
+        SongDataUtils.writeItemsToClipboard({
+          notes: [],
+          events: [selectedSongEvent]
+        });
+        hasClipboardEvent = true;
+        CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
+        selectedSongEvent = null;
+      case [FlxKey.V, true, _] if (hasClipboardEvent): // ctrl + v -> paste
+        var clipboard = SongDataUtils.readItemsFromClipboard();
+        if (clipboard.valid != true || clipboard.events.length == 0) return;
 
-            if (timeline.viewport.stepLengthMs > 0)
-            {
-              var stepMs = timeline.viewport.stepLengthMs;
-              mouseMs = Math.fround(mouseMs / stepMs) * stepMs;
-            }
+        var localX = MouseHelper.currentWorldX - timeline.viewport.screenLeft;
+        var mouseMs = timeline.viewport.pixelXToMs(localX);
 
-            if (mouseMs < 0) mouseMs = 0;
-            if (mouseMs > timeline.viewport.songLengthMs) mouseMs = timeline.viewport.songLengthMs;
+        if (timeline.viewport.stepLengthMs > 0)
+        {
+          var stepMs = timeline.viewport.stepLengthMs;
+          mouseMs = Math.fround(mouseMs / stepMs) * stepMs;
+        }
 
-            var newEvent = _clipboardEvent.clone();
-            newEvent.time = mouseMs;
+        if (mouseMs < 0) mouseMs = 0;
+        if (mouseMs > timeline.viewport.songLengthMs) mouseMs = timeline.viewport.songLengthMs;
 
-            CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
-            selectedSongEvent = newEvent;
-          }
-      }
-    }
+        var newEvent = clipboard.events[0];
+        newEvent.time = mouseMs;
 
-    if ((event.keyCode == 46 /* DELETE */ || event.keyCode == 8 /* BACKSPACE */) && selectedSongEvent != null)
-    {
-      var cmd = new RemoveEventCommand(selectedSongEvent);
-      CameraEditorCommandHandler.performCommand(this, cmd);
-      selectedSongEvent = null;
+        CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
+        selectedSongEvent = newEvent;
+
+      case [FlxKey.DELETE, _, true] | [FlxKey.BACKSPACE, _, true]: // delete/backspace (with a note selected) -> delete selected note
+        var cmd = new RemoveEventCommand(selectedSongEvent);
+        CameraEditorCommandHandler.performCommand(this, cmd);
+        selectedSongEvent = null;
+
+      default:
+        // unbound/do nothing
     }
   }
 
