@@ -51,6 +51,13 @@ class MoveResizeEventCommand implements CameraEditorCommand
     state.loadTimeline();
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
     return oldTime != newTime || oldDuration != newDuration || oldLayerName != newLayerName;
