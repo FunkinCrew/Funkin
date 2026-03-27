@@ -32,13 +32,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.3";
+  static final VERSION:String = "0.8.4";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 77;
+  static final BUILD_NUMBER:Int = 85;
 
   /**
    * The game's name. Used as the default window title.
@@ -861,10 +861,6 @@ class Project extends HXProject
     // FEATURE FLAGS
     //
 
-    // Should be true on debug builds or if GITHUB_BUILD is enabled.
-    FEATURE_DEBUG_FUNCTIONS.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-    FEATURE_RESULTS_DEBUG.apply(this, isDebug() || GITHUB_BUILD.isEnabled(this));
-
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
     FEATURE_DEBUG_FILE_LOGGING.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
@@ -1125,6 +1121,13 @@ class Project extends HXProject
     // Ensure all flixel-animate classes are available at runtime.
     addHaxeMacro("include('animate')");
 
+    // Ensure all openfl classes are available at runtime.
+    addHaxeMacro("include('openfl')");
+
+    // Ensure all lime classes are available at runtime.
+    // Explicitly ignore tools and internal packages.
+    addHaxeMacro("include('lime', true, ['lime.tools.*', 'lime._internal.*'])");
+
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
     addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
@@ -1135,8 +1138,9 @@ class Project extends HXProject
    */
   function configureCustomMacros()
   {
-    // This macro allows addition of new functionality to existing Flixel. -->
+    // These macros allow additions of new functionality to existing Flixel. -->
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
+    addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')");
   }
 
   function configureOutputDir()
@@ -1405,8 +1409,11 @@ class Project extends HXProject
 
   function configureAssets()
   {
-    // Delete the assets folder from the export folder before adding anything.
-    clearAssets();
+    if (!isDisplay())
+    {
+      // Delete the assets folder from the export folder before adding anything.
+      clearAssets();
+    }
 
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
     var shouldPreload = PRELOAD_ALL.isEnabled(this);
@@ -1518,7 +1525,7 @@ class Project extends HXProject
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
-    var platform:String = (!isMac() ? Std.string(this.target) : 'macos');
+    var platform:String = isHashLink() ? 'hl' : (!isMac() ? Std.string(this.target) : 'macos');
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 

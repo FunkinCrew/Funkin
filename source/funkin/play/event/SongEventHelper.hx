@@ -53,6 +53,49 @@ class SongEventHelper
     return easeBitmapMap.get(key);
   }
 
+  static function getEaseRange(func:Dynamic, samples:Int):{min:Float, max:Float}
+  {
+    if (func == null || samples <= 0) return {min: 0.0, max: 1.0};
+
+    var min:Float = 0.0;
+    var max:Float = 1.0;
+    var hasValue:Bool = false;
+
+    for (i in 0...samples)
+    {
+      var t:Float = if (samples > 1) (i / (samples - 1)) else 0.0;
+      var raw = func(t);
+      if (Math.isNaN(raw)) continue;
+
+      if (!hasValue)
+      {
+        min = raw;
+        max = raw;
+        hasValue = true;
+      }
+      else
+      {
+        if (raw < min) min = raw;
+        if (raw > max) max = raw;
+      }
+    }
+
+    if (!hasValue) return {min: 0.0, max: 1.0};
+    return {min: min, max: max};
+  }
+
+  static function getEaseY(raw:Float, size:Int, range:{min:Float, max:Float}):Int
+  {
+    var v:Float = raw;
+    var span = range.max - range.min;
+
+    if (span > 0)
+      v = (raw - range.min) / span;
+
+    v = if (v < 0) 0 else if (v > 1) 1 else v;
+    return Std.int((1 - v) * (size - 1));
+  }
+
   static function createBitmapFromFunc(func:Dynamic, key:String, thickness:Int = 2):BitmapData
   {
     try
@@ -62,6 +105,14 @@ class SongEventHelper
       if (key.toLowerCase() == "instant") return bd;
       if (thickness < 1) thickness = 1;
       var half = Std.int(thickness / 2);
+      var range = getEaseRange(func, size);
+
+      // Draw horizontal lines at y=1 and y=0 for reference.
+      var y1 = getEaseY(1, size, range);
+      var y0 = getEaseY(0, size, range);
+      bd.fillRect(new openfl.geom.Rectangle(0, y1 - half, size, thickness), 0xFF404040);
+      bd.fillRect(new openfl.geom.Rectangle(0, y0 - half, size, thickness), 0xFF404040);
+
       var lastY:Int = -1;
       for (i in 0...size)
       {
@@ -69,21 +120,20 @@ class SongEventHelper
         var raw = func(t);
         if (!Math.isNaN(raw))
         {
-          var v:Float = raw;
-          if (v < 0) v = 0;
-          if (v > 1) v = 1;
-          var y:Int = Std.int((1 - v) * (size - 1));
+          var y:Int = getEaseY(raw, size, range);
           if (lastY == -1)
           {
-            for (yy in (y - half)...(y + half + 1))
-              if (yy >= 0 && yy < size) bd.setPixel32(i, yy, 0xFFFFFFFF);
+            for (xx in (i - half)...(i + half + 1))
+              if (xx >= 0 && xx < size) for (yy in (y - half)...(y + half + 1))
+                if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
           }
           else
           {
             var a = Std.int(Math.min(y, lastY));
             var b = Std.int(Math.max(y, lastY));
-            for (yy in a - half...b + half + 1)
-              if (yy >= 0 && yy < size) bd.setPixel32(i, yy, 0xFFFFFFFF);
+            for (xx in (i - half)...(i + half + 1))
+              if (xx >= 0 && xx < size) for (yy in a - half...b + half + 1)
+                if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
           }
           lastY = y;
         }
@@ -122,6 +172,7 @@ class SongEventHelper
     if (baseBd == null) return null;
     var easeFunc:Dynamic = resolveEaseFuncForKey(key);
     var sizeH:Int = baseBd.height;
+    var range = getEaseRange(easeFunc, sizeH);
     var sprites:Array<FlxSprite> = [];
     for (f in 0...frameCount)
     {
@@ -136,10 +187,7 @@ class SongEventHelper
         raw = FlxEase.linear(t);
       }
       if (Math.isNaN(raw)) raw = 0.0;
-      var v:Float = raw;
-      if (v < 0) v = 0;
-      if (v > 1) v = 1;
-      var y:Int = Std.int((1 - v) * (sizeH - 1));
+      var y:Int = getEaseY(raw, sizeH, range);
       var bd:BitmapData = new BitmapData(dotWidth, sizeH, false, 0xFF202223);
       var centerX:Int = Std.int(dotWidth / 2);
       for (dx in -dotRadius...dotRadius + 1)

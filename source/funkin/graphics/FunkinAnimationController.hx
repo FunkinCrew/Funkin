@@ -1,8 +1,8 @@
 package funkin.graphics;
 
-import funkin.graphics.FunkinSprite;
 import animate.FlxAnimateController;
 
+@:access(funkin.graphics.FunkinSprite)
 class FunkinAnimationController extends FlxAnimateController
 {
   /**
@@ -14,6 +14,12 @@ class FunkinAnimationController extends FlxAnimateController
   {
     super(sprite);
     _parentSprite = sprite;
+  }
+
+  override function set_frameIndex(frame:Int):Int
+  {
+    _parentSprite._renderTextureDirty = true;
+    return super.set_frameIndex(frame);
   }
 
   /**

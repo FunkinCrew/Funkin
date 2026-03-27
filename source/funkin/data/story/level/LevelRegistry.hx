@@ -14,7 +14,7 @@ class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> imp
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateLevelData()` function.
    */
-  public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.1";
+  public static final LEVEL_DATA_VERSION:thx.semver.Version = "1.0.2";
 
   public static final LEVEL_DATA_VERSION_RULE:thx.semver.VersionRule = ">=1.0.0 <1.1.0";
 

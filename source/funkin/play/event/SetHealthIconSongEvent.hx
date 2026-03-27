@@ -109,20 +109,26 @@ class SetHealthIconSongEvent extends SongEvent
       defaultValue: DEFAULT_FLIPX,
       type: SongEventFieldType.BOOL,
     }, {
-      name: 'isPixel',
-      title: 'Is Pixel?',
-      defaultValue: DEFAULT_ISPIXEL,
-      type: SongEventFieldType.BOOL,
-    }, {
-      name: 'offsetX',
-      title: 'X Offset',
-      defaultValue: DEFAULT_X_OFFSET,
-      type: SongEventFieldType.FLOAT,
-    }, {
-      name: 'offsetY',
-      title: 'Y Offset',
-      defaultValue: DEFAULT_Y_OFFSET,
-      type: SongEventFieldType.FLOAT,
+      name: 'advanced',
+      title: 'Advanced',
+      type: SongEventFieldType.FRAME,
+      collapsible: true,
+      children: [{
+        name: 'isPixel',
+        title: 'Is Pixel?',
+        defaultValue: DEFAULT_ISPIXEL,
+        type: SongEventFieldType.BOOL,
+      }, {
+        name: 'offsetX',
+        title: 'X Offset',
+        defaultValue: DEFAULT_X_OFFSET,
+        type: SongEventFieldType.FLOAT,
+      }, {
+        name: 'offsetY',
+        title: 'Y Offset',
+        defaultValue: DEFAULT_Y_OFFSET,
+        type: SongEventFieldType.FLOAT,
+      }]
     }]);
   }
 }

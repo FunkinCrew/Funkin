@@ -4,6 +4,7 @@ import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import funkin.graphics.shaders.GaussianBlurShader;
+import openfl.filters.GlowFilter;
 
 /**
  * A FlxTypedGroup for capsules that does drawing in batches. This prevents memory leaks due to too many assets being rendered.
@@ -13,6 +14,7 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
 {
   var rankBlurredShader:GaussianBlurShader = new GaussianBlurShader(1);
   var favIconBlurredShader:GaussianBlurShader = new GaussianBlurShader(1.2);
+  var weekTextFilter:GlowFilter = new GlowFilter(0xFF1A1C24, 1, 5, 5, 3.13, 1, true, true);
 
   #if hl
   // What the hell is the compiler about on here?
@@ -27,6 +29,8 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
     capsule.fakeBlurredRanking.shader = rankBlurredShader;
     capsule.blurredRanking.shader = rankBlurredShader;
     capsule.favIconBlurred.shader = favIconBlurredShader;
+
+    capsule.weekText.filters = [weekTextFilter];
 
     return capsule;
   }

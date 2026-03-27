@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "554c224062349e8849081342ddd157da2a4be3ac",
+      "ref": "5c908b3f7c74115a8b52eddf1e05525f4873f26e",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -52,14 +52,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "ab6cc8c14878be3a1a918d85668efc3b6a6263f2",
+      "ref": "f7b94eebf7dbb452a929d0c67ab31a9cbd71d3a0",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "60e3076e1ed8cc6ad0cad5e72fe3c3d5e91207b7",
+      "ref": "187f93b34f93c6a405d634a42913c745e443463a",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -111,7 +111,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "5932340d095a7eea8635fe4d1355f1c0efd0b3c2",
+      "ref": "450d112e50acff57b1bc9d584dcf1374c9e33995",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -146,7 +146,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.5"
+      "version": "2.2.6"
     },
     {
       "name": "json2object",
@@ -169,7 +169,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "248ea4175a9150320243378107b3820e154f328b",
+      "ref": "58dd49b018729f86600f719a98728ffb024724e3",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -183,14 +183,14 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "0600b18e624aa8054ea86fc795c4d8e5bc004fbe",
+      "ref": "88534506595a32c3f02b21b3987e789a24074ae7",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "498478acb6c51b3d02ade9792d533cd84d6b2759",
+      "ref": "fb123758b90127f5647727727f273d27e93cabdb",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

@@ -417,6 +417,11 @@ class PolymodHandler
     // Disallow direct manipulation of save data.
     Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
 
+    // `haxe.Unserializer`
+    // Just to be double-sure, lets blacklist some fields of the Unserializer to make it harder to use if you DO get one.
+    Polymod.blacklistStaticFields(haxe.Unserializer, ['run']);
+    Polymod.blacklistInstanceFields(haxe.Unserializer, ['unserialize']);
+
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
@@ -424,6 +429,12 @@ class PolymodHandler
       'data', // LMFAO definitely not
       'clearData', // No score manipulation please
       'setLevelScore', 'setSongScore', 'applySongRank']);
+
+    // `openfl.filesystem.FileStream`, `openfl.net.Socket`, `openfl.utils.ByteArray.ByteArrayData`
+    // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
+    #if !html5 Polymod.blacklistInstanceFields(openfl.filesystem.FileStream, ['readObject']); #end
+    Polymod.blacklistInstanceFields(openfl.net.Socket, ['readObject']);
+    Polymod.blacklistInstanceFields(openfl.utils.ByteArray.ByteArrayData, ['readObject']);
 
     // `funkin.api.*`
     // Contains functions which may allow for cheating and such.
@@ -512,11 +523,6 @@ class PolymodHandler
     var output:polymod.format.ParseRules = polymod.format.ParseRules.getDefault();
     // Ensure TXT files have merge support.
     output.addType('txt', TextFileFormat.LINES);
-    // Ensure script files have merge support.
-    output.addType('hscript', TextFileFormat.PLAINTEXT);
-    output.addType('hxs', TextFileFormat.PLAINTEXT);
-    output.addType('hxc', TextFileFormat.PLAINTEXT);
-    output.addType('hx', TextFileFormat.PLAINTEXT);
 
     // You can specify the format of a specific file, with file extension.
     // output.addFile("data/introText.txt", TextFileFormat.LINES)

@@ -80,6 +80,7 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumId == null)
     {
       this.visible = false;
+      albumData = null;
       return;
     }
     else
@@ -241,6 +242,26 @@ class AlbumRoll extends FlxSpriteGroup
   {
     difficultyStars.visible = true;
     difficultyStars.flameCheck();
+  }
+
+  /**
+   * Returns the name for the OST associated with the album.
+   * If not specified, returns the default name if this is a base game album.
+   * @return Null<String>
+   */
+  public function getOSTNameOverride():Null<String>
+  {
+    var ostOverride:Null<String> = albumData?.getAlbumOSTName();
+    if (ostOverride != null)
+    {
+      return ostOverride;
+    }
+    else if (albumId == null || AlbumRegistry.instance.listBaseGameEntryIds().contains(albumId))
+    {
+      return Constants.DEFAULT_OST_NAME;
+    }
+
+    return null;
   }
 
   override function destroy():Void

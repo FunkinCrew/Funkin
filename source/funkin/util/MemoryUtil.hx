@@ -103,6 +103,15 @@ class MemoryUtil
     return 0.0;
   }
 
+  public static function supportsGCMem():Bool
+  {
+    #if !html5
+    return true;
+    #else
+    return false;
+    #end
+  }
+
   public static function getGCMemory():Float
   {
     return openfl.system.System.totalMemoryNumber;

@@ -2,6 +2,8 @@ package funkin.play.event;
 
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
+import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
+import funkin.modding.events.ScriptEvent;
 
 /**
  * Parameters used to initialize a song event.
@@ -22,7 +24,7 @@ typedef SongEventParams =
  * It is used by the ScriptedSongEvent class to handle user-defined events,
  * and also used by other classes in this package to provide default behavior for built-in events.
  */
-class SongEvent
+class SongEvent implements IPlayStateScriptedClass
 {
   /**
    * These variables are used in two different events (and may be in more), and in order not to create unnecessary variables, we store them here
@@ -98,5 +100,93 @@ class SongEvent
   public function toString():String
   {
     return 'SongEvent(${this.id})';
+  }
+
+  public function onScriptEvent(event:ScriptEvent)
+  {
+  }
+
+  public function onCreate(event:ScriptEvent)
+  {
+  }
+
+  public function onDestroy(event:ScriptEvent)
+  {
+  }
+
+  public function onUpdate(event:UpdateScriptEvent)
+  {
+  }
+
+  public function onStepHit(event:SongTimeScriptEvent)
+  {
+  }
+
+  public function onBeatHit(event:SongTimeScriptEvent)
+  {
+  }
+
+  public function onPause(event:PauseScriptEvent)
+  {
+  }
+
+  public function onResume(event:ScriptEvent)
+  {
+  }
+
+  public function onSongStart(event:ScriptEvent)
+  {
+  }
+
+  public function onSongEnd(event:ScriptEvent)
+  {
+  }
+
+  public function onGameOver(event:ScriptEvent)
+  {
+  }
+
+  public function onNoteIncoming(event:NoteScriptEvent)
+  {
+  }
+
+  public function onNoteHit(event:HitNoteScriptEvent)
+  {
+  }
+
+  public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  {
+  }
+
+  public function onSongEvent(event:SongEventScriptEvent)
+  {
+  }
+
+  public function onNoteGhostMiss(event:GhostMissNoteScriptEvent)
+  {
+  }
+
+  public function onCountdownStart(event:CountdownScriptEvent)
+  {
+  }
+
+  public function onCountdownStep(event:CountdownScriptEvent)
+  {
+  }
+
+  public function onCountdownEnd(event:CountdownScriptEvent)
+  {
+  }
+
+  public function onSongLoaded(event:SongLoadScriptEvent)
+  {
+  }
+
+  public function onSongRetry(event:SongRetryEvent)
+  {
   }
 }

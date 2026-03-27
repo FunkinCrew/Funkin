@@ -139,16 +139,22 @@ class ScrollSpeedEvent extends SongEvent
       type: SongEventFieldType.ENUM,
       keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
     }, {
-      name: 'strumline',
-      title: 'Target Strumline',
-      defaultValue: DEFAULT_STRUMLINE,
-      type: SongEventFieldType.ENUM,
-      keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
-    }, {
-      name: 'absolute',
-      title: 'Absolute',
-      defaultValue: DEFAULT_ABSOLUTE,
-      type: SongEventFieldType.BOOL,
+      name: 'advanced',
+      title: 'Advanced',
+      type: SongEventFieldType.FRAME,
+      collapsible: true,
+      children: [{
+        name: 'strumline',
+        title: 'Target Strumline',
+        defaultValue: DEFAULT_STRUMLINE,
+        type: SongEventFieldType.ENUM,
+        keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
+      }, {
+        name: 'absolute',
+        title: 'Absolute',
+        defaultValue: DEFAULT_ABSOLUTE,
+        type: SongEventFieldType.BOOL,
+      }]
     }]);
   }
 }

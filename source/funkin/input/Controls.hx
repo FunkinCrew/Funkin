@@ -1,5 +1,6 @@
 package funkin.input;
 
+import funkin.util.InputUtil;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.util.FlxDirectionFlags;
 import flixel.input.FlxInput.FlxInputState;
@@ -381,22 +382,22 @@ class Controls extends FlxActionSet
   public function getDialogueName(action:FlxActionDigital, ?ignoreSurrounding:Bool = false):String
   {
     if (action.inputs.length == 0) return 'N/A';
-    var input = action.inputs[0];
+    var input = FunkinAction.lastDeviceUsed == KEYBOARD ? action.inputs[0] : action.inputs[1];
     if (ignoreSurrounding == false)
     {
-      return switch (input.device)
+      return switch (FunkinAction.lastDeviceUsed)
       {
-        case KEYBOARD: return '[${(input.inputID : FlxKey)}]';
-        case GAMEPAD: return '(${(input.inputID : FlxGamepadInputID)})';
+        case KEYBOARD: return '[${InputUtil.format(input.inputID, Keys).toUpperCase()}]';
+        case GAMEPAD: return '(${InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase()})';
         case device: throw 'unhandled device: $device';
       }
     }
     else
     {
-      return switch (input.device)
+      return switch (FunkinAction.lastDeviceUsed)
       {
-        case KEYBOARD: return '${(input.inputID : FlxKey)}';
-        case GAMEPAD: return '${(input.inputID : FlxGamepadInputID)}';
+        case KEYBOARD: return InputUtil.format(input.inputID, Keys).toUpperCase();
+        case GAMEPAD: return InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase();
         case device: throw 'unhandled device: $device';
       }
     }
@@ -1188,6 +1189,8 @@ class FunkinAction extends FlxActionDigital
 
     this.namePressed = namePressed;
     this.nameReleased = nameReleased;
+
+    updateLastDeviceUsed();
   }
 
   /**
@@ -1203,6 +1206,7 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkPressed():Bool
   {
+    if (checkFiltered(PRESSED)) updateLastDeviceUsed();
     return checkFiltered(PRESSED);
   }
 
@@ -1211,6 +1215,7 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkJustPressed():Bool
   {
+    if (checkFiltered(JUST_PRESSED)) updateLastDeviceUsed();
     return checkFiltered(JUST_PRESSED);
   }
 
@@ -1227,6 +1232,7 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkJustReleased():Bool
   {
+    if (checkFiltered(JUST_RELEASED)) updateLastDeviceUsed();
     return checkFiltered(JUST_RELEASED);
   }
 
@@ -1352,6 +1358,29 @@ class FunkinAction extends FlxActionDigital
     cache.set(key, {timestamp: FlxG.game.ticks, value: triggered});
 
     return triggered;
+  }
+
+  public static var lastDeviceUsed:FlxInputDevice;
+
+  /**
+   * Checks which is the last device you have used and stores the value in `lastDeviceUsed`.
+   */
+  public function updateLastDeviceUsed()
+  {
+    if (FlxG.keys.pressed.ANY)
+    {
+      lastDeviceUsed = FlxInputDevice.KEYBOARD;
+      return;
+    }
+
+    if (FlxG.gamepads.lastActive != null)
+    {
+      lastDeviceUsed = FlxInputDevice.GAMEPAD;
+      return;
+    }
+
+    // Default value (just in case everything's null somehow)
+    lastDeviceUsed = FlxInputDevice.KEYBOARD;
   }
 }
 

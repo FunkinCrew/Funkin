@@ -1,6 +1,8 @@
 package funkin.play.event;
 
 import flixel.tweens.FlxEase;
+import flixel.math.FlxPoint;
+import funkin.ui.FullScreenScaleMode;
 // Data from the chart
 import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
@@ -27,9 +29,10 @@ class ZoomCameraSongEvent extends SongEvent
     });
   }
 
-  static final DEFAULT_ZOOM:Float = 1.0;
-  static final DEFAULT_DURATION:Float = 4.0;
-  static final DEFAULT_MODE:String = 'direct';
+  public static final DEFAULT_ZOOM:Float = 1.0;
+  public static final DEFAULT_WIDESCREEN_SCALE:Float = 0.0;
+  public static final DEFAULT_DURATION:Float = 4.0;
+  public static final DEFAULT_MODE:String = 'direct';
 
   public override function handleEvent(data:SongEventData):Void
   {
@@ -40,6 +43,11 @@ class ZoomCameraSongEvent extends SongEvent
     if (PlayState.instance.isMinimalMode) return;
 
     var zoom:Float = data.getFloat('zoom') ?? DEFAULT_ZOOM;
+
+    var widescreenScaleX:Float = data.getFloat('widescreenScaleX') ?? DEFAULT_WIDESCREEN_SCALE;
+    var widescreenScaleY:Float = data.getFloat('widescreenScaleY') ?? DEFAULT_WIDESCREEN_SCALE;
+
+    var scaledZoom:Float = zoom + (zoom * calculateScale(FullScreenScaleMode.wideScale, FlxPoint.get(widescreenScaleX, widescreenScaleY)));
 
     var duration:Float = data.getFloat('duration') ?? DEFAULT_DURATION;
 
@@ -55,7 +63,7 @@ class ZoomCameraSongEvent extends SongEvent
     switch (ease)
     {
       case 'INSTANT':
-        PlayState.instance.tweenCameraZoom(zoom, 0, isDirectMode);
+        PlayState.instance.tweenCameraZoom(scaledZoom, 0, isDirectMode);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunctionName = '$ease$easeDir';
@@ -66,8 +74,13 @@ class ZoomCameraSongEvent extends SongEvent
           return;
         }
 
-        PlayState.instance.tweenCameraZoom(zoom, durSeconds, isDirectMode, easeFunction);
+        PlayState.instance.tweenCameraZoom(scaledZoom, durSeconds, isDirectMode, easeFunction);
     }
+  }
+
+  function calculateScale(wideScale:FlxPoint, scale:FlxPoint)
+  {
+    return (wideScale.x - 1) * scale.x + (wideScale.y - 1) * scale.y;
   }
 
   public override function getTitle():String
@@ -105,12 +118,6 @@ class ZoomCameraSongEvent extends SongEvent
       type: SongEventFieldType.FLOAT,
       units: 'steps'
     }, {
-      name: 'mode',
-      title: 'Mode',
-      defaultValue: DEFAULT_MODE,
-      type: SongEventFieldType.ENUM,
-      keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
-    }, {
       name: 'ease',
       title: 'Easing Type',
       defaultValue: SongEvent.DEFAULT_EASE,
@@ -122,6 +129,34 @@ class ZoomCameraSongEvent extends SongEvent
       defaultValue: SongEvent.DEFAULT_EASE_DIR,
       type: SongEventFieldType.ENUM,
       keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+    }, {
+      name: 'advanced',
+      title: 'Advanced',
+      type: SongEventFieldType.FRAME,
+      collapsible: true,
+      children: [{
+        name: 'mode',
+        title: 'Mode',
+        defaultValue: DEFAULT_MODE,
+        type: SongEventFieldType.ENUM,
+        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+      }, {
+        name: 'widescreenScaleX',
+        title: 'Widescreen Scale X',
+        defaultValue: DEFAULT_WIDESCREEN_SCALE,
+        min: 0,
+        max: 1,
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
+      }, {
+        name: 'widescreenScaleY',
+        title: 'Widescreen Scale Y',
+        defaultValue: DEFAULT_WIDESCREEN_SCALE,
+        min: 0,
+        max: 1,
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
+      }]
     }]);
   }
 }

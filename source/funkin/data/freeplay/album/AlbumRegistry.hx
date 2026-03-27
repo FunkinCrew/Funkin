@@ -14,7 +14,7 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> imp
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateAlbumData()` function.
    */
-  public static final ALBUM_DATA_VERSION:thx.semver.Version = '1.0.0';
+  public static final ALBUM_DATA_VERSION:thx.semver.Version = '1.0.3';
 
   public static final ALBUM_DATA_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
 

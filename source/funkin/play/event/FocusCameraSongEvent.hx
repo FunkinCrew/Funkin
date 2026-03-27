@@ -6,6 +6,7 @@ import funkin.data.song.SongData.SongEventData;
 // Data from the event schema
 import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
+import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 
 /**
  * This class handles song events which change the camera focus.
