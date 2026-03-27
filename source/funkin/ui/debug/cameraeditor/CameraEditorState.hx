@@ -1064,11 +1064,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentInstrumental == null) return;
 
-    currentInstrumental.play();
+    currentInstrumental.play(false, currentInstrumental.time);
     for (vocal in currentVocals)
     {
       vocal.time = currentInstrumental.time;
-      vocal.play();
+      vocal.play(false, vocal.time);
     }
     timeline.isPlaying = true;
   }
