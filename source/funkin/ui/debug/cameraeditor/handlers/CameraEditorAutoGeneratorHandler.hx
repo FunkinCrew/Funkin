@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor.handlers;
 
+import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.debug.cameraeditor.commands.GenerateEventsCommand;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongEventData;
@@ -40,7 +41,26 @@ class CameraEditorAutoGeneratorHandler
 
         var generatedEvents:Array<SongEventData> = autoGen_Vanilla(notes, period);
 
-        var cmd = new GenerateEventsCommand(generatedEvents);
+        var existingLayers:Array<String> = state.timeline.viewport.layers.map(function(layer:TimelineLayerData):String
+        {
+          return layer.name;
+        });
+
+        var layerIndex:Int = 1;
+        var layerName:String = 'Generated';
+        var layerNameValid:Bool = false;
+
+        while (!layerNameValid)
+        {
+          layerNameValid = existingLayers.indexOf(layerName) == -1;
+          if (!layerNameValid)
+          {
+            layerIndex += 1;
+            layerName = 'Generated ${layerIndex}';
+          }
+        }
+
+        var cmd = new GenerateEventsCommand(generatedEvents, layerName);
         CameraEditorCommandHandler.performCommand(state, cmd);
         state.selectedSongEvent = null;
 
