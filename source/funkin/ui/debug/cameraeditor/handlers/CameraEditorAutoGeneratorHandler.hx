@@ -1,8 +1,8 @@
 package funkin.ui.debug.cameraeditor.handlers;
 
+import funkin.ui.debug.cameraeditor.commands.GenerateEventsCommand;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongChartData;
 
@@ -39,6 +39,10 @@ class CameraEditorAutoGeneratorHandler
         var period:Float = beatLengthMs * 3;
 
         var generatedEvents:Array<SongEventData> = autoGen_Vanilla(notes, period);
+
+        var cmd = new GenerateEventsCommand(generatedEvents);
+        CameraEditorCommandHandler.performCommand(state, cmd);
+        state.selectedSongEvent = null;
 
       default:
         trace(' WARNING '.warning() + ' Unknown Auto Generator placement mode: ' + params.placementMode);
