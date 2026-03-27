@@ -345,9 +345,16 @@ class Controls extends FlxActionSet
     #end
 
     var action = byName[name];
-    if (gamepadOnly) return action.checkFiltered(trigger, GAMEPAD);
+    if (gamepadOnly)
+    {
+      if(action.checkFiltered(trigger, GAMEPAD)) action.updateLastDeviceUsed();
+      return action.checkFiltered(trigger, GAMEPAD);
+    }
     else
+    {
+      if(action.checkFiltered(trigger)) action.updateLastDeviceUsed();
       return action.checkFiltered(trigger);
+    }
   }
 
   public function getKeysForAction(name:Action):Array<FlxKey>
@@ -1193,6 +1200,7 @@ class FunkinAction extends FlxActionDigital
    */
   public override function check():Bool
   {
+    if (checkFiltered(JUST_PRESSED)) updateLastDeviceUsed();
     return checkFiltered(JUST_PRESSED);
   }
 

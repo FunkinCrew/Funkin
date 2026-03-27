@@ -562,14 +562,7 @@ class FreeplayState extends MusicBeatSubState
     charSelectHint.alignment = CENTER;
     charSelectHint.font = "5by7";
     charSelectHint.color = 0xFF5F5F5F;
-    #if FEATURE_TOUCH_CONTROLS
-    if (ControlsHandler.hasExternalInputDevice)
-      charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
-    else
-      charSelectHint.text = 'Tap the DJ to change characters';
-    #else
-    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
-    #end
+    updateFreeplayHintText();
     if (!fromCharSelect)
     {
       charSelectHint.y -= 100;
@@ -1763,15 +1756,7 @@ class FreeplayState extends MusicBeatSubState
     handleTouchSelectionScroll(elapsed);
     #end
 
-    #if FEATURE_TOUCH_CONTROLS
-    if (ControlsHandler.usingExternalInputDevice)
-      charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
-    else
-      charSelectHint.text = 'Tap the DJ to change characters';
-    #else
-    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
-    #end
-
+    updateFreeplayHintText();
     handleDirectionalInput(elapsed);
 
     final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
@@ -3150,6 +3135,18 @@ class FreeplayState extends MusicBeatSubState
         });
       }
     }
+  }
+
+  function updateFreeplayHintText()
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (ControlsHandler.usingExternalInputDevice)
+      charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    else
+      charSelectHint.text = 'Tap the DJ to change characters';
+    #else
+    charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    #end
   }
 }
 
