@@ -1487,25 +1487,26 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (event.ctrlKey)
     {
+      // note: we can use FlxKey here since they just resolve to Int's, that correspond to their keycode
       switch (event.keyCode)
       {
-        case 90: // Z
+        case FlxKey.Z:
           CameraEditorCommandHandler.undoLastCommand(this);
-        case 89: // Y
+        case FlxKey.Y: // Y
           CameraEditorCommandHandler.redoLastCommand(this);
-        case 67: // C — Copy
+        case FlxKey.C: // C — Copy
           if (selectedSongEvent != null)
           {
             _clipboardEvent = selectedSongEvent.clone();
           }
-        case 88: // X — Cut
+        case FlxKey.X: // X — Cut
           if (selectedSongEvent != null)
           {
             _clipboardEvent = selectedSongEvent.clone();
             CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
             selectedSongEvent = null;
           }
-        case 86: // V — Paste
+        case FlxKey.V: // V — Paste
           if (_clipboardEvent != null)
           {
             var localX = MouseHelper.currentWorldX - timeline.viewport.screenLeft;
