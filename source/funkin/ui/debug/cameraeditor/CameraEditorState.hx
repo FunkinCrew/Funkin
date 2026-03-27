@@ -33,6 +33,7 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongDataUtils;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
@@ -70,6 +71,7 @@ import funkin.util.logging.CrashHandler;
 import funkin.util.macro.ConsoleMacro;
 import haxe.io.Bytes;
 import haxe.io.Path;
+import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.containers.Panel;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
@@ -187,6 +189,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   public var selectedSongEvent(default, set):Null<SongEventData> = null;
+  var hasClipboardEvent:Bool = false;
 
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
   {
@@ -1490,6 +1493,39 @@ class CameraEditorState extends UIState implements ConsoleClass
           CameraEditorCommandHandler.undoLastCommand(this);
         case 89: // Y
           CameraEditorCommandHandler.redoLastCommand(this);
+        case 67: // C — Copy
+          if (selectedSongEvent != null)
+          {
+            _clipboardEvent = selectedSongEvent.clone();
+          }
+        case 88: // X — Cut
+          if (selectedSongEvent != null)
+          {
+            _clipboardEvent = selectedSongEvent.clone();
+            CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
+            selectedSongEvent = null;
+          }
+        case 86: // V — Paste
+          if (_clipboardEvent != null)
+          {
+            var localX = MouseHelper.currentWorldX - timeline.viewport.screenLeft;
+            var mouseMs = timeline.viewport.pixelXToMs(localX);
+
+            if (timeline.viewport.stepLengthMs > 0)
+            {
+              var stepMs = timeline.viewport.stepLengthMs;
+              mouseMs = Math.fround(mouseMs / stepMs) * stepMs;
+            }
+
+            if (mouseMs < 0) mouseMs = 0;
+            if (mouseMs > timeline.viewport.songLengthMs) mouseMs = timeline.viewport.songLengthMs;
+
+            var newEvent = _clipboardEvent.clone();
+            newEvent.time = mouseMs;
+
+            CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
+            selectedSongEvent = newEvent;
+          }
       }
     }
 
