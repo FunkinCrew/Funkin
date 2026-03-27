@@ -10,10 +10,10 @@ class GenerateEventsCommand implements CameraEditorCommand
 
   var newLayerName:String;
 
-  public function new(events:Array<SongEventData>)
+  public function new(events:Array<SongEventData>, newLayerName:String)
   {
     this.events = events;
-    this.newLayerName = 'Generated';
+    this.newLayerName = newLayerName;
   }
 
   public function execute(state:CameraEditorState):Void
