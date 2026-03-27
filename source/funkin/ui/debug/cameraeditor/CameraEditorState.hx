@@ -126,6 +126,10 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
 
+  public var currentDifficulty:String = "hard";
+
+  public var currentNotes(get, never):Array<SongNoteData>;
+
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
 
   public var vCamDebug:FunkinSprite = null;
@@ -138,6 +142,15 @@ class CameraEditorState extends UIState implements ConsoleClass
   function get_currentSongChartData():Null<SongChartData>
   {
     return songDatas.get(currentVariation);
+  }
+
+  function get_currentNotes():Array<SongNoteData>
+  {
+    var chartData = currentSongChartData;
+    if (chartData == null) return [];
+    var notes = chartData.notes.get(currentDifficulty);
+    if (notes == null) return [];
+    return notes;
   }
 
   public var currentStage:Null<Stage> = null;
@@ -574,7 +587,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function processNotes():Void
   {
-    var notes:Array<SongNoteData> = currentSongChartData.notes["hard"];
+    var notes:Array<SongNoteData> = currentNotes;
     if (notes == null) return;
 
     var dad:BaseCharacter = currentStage.getDad();
@@ -1214,7 +1227,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
-    var notes:Array<SongNoteData> = currentSongChartData.notes["hard"];
+    var notes:Array<SongNoteData> = currentNotes;
     var dad:BaseCharacter = currentStage != null ? currentStage.getDad() : null;
     var bf:BaseCharacter = currentStage != null ? currentStage.getBoyfriend() : null;
     var dadShouldKeepSinging:Bool = false;
@@ -1281,6 +1294,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.update(0);
 
     previousTime = Conductor.instance.songPosition;
+    previousNoteTime = position;
   }
 
   // ui function bindings
