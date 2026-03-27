@@ -1,8 +1,10 @@
 package funkin.graphics;
 
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.FlxCamera;
 import flixel.addons.display.FlxSliceSprite;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
  * An FlxSprite that inherits the vcam positioning from FunkinSprite.
@@ -11,6 +13,16 @@ import flixel.addons.display.FlxSliceSprite;
 class FunkinSliceSprite extends FlxSliceSprite
 {
   public var vcamPoint:Null<FlxPoint> = null;
+
+  public function new(graphic:FlxGraphicAsset, sliceRect:FlxRect, width:Float, height:Float, ?sourceRect:FlxRect)
+  {
+    super(graphic, sliceRect, width, height, sourceRect);
+    stretchCenter = true;
+    stretchTop = true;
+    stretchBottom = true;
+    stretchLeft = true;
+    stretchRight = true;
+  }
 
   /**
    * Gets the screen position of the sprite, taking into account the camera scroll and the `vcamPoint` if it exists.
