@@ -27,7 +27,7 @@ interface CameraEditorCommand
 
   /**
    * Return whether or not this command should be appended to the in the undo/redo history.
-   * Generally this should be true, it should only be false if the command is minor and non-destructive,
+   * Generally this should be `true`, it should only be `false` if the command is minor and non-destructive,
    * like copying to the clipboard.
    *
    * Called after `execute()` is performed.

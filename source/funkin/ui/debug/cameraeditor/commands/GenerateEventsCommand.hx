@@ -4,18 +4,26 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
-class AddEventCommand implements CameraEditorCommand
+class GenerateEventsCommand implements CameraEditorCommand
 {
-  var event:SongEventData;
+  var events:Array<SongEventData>;
 
-  public function new(event:SongEventData)
+  var newLayerName:String;
+
+  public function new(events:Array<SongEventData>)
   {
-    this.event = event;
+    this.events = events;
+    this.newLayerName = 'Generated';
   }
 
   public function execute(state:CameraEditorState):Void
   {
-    state.currentSongChartData.events.push(event);
+    for (event in events)
+    {
+      event.editorLayer = newLayerName;
+      state.currentSongChartData.events.push(event);
+    }
+
     state.currentSongChartData.events.sort(function(a:SongEventData, b:SongEventData):Int
     {
       if (a.time < b.time) return -1;
@@ -26,9 +34,17 @@ class AddEventCommand implements CameraEditorCommand
     state.loadTimeline();
   }
 
+  /**
+   * Undo the `execute()` function.
+   * @param state
+   */
   public function undo(state:CameraEditorState):Void
   {
-    state.currentSongChartData.events.remove(event);
+    for (event in events)
+    {
+      state.currentSongChartData.events.remove(event);
+    }
+
     state.saved = false;
     state.loadTimeline();
   }
@@ -42,12 +58,12 @@ class AddEventCommand implements CameraEditorCommand
    */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
-    return true;
+    return this.events.length > 0;
   }
 
   public function toString():String
   {
-    return 'Add ${event.eventKind} Event';
+    return 'Auto Generate ${this.events.length} Events';
   }
 }
 #end
