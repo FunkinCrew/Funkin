@@ -69,6 +69,11 @@ class FileUtil
   public static final FILE_FILTER_OSU:FileFilter = new FileFilter('OSU! Beatmap File', '*.osu');
 
   /**
+   * File filter for Quaver chart files.
+   */
+  public static final FILE_FILTER_QUAVER:FileFilter = new FileFilter('Quaver Chart File', '*.qua');
+
+  /**
    * Paths which should not be deleted or modified by scripts.
    */
   public static var PROTECTED_PATHS(get, never):Array<String>;

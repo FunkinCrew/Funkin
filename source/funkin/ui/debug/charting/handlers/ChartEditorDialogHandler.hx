@@ -8,6 +8,8 @@ import funkin.data.song.importer.OsuManiaData;
 import funkin.data.song.importer.OsuManiaImporter;
 import funkin.data.song.importer.StepManiaData;
 import funkin.data.song.importer.StepManiaImporter;
+import funkin.data.song.importer.QuaverData;
+import funkin.data.song.importer.QuaverImporter;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -1135,6 +1137,8 @@ class ChartEditorDialogHandler
         'StepMania';
       case 'osumania':
         'osu!Mania';
+      case 'quaver':
+        'Quaver';
       default:
         'Unknown';
     }
@@ -1147,6 +1151,8 @@ class ChartEditorDialogHandler
         [FileUtil.FILE_FILTER_SM];
       case 'osumania':
         [FileUtil.FILE_FILTER_OSU];
+      case 'quaver':
+        [FileUtil.FILE_FILTER_QUAVER];
       default:
         null;
     }
@@ -1157,6 +1163,8 @@ class ChartEditorDialogHandler
         "osu";
       case 'stepmania':
         "sm";
+      case 'quaver':
+        "qua";
       default:
         "json";
     }
@@ -1264,9 +1272,22 @@ class ChartEditorDialogHandler
           songChartData = OsuManiaImporter.migrateChartData(osuManiaData);
 
           loadedText = 'Loaded beatmap file';
+        case 'quaver':
+          var quaverData:Null<QuaverData> = QuaverImporter.parseQuaverFile(content);
+
+          if (quaverData == null)
+          {
+            state.error('Failure', 'Failed to parse Quaver chart file (${path.file}.${path.ext})');
+            return;
+          }
+
+          songMetadata = QuaverImporter.migrateMetadata(quaverData);
+          songChartData = QuaverImporter.migrateChart(quaverData);
+
+          loadedText = 'Loaded chart file';
       }
 
-      if (songMetadata == null || songMetadata == null)
+      if (songMetadata == null || songChartData == null)
       {
         state.error('Failure', 'Failed to load song (${path.file}.${path.ext})');
         return;

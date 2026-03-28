@@ -35,6 +35,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.splashImportChartLegacy.onClick = _ -> onClickLinkImport('legacy');
     this.splashImportChartOsuMania.onClick = _ -> onClickLinkImport('osumania');
     this.splashImportChartStepMania.onClick = _ -> onClickLinkImport('stepmania');
+    this.splashImportChartQuaver.onClick = _ -> onClickLinkImport('quaver');
 
     // Add items to the Recent Charts list
     #if sys
