@@ -98,7 +98,7 @@ class PlayerSettings
    */
   function new(id:Int)
   {
-    trace('loading player settings for id: $id');
+    trace('Loading player settings for id: $id');
 
     this.id = id;
     this.controls = new Controls('player$id', None);

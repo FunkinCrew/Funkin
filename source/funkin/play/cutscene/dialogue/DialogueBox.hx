@@ -259,7 +259,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
    * Called when an animation finishes.
    * @param name The name of the animation that just finished.
    */
-  function onAnimationFinished(name:String):Void {}
+  function onAnimationFinished(name:String):Void
+  {
+  }
 
   /**
    * Called when the current animation's frame changes.
@@ -393,17 +395,29 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     return this.boxSprite?.animation?.finished ?? false;
   }
 
-  public function onDialogueStart(event:DialogueScriptEvent):Void {}
+  public function onDialogueStart(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void {}
+  public function onDialogueCompleteLine(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueLine(event:DialogueScriptEvent):Void {}
+  public function onDialogueLine(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueSkip(event:DialogueScriptEvent):Void {}
+  public function onDialogueSkip(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onDialogueEnd(event:DialogueScriptEvent):Void {}
+  public function onDialogueEnd(event:DialogueScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
 
   public function onDestroy(event:ScriptEvent):Void
   {
@@ -422,5 +436,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.kill();
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  }
 }

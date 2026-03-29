@@ -61,6 +61,7 @@ class PlayAnimationSongEvent extends SongEvent
       if (Std.isOfType(target, BaseCharacter))
       {
         var targetChar:BaseCharacter = cast target;
+        targetChar.tempVocals = force;
         targetChar.playAnimation(anim, force, force);
       }
       else
@@ -90,25 +91,21 @@ class PlayAnimationSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: 'target',
-        title: 'Target',
-        type: SongEventFieldType.STRING,
-        defaultValue: DEFAULT_TARGET,
-      },
-      {
-        name: 'anim',
-        title: 'Animation',
-        type: SongEventFieldType.STRING,
-        defaultValue: DEFAULT_ANIM,
-      },
-      {
-        name: 'force',
-        title: 'Force',
-        type: SongEventFieldType.BOOL,
-        defaultValue: DEFAULT_FORCE
-      }
-    ]);
+    return new SongEventSchema([{
+      name: 'target',
+      title: 'Target',
+      type: SongEventFieldType.STRING,
+      defaultValue: DEFAULT_TARGET,
+    }, {
+      name: 'anim',
+      title: 'Animation',
+      type: SongEventFieldType.STRING,
+      defaultValue: DEFAULT_ANIM,
+    }, {
+      name: 'force',
+      title: 'Force',
+      type: SongEventFieldType.BOOL,
+      defaultValue: DEFAULT_FORCE
+    }]);
   }
 }

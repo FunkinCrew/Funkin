@@ -5,4 +5,6 @@ package funkin.modding.base;
  * Create a scripted class that extends FlxSprite to use this.
  */
 @:hscriptClass
-class ScriptedFlxSprite extends flixel.FlxSprite implements HScriptedClass {}
+class ScriptedFlxSprite extends flixel.FlxSprite implements HScriptedClass
+{
+}

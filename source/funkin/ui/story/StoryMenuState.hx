@@ -6,8 +6,10 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.util.FlxStringUtil;
 import funkin.audio.FunkinSound;
 import funkin.data.story.level.LevelRegistry;
 import funkin.data.song.SongRegistry;
@@ -61,11 +63,6 @@ class StoryMenuState extends MusicBeatState
    * The score text at the top.
    */
   var scoreText:FlxText;
-
-  /**
-   * The mode text at the top-middle.
-   */
-  var modeText:FlxText;
 
   /**
    * The list of songs on the left.
@@ -129,7 +126,8 @@ class StoryMenuState extends MusicBeatState
     super.create();
 
     levelList = LevelRegistry.instance.listSortedLevelIds();
-    levelList = levelList.filter(function(id) {
+    levelList = levelList.filter(function(id)
+    {
       var levelData = LevelRegistry.instance.fetchEntry(id);
       if (levelData == null) return false;
 
@@ -248,13 +246,12 @@ class StoryMenuState extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    FunkinSound.playMusic('freakyMenu',
-      {
-        overrideExisting: true,
-        restartTrack: false,
-        // Continue playing this music between states, until a different music track gets played.
-        persist: true
-      });
+    FunkinSound.playMusic('freakyMenu', {
+      overrideExisting: true,
+      restartTrack: false,
+      // Continue playing this music between states, until a different music track gets played.
+      persist: true
+    });
   }
 
   function updateData():Void
@@ -323,7 +320,8 @@ class StoryMenuState extends MusicBeatState
 
     highScoreLerp = Std.int(MathUtil.snap(MathUtil.smoothLerpPrecision(highScoreLerp, highScore, elapsed, 0.307), highScore, 1));
 
-    scoreText.text = 'LEVEL SCORE: ${Math.round(highScoreLerp)}';
+    var commaSeparated:Bool = true;
+    scoreText.text = 'LEVEL SCORE: ${FlxStringUtil.formatMoney(highScoreLerp, false, commaSeparated)}';
 
     levelTitleText.text = currentLevel.getTitle();
 
@@ -372,21 +370,12 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
-        #if !html5
-        if (FlxG.mouse.wheel != 0)
+        final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
+
+        if (wheelAmount != 0)
         {
-          changeLevel(-Math.round(FlxG.mouse.wheel));
+          changeLevel(-wheelAmount);
         }
-        #else
-        if (FlxG.mouse.wheel < 0)
-        {
-          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
-        }
-        else if (FlxG.mouse.wheel > 0)
-        {
-          changeLevel(-Math.round(FlxG.mouse.wheel / 8));
-        }
-        #end
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
         if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
@@ -515,7 +504,7 @@ class StoryMenuState extends MusicBeatState
   {
     // "For now, NO erect in story mode" -Dave
 
-    var difficultyList:Array<String> = Constants.DEFAULT_DIFFICULTY_LIST;
+    var difficultyList:Array<String> = currentLevel.getDifficulties().filter(e -> Constants.DEFAULT_DIFFICULTY_LIST.contains(e));
     // Use this line to displays all difficulties
     // var difficultyList:Array<String> = currentLevel.getDifficulties();
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
@@ -619,7 +608,8 @@ class StoryMenuState extends MusicBeatState
 
     Highscore.talliesLevel = new funkin.Highscore.Tallies();
 
-    new FlxTimer().start(1, function(tmr:FlxTimer) {
+    new FlxTimer().start(1, function(tmr:FlxTimer)
+    {
       #if mobile
       FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
       #end
@@ -629,13 +619,13 @@ class StoryMenuState extends MusicBeatState
 
       var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, function() {
-        LoadingState.loadPlayState(
-          {
-            targetSong: targetSong,
-            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-            targetVariation: targetVariation
-          }, true);
+      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, function()
+      {
+        LoadingState.loadPlayState({
+          targetSong: targetSong,
+          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+          targetVariation: targetVariation
+        }, true);
       });
     });
   }
@@ -680,13 +670,13 @@ class StoryMenuState extends MusicBeatState
 
         // Reference the old background and fade it out.
         var oldBackground:FlxSprite = levelBackground;
-        FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6,
+        FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6, {
+          ease: FlxEase.linear,
+          onComplete: function(_)
           {
-            ease: FlxEase.linear,
-            onComplete: function(_) {
-              remove(oldBackground);
-            }
-          });
+            remove(oldBackground);
+          }
+        });
 
         // Build a new background and fade it in.
         levelBackground = currentLevel.buildBackground();
@@ -696,10 +686,9 @@ class StoryMenuState extends MusicBeatState
         levelBackground.zIndex = 100;
         add(levelBackground);
 
-        FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6,
-          {
-            ease: FlxEase.linear
-          });
+        FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6, {
+          ease: FlxEase.linear
+        });
       }
     }
   }

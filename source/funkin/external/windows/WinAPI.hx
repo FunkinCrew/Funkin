@@ -9,36 +9,6 @@ package funkin.external.windows;
 extern class WinAPI
 {
   /**
-   * Shows a message box with an error icon.
-   *
-   * @param handle A handle to the parent window.
-   * @param message The message to display.
-   * @param title The title of the message box.
-   */
-  @:native('WINAPI_ShowError')
-  static function showError(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
-
-  /**
-   * Shows a message box with a warning icon.
-   *
-   * @param handle A handle to the parent window.
-   * @param message The message to display.
-   * @param title The title of the message box.
-   */
-  @:native('WINAPI_ShowWarning')
-  static function showWarning(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
-
-  /**
-   * Shows a message box with an information icon.
-   *
-   * @param handle A handle to the parent window.
-   * @param message The message to display.
-   * @param title The title of the message box.
-   */
-  @:native('WINAPI_ShowInformation')
-  static function showInformation(handle:cpp.RawPointer<cpp.Void>, message:cpp.ConstCharStar, title:cpp.ConstCharStar):Void;
-
-  /**
    * Disables the "Report to Microsoft" dialog that appears when the application crashes.
    */
   @:native('WINAPI_DisableErrorReporting')
@@ -57,22 +27,5 @@ extern class WinAPI
    */
   @:native('WINAPI_GetProcessMemoryWorkingSetSize')
   static function getProcessMemoryWorkingSetSize():cpp.SizeT;
-
-  /**
-   * Sets the dark mode for the active window.
-   *
-   * @param handle A handle to the parent window.
-   * @param enable Whether to enable or disable dark mode.
-   */
-  @:native('WINAPI_SetDarkMode')
-  static function setDarkMode(handle:cpp.RawPointer<cpp.Void>, enable:Bool):Void;
-
-  /**
-   * Checks if the system is using dark mode.
-   *
-   * @return True if system is in dark mode, false otherwise.
-   */
-  @:native('WINAPI_IsSystemDarkMode')
-  static function isSystemDarkMode():Bool;
 }
 #end

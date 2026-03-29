@@ -85,10 +85,12 @@ using funkin.data.song.migrator.SongDataMigrator;
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String {
+    var entryIdList:Array<String> = DataAssets.listDataFilesInPath('songs/', '-metadata.json').map(function(songDataPath:String):String
+    {
       return songDataPath.split('/')[0];
     });
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool {
+    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    {
       return !entries.exists(entryId);
     });
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
@@ -489,13 +491,6 @@ using funkin.data.song.migrator.SongDataMigrator;
     return {fileName: entryFilePath, contents: rawJson};
   }
 
-  function hasMusicDataFile(id:String, ?variation:String):Bool
-  {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
-    return openfl.Assets.exists(entryFilePath);
-  }
-
   function loadEntryChartFile(id:String, ?variation:String):Null<JsonFile>
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
@@ -562,6 +557,8 @@ using funkin.data.song.migrator.SongDataMigrator;
         if (!allDifficulties.contains(diff)) allDifficulties.push(diff);
       }
     }
+
+    allDifficulties.sort(funkin.util.SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     if (allDifficulties.length == 0)
     {

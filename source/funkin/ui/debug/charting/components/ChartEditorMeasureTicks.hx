@@ -39,11 +39,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   var measureDividers:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup<FlxSprite>();
 
   /**
-   * The positions of each measure tick, in pixels, relative to the start of the song.
-   */
-  var measurePositions:Array<Float> = [];
-
-  /**
    * A map of the
    * @param value
    * @return Float
@@ -140,19 +135,21 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     measureTicksSprite.loadGraphic(measureTickBitmap);
 
     // Destroy these so they get rebuilt with the right theme later.
-    measureNumbers.forEach(function(measureNumber:FlxText) {
+    measureNumbers.forEach(function(measureNumber:FlxText)
+    {
       measureNumber.destroy();
     });
     measureNumbers.clear();
     // Destroy these so they get rebuilt with the right theme later.
-    measureDividers.forEach(function(measureDivider:FlxSprite) {
+    measureDividers.forEach(function(measureDivider:FlxSprite)
+    {
       measureDivider.destroy();
     });
     measureDividers.clear();
   }
 
   // The last measure number we updated the ticks on.
-  var previousMeasure:Int = 0;
+  var previousMeasure:Int = -1;
 
   function updateMeasureNumbers(force:Bool = false):Void
   {
@@ -163,12 +160,16 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     var currentMeasure:Int = Math.floor(Conductor.instance.getTimeInMeasures(chartEditorState.scrollPositionInMs));
     if (previousMeasure == currentMeasure && !force) return;
     if (currentMeasure < 0) currentMeasure = previousMeasure = 0;
+    else
+      previousMeasure = currentMeasure;
 
     // Remove existing measure numbers.
-    measureNumbers.forEachAlive(function(measureNumber:FlxText) {
+    measureNumbers.forEachAlive(function(measureNumber:FlxText)
+    {
       measureNumber.kill();
     });
-    measureDividers.forEachAlive(function(measureDivider:FlxSprite) {
+    measureDividers.forEachAlive(function(measureDivider:FlxSprite)
+    {
       measureDivider.kill();
     });
 

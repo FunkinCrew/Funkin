@@ -101,31 +101,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return previewSelectionSprite.width = value - previewBoxStartPosAbsolute;
   }
 
-  var previewBoxStartPosRelative(get, set):Float;
-
-  function get_previewBoxStartPosRelative():Float
-  {
-    return previewSelectionSprite.left - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxStartPosRelative(value:Float):Float
-  {
-    return previewSelectionSprite.left = waveformScrollview.hscrollPos + value;
-  }
-
-  var previewBoxEndPosRelative(get, set):Float;
-
-  function get_previewBoxEndPosRelative():Float
-  {
-    return previewSelectionSprite.left + previewSelectionSprite.width - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxEndPosRelative(value:Float):Float
-  {
-    if (value < previewBoxStartPosRelative) return previewSelectionSprite.left = previewBoxStartPosRelative;
-    return previewSelectionSprite.width = value - previewBoxStartPosRelative;
-  }
-
   /**
    * The amount you need to multiply the zoom by such that, at the base zoom level, one tick is equal to `MAGIC_SCALE_BASE_TIME` seconds.
    */
@@ -165,45 +140,56 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     this.x = 150;
     this.y = 250;
 
-    freeplayMusicVolume.onChange = (_) -> {
+    freeplayMusicVolume.onChange = (_) ->
+    {
       setTrackVolume(freeplayPreviewVolume);
     };
-    freeplayMusicMute.onClick = (_) -> {
+    freeplayMusicMute.onClick = (_) ->
+    {
       toggleMuteTrack();
     };
-    freeplayButtonZoomIn.onClick = (_) -> {
+    freeplayButtonZoomIn.onClick = (_) ->
+    {
       zoomWaveformIn();
     };
-    freeplayButtonZoomOut.onClick = (_) -> {
+    freeplayButtonZoomOut.onClick = (_) ->
+    {
       zoomWaveformOut();
     };
-    freeplayButtonPause.onClick = (_) -> {
+    freeplayButtonPause.onClick = (_) ->
+    {
       pauseAudioPreview();
     };
-    freeplayButtonPlay.onClick = (_) -> {
+    freeplayButtonPlay.onClick = (_) ->
+    {
       playAudioPreview();
     };
-    freeplayButtonStop.onClick = (_) -> {
+    freeplayButtonStop.onClick = (_) ->
+    {
       stopAudioPreview();
     };
-    testPreview.onClick = (_) -> {
+    testPreview.onClick = (_) ->
+    {
       performPreview();
     };
-    freeplayPreviewStart.onChange = (event:UIEvent) -> {
+    freeplayPreviewStart.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentSongFreeplayPreviewStart) return;
       if (waveformDragStartPos != null) return; // The values are changing because we are dragging the preview.
 
       chartEditorState.performCommand(new SetFreeplayPreviewCommand(event.value, null));
       refresh();
     }
-    freeplayPreviewEnd.onChange = (event:UIEvent) -> {
+    freeplayPreviewEnd.onChange = (event:UIEvent) ->
+    {
       if (event.value == chartEditorState.currentSongFreeplayPreviewEnd) return;
       if (waveformDragStartPos != null) return; // The values are changing because we are dragging the preview.
 
       chartEditorState.performCommand(new SetFreeplayPreviewCommand(null, event.value));
       refresh();
     }
-    waveformScrollview.onScroll = (_) -> {
+    waveformScrollview.onScroll = (_) ->
+    {
       if (!audioPreviewTracks.playing)
       {
         // Move the playhead if it would go out of view.
@@ -234,15 +220,21 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     initializeTicks();
 
+    chartEditorState.resetPreviewTimes();
+    freeplayPreviewStart.value = chartEditorState.currentSongFreeplayPreviewStart;
+    freeplayPreviewEnd.value = chartEditorState.currentSongFreeplayPreviewEnd;
+
     refreshAudioPreview();
     refresh();
     refreshTicks();
 
-    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragWaveform();
     });
 
-    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> {
+    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
+    {
       onStartDragPlayhead();
     });
   }
@@ -346,8 +338,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       return '${integerMinutes}:${remainingSecondsPad}${decimalSeconds > 0 ? '.$decimalSeconds' : ''}';
     }
   }
-
-  function buildTickLabel():Void {}
 
   public function onStartDragPlayhead():Void
   {
@@ -604,7 +594,8 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
       if (!isFadingOutPreview && audioPreviewTracks.time >= startFadeOutTime)
       {
         isFadingOutPreview = true;
-        audioPreviewTracks.fadeOut(FreeplayState.FADE_OUT_DURATION, FreeplayState.FADE_OUT_END_VOLUME * freeplayPreviewVolume, (_) -> {
+        audioPreviewTracks.fadeOut(FreeplayState.FADE_OUT_DURATION, FreeplayState.FADE_OUT_END_VOLUME * freeplayPreviewVolume, (_) ->
+        {
           trace('Stop performing preview! ${audioPreviewTracks.time}');
           stopPerformingPreview();
         });
@@ -615,9 +606,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
-      var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;
-      var playheadDiff = playheadAbsolutePos - prevPlayheadAbsolutePos;
 
       // BEHAVIOR C.
       // Copy Audacity!

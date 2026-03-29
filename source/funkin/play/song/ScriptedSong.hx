@@ -5,4 +5,6 @@ package funkin.play.song;
  * Create a scripted class that extends Song to use this.
  */
 @:hscriptClass
-class ScriptedSong extends funkin.play.song.Song implements polymod.hscript.HScriptedClass {}
+class ScriptedSong extends funkin.play.song.Song implements polymod.hscript.HScriptedClass
+{
+}

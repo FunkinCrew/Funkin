@@ -58,7 +58,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   function initialize():Void
   {
-    toolboxNotesNoteKind.onChange = function(event:UIEvent) {
+    toolboxNotesNoteKind.onChange = function(event:UIEvent)
+    {
       var noteKind:Null<String> = event?.data?.id ?? null;
       if (noteKind == '') noteKind = null;
 
@@ -118,7 +119,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
     toolboxNotesNoteKind.resumeEvent(UIEvent.CHANGE, true, true);
 
-    toolboxNotesCustomKind.onChange = function(event:UIEvent) {
+    toolboxNotesCustomKind.onChange = function(event:UIEvent)
+    {
       var customKind:Null<String> = event?.target?.text;
       chartEditorState.noteKindToPlace = customKind;
 
@@ -139,7 +141,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
 
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
-    
+
     toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
@@ -245,7 +247,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
         continue;
       }
 
-      paramComponent.onChange = function(event:UIEvent) {
+      paramComponent.onChange = function(event:UIEvent)
+      {
         chartEditorState.noteParamsToPlace[i].value = paramComponent.value;
 
         for (note in chartEditorState.currentNoteSelection)

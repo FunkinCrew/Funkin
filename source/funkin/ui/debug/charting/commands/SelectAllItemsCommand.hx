@@ -32,6 +32,7 @@ class SelectAllItemsCommand implements ChartEditorCommand
     state.currentEventSelection = shouldSelectEvents ? state.currentSongChartEventData : [];
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function undo(state:ChartEditorState):Void
@@ -40,6 +41,7 @@ class SelectAllItemsCommand implements ChartEditorCommand
     state.currentEventSelection = previousEventSelection;
 
     state.noteDisplayDirty = true;
+    state.editButtonsDirty = true;
   }
 
   public function shouldAddToHistory(state:ChartEditorState):Bool

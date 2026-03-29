@@ -7,4 +7,6 @@ package funkin.play.cutscene.dialogue;
  * Someone clever could use this to add branching dialogue I think.
  */
 @:hscriptClass
-class ScriptedConversation extends Conversation implements polymod.hscript.HScriptedClass {}
+class ScriptedConversation extends Conversation implements polymod.hscript.HScriptedClass
+{
+}

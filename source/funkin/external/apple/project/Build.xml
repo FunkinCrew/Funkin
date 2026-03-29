@@ -16,7 +16,7 @@
 		<file name="${this_dir}/src/AudioSession.mm" />
 		<file name="${this_dir}/src/MemoryUtil.mm" />
 		<file name="${this_dir}/src/ScreenUtil.mm" />
-		<file name="${this_dir}/src/FNFCUtil.mm" />
+		<file name="${this_dir}/src/FNFCExtern.mm" />
 	</files>
 
 	<target id="haxe">

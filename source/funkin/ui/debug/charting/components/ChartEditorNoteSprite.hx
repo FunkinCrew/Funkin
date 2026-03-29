@@ -259,6 +259,14 @@ class ChartEditorNoteSprite extends FlxSprite
     kindIndicator.draw();
   }
 
+  override public function kill()
+  {
+    super.kill();
+
+    // Remove the tooltip to prevent recently deleted notes from showing a tooltip.
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+  }
+
   function get_noteStyle():Null<String>
   {
     if (this.noteStyle == null)
@@ -286,7 +294,6 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Play the appropriate animation for the type, direction, and skin.
     var dirName:String = overrideData != null ? SongNoteData.buildDirectionName(overrideData) : this.noteData.getDirectionName();
-    var noteStyleSuffix:String = this.noteStyle?.toTitleCase() ?? Constants.DEFAULT_NOTE_STYLE.toTitleCase();
     var animationName:String = '${baseAnimationName}${dirName}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);

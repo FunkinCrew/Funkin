@@ -28,7 +28,8 @@ class EnumPreferenceItem<T> extends TextMenuItem
 
   public function new(x:Float, y:Float, name:String, map:Map<String, T>, defaultKey:String, ?callback:String->T->Void)
   {
-    super(x, y, name, function() {
+    super(x, y, name, function()
+    {
       var value = map.get(this.currentKey);
       callback(this.currentKey, value);
     });
@@ -42,8 +43,6 @@ class EnumPreferenceItem<T> extends TextMenuItem
     var i:Int = 0;
     for (key in map.keys())
     {
-      var value:T = map[key];
-
       this.keys.push(key);
       if (this.currentKey == key) index = i;
       i += 1;

@@ -60,7 +60,8 @@ class ChartPlaytestMenu extends MusicBeatState
     songName.cameras = [playtestCam];
     add(songName);
 
-    variationButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.55, "Variation", targetSong.variations, function(value:String) {
+    variationButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.55, "Variation", targetSong.variations, function(value:String)
+    {
       currentVariation = value;
       variationButton.screenCenter(X);
     });
@@ -69,15 +70,17 @@ class ChartPlaytestMenu extends MusicBeatState
     add(variationButton);
 
     difficultyButton = new ChartPlaytestMenuButtonListToggle(0, FlxG.height * 0.45, "Difficulty",
-      targetSong.listDifficulties(null, targetSong.variations, true, true), function(value:String) {
-        currentDifficulty = value;
-        difficultyButton.screenCenter(X);
+      targetSong.listDifficulties(null, targetSong.variations, true, true), function(value:String)
+    {
+      currentDifficulty = value;
+      difficultyButton.screenCenter(X);
     });
     difficultyButton.screenCenter(X);
     difficultyButton.cameras = [playtestCam];
     add(difficultyButton);
 
-    playtestButton = new ChartPlaytestMenuButton(0, FlxG.height * 0.8, "Playtest Song", function() {
+    playtestButton = new ChartPlaytestMenuButton(0, FlxG.height * 0.8, "Playtest Song", function()
+    {
       try
       {
         FNFCUtil.playSongFromFNFCPath(filePath, currentDifficulty, currentVariation);

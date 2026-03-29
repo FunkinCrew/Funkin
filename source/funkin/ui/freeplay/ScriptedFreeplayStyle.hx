@@ -6,4 +6,6 @@ package funkin.ui.freeplay;
  * This allows you to customize how a specific style works.
  */
 @:hscriptClass
-class ScriptedFreeplayStyle extends funkin.ui.freeplay.FreeplayStyle implements polymod.hscript.HScriptedClass {}
+class ScriptedFreeplayStyle extends funkin.ui.freeplay.FreeplayStyle implements polymod.hscript.HScriptedClass
+{
+}

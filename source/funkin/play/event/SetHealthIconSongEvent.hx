@@ -29,13 +29,16 @@ class SetHealthIconSongEvent extends SongEvent
 {
   public function new()
   {
-    super('SetHealthIcon');
+    super('SetHealthIcon', {
+      processOldEvents: true
+    });
   }
 
   static final DEFAULT_CHAR:Int = 0;
   static final DEFAULT_SCALE:Float = 1.0;
   static final DEFAULT_FLIPX:Bool = false;
   static final DEFAULT_ISPIXEL:Bool = false;
+  static final DEFAULT_SHOULDBOP:Bool = true;
 
   static final DEFAULT_X_OFFSET:Float = 0.0;
   static final DEFAULT_Y_OFFSET:Float = 0.0;
@@ -50,14 +53,14 @@ class SetHealthIconSongEvent extends SongEvent
 
     var offsets:Array<Float> = [data.value.offsetX ?? DEFAULT_X_OFFSET, data.value.offsetY ?? DEFAULT_Y_OFFSET];
 
-    var healthIconData:HealthIconData =
-      {
-        id: data.value.id ?? Constants.DEFAULT_HEALTH_ICON,
-        scale: data.value.scale ?? DEFAULT_SCALE,
-        flipX: data.value.flipX ?? DEFAULT_FLIPX,
-        isPixel: data.value.isPixel ?? DEFAULT_ISPIXEL,
-        offsets: offsets,
-      };
+    var healthIconData:HealthIconData = {
+      id: data.value.id ?? Constants.DEFAULT_HEALTH_ICON,
+      shouldBop: data.value.shouldBop ?? DEFAULT_SHOULDBOP,
+      scale: data.value.scale ?? DEFAULT_SCALE,
+      flipX: data.value.flipX ?? DEFAULT_FLIPX,
+      isPixel: data.value.isPixel ?? DEFAULT_ISPIXEL,
+      offsets: offsets,
+    };
 
     switch (data?.value?.char ?? DEFAULT_CHAR)
     {
@@ -85,51 +88,54 @@ class SetHealthIconSongEvent extends SongEvent
 
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([
-      {
-        name: 'char',
-        title: 'Character',
-        defaultValue: DEFAULT_CHAR,
-        type: SongEventFieldType.ENUM,
-        keys: ['Player' => 0, 'Opponent' => 1],
-      },
-      {
-        name: 'id',
-        title: 'Health Icon ID',
-        defaultValue: Constants.DEFAULT_HEALTH_ICON,
-        type: SongEventFieldType.STRING,
-      },
-      {
-        name: 'scale',
-        title: 'Scale',
-        defaultValue: DEFAULT_SCALE,
-        min: 0,
-        type: SongEventFieldType.FLOAT,
-      },
-      {
-        name: 'flipX',
-        title: 'Flip X?',
-        defaultValue: DEFAULT_FLIPX,
-        type: SongEventFieldType.BOOL,
-      },
-      {
+    return new SongEventSchema([{
+      name: 'char',
+      title: 'Character',
+      defaultValue: DEFAULT_CHAR,
+      type: SongEventFieldType.ENUM,
+      keys: ['Player' => 0, 'Opponent' => 1],
+    }, {
+      name: 'id',
+      title: 'Health Icon ID',
+      defaultValue: Constants.DEFAULT_HEALTH_ICON,
+      type: SongEventFieldType.STRING,
+    }, {
+      name: 'shouldBop',
+      title: 'Should Bop?',
+      defaultValue: DEFAULT_SHOULDBOP,
+      type: SongEventFieldType.BOOL,
+    }, {
+      name: 'scale',
+      title: 'Scale',
+      defaultValue: DEFAULT_SCALE,
+      min: 0,
+      type: SongEventFieldType.FLOAT,
+    }, {
+      name: 'flipX',
+      title: 'Flip X?',
+      defaultValue: DEFAULT_FLIPX,
+      type: SongEventFieldType.BOOL,
+    }, {
+      name: 'advanced',
+      title: 'Advanced',
+      type: SongEventFieldType.FRAME,
+      collapsible: true,
+      children: [{
         name: 'isPixel',
         title: 'Is Pixel?',
         defaultValue: DEFAULT_ISPIXEL,
         type: SongEventFieldType.BOOL,
-      },
-      {
+      }, {
         name: 'offsetX',
         title: 'X Offset',
         defaultValue: DEFAULT_X_OFFSET,
         type: SongEventFieldType.FLOAT,
-      },
-      {
+      }, {
         name: 'offsetY',
         title: 'Y Offset',
         defaultValue: DEFAULT_Y_OFFSET,
         type: SongEventFieldType.FLOAT,
-      }
-    ]);
+      }]
+    }]);
   }
 }

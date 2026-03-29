@@ -70,6 +70,7 @@ class VideoCutscene
   {
     if (PlayState.instance == null) return;
 
+    #if FEATURE_VIDEO_PLAYBACK
     if (!openfl.Assets.exists(filePath))
     {
       // Display a popup.
@@ -78,8 +79,7 @@ class VideoCutscene
 
       return;
     }
-
-    var rawFilePath = Paths.stripLibrary(filePath);
+    #end
 
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
@@ -100,12 +100,17 @@ class VideoCutscene
     }
     #end
 
+    #if NO_FEATURE_VIDEO_PLAYBACK
+    trace(" WARNING ".bold().bg_yellow() + " Video playback is not enabled. Calling video end callback instead.");
+    finishVideo();
+    #else
     #if html5
-    playVideoHTML5(rawFilePath);
+    playVideoHTML5(Paths.stripLibrary(filePath));
     #elseif hxvlc
     playVideoNative(filePath);
     #else
     throw "No video support for this platform!";
+    #end
     #end
   }
 
@@ -157,7 +162,8 @@ class VideoCutscene
 
       vid.active = false;
 
-      vid.bitmap.onFormatSetup.add(function():Void {
+      vid.bitmap.onFormatSetup.add(function():Void
+      {
         if (vid.bitmap != null && vid.bitmap.bitmapData != null)
         {
           final scale:Float = Math.min(FlxG.width / vid.bitmap.bitmapData.width, FlxG.height / vid.bitmap.bitmapData.height);
@@ -168,7 +174,8 @@ class VideoCutscene
         }
       });
 
-      vid.bitmap.onEncounteredError.add(function(msg:String):Void {
+      vid.bitmap.onEncounteredError.add(function(msg:String):Void
+      {
         finishVideo(0.5);
       });
 
@@ -337,22 +344,22 @@ class VideoCutscene
 
     PlayState.instance.camHUD.visible = true;
 
-    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime,
+    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime, {
+      ease: FlxEase.quadInOut,
+      onComplete: function(twn:FlxTween)
       {
-        ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
-          PlayState.instance.remove(blackScreen);
-          blackScreen = null;
-        }
-      });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime,
+        PlayState.instance.remove(blackScreen);
+        blackScreen = null;
+      }
+    });
+    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime, {
+      ease: FlxEase.quadInOut,
+      onComplete: function(twn:FlxTween)
       {
-        ease: FlxEase.quadInOut,
-        onComplete: function(twn:FlxTween) {
-          onVideoEnded.dispatch();
-          onCutsceneFinish(cutsceneType);
-        }
-      });
+        onVideoEnded.dispatch();
+        onCutsceneFinish(cutsceneType);
+      }
+    });
   }
 
   /**

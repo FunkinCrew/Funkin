@@ -1,33 +1,6 @@
 #pragma once
 
 /**
- * Shows an error message box.
- *
- * @param handle A handle to the parent window
- * @param message The error message to display
- * @param title The title of the message box
- */
-void WINAPI_ShowError(void* handle, const char *message, const char *title);
-
-/**
- * Shows a warning message box.
- *
- * @param handle A handle to the parent window
- * @param message The warning message to display
- * @param title The title of the message box
- */
-void WINAPI_ShowWarning(void* handle, const char *message, const char *title);
-
-/**
- * Shows an information message box.
- *
- * @param handle A handle to the parent window
- * @param message The information message to display
- * @param title The title of the message box
- */
-void WINAPI_ShowInformation(void* handle, const char *message, const char *title);
-
-/**
  * Disables Windows error reporting dialogs.
  */
 void WINAPI_DisableErrorReporting();
@@ -45,18 +18,3 @@ void WINAPI_DisableWindowsGhosting();
  * @return The working set size in bytes. Returns 0 if the query fails.
  */
 size_t WINAPI_GetProcessMemoryWorkingSetSize();
-
-/**
- * Sets dark mode on a window
- * @param handle A handle to the parent window.
- *
- * @param enable True to enable dark mode, false to disable
- */
-void WINAPI_SetDarkMode(void* handle, bool enable);
-
-/**
- * Checks if the system is using dark mode.
- *
- * @return True if system is in dark mode, false otherwise
- */
-bool WINAPI_IsSystemDarkMode();

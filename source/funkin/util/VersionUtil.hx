@@ -23,7 +23,6 @@ class VersionUtil
   {
     try
     {
-      var versionRaw:thx.semver.Version.SemVer = version;
       return version.satisfies(versionRule);
     }
     catch (e)

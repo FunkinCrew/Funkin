@@ -58,7 +58,8 @@ class Medals
         // Play the medal unlock animation, but only if the user has not already unlocked it.
         #if html5
         // Web builds support parsing the bitmap data from the URL directly.
-        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData) {
+        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData)
+        {
           var medalGraphic = FlxGraphic.fromBitmapData(bmp);
           medalGraphic.persist = true;
           NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
@@ -68,7 +69,8 @@ class Medals
         // We have to use a medal image from the game files. We use a Base64 encoded image that NG spits out.
         // TODO: Wait, don't they give us the medal icon?
 
-        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal) {
+        var localMedalData:Null<MedalJSON> = medalJSON.filter(function(jsonMedal)
+        {
           #if FEATURE_NEWGROUNDS_TESTING_MEDALS
           return medal == jsonMedal.idTest;
           #else
@@ -436,27 +438,7 @@ enum abstract Medal(Int) from Int to Int
    */
   public static function getAllMedals():Array<Medal>
   {
-    return [
-      StartGame,
-      StoryTutorial,
-      StoryWeek1,
-      StoryWeek2,
-      StoryWeek3,
-      StoryWeek4,
-      StoryWeek5,
-      StoryWeek6,
-      StoryWeek7,
-      StoryWeekend1,
-      CharSelect,
-      FreeplayPicoMix,
-      FreeplayStressPico,
-      LossRating,
-      PerfectRatingHard,
-      GoldPerfectRatingHard,
-      ErectDifficulty,
-      GoldPerfectRatingNightmare,
-      FridayNight,
-      Nice
-    ];
+    return
+      [StartGame, StoryTutorial, StoryWeek1, StoryWeek2, StoryWeek3, StoryWeek4, StoryWeek5, StoryWeek6, StoryWeek7, StoryWeekend1, CharSelect, FreeplayPicoMix, FreeplayStressPico, LossRating, PerfectRatingHard, GoldPerfectRatingHard, ErectDifficulty, GoldPerfectRatingNightmare, FridayNight, Nice];
   }
 }

@@ -176,15 +176,15 @@ class Scoring
 
     return switch (absTiming)
     {
-      // case(_ < PBOT1_KILLER_THRESHOLD) => true:
+      // case(_ <= PBOT1_KILLER_THRESHOLD) => true:
       //   'killer';
-      case(_ < PBOT1_SICK_THRESHOLD) => true:
+      case(_ <= PBOT1_SICK_THRESHOLD) => true:
         'sick';
-      case(_ < PBOT1_GOOD_THRESHOLD) => true:
+      case(_ <= PBOT1_GOOD_THRESHOLD) => true:
         'good';
-      case(_ < PBOT1_BAD_THRESHOLD) => true:
+      case(_ <= PBOT1_BAD_THRESHOLD) => true:
         'bad';
-      case(_ < PBOT1_SHIT_THRESHOLD) => true:
+      case(_ <= PBOT1_SHIT_THRESHOLD) => true:
         'shit';
       default:
         FlxG.log.warn('Missed note: Bad timing ($absTiming < $PBOT1_SHIT_THRESHOLD)');
@@ -272,13 +272,13 @@ class Scoring
 
     return switch (absTiming)
     {
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_SICK_THRESHOLD) => true:
         'sick';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_GOOD_THRESHOLD) => true:
         'good';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_BAD_THRESHOLD) => true:
         'bad';
-      case(_ < LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
+      case(_ <= LEGACY_HIT_WINDOW * LEGACY_SHIT_THRESHOLD) => true:
         'shit';
       default:
         FlxG.log.warn('Missed note: Bad timing ($absTiming < $LEGACY_SHIT_THRESHOLD)');
@@ -344,19 +344,19 @@ class Scoring
   static function judgeNoteWEEK7(msTiming:Float):String
   {
     var absTiming = Math.abs(msTiming);
-    if (absTiming < WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
+    if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_SICK_THRESHOLD)
     {
       return 'sick';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD)
+    else if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_GOOD_THRESHOLD)
     {
       return 'good';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD)
+    else if (absTiming <= WEEK7_HIT_WINDOW * WEEK7_BAD_THRESHOLD)
     {
       return 'bad';
     }
-    else if (absTiming < WEEK7_HIT_WINDOW)
+    else if (absTiming <= WEEK7_HIT_WINDOW)
     {
       return 'shit';
     }
@@ -420,7 +420,8 @@ class Scoring
   public static function tallyCompletion(?tallies:SaveScoreTallyData):Float
   {
     if (tallies == null) return 0.0;
-    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0, 1); // Needs to be clamped to make sure Perfect ranks are saved properly
+    return ((tallies.sick + tallies.good - tallies.missed) / tallies.totalNotes).clamp(0,
+      1); // Needs to be clamped to make sure Perfect ranks are saved properly
   }
 }
 
@@ -528,7 +529,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 2 / 24;
       default:
-        return 3.5;
+        return 2 / 24;
     }
   }
 
@@ -548,7 +549,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 95 / 24;
       default:
-        return 3.5;
+        return 95 / 24;
     }
   }
 
@@ -568,7 +569,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 186 / 24;
       default:
-        return 3.5;
+        return 186 / 24;
     }
   }
 
@@ -588,7 +589,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 207 / 24;
       default:
-        return 3.5;
+        return 207 / 24;
     }
   }
 
@@ -630,7 +631,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 'resultScreen/rankText/rankScrollLOSS';
       default:
-        return 'resultScreen/rankText/rankScrollGOOD';
+        return 'resultScreen/rankText/rankScrollLOSS';
     }
   }
 
@@ -651,7 +652,7 @@ enum abstract ScoringRank(String)
       case SHIT:
         return 'resultScreen/rankText/rankTextLOSS';
       default:
-        return 'resultScreen/rankText/rankTextGOOD';
+        return 'resultScreen/rankText/rankTextLOSS';
     }
   }
 
@@ -671,6 +672,8 @@ enum abstract ScoringRank(String)
         0xFFFF58B4;
       case PERFECT_GOLD:
         0xFFFFB619;
+      default:
+        0xFF6044FF;
     }
   }
 

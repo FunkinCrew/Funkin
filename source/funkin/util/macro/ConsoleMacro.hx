@@ -45,17 +45,16 @@ class ConsoleMacro
 
     // Generate a static field with initialization expression that runs at class load time
     var initFieldName = "__consoleRegistration_" + StringTools.replace(cl, ".", "_");
-    var initField =
-      {
-        name: initFieldName,
-        access: [AStatic, APrivate],
-        kind: FVar(macro :Bool, macro
-          {
-            funkin.util.macro.ConsoleMacro.registerClass($v{cl});
-            true;
-          }),
-        pos: Context.currentPos()
-      };
+    var initField = {
+      name: initFieldName,
+      access: [AStatic, APrivate],
+      kind: FVar(macro :Bool, macro
+        {
+          funkin.util.macro.ConsoleMacro.registerClass($v{cl});
+          true;
+        }),
+      pos: Context.currentPos()
+    };
 
     fields.push(initField);
     Sys.println(' INFO '.info() + ' Generated console registration for: $cl');
@@ -65,4 +64,6 @@ class ConsoleMacro
 }
 
 @:autoBuild(funkin.util.macro.ConsoleMacro.buildConsoleClass())
-interface ConsoleClass {}
+interface ConsoleClass
+{
+}

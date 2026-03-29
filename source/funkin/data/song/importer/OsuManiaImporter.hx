@@ -31,7 +31,8 @@ class OsuManiaImporter
         currentSection = sectionRegex.matched(1);
         if (nonCSVLikeSections.contains(currentSection))
         {
-          Reflect.setField(result, currentSection, {});
+          Reflect.setField(result, currentSection, {
+          });
         }
         else
         {
@@ -45,8 +46,9 @@ class OsuManiaImporter
       {
         var parts:Array<String> = line.split(":");
         var key:String = StringTools.trim(parts.shift());
-        var value:String = StringTools.trim(parts.join(":"));
-        if (Reflect.field(result, currentSection) == null) Reflect.setField(result, currentSection, {});
+        var value:Any = parseValue(StringTools.trim(parts.join(":")));
+        if (Reflect.field(result, currentSection) == null) Reflect.setField(result, currentSection, {
+        });
         Reflect.setField(Reflect.field(result, currentSection), key, value);
       }
       // For CSV-like sections
@@ -163,7 +165,8 @@ class OsuManiaImporter
 
   static function parseTimingPoints(timingLines:Array<String>):Array<TimingPoint>
   {
-    return timingLines.map(function(line:String):TimingPoint {
+    return timingLines.map(function(line:String):TimingPoint
+    {
       var parts = line.split(",");
       var time = Std.parseFloat(parts[0]);
       var beatLength = Std.parseFloat(parts[1]);
@@ -180,7 +183,8 @@ class OsuManiaImporter
 
   static function parseManiaHitObjects(hitObjectsLines:Array<String>, ?columns:Int = 4):Array<ManiaHitObject>
   {
-    return hitObjectsLines.map(function(line:String):ManiaHitObject {
+    return hitObjectsLines.map(function(line:String):ManiaHitObject
+    {
       var parts = line.split(",");
 
       var x:Int = Std.parseInt(parts[0]);
@@ -195,5 +199,23 @@ class OsuManiaImporter
 
       return new ManiaHitObject(time, noteD, holdDuration);
     });
+  }
+
+  static function parseValue(v:String):Any
+  {
+    var result:Null<Any>;
+
+    if (v.contains('.'))
+    {
+      result = Std.parseFloat(v);
+      if (!Math.isNaN(result)) return result;
+    }
+    else
+    {
+      result = Std.parseInt(v);
+      if (result != null) return result;
+    }
+
+    return v;
   }
 }

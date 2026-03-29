@@ -9,6 +9,6 @@ class NoAnimNoteKind extends NoteKind
 
   public function new()
   {
-    super("noanim", "Disables singing animations", null, [], DISABLE_ANIMATIONS, null);
+    super('noanim', 'No Animation', null, [], DISABLE_ANIMATIONS, null);
   }
 }

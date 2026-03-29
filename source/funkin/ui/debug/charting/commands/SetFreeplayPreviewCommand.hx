@@ -11,12 +11,12 @@ import funkin.data.song.SongDataUtils;
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class SetFreeplayPreviewCommand implements ChartEditorCommand
 {
-  var previousStartTime:Int = 0;
-  var previousEndTime:Int = 0;
-  var newStartTime:Null<Int> = null;
-  var newEndTime:Null<Int> = null;
+  var previousStartTime:Float = 0;
+  var previousEndTime:Float = 0;
+  var newStartTime:Null<Float> = null;
+  var newEndTime:Null<Float> = null;
 
-  public function new(newStartTime:Null<Int>, newEndTime:Null<Int>)
+  public function new(newStartTime:Null<Float>, newEndTime:Null<Float>)
   {
     this.newStartTime = newStartTime;
     this.newEndTime = newEndTime;

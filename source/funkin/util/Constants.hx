@@ -127,8 +127,7 @@ class Constants
   /**
    * The base colors used by notes.
    */
-  public static var COLOR_NOTES:Array<FlxColor> = [
-    0xFFFF22AA, // left (0)
+  public static var COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, // left (0)
     0xFF00EEFF, // down (1)
     0xFF00CC00, // up (2)
     0xFFCC1111 // right (3)
@@ -243,6 +242,11 @@ class Constants
   public static final DEFAULT_ZOOM_OFFSET:Int = 0;
 
   /**
+   * The default rate for characters or props (in beats per dance).
+   */
+  public static final DEFAULT_PROP_RATE:Int = 1;
+
+  /**
    * The default BPM for charts, so things don't break if none is specified.
    */
   public static final DEFAULT_BPM:Float = 100.0;
@@ -281,6 +285,21 @@ class Constants
    * The default album for songs in Freeplay.
    */
   public static final DEFAULT_ALBUM_ID:String = 'volume1';
+
+  /**
+   * The default name for the OST in Freeplay.
+   */
+  public static final DEFAULT_OST_NAME:String = 'OFFICIAL OST';
+
+  /**
+   * The default preview start time for the songs in Freeplay.
+   */
+  public static final DEFAULT_PREVIEW_START_TIME:Float = 0;
+
+  /**
+   * The default preview end time for the songs in Freeplay.
+   */
+  public static final DEFAULT_PREVIEW_END_TIME:Float = 0.2;
 
   /**
    * The default timing format for songs.
@@ -489,6 +508,11 @@ class Constants
   // ==============================
 
   /**
+   * The amount of score the player loses for pressing a key when no note is there.
+   */
+  public static final SCORE_GHOST_MISS_PENALTY:Float = -10.0;
+
+  /**
    * The amount of score the player gains for every second they hold a hold note.
    * A fraction of this value is granted every frame.
    */
@@ -572,9 +596,9 @@ class Constants
 
   #if FEATURE_LOST_FOCUS_VOLUME
   /**
-   * How much volume should be reduced on Application Focus Lost.
+   * The level the volume should be reduced to when the game loses focus.
    */
-  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.5;
+  public static final LOST_FOCUS_VOLUME_MULTIPLIER:Float = 0.25;
   #end
 
   /**

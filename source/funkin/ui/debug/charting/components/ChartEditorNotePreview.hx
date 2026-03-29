@@ -186,19 +186,6 @@ class ChartEditorNotePreview extends FlxSprite
     drawRect(noteX, noteY, NOTE_WIDTH, noteHeight, color);
   }
 
-  function eraseNote(dir:Int, mustHit:Bool, strumTimeInMs:Int, songLengthInPixels:Int):Void
-  {
-    var noteX:Float = NOTE_WIDTH * dir;
-    if (mustHit) noteX += NOTE_WIDTH * 4;
-    if (dir == -1) noteX = NOTE_WIDTH * 8;
-
-    var strumTimeInPixels:Int = Std.int(Conductor.instance.getTimeInSteps(strumTimeInMs) * ChartEditorState.GRID_SIZE);
-
-    var noteY:Float = FlxMath.remapToRange(strumTimeInPixels, 0, songLengthInPixels, 0, previewHeight);
-
-    drawRect(noteX, noteY, NOTE_WIDTH, NOTE_HEIGHT, BG_COLOR);
-  }
-
   inline function drawRect(noteX:Float, noteY:Float, width:Int, height:Int, color:FlxColor):Void
   {
     FlxSpriteUtil.drawRect(this, noteX, noteY, width, height, color);

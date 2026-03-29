@@ -5,6 +5,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
+import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
 
 /**
@@ -13,7 +14,7 @@ import funkin.modding.events.ScriptEvent;
  * since the characters aren't that complex in hindsight.
  */
 @:nullSafety
-class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClass
+class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClass implements ICharacterSelectScriptedClass
 {
   /**
    * The player to attach this character to.
@@ -82,7 +83,9 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     }
   }
 
-  public function onStepHit(event:SongTimeScriptEvent):Void {}
+  public function onStepHit(event:SongTimeScriptEvent):Void
+  {
+  }
 
   public function onBeatHit(event:SongTimeScriptEvent):Void
   {
@@ -93,13 +96,33 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     }
   }
 
-  public function onScriptEvent(event:ScriptEvent):Void {}
+  public function onScriptEvent(event:ScriptEvent):Void
+  {
+  }
 
-  public function onCreate(event:ScriptEvent):Void {}
+  public function onCreate(event:ScriptEvent):Void
+  {
+  }
 
-  public function onDestroy(event:ScriptEvent):Void {}
+  public function onDestroy(event:ScriptEvent):Void
+  {
+  }
 
-  public function onUpdate(event:UpdateScriptEvent):Void {}
+  public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
+
+  public function onCharacterSelect(event:CharacterSelectScriptEvent)
+  {
+  }
+
+  public function onCharacterDeselect(event:CharacterSelectScriptEvent)
+  {
+  }
+
+  public function onCharacterConfirm(event:CharacterSelectScriptEvent)
+  {
+  }
 
   function loadCharacterFrames()
   {

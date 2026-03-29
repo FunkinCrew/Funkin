@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "26ed20b9c181a576f4cbe18ccdea38912c01476e",
+      "ref": "2f984e244f1544ca98c0e03b9b21ae570f07ac55",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "4c69bb43f1fb89fd6003dc98d2f3a9d75c5364b6",
+      "ref": "5c908b3f7c74115a8b52eddf1e05525f4873f26e",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -52,27 +52,27 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "c8e79d2a42f9c11c639519ef2a6fd7ef2379a8aa",
+      "ref": "622bb65e7f49f0e1a03826b6593369d3ad5e54fa",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "6fa30b3f5209146c852c25f3d1003e08898083e2",
+      "ref": "187f93b34f93c6a405d634a42913c745e443463a",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
       "dir": null,
-      "ref": "c61476f4b3a3d225631ab3065e4e925a4b63c076",
+      "ref": "c5e3393c70b71a191f20fa902114cea92042e486",
       "url": "https://github.com/MaybeMaru/flixel-animate"
     },
     {
       "name": "format",
       "type": "haxelib",
-      "version": "3.5.0"
+      "version": "3.8.0"
     },
     {
       "name": "funkin.vis",
@@ -97,7 +97,7 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "088b153b35985f8e4419ef710057ebd5b3749513",
+      "ref": "09f2512564b45e92229e21433e6dd482391f7b7d",
       "url": "https://github.com/FunkinCrew/haxeui-core"
     },
     {
@@ -108,17 +108,10 @@
       "url": "https://github.com/haxeui/haxeui-flixel"
     },
     {
-      "name": "hscript",
-      "type": "git",
-      "dir": null,
-      "ref": "dcc6f822e0866ca4fda300ed23e99559260f7bf5",
-      "url": "https://github.com/FunkinCrew/hscript"
-    },
-    {
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "5932340d095a7eea8635fe4d1355f1c0efd0b3c2",
+      "ref": "450d112e50acff57b1bc9d584dcf1374c9e33995",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -153,7 +146,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.5"
+      "version": "2.2.6"
     },
     {
       "name": "json2object",
@@ -176,7 +169,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "318253ea3a28a3299a167748912c40444f403777",
+      "ref": "89cef3a2283e364e3ec175d567beb3e6ff2adfbe",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -190,15 +183,15 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "a69a6e778816c6a57eba7a91bfb0b60295508e88",
+      "ref": "aa7209d704d40b4c44b9a72593dc59496854da4c",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "9824bf4f00863c152d5afe3ac4bbcac173d80684",
-      "url": "https://github.com/larsiusprime/polymod"
+      "ref": "fb123758b90127f5647727727f273d27e93cabdb",
+      "url": "https://github.com/FunkinCrew/polymod"
     },
     {
       "name": "thx.core",

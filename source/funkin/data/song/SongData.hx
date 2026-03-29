@@ -1,11 +1,14 @@
 package funkin.data.song;
 
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongRegistry;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 
 /**
  * Data containing information about a song.
@@ -118,6 +121,18 @@ class SongMetadata implements ICloneable<SongMetadata>
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
+
+    // This might not be a very wise hack, but it works.
+    #if FEATURE_CHART_EDITOR
+    if (Std.isOfType(FlxG.state, ChartEditorState))
+    {
+      var state:ChartEditorState = cast(FlxG.state, ChartEditorState);
+
+      final songLength:Float = @:privateAccess state.songLengthInMs;
+      if (playData.previewStart > 1) playData.previewStart /= songLength;
+      if (playData.previewEnd > 1) playData.previewEnd /= songLength;
+    }
+    #end
 
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
@@ -483,17 +498,17 @@ class SongPlayData implements ICloneable<SongPlayData>
    * @since `2.2.2`
    */
   @:optional
-  @:default(0)
-  public var previewStart:Int;
+  @:default(funkin.util.Constants.DEFAULT_PREVIEW_START_TIME)
+  public var previewStart:Float;
 
   /**
    * The end time for the audio preview in Freeplay.
-   * Defaults to 15 seconds in.
+   * Defaults to 20% seconds in.
    * @since `2.2.2`
    */
   @:optional
-  @:default(15000)
-  public var previewEnd:Int;
+  @:default(funkin.util.Constants.DEFAULT_PREVIEW_END_TIME)
+  public var previewEnd:Float;
 
   public function new()
   {
@@ -566,7 +581,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.opponent = opponent;
     this.instrumental = instrumental;
 
-    this.altInstrumentals = altInstrumentals;
+    this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
 
@@ -780,7 +795,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 
   public function valueAsStruct(?defaultKey:String = "key"):Dynamic
   {
-    if (this.value == null) return {};
+    if (this.value == null) return
+    {
+    };
     if (Std.isOfType(this.value, Array))
     {
       var result:haxe.DynamicAccess<Dynamic> = {};
@@ -846,7 +863,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public function getInt(key:String):Null<Int>
   {
     if (this.value == null) return null;
-    var result = Reflect.field(this.value, key);
+    var result:Any = Reflect.field(this.value, key);
     if (result == null) return null;
     if (Std.isOfType(result, Int)) return result;
     if (Std.isOfType(result, String)) return Std.parseInt(cast result);
@@ -861,7 +878,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   public function getFloat(key:String):Null<Float>
   {
     if (this.value == null) return null;
-    var result = Reflect.field(this.value, key);
+    var result:Any = Reflect.field(this.value, key);
     if (result == null) return null;
     if (Std.isOfType(result, Float)) return result;
     if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
@@ -1301,12 +1318,15 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    */
   public function buildTooltip():String
   {
-    if ((this.kind?.length ?? 0) == 0) return "";
+    if ((this.kind?.length ?? 0) == 0) return '';
 
-    var result:String = 'Kind: ${this.kind}';
+    var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(this.kind);
+    var noteKindDesc:String = noteKind?.description ?? this.kind;
+
+    var result:String = 'Kind: $noteKindDesc';
     if (this.params.length == 0) return result;
 
-    result += "\nParams:";
+    result += '\nParams:';
 
     for (param in params)
     {

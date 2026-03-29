@@ -3,6 +3,7 @@ package funkin.ui.debug.stageeditor.toolboxes;
 #if FEATURE_STAGE_EDITOR
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.util.FileUtil;
 import haxe.ui.components.Button;
 import haxe.ui.components.Image;
 import haxe.ui.components.NumberStepper;
@@ -39,14 +40,17 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Callback for loading the image from the local hard drive.
-    objLoad.onClick = function(_) {
+    objLoad.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
-      Dialogs.openBinaryFile("Open Image File", FileDialogTypes.IMAGES, function(selectedFile) {
+      FileUtil.browseForFile("Open Image File", [FileUtil.FILE_FILTER_PNG], function(selectedFile)
+      {
         if (selectedFile == null) return;
         objImage.resource = null;
 
-        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, function(imageInfo) {
+        ToolkitAssets.instance.imageFromBytes(selectedFile.bytes, function(imageInfo)
+        {
           if (imageInfo == null) return;
 
           objImage.resource = imageInfo.data;
@@ -54,7 +58,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 
           // This checks if the same image had already been loaded, so that we don't add it twice.
           // Kind of hacky but it is what it is.
-          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels());
+          var name:String = haxe.io.Path.withoutExtension(selectedFile.name);
+          var bitToLoad:String = state.addBitmap(linkedObj.updateFramePixels(), name);
           linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
           linkedObj.updateHitbox();
 
@@ -70,11 +75,13 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the image from the internet.
-    objLoadNet.onClick = function(_) {
+    objLoadNet.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
-      state.createURLDialog(function(bytes:lime.utils.Bytes) {
-        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes));
+      state.createURLDialog(function(bytes:lime.utils.Bytes)
+      {
+        var bitToLoad:String = state.addBitmap(BitmapData.fromBytes(bytes), linkedObj.name);
         linkedObj.loadGraphic(state.bitmaps[bitToLoad]);
         linkedObj.updateHitbox();
 
@@ -88,7 +95,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting the image.
-    objReset.onClick = function(_) {
+    objReset.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(AssetDataHandler.getDefaultGraphic());
@@ -103,7 +111,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for resetting frames.
-    objResetFrames.onClick = function(_) {
+    objResetFrames.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic);
@@ -112,13 +121,16 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     }
 
     // Callback for loading the text for the Frame Data.
-    objLoadFrames.onClick = function(_) {
-      Dialogs.openTextFile("Open Text File", FileDialogTypes.TEXTS, function(selectedFile) {
-        if (selectedFile.text == null || (!selectedFile.name.endsWith(".xml") && !selectedFile.name.endsWith(".txt"))) return;
+    objLoadFrames.onClick = function(_)
+    {
+      FileUtil.browseForFile("Open Text File", [FileUtil.FILE_FILTER_XML, FileUtil.FILE_FILTER_TXT], function(selectedFile)
+      {
+        if (selectedFile != null && selectedFile.bytes != null)
+        {
+          objFrameTxt.text = selectedFile.bytes.toString();
 
-        objFrameTxt.text = selectedFile.text;
-
-        state.notifyChange("Frame Text Loaded", "The Text File " + selectedFile.name + " has been loaded.");
+          state.notifyChange("Frame Text Loaded", "The Text File " + selectedFile.name + " has been loaded.");
+        }
       });
     }
 
@@ -129,7 +141,8 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     objSetPacker.onClick = function(_) setObjFrames(true);
 
     // Callback for splitting the graphic into frames.
-    objSplit.onClick = function(_) {
+    objSplit.onClick = function(_)
+    {
       if (linkedObj == null) return;
 
       linkedObj.loadGraphic(linkedObj.graphic, true, Std.int(objImageWidth.pos), Std.int(objImageHeight.pos));

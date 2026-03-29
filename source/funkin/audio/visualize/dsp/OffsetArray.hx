@@ -12,35 +12,28 @@ abstract OffsetArray<T>({
   final offset:Int;
 })
 {
-  public inline function new(array:Array<T>, offset:Int)
-    this = {array: array, offset: offset};
+  public inline function new(array:Array<T>, offset:Int) this = {array: array, offset: offset};
 
   public var length(get, never):Int;
 
-  inline function get_length()
-    return this.array.length;
+  inline function get_length() return this.array.length;
 
   @:arrayAccess
-  public inline function get(index:Int):T
-    return this.array[index - this.offset];
+  public inline function get(index:Int):T return this.array[index - this.offset];
 
   @:arrayAccess
-  public inline function set(index:Int, value:T):Void
-    this.array[index - this.offset] = value;
+  public inline function set(index:Int, value:T):Void this.array[index - this.offset] = value;
 
   /**
     Iterates through items in their original order while providing the altered indexes as keys.
   **/
-  public inline function keyValueIterator():KeyValueIterator<Int, T>
-    return new OffsetArrayIterator(this.array, this.offset);
+  public inline function keyValueIterator():KeyValueIterator<Int, T> return new OffsetArrayIterator(this.array, this.offset);
 
   @:from
-  static inline function fromArray<T>(array:Array<T>)
-    return new OffsetArray(array, 0);
+  static inline function fromArray<T>(array:Array<T>) return new OffsetArray(array, 0);
 
   @:to
-  inline function toArray()
-    return this.array;
+  inline function toArray() return this.array;
 
   /**
     Makes a shifted version of the given `array`, where elements are in the
@@ -76,12 +69,12 @@ private class OffsetArrayIterator<T>
     this.enumeration = 0;
   }
 
-  public inline function next():{key:Int, value:T}
+  public inline function next():
+    {key:Int, value:T}
   {
     final i = this.enumeration++;
     return {key: i + this.offset, value: this.array[i]};
   }
 
-  public inline function hasNext():Bool
-    return this.enumeration < this.array.length;
+  public inline function hasNext():Bool return this.enumeration < this.array.length;
 }

@@ -29,11 +29,6 @@ class ChartEditorEventSprite extends FlxSprite
    */
   public var eventData(default, set):Null<SongEventData> = null;
 
-  /**
-   * The image used for all song events. Cached for performance.
-   */
-  static var eventSpriteBasic:Null<BitmapData> = null;
-
   public var overrideStepTime(default, set):Null<Float> = null;
 
   public var tooltip:ToolTipRegionOptions;
@@ -211,6 +206,14 @@ class ChartEditorEventSprite extends FlxSprite
       // Enable the tooltip.
       ToolTipManager.instance.registerTooltipRegion(this.tooltip);
     }
+  }
+
+  override public function kill()
+  {
+    super.kill();
+
+    // Remove the tooltip to prevent recently deleted events from showing a tooltip.
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
   }
 
   /**

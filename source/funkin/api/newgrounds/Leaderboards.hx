@@ -24,7 +24,7 @@ class Leaderboards
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch leaderboard data!');
       return [];
     }
 
@@ -51,7 +51,8 @@ class Leaderboards
       var leaderboardData:Null<LeaderboardData> = listLeaderboardData().get(leaderboard.getId());
       if (leaderboardData != null)
       {
-        leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void {
+        leaderboardData.postScore(score, function(outcome:Outcome<CallError>):Void
+        {
           switch (outcome)
           {
             case SUCCESS:
@@ -82,7 +83,8 @@ class Leaderboards
     if ((params?.useCurrentUser ?? false) && NewgroundsClient.instance.isLoggedIn()) user = NewgroundsClient.instance.user;
 
     leaderboardData.requestScores(params?.limit ?? 10, params?.skip ?? 0, params?.period ?? ALL, params?.social ?? false, params?.tag, user,
-      function(outcome:Outcome<CallError>):Void {
+      function(outcome:Outcome<CallError>):Void
+      {
         switch (outcome)
         {
           case SUCCESS:
@@ -159,7 +161,7 @@ class LeaderboardsSandboxed
    * @param leaderboard The leaderboard to fetch scores from.
    * @param params Additional parameters for fetching the score.
    */
-  public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  public static function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
   {
     Leaderboards.requestScores(leaderboard, params);
   }

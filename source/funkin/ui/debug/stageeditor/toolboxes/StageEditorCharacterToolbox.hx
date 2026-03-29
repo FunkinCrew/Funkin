@@ -41,46 +41,54 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Numeric callbacks.
-    charPosX.onChange = charPosY.onChange = function(_) {
+    charPosX.onChange = charPosY.onChange = function(_)
+    {
       repositionCharacter();
     }
 
     charZIdx.max = StageEditorState.MAX_Z_INDEX;
-    charZIdx.onChange = function(_) {
+    charZIdx.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
       state.charGroups[state.selectedChar.characterType].zIndex = Std.int(charZIdx.pos);
       state.sortAssets();
     }
 
-    charCamX.onChange = charCamY.onChange = function(_) {
+    charCamX.onChange = charCamY.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
-      state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos, charCamY.pos];
+      state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos ?? 0, charCamY.pos ?? 0];
       state.updateMarkerPos();
     }
 
-    charScale.onChange = function(_) {
+    charScale.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
       state.selectedChar.setScale(state.selectedChar.getBaseScale() * charScale.pos);
       repositionCharacter();
     }
 
-    charAlpha.onChange = function(_) {
+    charAlpha.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
       state.selectedChar.alpha = charAlpha.pos;
     }
 
-    charAngle.onChange = function(_) {
+    charAngle.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
       state.selectedChar.angle = charAngle.pos;
     }
 
-    charScrollX.onChange = charScrollY.onChange = function(_) {
+    charScrollX.onChange = charScrollY.onChange = function(_)
+    {
       if (state.selectedChar == null) return;
       state.selectedChar.scrollFactor.set(charScrollX.pos, charScrollY.pos);
     }
 
     // character button
-    charType.onClick = function(_) {
+    charType.onClick = function(_)
+    {
       charMenu = new StageEditorCharacterMenu(state, this);
       Screen.instance.addComponent(charMenu);
     }
@@ -131,8 +139,8 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
   public function repositionCharacter()
   {
     if (stageEditorState.selectedChar == null) return;
-    stageEditorState.selectedChar.x = charPosX.pos - stageEditorState.selectedChar.characterOrigin.x + stageEditorState.selectedChar.globalOffsets[0];
-    stageEditorState.selectedChar.y = charPosY.pos - stageEditorState.selectedChar.characterOrigin.y + stageEditorState.selectedChar.globalOffsets[1];
+    stageEditorState.selectedChar.x = charPosX.pos - stageEditorState.selectedChar.characterOrigin.x;
+    stageEditorState.selectedChar.y = charPosY.pos - stageEditorState.selectedChar.characterOrigin.y;
 
     stageEditorState.selectedChar.setScale(stageEditorState.selectedChar.getBaseScale() * charScale.pos);
     stageEditorState.updateMarkerPos();
@@ -189,7 +197,8 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
       charButton.icon = CharacterDataParser.getCharPixelIconAsset(charId);
       charButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
 
-      charButton.onClick = _ -> {
+      charButton.onClick = _ ->
+      {
         var type = state.selectedChar?.characterType;
         if (type == null)
         {
@@ -259,10 +268,12 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
         }
       };
 
-      charButton.onMouseOver = _ -> {
+      charButton.onMouseOver = _ ->
+      {
         charIconName.text = '${charData.name} [${charId}]';
       };
-      charButton.onMouseOut = _ -> {
+      charButton.onMouseOut = _ ->
+      {
         charIconName.text = defaultText;
       };
       charGrid.addComponent(charButton);

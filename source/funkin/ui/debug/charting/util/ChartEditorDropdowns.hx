@@ -1,17 +1,23 @@
 package funkin.ui.debug.charting.util;
 
 #if FEATURE_CHART_EDITOR
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.notes.notestyle.NoteStyle;
-import funkin.data.song.SongData.SongTimeChange;
-import funkin.play.event.SongEvent;
-import funkin.data.stage.StageRegistry;
 import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.SongTimeChange;
+import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
 import haxe.ui.components.DropDown;
 import funkin.play.stage.Stage;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.event.SongEventRegistry;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.play.event.SongEvent;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.ui.freeplay.Album;
+import funkin.ui.transition.stickers.StickerPack;
 
 /**
  * Functions for populating dropdowns based on game data.
@@ -91,19 +97,17 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry =
-      {
-        id: "0",
-        text: '${timeChanges[0].timeStamp} ms : BPM: ${timeChanges[0].bpm} in ${timeChanges[0].timeSignatureNum}/${timeChanges[0].timeSignatureDen}'
-      };
+    var returnValue:DropDownEntry = {
+      id: "0",
+      text: '${timeChanges[0].timeStamp} ms : BPM: ${timeChanges[0].bpm} in ${timeChanges[0].timeSignatureNum}/${timeChanges[0].timeSignatureDen}'
+    };
 
     for (index in 0...timeChanges.length)
     {
-      var value =
-        {
-          id: '$index',
-          text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
-        };
+      var value = {
+        id: '$index',
+        text: '${timeChanges[index].timeStamp} ms : BPM: ${timeChanges[index].bpm} in ${timeChanges[index].timeSignatureNum}/${timeChanges[index].timeSignatureDen}'
+      };
       if (startingTimeChange == index) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -188,77 +192,108 @@ class ChartEditorDropdowns
     return returnValue;
   }
 
-  public static final NOTE_KINDS:Map<String, String> = [
-    // Base
-    "" => "Default",
-    "~CUSTOM~" => "Custom",
-    "noanim" => "No Animation",
-    "non_scoreable" => "Non-scoreable",
-    // Weeks 1-7
-    "censor" => "[UH-OH!] Censor Bar",
-    "mom" => "Mom Sings (Week 5)",
-    "ugh" => "Tankman Ugh (Week 7)",
-    "hehPrettyGood" => "Tankman Heh, Pretty Good (Week 7)",
-    // Weekend 1
-    "weekend-1-lightcan" => "Darnell Light Can (2hot)",
-    "weekend-1-kneecan" => "Darnell Knee Can (2hot)",
-    "weekend-1-kickcan" => "Darnell Kick Can (2hot)",
-    "weekend-1-cockgun" => "Pico Cock Gun (2hot)",
-    "weekend-1-firegun" => "Pico Fire Gun (2hot)",
-    "weekend-1-punchhigh" => "Punch High (Blazin')",
-    "weekend-1-punchhighdodged" => "Punch High (Dodge) (Blazin')",
-    "weekend-1-punchhighblocked" => "Punch High (Block) (Blazin')",
-    "weekend-1-punchhighspin" => "Punch High (Spin) (Blazin')",
-    "weekend-1-punchlow" => "Punch Low (Blazin')",
-    "weekend-1-punchlowdodged" => "Punch Low (Dodge) (Blazin')",
-    "weekend-1-punchlowblocked" => "Punch Low (Block) (Blazin')",
-    "weekend-1-punchlowspin" => "Punch High (Spin) (Blazin')",
-    "weekend-1-picouppercutprep" => "Pico Uppercut (Prep) (Blazin')",
-    "weekend-1-picouppercut" => "Pico Uppercut (Blazin')",
-    "weekend-1-blockhigh" => "Block High (Blazin')",
-    "weekend-1-blocklow" => "Block Low (Blazin')",
-    "weekend-1-blockspin" => "Block High (Spin) (Blazin')",
-    "weekend-1-dodgehigh" => "Dodge High (Blazin')",
-    "weekend-1-dodgelow" => "Dodge Low (Blazin')",
-    "weekend-1-dodgespin" => "Dodge High (Spin) (Blazin')",
-    "weekend-1-hithigh" => "Hit High (Blazin')",
-    "weekend-1-hitlow" => "Hit Low (Blazin')",
-    "weekend-1-hitspin" => "Hit High (Spin) (Blazin')",
-    "weekend-1-darnelluppercutprep" => "Darnell Uppercut (Prep) (Blazin')",
-    "weekend-1-darnelluppercut" => "Darnell Uppercut (Blazin')",
-    "weekend-1-idle" => "Idle (Blazin')",
-    "weekend-1-fakeout" => "Fakeout (Blazin')",
-    "weekend-1-taunt" => "Taunt (If Fakeout) (Blazin')",
-    "weekend-1-tauntforce" => "Taunt (Forced) (Blazin')",
-    "weekend-1-reversefakeout" => "Fakeout (Reverse) (Blazin')",
-  ];
-
-  public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
+  /**
+   * Populate a dropdown with a list of albums.
+   */
+  public static function populateDropdownWithAlbums(dropDown:DropDown, startingAlbumId:Null<String>):DropDownEntry
   {
+    startingAlbumId = startingAlbumId ?? Constants.DEFAULT_ALBUM_ID;
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind(startingKindId);
+    var albumIds:Array<String> = AlbumRegistry.instance.listEntryIds();
 
-    for (noteKindId in NOTE_KINDS.keys())
+    var returnValue:DropDownEntry = {id: "volume1", text: "Volume 1"};
+
+    for (albumId in albumIds)
     {
-      var noteKind:String = NOTE_KINDS.get(noteKindId) ?? 'Unknown';
+      var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+      if (album == null) continue;
 
-      var value:DropDownEntry = {id: noteKindId, text: noteKind};
-      if (startingKindId == noteKindId) returnValue = value;
+      // Check if the album has all necessary assets (art and title)
+      if (album._data?.albumArtAsset == null || album._data?.albumTitleAsset == null) continue;
+
+      var value = {id: albumId, text: album.getAlbumName()};
+      if (startingAlbumId == albumId) returnValue = value;
 
       dropDown.dataSource.add(value);
     }
 
-    dropDown.dataSource.sort('id', ASCENDING);
+    dropDown.dataSource.sort('text', ASCENDING);
 
     return returnValue;
   }
 
+  /**
+   * Populate a dropdown with a list of sticker packs.
+   */
+  public static function populateDropdownWithStickerPacks(dropDown:DropDown, startingStickerPackId:Null<String>):DropDownEntry
+  {
+    startingStickerPackId = startingStickerPackId ?? Constants.DEFAULT_STICKER_PACK;
+    dropDown.dataSource.clear();
+
+    var stickerPackIds:Array<String> = StickerRegistry.instance.listEntryIds();
+
+    var returnValue:DropDownEntry = {id: "default", text: "Default"};
+
+    for (stickerPackId in stickerPackIds)
+    {
+      var stickerPack:Null<StickerPack> = StickerRegistry.instance.fetchEntry(stickerPackId);
+      if (stickerPack == null) continue;
+
+      // Check if the sticker has all necessary assets (stickers)
+      if (stickerPack._data?.stickers == null) continue;
+
+      var value = {id: stickerPackId, text: stickerPack.getStickerPackName()};
+      if (startingStickerPackId == stickerPackId) returnValue = value;
+
+      dropDown.dataSource.add(value);
+    }
+
+    dropDown.dataSource.sort('text', ASCENDING);
+
+    return returnValue;
+  }
+
+  /**
+   * Populate the provided dropdown with the list of available note kinds.
+   * @param dropDown The dropdown to populate
+   * @param startingKindId The note kind to pre-select.
+   * @return The dropdown entry for the pre-selected note kind.
+   */
+  public static function populateDropdownWithNoteKinds(dropDown:DropDown, startingKindId:String):DropDownEntry
+  {
+    dropDown.dataSource.clear();
+
+    dropDown.dataSource.add({id: '', text: 'Default'});
+    dropDown.dataSource.add({id: '~CUSTOM~', text: 'Custom'});
+
+    var customNoteKinds:Array<String> = NoteKindManager.listNoteKinds();
+
+    for (noteKindId in customNoteKinds)
+    {
+      dropDown.dataSource.add(lookupNoteKind(noteKindId));
+    }
+
+    dropDown.dataSource.sort('id', ASCENDING);
+
+    return lookupNoteKind(startingKindId);
+  }
+
+  /**
+   * Generates the dropdown entry for the provided note kind ID.
+   * @param noteKindId The note kind ID
+   * @return The dropdown entry
+   */
   public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
   {
     if (noteKindId == null) return lookupNoteKind('');
-    if (noteKindId != '' && !NOTE_KINDS.exists(noteKindId)) return {id: '~CUSTOM~', text: 'Custom'};
-    return {id: noteKindId ?? '', text: NOTE_KINDS.get(noteKindId) ?? 'Unknown'};
+    if (noteKindId == '') return {id: '', text: 'Default'};
+
+    var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(noteKindId);
+    var noteKindDesc:Null<String> = noteKind?.description ?? noteKindId;
+    if (noteKind != null) return {id: noteKindId ?? 'unknown', text: noteKindDesc ?? 'unknown'};
+
+    return {id: '~CUSTOM~', text: 'Custom'};
   }
 
   /**

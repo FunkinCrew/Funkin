@@ -9,6 +9,7 @@ import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.stage.Stage;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -52,6 +53,11 @@ class BaseCharacter extends Bopper
   public var debug:Bool = false;
 
   /**
+   * If set, this stage will be used instead of the current stage in PlayState.
+   */
+  public var currentStage:Null<Stage> = null;
+
+  /**
    * The current note kind.
    */
   public var curNoteKind:NoteKind;
@@ -69,6 +75,11 @@ class BaseCharacter extends Bopper
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
   final _data:CharacterData;
   final singTimeSteps:Float;
+
+  /**
+   * When set to true, the next animation to play will temporarily force the character's vocals to play.
+   */
+  public var tempVocals:Bool = false;
 
   /**
    * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
@@ -181,6 +192,8 @@ class BaseCharacter extends Bopper
       this.flipX = _data.flipX;
     }
 
+    if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;
+
     shouldBop = false;
   }
 
@@ -244,6 +257,9 @@ class BaseCharacter extends Bopper
   {
     // Set the x and y to be their original values.
     this.resetPosition();
+
+    // Resets danceEvery value to the original one.
+    this.danceEvery = _data.danceEvery;
 
     this.dance(true); // Force to avoid the old animation playing with the wrong offset at the start of the song.
     // Make sure we are playing the idle animation
@@ -314,6 +330,20 @@ class BaseCharacter extends Bopper
     {
       // Force the character to play the idle after the animation ends.
       this.dance(true);
+    }
+    if (tempVocals)
+    {
+      // stop the temporary vocals
+      if (characterType == BF && PlayState.instance.vocals.playerVolume == 1)
+      {
+        PlayState.instance.vocals.playerVolume = 0;
+      }
+
+      if (characterType == DAD && PlayState.instance.vocals.opponentVolume == 1)
+      {
+        PlayState.instance.vocals.opponentVolume = 0;
+      }
+      tempVocals = false;
     }
   }
 
@@ -689,6 +719,21 @@ class BaseCharacter extends Bopper
 
   public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
+    if (tempVocals)
+    {
+      // restart the character's vocals for the duration of the animation
+      if (characterType == BF && PlayState.instance.vocals.playerVolume == 0)
+      {
+        PlayState.instance.vocals.playerVolume = 1;
+      }
+      else if (characterType == DAD && PlayState.instance.vocals.opponentVolume == 0)
+      {
+        PlayState.instance.vocals.opponentVolume = 1;
+      }
+      else if (characterType != BF || characterType != DAD)
+        tempVocals = false;
+    }
+
     super.playAnimation(name, restart, ignoreOther, reversed);
   }
 

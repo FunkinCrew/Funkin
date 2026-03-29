@@ -10,7 +10,9 @@ import funkin.data.freeplay.player.PlayerRegistry;
  * Create a scripted class that extends MultiSparrowFreeplayDJ to use this.
  */
 @:hscriptClass
-class ScriptedMultiSparrowFreeplayDJ extends MultiSparrowFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedMultiSparrowFreeplayDJ extends MultiSparrowFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 /**
  * For some Freeplay DJs which use Sparrow atlases, the spritesheets need to be split
@@ -34,7 +36,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
 
   public function loadFrames():Void
   {
-    trace('Loading assets for Multi-Sparrow character "${characterId}"', flixel.util.FlxColor.fromString("#89CFF0"));
+    log('Loading assets for Multi-Sparrow Freeplay DJ "${characterId}"');
 
     var assetList = [];
     for (anim in playableCharData.getAnimationsList())
@@ -44,39 +46,39 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
 
     if (texture == null)
     {
-      trace('Multi-Sparrow atlas could not load PRIMARY texture: ${playableCharData.getAssetPath()}');
+      log('Multi-Sparrow atlas could not load PRIMARY texture: ${playableCharData.getAssetPath()}');
       FlxG.log.error('Multi-Sparrow atlas could not load PRIMARY texture: ${playableCharData.getAssetPath()}');
       return;
     }
     else
     {
-      trace('Creating multi-sparrow atlas: ${playableCharData.getAssetPath()}');
       texture.parent.destroyOnNoUse = false;
     }
 
     for (asset in assetList)
     {
       final subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(asset);
-      if (subTexture == null) trace('Multi-Sparrow atlas could not load subtexture: ${asset}');
+      if (subTexture == null) log('Multi-Sparrow atlas could not load subtexture: ${asset}');
       else
       {
-        trace('Concatenating multi-sparrow atlas: ${asset}');
+        log('Concatenating multi-sparrow atlas: ${asset}');
         subTexture.parent.destroyOnNoUse = false;
         FunkinMemory.cacheTexture(Paths.image(asset));
       }
       texture.addAtlas(subTexture);
     }
+
     this.frames = texture;
   }
 
   public function loadAnimations():Void
   {
-    trace('[MULTISPARROWDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
+    log('[MULTISPARROWDJ] Loading ${playableCharData.getAnimationsList().length} animations for ${characterId}');
 
     FlxAnimationUtil.addAtlasAnimations(this, playableCharData.getAnimationsList());
 
     var animationList:Array<String> = this.animation.getNameList();
-    trace('[MULTISPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
+    log('[MULTISPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
   }
 
   public override function update(elapsed:Float):Void
@@ -248,7 +250,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
     }
     else
     {
-      trace('Finished ${name}');
+      log('Finished ${name}');
     }
   }
 
@@ -261,5 +263,10 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
       animation.curAnim.looped = Loop;
     }
     applyAnimationOffset();
+  }
+
+  static function log(message:String):Void
+  {
+    trace(' MULTISPARROWDJ '.bold().bg_blue() + ' $message');
   }
 }

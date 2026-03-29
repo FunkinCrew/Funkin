@@ -18,7 +18,7 @@ class InputUtil
     return switch (device)
     {
       case Keys: getKeyName(id);
-      case Gamepad(gamepadID): getButtonName(id, FlxG.gamepads.getByID(gamepadID));
+      case Gamepad(gamepadID): FlxG.gamepads.getByID(gamepadID) != null ? getButtonName(id, FlxG.gamepads.getByID(gamepadID)) : 'N/A';
     }
   }
 
@@ -216,11 +216,9 @@ enum abstract ControllerName(String) from String to String
     return 'assets/images/ui/devices/Pad.png';
   }
 
-  inline static public function getNameById(id:Int):ControllerName
-    return getName(FlxG.gamepads.getByID(id));
+  inline static public function getNameById(id:Int):ControllerName return getName(FlxG.gamepads.getByID(id));
 
-  inline static public function getName(gamepad:FlxGamepad):ControllerName
-    return parseName(gamepad.name);
+  inline static public function getName(gamepad:FlxGamepad):ControllerName return parseName(gamepad.name);
 
   static public function parseName(name:String):ControllerName
   {

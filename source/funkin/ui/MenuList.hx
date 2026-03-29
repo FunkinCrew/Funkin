@@ -288,7 +288,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       busy = true;
       FunkinSound.playOnce(Paths.sound('confirmMenu'));
-      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_) {
+      FlxFlicker.flicker(menuItem, 1, 0.06, true, false, function(_)
+      {
         busy = false;
         menuItem.callback();
       });
@@ -370,8 +371,7 @@ class MenuListItem extends FlxSprite
 
   public var selected(get, never):Bool;
 
-  function get_selected()
-    return alpha == 1.0;
+  function get_selected() return alpha == 1.0;
 
   public function new(x = 0.0, y = 0.0, name:String, callback, available:Bool = true)
   {

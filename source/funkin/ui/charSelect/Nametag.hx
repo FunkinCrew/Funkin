@@ -41,28 +41,37 @@ class Nametag extends FlxSprite
 
   public function switchChar(str:String, playMosaicSequence:Bool = true):Void
   {
-    if (playMosaicSequence) shaderEffect();
+    var path:String = (str == "bf") ? "boyfriend" : "bf";
+    if (str != "bf") path = str;
 
-    new FlxTimer().start(4 / 30, _ -> {
-      var path:String = str;
-      switch str
+    loadGraphic(Paths.image("charSelect/" + path + "Nametag"));
+    updateHitbox();
+    scale.set(0.77, 0.77);
+    updatePosition();
+
+    // Reset shader to ensure the nametag doesn't get stuck
+    if (playMosaicSequence)
+    {
+      mosaicShader.setBlockSize(1, 1);
+      shaderEffect();
+
+      // Delay the shader effect by a bit to prevent lag.
+      new FlxTimer().start(2 / 30, _ ->
       {
-        case "bf":
-          path = "boyfriend";
-      }
-
-      loadGraphic(Paths.image('charSelect/' + path + "Nametag"));
-      updateHitbox();
-      scale.x = scale.y = 0.77;
-
-      updatePosition();
-
-      if (playMosaicSequence) shaderEffect(true);
-    });
+        shaderEffect(true);
+      });
+    }
+    else
+    {
+      mosaicShader.setBlockSize(1, 1);
+    }
   }
 
   function shaderEffect(fadeOut:Bool = false):Void
   {
+    // Skip the shader effect if the width is too small.
+    if (width <= 1) return;
+
     if (currentMosaicSequence != null)
     {
       // Forcibly reset the shader to prevent overlapping blur sequences
@@ -74,31 +83,27 @@ class Nametag extends FlxSprite
 
     if (fadeOut)
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
-      ]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(1, 1)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 27, height / 26)
+      }, {
+        time: 2 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},]);
     }
     else
     {
-      currentMosaicSequence = new Sequence([
-        {time: 0 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-        {time: 1 / 30, callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)},
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
-      ]);
+      currentMosaicSequence = new Sequence([{
+        time: 0 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+      }, {
+        time: 1 / 30,
+        callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)
+      }, {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},]);
     }
-  }
-
-  function setBlockTimer(frame:Int, ?forceX:Float, ?forceY:Float):Void
-  {
-    var daX:Float = forceX ?? 10 * FlxG.random.int(1, 4);
-    var daY:Float = forceY ?? 10 * FlxG.random.int(1, 4);
-
-    FlxTimer.wait(frame / 30, () -> {
-      mosaicShader.setBlockSize(daX, daY);
-    });
   }
 
   function set_midpointX(val:Float):Float

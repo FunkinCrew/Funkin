@@ -10,8 +10,6 @@ class NoteSplash extends FlxSprite
   public var splashFramerate:Int = 24;
   public var splashFramerateVariance:Int = 2;
 
-  static var frameCollection:FlxFramesCollection;
-
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);

@@ -33,8 +33,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 {
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls
-    return PlayerSettings.player1.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
@@ -224,6 +223,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function stepHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return false;
+
     var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
@@ -235,6 +236,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function beatHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return false;
+
     var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);

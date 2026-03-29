@@ -140,7 +140,7 @@ class HitNoteScriptEvent extends NoteScriptEvent
   /**
    * The score the player received for hitting the note.
    */
-  public var score:Int;
+  public var score:Float;
 
   /**
    * If the hit causes a combo break.
@@ -158,7 +158,7 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Int, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
+  public function new(note:NoteSprite, healthChange:Float, score:Float, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
       doesNotesplash:Bool = false):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
@@ -200,7 +200,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
   /**
    * How much score should be lost when this ghost note is pressed.
    */
-  public var scoreChange(default, default):Int;
+  public var scoreChange(default, default):Float;
 
   /**
    * Whether to play the record scratch sound.
@@ -212,7 +212,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
    */
   public var playAnim(default, default):Bool;
 
-  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Int):Void
+  public function new(dir:NoteDirection, hasPossibleNotes:Bool, healthChange:Float, scoreChange:Float):Void
   {
     super(NOTE_GHOST_MISS, true);
     this.dir = dir;
@@ -239,7 +239,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
   /**
    * The score the player received for hitting the note.
    */
-  public var score:Int;
+  public var score:Float;
 
   /**
    * If the hit causes a combo break.
@@ -257,7 +257,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Int, isComboBreak:Bool, comboCount:Int = 0,
+  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Float, isComboBreak:Bool, comboCount:Int = 0,
       cancelable:Bool = false):Void
   {
     super(type, null, healthChange, comboCount, true);
@@ -416,19 +416,34 @@ class KeyboardInputScriptEvent extends ScriptEvent
 
 /**
  * An event that is fired once the song's chart has been parsed.
+ *
+ * The event data includes the song's full note data and event data, which lets you modify it if you like.
+ * Override `onSongLoad(event:SongLoadScriptEvent)` on a song/character/stage/module to use it.
  */
 class SongLoadScriptEvent extends ScriptEvent
 {
   /**
-   * The note associated with this event.
-   * You cannot replace it, but you can edit it.
+   * The note data for the song that just loaded.
+   * Modifying this will carry over to the song, so feel free to edit it
+   * (to easily mirror a chart, randomize it, add/remove notes, etc.)
    */
   public var notes(default, set):Array<SongNoteData>;
 
+  /**
+   * The event data for the song that just loaded.
+   * Modifying this will carry over to the song, so feel free to edit it
+   * (add/remove events, modify event data, etc.)
+   */
   public var events(default, set):Array<SongEventData>;
 
+  /**
+   * The ID of the song that just loaded.
+   */
   public var id(default, null):String;
 
+  /**
+   * The difficulty of the song that just loaded.
+   */
   public var difficulty(default, null):String;
 
   function set_notes(notes:Array<SongNoteData>):Array<SongNoteData>
@@ -455,12 +470,13 @@ class SongLoadScriptEvent extends ScriptEvent
   public override function toString():String
   {
     var noteStr = notes == null ? 'null' : 'Array(' + notes.length + ')';
-    return 'SongLoadScriptEvent(notes=$noteStr, id=$id, difficulty=$difficulty)';
+    var eventStr = events == null ? 'null' : 'Array(' + events.length + ')';
+    return 'SongLoadScriptEvent(notes=$noteStr, events=$eventStr, id=$id, difficulty=$difficulty)';
   }
 }
 
 /**
- * AAn event that is fired when the player retries the song.
+ * An event that is fired when the player retries the song.
  */
 class SongRetryEvent extends ScriptEvent
 {

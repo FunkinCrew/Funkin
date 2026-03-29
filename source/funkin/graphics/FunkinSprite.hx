@@ -6,6 +6,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import openfl.display3D.textures.TextureBase;
 import funkin.graphics.framebuffer.FixedBitmapData;
+import funkin.graphics.framebuffer.FunkinFilterRenderer;
 import openfl.display.BitmapData;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
@@ -21,6 +22,8 @@ import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.SymbolInstance;
 import animate.FlxAnimate;
 import animate.FlxAnimateFrames;
+import animate.internal.RenderTexture;
+import openfl.filters.BitmapFilter;
 import haxe.io.Path;
 
 using StringTools;
@@ -111,8 +114,14 @@ typedef AtlasSpriteSettings =
  * - TODO: Better cache handling for textures.
  */
 @:nullSafety
+@:access(animate.FlxAnimateController)
 class FunkinSprite extends FlxAnimate
 {
+  /**
+   * The filters array to be applied to the sprite.
+   */
+  public var filters(default, set):Null<Array<BitmapFilter>> = null;
+
   /**
    * @param x Starting X position
    * @param y Starting Y position
@@ -122,6 +131,8 @@ class FunkinSprite extends FlxAnimate
   public function new(?x:Float = 0, ?y:Float = 0, ?path:String, ?atlasSettings:AtlasSpriteSettings)
   {
     super(x, y);
+
+    filterRenderer = new FunkinFilterRenderer(this);
 
     if (path != null)
     {
@@ -255,7 +266,8 @@ class FunkinSprite extends FlxAnimate
     trace('[ASYNC] Start loading image (${key})');
     graphic.persist = true;
     openfl.Assets.loadBitmapData(key)
-      .onComplete(function(bitmapData:openfl.display.BitmapData) {
+      .onComplete(function(bitmapData:openfl.display.BitmapData)
+      {
         trace('[ASYNC] Finished loading image');
         var cache:Bool = false;
         loadBitmapData(bitmapData, cache);
@@ -266,7 +278,8 @@ class FunkinSprite extends FlxAnimate
           FlxTween.tween(this, {alpha: 1.0}, 0.25);
         }
       })
-      .onError(function(error:Dynamic) {
+      .onError(function(error:Dynamic)
+      {
         trace('[ASYNC] Failed to load image: ${error}');
         if (fadeTween != null)
         {
@@ -274,7 +287,8 @@ class FunkinSprite extends FlxAnimate
           this.alpha = 1.0;
         }
       })
-      .onProgress(function(progress:Int, total:Int) {
+      .onProgress(function(progress:Int, total:Int)
+      {
         trace('[ASYNC] Loading image progress: ${progress}/${total}');
       });
   }
@@ -397,7 +411,7 @@ class FunkinSprite extends FlxAnimate
     {
       return true;
     }
-    else if (this.isAnimate && !animationList.contains(id))
+    else if (this.anim.hasAnimateAtlas && !animationList.contains(id))
     {
       return addAnimationIfMissing(id);
     }
@@ -438,9 +452,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFramesWithKeyword(keyword:String):Array<animate.internal.Frame>
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getFramesWithKeyword() only works texture atlases!');
+      trace('WARNING: getFramesWithKeyword() only works on texture atlases!');
       return [];
     }
 
@@ -461,8 +475,10 @@ class FunkinSprite extends FlxAnimate
 
     for (symbolItem in symbolItems)
     {
-      symbolItem.timeline.forEachLayer((layer) -> {
-        layer.forEachFrame((frame) -> {
+      symbolItem.timeline.forEachLayer((layer) ->
+      {
+        layer.forEachFrame((frame) ->
+        {
           frames.push(frame);
         });
       });
@@ -528,9 +544,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFrameLabelList():Array<String>
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getFrameLabelList() only works texture atlases!');
+      trace('WARNING: getFrameLabelList() only works on texture atlases!');
       return [];
     }
 
@@ -557,15 +573,15 @@ class FunkinSprite extends FlxAnimate
    * @param name The name of the frame label to retrieve.
    * @return The frame label, or null if it doesn't exist.
    */
-  public function getFrameLabel(name:String):Null<animate.internal.Frame>
+  public function getFrameLabel(name:String, ?timeline:animate.internal.Timeline):Null<animate.internal.Frame>
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getFrameLabel() only works texture atlases!');
+      trace('WARNING: getFrameLabel() only works on texture atlases!');
       return null;
     }
 
-    for (layer in this.timeline.layers)
+    for (layer in (timeline ?? this.timeline).layers)
     {
       @:nullSafety(Off)
       for (frame in layer.frames)
@@ -576,6 +592,7 @@ class FunkinSprite extends FlxAnimate
         }
       }
     }
+
     return null;
   }
 
@@ -584,9 +601,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function getDefaultSymbol():String
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getDefaultSymbol() only works texture atlases!');
+      trace('WARNING: getDefaultSymbol() only works on texture atlases!');
       return '';
     }
 
@@ -601,9 +618,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: replaceSymbolGraphic() only works texture atlases!');
+      trace('WARNING: replaceSymbolGraphic() only works on texture atlases!');
       return;
     }
 
@@ -626,9 +643,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function getFirstElement(symbol:String):Null<Element>
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getFirstElement() only works texture atlases!');
+      trace('WARNING: getFirstElement() only works on texture atlases!');
       return null;
     }
 
@@ -642,9 +659,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function getSymbolElements(symbol:String):Array<Element>
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: getSymbolElements() only works texture atlases!');
+      trace('WARNING: getSymbolElements() only works on texture atlases!');
       return [];
     }
 
@@ -675,9 +692,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function scaleElement(element:Element, scale:Float, positionOffset:Float = 0, scaleEverything:Bool = false):Void
   {
-    if (!this.isAnimate)
+    if (!this.anim.hasAnimateAtlas)
     {
-      trace('WARNING: scaleElement() only works texture atlases!');
+      trace('WARNING: scaleElement() only works on texture atlases!');
       return;
     }
 
@@ -767,10 +784,136 @@ class FunkinSprite extends FlxAnimate
     matrix.ty = Math.round(matrix.ty / this.scale.y) * this.scale.y;
   }
 
+  var filterRenderer:FunkinFilterRenderer;
+  var filtered:Bool = false;
+  var filterOffsets:Array<Float> = [0, 0];
+
+  override function checkRenderTexture():Bool
+  {
+    // Forcefully enable render texture when we have filters.
+    if (filters != null && filters.length > 0) return true;
+
+    return super.checkRenderTexture();
+  }
+
+  function set_filters(value:Null<Array<BitmapFilter>>):Null<Array<BitmapFilter>>
+  {
+    if (filters != value) _renderTextureDirty = true;
+    filters = value;
+    return value;
+  }
+
+  override public function draw():Void
+  {
+    for (filter in filters ?? [])
+    {
+      @:privateAccess
+      if (filter.__renderDirty) _renderTextureDirty = true;
+    }
+
+    super.draw();
+  }
+
+  override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
+  {
+    final willUseRenderTexture = checkRenderTexture();
+    final matrix = this._matrix;
+
+    frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+    prepareDrawMatrix(matrix, camera);
+
+    if (willUseRenderTexture)
+    {
+      var bounds:Array<Int> = [Math.ceil(frame.frame.width), Math.ceil(frame.frame.height)];
+      if (_renderTexture == null) _renderTexture = new RenderTexture(bounds[0], bounds[1]);
+
+      if (_renderTextureDirty)
+      {
+        _renderTexture.init(bounds[0], bounds[1]);
+        _renderTexture.drawToCamera((camera, mat) ->
+        {
+          camera.drawPixels(frame, framePixels, mat, null, null, antialiasing, null);
+        });
+
+        _renderTexture.render();
+
+        filterRenderer.applyFilters();
+        _renderTextureDirty = false;
+      }
+
+      if (filtered)
+      {
+        matrix.translate(filterOffsets[0], filterOffsets[1]);
+        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
+      }
+      else
+      {
+        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+      }
+    }
+    else
+    {
+      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+    }
+  }
+
+  override function drawAnimate(camera:FlxCamera):Void
+  {
+    final willUseRenderTexture = checkRenderTexture();
+    final matrix = _matrix;
+    matrix.identity();
+
+    @:privateAccess
+    var bounds = timeline._bounds;
+    if (!willUseRenderTexture) matrix.translate(-bounds.x, -bounds.y);
+
+    prepareAnimateMatrix(matrix, camera, bounds);
+
+    if (renderStage) drawStage(camera);
+
+    timeline.currentFrame = animation.frameIndex;
+
+    #if !flash
+    if (willUseRenderTexture)
+    {
+      if (_renderTexture == null) _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
+
+      if (_renderTextureDirty)
+      {
+        _renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
+        _renderTexture.drawToCamera((camera, matrix) ->
+        {
+          matrix.translate(-bounds.x, -bounds.y);
+          timeline.draw(camera, matrix, null, null, antialiasing, null);
+        });
+        _renderTexture.render();
+
+        filterRenderer.applyFilters();
+        _renderTextureDirty = false;
+      }
+
+      if (filtered)
+      {
+        matrix.translate(filterOffsets[0], filterOffsets[1]);
+        camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
+      }
+      else
+      {
+        camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+      }
+    }
+    else
+    #end
+    {
+      timeline.draw(camera, matrix, colorTransform, blend, antialiasing, shader);
+    }
+  }
+
   public override function destroy():Void
   {
     @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
     frames = null;
+    filterRenderer.destroy();
     // Cancel all tweens so they don't continue to run on a destroyed sprite.
     // This prevents crashes.
     FlxTween.cancelTweensOf(this);
