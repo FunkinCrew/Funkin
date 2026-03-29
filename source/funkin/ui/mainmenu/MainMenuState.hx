@@ -63,11 +63,6 @@ class MainMenuState extends MusicBeatState
   var uiStateMachine:UIStateMachine = new UIStateMachine();
   var canInteract(get, never):Bool;
 
-  function get_canInteract():Bool
-  {
-    return uiStateMachine.canInteract();
-  }
-
   static var rememberedSelectedIndex:Int = 0;
 
   // this should never be false on non-mobile targets.
