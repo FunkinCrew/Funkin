@@ -562,10 +562,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         case "FocusCamera":
           cameraRect.handleFocusCamera(eventData);
-          break;
         case "ZoomCamera":
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
-          break;
       }
 
       completedEvents.push(eventData);
