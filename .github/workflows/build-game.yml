@@ -24,10 +24,10 @@ jobs:
       trigger-build: ${{ steps.should-trigger.outputs.result }}
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v7.3.3
+        uses: funkincrew/ci-checkout@v7.4
         with:
           submodules: false
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           base: ${{ github.ref }}
@@ -59,7 +59,7 @@ jobs:
       list: ${{ steps.build-tags.outputs.list }}
     steps:
       - name: Gather build tags
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         id: build-tags
         with:
           script: |
@@ -96,17 +96,20 @@ jobs:
       packages: write
     steps:
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v7.3.3
+        uses: funkincrew/ci-checkout@v7.4
         with:
           submodules: false
       - name: Log into GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: ./build
           push: true
@@ -143,14 +146,14 @@ jobs:
         run: |
           git config --global --replace-all safe.directory $GITHUB_WORKSPACE
       - name: Get checkout token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         id: app_token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v7.3.3
+        uses: funkincrew/ci-checkout@v7.4
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
@@ -184,7 +187,7 @@ jobs:
         timeout-minutes: 120
       - name: Save build artifact to Github Actions
         if: ${{ github.event.inputs.save-artifact }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-${{ matrix.target }}
           path: export/release/${{matrix.target}}/bin/
@@ -212,14 +215,14 @@ jobs:
       BUILD_DEFINES: ${{ github.event.inputs.build-defines || '-DGITHUB_BUILD' }}
     steps:
       - name: Get checkout token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         id: app_token
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
           owner: ${{ github.repository_owner }}
       - name: Checkout repo
-        uses: funkincrew/ci-checkout@v7.3.3
+        uses: funkincrew/ci-checkout@v7.4
         with:
           submodules: 'recursive'
           token: ${{ steps.app_token.outputs.token }}
@@ -233,7 +236,7 @@ jobs:
           echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
       - name: Restore cached dependencies
         id: cache-hmm
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .haxelib
           key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
@@ -242,15 +245,35 @@ jobs:
         run: |
           git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
           git config --global advice.detachedHead false
+          haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git
+          haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git
           haxelib --global run hmm install -q
-          cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
+          haxelib --global fixrepo
+          haxelib --global list
+          pushd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml && popd
       - if: ${{ matrix.target != 'html5' }}
         name: Restore hxcpp cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /usr/share/hxcpp
           key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+      - name: Restore lime rebuild cache
+        id: cache-lime
+        uses: actions/cache@v5
+        with:
+          path: .haxelib/lime/git/ndll/Linux64
+          key: haxe-lime-linux64-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}-${{ github.sha }}
+          restore-keys: haxe-lime-linux64-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+      - name: Setup lime
+        run: |
+          haxelib --always run lime setup
+          haxelib run lime rebuild hxcpp
+      - if: ${{ steps.cache-lime.outputs.cache-hit != 'true' }}
+        name: Rebuild lime
+        run: |
+          haxelib run lime rebuild cpp -64
+          git -C .haxelib/lime/git status || true
       - name: Populate .env
         run: |
           touch .env
@@ -262,7 +285,7 @@ jobs:
         timeout-minutes: 120
       - name: Save build artifact to Github Actions
         if: ${{ github.event.inputs.save-artifact }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-${{ matrix.target }}
           path: export/release/${{matrix.target}}/bin/
