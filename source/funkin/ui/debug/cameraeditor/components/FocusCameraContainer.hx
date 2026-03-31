@@ -138,6 +138,11 @@ class FocusCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  function updateCameraPreview():Void
+  {
+    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
+  }
+
   /**
    * Loads the data for the currently selected event into the UI.
    */
@@ -177,6 +182,7 @@ class FocusCameraContainer extends VBox
     });
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   /**
@@ -194,6 +200,7 @@ class FocusCameraContainer extends VBox
     var value:Int = Std.parseInt(focusCameraTarget.selectedItem.id);
 
     cameraEditorState.selectedSongEvent.set('char', value);
+    updateCameraPreview();
   }
 
   /**
@@ -205,6 +212,7 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraXPos.value;
 
     cameraEditorState.selectedSongEvent.set('x', value);
+    updateCameraPreview();
   }
 
   /**
@@ -216,6 +224,7 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraYPos.value;
 
     cameraEditorState.selectedSongEvent.set('y', value);
+    updateCameraPreview();
   }
 
   /**
@@ -227,6 +236,7 @@ class FocusCameraContainer extends VBox
     var value:Float = focusCameraDuration.value;
 
     cameraEditorState.selectedSongEvent.set('duration', value);
+    updateCameraPreview();
   }
 
   /**
@@ -259,6 +269,7 @@ class FocusCameraContainer extends VBox
     }
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   /**
@@ -282,6 +293,7 @@ class FocusCameraContainer extends VBox
     cameraEditorState.selectedSongEvent.set('easeDir', value);
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   public override function destroy():Void
