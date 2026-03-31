@@ -460,12 +460,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     final easeVal:Null<String> = chartEditorState.eventDataToPlace.get('ease');
     final easeDirVal:Null<String> = chartEditorState.eventDataToPlace.get('easeDir');
-    final easeStr:String = easeVal == null ? 'linear' : easeVal;
-    final easeDirStr:String = easeDirVal == null ? 'In' : easeDirVal;
+    final easeStr:String = easeVal ?? 'linear';
+    final easeDirStr:String = easeDirVal ?? 'In';
     final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
 
-    // Hide preview when easing indicates a non-visual/legacy type such as "classic"
-    if (easeStr != null && easeStr.toLowerCase().indexOf('classic') != -1)
+    // Hide preview when easing indicates a non-visual/legacy type such as "CLASSIC"
+    if (easeStr != null && easeStr.toUpperCase().indexOf('CLASSIC') != -1)
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();

@@ -49,9 +49,12 @@ class ZoomCameraContainer extends VBox
     }
 
     var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? SongEvent.DEFAULT_EASE;
-    var easeDirStr:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    var easeDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
 
-    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
+    var easeStr:String = SongEventHelper.resolveEaseTypeFromKey(easeStr);
+    var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
+
+    final easeKey:String = '$easeStr$easeDir';
 
     // Hide preview when easing indicates a non-visual/legacy type such as "classic"
     if (easeStr != null && (easeStr == 'CLASSIC' || easeStr == 'INSTANT'))
@@ -88,8 +91,8 @@ class ZoomCameraContainer extends VBox
 
     final EASE_GRAPH_SIZE:Int = 100;
 
-    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(key);
-    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
+    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(easeKey);
+    _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
     zoomCameraEaseGraph.resource = _easeGraphSprite?.frame;
     if (_graphBd == null || zoomCameraEaseGraph.resource == null)
     {
@@ -105,7 +108,7 @@ class ZoomCameraContainer extends VBox
     zoomCameraEaseDot.hidden = false;
     if (zoomCameraEaseBox != null) zoomCameraEaseBox.hidden = false;
 
-    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(key, 30, 3, 16);
+    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(easeKey, 30, 3, 16);
     if (dotSprites == null || dotSprites.length == 0)
     {
       // if no dot sprites, still show graph but keep dot empty
@@ -173,7 +176,10 @@ class ZoomCameraContainer extends VBox
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
     zoomCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? ZoomCameraSongEvent.DEFAULT_DURATION;
 
-    var eventEase:String = cameraEditorState.selectedSongEvent.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    // Event data from the chart might use the "legacy" ease types where the direction wasn't separate.
+    var eventEaseStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? SongEvent.DEFAULT_EASE;
+    var eventEase:String = SongEventHelper.resolveEaseTypeFromKey(eventEaseStr);
+
     zoomCameraEase.selectItemBy(function(data):Bool
     {
       return data.id == eventEase;
@@ -188,7 +194,10 @@ class ZoomCameraContainer extends VBox
       zoomCameraEaseDir.hidden = false;
     }
 
-    var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    var eventEaseDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
+    if (eventEaseDirStr == '') eventEaseDirStr = null;
+    var eventEaseDir:String = eventEaseDirStr ?? SongEventHelper.resolveEaseDirFromKey(eventEaseStr);
+
     zoomCameraEaseDir.selectItemBy(function(data):Bool
     {
       return data.id == eventEaseDir;
