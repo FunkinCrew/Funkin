@@ -159,9 +159,32 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentStage:Null<Stage> = null;
 
   // Song chart data we have to hold onto just to save properly later.
-  public var songManifestData:Null<ChartManifestData> = null;
   public var audioInstTrackData:Map<String, Bytes> = [];
   public var audioVocalTrackData:Map<String, Bytes> = [];
+
+  /**
+   * The song manifest data.
+   * If none already exists, it's initialized with the current song name in lower-kebab-case.
+   */
+  var _songManifestData:Null<ChartManifestData> = null;
+
+  public var songManifestData(get, set):ChartManifestData;
+
+  function get_songManifestData():ChartManifestData
+  {
+    if (_songManifestData != null) return _songManifestData;
+
+    var defaultSongId:String = (currentSongMetadata.songName ?? 'New Song').trim().toLowerKebabCase().sanitize();
+    if (defaultSongId == '') defaultSongId = 'new-song';
+    _songManifestData = new ChartManifestData(defaultSongId);
+
+    return _songManifestData;
+  }
+
+  function set_songManifestData(value:ChartManifestData):ChartManifestData
+  {
+    return _songManifestData = value;
+  }
 
   public var selectedSongEvent(default, set):Null<SongEventData> = null;
 
