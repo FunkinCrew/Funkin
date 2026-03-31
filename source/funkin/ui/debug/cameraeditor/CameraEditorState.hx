@@ -1193,7 +1193,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
-  function replayCameraTimeline(position:Float):Void
+  public function replayCameraTimeline(position:Float):Void
   {
     if (cameraRect == null) return;
 
