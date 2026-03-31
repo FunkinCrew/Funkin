@@ -13,6 +13,7 @@ import funkin.ui.debug.charting.util.FNFCData;
 /**
  * Handles saving, loading, importing, and exporting for the camera editor.
  */
+@:nullSafety
 class CameraEditorImportExportHandler
 {
   public static final BACKUPS_PATH:String = './backups/charts/';
