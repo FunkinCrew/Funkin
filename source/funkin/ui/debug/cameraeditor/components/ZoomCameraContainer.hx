@@ -68,7 +68,14 @@ class ZoomCameraContainer extends VBox
       zoomCameraEaseGraph.hidden = true;
       zoomCameraEaseDot.hidden = true;
       if (zoomCameraEaseBox != null) zoomCameraEaseBox.hidden = true;
+
+      zoomCameraEaseDir.hidden = true;
+
       return;
+    }
+    else
+    {
+      zoomCameraEaseDir.hidden = false;
     }
 
     // Reset any previous timers/sprites
@@ -174,11 +181,11 @@ class ZoomCameraContainer extends VBox
 
     if (eventEase == 'CLASSIC' || eventEase == 'INSTANT')
     {
-      zoomCameraEaseDir.visible = false;
+      zoomCameraEaseDir.hidden = true;
     }
     else
     {
-      zoomCameraEaseDir.visible = true;
+      zoomCameraEaseDir.hidden = false;
     }
 
     var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
@@ -263,11 +270,11 @@ class ZoomCameraContainer extends VBox
     // If the ease type is classic or instant, don't display ease direction
     if (value == 'CLASSIC' || value == 'INSTANT')
     {
-      zoomCameraEaseDir.visible = false;
+      zoomCameraEaseDir.hidden = true;
     }
     else
     {
-      zoomCameraEaseDir.visible = true;
+      zoomCameraEaseDir.hidden = false;
     }
 
     updateEasePreview();
