@@ -8,46 +8,55 @@ class SongEventHelper
 {
   public static var EASE_CANVAS_SIZE:Int = 200;
   public static var easeBitmapMap:Map<String, BitmapData> = new Map<String, BitmapData>();
-  public static var easeDirList:Array<String> = [
-    "sine",
-    "quad",
-    "cube",
-    "quart",
-    "quint",
-    "expo",
-    "smoothStep",
-    "smootherStep",
-    "elastic",
-    "back",
-    "bounce",
-    "circ"
+
+  /**
+   * A list of all the easing functions available to song events.
+   * TODO: Make this an enum to easily pair it with the corresponding functions?
+   */
+  public static final EASE_TYPES:Array<String> = [
+    'sine',
+    'quad',
+    'cube',
+    'quart',
+    'quint',
+    'expo',
+    'smoothStep',
+    'smootherStep',
+    'elastic',
+    'back',
+    'bounce',
+    'circ'
   ];
-  public static var easeDirs:Array<String> = ["In", "Out", "InOut"];
+
+  public static final EASE_DIRS:Array<String> = ['In', 'Out', 'InOut'];
   public static var easeDotCache:Map<String, Array<FlxSprite>> = new Map<String, Array<FlxSprite>>();
 
   public static function generateEaseGraphsBitmaps():Void
   {
-    for (ease in easeDirList) for (dir in easeDirs)
+    for (ease in EASE_TYPES)
     {
-      final func = getEaseFunc(ease, dir);
-      if (func == null) continue;
-      final key = ease + dir;
-      if (!easeBitmapMap.exists(key))
+      for (dir in EASE_DIRS)
       {
-        final bd = createBitmapFromFunc(func, key);
-        if (bd != null) easeBitmapMap.set(key, bd);
+        var func = getEaseFunc(ease, dir);
+        if (func == null) continue;
+        var key = ease + dir;
+        if (!easeBitmapMap.exists(key))
+        {
+          var bd = createBitmapFromFunc(func, key);
+          if (bd != null) easeBitmapMap.set(key, bd);
+        }
       }
     }
-    var k = "INSTANT";
+    var k = 'INSTANT';
     if (!easeBitmapMap.exists(k))
     {
-      final bd = createBitmapFromFunc(null, k);
+      var bd = createBitmapFromFunc(null, k);
       if (bd != null) easeBitmapMap.set(k, bd);
     }
-    k = "linear";
+    k = 'linear';
     if (!easeBitmapMap.exists(k))
     {
-      final bd = createBitmapFromFunc(FlxEase.linear, k);
+      var bd = createBitmapFromFunc(FlxEase.linear, k);
       if (bd != null) easeBitmapMap.set(k, bd);
     }
   }
@@ -61,7 +70,7 @@ class SongEventHelper
 
   public static function getEaseBitmap(key:String):BitmapData
   {
-    if (key == "linearIn" || key == "linearInOut" || key == "linearOut") key = "linear";
+    if (key == 'linearIn' || key == 'linearInOut' || key == 'linearOut') key = 'linear';
     return easeBitmapMap.get(key);
   }
 
@@ -115,7 +124,7 @@ class SongEventHelper
     {
       var size = EASE_CANVAS_SIZE;
       var bd = new BitmapData(size, size, false, 0xFF202223);
-      if (key.toLowerCase() == "instant") return bd;
+      if (key.toLowerCase() == 'instant') return bd;
       if (thickness < 1) thickness = 1;
       var half = Std.int(thickness / 2);
       var range = getEaseRange(func, size);
@@ -161,9 +170,9 @@ class SongEventHelper
   {
     var bd = getEaseBitmap(key);
     if (bd == null) return null;
-    var graphicName = "easegfx_" + key;
+    var graphicName = 'easegfx_' + key;
     var gfx = FlxG.bitmap.add(bd, true, graphicName);
-    final spr = new FlxSprite();
+    var spr = new FlxSprite();
     spr.loadGraphic(gfx);
     if (bd.width > 0 && bd.height > 0)
     {
@@ -207,7 +216,7 @@ class SongEventHelper
         var py = y + dy;
         if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
       }
-      var gfxName = "ease_dot_" + key + "_" + f;
+      var gfxName = 'ease_dot_' + key + '_' + f;
       var gfx = FlxG.bitmap.add(bd, true, gfxName);
       var spr = new FlxSprite();
       spr.loadGraphic(gfx);
@@ -217,12 +226,42 @@ class SongEventHelper
     return sprites;
   }
 
+  public static function resolveEaseDirFromKey(key:String):String
+  {
+    final DEFAULT_DIR:String = 'In';
+
+    if (key == null || key == '') return DEFAULT_DIR;
+
+    for (dir in EASE_DIRS)
+    {
+      if (key.endsWith(dir)) return dir;
+    }
+
+    return DEFAULT_DIR;
+  }
+
+  public static function resolveEaseTypeFromKey(key:String):Null<String>
+  {
+    if (key == null || key == '') return null;
+
+    if (key.startsWith('linear')) return 'linear';
+    if (key.startsWith('INSTANT')) return 'INSTANT';
+    if (key.startsWith('CLASSIC')) return 'CLASSIC';
+
+    for (type in EASE_TYPES)
+    {
+      if (key.startsWith(type)) return type;
+    }
+
+    return null;
+  }
+
   static function resolveEaseFuncForKey(key:String):Dynamic
   {
     var lk = key;
-    if (lk == null || lk.toLowerCase() == "linear") return FlxEase.linear;
-    if (lk.toLowerCase() == "instant") return null;
-    for (dir in easeDirs)
+    if (lk == null || lk.toLowerCase() == 'linear') return FlxEase.linear;
+    if (lk.toLowerCase() == 'instant') return null;
+    for (dir in EASE_DIRS)
     {
       if (lk.length >= dir.length && lk.substr(lk.length - dir.length, dir.length) == dir)
       {
