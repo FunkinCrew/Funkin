@@ -538,7 +538,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     {
       var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
 
-      // Apply classic ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
+      // Apply CLASSIC ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
       final adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
       final easeProgress = (1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed)).clamp(0, 1);
 
