@@ -144,6 +144,11 @@ class ZoomCameraContainer extends VBox
     _dotTimer.start(_dotInterval, frameCallback, 0);
   }
 
+  function updateCameraPreview():Void
+  {
+    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
+  }
+
   /**
    * Loads the data for the currently selected event into the UI.
    */
@@ -180,6 +185,7 @@ class ZoomCameraContainer extends VBox
     });
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   /**
@@ -193,6 +199,7 @@ class ZoomCameraContainer extends VBox
     trace('Zoom Camera: Zoom Level changed to ' + value);
 
     cameraEditorState.selectedSongEvent.set('zoom', value);
+    updateCameraPreview();
   }
 
   /**
@@ -212,6 +219,7 @@ class ZoomCameraContainer extends VBox
     trace('Zoom Camera: Mode changed to ' + value);
 
     cameraEditorState.selectedSongEvent.set('mode', value);
+    updateCameraPreview();
   }
 
   /**
@@ -223,6 +231,7 @@ class ZoomCameraContainer extends VBox
     var value:Float = zoomCameraDuration.value;
 
     cameraEditorState.selectedSongEvent.set('duration', value);
+    updateCameraPreview();
   }
 
   /**
@@ -255,6 +264,7 @@ class ZoomCameraContainer extends VBox
     }
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   /**
@@ -278,6 +288,7 @@ class ZoomCameraContainer extends VBox
     cameraEditorState.selectedSongEvent.set('easeDir', value);
 
     updateEasePreview();
+    updateCameraPreview();
   }
 
   override public function destroy():Void
