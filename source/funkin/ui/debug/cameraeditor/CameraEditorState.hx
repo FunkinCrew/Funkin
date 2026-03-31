@@ -550,7 +550,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
 
-    this.hidePropertiesPanel();
+    CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
 
@@ -699,18 +699,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
 
     this.updatePropertiesPanel(elapsed);
-
-    // DEBUG
-    if (FlxG.keys.justPressed.ONE)
-    {
-    }
-    if (FlxG.keys.justPressed.TWO)
-    {
-    }
-    if (FlxG.keys.justPressed.ZERO)
-    {
-      this.hidePropertiesPanel();
-    }
   }
 
   /**
