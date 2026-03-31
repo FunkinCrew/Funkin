@@ -64,7 +64,14 @@ class FocusCameraContainer extends VBox
       focusCameraEaseGraph.hidden = true;
       focusCameraEaseDot.hidden = true;
       if (focusCameraEaseBox != null) focusCameraEaseBox.hidden = true;
+
+      focusCameraEaseDir.hidden = true;
+
       return;
+    }
+    else
+    {
+      focusCameraEaseDir.hidden = false;
     }
 
     // Reset any previous timers/sprites
@@ -171,13 +178,13 @@ class FocusCameraContainer extends VBox
       return data.id == eventEase;
     });
 
-    if (eventEase == 'CLASSIC' || eventEase == 'INSTANT')
+    if (eventEaseStr == 'CLASSIC' || eventEaseStr == 'INSTANT')
     {
-      focusCameraEaseDir.visible = false;
+      focusCameraEaseDir.hidden = true;
     }
     else
     {
-      focusCameraEaseDir.visible = true;
+      focusCameraEaseDir.hidden = false;
     }
 
     var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
@@ -265,14 +272,14 @@ class FocusCameraContainer extends VBox
 
     cameraEditorState.selectedSongEvent.set('ease', value);
 
-    // If the ease type is classic or instant, don't display ease direction
+    // If the ease type is CLASSIC or INSTANT, don't display ease direction
     if (value == 'CLASSIC' || value == 'INSTANT')
     {
-      focusCameraEaseDir.visible = false;
+      focusCameraEaseDir.hidden = true;
     }
     else
     {
-      focusCameraEaseDir.visible = true;
+      focusCameraEaseDir.hidden = false;
     }
 
     updateEasePreview();
