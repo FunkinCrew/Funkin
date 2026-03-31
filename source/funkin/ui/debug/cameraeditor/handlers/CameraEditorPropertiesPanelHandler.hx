@@ -19,6 +19,28 @@ import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
 class CameraEditorPropertiesPanelHandler
 {
   /**
+   * Initialize the properties panel when first opening the Camera Editor.
+   * @param state The CameraEditorState to target.
+   */
+  public static function initializePropertiesPanel(state:CameraEditorState):Void
+  {
+    var hideButton = state.propertiesPanel.findComponent('propertiesPanelActionHide');
+    if (hideButton != null)
+    {
+      hideButton.onClick = function(_)
+      {
+        hidePropertiesPanel(state);
+      }
+    }
+    else
+    {
+      trace(' ERROR '.error() + 'Could not locate properties panel hide button.');
+    }
+
+    hidePropertiesPanel(state);
+  }
+
+  /**
    * Update the state of the Properties panel. Call this every frame.
    * @param state The CameraEditorState to target.
    * @param elapsed The elapsed time in seconds since the last frame.
