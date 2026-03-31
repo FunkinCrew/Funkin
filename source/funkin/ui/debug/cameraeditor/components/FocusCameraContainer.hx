@@ -44,13 +44,16 @@ class FocusCameraContainer extends VBox
       throw 'Could not find ease graph or ease dot!';
     }
 
-    var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
-    var easeDirStr:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease');
+    var easeDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
 
-    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
+    var easeType:String = SongEventHelper.resolveEaseTypeFromKey(easeStr ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE);
+    var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
 
-    // Hide preview when easing indicates a non-visual/legacy type such as "classic"
-    if (easeStr != null && (easeStr == 'CLASSIC' || easeStr == 'INSTANT'))
+    final easeKey:String = '$easeType$easeDir';
+
+    // Hide preview when easing indicates a non-visual/legacy type such as "CLASSIC"
+    if (easeType != null && (easeType == 'CLASSIC' || easeType == 'INSTANT'))
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();
@@ -84,8 +87,8 @@ class FocusCameraContainer extends VBox
 
     final EASE_GRAPH_SIZE:Int = 100;
 
-    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(key);
-    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
+    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(easeKey);
+    _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
     focusCameraEaseGraph.resource = _easeGraphSprite?.frame;
     if (_graphBd == null || focusCameraEaseGraph.resource == null)
     {
@@ -101,7 +104,7 @@ class FocusCameraContainer extends VBox
     focusCameraEaseDot.hidden = false;
     if (focusCameraEaseBox != null) focusCameraEaseBox.hidden = false;
 
-    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(key, 30, 3, 16);
+    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(easeKey, 30, 3, 16);
     if (dotSprites == null || dotSprites.length == 0)
     {
       // if no dot sprites, still show graph but keep dot empty
@@ -172,7 +175,10 @@ class FocusCameraContainer extends VBox
     focusCameraYPos.value = cameraEditorState.selectedSongEvent.getFloat('y') ?? FocusCameraSongEvent.DEFAULT_Y_POSITION;
     focusCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? FocusCameraSongEvent.DEFAULT_DURATION;
 
-    var eventEase:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    // Event data from the chart might use the "legacy" ease types where the direction wasn't separate.
+    var eventEaseStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    var eventEase:String = SongEventHelper.resolveEaseTypeFromKey(eventEaseStr);
+
     focusCameraEase.selectItemBy(function(data):Bool
     {
       return data.id == eventEase;
@@ -187,7 +193,12 @@ class FocusCameraContainer extends VBox
       focusCameraEaseDir.hidden = false;
     }
 
-    var eventEaseDir:String = cameraEditorState.selectedSongEvent.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
+    var eventEaseDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
+    if (eventEaseDirStr == '') eventEaseDirStr = null;
+    var eventEaseDir:String = eventEaseDirStr ?? SongEventHelper.resolveEaseDirFromKey(eventEaseStr);
+
+    trace('eventEaseDir: $eventEaseDir (from "$eventEaseDirStr")');
+
     focusCameraEaseDir.selectItemBy(function(data):Bool
     {
       return data.id == eventEaseDir;
