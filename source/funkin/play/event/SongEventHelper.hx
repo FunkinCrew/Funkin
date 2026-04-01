@@ -53,7 +53,8 @@ class SongEventHelper
     return easeBitmapMap.get(key);
   }
 
-  static function getEaseRange(func:Dynamic, samples:Int):{min:Float, max:Float}
+  static function getEaseRange(func:Dynamic, samples:Int):
+    {min:Float, max:Float}
   {
     if (func == null || samples <= 0) return {min: 0.0, max: 1.0};
 
@@ -84,13 +85,13 @@ class SongEventHelper
     return {min: min, max: max};
   }
 
-  static function getEaseY(raw:Float, size:Int, range:{min:Float, max:Float}):Int
+  static function getEaseY(raw:Float, size:Int, range:
+    {min:Float, max:Float}):Int
   {
     var v:Float = raw;
     var span = range.max - range.min;
 
-    if (span > 0)
-      v = (raw - range.min) / span;
+    if (span > 0) v = (raw - range.min) / span;
 
     v = if (v < 0) 0 else if (v > 1) 1 else v;
     return Std.int((1 - v) * (size - 1));

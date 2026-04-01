@@ -119,7 +119,7 @@ class StickerSubState extends MusicBeatSubState
       #if !mobile
       // Re-enable autoPause if it was disabled
       FlxG.autoPause = Preferences.autoPause;
-      #end  
+      #end
       regenStickers();
     }
   }

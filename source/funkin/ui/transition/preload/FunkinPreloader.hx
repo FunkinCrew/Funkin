@@ -444,15 +444,15 @@ class FunkinPreloader extends FlxBasePreloader
           cachingAudioStartTime = elapsed;
 
           /*
-          var assetsToCache:Array<String> = []; // Assets.listSound('core');
-            var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
+            var assetsToCache:Array<String> = []; // Assets.listSound('core');
+              var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
 
-            future.onProgress((loaded:Int, total:Int) -> {
-              cachingAudioPercent = loaded / total;
-            });
-            future.onComplete((_result) -> {
-              trace('Completed caching audio.');
-            });
+              future.onProgress((loaded:Int, total:Int) -> {
+                cachingAudioPercent = loaded / total;
+              });
+              future.onComplete((_result) -> {
+                trace('Completed caching audio.');
+              });
            */
 
           // TODO: Reimplement this.

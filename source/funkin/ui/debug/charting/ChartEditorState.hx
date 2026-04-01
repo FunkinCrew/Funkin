@@ -1154,7 +1154,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var clipboardValid:Bool = true;
 
-
   /**
    * If true, we are currently in the process of quitting the chart editor.
    * Skip any update functions as most of them will call a crash.
@@ -1577,8 +1576,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_currentSongAlbum():Null<String>
   {
     if (currentSongMetadata.playData.album == null
-    || currentSongMetadata.playData.album == ''
-    || currentSongMetadata.playData.album == 'item')
+      || currentSongMetadata.playData.album == ''
+      || currentSongMetadata.playData.album == 'item')
     {
       // Initialize to the default value if not set.
       currentSongMetadata.playData.album = Constants.DEFAULT_ALBUM_ID;
@@ -1596,8 +1595,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_currentSongStickerPack():Null<String>
   {
     if (currentSongMetadata.playData.stickerPack == null
-    || currentSongMetadata.playData.stickerPack == ''
-    || currentSongMetadata.playData.stickerPack == 'item')
+      || currentSongMetadata.playData.stickerPack == ''
+      || currentSongMetadata.playData.stickerPack == 'item')
     {
       // Initialize to the default value if not set.
       currentSongMetadata.playData.stickerPack = Constants.DEFAULT_STICKER_PACK;
@@ -2561,7 +2560,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.welcomeMusic.looped = true;
   }
 
-  public function resetPreviewTimes() {
+  public function resetPreviewTimes()
+  {
     currentSongFreeplayPreviewStart = (currentSongMetadata?.playData?.previewStart ?? Constants.DEFAULT_PREVIEW_START_TIME);
     currentSongFreeplayPreviewEnd = (currentSongMetadata?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME);
   }
@@ -3340,9 +3340,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemSelectNone.onClick = _ -> performCommand(new DeselectAllItemsCommand());
 
-    menubarItemSelectBeforePlayhead.onClick = _ -> performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+    menubarItemSelectBeforePlayhead.onClick = _ -> performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true,
+      true));
 
-    menubarItemSelectAfterPlayhead.onClick = _ -> performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+    menubarItemSelectAfterPlayhead.onClick = _ -> performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true,
+      true));
 
     menubarItemPlaytestFull.onClick = _ -> testSongInPlayState(false);
     menubarItemPlaytestMinimal.onClick = _ -> testSongInPlayState(true);
@@ -6275,8 +6277,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.HOME)
     {
       // CTRL +  SHIFT + Home = Inverse - deselect all above playhead
-      if (FlxG.keys.pressed.CONTROL)
-      performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+      if (FlxG.keys.pressed.CONTROL) performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
       else
         performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
     }
@@ -6285,8 +6286,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.END)
     {
       // CTRL +  SHIFT + Home = Inverse - deselect all below playhead
-      if (FlxG.keys.pressed.CONTROL)
-      performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+      if (FlxG.keys.pressed.CONTROL) performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
       else
         performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
     }

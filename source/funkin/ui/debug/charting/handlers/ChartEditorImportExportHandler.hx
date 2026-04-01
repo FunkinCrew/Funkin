@@ -100,7 +100,7 @@ class ChartEditorImportExportHandler
           {
             state.loadVocalsFromAsset(voiceFile, diff.characters.player, instId);
             state.audioVocalTrackGroup.legacyVoiceSystem = true;
-            state.audioVocalTrackGroup.legacyVoiceUsesPlayer = true;  
+            state.audioVocalTrackGroup.legacyVoiceUsesPlayer = true;
           }
         }
 

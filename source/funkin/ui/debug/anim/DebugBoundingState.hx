@@ -431,7 +431,8 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.SPACE)
     {
       if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {id: 'danceLeft', text: 'danceLeft'};
-      else offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
+      else
+        offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
 
       playCharacterAnimation(currentAnimationName, true);
     }

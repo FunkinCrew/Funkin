@@ -898,12 +898,11 @@ class FreeplayState extends MusicBeatSubState
       case 'packer':
         dj = (scriptClass != "") ? (ScriptedPackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
-        dj = (scriptClass != "") ? (ScriptedBaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) :
-          {
-            // force-skip intro only in fallback, since you can specify onIntroDone.dispatch in ScriptedBaseFreeplayDJ, and this is goddamn fallback
-            forceSkipIntro = true;
-            new BaseFreeplayDJ(x, y, characterId);
-          }; // We can't fallback on any other types, since the assets may be unspecified
+        dj = (scriptClass != "") ? (ScriptedBaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : {
+          // force-skip intro only in fallback, since you can specify onIntroDone.dispatch in ScriptedBaseFreeplayDJ, and this is goddamn fallback
+          forceSkipIntro = true;
+          new BaseFreeplayDJ(x, y, characterId);
+        }; // We can't fallback on any other types, since the assets may be unspecified
     }
   }
 

@@ -22,12 +22,11 @@ class PasteItemsCommand implements ChartEditorCommand
   var removedNotes:Array<SongNoteData> = [];
   var isRedo:Bool = false;
 
-  var currentClipboard:SongClipboardItems =
-    {
-      valid: false,
-      notes: [],
-      events: []
-    };
+  var currentClipboard:SongClipboardItems = {
+    valid: false,
+    notes: [],
+    events: []
+  };
 
   public function new(targetTimestamp:Float)
   {

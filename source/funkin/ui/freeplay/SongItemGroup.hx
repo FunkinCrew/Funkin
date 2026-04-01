@@ -29,9 +29,7 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
     capsule.fakeBlurredRanking.shader = rankBlurredShader;
     capsule.blurredRanking.shader = rankBlurredShader;
     capsule.favIconBlurred.shader = favIconBlurredShader;
-
     capsule.weekText.filters = [weekTextFilter];
-
     return capsule;
   }
 

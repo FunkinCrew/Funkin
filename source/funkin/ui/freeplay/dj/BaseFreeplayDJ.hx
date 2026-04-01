@@ -64,7 +64,9 @@ enum FreeplayDJState
  * Can be used for full control over DJ's logic.
  */
 @:hscriptClass
-class ScriptedBaseFreeplayDJ extends BaseFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedBaseFreeplayDJ extends BaseFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 @:nullSafety
 class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass

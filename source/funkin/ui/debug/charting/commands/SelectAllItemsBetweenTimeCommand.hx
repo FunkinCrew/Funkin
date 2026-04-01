@@ -34,16 +34,15 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
 
   public function execute(state:ChartEditorState):Void
   {
-    if(above)
+    if (above)
     {
       if (shouldSelectNotes)
       {
         for (i in 0...state.currentSongChartNoteData.length)
         {
-          if (state.currentSongChartNoteData[i].time < time)
-            notes.push(state.currentSongChartNoteData[i]);
+          if (state.currentSongChartNoteData[i].time < time) notes.push(state.currentSongChartNoteData[i]);
           else
-            //We've reached the end of the notes above this time,
+            // We've reached the end of the notes above this time,
             // there's no reason to waste our time running this loop to completion
             break;
         }
@@ -52,9 +51,7 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
       {
         for (i in 0...state.currentSongChartEventData.length)
         {
-          if (state.currentSongChartEventData[i].time < time)
-            events.push(state.currentSongChartEventData[i]);
-
+          if (state.currentSongChartEventData[i].time < time) events.push(state.currentSongChartEventData[i]);
           else
             break;
         }
@@ -68,7 +65,8 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
         {
           // Backwards for loop (kinda). Neat!
           if (state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1].time > time)
-          notes.push(state.currentSongChartNoteData[state.currentSongChartNoteData.length - i- 1]);
+            notes.push(state.currentSongChartNoteData[state.currentSongChartNoteData.length
+            - i - 1]);
           else
             // We've reached the end of the notes below this time,
             // there's no reason to waste our time running this loop to completion
@@ -80,7 +78,8 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
         for (i in 0...state.currentSongChartEventData.length)
         {
           if (state.currentSongChartEventData[state.currentSongChartEventData.length - i - 1].time > time)
-          events.push(state.currentSongChartEventData[state.currentSongChartEventData.length- i- 1]);
+            events.push(state.currentSongChartEventData[state.currentSongChartEventData.length
+            - i - 1]);
           else
             break;
         }
@@ -97,7 +96,6 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
     {
       state.currentEventSelection.push(event);
     }
-
 
     // I don't think it's neccesary to copy this code in, but someone will make an issue out of this if I don't, I'm sure.
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
