@@ -6,8 +6,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.math.FlxPoint;
 import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.Paths;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import lime.app.Future;
@@ -17,6 +17,10 @@ import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.utils.Assets as OpenFLAssets;
+//
+// ~PATHS~
+//
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions,

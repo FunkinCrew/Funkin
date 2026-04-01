@@ -4,10 +4,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxDestroyUtil;
 import funkin.assets.Assets.AssetType as FunkinAssetType;
-import funkin.assets.Paths;
 import funkin.assets.Paths.AssetPath;
-import funkin.assets.Paths.MusicAssetPathBuilder;
-import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.util.assets.AssetsUtil;
 import funkin.util.MemoryUtil;
 import funkin.util.SortUtil;
@@ -25,6 +22,11 @@ import openfl.text.Font;
 import openfl.utils.Assets as OpenFLAssets;
 import openfl.utils.ByteArray;
 import openfl.utils.IAssetCache as OpenFLIAssetCache;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets as Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * An override for the OpenFL AssetCache class to override the internal cache with our own.
@@ -301,7 +303,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     for (key in previous_flxGraphic.keys())
     {
-      // trace('[ASSETS] Purging graphic: ${key}');
       var graphic:Null<FlxGraphic> = previous_flxGraphic.get(key);
       if (graphic == null) continue;
       previous_flxGraphic.remove(key);
@@ -311,7 +312,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     for (key in previous_bitmapData.keys())
     {
-      // trace('[ASSETS] Purging bitmap: ${key}');
       var bitmapData:Null<BitmapData> = previous_bitmapData.get(key);
       if (bitmapData == null) continue;
       previous_bitmapData.remove(key);
@@ -321,7 +321,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     for (key in previous_font.keys())
     {
-      // trace('[ASSETS] Purging font: ${key}');
       var font:Null<Font> = previous_font.get(key);
       if (font == null) continue;
       previous_font.remove(key);
@@ -330,7 +329,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     for (key in previous_sound.keys())
     {
-      // trace('[ASSETS] Purging sound: ${key}');
       var sound:Null<Sound> = previous_sound.get(key);
       if (sound == null) continue;
       previous_sound.remove(key);
@@ -340,7 +338,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     for (key in previous_text.keys())
     {
-      // trace('[ASSETS] Purging text: ${key}');
       var text:Null<String> = previous_text.get(key);
       if (text == null) continue;
       previous_text.remove(key);
@@ -349,7 +346,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     for (key in previous_bytes.keys())
     {
-      // trace('[ASSETS] Purging binary: ${key}');
       var bytes:Null<openfl.utils.ByteArray> = previous_bytes.get(key);
       if (bytes == null) continue;
       previous_bytes.remove(key);
@@ -1474,7 +1470,7 @@ class FunkinLimeAssetCache extends LimeAssetCache
     });
   }
 
-  public override function exists(id:String, ?assetType:LimeAssetType):Bool
+  override public function exists(id:String, ?assetType:LimeAssetType):Bool
   {
     if (assetType == LimeAssetType.IMAGE || assetType == null)
     {
@@ -1494,7 +1490,7 @@ class FunkinLimeAssetCache extends LimeAssetCache
     return false;
   }
 
-  public override function set(id:String, assetType:LimeAssetType, asset:Dynamic):Void
+  override public function set(id:String, assetType:LimeAssetType, asset:Dynamic):Void
   {
     switch (assetType)
     {
@@ -1520,7 +1516,7 @@ class FunkinLimeAssetCache extends LimeAssetCache
    * Clear the cache.
    * @param prefix The prefix of the assets to clear.
    */
-  public override function clear(?prefix:String):Void
+  override public function clear(?prefix:String):Void
   {
     if (prefix == null)
     {
@@ -1621,7 +1617,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    * @param key The key of the asset.
    * @return The FlxGraphic, if added.
    */
-  public override function add(graphic:flixel.system.FlxAssets.FlxGraphicAsset, unique:Bool = false, ?key:String):FlxGraphic
+  override public function add(graphic:flixel.system.FlxAssets.FlxGraphicAsset, unique:Bool = false, ?key:String):FlxGraphic
   {
     if ((graphic is FlxGraphic))
     {
