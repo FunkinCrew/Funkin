@@ -13,7 +13,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 /**
  * A `FunkinSprite` with its sole purpose of rendering a `FlxCamera`.
  */
-@:access(funkin.graphics.FunkinCamera)
+@:access(funkin.graphics.FunkinCamera) @:nullSafety
 class FunkinBufferSprite extends FunkinSprite
 {
   /**
@@ -28,8 +28,9 @@ class FunkinBufferSprite extends FunkinSprite
     return _usedCamera.bufferBaseZoom;
   }
 
-  function set_baseZoom(value:Float):Float
+  function set_baseZoom(value:Null<Float>):Float
   {
+    if (value == null) return _usedCamera.bufferBaseZoom;
     return _usedCamera.bufferBaseZoom = value;
   }
 
@@ -46,8 +47,9 @@ class FunkinBufferSprite extends FunkinSprite
     return _usedCamera.bufferDelay;
   }
 
-  function set_bufferDelay(value:Float):Float
+  function set_bufferDelay(value:Null<Float>):Float
   {
+    if (value == null) return _usedCamera.bufferDelay;
     return _usedCamera.bufferDelay = value;
   }
 
@@ -72,13 +74,13 @@ class FunkinBufferSprite extends FunkinSprite
 
     // We need the previous frame from the camera
     _usedCamera.renderBuffer = true;
-    _usedCamera.bufferBaseZoom = baseZoom;
-    _usedCamera.bufferDelay = bufferDelay;
 
     @:privateAccess
-    _cameraBufferFrame = new FlxFrame(new FlxGraphic('', null));
+    _cameraBufferFrame = new FlxFrame(new FlxGraphic('CAMERA_BUFFER', _usedCamera._previousFrameTexture));
     _cameraBufferFrame.frame = FlxRect.get(0, 0, _usedCamera.width, _usedCamera.height);
-    _cameraBufferFrame.parent.bitmap = _usedCamera._previousFrameTexture;
+
+    this.baseZoom = baseZoom;
+    this.bufferDelay = bufferDelay;
   }
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
