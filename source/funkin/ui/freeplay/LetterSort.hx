@@ -42,12 +42,12 @@ class LetterSort extends FlxSpriteGroup
     grpSeperators = new FlxSpriteGroup();
     add(grpSeperators);
 
-    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("ui/freeplay/interface/mini-arrow"));
+    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow'));
     // leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
 
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("ui/freeplay/interface/mini-arrow"));
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow'));
     // rightArrow.animation.play("arrow");
     add(rightArrow);
 
@@ -75,7 +75,7 @@ class LetterSort extends FlxSpriteGroup
       // don't put the last separator
       if (i == 4) continue;
 
-      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("ui/freeplay/interface/separator"));
+      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image('ui/freeplay/interface/separator'));
       // sep.animation.play("separator");
       sep.color = letter.color.getDarkened(darkness);
       grpSeperators.add(sep);
@@ -226,7 +226,7 @@ class LetterSort extends FlxSpriteGroup
   }
 
   @:noCompletion
-  private function set_instance(value:FreeplayState):FreeplayState
+  function set_instance(value:FreeplayState):FreeplayState
   {
     instance = value;
 
@@ -270,7 +270,7 @@ class FreeplayLetter extends FunkinSprite
   {
     super(x, y);
 
-    loadTextureAtlas("ui/freeplay/interface/sorted-letters");
+    loadTextureAtlas('ui/freeplay/interface/sorted-letters');
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
@@ -290,7 +290,7 @@ class FreeplayLetter extends FunkinSprite
 
     if (letterInd != null)
     {
-      this.anim.play(animLetters[letterInd] + " move", true);
+      this.anim.play(animLetters[letterInd] + ' move', true);
       curLetter = letterInd;
 
       if (curSelected != curLetter)
@@ -300,7 +300,7 @@ class FreeplayLetter extends FunkinSprite
 
       this.anim.onFinish.add(function(name:String)
       {
-        this.anim.play(animLetters[curLetter] + " move", true);
+        this.anim.play(animLetters[curLetter] + ' move', true);
       });
     }
   }
@@ -321,12 +321,12 @@ class FreeplayLetter extends FunkinSprite
 
     switch (animLetters[curLetter])
     {
-      case "IL":
-        animName = "IL move";
-      case "s":
-        animName = "S move";
-      case "t":
-        animName = "T move";
+      case 'IL':
+        animName = 'IL move';
+      case 's':
+        animName = 'S move';
+      case 't':
+        animName = 'T move';
     }
 
     this.anim.play(animName, true);

@@ -217,7 +217,7 @@ typedef RequestScoresParams =
 /**
  * An enumeration of Newgrounds leaderboards for the game's levels and songs.
  */
-@:SuppressWarnings('checkstyle:FieldDocComment')
+@SuppressWarnings('checkstyle:FieldDocComment')
 enum abstract Leaderboard(Int) from Int to Int
 {
   /**

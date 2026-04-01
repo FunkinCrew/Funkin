@@ -225,10 +225,7 @@ class DataParse
   static function jsonArrayToDynamicArray(jsons:Array<Json>):Array<Null<Dynamic>>
   {
     return[
-      for (json in jsons)
-      {
-        Tools.getValue(json)
-      }
+      for (json in jsons) Tools.getValue(json)
     ];
   }
 

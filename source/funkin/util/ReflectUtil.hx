@@ -7,7 +7,7 @@ import polymod.hscript._internal.PolymodScriptClass;
  * Provides sanitized and blacklisted access to haxe's Reflection functions.
  * Used for sandboxing in scripts.
  */
-@:nullSafety @SuppressWarnings('checkstyle:VarTypeHint')
+@:nullSafety @SuppressWarnings(['checkstyle:VarTypeHint', 'checkstyle:FieldDocComment'])
 class ReflectUtil
 {
   /**
@@ -18,7 +18,6 @@ class ReflectUtil
    * @param value The new value to apply.
    * @throws error When trying to call a blacklisted method.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function callMethod(obj:Any, name:String, args:Array<Any>):Any
   {
     if (!isAccessAllowed(obj, name))
@@ -318,7 +317,6 @@ class ReflectUtil
    * @param cls The class to create.
    * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function createEmptyInstance(cls:Class<Any>):Any
   {
     if (!isAccessAllowed(cls))
@@ -335,7 +333,6 @@ class ReflectUtil
    * @param args Parameters to give to the constructor
    * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function createInstance(cls:Class<Any>, args:Array<Any>):Any
   {
     if (!isAccessAllowed(cls))
@@ -349,7 +346,6 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function resolveClass(name:String):Null<Class<Any>>
   {
     var resolved = getReflectionParent(getClassOrEnumFromName(name));
@@ -383,7 +379,6 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function typeof(value:Any):ValueType
   {
     throw 'Function Type.typeof is blacklisted.';

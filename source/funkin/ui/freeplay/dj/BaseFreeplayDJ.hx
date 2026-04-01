@@ -78,7 +78,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   // Without state machines I would have driven myself crazy years ago.
   // Made this PRIVATE so we can keep track of everything that can alter the state!
   //   Add a function to this class if you want to edit this value from outside.
-  private var currentState:FreeplayDJState = Intro;
+  var currentState:FreeplayDJState = Intro;
 
   // A callback activated when the intro animation finishes.
   public var onIntroDone:FlxSignal = new FlxSignal();
@@ -94,7 +94,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   {
     this.characterId = characterId;
 
-    final playableChar = PlayerRegistry.instance.fetchEntry(characterId);
+    var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
     playableCharData = playableChar?.getFreeplayDJData();
 
     super(x, y);
@@ -267,11 +267,11 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     }
   }
 
-  public function onScriptEvent(event:ScriptEvent)
+  public function onScriptEvent(event:ScriptEvent):Void
   {
   }
 
-  public function onCreate(event:ScriptEvent)
+  public function onCreate(event:ScriptEvent):Void
   {
   }
 

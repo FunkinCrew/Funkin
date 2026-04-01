@@ -20,9 +20,9 @@ class MenuItem extends FlxSpriteGroup
     var weekStr:String = switch (weekType)
     {
       case WEEK:
-        "week";
+        'week';
       case WEEKEND:
-        "weekend";
+        'weekend';
     }
 
     week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekStr + weekNum));
@@ -38,7 +38,7 @@ class MenuItem extends FlxSpriteGroup
     isFlashing = true;
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
     y = MathUtil.smoothLerpPrecision(y, (targetY * 120) + 480, elapsed, 0.451);
@@ -49,7 +49,7 @@ class MenuItem extends FlxSpriteGroup
       if (flashTick >= 1 / flashFramerate)
       {
         flashTick %= 1 / flashFramerate;
-        week.color = (week.color == FlxColor.WHITE) ? 0xFF33ffff : FlxColor.WHITE;
+        week.color = (week.color == FlxColor.WHITE) ? 0xFF33FFFF : FlxColor.WHITE;
       }
     }
   }
@@ -57,6 +57,6 @@ class MenuItem extends FlxSpriteGroup
 
 enum abstract WeekType(String) to String
 {
-  var WEEK;
-  var WEEKEND;
+  public var WEEK;
+  public var WEEKEND;
 }

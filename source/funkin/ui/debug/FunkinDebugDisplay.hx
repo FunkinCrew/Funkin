@@ -70,32 +70,31 @@ class FunkinDebugDisplay extends Sprite
   {
     removeChildren(0, numChildren);
 
-    var BG_WIDTH_MULTIPLIER:Float = advanced ? 1 : 0.3;
+    var bgWidthMultiplier:Float = advanced ? 1 : 0.3;
 
     if (MemoryUtil.supportsGCMem() || MemoryUtil.supportsTaskMem())
     {
-      BG_WIDTH_MULTIPLIER = 1;
+      bgWidthMultiplier = 1;
     }
 
-    var BG_HEIGHT_MULTIPLIER:Float = advanced ? 0.45 : 0.15;
+    var bgHeightMultiplier:Float = advanced ? 0.45 : 0.15;
 
     if (MemoryUtil.supportsGCMem() && MemoryUtil.supportsTaskMem())
     {
-      BG_HEIGHT_MULTIPLIER = advanced ? 1 : 0.3;
+      bgHeightMultiplier = advanced ? 1 : 0.3;
     }
     else if (MemoryUtil.supportsGCMem() || MemoryUtil.supportsTaskMem())
     {
-      BG_HEIGHT_MULTIPLIER = advanced ? 0.7 : 0.2;
+      bgHeightMultiplier = advanced ? 0.7 : 0.2;
     }
 
     background = new Shape();
-    background.graphics.beginFill(0x3d3f41, 1);
-    background.graphics.drawRect(0, 0, (OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER) + (INNER_RECT_DIFF * 2),
-      (OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER) + (INNER_RECT_DIFF * 2));
+    background.graphics.beginFill(0x3D3F41, 1);
+    background.graphics.drawRect(0, 0, (OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier) + (INNER_RECT_DIFF * 2),
+      (OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier) + (INNER_RECT_DIFF * 2));
     background.graphics.endFill();
-    background.graphics.beginFill(0x2c2f30, 1);
-    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0] * BG_WIDTH_MULTIPLIER,
-      OUTER_RECT_DIMENSIONS[1] * BG_HEIGHT_MULTIPLIER);
+    background.graphics.beginFill(0x2C2F30, 1);
+    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier, OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier);
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
     addChild(background);
@@ -114,8 +113,8 @@ class FunkinDebugDisplay extends Sprite
 
   function createAdvancedElements():Void
   {
-    final graphsWidth:Int = OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2) - (OTHERS_OFFSET * 3);
-    final graphsHeight:Int = 25;
+    var graphsWidth:Int = OUTER_RECT_DIMENSIONS[0] + (INNER_RECT_DIFF * 2) - (OTHERS_OFFSET * 3);
+    var graphsHeight:Int = 25;
 
     fpsGraph = new FunkinStatsGraph(OTHERS_OFFSET, OTHERS_OFFSET + 49, graphsWidth, graphsHeight, color);
     fpsGraph.textDisplay.y = -49;
@@ -154,11 +153,11 @@ class FunkinDebugDisplay extends Sprite
 
   override function __enterFrame(deltaTime:Float):Void
   {
-    final currentTime:Float = Lib.getTimer();
+    var currentTime:Float = Lib.getTimer();
 
     times.push(currentTime);
 
-    while (times[0] < currentTime - 1000)
+    while (times[0] < currentTime - Constants.MS_PER_SEC)
     {
       times.shift();
     }
@@ -205,7 +204,7 @@ class FunkinDebugDisplay extends Sprite
     updateGcMemGraph();
     updateTaskMemGraph();
 
-    final info:Array<String> = [];
+    var info:Array<String> = [];
     info.push('FPS: $fps');
     info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
     info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
@@ -226,7 +225,7 @@ class FunkinDebugDisplay extends Sprite
   {
     if (infoDisplay != null)
     {
-      final info:Array<String> = [];
+      var info:Array<String> = [];
 
       info.push('FPS: $fps');
 
@@ -292,17 +291,17 @@ enum abstract DebugDisplayMode(String) from String to String
   /**
    * Debug display is disabled.
    */
-  var Off;
+  public var Off;
 
   /**
    * Simple debug display.
    * FPS and Memory counters only.
    */
-  var Simple;
+  public var Simple;
 
   /**
    * Advanced debug display.
    * Full FPS and Memory info.
    */
-  var Advanced;
+  public var Advanced;
 }

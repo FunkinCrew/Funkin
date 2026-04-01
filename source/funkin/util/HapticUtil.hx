@@ -163,15 +163,15 @@ enum abstract HapticsMode(Int) from Int to Int
   /**
    * Haptics are completely disabled.
    */
-  var NONE:Int = 0;
+  public var NONE:Int = 0;
 
   /**
    * Only note haptics are enabled.
    */
-  var NOTES_ONLY:Int = 1;
+  public var NOTES_ONLY:Int = 1;
 
   /**
    * All the haptics are enabled.
    */
-  var ALL:Int = 2;
+  public var ALL:Int = 2;
 }

@@ -15,7 +15,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
   static var fonts:Map<AtlasFont, AtlasFontData> = new Map<AtlasFont, AtlasFontData>();
   static var casesAllowed:Map<AtlasFont, Case> = new Map<AtlasFont, Case>();
 
-  public var text(default, set):String = "";
+  public var text(default, set):String = '';
 
   var font:AtlasFontData = new AtlasFontData(AtlasFont.DEFAULT);
 
@@ -31,7 +31,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   inline function get_maxHeight():Float return font.maxHeight;
 
-  public function new(x = 0.0, y = 0.0, text:String = "", fontName:AtlasFont = AtlasFont.DEFAULT)
+  public function new(x = 0.0, y = 0.0, text:String = '', fontName:AtlasFont = AtlasFont.DEFAULT)
   {
     if (!fonts.exists(fontName)) fonts[fontName] = new AtlasFontData(fontName);
     font = fonts[fontName] ?? new AtlasFontData(fontName);
@@ -43,10 +43,10 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   function set_text(value:String):String
   {
-    value ??= "";
+    value ??= '';
 
-    final caseValue:String = restrictCase(value);
-    final caseText:String = restrictCase(this.text);
+    var caseValue:String = restrictCase(value);
+    var caseText:String = restrictCase(this.text);
 
     this.text = value;
     if (caseText == caseValue) return value; // cancel redraw
@@ -62,7 +62,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
     group.kill();
 
-    if (value == "") return this.text;
+    if (value == '') return this.text;
 
     appendTextCased(caseValue);
     return this.text;
@@ -75,8 +75,8 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
    */
   public function appendText(str:String):Void
   {
-    if (str == null) throw "cannot append null";
-    if (str == "") return;
+    if (str == null) throw 'cannot append null';
+    if (str == '') return;
 
     this.text += str;
   }
@@ -108,7 +108,10 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
     var xPos:Float = 0;
     var yPos:Float = 0;
     // `countLiving` returns -1 if group is empty
-    if (charCount == -1) charCount = 0;
+    if (charCount == -1)
+    {
+      charCount = 0;
+    }
     else if (charCount > 0)
     {
       var lastChar:AtlasChar = group.members[charCount - 1];
@@ -116,18 +119,21 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
       yPos = lastChar.y + lastChar.height - maxHeight - y;
     }
 
-    for (splitStr in str.split(""))
+    for (splitStr in str.split(''))
     {
       switch (splitStr)
       {
-        case " ":
+        case ' ':
           xPos += 40;
-        case "\n":
+        case '\n':
           xPos = 0;
           yPos += maxHeight;
         case char:
           var charSprite:AtlasChar;
-          if (group.members.length <= charCount) charSprite = new AtlasChar(atlas, char);
+          if (group.members.length <= charCount)
+          {
+            charSprite = new AtlasChar(atlas, char);
+          }
           else
           {
             charSprite = group.members[charCount];
@@ -148,13 +154,13 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
   public function getWidth():Int
   {
     var width:Int = 0;
-    for (char in this.text.split(""))
+    for (char in this.text.split(''))
     {
       switch (char)
       {
-        case " ":
+        case ' ':
           width += 40;
-        case "\n":
+        case '\n':
           // no width for newline character
         case char:
           var sprite = new AtlasChar(atlas, char);
@@ -169,10 +175,10 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   override function toString():String
   {
-    return "InputItem, " + FlxStringUtil.getDebugString([
-      LabelValuePair.weak("x", x),
-      LabelValuePair.weak("y", y),
-      LabelValuePair.weak("text", text)
+    return 'InputItem, ' + FlxStringUtil.getDebugString([
+      LabelValuePair.weak('x', x),
+      LabelValuePair.weak('y', y),
+      LabelValuePair.weak('text', text)
     ]);
   }
 }
@@ -200,7 +206,8 @@ class AtlasChar extends FlxSprite
 
     updateHitbox();
 
-    return this.char = value;
+    this.char = value;
+    return this.char;
   }
 
   function getAnimPrefix(char:String):String
@@ -209,23 +216,23 @@ class AtlasChar extends FlxSprite
     {
       case '&':
         return '-andpersand-';
-      case "😠":
+      case '😠':
         '-angry faic-'; // TODO: Do multi-flag characters work?
       case "'":
         '-apostraphie-';
-      case "\\":
+      case '\\':
         '-back slash-';
-      case ",":
+      case ',':
         '-comma-';
       case '-':
         '-dash-';
       case '↓':
         '-down arrow-'; // U+2193
-      case "”":
+      case '”':
         '-end quote-'; // U+0022
-      case "!":
+      case '!':
         '-exclamation point-'; // U+0021
-      case "/":
+      case '/':
         '-forward slash-'; // U+002F
       case '>':
         '-greater than-'; // U+003E
@@ -237,15 +244,15 @@ class AtlasChar extends FlxSprite
         '-left arrow-'; // U+2190
       case '<':
         '-less than-'; // U+003C
-      case "*":
+      case '*':
         '-multiply x-';
       case '.':
         '-period-'; // U+002E
-      case "?":
+      case '?':
         '-question mark-';
       case '→':
         '-right arrow-'; // U+2192
-      case "“":
+      case '“':
         '-start quote-';
       case '↑':
         '-up arrow-'; // U+2191
@@ -260,8 +267,8 @@ class AtlasChar extends FlxSprite
 @:nullSafety
 private class AtlasFontData
 {
-  static public var upperChar = ~/^[A-Z]\d+$/;
-  static public var lowerChar = ~/^[a-z]\d+$/;
+  public static var upperChar = ~/^[A-Z]\d+$/;
+  public static var lowerChar = ~/^[a-z]\d+$/;
 
   public var atlas:FlxAtlasFrames;
   public var maxHeight:Float = 0.0;
@@ -303,7 +310,7 @@ enum Case
 
 enum abstract AtlasFont(String) from String to String
 {
-  var DEFAULT = "default";
-  var BOLD = "bold";
-  var FREEPLAY_CLEAR = "freeplay-clear";
+  public var DEFAULT = 'default';
+  public var BOLD = 'bold';
+  public var FREEPLAY_CLEAR = 'freeplay-clear';
 }

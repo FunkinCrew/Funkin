@@ -51,7 +51,7 @@ class HorizontalVirtualLayout extends VirtualLayout
     // but since it's all commented out, it might not be relavant
   }
 
-  private function horizontalConstraintModifier():Float return 0;
+  function horizontalConstraintModifier():Float return 0;
 
   override function calculateRangeVisible():Void
   {
@@ -64,12 +64,19 @@ class HorizontalVirtualLayout extends VirtualLayout
     if (contents.autoWidth)
     {
       var itemCount:Int = this.itemCount;
-      if (itemCount > 0 || _component.autoWidth) contentsWidth = itemCount * itemWidth - horizontalConstraintModifier();
+      if (itemCount > 0 || _component.autoWidth)
+      {
+        contentsWidth = itemCount * itemWidth - horizontalConstraintModifier();
+      }
       else
+      {
         contentsWidth = _component.width - horizontalConstraintModifier();
+      }
     }
     else
+    {
       contentsWidth = contents.width - horizontalConstraintModifier();
+    }
 
     if (contentsWidth > _component.width - horizontalConstraintModifier()) contentsWidth = _component.height - horizontalConstraintModifier();
 
@@ -118,7 +125,9 @@ class HorizontalVirtualLayout extends VirtualLayout
             ++visibleItemsCount;
           }
           else
+          {
             totalSize += size;
+          }
         }
         else // Stage 2 - find the visible items count
         {
@@ -189,7 +198,7 @@ class HorizontalVirtualLayout extends VirtualLayout
     var comp:IVirtualContainer = cast(_component, IVirtualContainer);
     if (comp.itemCount > 0 && _component.autoWidth)
     {
-      var contents:Component = _component.findComponent("scrollview-contents", false);
+      var contents:Component = _component.findComponent('scrollview-contents', false);
       var contentsPadding:Float = 0;
       var horizontalSpacing = this.horizontalSpacing;
       if (contents != null)

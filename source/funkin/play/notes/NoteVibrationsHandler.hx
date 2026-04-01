@@ -78,7 +78,7 @@ class NoteVibrationsHandler
     {
       if (currentNoteStatus != NoteStatus.holdConfirm) continue;
 
-      final amplitudeDivider:Float = holdNoteEnded ? 4 : 10;
+      var amplitudeDivider:Float = holdNoteEnded ? 4 : 10;
       stackingAmplitude += Constants.MAX_VIBRATION_AMPLITUDE / amplitudeDivider;
     }
 
@@ -98,8 +98,8 @@ class NoteVibrationsHandler
  */
 enum abstract NoteStatus(Int) from Int to Int
 {
-  var idle = 0;
-  var pressed = 1;
-  var confirm = 2;
-  var holdConfirm = 3;
+  public var idle = 0;
+  public var pressed = 1;
+  public var confirm = 2;
+  public var holdConfirm = 3;
 }

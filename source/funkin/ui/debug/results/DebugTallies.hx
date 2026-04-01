@@ -5,6 +5,7 @@ import funkin.save.Save.SaveScoreTallyData;
 /**
  * Just lil class to hold different score tallies for debug purposes
  */
+@SuppressWarnings('checkstyle:MagicNumber')
 class DebugTallies
 {
   /**
@@ -112,6 +113,13 @@ class DebugTallies
     totalNotes: 190,
   };
 
+  /**
+   * Retrieve the score tally data for the given rank.
+   * Used for debugging the Results screen.
+   *
+   * @param rank The intended rank to display.
+   * @return A score
+   */
   public static function getTallyForRank(rank:DebugRank):SaveScoreTallyData
   {
     return switch (rank)
@@ -146,11 +154,11 @@ class DebugTallies
 
 enum abstract DebugRank(String) from String to String
 {
-  var LOSS_RANK = "Loss";
-  var NICE_RANK = "Nice";
-  var GOOD_RANK = "Good";
-  var GREAT_RANK = "Great";
-  var EXCELLENT_RANK = "Excellent";
-  var PERFECT_RANK = "Perfect";
-  var PERFECT_GOLD_RANK = "Perfect (Gold)";
+  public var LOSS_RANK = 'Loss';
+  public var NICE_RANK = 'Nice';
+  public var GOOD_RANK = 'Good';
+  public var GREAT_RANK = 'Great';
+  public var EXCELLENT_RANK = 'Excellent';
+  public var PERFECT_RANK = 'Perfect';
+  public var PERFECT_GOLD_RANK = 'Perfect (Gold)';
 }

@@ -8,10 +8,10 @@ import flixel.util.FlxColor;
  */
 enum abstract NoteDirection(Int) from Int to Int
 {
-  var LEFT = 0;
-  var DOWN = 1;
-  var UP = 2;
-  var RIGHT = 3;
+  public var LEFT = 0;
+  public var DOWN = 1;
+  public var UP = 2;
+  public var RIGHT = 3;
   public var name(get, never):String;
   public var nameUpper(get, never):String;
   public var color(get, never):FlxColor;

@@ -96,13 +96,13 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   public static var hasFakeCutouts:Bool = false;
 
   @:noCompletion
-  private static var cutoutBitmaps:Array<Bitmap> = [null, null];
+  static var cutoutBitmaps:Array<Bitmap> = [null, null];
   @:noCompletion
-  private static var mustAwait:Bool = false;
+  static var mustAwait:Bool = false;
   @:noCompletion
-  private static var awaitedSize:FlxPoint = FlxPoint.get(0, 0);
+  static var awaitedSize:FlxPoint = FlxPoint.get(0, 0);
   @:noCompletion
-  private static var finishingAwait:Bool = false;
+  static var finishingAwait:Bool = false;
 
   /**
    * Constructor for `FullScreenScaleMode`.
@@ -223,7 +223,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     {
       if (bitmap == null)
       {
-        final game = FlxG.game;
+        var game = FlxG.game;
 
         cutoutBitmaps[i] = bitmap = new Bitmap(new BitmapData((ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(FlxG.scaleMode.gameSize.x)) + 1,
           (ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(FlxG.scaleMode.gameSize.y)) + 1, true, 0xFF000000));
@@ -276,12 +276,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     {
       if (bitmap == null)
       {
-        trace(" WARNING ".bg_yellow().bold() + " Tried to remove a cutout bar but there don't seem to be any.");
+        trace(' WARNING '.bg_yellow().bold() + " Tried to remove a cutout bar but there don't seem to be any.");
         continue;
       }
 
-      final targetX:Float = (ratioAxis == Y) ? -1 : instance.offset.x + ((i == 0) ? -bitmap.width - 1 : FlxG.scaleMode.gameSize.x + 1);
-      final targetY:Float = (ratioAxis == X) ? -1 : instance.offset.y + ((i == 0) ? -bitmap.height - 1 : FlxG.scaleMode.gameSize.y + 1);
+      var targetX:Float = (ratioAxis == Y) ? -1 : instance.offset.x + ((i == 0) ? -bitmap.width - 1 : FlxG.scaleMode.gameSize.x + 1);
+      var targetY:Float = (ratioAxis == X) ? -1 : instance.offset.y + ((i == 0) ? -bitmap.height - 1 : FlxG.scaleMode.gameSize.y + 1);
 
       if (tweenDuration > 0.0)
       {
@@ -297,7 +297,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     hasFakeCutouts = false;
   }
 
-  private function updateDeviceCutout(Width:Int, Height:Int):Void
+  function updateDeviceCutout(Width:Int, Height:Int):Void
   {
     if (enabled)
     {
@@ -347,9 +347,14 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       scale.x = deviceSize.x / FlxG.width;
       scale.y = deviceSize.y / FlxG.height;
 
-      if (scale.x > scale.y) scale.x = scale.y;
+      if (scale.x > scale.y)
+      {
+        scale.x = scale.y;
+      }
       else
+      {
         scale.y = scale.x;
+      }
     }
     updateOffsetX();
     updateOffsetY();
@@ -413,7 +418,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     gameNotchPosition.set(0, 0);
   }
 
-  private function adjustGameSize():Void
+  function adjustGameSize():Void
   {
     if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
     {
@@ -436,12 +441,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         if (gameHeight / FlxG.width > maxAspectRatio.y / maxAspectRatio.x && maxRatioAxis.y)
         {
-          final oldGameHeight = gameSize.y;
+          var oldGameHeight = gameSize.y;
           gameHeight = ((gameSize.x / scale.x) / maxAspectRatio.x) * maxAspectRatio.y;
           gameSize.y = gameHeight * scale.y;
 
-          final sizeDifference:Float = oldGameHeight - gameSize.y;
-          final scale:Float = logicalSize.y / FlxG.initialHeight;
+          var sizeDifference:Float = oldGameHeight - gameSize.y;
+          var scale:Float = logicalSize.y / FlxG.initialHeight;
           cutoutSize.set(0, cutoutSize.y - sizeDifference);
           gameCutoutSize.copyFrom(cutoutSize);
           gameCutoutSize /= scale;
@@ -474,12 +479,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         if (gameWidth / FlxG.height > maxAspectRatio.x / maxAspectRatio.y && maxRatioAxis.x)
         {
-          final oldGameWidth = gameSize.x;
+          var oldGameWidth = gameSize.x;
           gameWidth = ((gameSize.y / scale.y) / maxAspectRatio.y) * maxAspectRatio.x;
           gameSize.x = gameWidth * scale.x;
 
-          final sizeDifference:Float = oldGameWidth - gameSize.x;
-          final scale:Float = logicalSize.x / FlxG.initialWidth;
+          var sizeDifference:Float = oldGameWidth - gameSize.x;
+          var scale:Float = logicalSize.x / FlxG.initialWidth;
           cutoutSize.set(cutoutSize.x - sizeDifference, 0);
           gameCutoutSize.copyFrom(cutoutSize);
           gameCutoutSize /= scale;
@@ -499,7 +504,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   }
 
   @:noCompletion
-  private static function set_enabled(Value:Bool):Bool
+  static function set_enabled(Value:Bool):Bool
   {
     if (ratioAxis == FlxAxes.X #if android
       && (extension.androidtools.os.Build.VERSION.SDK_INT >= extension.androidtools.os.Build.VERSION_CODES.P
