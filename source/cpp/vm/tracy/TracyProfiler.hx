@@ -19,68 +19,68 @@ enum abstract PlotFormatType(cpp.UInt8) from cpp.UInt8 to cpp.UInt8
 extern class Native_TracyProfiler
 {
   /**
-    Mark a frame. Call this at the end of each frame loop.
-  **/
+   * Mark a frame. Call this at the end of each frame loop.
+   */
   @:native('::__hxcpp_tracy_framemark')
   public static function frameMark():Void;
 
   /**
-    Mark a named frame. Allows creating multiple frame sets for different timing categories.
-    Each unique name creates a separate frame set in the Tracy timeline.
-  **/
+   * Mark a named frame. Allows creating multiple frame sets for different timing categories.
+   * Each unique name creates a separate frame set in the Tracy timeline.
+   */
   @:native('::__hxcpp_tracy_framemark_named')
   public static function frameMarkNamed(_name:String):Void;
 
   /**
-    Mark the start of a discontinuous frame. Use for periodic work with gaps.
-    Must be paired with frameMarkEnd() using the same name.
-  **/
+   * Mark the start of a discontinuous frame. Use for periodic work with gaps.
+   * Must be paired with frameMarkEnd() using the same name.
+   */
   @:native('::__hxcpp_tracy_framemark_start')
   public static function frameMarkStart(_name:String):Void;
 
   /**
-    Mark the end of a discontinuous frame. Use for periodic work with gaps.
-    Must be paired with frameMarkStart() using the same name.
-  **/
+   * Mark the end of a discontinuous frame. Use for periodic work with gaps.
+   * Must be paired with frameMarkStart() using the same name.
+   */
   @:native('::__hxcpp_tracy_framemark_end')
   public static function frameMarkEnd(_name:String):Void;
 
   /**
-    Print a message into Tracy's log.
-  **/
+   * Print a message into Tracy's log.
+   */
   @:native('::__hxcpp_tracy_message')
   public static function message(_msg:String, ?_color:Int = 0x000000):Void;
 
   /**
-    Tracy can collect additional information about the profiled application,
-    which will be available in the trace description.
-    This can include data such as the source repository revision,
-    the application’s environment (dev/prod), etc.
-  **/
+   * Tracy can collect additional information about the profiled application,
+   * which will be available in the trace description.
+   * This can include data such as the source repository revision,
+   * the application’s environment (dev/prod), etc.
+   */
   @:native('::__hxcpp_tracy_message_app_info')
   public static function messageAppInfo(_info:String):Void;
 
   /**
-    Plot a named value to tracy. This will generate a graph in the profiler for you.
-  **/
+   * Plot a named value to tracy. This will generate a graph in the profiler for you.
+   */
   @:native('::__hxcpp_tracy_plot')
   public static function plot(_name:String, _val:cpp.Float32):Void;
 
   /**
-    Configure how values are plotted and displayed.
-  **/
+   * Configure how values are plotted and displayed.
+   */
   @:native('::__hxcpp_tracy_plot_config')
   public static function plotConfig(_name:String, _format:PlotFormatType, ?_step:Bool = false, ?_fill:Bool = false, ?_color:Int = 0x000000):Void;
 
   /**
-    Set a name for the current thread this function is called in. Supply an optional groupHint so threads become grouped in Tracy's UI.
-  **/
+   * Set a name for the current thread this function is called in. Supply an optional groupHint so threads become grouped in Tracy's UI.
+   */
   @:native('::__hxcpp_tracy_set_thread_name_and_group')
   public static function setThreadName(_name:String, ?_groupHint:Int = 1):Void;
 
   /**
-    Create a custom named scoped zone in your code.
-  **/
+   * Create a custom named scoped zone in your code.
+   */
   @:native('HXCPP_TRACY_ZONE')
   public static function zoneScoped(_name:String):Void;
 }

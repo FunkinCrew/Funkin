@@ -47,7 +47,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   /**
    * The current line in the current entry in the dialogue.
-  * **/
+   */
   var currentDialogueLine:Int = 0;
 
   var currentDialogueLineCount(get, never):Int;

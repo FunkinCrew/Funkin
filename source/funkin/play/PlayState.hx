@@ -451,13 +451,13 @@ class PlayState extends MusicBeatSubState
   /**
    * Key press inputs which have been received but not yet processed.
    * These are encoded with an OS timestamp, so we can account for input latency.
-  **/
+   */
   var inputPressQueue:Array<PreciseInputEvent> = [];
 
   /**
    * Key release inputs which have been received but not yet processed.
    * These are encoded with an OS timestamp, so we can account for input latency.
-  **/
+   */
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
   /**

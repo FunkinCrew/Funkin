@@ -1,10 +1,10 @@
 package funkin.audio.visualize.dsp;
 
 /**
-  A view into an Array with an indexing offset.
-
-  Usages include 1-indexed sequences or zero-centered buffers with negative indexing.
-**/
+ * A view into an Array with an indexing offset.
+ *
+ * Usages include 1-indexed sequences or zero-centered buffers with negative indexing.
+ */
 @:forward(array, offset) @:nullSafety
 abstract OffsetArray<T>({
   final array:Array<T>;
@@ -24,8 +24,8 @@ abstract OffsetArray<T>({
   public inline function set(index:Int, value:T):Void this.array[index - this.offset] = value;
 
   /**
-    Iterates through items in their original order while providing the altered indexes as keys.
-  **/
+   * Iterates through items in their original order while providing the altered indexes as keys.
+   */
   public inline function keyValueIterator():KeyValueIterator<Int, T> return new OffsetArrayIterator(this.array, this.offset);
 
   @:from
@@ -35,10 +35,10 @@ abstract OffsetArray<T>({
   inline function toArray() return this.array;
 
   /**
-    Makes a shifted version of the given `array`, where elements are in the
-    same order but shifted by `n` positions (to the right if positive and to
-    the left if negative) in **circular** fashion (no elements discarded).
-  **/
+   * Makes a shifted version of the given `array`, where elements are in the
+   * same order but shifted by `n` positions (to the right if positive and to
+   * the left if negative) in **circular** fashion (no elements discarded).
+   */
   public static function circShift<T>(array:Array<T>, n:Int):Array<T>
   {
     if (n < 0) return circShift(array, array.length + n);

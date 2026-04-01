@@ -3,14 +3,14 @@ package funkin.audio.visualize.dsp;
 using Lambda;
 
 /**
-  Signal processing miscellaneous utilities.
-**/
+ * Signal processing miscellaneous utilities.
+ */
 @:nullSafety
 class Signal
 {
   /**
-    Returns a smoothed version of the input array using a moving average.
-  **/
+   * Returns a smoothed version of the input array using a moving average.
+   */
   public static function smooth(y:Array<Float>, n:Int):Null<Array<Float>>
   {
     if (n <= 0)
@@ -35,11 +35,11 @@ class Signal
   }
 
   /**
-    Finds indexes of peaks in the order they appear in the input sequence.
-
-    @param threshold Minimal peak height wrt. its neighbours, defaults to 0.
-    @param minHeight Minimal peak height wrt. the whole input, defaults to global minimum.
-  **/
+   * Finds indexes of peaks in the order they appear in the input sequence.
+   *
+   * @param threshold Minimal peak height wrt. its neighbours, defaults to 0.
+   * @param minHeight Minimal peak height wrt. the whole input, defaults to global minimum.
+   */
   public static function findPeaks(y:Array<Float>, ?threshold:Float, ?minHeight:Float):Array<Int>
   {
     threshold = threshold == null ? 0.0 : Math.abs(threshold);
@@ -63,11 +63,11 @@ class Signal
     return peaks;
   }
 
-  /**
-    Returns the sum of all the elements of a given array.
-
-    This function tries to minimize floating-point precision errors.
-  **/
+  /***
+   * Returns the sum of all the elements of a given array.
+   *
+   * This function tries to minimize floating-point precision errors.
+   */
   public static function sum(array:Array<Float>):Float
   {
     // Neumaier's "improved Kahan-Babuska algorithm":
@@ -87,27 +87,27 @@ class Signal
   }
 
   /**
-    Returns the average value of an array.
-  **/
+   * Returns the average value of an array.
+   */
   public static function mean(y:Array<Float>):Float return sum(y) / y.length;
 
   /**
-    Returns the global maximum.
-  **/
+   * Returns the global maximum.
+   */
   public static function max(y:Array<Float>):Float return y.fold(Math.max, y[0]);
 
   /**
-    Returns the global maximum's index.
-  **/
+   * Returns the global maximum's index.
+   */
   public static function maxi(y:Array<Float>):Int return y.foldi((yi, m, i) -> yi > y[m] ? i : m, 0);
 
   /**
-    Returns the global minimum.
-  **/
+   * Returns the global minimum.
+   */
   public static function min(y:Array<Float>):Float return y.fold(Math.min, y[0]);
 
   /**
-    Returns the global minimum's index.
-  **/
+   * Returns the global minimum's index.
+   */
   public static function mini(y:Array<Float>):Int return y.foldi((yi, m, i) -> yi < y[m] ? i : m, 0);
 }

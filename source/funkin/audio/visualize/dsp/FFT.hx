@@ -6,27 +6,27 @@ using funkin.audio.visualize.dsp.Signal;
 // these are only used for testing, down in FFT.main()
 
 /**
-  Fast/Finite Fourier Transforms.
-**/
+ * Fast/Finite Fourier Transforms.
+ */
 @:nullSafety
 class FFT
 {
   /**
-    Computes the Discrete Fourier Transform (DFT) of a `Complex` sequence.
-
-    If the input has N data points (N should be a power of 2 or padding will be added)
-    from a signal sampled at intervals of 1/Fs, the result will be a sequence of N
-    samples from the Discrete-Time Fourier Transform (DTFT) - which is Fs-periodic -
-    with a spacing of Fs/N Hz between them and a scaling factor of Fs.
-  **/
+   * Computes the Discrete Fourier Transform (DFT) of a `Complex` sequence.
+   *
+   * If the input has N data points (N should be a power of 2 or padding will be added)
+   * from a signal sampled at intervals of 1/Fs, the result will be a sequence of N
+   * samples from the Discrete-Time Fourier Transform (DTFT) - which is Fs-periodic -
+   * with a spacing of Fs/N Hz between them and a scaling factor of Fs.
+   */
   public static function fft(input:Array<Complex>):Array<Complex> return do_fft(input, false);
 
   /**
-    Like `fft`, but for a real (Float) sequence input.
-
-    Since the input time signal is real, its frequency representation is
-    Hermitian-symmetric so we only return the positive frequencies.
-  **/
+   * Like `fft`, but for a real (Float) sequence input.
+   *
+   * Since the input time signal is real, its frequency representation is
+   * Hermitian-symmetric so we only return the positive frequencies.
+   */
   public static function rfft(input:Array<Float>):Array<Complex>
   {
     final s = fft(input.map(Complex.fromReal));
@@ -34,12 +34,12 @@ class FFT
   }
 
   /**
-    Computes the Inverse DFT of a periodic input sequence.
-
-    If the input contains N (a power of 2) DTFT samples, each spaced Fs/N Hz
-    from each other, the result will consist of N data points as sampled
-    from a time signal at intervals of 1/Fs with a scaling factor of 1/Fs.
-  **/
+   * Computes the Inverse DFT of a periodic input sequence.
+   *
+   * If the input contains N (a power of 2) DTFT samples, each spaced Fs/N Hz
+   * from each other, the result will consist of N data points as sampled
+   * from a time signal at intervals of 1/Fs with a scaling factor of 1/Fs.
+   */
   public static function ifft(input:Array<Complex>):Array<Complex> return do_fft(input, true);
 
   // Handles padding and scaling for forwards and inverse FFTs.
@@ -102,8 +102,8 @@ class FFT
   }
 
   /**
-    Finds the power of 2 that is equal to or greater than the given natural.
-  **/
+   * Finds the power of 2 that is equal to or greater than the given natural.
+   */
   static function nextPow2(x:Int):Int
   {
     if (x < 2) return 1;
