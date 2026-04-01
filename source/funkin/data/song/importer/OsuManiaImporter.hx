@@ -13,16 +13,16 @@ class OsuManiaImporter
 {
   public static function parseOsuFile(osuContent:String):OsuManiaData
   {
-    var lines:Array<String> = osuContent.split("\n");
+    var lines:Array<String> = osuContent.split('\n');
     var result:Dynamic = {};
     var currentSection:String = null;
 
-    var nonCSVLikeSections = ["General", "Editor", "Metadata", "Difficulty"];
+    var nonCSVLikeSections = ['General', 'Editor', 'Metadata', 'Difficulty'];
 
     for (line in lines)
     {
       line = StringTools.trim(line);
-      if (line == "" || StringTools.startsWith(line, "//")) continue;
+      if (line == '' || StringTools.startsWith(line, '//')) continue;
 
       // Section header like [General]
       var sectionRegex = ~/^\[(.+)\]$/;
@@ -44,9 +44,9 @@ class OsuManiaImporter
       // Key-value pairs (INI style)
       if (currentSection != null && nonCSVLikeSections.contains(currentSection))
       {
-        var parts:Array<String> = line.split(":");
+        var parts:Array<String> = line.split(':');
         var key:String = StringTools.trim(parts.shift());
-        var value:Any = parseValue(StringTools.trim(parts.join(":")));
+        var value:Any = parseValue(StringTools.trim(parts.join(':')));
         if (Reflect.field(result, currentSection) == null) Reflect.setField(result, currentSection, {
         });
         Reflect.setField(Reflect.field(result, currentSection), key, value);
@@ -113,7 +113,7 @@ class OsuManiaImporter
     if (result.length == 0)
     {
       result.push(new SongTimeChange(0, Constants.DEFAULT_BPM));
-      trace("[WARN] No BPM points found, resulting to default BPM...");
+      trace('[WARN] No BPM points found, resulting to default BPM...');
     }
 
     return result;
@@ -169,7 +169,7 @@ class OsuManiaImporter
   {
     return timingLines.map(function(line:String):TimingPoint
     {
-      var parts = line.split(",");
+      var parts = line.split(',');
       var time = Std.parseFloat(parts[0]);
       var beatLength = Std.parseFloat(parts[1]);
       var meter = Std.parseInt(parts[2]);
@@ -187,7 +187,7 @@ class OsuManiaImporter
   {
     return hitObjectsLines.map(function(line:String):ManiaHitObject
     {
-      var parts = line.split(",");
+      var parts = line.split(',');
 
       var x:Int = Std.parseInt(parts[0]);
       var time:Int = Std.parseInt(parts[2]);
@@ -195,7 +195,7 @@ class OsuManiaImporter
       var hasHold:Bool = (type & 128) == 128;
 
       var noteD:Int = Std.int(x / (512 / columns));
-      var holdEndTime:Null<Int> = hasHold ? Std.parseInt(parts[5].split(":")[0]) : null;
+      var holdEndTime:Null<Int> = hasHold ? Std.parseInt(parts[5].split(':')[0]) : null;
 
       var holdDuration:Int = (holdEndTime != null) ? (holdEndTime - time) : 0;
 

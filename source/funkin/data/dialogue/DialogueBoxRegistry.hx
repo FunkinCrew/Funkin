@@ -14,9 +14,9 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData, Dia
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateDialogueBoxData()` function.
    */
-  public static final DIALOGUEBOX_DATA_VERSION:thx.semver.Version = "1.1.0";
+  public static final DIALOGUEBOX_DATA_VERSION:thx.semver.Version = '1.1.0';
 
-  public static final DIALOGUEBOX_DATA_VERSION_RULE:thx.semver.VersionRule = ">=1.0.0 <1.2.0";
+  public static final DIALOGUEBOX_DATA_VERSION_RULE:thx.semver.VersionRule = '>=1.0.0 <1.2.0';
 
   public function new()
   {

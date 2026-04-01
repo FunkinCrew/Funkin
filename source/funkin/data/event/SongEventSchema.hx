@@ -255,32 +255,32 @@ enum abstract SongEventFieldType(String) from String to String
   /**
    * The STRING type will display as a text field.
    */
-  public var STRING = "string";
+  public var STRING = 'string';
 
   /**
    * The INTEGER type will display as a text field that only accepts numbers.
    */
-  public var INTEGER = "integer";
+  public var INTEGER = 'integer';
 
   /**
    * The FLOAT type will display as a text field that only accepts numbers.
    */
-  public var FLOAT = "float";
+  public var FLOAT = 'float';
 
   /**
    * The BOOL type will display as a checkbox.
    */
-  public var BOOL = "bool";
+  public var BOOL = 'bool';
 
   /**
    * The ENUM type will display as a dropdown.
    * Make sure to specify the `keys` field in the schema.
    */
-  public var ENUM = "enum";
+  public var ENUM = 'enum';
 
   /**
    * The FRAME type will display a frame with child components.
    * Make sure to specify the `children` field in the schema.
    */
-  public var FRAME = "frame";
+  public var FRAME = 'frame';
 }

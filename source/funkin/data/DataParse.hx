@@ -34,7 +34,7 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected property $name to be non-empty.';
+        if (s == '') throw 'Expected property $name to be non-empty.';
         return s;
       default:
         throw 'Expected property $name to be a string, but it was ${json.value}.';
@@ -52,7 +52,7 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected version property $name to be non-empty.';
+        if (s == '') throw 'Expected version property $name to be non-empty.';
         return s;
       default:
         throw 'Expected version property $name to be a string, but it was ${json.value}.';
@@ -70,7 +70,7 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected version rule property $name to be non-empty.';
+        if (s == '') throw 'Expected version rule property $name to be non-empty.';
         return s;
       default:
         throw 'Expected version rule property $name to be a string, but it was ${json.value}.';

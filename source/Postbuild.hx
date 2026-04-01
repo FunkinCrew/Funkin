@@ -36,7 +36,7 @@ class Postbuild
 
   static function format(time:Float, decimals:Int = 1):String
   {
-    var units = [{name: "day", secs: 86400}, {name: "hour", secs: 3600}, {name: "minute", secs: 60}, {name: "second", secs: 1}];
+    var units = [{name: 'day', secs: 86400}, {name: 'hour', secs: 3600}, {name: 'minute', secs: 60}, {name: 'second', secs: 1}];
 
     var parts:Array<String> = [];
     var remaining:Float = time;
@@ -44,13 +44,13 @@ class Postbuild
 
     for (u in units)
     {
-      var value:Float = (u.name == "second") ? Math.round(remaining * factor) / factor : Math.floor(remaining / u.secs);
+      var value:Float = (u.name == 'second') ? Math.round(remaining * factor) / factor : Math.floor(remaining / u.secs);
 
-      if (u.name != "second") remaining %= u.secs;
+      if (u.name != 'second') remaining %= u.secs;
 
-      if (value > 0 || (u.name == "second" && parts.length == 0)) parts.push('${value} ${u.name}${value == 1 ? "" : "s"}');
+      if (value > 0 || (u.name == 'second' && parts.length == 0)) parts.push('${value} ${u.name}${value == 1 ? "" : "s"}');
     }
 
-    return parts.join(" ");
+    return parts.join(' ');
   }
 }

@@ -22,7 +22,7 @@ class PlayAnimationSongEvent extends SongEvent
   static final DEFAULT_ANIM:String = 'idle';
   static final DEFAULT_FORCE:Bool = false;
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -75,9 +75,9 @@ class PlayAnimationSongEvent extends SongEvent
     }
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
-    return "Play Animation";
+    return 'Play Animation';
   }
 
   /**
@@ -89,7 +89,7 @@ class PlayAnimationSongEvent extends SongEvent
    * }
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {

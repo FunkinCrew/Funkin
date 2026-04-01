@@ -19,7 +19,7 @@ class ForceCrashPlugin extends FlxBasic
     FlxG.plugins.addPlugin(new ForceCrashPlugin());
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -27,11 +27,11 @@ class ForceCrashPlugin extends FlxBasic
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, L]))
     {
       // TODO: Make this message 87% funnier.
-      throw "DEBUG: Crashing the game via debug keybind!";
+      throw 'DEBUG: Crashing the game via debug keybind!';
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
   }

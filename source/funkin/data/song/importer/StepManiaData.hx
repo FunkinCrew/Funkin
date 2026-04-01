@@ -47,15 +47,15 @@ class StepNote
     this.column = column;
     switch (t)
     {
-      case "2":
+      case '2':
         this.type = StepManiaNoteType.Head;
-      case "3":
+      case '3':
         this.type = StepManiaNoteType.Tail;
-      case "4":
+      case '4':
         this.type = StepManiaNoteType.Roll;
-      case "M":
+      case 'M':
         this.type = StepManiaNoteType.Mine;
-      case "F":
+      case 'F':
         this.type = StepManiaNoteType.Fake;
       default:
         this.type = StepManiaNoteType.Tap;
@@ -75,9 +75,9 @@ class StepDifficulty
   {
     switch (chartTypeStr)
     {
-      case "dance-single":
+      case 'dance-single':
         return StepManiaChartType.DanceSingle;
-      case "dance-double":
+      case 'dance-double':
         return StepManiaChartType.DanceDouble;
       default:
         return StepManiaChartType.Unknown;

@@ -169,7 +169,7 @@ class StoryMenuState extends MusicBeatState
     updateProps();
 
     // x on tracklistText is set/updated later, we dont need to init it
-    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, 'Tracks', 32);
     tracklistText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
@@ -543,7 +543,7 @@ class StoryMenuState extends MusicBeatState
 
   function funnyMusicThing():Void
   {
-    if (currentDifficultyId == "nightmare")
+    if (currentDifficultyId == 'nightmare')
     {
       FlxG.sound.music.fadeOut(FADE_OUT_TIME, 0.0);
     }
@@ -553,7 +553,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);

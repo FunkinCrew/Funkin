@@ -331,21 +331,21 @@ enum abstract Leaderboard(Int) from Int to Int
   {
     switch (levelId)
     {
-      case "week1":
+      case 'week1':
         return StoryWeek1;
-      case "week2":
+      case 'week2':
         return StoryWeek2;
-      case "week3":
+      case 'week3':
         return StoryWeek3;
-      case "week4":
+      case 'week4':
         return StoryWeek4;
-      case "week5":
+      case 'week5':
         return StoryWeek5;
-      case "week6":
+      case 'week6':
         return StoryWeek6;
-      case "week7":
+      case 'week7':
         return StoryWeek7;
-      case "weekend1":
+      case 'weekend1':
         return StoryWeekend1;
       // Collab 1 has only one song.
       default:
@@ -371,153 +371,153 @@ enum abstract Leaderboard(Int) from Int to Int
     }
     else if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(difficulty))
     {
-      variation = "erect";
+      variation = 'erect';
     }
 
     switch (variation)
     {
-      case "pico":
+      case 'pico':
         switch (songId)
         {
-          case "bopeebo":
+          case 'bopeebo':
             return BopeeboPicoMix;
-          case "fresh":
+          case 'fresh':
             return FreshPicoMix;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattlePicoMix;
-          case "spookeez":
+          case 'spookeez':
             return SpookeezPicoMix;
-          case "south":
+          case 'south':
             return SouthPicoMix;
-          case "pico":
+          case 'pico':
             return PicoPicoMix;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNicePicoMix;
-          case "blammed":
+          case 'blammed':
             return BlammedPicoMix;
-          case "cocoa":
+          case 'cocoa':
             return CocoaPicoMix;
-          case "eggnog":
+          case 'eggnog':
             return EggnogPicoMix;
-          case "senpai":
+          case 'senpai':
             return SenpaiPicoMix;
-          case "roses":
+          case 'roses':
             return RosesPicoMix;
-          case "ugh":
+          case 'ugh':
             return UghPicoMix;
-          case "guns":
+          case 'guns':
             return GunsPicoMix;
-          case "stress":
+          case 'stress':
             return StressPicoMix;
           default:
             return Unknown;
         }
-      case "bf":
+      case 'bf':
         switch (songId)
         {
-          case "darnell":
+          case 'darnell':
             return DarnellBFMix;
-          case "lit-up":
+          case 'lit-up':
             return LitUpBFMix;
           default:
             return Unknown;
         }
-      case "erect":
+      case 'erect':
         switch (songId)
         {
-          case "bopeebo":
+          case 'bopeebo':
             return BopeeboErect;
-          case "fresh":
+          case 'fresh':
             return FreshErect;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattleErect;
-          case "spookeez":
+          case 'spookeez':
             return SpookeezErect;
-          case "south":
+          case 'south':
             return SouthErect;
-          case "pico":
+          case 'pico':
             return PicoErect;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNiceErect;
-          case "blammed":
+          case 'blammed':
             return BlammedErect;
-          case "satin-panties":
+          case 'satin-panties':
             return SatinPantiesErect;
-          case "high":
+          case 'high':
             return HighErect;
-          case "cocoa":
+          case 'cocoa':
             return CocoaErect;
-          case "eggnog":
+          case 'eggnog':
             return EggnogErect;
-          case "senpai":
+          case 'senpai':
             return SenpaiErect;
-          case "roses":
+          case 'roses':
             return RosesErect;
-          case "thorns":
+          case 'thorns':
             return ThornsErect;
-          case "ugh":
+          case 'ugh':
             return UghErect;
-          case "darnell":
+          case 'darnell':
             return DarnellErect;
           default:
             return Unknown;
         }
-      case "default":
+      case 'default':
         switch (songId)
         {
-          case "tutorial":
+          case 'tutorial':
             return Tutorial;
-          case "bopeebo":
+          case 'bopeebo':
             return Bopeebo;
-          case "fresh":
+          case 'fresh':
             return Fresh;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattle;
-          case "spookeez":
+          case 'spookeez':
             return Spookeez;
-          case "south":
+          case 'south':
             return South;
-          case "monster":
+          case 'monster':
             return Monster;
-          case "pico":
+          case 'pico':
             return Pico;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNice;
-          case "blammed":
+          case 'blammed':
             return Blammed;
-          case "satin-panties":
+          case 'satin-panties':
             return SatinPanties;
-          case "high":
+          case 'high':
             return High;
-          case "milf":
+          case 'milf':
             return MILF;
-          case "cocoa":
+          case 'cocoa':
             return Cocoa;
-          case "eggnog":
+          case 'eggnog':
             return Eggnog;
-          case "winter-horrorland":
+          case 'winter-horrorland':
             return WinterHorrorland;
-          case "senpai":
+          case 'senpai':
             return Senpai;
-          case "roses":
+          case 'roses':
             return Roses;
-          case "thorns":
+          case 'thorns':
             return Thorns;
-          case "ugh":
+          case 'ugh':
             return Ugh;
-          case "guns":
+          case 'guns':
             return Guns;
-          case "stress":
+          case 'stress':
             return Stress;
-          case "darnell":
+          case 'darnell':
             return Darnell;
-          case "lit-up":
+          case 'lit-up':
             return LitUp;
-          case "2hot":
+          case '2hot':
             return TwoHot;
-          case "blazin":
+          case 'blazin':
             return Blazin;
-          case "spaghetti":
+          case 'spaghetti':
             return Spaghetti;
           default:
             return Unknown;

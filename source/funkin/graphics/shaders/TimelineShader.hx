@@ -546,7 +546,7 @@ void main()
     lineWidth.value = [_lineWidth];
     topBarSize.value = [TimelineViewport.TOP_BAR_HEIGHT];
     layerHeight = TimelineViewport.LAYER_HEIGHT;
-    fontTexture = BitmapData.fromFile("assets/ui/editors/camera-editor/timelineFont.png");
+    fontTexture = BitmapData.fromFile('assets/ui/editors/camera-editor/timelineFont.png');
   }
 }
 #end

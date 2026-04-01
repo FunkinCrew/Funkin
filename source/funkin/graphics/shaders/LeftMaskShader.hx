@@ -25,7 +25,7 @@ class LeftMaskShader extends FlxShader
 
   function set_frameUV(uv:FlxRect):FlxRect
   {
-    trace("SETTING FRAMEUV");
+    trace('SETTING FRAMEUV');
     trace(uv);
 
     uvFrameX.value[0] = uv.left;

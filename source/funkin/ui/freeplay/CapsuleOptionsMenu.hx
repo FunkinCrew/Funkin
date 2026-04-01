@@ -71,7 +71,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     capsuleMenuBG.animation.play('open', true);
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

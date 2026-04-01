@@ -92,7 +92,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var hsv:HSVShader = new HSVShader();
 
-  public override function create():Void
+  override public function create():Void
   {
     super.create();
 
@@ -338,7 +338,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var originX:Float;
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

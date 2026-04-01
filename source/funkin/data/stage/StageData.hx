@@ -17,7 +17,7 @@ class StageData
   public var characters:StageDataCharacters;
   @:default(1.0) @:optional
   public var cameraZoom:Null<Float>;
-  @:deprecated("This is no longer used.") @:default("shared") @:optional
+  @:deprecated('This is no longer used.') @:default('shared') @:optional
   public var directory:Null<String>;
 
   public function new()
@@ -181,7 +181,7 @@ typedef StageDataProp =
    * Options: "sparrow", "packer", "animateatlas"
    * @default "sparrow"
    */
-  @:default("sparrow") @:optional
+  @:default('sparrow') @:optional
   var animType:String;
 
   /**
@@ -196,7 +196,7 @@ typedef StageDataProp =
    * Just like in photoshop.
    * @default Nothing.
    */
-  @:default("") @:optional
+  @:default('') @:optional
   var blend:String;
 
   /**
@@ -204,7 +204,7 @@ typedef StageDataProp =
    * White overlays, or the ones with the value #FFFFFF, do not appear.
    * @default `#FFFFFF`
    */
-  @:default("#FFFFFF") @:optional
+  @:default('#FFFFFF') @:optional
   var color:String;
 
   /**

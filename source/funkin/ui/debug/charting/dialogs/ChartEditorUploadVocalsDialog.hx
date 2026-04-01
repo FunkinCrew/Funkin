@@ -17,7 +17,7 @@ import haxe.ui.core.Component;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml")) @:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
@@ -171,7 +171,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
+  override public function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
 
@@ -187,13 +187,13 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     }
   }
 
-  public override function lock():Void
+  override public function lock():Void
   {
     super.lock();
     this.dialogCancel.disabled = true;
   }
 
-  public override function unlock():Void
+  override public function unlock():Void
   {
     super.unlock();
     this.dialogCancel.disabled = false;
@@ -245,7 +245,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
   }
 }
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals-entry.xml"))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals-entry.xml'))
 class ChartEditorUploadVocalsEntry extends Box
 {
   public var vocalsEntryLabel:Label;

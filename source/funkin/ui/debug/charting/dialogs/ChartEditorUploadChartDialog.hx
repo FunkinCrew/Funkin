@@ -10,7 +10,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-chart.xml")) @:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/upload-chart.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
@@ -56,7 +56,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
+  override public function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
 
@@ -72,13 +72,13 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     }
   }
 
-  public override function lock():Void
+  override public function lock():Void
   {
     super.lock();
     this.dialogCancel.disabled = true;
   }
 
-  public override function unlock():Void
+  override public function unlock():Void
   {
     super.unlock();
     this.dialogCancel.disabled = false;

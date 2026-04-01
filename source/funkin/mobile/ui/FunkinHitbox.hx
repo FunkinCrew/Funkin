@@ -171,7 +171,7 @@ class FunkinHint extends FunkinButton
     hsvShader.hue = hue;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -193,7 +193,7 @@ class FunkinHint extends FunkinButton
     }
   }
 
-  public override function draw():Void
+  override public function draw():Void
   {
     super.draw();
 
@@ -205,7 +205,7 @@ class FunkinHint extends FunkinButton
   }
 
   #if FLX_DEBUG
-  public override function drawDebug():Void
+  override public function drawDebug():Void
   {
     super.drawDebug();
 
@@ -216,7 +216,7 @@ class FunkinHint extends FunkinButton
   /**
    * Cleans up memory used by the `FunkinHint`.
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (alphaTween != null) alphaTween = FlxDestroyUtil.destroy(alphaTween);
 
@@ -248,11 +248,11 @@ class FunkinHint extends FunkinButton
 
 enum abstract FunkinHitboxControlSchemes(String) from String to String
 {
-  var FourLanes = 'Four Lanes';
-  var DoubleThumbTriangle = 'Double Thumb Triangle';
-  var DoubleThumbSquare = 'Double Thumb Square';
-  var DoubleThumbDPad = 'Double Thumb DPad';
-  var Arrows = 'Arrows';
+  public var FourLanes = 'Four Lanes';
+  public var DoubleThumbTriangle = 'Double Thumb Triangle';
+  public var DoubleThumbSquare = 'Double Thumb Square';
+  public var DoubleThumbDPad = 'Double Thumb DPad';
+  public var Arrows = 'Arrows';
 }
 
 /**
@@ -696,7 +696,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Cleans up memory used by the `FunkinHitbox`.
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (trackedInputs != null && trackedInputs.length > 0) ControlsHandler.removeCachedInput(PlayerSettings.player1.controls, trackedInputs);
 

@@ -13,7 +13,7 @@ import openfl.display.BitmapData;
 /**
  * The contents of the Properties panel, while a Zoom Camera event is selected.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/camera-editor/components/properties/zoom-camera.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/ui/editors/camera-editor/components/properties/zoom-camera.xml'))
 class ZoomCameraContainer extends VBox
 {
   /**
@@ -291,7 +291,7 @@ class ZoomCameraContainer extends VBox
     updateCameraPreview();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 

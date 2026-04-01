@@ -30,7 +30,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     FlxG.plugins.addPlugin(new ReloadAssetsDebugPlugin());
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -44,7 +44,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 
@@ -56,7 +56,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     #end
   }
 
-  var path:String = "";
+  var path:String = '';
 
   @:noCompletion
   function reload():Void
@@ -68,7 +68,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       var s:ScriptedMusicBeatState = cast FlxG.state;
       @:privateAccess
       path = s._asc.fullyQualifiedName;
-      trace("Current scripted state path: " + path);
+      trace('Current scripted state path: ' + path);
     }
 
     if ((state is MusicBeatState || state is MusicBeatSubState) && !isScripted) state.reloadAssets();
@@ -76,10 +76,10 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     {
       funkin.modding.PolymodHandler.forceReloadAssets();
 
-      trace("Reloaded assets, checking for scripted state. Scripted: " + isScripted + ", Path: " + path);
+      trace('Reloaded assets, checking for scripted state. Scripted: ' + isScripted + ', Path: ' + path);
       if (isScripted)
       {
-        trace("Reloading scripted state: " + path);
+        trace('Reloading scripted state: ' + path);
         var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
         FlxG.switchState(state);
       }

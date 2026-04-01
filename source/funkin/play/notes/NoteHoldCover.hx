@@ -41,7 +41,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
-  public override function update(elapsed):Void
+  override public function update(elapsed):Void
   {
     super.update(elapsed);
   }
@@ -65,7 +65,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     glow.animation.play('holdCoverEnd${direction.colorName.toTitleCase()}');
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 
@@ -77,7 +77,7 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
     if (sparks != null) sparks.visible = false;
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
 

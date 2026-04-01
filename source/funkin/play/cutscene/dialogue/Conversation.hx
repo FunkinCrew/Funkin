@@ -72,7 +72,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   function get_currentDialogueLineString():String
   {
     // TODO: Replace "" with some placeholder text?
-    return currentDialogueEntryData?.text[currentDialogueLine] ?? "";
+    return currentDialogueEntryData?.text[currentDialogueLine] ?? '';
   }
 
   /**
@@ -116,7 +116,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   {
     if (_data == null) return;
 
-    if (_data.music == null || (_data.music.asset ?? "") == "") return;
+    if (_data.music == null || (_data.music.asset ?? '') == '') return;
 
     music = FunkinSound.load(Paths.music(_data.music.asset), 0.0, true, true, true);
     var fadeTime:Float = _data.music.fadeTime ?? 0.0;
@@ -190,7 +190,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     refresh();
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -199,7 +199,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   function showCurrentSpeaker():Void
   {
-    var nextSpeakerId:String = currentDialogueEntryData?.speaker ?? "";
+    var nextSpeakerId:String = currentDialogueEntryData?.speaker ?? '';
 
     // Skip the next steps if the current speaker is already displayed.
     if ((currentSpeaker != null && currentSpeaker.alive) && nextSpeakerId == currentSpeaker.id) return;
@@ -251,7 +251,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
   function showCurrentDialogueBox():Void
   {
-    var nextDialogueBoxId:String = currentDialogueEntryData?.box ?? "";
+    var nextDialogueBoxId:String = currentDialogueEntryData?.box ?? '';
 
     // Skip the next steps if the current dialogue box is already displayed.
     if ((currentDialogueBox != null && currentDialogueBox.alive) && nextDialogueBoxId == currentDialogueBox.id) return;
@@ -621,7 +621,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
    * Calls `kill()` on the group's members and then on the group itself.
    * You can revive this group later via `revive()` after this.
    */
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
     this.alpha = 1;
@@ -632,7 +632,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
    * Calls `kill()` on the group's members and then on the group itself.
    * You can revive this group later via `revive()` after this.
    */
-  public override function kill():Void
+  override public function kill():Void
   {
     _skipTransformChildren = true;
     alive = false;

@@ -834,7 +834,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
   }
 
-  public override function kill()
+  override public function kill()
   {
     _skipTransformChildren = true;
     alive = false;
@@ -843,7 +843,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     if (group != null) group.kill();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     trace(' WARNING '.warning() + ' Tried to destroy the singleton Stage instance! This will break the level.');
 
@@ -851,7 +851,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     // super.destroy();
   }
 
-  public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
+  override public function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
   {
     if (Sprite == null) return Sprite;
     var sprite:FlxSprite = cast Sprite;

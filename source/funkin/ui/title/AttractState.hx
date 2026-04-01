@@ -47,7 +47,7 @@ class AttractState extends MusicBeatState
   var pie:FlxRadialGauge;
   var holdDelta:Float = 0;
 
-  public override function create():Void
+  override public function create():Void
   {
     // Pause existing music.
     if (FlxG.sound.music != null)
@@ -153,7 +153,7 @@ class AttractState extends MusicBeatState
   }
   #end
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

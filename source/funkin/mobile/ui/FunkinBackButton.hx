@@ -42,9 +42,9 @@ class FunkinBackButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas("ui/back-button");
-    animation.addByIndices('idle', 'back', [0], "", 24, false);
-    animation.addByIndices('hold', 'back', [5], "", 24, false);
+    frames = Paths.getSparrowAtlas('ui/back-button');
+    animation.addByIndices('idle', 'back', [0], '', 24, false);
+    animation.addByIndices('hold', 'back', [5], '', 24, false);
     animation.addByIndices('confirm', 'back', [
       6,
       7,
@@ -63,8 +63,8 @@ class FunkinBackButton extends FunkinButton
       20,
       21,
       22
-    ], "", 24, false);
-    animation.play("idle");
+    ], '', 24, false);
+    animation.play('idle');
 
     scale.set(0.7, 0.7);
     updateHitbox();

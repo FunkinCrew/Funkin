@@ -24,7 +24,7 @@ class WaveformTestState extends MusicBeatState
   var polygonSprite:MeshRender;
   var vertexCount:Int = 3;
 
-  public override function create():Void
+  override public function create():Void
   {
     super.create();
 
@@ -65,7 +65,7 @@ class WaveformTestState extends MusicBeatState
     // drawWaveform(time, duration);
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -180,7 +180,7 @@ class WaveformTestState extends MusicBeatState
     polygonSprite.add_tri(centerVertex, lastVertex, firstVertex);
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
   }

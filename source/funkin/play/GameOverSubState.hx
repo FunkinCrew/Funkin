@@ -129,7 +129,7 @@ class GameOverSubState extends MusicBeatSubState
     blueballed = false;
   }
 
-  public override function create():Void
+  override public function create():Void
   {
     if (instance != null)
     {
@@ -457,7 +457,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -625,7 +625,7 @@ class GameOverSubState extends MusicBeatSubState
 
   var hasPlayedDeathQuote:Bool = false;
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     if (gameOverMusic != null)
@@ -637,7 +637,7 @@ class GameOverSubState extends MusicBeatSubState
     instance = null;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'GameOverSubState';
   }

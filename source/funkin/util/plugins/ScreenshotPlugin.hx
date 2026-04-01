@@ -139,7 +139,7 @@ class ScreenshotPlugin extends FlxBasic
     CrashHandler.criticalErrorSignal.add(onWindowCrash);
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     if (asyncLoop != null)
     {
@@ -155,7 +155,7 @@ class ScreenshotPlugin extends FlxBasic
         {
           if (screenshotBuffer != [])
           {
-            trace("finished processing screenshot buffer");
+            trace('finished processing screenshot buffer');
             screenshotBuffer = [];
             screenshotNameBuffer = [];
           }
@@ -489,7 +489,7 @@ class ScreenshotPlugin extends FlxBasic
    * @param screenShotNum Used for the delay save option, to space out the saving of the images.
    * @param delaySave If true, the image gets saved with the screenShotNum as the delay.
    */
-  function saveScreenshot(bitmap:Bitmap, targetPath = "image", screenShotNum:Int = 0, delaySave:Bool = true):Void
+  function saveScreenshot(bitmap:Bitmap, targetPath = 'image', screenShotNum:Int = 0, delaySave:Bool = true):Void
   {
     #if !web
     makeScreenshotPath();
@@ -545,7 +545,7 @@ class ScreenshotPlugin extends FlxBasic
     var a:js.html.AnchorElement = cast js.Browser.document.createElement('a');
     js.Browser.document.body.appendChild(a);
     a.style.display = 'none';
-    a.href = bitmap.bitmapData.image.src.toDataURL("image/png");
+    a.href = bitmap.bitmapData.image.src.toDataURL('image/png');
     a.download = targetPath;
     a.click();
 

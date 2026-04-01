@@ -226,7 +226,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     var levelId:String = this.freeplayData.levelId;
     var levelIdData:Level = LevelRegistry.instance.fetchEntry(levelId);
-    var levelIdClean:String = "";
+    var levelIdClean:String = '';
 
     if (levelIdData.getCapsuleTitle() != null)
     {
@@ -248,9 +248,9 @@ class SongMenuItem extends FlxSpriteGroup
         var previousChar:String = levelId.charAt(i - 1);
         var currentChar:String = levelId.charAt(i);
 
-        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
-        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
-        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
+        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += ' ';
+        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += ' ';
+        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += ' ';
 
         levelIdClean += currentChar;
       }
@@ -767,7 +767,7 @@ class SongMenuItem extends FlxSpriteGroup
     songText.alpha = isSelected ? 1 : 0.6;
     songText.blurredText.visible = isSelected ? true : false;
     capsule.offset.x = isSelected ? 0 : -5;
-    capsule.animation.play(isSelected ? "selected" : "unselected");
+    capsule.animation.play(isSelected ? 'selected' : 'unselected');
     ranking.alpha = isSelected ? 1 : 0.7;
     favIcon.alpha = isSelected ? 1 : 0.6;
     favIconBlurred.alpha = isSelected ? 1 : 0;
@@ -778,7 +778,7 @@ class SongMenuItem extends FlxSpriteGroup
     if (selected && songText.tooLong) songText.initMove();
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 
@@ -895,16 +895,16 @@ class CapsuleNumber extends FlxSprite
   public var baseX:Float = 0;
 
   var numToString:Array<String> = [
-    "ZERO",
-    "ONE",
-    "TWO",
-    "THREE",
-    "FOUR",
-    "FIVE",
-    "SIX",
-    "SEVEN",
-    "EIGHT",
-    "NINE"
+    'ZERO',
+    'ONE',
+    'TWO',
+    'THREE',
+    'FOUR',
+    'FIVE',
+    'SIX',
+    'SEVEN',
+    'EIGHT',
+    'NINE'
   ];
 
   public function new(x:Float, y:Float, big:Bool = false, ?initDigit:Int = 0)

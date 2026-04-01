@@ -46,7 +46,7 @@ class SongEventRegistry
       var eventClsName:String = Type.getClassName(eventCls);
       if (eventClsName == 'funkin.play.event.SongEvent' || eventClsName == 'funkin.play.event.ScriptedSongEvent') continue;
 
-      var event:SongEvent = Type.createInstance(eventCls, ["UNKNOWN"]);
+      var event:SongEvent = Type.createInstance(eventCls, ['UNKNOWN']);
 
       if (event != null)
       {
@@ -68,7 +68,7 @@ class SongEventRegistry
 
     for (eventCls in scriptedEventClassNames)
     {
-      var event:SongEvent = ScriptedSongEvent.scriptInit(eventCls, "UKNOWN");
+      var event:SongEvent = ScriptedSongEvent.scriptInit(eventCls, 'UKNOWN');
 
       if (event != null)
       {

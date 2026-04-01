@@ -298,7 +298,7 @@ class FocusCameraContainer extends VBox
     updateCameraPreview();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 

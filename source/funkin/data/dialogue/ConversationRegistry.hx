@@ -13,9 +13,9 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData, 
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateConversationData()` function.
    */
-  public static final CONVERSATION_DATA_VERSION:thx.semver.Version = "1.0.0";
+  public static final CONVERSATION_DATA_VERSION:thx.semver.Version = '1.0.0';
 
-  public static final CONVERSATION_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+  public static final CONVERSATION_DATA_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
 
   public function new()
   {

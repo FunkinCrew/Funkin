@@ -122,7 +122,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     initConsoleHelpers();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 
@@ -146,7 +146,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     }
 
     // Display Conductor info in the watch window.
-    FlxG.watch.addQuick("musicTime", FlxG.sound.music?.time ?? 0.0);
+    FlxG.watch.addQuick('musicTime', FlxG.sound.music?.time ?? 0.0);
     Conductor.watchQuick(conductorInUse);
 
     dispatchEvent(new UpdateScriptEvent(elapsed));
@@ -275,7 +275,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     }
   }
 
-  public override function openSubState(targetSubState:FlxSubState):Void
+  override public function openSubState(targetSubState:FlxSubState):Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
@@ -291,7 +291,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
   }
 
-  public override function closeSubState():Void
+  override public function closeSubState():Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 

@@ -21,7 +21,7 @@ class SetTargetBopSpeedSongEvent extends SongEvent
 
   static final DEFAULT_TARGET:String = 'boyfriend';
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -71,7 +71,7 @@ class SetTargetBopSpeedSongEvent extends SongEvent
     }
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return "Set Target Bop Speed";
   }
@@ -85,7 +85,7 @@ class SetTargetBopSpeedSongEvent extends SongEvent
    * ```
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {

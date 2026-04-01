@@ -18,8 +18,8 @@ import haxe.ds.Map;
  */
 enum abstract FunkinButtonStatus(Int) from Int to Int
 {
-  var NORMAL = 0;
-  var PRESSED = 1;
+  public var NORMAL = 0;
+  public var PRESSED = 1;
 }
 
 /**
@@ -148,7 +148,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * Called by the game state when the state is changed (if this object belongs to the state).
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     deadZones = FlxDestroyUtil.destroyArray(deadZones);
     currentInput = null;
@@ -164,7 +164,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   /**
    * Called by the game loop automatically, handles touch over and click detection.
    */
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -376,7 +376,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   }
 
   #if FLX_DEBUG
-  public override function drawDebugOnCamera(camera:FlxCamera):Void
+  override public function drawDebugOnCamera(camera:FlxCamera):Void
   {
     if (polygon != null && polygon.length >= 6 && polygon.length % 2 == 0)
     {

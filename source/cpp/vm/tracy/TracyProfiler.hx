@@ -6,7 +6,7 @@
 package cpp.vm.tracy;
 
 #if (!HXCPP_TRACY)
-#error "This class cannot be used without -D HXCPP_TRACY"
+#error 'This class cannot be used without -D HXCPP_TRACY'
 #end
 enum abstract PlotFormatType(cpp.UInt8) from cpp.UInt8 to cpp.UInt8
 {

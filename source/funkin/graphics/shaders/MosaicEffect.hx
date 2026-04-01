@@ -17,6 +17,6 @@ class MosaicEffect extends FlxRuntimeShader
   public function setBlockSize(w:Float, h:Float)
   {
     blockSize.set(w, h);
-    setFloatArray("uBlocksize", [w, h]);
+    setFloatArray('uBlocksize', [w, h]);
   }
 }

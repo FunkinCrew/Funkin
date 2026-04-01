@@ -92,7 +92,7 @@ typedef DialogueBoxTextData =
    * The color to use for the text.
    * Use a string that can be translated to a color, like `#FF0000` for red.
    */
-  @:optional @:default("#000000")
+  @:optional @:default('#000000')
   var color:String;
 
   /**
@@ -100,7 +100,7 @@ typedef DialogueBoxTextData =
    * @since v1.1.0
    * @default `Arial`, make sure to switch this!
    */
-  @:optional @:default("Arial")
+  @:optional @:default('Arial')
   var fontFamily:String;
 
   /**

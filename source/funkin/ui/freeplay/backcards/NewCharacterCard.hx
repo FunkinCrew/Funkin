@@ -28,7 +28,7 @@ class NewCharacterCard extends BackingCard
   public var friendFoe2:BGScrollingText;
   public var newUnlock3:BGScrollingText;
 
-  public override function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  override public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     super.applyExitMovers(exitMovers, exitMoversCharSel);
     if (exitMovers == null || exitMoversCharSel == null) return;
@@ -74,7 +74,7 @@ class NewCharacterCard extends BackingCard
     });
   }
 
-  public override function introDone():Void
+  override public function introDone():Void
   {
     // pinkBack.color = 0xFFFFD863;
 
@@ -94,10 +94,10 @@ class NewCharacterCard extends BackingCard
     lightLayer3.visible = true;
 
     cardGlow.visible = true;
-    FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.45, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.45, {ease: FlxEase.sineOut});
   }
 
-  public override function enterCharSel():Void
+  override public function enterCharSel():Void
   {
     FlxTween.tween(friendFoe, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
     FlxTween.tween(newUnlock1, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
@@ -107,7 +107,7 @@ class NewCharacterCard extends BackingCard
     FlxTween.tween(newUnlock3, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
   }
 
-  public override function onCreate(event:ScriptEvent):Void
+  override public function onCreate(event:ScriptEvent):Void
   {
     FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
     add(pinkBack);
@@ -120,7 +120,7 @@ class NewCharacterCard extends BackingCard
     confirmGlow.visible = false;
     confirmGlow2.visible = false;
 
-    friendFoe = new BGScrollingText(0, 163, "COULD IT BE A NEW FRIEND? OR FOE??", FlxG.width, true, 43);
+    friendFoe = new BGScrollingText(0, 163, 'COULD IT BE A NEW FRIEND? OR FOE??', FlxG.width, true, 43);
     newUnlock1 = new BGScrollingText(-440, 215, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
     waiting = new BGScrollingText(0, 286, "SOMEONE'S WAITING!", FlxG.width / 2, true, 43);
     newUnlock2 = new BGScrollingText(-220, 331, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
@@ -232,7 +232,7 @@ class NewCharacterCard extends BackingCard
     }
   }
 
-  public override function disappear():Void
+  override public function disappear():Void
   {
     FlxTween.color(pinkBack, 0.25, 0xFF05020E, 0xFFFFD0D5, {ease: FlxEase.quadOut});
 
@@ -254,6 +254,6 @@ class NewCharacterCard extends BackingCard
     cardGlow.visible = true;
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
-    FlxTween.tween(cardGlow, {alpha: 0, "scale.x": 1.2, "scale.y": 1.2}, 0.25, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.25, {ease: FlxEase.sineOut});
   }
 }

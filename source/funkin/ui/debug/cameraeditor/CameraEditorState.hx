@@ -93,7 +93,7 @@ using StringTools;
 /**
  * The EYES OF GOD......
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/camera-editor/main-view.xml"))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/camera-editor/main-view.xml'))
 class CameraEditorState extends UIState implements ConsoleClass
 {
   /**
@@ -104,7 +104,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The path to save backups to, when the editor is closed unexpectedly.
    */
-  public static final BACKUPS_PATH:String = "./backups/camera/";
+  public static final BACKUPS_PATH:String = './backups/camera/';
 
   /**
    * The current instance of the Camera Editor.
@@ -123,7 +123,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentSongChartData(get, never):Null<SongChartData>;
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
-  public var currentDifficulty:String = "hard";
+  public var currentDifficulty:String = 'hard';
   public var currentNotes(get, never):Array<SongNoteData>;
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
   public var vCamDebug:FunkinSprite = null;
@@ -292,7 +292,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The path to the current file being operated on.
    */
-  public var currentFile(default, set):String = "";
+  public var currentFile(default, set):String = '';
 
   function set_currentFile(value:String):String
   {
@@ -477,7 +477,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     this.params = params;
   }
 
-  public override function create():Void
+  override public function create():Void
   {
     vCamDebug = new FunkinSprite(0, 0);
     vCamDebug.makeGraphic(32, 32, FlxColor.RED);
@@ -575,9 +575,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       switch (eventData.eventKind)
       {
-        case "FocusCamera":
+        case 'FocusCamera':
           cameraRect.handleFocusCamera(eventData);
-        case "ZoomCamera":
+        case 'ZoomCamera':
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
       }
 
@@ -588,7 +588,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     previousTime = conductorInUse.songPosition;
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -636,7 +636,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var _cameraTarget:FlxPoint = new FlxPoint();
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     // Save the stage if exiting through the F4 keybind.
     // Soon the EvacuateDebugPlugin will move us to the new state.
@@ -772,7 +772,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
 
-    trace("Built stage: " + stageID);
+    trace('Built stage: ' + stageID);
     add(cameraRect);
     cameraRect.currentStage = currentStage;
 
@@ -788,7 +788,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function autosavePerCrash(message:String)
   {
-    trace("Crashed the game for the reason: " + message);
+    trace('Crashed the game for the reason: ' + message);
 
     if (!saved)
     {
@@ -801,7 +801,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function windowClose(exitCode:Int)
   {
-    trace("Closing the game window.");
+    trace('Closing the game window.');
 
     if (!saved)
     {
@@ -902,11 +902,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var defaultTitle = "Friday Night Funkin\' Camera Editor";
 
-    if (currentWorkingFilePath == "") defaultTitle += " - New File"
+    if (currentWorkingFilePath == '') defaultTitle += ' - New File'
     else
-      defaultTitle += " - " + currentWorkingFilePath;
+      defaultTitle += ' - ' + currentWorkingFilePath;
 
-    if (!saved) defaultTitle += "*";
+    if (!saved) defaultTitle += '*';
 
     WindowUtil.setWindowTitle(defaultTitle);
   }
@@ -939,7 +939,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String)
     {
-      notifyChange("Auto-Save", "A Backup of this Chart has been made.");
+      notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
     {
       // Failed to save backup?
@@ -1039,12 +1039,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
     {
       var raw:SongEventDataRaw = e.eventData;
-      var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
+      var layerName = raw.editorLayer != null ? raw.editorLayer : 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
-    timeline.toolbar.findComponent("btnTogglePlayback").registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
+    timeline.toolbar.findComponent('btnTogglePlayback').registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
   }
 
   /**
@@ -1122,7 +1122,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
       playAudioPlayback();
 
-    trace(currentInstrumental.playing ? "Toggled playback ON" : "Toggled playback OFF");
+    trace(currentInstrumental.playing ? 'Toggled playback ON' : 'Toggled playback OFF');
   }
 
   function playAudioPlayback():Void
@@ -1220,9 +1220,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
         switch (eventData.eventKind)
         {
-          case "FocusCamera":
+          case 'FocusCamera':
             cameraRect.handleFocusCamera(eventData);
-          case "ZoomCamera":
+          case 'ZoomCamera':
             cameraRect.handleZoomCamera(defaultStageZoom, eventData);
         }
 
@@ -1301,11 +1301,11 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (!dadShouldKeepSinging && dad != null)
     {
       trace(dad.animation.curAnim.name);
-      if (!StringTools.startsWith(dad.animation.curAnim.name, "idle")) dad.dance(true);
+      if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
     }
     if (!bfShouldKeepSinging && bf != null)
     {
-      if (!StringTools.startsWith(bf.animation.curAnim.name, "idle")) bf.dance(true);
+      if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
     }
 
     conductorInUse.update(position);
@@ -1347,7 +1347,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String)
       {
-        notifyChange("Chart Save", 'This chart has been saved to ${path}');
+        notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
       {
         // Failed to save backup?
@@ -1364,7 +1364,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String)
     {
-      notifyChange("Chart Save", 'This chart has been saved to ${path}');
+      notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
     }, function()
     {
@@ -1379,7 +1379,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (exitConfirmDialog == null)
       {
-        exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
+        exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor',
           MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
         {
           exitConfirmDialog = null;
@@ -1567,12 +1567,12 @@ enum abstract CameraEditorTheme(String)
   /**
    * The default theme for the stage editor.
    */
-  var Light;
+  public var Light;
 
   /**
    * A theme which introduces stage colors.
    */
-  var Dark;
+  public var Dark;
 }
 
 typedef CameraEditorParams =

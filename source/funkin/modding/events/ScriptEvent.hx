@@ -124,7 +124,7 @@ class NoteScriptEvent extends ScriptEvent
     this.healthChange = healthChange;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'NoteScriptEvent(type=' + type + ', cancelable=' + cancelable + ', note=' + note + ', comboCount=' + comboCount + ')';
   }
@@ -169,7 +169,7 @@ class HitNoteScriptEvent extends NoteScriptEvent
     this.hitDiff = hitDiff;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
       + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
@@ -223,7 +223,7 @@ class GhostMissNoteScriptEvent extends ScriptEvent
     this.playAnim = true;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'GhostMissNoteScriptEvent(dir=' + dir + ', hasPossibleNotes=' + hasPossibleNotes + ')';
   }
@@ -266,7 +266,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
     this.isComboBreak = isComboBreak;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'HoldNoteScriptEvent(type=$type, holdNote=$holdNote, healthChange=$healthChange, score=$score, isComboBreak=$isComboBreak, cancelable=$cancelable)';
   }
@@ -289,7 +289,7 @@ class SongEventScriptEvent extends ScriptEvent
     this.eventData = eventData;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'SongEventScriptEvent(event=' + eventData + ')';
   }
@@ -312,7 +312,7 @@ class UpdateScriptEvent extends ScriptEvent
     this.elapsed = elapsed;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'UpdateScriptEvent(elapsed=$elapsed)';
   }
@@ -341,7 +341,7 @@ class SongTimeScriptEvent extends ScriptEvent
     this.step = step;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'SongTimeScriptEvent(type=' + type + ', beat=' + beat + ', step=' + step + ')';
   }
@@ -364,7 +364,7 @@ class CountdownScriptEvent extends ScriptEvent
     this.step = step;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'CountdownScriptEvent(type=' + type + ', step=' + step + ')';
   }
@@ -386,7 +386,7 @@ class DialogueScriptEvent extends ScriptEvent
     this.conversation = conversation;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'DialogueScriptEvent(type=$type, conversation=$conversation)';
   }
@@ -408,7 +408,7 @@ class KeyboardInputScriptEvent extends ScriptEvent
     this.event = event;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'KeyboardInputScriptEvent(type=' + type + ', event=' + event + ')';
   }
@@ -467,7 +467,7 @@ class SongLoadScriptEvent extends ScriptEvent
     this.events = events;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     var noteStr = notes == null ? 'null' : 'Array(' + notes.length + ')';
     var eventStr = events == null ? 'null' : 'Array(' + events.length + ')';
@@ -491,7 +491,7 @@ class SongRetryEvent extends ScriptEvent
     this.difficulty = difficulty;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'SongRetryEvent(difficulty=$difficulty)';
   }
@@ -513,7 +513,7 @@ class StateChangeScriptEvent extends ScriptEvent
     this.targetState = targetState;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'StateChangeScriptEvent(type=' + type + ', targetState=' + targetState + ')';
   }
@@ -529,7 +529,7 @@ class FocusScriptEvent extends ScriptEvent
     super(type, false);
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'FocusScriptEvent(type=' + type + ')';
   }
@@ -563,7 +563,7 @@ class CapsuleScriptEvent extends ScriptEvent
     this.variationId = variationId;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     var songName = this.capsule.freeplayData?.fullSongName ?? 'Random';
     return 'CapsuleScriptEvent(type=$type, capsule=$songName)';
@@ -580,7 +580,7 @@ class FreeplayScriptEvent extends ScriptEvent
     super(type, false);
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'FreeplayScriptEvent(type=' + type + ')';
   }
@@ -602,7 +602,7 @@ class CharacterSelectScriptEvent extends ScriptEvent
     this.characterId = characterId;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'CharacterSelectScriptEvent(type=' + type + ')';
   }
@@ -624,7 +624,7 @@ class SubStateScriptEvent extends ScriptEvent
     this.targetState = targetState;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'SubStateScriptEvent(type=' + type + ', targetState=' + targetState + ')';
   }

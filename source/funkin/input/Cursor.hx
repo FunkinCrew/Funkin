@@ -48,91 +48,91 @@ class Cursor
   }
 
   public static final CURSOR_DEFAULT_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-default"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-default'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorDefault:Null<BitmapData> = null;
   public static final CURSOR_CROSS_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-cross"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-cross'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorCross:Null<BitmapData> = null;
   public static final CURSOR_ERASER_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-eraser"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-eraser'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorEraser:Null<BitmapData> = null;
   public static final CURSOR_GRABBING_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-grabbing"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-grabbing'),
     scale: 1.0,
     offsetX: -8,
     offsetY: 0,
   };
   static var assetCursorGrabbing:Null<BitmapData> = null;
   public static final CURSOR_HOURGLASS_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-hourglass"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-hourglass'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorHourglass:Null<BitmapData> = null;
   public static final CURSOR_POINTER_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-pointer"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-pointer'),
     scale: 1.0,
     offsetX: -8,
     offsetY: 0,
   };
   static var assetCursorPointer:Null<BitmapData> = null;
   public static final CURSOR_TEXT_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-text"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-text'),
     scale: 0.2,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorText:Null<BitmapData> = null;
   public static final CURSOR_TEXT_VERTICAL_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-text-vertical"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-text-vertical'),
     scale: 0.2,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorTextVertical:Null<BitmapData> = null;
   public static final CURSOR_ZOOM_IN_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-zoom-in"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-zoom-in'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorZoomIn:Null<BitmapData> = null;
   public static final CURSOR_ZOOM_OUT_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-zoom-out"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-zoom-out'),
     scale: 1.0,
     offsetX: 0,
     offsetY: 0,
   };
   static var assetCursorZoomOut:Null<BitmapData> = null;
   public static final CURSOR_CROSSHAIR_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-crosshair"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-crosshair'),
     scale: 1.0,
     offsetX: -16,
     offsetY: -16,
   };
   static var assetCursorCrosshair:Null<BitmapData> = null;
   public static final CURSOR_CELL_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-cell"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-cell'),
     scale: 1.0,
     offsetX: -16,
     offsetY: -16,
   };
   static var assetCursorCell:Null<BitmapData> = null;
   public static final CURSOR_SCROLL_PARAMS:CursorParams = {
-    graphic: Paths.image("ui/cursor/desktop/cursor-scroll"),
+    graphic: Paths.image('ui/cursor/desktop/cursor-scroll'),
     scale: 0.2,
     offsetX: -15,
     offsetY: -15,
@@ -239,14 +239,14 @@ class Cursor
     }
   }
 
-  private static inline function applyGraphic(graphic:BitmapData, params:CursorParams):Void
+  static inline function applyGraphic(graphic:BitmapData, params:CursorParams):Void
   {
     FlxG.mouse.load(graphic, params.scale, params.offsetX, params.offsetY);
   }
 
   static function onCursorError(cursorMode:CursorMode, error:String):Void
   {
-    trace("Failed to load cursor graphic for cursor mode " + cursorMode + ": " + error);
+    trace('Failed to load cursor graphic for cursor mode ' + cursorMode + ': ' + error);
   }
 
   #if FEATURE_HAXEUI

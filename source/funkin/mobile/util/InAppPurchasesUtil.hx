@@ -66,7 +66,7 @@ class InAppPurchasesUtil
 
     IAPAndroid.onBillingServiceDisconnected.add(function():Void
     {
-      trace("Billing service disconnected!");
+      trace('Billing service disconnected!');
     });
 
     IAPAndroid.onProductDetailsResponse.add(function(result:IAPResult, productDetails:Array<IAPProductDetails>):Void
@@ -130,9 +130,9 @@ class InAppPurchasesUtil
     IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void
     {
       handlePurchases(purchases);
-      trace("iOS purchases updated: " + purchases.length);
+      trace('iOS purchases updated: ' + purchases.length);
       hasInitialized = true;
-      trace("hasInitialized: " + hasInitialized);
+      trace('hasInitialized: ' + hasInitialized);
     });
 
     IAPIOS.init();

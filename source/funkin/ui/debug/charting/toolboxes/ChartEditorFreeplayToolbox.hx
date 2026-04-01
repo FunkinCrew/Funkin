@@ -21,7 +21,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml'))
 class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -300,7 +300,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
       var tickLabel:Label = new Label();
       tickLabel.text = formatTime(tickTime);
-      tickLabel.styleNames = "offset-ticks-label";
+      tickLabel.styleNames = 'offset-ticks-label';
       tickLabel.height = labelHeight;
       // Positioning within offsetTicksContainer is absolute (relative to the container itself).
       tickLabel.top = labelYPos;
@@ -313,7 +313,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
   function formatTime(seconds:Float):String
   {
-    if (seconds <= 0) return "0.0";
+    if (seconds <= 0) return '0.0';
 
     var integerSeconds = Math.floor(seconds);
     var decimalSeconds = Math.floor((seconds - integerSeconds) * 10);
@@ -570,7 +570,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     audioPreviewTracks.pause();
   }
 
-  public override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 
@@ -640,7 +640,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 

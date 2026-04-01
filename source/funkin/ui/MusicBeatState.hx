@@ -145,7 +145,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new ScriptEvent(STATE_CREATE));
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 
@@ -275,7 +275,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
-  public override function openSubState(targetSubState:FlxSubState):Void
+  override public function openSubState(targetSubState:FlxSubState):Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
@@ -291,7 +291,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
   }
 
-  public override function closeSubState():Void
+  override public function closeSubState():Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 

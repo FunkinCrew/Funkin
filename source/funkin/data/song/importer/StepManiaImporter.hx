@@ -22,46 +22,46 @@ enum StepStateEnum
 
 class StepManiaImporter
 {
-  private static var readDiffMetadata:Map<String, String> = new Map<String, String>();
+  static var readDiffMetadata:Map<String, String> = new Map<String, String>();
 
   static function parseMetadataLine(line:String, result:StepManiaData):StepManiaData
   {
-    var parts:Array<String> = line.split(":");
+    var parts:Array<String> = line.split(':');
     if (parts.length != 2) return result;
 
     var key:String = StringTools.trim(parts[0]);
     var value:String = StringTools.trim(parts[1]);
 
     // remove trailing ; on value
-    if (StringTools.endsWith(value, ";")) value = value.substr(0, value.length - 1);
+    if (StringTools.endsWith(value, ';')) value = value.substr(0, value.length - 1);
 
     switch (key)
     {
-      case "TITLE":
+      case 'TITLE':
         result.Metadata.Title = value;
-      case "ARTIST":
+      case 'ARTIST':
         result.Metadata.Artist = value;
-      case "GENRE":
+      case 'GENRE':
         result.Metadata.Genre = value;
-      case "CREDIT":
-        if (result.Metadata.Credit == "") result.Metadata.Credit = value;
+      case 'CREDIT':
+        if (result.Metadata.Credit == '') result.Metadata.Credit = value;
         else // .ssc
-          readDiffMetadata.set("CREDIT", value);
-      case "BANNER":
+          readDiffMetadata.set('CREDIT', value);
+      case 'BANNER':
         result.Metadata.Banner = value;
-      case "BACKGROUND":
+      case 'BACKGROUND':
         result.Metadata.Background = value;
-      case "OFFSET":
+      case 'OFFSET':
         result.Metadata.Offset = Std.parseFloat(value);
-      case "SAMPLESTART":
+      case 'SAMPLESTART':
         result.Metadata.SampleStart = Std.parseFloat(value);
       // .ssc
-      case "STEPSTYPE":
-        readDiffMetadata.set("STEPSTYPE", value);
-      case "DESCRIPTION":
-        readDiffMetadata.set("DESCRIPTION", value);
-      case "DIFFICULTY":
-        readDiffMetadata.set("DIFFICULTY", value);
+      case 'STEPSTYPE':
+        readDiffMetadata.set('STEPSTYPE', value);
+      case 'DESCRIPTION':
+        readDiffMetadata.set('DESCRIPTION', value);
+      case 'DIFFICULTY':
+        readDiffMetadata.set('DIFFICULTY', value);
     }
 
     return result;
@@ -70,22 +70,22 @@ class StepManiaImporter
   static function parseTimingPointLine(line:String):Array<StepTimingPoint>
   {
     // Remove #BPMS: prefix if present
-    if (StringTools.startsWith(line, "#BPMS:")) line = line.substr(6);
+    if (StringTools.startsWith(line, '#BPMS:')) line = line.substr(6);
 
-    var parts:Array<String> = line.split(",");
+    var parts:Array<String> = line.split(',');
 
     var stepTimingPoints:Array<StepTimingPoint> = [];
     for (i in 0...parts.length)
     {
       // Split the =
-      var split = parts[i].split("=");
+      var split = parts[i].split('=');
       if (split.length != 2) continue;
 
       var beat:Float = Std.parseFloat(StringTools.trim(split[0]));
 
       // Check if split[i + 1] has ; and remove it
       var bpmSplit = split[1];
-      if (StringTools.endsWith(bpmSplit, ";")) bpmSplit = bpmSplit.substr(0, bpmSplit.length - 1);
+      if (StringTools.endsWith(bpmSplit, ';')) bpmSplit = bpmSplit.substr(0, bpmSplit.length - 1);
 
       var tp:StepTimingPoint = new StepTimingPoint(Std.parseFloat(bpmSplit), beat);
       stepTimingPoints.push(tp);
@@ -97,22 +97,22 @@ class StepManiaImporter
   static function parseStopsLine(line:String):Array<StepStop>
   {
     // Remove #STOPS: prefix if present
-    if (StringTools.startsWith(line, "#STOPS:")) line = line.substr(7);
+    if (StringTools.startsWith(line, '#STOPS:')) line = line.substr(7);
 
     // Same as timing points
-    var parts:Array<String> = line.split(",");
+    var parts:Array<String> = line.split(',');
     var stepStopPoints:Array<StepStop> = [];
     for (i in 0...parts.length)
     {
       // Split the =
-      var split = parts[i].split("=");
+      var split = parts[i].split('=');
       if (split.length != 2) continue;
 
       var beat:Float = Std.parseFloat(StringTools.trim(split[0]));
 
       // Check if split[i + 1] has ; and remove it
       var durSplit = split[1];
-      if (StringTools.endsWith(durSplit, ";")) durSplit = durSplit.substr(0, durSplit.length - 1);
+      if (StringTools.endsWith(durSplit, ';')) durSplit = durSplit.substr(0, durSplit.length - 1);
 
       var tp:StepStop = new StepStop(beat, Std.parseFloat(durSplit));
       stepStopPoints.push(tp);
@@ -137,7 +137,7 @@ class StepManiaImporter
       for (j in 0...lines[i].length)
       {
         var char:String = lines[i].charAt(j);
-        if (char != "0")
+        if (char != '0')
         {
           var stepNote:StepNote = new StepNote(char, beat, j);
           stepNotes.push(stepNote);
@@ -256,11 +256,11 @@ class StepManiaImporter
         var metaValue = readDiffMetadata.get(metaKey);
         switch (metaKey)
         {
-          case "STEPSTYPE":
+          case 'STEPSTYPE':
             workingDiff.type = workingDiff.parseChartType(metaValue);
-          case "DIFFICULTY":
+          case 'DIFFICULTY':
             workingDiff.name = metaValue;
-          case "CREDIT":
+          case 'CREDIT':
             workingDiff.charter = metaValue;
             // DESCRIPTION is ignored for now
         }
@@ -301,7 +301,7 @@ class StepManiaImporter
   public static function parseStepManiaFile(stepContent:String):StepManiaData
   {
     readDiffMetadata = new Map<String, String>();
-    var lines:Array<String> = stepContent.split("\n");
+    var lines:Array<String> = stepContent.split('\n');
 
     var currentMeasure:Int = 0;
     var measure:Array<String> = [];
@@ -312,12 +312,12 @@ class StepManiaImporter
 
     var result:StepManiaData = {
       Metadata: {
-        Title: "",
-        Artist: "",
-        Genre: "",
-        Credit: "",
-        Banner: "",
-        Background: "",
+        Title: '',
+        Artist: '',
+        Genre: '',
+        Credit: '',
+        Banner: '',
+        Background: '',
         Offset: 0,
         SampleStart: 0
       },
@@ -331,25 +331,25 @@ class StepManiaImporter
     for (line in lines)
     {
       line = StringTools.trim(line);
-      if (line == "") continue;
-      if (StringTools.startsWith(line, "//")) continue; // Comment line
+      if (line == '') continue;
+      if (StringTools.startsWith(line, '//')) continue; // Comment line
 
       switch (state)
       {
         case StepStateEnum.Metadata:
-          if (StringTools.startsWith(line, "#BPMS:"))
+          if (StringTools.startsWith(line, '#BPMS:'))
           {
             state = StepStateEnum.TimingPoints;
             result = parseBPMS(line, result);
-            if (StringTools.endsWith(line, ";")) state = StepStateEnum.Metadata;
+            if (StringTools.endsWith(line, ';')) state = StepStateEnum.Metadata;
           }
-          else if (StringTools.startsWith(line, "#STOPS:"))
+          else if (StringTools.startsWith(line, '#STOPS:'))
           {
             state = StepStateEnum.Stops;
             result = parseStops(line, result);
-            if (StringTools.endsWith(line, ";")) state = StepStateEnum.Metadata;
+            if (StringTools.endsWith(line, ';')) state = StepStateEnum.Metadata;
           }
-          else if (StringTools.startsWith(line, "#NOTES:"))
+          else if (StringTools.startsWith(line, '#NOTES:'))
           {
             if (workingDiff != null)
             {
@@ -358,7 +358,7 @@ class StepManiaImporter
             }
 
             // Start new difficulty
-            workingDiff = new StepDifficulty("", "", 0, "");
+            workingDiff = new StepDifficulty('', '', 0, '');
             workingDiff.notes = [];
 
             headerLines = 0;
@@ -366,44 +366,44 @@ class StepManiaImporter
             measure = [];
             state = StepStateEnum.Notes;
           }
-          else if (StringTools.startsWith(line, "#")) result = parseMetadataLine(line.substr(1), result);
+          else if (StringTools.startsWith(line, '#')) result = parseMetadataLine(line.substr(1), result);
         case StepStateEnum.TimingPoints:
-          if (line == ";") state = StepStateEnum.Metadata;
+          if (line == ';') state = StepStateEnum.Metadata;
           else
           {
             result = parseBPMS(line, result);
-            if (StringTools.endsWith(line, ";")) state = StepStateEnum.Metadata;
+            if (StringTools.endsWith(line, ';')) state = StepStateEnum.Metadata;
           }
         case StepStateEnum.Stops:
-          if (line == ";") state = StepStateEnum.Metadata;
+          if (line == ';') state = StepStateEnum.Metadata;
           else
           {
             result = parseStops(line, result);
-            if (StringTools.endsWith(line, ";")) state = StepStateEnum.Metadata;
+            if (StringTools.endsWith(line, ';')) state = StepStateEnum.Metadata;
           }
         case StepStateEnum.Notes:
-          if (line == "#NOTES:") continue;
+          if (line == '#NOTES:') continue;
           // remove comments in line (if any) ie, "0000 // some comment"
-          var commentIndex = line.indexOf("//");
+          var commentIndex = line.indexOf('//');
           if (commentIndex != -1) line = StringTools.trim(line.substr(0, commentIndex));
 
-          if (StringTools.contains(line, ":")) // header
+          if (StringTools.contains(line, ':')) // header
           {
             switch (headerLines)
             {
               case 0:
                 // First line is chart type
-                var chartTypeStr = StringTools.trim(line).replace(":", "");
+                var chartTypeStr = StringTools.trim(line).replace(':', '');
                 workingDiff.type = workingDiff.parseChartType(chartTypeStr);
               case 1:
                 // Second line is charter
-                workingDiff.charter = StringTools.trim(line).replace(":", "");
+                workingDiff.charter = StringTools.trim(line).replace(':', '');
               case 2:
                 // Third line is difficulty name
-                workingDiff.name = StringTools.trim(line).replace(":", "");
+                workingDiff.name = StringTools.trim(line).replace(':', '');
               case 3:
                 // Fourth line is difficulty rating
-                workingDiff.difficultyRating = Std.parseInt(StringTools.trim(line).replace(":", ""));
+                workingDiff.difficultyRating = Std.parseInt(StringTools.trim(line).replace(':', ''));
                 // we dont care about the rest lol
             }
             headerLines++;
@@ -412,7 +412,7 @@ class StepManiaImporter
 
           // we're reading StepNote data now
           // start gathering measures until we hit a ,
-          if (line == "," || line == ";")
+          if (line == ',' || line == ';')
           {
             // end of measure
             var stepNotesInMeasure = parseMeasure(measure, currentMeasure);
@@ -421,7 +421,7 @@ class StepManiaImporter
             measure = [];
             currentMeasure++;
             // end of StepNotes section
-            if (line == ";") state = StepStateEnum.Metadata;
+            if (line == ';') state = StepStateEnum.Metadata;
           }
           else
           {
@@ -505,7 +505,7 @@ class StepManiaImporter
     }
     else
     {
-      trace("[WARN] Unknown StepMania chart type when converting notes.");
+      trace('[WARN] Unknown StepMania chart type when converting notes.');
       return result;
     }
 
@@ -520,8 +520,8 @@ class StepManiaImporter
       }
 
       var snd:SongNoteData = new SongNoteData(time, stepNote.column, 0);
-      if (stepNote.type == StepManiaNoteType.Mine) snd.kind = "mine";
-      else if (stepNote.type == StepManiaNoteType.Fake) snd.kind = "fake";
+      if (stepNote.type == StepManiaNoteType.Mine) snd.kind = 'mine';
+      else if (stepNote.type == StepManiaNoteType.Fake) snd.kind = 'fake';
       if (stepNote.type == StepManiaNoteType.Tail)
       {
         var length:Float = 0;
@@ -569,7 +569,7 @@ class StepManiaImporter
     {
       if (diff.type == StepManiaChartType.Unknown)
       {
-        trace("[WARN] Skipping unknown StepMania chart type. Name: " + diff.name);
+        trace('[WARN] Skipping unknown StepMania chart type. Name: ' + diff.name);
         continue; // skip unknown chart types
       }
       difficulties.push(diff.name);
@@ -578,7 +578,7 @@ class StepManiaImporter
 
     metadata.playData.difficulties = difficulties;
 
-    metadata.charter = songData.Metadata.Credit != "" ? songData.Metadata.Credit : null;
+    metadata.charter = songData.Metadata.Credit != '' ? songData.Metadata.Credit : null;
 
     // TimeChanges
     metadata.timeChanges = [];
@@ -606,7 +606,7 @@ class StepManiaImporter
     {
       if (diff.type == StepManiaChartType.Unknown)
       {
-        trace("[WARN] Skipping unknown StepMania chart type. Name: " + diff.name);
+        trace('[WARN] Skipping unknown StepMania chart type. Name: ' + diff.name);
         continue; // skip unknown chart types
       }
       scrollsMap.set(diff.name, Constants.DEFAULT_SCROLLSPEED);

@@ -97,7 +97,7 @@ class SustainTrail extends FlxSprite
    */
   public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-  private var zoom:Float = 1;
+  var zoom:Float = 1;
 
   /**
    * What part of the trail's end actually represents the end of the note.
@@ -286,7 +286,7 @@ class SustainTrail extends FlxSprite
     updateHitbox();
   }
 
-  public override function updateHitbox():Void
+  override public function updateHitbox():Void
   {
     width = graphicWidth;
     height = graphicHeight;
@@ -428,11 +428,11 @@ class SustainTrail extends FlxSprite
     #end
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 
-    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
+    if (!((cover?.animation?.name ?? '').startsWith('holdCoverEnd'))) cover?.playEnd();
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
@@ -443,7 +443,7 @@ class SustainTrail extends FlxSprite
     missedNote = false;
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
 

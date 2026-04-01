@@ -54,7 +54,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
     log('[SPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     switch (currentState)
     {
@@ -110,7 +110,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
         }
 
       case FistPump:
@@ -135,7 +135,7 @@ class SparrowFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPump: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPump: ' + getCurrentAnimation());
         }
 
       case IdleEasterEgg:

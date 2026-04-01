@@ -271,7 +271,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Called when the state is first loaded.
    */
-  public override function create():Void
+  override public function create():Void
   {
     // Add banner ad when game is state is first loaded.
     #if FEATURE_MOBILE_ADVERTISEMENTS
@@ -303,7 +303,7 @@ class PauseSubState extends MusicBeatSubState
    * Called every frame.
    * @param elapsed The time elapsed since the last frame, in seconds.
    */
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -313,7 +313,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Called when the state is closed.
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     // #if FEATURE_MOBILE_ADVERTISEMENTS
     // extension.admob.Admob.onEvent.remove(onBannerEvent);
@@ -385,7 +385,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Called when the game loses focus. Used to temporarily pause the sound.
    */
-  public override function onFocusLost():Void
+  override public function onFocusLost():Void
   {
     super.onFocusLost();
     if (Preferences.autoPause) pauseMusic.pause();
@@ -394,7 +394,7 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Called when the game loses focus. Used to temporarily pause the sound.
    */
-  public override function onFocus():Void
+  override public function onFocus():Void
   {
     super.onFocus();
     if (Preferences.autoPause) pauseMusic.resume();
@@ -414,9 +414,9 @@ class PauseSubState extends MusicBeatSubState
     add(background);
 
     #if mobile
-    pauseButton = FunkinSprite.createSparrow(0, 0, "ui/pause-button");
-    pauseButton.animation.addByIndices('idle', 'pause', [0], "", 24, false);
-    pauseButton.animation.addByIndices('hold', 'pause', [5], "", 24, false);
+    pauseButton = FunkinSprite.createSparrow(0, 0, 'ui/pause-button');
+    pauseButton.animation.addByIndices('idle', 'pause', [0], '', 24, false);
+    pauseButton.animation.addByIndices('hold', 'pause', [5], '', 24, false);
     pauseButton.animation.addByIndices('confirm', 'pause', [
       6,
       7,
@@ -445,10 +445,10 @@ class PauseSubState extends MusicBeatSubState
       30,
       31,
       32
-    ], "", 24, false);
+    ], '', 24, false);
     pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
-    pauseButton.animation.play("confirm");
+    pauseButton.animation.play('confirm');
     pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
 
     pauseCircle = FunkinSprite.create(0, 0, 'ui/pause-circle');
@@ -614,7 +614,7 @@ class PauseSubState extends MusicBeatSubState
     #if mobile
     HapticUtil.vibrate(0, 0.05, 0.5);
 
-    pauseButton.animation.play("confirm");
+    pauseButton.animation.play('confirm');
     pauseCircle.scale.set(0.84 * 1.4, 0.8 * 1.4);
     pauseCircle.alpha = 0.4;
     FlxTween.tween(pauseCircle.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});

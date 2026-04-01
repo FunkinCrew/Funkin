@@ -13,7 +13,7 @@ class NonScoreableNoteKind extends NoteKind
     scoreable = false;
   }
 
-  public override function onNoteMiss(event:NoteScriptEvent):Void
+  override public function onNoteMiss(event:NoteScriptEvent):Void
   {
     event.note.visible = false;
     event.cancel();

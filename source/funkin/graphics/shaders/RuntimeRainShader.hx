@@ -96,7 +96,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_rainColor(color:FlxColor):FlxColor
   {
-    this.setFloatArray("uRainColor", [color.red / 255, color.green / 255, color.blue / 255]);
+    this.setFloatArray('uRainColor', [color.red / 255, color.green / 255, color.blue / 255]);
     return rainColor = color;
   }
 

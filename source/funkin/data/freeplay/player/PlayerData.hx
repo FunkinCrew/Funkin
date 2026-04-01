@@ -41,7 +41,7 @@ class PlayerData
   /**
    * Which freeplay style to use for this character.
    */
-  @:optional @:default("bf")
+  @:optional @:default('bf')
   public var freeplayStyle:String = Constants.DEFAULT_FREEPLAY_STYLE;
 
   /**
@@ -100,11 +100,11 @@ class PlayerFreeplayDJData
   var animations:Array<AnimationData>;
   @:optional @:default(false)
   var applyStageMatrix:Bool;
-  @:optional @:default("BOYFRIEND")
+  @:optional @:default('BOYFRIEND')
   var text1:String;
-  @:optional @:default("HOT BLOODED IN MORE WAYS THAN ONE")
+  @:optional @:default('HOT BLOODED IN MORE WAYS THAN ONE')
   var text2:String;
-  @:optional @:default("PROTECT YO NUTS")
+  @:optional @:default('PROTECT YO NUTS')
   var text3:String;
   @:jignored
   var animationMap:Map<String, AnimationData>;
@@ -117,9 +117,9 @@ class PlayerFreeplayDJData
 
   @:optional
   public var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
-  @:optional @:default("animateatlas")
+  @:optional @:default('animateatlas')
   public var renderType:Null<String>;
-  @:optional @:default("")
+  @:optional @:default('')
   public var scriptClass:Null<String>;
   @:optional @:default(false)
   public var useAnimatePosition:Bool;
@@ -143,7 +143,7 @@ class PlayerFreeplayDJData
     {
       animationMap.set(anim.name, anim);
 
-      if (this.renderType != "animateatlas")
+      if (this.renderType != 'animateatlas')
       {
         prefixToOffsetsMap.set(anim.name, anim.offsets);
       }
@@ -216,7 +216,7 @@ class PlayerFreeplayDJData
 
     // For render types other than `animateatlas`, we can just return the name.
     // Sparrows, for example, use the name instead of the prefix.
-    if (renderType != "animateatlas")
+    if (renderType != 'animateatlas')
     {
       return anim.name;
     }
@@ -360,7 +360,7 @@ typedef PlayerResultsAnimationData =
   var scriptClass:Null<String>;
   @:optional @:default([0, 0])
   var offsets:Array<Float>;
-  @:optional @:default("both")
+  @:optional @:default('both')
   var filter:String;
   @:optional @:default(500)
   var zIndex:Int;

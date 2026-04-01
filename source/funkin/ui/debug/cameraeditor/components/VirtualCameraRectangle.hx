@@ -335,7 +335,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
         resetCamera(false, true, true);
       default:
         var easeDir:String = eventData.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
-        if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+        if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunctionName = '$ease$easeDir';
@@ -365,7 +365,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     var ease:String = eventData.getString('ease') ?? SongEvent.DEFAULT_EASE;
     var easeDir:String = eventData.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
 
-    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
     // If it's a string, check the value.
     switch (ease)
@@ -561,7 +561,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     passepartoutTransparency = 0.5;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

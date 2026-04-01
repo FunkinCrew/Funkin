@@ -209,7 +209,7 @@ class NoteSprite extends FunkinSprite
   /**
    * Call this to override how debug bounding boxes are drawn for this sprite.
    */
-  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
+  override public function drawDebugOnCamera(camera:flixel.FlxCamera):Void
   {
     if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
 
@@ -245,7 +245,7 @@ class NoteSprite extends FunkinSprite
     if (hue != 1.0) this.shader = this.hsvShader;
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
     this.visible = true;
@@ -266,12 +266,12 @@ class NoteSprite extends FunkinSprite
     this.hsvShader.value = 1.0;
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     // This function should ONLY get called as you leave PlayState entirely.
     // Otherwise, we want the game to keep reusing note sprites to save memory.

@@ -42,7 +42,7 @@ class SetHealthIconSongEvent extends SongEvent
   static final DEFAULT_X_OFFSET:Float = 0.0;
   static final DEFAULT_Y_OFFSET:Float = 0.0;
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState.
     if (PlayState.instance == null) return;
@@ -83,12 +83,12 @@ class SetHealthIconSongEvent extends SongEvent
     }
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Set Health Icon';
   }
 
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {

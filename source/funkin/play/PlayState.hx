@@ -755,7 +755,7 @@ class PlayState extends MusicBeatSubState
     lastParams = params;
 
     // Apply parameters.
-    currentSong = params.targetSong ?? throw "targetSong should not be null";
+    currentSong = params.targetSong ?? throw 'targetSong should not be null';
     if (params.targetDifficulty != null) currentDifficulty = params.targetDifficulty;
     previousDifficulty = currentDifficulty;
     if (params.targetVariation != null) currentVariation = params.targetVariation;
@@ -828,7 +828,7 @@ class PlayState extends MusicBeatSubState
    * Called when the PlayState is switched to.
    */
   @:nullSafety(Off)
-  public override function create():Void
+  override public function create():Void
   {
     if (instance != null)
     {
@@ -905,7 +905,7 @@ class PlayState extends MusicBeatSubState
       addHitbox(false);
       if (hitbox != null)
       {
-        hitbox.isPixel = currentChart.noteStyle == "pixel";
+        hitbox.isPixel = currentChart.noteStyle == 'pixel';
 
         if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
         {
@@ -1029,7 +1029,7 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     if (criticalFailure) return;
 
@@ -1157,7 +1157,7 @@ class PlayState extends MusicBeatSubState
         Conductor.instance.update(Conductor.instance.songPosition + elapsed * 1000, false);
         if (Conductor.instance.songPosition >= (startTimestamp + Conductor.instance.combinedOffset))
         {
-          trace("started song at " + Conductor.instance.songPosition);
+          trace('started song at ' + Conductor.instance.songPosition);
           startSong();
         }
       }
@@ -1528,7 +1528,7 @@ class PlayState extends MusicBeatSubState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     // ORDER: Module, Song, Events, Notes, Stage, Conversation, Characters
     // Modules should get the first chance to cancel the event.
@@ -1558,7 +1558,7 @@ class PlayState extends MusicBeatSubState
      * Function called before opening a new substate.
      * @param subState The substate to open.
      */
-  public override function openSubState(subState:FlxSubState):Void
+  override public function openSubState(subState:FlxSubState):Void
   {
     if (shouldSubstatePause)
     {
@@ -1639,7 +1639,7 @@ class PlayState extends MusicBeatSubState
      * Function called before closing the current substate.
      * @param subState
      */
-  public override function closeSubState():Void
+  override public function closeSubState():Void
   {
     if (shouldSubstatePause)
     {
@@ -1751,7 +1751,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Function called when the game window gains focus.
      */
-  public override function onFocus():Void
+  override public function onFocus():Void
   {
     if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
     #if html5
@@ -1792,7 +1792,7 @@ class PlayState extends MusicBeatSubState
   /**
      * Function called when the game window loses focus.
      */
-  public override function onFocusLost():Void
+  override public function onFocusLost():Void
   {
     #if html5
     if (Preferences.autoPause) VideoCutscene.pauseVideo();
@@ -1844,7 +1844,7 @@ class PlayState extends MusicBeatSubState
     funkin.modding.PolymodHandler.forceReloadAssets();
     if (lastParams == null)
     {
-      throw "No lastParams to refer to";
+      throw 'No lastParams to refer to';
     }
     lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id,
       {variation: currentVariation}) ?? throw "Could not load current song from ID. This shouldn't happen!";
@@ -1929,7 +1929,7 @@ class PlayState extends MusicBeatSubState
           || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
           || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
       {
-        trace("VOCALS NEED RESYNC");
+        trace('VOCALS NEED RESYNC');
         if (vocals != null)
         {
           trace(playerVoicesError);
@@ -1947,7 +1947,7 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     performCleanup();
 
@@ -1963,9 +1963,9 @@ class PlayState extends MusicBeatSubState
     super.destroy();
   }
 
-  public override function initConsoleHelpers():Void
+  override public function initConsoleHelpers():Void
   {
-    FlxG.console.registerFunction("debugUnbindCameraZoom", () ->
+    FlxG.console.registerFunction('debugUnbindCameraZoom', () ->
     {
       debugUnbindCameraZoom = !debugUnbindCameraZoom;
     });
@@ -2303,7 +2303,7 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
-    if (currentChart?.noteStyle != "pixel")
+    if (currentChart?.noteStyle != 'pixel')
     {
       #if android playerStrumline.y += 10; #end
     }
@@ -2317,8 +2317,8 @@ class PlayState extends MusicBeatSubState
 
   function initPauseSprites()
   {
-    pauseButton.animation.addByIndices('idle', 'back', [0], "", 24, false);
-    pauseButton.animation.addByIndices('hold', 'back', [5], "", 24, false);
+    pauseButton.animation.addByIndices('idle', 'back', [0], '', 24, false);
+    pauseButton.animation.addByIndices('hold', 'back', [5], '', 24, false);
     pauseButton.animation.addByIndices('confirm', 'back', [
       6,
       7,
@@ -2347,10 +2347,10 @@ class PlayState extends MusicBeatSubState
       30,
       31,
       32
-    ], "", 24, false);
+    ], '', 24, false);
     pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
-    pauseButton.animation.play("idle");
+    pauseButton.animation.play('idle');
     pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
     if (camControls != null) pauseButton.cameras = [camControls];
 
@@ -2454,7 +2454,7 @@ class PlayState extends MusicBeatSubState
   {
     if (currentChart == null)
     {
-      trace("WARNING: Difficulty data for RPC is null.");
+      trace('WARNING: Difficulty data for RPC is null.');
     }
     var discordRPCDifficulty = PlayState.instance?.currentDifficulty?.replace('-', ' ')?.toTitleCase() ?? '???';
     return '${currentChart?.songName ?? '???'} [${discordRPCDifficulty}]';
@@ -3723,7 +3723,7 @@ class PlayState extends MusicBeatSubState
     }
   }
 
-  public override function close():Void
+  override public function close():Void
   {
     criticalFailure = true; // Stop game updates.
     performCleanup();

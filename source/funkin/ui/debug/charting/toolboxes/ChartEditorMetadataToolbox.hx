@@ -27,7 +27,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/metadata.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/metadata.xml'))
 class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
   var inputSongId:TextField;
@@ -360,7 +360,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     return currentTimeChange;
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 
@@ -383,21 +383,21 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stage != null) ? {id: stage.id, text: stage.stageName} : {id: "mainStage", text: "Main Stage"};
+      inputStage.value = (stage != null) ? {id: stage.id, text: stage.stageName} : {id: 'mainStage', text: 'Main Stage'};
     }
 
     var noteStyleId:String = chartEditorState.currentSongNoteStyle;
     var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (inputNoteStyle != null)
     {
-      inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: "Funkin", text: "Funkin'"};
+      inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: 'Funkin', text: "Funkin'"};
     }
 
     var albumId:String = chartEditorState.currentSongAlbum;
     var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
     if (inputAlbum != null)
     {
-      inputAlbum.value = (album != null) ? {id: album.id, text: album.getAlbumName()} : {id: "volume1", text: "Volume 1"};
+      inputAlbum.value = (album != null) ? {id: album.id, text: album.getAlbumName()} : {id: 'volume1', text: 'Volume 1'};
     }
 
     var LIMIT = 6;
@@ -411,7 +411,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterOpponent.icon = null;
-      buttonCharacterOpponent.text = "None";
+      buttonCharacterOpponent.text = 'None';
     }
 
     var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
@@ -423,7 +423,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterGirlfriend.icon = null;
-      buttonCharacterGirlfriend.text = "None";
+      buttonCharacterGirlfriend.text = 'None';
     }
 
     var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
@@ -435,7 +435,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterPlayer.icon = null;
-      buttonCharacterPlayer.text = "None";
+      buttonCharacterPlayer.text = 'None';
     }
   }
 

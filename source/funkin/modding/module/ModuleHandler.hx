@@ -26,7 +26,7 @@ class ModuleHandler
   {
     // Clear any stages that are cached if there were any.
     clearModuleCache();
-    trace("[MODULEHANDLER] Loading module cache...");
+    trace('[MODULEHANDLER] Loading module cache...');
 
     var scriptedModuleClassNames:Array<String> = ScriptedModule.listScriptClasses();
     trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
@@ -47,7 +47,7 @@ class ModuleHandler
     }
     reorderModuleCache();
 
-    trace("[MODULEHANDLER] Module cache loaded.");
+    trace('[MODULEHANDLER] Module cache loaded.');
   }
 
   public static function buildModuleCallbacks():Void

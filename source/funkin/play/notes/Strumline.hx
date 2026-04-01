@@ -317,7 +317,7 @@ class Strumline extends FlxSpriteGroup
     return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -773,7 +773,7 @@ class Strumline extends FlxSpriteGroup
 
     for (dir in DIRECTIONS)
     {
-      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
+      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == 'static')
       {
         playPress(dir);
       }

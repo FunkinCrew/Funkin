@@ -182,7 +182,7 @@ class BaseCharacter extends Bopper
 
     this.characterId = id;
 
-    ignoreExclusionPref = ["sing"];
+    ignoreExclusionPref = ['sing'];
 
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
     if (_data == null)
@@ -395,7 +395,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onUpdate(event:UpdateScriptEvent):Void
+  override public function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
 
@@ -611,7 +611,7 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:HitNoteScriptEvent):Void
+  override public function onNoteHit(event:HitNoteScriptEvent):Void
   {
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
@@ -624,7 +624,7 @@ class BaseCharacter extends Bopper
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteMiss(event:NoteScriptEvent)
+  override public function onNoteMiss(event:NoteScriptEvent)
   {
     super.onNoteMiss(event);
 
@@ -647,7 +647,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  override public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
     super.onNoteHoldDrop(event);
 
@@ -705,7 +705,7 @@ class BaseCharacter extends Bopper
   /**
    * Every time a wrong key is pressed, play the miss animation if we are Boyfriend.
    */
-  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+  override public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
   {
     super.onNoteGhostMiss(event);
 
@@ -722,7 +722,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onDestroy(event:ScriptEvent):Void
+  override public function onDestroy(event:ScriptEvent):Void
   {
     this.characterType = OTHER;
   }
@@ -742,7 +742,7 @@ class BaseCharacter extends Bopper
     playAnimation(anim, true);
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
+  override public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
     if (tempVocals)
     {

@@ -17,7 +17,7 @@ import funkin.data.song.SongData.NoteParamData;
 /**
  * The toolbox which allows modifying information like Note Kind.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml'))
 class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 {
   // 100 is the height used in note-data.xml
@@ -141,7 +141,7 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
     toolboxNotesCustomKind.resumeEvent(UIEvent.CHANGE, true, true);
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 
@@ -202,8 +202,8 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
       var paramLabel:Label = new Label();
       paramLabel.value = param.description;
-      paramLabel.verticalAlign = "center";
-      paramLabel.horizontalAlign = "right";
+      paramLabel.verticalAlign = 'center';
+      paramLabel.horizontalAlign = 'right';
 
       var paramComponent:Component = null;
 

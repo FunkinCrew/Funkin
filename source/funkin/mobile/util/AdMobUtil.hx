@@ -27,7 +27,7 @@ class AdMobUtil
   /**
    * The AdMob Interstitial Preload ID used for loading interstitial ads.
    */
-  static final ADMOB_INTERSTITIAL_PRELOAD_ID:String = "FNF_INTERSTITIAL_PRELOAD_ID";
+  static final ADMOB_INTERSTITIAL_PRELOAD_ID:String = 'FNF_INTERSTITIAL_PRELOAD_ID';
 
   /**
    * The number of interstitial ads to preload and keep in buffer for AdMob.
@@ -38,28 +38,28 @@ class AdMobUtil
    * AdMob publisher ID used for the application.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_PUBLISHER:Null<String>;
   #else
-  static final ADMOB_PUBLISHER:Null<String> = "ca-app-pub-3940256099942544";
+  static final ADMOB_PUBLISHER:Null<String> = 'ca-app-pub-3940256099942544';
   #end
   /**
    * Ad unit ID for displaying banner ads.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_BANNER_AD_UNIT_ID:Null<String>;
   #else
-  static final ADMOB_BANNER_AD_UNIT_ID:Null<String> = #if android "9214589741" #elseif ios "2435281174" #else null #end;
+  static final ADMOB_BANNER_AD_UNIT_ID:Null<String> = #if android '9214589741' #elseif ios '2435281174' #else null #end;
   #end
   /**
    * Ad unit ID for displaying interstitial ads.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String>;
   #else
-  static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String> = #if android "1033173712" #elseif ios "4411468910" #else null #end;
+  static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String> = #if android '1033173712' #elseif ios '4411468910' #else null #end;
   #end
 
   /**

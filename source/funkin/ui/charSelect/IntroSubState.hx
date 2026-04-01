@@ -22,7 +22,7 @@ class IntroSubState extends MusicBeatSubState
   static final LIGHTS_VIDEO_PATH:String = Paths.videos('ui/character-select/intro');
   #end
 
-  public override function create():Void
+  override public function create():Void
   {
     if (Save.instance.oldChar.value)
     {
@@ -119,7 +119,7 @@ class IntroSubState extends MusicBeatSubState
   }
   #end
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

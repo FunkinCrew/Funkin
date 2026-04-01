@@ -30,7 +30,7 @@ import haxe.ui.events.UIEvent;
  * and adding/removing variations and difficulties.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml'))
 class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 {
   var difficultyToolboxTree:TreeView;
@@ -103,7 +103,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         }
       }
 
-      Dialogs.messageBox("Are you sure? This cannot be undone.", "Remove Difficulty", MessageBoxType.TYPE_YESNO, callback);
+      Dialogs.messageBox('Are you sure? This cannot be undone.', 'Remove Difficulty', MessageBoxType.TYPE_YESNO, callback);
     };
 
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent)
@@ -114,12 +114,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           switch (notification)
           {
-            case "success":
-              chartEditorState.success("Saved Metadata", 'Successfully wrote file (${chartEditorState.currentSongId}$vari-metadata.json).');
-            case "info":
-              chartEditorState.info("Canceled Save Metadata", '(${chartEditorState.currentSongId}$vari-metadata.json)');
-            case "error":
-              chartEditorState.error("Failure", 'Failed to write file (${chartEditorState.currentSongId}$vari-metadata.json).');
+            case 'success':
+              chartEditorState.success('Saved Metadata', 'Successfully wrote file (${chartEditorState.currentSongId}$vari-metadata.json).');
+            case 'info':
+              chartEditorState.info('Canceled Save Metadata', '(${chartEditorState.currentSongId}$vari-metadata.json)');
+            case 'error':
+              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}$vari-metadata.json).');
           }
         });
     };
@@ -132,12 +132,12 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           switch (notification)
           {
-            case "success":
-              chartEditorState.success("Saved Chart Data", 'Successfully wrote file (${chartEditorState.currentSongId}$vari-chart.json).');
-            case "info":
-              chartEditorState.info("Canceled Save Chart Data", '(${chartEditorState.currentSongId}$vari-chart.json)');
-            case "error":
-              chartEditorState.error("Failure", 'Failed to write file (${chartEditorState.currentSongId}$vari-chart.json).');
+            case 'success':
+              chartEditorState.success('Saved Chart Data', 'Successfully wrote file (${chartEditorState.currentSongId}$vari-chart.json).');
+            case 'info':
+              chartEditorState.info('Canceled Save Chart Data', '(${chartEditorState.currentSongId}$vari-chart.json)');
+            case 'error':
+              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}$vari-chart.json).');
           }
         });
     };
@@ -315,7 +315,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 

@@ -37,7 +37,7 @@ class SetCameraBopSongEvent extends SongEvent
     });
   }
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null) return;
@@ -53,7 +53,7 @@ class SetCameraBopSongEvent extends SongEvent
     trace('Set camera zoom rate to ${PlayState.instance.cameraZoomRate}');
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Set Camera Bop';
   }
@@ -67,7 +67,7 @@ class SetCameraBopSongEvent extends SongEvent
    * ```
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {

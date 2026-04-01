@@ -34,7 +34,7 @@ class ZoomCameraSongEvent extends SongEvent
   public static final DEFAULT_DURATION:Float = 4.0;
   public static final DEFAULT_MODE:String = 'direct';
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -57,7 +57,7 @@ class ZoomCameraSongEvent extends SongEvent
     var ease:String = data.getString('ease') ?? SongEvent.DEFAULT_EASE;
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
 
-    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
     // If it's a string, check the value.
     switch (ease)
@@ -83,7 +83,7 @@ class ZoomCameraSongEvent extends SongEvent
     return (wideScale.x - 1) * scale.x + (wideScale.y - 1) * scale.y;
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Zoom Camera';
   }
@@ -99,7 +99,7 @@ class ZoomCameraSongEvent extends SongEvent
    * }
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {

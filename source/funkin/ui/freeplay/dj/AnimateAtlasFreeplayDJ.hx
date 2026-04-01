@@ -52,7 +52,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
     log('Successfully loaded ${animationNames.length} animations for ${characterId}');
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     switch (currentState)
     {
@@ -108,7 +108,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
         }
 
       case FistPump:
@@ -133,7 +133,7 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPump: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPump: ' + getCurrentAnimation());
         }
 
       case IdleEasterEgg:

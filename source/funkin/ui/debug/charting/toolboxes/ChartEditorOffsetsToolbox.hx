@@ -21,7 +21,7 @@ import haxe.ui.events.UIEvent;
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml'))
 class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -319,7 +319,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
       var tickLabel:Label = new Label();
       tickLabel.text = formatTime(tickTime);
-      tickLabel.styleNames = "offset-ticks-label";
+      tickLabel.styleNames = 'offset-ticks-label';
       tickLabel.height = labelHeight;
       // Positioning within offsetTicksContainer is absolute (relative to the container itself).
       tickLabel.top = labelYPos;
@@ -332,7 +332,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   function formatTime(seconds:Float):String
   {
-    if (seconds <= 0) return "0.0";
+    if (seconds <= 0) return '0.0';
 
     var integerSeconds = Math.floor(seconds);
     var decimalSeconds = Math.floor((seconds - integerSeconds) * 10);
@@ -618,21 +618,21 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         if (trackInst != null)
         {
           trackInst.muted = true;
-          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+          offsetInstrumentalMute.text = trackInst.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.PLAYER:
         var trackPlayer = audioPreviewTracks.members[1];
         if (trackPlayer != null)
         {
           trackPlayer.muted = true;
-          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+          offsetPlayerMute.text = trackPlayer.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.OPPONENT:
         var trackOpponent = audioPreviewTracks.members[2];
         if (trackOpponent != null)
         {
           trackOpponent.muted = true;
-          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+          offsetOpponentMute.text = trackOpponent.muted ? 'Unmute' : 'Mute';
         }
     }
   }
@@ -646,21 +646,21 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         if (trackInst != null)
         {
           trackInst.muted = false;
-          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+          offsetInstrumentalMute.text = trackInst.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.PLAYER:
         var trackPlayer = audioPreviewTracks.members[1];
         if (trackPlayer != null)
         {
           trackPlayer.muted = false;
-          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+          offsetPlayerMute.text = trackPlayer.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.OPPONENT:
         var trackOpponent = audioPreviewTracks.members[2];
         if (trackOpponent != null)
         {
           trackOpponent.muted = false;
-          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+          offsetOpponentMute.text = trackOpponent.muted ? 'Unmute' : 'Mute';
         }
     }
   }
@@ -674,21 +674,21 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
         if (trackInst != null)
         {
           trackInst.muted = !trackInst.muted;
-          offsetInstrumentalMute.text = trackInst.muted ? "Unmute" : "Mute";
+          offsetInstrumentalMute.text = trackInst.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.PLAYER:
         var trackPlayer = audioPreviewTracks.members[1];
         if (trackPlayer != null)
         {
           trackPlayer.muted = !trackPlayer.muted;
-          offsetPlayerMute.text = trackPlayer.muted ? "Unmute" : "Mute";
+          offsetPlayerMute.text = trackPlayer.muted ? 'Unmute' : 'Mute';
         }
       case Waveform.OPPONENT:
         var trackOpponent = audioPreviewTracks.members[2];
         if (trackOpponent != null)
         {
           trackOpponent.muted = !trackOpponent.muted;
-          offsetOpponentMute.text = trackOpponent.muted ? "Unmute" : "Mute";
+          offsetOpponentMute.text = trackOpponent.muted ? 'Unmute' : 'Mute';
         }
     }
   }
@@ -716,7 +716,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  public override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 
@@ -793,7 +793,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     //   Math.min(waveformScrollview.hscrollPos + waveformScrollview.width, waveformContainer.width));
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 

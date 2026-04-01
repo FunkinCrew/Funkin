@@ -698,7 +698,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override public function makeGraphic(Width:Int, Height:Int, Color:Int = FlxColor.WHITE, Unique:Bool = false, ?Key:String):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
   }
@@ -710,7 +710,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override public function loadGraphicFromSprite(Sprite:FlxSprite):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
   }
@@ -733,7 +733,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
       AutoBuffer:Bool = false, ?Key:String):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
   }

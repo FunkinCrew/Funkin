@@ -62,7 +62,7 @@ class FocusCameraSongEvent extends SongEvent
   public static final DEFAULT_CAMERA_EASE:String = 'CLASSIC';
   public static final DEFAULT_TARGET:Int = 0; // Boyfriend
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -86,7 +86,7 @@ class FocusCameraSongEvent extends SongEvent
     if (ease == null) ease = DEFAULT_CAMERA_EASE; // No linear in defaults lol
 
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
-    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
     var currentStage = PlayState.instance.currentStage;
 
@@ -158,7 +158,7 @@ class FocusCameraSongEvent extends SongEvent
     }
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Focus Camera';
   }
@@ -172,31 +172,31 @@ class FocusCameraSongEvent extends SongEvent
    * }
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
     return new SongEventSchema([
       {
-        name: "char",
-        title: "Target",
+        name: 'char',
+        title: 'Target',
         defaultValue: DEFAULT_TARGET,
         type: SongEventFieldType.ENUM,
-        keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
+        keys: ['Position' => -1, 'Player' => 0, 'Opponent' => 1, 'Girlfriend' => 2]
       },
       {
-        name: "x",
-        title: "X Position",
+        name: 'x',
+        title: 'X Position',
         defaultValue: DEFAULT_X_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px"
+        units: 'px'
       },
       {
-        name: "y",
-        title: "Y Position",
+        name: 'y',
+        title: 'Y Position',
         defaultValue: DEFAULT_Y_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
-        units: "px"
+        units: 'px'
       },
       {
         name: 'duration',

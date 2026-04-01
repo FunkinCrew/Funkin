@@ -118,7 +118,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     setup();
   }
 
-  public override function updateHitbox():Void
+  override public function updateHitbox():Void
   {
     // Expand the clickable hitbox to the full column width, then nudge to the left to re-center it.
     width = ChartEditorState.GRID_SIZE;
@@ -151,7 +151,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   /**
    * Call this to override how debug bounding boxes are drawn for this sprite.
    */
-  public override function drawDebugOnCamera(camera:flixel.FlxCamera):Void
+  override public function drawDebugOnCamera(camera:flixel.FlxCamera):Void
   {
     if (!camera.visible || !camera.exists || !isOnScreen(camera)) return;
 
@@ -179,14 +179,14 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     updateHitbox();
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
 
     setup();
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 

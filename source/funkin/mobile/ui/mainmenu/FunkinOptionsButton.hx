@@ -35,9 +35,9 @@ class FunkinOptionsButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas("ui/main-menu/items/options-button");
-    animation.addByIndices('idle', 'options', [0], "", 24, false);
-    animation.addByIndices('hold', 'options', [3], "", 24, false);
+    frames = Paths.getSparrowAtlas('ui/main-menu/items/options-button');
+    animation.addByIndices('idle', 'options', [0], '', 24, false);
+    animation.addByIndices('hold', 'options', [3], '', 24, false);
     animation.addByIndices('confirm', 'options', [
       4,
       5,
@@ -52,8 +52,8 @@ class FunkinOptionsButton extends FunkinButton
       14,
       15,
       16
-    ], "", 24, false);
-    animation.play("idle");
+    ], '', 24, false);
+    animation.play('idle');
 
     scale.set(0.7, 0.7);
     updateHitbox();
