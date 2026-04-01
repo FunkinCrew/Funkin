@@ -287,7 +287,7 @@ private class Layout extends DefaultLayout
     character.cornerPosition.set(0, 0);
   }
 
-  public override function calcAutoSize(exclusions:Array<Component> = null):Size
+  public override function calcAutoSize(?exclusions:Array<Component>):Size
   {
     var player:CharacterPlayer = cast(_component, CharacterPlayer);
     var character:BaseCharacter = player.character;

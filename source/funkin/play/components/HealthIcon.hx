@@ -240,7 +240,7 @@ class HealthIcon extends FunkinSprite
     this.updatePosition();
   }
 
-  /*
+  /**
    * Immediately snap the health icon to its target size without lerping.
    */
   public function snapToTargetSize():Void

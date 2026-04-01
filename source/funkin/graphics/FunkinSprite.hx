@@ -1,6 +1,5 @@
 package funkin.graphics;
 
-import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
@@ -13,7 +12,6 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMatrix;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
-import openfl.system.System;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.FunkinMemory;
 import animate.internal.SymbolItem;
@@ -21,7 +19,8 @@ import animate.internal.elements.Element;
 import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.SymbolInstance;
 import animate.FlxAnimate;
-import animate.FlxAnimateFrames;
+import animate.FlxAnimateFrames.FilterQuality;
+import animate.FlxAnimateFrames.SpritemapInput;
 import animate.internal.RenderTexture;
 import openfl.filters.BitmapFilter;
 import haxe.io.Path;
@@ -763,7 +762,7 @@ class FunkinSprite extends FlxAnimate
    * The default `clone()` method acts kinda weird TBH.
    * @return A clone of this sprite.
    */
-  public override function clone():FunkinSprite
+  override public function clone():FunkinSprite
   {
     var result = new FunkinSprite(this.x, this.y);
     result.frames = this.frames;
@@ -928,7 +927,7 @@ class FunkinSprite extends FlxAnimate
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
     frames = null;

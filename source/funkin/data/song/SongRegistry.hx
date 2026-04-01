@@ -1,11 +1,11 @@
 package funkin.data.song;
 
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.song.SongData;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
 import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongMusicData;
 import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.VersionUtil;
@@ -47,7 +47,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     });
   }
 
-  public override function loadEntries():Void
+  override public function loadEntries():Void
   {
     clearEntries();
 
@@ -127,7 +127,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     return parseEntryMetadataRaw(contents);
   }
 
-  public override function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
+  override public function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
@@ -137,7 +137,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     return super.isScriptedEntry(id, params);
   }
 
-  public override function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
+  override public function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
@@ -153,7 +153,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   /**
    * We override `fetchEntry` to handle song variations!
    */
-  public override function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
+  override public function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
 
@@ -220,11 +220,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       return parseEntryMetadata(id, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    else if (VersionUtil.validateVersion(version, '2.1.x'))
     {
       return parseEntryMetadata_v2_1_0(id, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.0.x"))
+    else if (VersionUtil.validateVersion(version, '2.0.x'))
     {
       return parseEntryMetadata_v2_0_0(id, variation);
     }
@@ -242,11 +242,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       return parseEntryMetadataRaw(contents, fileName, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    else if (VersionUtil.validateVersion(version, '2.1.x'))
     {
       return parseEntryMetadataRaw_v2_1_0(contents, fileName);
     }
-    else if (VersionUtil.validateVersion(version, "2.0.x"))
+    else if (VersionUtil.validateVersion(version, '2.0.x'))
     {
       return parseEntryMetadataRaw_v2_0_0(contents, fileName);
     }

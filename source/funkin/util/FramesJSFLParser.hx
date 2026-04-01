@@ -21,15 +21,15 @@ class FramesJSFLParser
 
     var output:FramesJSFLInfo = {frames: []};
 
-    var frames:Array<String> = text.split("\n");
+    var frames:Array<String> = text.split('\n');
 
     for (frame in frames)
     {
-      var frameInfo:Array<String> = frame.split(" ");
+      var frameInfo:Array<String> = frame.split(' ');
 
       var x:Float = Std.parseFloat(frameInfo[0]);
       var y:Float = Std.parseFloat(frameInfo[1]);
-      var alpha:Float = (frameInfo[2] != "undefined") ? Std.parseFloat(frameInfo[2]) : 100;
+      var alpha:Float = (frameInfo[2] != 'undefined') ? Std.parseFloat(frameInfo[2]) : 100;
 
       var scaleX:Float = 1;
       var scaleY:Float = 1;

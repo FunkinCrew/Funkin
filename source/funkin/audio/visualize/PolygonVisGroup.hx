@@ -92,13 +92,13 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
    * @param vis The visualizer to add.
    * @return The added visualizer.
    */
-  public override function add(vis:PolygonSpectogram):PolygonSpectogram
+  override public function add(vis:PolygonSpectogram):PolygonSpectogram
   {
     var result:PolygonSpectogram = super.add(vis);
     return result;
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (playerVis != null)
     {

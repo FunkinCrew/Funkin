@@ -79,7 +79,7 @@ class FlxVideo extends FunkinSprite
 
   static final FRAME_RATE:Float = 60;
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -117,7 +117,7 @@ class FlxVideo extends FunkinSprite
     if (finishCallback != null) finishCallback();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (netStream != null)
     {

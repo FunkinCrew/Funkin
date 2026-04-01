@@ -37,7 +37,7 @@ class NoteSplash extends FlxSprite
     this.animation.play(name, force, reversed, startFrame);
   }
 
-  public function play(direction:NoteDirection, variant:Int = null):Void
+  public function play(direction:NoteDirection, ?variant:Int):Void
   {
     if (variant == null)
     {

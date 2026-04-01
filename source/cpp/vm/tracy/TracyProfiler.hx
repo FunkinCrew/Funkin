@@ -1,4 +1,4 @@
-/*
+/**
  * Pulled from Tracey profiler PR
  * @see https://github.com/HaxeFoundation/haxe/pull/11772
  */

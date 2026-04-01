@@ -3,62 +3,77 @@ package funkin.graphics.shaders;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxColor;
 
-/*
-  A shader that takes in various values for certain "lights" in the "sserafim" stage and uses those
-  to tint a sprite based on that context.
-  Used on the characters and stage for the LE SERRAFIM collab.
-
-  (Kinda sucks having specific shaders for certain parts of the game but this one is sooo specific
-  that i dont really have a choice... : P)
+/**
+ * A shader that takes in various values for certain "lights" in the "sserafim" stage and uses those
+ * to tint a sprite based on that context.
+ * Used on the characters and stage for the LE SERRAFIM collab.
+ *
+ * (Kinda sucks having specific shaders for certain parts of the game but this one is sooo specific
+ * that I don't really have a choice... : P)
  */
 class SserafimShader extends FlxShader
 {
-  /*
-    The current amount of "darkness" the stage has.
-    Tints the sprite color further to black from 0-1.
-    (this is treated differently when isCharacter is true)
+  /**
+   * The current amount of "darkness" the stage has.
+   * Tints the sprite color further to black from 0-1.
+   * (This is treated differently when isCharacter is true.)
    */
   public var darkenAmount(default, set):Float;
-  /*
-    The color of the pulse light behind the truck.
+
+  /**
+   * The color of the pulse light behind the truck.
    */
   public var pulseLightColor(default, set):FlxColor;
-  /*
-    The strength/opacity of the light behind the truck.
+
+  /**
+   * The strength/opacity of the light behind the truck.
    */
   public var pulseLightStrength(default, set):Float;
-  /*
-    The strength/opacity of the lights on the truck.
+
+  /**
+   * The strength/opacity of the lights on the truck.
    */
   public var truckLightStrength(default, set):Float;
-  /*
-    Whether this shader is for the characters or not.
-    This will change how dramatic the light effect is.
+
+  /**
+   * Whether this shader is for the characters or not.
+   * This will change how dramatic the light effect is.
    */
   public var isCharacter(default, set):Bool;
-  // TODO: this is for the future but maybe we should make support for AdjustColor to be like... a default thing any shader can pull from???
-  // (if thats possible??) i know flixel does some stuff like that
-  /*
-    The hue component of the Adjust Color part of the shader.
+
+  // TODO: This is for the future but maybe we should make support for AdjustColor
+  // to be like... a default thing any shader can pull from???
+  // (If that's possible??) I know flixel does some stuff like that.
+
+  /**
+   * The hue component of the Adjust Color part of the shader.
    */
   public var baseHue(default, set):Float;
-  /*
-    The saturation component of the Adjust Color part of the shader.
+
+  /**
+   * The saturation component of the Adjust Color part of the shader.
    */
   public var baseSaturation(default, set):Float;
-  /*
-    The brightness component of the Adjust Color part of the shader.
+
+  /**
+   * The brightness component of the Adjust Color part of the shader.
    */
   public var baseBrightness(default, set):Float;
-  /*
-    The contrast component of the Adjust Color part of the shader.
+
+  /**
+   * The contrast component of the Adjust Color part of the shader.
    */
   public var baseContrast(default, set):Float;
 
-  /*
-    Sets all 4 adjust color values.
+  /**
+   * Sets all 4 adjust color values.
+   *
+   * @param b The brightness value.
+   * @param h The hue value.
+   * @param c The contrast value.
+   * @param s The saturation value.
    */
-  public function setAdjustColor(b:Float, h:Float, c:Float, s:Float)
+  public function setAdjustColor(b:Float, h:Float, c:Float, s:Float):Void
   {
     baseBrightness = b;
     baseHue = h;
@@ -300,7 +315,7 @@ class SserafimShader extends FlxShader
     super();
 
     darkenAmount = 0.0;
-    pulseLightColor = 0xFFFFFF;
+    pulseLightColor = FlxColor.WHITE;
     pulseLightStrength = 0.0;
     truckLightStrength = 0.0;
     isCharacter = char;

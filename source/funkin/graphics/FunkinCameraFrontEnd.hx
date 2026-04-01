@@ -9,7 +9,7 @@ import flixel.system.frontEnds.CameraFrontEnd;
 @:nullSafety
 class FunkinCameraFrontEnd extends CameraFrontEnd
 {
-  public override function reset(?newCamera:FlxCamera):Void
+  override public function reset(?newCamera:FlxCamera):Void
   {
     super.reset(newCamera ?? new FunkinCamera());
   }

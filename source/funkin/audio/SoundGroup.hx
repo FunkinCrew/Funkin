@@ -21,8 +21,8 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     super();
   }
 
-  @:deprecated("Create sound files and call add() instead")
-  public static function build(song:String, ?files:Array<String> = null):SoundGroup
+  @:deprecated('Create sound files and call add() instead')
+  public static function build(song:String, ?files:Array<String>):SoundGroup
   {
     var result = new SoundGroup();
 
@@ -69,7 +69,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   /**
    * Add a sound to the group.
    */
-  public override function add(sound:FunkinSound):Null<FunkinSound>
+  override public function add(sound:FunkinSound):Null<FunkinSound>
   {
     var result:FunkinSound = super.add(sound);
 
@@ -79,7 +79,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     // else the sound will restart immediately when played.
     // TODO: Past me experienced that issue but present me didn't? Investigate.
     // result.play(true, 0.0);
-    // result.pause();
+
     result.time = this.time;
 
     result.onComplete = function()
@@ -118,7 +118,6 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     {
       if (sound.length < startTime)
       {
-        // trace('Queuing sound (${sound.toString()} past its length! Skipping...)');
         return;
       }
       sound.play(forceRestart, startTime, endTime);
@@ -174,7 +173,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     stop();
     super.destroy();
@@ -183,7 +182,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   /**
    * Remove all sounds from the group.
    */
-  public override function clear():Void
+  override public function clear():Void
   {
     this.stop();
 

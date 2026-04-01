@@ -13,6 +13,13 @@ using flixel.util.FlxStringUtil;
 @:nullSafety
 class InputUtil
 {
+  /**
+   * Format a key or button for the given device.
+   *
+   * @param id The key or button to format.
+   * @param device The input device the key or button belongs to.
+   * @return A human readable string representing the button.
+   */
   public static function format(id:Int, device:Device):String
   {
     return switch (device)
@@ -56,34 +63,39 @@ class InputUtil
     return keyArray.exists(isKeyNotPressed);
   }
 
+  /**
+   * Get the key name for a given key code.
+   * @param id The key code to get the name of
+   * @return The name of the key
+   */
   public static function getKeyName(id:Int):String
   {
     return switch (id)
     {
       case ZERO:
-        "0";
+        '0';
       case ONE:
-        "1";
+        '1';
       case TWO:
-        "2";
+        '2';
       case THREE:
-        "3";
+        '3';
       case FOUR:
-        "4";
+        '4';
       case FIVE:
-        "5";
+        '5';
       case SIX:
-        "6";
+        '6';
       case SEVEN:
-        "7";
+        '7';
       case EIGHT:
-        "8";
+        '8';
       case NINE:
-        "9";
+        '9';
       case PAGEUP:
-        "PgUp";
+        'PgUp';
       case PAGEDOWN:
-        "PgDown";
+        'PgDown';
       // case HOME          : "Hm";
       // case END           : "End";
       // case INSERT        : "Ins";
@@ -92,33 +104,33 @@ class InputUtil
       // case PLUS          : "+";
       // case DELETE        : "Del";
       case BACKSPACE:
-        "BckSpc";
+        'BckSpc';
       case LBRACKET:
-        "[";
+        '[';
       case RBRACKET:
-        "]";
+        ']';
       case BACKSLASH:
-        "\\";
+        '\\';
       case CAPSLOCK:
-        "Caps";
+        'Caps';
       case SEMICOLON:
-        ";";
+        ';';
       case QUOTE:
         "'";
       // case ENTER         : "Ent";
       // case SHIFT         : "Shf";
       case COMMA:
-        ",";
+        ',';
       case PERIOD:
-        ".";
+        '.';
       case SLASH:
-        "/";
+        '/';
       case GRAVEACCENT:
-        "`";
+        '`';
       case CONTROL:
-        "Ctrl";
+        'Ctrl';
       case ALT:
-        "Alt";
+        'Alt';
       // case SPACE         : "Spc";
       // case UP            : "Up";
       // case DOWN          : "Dn";
@@ -126,59 +138,66 @@ class InputUtil
       // case RIGHT         : "Rt";
       // case TAB           : "Tab";
       case PRINTSCREEN:
-        "PrtScrn";
+        'PrtScrn';
       case NUMPADZERO:
-        "#0";
+        '#0';
       case NUMPADONE:
-        "#1";
+        '#1';
       case NUMPADTWO:
-        "#2";
+        '#2';
       case NUMPADTHREE:
-        "#3";
+        '#3';
       case NUMPADFOUR:
-        "#4";
+        '#4';
       case NUMPADFIVE:
-        "#5";
+        '#5';
       case NUMPADSIX:
-        "#6";
+        '#6';
       case NUMPADSEVEN:
-        "#7";
+        '#7';
       case NUMPADEIGHT:
-        "#8";
+        '#8';
       case NUMPADNINE:
-        "#9";
+        '#9';
       case NUMPADMINUS:
-        "#-";
+        '#-';
       case NUMPADPLUS:
-        "#+";
+        '#+';
       case NUMPADPERIOD:
-        "#.";
+        '#.';
       case NUMPADMULTIPLY:
-        "#*";
+        '#*';
       default:
         titleCase(FlxKey.toStringMap[id] ?? '?');
     }
   }
 
-  static var dirReg = ~/^(l|r).?-(left|right|down|up)$/;
+  static var dirReg:EReg = ~/^(l|r).?-(left|right|down|up)$/;
 
-  inline static public function getButtonName(id:Int, gamepad:FlxGamepad):String
+  /**
+   * Get the shortened name of a button for a gamepad.
+   *
+   * @param id The button code to get the name of
+   * @param gamepad The gamepad to get the name from
+   * @return The name of the button
+   */
+  public static inline function getButtonName(id:Int, gamepad:FlxGamepad):String
   {
     return switch (gamepad.getInputLabel(id))
     {
-      case null, "":
+      case null, '':
         shortenButtonName(FlxGamepadInputID.toStringMap[id]);
       case label:
         shortenButtonName(label);
     }
   }
 
-  static function shortenButtonName(name:Null<String>)
+  static function shortenButtonName(name:Null<String>):String
   {
-    return switch (name == null ? "" : name.toLowerCase())
+    return switch (name == null ? '' : name.toLowerCase())
     {
-      case "":
-        "[?]";
+      case '':
+        '[?]';
       // case "square"  : "[]";
       // case "circle"  : "()";
       // case "triangle": "/\\";
@@ -194,55 +213,121 @@ class InputUtil
       // case "down"    : "Dn";
       // case "up"      : "Up";
       case dir if (dirReg.match(dir)):
-        dirReg.matched(1).toUpperCase() + " " + titleCase(dirReg.matched(2));
+        dirReg.matched(1).toUpperCase() + ' ' + titleCase(dirReg.matched(2));
       case label:
         titleCase(label);
     }
   }
 
-  inline static function titleCaseTrim(str:String, length = 8)
-  {
-    return str.charAt(0).toUpperCase() + str.substr(1, length - 1).toLowerCase();
-  }
-
-  inline static function titleCase(str:String)
+  static inline function titleCase(str:String):String
   {
     return str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
   }
 
-  inline static public function parsePadName(name:String):ControllerName
+  /**
+   * Get the name of a gamepad's controller type by parsing a name string.
+   * @param name The controller name string to parse
+   * @return The controller name
+   */
+  public static inline function parsePadName(name:String):ControllerName
   {
     return ControllerName.parseName(name);
   }
 
-  inline static public function getPadName(gamepad:FlxGamepad):ControllerName
+  /**
+   * Get the name of a gamepad's controller type.
+   * @param gamepad The gamepad to get the name from
+   * @return The controller name.
+   */
+  public static inline function getPadName(gamepad:FlxGamepad):ControllerName
   {
     return ControllerName.getName(gamepad);
   }
 
-  inline static public function getPadNameById(id:Int):ControllerName
+  /**
+   * Get the name of a gamepad's controller type.
+   * @param id The integer ID of the gamepad device to access.
+   * @return The controller name.
+   */
+  public static inline function getPadNameById(id:Int):ControllerName
   {
     return ControllerName.getNameById(id);
   }
 }
 
+/**
+ * Represents a list of controller names, determined based on driver data.
+ * Used for displaying names and button prompts in the UI.
+ */
 @:nullSafety @:forward
 enum abstract ControllerName(String) from String to String
 {
-  var OUYA = "Ouya";
-  var PS4 = "PS4";
-  var LOGI = "Logi";
-  var XBOX = "XBox";
-  var XINPUT = "XInput";
-  var WII = "Wii";
-  var PRO_CON = "Pro_Con";
-  var JOYCONS = "Joycons";
-  var JOYCON_L = "Joycon_L";
-  var JOYCON_R = "Joycon_R";
-  var MFI = "MFI";
-  var PAD = "Pad";
+  /**
+   * Ouya controller
+   */
+  public var OUYA = 'Ouya';
 
-  static public function getAssetByDevice(device:Device):String
+  /**
+   * PlayStation 4 controller
+   */
+  public var PS4 = 'PS4';
+
+  /**
+   * Logitech controller
+   */
+  public var LOGI = 'Logi';
+
+  /**
+   * XBox controller
+   */
+  public var XBOX = 'XBox';
+
+  /**
+   * XInput controller
+   */
+  public var XINPUT = 'XInput';
+
+  /**
+   * Wii controller
+   */
+  public var WII = 'Wii';
+
+  /**
+   * Nintendo Switch Pro Controller
+   */
+  public var PRO_CON = 'Pro_Con';
+
+  /**
+   * Nintendo Switch JoyCons
+   */
+  public var JOYCONS = 'Joycons';
+
+  /**
+   * Nintendo Switch JoyCon (Left Only)
+   */
+  public var JOYCON_L = 'Joycon_L';
+
+  /**
+   * Nintendo Switch JoyCon (Right Only)
+   */
+  public var JOYCON_R = 'Joycon_R';
+
+  /**
+   * MFi controller
+   */
+  public var MFI = 'MFI';
+
+  /**
+   * A generic gamepad.
+   */
+  public var PAD = 'Pad';
+
+  /**
+   * Get the asset path for a device.
+   * @param device The input device
+   * @return The path to the device asset image
+   */
+  public static function getAssetByDevice(device:Device):String
   {
     return switch (device)
     {
@@ -253,29 +338,102 @@ enum abstract ControllerName(String) from String to String
     }
   }
 
-  static public function getAsset(gamepad:Null<FlxGamepad>):String
+  /**
+   * Get the asset path for a gamepad.
+   * @param gamepad The gamepad to get the asset for, or null for keyboard
+   * @return The path to the device asset image
+   */
+  public static function getAsset(gamepad:Null<FlxGamepad>):String
   {
     if (gamepad == null) return 'assets/images/ui/devices/Keys.png';
 
-    final name = parseName(gamepad.name);
+    var name = parseName(gamepad.name);
     var path = 'assets/images/ui/devices/$name.png';
     if (openfl.utils.Assets.exists(path)) return path;
 
     return 'assets/images/ui/devices/Pad.png';
   }
 
-  inline static public function getNameById(id:Int):ControllerName return getName(FlxG.gamepads.getByID(id));
-
-  inline static public function getName(gamepad:FlxGamepad):ControllerName return parseName(gamepad.name);
-
-  static public function parseName(name:String):ControllerName
+  /**
+   * Get the controller name for a gamepad by its ID.
+   * @param id The gamepad ID
+   * @return The controller name
+   */
+  public static inline function getNameById(id:Int):ControllerName
   {
-    name = name.toLowerCase().remove("-").remove("_");
-    return if (name.contains("ouya")) OUYA; else if (name.contains("wireless controller")
-      || name.contains("ps4")) PS4; else if (name.contains("logitech")) LOGI; else if (name.contains("xbox")) XBOX else if (name.contains("xinput"))
-      XINPUT; else if (name.contains("nintendo rvlcnt01tr")
-      || name.contains("nintendo rvlcnt01")) WII; else if (name.contains("mayflash wiimote pc adapter")) WII; else if (name.contains("pro controller"))
-      PRO_CON; else if (name.contains("joycon l+r")) JOYCONS; else if (name.contains("joycon (l)")) JOYCON_L; else if (name.contains("joycon (r)"))
-      JOYCON_R; else if (name.contains("mfi")) MFI; else PAD;
+    return getName(FlxG.gamepads.getByID(id));
+  }
+
+  /**
+   * Get the controller name for a gamepad.
+   * @param gamepad The gamepad to get the name from
+   * @return The controller name
+   */
+  public static inline function getName(gamepad:FlxGamepad):ControllerName
+  {
+    return parseName(gamepad.name);
+  }
+
+  /**
+   * Parse a controller name string and return the corresponding ControllerName.
+   * @param name The controller name string to parse
+   * @return The corresponding ControllerName enum value
+   */
+  public static function parseName(name:String):ControllerName
+  {
+    name = name.toLowerCase().remove('-').remove('_');
+
+    if (name.contains('ouya'))
+    {
+      return OUYA;
+    }
+    else if (name.contains('wireless controller') || name.contains('ps4'))
+    {
+      return PS4;
+    }
+    else if (name.contains('logitech'))
+    {
+      return LOGI;
+    }
+    else if (name.contains('xbox'))
+    {
+      return XBOX;
+    }
+    else if (name.contains('xinput'))
+    {
+      return XINPUT;
+    }
+    else if (name.contains('nintendo rvlcnt01tr') || name.contains('nintendo rvlcnt01'))
+    {
+      return WII;
+    }
+    else if (name.contains('mayflash wiimote pc adapter'))
+    {
+      return WII;
+    }
+    else if (name.contains('pro controller'))
+    {
+      return PRO_CON;
+    }
+    else if (name.contains('joycon l+r'))
+    {
+      return JOYCONS;
+    }
+    else if (name.contains('joycon (l)'))
+    {
+      return JOYCON_L;
+    }
+    else if (name.contains('joycon (r)'))
+    {
+      return JOYCON_R;
+    }
+    else if (name.contains('mfi'))
+    {
+      return MFI;
+    }
+    else
+    {
+      return PAD;
+    }
   }
 }

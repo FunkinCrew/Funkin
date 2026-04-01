@@ -61,7 +61,7 @@ class TurboKeyHandler extends FlxBasic
     return true;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -96,7 +96,7 @@ class TurboKeyHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  public static overload inline extern function build(inputKey:FlxKey, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
+  overload public static extern inline function build(inputKey:FlxKey, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
   {
     return new TurboKeyHandler([inputKey], delay, interval);
   }
@@ -108,7 +108,7 @@ class TurboKeyHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboKeyHandler
    */
-  public static overload inline extern function build(inputKeys:Array<FlxKey>, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
+  overload public static extern inline function build(inputKeys:Array<FlxKey>, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL):TurboKeyHandler
   {
     return new TurboKeyHandler(inputKeys, delay, interval);
   }

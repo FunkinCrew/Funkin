@@ -154,7 +154,7 @@ class Cursor
    *
    * @param value The cursor mode to load. If null, the cursor is unloaded.
    */
-  static function loadCursorGraphicSync(?value:CursorMode = null):Void
+  static function loadCursorGraphicSync(?value:CursorMode):Void
   {
     applyCursorParams(value);
   }
@@ -164,7 +164,7 @@ class Cursor
    *
    * @param value The cursor mode to load. If null, the cursor is unloaded.
    */
-  static function loadCursorGraphicAsync(?value:CursorMode = null):Void
+  static function loadCursorGraphicAsync(?value:CursorMode):Void
   {
     applyCursorParams(value, true);
   }

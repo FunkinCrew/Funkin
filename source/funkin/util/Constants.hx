@@ -1,6 +1,5 @@
 package funkin.util;
 
-import flixel.system.FlxBasePreloader;
 import flixel.util.FlxColor;
 import funkin.data.song.SongData.SongTimeFormat;
 import lime.app.Application;
@@ -102,6 +101,9 @@ class Constants
    */
   public static final GIT_HASH:String = funkin.util.macro.GitCommit.getGitCommitHash();
 
+  /**
+   * Whether the local Git repository contains local changes that haven't been committed.
+   */
   public static final GIT_HAS_LOCAL_CHANGES:Bool = funkin.util.macro.GitCommit.getGitHasLocalChanges();
 
   /**
@@ -445,7 +447,7 @@ class Constants
   /**
    * The player's starting health.
    */
-  public static final HEALTH_STARTING = HEALTH_MAX / 2.0;
+  public static final HEALTH_STARTING:Float = HEALTH_MAX / 2.0;
 
   /**
    * The player's minimum health.
@@ -477,7 +479,7 @@ class Constants
    * The amount of health the player gains when hitting a note with the SHIT rating.
    * If negative, the player will actually lose health.
    */
-  public static final HEALTH_SHIT_BONUS:Float = -1.0 / 100.0 * HEALTH_MAX; // -1.0%
+  public static final HEALTH_SHIT_BONUS:Float = -1.0 / 100.0 * HEALTH_MAX;
 
   /**
    * The amount of health the player gains, while holding a hold note, per second.
@@ -487,12 +489,12 @@ class Constants
   /**
    * The amount of health the player loses upon missing a note.
    */
-  public static final HEALTH_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX; // 4.0%
+  public static final HEALTH_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX;
 
   /**
    * The amount of health the player loses upon pressing a key when no note is there.
    */
-  public static final HEALTH_GHOST_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX; // 2.0%
+  public static final HEALTH_GHOST_MISS_PENALTY:Float = -4.0 / 100.0 * HEALTH_MAX;
 
   /**
    * The amount of health the player loses upon letting go of a hold note, per second remaining.
@@ -502,12 +504,12 @@ class Constants
   /**
    * The maximum amount of health the player can lose upon letting go of a hold note.
    */
-  public static final HEALTH_HOLD_DROP_PENALTY_MAX:Float = 0 / 100.0 * HEALTH_MAX; // -10.0%
+  public static final HEALTH_HOLD_DROP_PENALTY_MAX:Float = 0 / 100.0 * HEALTH_MAX;
 
   /**
    * The amount of health the player loses upon hitting a mine.
    */
-  public static final HEALTH_MINE_PENALTY:Float = -15.0 / 100.0 * HEALTH_MAX; // 15.0%
+  public static final HEALTH_MINE_PENALTY:Float = -15.0 / 100.0 * HEALTH_MAX;
 
   /**
    * SCORE VALUES
@@ -535,17 +537,53 @@ class Constants
    */
   public static final HOLD_DROP_PENALTY_THRESHOLD_MS:Float = 160.0;
 
+  /**
+   * Whether a `KILLER` judgement results in a combo break.
+   */
   public static final JUDGEMENT_KILLER_COMBO_BREAK:Bool = false;
+
+  /**
+   * Whether a `SICK` judgement results in a combo break.
+   */
   public static final JUDGEMENT_SICK_COMBO_BREAK:Bool = false;
+
+  /**
+   * Whether a `GOOD` judgement results in a combo break.
+   */
   public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
+
+  /**
+   * Whether a `BAD` judgement results in a combo break.
+   */
   public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
+
+  /**
+   * Whether a `SHIT` judgement results in a combo break.
+   */
   public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
+
   // % Hit
+
+  /**
+   * The % ranking required for a `PERFECT` ranking.
+   */
   public static final RANK_PERFECT_THRESHOLD:Float = 1.00;
+
+  /**
+   * The % ranking required for an `EXCELLENT` ranking.
+   */
   public static final RANK_EXCELLENT_THRESHOLD:Float = 0.90;
+
+  /**
+   * The % ranking required for a `GREAT` ranking.
+   */
   public static final RANK_GREAT_THRESHOLD:Float = 0.80;
+
+  /**
+   * The % ranking required for a `GOOD` ranking.
+   */
   public static final RANK_GOOD_THRESHOLD:Float = 0.60;
-  // public static final RANK_SHIT_THRESHOLD:Float = 0.00;
+
   /**
    * FILE EXTENSIONS
    */
@@ -557,32 +595,32 @@ class Constants
    * - "I made a new file format"
    * - "Actually new or just a renamed ZIP?"
    */
-  public static final EXT_CHART = "fnfc";
+  public static final EXT_CHART:String = 'fnfc';
 
   /**
    * The file extension used when exporting stage files.
    */
-  public static final EXT_STAGE = "fnfs";
+  public static final EXT_STAGE:String = 'fnfs';
 
   /**
    * The file extension used when loading audio files.
    */
-  public static final EXT_SOUND = #if web "mp3" #else "ogg" #end;
+  public static final EXT_SOUND:String = #if web 'mp3' #else 'ogg' #end;
 
   /**
    * The file extension used when loading video files.
    */
-  public static final EXT_VIDEO = "mp4";
+  public static final EXT_VIDEO:String = 'mp4';
 
   /**
    * The file extension used when loading image files.
    */
-  public static final EXT_IMAGE = "png";
+  public static final EXT_IMAGE:String = 'png';
 
   /**
    * The file extension used when loading data files.
    */
-  public static final EXT_DATA = "json";
+  public static final EXT_DATA:String = 'json';
 
   /**
    * OTHER
@@ -650,56 +688,56 @@ class Constants
   /**
    * Default period value for vibration.
    */
-  public inline static final DEFAULT_VIBRATION_PERIOD:Float = 0.1;
+  public static inline final DEFAULT_VIBRATION_PERIOD:Float = 0.1;
 
   /**
    * Default duration value for vibration.
    */
-  public inline static final DEFAULT_VIBRATION_DURATION:Float = 0.1;
+  public static inline final DEFAULT_VIBRATION_DURATION:Float = 0.1;
 
   /**
    * Min vibration amplitude.
    */
-  public inline static final MIN_VIBRATION_AMPLITUDE:Float = 0.25;
+  public static inline final MIN_VIBRATION_AMPLITUDE:Float = 0.25;
 
   /**
    * Default vibration amplitude.
    */
-  public inline static final DEFAULT_VIBRATION_AMPLITUDE:Float = 0.5;
+  public static inline final DEFAULT_VIBRATION_AMPLITUDE:Float = 0.5;
 
   /**
    * Max vibration amplitude.
    */
-  public inline static final MAX_VIBRATION_AMPLITUDE:Float = 1;
+  public static inline final MAX_VIBRATION_AMPLITUDE:Float = 1;
 
   /**
    * Default vibration sharpness.
    */
-  public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
+  public static inline final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 
   /**
    * The path where our save data will be stored.
    */
-  public inline static final SAVE_PATH:String = 'FunkinCrew';
+  public static inline final SAVE_PATH:String = 'FunkinCrew';
 
   /**
    * The name of our save slot.
    */
-  public inline static final SAVE_NAME:String = 'Funkin';
+  public static inline final SAVE_NAME:String = 'Funkin';
 
   /**
    * The legacy path where our save data was saved. Used for backwards compatibility.
    */
-  public inline static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
+  public static inline final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
 
   /**
    * The legacy save slot name, used for backwards compatibility.
    */
-  public inline static final SAVE_NAME_LEGACY:String = 'funkin';
+  public static inline final SAVE_NAME_LEGACY:String = 'funkin';
 
   /**
    * We always use this save slot.
    * Alter this if you want to use a different save slot.
    */
-  public inline static final BASE_SAVE_SLOT:Int = 1;
+  public static inline final BASE_SAVE_SLOT:Int = 1;
 }

@@ -10,7 +10,6 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.debug.log.LogStyle;
 import flixel.util.FlxColor;
-import funkin.graphics.FunkinSprite;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -67,7 +66,7 @@ class InitState extends FlxState
   /**
    * Perform a bunch of game setup, then immediately transition to the title screen.
    */
-  public override function create():Void
+  override public function create():Void
   {
     // Setup a bunch of important Flixel stuff.
     setupShit();
@@ -389,10 +388,10 @@ class InitState extends FlxState
     // -DRESULTS
     FlxG.switchState(() -> new funkin.play.ResultState({
       storyMode: true,
-      title: "Cum Song Erect by Kawai Sprite",
-      songId: "cum",
-      characterId: "pico",
-      difficultyId: "hard",
+      title: 'Cum Song Erect by Kawai Sprite',
+      songId: 'cum',
+      characterId: 'pico',
+      difficultyId: 'hard',
       isNewHighscore: true,
       scoreData: {
         score: 1_234_567,
@@ -463,7 +462,6 @@ class InitState extends FlxState
     }
     else
     {
-      // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       #if mobile
       funkin.mobile.util.FNFCProvider.onFNFCOpen.add(function(fnfcFile:String)
       {

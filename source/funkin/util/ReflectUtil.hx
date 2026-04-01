@@ -7,7 +7,7 @@ import polymod.hscript._internal.PolymodScriptClass;
  * Provides sanitized and blacklisted access to haxe's Reflection functions.
  * Used for sandboxing in scripts.
  */
-@:nullSafety @SuppressWarnings("checkstyle:VarTypeHint")
+@:nullSafety @SuppressWarnings('checkstyle:VarTypeHint')
 class ReflectUtil
 {
   /**
@@ -18,7 +18,7 @@ class ReflectUtil
    * @param value The new value to apply.
    * @throws error When trying to call a blacklisted method.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function callMethod(obj:Any, name:String, args:Array<Any>):Any
   {
     if (!isAccessAllowed(obj, name))
@@ -297,8 +297,10 @@ class ReflectUtil
   /**
    * Set the value of a specific field on an object.
    * Accounts for property fields with getters and setters.
+   *
    * @param obj The object to modify.
    * @param name The field to modify.
+   * @param value The new value to apply.
    * @throws error When trying to set a blacklisted field.
    */
   public static function setProperty(obj:Any, name:String, value:Any):Void
@@ -316,7 +318,7 @@ class ReflectUtil
    * @param cls The class to create.
    * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function createEmptyInstance(cls:Class<Any>):Any
   {
     if (!isAccessAllowed(cls))
@@ -333,7 +335,7 @@ class ReflectUtil
    * @param args Parameters to give to the constructor
    * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function createInstance(cls:Class<Any>, args:Array<Any>):Any
   {
     if (!isAccessAllowed(cls))
@@ -347,7 +349,7 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function resolveClass(name:String):Null<Class<Any>>
   {
     var resolved = getReflectionParent(getClassOrEnumFromName(name));
@@ -364,7 +366,7 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function resolveEnum(name:String):Null<Enum<Any>>
   {
     var resolved = getReflectionParent(getClassOrEnumFromName(name));
@@ -381,10 +383,10 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
+  @SuppressWarnings('checkstyle:FieldDocComment')
   public static function typeof(value:Any):ValueType
   {
-    throw "Function Type.typeof is blacklisted.";
+    throw 'Function Type.typeof is blacklisted.';
   }
 
   /**
@@ -453,17 +455,20 @@ class ReflectUtil
    */
   public static function getClassNameOf(obj:Any):String
   {
-    if (obj == null) return "Unknown";
+    if (obj == null) return 'Unknown';
     if (obj is String && Type.resolveClass(obj) != null) return obj;
     @:nullSafety(Off)
     var cls = Type.getClass(obj);
-    if (cls == null) return "Unknown";
+    if (cls == null) return 'Unknown';
     return Type.getClassName(cls);
   }
 
   /**
    * Transform a function taking an array of arguments into a function that can
    * be called with any number of arguments.
+   *
+   * @param f A function which takes an array of arguments.
+   * @return A new function that takes any number of arguments and passes them as an array to `f`.
    */
   public static function makeVarArgs(f:Array<Dynamic>->Dynamic):Dynamic
   {
@@ -471,9 +476,9 @@ class ReflectUtil
   }
 
   @:unreflective
-  static final pathResolveCache:Map<String, Any> = new Map();
+  static var pathResolveCache:Map<String, Any> = new Map();
   @:unreflective
-  static final blacklistedFieldsCache:Map<String, Any> = new Map();
+  static var blacklistedFieldsCache:Map<String, Any> = new Map();
 
   @:unreflective @:nullSafety(Off)
   static function getClassOrEnumFromName(path:String):Any
@@ -497,7 +502,7 @@ class ReflectUtil
   static function getReflectionParent(obj:Dynamic):Dynamic
   {
     var clsName = getClassNameOf(obj);
-    if (clsName == "Unknown") clsName = null;
+    if (clsName == 'Unknown') clsName = null;
     var objName = obj is String ? obj : (clsName ?? obj);
     return PolymodScriptClass.importOverrides.exists(objName) ? PolymodScriptClass.importOverrides.get(objName) : obj;
   }
@@ -509,9 +514,14 @@ class ReflectUtil
     var isClassReflect = Std.isOfType(reflectedObj, Class);
 
     var key:String;
-    if (isClassReflect) key = Type.getClassName(cast reflectedObj);
+    if (isClassReflect)
+    {
+      key = Type.getClassName(cast reflectedObj);
+    }
     else
+    {
       key = getClassNameOf(reflectedObj);
+    }
 
     if (varName != null)
     {
@@ -519,9 +529,14 @@ class ReflectUtil
       var blacklistedFields:Array<String> = blacklistedFieldsCache.get(cacheKey);
       if (blacklistedFields == null)
       {
-        if (isClassReflect) blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
+        if (isClassReflect)
+        {
+          blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
+        }
         else
+        {
           blacklistedFields = PolymodScriptClass.blacklistedInstanceFields.get(key);
+        }
 
         if (blacklistedFields == null) blacklistedFields = [];
         blacklistedFieldsCache.set(cacheKey, blacklistedFields);

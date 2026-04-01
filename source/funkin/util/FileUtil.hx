@@ -478,19 +478,19 @@ class FileUtil
     file.addEventListener(Event.COMPLETE, function(e:Event)
     {
       trace('Successfully wrote file: "$path"');
-      callback("success");
+      callback('success');
     });
 
     file.addEventListener(Event.CANCEL, function(e:Event)
     {
       trace('Cancelled writing file: "$path"');
-      callback("info");
+      callback('info');
     });
 
     file.addEventListener(IOErrorEvent.IO_ERROR, function(e:IOErrorEvent)
     {
       trace('IO error writing file: "$path"');
-      callback("error");
+      callback('error');
     });
 
     file.save(data, path);
@@ -1121,22 +1121,22 @@ class FileUtil
     // thats why the above comment is there!
     Sys.command('open', [pathFolder]);
     #elseif linux
-    var exitCode = Sys.command("xdg-open", [pathFolder]);
+    var exitCode = Sys.command('xdg-open', [pathFolder]);
     if (exitCode == 0) return;
     var fileManagers:Array<String> = [
-      "dolphin",
-      "nautilus",
-      "nemo",
-      "thunar",
-      "caja",
-      "konqueror",
-      "spacefm",
-      "pcmanfm"
+      'dolphin',
+      'nautilus',
+      'nemo',
+      'thunar',
+      'caja',
+      'konqueror',
+      'spacefm',
+      'pcmanfm'
     ];
 
     for (fm in fileManagers)
     {
-      if (Sys.command("which", [fm]) == 0)
+      if (Sys.command('which', [fm]) == 0)
       {
         exitCode = Sys.command(fm, [pathFolder]);
         if (exitCode == 0) return;

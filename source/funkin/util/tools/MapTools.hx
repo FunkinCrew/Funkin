@@ -61,17 +61,7 @@ class MapTools
   public static function deepClone<K, T, U:ICloneable<T>>(map:Map<K, U>):Map<K, T>
   {
     // TODO: This function does NOT work.
-    throw "Not implemented";
-
-    /*
-      var newMap:Map<K, T> = [];
-      // Replace each value with a clone of itself.
-      for (key in newMap.keys())
-      {
-        newMap.set(key, newMap.get(key).clone());
-      }
-      return newMap;
-     */
+    throw 'Not implemented';
   }
 
   /**

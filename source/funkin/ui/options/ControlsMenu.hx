@@ -22,7 +22,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   public static inline final COLUMNS = 2;
   static var controlList = Control.createAll();
-  /*
+
+  /**
    * Defines groups of controls that cannot share inputs, like left and right. Say, if ACCEPT is Z, Back is X,
    * if the player sets Back to Z it also set ACCEPT to X. This prevents the player from setting the controls in
    * a way the prevents them from changing more controls or exiting the menu.

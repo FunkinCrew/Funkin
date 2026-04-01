@@ -8,12 +8,20 @@ import hxdiscord_rpc.Types.DiscordRichPresence;
 import hxdiscord_rpc.Types.DiscordUser;
 import sys.thread.Thread;
 
+/**
+ * Handles integration with the Discord Rich Presence API.
+ */
 @:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class DiscordClient
 {
   @:envField
   static final DISCORD_CLIENT_ID:Null<String>;
+
+  /**
+   * The current instance of the singleton Discord client.
+   */
   public static var instance(get, never):DiscordClient;
+
   static var _instance:Null<DiscordClient> = null;
 
   static function get_instance():DiscordClient

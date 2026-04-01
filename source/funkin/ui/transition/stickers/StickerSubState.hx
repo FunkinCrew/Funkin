@@ -24,7 +24,7 @@ using StringTools;
 
 typedef StickerSubStateParams =
 {
-  /*
+  /**
    * The state to transition into.
    */
   ?targetState:StickerSubState->FlxState,

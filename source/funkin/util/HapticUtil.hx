@@ -1,7 +1,6 @@
 package funkin.util;
 
 import flixel.tweens.FlxTween;
-import flixel.math.FlxMath;
 #if FEATURE_HAPTICS
 import extension.haptics.Haptic;
 #end
@@ -75,11 +74,11 @@ class HapticUtil
    *
    * @param vibrationPreset Vibration's data.
    */
-  public static function vibrateByPreset(vibrationPreset:VibrationPreset = null):Void
+  public static function vibrateByPreset(?vibrationPreset:VibrationPreset):Void
   {
     if (!HapticUtil.hapticsAvailable) return;
 
-    final preset:VibrationPreset = (vibrationPreset != null) ? vibrationPreset : defaultVibrationPreset;
+    var preset:VibrationPreset = (vibrationPreset != null) ? vibrationPreset : defaultVibrationPreset;
 
     vibrate(preset.period, preset.duration, preset.amplitude, preset.sharpness);
   }
@@ -98,16 +97,16 @@ class HapticUtil
     if (amplitudeTween != null) amplitudeTween.cancel();
 
     amplitudeTween = FlxTween.num(startAmplitude, targetAmplitude, tweenDuration, {
-      onComplete: function(_)
+      onComplete: (_) ->
       {
-        final finalAmplitude:Float = targetAmplitude * 2;
+        var finalAmplitude:Float = targetAmplitude * 2;
 
         vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, finalAmplitude);
       }
-    }, function(currentAmplitude:Float)
-    {
-      vibrate(0, Constants.DEFAULT_VIBRATION_DURATION / 10, currentAmplitude);
-    });
+    }, (currentAmplitude:Float) ->
+      {
+        vibrate(0, Constants.DEFAULT_VIBRATION_DURATION / 10, currentAmplitude);
+      });
   }
 
   static function get_defaultVibrationPreset():VibrationPreset

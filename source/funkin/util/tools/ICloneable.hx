@@ -7,5 +7,9 @@ package funkin.util.tools;
 @:nullSafety
 interface ICloneable<T>
 {
+  /**
+   * Create a clone of this object, a new instance with identical property values.
+   * @return The clone of this object.
+   */
   public function clone():T;
 }

@@ -1,10 +1,10 @@
 package funkin.mobile.input;
 
-import funkin.input.Controls;
-import flixel.input.FlxInput;
-import flixel.input.actions.FlxAction;
+import flixel.input.actions.FlxAction.FlxActionDigital;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
+import flixel.input.FlxInput.FlxInputState;
+import flixel.input.actions.FlxActionInputDigital.FlxActionInputDigitalIFlxInput;
+import funkin.input.Controls;
 import funkin.mobile.ui.FunkinButton;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
@@ -130,7 +130,7 @@ class ControlsHandler
   }
 
   @:noCompletion
-  private static function get_hasExternalInputDevice():Bool
+  static function get_hasExternalInputDevice():Bool
   {
     return FlxG.gamepads.numActiveGamepads > 0 #if android
     || KeyboardUtil.keyboardConnected
@@ -138,7 +138,7 @@ class ControlsHandler
   }
 
   @:noCompletion
-  private static function get_usingExternalInputDevice():Bool
+  static function get_usingExternalInputDevice():Bool
   {
     return ControlsHandler.hasExternalInputDevice && !ControlsHandler.lastInputTouch;
   }

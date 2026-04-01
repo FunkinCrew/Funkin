@@ -560,8 +560,7 @@ class AnimateAtlasAssetPathBuilder
   }
 
   /**
-   * Checks if the image files for this texture atlas exist.
-   * @return Whether the image files exist.
+   * @return Whether the image files for this texture atlas exist.
    */
   public function imageExists():Bool
   {
@@ -577,8 +576,7 @@ class AnimateAtlasAssetPathBuilder
   }
 
   /**
-   * Checks if the `.json` files for this texture atlas exist.
-   * @return Whether the `.json` files exist.
+   * @return Whether the `.json` files for this texture atlas exist.
    */
   public function jsonExists():Bool
   {
@@ -594,8 +592,7 @@ class AnimateAtlasAssetPathBuilder
   }
 
   /**
-   * Validates whether the Adobe Animate texture atlas at this path exists.
-   * @return `true` if the image and all required JSON files exist.
+   * @return `true` if the image and all required `.json` files for this texture atlas exist.
    */
   public function exists():Bool
   {

@@ -39,6 +39,11 @@ class BezierUtil
   /**
    * A bezier curve with two points.
    * This is really just linear interpolation but whatever.
+   *
+   * @param p The percentage of the way through the curve.
+   * @param a The start point.
+   * @param b The end point.
+   * @return The point on the curve.
    */
   public static function bezier2(p:Float, a:FlxPoint, b:FlxPoint):FlxPoint
   {
@@ -47,10 +52,12 @@ class BezierUtil
 
   /**
    * A bezier curve with three points.
+   *
    * @param p The percentage of the way through the curve.
    * @param a The start point.
    * @param b The control point.
    * @param c The end point.
+   * @return The point on the curve.
    */
   public static function bezier3(p:Float, a:FlxPoint, b:FlxPoint, c:FlxPoint):FlxPoint
   {
@@ -59,11 +66,13 @@ class BezierUtil
 
   /**
    * A bezier curve with four points.
+   *
    * @param p The percentage of the way through the curve.
    * @param a The start point.
    * @param b The first control point.
    * @param c The second control point.
    * @param d The end point.
+   * @return The point on the curve.
    */
   public static function bezier4(p:Float, a:FlxPoint, b:FlxPoint, c:FlxPoint, d:FlxPoint):FlxPoint
   {
@@ -72,12 +81,14 @@ class BezierUtil
 
   /**
    * A bezier curve with four points.
+   *
    * @param p The percentage of the way through the curve.
    * @param a The start point.
    * @param b The first control point.
    * @param c The second control point.
-   * @param c The third control point.
-   * @param d The end point.
+   * @param d The third control point.
+   * @param e The end point.
+   * @return The point on the curve.
    */
   public static function bezier5(p:Float, a:FlxPoint, b:FlxPoint, c:FlxPoint, d:FlxPoint, e:FlxPoint):FlxPoint
   {

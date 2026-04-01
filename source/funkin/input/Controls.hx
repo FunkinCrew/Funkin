@@ -1,18 +1,12 @@
 package funkin.input;
 
+import flixel.input.actions.FlxAction.FlxActionDigital;
 import funkin.util.InputUtil;
-import flixel.input.gamepad.FlxGamepad;
-import flixel.util.FlxDirectionFlags;
 import flixel.input.FlxInput.FlxInputState;
-import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
-import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
-import flixel.input.android.FlxAndroidKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxAngle;
 import flixel.math.FlxPoint;
 
 /**
@@ -24,261 +18,417 @@ class Controls extends FlxActionSet
    * A list of actions that a player would invoke via some input device.
    * Uses FlxActions to funnel various inputs to a single action.
    */
-  var _ui_up = new FunkinAction(Action.UI_UP);
-  var _ui_left = new FunkinAction(Action.UI_LEFT);
-  var _ui_right = new FunkinAction(Action.UI_RIGHT);
-  var _ui_down = new FunkinAction(Action.UI_DOWN);
-  var _note_up = new FunkinAction(Action.NOTE_UP);
-  var _note_left = new FunkinAction(Action.NOTE_LEFT);
-  var _note_right = new FunkinAction(Action.NOTE_RIGHT);
-  var _note_down = new FunkinAction(Action.NOTE_DOWN);
-  var _accept = new FunkinAction(Action.ACCEPT);
-  var _back = new FunkinAction(Action.BACK);
-  var _pause = new FunkinAction(Action.PAUSE);
-  var _reset = new FunkinAction(Action.RESET);
+  var _ui_up:FunkinAction = new FunkinAction(Action.UI_UP);
+  var _ui_left:FunkinAction = new FunkinAction(Action.UI_LEFT);
+  var _ui_right:FunkinAction = new FunkinAction(Action.UI_RIGHT);
+  var _ui_down:FunkinAction = new FunkinAction(Action.UI_DOWN);
+  var _note_up:FunkinAction = new FunkinAction(Action.NOTE_UP);
+  var _note_left:FunkinAction = new FunkinAction(Action.NOTE_LEFT);
+  var _note_right:FunkinAction = new FunkinAction(Action.NOTE_RIGHT);
+  var _note_down:FunkinAction = new FunkinAction(Action.NOTE_DOWN);
+  var _accept:FunkinAction = new FunkinAction(Action.ACCEPT);
+  var _back:FunkinAction = new FunkinAction(Action.BACK);
+  var _pause:FunkinAction = new FunkinAction(Action.PAUSE);
+  var _reset:FunkinAction = new FunkinAction(Action.RESET);
   #if FEATURE_SCREENSHOTS
-  var _window_screenshot = new FunkinAction(Action.WINDOW_SCREENSHOT);
+  var _window_screenshot:FunkinAction = new FunkinAction(Action.WINDOW_SCREENSHOT);
   #end
-  var _window_fullscreen = new FunkinAction(Action.WINDOW_FULLSCREEN);
-  var _freeplay_favorite = new FunkinAction(Action.FREEPLAY_FAVORITE);
-  var _freeplay_left = new FunkinAction(Action.FREEPLAY_LEFT);
-  var _freeplay_right = new FunkinAction(Action.FREEPLAY_RIGHT);
-  var _freeplay_char_select = new FunkinAction(Action.FREEPLAY_CHAR_SELECT);
-  var _freeplay_jump_to_top = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
-  var _freeplay_jump_to_bottom = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
-  var _cutscene_advance = new FunkinAction(Action.CUTSCENE_ADVANCE);
+  var _window_fullscreen:FunkinAction = new FunkinAction(Action.WINDOW_FULLSCREEN);
+  var _freeplay_favorite:FunkinAction = new FunkinAction(Action.FREEPLAY_FAVORITE);
+  var _freeplay_left:FunkinAction = new FunkinAction(Action.FREEPLAY_LEFT);
+  var _freeplay_right:FunkinAction = new FunkinAction(Action.FREEPLAY_RIGHT);
+  var _freeplay_char_select:FunkinAction = new FunkinAction(Action.FREEPLAY_CHAR_SELECT);
+  var _freeplay_jump_to_top:FunkinAction = new FunkinAction(Action.FREEPLAY_JUMP_TO_TOP);
+  var _freeplay_jump_to_bottom:FunkinAction = new FunkinAction(Action.FREEPLAY_JUMP_TO_BOTTOM);
+  var _cutscene_advance:FunkinAction = new FunkinAction(Action.CUTSCENE_ADVANCE);
   #if FEATURE_DEBUG_MENU
-  var _debug_menu = new FunkinAction(Action.DEBUG_MENU);
+  var _debug_menu:FunkinAction = new FunkinAction(Action.DEBUG_MENU);
   #end
   #if FEATURE_CHART_EDITOR
-  var _debug_chart = new FunkinAction(Action.DEBUG_CHART);
+  var _debug_chart:FunkinAction = new FunkinAction(Action.DEBUG_CHART);
   #end
   #if FEATURE_STAGE_EDITOR
-  var _debug_stage = new FunkinAction(Action.DEBUG_STAGE);
+  var _debug_stage:FunkinAction = new FunkinAction(Action.DEBUG_STAGE);
   #end
-  var _debug_display = new FunkinAction(Action.DEBUG_DISPLAY);
-  var _volume_up = new FunkinAction(Action.VOLUME_UP);
-  var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
-  var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
+  var _debug_display:FunkinAction = new FunkinAction(Action.DEBUG_DISPLAY);
+  var _volume_up:FunkinAction = new FunkinAction(Action.VOLUME_UP);
+  var _volume_down:FunkinAction = new FunkinAction(Action.VOLUME_DOWN);
+  var _volume_mute:FunkinAction = new FunkinAction(Action.VOLUME_MUTE);
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
   public var gamepadsAdded:Array<Int> = [];
   public var keyboardScheme = KeyboardScheme.None;
   public var UI_UP(get, never):Bool;
 
-  inline function get_UI_UP() return _ui_up.checkPressed();
+  inline function get_UI_UP():Bool
+  {
+    return _ui_up.checkPressed();
+  }
 
   public var UI_LEFT(get, never):Bool;
 
-  inline function get_UI_LEFT() return _ui_left.checkPressed();
+  inline function get_UI_LEFT():Bool
+  {
+    return _ui_left.checkPressed();
+  }
 
   public var UI_RIGHT(get, never):Bool;
 
-  inline function get_UI_RIGHT() return _ui_right.checkPressed();
+  inline function get_UI_RIGHT():Bool
+  {
+    return _ui_right.checkPressed();
+  }
 
   public var UI_DOWN(get, never):Bool;
 
-  inline function get_UI_DOWN() return _ui_down.checkPressed();
+  inline function get_UI_DOWN():Bool
+  {
+    return _ui_down.checkPressed();
+  }
 
   public var UI_UP_P(get, never):Bool;
 
-  inline function get_UI_UP_P() return _ui_up.checkJustPressed();
+  inline function get_UI_UP_P():Bool
+  {
+    return _ui_up.checkJustPressed();
+  }
 
   public var UI_LEFT_P(get, never):Bool;
 
-  inline function get_UI_LEFT_P() return _ui_left.checkJustPressed();
+  inline function get_UI_LEFT_P():Bool
+  {
+    return _ui_left.checkJustPressed();
+  }
 
   public var UI_RIGHT_P(get, never):Bool;
 
-  inline function get_UI_RIGHT_P() return _ui_right.checkJustPressed();
+  inline function get_UI_RIGHT_P():Bool
+  {
+    return _ui_right.checkJustPressed();
+  }
 
   public var UI_DOWN_P(get, never):Bool;
 
-  inline function get_UI_DOWN_P() return _ui_down.checkJustPressed();
+  inline function get_UI_DOWN_P():Bool
+  {
+    return _ui_down.checkJustPressed();
+  }
 
   public var UI_UP_R(get, never):Bool;
 
-  inline function get_UI_UP_R() return _ui_up.checkJustReleased();
+  inline function get_UI_UP_R():Bool
+  {
+    return _ui_up.checkJustReleased();
+  }
 
   public var UI_LEFT_R(get, never):Bool;
 
-  inline function get_UI_LEFT_R() return _ui_left.checkJustReleased();
+  inline function get_UI_LEFT_R():Bool
+  {
+    return _ui_left.checkJustReleased();
+  }
 
   public var UI_RIGHT_R(get, never):Bool;
 
-  inline function get_UI_RIGHT_R() return _ui_right.checkJustReleased();
+  inline function get_UI_RIGHT_R():Bool
+  {
+    return _ui_right.checkJustReleased();
+  }
 
   public var UI_DOWN_R(get, never):Bool;
 
-  inline function get_UI_DOWN_R() return _ui_down.checkJustReleased();
+  inline function get_UI_DOWN_R():Bool
+  {
+    return _ui_down.checkJustReleased();
+  }
 
   public var NOTE_UP(get, never):Bool;
 
-  inline function get_NOTE_UP() return _note_up.checkPressed();
+  inline function get_NOTE_UP():Bool
+  {
+    return _note_up.checkPressed();
+  }
 
   public var NOTE_LEFT(get, never):Bool;
 
-  inline function get_NOTE_LEFT() return _note_left.checkPressed();
+  inline function get_NOTE_LEFT():Bool
+  {
+    return _note_left.checkPressed();
+  }
 
   public var NOTE_RIGHT(get, never):Bool;
 
-  inline function get_NOTE_RIGHT() return _note_right.checkPressed();
+  inline function get_NOTE_RIGHT():Bool
+  {
+    return _note_right.checkPressed();
+  }
 
   public var NOTE_DOWN(get, never):Bool;
 
-  inline function get_NOTE_DOWN() return _note_down.checkPressed();
+  inline function get_NOTE_DOWN():Bool
+  {
+    return _note_down.checkPressed();
+  }
 
   public var NOTE_UP_P(get, never):Bool;
 
-  inline function get_NOTE_UP_P() return _note_up.checkJustPressed();
+  inline function get_NOTE_UP_P():Bool
+  {
+    return _note_up.checkJustPressed();
+  }
 
   public var NOTE_LEFT_P(get, never):Bool;
 
-  inline function get_NOTE_LEFT_P() return _note_left.checkJustPressed();
+  inline function get_NOTE_LEFT_P():Bool
+  {
+    return _note_left.checkJustPressed();
+  }
 
   public var NOTE_RIGHT_P(get, never):Bool;
 
-  inline function get_NOTE_RIGHT_P() return _note_right.checkJustPressed();
+  inline function get_NOTE_RIGHT_P():Bool
+  {
+    return _note_right.checkJustPressed();
+  }
 
   public var NOTE_DOWN_P(get, never):Bool;
 
-  inline function get_NOTE_DOWN_P() return _note_down.checkJustPressed();
+  inline function get_NOTE_DOWN_P():Bool
+  {
+    return _note_down.checkJustPressed();
+  }
 
   public var NOTE_UP_R(get, never):Bool;
 
-  inline function get_NOTE_UP_R() return _note_up.checkJustReleased();
+  inline function get_NOTE_UP_R():Bool
+  {
+    return _note_up.checkJustReleased();
+  }
 
   public var NOTE_LEFT_R(get, never):Bool;
 
-  inline function get_NOTE_LEFT_R() return _note_left.checkJustReleased();
+  inline function get_NOTE_LEFT_R():Bool
+  {
+    return _note_left.checkJustReleased();
+  }
 
   public var NOTE_RIGHT_R(get, never):Bool;
 
-  inline function get_NOTE_RIGHT_R() return _note_right.checkJustReleased();
+  inline function get_NOTE_RIGHT_R():Bool
+  {
+    return _note_right.checkJustReleased();
+  }
 
   public var NOTE_DOWN_R(get, never):Bool;
 
-  inline function get_NOTE_DOWN_R() return _note_down.checkJustReleased();
+  inline function get_NOTE_DOWN_R():Bool
+  {
+    return _note_down.checkJustReleased();
+  }
 
   public var ACCEPT(get, never):Bool;
 
-  inline function get_ACCEPT() return _accept.checkPressed();
+  inline function get_ACCEPT():Bool
+  {
+    return _accept.checkPressed();
+  }
 
   public var ACCEPT_P(get, never):Bool;
 
-  inline function get_ACCEPT_P() return _accept.checkJustPressed();
+  inline function get_ACCEPT_P():Bool
+  {
+    return _accept.checkJustPressed();
+  }
 
   public var ACCEPT_R(get, never):Bool;
 
-  inline function get_ACCEPT_R() return _accept.checkJustReleased();
+  inline function get_ACCEPT_R():Bool
+  {
+    return _accept.checkJustReleased();
+  }
 
   public var BACK(get, never):Bool;
 
-  inline function get_BACK() return _back.checkPressed();
+  inline function get_BACK():Bool
+  {
+    return _back.checkPressed();
+  }
 
   public var BACK_P(get, never):Bool;
 
-  inline function get_BACK_P() return _back.checkJustPressed();
+  inline function get_BACK_P():Bool
+  {
+    return _back.checkJustPressed();
+  }
 
   public var BACK_R(get, never):Bool;
 
-  inline function get_BACK_R() return _back.checkJustReleased();
+  inline function get_BACK_R():Bool
+  {
+    return _back.checkJustReleased();
+  }
 
   public var PAUSE(get, never):Bool;
 
-  inline function get_PAUSE() return _pause.checkPressed();
+  inline function get_PAUSE():Bool
+  {
+    return _pause.checkPressed();
+  }
 
   public var PAUSE_P(get, never):Bool;
 
-  inline function get_PAUSE_P() return _pause.checkJustPressed();
+  inline function get_PAUSE_P():Bool
+  {
+    return _pause.checkJustPressed();
+  }
 
   public var PAUSE_R(get, never):Bool;
 
-  inline function get_PAUSE_R() return _pause.checkJustReleased();
+  inline function get_PAUSE_R():Bool
+  {
+    return _pause.checkJustReleased();
+  }
 
   public var RESET(get, never):Bool;
 
-  inline function get_RESET() return _reset.checkPressed();
+  inline function get_RESET():Bool
+  {
+    return _reset.checkPressed();
+  }
 
   public var RESET_P(get, never):Bool;
 
-  inline function get_RESET_P() return _reset.checkJustPressed();
+  inline function get_RESET_P():Bool
+  {
+    return _reset.checkJustPressed();
+  }
 
   public var RESET_R(get, never):Bool;
 
-  inline function get_RESET_R() return _reset.checkJustReleased();
+  inline function get_RESET_R():Bool
+  {
+    return _reset.checkJustReleased();
+  }
 
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
-  inline function get_WINDOW_FULLSCREEN() return _window_fullscreen.check();
+  inline function get_WINDOW_FULLSCREEN():Bool
+  {
+    return _window_fullscreen.check();
+  }
 
   #if FEATURE_SCREENSHOTS
   public var WINDOW_SCREENSHOT(get, never):Bool;
 
-  inline function get_WINDOW_SCREENSHOT() return _window_screenshot.check();
+  inline function get_WINDOW_SCREENSHOT():Bool
+  {
+    return _window_screenshot.check();
+  }
   #end
 
   public var FREEPLAY_FAVORITE(get, never):Bool;
 
-  inline function get_FREEPLAY_FAVORITE() return _freeplay_favorite.check();
+  inline function get_FREEPLAY_FAVORITE():Bool
+  {
+    return _freeplay_favorite.check();
+  }
 
   public var FREEPLAY_LEFT(get, never):Bool;
 
-  inline function get_FREEPLAY_LEFT() return _freeplay_left.check();
+  inline function get_FREEPLAY_LEFT():Bool
+  {
+    return _freeplay_left.check();
+  }
 
   public var FREEPLAY_RIGHT(get, never):Bool;
 
-  inline function get_FREEPLAY_RIGHT() return _freeplay_right.check();
+  inline function get_FREEPLAY_RIGHT():Bool
+  {
+    return _freeplay_right.check();
+  }
 
   public var FREEPLAY_CHAR_SELECT(get, never):Bool;
 
-  inline function get_FREEPLAY_CHAR_SELECT() return _freeplay_char_select.check();
+  inline function get_FREEPLAY_CHAR_SELECT():Bool
+  {
+    return _freeplay_char_select.check();
+  }
 
   public var FREEPLAY_JUMP_TO_TOP(get, never):Bool;
 
-  inline function get_FREEPLAY_JUMP_TO_TOP() return _freeplay_jump_to_top.check();
+  inline function get_FREEPLAY_JUMP_TO_TOP():Bool
+  {
+    return _freeplay_jump_to_top.check();
+  }
 
   public var FREEPLAY_JUMP_TO_BOTTOM(get, never):Bool;
 
-  inline function get_FREEPLAY_JUMP_TO_BOTTOM() return _freeplay_jump_to_bottom.check();
+  inline function get_FREEPLAY_JUMP_TO_BOTTOM():Bool
+  {
+    return _freeplay_jump_to_bottom.check();
+  }
 
   public var CUTSCENE_ADVANCE(get, never):Bool;
 
-  inline function get_CUTSCENE_ADVANCE() return _cutscene_advance.check();
+  inline function get_CUTSCENE_ADVANCE():Bool
+  {
+    return _cutscene_advance.check();
+  }
 
   #if FEATURE_DEBUG_MENU
   public var DEBUG_MENU(get, never):Bool;
 
-  inline function get_DEBUG_MENU() return _debug_menu.check();
+  inline function get_DEBUG_MENU():Bool
+  {
+    return _debug_menu.check();
+  }
   #end
 
   #if FEATURE_CHART_EDITOR
   public var DEBUG_CHART(get, never):Bool;
 
-  inline function get_DEBUG_CHART() return _debug_chart.check();
+  inline function get_DEBUG_CHART():Bool
+  {
+    return _debug_chart.check();
+  }
   #end
 
   #if FEATURE_STAGE_EDITOR
   public var DEBUG_STAGE(get, never):Bool;
 
-  inline function get_DEBUG_STAGE() return _debug_stage.check();
+  inline function get_DEBUG_STAGE():Bool
+  {
+    return _debug_stage.check();
+  }
   #end
 
   public var DEBUG_DISPLAY(get, never):Bool;
 
-  inline function get_DEBUG_DISPLAY() return _debug_display.check();
+  inline function get_DEBUG_DISPLAY():Bool
+  {
+    return _debug_display.check();
+  }
 
   public var VOLUME_UP(get, never):Bool;
 
-  inline function get_VOLUME_UP() return _volume_up.check();
+  inline function get_VOLUME_UP():Bool
+  {
+    return _volume_up.check();
+  }
 
   public var VOLUME_DOWN(get, never):Bool;
 
-  inline function get_VOLUME_DOWN() return _volume_down.check();
+  inline function get_VOLUME_DOWN():Bool
+  {
+    return _volume_down.check();
+  }
 
   public var VOLUME_MUTE(get, never):Bool;
 
-  inline function get_VOLUME_MUTE() return _volume_mute.check();
+  inline function get_VOLUME_MUTE():Bool
+  {
+    return _volume_mute.check();
+  }
 
   public function new(name, ?scheme:KeyboardScheme)
   {
@@ -706,7 +856,7 @@ class Controls extends FlxActionSet
     }
   }
 
-  inline public function copyTo(controls:Controls, ?device:Device):Void
+  public inline function copyTo(controls:Controls, ?device:Device):Void
   {
     controls.copyFrom(this, device);
   }
@@ -1189,7 +1339,7 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, _) removeButtons(action, gamepadID, buttons));
   }
 
-  inline static function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id:Int):Void
+  static inline function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id:Int):Void
   {
     for (button in buttons)
     {
@@ -1321,7 +1471,7 @@ class Controls extends FlxActionSet
     }
   }
 
-  inline static function isGamepad(input:FlxActionInput, deviceID:Int):Bool
+  static inline function isGamepad(input:FlxActionInput, deviceID:Int):Bool
   {
     return input.device == GAMEPAD && (deviceID == FlxInputDeviceID.ALL || input.deviceID == deviceID);
   }
@@ -1354,7 +1504,7 @@ class FunkinAction extends FlxActionDigital
   var cache:Map<String,
     {timestamp:Float, value:Bool}> = [];
 
-  public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
+  public function new(?name:String = '', ?namePressed:String, ?nameReleased:String)
   {
     super(name);
 
@@ -1367,7 +1517,7 @@ class FunkinAction extends FlxActionDigital
   /**
    * Input checks default to whether the input was just pressed, on any input device.
    */
-  public override function check():Bool
+  override public function check():Bool
   {
     return checkFiltered(JUST_PRESSED);
   }
@@ -1602,48 +1752,48 @@ enum Control
 enum abstract Action(String) to String from String
 {
   // NOTE
-  var NOTE_UP = "note_up";
-  var NOTE_LEFT = "note_left";
-  var NOTE_RIGHT = "note_right";
-  var NOTE_DOWN = "note_down";
+  public var NOTE_UP = 'note_up';
+  public var NOTE_LEFT = 'note_left';
+  public var NOTE_RIGHT = 'note_right';
+  public var NOTE_DOWN = 'note_down';
   // UI
-  var UI_UP = "ui_up";
-  var UI_LEFT = "ui_left";
-  var UI_RIGHT = "ui_right";
-  var UI_DOWN = "ui_down";
-  var ACCEPT = "accept";
-  var BACK = "back";
-  var PAUSE = "pause";
-  var RESET = "reset";
+  public var UI_UP = 'ui_up';
+  public var UI_LEFT = 'ui_left';
+  public var UI_RIGHT = 'ui_right';
+  public var UI_DOWN = 'ui_down';
+  public var ACCEPT = 'accept';
+  public var BACK = 'back';
+  public var PAUSE = 'pause';
+  public var RESET = 'reset';
   // WINDOW
-  var WINDOW_FULLSCREEN = "window_fullscreen";
+  public var WINDOW_FULLSCREEN = 'window_fullscreen';
   #if FEATURE_SCREENSHOTS
-  var WINDOW_SCREENSHOT = "window_screenshot";
+  var WINDOW_SCREENSHOT = 'window_screenshot';
   #end
   // CUTSCENE
-  var CUTSCENE_ADVANCE = "cutscene_advance";
+  public var CUTSCENE_ADVANCE = 'cutscene_advance';
   // FREEPLAY
-  var FREEPLAY_FAVORITE = "freeplay_favorite";
-  var FREEPLAY_LEFT = "freeplay_left";
-  var FREEPLAY_RIGHT = "freeplay_right";
-  var FREEPLAY_CHAR_SELECT = "freeplay_char_select";
-  var FREEPLAY_JUMP_TO_TOP = "freeplay_jump_to_top";
-  var FREEPLAY_JUMP_TO_BOTTOM = "freeplay_jump_to_bottom";
+  public var FREEPLAY_FAVORITE = 'freeplay_favorite';
+  public var FREEPLAY_LEFT = 'freeplay_left';
+  public var FREEPLAY_RIGHT = 'freeplay_right';
+  public var FREEPLAY_CHAR_SELECT = 'freeplay_char_select';
+  public var FREEPLAY_JUMP_TO_TOP = 'freeplay_jump_to_top';
+  public var FREEPLAY_JUMP_TO_BOTTOM = 'freeplay_jump_to_bottom';
   // VOLUME
-  var VOLUME_UP = "volume_up";
-  var VOLUME_DOWN = "volume_down";
-  var VOLUME_MUTE = "volume_mute";
+  public var VOLUME_UP = 'volume_up';
+  public var VOLUME_DOWN = 'volume_down';
+  public var VOLUME_MUTE = 'volume_mute';
   // DEBUG
   #if FEATURE_DEBUG_MENU
-  var DEBUG_MENU = "debug_menu";
+  var DEBUG_MENU = 'debug_menu';
   #end
   #if FEATURE_CHART_EDITOR
-  var DEBUG_CHART = "debug_chart";
+  var DEBUG_CHART = 'debug_chart';
   #end
   #if FEATURE_STAGE_EDITOR
-  var DEBUG_STAGE = "debug_stage";
+  var DEBUG_STAGE = 'debug_stage';
   #end
-  var DEBUG_DISPLAY = "debug_display";
+  public var DEBUG_DISPLAY = 'debug_display';
 }
 
 enum Device

@@ -83,7 +83,7 @@ class CLIUtil
               result.chart.shouldLoadChart = true;
               result.chart.chartPath = args.shift();
             }
-          case "--stage":
+          case '--stage':
             if (args.length == 0)
             {
               trace('No stage path provided.');
@@ -94,7 +94,7 @@ class CLIUtil
               result.stage.shouldLoadStage = true;
               result.stage.stagePath = args.shift();
             }
-          case "--song":
+          case '--song':
             if (args.length == 0)
             {
               trace('No chart path provided.');

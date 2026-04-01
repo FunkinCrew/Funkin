@@ -6,8 +6,9 @@ package funkin.util.tools;
 @:nullSafety
 class ArrayTools
 {
-  /*
+  /**
    * Push an element to the array if it is not already present.
+   *
    * @param input The array to push to
    * @param element The element to push
    * @return Whether the element was pushed
@@ -27,11 +28,16 @@ class ArrayTools
   {
     // This method is faster than array.splice(0, array.length)
     while (array.length > 0)
+    {
       array.pop();
+    }
   }
 
   /**
    * Create a new array with all elements of the given array, to prevent modifying the original.
+   *
+   * @param array The array to clone.
+   * @return A new array with the same elements as the original.
    */
   public static function clone<T>(array:Array<T>):Array<T>
   {
@@ -40,6 +46,10 @@ class ArrayTools
 
   /**
    * Create a new array with clones of all elements of the given array, to prevent modifying the original.
+   * NOTE: Requires the input array to implement `ICloneable`.
+   *
+   * @param array The array to clone.
+   * @return A new array with the same elements as the original.
    */
   public static function deepClone<T, U:ICloneable<T>>(array:Array<U>):Array<T>
   {

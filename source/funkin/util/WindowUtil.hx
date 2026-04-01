@@ -29,7 +29,7 @@ class WindowUtil
       return '';
     }
 
-    final lowerUrl:String = targetUrl.toLowerCase();
+    var lowerUrl:String = targetUrl.toLowerCase();
     if (!lowerUrl.startsWith('http:') && !lowerUrl.startsWith('https:'))
     {
       targetUrl = 'http://' + targetUrl;
@@ -50,9 +50,15 @@ class WindowUtil
   public static function openURL(targetUrl:String):Void
   {
     // Ensure you can't open protocols such as steam://, file://, etc
-    var protocol:Array<String> = targetUrl.split("://");
-    if (protocol.length == 1) targetUrl = 'https://${targetUrl}';
-    else if (protocol[0] != 'http' && protocol[0] != 'https') throw "openURL can only open http and https links.";
+    var protocol:Array<String> = targetUrl.split('://');
+    if (protocol.length == 1)
+    {
+      targetUrl = 'https://${targetUrl}';
+    }
+    else if (protocol[0] != 'http' && protocol[0] != 'https')
+    {
+      throw 'openURL can only open http and https links.';
+    }
 
     #if FEATURE_OPEN_URL
     targetUrl = sanitizeURL(targetUrl);
@@ -86,14 +92,14 @@ class WindowUtil
     // Post system info like Git hash
     cpp.vm.tracy.TracyProfiler.messageAppInfo(appInfoMessage);
 
-    cpp.vm.tracy.TracyProfiler.setThreadName("main");
+    cpp.vm.tracy.TracyProfiler.setThreadName('main');
   }
   #end
 
   /**
    * Dispatched when the game window is closed.
    */
-  public static final windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
+  public static var windowExit:FlxTypedSignal<Int->Void> = new FlxTypedSignal<Int->Void>();
 
   /**
    * Wires up FlxSignals that happen based on window activity.
@@ -102,7 +108,7 @@ class WindowUtil
   public static function initWindowEvents():Void
   {
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int)
+    openfl.Lib.current.stage.application.onExit.add((exitCode:Int) ->
     {
       windowExit.dispatch(exitCode);
     });
@@ -178,6 +184,10 @@ class WindowUtil
     lime.app.Application.current.window.alert(lime.ui.MessageBoxType.INFORMATION, desc, name);
   }
 
+  /**
+   * Modifies the VSync mode of the application window.
+   * @param value The desired VSync mode to use.
+   */
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
     var res:Bool = FlxG.stage.application.window.setVSyncMode(value);

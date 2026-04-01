@@ -3,13 +3,6 @@ package funkin.util;
 import haxe.Json;
 import haxe.io.Bytes;
 
-typedef ScoreInput =
-{
-  var d:Int; // Key pressed
-  var l:Int; // Duration
-  var t:Int; // Start timestamp
-}
-
 /**
  * Functions dedicated to serializing and deserializing data.
  * NOTE: Use `json2object` wherever possible, it's way more efficient.
@@ -17,12 +10,16 @@ typedef ScoreInput =
 @:nullSafety
 class SerializerUtil
 {
-  static final INDENT_CHAR = "\t";
+  static final INDENT_CHAR:String = '\t';
 
   /**
    * Convert a Haxe object to a JSON string.
    * NOTE: Use `json2object.JsonWriter<T>` WHEREVER POSSIBLE. Do not use this one unless you ABSOLUTELY HAVE TO it's SLOW!
    * And don't even THINK about using `haxe.Json.stringify` without the replacer!
+   *
+   * @param input The object to serialize to JSON.
+   * @param pretty Whether to format the output with indentation.
+   * @return The JSON string representation of the input object.
    */
   public static function toJSON(input:Dynamic, pretty:Bool = true):String
   {
@@ -31,6 +28,9 @@ class SerializerUtil
 
   /**
    * Convert a JSON string to a Haxe object.
+   *
+   * @param input The JSON string to parse.
+   * @return The parsed object, or null if parsing fails.
    */
   public static function fromJSON(input:String):Dynamic
   {
@@ -50,6 +50,9 @@ class SerializerUtil
 
   /**
    * Convert a JSON byte array to a Haxe object.
+   *
+   * @param input The JSON byte array to parse.
+   * @return The parsed object, or null if parsing fails.
    */
   public static function fromJSONBytes(input:Bytes):Null<Dynamic>
   {
@@ -71,7 +74,7 @@ class SerializerUtil
   static function replacer(key:Dynamic, value:Dynamic):Dynamic
   {
     // Hacky because you can't use `isOfType` on a struct.
-    if (key == "version")
+    if (key == 'version')
     {
       if (Std.isOfType(value, String)) return value;
 

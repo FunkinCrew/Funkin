@@ -8,6 +8,11 @@ class IntTools
 {
   /**
    * Constrain an integer between a minimum and maximum value.
+   *
+   * @param value The value to clamp.
+   * @param min The minimum value.
+   * @param max The maximum value.
+   * @return The clamped value.
    */
   public static function clamp(value:Int, min:Int, max:Int):Int
   {

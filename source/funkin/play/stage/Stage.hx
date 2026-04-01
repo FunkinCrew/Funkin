@@ -331,7 +331,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param name (Optional) A unique name for the sprite.
    *   You can call `getNamedProp(name)` to retrieve it later.
    */
-  public function addProp(prop:StageProp, ?name:String = null):Void
+  public function addProp(prop:StageProp, ?name:String):Void
   {
     prop.vcamPoint = this.vcamPoint;
     if (name != null)
@@ -345,7 +345,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   /**
    * Add a sprite to the stage which animates to the beat of the song.
    */
-  public function addBopper(bopper:Bopper, ?name:String = null):Void
+  public function addBopper(bopper:Bopper, ?name:String):Void
   {
     boppers.push(bopper);
     this.addProp(bopper, name);
