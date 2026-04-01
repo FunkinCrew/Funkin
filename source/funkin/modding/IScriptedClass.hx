@@ -10,7 +10,6 @@ import funkin.modding.events.ScriptEvent;
 interface IScriptedClass
 {
   public function onScriptEvent(event:ScriptEvent):Void;
-
   public function onCreate(event:ScriptEvent):Void;
   public function onDestroy(event:ScriptEvent):Void;
   public function onUpdate(event:UpdateScriptEvent):Void;
@@ -32,12 +31,10 @@ interface IStateChangingScriptedClass extends IScriptedClass
 {
   public function onStateChangeBegin(event:StateChangeScriptEvent):Void;
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void;
-
   public function onSubStateOpenBegin(event:SubStateScriptEvent):Void;
   public function onSubStateOpenEnd(event:SubStateScriptEvent):Void;
   public function onSubStateCloseBegin(event:SubStateScriptEvent):Void;
   public function onSubStateCloseEnd(event:SubStateScriptEvent):Void;
-
   public function onFocusLost(event:FocusScriptEvent):Void;
   public function onFocusGained(event:FocusScriptEvent):Void;
 }

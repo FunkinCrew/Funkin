@@ -17,8 +17,7 @@ import haxe.ui.events.MouseEvent;
  * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
  * Opens when the chart editor first opens.
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/welcome.xml"))
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/welcome.xml")) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 {
   /**

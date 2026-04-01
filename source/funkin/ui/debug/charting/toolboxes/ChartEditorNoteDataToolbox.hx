@@ -17,18 +17,15 @@ import funkin.data.song.SongData.NoteParamData;
 /**
  * The toolbox which allows modifying information like Note Kind.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml"))
 class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 {
   // 100 is the height used in note-data.xml
   static final DIALOG_HEIGHT:Int = 100;
-
   // toolboxNotesGrid.height + 45
   // this is what i found out by printing this.height and grid.height
   // and then seeing that this.height is 100 and grid.height is 55
   static final HEIGHT_OFFSET:Int = 45;
-
   // minimizing creates a gray bar the bottom, which would obscure the components,
   // which is why we use an extra offset of 20
   static final MINIMIZE_FIX:Int = 20;
@@ -37,7 +34,6 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
   var toolboxNotesNoteKind:DropDown;
   var toolboxNotesCustomKind:TextField;
   var toolboxNotesParams:Array<ToolboxNoteKindParam> = [];
-
   var _initializing:Bool = true;
 
   public function new(chartEditorState2:ChartEditorState)

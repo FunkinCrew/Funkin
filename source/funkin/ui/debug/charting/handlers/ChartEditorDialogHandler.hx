@@ -49,8 +49,7 @@ using Lambda;
 /**
  * Handles dialogs for the new Chart Editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
@@ -694,7 +693,8 @@ class ChartEditorDialogHandler
 
     var inputAlbum:Null<DropDown> = dialog.findComponent('inputAlbum', DropDown);
     if (inputAlbum == null) throw 'Could not locate inputAlbum DropDown in Song Metadata dialog';
-    inputAlbum.onChange = (event:UIEvent) -> {
+    inputAlbum.onChange = (event:UIEvent) ->
+    {
       if (event.data?.id == null) return;
       newSongMetadata.playData.album = event.data.id;
     };
@@ -703,7 +703,8 @@ class ChartEditorDialogHandler
 
     var inputStickerPack:Null<DropDown> = dialog.findComponent('inputStickerPack', DropDown);
     if (inputStickerPack == null) throw 'Could not locate inputStickerPack DropDown in Song Metadata dialog';
-    inputStickerPack.onChange = (event:UIEvent) -> {
+    inputStickerPack.onChange = (event:UIEvent) ->
+    {
       if (event.data?.id == null) return;
       newSongMetadata.playData.stickerPack = event.data.id;
     };
@@ -752,7 +753,9 @@ class ChartEditorDialogHandler
       var timeChanges:Array<SongTimeChange> = newSongMetadata.timeChanges;
       if (timeChanges == null || timeChanges.length == 0)
       {
-        timeChanges = [new SongTimeChange(0, event.value)];
+        timeChanges = [
+          new SongTimeChange(0, event.value)
+        ];
       }
       else
       {
@@ -1126,10 +1129,14 @@ class ChartEditorDialogHandler
 
     var prettyFormat:String = switch (format)
     {
-      case 'legacy': 'FNF Legacy';
-      case 'stepmania': 'StepMania';
-      case 'osumania': 'osu!Mania';
-      default: 'Unknown';
+      case 'legacy':
+        'FNF Legacy';
+      case 'stepmania':
+        'StepMania';
+      case 'osumania':
+        'osu!Mania';
+      default:
+        'Unknown';
     }
 
     var fileFilter = switch (format)
@@ -1140,7 +1147,8 @@ class ChartEditorDialogHandler
         [FileUtil.FILE_FILTER_SM];
       case 'osumania':
         [FileUtil.FILE_FILTER_OSU];
-      default: null;
+      default:
+        null;
     }
 
     var fileExt:String = switch (format)
@@ -1149,7 +1157,8 @@ class ChartEditorDialogHandler
         "osu";
       case 'stepmania':
         "sm";
-      default: "json";
+      default:
+        "json";
     }
 
     dialog.title = 'Import Chart - ${prettyFormat}';
@@ -1262,7 +1271,11 @@ class ChartEditorDialogHandler
         state.error('Failure', 'Failed to load song (${path.file}.${path.ext})');
         return;
       }
-      state.loadSong([Constants.DEFAULT_VARIATION => songMetadata], [Constants.DEFAULT_VARIATION => songChartData]);
+      state.loadSong([
+        Constants.DEFAULT_VARIATION => songMetadata
+      ], [
+        Constants.DEFAULT_VARIATION => songChartData
+      ]);
 
       dialog.hideDialog(DialogButton.APPLY);
       state.success('Success', '$loadedText (${path.file}.${path.ext})');

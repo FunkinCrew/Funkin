@@ -11,12 +11,10 @@ import haxe.ui.util.Color;
 import flixel.util.FlxColor;
 import haxe.ui.events.UIEvent;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-properties.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-properties.xml"))
 class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;
-
   var objPosX:NumberStepper;
   var objPosY:NumberStepper;
   var objZIdx:NumberStepper;
@@ -27,11 +25,9 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
   var objScrollX:NumberStepper;
   var objScrollY:NumberStepper;
   var objDance:NumberStepper;
-
   var objPixel:CheckBox;
   var objFlipX:CheckBox;
   var objFlipY:CheckBox;
-
   var objBlend:DropDown;
   var objTint:DropDown;
 
@@ -279,7 +275,6 @@ private class ObjectTintHandler extends DropDownHandler
 private class ObjectTintView extends VBox
 {
   public var dropdown:DropDown = null;
-
   public var currentColor(get, set):Null<Color>;
 
   private function get_currentColor():Null<Color>

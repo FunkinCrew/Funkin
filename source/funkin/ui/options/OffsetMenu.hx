@@ -50,46 +50,38 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   var items:TextMenuList;
   var preferenceItems:FlxTypedSpriteGroup<FlxSprite>;
   var backButton:FunkinBackButton;
-
   // Background
   var blackRect:FlxSprite;
-
   // Text for the jump-in message and count
   var jumpInText:FlxText;
   var countText:FlxText;
-
   // Elements for the offset calibration (receptor, arrows, strumline, etc)
   var arrows:Array<ArrowData> = [];
   var receptor:FunkinSprite;
   var testStrumline:Strumline;
-
   // Camera for the menu
   var menuCamera:FunkinCamera;
   // Variable to check if we're calibrating or testing
   var calibrating:Bool = false;
-
   // Variables for the offset calibration
   var appliedOffsetLerp:Float = 0;
   var savedOffset:Int = 0;
   var tempOffset:Int = 0;
-
   // Variables for transitioning between states
   var lerped:Float = 0;
   var shouldOffset:Int = 0;
   var offsetLerp:Float = 0;
   var scaleModifier:Float = 1;
-
   // Variables for keeping time and beat
   var localConductor:Conductor;
   var arrowBeat:Float = 0;
-
   // Variables for differences and consistency functionality
   var _gotMad:Bool = false;
   var differences:Array<Float> = [];
-
   var msPerBeat(get, never):Float;
 
   // The milliseconds per beat, calculated from the BPM.
+
   function get_msPerBeat():Float
   {
     return 60000 / BPM;
@@ -408,6 +400,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   // Exits the calibration and resets the offset.
+
   public function exitCalibration(cancel:Bool):Void
   {
     backButton.enabled = false;
@@ -431,6 +424,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   // Handles the exit for mobile devices.
+
   public function handleMobileExit():Void
   {
     if (shouldOffset == 1) exitCalibration(true);
@@ -439,6 +433,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   // Returns the average of the differences in milliseconds.
   // Average is the sum of all differences divided by the number of differences.
+
   public function getAverage():Float
   {
     if (differences.length == 0) return 0;
@@ -455,6 +450,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   // Returns the consistency of the differences.
   // Consistency is the average of the squared differences from the mean. (Standard deviation)
+
   public function getConsistency():Float
   {
     if (differences.length == 0) return 0;
@@ -908,6 +904,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   // Creates a button item with a callback.
+
   function createButtonItem(name:String, callback:Void->Void):Void
   {
     var item = items.createItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, name, BOLD, callback);
@@ -915,6 +912,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
   }
 
   // Creates a preference item with a number input.
+
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
       step:Float = 0.1, precision:Int, dragStepMultiplier:Float = 1):NumberPreferenceItem
   {

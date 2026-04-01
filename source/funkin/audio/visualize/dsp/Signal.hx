@@ -47,7 +47,10 @@ class Signal
 
     var peaks = new Array<Int>();
 
-    final dy = [for (i in 1...y.length) y[i] - y[i - 1]];
+    final dy = [
+      for (i in 1...y.length)
+        y[i] - y[i - 1]
+    ];
     for (i in 1...dy.length)
     {
       // peak: function growth positive to its left and negative to its right

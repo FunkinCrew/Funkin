@@ -129,7 +129,9 @@ class OsuManiaImporter
     trace('Migrating song chart data from Osu!Mania.');
 
     // Osu!Mania doesn't have a scroll speed variable as its controlled by the player
-    var songChartData:SongChartData = new SongChartData([difficulty => Constants.DEFAULT_SCROLLSPEED], [], [difficulty => []]);
+    var songChartData:SongChartData = new SongChartData([
+      difficulty => Constants.DEFAULT_SCROLLSPEED
+    ], [], [difficulty => []]);
 
     // songData.HitObjects is a Array<String> here so im casting it so haxe stops yelling at me
     var osuNotes:Array<ManiaHitObject> = parseManiaHitObjects(cast songData.HitObjects, songData.Difficulty.CircleSize);

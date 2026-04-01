@@ -11,7 +11,6 @@ class NoteHoldCover extends FlxTypedSpriteGroup<FlxSprite>
   static final FRAMERATE_DEFAULT:Int = 24;
 
   public var holdNote:SustainTrail;
-
   public var glow:FlxSprite;
 
   var sparks:FlxSprite;

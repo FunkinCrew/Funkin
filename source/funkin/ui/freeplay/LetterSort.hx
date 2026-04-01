@@ -114,7 +114,13 @@ class LetterSort extends FlxSpriteGroup
 
         if (index == 2 || index == 5) continue;
 
-        var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+        var selectionChanges:Array<Int> = [
+          -1,
+          -1,
+          0,
+          1,
+          1
+        ];
         var changeValue = selectionChanges[index];
 
         if (changeValue != 0)

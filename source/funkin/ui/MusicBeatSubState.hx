@@ -29,7 +29,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 {
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
-
   public var conductorInUse(get, set):Conductor;
 
   var _conductorInUse:Null<Conductor>;

@@ -14,8 +14,7 @@ import openfl.geom.Rectangle;
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorThemeHandler
 {
   // TODO: There's probably a better system of organization for these colors.
@@ -23,32 +22,25 @@ class ChartEditorThemeHandler
   // ================================
   static final BACKGROUND_COLOR_LIGHT:FlxColor = 0xFF673AB7;
   static final BACKGROUND_COLOR_DARK:FlxColor = 0xFF361E60;
-
   // Color 1 of the grid pattern. Alternates with Color 2.
   public static final GRID_COLOR_1_LIGHT:FlxColor = 0xFFE7E6E6;
   public static final GRID_COLOR_1_DARK:FlxColor = 0xFF181919;
-
   // Color 2 of the grid pattern. Alternates with Color 1.
   public static final GRID_COLOR_2_LIGHT:FlxColor = 0xFFF8F8F8;
   public static final GRID_COLOR_2_DARK:FlxColor = 0xFF202020;
-
   // Color 3 of the grid pattern. Borders the other colors.
   public static final GRID_COLOR_3_LIGHT:FlxColor = 0xFFD9D5D5;
   public static final GRID_COLOR_3_DARK:FlxColor = 0xFF262A2A;
-
   // Vertical divider between characters.
   public static final GRID_STRUMLINE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   public static final GRID_STRUMLINE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_STRUMLINE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
-
   // Horizontal divider between measures.
   public static final GRID_MEASURE_DIVIDER_COLOR_LIGHT:FlxColor = 0xFF111111;
   public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
-
   public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
   public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF484848;
-
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
   static final SELECTION_SQUARE_BORDER_COLOR_DARK:FlxColor = 0xFF339933;
@@ -62,24 +54,19 @@ class ChartEditorThemeHandler
   // Make sure this is transparent so you can see the notes underneath.
   static final SELECTION_SQUARE_FILL_COLOR_LIGHT:FlxColor = 0x4033FF33;
   static final SELECTION_SQUARE_FILL_COLOR_DARK:FlxColor = 0x4033FF33;
-
   static final PLAYHEAD_BLOCK_BORDER_WIDTH:Int = 2;
   static final PLAYHEAD_BLOCK_BORDER_COLOR:FlxColor = 0xFF9D0011;
   static final PLAYHEAD_BLOCK_FILL_COLOR:FlxColor = 0xFFBD0231;
-
   // Lines on the measure ticks.
   public static final MEASURE_TICKS_MEASURE_WIDTH:Int = 6;
   public static final MEASURE_TICKS_BEAT_WIDTH:Int = 4;
   public static final MEASURE_TICKS_STEP_WIDTH:Int = 2;
-
   // Border on the square over the note preview.
   static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT = 0xFFF8A657;
   static final NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK = 0xFFF8A657;
-
   // Fill on the square over the note preview.
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT = 0x80F8A657;
   static final NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK = 0x80F8A657;
-
   public static final TOTAL_COLUMN_COUNT:Int = ChartEditorState.STRUMLINE_SIZE * 2 + 1;
 
   /**
@@ -105,9 +92,12 @@ class ChartEditorThemeHandler
     if (state.menuBG == null) return;
     state.menuBG.color = switch (state.currentTheme)
     {
-      case ChartEditorTheme.Light: BACKGROUND_COLOR_LIGHT;
-      case ChartEditorTheme.Dark: BACKGROUND_COLOR_DARK;
-      default: BACKGROUND_COLOR_LIGHT;
+      case ChartEditorTheme.Light:
+        BACKGROUND_COLOR_LIGHT;
+      case ChartEditorTheme.Dark:
+        BACKGROUND_COLOR_DARK;
+      default:
+        BACKGROUND_COLOR_LIGHT;
     }
   }
 
@@ -119,23 +109,32 @@ class ChartEditorThemeHandler
   {
     var gridColor1:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_1_LIGHT;
-      case Dark: GRID_COLOR_1_DARK;
-      default: GRID_COLOR_1_LIGHT;
+      case Light:
+        GRID_COLOR_1_LIGHT;
+      case Dark:
+        GRID_COLOR_1_DARK;
+      default:
+        GRID_COLOR_1_LIGHT;
     };
 
     var gridColor2:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_2_LIGHT;
-      case Dark: GRID_COLOR_2_DARK;
-      default: GRID_COLOR_2_LIGHT;
+      case Light:
+        GRID_COLOR_2_LIGHT;
+      case Dark:
+        GRID_COLOR_2_DARK;
+      default:
+        GRID_COLOR_2_LIGHT;
     };
 
     var dividerColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
-      case Dark: GRID_STRUMLINE_DIVIDER_COLOR_DARK;
-      default: GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
+      case Light:
+        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
+      case Dark:
+        GRID_STRUMLINE_DIVIDER_COLOR_DARK;
+      default:
+        GRID_STRUMLINE_DIVIDER_COLOR_LIGHT;
     }
 
     // Draw the base grid.
@@ -149,9 +148,12 @@ class ChartEditorThemeHandler
     // Selection borders
     var selectionBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: GRID_COLOR_3_LIGHT;
-      case Dark: GRID_COLOR_3_DARK;
-      default: GRID_COLOR_3_LIGHT;
+      case Light:
+        GRID_COLOR_3_LIGHT;
+      case Dark:
+        GRID_COLOR_3_DARK;
+      default:
+        GRID_COLOR_3_LIGHT;
     };
 
     // Selection border at top.
@@ -249,16 +251,22 @@ class ChartEditorThemeHandler
   {
     var selectionSquareBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: SELECTION_SQUARE_BORDER_COLOR_LIGHT;
-      case Dark: SELECTION_SQUARE_BORDER_COLOR_DARK;
-      default: SELECTION_SQUARE_BORDER_COLOR_LIGHT;
+      case Light:
+        SELECTION_SQUARE_BORDER_COLOR_LIGHT;
+      case Dark:
+        SELECTION_SQUARE_BORDER_COLOR_DARK;
+      default:
+        SELECTION_SQUARE_BORDER_COLOR_LIGHT;
     };
 
     var selectionSquareFillColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: SELECTION_SQUARE_FILL_COLOR_LIGHT;
-      case Dark: SELECTION_SQUARE_FILL_COLOR_DARK;
-      default: SELECTION_SQUARE_FILL_COLOR_LIGHT;
+      case Light:
+        SELECTION_SQUARE_FILL_COLOR_LIGHT;
+      case Dark:
+        SELECTION_SQUARE_FILL_COLOR_DARK;
+      default:
+        SELECTION_SQUARE_FILL_COLOR_LIGHT;
     };
 
     state.selectionSquareBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
@@ -288,16 +296,22 @@ class ChartEditorThemeHandler
   {
     var viewportBorderColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
-      case Dark: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
-      default: NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
+      case Light:
+        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
+      case Dark:
+        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_DARK;
+      default:
+        NOTE_PREVIEW_VIEWPORT_BORDER_COLOR_LIGHT;
     };
 
     var viewportFillColor:FlxColor = switch (state.currentTheme)
     {
-      case Light: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
-      case Dark: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
-      default: NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
+      case Light:
+        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
+      case Dark:
+        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_DARK;
+      default:
+        NOTE_PREVIEW_VIEWPORT_FILL_COLOR_LIGHT;
     };
 
     state.notePreviewViewportBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);

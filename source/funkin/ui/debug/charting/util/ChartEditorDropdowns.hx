@@ -23,8 +23,7 @@ import funkin.ui.transition.stickers.StickerPack;
  * Functions for populating dropdowns based on game data.
  * These get used by both dialogs and toolboxes so they're in their own class to prevent "reaching over."
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDropdowns
 {
   /**
@@ -39,9 +38,12 @@ class ChartEditorDropdowns
 
     var returnValue:DropDownEntry = switch (charType)
     {
-      case BF: {id: "bf", text: "Boyfriend"};
-      case DAD: {id: "dad", text: "Daddy Dearest"};
-      default: {
+      case BF:
+        {id: "bf", text: "Boyfriend"};
+      case DAD:
+        {id: "dad", text: "Daddy Dearest"};
+      default:
+        {
           dropDown.dataSource.add({id: "none", text: ""});
           {id: "none", text: "None"};
         }

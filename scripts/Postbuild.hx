@@ -31,16 +31,15 @@ class Postbuild
       else
       {
         var bytes:haxe.io.Bytes = haxe.io.Bytes.ofData(sys.io.File.getBytes(path).getData());
-        var entry:haxe.zip.Entry =
-          {
-            fileName: StringTools.replace(path, inDir, ""),
-            fileSize: bytes.length,
-            fileTime: Date.now(),
-            compressed: false,
-            dataSize: sys.FileSystem.stat(path).size,
-            data: bytes,
-            crc32: haxe.crypto.Crc32.make(bytes)
-          };
+        var entry:haxe.zip.Entry = {
+          fileName: StringTools.replace(path, inDir, ""),
+          fileSize: bytes.length,
+          fileTime: Date.now(),
+          compressed: false,
+          dataSize: sys.FileSystem.stat(path).size,
+          data: bytes,
+          crc32: haxe.crypto.Crc32.make(bytes)
+        };
         entries.push(entry);
       }
     }

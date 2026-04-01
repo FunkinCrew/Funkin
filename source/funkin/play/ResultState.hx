@@ -58,24 +58,18 @@ import funkin.util.DeviceUtil;
 class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
-
   final rank:ScoringRank;
   final songName:FlxBitmapText;
   final difficulty:FlxSprite;
   final clearPercentSmall:ClearPercentCounter;
-
   final maskShaderSongName:LeftMaskShader = new LeftMaskShader();
   final maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
-
   final resultsAnim:FunkinSprite;
   final ratingsPopin:FunkinSprite;
   final scorePopin:FunkinSprite;
-
   final bgFlash:FlxSprite;
-
   final highscoreNew:FlxSprite;
   final score:ResultScore;
-
   var characterAtlasAnimations:Array<
     {
       sprite:FunkinSprite,
@@ -89,10 +83,8 @@ class ResultState extends MusicBeatSubState
       sprite:FunkinSprite,
       delay:Float
     }> = [];
-
   var playerCharacterId:Null<String> = null;
   var playerCharacter:Null<PlayableCharacter> = null;
-
   var introMusicAudio:Null<FunkinSound> = null;
 
   /**
@@ -104,9 +96,7 @@ class ResultState extends MusicBeatSubState
   final cameraBG:FunkinCamera;
   final cameraScroll:FunkinCamera;
   final cameraEverything:FunkinCamera;
-
   var blackTopBar:FlxSprite = new FlxSprite();
-
   var busy:Bool = false;
 
   public var isChartingMode(get, never):Bool;

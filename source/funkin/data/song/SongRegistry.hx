@@ -14,7 +14,8 @@ import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
-@:nullSafety class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
+@:nullSafety
+class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.

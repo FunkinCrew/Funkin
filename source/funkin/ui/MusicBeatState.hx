@@ -37,7 +37,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
-
   public var conductorInUse(get, set):Conductor;
 
   var _conductorInUse:Null<Conductor>;
@@ -117,6 +116,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   // this should get moved post ui update but this is easier rn lolll
+
   public function addOptionsButton(?xPos:Float = 0, ?yPos:Float = 0, ?confirmCallback:Void->Void = null, ?instant:Bool = false):Void
   {
     if (optionsButton != null) remove(optionsButton);

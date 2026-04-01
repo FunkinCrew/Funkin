@@ -19,13 +19,12 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData, 
 
   public function new()
   {
-    super(
-      {
-        registryId: 'CONVERSATION',
-        dataFilePath: 'gameplay/dialogue/conversations',
-        nestedEntries: true,
-        versionRule: CONVERSATION_DATA_VERSION_RULE
-      });
+    super({
+      registryId: 'CONVERSATION',
+      dataFilePath: 'gameplay/dialogue/conversations',
+      nestedEntries: true,
+      versionRule: CONVERSATION_DATA_VERSION_RULE
+    });
   }
 }
 

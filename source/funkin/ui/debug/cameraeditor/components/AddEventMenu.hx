@@ -17,8 +17,8 @@ class AddEventMenu
   static final MENU_WIDTH:Float = 150;
   static final ICON_SIZE:Float = 16;
   static final ICON_PATH:String = "assets/ui/editors/camera-editor/event-icons/";
-
-  static final EVENT_ITEMS:Array<{kind:String, label:String, icon:String}> = [
+  static final EVENT_ITEMS:Array<
+    {kind:String, label:String, icon:String}> = [
     {kind: "FocusCamera", label: "Focus Camera", icon: "focus_event.png"},
     {kind: "ZoomCamera", label: "Zoom Camera", icon: "zoom_event.png"},
   ];
@@ -71,7 +71,10 @@ class AddEventMenu
     menu.addComponent(cameraSubmenu);
 
     menu.registerEvent(MenuEvent.MENU_SELECTED, onMenuSelected);
-    menu.registerEvent(UIEvent.CLOSE, function(_) { menu = null; });
+    menu.registerEvent(UIEvent.CLOSE, function(_)
+    {
+      menu = null;
+    });
 
     menu.left = screenX;
     menu.top = screenY;
@@ -100,8 +103,7 @@ class AddEventMenu
     if (eventKind == null || eventKind == "") return;
 
     var eventData = createDefaultEvent(eventKind);
-    if (onEventSelected != null)
-      onEventSelected(eventData);
+    if (onEventSelected != null) onEventSelected(eventData);
 
     menu = null;
   }
@@ -111,8 +113,8 @@ class AddEventMenu
     var time:Float = Conductor.instance.songPosition;
     var schema = SongEventRegistry.getEventSchema(eventKind);
 
-    if (schema == null)
-      return new SongEventDataRaw(time, eventKind, {});
+    if (schema == null) return new SongEventDataRaw(time, eventKind, {
+    });
 
     var value:haxe.DynamicAccess<Dynamic> = {};
     for (fieldName in schema.listAllFieldNames())

@@ -4,7 +4,9 @@ import haxe.ui.containers.Box;
 import haxe.ui.events.MouseEvent;
 
 @:composite(CameraViewportEvents)
-class CameraViewport extends Box {}
+class CameraViewport extends Box
+{
+}
 
 @:dox(hide) @:noCompletion
 private class CameraViewportEvents extends haxe.ui.events.Events
@@ -19,8 +21,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   override public function register():Void
   {
-    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel))
-      registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
   }
 
   override public function unregister():Void

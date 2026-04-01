@@ -225,7 +225,8 @@ class RegistryMacro
           }
           return parser.value;
         }
-      }).fields.filter(function(field:Field):Bool {
+      }).fields.filter(function(field:Field):Bool
+      {
         // Exclude fields which already exist on the CURRENT class
         // (use override for the superclass)
         return !MacroUtil.fieldAlreadyExists(field.name, false);
@@ -272,7 +273,6 @@ class RegistryMacro
     return (macro class TempClass
       {
         public final id:String;
-
         public final _data:Null<$entryDataType>;
       }).fields.filter((field) -> return !MacroUtil.fieldAlreadyExists(field.name));
   }

@@ -17,13 +17,10 @@ class WaveformTestState extends MusicBeatState
 
   var waveformData:WaveformData;
   var waveformData2:WaveformData;
-
   var waveformAudio:FunkinSound;
-
   // var waveformSprite:WaveformSprite;
   // var waveformSprite2:WaveformSprite;
   var timeMarker:FlxSprite;
-
   var polygonSprite:MeshRender;
   var vertexCount:Int = 3;
 

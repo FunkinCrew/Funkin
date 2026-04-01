@@ -113,8 +113,7 @@ typedef AtlasSpriteSettings =
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
-@:nullSafety
-@:access(animate.FlxAnimateController)
+@:nullSafety @:access(animate.FlxAnimateController)
 class FunkinSprite extends FlxAnimate
 {
   public var vcamPoint:Null<FlxPoint> = null;

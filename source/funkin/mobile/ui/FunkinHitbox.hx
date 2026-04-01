@@ -79,7 +79,6 @@ class FunkinHint extends FunkinButton
   var alphaTween:Null<FlxTween>;
 
   var followTarget:Null<FunkinSprite>;
-
   var followTargetSize:Bool = false;
 
   /**
@@ -655,10 +654,42 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     return switch (facing)
     {
-      case UP: [width / 2, 0, 0, height, width, height];
-      case DOWN: [0, 0, width, 0, width / 2, height];
-      case LEFT: [0, 0, width, height / 2, 0, height];
-      case RIGHT: [width, 0, 0, height / 2, width, height];
+      case UP:
+        [
+          width / 2,
+          0,
+          0,
+          height,
+          width,
+          height
+        ];
+      case DOWN:
+        [
+          0,
+          0,
+          width,
+          0,
+          width / 2,
+          height
+        ];
+      case LEFT:
+        [
+          0,
+          0,
+          width,
+          height / 2,
+          0,
+          height
+        ];
+      case RIGHT:
+        [
+          width,
+          0,
+          0,
+          height / 2,
+          width,
+          height
+        ];
     }
   }
 

@@ -7,8 +7,7 @@ import io.newgrounds.Call.CallError;
 import io.newgrounds.objects.events.Outcome;
 import funkin.save.Save;
 
-@:nullSafety
-@:access(funkin.save.Save)
+@:nullSafety @:access(funkin.save.Save)
 class NGSaveSlot
 {
   public static var instance(get, never):NGSaveSlot;

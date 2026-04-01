@@ -116,17 +116,32 @@ class DebugTallies
   {
     return switch (rank)
     {
-      case LOSS_RANK: LOSS;
-      case NICE_RANK: NICE;
-      case GOOD_RANK: GOOD;
-      case GREAT_RANK: GREAT;
-      case EXCELLENT_RANK: EXCELLENT;
-      case PERFECT_RANK: PERFECT;
-      case PERFECT_GOLD_RANK: PERFECT_GOLD;
+      case LOSS_RANK:
+        LOSS;
+      case NICE_RANK:
+        NICE;
+      case GOOD_RANK:
+        GOOD;
+      case GREAT_RANK:
+        GREAT;
+      case EXCELLENT_RANK:
+        EXCELLENT;
+      case PERFECT_RANK:
+        PERFECT;
+      case PERFECT_GOLD_RANK:
+        PERFECT_GOLD;
     }
   }
 
-  public static var DEBUG_RANKS:Array<DebugRank> = [LOSS_RANK, NICE_RANK, GOOD_RANK, GREAT_RANK, EXCELLENT_RANK, PERFECT_RANK, PERFECT_GOLD_RANK];
+  public static var DEBUG_RANKS:Array<DebugRank> = [
+    LOSS_RANK,
+    NICE_RANK,
+    GOOD_RANK,
+    GREAT_RANK,
+    EXCELLENT_RANK,
+    PERFECT_RANK,
+    PERFECT_GOLD_RANK
+  ];
 }
 
 enum abstract DebugRank(String) from String to String

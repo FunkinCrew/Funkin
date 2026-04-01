@@ -21,8 +21,7 @@ typedef ConversationData =
   /**
    * Data on the outro for the conversation.
    */
-  @:jcustomparse(funkin.data.DataParse.outroData)
-  @:optional
+  @:jcustomparse(funkin.data.DataParse.outroData) @:optional
   public var outro:Null<OutroData>;
 
   /**
@@ -65,8 +64,7 @@ typedef BackdropData_Solid =
    * Fade-in time for the backdrop.
    * @default No fade-in
    */
-  @:optional
-  @:default(0.0)
+  @:optional @:default(0.0)
   var fadeTime:Float;
 };
 
@@ -95,8 +93,7 @@ typedef OutroData_Fade =
    * The time to fade out the conversation.
    * @default 1 second
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var fadeTime:Float;
 }
 
@@ -110,12 +107,10 @@ typedef MusicData =
   /**
    * The time to fade in the music.
    */
-  @:optional
-  @:default(0.0)
+  @:optional @:default(0.0)
   var fadeTime:Float;
 
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var looped:Bool;
 };
 
@@ -160,7 +155,6 @@ typedef DialogueEntryData =
    * Setting `speed` to `1.5` would make it look like the character is speaking quickly,
    * and setting `speed` to `0.5` would make it look like the character is emphasizing each word.
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   public var speed:Float;
 };

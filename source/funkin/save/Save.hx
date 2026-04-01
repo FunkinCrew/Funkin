@@ -21,13 +21,11 @@ import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
 
-@:nullSafety
-@:build(funkin.util.macro.SaveMacro.buildSaveProperties())
+@:nullSafety @:build(funkin.util.macro.SaveMacro.buildSaveProperties())
 class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
-
   public static var system:SaveSystem = new SaveSystem();
 
   /**
@@ -250,64 +248,45 @@ class Save implements ConsoleClass
   ///
   @:saveProperty(data.mods.enabledMods)
   public var enabledModDirs:SaveProperty<Array<String>>;
-
   ///
   /// CHART EDITOR OPTIONS
   ///
   @:saveProperty(data.optionsChartEditor.previousFiles, [])
   public var chartEditorPreviousFiles:SaveProperty<Array<String>>;
-
   @:saveProperty(data.optionsChartEditor.hasBackup, false)
   public var chartEditorHasBackup:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.noteQuant, 3)
   public var chartEditorNoteQuant:SaveProperty<Int>;
-
   @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.None)
   public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
-
   @:saveProperty(data.optionsChartEditor.downscroll, false)
   public var chartEditorDownscroll:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
   public var chartEditorShowNoteKinds:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.showSubtitles, true)
   public var chartEditorShowSubtitles:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.playtestStartTime, false)
   public var chartEditorPlaytestStartTime:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.playtestAudioSettings, false)
   public var chartEditorPlaytestAudioSettings:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.playtestResultsSettings, false)
   public var chartEditorPlaytestResultsSettings:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
   public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
-
   @:saveProperty(data.optionsChartEditor.metronomeVolume, 1.0)
   public var chartEditorMetronomeVolume:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.hitsoundVolumePlayer, 1.0)
   public var chartEditorHitsoundVolumePlayer:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.hitsoundVolumeOpponent, 1.0)
   public var chartEditorHitsoundVolumeOpponent:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.instVolume, 1.0)
   public var chartEditorInstVolume:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.playerVoiceVolume, 1.0)
   public var chartEditorPlayerVoiceVolume:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.opponentVoiceVolume, 1.0)
   public var chartEditorOpponentVoiceVolume:SaveProperty<Float>;
-
   @:saveProperty(data.optionsChartEditor.themeMusic, true)
   public var chartEditorThemeMusic:SaveProperty<Bool>;
-
   @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
   public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
@@ -336,7 +315,6 @@ class Save implements ConsoleClass
   public var stageEditorAngleStep:SaveProperty<Float>;
   @:saveProperty(data.optionsStageEditor.theme, StageEditorTheme.Light)
   public var stageEditorTheme:SaveProperty<StageEditorTheme>;
-
   public var stageBoyfriendChar(get, set):String;
 
   function get_stageBoyfriendChar():String
@@ -393,7 +371,6 @@ class Save implements ConsoleClass
   ///
   @:saveProperty(data.optionsCameraEditor.previousFiles, [])
   public var cameraEditorPreviousFiles:SaveProperty<Array<String>>;
-
   @:saveProperty(data.optionsCameraEditor.hasBackup, false)
   public var cameraEditorHasBackup:SaveProperty<Bool>;
 

@@ -11,8 +11,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 /**
  * A command which inserts the contents of the clipboard into the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
@@ -21,13 +20,11 @@ class PasteItemsCommand implements ChartEditorCommand
   var addedEvents:Array<SongEventData> = [];
   var removedNotes:Array<SongNoteData> = [];
   var isRedo:Bool = false;
-
-  var currentClipboard:SongClipboardItems =
-    {
-      valid: false,
-      notes: [],
-      events: []
-    };
+  var currentClipboard:SongClipboardItems = {
+    valid: false,
+    notes: [],
+    events: []
+  };
 
   public function new(targetTimestamp:Float)
   {

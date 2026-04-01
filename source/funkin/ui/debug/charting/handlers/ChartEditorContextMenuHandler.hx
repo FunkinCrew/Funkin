@@ -15,8 +15,7 @@ import haxe.ui.events.UIEvent;
 /**
  * Handles context menus (the little menus that appear when you right click on stuff) for the new Chart Editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorContextMenuHandler
 {
   static var existingMenu:Null<Menu>;

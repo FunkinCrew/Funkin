@@ -127,7 +127,8 @@ class Constants
   /**
    * The base colors used by notes.
    */
-  public static var COLOR_NOTES:Array<FlxColor> = [0xFFFF22AA, // left (0)
+  public static var COLOR_NOTES:Array<FlxColor> = [
+    0xFFFF22AA, // left (0)
     0xFF00EEFF, // down (1)
     0xFF00CC00, // up (2)
     0xFFCC1111 // right (3)
@@ -188,7 +189,13 @@ class Constants
    * List of all difficulties used by the base game.
    * Includes Erect and Nightmare.
    */
-  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = ['easy', 'normal', 'hard', 'erect', 'nightmare'];
+  public static final DEFAULT_DIFFICULTY_LIST_FULL:Array<String> = [
+    'easy',
+    'normal',
+    'hard',
+    'erect',
+    'nightmare'
+  ];
 
   /**
    * Default player character for charts.
@@ -533,13 +540,11 @@ class Constants
   public static final JUDGEMENT_GOOD_COMBO_BREAK:Bool = false;
   public static final JUDGEMENT_BAD_COMBO_BREAK:Bool = true;
   public static final JUDGEMENT_SHIT_COMBO_BREAK:Bool = true;
-
   // % Hit
   public static final RANK_PERFECT_THRESHOLD:Float = 1.00;
   public static final RANK_EXCELLENT_THRESHOLD:Float = 0.90;
   public static final RANK_GREAT_THRESHOLD:Float = 0.80;
   public static final RANK_GOOD_THRESHOLD:Float = 0.60;
-
   // public static final RANK_SHIT_THRESHOLD:Float = 0.00;
   /**
    * FILE EXTENSIONS

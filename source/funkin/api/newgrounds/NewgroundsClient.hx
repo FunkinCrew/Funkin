@@ -17,18 +17,14 @@ import io.newgrounds.objects.User;
 import funkin.mobile.util.WebViewUtil;
 #end
 
-@:build(funkin.util.macro.EnvironmentMacro.build())
-@:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class NewgroundsClient
 {
   @:envField
   static final API_NG_APP_ID:Null<String>;
-
   @:envField
   static final API_NG_ENC_KEY:Null<String>;
-
   public static var instance(get, never):NewgroundsClient;
-
   static var _instance:Null<NewgroundsClient> = null;
 
   static function get_instance():NewgroundsClient

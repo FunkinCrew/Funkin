@@ -13,8 +13,7 @@ import flixel.math.FlxMath;
  * A sprite that can be used to display the trail of a hold note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState) @:nullSafety
 class ChartEditorHoldNoteSprite extends SustainTrail
 {
   /**

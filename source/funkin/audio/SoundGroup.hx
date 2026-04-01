@@ -11,13 +11,9 @@ import flixel.tweens.FlxTween;
 class SoundGroup extends FlxTypedGroup<FunkinSound>
 {
   public var time(get, set):Float;
-
   public var volume(get, set):Float;
-
   public var muted(get, set):Bool;
-
   public var pitch(get, set):Float;
-
   public var playing(get, never):Bool;
 
   public function new()
@@ -242,6 +238,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   }
 
   // in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
+
   function set_volume(volume:Float):Float
   {
     forEachAlive(function(snd:FunkinSound)

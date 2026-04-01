@@ -7,8 +7,7 @@ import haxe.ui.components.DropDown;
 import funkin.util.SortUtil;
 import haxe.ui.events.UIEvent;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/stage-settings.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/stage-settings.xml"))
 class StageEditorStageToolbox extends StageEditorDefaultToolbox
 {
   var stageNameText:TextField;
@@ -31,7 +30,14 @@ class StageEditorStageToolbox extends StageEditorDefaultToolbox
       state.saved = false;
     }
 
-    final EXCLUDE_LIBS = ["art", "default", "vlc", "videos", "songs", "libvlc"];
+    final EXCLUDE_LIBS = [
+      "art",
+      "default",
+      "vlc",
+      "videos",
+      "songs",
+      "libvlc"
+    ];
 
     refresh();
 

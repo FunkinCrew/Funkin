@@ -12,8 +12,7 @@ class ChartManifestData
 
   public static final invalidIdRegex:EReg = ~/[\/\\:*?"<>|]/g;
 
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:thx.semver.Version;
 
   /**

@@ -7,13 +7,11 @@ import funkin.data.song.SongData.SongEventData;
 /**
  * Command to set the selection to all notes and events in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class SelectAllItemsCommand implements ChartEditorCommand
 {
   var shouldSelectNotes:Bool;
   var shouldSelectEvents:Bool;
-
   var previousNoteSelection:Array<SongNoteData> = [];
   var previousEventSelection:Array<SongEventData> = [];
 

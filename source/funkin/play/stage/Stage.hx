@@ -33,7 +33,6 @@ typedef StagePropGroup = FlxTypedSpriteGroup<StageProp>;
 class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements IRegistryEntry<StageData>
 {
   public var vcamPoint:Null<FlxPoint> = null;
-
   public var stageName(get, never):String;
 
   function get_stageName():String

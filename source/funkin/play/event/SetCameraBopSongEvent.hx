@@ -69,29 +69,33 @@ class SetCameraBopSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([{
-      name: 'intensity',
-      title: 'Intensity',
-      defaultValue: Constants.DEFAULT_BOP_INTENSITY,
-      min: 0,
-      step: 0.1,
-      type: SongEventFieldType.FLOAT,
-      units: 'x'
-    }, {
-      name: 'offset',
-      title: 'Offset',
-      defaultValue: Constants.DEFAULT_ZOOM_OFFSET,
-      step: 0.25,
-      type: SongEventFieldType.FLOAT,
-      units: 'beats'
-    }, {
-      name: 'rate',
-      title: 'Rate',
-      defaultValue: Constants.DEFAULT_ZOOM_RATE,
-      min: 0,
-      step: 0.25,
-      type: SongEventFieldType.FLOAT,
-      units: 'beats/zoom'
-    }]);
+    return new SongEventSchema([
+      {
+        name: 'intensity',
+        title: 'Intensity',
+        defaultValue: Constants.DEFAULT_BOP_INTENSITY,
+        min: 0,
+        step: 0.1,
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
+      },
+      {
+        name: 'offset',
+        title: 'Offset',
+        defaultValue: Constants.DEFAULT_ZOOM_OFFSET,
+        step: 0.25,
+        type: SongEventFieldType.FLOAT,
+        units: 'beats'
+      },
+      {
+        name: 'rate',
+        title: 'Rate',
+        defaultValue: Constants.DEFAULT_ZOOM_RATE,
+        min: 0,
+        step: 0.25,
+        type: SongEventFieldType.FLOAT,
+        units: 'beats/zoom'
+      }
+    ]);
   }
 }

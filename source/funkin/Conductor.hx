@@ -864,10 +864,14 @@ class Conductor
     var wantedBeatLengthMs:Float = ((Constants.SECS_PER_MIN / wantedTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / wantedTimeChange.timeSignatureDen);
     return switch (type.toLowerCase())
     {
-      case "measure", "m": wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
-      case "beat", "b": wantedBeatLengthMs;
-      case "step", "s": wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
-      default: wantedBeatLengthMs;
+      case "measure", "m":
+        wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
+      case "beat", "b":
+        wantedBeatLengthMs;
+      case "step", "s":
+        wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
+      default:
+        wantedBeatLengthMs;
     }
   }
 

@@ -59,7 +59,15 @@ class NewCharacterCard extends BackingCard
       speed: 0.3
     });
 
-    exitMoversCharSel.set([friendFoe, newUnlock1, waiting, newUnlock2, friendFoe2, newUnlock3, multiplyBar], {
+    exitMoversCharSel.set([
+      friendFoe,
+      newUnlock1,
+      waiting,
+      newUnlock2,
+      friendFoe2,
+      newUnlock3,
+      multiplyBar
+    ], {
       y: -60,
       speed: 0.8,
       wait: 0.1

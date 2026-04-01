@@ -69,7 +69,6 @@ class StepDifficulty
   public var charter:String;
   public var difficultyRating:Int;
   public var type:StepManiaChartType;
-
   public var notes:Array<StepNote>;
 
   public function parseChartType(chartTypeStr:String):StepManiaChartType
@@ -111,11 +110,11 @@ class StepTimingPoint
 
 // Not implemented, but if any chart uses them then the chart will break.
 // IE this messes with the timing of the notes.
+
 class StepStop
 {
   public var startBeat:Float = Math.NEGATIVE_INFINITY;
   public var duration:Float = 0;
-
   public var startTimestamp:Float = Math.NEGATIVE_INFINITY;
 
   public function new(startBeat:Float, duration:Float)

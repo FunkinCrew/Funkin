@@ -18,7 +18,6 @@ class IntroSubState extends MusicBeatSubState
   #if html5
   static final LIGHTS_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('ui/character-select/intro'));
   #end
-
   #if hxvlc
   static final LIGHTS_VIDEO_PATH:String = Paths.videos('ui/character-select/intro');
   #end

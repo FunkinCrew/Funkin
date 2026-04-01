@@ -5,8 +5,7 @@ package funkin.audio.visualize.dsp;
 
   Usages include 1-indexed sequences or zero-centered buffers with negative indexing.
 **/
-@:forward(array, offset)
-@:nullSafety
+@:forward(array, offset) @:nullSafety
 abstract OffsetArray<T>({
   final array:Array<T>;
   final offset:Int;

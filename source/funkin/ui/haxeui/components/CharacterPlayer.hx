@@ -270,8 +270,7 @@ class CharacterPlayer extends Box
   }
 }
 
-@:access(funkin.ui.haxeui.components.CharacterPlayer)
-@:access(funkin.play.character.BaseCharacter)
+@:access(funkin.ui.haxeui.components.CharacterPlayer) @:access(funkin.play.character.BaseCharacter)
 private class Layout extends DefaultLayout
 {
   public override function resizeChildren():Void

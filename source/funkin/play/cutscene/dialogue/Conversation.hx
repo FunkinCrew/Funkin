@@ -86,7 +86,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
   var backdrop:Null<FunkinSprite>;
 
   var currentSpeaker:Null<Speaker>;
-
   var currentDialogueBox:Null<DialogueBox>;
 
   public function new(id:String, ?params:Dynamic)
@@ -650,6 +649,7 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 }
 
 // Managing things with a single enum is a lot easier than a multitude of flags.
+
 enum ConversationState
 {
   /**

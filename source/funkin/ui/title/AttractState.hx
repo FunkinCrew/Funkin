@@ -31,7 +31,11 @@ class AttractState extends MusicBeatState
    * This used
    */
   static final VIDEO_PATHS:Array<
-    {path:String}> = [{path: Paths.videos('ui/title/attract/rift-collab-trailer')}, {path: Paths.videos('ui/title/attract/mobile-release')}, {path: Paths.videos('ui/title/attract/boyfriend-everywhere')}];
+    {path:String}> = [
+    {path: Paths.videos('ui/title/attract/rift-collab-trailer')},
+    {path: Paths.videos('ui/title/attract/mobile-release')},
+    {path: Paths.videos('ui/title/attract/boyfriend-everywhere')}
+  ];
 
   static var nextVideoToPlay:Int = 0;
 

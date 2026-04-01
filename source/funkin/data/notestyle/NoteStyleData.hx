@@ -125,31 +125,22 @@ typedef NoteStyleAssetsData =
 
   @:optional
   var comboNumber0:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber1:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber2:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber3:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber4:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber5:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber6:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber7:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber8:NoteStyleAssetData<NoteStyleData_ComboNum>;
-
   @:optional
   var comboNumber9:NoteStyleAssetData<NoteStyleData_ComboNum>;
 }
@@ -168,35 +159,30 @@ typedef NoteStyleAssetData<T> =
    * The scale to render the note at.
    * @default 1.0
    */
-  @:default(1.0)
-  @:optional
+  @:default(1.0) @:optional
   var scale:Float;
 
   /**
    * Offset the sprite's position by this amount.
    * @default [0, 0]
    */
-  @:default([0, 0])
-  @:optional
+  @:default([0, 0]) @:optional
   var offsets:Null<Array<Float>>;
 
   /**
    * If true, the note is a pixel sprite, and will be rendered without anti-aliasing.
    */
-  @:default(false)
-  @:optional
+  @:default(false) @:optional
   var isPixel:Bool;
 
-  @:default(1.0)
-  @:optional
+  @:default(1.0) @:optional
   var alpha:Float;
 
   /**
    * If true, animations will be played on the graphic.
    * @default `false` to save performance.
    */
-  @:default(false)
-  @:optional
+  @:default(false) @:optional
   var animated:Bool;
 
   /**
@@ -260,31 +246,21 @@ typedef NoteStyleData_NoteSplash =
    * If false, note splashes are entirely hidden on this note style.
    * @default Note splashes are enabled.
    */
-  @:optional
-  @:default(true)
+  @:optional @:default(true)
   var enabled:Bool;
 
-  @:optional
-  @:default(24)
+  @:optional @:default(24)
   var framerateDefault:Int;
-
-  @:optional
-  @:default(2)
+  @:optional @:default(2)
   var framerateVariance:Int;
-
-  @:optional
-  @:default("normal")
+  @:optional @:default("normal")
   var blendMode:String;
-
   @:optional
   var leftSplashes:Array<UnnamedAnimationData>;
-
   @:optional
   var downSplashes:Array<UnnamedAnimationData>;
-
   @:optional
   var upSplashes:Array<UnnamedAnimationData>;
-
   @:optional
   var rightSplashes:Array<UnnamedAnimationData>;
 };
@@ -295,19 +271,15 @@ typedef NoteStyleData_HoldNoteCover =
    * If false, hold note covers are entirely hidden on this note style.
    * @default Hold note covers are enabled.
    */
-  @:optional
-  @:default(true)
+  @:optional @:default(true)
   var enabled:Bool;
 
   @:optional
   var left:NoteStyleData_HoldNoteCoverDirectionData;
-
   @:optional
   var down:NoteStyleData_HoldNoteCoverDirectionData;
-
   @:optional
   var up:NoteStyleData_HoldNoteCoverDirectionData;
-
   @:optional
   var right:NoteStyleData_HoldNoteCoverDirectionData;
 };

@@ -90,15 +90,12 @@ class GameOverSubState extends MusicBeatSubState
   var isStarting:Bool = true;
 
   var isChartingMode:Bool = false;
-
   var mustNotExit:Bool = false;
-
   var transparent:Bool;
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
   var targetCameraZoom:Float = 1.0;
-
   var canInput:Bool = false;
 
   public function new(params:GameOverParams)

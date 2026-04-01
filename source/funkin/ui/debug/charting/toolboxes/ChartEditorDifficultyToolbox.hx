@@ -30,8 +30,7 @@ import haxe.ui.events.UIEvent;
  * and adding/removing variations and difficulties.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml"))
 class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 {
   var difficultyToolboxTree:TreeView;

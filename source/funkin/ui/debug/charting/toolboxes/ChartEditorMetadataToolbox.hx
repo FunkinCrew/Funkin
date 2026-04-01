@@ -27,8 +27,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/metadata.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/metadata.xml"))
 class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
   var inputSongId:TextField;
@@ -158,7 +157,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
-    inputAlbum.onChange = (event:UIEvent) -> {
+    inputAlbum.onChange = (event:UIEvent) ->
+    {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -169,7 +169,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, chartEditorState.currentSongMetadata.playData?.album);
     inputAlbum.value = startingValueAlbum;
 
-    inputStickerPack.onChange = (event:UIEvent) -> {
+    inputStickerPack.onChange = (event:UIEvent) ->
+    {
       var valid:Bool = event.data != null && event.data.id != null;
 
       if (valid)
@@ -177,19 +178,24 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
         chartEditorState.currentSongStickerPack = event.data.id;
       }
     }
-    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack, chartEditorState.currentSongMetadata.playData?.stickerPack);
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack,
+      chartEditorState.currentSongMetadata.playData?.stickerPack);
     inputStickerPack.value = startingValueStickerPack;
 
     inputTimeChange.onChange = function(event:UIEvent)
     {
       var currentTimeChange = refreshTimeChangeInputs();
-      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
+      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[
+        inputTimeChange.selectedIndex - 1
+      ];
       // Set the step of the timestamp to the step.
       inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
       // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
       // to prevent the conductor from breaking due to time change timestamps not being in ascending order.
       inputTimeStamp.min = (previousTimeChange?.timeStamp ?? 0);
-      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
+      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[
+        inputTimeChange.selectedIndex + 1
+      ]?.timeStamp ?? chartEditorState.songLengthInMs);
       inputTimeStamp.max -= 1;
 
       // Prevent the inital time change timestamp from being modified (it should always be 0) or removed.
@@ -323,6 +329,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   }
 
   // Separate function because it needs to be refreshed in some of the time change commands, updating the entire toolbox would be wasteful.
+
   public function refreshTimeChanges(startingTimeChangeIndex:Int = 0):Void
   {
     // Reset time change dropdown and the associated inputs
@@ -390,9 +397,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
     if (inputAlbum != null)
     {
-      inputAlbum.value = (album != null) ?
-        {id: album.id, text: album.getAlbumName()} :
-          {id: "volume1", text: "Volume 1"};
+      inputAlbum.value = (album != null) ? {id: album.id, text: album.getAlbumName()} : {id: "volume1", text: "Volume 1"};
     }
 
     var LIMIT = 6;

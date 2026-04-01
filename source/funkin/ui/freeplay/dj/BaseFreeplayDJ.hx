@@ -64,7 +64,9 @@ enum FreeplayDJState
  * Can be used for full control over DJ's logic.
  */
 @:hscriptClass
-class ScriptedBaseFreeplayDJ extends BaseFreeplayDJ implements polymod.hscript.HScriptedClass {}
+class ScriptedBaseFreeplayDJ extends BaseFreeplayDJ implements polymod.hscript.HScriptedClass
+{
+}
 
 @:nullSafety
 class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
@@ -80,15 +82,12 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
 
   // A callback activated when the intro animation finishes.
   public var onIntroDone:FlxSignal = new FlxSignal();
-
   // A callback activated when the idle easter egg plays.
   public var onIdleEasterEgg:FlxSignal = new FlxSignal();
 
   var seenIdleEasterEgg:Bool = false;
-
   final characterId:String = Constants.DEFAULT_CHARACTER;
   final playableCharData:Null<PlayerFreeplayDJData>;
-
   var timeIdling:Float = 0;
 
   public function new(x:Float, y:Float, characterId:String)

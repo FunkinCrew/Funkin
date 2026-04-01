@@ -7,8 +7,7 @@ import polymod.hscript._internal.PolymodScriptClass;
  * Provides sanitized and blacklisted access to haxe's Reflection functions.
  * Used for sandboxing in scripts.
  */
-@:nullSafety
-@SuppressWarnings("checkstyle:VarTypeHint")
+@:nullSafety @SuppressWarnings("checkstyle:VarTypeHint")
 class ReflectUtil
 {
   /**
@@ -473,12 +472,10 @@ class ReflectUtil
 
   @:unreflective
   static final pathResolveCache:Map<String, Any> = new Map();
-
   @:unreflective
   static final blacklistedFieldsCache:Map<String, Any> = new Map();
 
-  @:unreflective
-  @:nullSafety(Off)
+  @:unreflective @:nullSafety(Off)
   static function getClassOrEnumFromName(path:String):Any
   {
     if (pathResolveCache.exists(path)) return pathResolveCache.get(path);
@@ -496,8 +493,7 @@ class ReflectUtil
     }
   }
 
-  @:unreflective
-  @:nullSafety(Off)
+  @:unreflective @:nullSafety(Off)
   static function getReflectionParent(obj:Dynamic):Dynamic
   {
     var clsName = getClassNameOf(obj);
@@ -506,8 +502,7 @@ class ReflectUtil
     return PolymodScriptClass.importOverrides.exists(objName) ? PolymodScriptClass.importOverrides.get(objName) : obj;
   }
 
-  @:unreflective
-  @:nullSafety(Off)
+  @:unreflective @:nullSafety(Off)
   static function isAccessAllowed(obj:Dynamic, ?varName:String):Bool
   {
     var reflectedObj = getReflectionParent(obj);

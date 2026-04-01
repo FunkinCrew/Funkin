@@ -13,10 +13,8 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
 {
   var analyzer:Null<SpectralAnalyzer>;
   var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
-
   var currentGFPath:String = "";
   var enableVisualizer:Bool = false;
-
   var danceEvery:Int = 2;
 
   public function new(x:Float, y:Float)

@@ -49,7 +49,6 @@ class CharSelectSubState extends MusicBeatSubState
   final DEFAULT_CURSOR_INDEX:Int = 4;
 
   var cursors:CharSelectCursors;
-
   var cursorX:Int = 0;
   var cursorY:Int = 0;
   var cursorFactor:Float = 110;
@@ -73,23 +72,19 @@ class CharSelectSubState extends MusicBeatSubState
   var pressedSelect:Bool = false;
   var selectTimer:FlxTimer = new FlxTimer();
   var allowInput:Bool = false;
-
   var selectSound:FunkinSound = new FunkinSound();
   var unlockSound:FunkinSound = new FunkinSound();
   var lockedSound:FunkinSound = new FunkinSound();
   var introSound:FunkinSound = new FunkinSound();
   var staticSound:FunkinSound = new FunkinSound();
-
-  var selectedBizz:Array<BitmapFilter> = [new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false,
-    false), new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)];
-
+  var selectedBizz:Array<BitmapFilter> = [
+    new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false, false),
+    new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
+  ];
   var bopInfo:Null<Null<FramesJSFLInfo>>;
-
   // var blackScreen:FunkinSprite;
   var charHitbox:FlxObject = new FlxObject();
-
   var cutoutSize:Float = 0;
-
   var fadeShader:BlueFade = new BlueFade();
 
   public function new(?params:CharSelectSubStateParams)
@@ -172,16 +167,16 @@ class CharSelectSubState extends MusicBeatSubState
     add(bg);
 
     var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, "ui/character-select/interface/crowd", {
-        applyStageMatrix: true
-      });
+      applyStageMatrix: true
+    });
     crowd.anim.play('');
     crowd.anim.curAnim.looped = true;
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
     var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, "ui/character-select/interface/char-select-stage", {
-        applyStageMatrix: true
-      });
+      applyStageMatrix: true
+    });
     stageSpr.anim.play('');
     stageSpr.anim.curAnim.looped = true;
     add(stageSpr);
@@ -192,8 +187,8 @@ class CharSelectSubState extends MusicBeatSubState
     add(curtains);
 
     barthing.loadTextureAtlas("ui/character-select/interface/bar-thing", {
-        applyStageMatrix: true
-      });
+      applyStageMatrix: true
+    });
     barthing.anim.play('');
     barthing.anim.curAnim.looped = true;
     barthing.blend = BlendMode.MULTIPLY;
@@ -247,8 +242,8 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "ui/character-select/interface/speakers", {
-        applyStageMatrix: true
-      });
+      applyStageMatrix: true
+    });
     speakers.anim.play('');
     speakers.anim.curAnim.looped = true;
     speakers.scrollFactor.set(1.8, 1.8);
@@ -299,7 +294,13 @@ class CharSelectSubState extends MusicBeatSubState
 
     nametag.scrollFactor.set();
 
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(FunkinSprite, ["x", "y", "alpha", "scale", "blend"]));
+    FlxG.debugger.addTrackerProfile(new TrackerProfile(FunkinSprite, [
+      "x",
+      "y",
+      "alpha",
+      "scale",
+      "blend"
+    ]));
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSound, ["pitch", "volume"]));
 
     add(cursors);
@@ -336,10 +337,10 @@ class CharSelectSubState extends MusicBeatSubState
     // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
     // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
     FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
-        startingVolume: 0,
-        overrideExisting: true,
-        restartTrack: true,
-      });
+      startingVolume: 0,
+      overrideExisting: true,
+      restartTrack: true,
+    });
 
     initLocks();
 
@@ -724,10 +725,8 @@ class CharSelectSubState extends MusicBeatSubState
   var holdTmrRight:Float = 0;
   var spamDirections:FlxDirectionFlags = NONE;
   var initSpam = 0.5;
-
   var mobileDeny:Bool = false;
   var mobileAccept:Bool = false;
-
   var wentBackToFreeplay:Bool = false;
 
   override public function update(elapsed:Float):Void

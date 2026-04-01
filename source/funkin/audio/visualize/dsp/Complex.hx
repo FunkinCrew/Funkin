@@ -3,8 +3,7 @@ package funkin.audio.visualize.dsp;
 /**
   Complex number representation.
 **/
-@:forward(real, imag) @:notNull @:pure
-@:nullSafety
+@:forward(real, imag) @:notNull @:pure @:nullSafety
 abstract Complex({
   final real:Float;
   final imag:Float;

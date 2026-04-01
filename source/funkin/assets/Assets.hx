@@ -26,8 +26,22 @@ import openfl.utils.Assets as OpenFLAssets;
 class Assets implements ConsoleClass
 {
   static var initialized:Bool = false;
-
-  static final ASSET_TYPES:Array<Null<AssetType>> = [null, IMAGE, SOUND, VIDEO, TEXT, JSON, SHADER, SCRIPT, SCRIPTED_CLASS, CHART, STAGE, XML, FONT, UNKNOWN];
+  static final ASSET_TYPES:Array<Null<AssetType>> = [
+    null,
+    IMAGE,
+    SOUND,
+    VIDEO,
+    TEXT,
+    JSON,
+    SHADER,
+    SCRIPT,
+    SCRIPTED_CLASS,
+    CHART,
+    STAGE,
+    XML,
+    FONT,
+    UNKNOWN
+  ];
 
   /**
    * Perform functions to initialize internal asset management.
@@ -627,32 +641,54 @@ class Assets implements ConsoleClass
     switch (type)
     {
       case IMAGE:
-        results = results.concat([ // Built-in
+        results = results.concat([
+          // Built-in
           Paths.file('images/logo/default', 'png', 'flixel'), // Fonts
 
-          Paths.image('ui/fonts/default'), Paths.image('ui/fonts/bold'), // Soundtray
+          Paths.image('ui/fonts/default'),
+          Paths.image('ui/fonts/bold'), // Soundtray
 
-          Paths.image('ui/soundtray/volume-box'), Paths.image('ui/soundtray/bars-01'), Paths.image('ui/soundtray/bars-02'), Paths.image('ui/soundtray/bars-03'), Paths.image('ui/soundtray/bars-04'), Paths.image('ui/soundtray/bars-05'), Paths.image('ui/soundtray/bars-06'), Paths.image('ui/soundtray/bars-07'), Paths.image('ui/soundtray/bars-08'), Paths.image('ui/soundtray/bars-09'), Paths.image('ui/soundtray/bars-10'), // Medals,
+          Paths.image('ui/soundtray/volume-box'),
+          Paths.image('ui/soundtray/bars-01'),
+          Paths.image('ui/soundtray/bars-02'),
+          Paths.image('ui/soundtray/bars-03'),
+          Paths.image('ui/soundtray/bars-04'),
+          Paths.image('ui/soundtray/bars-05'),
+          Paths.image('ui/soundtray/bars-06'),
+          Paths.image('ui/soundtray/bars-07'),
+          Paths.image('ui/soundtray/bars-08'),
+          Paths.image('ui/soundtray/bars-09'),
+          Paths.image('ui/soundtray/bars-10'), // Medals,
         ]);
 
         results = results.concat(Paths.animateAtlas('ui/medals/medal-popup').image());
 
       case SOUND:
-        results = results.concat([ // Built-in
+        results = results.concat([
+          // Built-in
           Paths.file('sounds/beep', 'ogg', 'flixel'), // Menus
 
-          Paths.sound('ui/main-menu/scroll-menu'), Paths.sound('ui/main-menu/confirm-menu'), Paths.sound('ui/main-menu/cancel-menu'), // Soundtray
+          Paths.sound('ui/main-menu/scroll-menu'),
+          Paths.sound('ui/main-menu/confirm-menu'),
+          Paths.sound('ui/main-menu/cancel-menu'), // Soundtray
 
-          Paths.sound('ui/soundtray/volume-up'), Paths.sound('ui/soundtray/volume-down'), Paths.sound('ui/soundtray/volume-max'), // Screenshots
+          Paths.sound('ui/soundtray/volume-up'),
+          Paths.sound('ui/soundtray/volume-down'),
+          Paths.sound('ui/soundtray/volume-max'), // Screenshots
 
-          Paths.sound('ui/main-menu/screenshot'),]);
+          Paths.sound('ui/main-menu/screenshot'),
+        ]);
 
       case XML:
-        results = results.concat([ // Fonts
-          Paths.xml('ui/fonts/default'), Paths.xml('ui/fonts/bold'),]);
+        results = results.concat([
+          // Fonts
+          Paths.xml('ui/fonts/default'),
+          Paths.xml('ui/fonts/bold'),
+        ]);
 
       case SHADER:
-        results = results.concat([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+        results = results.concat([
+          Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
         ]);
 
       default:

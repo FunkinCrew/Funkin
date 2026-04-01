@@ -152,7 +152,6 @@ class OptionsState extends MusicBeatState
 class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
-
   #if FEATURE_TOUCH_CONTROLS
   var backButton:FunkinBackButton;
   var goingBack:Bool = false;
@@ -349,12 +348,14 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
     add(prompt);
-    prompt.onYes = function() {
+    prompt.onYes = function()
+    {
       // Clear the save data.
       funkin.save.Save.clearData();
       FlxG.switchState(() -> new funkin.InitState());
     };
-    prompt.onNo = function() {
+    prompt.onNo = function()
+    {
       prompt.close();
       prompt.destroy();
       prompt = null;

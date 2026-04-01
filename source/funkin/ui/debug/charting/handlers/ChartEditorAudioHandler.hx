@@ -18,8 +18,7 @@ import haxe.io.Path;
  * Functions for loading audio for the chart editor.
  * Handlers split up the functionality of the Chart Editor into different classes based on focus to limit the amount of code in each class.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorAudioHandler
 {
   /**
@@ -244,6 +243,7 @@ class ChartEditorAudioHandler
   }
 
   // initializes a waveform sprite with buncho non-charType specific things
+
   static function initWaveformSprite(waveformData:WaveformData, state:ChartEditorState, charType:CharacterType):WaveformSprite
   {
     var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);

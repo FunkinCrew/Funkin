@@ -8,8 +8,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Move the given notes by the given offset and shift them by the given number of columns in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class MoveItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;

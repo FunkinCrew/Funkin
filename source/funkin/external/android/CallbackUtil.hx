@@ -52,7 +52,6 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
 
   @:noCompletion
   private static var __staticFields:Array<Dynamic> = null;
-
   @:noCompletion
   public static var __callbacksFields:Map<String, Dynamic> = new Map<String, Dynamic>();
 

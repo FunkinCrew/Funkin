@@ -48,11 +48,9 @@ class TurboActionHandler extends FlxBasic
   }
 
   var action:Action;
-
   var delay:Float;
   var interval:Float;
   var gamepadOnly:Bool;
-
   var pressedTime:Float = 0;
 
   function new(action:Action, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL, gamepadOnly:Bool = false)

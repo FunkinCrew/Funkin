@@ -21,8 +21,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml"))
 class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -40,18 +39,14 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   var previewSelectionSprite:SpriteWrapper;
 
   static final TICK_LABEL_X_OFFSET:Float = 4.0;
-
   static final PLAYHEAD_RIGHT_PAD:Float = 10.0;
-
   static final BASE_SCALE:Float = 64.0;
   static final STARTING_SCALE:Float = 1024.0;
   static final MIN_SCALE:Float = 4.0;
   static final WAVEFORM_ZOOM_MULT:Float = 1.5;
-
   static final MAGIC_SCALE_BASE_TIME:Float = 5.0;
 
   var waveformScale:Float = STARTING_SCALE;
-
   var playheadAbsolutePos(get, set):Float;
 
   function get_playheadAbsolutePos():Float
@@ -107,9 +102,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   var waveformMagicFactor:Float = 1.0;
 
   var audioPreviewTracks:SoundGroup;
-
   var tickTiledSprite:FlxTiledSprite;
-
   var freeplayPreviewVolume(get, null):Float;
 
   function get_freeplayPreviewVolume():Float
@@ -377,7 +370,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   }
 
   var waveformDragStartPos:Null<Float> = null;
-
   var waveformDragPreviewStartPos:Float;
   var waveformDragPreviewEndPos:Float;
 

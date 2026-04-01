@@ -32,20 +32,16 @@ class FunkinDebugDisplay extends Sprite
   var deltaTimeout:Float;
   var times:Array<Float>;
   var color:Int;
-
   var fps:Int;
   var fpsPeak:Int;
   var gcMem:Float;
   var gcMemPeak:Float;
   var taskMem:Float;
   var taskMemPeak:Float;
-
   var background:Shape;
-
   var fpsGraph:FunkinStatsGraph;
   var gcMemGraph:FunkinStatsGraph;
   var taskMemGraph:FunkinStatsGraph;
-
   var infoDisplay:TextField;
 
   public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000):Void
@@ -290,6 +286,7 @@ class FunkinDebugDisplay extends Sprite
 // Note: the string values here are deduced
 // so we dont need to do `Off = 'Off'` or nothin
 // https://haxe.org/manual/types-abstract-enum.html
+
 enum abstract DebugDisplayMode(String) from String to String
 {
   /**

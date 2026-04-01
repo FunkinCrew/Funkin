@@ -21,7 +21,6 @@ import funkin.ui.debug.charting.util.FNFCData;
 class UploadChartDialog extends Dialog
 {
   var locked:Bool = false;
-
   var cameraEditorState:CameraEditorState = null;
 
   public function new(state:CameraEditorState)

@@ -70,7 +70,6 @@ class CreditsState extends MusicBeatState
   var creditsGroup:FlxSpriteGroup;
 
   var scrollPaused:Bool = false;
-
   var backersToBuild:Array<String>;
   var entriesToBuild:Array<CreditsEntry>;
 

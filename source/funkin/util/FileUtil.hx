@@ -75,7 +75,25 @@ class FileUtil
 
   static function get_PROTECTED_PATHS():Array<String>
   {
-    final protected:Array<String> = ['', '.', 'assets', 'assets/*', 'backups', 'backups/*', 'manifest', 'manifest/*', 'plugins', 'plugins/*', 'Funkin.exe', 'Funkin', 'icon.ico', 'libvlc.dll', 'libvlccore.dll', 'lime.ndll', 'scores.json'];
+    final protected:Array<String> = [
+      '',
+      '.',
+      'assets',
+      'assets/*',
+      'backups',
+      'backups/*',
+      'manifest',
+      'manifest/*',
+      'plugins',
+      'plugins/*',
+      'Funkin.exe',
+      'Funkin',
+      'icon.ico',
+      'libvlc.dll',
+      'libvlccore.dll',
+      'lime.ndll',
+      'scores.json'
+    ];
 
     #if sys
     for (i in 0...protected.length)
@@ -1105,7 +1123,16 @@ class FileUtil
     #elseif linux
     var exitCode = Sys.command("xdg-open", [pathFolder]);
     if (exitCode == 0) return;
-    var fileManagers:Array<String> = ["dolphin", "nautilus", "nemo", "thunar", "caja", "konqueror", "spacefm", "pcmanfm"];
+    var fileManagers:Array<String> = [
+      "dolphin",
+      "nautilus",
+      "nemo",
+      "thunar",
+      "caja",
+      "konqueror",
+      "spacefm",
+      "pcmanfm"
+    ];
 
     for (fm in fileManagers)
     {

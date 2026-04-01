@@ -12,7 +12,6 @@ class ModMenu extends Page<OptionsState.OptionsMenuPageName>
   var grpMods:FlxTypedGroup<ModMenuItem>;
   var enabledMods:Array<ModMetadata> = [];
   var detectedMods:Array<ModMetadata> = [];
-
   var curSelected:Int = 0;
 
   public function new():Void

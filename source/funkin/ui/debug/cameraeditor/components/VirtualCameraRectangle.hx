@@ -44,21 +44,17 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   }
 
   var isClassicEase:Bool = false;
-
   var lastVCamPoint:FlxPoint = new FlxPoint();
   var cameraFollowPoint:FlxObject = new FlxObject();
-
   var cameraFollowTween:Float = 0;
   var cameraFollowStart:FlxPoint = new FlxPoint();
   var cameraFollowDuration:Float = 0;
   var cameraFollowEase:Null<Float->Float> = null;
-
   var cameraZoomTween:Float = 0;
   var cameraZoomEnd:Float = 0;
   var cameraZoomStart:Float = 0;
   var cameraZoomDuration:Float = 0;
   var cameraZoomEase:Null<Float->Float> = null;
-
   var scrollTarget:FlxPoint = new FlxPoint();
 
   function set_zoom(value:Float):Float
@@ -80,7 +76,16 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   {
     showExtendedBounds = val;
 
-    for (obj in [leftExt, rightExt, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineLSmall, lineRSmall])
+    for (obj in [
+      leftExt,
+      rightExt,
+      cornerTLSmall,
+      cornerBRSmall,
+      cornerTRSmall,
+      cornerBLSmall,
+      lineLSmall,
+      lineRSmall
+    ])
     {
       obj.visible = val;
     }
@@ -102,7 +107,22 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     {
       obj.visible = !val;
     }
-    for (obj in [cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineLSmall, lineRSmall, cornerTL, cornerBR, cornerTR, cornerBL, lineT, lineL, lineR, lineB])
+    for (obj in [
+      cornerTLSmall,
+      cornerBRSmall,
+      cornerTRSmall,
+      cornerBLSmall,
+      lineLSmall,
+      lineRSmall,
+      cornerTL,
+      cornerBR,
+      cornerTR,
+      cornerBL,
+      lineT,
+      lineL,
+      lineR,
+      lineB
+    ])
     {
       obj.color = val ? 0xFFFFFFFF : 0xFF000000;
     }
@@ -368,37 +388,28 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   // the underlying sprite that makes up the view
   var mainView:FunkinSprite;
-
   // the visual slice sprites that show the camera bounds
   var camSlice:FunkinSliceSprite;
   var camSliceOverlay:FunkinSliceSprite;
-
   var cornerTL:FunkinSprite;
   var cornerBR:FunkinSprite;
   var cornerTR:FunkinSprite;
   var cornerBL:FunkinSprite;
-
   var lineT:FunkinSprite;
   var lineL:FunkinSprite;
   var lineR:FunkinSprite;
   var lineB:FunkinSprite;
-
   var cornerTLSmall:FunkinSprite;
   var cornerBRSmall:FunkinSprite;
   var cornerTRSmall:FunkinSprite;
   var cornerBLSmall:FunkinSprite;
-
   var lineLSmall:FunkinSprite;
   var lineRSmall:FunkinSprite;
-
   var middle:FunkinSprite;
-
   // extension pieces for when showExtendedBounds is true
   var leftExt:FunkinSliceSprite;
   var rightExt:FunkinSliceSprite;
-
   var pieceSize:Float = 0;
-
   var passeT:FunkinSprite;
   var passeB:FunkinSprite;
   var passeL:FunkinSprite;
@@ -490,7 +501,22 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     lineRSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_small');
 
     // no fucking way im doing this manually
-    for (obj in [cornerTR, cornerBR, cornerTL, cornerBL, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineT, lineB, lineL, lineR, lineLSmall, lineRSmall])
+    for (obj in [
+      cornerTR,
+      cornerBR,
+      cornerTL,
+      cornerBL,
+      cornerTLSmall,
+      cornerBRSmall,
+      cornerTRSmall,
+      cornerBLSmall,
+      lineT,
+      lineB,
+      lineL,
+      lineR,
+      lineLSmall,
+      lineRSmall
+    ])
     {
       obj.vcamPoint = vCamPoint;
       obj.color = 0xFF000000;

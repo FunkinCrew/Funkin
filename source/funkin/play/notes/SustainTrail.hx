@@ -23,14 +23,26 @@ class SustainTrail extends FlxSprite
    * `top left, top right, bottom left`
    * `top left, bottom left, bottom right`
    */
-  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
+  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [
+    0,
+    1,
+    2,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    5,
+    6,
+    7
+  ];
 
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
   public var parentStrumline:Strumline;
-
   public var cover:NoteHoldCover = null;
 
   /**

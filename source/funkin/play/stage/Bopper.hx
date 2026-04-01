@@ -248,7 +248,6 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   public var canPlayOtherAnims:Bool = true;
-
   public var ignoreExclusionPref:Array<String> = [];
 
   /**
@@ -332,6 +331,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   }
 
   // override getScreenPosition (used by FlxSprite's draw method) to account for animation offsets.
+
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);

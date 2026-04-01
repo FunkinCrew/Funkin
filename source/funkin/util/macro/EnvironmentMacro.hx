@@ -215,6 +215,7 @@ class EnvironmentMacro
   }
 
   // MIGHT be able to repurpose this for custom context warnings hehe - Zack
+
   static function warning(msg:String, pos:Position)
   {
     var infos:Dynamic = Context.getPosInfos(pos);

@@ -19,7 +19,6 @@ class DifficultyStars extends FlxSpriteGroup
   public var difficulty(default, set):Int = 1;
 
   public var stars:FunkinSprite;
-
   public var flames:FreeplayFlames;
 
   var hsvShader:HSVShader;

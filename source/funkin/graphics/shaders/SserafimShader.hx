@@ -19,45 +19,37 @@ class SserafimShader extends FlxShader
     (this is treated differently when isCharacter is true)
    */
   public var darkenAmount(default, set):Float;
-
   /*
     The color of the pulse light behind the truck.
    */
   public var pulseLightColor(default, set):FlxColor;
-
   /*
     The strength/opacity of the light behind the truck.
    */
   public var pulseLightStrength(default, set):Float;
-
   /*
     The strength/opacity of the lights on the truck.
    */
   public var truckLightStrength(default, set):Float;
-
   /*
     Whether this shader is for the characters or not.
     This will change how dramatic the light effect is.
    */
   public var isCharacter(default, set):Bool;
-
   // TODO: this is for the future but maybe we should make support for AdjustColor to be like... a default thing any shader can pull from???
   // (if thats possible??) i know flixel does some stuff like that
   /*
     The hue component of the Adjust Color part of the shader.
    */
   public var baseHue(default, set):Float;
-
   /*
     The saturation component of the Adjust Color part of the shader.
    */
   public var baseSaturation(default, set):Float;
-
   /*
     The brightness component of the Adjust Color part of the shader.
    */
   public var baseBrightness(default, set):Float;
-
   /*
     The contrast component of the Adjust Color part of the shader.
    */

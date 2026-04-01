@@ -11,8 +11,7 @@ import funkin.play.cutscene.VideoCutscene;
 /**
  * Provides utility functions for working with admob advertisements.
  */
-@:build(funkin.util.macro.EnvironmentMacro.build())
-@:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class AdMobUtil
 {
   /**
@@ -44,7 +43,6 @@ class AdMobUtil
   #else
   static final ADMOB_PUBLISHER:Null<String> = "ca-app-pub-3940256099942544";
   #end
-
   /**
    * Ad unit ID for displaying banner ads.
    */
@@ -54,7 +52,6 @@ class AdMobUtil
   #else
   static final ADMOB_BANNER_AD_UNIT_ID:Null<String> = #if android "9214589741" #elseif ios "2435281174" #else null #end;
   #end
-
   /**
    * Ad unit ID for displaying interstitial ads.
    */
@@ -79,7 +76,10 @@ class AdMobUtil
         case AdmobEvent.INIT_OK:
           if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID != null)
           {
-            final adUnitID:String = [AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/');
+            final adUnitID:String = [
+              AdMobUtil.ADMOB_PUBLISHER,
+              AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID
+            ].join('/');
 
             Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
           }
@@ -120,7 +120,10 @@ class AdMobUtil
 
     if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_BANNER_AD_UNIT_ID != null)
     {
-      Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_BANNER_AD_UNIT_ID].join('/'), size, align);
+      Admob.showBanner([
+        AdMobUtil.ADMOB_PUBLISHER,
+        AdMobUtil.ADMOB_BANNER_AD_UNIT_ID
+      ].join('/'), size, align);
     }
   }
 
@@ -187,7 +190,10 @@ class AdMobUtil
       }
       else
       {
-        Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/'));
+        Admob.loadInterstitial([
+          AdMobUtil.ADMOB_PUBLISHER,
+          AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID
+        ].join('/'));
       }
     }
     else

@@ -15,7 +15,6 @@ class Subtitles extends FlxSpriteGroup
 {
   var subtitleText:SubtitlesText;
   var background:FlxSprite;
-
   var subtitlesData:Array<SubtitleEntry>;
   var assignedSound:FlxSound;
 

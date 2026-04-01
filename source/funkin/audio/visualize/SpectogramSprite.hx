@@ -16,14 +16,11 @@ using flixel.util.FlxSpriteUtil;
 class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 {
   var sampleRate:Int;
-
   var lengthOfShit:Int = 500;
 
   public var visType:VISTYPE = UPDATED;
-
   public var col:Int = FlxColor.WHITE;
   public var daHeight:Float = FlxG.height;
-
   public var vis:VisShit;
 
   public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?amnt:Int = 500)

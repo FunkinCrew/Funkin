@@ -22,7 +22,11 @@ class SubtitleEntry
 
   public function toString():String
   {
-    return FlxStringUtil.getDebugString([LabelValuePair.weak("index", id), LabelValuePair.weak("range", [start, end]), LabelValuePair.weak("text", text)]);
+    return FlxStringUtil.getDebugString([
+      LabelValuePair.weak("index", id),
+      LabelValuePair.weak("range", [start, end]),
+      LabelValuePair.weak("text", text)
+    ]);
   }
 }
 

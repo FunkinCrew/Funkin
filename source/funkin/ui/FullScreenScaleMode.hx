@@ -97,13 +97,10 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
   @:noCompletion
   private static var cutoutBitmaps:Array<Bitmap> = [null, null];
-
   @:noCompletion
   private static var mustAwait:Bool = false;
-
   @:noCompletion
   private static var awaitedSize:FlxPoint = FlxPoint.get(0, 0);
-
   @:noCompletion
   private static var finishingAwait:Bool = false;
 

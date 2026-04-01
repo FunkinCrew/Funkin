@@ -9,11 +9,9 @@ import haxe.ui.components.CheckBox;
 class FindObjDialog extends Dialog
 {
   var stageEditorState:StageEditorState;
-
   var assets:Array<StageEditorObject> = [];
   var curSelected:Int = 0;
   var field:TextField;
-
   var checkWord:CheckBox;
   var checkCaps:CheckBox;
 

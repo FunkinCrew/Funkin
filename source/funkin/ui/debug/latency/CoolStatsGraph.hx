@@ -35,7 +35,6 @@ class CoolStatsGraph extends Sprite
   static inline var MEMORY_COLOR:FlxColor = 0xff009cff;
   static inline var DRAW_TIME_COLOR:FlxColor = 0xffA60004;
   static inline var UPDATE_TIME_COLOR:FlxColor = 0xffdcd400;
-
   public static inline var LABEL_COLOR:FlxColor = 0xaaffffff;
   public static inline var TEXT_SIZE:Int = 11;
   public static inline var DECIMALS:Int = 1;
@@ -44,12 +43,9 @@ class CoolStatsGraph extends Sprite
   public var curLabel:TextField;
   public var maxLabel:TextField;
   public var avgLabel:TextField;
-
   public var minValue:Float = FlxMath.MAX_VALUE_FLOAT;
   public var maxValue:Float = FlxMath.MIN_VALUE_FLOAT;
-
   public var graphColor:FlxColor;
-
   public var history:Array<Float> = [];
 
   var _axis:Shape;

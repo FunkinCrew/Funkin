@@ -26,13 +26,10 @@ class TimelineViewport extends Box
 
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var scrollOffsetMs:Float;
-
   @:clonable @:behaviour(DataBehaviour, 1.0)
   public var zoomLevel:Float;
-
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var songPositionMs:Float;
-
   public var eventBlocks:Array<TimelineEventBlock> = [];
   public var layers:Array<TimelineLayerData> = [];
   public var stepLengthMs:Float = 125.0;
@@ -41,7 +38,6 @@ class TimelineViewport extends Box
   public var playhead:Box;
   public var layerTopOffset:Float = 0;
   public var onRefresh:Void->Void;
-
   public var pixelsPerMs(get, never):Float;
 
   function get_pixelsPerMs():Float
@@ -250,7 +246,6 @@ private class TimelineViewportLayout extends DefaultLayout
 private class TimelineViewportEvents extends haxe.ui.events.Events
 {
   var _viewport:TimelineViewport;
-
   var _dragMode:TimelineDragMode = NONE;
   var _dragTarget:TimelineEventBlock;
   var _dragOffsetMs:Float = 0;
@@ -258,7 +253,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _dragOriginalDuration:Float = 0;
   var _dragOriginalLayerIndex:Int = 0;
   var _hoverBlock:TimelineEventBlock;
-
   var _ghost:Box;
   var _ghostTimeMs:Float = 0;
   var _ghostDurationSteps:Float = 0;

@@ -236,14 +236,12 @@ enum abstract Leaderboard(Int) from Int to Int
   public var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14244 #else 9957 #end;
   public var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14245 #else 14682 #end;
   public var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14237 #else 14683 #end;
-
   // Collab 1 only has one song.
   //
   // SONGS
   //
   // Tutorial
   public var Tutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14249 #else 14684 #end;
-
   // Week 1
   public var Bopeebo = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14246 #else 9603 #end;
   public var BopeeboErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14685 #end;
@@ -254,7 +252,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var DadBattle = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14248 #else 9605 #end;
   public var DadBattleErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14689 #end;
   public var DadBattlePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14690 #end;
-
   // Week 2
   public var Spookeez = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9604 #end;
   public var SpookeezErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14691 #end;
@@ -263,7 +260,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var SouthErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14693 #end;
   public var SouthPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14694 #end;
   public var Monster = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14703 #end;
-
   // Week 3
   public var Pico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9766 #end;
   public var PicoErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14695 #end;
@@ -274,14 +270,12 @@ enum abstract Leaderboard(Int) from Int to Int
   public var Blammed = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9768 #end;
   public var BlammedErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14704 #end;
   public var BlammedPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14705 #end;
-
   // Week 4
   public var SatinPanties = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9869 #end;
   public var SatinPantiesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14701 #end;
   public var High = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9867 #end;
   public var HighErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14699 #end;
   public var MILF = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9868 #end;
-
   // Week 5
   public var Cocoa = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14706 #end;
   public var CocoaErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14707 #end;
@@ -290,7 +284,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var EggnogErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14711 #end;
   public var EggnogPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14710 #end;
   public var WinterHorrorland = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14712 #end;
-
   // Week 6
   public var Senpai = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9958 #end;
   public var SenpaiErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14713 #end;
@@ -300,7 +293,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var RosesPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14717 #end;
   public var Thorns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9960 #end;
   public var ThornsErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14715 #end;
-
   // Week 7
   public var Ugh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14718 #end;
   public var UghErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14722 #end;
@@ -309,7 +301,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var GunsPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14723 #end;
   public var Stress = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14720 #end;
   public var StressPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14724 #end;
-
   // Weekend 1
   public var Darnell = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14725 #end;
   public var DarnellErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14727 #end;
@@ -318,7 +309,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var LitUpBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14729 #end;
   public var TwoHot = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14730 #end; // Variable names can't start with a number!
   public var Blazin = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14731 #end;
-
   // Collab 1
   public var Spaghetti = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 15448 #else 15451 #end;
 

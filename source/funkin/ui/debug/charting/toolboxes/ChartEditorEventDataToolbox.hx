@@ -31,16 +31,13 @@ import flixel.FlxG;
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml"))
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
   var toolboxEventsDataBox:VBox;
-
   var easeGraphImage:Image;
   var easeDotImage:Image;
-
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
   var _easeDotSprites:Array<flixel.FlxSprite> = [];
   var _dotTimer:Null<FlxTimer> = null;

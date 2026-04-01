@@ -21,7 +21,6 @@ class PlayerSettings
   public static var player1(default, null):PlayerSettings;
   @:nullSafety(Off)
   public static var player2(default, null):PlayerSettings;
-
   public static var onAvatarAdd(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
   public static var onAvatarRemove(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
 
@@ -45,9 +44,12 @@ class PlayerSettings
   {
     return switch (id)
     {
-      case 1: player1;
-      case 2: player2;
-      default: null;
+      case 1:
+        player1;
+      case 2:
+        player2;
+      default:
+        null;
     };
   }
 

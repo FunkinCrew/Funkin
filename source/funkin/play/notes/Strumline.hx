@@ -44,7 +44,6 @@ class Strumline extends FlxSpriteGroup
   // Positional fixes for new strumline graphics.
   static final INITIAL_OFFSET:Float = -0.275 * STRUMLINE_SIZE;
   static final NUDGE:Float = 2.0;
-
   public static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
 
@@ -153,9 +152,7 @@ class Strumline extends FlxSpriteGroup
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
-
   final noteStyle:NoteStyle;
-
   var noteSpacingScale:Float = 1;
 
   /**
@@ -1353,14 +1350,16 @@ class Strumline extends FlxSpriteGroup
     #end
     return switch (direction)
     {
-      case NoteDirection.LEFT: -pos * 2;
+      case NoteDirection.LEFT:
+        -pos * 2;
       case NoteDirection.DOWN:
         -(pos * 2) + (1 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
       case NoteDirection.UP:
         pos + (2 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
       case NoteDirection.RIGHT:
         pos + (3 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
-      default: -pos * 2;
+      default:
+        -pos * 2;
     }
   }
 

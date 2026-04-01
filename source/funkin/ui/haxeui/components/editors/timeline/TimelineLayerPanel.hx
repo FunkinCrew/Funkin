@@ -9,8 +9,7 @@ import haxe.ui.containers.VBox;
 import haxe.ui.core.CompositeBuilder;
 import haxe.ui.events.UIEvent;
 
-@:composite(TimelineLayerPanelBuilder)
-@:xml('
+@:composite(TimelineLayerPanelBuilder) @:xml('
 <vbox width="120" style="background-color: #2A2A2A; spacing: 0; clip: true; overflow: hidden;">
 </vbox>
 ')
@@ -19,7 +18,6 @@ class TimelineLayerPanel extends VBox
   public var btnAddLayer:Image;
   public var btnRemoveLayer:Image;
   public var buttonRow:HBox;
-
   public var _layerContainer:VBox;
 
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void

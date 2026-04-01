@@ -16,13 +16,11 @@ class LegacySongData
 {
   public var player1:String; // Boyfriend
   public var player2:String; // Opponent
-
   @:jcustomparse(funkin.data.DataParse.eitherLegacyScrollSpeeds)
   public var speed:Either<Float, LegacyScrollSpeeds>;
   @:optional
   public var stageDefault:Null<String>;
   public var bpm:Float;
-
   @:jcustomparse(funkin.data.DataParse.eitherLegacyNoteData)
   public var notes:Either<Array<LegacyNoteSection>, LegacyNoteData>;
   public var song:String; // Song name
@@ -35,7 +33,8 @@ class LegacySongData
   {
     var notesStr:String = switch (notes)
     {
-      case Left(sections): 'single difficulty w/ ${sections.length} sections';
+      case Left(sections):
+        'single difficulty w/ ${sections.length} sections';
       case Right(data):
         var difficultyCount:Int = 0;
         if (data.easy != null) difficultyCount++;
@@ -91,9 +90,7 @@ typedef LegacyNoteSection =
   public var sectionNotes:Array<LegacyNote>;
 
   public var ?typeOfSection:Int;
-
   public var ?lengthInSteps:Int;
-
   // BPM changes
   public var ?changeBPM:Bool;
   public var ?bpm:Float;

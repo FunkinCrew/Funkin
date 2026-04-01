@@ -237,7 +237,9 @@ class InitState extends FlxState
       // ANDROID SETUP
       //
       #if android
-      FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
+      FlxG.android.preventDefaultKeys = [
+        flixel.input.android.FlxAndroidKey.BACK
+      ];
       #end
 
       //
@@ -309,7 +311,8 @@ class InitState extends FlxState
   }
 
   #if FEATURE_LOST_FOCUS_VOLUME
-  @:noCompletion var _lastFocusVolume:Null<Float>;
+  @:noCompletion
+  var _lastFocusVolume:Null<Float>;
 
   function onLostFocus():Void
   {

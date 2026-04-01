@@ -28,13 +28,11 @@ class LoadingState extends MusicBeatSubState
   inline static var MIN_TIME = 1.0;
 
   var asSubState:Bool = false;
-
   var target:NextState;
   var playParams:Null<PlayStateParams>;
   var stopMusic:Bool = false;
   var callbacks:Null<MultiCallback>;
   var danceLeft:Bool = false;
-
   var loadBar:FlxSprite;
   var funkay:FlxSprite;
 
@@ -283,9 +281,27 @@ class LoadingState extends MusicBeatSubState
       // TODO: This sucks lol.
       if (params.targetSong.songName == "2hot")
       {
-        var spritesToCache = ["gameplay/songs/darnell/cutscene/cutscene-can", "gameplay/songs/2hot/graphics/spraycan-explosion-ez", "gameplay/songs/2hot/graphics/can-impact"];
+        var spritesToCache = [
+          "gameplay/songs/darnell/cutscene/cutscene-can",
+          "gameplay/songs/2hot/graphics/spraycan-explosion-ez",
+          "gameplay/songs/2hot/graphics/can-impact"
+        ];
 
-        var soundsToCache = ["gameplay/songs/2hot/sounds/darnell-lighter", "gameplay/characters/pico-playable/sounds/gun-prep", "gameplay/songs/2hot/sounds/kick-can-forward", "gameplay/songs/2hot/sounds/kick-can-up", "gameplay/songs/2hot/spraycan/spritemap1", "gameplay/stages/phillyBlazin/sounds/lightning-1", "gameplay/stages/phillyBlazin/sounds/lightning-2", "gameplay/stages/phillyBlazin/sounds/lightning-3", "gameplay/characters/pico-playable/sounds/bonk", "gameplay/characters/pico-playable/sounds/shot-1", "gameplay/characters/pico-playable/sounds/shot-2", "gameplay/characters/pico-playable/sounds/shot-3", "gameplay/characters/pico-playable/sounds/shot-4"];
+        var soundsToCache = [
+          "gameplay/songs/2hot/sounds/darnell-lighter",
+          "gameplay/characters/pico-playable/sounds/gun-prep",
+          "gameplay/songs/2hot/sounds/kick-can-forward",
+          "gameplay/songs/2hot/sounds/kick-can-up",
+          "gameplay/songs/2hot/spraycan/spritemap1",
+          "gameplay/stages/phillyBlazin/sounds/lightning-1",
+          "gameplay/stages/phillyBlazin/sounds/lightning-2",
+          "gameplay/stages/phillyBlazin/sounds/lightning-3",
+          "gameplay/characters/pico-playable/sounds/bonk",
+          "gameplay/characters/pico-playable/sounds/shot-1",
+          "gameplay/characters/pico-playable/sounds/shot-2",
+          "gameplay/characters/pico-playable/sounds/shot-3",
+          "gameplay/characters/pico-playable/sounds/shot-4"
+        ];
 
         for (sprite in spritesToCache)
         {
@@ -479,6 +495,8 @@ class MultiCallback
         FlxG.switchState(state);
       }
     });
-    FlxG.camera.filters = [new ShaderFilter(screenWipeShit)];
+    FlxG.camera.filters = [
+      new ShaderFilter(screenWipeShit)
+    ];
   }
 }

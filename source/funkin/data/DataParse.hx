@@ -224,7 +224,10 @@ class DataParse
    */
   static function jsonArrayToDynamicArray(jsons:Array<Json>):Array<Null<Dynamic>>
   {
-    return [for (json in jsons) Tools.getValue(json)];
+    return [
+      for (json in jsons)
+        Tools.getValue(json)
+    ];
   }
 
   static function legacyNoteSectionArray(json:Json, name:String):Array<LegacyNoteSection>
@@ -232,7 +235,10 @@ class DataParse
     switch (json.value)
     {
       case JArray(values):
-        return [for (value in values) legacyNoteSection(value, name)];
+        return [
+          for (value in values)
+            legacyNoteSection(value, name)
+        ];
       default:
         throw 'Expected property to be an array, but it was ${json.value}.';
     }
@@ -293,7 +299,10 @@ class DataParse
     switch (json.value)
     {
       case JArray(values):
-        return [for (value in values) legacyNote(value, name)];
+        return [
+          for (value in values)
+            legacyNote(value, name)
+        ];
       default:
         throw 'Expected property $name to be an array of notes, but it was ${json.value}.';
     }

@@ -17,14 +17,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
 {
   var capsuleMenuBG:FunkinSprite;
   var parent:FreeplayState;
-
   var queueDestroy:Bool = false;
-
   var instrumentalIds:Array<String> = [''];
   var currentInstrumentalIndex:Int = 0;
-
   var currentInstrumental:FlxText;
-
   var busy:Bool = false;
   var leftArrow:InstrumentalSelector;
   var rightArrow:InstrumentalSelector;
@@ -153,7 +149,6 @@ class InstrumentalSelector extends FunkinSprite
 {
   var controls:Controls;
   var whiteShader:PureColor;
-
   var parent:FreeplayState;
 
   public var busy:Bool = false;

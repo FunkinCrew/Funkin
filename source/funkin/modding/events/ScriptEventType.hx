@@ -357,7 +357,8 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Allow for comparing `ScriptEventType` to `String`.
    */
-  @:op(A == B) private static inline function equals(a:ScriptEventType, b:String):Bool
+  @:op(A == B)
+  private static inline function equals(a:ScriptEventType, b:String):Bool
   {
     return (a : String) == b;
   }
@@ -365,7 +366,8 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Allow for comparing `ScriptEventType` to `String`.
    */
-  @:op(A != B) private static inline function notEquals(a:ScriptEventType, b:String):Bool
+  @:op(A != B)
+  private static inline function notEquals(a:ScriptEventType, b:String):Bool
   {
     return (a : String) != b;
   }

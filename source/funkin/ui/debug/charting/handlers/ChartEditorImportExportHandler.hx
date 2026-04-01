@@ -19,8 +19,7 @@ import thx.semver.Version as SemverVersion;
 /**
  * Contains functions for importing, loading, saving, and exporting charts.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
   public static final BACKUPS_PATH:String = './backups/charts/';
@@ -100,7 +99,7 @@ class ChartEditorImportExportHandler
           {
             state.loadVocalsFromAsset(voiceFile, diff.characters.player, instId);
             state.audioVocalTrackGroup.legacyVoiceSystem = true;
-            state.audioVocalTrackGroup.legacyVoiceUsesPlayer = true;  
+            state.audioVocalTrackGroup.legacyVoiceUsesPlayer = true;
           }
         }
 
@@ -177,7 +176,13 @@ class ChartEditorImportExportHandler
       if (stackedNotesCount > 0)
       {
         // Difficulty names might be out of order due to how maps work
-        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind(['Easy', 'Normal', 'Hard', 'Erect', 'Nightmare']));
+        affectedDiffs.sort(SortUtil.defaultsThenAlphabetically.bind([
+          'Easy',
+          'Normal',
+          'Hard',
+          'Erect',
+          'Nightmare'
+        ]));
 
         // Delay it so it doesn't overlap other notifications
         flixel.util.FlxTimer.wait(delay, () ->
@@ -590,7 +595,10 @@ class ChartEditorImportExportHandler
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
         if (state.currentSongId == '') state.currentSongName = 'New Chart'; // Hopefully no one notices this silliness
-        targetPath = Path.join([BACKUPS_PATH, 'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}']);
+        targetPath = Path.join([
+          BACKUPS_PATH,
+          'chart-editor-${state.currentSongId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+        ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         try

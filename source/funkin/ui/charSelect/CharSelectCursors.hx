@@ -17,7 +17,6 @@ class CharSelectCursors extends FlxTypedSpriteContainer<FunkinSprite>
 
   var lightBlue:FunkinSprite;
   var darkBlue:FunkinSprite;
-
   var cursorConfirmed:FunkinSprite;
   var cursorDenied:FunkinSprite;
 

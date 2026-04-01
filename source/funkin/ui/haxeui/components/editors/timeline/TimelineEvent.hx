@@ -9,8 +9,10 @@ class TimelineEvent extends UIEvent
 {
   public static inline var EVENT_MOVED:EventType<TimelineEvent> = "timelineEventMoved";
   public static inline var EVENT_RESIZED:EventType<TimelineEvent> = "timelineEventResized";
+
   /** Reserved for future use — not currently dispatched. */
   public static inline var EVENT_LAYER_CHANGED:EventType<TimelineEvent> = "timelineEventLayerChanged";
+
   public static inline var EVENT_SELECTED:EventType<TimelineEvent> = "timelineEventSelected";
   public static inline var SEEK:EventType<TimelineEvent> = "timelineSeek";
   public static inline var ZOOM_CHANGED:EventType<TimelineEvent> = "timelineZoomChanged";

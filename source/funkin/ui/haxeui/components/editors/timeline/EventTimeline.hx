@@ -15,8 +15,7 @@ import haxe.ui.events.Events;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
-@:composite(EventTimelineEvents, TimelineBuilder)
-@:xml('
+@:composite(EventTimelineEvents, TimelineBuilder) @:xml('
 <vbox width="100%" height="100%" style="background-color: #2A2A2A;" />
 ')
 class EventTimeline extends VBox
@@ -28,16 +27,12 @@ class EventTimeline extends VBox
   public var viewport:TimelineViewport;
   public var scrollbar:HorizontalScroll;
   public var scrollbarPlayhead:Box;
-
   @:clonable @:behaviour(SongPositionBehaviour, 0)
   public var songPosition:Float;
-
   @:clonable @:behaviour(SongLengthBehaviour, 0)
   public var songLength:Float;
-
   @:clonable @:behaviour(DefaultBehaviour, false)
   public var isPlaying:Bool;
-
   @:clonable @:behaviour(DefaultBehaviour, 1)
   public var autoScrollMode:Int;
 

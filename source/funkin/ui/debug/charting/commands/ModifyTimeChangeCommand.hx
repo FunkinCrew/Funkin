@@ -9,21 +9,16 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
  * Annoyingly, due to the way haxe works, every value of the time change has to be passed into this.
  * Will clamp the target timestamp to a valid value.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ModifyTimeChangeCommand implements ChartEditorCommand
 {
   var timeChangeIndex:Int;
-
   var targetBPM:Float;
   var previousBPM:Float = 100;
-
   var targetTimeStamp:Float;
   var previousTimeStamp:Float = 0;
-
   var targetNumerator:Int;
   var previousNumerator:Int = 4;
-
   var targetDenominator:Int;
   var previousDenominator:Int = 4;
 
@@ -43,7 +38,9 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     {
       previousBPM = 100;
       previousTimeStamp = 0;
-      timeChanges = [new SongTimeChange(previousTimeStamp, targetBPM)];
+      timeChanges = [
+        new SongTimeChange(previousTimeStamp, targetBPM)
+      ];
     }
     else
     {
@@ -82,7 +79,9 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
     if (timeChanges == null || timeChanges.length == 0)
     {
-      timeChanges = [new SongTimeChange(previousTimeStamp, targetBPM)];
+      timeChanges = [
+        new SongTimeChange(previousTimeStamp, targetBPM)
+      ];
     }
     else
     {

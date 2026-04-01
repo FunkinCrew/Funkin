@@ -12,7 +12,6 @@ typedef BlendModeShader =
 class BlendModeEffect
 {
   public var shader(default, null):BlendModeShader;
-
   @:isVar
   public var color(default, set):FlxColor = new FlxColor();
 

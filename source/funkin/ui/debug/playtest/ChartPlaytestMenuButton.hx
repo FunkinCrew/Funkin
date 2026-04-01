@@ -72,7 +72,6 @@ class ChartPlaytestMenuButtonListToggle extends ChartPlaytestMenuButtonBase
   var title:String;
   var list:Array<String>;
   var onPressed:String->Void;
-
   var curSelected:Int = 0;
 
   public function new(x:Float, y:Float, title:String, list:Array<String>, onPressed:String->Void)

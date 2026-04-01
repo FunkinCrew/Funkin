@@ -21,8 +21,7 @@ import haxe.ui.events.UIEvent;
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml"))
 class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -42,17 +41,13 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   var playheadSprite:SpriteWrapper;
 
   static final TICK_LABEL_X_OFFSET:Float = 4.0;
-
   static final PLAYHEAD_RIGHT_PAD:Float = 10.0;
-
   static final BASE_SCALE:Float = 64.0;
   static final MIN_SCALE:Float = 4.0;
   static final WAVEFORM_ZOOM_MULT:Float = 1.5;
-
   static final MAGIC_SCALE_BASE_TIME:Float = 5.0;
 
   var waveformScale:Float = BASE_SCALE;
-
   var playheadAbsolutePos(get, set):Float;
 
   function get_playheadAbsolutePos():Float
@@ -83,11 +78,8 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
   var waveformMagicFactor:Float = 1.0;
 
   var audioPreviewTracks:SoundGroup;
-
   var tickTiledSprite:FlxTiledSprite;
-
   var tickLabels:Array<Label> = [];
-
   // Local store of the audio offsets, so we can detect when they change.
   var audioPreviewPlayerOffset:Float = 0;
   var audioPreviewOpponentOffset:Float = 0;

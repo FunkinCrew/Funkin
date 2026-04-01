@@ -28,12 +28,10 @@ class Controls extends FlxActionSet
   var _ui_left = new FunkinAction(Action.UI_LEFT);
   var _ui_right = new FunkinAction(Action.UI_RIGHT);
   var _ui_down = new FunkinAction(Action.UI_DOWN);
-
   var _note_up = new FunkinAction(Action.NOTE_UP);
   var _note_left = new FunkinAction(Action.NOTE_LEFT);
   var _note_right = new FunkinAction(Action.NOTE_RIGHT);
   var _note_down = new FunkinAction(Action.NOTE_DOWN);
-
   var _accept = new FunkinAction(Action.ACCEPT);
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
@@ -62,12 +60,10 @@ class Controls extends FlxActionSet
   var _volume_up = new FunkinAction(Action.VOLUME_UP);
   var _volume_down = new FunkinAction(Action.VOLUME_DOWN);
   var _volume_mute = new FunkinAction(Action.VOLUME_MUTE);
-
   var byName:Map<String, FunkinAction> = new Map<String, FunkinAction>();
 
   public var gamepadsAdded:Array<Int> = [];
   public var keyboardScheme = KeyboardScheme.None;
-
   public var UI_UP(get, never):Bool;
 
   inline function get_UI_UP() return _ui_up.checkPressed();
@@ -387,18 +383,24 @@ class Controls extends FlxActionSet
     {
       return switch (FunkinAction.lastDeviceUsed)
       {
-        case KEYBOARD: return '[${InputUtil.format(input.inputID, Keys).toUpperCase()}]';
-        case GAMEPAD: return '(${InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase()})';
-        case device: throw 'unhandled device: $device';
+        case KEYBOARD:
+          return '[${InputUtil.format(input.inputID, Keys).toUpperCase()}]';
+        case GAMEPAD:
+          return '(${InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase()})';
+        case device:
+          throw 'unhandled device: $device';
       }
     }
     else
     {
       return switch (FunkinAction.lastDeviceUsed)
       {
-        case KEYBOARD: return InputUtil.format(input.inputID, Keys).toUpperCase();
-        case GAMEPAD: return InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase();
-        case device: throw 'unhandled device: $device';
+        case KEYBOARD:
+          return InputUtil.format(input.inputID, Keys).toUpperCase();
+        case GAMEPAD:
+          return InputUtil.format(input.inputID, Gamepad(input.deviceID)).toUpperCase();
+        case device:
+          throw 'unhandled device: $device';
       }
     }
   }
@@ -417,34 +419,70 @@ class Controls extends FlxActionSet
   {
     return switch (control)
     {
-      case UI_UP: _ui_up;
-      case UI_DOWN: _ui_down;
-      case UI_LEFT: _ui_left;
-      case UI_RIGHT: _ui_right;
-      case NOTE_UP: _note_up;
-      case NOTE_DOWN: _note_down;
-      case NOTE_LEFT: _note_left;
-      case NOTE_RIGHT: _note_right;
-      case ACCEPT: _accept;
-      case BACK: _back;
-      case PAUSE: _pause;
-      case RESET: _reset;
-      #if FEATURE_SCREENSHOTS case WINDOW_SCREENSHOT: _window_screenshot; #end
-      case WINDOW_FULLSCREEN: _window_fullscreen;
-      case FREEPLAY_FAVORITE: _freeplay_favorite;
-      case FREEPLAY_LEFT: _freeplay_left;
-      case FREEPLAY_RIGHT: _freeplay_right;
-      case FREEPLAY_CHAR_SELECT: _freeplay_char_select;
-      case FREEPLAY_JUMP_TO_TOP: _freeplay_jump_to_top;
-      case FREEPLAY_JUMP_TO_BOTTOM: _freeplay_jump_to_bottom;
-      case CUTSCENE_ADVANCE: _cutscene_advance;
-      #if FEATURE_DEBUG_MENU case DEBUG_MENU: _debug_menu; #end
-      #if FEATURE_CHART_EDITOR case DEBUG_CHART: _debug_chart; #end
-      #if FEATURE_STAGE_EDITOR case DEBUG_STAGE: _debug_stage; #end
-      case DEBUG_DISPLAY: _debug_display;
-      case VOLUME_UP: _volume_up;
-      case VOLUME_DOWN: _volume_down;
-      case VOLUME_MUTE: _volume_mute;
+      case UI_UP:
+        _ui_up;
+      case UI_DOWN:
+        _ui_down;
+      case UI_LEFT:
+        _ui_left;
+      case UI_RIGHT:
+        _ui_right;
+      case NOTE_UP:
+        _note_up;
+      case NOTE_DOWN:
+        _note_down;
+      case NOTE_LEFT:
+        _note_left;
+      case NOTE_RIGHT:
+        _note_right;
+      case ACCEPT:
+        _accept;
+      case BACK:
+        _back;
+      case PAUSE:
+        _pause;
+      case RESET:
+        _reset;
+      #if FEATURE_SCREENSHOTS
+      case WINDOW_SCREENSHOT:
+        _window_screenshot;
+      #end
+      case WINDOW_FULLSCREEN:
+        _window_fullscreen;
+      case FREEPLAY_FAVORITE:
+        _freeplay_favorite;
+      case FREEPLAY_LEFT:
+        _freeplay_left;
+      case FREEPLAY_RIGHT:
+        _freeplay_right;
+      case FREEPLAY_CHAR_SELECT:
+        _freeplay_char_select;
+      case FREEPLAY_JUMP_TO_TOP:
+        _freeplay_jump_to_top;
+      case FREEPLAY_JUMP_TO_BOTTOM:
+        _freeplay_jump_to_bottom;
+      case CUTSCENE_ADVANCE:
+        _cutscene_advance;
+      #if FEATURE_DEBUG_MENU
+      case DEBUG_MENU:
+        _debug_menu;
+      #end
+      #if FEATURE_CHART_EDITOR
+      case DEBUG_CHART:
+        _debug_chart;
+      #end
+      #if FEATURE_STAGE_EDITOR
+      case DEBUG_STAGE:
+        _debug_stage;
+      #end
+      case DEBUG_DISPLAY:
+        _debug_display;
+      case VOLUME_UP:
+        _volume_up;
+      case VOLUME_DOWN:
+        _volume_down;
+      case VOLUME_MUTE:
+        _volume_mute;
     }
   }
 
@@ -775,98 +813,206 @@ class Controls extends FlxActionSet
       case Solo:
         switch (control)
         {
-          case Control.UI_UP: return [W, FlxKey.UP];
-          case Control.UI_DOWN: return [S, FlxKey.DOWN];
-          case Control.UI_LEFT: return [A, FlxKey.LEFT];
-          case Control.UI_RIGHT: return [D, FlxKey.RIGHT];
-          case Control.NOTE_UP: return [W, FlxKey.UP];
-          case Control.NOTE_DOWN: return [S, FlxKey.DOWN];
-          case Control.NOTE_LEFT: return [A, FlxKey.LEFT];
-          case Control.NOTE_RIGHT: return [D, FlxKey.RIGHT];
-          case Control.ACCEPT: return [Z, SPACE, ENTER];
-          case Control.BACK: return [X, BACKSPACE, ESCAPE];
-          case Control.PAUSE: return [P, ENTER, ESCAPE];
-          case Control.RESET: return [R];
-          case Control.WINDOW_FULLSCREEN: return [F11]; // We use F for other things LOL.
-          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
-          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
-          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
-          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
-          case Control.FREEPLAY_CHAR_SELECT: return [TAB];
-          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
-          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
-          case Control.CUTSCENE_ADVANCE: return [Z, ENTER];
-          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
-          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
-          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
-          case Control.DEBUG_DISPLAY: return [F6];
-          case Control.VOLUME_UP: return [PLUS, NUMPADPLUS];
-          case Control.VOLUME_DOWN: return [MINUS, NUMPADMINUS];
-          case Control.VOLUME_MUTE: return [ZERO, NUMPADZERO];
+          case Control.UI_UP:
+            return [W, FlxKey.UP];
+          case Control.UI_DOWN:
+            return [S, FlxKey.DOWN];
+          case Control.UI_LEFT:
+            return [A, FlxKey.LEFT];
+          case Control.UI_RIGHT:
+            return [D, FlxKey.RIGHT];
+          case Control.NOTE_UP:
+            return [W, FlxKey.UP];
+          case Control.NOTE_DOWN:
+            return [S, FlxKey.DOWN];
+          case Control.NOTE_LEFT:
+            return [A, FlxKey.LEFT];
+          case Control.NOTE_RIGHT:
+            return [D, FlxKey.RIGHT];
+          case Control.ACCEPT:
+            return [Z, SPACE, ENTER];
+          case Control.BACK:
+            return [X, BACKSPACE, ESCAPE];
+          case Control.PAUSE:
+            return [P, ENTER, ESCAPE];
+          case Control.RESET:
+            return [R];
+          case Control.WINDOW_FULLSCREEN:
+            return [F11]; // We use F for other things LOL.
+          #if FEATURE_SCREENSHOTS
+          case Control.WINDOW_SCREENSHOT:
+            return [F3];
+          #end
+          case Control.FREEPLAY_FAVORITE:
+            return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT:
+            return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT:
+            return [E]; // Switch tabs on the menu
+          case Control.FREEPLAY_CHAR_SELECT:
+            return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP:
+            return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM:
+            return [END];
+          case Control.CUTSCENE_ADVANCE:
+            return [Z, ENTER];
+          #if FEATURE_DEBUG_MENU
+          case Control.DEBUG_MENU:
+            return [GRAVEACCENT];
+          #end
+          #if FEATURE_CHART_EDITOR
+          case Control.DEBUG_CHART:
+            return [];
+          #end
+          #if FEATURE_STAGE_EDITOR
+          case Control.DEBUG_STAGE:
+            return [];
+          #end
+          case Control.DEBUG_DISPLAY:
+            return [F6];
+          case Control.VOLUME_UP:
+            return [PLUS, NUMPADPLUS];
+          case Control.VOLUME_DOWN:
+            return [MINUS, NUMPADMINUS];
+          case Control.VOLUME_MUTE:
+            return [ZERO, NUMPADZERO];
         }
       case Duo(true):
         switch (control)
         {
-          case Control.UI_UP: return [W];
-          case Control.UI_DOWN: return [S];
-          case Control.UI_LEFT: return [A];
-          case Control.UI_RIGHT: return [D];
-          case Control.NOTE_UP: return [W];
-          case Control.NOTE_DOWN: return [S];
-          case Control.NOTE_LEFT: return [A];
-          case Control.NOTE_RIGHT: return [D];
-          case Control.ACCEPT: return [G, Z];
-          case Control.BACK: return [H, X];
-          case Control.PAUSE: return [ONE];
-          case Control.RESET: return [R];
-          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return [F3]; #end
-          case Control.WINDOW_FULLSCREEN: return [F11];
-          case Control.FREEPLAY_FAVORITE: return [F]; // Favorite a song on the menu
-          case Control.FREEPLAY_LEFT: return [Q]; // Switch tabs on the menu
-          case Control.FREEPLAY_RIGHT: return [E]; // Switch tabs on the menu
-          case Control.FREEPLAY_CHAR_SELECT: return [TAB];
-          case Control.FREEPLAY_JUMP_TO_TOP: return [HOME];
-          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [END];
-          case Control.CUTSCENE_ADVANCE: return [G, Z];
-          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return [GRAVEACCENT]; #end
-          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
-          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
-          case Control.DEBUG_DISPLAY: return [F6];
-          case Control.VOLUME_UP: return [PLUS];
-          case Control.VOLUME_DOWN: return [MINUS];
-          case Control.VOLUME_MUTE: return [ZERO];
+          case Control.UI_UP:
+            return [W];
+          case Control.UI_DOWN:
+            return [S];
+          case Control.UI_LEFT:
+            return [A];
+          case Control.UI_RIGHT:
+            return [D];
+          case Control.NOTE_UP:
+            return [W];
+          case Control.NOTE_DOWN:
+            return [S];
+          case Control.NOTE_LEFT:
+            return [A];
+          case Control.NOTE_RIGHT:
+            return [D];
+          case Control.ACCEPT:
+            return [G, Z];
+          case Control.BACK:
+            return [H, X];
+          case Control.PAUSE:
+            return [ONE];
+          case Control.RESET:
+            return [R];
+          #if FEATURE_SCREENSHOTS
+          case Control.WINDOW_SCREENSHOT:
+            return [F3];
+          #end
+          case Control.WINDOW_FULLSCREEN:
+            return [F11];
+          case Control.FREEPLAY_FAVORITE:
+            return [F]; // Favorite a song on the menu
+          case Control.FREEPLAY_LEFT:
+            return [Q]; // Switch tabs on the menu
+          case Control.FREEPLAY_RIGHT:
+            return [E]; // Switch tabs on the menu
+          case Control.FREEPLAY_CHAR_SELECT:
+            return [TAB];
+          case Control.FREEPLAY_JUMP_TO_TOP:
+            return [HOME];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM:
+            return [END];
+          case Control.CUTSCENE_ADVANCE:
+            return [G, Z];
+          #if FEATURE_DEBUG_MENU
+          case Control.DEBUG_MENU:
+            return [GRAVEACCENT];
+          #end
+          #if FEATURE_CHART_EDITOR
+          case Control.DEBUG_CHART:
+            return [];
+          #end
+          #if FEATURE_STAGE_EDITOR
+          case Control.DEBUG_STAGE:
+            return [];
+          #end
+          case Control.DEBUG_DISPLAY:
+            return [F6];
+          case Control.VOLUME_UP:
+            return [PLUS];
+          case Control.VOLUME_DOWN:
+            return [MINUS];
+          case Control.VOLUME_MUTE:
+            return [ZERO];
         }
       case Duo(false):
         switch (control)
         {
-          case Control.UI_UP: return [FlxKey.UP];
-          case Control.UI_DOWN: return [FlxKey.DOWN];
-          case Control.UI_LEFT: return [FlxKey.LEFT];
-          case Control.UI_RIGHT: return [FlxKey.RIGHT];
-          case Control.NOTE_UP: return [FlxKey.UP];
-          case Control.NOTE_DOWN: return [FlxKey.DOWN];
-          case Control.NOTE_LEFT: return [FlxKey.LEFT];
-          case Control.NOTE_RIGHT: return [FlxKey.RIGHT];
-          case Control.ACCEPT: return [ENTER];
-          case Control.BACK: return [ESCAPE];
-          case Control.PAUSE: return [ONE];
-          case Control.RESET: return [R];
-          #if FEATURE_SCREENSHOTS case Control.WINDOW_SCREENSHOT: return []; #end
-          case Control.WINDOW_FULLSCREEN: return [];
-          case Control.FREEPLAY_FAVORITE: return [];
-          case Control.FREEPLAY_LEFT: return [];
-          case Control.FREEPLAY_RIGHT: return [];
-          case Control.FREEPLAY_CHAR_SELECT: return [];
-          case Control.FREEPLAY_JUMP_TO_TOP: return [];
-          case Control.FREEPLAY_JUMP_TO_BOTTOM: return [];
-          case Control.CUTSCENE_ADVANCE: return [ENTER];
-          #if FEATURE_DEBUG_MENU case Control.DEBUG_MENU: return []; #end
-          #if FEATURE_CHART_EDITOR case Control.DEBUG_CHART: return []; #end
-          #if FEATURE_STAGE_EDITOR case Control.DEBUG_STAGE: return []; #end
-          case Control.DEBUG_DISPLAY: return [];
-          case Control.VOLUME_UP: return [NUMPADPLUS];
-          case Control.VOLUME_DOWN: return [NUMPADMINUS];
-          case Control.VOLUME_MUTE: return [NUMPADZERO];
+          case Control.UI_UP:
+            return [FlxKey.UP];
+          case Control.UI_DOWN:
+            return [FlxKey.DOWN];
+          case Control.UI_LEFT:
+            return [FlxKey.LEFT];
+          case Control.UI_RIGHT:
+            return [FlxKey.RIGHT];
+          case Control.NOTE_UP:
+            return [FlxKey.UP];
+          case Control.NOTE_DOWN:
+            return [FlxKey.DOWN];
+          case Control.NOTE_LEFT:
+            return [FlxKey.LEFT];
+          case Control.NOTE_RIGHT:
+            return [FlxKey.RIGHT];
+          case Control.ACCEPT:
+            return [ENTER];
+          case Control.BACK:
+            return [ESCAPE];
+          case Control.PAUSE:
+            return [ONE];
+          case Control.RESET:
+            return [R];
+          #if FEATURE_SCREENSHOTS
+          case Control.WINDOW_SCREENSHOT:
+            return [];
+          #end
+          case Control.WINDOW_FULLSCREEN:
+            return [];
+          case Control.FREEPLAY_FAVORITE:
+            return [];
+          case Control.FREEPLAY_LEFT:
+            return [];
+          case Control.FREEPLAY_RIGHT:
+            return [];
+          case Control.FREEPLAY_CHAR_SELECT:
+            return [];
+          case Control.FREEPLAY_JUMP_TO_TOP:
+            return [];
+          case Control.FREEPLAY_JUMP_TO_BOTTOM:
+            return [];
+          case Control.CUTSCENE_ADVANCE:
+            return [ENTER];
+          #if FEATURE_DEBUG_MENU
+          case Control.DEBUG_MENU:
+            return [];
+          #end
+          #if FEATURE_CHART_EDITOR
+          case Control.DEBUG_CHART:
+            return [];
+          #end
+          #if FEATURE_STAGE_EDITOR
+          case Control.DEBUG_STAGE:
+            return [];
+          #end
+          case Control.DEBUG_DISPLAY:
+            return [];
+          case Control.VOLUME_UP:
+            return [NUMPADPLUS];
+          case Control.VOLUME_DOWN:
+            return [NUMPADMINUS];
+          case Control.VOLUME_MUTE:
+            return [NUMPADZERO];
         }
       default:
         // Fallthrough.
@@ -1168,8 +1314,10 @@ class Controls extends FlxActionSet
   {
     return switch (device)
     {
-      case Keys: input.device == KEYBOARD;
-      case Gamepad(id): isGamepad(input, id);
+      case Keys:
+        input.device == KEYBOARD;
+      case Gamepad(id):
+        isGamepad(input, id);
     }
   }
 

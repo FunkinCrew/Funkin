@@ -258,6 +258,7 @@ class HealthIcon extends FunkinSprite
   }
 
   // Apply custom icons offset after hitbox update.
+
   override public function updateHitbox():Void
   {
     super.updateHitbox();

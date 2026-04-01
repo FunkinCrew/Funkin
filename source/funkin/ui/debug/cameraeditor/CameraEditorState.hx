@@ -119,19 +119,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
   public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
-
   public var currentSongMetadata(get, never):Null<SongMetadata>;
   public var currentSongChartData(get, never):Null<SongChartData>;
-
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
-
   public var currentDifficulty:String = "hard";
-
   public var currentNotes(get, never):Array<SongNoteData>;
-
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
-
   public var vCamDebug:FunkinSprite = null;
 
   var cachedEventIndex = 0;
@@ -157,7 +151,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   public var currentStage:Null<Stage> = null;
-
   // Song chart data we have to hold onto just to save properly later.
   public var audioInstTrackData:Map<String, Bytes> = [];
   public var audioVocalTrackData:Map<String, Bytes> = [];
@@ -471,7 +464,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var criticalFailure:Bool = false;
 
   var songEvents:Array<SongEventData> = [];
-
   var addEventMenu:AddEventMenu;
 
   /**
@@ -563,7 +555,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
-
   var previousTime:Float = 0;
   var completedEvents:Array<SongEventData> = [];
 

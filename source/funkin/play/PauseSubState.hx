@@ -37,7 +37,6 @@ typedef PauseSubStateParams =
    * Which mode to start in. Dictates what entries are displayed.
    */
   ?mode:PauseMode,
-
   /**
    * Whether the game paused because the window lost focus.
    */
@@ -56,50 +55,71 @@ class PauseSubState extends MusicBeatSubState
   /**
    * Pause menu entries for when the game is paused during a song.
    */
-  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
-    text: 'Restart Song',
-    callback: restartPlayState
-  }, {
-    text: 'Change Difficulty',
-    callback: switchMode.bind(_, Difficulty)
-  }, {
-    text: 'Enable Practice Mode',
-    callback: enablePracticeMode,
-    filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
-  }, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
+    {text: 'Resume', callback: resume},
+    {
+      text: 'Restart Song',
+      callback: restartPlayState
+    },
+    {
+      text: 'Change Difficulty',
+      callback: switchMode.bind(_, Difficulty)
+    },
+    {
+      text: 'Enable Practice Mode',
+      callback: enablePracticeMode,
+      filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
+    },
+    {text: 'Exit to Menu', callback: quitToMenu},
+  ];
 
   /**
    * Pause menu entries for when the game is paused in the Chart Editor preview.
    */
-  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
-    text: 'Restart Song',
-    callback: restartPlayState
-  }, {text: 'Return to Chart Editor', callback: quitToChartEditor},];
+  static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [
+    {text: 'Resume', callback: resume},
+    {
+      text: 'Restart Song',
+      callback: restartPlayState
+    },
+    {text: 'Return to Chart Editor', callback: quitToChartEditor},
+  ];
 
   /**
    * Pause menu entries for when the user selects "Change Difficulty".
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{
-    text: 'Back',
-    callback: switchMode.bind(_, Standard)
-  } // Other entries are added dynamically.
+  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
+    {
+      text: 'Back',
+      callback: switchMode.bind(_, Standard)
+    } // Other entries are added dynamically.
   ];
 
   /**
    * Pause menu entries for when the game is paused during a video cutscene.
    */
-  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
-    text: 'Skip Cutscene',
-    callback: skipVideoCutscene
-  }, {text: 'Restart Cutscene', callback: restartVideoCutscene}, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
+    {text: 'Resume', callback: resume},
+    {
+      text: 'Skip Cutscene',
+      callback: skipVideoCutscene
+    },
+    {text: 'Restart Cutscene', callback: restartVideoCutscene},
+    {text: 'Exit to Menu', callback: quitToMenu},
+  ];
 
   /**
    * Pause menu entries for when the game is paused during a conversation.
    */
-  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [{text: 'Resume', callback: resume}, {
-    text: 'Skip Dialogue',
-    callback: skipConversation
-  }, {text: 'Restart Dialogue', callback: restartConversation}, {text: 'Exit to Menu', callback: quitToMenu},];
+  static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
+    {text: 'Resume', callback: resume},
+    {
+      text: 'Skip Dialogue',
+      callback: skipConversation
+    },
+    {text: 'Restart Dialogue', callback: restartConversation},
+    {text: 'Exit to Menu', callback: quitToMenu},
+  ];
 
   /**
    * Duration for the music to fade in when the pause menu is opened.
@@ -112,7 +132,6 @@ class PauseSubState extends MusicBeatSubState
   static final MUSIC_FINAL_VOLUME:Float = 0.75;
 
   static final CHARTER_FADE_DELAY:Float = 15.0;
-
   static final CHARTER_FADE_DURATION:Float = 0.75;
 
   /**
@@ -398,8 +417,35 @@ class PauseSubState extends MusicBeatSubState
     pauseButton = FunkinSprite.createSparrow(0, 0, "ui/pause-button");
     pauseButton.animation.addByIndices('idle', 'pause', [0], "", 24, false);
     pauseButton.animation.addByIndices('hold', 'pause', [5], "", 24, false);
-    pauseButton.animation.addByIndices('confirm', 'pause',
-      [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'pause', [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ], "", 24, false);
     pauseButton.scale.set(0.8, 0.8);
     pauseButton.updateHitbox();
     pauseButton.animation.play("confirm");

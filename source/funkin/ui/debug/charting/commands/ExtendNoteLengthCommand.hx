@@ -7,8 +7,7 @@ import funkin.data.song.SongData.SongNoteData;
  * Command that modifies the length of a hold note in the chart editor.
  * If it is not a hold note, it will become one, and if it is already a hold note, its length will change.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ExtendNoteLengthCommand implements ChartEditorCommand
 {
   var note:SongNoteData;

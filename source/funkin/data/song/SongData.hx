@@ -22,25 +22,18 @@ class SongMetadata implements ICloneable<SongMetadata>
    * A semantic versioning string for the song data format.
    *
    */
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   @:default("Unknown")
   public var songName:String;
-
   @:default("Unknown")
   public var artist:String;
-
   @:optional
   public var charter:Null<String> = null;
-
-  @:optional
-  @:default(96)
+  @:optional @:default(96)
   public var divisions:Null<Int>; // Optional field
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var looped:Bool;
 
   /**
@@ -56,11 +49,8 @@ class SongMetadata implements ICloneable<SongMetadata>
   public var playData:SongPlayData;
 
   public var generatedBy:String;
-
-  @:optional
-  @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
+  @:optional @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
-
   public var timeChanges:Array<SongTimeChange>;
 
   /**
@@ -167,9 +157,7 @@ enum abstract SongTimeFormat(String) from String to String
 class SongTimeChange implements ICloneable<SongTimeChange>
 {
   public static final DEFAULT_SONGTIMECHANGE:SongTimeChange = new SongTimeChange(0, 100);
-
   public static final DEFAULT_SONGTIMECHANGES:Array<SongTimeChange> = [DEFAULT_SONGTIMECHANGE];
-
   static final DEFAULT_BEAT_TUPLETS:Array<Int> = [4, 4, 4, 4];
   static final DEFAULT_BEAT_TIME:Null<Float> = null; // Later, null gets detected and recalculated.
 
@@ -183,8 +171,7 @@ class SongTimeChange implements ICloneable<SongTimeChange>
    * Time in beats (int). The game will calculate further beat values based on this one,
    * so it can do it in a simple linear fashion.
    */
-  @:optional
-  @:alias("b")
+  @:optional @:alias("b")
   public var beatTime:Float;
 
   /**
@@ -197,17 +184,13 @@ class SongTimeChange implements ICloneable<SongTimeChange>
   /**
    * Time signature numerator (int). Optional, defaults to 4.
    */
-  @:default(4)
-  @:optional
-  @:alias("n")
+  @:default(4) @:optional @:alias("n")
   public var timeSignatureNum:Int;
 
   /**
    * Time signature denominator (int). Optional, defaults to 4. Should only ever be a power of two.
    */
-  @:default(4)
-  @:optional
-  @:alias("d")
+  @:default(4) @:optional @:alias("d")
   public var timeSignatureDen:Int;
 
   /**
@@ -215,8 +198,7 @@ class SongTimeChange implements ICloneable<SongTimeChange>
    * It can either be an array of length `n` (see above) or a single integer number.
    * Optional, defaults to `[4]`.
    */
-  @:optional
-  @:alias("bt")
+  @:optional @:alias("bt")
   public var beatTuplets:Array<Int>;
 
   public function new(timeStamp:Float, bpm:Float, timeSignatureNum:Int = 4, timeSignatureDen:Int = 4, ?beatTime:Float, ?beatTuplets:Array<Int>)
@@ -259,31 +241,27 @@ class SongOffsets implements ICloneable<SongOffsets>
    * Setting this to `-5000.0` means the chart start 5 seconds into the song.
    * Setting this to `5000.0` means there will be 5 seconds of silence before the song starts.
    */
-  @:optional
-  @:default(0)
+  @:optional @:default(0)
   public var instrumental:Float;
 
   /**
    * Apply different offsets to different alternate instrumentals.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var altInstrumentals:Map<String, Float>;
 
   /**
    * The offset, in milliseconds, to apply to the song's vocals, relative to the song's base instrumental.
    * These are applied ON TOP OF the instrumental offset.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var vocals:Map<String, Float>;
 
   /**
    * The offset, in milliseconds, to apply to the songs vocals, relative to each alternate instrumental.
    * This is useful for the circumstance where, for example, an alt instrumental has a few seconds of lead in before the song starts.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var altVocals:Map<String, Map<String, Float>>;
 
   public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
@@ -366,30 +344,21 @@ class SongMusicData implements ICloneable<SongMusicData>
    * A semantic versioning string for the song data format.
    *
    */
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
 
   @:default("Unknown")
   public var songName:String;
-
   @:default("Unknown")
   public var artist:String;
-
-  @:optional
-  @:default(96)
+  @:optional @:default(96)
   public var divisions:Null<Int>; // Optional field
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var looped:Null<Bool>;
-
   // @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
-
   // @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
-
   // @:default(funkin.data.song.SongData.SongTimeChange.DEFAULT_SONGTIMECHANGES)
   public var timeChanges:Array<SongTimeChange>;
 
@@ -446,8 +415,7 @@ class SongPlayData implements ICloneable<SongPlayData>
   /**
    * The variations this song has. The associated metadata files should exist.
    */
-  @:default([])
-  @:optional
+  @:default([]) @:optional
   public var songVariations:Array<String>;
 
   /**
@@ -474,9 +442,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    * The difficulty ratings for this song as displayed in Freeplay.
    * Key is a difficulty ID.
    */
-  @:optional
-  @:default(['normal' => 0])
-  @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
+  @:optional @:default(['normal' => 0]) @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var ratings:Map<String, Int>;
 
   /**
@@ -498,8 +464,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    * Defaults to 0 seconds in.
    * @since `2.2.2`
    */
-  @:optional
-  @:default(funkin.util.Constants.DEFAULT_PREVIEW_START_TIME)
+  @:optional @:default(funkin.util.Constants.DEFAULT_PREVIEW_START_TIME)
   public var previewStart:Float;
 
   /**
@@ -507,8 +472,7 @@ class SongPlayData implements ICloneable<SongPlayData>
    * Defaults to 20% seconds in.
    * @since `2.2.2`
    */
-  @:optional
-  @:default(funkin.util.Constants.DEFAULT_PREVIEW_END_TIME)
+  @:optional @:default(funkin.util.Constants.DEFAULT_PREVIEW_END_TIME)
   public var previewEnd:Float;
 
   public function new()
@@ -548,29 +512,18 @@ class SongPlayData implements ICloneable<SongPlayData>
  */
 class SongCharacterData implements ICloneable<SongCharacterData>
 {
-  @:optional
-  @:default('')
+  @:optional @:default('')
   public var player:String = '';
-
-  @:optional
-  @:default('')
+  @:optional @:default('')
   public var girlfriend:String = '';
-
-  @:optional
-  @:default('')
+  @:optional @:default('')
   public var opponent:String = '';
-
-  @:optional
-  @:default('')
+  @:optional @:default('')
   public var instrumental:String = '';
-
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var altInstrumentals:Array<String> = [];
-
   @:optional
   public var opponentVocals:Null<Array<String>> = null;
-
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
@@ -609,10 +562,8 @@ class SongCharacterData implements ICloneable<SongCharacterData>
 
 class SongChartData implements ICloneable<SongChartData>
 {
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
-
   @:order(funkin.util.Constants.DEFAULT_DIFFICULTY_LIST_FULL)
   public var scrollSpeed:Map<String, Float>;
   public var events:Array<SongEventData>;
@@ -623,8 +574,7 @@ class SongChartData implements ICloneable<SongChartData>
    * Data used by the ingame editors, not necessary for gameplay.
    * @default `null`, to be populated only when needed by the game.
    */
-  @:alias("_editor")
-  @:optional
+  @:alias("_editor") @:optional
   public var editorData:Null<SongChartEditorData>;
 
   /**
@@ -823,18 +773,14 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * This can allow the event to include information used for custom behavior.
    * This is usually a struct containing multiple fields as defined in the event schema.
    */
-  @:alias("v")
-  @:optional
-  @:jcustomparse(funkin.data.DataParse.dynamicValue)
-  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v") @:optional @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
   public var value:Dynamic;
 
   /**
    * The name of the layer this event appears on in the Camera Editor.
    * @default `null`, excluded from chart data unless explicitly set by the editor.
    */
-  @:alias("_layer")
-  @:optional
+  @:alias("_layer") @:optional
   public var editorLayer:Null<String>;
 
   /**
@@ -1244,9 +1190,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * Length of the note, if applicable.
    * Defaults to 0 for single notes.
    */
-  @:alias("l")
-  @:default(0)
-  @:optional
+  @:alias("l") @:default(0) @:optional
   public var length(default, set):Float;
 
   function set_length(value:Float):Float
@@ -1260,9 +1204,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * This can allow the note to include information used for custom behavior.
    * Defaults to `null` for no kind.
    */
-  @:alias("k")
-  @:optional
-  @:isVar
+  @:alias("k") @:optional @:isVar
   public var kind(get, set):Null<String> = null;
 
   function get_kind():Null<String>
@@ -1282,9 +1224,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * The parameters for the note.
    * Used for custom behavior on custom note kinds. Defaults to an empty array.
    */
-  @:alias("p")
-  @:default([])
-  @:optional
+  @:alias("p") @:default([]) @:optional
   public var params:Array<NoteParamData>;
 
   public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
@@ -1599,10 +1539,7 @@ class NoteParamData implements ICloneable<NoteParamData>
 {
   @:alias("n")
   public var name:String;
-
-  @:alias("v")
-  @:jcustomparse(funkin.data.DataParse.dynamicValue)
-  @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v") @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
   public var value:Dynamic;
 
   public function new(name:String, value:Dynamic)

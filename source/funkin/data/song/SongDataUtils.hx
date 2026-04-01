@@ -33,7 +33,10 @@ class SongDataUtils
       return new SongNoteData(time, data, length, kind);
     };
 
-    var result = [for (i in 0...notes.length) offsetNote(notes[i])];
+    var result = [
+      for (i in 0...notes.length)
+        offsetNote(notes[i])
+    ];
     return result;
   }
 

@@ -4,9 +4,7 @@ package funkin.external.apple;
 /**
  * A utility class to get screen related informations on apple devices.
  */
-@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
-@:include('ScreenUtil.hpp')
-@:unreflective
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml')) @:include('ScreenUtil.hpp') @:unreflective
 extern class ScreenUtil
 {
   /**

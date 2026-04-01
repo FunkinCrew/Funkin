@@ -67,9 +67,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     {
       this.wrapMode = switch (navControls)
       {
-        case Horizontal: Horizontal;
-        case Vertical: Vertical;
-        default: Both;
+        case Horizontal:
+          Horizontal;
+        case Vertical:
+          Vertical;
+        default:
+          Both;
       }
     }
 
@@ -123,12 +126,17 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
     // Keepin' these for keyboard/controller support on mobile platforms
     newIndex = switch (navControls)
     {
-      case Vertical: navList(inputUp, inputDown, wrapY);
-      case Horizontal: navList(inputLeft, inputRight, wrapX);
-      case Both: navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
+      case Vertical:
+        navList(inputUp, inputDown, wrapY);
+      case Horizontal:
+        navList(inputLeft, inputRight, wrapX);
+      case Both:
+        navList(inputLeft || inputUp, inputRight || inputDown, !wrapMode.match(None));
 
-      case Columns(num): navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
-      case Rows(num): navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
+      case Columns(num):
+        navGrid(num, inputLeft, inputRight, wrapX, inputUp, inputDown, wrapY);
+      case Rows(num):
+        navGrid(num, inputUp, inputDown, wrapY, inputLeft, inputRight, wrapX);
     };
 
     #if FEATURE_TOUCH_CONTROLS

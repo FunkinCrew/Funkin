@@ -8,11 +8,9 @@ class TimelineUtil
 {
   public static function isFixedDuration(event:SongEventData):Bool
   {
-    if (event.eventKind != "FocusCamera")
-      return false;
+    if (event.eventKind != "FocusCamera") return false;
     var ease = event.getString('ease');
-    if (ease == null)
-      return true;
+    if (ease == null) return true;
     return ease == 'CLASSIC' || ease == 'INSTANT';
   }
 
@@ -22,20 +20,17 @@ class TimelineUtil
     if (schema != null)
     {
       var field = schema.getByName('duration');
-      if (field != null && field.step != null)
-        return field.step;
+      if (field != null && field.step != null) return field.step;
     }
     return 0.5;
   }
 
   public static function getEventDurationSteps(event:SongEventData):Float
   {
-    if (isFixedDuration(event))
-      return FocusCameraSongEvent.DEFAULT_DURATION;
+    if (isFixedDuration(event)) return FocusCameraSongEvent.DEFAULT_DURATION;
     var duration:Null<Float> = event.getFloat('duration');
     var minSteps = getMinDurationSteps(event);
-    if (duration == null || duration < minSteps)
-      return minSteps;
+    if (duration == null || duration < minSteps) return minSteps;
     return duration;
   }
 

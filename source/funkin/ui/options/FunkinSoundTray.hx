@@ -20,12 +20,10 @@ class FunkinSoundTray extends FlxSoundTray
 {
   static final GRAPHIC_SCALE:Float = 0.30;
   static final BAR_COUNT:Int = 10;
-
   static final BACKING_BAR_OPACITY:Float = 0.4;
 
   var lerpYPos:Float = 0;
   var alphaTarget:Float = 0;
-
   var volumeMaxSound:String;
 
   public function new()

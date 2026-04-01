@@ -8,8 +8,7 @@ import funkin.data.song.SongDataUtils;
  * along either the X (note direction) axis or Y (note time) axis.
  * Flip middle will only work when the given notes are in both strumlines - it's incompatible with individually mirroring the selection.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class MirrorNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];

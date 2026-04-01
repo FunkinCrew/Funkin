@@ -20,11 +20,9 @@ class FunkinMemory
   static var permanentCachedTextures:Map<String, FlxGraphic> = [];
   static var currentCachedTextures:Map<String, FlxGraphic> = [];
   static var previousCachedTextures:Map<String, FlxGraphic> = [];
-
   static var permanentCachedSounds:Map<String, Sound> = [];
   static var currentCachedSounds:Map<String, Sound> = [];
   static var previousCachedSounds:Map<String, Sound> = [];
-
   static var purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
 
   /**

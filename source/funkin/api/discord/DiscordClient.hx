@@ -8,13 +8,11 @@ import hxdiscord_rpc.Types.DiscordRichPresence;
 import hxdiscord_rpc.Types.DiscordUser;
 import sys.thread.Thread;
 
-@:build(funkin.util.macro.EnvironmentMacro.build())
-@:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class DiscordClient
 {
   @:envField
   static final DISCORD_CLIENT_ID:Null<String>;
-
   public static var instance(get, never):DiscordClient;
   static var _instance:Null<DiscordClient> = null;
 
@@ -138,6 +136,7 @@ class DiscordClient
   }
 
   // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
+
   private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
   {
     trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');

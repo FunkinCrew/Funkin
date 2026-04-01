@@ -48,34 +48,25 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
-
   public var ranking:FreeplayRank;
   public var blurredRanking:FreeplayRank;
-
   public var fakeRanking:FreeplayRank;
   public var fakeBlurredRanking:FreeplayRank;
-
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
-
   public var doJumpOut:Bool = false;
-
   public var onConfirm:Void->Void;
   public var grayscaleShader:Grayscale;
-
   public var hsvShader(default, set):HSVShader;
-
   // var diffRatingSprite:FlxSprite;
   public var bpmText:FlxSprite;
   public var difficultyText:FlxSprite;
   public var weekText:FunkinSprite;
-
   public var newText:FlxSprite;
 
   var difficultyNumbers:Array<CapsuleNumber> = []; // referred to as "bignumbers" in the .fla file!
   var bpmNumbers:Array<CapsuleNumber> = []; // referred to as "smallnumbers" in the .fla file!
-
   var impactThing:FunkinSprite;
 
   public var sparkle:FlxSprite;
@@ -450,7 +441,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateDifficultyRating(newRating:Int):Void
   {
-    //var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
+    // var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
 
     for (i in 0...difficultyNumbers.length)
     {
@@ -568,13 +559,33 @@ class SongMenuItem extends FlxSpriteGroup
 
   var frameInTicker:Float = 0;
   var frameInTypeBeat:Int = 0;
-
   var frameOutTicker:Float = 0;
   var frameOutTypeBeat:Int = 0;
-
-  var xFrames:Array<Float> = [1.7, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
-  var xPosLerpLol:Array<Float> = [0, 0, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
-  var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xFrames:Array<Float> = [
+    1.7,
+    1.8,
+    0.85,
+    0.85,
+    0.97,
+    0.97,
+    1
+  ];
+  var xPosLerpLol:Array<Float> = [
+    0,
+    0,
+    0.16,
+    0.16,
+    0.22,
+    0.22,
+    0.245
+  ]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xPosOutLerpLol:Array<Float> = [
+    0.245,
+    0.75,
+    0.98,
+    0.98,
+    1.2
+  ]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
   public var realScaled:Float = 0.8;
 
@@ -646,7 +657,9 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+        targetPos.x = FlxG.width * xPosLerpLol[
+          Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))
+        ];
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
@@ -673,7 +686,9 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+        this.x = FlxG.width * xPosOutLerpLol[
+          Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))
+        ];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
@@ -879,7 +894,18 @@ class CapsuleNumber extends FlxSprite
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
-  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  var numToString:Array<String> = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "SIX",
+    "SEVEN",
+    "EIGHT",
+    "NINE"
+  ];
 
   public function new(x:Float, y:Float, big:Bool = false, ?initDigit:Int = 0)
   {

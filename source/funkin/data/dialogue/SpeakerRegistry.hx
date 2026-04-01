@@ -19,13 +19,12 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryPar
 
   public function new()
   {
-    super(
-      {
-        registryId: 'SPEAKER',
-        dataFilePath: 'gameplay/dialogue/speakers',
-        nestedEntries: true,
-        versionRule: SPEAKER_DATA_VERSION_RULE
-      });
+    super({
+      registryId: 'SPEAKER',
+      dataFilePath: 'gameplay/dialogue/speakers',
+      nestedEntries: true,
+      versionRule: SPEAKER_DATA_VERSION_RULE
+    });
   }
 }
 

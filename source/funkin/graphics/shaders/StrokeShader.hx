@@ -9,7 +9,6 @@ class StrokeShader extends FlxShader
   // https://gist.github.com/AustinEast/d3892fdf6a6079366fffde071f0c2bae
   public var width(default, set):Float = 0;
   public var height(default, set):Float = 0;
-
   public var col(default, set):FlxColor = 0xFFFFFFFF;
 
   function set_width(val):Float

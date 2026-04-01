@@ -24,7 +24,10 @@ class CLIUtil
     trace(' WARNING '.warning() + ' : Reseting the Current Working Directory is unavailable on iOS targets');
     gameDir = cwd;
     #elseif mac
-    gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
+    gameDir = Path.addTrailingSlash(Path.join([
+      Path.directory(Sys.programPath()),
+      '../Resources/'
+    ]));
     #else
     gameDir = Path.addTrailingSlash(Path.directory(Sys.programPath()));
     #end
@@ -180,7 +183,6 @@ class CLIUtil
 typedef CLIParams =
 {
   var args:Array<String>;
-
   var chart:CLIChartParams;
   var stage:CLIStageParams;
   var song:CLISongParams;

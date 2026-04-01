@@ -64,22 +64,23 @@ class StageEditorState extends UIState
   public static final BACKUPS_PATH:String = "./backups/stages/";
   public static final LIGHT_MODE_COLORS:Array<FlxColor> = [0xFFE7E6E6, 0xFFF8F8F8];
   public static final DARK_MODE_COLORS:Array<FlxColor> = [0xFF181919, 0xFF202020];
-
-  public static final DEFAULT_POSITIONS:Map<CharacterType,
-    Array<Float>> = [CharacterType.BF => [989.5, 885], CharacterType.GF => [751.5, 787], CharacterType.DAD => [335, 885]];
-
-  public static final DEFAULT_CAMERA_OFFSETS:Map<CharacterType,
-    Array<Float>> = [CharacterType.BF => [-100, -100], CharacterType.GF => [0, 0], CharacterType.DAD => [150, -100]];
-
+  public static final DEFAULT_POSITIONS:Map<CharacterType, Array<Float>> = [
+    CharacterType.BF => [989.5, 885],
+    CharacterType.GF => [751.5, 787],
+    CharacterType.DAD => [335, 885]
+  ];
+  public static final DEFAULT_CAMERA_OFFSETS:Map<CharacterType, Array<Float>> = [
+    CharacterType.BF => [-100, -100],
+    CharacterType.GF => [0, 0],
+    CharacterType.DAD => [150, -100]
+  ];
   public static final MAX_Z_INDEX:Int = 10000;
   public static final CHARACTER_COLORS:Array<FlxColor> = [FlxColor.RED, FlxColor.PURPLE, FlxColor.CYAN]; // FCUK IVE TURNED INTO AN AMERICAN
   public static final TIME_BEFORE_ANIM_STOP:Float = 3.0;
-
   public static var instance:StageEditorState = null; // unused lol
 
   // the other shit:tm:
   var menubar:MenuBar;
-
   var menubarMenuFile:Menu;
   var menubarItemNewStage:MenuItem; // new
   var menubarItemOpenStage:MenuItem; // open
@@ -88,7 +89,6 @@ class StageEditorState extends UIState
   var menubarItemSaveStageAs:MenuItem; // save as
   var menubarItemClearAssets:MenuItem; // clear assets
   var menubarItemExit:MenuItem; // exit
-
   var menubarMenuEdit:Menu;
   var menubarItemUndo:MenuItem; // undo
   var menubarItemRedo:MenuItem; // redo
@@ -100,7 +100,6 @@ class StageEditorState extends UIState
   var menubarItemFindObj:MenuItem; // find
   var menubarItemSelectNone:MenuItem; // access none
   var menubarItemMoveStep:Menu; // move step submenu
-
   var menubarMenuView:Menu;
   var menubarItemThemeLight:MenuOptionBox; // light mode option
   var menubarItemThemeDark:MenuOptionBox; // dark mode option
@@ -109,27 +108,22 @@ class StageEditorState extends UIState
   var menubarItemViewFloorLines:MenuCheckBox; // view floor lines check
   var menubarItemViewPosMarkers:MenuCheckBox; // view pos markers check
   var menubarItemViewCamBounds:MenuCheckBox; // view cam bounds check
-
   var menubarMenuWindow:Menu;
   var menubarItemWindowObjectGraphic:MenuCheckBox;
   var menubarItemWindowObjectAnims:MenuCheckBox;
   var menubarItemWindowObjectProps:MenuCheckBox;
   var menubarItemWindowCharacter:MenuCheckBox;
   var menubarItemWindowStage:MenuCheckBox;
-
   var menubarMenuHelp:Menu;
   var menubarItemUserGuide:MenuItem;
   var menubarItemGoToBackupsFolder:MenuItem;
   var menubarItemAbout:MenuItem;
-
   var menubarButtonText:Button; // test stage button
   var windowList:WindowList;
-
   var bottomBarModeText:Label;
   var bottomBarSelectText:Label;
   var bottomBarMoveStepText:Label;
   var bottomBarAngleStepText:Label;
-
   var bg:FlxSprite;
 
   public var selectedSprite(default, set):StageEditorObject = null;
@@ -174,14 +168,10 @@ class StageEditorState extends UIState
   public var spriteMarker:FlxSprite;
   public var spriteArray:Array<StageEditorObject> = [];
   public var camMarker:FlxSprite;
-
   public var copiedSprite:StageEditorObjectData = null;
-
   public var stageZoom:Float = 1.0;
   public var stageName:String = "Unnamed";
-
   public var autoSaveTimer:FlxTimer = new FlxTimer();
-
   public var saved(default, set):Bool = true;
   public var currentFile(default, set):String = "";
 
@@ -222,9 +212,7 @@ class StageEditorState extends UIState
 
   public var undoArray:Array<UndoAction> = [];
   public var redoArray:Array<UndoAction> = [];
-
   public var nameTxt:FlxText;
-
   public var gf(get, never):BaseCharacter;
   public var bf(get, never):BaseCharacter;
   public var dad(get, never):BaseCharacter;
@@ -236,10 +224,8 @@ class StageEditorState extends UIState
   function get_dad() return charGroups[CharacterType.DAD].getFirst(StageDataHandler.checkForCharacter);
 
   public var charGroups:Map<CharacterType, FlxTypedGroup<BaseCharacter>> = [];
-
   public var charCamOffsets:Map<CharacterType, Array<Float>> = DEFAULT_CAMERA_OFFSETS.copy();
   public var charPos:Map<CharacterType, Array<Float>> = DEFAULT_POSITIONS.copy();
-
   public var bitmaps:Map<String, BitmapData> = []; // used for optimizing the file size!!!
 
   var charDeselectShader:Grayscale = new Grayscale();
@@ -264,7 +250,6 @@ class StageEditorState extends UIState
   }
 
   var testingMode:Bool = false;
-
   var showChars(default, set):Bool = true;
 
   function set_showChars(value:Bool):Bool
@@ -343,7 +328,11 @@ class StageEditorState extends UIState
     bf?.updateHitbox();
 
     // Only one character per group allowed.
-    charGroups = [CharacterType.BF => new FlxTypedGroup<BaseCharacter>(1), CharacterType.GF => new FlxTypedGroup<BaseCharacter>(1), CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)];
+    charGroups = [
+      CharacterType.BF => new FlxTypedGroup<BaseCharacter>(1),
+      CharacterType.GF => new FlxTypedGroup<BaseCharacter>(1),
+      CharacterType.DAD => new FlxTypedGroup<BaseCharacter>(1)
+    ];
 
     if (gf != null)
     {
@@ -734,7 +723,10 @@ class StageEditorState extends UIState
         {
           this.createAndPushAction(OBJECT_MOVED);
 
-          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedSprite.x, FlxG.mouse.getWorldPosition().y - selectedSprite.y];
+          moveOffset = [
+            FlxG.mouse.getWorldPosition().x - selectedSprite.x,
+            FlxG.mouse.getWorldPosition().y - selectedSprite.y
+          ];
         }
 
         var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
@@ -796,7 +788,10 @@ class StageEditorState extends UIState
         {
           this.createAndPushAction(CHARACTER_MOVED);
 
-          moveOffset = [FlxG.mouse.getWorldPosition().x - selectedChar.x, FlxG.mouse.getWorldPosition().y - selectedChar.y];
+          moveOffset = [
+            FlxG.mouse.getWorldPosition().x - selectedChar.x,
+            FlxG.mouse.getWorldPosition().y - selectedChar.y
+          ];
         }
 
         var posBros:FlxPoint = FlxPoint.get(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
@@ -890,7 +885,10 @@ class StageEditorState extends UIState
       if (char == null) continue;
       var type = char.characterType;
 
-      charPos.set(type, [char.feetPosition.x - char.globalOffsets[0], char.feetPosition.y - char.globalOffsets[1]]);
+      charPos.set(type, [
+        char.feetPosition.x - char.globalOffsets[0],
+        char.feetPosition.y - char.globalOffsets[1]
+      ]);
 
       floorLines[i].y = charPos.get(type)[1] - floorLines[i].height / 2;
 
@@ -913,6 +911,7 @@ class StageEditorState extends UIState
 
   // made because characters have shitty hitboxes and often cause the game to straight up crash
   // it comes from some flxobject/polymod error apparently and I have no idea why
+
   function checkCharOverlaps(char:BaseCharacter)
   {
     if (char == null) return false;
@@ -926,6 +925,7 @@ class StageEditorState extends UIState
 
   // i wish there was a better way to do this this looks like an eyesore
   // yanderedev fr
+
   function arrowMovement(obj:FlxSprite)
   {
     if (obj == null) return;
@@ -1096,7 +1096,16 @@ class StageEditorState extends UIState
     bottomBarSelectText.onClick = function(_) switchFocus();
     bottomBarSelectText.onRightClick = function(_) switchFocus(true);
 
-    var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
+    var stepOptions = [
+      "1px",
+      "2px",
+      "3px",
+      "5px",
+      "10px",
+      "25px",
+      "50px",
+      "100px"
+    ];
     bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep.value) ? Save.instance.stageEditorMoveStep.value : "1px";
 
     var changeStep = function(change:Int = 0)
@@ -1121,7 +1130,18 @@ class StageEditorState extends UIState
 
     changeStep(); // update
 
-    var angleOptions = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
+    var angleOptions = [
+      0.5,
+      1,
+      2,
+      5,
+      10,
+      15,
+      45,
+      75,
+      90,
+      180
+    ];
     bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
 
     var changeAngle = function(change:Int = 0)
@@ -1551,7 +1571,10 @@ class StageEditorState extends UIState
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
     var data = this.packShitToZip();
-    var path = haxe.io.Path.join([BACKUPS_PATH, 'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_FILTER_FNFS.extension}']);
+    var path = haxe.io.Path.join([
+      BACKUPS_PATH,
+      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_FILTER_FNFS.extension}'
+    ]);
 
     FileUtil.writeBytesToPath(path, data);
 

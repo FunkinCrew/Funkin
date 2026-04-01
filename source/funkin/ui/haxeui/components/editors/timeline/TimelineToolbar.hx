@@ -22,7 +22,6 @@ class TimelineToolbar extends HBox
 {
   @:clonable @:behaviour(SongLengthBehaviour, 0)
   public var songLength:Float;
-
   @:clonable @:behaviour(SongPositionBehaviour, 0)
   public var songPosition:Float;
 
@@ -52,9 +51,7 @@ private class SongPositionBehaviour extends DataBehaviour
     if (toolbar.songLength > 0 && v > toolbar.songLength) v = toolbar.songLength;
     _value = v;
 
-    toolbar.lblTime.text = FlxStringUtil.formatTime(v / 1000, true)
-      + "/"
-      + FlxStringUtil.formatTime(toolbar.songLength / 1000, true);
+    toolbar.lblTime.text = FlxStringUtil.formatTime(v / 1000, true) + "/" + FlxStringUtil.formatTime(toolbar.songLength / 1000, true);
   }
 }
 
@@ -66,9 +63,7 @@ private class SongLengthBehaviour extends DataBehaviour
     var toolbar:TimelineToolbar = cast(_component, TimelineToolbar);
     var len:Float = _value;
 
-    toolbar.lblTime.text = FlxStringUtil.formatTime(toolbar.songPosition / 1000, true)
-      + "/"
-      + FlxStringUtil.formatTime(len / 1000, true);
+    toolbar.lblTime.text = FlxStringUtil.formatTime(toolbar.songPosition / 1000, true) + "/" + FlxStringUtil.formatTime(len / 1000, true);
   }
 }
 #end

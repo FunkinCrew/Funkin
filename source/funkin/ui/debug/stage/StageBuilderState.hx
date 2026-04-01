@@ -19,9 +19,7 @@ class StageBuilderState extends MusicBeatState
 {
   var hudGrp:FlxGroup;
   var textInfo:FlxText;
-
   var sprGrp:FlxTypedGroup<SprStage>;
-
   // var snd:Sound;
   // var sndChannel:SoundChannel;
   var hudCam:FlxCamera;
@@ -208,7 +206,10 @@ class StageBuilderState extends MusicBeatState
 
     if (curTool == GRABBING && FlxG.mouse.justReleased)
     {
-      moveSprPos([curSelectedSpr.x - curSelectedSpr.oldPos.x, curSelectedSpr.y - curSelectedSpr.oldPos.y]);
+      moveSprPos([
+        curSelectedSpr.x - curSelectedSpr.oldPos.x,
+        curSelectedSpr.y - curSelectedSpr.oldPos.y
+      ]);
     }
 
     if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
@@ -330,6 +331,7 @@ class StageBuilderState extends MusicBeatState
   }
 
   // base check to see if its in a state of undo or redo
+
   function undoRedoCheck(daFunc:Dynamic->Void, daValue:Dynamic)
   {
     if (!isUndoRedo)
@@ -353,6 +355,7 @@ class StageBuilderState extends MusicBeatState
   }
 
   // make function for changing cur selection
+
   function moveSprPos(dumbArray:Array<Dynamic>)
   {
     var xDiff:Float = dumbArray[0];

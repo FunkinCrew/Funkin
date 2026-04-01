@@ -71,7 +71,6 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   var boxSprite:FlxSprite;
   var textDisplay:FunkinTypeText;
-
   var text(default, set):String;
 
   function set_text(value:String):String
@@ -289,7 +288,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
     // TODO: Add an option to configure this.
-    textDisplay.sounds = [FunkinSound.load(Paths.sound('gameplay/dialogue/boxes/roses/click'), 0.6)];
+    textDisplay.sounds = [
+      FunkinSound.load(Paths.sound('gameplay/dialogue/boxes/roses/click'), 0.6)
+    ];
 
     textDisplay.completeCallback = onTypingComplete;
 

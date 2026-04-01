@@ -154,7 +154,10 @@ class CameraEditorImportExportHandler
       {
         // Force writing to a generic path (autosave or crash recovery)
         targetMode = Skip;
-        targetPath = Path.join([BACKUPS_PATH, 'camera-editor-${songId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}']);
+        targetPath = Path.join([
+          BACKUPS_PATH,
+          'camera-editor-${songId}-${DateUtil.generateTimestamp()}.${Constants.EXT_CHART}'
+        ]);
         // We have to force write because the program will die before the save dialog is closed.
         trace('Force exporting to $targetPath...');
         try

@@ -257,7 +257,13 @@ class PolymodHandler
   static function buildImports():Void
   {
     // Add default imports for common classes.
-    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [funkin.Assets, funkin.Paths, funkin.Preferences, funkin.util.Constants, flixel.FlxG];
+    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
+      funkin.Assets,
+      funkin.Paths,
+      funkin.Preferences,
+      funkin.util.Constants,
+      flixel.FlxG
+    ];
 
     for (cls in DEFAULT_IMPORTS)
     {
@@ -408,10 +414,14 @@ class PolymodHandler
     // `funkin.save.Save`
     // Direct access to save data is important for scripts (like checking unlocks),
     // but we don't want scripts to be able to perform operations like writing scores.
-    Polymod.blacklistInstanceFields(funkin.save.Save, [ // No direct field access
+    Polymod.blacklistInstanceFields(funkin.save.Save, [
+      // No direct field access
       'data', // LMFAO definitely not
       'clearData', // No score manipulation please
-      'setLevelScore', 'setSongScore', 'applySongRank']);
+      'setLevelScore',
+      'setSongScore',
+      'applySongRank'
+    ]);
 
     // `openfl.filesystem.FileStream`, `openfl.net.Socket`, `openfl.utils.ByteArray.ByteArrayData`
     // Returns `Unseralizer.run` if encoded in HXSF format, though it does have to be seralized correctly for the exploit to work.
@@ -556,7 +566,10 @@ class PolymodHandler
    */
   public static function getAllModDirs():Array<String>
   {
-    var modDirs:Array<String> = [for (i in getAllMods()) i.dirName];
+    var modDirs:Array<String> = [
+      for (i in getAllMods())
+        i.dirName
+    ];
     return modDirs;
   }
 

@@ -492,7 +492,16 @@ class StepManiaImporter
     }
     else if (type == StepManiaChartType.DanceDouble)
     {
-      holdArray = [-1, -1, -1, -1, -1, -1, -1, -1];
+      holdArray = [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ];
     }
     else
     {

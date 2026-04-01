@@ -192,10 +192,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     var result:Null<AnimationData> = switch (dir)
     {
-      case LEFT: _data.assets?.note?.data?.left?.toNamed();
-      case DOWN: _data.assets?.note?.data?.down?.toNamed();
-      case UP: _data.assets?.note?.data?.up?.toNamed();
-      case RIGHT: _data.assets?.note?.data?.right?.toNamed();
+      case LEFT:
+        _data.assets?.note?.data?.left?.toNamed();
+      case DOWN:
+        _data.assets?.note?.data?.down?.toNamed();
+      case UP:
+        _data.assets?.note?.data?.up?.toNamed();
+      case RIGHT:
+        _data.assets?.note?.data?.right?.toNamed();
     };
 
     return result ?? fallback?.fetchNoteAnimationData(dir);
@@ -279,11 +283,35 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var result:Array<Null<AnimationData>> = switch (dir)
     {
       case NoteDirection.LEFT:
-        [_data.assets.noteStrumline?.data?.leftStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.leftPress?.toNamed('press'), _data.assets.noteStrumline?.data?.leftConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.leftConfirmHold?.toNamed('confirm-hold'),];
-      case NoteDirection.DOWN: [_data.assets.noteStrumline?.data?.downStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.downPress?.toNamed('press'), _data.assets.noteStrumline?.data?.downConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.downConfirmHold?.toNamed('confirm-hold'),];
-      case NoteDirection.UP: [_data.assets.noteStrumline?.data?.upStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.upPress?.toNamed('press'), _data.assets.noteStrumline?.data?.upConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.upConfirmHold?.toNamed('confirm-hold'),];
-      case NoteDirection.RIGHT: [_data.assets.noteStrumline?.data?.rightStatic?.toNamed('static'), _data.assets.noteStrumline?.data?.rightPress?.toNamed('press'), _data.assets.noteStrumline?.data?.rightConfirm?.toNamed('confirm'), _data.assets.noteStrumline?.data?.rightConfirmHold?.toNamed('confirm-hold'),];
-      default: [];
+        [
+          _data.assets.noteStrumline?.data?.leftStatic?.toNamed('static'),
+          _data.assets.noteStrumline?.data?.leftPress?.toNamed('press'),
+          _data.assets.noteStrumline?.data?.leftConfirm?.toNamed('confirm'),
+          _data.assets.noteStrumline?.data?.leftConfirmHold?.toNamed('confirm-hold'),
+        ];
+      case NoteDirection.DOWN:
+        [
+          _data.assets.noteStrumline?.data?.downStatic?.toNamed('static'),
+          _data.assets.noteStrumline?.data?.downPress?.toNamed('press'),
+          _data.assets.noteStrumline?.data?.downConfirm?.toNamed('confirm'),
+          _data.assets.noteStrumline?.data?.downConfirmHold?.toNamed('confirm-hold'),
+        ];
+      case NoteDirection.UP:
+        [
+          _data.assets.noteStrumline?.data?.upStatic?.toNamed('static'),
+          _data.assets.noteStrumline?.data?.upPress?.toNamed('press'),
+          _data.assets.noteStrumline?.data?.upConfirm?.toNamed('confirm'),
+          _data.assets.noteStrumline?.data?.upConfirmHold?.toNamed('confirm-hold'),
+        ];
+      case NoteDirection.RIGHT:
+        [
+          _data.assets.noteStrumline?.data?.rightStatic?.toNamed('static'),
+          _data.assets.noteStrumline?.data?.rightPress?.toNamed('press'),
+          _data.assets.noteStrumline?.data?.rightConfirm?.toNamed('confirm'),
+          _data.assets.noteStrumline?.data?.rightConfirmHold?.toNamed('confirm-hold'),
+        ];
+      default:
+        [];
     };
 
     // New variable so we can change the type.
@@ -952,10 +980,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     var result:Null<Array<AnimationData>> = switch (dir)
     {
-      case LEFT: _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLEFT");
-      case DOWN: _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDOWN");
-      case UP: _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUP");
-      case RIGHT: _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
+      case LEFT:
+        _data.assets?.noteSplash?.data?.leftSplashes?.toNamedArray("splashLEFT");
+      case DOWN:
+        _data.assets?.noteSplash?.data?.downSplashes?.toNamedArray("splashDOWN");
+      case UP:
+        _data.assets?.noteSplash?.data?.upSplashes?.toNamedArray("splashUP");
+      case RIGHT:
+        _data.assets?.noteSplash?.data?.rightSplashes?.toNamedArray("splashRIGHT");
     };
     return result ?? fallback?.fetchSplashAnimationData(dir);
   }
@@ -1020,10 +1052,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   {
     var directionData = switch (direction)
     {
-      case LEFT: _data.assets?.holdNoteCover?.data?.left;
-      case DOWN: _data.assets?.holdNoteCover?.data?.down;
-      case UP: _data.assets?.holdNoteCover?.data?.up;
-      case RIGHT: _data.assets?.holdNoteCover?.data?.right;
+      case LEFT:
+        _data.assets?.holdNoteCover?.data?.left;
+      case DOWN:
+        _data.assets?.holdNoteCover?.data?.down;
+      case UP:
+        _data.assets?.holdNoteCover?.data?.up;
+      case RIGHT:
+        _data.assets?.holdNoteCover?.data?.right;
     };
 
     if (directionData == null) return null;
@@ -1067,11 +1103,32 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var noteColor:String = dir.colorName.toTitleCase();
     var result:Array<Null<AnimationData>> = switch (dir)
     {
-      case LEFT: [_data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),];
-      case DOWN: [_data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),];
-      case UP: [_data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),];
-      case RIGHT: [_data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'), _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'), _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),];
-      default: [];
+      case LEFT:
+        [
+          _data.assets?.holdNoteCover?.data?.left?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.left?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case DOWN:
+        [
+          _data.assets?.holdNoteCover?.data?.down?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.down?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case UP:
+        [
+          _data.assets?.holdNoteCover?.data?.up?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.up?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      case RIGHT:
+        [
+          _data.assets?.holdNoteCover?.data?.right?.start?.toNamed('holdCoverStart$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.hold?.toNamed('holdCover$noteColor'),
+          _data.assets?.holdNoteCover?.data?.right?.end?.toNamed('holdCoverEnd$noteColor'),
+        ];
+      default:
+        [];
     };
 
     // New variable so we can change the type.
@@ -1085,6 +1142,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   // fallbacks:
   // assetPath for a direction -> root assetpath -> fallback assetpath for direction -> fallback root assetpath
   // `direction` here is required, however it only is used for fallback purposes
+
   function getHoldCoverRootAssetPath(direction:NoteDirection, raw:Bool = false):Null<String>
   {
     if (raw)
@@ -1108,10 +1166,14 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     {
       var rawPath:Null<String> = switch (direction)
       {
-        case LEFT: _data?.assets?.holdNoteCover?.data?.left?.assetPath;
-        case DOWN: _data?.assets?.holdNoteCover?.data?.down?.assetPath;
-        case UP: _data?.assets?.holdNoteCover?.data?.up?.assetPath;
-        case RIGHT: _data?.assets?.holdNoteCover?.data?.right?.assetPath;
+        case LEFT:
+          _data?.assets?.holdNoteCover?.data?.left?.assetPath;
+        case DOWN:
+          _data?.assets?.holdNoteCover?.data?.down?.assetPath;
+        case UP:
+          _data?.assets?.holdNoteCover?.data?.up?.assetPath;
+        case RIGHT:
+          _data?.assets?.holdNoteCover?.data?.right?.assetPath;
       };
 
       // we don't want to fallback directly just yet, we want to check our root assetpath first

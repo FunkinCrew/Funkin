@@ -9,8 +9,7 @@ import funkin.data.song.SongDataUtils;
  * Deletes the given notes and events from the current chart in the chart editor.
  * Use only when BOTH notes and events are being deleted.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;

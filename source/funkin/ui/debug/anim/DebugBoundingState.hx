@@ -39,25 +39,17 @@ class DebugBoundingState extends FlxState
     - Cleaner UI
    */
   var bg:FlxBackdrop;
-
   var txtGrp:FlxTypedGroup<FlxText>;
-
   var hudCam:FlxCamera;
-
   var curView:ANIMDEBUGVIEW = SPRITESHEET;
-
   var spriteSheetView:FlxGroup;
   var offsetView:FlxGroup;
   var dropDownSetup:Bool = false;
-
   var onionSkinChar:BaseCharacter;
   var txtOffsetShit:FlxText;
-
   var offsetEditorDialog:CollapsibleDialog;
   var offsetAnimationDropdown:DropDown;
-
   var haxeUIFocused(get, default):Bool = false;
-
   var currentAnimationName(get, never):String;
 
   function get_currentAnimationName():String
@@ -238,7 +230,10 @@ class DebugBoundingState extends FlxState
 
       if (FlxG.mouse.pressed)
       {
-        swagChar.animOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
+        swagChar.animOffsets = [
+          (FlxG.mouse.x - mouseOffset.x) * -1,
+          (FlxG.mouse.y - mouseOffset.y) * -1
+        ];
 
         swagChar.animationOffsets.set(swagChar.getCurrentAnimation(), swagChar.animOffsets);
 

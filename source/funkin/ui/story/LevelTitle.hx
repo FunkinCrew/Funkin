@@ -10,7 +10,6 @@ class LevelTitle extends FlxSpriteGroup
   static final LOCK_PAD:Int = 4;
 
   public final level:Level;
-
   public var targetY:Float;
 
   var title:FlxSprite;

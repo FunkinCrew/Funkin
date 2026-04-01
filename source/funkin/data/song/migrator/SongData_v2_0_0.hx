@@ -17,36 +17,25 @@ class SongMetadata_v2_0_0
   /**
    * In metadata `v2.1.0`, `variation` was set to `ignore` when writing.
    */
-  @:optional
-  @:default('default')
+  @:optional @:default('default')
   public var variation:String;
 
   // ==========
   // UNMODIFIED VALUES
   // ==========
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
-
   @:default("Unknown")
   public var songName:String;
-
   @:default("Unknown")
   public var artist:String;
-
-  @:optional
-  @:default(96)
+  @:optional @:default(96)
   public var divisions:Null<Int>; // Optional field
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var looped:Bool;
-
   @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
-
   public var timeFormat:SongData.SongTimeFormat;
-
   public var timeChanges:Array<SongData.SongTimeChange>;
 
   public function new()
@@ -83,11 +72,9 @@ class SongPlayData_v2_0_0
   // ==========
   // UNMODIFIED VALUES
   // ==========
-  @:default([])
-  @:optional
+  @:default([]) @:optional
   public var songVariations:Array<String>;
   public var difficulties:Array<String>;
-
   public var stage:String;
 
   public function new()
@@ -105,19 +92,11 @@ class SongPlayData_v2_0_0
 
 class SongPlayableChar_v2_0_0
 {
-  @:alias('g')
-  @:optional
-  @:default('')
+  @:alias('g') @:optional @:default('')
   public var girlfriend:String = '';
-
-  @:alias('o')
-  @:optional
-  @:default('')
+  @:alias('o') @:optional @:default('')
   public var opponent:String = '';
-
-  @:alias('i')
-  @:optional
-  @:default('')
+  @:alias('i') @:optional @:default('')
   public var inst:String = '';
 
   public function new(girlfriend:String = '', opponent:String = '', inst:String = '')

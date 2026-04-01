@@ -80,29 +80,20 @@ class ScreenshotPlugin extends FlxBasic
   var previewSprite:Sprite;
   var shotPreviewBitmap:Bitmap;
   var outlineBitmap:Bitmap;
-
   var wasMouseHidden:Bool = false; // Used for hiding and then showing the mouse
   var wasMouseShown:Bool = false; // Used for showing and then hiding the mouse
   var screenshotTakenFrame:Int = 0;
-
   var screenshotBeingSpammed:Bool = false;
-
   var screenshotSpammedTimer:Null<FlxTimer> = null;
-
   var screenshotBuffer:Array<Bitmap> = [];
   var screenshotNameBuffer:Array<String> = [];
-
   var unsavedScreenshotBuffer:Array<Bitmap> = [];
   var unsavedScreenshotNameBuffer:Array<String> = [];
-
   var stateChanging:Bool = false;
   var noSavingScreenshots:Bool = false;
-
   var flashTween:Null<FlxTween> = null;
-
   var previewFadeInTween:Null<FlxTween> = null;
   var previewFadeOutTween:Null<FlxTween> = null;
-
   var asyncLoop:Null<FlxAsyncLoop> = null;
 
   public function new(params:ScreenshotPluginParams)
@@ -444,6 +435,7 @@ class ScreenshotPlugin extends FlxBasic
   }
 
   // Save them, save the screenshots
+
   function onWindowClose(exitCode:Int):Void
   {
     if (noSavingScreenshots) return; // sike
@@ -601,6 +593,7 @@ class ScreenshotPlugin extends FlxBasic
   }
 
   // I' m very happy with this code, all of it just works
+
   function saveBufferedScreenshots(screenshots:Array<Bitmap>, screenshotNames:Array<String>):Void
   {
     trace('Saving screenshot buffer');

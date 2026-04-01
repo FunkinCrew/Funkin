@@ -294,9 +294,12 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     var suffix = params.suffix ?? '';
     var pathToUse = switch (pathsFunction)
     {
-      case MUSIC: Paths.music('$key');
-      case INST: Paths.inst('$key', suffix);
-      default: Paths.music('$key');
+      case MUSIC:
+        Paths.music('$key');
+      case INST:
+        Paths.inst('$key', suffix);
+      default:
+        Paths.music('$key');
     }
 
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
@@ -529,9 +532,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     this._waveformData = null;
   }
 
-  @:access(openfl.media.Sound)
-  @:access(openfl.media.SoundChannel)
-  @:access(openfl.media.SoundMixer)
+  @:access(openfl.media.Sound) @:access(openfl.media.SoundChannel) @:access(openfl.media.SoundMixer)
   override function startSound(startTime:Float)
   {
     if (!important)

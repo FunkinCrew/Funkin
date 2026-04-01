@@ -1,7 +1,6 @@
 package funkin.data.event;
 
-@:nullSafety
-@:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
+@:nullSafety @:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
   /**
@@ -209,46 +208,39 @@ typedef SongEventSchemaField =
    * The key is the display name and the value is the actual value.
    */
   ?keys:Map<String, Dynamic>,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The minimum value that can be entered.
    * @default No minimum
    */
   ?min:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The maximum value that can be entered.
    * @default No maximum
    */
   ?max:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The step value that will be used when incrementing/decrementing the value.
    * @default `0.1`
    */
   ?step:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The units that the value is expressed in (pixels, percent, etc).
    */
   ?units:String,
-
   /**
    * Used for FRAME values.
    * The child components that this frame contains.
    */
   ?children:SongEventSchemaRaw,
-
   /**
    * Used for FRAME values.
    * Whether to make the frame be collapsible.
    */
   ?collapsible:Bool,
-
   /**
    * An optional default value for the field.
    */

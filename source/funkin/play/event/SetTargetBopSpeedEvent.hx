@@ -87,19 +87,22 @@ class SetTargetBopSpeedSongEvent extends SongEvent
    */
   public override function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([{
-      name: 'target',
-      title: 'Target',
-      type: SongEventFieldType.STRING,
-      defaultValue: DEFAULT_TARGET,
-    }, {
-      name: 'rate',
-      title: 'Rate',
-      defaultValue: Constants.DEFAULT_PROP_RATE,
-      min: 0,
-      step: 0.25,
-      type: SongEventFieldType.FLOAT,
-      units: 'beats/dance'
-    }]);
+    return new SongEventSchema([
+      {
+        name: 'target',
+        title: 'Target',
+        type: SongEventFieldType.STRING,
+        defaultValue: DEFAULT_TARGET,
+      },
+      {
+        name: 'rate',
+        title: 'Rate',
+        defaultValue: Constants.DEFAULT_PROP_RATE,
+        min: 0,
+        step: 0.25,
+        type: SongEventFieldType.FLOAT,
+        units: 'beats/dance'
+      }
+    ]);
   }
 }

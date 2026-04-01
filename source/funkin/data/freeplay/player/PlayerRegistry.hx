@@ -26,13 +26,12 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
 
   public function new()
   {
-    super(
-      {
-        registryId: 'PLAYER',
-        dataFilePath: 'gameplay/playable-characters',
-        nestedEntries: true,
-        versionRule: PLAYER_DATA_VERSION_RULE
-      });
+    super({
+      registryId: 'PLAYER',
+      dataFilePath: 'gameplay/playable-characters',
+      nestedEntries: true,
+      versionRule: PLAYER_DATA_VERSION_RULE
+    });
   }
 
   public override function loadEntries():Void

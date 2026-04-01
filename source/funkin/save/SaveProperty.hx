@@ -11,7 +11,6 @@ class SaveProperty<T>
   var _autoFlush:Bool;
 
   public var onChange(default, null):FlxTypedSignal<T->Void>;
-
   public var value(get, set):T;
 
   function get_value():T

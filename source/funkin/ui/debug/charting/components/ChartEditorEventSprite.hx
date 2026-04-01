@@ -30,7 +30,6 @@ class ChartEditorEventSprite extends FlxSprite
   public var eventData(default, set):Null<SongEventData> = null;
 
   public var overrideStepTime(default, set):Null<Float> = null;
-
   public var tooltip:ToolTipRegionOptions;
 
   /**

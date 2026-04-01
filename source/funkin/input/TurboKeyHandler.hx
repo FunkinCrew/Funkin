@@ -38,7 +38,6 @@ class TurboKeyHandler extends FlxBasic
   var keys:Array<FlxKey>;
   var delay:Float;
   var interval:Float;
-
   var allPressedTime:Float = 0;
 
   function new(keys:Array<FlxKey>, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL)

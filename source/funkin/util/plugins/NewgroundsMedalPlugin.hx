@@ -26,12 +26,9 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
   var medal:FunkinSprite;
   var pointsLabel:FlxText;
   var nameLabel:FlxText;
-
   var moveText:Bool = false;
   var medalQueue:Array<Void->Void> = [];
-
   var textSpeed:Float = 20;
-
   final MEDAL_X = (FlxG.width - 250) * 0.5;
   final MEDAL_Y = FlxG.height - 100;
 

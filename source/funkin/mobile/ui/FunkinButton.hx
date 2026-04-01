@@ -28,8 +28,7 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 #if !display
 @:generic
 #end
-@:allow(funkin.mobile.ui.FunkinHitbox)
-@:allow(funkin.mobile.ui.FunkinButton)
+@:allow(funkin.mobile.ui.FunkinHitbox) @:allow(funkin.mobile.ui.FunkinButton)
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**

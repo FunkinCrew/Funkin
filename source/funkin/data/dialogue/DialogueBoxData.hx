@@ -29,29 +29,25 @@ typedef DialogueBoxData =
   /**
    * Whether to horizontally flip the dialogue box sprite.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var flipX:Bool;
 
   /**
    * Whether to vertically flip the dialogue box sprite.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var flipY:Bool;
 
   /**
    * Whether to disable anti-aliasing for the dialogue box sprite.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var isPixel:Bool;
 
   /**
    * The relative horizontal and vertical offsets for the dialogue box sprite.
    */
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   public var offsets:Array<Float>;
 
   /**
@@ -62,15 +58,13 @@ typedef DialogueBoxData =
   /**
    * Multiply the size of the dialogue box sprite.
    */
-  @:optional
-  @:default(1)
+  @:optional @:default(1)
   public var scale:Float;
 
   /**
    * If using a spritesheet for the dialogue box, the animations to use.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var animations:Array<AnimationData>;
 }
 
@@ -79,30 +73,26 @@ typedef DialogueBoxTextData =
   /**
    * The position of the text in teh box.
    */
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   var offsets:Array<Float>;
 
   /**
    * The width of the
    */
-  @:optional
-  @:default(300)
+  @:optional @:default(300)
   var width:Int;
 
   /**
    * The font size to use for the text.
    */
-  @:optional
-  @:default(32)
+  @:optional @:default(32)
   var size:Int;
 
   /**
    * The color to use for the text.
    * Use a string that can be translated to a color, like `#FF0000` for red.
    */
-  @:optional
-  @:default("#000000")
+  @:optional @:default("#000000")
   var color:String;
 
   /**
@@ -110,8 +100,7 @@ typedef DialogueBoxTextData =
    * @since v1.1.0
    * @default `Arial`, make sure to switch this!
    */
-  @:optional
-  @:default("Arial")
+  @:optional @:default("Arial")
   var fontFamily:String;
 
   /**
@@ -122,7 +111,6 @@ typedef DialogueBoxTextData =
   /**
    * The width of the shadow of the text.
    */
-  @:optional
-  @:default(0)
+  @:optional @:default(0)
   var shadowWidth:Int;
 };

@@ -9,7 +9,6 @@ import flixel.tweens.FlxEase;
 class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
 {
   public var scoreShit(default, set):Int = 0;
-
   public var scoreStart:Int = 0;
 
   function set_scoreShit(val):Int
@@ -17,7 +16,7 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     if (group == null || group.members == null) return val;
     var loopNum:Int = group.members.length - 1;
     var dumbNumb = Std.parseInt(Std.string(val));
-    //var prevNum:ScoreNum;
+    // var prevNum:ScoreNum;
 
     dumbNumb = Std.int(Math.min(dumbNumb, Math.pow(10, group.members.length) - 1));
 
@@ -142,11 +141,22 @@ class ScoreNum extends FlxSprite
   public var shuffleTimer:FlxTimer;
   public var finalTween:FlxTween;
   public var finalDelay:Float = 0;
-
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
-  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "DISABLED"];
+  var numToString:Array<String> = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "SIX",
+    "SEVEN",
+    "EIGHT",
+    "NINE",
+    "DISABLED"
+  ];
 
   function finishShuffleTween():Void
   {

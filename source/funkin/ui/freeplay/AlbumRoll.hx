@@ -33,14 +33,11 @@ class AlbumRoll extends FlxSpriteGroup
   }
 
   final ALBUM_ART_SYMBOL:String = "album art placeholder";
-
   var newAlbumArt:FunkinSprite;
   var albumTitle:Null<FunkinSprite> = null;
-
   var difficultyStars:DifficultyStars;
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
-
   var albumData:Null<Album> = null;
 
   public function new()

@@ -28,13 +28,11 @@ typedef StickerSubStateParams =
    * The state to transition into.
    */
   ?targetState:StickerSubState->FlxState,
-
   /**
    * The sticker pack to retrieve and use.
    * @default `Constants.DEFAULT_STICKER_PACK`
    */
   ?stickerPack:String,
-
   /**
    * An existing set of stickers to transition out with.
    */
@@ -77,7 +75,8 @@ class StickerSubState extends MusicBeatSubState
     this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
     // TODO: Make this tied to the sticker pack more closely.
     var assetsInList = Assets.list();
-    sounds = assetsInList.filter(function(a:String) {
+    sounds = assetsInList.filter(function(a:String)
+    {
       return a.startsWith('assets/ui/loading/stickers/sounds/') && a.endsWith(Constants.EXT_SOUND);
     });
     grpStickers = new FlxTypedGroup<StickerSprite>();
@@ -107,7 +106,7 @@ class StickerSubState extends MusicBeatSubState
       #if !mobile
       // Re-enable autoPause if it was disabled
       FlxG.autoPause = Preferences.autoPause;
-      #end  
+      #end
       regenStickers();
     }
   }

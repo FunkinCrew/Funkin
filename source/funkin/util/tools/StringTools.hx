@@ -6,7 +6,6 @@ package funkin.util.tools;
 @:nullSafety
 class StringTools
 {
-
   /**
    * Checks if a string is `null` or blank (contains only whitespaces).
    *

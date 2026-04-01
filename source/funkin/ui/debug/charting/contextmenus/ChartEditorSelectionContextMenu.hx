@@ -18,8 +18,7 @@ import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/selection.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/selection.xml"))
 class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuOffset:NumberStepper;

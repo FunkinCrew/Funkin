@@ -17,17 +17,14 @@ import haxe.ui.core.Component;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml"))
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml")) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
-
   var vocalContainer:Component;
   var dialogCancel:Button;
   var dialogNoVocals:Button;
   var dialogContinue:Button;
-
   var charIds:Array<String>;
   var instId:String;
   var hasClearedVocals:Bool = false;

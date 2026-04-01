@@ -7,8 +7,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Adds the given notes to the current chart in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class AddNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;

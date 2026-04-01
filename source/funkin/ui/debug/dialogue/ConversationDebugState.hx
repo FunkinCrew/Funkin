@@ -14,7 +14,6 @@ import funkin.play.cutscene.dialogue.Conversation;
 class ConversationDebugState extends MusicBeatState
 {
   final conversationId:String = 'senpai';
-
   var conversation:Conversation;
 
   public function new()

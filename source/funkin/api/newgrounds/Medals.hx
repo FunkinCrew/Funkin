@@ -438,7 +438,27 @@ enum abstract Medal(Int) from Int to Int
    */
   public static function getAllMedals():Array<Medal>
   {
-    return
-      [StartGame, StoryTutorial, StoryWeek1, StoryWeek2, StoryWeek3, StoryWeek4, StoryWeek5, StoryWeek6, StoryWeek7, StoryWeekend1, CharSelect, FreeplayPicoMix, FreeplayStressPico, LossRating, PerfectRatingHard, GoldPerfectRatingHard, ErectDifficulty, GoldPerfectRatingNightmare, FridayNight, Nice];
+    return [
+      StartGame,
+      StoryTutorial,
+      StoryWeek1,
+      StoryWeek2,
+      StoryWeek3,
+      StoryWeek4,
+      StoryWeek5,
+      StoryWeek6,
+      StoryWeek7,
+      StoryWeekend1,
+      CharSelect,
+      FreeplayPicoMix,
+      FreeplayStressPico,
+      LossRating,
+      PerfectRatingHard,
+      GoldPerfectRatingHard,
+      ErectDifficulty,
+      GoldPerfectRatingNightmare,
+      FridayNight,
+      Nice
+    ];
   }
 }

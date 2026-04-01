@@ -22,11 +22,16 @@ enum abstract NoteDirection(Int) from Int to Int
   {
     return switch (value % 4)
     {
-      case 0: LEFT;
-      case 1: DOWN;
-      case 2: UP;
-      case 3: RIGHT;
-      default: LEFT;
+      case 0:
+        LEFT;
+      case 1:
+        DOWN;
+      case 2:
+        UP;
+      case 3:
+        RIGHT;
+      default:
+        LEFT;
     }
   }
 

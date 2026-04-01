@@ -89,9 +89,12 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
   {
     return switch (caseAllowed)
     {
-      case Both: str;
-      case Upper: str.toUpperCase();
-      case Lower: str.toLowerCase();
+      case Both:
+        str;
+      case Upper:
+        str.toUpperCase();
+      case Lower:
+        str.toLowerCase();
     }
   }
 
@@ -166,7 +169,11 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   override function toString():String
   {
-    return "InputItem, " + FlxStringUtil.getDebugString([LabelValuePair.weak("x", x), LabelValuePair.weak("y", y), LabelValuePair.weak("text", text)]);
+    return "InputItem, " + FlxStringUtil.getDebugString([
+      LabelValuePair.weak("x", x),
+      LabelValuePair.weak("y", y),
+      LabelValuePair.weak("text", text)
+    ]);
   }
 }
 
@@ -200,30 +207,52 @@ class AtlasChar extends FlxSprite
   {
     return switch (char)
     {
-      case '&': return '-andpersand-';
-      case "😠": '-angry faic-'; // TODO: Do multi-flag characters work?
-      case "'": '-apostraphie-';
-      case "\\": '-back slash-';
-      case ",": '-comma-';
-      case '-': '-dash-';
-      case '↓': '-down arrow-'; // U+2193
-      case "”": '-end quote-'; // U+0022
-      case "!": '-exclamation point-'; // U+0021
-      case "/": '-forward slash-'; // U+002F
-      case '>': '-greater than-'; // U+003E
-      case '♥': '-heart-'; // U+2665
-      case '♡': '-heart-';
-      case '←': '-left arrow-'; // U+2190
-      case '<': '-less than-'; // U+003C
-      case "*": '-multiply x-';
-      case '.': '-period-'; // U+002E
-      case "?": '-question mark-';
-      case '→': '-right arrow-'; // U+2192
-      case "“": '-start quote-';
-      case '↑': '-up arrow-'; // U+2191
+      case '&':
+        return '-andpersand-';
+      case "😠":
+        '-angry faic-'; // TODO: Do multi-flag characters work?
+      case "'":
+        '-apostraphie-';
+      case "\\":
+        '-back slash-';
+      case ",":
+        '-comma-';
+      case '-':
+        '-dash-';
+      case '↓':
+        '-down arrow-'; // U+2193
+      case "”":
+        '-end quote-'; // U+0022
+      case "!":
+        '-exclamation point-'; // U+0021
+      case "/":
+        '-forward slash-'; // U+002F
+      case '>':
+        '-greater than-'; // U+003E
+      case '♥':
+        '-heart-'; // U+2665
+      case '♡':
+        '-heart-';
+      case '←':
+        '-left arrow-'; // U+2190
+      case '<':
+        '-less than-'; // U+003C
+      case "*":
+        '-multiply x-';
+      case '.':
+        '-period-'; // U+002E
+      case "?":
+        '-question mark-';
+      case '→':
+        '-right arrow-'; // U+2192
+      case "“":
+        '-start quote-';
+      case '↑':
+        '-up arrow-'; // U+2191
 
       // Default to getting the character itself.
-      default: char;
+      default:
+        char;
     }
   }
 }

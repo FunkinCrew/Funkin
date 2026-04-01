@@ -193,7 +193,6 @@ class IntervalShake implements IFlxDestroyable
   }
 
   public var _secondsSinceStart(default, null):Float = 0;
-
   public var scale(default, null):Float = 0;
 
   /**

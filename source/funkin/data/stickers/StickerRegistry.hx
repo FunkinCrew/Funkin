@@ -20,13 +20,12 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
 
   public function new()
   {
-    super(
-      {
-        registryId: 'STICKER',
-        dataFilePath: 'ui/loading/stickers/stickerpacks',
-        // nestedEntries: true, // This registry uses custom parsing.
-        versionRule: STICKER_DATA_VERSION_RULE
-      });
+    super({
+      registryId: 'STICKER',
+      dataFilePath: 'ui/loading/stickers/stickerpacks',
+      // nestedEntries: true, // This registry uses custom parsing.
+      versionRule: STICKER_DATA_VERSION_RULE
+    });
   }
 
   public function fetchDefault():StickerPack

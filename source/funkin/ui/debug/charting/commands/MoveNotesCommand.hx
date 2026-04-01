@@ -7,8 +7,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Move the given notes by the given offset and shift them by the given number of columns in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class MoveNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -20,7 +19,10 @@ class MoveNotesCommand implements ChartEditorCommand
   public function new(notes:Array<SongNoteData>, offset:Float, columns:Int, setPos:Bool = false, offsetInSteps:Bool = false)
   {
     // Clone the notes to prevent editing from affecting the history.
-    this.notes = [for (note in notes) note.clone()];
+    this.notes = [
+      for (note in notes)
+        note.clone()
+    ];
     if (offsetInSteps) this.offset = Conductor.instance.getStepTimeInMs(offset);
     else
       this.offset = offset;
@@ -42,7 +44,7 @@ class MoveNotesCommand implements ChartEditorCommand
       // If setting position, use the offset as the resulting time
       if (setPos) resultNote.time = offset.clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       else
-      resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
+        resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       resultNote.data = ChartEditorState.gridColumnToNoteData((ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0,
         ChartEditorState.STRUMLINE_SIZE * 2 - 1));
 

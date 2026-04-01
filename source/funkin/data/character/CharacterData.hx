@@ -38,9 +38,7 @@ class CharacterDataParser
 
   static final characterCache:Map<String, CharacterData> = new Map<String, CharacterData>();
   static final characterScriptedClass:Map<String, String> = new Map<String, String>();
-
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
-
   static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
 
   /**
@@ -779,8 +777,7 @@ typedef CharacterData =
    * Supports up to `0.25` precision.
    * @default `1.0` on characters
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var danceEvery:Null<Float>;
 
   /**
