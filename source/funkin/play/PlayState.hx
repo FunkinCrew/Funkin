@@ -1055,15 +1055,6 @@ class PlayState extends MusicBeatSubState
 
       resetCamera();
 
-      @:privateAccess {
-        camGame.skipRenderBuffer = false;
-        camHUD.skipRenderBuffer = false;
-        camCutscene.skipRenderBuffer = false;
-        camCutouts.skipRenderBuffer = false;
-        camSubtitles.skipRenderBuffer = false;
-        camPause.skipRenderBuffer = false;
-      }
-
       var fromDeathState = isPlayerDying;
 
       persistentUpdate = true;
@@ -1476,15 +1467,6 @@ class PlayState extends MusicBeatSubState
     });
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
-
-    @:privateAccess {
-      camGame.skipRenderBuffer = true;
-      camHUD.skipRenderBuffer = true;
-      camCutscene.skipRenderBuffer = true;
-      camCutouts.skipRenderBuffer = true;
-      camSubtitles.skipRenderBuffer = true;
-      camPause.skipRenderBuffer = true;
-    }
 
     openSubState(gameOverSubState);
   }
@@ -3752,15 +3734,6 @@ class PlayState extends MusicBeatSubState
      */
   function performCleanup():Void
   {
-    @:privateAccess {
-      camGame.skipRenderBuffer = true;
-      camHUD.skipRenderBuffer = true;
-      camCutscene.skipRenderBuffer = true;
-      camCutouts.skipRenderBuffer = true;
-      camSubtitles.skipRenderBuffer = true;
-      camPause.skipRenderBuffer = true;
-    }
-
     // If the camera is being tweened, stop it.
     cancelAllCameraTweens();
 

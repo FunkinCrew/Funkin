@@ -107,14 +107,15 @@ class FunkinCamera extends FlxCamera
    */
   public var renderBuffer:Bool = false;
 
-  var skipRenderBuffer:Bool = false;
+  var _skipRenderBuffer:Bool = false;
+  var _renderingBuffer:Bool = false;
   var bufferBaseZoom:Float = -1;
   var bufferDelay:Float = 0;
   var _bufferTimer:Float = 0;
   var _blendShader:RuntimeCustomBlendShader;
-  var _backgroundFrame:FlxFrame;
-  var _blendRenderTexture:RenderTexture;
-  var _backgroundRenderTexture:RenderTexture;
+  var _blendBackgroundFrame:FlxFrame;
+  var _foregroundRenderTexture:RenderTexture;
+  var _blendedRenderTexture:RenderTexture;
   var _cameraTexture:FixedBitmapData;
   var _cameraMatrix:FlxMatrix;
   var _previousFrameTexture:FixedBitmapData;
@@ -126,15 +127,16 @@ class FunkinCamera extends FlxCamera
 
     this.id = id;
 
-    _backgroundFrame = new FlxFrame(new FlxGraphic('', null));
-    _backgroundFrame.frame = new FlxRect();
-
     _blendShader = new RuntimeCustomBlendShader();
 
-    _backgroundRenderTexture = new RenderTexture(this.width, this.height);
-    _blendRenderTexture = new RenderTexture(this.width, this.height);
+    _blendedRenderTexture = new RenderTexture(this.width, this.height);
+    _foregroundRenderTexture = new RenderTexture(this.width, this.height);
+
+    _blendBackgroundFrame = new FlxFrame(new FlxGraphic('', _foregroundRenderTexture.graphic.bitmap));
+    _blendBackgroundFrame.frame = new FlxRect();
 
     _cameraMatrix = new FlxMatrix();
+
     _cameraTexture = FixedBitmapData.create(this.width, this.height);
     _previousFrameTexture = FixedBitmapData.create(this.width, this.height);
 
@@ -150,6 +152,8 @@ class FunkinCamera extends FlxCamera
     // the specified blend mode requires the shader.
     if (shouldUseShader)
     {
+      _skipRenderBuffer = true;
+
       if (crossCameraBlending)
       {
         var camerasUnderneath:Array<FlxCamera> = FlxG.cameras.list.copy();
@@ -175,15 +179,15 @@ class FunkinCamera extends FlxCamera
         _cameraTexture.drawCameraScreen(this);
       }
 
-      _backgroundFrame.frame.set(0, 0, this.width, this.height);
+      _blendBackgroundFrame.frame.set(0, 0, this.width, this.height);
 
       // Clear the camera's graphics
       // It'll get redrawn anyway
       this.clearDrawStack();
       this.canvas.graphics.clear();
 
-      _blendRenderTexture.init(this.width, this.height);
-      _blendRenderTexture.drawToCamera((camera, frameMatrix) ->
+      _foregroundRenderTexture.init(this.width, this.height);
+      _foregroundRenderTexture.drawToCamera((camera, frameMatrix) ->
       {
         var pivotX:Float = width / 2;
         var pivotY:Float = height / 2;
@@ -194,36 +198,36 @@ class FunkinCamera extends FlxCamera
         frameMatrix.translate(pivotX, pivotY);
         camera.drawPixels(frame, pixels, frameMatrix, transform, null, smoothing, shader);
       });
-      _blendRenderTexture.render();
+      _foregroundRenderTexture.render();
 
-      _blendShader.sourceSwag = _blendRenderTexture.graphic.bitmap;
+      _blendShader.sourceSwag = _foregroundRenderTexture.graphic.bitmap;
       _blendShader.backgroundSwag = _cameraTexture;
 
       _blendShader.blendSwag = blend;
       _blendShader.updateViewInfo(width, height, this);
 
-      _backgroundFrame.parent.bitmap = _blendRenderTexture.graphic.bitmap;
-
       // On some displays, the DPI can be less than 1, which causes the blend shader to look bad
       // We just clamp the scale to 1 to avoid this!
       var clampedScale:Float = Math.max(1, Lib.current.stage.window.scale);
 
-      _backgroundRenderTexture.init(Std.int(this.width * clampedScale), Std.int(this.height * clampedScale));
-      _backgroundRenderTexture.drawToCamera((camera, matrix) ->
+      _blendedRenderTexture.init(Std.int(this.width * clampedScale), Std.int(this.height * clampedScale));
+      _blendedRenderTexture.drawToCamera((camera, matrix) ->
       {
         camera.zoom = this.zoom;
         matrix.scale(clampedScale, clampedScale);
-        camera.drawPixels(_backgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);
+        camera.drawPixels(_blendBackgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);
       });
 
-      _backgroundRenderTexture.render();
+      _blendedRenderTexture.render();
 
       // Resize the frame so it always fills the screen
       _cameraMatrix.identity();
       _cameraMatrix.scale(1 / (this.scaleX * clampedScale), 1 / (this.scaleY * clampedScale));
       _cameraMatrix.translate(((width - width / this.scaleX) * 0.5), ((height - height / this.scaleY) * 0.5));
 
-      super.drawPixels(_backgroundRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
+      super.drawPixels(_blendedRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
+
+      _skipRenderBuffer = false;
     }
     else
     {
@@ -283,6 +287,38 @@ class FunkinCamera extends FlxCamera
     return super.startQuadBatch(graphic, colored, hasColorOffsets, blend, smooth, shader);
   }
 
+  @:allow(flixel.system.frontEnds.CameraFrontEnd)
+  override function render():Void
+  {
+    @:nullSafety(Off)
+    flashSprite.filters = filtersEnabled ? filters : null;
+
+    var currItem:flixel.graphics.tile.FlxDrawBaseItem<Dynamic> = _headOfDrawStack;
+    var shouldRender:Bool = true;
+
+    while (currItem != null)
+    {
+      // Prevent the buffer from causing a feedback loop (i.e being drawn in the buffer itself!)
+      if (currItem.graphics.key == 'CAMERA_BUFFER')
+      {
+        shouldRender = !_renderingBuffer;
+      }
+
+      // Skip drawing any sprites that were destroyed if a buffer is being rendered
+      if (_renderingBuffer && currItem.graphics.key != 'CAMERA_BUFFER')
+      {
+        shouldRender = !currItem.graphics.isDestroyed;
+      }
+
+      if (shouldRender)
+      {
+        currItem.render(this);
+      }
+
+      currItem = currItem.next;
+    }
+  }
+
   override function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool,
       ?shader:FlxShader):FlxDrawTrianglesItem
   {
@@ -296,7 +332,7 @@ class FunkinCamera extends FlxCamera
 
   override function clearDrawStack():Void
   {
-    if (renderBuffer && !skipRenderBuffer)
+    if (renderBuffer && !_skipRenderBuffer)
     {
       if (bufferDelay > 0)
       {
@@ -319,6 +355,8 @@ class FunkinCamera extends FlxCamera
 
   function _drawPreviousFrame():Void
   {
+    _renderingBuffer = true;
+
     if (bufferBaseZoom > 0)
     {
       this.setScale(bufferBaseZoom, bufferBaseZoom);
@@ -329,6 +367,8 @@ class FunkinCamera extends FlxCamera
     {
       _previousFrameTexture.drawCameraScreen(this);
     }
+
+    _renderingBuffer = false;
   }
 
   override function destroy():Void
@@ -337,8 +377,8 @@ class FunkinCamera extends FlxCamera
 
     super.destroy();
 
-    _blendRenderTexture.destroy();
-    _backgroundRenderTexture.destroy();
+    _foregroundRenderTexture.destroy();
+    _blendedRenderTexture.destroy();
 
     _cameraTexture.dispose();
     _previousFrameTexture.dispose();
