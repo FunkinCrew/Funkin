@@ -214,7 +214,7 @@
     "expressionIf": "same",
     "expressionIfWithBlocks": false,
 
-    "forBody": "next",
+    "forBody": "same",
 
     "comprehensionFor": "same",
 
@@ -250,7 +250,36 @@
     },
 
     "bracesConfig": {},
-    "bracketConfig": {},
+
+    "bracketConfig": {
+      "arrayLiteralBrackets": {
+        "openingPolicy": "noneAfter",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      },
+      "mapLiteralBrackets": {
+        "openingPolicy": "noneAfter",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      },
+
+      "accessBrackets": {
+        "openingPolicy": "noneAfter",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      },
+      "comprehensionBrackets": {
+        "openingPolicy": "none",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      },
+
+      "unknownBrackets": {
+        "openingPolicy": "noneAfter",
+        "closingPolicy": "none",
+        "removeInnerWhenEmpty": true
+      }
+    },
 
     "typeParamOpenPolicy": "none",
     "typeParamClosePolicy": "none",
