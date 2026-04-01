@@ -955,8 +955,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       var animData:Null<Array<AnimationData>> = fetchSplashAnimationData(dir);
       if (animData != null)
       {
-        for (anim in animData)
-          FlxAnimationUtil.addAtlasAnimation(target, anim);
+        for (anim in animData) FlxAnimationUtil.addAtlasAnimation(target, anim);
       }
     };
 

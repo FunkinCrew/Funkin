@@ -190,8 +190,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           var freqPower:Float = 0;
 
-          for (pow in 0...freqShit.length)
-            freqPower += freqShit[pow][remappedFreq];
+          for (pow in 0...freqShit.length) freqPower += freqShit[pow][remappedFreq];
 
           freqPower /= freqShit.length;
           var freqIDK:Float = FlxMath.remapToRange(freqPower, 0, 0.000005, 0, 50);

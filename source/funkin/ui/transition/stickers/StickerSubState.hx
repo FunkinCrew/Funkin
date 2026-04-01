@@ -97,8 +97,7 @@ class StickerSubState extends MusicBeatSubState
 
     if (params.oldStickers != null)
     {
-      for (sticker in params.oldStickers)
-        grpStickers.add(sticker);
+      for (sticker in params.oldStickers) grpStickers.add(sticker);
       degenStickers();
     }
     else

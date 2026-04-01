@@ -846,15 +846,13 @@ class FunkinPreloader extends FlxBasePreloader
       // Render progress bar
       var piecesToRender:Int = Std.int(percent * progressBarPieces.length);
 
-      for (i => piece in progressBarPieces)
-        piece.alpha = i <= piecesToRender ? 0.9 : 0.1;
+      for (i => piece in progressBarPieces) piece.alpha = i <= piecesToRender ? 0.9 : 0.1;
     }
 
     // Cycle ellipsis count to show loading
     var ellipsisCount:Int = Std.int(elapsed / ELLIPSIS_TIME) % 3 + 1;
     var ellipsis:String = '';
-    for (_ in 0...ellipsisCount)
-      ellipsis += '.';
+    for (_ in 0...ellipsisCount) ellipsis += '.';
 
     // Render status text
     updateProgressLeftText(currentState.getProgressLeftText(TOTAL_STEPS, ellipsis));
@@ -932,8 +930,7 @@ class FunkinPreloader extends FlxBasePreloader
     rTextGroup.alpha = alphaToFade;
     progressLines.alpha = alphaToFade;
 
-    for (piece in progressBarPieces)
-      piece.alpha = alphaToFade;
+    for (piece in progressBarPieces) piece.alpha = alphaToFade;
 
     return elapsedFinished;
   }

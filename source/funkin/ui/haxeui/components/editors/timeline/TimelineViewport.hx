@@ -84,8 +84,7 @@ class TimelineViewport extends Box
 
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
-    for (block in eventBlocks)
-      removeComponent(block);
+    for (block in eventBlocks) removeComponent(block);
     eventBlocks = [];
 
     for (event in events)

@@ -27,18 +27,17 @@ class SongEventHelper
 
   public static function generateEaseGraphsBitmaps():Void
   {
-    for (ease in easeDirList)
-      for (dir in easeDirs)
+    for (ease in easeDirList) for (dir in easeDirs)
+    {
+      final func = getEaseFunc(ease, dir);
+      if (func == null) continue;
+      final key = ease + dir;
+      if (!easeBitmapMap.exists(key))
       {
-        final func = getEaseFunc(ease, dir);
-        if (func == null) continue;
-        final key = ease + dir;
-        if (!easeBitmapMap.exists(key))
-        {
-          final bd = createBitmapFromFunc(func, key);
-          if (bd != null) easeBitmapMap.set(key, bd);
-        }
+        final bd = createBitmapFromFunc(func, key);
+        if (bd != null) easeBitmapMap.set(key, bd);
       }
+    }
     var k = "INSTANT";
     if (!easeBitmapMap.exists(k))
     {
@@ -137,17 +136,15 @@ class SongEventHelper
           var y:Int = getEaseY(raw, size, range);
           if (lastY == -1)
           {
-            for (xx in (i - half)...(i + half + 1))
-              if (xx >= 0 && xx < size) for (yy in (y - half)...(y + half + 1))
-                if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
+            for (xx in (i - half)...(i + half + 1)) if (xx >= 0 && xx < size) for (yy in (y - half)...(y + half + 1)) if (yy >= 0 && yy < size)
+              bd.setPixel32(xx, yy, 0xFFFFFFFF);
           }
           else
           {
             var a = Std.int(Math.min(y, lastY));
             var b = Std.int(Math.max(y, lastY));
-            for (xx in (i - half)...(i + half + 1))
-              if (xx >= 0 && xx < size) for (yy in a - half...b + half + 1)
-                if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
+            for (xx in (i - half)...(i + half + 1)) if (xx >= 0 && xx < size) for (yy in a - half...b + half + 1) if (yy >= 0 && yy < size) bd.setPixel32(xx,
+              yy, 0xFFFFFFFF);
           }
           lastY = y;
         }
@@ -204,13 +201,12 @@ class SongEventHelper
       var y:Int = getEaseY(raw, sizeH, range);
       var bd:BitmapData = new BitmapData(dotWidth, sizeH, false, 0xFF202223);
       var centerX:Int = Std.int(dotWidth / 2);
-      for (dx in -dotRadius...dotRadius + 1)
-        for (dy in -dotRadius...dotRadius + 1)
-        {
-          var px = centerX + dx;
-          var py = y + dy;
-          if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
-        }
+      for (dx in -dotRadius...dotRadius + 1) for (dy in -dotRadius...dotRadius + 1)
+      {
+        var px = centerX + dx;
+        var py = y + dy;
+        if (px >= 0 && px < dotWidth && py >= 0 && py < sizeH) if (dx * dx + dy * dy <= dotRadius * dotRadius) bd.setPixel32(px, py, 0xFFFFFFFF);
+      }
       var gfxName = "ease_dot_" + key + "_" + f;
       var gfx = FlxG.bitmap.add(bd, true, gfxName);
       var spr = new FlxSprite();

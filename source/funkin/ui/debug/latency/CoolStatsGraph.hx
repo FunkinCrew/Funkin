@@ -156,8 +156,7 @@ class CoolStatsGraph extends Sprite
   public function average():Float
   {
     var sum:Float = 0;
-    for (value in history)
-      sum += value;
+    for (value in history) sum += value;
     return sum / history.length;
   }
 

@@ -844,8 +844,7 @@ class Controls extends FlxActionSet
     {
       case null:
         // add all
-        for (gamepad in controls.gamepadsAdded)
-          if (gamepadsAdded.indexOf(gamepad) == -1) gamepadsAdded.push(gamepad);
+        for (gamepad in controls.gamepadsAdded) if (gamepadsAdded.indexOf(gamepad) == -1) gamepadsAdded.push(gamepad);
 
         mergeKeyboardScheme(controls.keyboardScheme);
 
@@ -1195,8 +1194,7 @@ class Controls extends FlxActionSet
   {
     gamepadsAdded.push(id);
 
-    for (control in buttonMap.keys())
-      bindButtons(control, id, buttonMap[control]);
+    for (control in buttonMap.keys()) bindButtons(control, id, buttonMap[control]);
   }
 
   public function removeGamepad(deviceID:Int = FlxInputDeviceID.ALL):Void

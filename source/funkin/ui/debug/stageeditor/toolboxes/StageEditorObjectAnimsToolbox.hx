@@ -144,9 +144,8 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     // Otherwise, update them accordingly.
 
-    if (previousFrames != [
-      for (f in linkedObj.frames.frames)
-        f.name
+    if (previousFrames !=[
+      for (f in linkedObj.frames.frames) f.name
     ]) updateFrameList();
     if (previousAnims != linkedObj.animation.getNameList().copy()) updateAnimList();
   }
@@ -195,8 +194,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     {
       var splitter = objAnimIndices.text.replace(" ", "").split(",");
 
-      for (num in splitter)
-        indices.push(Std.parseInt(num));
+      for (num in splitter) indices.push(Std.parseInt(num));
     }
 
     var shouldDoIndices:Bool = (indices.length > 0 && !indices.contains(null));

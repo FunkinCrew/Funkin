@@ -122,8 +122,7 @@ class Medals
     if (parser.errors.length > 0)
     {
       trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to parse local medal data!');
-      for (error in parser.errors)
-        funkin.data.DataError.printError(error);
+      for (error in parser.errors) funkin.data.DataError.printError(error);
       medalJSON = [];
     }
     else

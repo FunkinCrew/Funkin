@@ -25,7 +25,7 @@ class MapTools
   public static function values<K, T>(map:Null<Map<K, T>>):Array<T>
   {
     if (map == null) return [];
-    return [for (i in map.iterator()) i];
+    return[for (i in map.iterator()) i];
   }
 
   /**

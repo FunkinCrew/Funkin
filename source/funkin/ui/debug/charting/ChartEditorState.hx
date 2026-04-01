@@ -1387,8 +1387,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function get_availableVariations():Array<String>
   {
     var variations:Array<String> = [
-      for (x in songMetadata.keys())
-        x
+      for (x in songMetadata.keys()) x
     ];
     variations.sort(SortUtil.defaultThenAlphabetically.bind('default'));
     return variations;
@@ -1423,8 +1422,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         var m:Null<SongMetadata> = songMetadata.get(x);
         [
-          for (diff in (m?.playData?.difficulties ?? []))
-            '$diff-$x'
+          for (diff in (m?.playData?.difficulties ?? [])) '$diff-$x'
         ];
       }
     ];
@@ -1491,8 +1489,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Add the chartdata difficulties to the metadata difficulties if they don't exist so that the editor properly loads them
       var keys:Array<String> = [
-        for (x in songChartData.get(selectedVariation).notes.keys())
-          x
+        for (x in songChartData.get(selectedVariation).notes.keys()) x
       ];
       for (key in keys)
       {
@@ -2645,8 +2642,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];
-    for (chartPath in previousWorkingFilePaths)
-      if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
     save.chartEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
@@ -4930,8 +4926,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           var columnStart:Int = Std.int(Math.min(cursorColumnBase, cursorColumnBaseStart));
           var columnEnd:Int = Std.int(Math.max(cursorColumnBase, cursorColumnBaseStart));
           var columns:Array<Int> = [
-            for (i in columnStart...(columnEnd + 1))
-              i
+            for (i in columnStart...(columnEnd + 1)) i
           ].map(function(i:Int):Int
           {
             if (i >= eventColumn)

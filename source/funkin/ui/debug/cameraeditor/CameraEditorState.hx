@@ -665,7 +665,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     else if (currentVocals.length > 0 && currentVocals[0].playing)
     {
       for (vocal in currentVocals)
+      {
         if (vocal.playing) vocal.pause();
+      }
     }
 
     super.update(elapsed);
@@ -973,8 +975,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Can't use filter() because of null safety checking!
     trace('Saving previous files: ${previousWorkingFilePaths.toString()}');
     var filteredWorkingFilePaths:Array<String> = [];
-    for (chartPath in previousWorkingFilePaths)
-      if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
     save.cameraEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');

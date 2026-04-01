@@ -567,8 +567,7 @@ class PolymodHandler
   public static function getAllModDirs():Array<String>
   {
     var modDirs:Array<String> = [
-      for (i in getAllMods())
-        i.dirName
+      for (i in getAllMods()) i.dirName
     ];
     return modDirs;
   }

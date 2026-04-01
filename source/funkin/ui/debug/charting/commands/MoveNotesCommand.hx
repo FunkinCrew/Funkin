@@ -20,8 +20,7 @@ class MoveNotesCommand implements ChartEditorCommand
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = [
-      for (note in notes)
-        note.clone()
+      for (note in notes) note.clone()
     ];
     if (offsetInSteps) this.offset = Conductor.instance.getStepTimeInMs(offset);
     else

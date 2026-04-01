@@ -132,6 +132,8 @@ class WaveformDataParser
     trace('[WAVEFORM] Failed to parse waveform data: ${id}');
 
     for (error in errors)
+    {
       funkin.data.DataError.printError(error);
+    }
   }
 }

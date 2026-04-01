@@ -100,8 +100,7 @@ class AnsiTrace
     }
 
     var pstr:String = infos.fileName + ":" + '${infos.lineNumber}'.bold();
-    if (infos.customParams != null) for (v in infos.customParams)
-      str += ", " + Std.string(v);
+    if (infos.customParams != null) for (v in infos.customParams) str += ", " + Std.string(v);
 
     var header:String = "";
     var body:String = str;
@@ -124,8 +123,7 @@ class AnsiTrace
     #if (sys && debug)
     if (AnsiUtil.isColorCodesSupported())
     {
-      for (line in ansiBF)
-        Sys.stdout().writeString(line + "\n");
+      for (line in ansiBF) Sys.stdout().writeString(line + "\n");
       Sys.stdout().flush();
     }
     #end

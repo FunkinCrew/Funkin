@@ -220,8 +220,7 @@ class LetterSort extends FlxSpriteGroup
     if (curSelection < 0) curSelection = letters[0].regexLetters.length - 1;
     if (curSelection >= letters[0].regexLetters.length) curSelection = 0;
 
-    for (letter in letters)
-      letter.changeLetter(diff, curSelection);
+    for (letter in letters) letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].regexLetters[letters[2].curLetter]); // bullshit and long lol!
   }

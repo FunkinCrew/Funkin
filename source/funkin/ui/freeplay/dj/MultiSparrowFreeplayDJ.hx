@@ -40,7 +40,9 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
 
     var assetList = [];
     for (anim in playableCharData.getAnimationsList())
+    {
       if (anim.assetPath != null && !assetList.contains(anim.assetPath)) assetList.push(anim.assetPath);
+    }
 
     var texture:FlxAtlasFrames = Paths.getSparrowAtlas(playableCharData.getAssetPath());
 

@@ -88,8 +88,7 @@ class ChartManifestData
     {
       trace('[ChartManifest] Failed to parse chart file manifest');
 
-      for (error in parser.errors)
-        DataError.printError(error);
+      for (error in parser.errors) DataError.printError(error);
 
       return null;
     }

@@ -20,8 +20,7 @@ class MoveEventsCommand implements ChartEditorCommand
   {
     // Clone the events to prevent editing from affecting the history.
     this.events = [
-      for (event in events)
-        event.clone()
+      for (event in events) event.clone()
     ];
     if (offsetInSteps) this.offset = Conductor.instance.getStepTimeInMs(offset);
     else

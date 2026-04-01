@@ -276,8 +276,7 @@ class StepManiaImporter
     var tps = parseTimingPointLine(line);
     if (tps != null)
     {
-      for (tp in tps)
-        result.TimingPoints.push(tp);
+      for (tp in tps) result.TimingPoints.push(tp);
     }
     return result;
   }
@@ -287,8 +286,7 @@ class StepManiaImporter
     var sps = parseStopsLine(line);
     if (sps != null)
     {
-      for (sp in sps)
-        result.Stops.push(sp);
+      for (sp in sps) result.Stops.push(sp);
     }
     return result;
   }
@@ -416,8 +414,7 @@ class StepManiaImporter
           {
             // end of measure
             var stepNotesInMeasure = parseMeasure(measure, currentMeasure);
-            for (stepNote in stepNotesInMeasure)
-              workingDiff.notes.push(stepNote);
+            for (stepNote in stepNotesInMeasure) workingDiff.notes.push(stepNote);
             measure = [];
             currentMeasure++;
             // end of StepNotes section

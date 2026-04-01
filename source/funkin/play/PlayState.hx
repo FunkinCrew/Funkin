@@ -3035,8 +3035,7 @@ class PlayState extends MusicBeatSubState
 
     var notesByDirection:Array<Array<NoteSprite>> = [[], [], [], []];
 
-    for (note in notesInRange)
-      notesByDirection[note.direction].push(note);
+    for (note in notesInRange) notesByDirection[note.direction].push(note);
 
     while (inputPressQueue.length > 0)
     {

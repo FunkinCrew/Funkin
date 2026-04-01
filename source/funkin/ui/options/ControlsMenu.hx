@@ -171,8 +171,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       var formatName = name.replace('_', ' ');
       var label = labels.add(new AtlasText(Math.max(FullScreenScaleMode.gameNotchSize.x, CONTROL_BASE_X), y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
-      for (i in 0...COLUMNS)
-        createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
+      for (i in 0...COLUMNS) createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
 
       y += spacer;
     }
@@ -284,8 +283,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     currentDevice = device;
 
-    for (item in controlGrid.members)
-      item.updateDevice(currentDevice);
+    for (item in controlGrid.members) item.updateDevice(currentDevice);
 
     var cancel = device == Keys ? "Escape" : "Back";
     // todo: alignment

@@ -1622,8 +1622,7 @@ class FreeplayState extends MusicBeatSubState
           {
             fromCharSelect = false;
 
-            for (capsule in grpCapsules.members)
-              capsule.doLerp = true;
+            for (capsule in grpCapsules.members) capsule.doLerp = true;
           }
         });
       }

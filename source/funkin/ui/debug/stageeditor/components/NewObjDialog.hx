@@ -40,8 +40,7 @@ class NewObjDialog extends Dialog
     if (button == '{{Create}}')
     {
       var objNames = [
-        for (obj in StageEditorState.instance.spriteArray)
-          obj.name
+        for (obj in StageEditorState.instance.spriteArray) obj.name
       ];
 
       if (field.text == '' || field.text == null || objNames.contains(field.text))

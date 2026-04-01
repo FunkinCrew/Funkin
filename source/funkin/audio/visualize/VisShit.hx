@@ -65,8 +65,7 @@ class VisShit
     {
       // take a chunk (zero-padded if needed) and apply the window
       final chunk = [
-        for (n in 0...fftN)
-          (c + n < samples.length ? samples[c + n] : 0.0) * window(n)
+        for (n in 0...fftN) (c + n < samples.length ? samples[c + n] : 0.0) * window(n)
       ];
 
       // compute positive spectrum with sampling correction and BP filter

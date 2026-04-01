@@ -132,8 +132,7 @@ class CreditsDataHandler
   {
     trace('[CREDITS] Failed to parse credits data: ${id}');
 
-    for (error in errors)
-      funkin.data.DataError.printError(error);
+    for (error in errors) funkin.data.DataError.printError(error);
   }
   #end
 }

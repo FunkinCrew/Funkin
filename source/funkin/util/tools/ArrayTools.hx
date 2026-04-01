@@ -41,7 +41,7 @@ class ArrayTools
    */
   public static function clone<T>(array:Array<T>):Array<T>
   {
-    return [for (element in array) element];
+    return[for (element in array) element];
   }
 
   /**
@@ -53,9 +53,8 @@ class ArrayTools
    */
   public static function deepClone<T, U:ICloneable<T>>(array:Array<U>):Array<T>
   {
-    return [
-      for (element in array)
-        element.clone()
+    return[
+      for (element in array) element.clone()
     ];
   }
 

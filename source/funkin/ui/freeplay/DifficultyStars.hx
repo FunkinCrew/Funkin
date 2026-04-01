@@ -39,8 +39,7 @@ class DifficultyStars extends FlxSpriteGroup
 
     stars.shader = hsvShader;
 
-    for (memb in flames.members)
-      memb.shader = hsvShader;
+    for (memb in flames.members) memb.shader = hsvShader;
   }
 
   override function update(elapsed:Float):Void
