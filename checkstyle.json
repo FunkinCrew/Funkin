@@ -215,7 +215,21 @@
         "fieldType": "BOTH",
         "requireReturn": true,
         "ignoreOverride": true,
-        "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF"],
+        "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "INTERFACE_DEF"],
+        "modifier": "PUBLIC",
+        "excludeNames": ["new", "toString"],
+        "severity": "INFO"
+      },
+      "type": "FieldDocComment"
+    },
+    {
+      "comment": "If enabled, mandates documentation comments for public fields.",
+      "props": {
+        "requireParams": true,
+        "fieldType": "FUNCTIONS",
+        "requireReturn": true,
+        "ignoreOverride": true,
+        "tokens": ["ENUM_DEF"],
         "modifier": "PUBLIC",
         "excludeNames": ["new", "toString"],
         "severity": "INFO"
@@ -267,7 +281,10 @@
     },
     {
       "comment": "If enabled, warns about assignments performed within another expression, like 'if (a=b){}'",
-      "props": { "ignoreReturnAssignments": true, "severity": "WARNING" },
+      "props": {
+        "ignoreReturnAssignments": true,
+        "severity": "WARNING"
+      },
       "type": "InnerAssignment"
     },
     {
