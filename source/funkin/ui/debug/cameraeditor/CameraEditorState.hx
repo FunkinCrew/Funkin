@@ -1513,24 +1513,17 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
         CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
         selectedSongEvent = null;
-      case [FlxKey.V, true, _] if (hasClipboardEvent): // ctrl + v -> paste
+      case [FlxKey.V, true, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
         var clipboard = SongDataUtils.readItemsFromClipboard();
         if (clipboard.valid != true || clipboard.events.length == 0) return;
 
-        var localX = MouseHelper.currentWorldX - timeline.viewport.screenLeft;
-        var mouseMs = timeline.viewport.pixelXToMs(localX);
+        var pasteMs = Conductor.instance.songPosition;
 
-        if (timeline.viewport.stepLengthMs > 0)
-        {
-          var stepMs = timeline.viewport.stepLengthMs;
-          mouseMs = Math.fround(mouseMs / stepMs) * stepMs;
-        }
-
-        if (mouseMs < 0) mouseMs = 0;
-        if (mouseMs > timeline.viewport.songLengthMs) mouseMs = timeline.viewport.songLengthMs;
+        if (pasteMs < 0) pasteMs = 0;
+        if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
 
         var newEvent = clipboard.events[0];
-        newEvent.time = mouseMs;
+        newEvent.time = pasteMs;
 
         CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
         selectedSongEvent = newEvent;
