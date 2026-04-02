@@ -203,18 +203,20 @@ class ZoomCameraContainer extends VBox
   }
 
   /**
-   * Called when the Zoom Camera Mode field is changed.
+   * Called when the Zoom Mode field is changed.
    */
   @:bind(zoomCameraMode, UIEvent.CHANGE)
   function onChange_zoomCameraMode(_):Void
   {
     if (zoomCameraMode.selectedItem == null)
     {
-      cameraEditorState.selectedSongEvent.set('char', ZoomCameraSongEvent.DEFAULT_MODE);
+      cameraEditorState.selectedSongEvent.set('mode', ZoomCameraSongEvent.DEFAULT_MODE);
       return;
     }
 
-    var value:String = zoomCameraMode.selectedItem.id;
+    var index = zoomCameraMode.selectedIndex;
+    var value = 'absolute';
+    if (index == 1) value = 'direct';
 
     trace('Zoom Camera: Mode changed to ' + value);
 
