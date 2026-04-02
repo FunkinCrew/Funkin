@@ -89,6 +89,11 @@
       "url": "https://github.com/FunkinCrew/grig.audio"
     },
     {
+      "name": "tink_core",
+      "type": "haxelib",
+      "version": "1.26.0"
+    },
+    {
       "name": "hamcrest",
       "type": "haxelib",
       "version": "3.0.0"
