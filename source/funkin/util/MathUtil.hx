@@ -11,7 +11,6 @@ class MathUtil
    * Math.E is not a constant in Haxe, so we'll just define it ourselves.
    */
   public static final E:Float = 2.71828182845904523536;
-
   /**
    * Get the logarithm of a value with a given base.
    * @param base The base of the logarithm.
