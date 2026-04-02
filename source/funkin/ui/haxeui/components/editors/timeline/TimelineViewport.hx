@@ -107,6 +107,16 @@ class TimelineViewport extends Box
 
       addComponent(block);
 
+      var triangle = block.findComponent("block-instantTriangle", Image);
+      if (triangle != null)
+      {
+        if (!block.isInstant())
+        {
+          triangle.opacity = 0;
+        }
+        block._cachedTriangle = triangle;
+      }
+
       var icon = block.findComponent("block-icon", Image);
       if (icon != null)
       {
@@ -214,9 +224,11 @@ private class TimelineViewportLayout extends DefaultLayout
       block.blockWidth = blockWidthVal;
 
       if (block._cachedIcon == null) block._cachedIcon = block.findComponent("block-icon", Image);
+      if (block._cachedTriangle == null) block._cachedTriangle = block.findComponent("block-instantTriangle", Image);
 
       var icon = block._cachedIcon;
-      if (icon != null)
+      var triangle = block._cachedTriangle;
+      if (icon != null && triangle != null)
       {
         var maxIconSize = TimelineEventBlock.BLOCK_HEIGHT - 4;
         var preferredPadding = maxIconSize * 0.05;
@@ -228,13 +240,21 @@ private class TimelineViewportLayout extends DefaultLayout
           // Block is wide enough: full-size icon with padding
           iconSize = maxIconSize;
           iconLeft = preferredPadding;
+
+          // size triangle
+          triangle.width = iconSize / 2;
         }
         else
         {
           // Block is too narrow: fill the block and center
           iconSize = Math.max(16, blockWidthVal);
           iconLeft = (blockWidthVal - iconSize) / 2;
+
+          triangle.width = blockWidthVal;
         }
+
+        triangle.color = block.backgroundColor;
+        triangle.height = block.componentHeight;
 
         if (icon.width != iconSize) icon.width = iconSize;
         if (icon.height != iconSize) icon.height = iconSize;
@@ -310,6 +330,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     block.selected = true;
     if (block.layerIndex >= 0 && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
 
+    block.updateVisuals();
+
     var selectEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
     selectEvent.eventData = block.eventData;
     _viewport.dispatch(selectEvent);
@@ -325,6 +347,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         if (block.layerIndex >= 0
           && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
       }
+      block.updateVisuals();
     }
   }
 
