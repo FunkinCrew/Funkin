@@ -904,6 +904,10 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     this.currentVariation = target;
 
+    // Maybe make this changeable in the ui?
+    if (target == 'erect') currentDifficulty = 'nightmare';
+    else currentDifficulty = 'hard';
+
     onChartLoaded();
   }
 

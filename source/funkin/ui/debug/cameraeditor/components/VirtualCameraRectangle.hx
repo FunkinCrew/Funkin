@@ -553,7 +553,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
       // Apply classic ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
       final adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
-      final easeProgress = 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed);
+      final easeProgress = (1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed)).clamp(0, 1);
 
       vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, easeProgress);
       vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, easeProgress);
@@ -568,8 +568,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     {
       // Handle regular easing
       var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
-      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
-      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase(cameraFollowElapsed / (cameraFollowDuration * 1000)));
+      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x,
+        cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
+      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y,
+        cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
 
       if (cameraFollowElapsed >= cameraFollowDuration * 1000)
       {
@@ -581,7 +583,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     if (cameraZoomEase != null)
     {
       var cameraZoomElapsed = Conductor.instance.songPosition - cameraZoomTween;
-      zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, cameraZoomEase(cameraZoomElapsed / (cameraZoomDuration * 1000)));
+      zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, cameraZoomEase((cameraZoomElapsed / (cameraZoomDuration * 1000)).clamp(0, 1)));
 
       if (cameraZoomElapsed >= cameraZoomDuration * 1000)
       {
