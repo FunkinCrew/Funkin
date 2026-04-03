@@ -131,6 +131,15 @@ class TimelineViewport extends Box
     refreshLayout();
   }
 
+  public function refreshBlockVisuals(targetSelected:Bool = false):Void
+  {
+    for (block in eventBlocks)
+    {
+      if (targetSelected && !block.selected) continue;
+      block.updateVisuals();
+    }
+  }
+
   public function getLayerIndex(layerName:String):Int
   {
     for (i in 0...layers.length)
