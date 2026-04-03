@@ -149,6 +149,11 @@ class ZoomCameraContainer extends VBox
     cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
   }
 
+  function updateBlockVisuals():Void
+  {
+    cameraEditorState.timeline.viewport.refreshBlockVisuals(true);
+  }
+
   /**
    * Loads the data for the currently selected event into the UI.
    */
@@ -184,6 +189,7 @@ class ZoomCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -232,6 +238,7 @@ class ZoomCameraContainer extends VBox
 
     cameraEditorState.selectedSongEvent.set('duration', value);
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -265,6 +272,7 @@ class ZoomCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -289,6 +297,7 @@ class ZoomCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   override public function destroy():Void

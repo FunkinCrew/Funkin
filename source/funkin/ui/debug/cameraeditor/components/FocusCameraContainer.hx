@@ -145,6 +145,11 @@ class FocusCameraContainer extends VBox
     cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
   }
 
+  function updateBlockVisuals():Void
+  {
+    cameraEditorState.timeline.viewport.refreshBlockVisuals(true);
+  }
+
   /**
    * Loads the data for the currently selected event into the UI.
    */
@@ -185,6 +190,7 @@ class FocusCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -239,6 +245,7 @@ class FocusCameraContainer extends VBox
 
     cameraEditorState.selectedSongEvent.set('duration', value);
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -272,6 +279,7 @@ class FocusCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   /**
@@ -296,6 +304,7 @@ class FocusCameraContainer extends VBox
 
     updateEasePreview();
     updateCameraPreview();
+    updateBlockVisuals();
   }
 
   override public function destroy():Void
