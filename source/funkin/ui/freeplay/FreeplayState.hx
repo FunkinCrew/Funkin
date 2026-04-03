@@ -771,7 +771,6 @@ class FreeplayState extends MusicBeatSubState
 
         clearBoxSprite.visible = true;
         txtCompletion.visible = true;
-        intendedCompletion = 0;
 
         new FlxTimer().start(1.5 / 24, function(bold)
         {
