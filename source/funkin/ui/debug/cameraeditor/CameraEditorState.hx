@@ -1400,6 +1400,10 @@ class CameraEditorState extends UIState implements ConsoleClass
           if (btn == DialogButton.YES)
           {
             saveBackup();
+
+            // LMAO this prevents infinite recursion.
+            this.saved = true;
+
             onMenubarExit(null);
           }
         });
