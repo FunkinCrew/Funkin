@@ -422,11 +422,6 @@ class Preferences
     #end
   }
 
-  // Lime already implements their own little framerate cap, so we can just use that
-  // This also gets set in the init function in Main.hx, since we need to definitely override it
-  public static var lockedFramerateFunction = untyped js.Syntax.code("window.requestAnimationFrame");
-  #end
-
   public static var enabledDiscordRPC(get, set):Bool;
 
   static function get_enabledDiscordRPC():Bool
