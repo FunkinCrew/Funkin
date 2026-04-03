@@ -1398,14 +1398,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (exitConfirmDialog == null)
       {
-        exitConfirmDialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure? ", "Leave Editor",
-          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton) {
-            exitConfirmDialog = null;
-            if (btn == DialogButton.YES)
-            {
-              saveBackup();
-              onMenubarExit(null);
-            }
+        exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor',
+          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+        {
+          exitConfirmDialog = null;
+          if (btn == DialogButton.YES)
+          {
+            saveBackup();
+
+            // LMAO this prevents infinite recursion.
+            this.saved = true;
+
+            onMenubarExit(null);
+          }
         });
       }
 
