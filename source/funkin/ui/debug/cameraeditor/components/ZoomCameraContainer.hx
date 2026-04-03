@@ -154,11 +154,9 @@ class ZoomCameraContainer extends VBox
    */
   public function loadCurrentEventData():Void
   {
-    var eventMode = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
-    zoomCameraMode.selectItemBy(function(data):Bool
-    {
-      return data.id == eventMode;
-    });
+    var modeType = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
+    if (modeType == 'absolute') zoomCameraMode.selectedIndex = 0;
+    else if (modeType == 'direct') zoomCameraMode.selectedIndex = 1;
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
     zoomCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? ZoomCameraSongEvent.DEFAULT_DURATION;
