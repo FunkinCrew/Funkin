@@ -267,7 +267,7 @@ class Paths implements ConsoleClass
    * @param validate Whether to validate that the file exists
    * @return An AssetPath
    */
-  public static function inst(song:String, suffix:String = '', withExtension:Bool = true, validate:Bool = true):AssetPath
+  public static function inst(song:String, suffix:String = '', validate:Bool = true):AssetPath
   {
     return file('gameplay/songs/${song.toLowerCase()}/Inst$suffix', Constants.EXT_SOUND, validate);
   }
@@ -346,6 +346,26 @@ class AssetPath
   {
     if (this.ext == null || this.ext == '') return '${this.id}';
     return '${this.id}.${this.ext}';
+  }
+
+  /**
+   * The asset's file name, with the extension and without the path.
+   */
+  public var fileName(get, never):String;
+
+  function get_fileName():String
+  {
+    return Path.withoutDirectory(this.path);
+  }
+
+  /**
+   * The asset's file name, without the extension or the path.
+   */
+  public var fileBareName(get, never):String;
+
+  function get_fileBareName():String
+  {
+    return Path.withoutExtension(Path.withoutDirectory(this.path));
   }
 
   // Only construct from Paths.hx
