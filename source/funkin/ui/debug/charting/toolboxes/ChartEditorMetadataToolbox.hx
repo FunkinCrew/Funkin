@@ -75,7 +75,9 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     inputSongId.onChange = function(event:UIEvent)
     {
-      var valid:Bool = event.target.text != null && event.target.text != '' && !ChartManifestData.invalidIdRegex.match(event.target.text);
+      var valid:Bool = event.target.text != null
+        && event.target.text != ''
+        && !ChartManifestData.INVALID_ID_REGEX.match(event.target.text);
 
       if (valid)
       {
