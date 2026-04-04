@@ -235,26 +235,14 @@ class CameraEditorImportExportHandler
     var instTrackIds:Array<String> = state.audioInstTrackData.keys().array();
     for (key in instTrackIds)
     {
-      if (key == 'default')
+      var instAudioData:Null<Bytes> = state.audioInstTrackData.get(key);
+      if (instAudioData == null)
       {
-        var data:Null<Bytes> = state.audioInstTrackData.get('default');
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
+        trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
+        continue;
       }
-      else
-      {
-        var data:Null<Bytes> = state.audioInstTrackData.get(key);
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
-      }
+      var instPath:String = state.songManifestData.getInstFileName(key);
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes(instPath, instAudioData));
     }
 
     return zipEntries;
@@ -270,15 +258,16 @@ class CameraEditorImportExportHandler
     var zipEntries = [];
 
     var vocalTrackIds:Array<String> = state.audioVocalTrackData.keys().array();
-    for (key in state.audioVocalTrackData.keys())
+    for (key in vocalTrackIds)
     {
-      var data:Null<Bytes> = state.audioVocalTrackData.get(key);
-      if (data == null)
+      var vocalAudioData:Null<Bytes> = state.audioVocalTrackData.get(key);
+      if (vocalAudioData == null)
       {
         trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
         continue;
       }
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
+      var vocalPath:String = state.songManifestData.getVocalsFileName(key);
+      zipEntries.push(FileUtil.makeZIPEntryFromBytes(vocalPath, vocalAudioData));
     }
 
     return zipEntries;
