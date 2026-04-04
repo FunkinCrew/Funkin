@@ -10,8 +10,15 @@ class ChartManifestData
    */
   public static final CHART_MANIFEST_DATA_VERSION:thx.semver.Version = '1.0.0';
 
-  public static final invalidIdRegex:EReg = ~/[\/\\:*?"<>|]/g;
+  /**
+   * A regex pattern to match invalid characters in song IDs for sanitization.
+   */
+  public static final INVALID_ID_REGEX:EReg = ~/[\/\\:*?"<>|]/g;
 
+  /**
+   * The semantic version of this chart manifest data.
+   * Used for compatibility checks when loading from JSON.
+   */
   @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:thx.semver.Version;
 
@@ -21,9 +28,10 @@ class ChartManifestData
    */
   public var songId(default, set):String;
 
-  public function set_songId(value:String):String
+  function set_songId(value:String):String
   {
-    return songId = invalidIdRegex.replace(value.trim(), '');
+    songId = INVALID_ID_REGEX.replace(value.trim(), '');
+    return songId;
   }
 
   public function new(songId:String)
@@ -32,6 +40,11 @@ class ChartManifestData
     this.songId = songId;
   }
 
+  /**
+   * Determine the relative filename of the chart metadata file for a given variation.
+   * @param variation The song variation, if any.
+   * @return The expected file name.
+   */
   public function getMetadataFileName(?variation:String):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
@@ -39,6 +52,11 @@ class ChartManifestData
     return '$songId-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_DATA}';
   }
 
+  /**
+   * Determine the relative filename of the chart data file for a given variation.
+   * @param variation The song variation, if any.
+   * @return The expected file name.
+   */
   public function getChartDataFileName(?variation:String):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
@@ -46,22 +64,40 @@ class ChartManifestData
     return '$songId-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_DATA}';
   }
 
+  /**
+   * Get the expected file name for the character's vocal track for a given variation.
+   * @param charId The character vocal ID. Make sure to get this from `playData.characters.instrumental`!
+   * @param variation The song variation, if any.
+   * @return The expected file name.
+   */
   public function getInstFileName(?variation:String):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
-    return 'Inst${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    var instId:String = variation == Constants.DEFAULT_VARIATION ? '' : '-$variation';
+    // Get the file name as it would be in the assets folder.
+    return funkin.assets.Paths.inst(this.songId, instId, false).fileName;
   }
 
+  /**
+   * Get the expected file name for the character's vocal track for a given variation.
+   * @param charId The character vocal ID. Make sure to get this from `playData.characters.playerVocals` or `playData.characters.opponentVocals`!
+   * @param variation The song variation, if any.
+   * @return The expected file name.
+   */
   public function getVocalsFileName(charId:String, ?variation:String):String
   {
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
-    return 'Voices-$charId${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.${Constants.EXT_SOUND}';
+    var vocalId:String = variation == Constants.DEFAULT_VARIATION ? '-$charId' : '-$charId-$variation';
+    // Get the file name as it would be in the assets folder.
+    return funkin.assets.Paths.voices(this.songId, vocalId, false).fileName;
   }
 
   /**
    * Serialize this ChartManifestData into a JSON string.
+   *
+   * @param pretty Whether to format the JSON with indentation and newlines.
    * @return The JSON string.
    */
   public function serialize(pretty:Bool = true):String
@@ -73,11 +109,16 @@ class ChartManifestData
     return writer.write(this, pretty ? ' ' : null);
   }
 
-  public function updateVersionToLatest():Void
+  function updateVersionToLatest():Void
   {
     this.version = CHART_MANIFEST_DATA_VERSION;
   }
 
+  /**
+   * Parse a JSON-serialized ChartManifestData from a string.
+   * @param contents The JSON string to parse.
+   * @return The deserialized ChartManifestData, or `null` if parsing failed.
+   */
   public static function deserialize(contents:String):Null<ChartManifestData>
   {
     var parser = new json2object.JsonParser<ChartManifestData>();
