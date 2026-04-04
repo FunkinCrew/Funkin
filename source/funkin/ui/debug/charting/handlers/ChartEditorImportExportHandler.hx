@@ -22,15 +22,21 @@ import thx.semver.Version as SemverVersion;
 @:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
+  /**
+   * The local file path to save Chart Editor backups to.
+   */
   public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
    * Fetch's a song's existing chart and audio and loads it, replacing the current song.
+   *
+   * @param state The current chart editor state.
+   * @param songId The internal song ID to load. This is the same as the song's folder name in the assets/songs directory.
+   * @param targetSongDifficulty The difficulty to select after loading the song. If null, it will default to the first available difficulty.
+   * @param targetSongVariation The variation to select after loading the song. If null, it will default to the first available variation.
    */
   public static function loadSongAsTemplate(state:ChartEditorState, songId:String, targetSongDifficulty:String = null, ?targetSongVariation:String):Void
   {
-    trace('===============START');
-
     var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: targetSongVariation});
 
     if (song == null) return;
@@ -127,14 +133,15 @@ class ChartEditorImportExportHandler
     {
       if (metadata.variation == state.selectedVariation) state.success('Success', 'Loaded song (${metadata.songName})');
     }
-
-    trace('===============END');
   }
 
   /**
    * Loads a chart from parsed song metadata and chart data into the editor.
+   *
+   * @param state The current chart editor state.
    * @param newSongMetadata The song metadata to load.
    * @param newSongChartData The song chart data to load.
+   * @param newSongManifestData The song manifest data to load.
    */
   public static function loadSong(state:ChartEditorState, newSongMetadata:Map<String, SongMetadata>, newSongChartData:Map<String, SongChartData>,
       ?newSongManifestData:ChartManifestData):Void
@@ -296,16 +303,14 @@ class ChartEditorImportExportHandler
         if (playerVocalsFileBytes == null)
         {
           output.push('Could not find vocals ($playerVocalsFileName).');
-          // throw 'Could not find vocals ($playerVocalsFileName).';
         }
         else if (!ChartEditorAudioHandler.loadVocalsFromBytes(state, playerVocalsFileBytes, voice, instId))
         {
           output.push('Could not parse vocals ($playerCharId).');
-          // throw 'Could not parse vocals ($playerCharId).';
         }
       }
 
-      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? "dad";
+      var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? 'dad';
       var opponentVoiceList:Array<String> = variMetadata?.playData.characters?.opponentVocals ?? [opponentCharId];
       for (voice in opponentVoiceList)
       {
@@ -406,7 +411,7 @@ class ChartEditorImportExportHandler
           trace('  Loaded vocals: $vocalTrackKey');
         }
 
-        var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? "dad";
+        var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? 'dad';
         var opponentVoiceList:Array<String> = variMetadata?.playData.characters?.opponentVocals ?? [opponentCharId];
         for (voice in opponentVoiceList)
         {
@@ -442,7 +447,7 @@ class ChartEditorImportExportHandler
         trace('  Loaded vocals: $playerVocalsFileName');
       }
 
-      var opponentCharId:Null<String> = variMeta?.playData?.characters?.opponent ?? "dad";
+      var opponentCharId:Null<String> = variMeta?.playData?.characters?.opponent ?? 'dad';
       var opponentVoiceList:Array<String> = variMeta?.playData.characters?.opponentVocals ?? [opponentCharId];
       for (voice in opponentVoiceList)
       {
@@ -523,7 +528,7 @@ class ChartEditorImportExportHandler
     var stat = sys.FileSystem.stat(latestBackupPath);
     var sizeInMB = (stat.size / BYTES_PER_MB).round(3);
 
-    return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
+    return 'Full Name: ' + latestBackupName + '\nLast Modified: ' + stat.mtime.toString() + '\nSize: ' + sizeInMB + ' MB';
     #else
     return null;
     #end
