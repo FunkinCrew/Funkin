@@ -84,7 +84,7 @@ class CreditsState extends MusicBeatState
 
     #if ios
     var fix = new FlxText();
-    fix.font = CREDITS_FONT;
+    fix.font = funkin.assets.Paths.font('ui/fonts/Inconsolata Black');
     fix.draw();
     #end
 
