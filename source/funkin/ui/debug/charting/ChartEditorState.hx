@@ -3129,7 +3129,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectOpponent.y = GRID_INITIAL_Y_POS - NOTE_SELECT_BUTTON_HEIGHT;
     buttonSelectOpponent.width = GRID_SIZE * 4;
     buttonSelectOpponent.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectOpponent.tooltip = 'Click to set selection to all notes on this side./nShift-click to add all notes on this side to selection.';
+    buttonSelectOpponent.tooltip = 'Click to set selection to all notes on this side.\nShift-click to add all notes on this side to selection.';
     buttonSelectOpponent.zIndex = 110;
     add(buttonSelectOpponent);
 
@@ -3154,7 +3154,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectPlayer.y = buttonSelectOpponent.y;
     buttonSelectPlayer.width = GRID_SIZE * 4;
     buttonSelectPlayer.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectPlayer.tooltip = 'Click to set selection to all notes on this side./nShift-click to add all notes on this side to selection.';
+    buttonSelectPlayer.tooltip = 'Click to set selection to all notes on this side.\nShift-click to add all notes on this side to selection.';
     buttonSelectPlayer.zIndex = 110;
     add(buttonSelectPlayer);
 
@@ -3180,7 +3180,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     buttonSelectEvent.y = buttonSelectPlayer.y;
     buttonSelectEvent.width = GRID_SIZE;
     buttonSelectEvent.height = NOTE_SELECT_BUTTON_HEIGHT;
-    buttonSelectEvent.tooltip = 'Click to set selection to all events./nShift-click to add all events to selection.';
+    buttonSelectEvent.tooltip = 'Click to set selection to all events.\nShift-click to add all events to selection.';
     buttonSelectEvent.zIndex = 110;
     add(buttonSelectEvent);
 
