@@ -160,7 +160,7 @@ class ZoomCameraContainer extends VBox
   public function loadCurrentEventData():Void
   {
     var modeType = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
-    if (modeType == 'absolute') zoomCameraMode.selectedIndex = 0;
+    if (modeType == 'stage') zoomCameraMode.selectedIndex = 0;
     else if (modeType == 'direct') zoomCameraMode.selectedIndex = 1;
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
@@ -219,7 +219,7 @@ class ZoomCameraContainer extends VBox
     }
 
     var index = zoomCameraMode.selectedIndex;
-    var value = 'absolute';
+    var value = 'stage';
     if (index == 1) value = 'direct';
 
     trace('Zoom Camera: Mode changed to ' + value);
