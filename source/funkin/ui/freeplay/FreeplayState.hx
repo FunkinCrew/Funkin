@@ -396,6 +396,12 @@ class FreeplayState extends MusicBeatSubState
 
     if (fromResultsParams != null)
     {
+      if (prepForNewRank && rememberedSongId == null)
+      {
+        // Set rememberedSongId to last played song if accessed from the RANDOM option
+        rememberedSongId = fromResultsParams.songId;
+      }
+    
       @:privateAccess
       this._parentState._constructor = () ->
       {
