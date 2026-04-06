@@ -283,14 +283,12 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.scrollFactor.set();
     dipshitBlur.scrollFactor.set();
 
-    nametag.midpointX += cutoutSize;
+    nametag.midpoint.x += cutoutSize;
     add(nametag);
 
-    @:privateAccess
-    {
-      nametag.midpointY += 200;
-      FlxTween.tween(nametag, {midpointY: nametag.midpointY - 200}, 1, {ease: FlxEase.expoOut});
-    }
+    final initialMidpointY:Float = nametag.midpoint.y;
+    nametag.midpoint.y += 200;
+    FlxTween.tween(nametag.midpoint, {y: initialMidpointY}, 1, {ease: FlxEase.expoOut});
 
     nametag.scrollFactor.set();
 
