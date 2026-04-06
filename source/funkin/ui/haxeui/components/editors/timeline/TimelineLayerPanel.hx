@@ -18,8 +18,6 @@ class TimelineLayerPanel extends VBox
 {
   public var btnAddLayer:Image;
   public var btnRemoveLayer:Image;
-  public var buttonRow:HBox;
-
   public var _layerContainer:VBox;
 
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
@@ -80,12 +78,12 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
 
   override public function create():Void
   {
-    // Note: buttonRow is NOT added to the panel — EventTimeline extracts it into its own top row
-    _panel.buttonRow = new HBox();
-    _panel.buttonRow.id = "layer-button-row";
-    _panel.buttonRow.percentWidth = 100;
-    _panel.buttonRow.customStyle.paddingLeft = 6;
-    _panel.buttonRow.customStyle.verticalAlign = "center";
+    var topSpacer = new HBox();
+    topSpacer.percentWidth = 100;
+    topSpacer.height = TimelineViewport.TOP_BAR_HEIGHT;
+    topSpacer.customStyle.backgroundColor = 0x1F1F1F;
+    topSpacer.customStyle.paddingLeft = 6;
+    topSpacer.customStyle.verticalAlign = "center";
 
     _panel.btnAddLayer = new Image();
     _panel.btnAddLayer.id = "btn-add-layer";
@@ -94,7 +92,8 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel.btnAddLayer.width = 20;
     _panel.btnAddLayer.height = 20;
     _panel.btnAddLayer.customStyle.cursor = "pointer";
-    _panel.buttonRow.addComponent(_panel.btnAddLayer);
+    _panel.btnAddLayer.customStyle.verticalAlign = "center";
+    topSpacer.addComponent(_panel.btnAddLayer);
 
     _panel.btnRemoveLayer = new Image();
     _panel.btnRemoveLayer.id = "btn-remove-layer";
@@ -104,7 +103,10 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel.btnRemoveLayer.height = 20;
     _panel.btnRemoveLayer.customStyle.cursor = "pointer";
     _panel.btnRemoveLayer.customStyle.marginLeft = 4;
-    _panel.buttonRow.addComponent(_panel.btnRemoveLayer);
+    _panel.btnRemoveLayer.customStyle.verticalAlign = "center";
+    topSpacer.addComponent(_panel.btnRemoveLayer);
+
+    _panel.addComponent(topSpacer);
 
     _panel._layerContainer = new VBox();
     _panel._layerContainer.id = "layer-container";
