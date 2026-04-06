@@ -28,7 +28,7 @@ class TimelineLayerPanel extends VBox
     {
       var row = new HBox();
       row.percentWidth = 100;
-      row.height = TimelineViewport.LAYER_HEIGHT;
+      row.height = TimelineViewport.LAYER_HEIGHT - 2;
       row.customStyle.backgroundColor = 0x3A3A3A;
       row.customStyle.verticalAlign = "center";
       row.customStyle.paddingLeft = 6;
@@ -80,7 +80,7 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
   {
     var topSpacer = new HBox();
     topSpacer.percentWidth = 100;
-    topSpacer.height = TimelineViewport.TOP_BAR_HEIGHT;
+    topSpacer.height = TimelineViewport.TOP_BAR_HEIGHT + 1;
     topSpacer.customStyle.backgroundColor = 0x1F1F1F;
     topSpacer.customStyle.paddingLeft = 6;
     topSpacer.customStyle.verticalAlign = "center";
@@ -111,7 +111,7 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel._layerContainer = new VBox();
     _panel._layerContainer.id = "layer-container";
     _panel._layerContainer.percentWidth = 100;
-    _panel._layerContainer.customStyle.verticalSpacing = 0;
+    _panel._layerContainer.customStyle.verticalSpacing = 2;
     _panel._layerContainer.customStyle.horizontalSpacing = 0;
     _panel.addComponent(_panel._layerContainer);
   }
