@@ -2161,8 +2161,8 @@ class Project extends HXProject
 
         if (haxe.io.Path.isAbsolute(devPath))
         {
-          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
-          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
+          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".bright_cyan());
+          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).bright_blue());
         }
         else
         {
