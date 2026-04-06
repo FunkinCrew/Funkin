@@ -5,8 +5,7 @@ import extension.admob.Admob;
 import extension.admob.AdmobBannerAlign;
 import extension.admob.AdmobBannerSize;
 import extension.admob.AdmobEvent;
-import flixel.FlxG;
-import funkin.play.cutscene.VideoCutscene;
+import lime.media.AudioManager;
 
 /**
  * Provides utility functions for working with admob advertisements.
@@ -83,12 +82,10 @@ class AdMobUtil
 
             Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
           }
-        #if ios
-        case AdmobEvent.INTERSTITIAL_LOADED:
-          lime.media.AudioManager.suspend();
+        case AdmobEvent.INTERSTITIAL_SHOWED:
+          AudioManager.suspend();
         case AdmobEvent.INTERSTITIAL_DISMISSED:
-          lime.media.AudioManager.resume();
-        #end
+          AudioManager.resume();
         default:
       }
 
