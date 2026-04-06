@@ -140,9 +140,6 @@ private class TimelineBuilder extends CompositeBuilder
     topRow.id = "timeline-top-row";
     topRow.percentWidth = 100;
     topRow.customStyle.backgroundColor = 0x3A3A3A;
-    _timeline.layerPanel.buttonRow.percentWidth = null;
-    _timeline.layerPanel.buttonRow.width = EventTimeline.LAYER_PANEL_WIDTH;
-    topRow.addComponent(_timeline.layerPanel.buttonRow);
 
     _timeline.toolbar = new TimelineToolbar();
     _timeline.toolbar.percentWidth = 100;
