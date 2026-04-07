@@ -194,6 +194,8 @@ private class TimelineBuilder extends CompositeBuilder
     _timeline.viewport.percentHeight = 100;
     contentRow.addComponent(_timeline.viewport);
 
+    _timeline.layerPanel.viewport = _timeline.viewport;
+
     _timeline.addComponent(contentRow);
   }
 }
@@ -241,17 +243,26 @@ private class EventTimelineEvents extends Events
   {
     var colorIdx = _timeline.viewport.layers.length % TimelineLayerData.DEFAULT_LAYER_COLORS.length;
     var newLayer = new TimelineLayerData('Layer ${_timeline.viewport.layers.length + 1}', TimelineLayerData.DEFAULT_LAYER_COLORS[colorIdx]);
-    _timeline.viewport.layers.push(newLayer);
-    _timeline.layerPanel.rebuildLayers(_timeline.viewport.layers);
-    _timeline.viewport.refreshLayout();
+    var insertIdx = _timeline.viewport.selectedLayerIndex + 1;
+
+    var addEvent = new TimelineEvent(TimelineEvent.LAYER_ADDED);
+    addEvent.layerData = newLayer;
+    addEvent.layerIndex = insertIdx;
+    _timeline.dispatch(addEvent);
   }
 
   function _onRemoveLayer(_:MouseEvent):Void
   {
     if (_timeline.viewport.layers.length <= 1) return;
-    _timeline.viewport.layers.pop();
-    _timeline.layerPanel.rebuildLayers(_timeline.viewport.layers);
-    _timeline.viewport.refreshLayout();
+
+    var selectedIdx = _timeline.viewport.selectedLayerIndex;
+    var layer = _timeline.viewport.layers[selectedIdx];
+    if (layer.name == "Default") return;
+
+    var removeEvent = new TimelineEvent(TimelineEvent.LAYER_REMOVED);
+    removeEvent.layerData = layer;
+    removeEvent.layerIndex = selectedIdx;
+    _timeline.dispatch(removeEvent);
   }
 
   function _onZoomChange(_:UIEvent):Void

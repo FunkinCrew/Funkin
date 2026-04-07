@@ -51,10 +51,14 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.debug.cameraeditor.commands.AddEventCommand;
+import funkin.ui.debug.cameraeditor.commands.AddLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
+import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
+import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
+import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
 import funkin.ui.debug.cameraeditor.components.WelcomeDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
@@ -421,6 +425,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public var exitConfirmDialog:Dialog;
 
+  var deleteLayerConfirmDialog:Dialog;
+
   /**
    * The properties panel on the right side.
    * Holds the properties container, which gets swapped when a different event type is selected.
@@ -559,6 +565,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     addEventMenu = new AddEventMenu(function(eventData)
     {
+      var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
+      var raw:SongEventDataRaw = eventData;
+      raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
+
       var cmd = new AddEventCommand(eventData);
       CameraEditorCommandHandler.performCommand(this, cmd);
       selectedSongEvent = eventData;
@@ -1084,6 +1094,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     loadCurrentInstrumentalAndVocals();
     buildStage();
     updateWindowTitle();
+    timeline.viewport.layers = [];
+    timeline.viewport.selectedLayerIndex = 0;
     loadTimeline();
   }
 
@@ -1111,13 +1123,55 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
     {
-      var raw:SongEventDataRaw = e.eventData;
-      var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
+      var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
-    timeline.toolbar.findComponent("btnTogglePlayback").registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
+    timeline.toolbar.findComponent('btnTogglePlayback').registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
+
+    timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
+    {
+      var cmd = new AddLayerCommand(e.layerData, e.layerIndex);
+      CameraEditorCommandHandler.performCommand(this, cmd);
+    });
+
+    timeline.registerEvent(TimelineEvent.LAYER_REMOVED, function(e:TimelineEvent)
+    {
+      var layerName:String = e.layerData.name;
+
+      // note/todo: should find a way to get how many events are in each layer easier than this
+      var eventCount:Int = 0;
+      for (event in currentSongChartData.events)
+      {
+        var editorLayer = event.editorLayer ?? "Default";
+        if (editorLayer == layerName) eventCount++;
+      }
+
+      if (eventCount > 0)
+      {
+        if (deleteLayerConfirmDialog == null)
+        {
+          var dialog = new DeleteLayerConfirmDialog(layerName, eventCount,
+            () -> {
+              var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
+              CameraEditorCommandHandler.performCommand(this, cmd);
+            },
+            () -> {
+              var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
+              CameraEditorCommandHandler.performCommand(this, cmd);
+            });
+          dialog.showDialog(true);
+          deleteLayerConfirmDialog = dialog;
+          dialog.onDialogClosed = (_) -> deleteLayerConfirmDialog = null;
+        }
+      }
+      else
+      {
+        var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
+        CameraEditorCommandHandler.performCommand(this, cmd);
+      }
+    });
   }
 
   /**
