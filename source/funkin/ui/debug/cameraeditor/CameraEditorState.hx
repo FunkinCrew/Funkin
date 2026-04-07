@@ -137,7 +137,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var vCamDebug:FunkinSprite = null;
 
   var cachedEventIndex = 0;
-  var cachedNoteIndex = 0;
 
   function get_currentSongMetadata():Null<SongMetadata>
   {
@@ -627,7 +626,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     var dad:BaseCharacter = currentStage.getDad();
     var bf:BaseCharacter = currentStage.getBoyfriend();
 
-    for (i in cachedNoteIndex...notes.length)
+    for (i in 0...notes.length)
     {
       var note = notes[i];
       if (note.time > conductorInUse.songPosition || note.time + note.length < previousNoteTime) continue;
@@ -639,13 +638,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (note.length > 0 && note.time < previousNoteTime)
         {
+          // hold note trigger
           char.holdTimer = 0;
           continue;
         }
         playSingAnimation(note);
       }
-
-      cachedNoteIndex = i + 1;
     }
 
     previousNoteTime = conductorInUse.songPosition;
@@ -1301,20 +1299,6 @@ class CameraEditorState extends UIState implements ConsoleClass
         playSingAnimation(latestBFNote);
         if (latestBFNote.length == 0) bfShouldKeepSinging = latestBFNote.time + 300 > position;
         else if (latestBFNote.length > 0) bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
-      }
-
-      if (latestDadNote != null && latestBFNote != null)
-      {
-        var latestNote = latestDadNote.time > latestBFNote.time ? latestDadNote : latestBFNote;
-        cachedNoteIndex = notes.indexOf(latestNote);
-      }
-      else if (latestDadNote != null)
-      {
-        cachedNoteIndex = notes.indexOf(latestDadNote);
-      }
-      else if (latestBFNote != null)
-      {
-        cachedNoteIndex = notes.indexOf(latestBFNote);
       }
     }
 
