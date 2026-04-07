@@ -15,14 +15,12 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
-import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import funkin.ui.debug.charting.util.FNFCData;
 
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
 class UploadChartDialog extends Dialog
 {
   var locked:Bool = false;
-
   var cameraEditorState:CameraEditorState = null;
 
   public function new(state:CameraEditorState)
@@ -33,14 +31,16 @@ class UploadChartDialog extends Dialog
 
     this.dialogCancel.onClick = (_) -> this.hideDialog(DialogButton.CANCEL);
 
-    this.chartBox.onMouseOver = (_) -> {
+    this.chartBox.onMouseOver = (_) ->
+    {
       if (locked) return;
       this.chartBox.swapClass('upload-bg', 'upload-bg-hover');
 
       Cursor.cursorMode = Pointer;
     }
 
-    this.chartBox.onMouseOut = (_) -> {
+    this.chartBox.onMouseOut = (_) ->
+    {
       if (locked) return;
       this.chartBox.swapClass('upload-bg-hover', 'upload-bg');
 
@@ -75,18 +75,14 @@ class UploadChartDialog extends Dialog
     if (this.locked) return;
 
     this.lock();
-    // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-    #if !mac
-    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
-    #else
-    FileUtil.browseForBinaryFile('Open Chart', null, onSelectFile, onCancelBrowse);
-    #end
+
+    FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
   }
 
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
     this.unlock();
 
