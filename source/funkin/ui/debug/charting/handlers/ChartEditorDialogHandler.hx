@@ -125,9 +125,7 @@ class ChartEditorDialogHandler
   {
     var charData:SongCharacterData = state.currentSongMetadata.playData.characters;
 
-    var charIdsForVocals:Array<String> = [charData.player, charData.opponent];
-
-    var dialog = ChartEditorUploadVocalsDialog.build(state, charIdsForVocals, closable);
+    var dialog = ChartEditorUploadVocalsDialog.build(state, charData.player, charData.opponent, closable);
 
     dialog.zIndex = 1000;
     state.isHaxeUIDialogOpen = true;
@@ -616,6 +614,10 @@ class ChartEditorDialogHandler
 
     newSongMetadata.variation = targetVariation;
     newSongMetadata.playData.difficulties = (erect) ? ['erect', 'nightmare'] : ['easy', 'normal', 'hard'];
+
+    // Tell the game not to load any vocal tracks until they get uploaded.
+    newSongMetadata.playData.characters.opponentVocals = [];
+    newSongMetadata.playData.characters.playerVocals = [];
 
     var inputSongName:Null<TextField> = dialog.findComponent('inputSongName', TextField);
     if (inputSongName == null) throw 'Could not locate inputSongName TextField in Song Metadata dialog';
