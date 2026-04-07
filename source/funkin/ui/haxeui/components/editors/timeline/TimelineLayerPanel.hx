@@ -7,6 +7,7 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.CompositeBuilder;
+import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
 @:composite(TimelineLayerPanelBuilder)
@@ -19,19 +20,36 @@ class TimelineLayerPanel extends VBox
   public var btnAddLayer:Image;
   public var btnRemoveLayer:Image;
   public var _layerContainer:VBox;
+  public var viewport:TimelineViewport;
 
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
   {
     _layerContainer.removeAllComponents();
 
-    for (layer in layers)
+    for (i in 0...layers.length)
     {
+      var layer = layers[i];
+      var layerIdx = i;
+
       var row = new HBox();
       row.percentWidth = 100;
       row.height = TimelineViewport.LAYER_HEIGHT - 2;
       row.customStyle.backgroundColor = 0x3A3A3A;
       row.customStyle.verticalAlign = "center";
       row.customStyle.paddingLeft = 6;
+
+      if (viewport != null && viewport.selectedLayerIndex == i)
+        row.customStyle.backgroundColor = 0x505050;
+      else
+        row.customStyle.backgroundColor = 0x3A3A3A;
+
+      row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) -> {
+        if (viewport != null)
+        {
+          viewport.selectedLayerIndex = layerIdx;
+          rebuildLayers(viewport.layers);
+        }
+      });
 
       var swatch = new Box();
       swatch.width = 12;
