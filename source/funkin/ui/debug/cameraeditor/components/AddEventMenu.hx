@@ -11,7 +11,9 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.MenuEvent;
 import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.events.UIEvent;
+import haxe.ui.Toolkit;
 
+@:access(haxe.ui.core.Component)
 class AddEventMenu
 {
   static final MENU_WIDTH:Float = 150;
@@ -73,9 +75,46 @@ class AddEventMenu
     menu.registerEvent(MenuEvent.MENU_SELECTED, onMenuSelected);
     menu.registerEvent(UIEvent.CLOSE, function(_) { menu = null; });
 
+    // Hide before adding so we can measure without a visual flash
+    menu.handleVisibility(false);
     menu.left = screenX;
     menu.top = screenY;
     Screen.instance.addComponent(menu);
+    menu.validateNow();
+
+    // Edge detection
+    var menuW:Float = menu.actualComponentWidth;
+    var menuH:Float = menu.actualComponentHeight;
+    var scrW:Float = Screen.instance.width;
+    var scrH:Float = Screen.instance.height;
+
+    var left:Float = screenX;
+    var top:Float = screenY;
+
+    // Right edge: flip to left side of cursor
+    if (left + menuW > scrW) {
+      left = screenX - menuW;
+    }
+
+    // Bottom edge: clamp so menu bottom aligns with window bottom
+    if (top + menuH > scrH) {
+      top = scrH - menuH;
+    }
+
+    // Safety clamp to 0 if negative (e.g., menu larger than screen)
+    if (left < 0) left = 0;
+    if (top < 0) top = 0;
+
+    menu.left = left;
+    menu.top = top;
+
+    // Reveal on next frame (matches showSubMenu pattern)
+    var menuRef = menu;
+    Toolkit.callLater(() -> {
+      if (menuRef != null) {
+        menuRef.handleVisibility(true);
+      }
+    });
   }
 
   public function close():Void
