@@ -13,14 +13,15 @@ import funkin.play.song.Song;
 import thx.semver.Version as SemverVersion;
 
 /**
- * Utility functions for interacting with .FNFC files.
+ * Utility functions for interacting with `.fnfc` files.
  */
 @:nullSafety
 class FNFCUtil
 {
   /**
-   * Loads a song from
-   * @param fnfcPath The absolute file path to the .FNFC file to load.
+   * Loads a song from an `.fnfc` file at the given path.
+   * @param fnfcPath The absolute file path to the `.fnfc` file to load.
+   * @return A Song object containing the data from the `.fnfc` file, ready to be played in the Play State.
    */
   public static function loadSongFromFNFCPath(fnfcPath:String):Song
   {
