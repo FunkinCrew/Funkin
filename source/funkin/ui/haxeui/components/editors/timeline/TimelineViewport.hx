@@ -32,6 +32,7 @@ class TimelineViewport extends Box
   public var songPositionMs:Float;
   public var eventBlocks:Array<TimelineEventBlock> = [];
   public var layers:Array<TimelineLayerData> = [];
+  public var selectedLayerIndex:Int = 0;
   public var stepLengthMs:Float = 125.0;
   public var songLengthMs:Float = 0;
   public var beatsPerGroup:Int = 1;
@@ -503,6 +504,16 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       var deselectEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
       deselectEvent.eventData = null;
       _viewport.dispatch(deselectEvent);
+
+      var clickedLayer = _viewport.pixelYToLayerIndex(localY - TimelineViewport.TOP_BAR_HEIGHT);
+      if (clickedLayer != _viewport.selectedLayerIndex)
+      {
+        _viewport.selectedLayerIndex = clickedLayer;
+        var timeline = _viewport.findAncestor(EventTimeline);
+        if (timeline != null)
+          timeline.layerPanel.rebuildLayers(_viewport.layers);
+      }
+
       _dragMode = SEEKING;
       var clickMs = _viewport.pixelXToMs(localX);
       if (clickMs >= 0 && clickMs <= _viewport.songLengthMs)
