@@ -400,8 +400,10 @@ class ChartEditorImportExportHandler
           var playerVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
           var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
           if (playerVocalsFileBytes == null) continue;
-          vocals.set('${variation}-${voice}', playerVocalsFileBytes);
-          trace('  Loaded vocals: $playerVocalsFileName');
+
+          var vocalTrackKey:String = '$voice${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+          vocals.set(vocalTrackKey, playerVocalsFileBytes);
+          trace('  Loaded vocals: $vocalTrackKey');
         }
 
         var opponentCharId:Null<String> = variMetadata?.playData?.characters?.opponent ?? "dad";
@@ -411,8 +413,10 @@ class ChartEditorImportExportHandler
           var opponentVocalsFileName:String = manifest.getVocalsFileName(voice, variation);
           var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
           if (opponentVocalsFileBytes == null) continue;
-          vocals.set('${variation}-${voice}', opponentVocalsFileBytes);
-          trace('  Loaded vocals: $opponentVocalsFileName');
+
+          var vocalTrackKey:String = '$voice${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+          vocals.set(vocalTrackKey, opponentVocalsFileBytes);
+          trace('  Loaded vocals: $vocalTrackKey');
         }
       }
     }
@@ -434,7 +438,7 @@ class ChartEditorImportExportHandler
         var playerVocalsFileName:String = manifest.getVocalsFileName(voice, Constants.DEFAULT_VARIATION);
         var playerVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(playerVocalsFileName)?.data;
         if (playerVocalsFileBytes == null) continue;
-        vocals.set('${Constants.DEFAULT_VARIATION}-${voice}', playerVocalsFileBytes);
+        vocals.set(voice, playerVocalsFileBytes);
         trace('  Loaded vocals: $playerVocalsFileName');
       }
 
@@ -445,7 +449,7 @@ class ChartEditorImportExportHandler
         var opponentVocalsFileName:String = manifest.getVocalsFileName(voice, Constants.DEFAULT_VARIATION);
         var opponentVocalsFileBytes:Null<Bytes> = mappedFileEntries.get(opponentVocalsFileName)?.data;
         if (opponentVocalsFileBytes == null) continue;
-        vocals.set('${Constants.DEFAULT_VARIATION}-${voice}', opponentVocalsFileBytes);
+        vocals.set(voice, opponentVocalsFileBytes);
         trace('  Loaded vocals: $opponentVocalsFileName');
       }
     }
