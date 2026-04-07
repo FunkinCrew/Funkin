@@ -215,10 +215,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   // simple getter to remove bunch of `if (selectedSongEvent != null)` esque checks
   var isSelectingSongEvent(get, never):Bool;
 
-  inline function get_isSelectingSongEvent():Bool
-  {
-    return selectedSongEvent != null;
-  }
+  inline function get_isSelectingSongEvent():Bool return selectedSongEvent != null;
 
   /**
    * A list of previous working file paths.
@@ -1233,21 +1230,30 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     trace('Loading vocals');
 
-    var buildVocal:Null<String>->Null<Array<String>>->Void = function(character, vocals) {
-      var vocal = character;
-      if (vocals != null && vocals.length > 0) vocal = vocals[0];
-
-      var vocalData:Null<Bytes> = audioVocalTrackData.get('$currentVariation-$vocal');
-      if (vocalData != null)
+    var buildVocal:Null<Array<String>>->Void = (vocals:Null<Array<String>>) ->
+    {
+      for (voice in vocals)
       {
-        var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
-        currentVocals.push(vocalSound);
+        var variSuffix:String = currentVariation == Constants.DEFAULT_VARIATION ? '' : '-$currentVariation';
+        var vocalTrackKey:String = '$voice$variSuffix';
+
+        var vocalData:Null<Bytes> = audioVocalTrackData.get(vocalTrackKey);
+        if (vocalData != null)
+        {
+          var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
+          currentVocals.push(vocalSound);
+        }
+        else
+        {
+          trace('Missing vocal track "$vocalTrackKey" (available: ${audioVocalTrackData.keyValues()})');
+        }
       }
     };
 
-    var currentCharactersData:Null<SongCharacterData> = currentSongMetadata?.playData?.characters;
-    buildVocal(currentCharactersData?.player, currentCharactersData?.playerVocals);
-    buildVocal(currentCharactersData?.opponent, currentCharactersData?.opponentVocals);
+    var currentCharactersData:SongCharacterData = currentSongMetadata.playData.characters;
+    // Default to the character ID if the array is null, but NOT if the array is empty.
+    buildVocal(currentCharactersData.playerVocals ?? [currentCharactersData.player]);
+    buildVocal(currentCharactersData.opponentVocals ?? [currentCharactersData.opponent]);
 
     trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
     trace('    Vocals: ' + currentVocals.length + ' loaded');

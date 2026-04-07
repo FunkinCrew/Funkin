@@ -6737,7 +6737,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function switchToCurrentInstrumental():Void
   {
     // ChartEditorAudioHandler
-    this.switchToInstrumental(currentInstrumentalId, currentSongMetadata.playData.characters.player, currentSongMetadata.playData.characters.opponent);
+    this.switchToInstrumental(currentInstrumentalId);
   }
 
   public function updateGridHeight():Void
