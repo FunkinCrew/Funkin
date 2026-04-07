@@ -2,6 +2,7 @@ package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import haxe.ui.events.EventType;
 import haxe.ui.events.UIEvent;
 
@@ -15,8 +16,12 @@ class TimelineEvent extends UIEvent
   public static inline var SEEK:EventType<TimelineEvent> = "timelineSeek";
   public static inline var ZOOM_CHANGED:EventType<TimelineEvent> = "timelineZoomChanged";
   public static inline var ADD_EVENT_REQUESTED:EventType<TimelineEvent> = "timelineAddEventRequested";
+  public static inline var LAYER_ADDED:EventType<TimelineEvent> = "timelineLayerAdded";
+  public static inline var LAYER_REMOVED:EventType<TimelineEvent> = "timelineLayerRemoved";
 
   public var eventData:Null<SongEventData>;
+  public var layerData:Null<TimelineLayerData>;
+  public var layerIndex:Int = 0;
   public var oldTime:Float = 0;
   public var newTime:Float = 0;
   public var oldDuration:Float = 0;
@@ -46,6 +51,8 @@ class TimelineEvent extends UIEvent
     c.oldLayerName = oldLayerName;
     c.newLayerName = newLayerName;
     c.seekPositionMs = seekPositionMs;
+    c.layerData = layerData;
+    c.layerIndex = layerIndex;
     postClone(c);
     return c;
   }

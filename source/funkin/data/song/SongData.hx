@@ -1055,7 +1055,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 /**
  * Wrap SongEventData in an abstract so we can overload operators.
  */
-@:forward(time, eventKind, value, activated, getStepTime, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
+@:forward(time, eventKind, value, activated, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray,
   getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
