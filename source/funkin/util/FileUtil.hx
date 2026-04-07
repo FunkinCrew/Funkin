@@ -397,18 +397,15 @@ class FileUtil
   public static function saveStageAsFNFS(resources:Array<Entry>, ?onSave:(Array<String>) -> Void, ?onCancel:() -> Void, ?defaultPath:String,
       force:Bool = false):Bool
   {
-    // Create a ZIP file.
-    var zipBytes:Bytes = createZIPFromEntries(resources);
-    var onSave:(String) -> Void = function(path:String) {
+    saveFile('Save stage as FNFS...', createZIPFromEntries(resources), [FILE_FILTER_FNFS], function(path:String)
+    {
       trace('Saved FNFS file to "$path"');
 
       if (onSave != null)
       {
         onSave([path]);
       }
-    };
-    // Prompt the user to save the ZIP file.
-    saveFile(zipBytes, [FILE_FILTER_FNFS], onSave, onCancel, defaultPath, 'Save stage as FNFS...');
+    }, onCancel, defaultPath);
     return true;
   }
 

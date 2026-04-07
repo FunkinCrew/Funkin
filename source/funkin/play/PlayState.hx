@@ -3260,9 +3260,9 @@ class PlayState extends MusicBeatSubState
       var dad:String = currentStage?.getDad()?.characterId ?? '';
       FlxG.switchState(() -> new StageEditorState({
         targetStageId: currentStageId,
-        targetBfChar: bf,
-        targetGfChar: gf,
-        targetDadChar: dad
+        targetBfCharacter: bf,
+        targetGfCharacter: gf,
+        targetDadCharacter: dad
       }));
     }
     #end

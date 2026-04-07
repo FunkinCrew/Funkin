@@ -1,102 +1,43 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
-#if FEATURE_STAGE_EDITOR
-import haxe.ui.components.NumberStepper;
-import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.character.CharacterData.CharacterDataParser;
-import funkin.data.character.CharacterData;
-import funkin.util.SortUtil;
-import funkin.save.Save;
-import haxe.ui.components.Button;
-import haxe.ui.components.Slider;
-import haxe.ui.containers.menus.Menu;
-import haxe.ui.core.Screen;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+import funkin.play.character.BaseCharacter;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterData;
+import funkin.data.stage.StageData.StageDataCharacter;
+import funkin.util.SortUtil;
+import funkin.save.Save;
+import haxe.ui.core.Screen;
+import haxe.ui.components.Button;
+import haxe.ui.components.NumberStepper;
 import haxe.ui.containers.Grid;
+import haxe.ui.containers.menus.Menu;
 import haxe.ui.events.UIEvent;
 
-using StringTools;
-
 @:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
-class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
+class StageEditorCharacterToolbox extends StageEditorBaseToolbox
 {
-  public var charPosX:NumberStepper;
-  public var charPosY:NumberStepper;
-  public var charZIdx:NumberStepper;
-  public var charScale:NumberStepper;
-  public var charCamX:NumberStepper;
-  public var charCamY:NumberStepper;
-  public var charAlpha:NumberStepper;
-  public var charAngle:NumberStepper;
-  public var charScrollX:NumberStepper;
-  public var charScrollY:NumberStepper;
+  var linkedCharacter:Null<BaseCharacter> = null;
+  var inputCharacterPositionX:NumberStepper;
+  var inputCharacterPositionY:NumberStepper;
+  var inputCharacterScale:NumberStepper;
+  var inputCharacterZIndex:NumberStepper;
+  var inputCharacterCameraOffsetX:NumberStepper;
+  var inputCharacterCameraOffsetY:NumberStepper;
+  var inputCharacterScrollX:NumberStepper;
+  var inputCharacterScrollY:NumberStepper;
+  var inputCharacterAlpha:NumberStepper;
+  var inputCharacterAngle:NumberStepper;
+  var buttonCharacterSelection:Button;
+  var characterSelectionMenu:Menu;
+  var dataCharacter:Null<StageDataCharacter> = null;
 
-  var charType:Button;
-  var charMenu:StageEditorCharacterMenu;
-
-  override public function new(state:StageEditorState)
+  public function new(stageEditorState2:StageEditorState)
   {
-    super(state);
+    super(stageEditorState2);
 
-    // Numeric callbacks.
-    charPosX.onChange = charPosY.onChange = function(_)
-    {
-      repositionCharacter();
-    }
-
-    charZIdx.max = StageEditorState.MAX_Z_INDEX;
-    charZIdx.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.charGroups[
-        state.selectedChar.characterType
-      ].zIndex = Std.int(charZIdx.pos);
-      state.sortAssets();
-    }
-
-    charCamX.onChange = charCamY.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.charCamOffsets[
-        state.selectedChar.characterType
-      ] = [charCamX.pos ?? 0, charCamY.pos ?? 0];
-      state.updateMarkerPos();
-    }
-
-    charScale.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.selectedChar.setScale(state.selectedChar.getBaseScale() * charScale.pos);
-      repositionCharacter();
-    }
-
-    charAlpha.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.selectedChar.alpha = charAlpha.pos;
-    }
-
-    charAngle.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.selectedChar.angle = charAngle.pos;
-    }
-
-    charScrollX.onChange = charScrollY.onChange = function(_)
-    {
-      if (state.selectedChar == null) return;
-      state.selectedChar.scrollFactor.set(charScrollX.pos, charScrollY.pos);
-    }
-
-    // character button
-    charType.onClick = function(_)
-    {
-      charMenu = new StageEditorCharacterMenu(state, this);
-      Screen.instance.addComponent(charMenu);
-    }
-
-    refresh();
+    initialize();
 
     this.onDialogClosed = onClose;
   }
@@ -106,47 +47,130 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     stageEditorState.menubarItemWindowCharacter.selected = false;
   }
 
-  override public function refresh()
+  function initialize():Void
   {
-    var name = stageEditorState.selectedChar?.characterType;
-    var curChar = stageEditorState.selectedChar;
+    inputCharacterPositionX.onChange = inputCharacterPositionY.onChange = _ -> repositionCharacter();
 
-    charPosX.step = charPosY.step = stageEditorState.moveStep;
-    charCamX.step = charCamY.step = stageEditorState.moveStep;
-    charAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
+    inputCharacterScale.onChange = _ -> repositionCharacter();
 
-    // Always update the displays, since selectedChar is never null.
-
-    if (curChar != null)
+    inputCharacterZIndex.max = StageEditorState.MAX_Z_INDEX;
+    inputCharacterZIndex.onChange = event ->
     {
-      if (charPosX.pos != stageEditorState.charPos[name][0]) charPosX.pos = stageEditorState.charPos[name][0];
-      if (charPosY.pos != stageEditorState.charPos[name][1]) charPosY.pos = stageEditorState.charPos[name][1];
-      if (charZIdx.pos != stageEditorState.charGroups[name].zIndex) charZIdx.pos = stageEditorState.charGroups[name].zIndex;
-      if (charCamX.pos != stageEditorState.charCamOffsets[name][0]) charCamX.pos = stageEditorState.charCamOffsets[name][0];
-      if (charCamY.pos != stageEditorState.charCamOffsets[name][1]) charCamY.pos = stageEditorState.charCamOffsets[name][1];
-      if (charScale.pos != curChar.scale.x / curChar.getBaseScale()) charScale.pos = curChar.scale.x / curChar.getBaseScale();
-      if (charAlpha.pos != curChar.alpha) charAlpha.pos = curChar.alpha;
-      if (charAngle.pos != curChar.angle) charAngle.pos = curChar.angle;
-      if (charScrollX.pos != curChar.scrollFactor.x) charScrollX.pos = curChar.scrollFactor.x;
-      if (charScrollY.pos != curChar.scrollFactor.y) charScrollY.pos = curChar.scrollFactor.y;
+      if (linkedCharacter == null) return;
+      dataCharacter.zIndex = event.value;
+      linkedCharacter.zIndex = event.value;
+      stageEditorState.sortObjects();
     }
 
-    var prevText = charType.text;
-    var charData = CharacterDataParser.fetchCharacterData(curChar?.characterId);
-    charType.icon = (charData == null ? null : CharacterDataParser.getCharPixelIconAsset(curChar?.characterId));
-    charType.text = (charData == null ? "None" : charData.name.length > 6 ? '${charData.name.substr(0, 6)}.' : '${charData.name}');
+    inputCharacterCameraOffsetX.onChange = inputCharacterCameraOffsetY.onChange = _ ->
+    {
+      if (linkedCharacter == null) return;
+      dataCharacter.cameraOffsets = [
+        inputCharacterCameraOffsetX.pos,
+        inputCharacterCameraOffsetY.pos
+      ];
+      stageEditorState.updateVisuals();
+    }
 
-    if (prevText != charType.text) Screen.instance.removeComponent(charMenu);
+    inputCharacterScrollX.onChange = inputCharacterScrollY.onChange = _ ->
+    {
+      if (linkedCharacter == null) return;
+      dataCharacter.scroll = [inputCharacterScrollX.pos, inputCharacterScrollY.pos];
+      linkedCharacter.scrollFactor.set(inputCharacterScrollX.pos, inputCharacterScrollY.pos);
+    }
+
+    inputCharacterAlpha.onChange = event ->
+    {
+      if (linkedCharacter == null) return;
+      dataCharacter.alpha = event.value;
+      linkedCharacter.alpha = event.value;
+    }
+
+    inputCharacterAngle.onChange = event ->
+    {
+      if (linkedCharacter == null) return;
+      dataCharacter.angle = event.value;
+      linkedCharacter.angle = event.value;
+    }
+
+    buttonCharacterSelection.onClick = _ ->
+    {
+      if (linkedCharacter == null) return;
+      characterSelectionMenu = new StageEditorCharacterMenu(stageEditorState, this);
+      Screen.instance.addComponent(characterSelectionMenu);
+    }
+  }
+
+  public override function refresh():Void
+  {
+    linkedCharacter = stageEditorState.selectedCharacter;
+
+    inputCharacterPositionX.step = inputCharacterPositionY.step = stageEditorState.moveStep;
+    inputCharacterAngle.step = stageEditorState.angleStep;
+
+    // If there is no selected character, reset displays.
+    if (linkedCharacter == null)
+    {
+      inputCharacterPositionX.pos = 0;
+      inputCharacterPositionY.pos = 0;
+      inputCharacterScale.pos = 1;
+      inputCharacterZIndex.pos = 0;
+      inputCharacterCameraOffsetX.pos = 0;
+      inputCharacterCameraOffsetY.pos = 0;
+      inputCharacterScrollX.pos = 1;
+      inputCharacterScrollY.pos = 1;
+      inputCharacterAlpha.pos = 1;
+      inputCharacterAngle.pos = 0;
+
+      buttonCharacterSelection.icon = null;
+      buttonCharacterSelection.text = 'None';
+
+      return;
+    }
+
+    dataCharacter = Reflect.field(stageEditorState.currentCharacters, Std.string(linkedCharacter.characterType).toLowerCase());
+
+    // Otherwise, only update components whose linked character values have been changed.
+    if (inputCharacterPositionX.pos != dataCharacter.position[0]) inputCharacterPositionX.pos = dataCharacter.position[0];
+    if (inputCharacterPositionY.pos != dataCharacter.position[1]) inputCharacterPositionY.pos = dataCharacter.position[1];
+    if (inputCharacterScale.pos != dataCharacter.scale / linkedCharacter.getBaseScale())
+      inputCharacterScale.pos = dataCharacter.scale / linkedCharacter.getBaseScale();
+    if (inputCharacterZIndex.pos != dataCharacter.zIndex) inputCharacterZIndex.pos = dataCharacter.zIndex;
+    if (inputCharacterCameraOffsetX.pos != dataCharacter.cameraOffsets[0]) inputCharacterCameraOffsetX.pos = dataCharacter.cameraOffsets[0];
+    if (inputCharacterCameraOffsetY.pos != dataCharacter.cameraOffsets[1]) inputCharacterCameraOffsetY.pos = dataCharacter.cameraOffsets[1];
+    if (inputCharacterScrollX.pos != dataCharacter.scroll[0]) inputCharacterScrollX.pos = dataCharacter.scroll[0];
+    if (inputCharacterScrollY.pos != dataCharacter.scroll[1]) inputCharacterScrollY.pos = dataCharacter.scroll[1];
+    if (inputCharacterAlpha.pos != dataCharacter.alpha) inputCharacterAlpha.pos = dataCharacter.alpha;
+    if (inputCharacterAngle.pos != dataCharacter.angle) inputCharacterAngle.pos = dataCharacter.angle;
+
+    var prevText:String = buttonCharacterSelection.text;
+    var characterData:Null<CharacterData> = CharacterDataParser.fetchCharacterData(linkedCharacter.characterId);
+    buttonCharacterSelection.icon = (characterData == null ? null : haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(linkedCharacter.characterId)));
+    buttonCharacterSelection.text = (characterData == null ? "None" : characterData.name.length > 6 ? '${characterData.name.substr(0, 6)}.' : '${characterData.name}');
+
+    if (prevText != buttonCharacterSelection.text) Screen.instance.removeComponent(characterSelectionMenu);
   }
 
   public function repositionCharacter()
   {
-    if (stageEditorState.selectedChar == null) return;
-    stageEditorState.selectedChar.x = charPosX.pos - stageEditorState.selectedChar.characterOrigin.x;
-    stageEditorState.selectedChar.y = charPosY.pos - stageEditorState.selectedChar.characterOrigin.y;
+    if (linkedCharacter == null) return;
 
-    stageEditorState.selectedChar.setScale(stageEditorState.selectedChar.getBaseScale() * charScale.pos);
-    stageEditorState.updateMarkerPos();
+    linkedCharacter.x = inputCharacterPositionX.pos - linkedCharacter.characterOrigin.x + linkedCharacter.globalOffsets[0];
+    linkedCharacter.y = inputCharacterPositionY.pos - linkedCharacter.characterOrigin.y + linkedCharacter.globalOffsets[1];
+    dataCharacter.position = [
+      linkedCharacter.feetPosition.x - linkedCharacter.globalOffsets[0],
+      linkedCharacter.feetPosition.y - linkedCharacter.globalOffsets[1],
+    ];
+
+    linkedCharacter.setScale(linkedCharacter.getBaseScale() * inputCharacterScale.pos);
+    dataCharacter.scale = inputCharacterScale.pos / linkedCharacter.getBaseScale();
+
+    stageEditorState.updateVisuals();
+  }
+
+  public static function build(stageEditorState:StageEditorState):StageEditorCharacterToolbox
+  {
+    return new StageEditorCharacterToolbox(stageEditorState);
   }
 }
 
@@ -157,8 +181,8 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     <label id="charIconName" text="(choose a character)" />
   </vbox>
 </menu>
-')
-class StageEditorCharacterMenu extends Menu // copied from chart editor
+') @:access(funkin.ui.debug.stageeditor.StageEditorState) @:access(funkin.ui.debug.stageeditor.toolboxes.StageEditorCharacterToolbox)
+class StageEditorCharacterMenu extends Menu
 {
   override public function new(state:StageEditorState, parent:StageEditorCharacterToolbox)
   {
@@ -167,10 +191,10 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
     this.x = Screen.instance.currentMouseX;
     this.y = Screen.instance.currentMouseY;
 
-    var charGrid = new Grid();
-    charGrid.columns = 5;
-    charGrid.width = this.width;
-    charSelectScroll.addComponent(charGrid);
+    var characterGrid = new Grid();
+    characterGrid.columns = 5;
+    characterGrid.width = this.width;
+    charSelectScroll.addComponent(characterGrid);
 
     var charIds = CharacterDataParser.listCharacterIds();
     charIds.sort(SortUtil.alphabetically);
@@ -181,81 +205,52 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
     {
       var charData:CharacterData = CharacterDataParser.fetchCharacterData(charId);
 
-      var charButton = new Button();
-      charButton.width = 70;
-      charButton.height = 70;
-      charButton.padding = 8;
-      charButton.iconPosition = "top";
+      var characterButton = new Button();
+      characterButton.width = 70;
+      characterButton.height = 70;
+      characterButton.padding = 8;
+      characterButton.iconPosition = "top";
 
-      if (charId == state.selectedChar?.characterId)
+      if (charId == parent.linkedCharacter.characterId)
       {
         // Scroll to the character if it is already selected.
         charSelectScroll.hscrollPos = Math.floor(charIndex / 5) * 80;
-        charButton.selected = true;
+        characterButton.selected = true;
 
         defaultText = '${charData.name} [${charId}]';
       }
 
       var LIMIT = 6;
-      charButton.icon = CharacterDataParser.getCharPixelIconAsset(charId);
-      charButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
+      characterButton.icon = haxe.ui.util.Variant.fromImageData(CharacterDataParser.getCharPixelIconAsset(charId));
+      characterButton.text = charData.name.length > LIMIT ? '${charData.name.substr(0, LIMIT)}.' : '${charData.name}';
 
-      charButton.onClick = _ ->
+      characterButton.onClick = _ ->
       {
-        var type = state.selectedChar?.characterType;
-        if (type == null)
+        var type = parent.linkedCharacter.characterType;
+        if (parent.linkedCharacter.characterId == charId) return; // saves on memory
+
+        state.remove(parent.linkedCharacter);
+        state.characters.remove(Std.string(type).toLowerCase());
+
+        var newCharacter = CharacterDataParser.fetchCharacter(charId, true);
+        if (newCharacter == null)
         {
-          // Hack - choose the type based of the first null character in getCharacters,
-          // since this is how the click on the char type gets the selected char anyway, we can be sure this is the right type
-          var chars = state.getCharacters();
-          var index = chars.indexOf(state.selectedChar);
-
-          switch (index)
-          {
-            case 0:
-              type = CharacterType.GF;
-            case 1:
-              type = CharacterType.DAD;
-            case 2:
-              type = CharacterType.BF;
-          }
-        }
-        if (state.selectedChar?.characterId == charId) return; // saves on memory
-
-        var group = state.charGroups[type];
-        group.killMembers();
-        for (member in group.members)
-        {
-          member.kill();
-          group.remove(member, true);
-          member.destroy();
-        }
-        group.clear();
-
-        // okay i think that was enough cleaning phew you can see how clean this group is now!!!
-        // anyways new character!!!!
-
-        var newChar = CharacterDataParser.fetchCharacter(charId, true);
-        if (newChar == null)
-        {
-          state.notifyChange("Switch Character", "Couldn't find character " + charId + ". Switching to default.", true);
-          newChar = CharacterDataParser.fetchCharacter(Constants.DEFAULT_CHARACTER, true);
+          state.error('Switch Character', "Couldn't find character " + charId + ". Switching to default.");
+          newCharacter = CharacterDataParser.fetchCharacter(Constants.DEFAULT_CHARACTER, true);
         }
 
-        newChar.characterType = type;
+        newCharacter.characterType = type;
 
-        newChar.resetCharacter(true);
-        newChar.flipX = type == CharacterType.BF ? !newChar.getDataFlipX() : newChar.getDataFlipX();
-        newChar.alpha = parent.charAlpha.pos;
-        newChar.angle = parent.charAngle.pos;
-        newChar.scrollFactor.x = parent.charScrollX.pos;
-        newChar.scrollFactor.y = parent.charScrollY.pos;
+        newCharacter.resetCharacter(true);
+        newCharacter.alpha = parent.inputCharacterAlpha.pos;
+        newCharacter.angle = parent.inputCharacterAngle.pos;
+        newCharacter.scrollFactor.x = parent.inputCharacterScrollX.pos;
+        newCharacter.scrollFactor.y = parent.inputCharacterScrollY.pos;
 
-        state.selectedChar = newChar;
-        group.add(newChar);
-
+        state.selectedCharacter = newCharacter;
+        state.addCharacter(newCharacter, type);
         parent.repositionCharacter();
-        group.zIndex = Std.int(parent.charZIdx.pos ?? 0);
+        newCharacter.zIndex = Std.int(parent.inputCharacterZIndex.pos ?? 0);
 
         // Save the selection.
         switch (type)
@@ -266,20 +261,13 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
             Save.instance.stageGirlfriendChar = charId;
           case DAD:
             Save.instance.stageDadChar = charId;
-          default:
-            // Do nothing.
+          default: // Do nothing.
         }
       };
 
-      charButton.onMouseOver = _ ->
-      {
-        charIconName.text = '${charData.name} [${charId}]';
-      };
-      charButton.onMouseOut = _ ->
-      {
-        charIconName.text = defaultText;
-      };
-      charGrid.addComponent(charButton);
+      characterButton.onMouseOver = _ -> charIconName.text = '${charData.name} [${charId}]';
+      characterButton.onMouseOut = _ -> charIconName.text = defaultText;
+      characterGrid.addComponent(characterButton);
     }
 
     charIconName.text = defaultText;
@@ -289,4 +277,3 @@ class StageEditorCharacterMenu extends Menu // copied from chart editor
     FlxTween.tween(this, {alpha: 1, y: this.y + 10}, 0.2, {ease: FlxEase.quartOut});
   }
 }
-#end

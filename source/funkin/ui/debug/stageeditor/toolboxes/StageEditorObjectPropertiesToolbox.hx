@@ -1,6 +1,8 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
-#if FEATURE_STAGE_EDITOR
+import flixel.util.FlxColor;
+import funkin.ui.debug.stageeditor.components.StageEditorObject;
+import funkin.data.stage.StageData.StageDataProp;
 import haxe.ui.containers.VBox;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
@@ -8,131 +10,34 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.util.Color;
-import flixel.util.FlxColor;
-import haxe.ui.events.UIEvent;
+import openfl.display.BlendMode;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml'))
-class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml"))
+class StageEditorObjectPropertiesToolbox extends StageEditorBaseToolbox
 {
-  var linkedObj:StageEditorObject = null;
-  var objPosX:NumberStepper;
-  var objPosY:NumberStepper;
-  var objZIdx:NumberStepper;
-  var objAlpha:NumberStepper;
-  var objAngle:NumberStepper;
-  var objScaleX:NumberStepper;
-  var objScaleY:NumberStepper;
-  var objScrollX:NumberStepper;
-  var objScrollY:NumberStepper;
-  var objDance:NumberStepper;
-  var objPixel:CheckBox;
-  var objFlipX:CheckBox;
-  var objFlipY:CheckBox;
-  var objBlend:DropDown;
-  var objTint:DropDown;
+  var linkedObject:Null<StageEditorObject> = null;
+  var inputObjectPositionX:NumberStepper;
+  var inputObjectPositionY:NumberStepper;
+  var inputObjectScaleX:NumberStepper;
+  var inputObjectScaleY:NumberStepper;
+  var inputObjectZIndex:NumberStepper;
+  var inputObjectScrollX:NumberStepper;
+  var inputObjectScrollY:NumberStepper;
+  var inputObjectAlpha:NumberStepper;
+  var inputObjectAngle:NumberStepper;
+  var inputObjectDanceEvery:NumberStepper;
+  var inputObjectBlend:DropDown;
+  var inputObjectTint:DropDown;
+  var inputObjectFlipX:CheckBox;
+  var inputObjectFlipY:CheckBox;
+  var inputObjectAntialiasing:CheckBox;
+  var dataObject:Null<StageDataProp> = null;
 
-  override public function new(state:StageEditorState)
+  public function new(stageEditorState2:StageEditorState)
   {
-    super(state);
+    super(stageEditorState2);
 
-    // Initialize the custom DropDown view.
-    DropDownBuilder.HANDLER_MAP.set('objTint', Type.getClassName(ObjectTintHandler));
-
-    // Numeric callbacks.
-    objPosX.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.x = objPosX.pos;
-    }
-
-    objPosY.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.y = objPosY.pos;
-    }
-
-    objZIdx.max = StageEditorState.MAX_Z_INDEX;
-    objZIdx.onChange = function(_)
-    {
-      if (linkedObj != null)
-      {
-        linkedObj.zIndex = Std.int(objZIdx.pos);
-        state.updateArray();
-      }
-    }
-
-    objAlpha.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.alpha = objAlpha.pos;
-    }
-
-    objAngle.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.angle = objAngle.pos;
-    }
-
-    objScaleX.onChange = function(_)
-    {
-      if (linkedObj != null)
-      {
-        linkedObj.scale.x = objScaleX.pos;
-        linkedObj.updateHitbox();
-      }
-    }
-
-    objScaleY.onChange = function(_)
-    {
-      if (linkedObj != null)
-      {
-        linkedObj.scale.y = objScaleY.pos;
-        linkedObj.updateHitbox();
-      }
-    }
-
-    objScrollX.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.scrollFactor.x = objScrollX.pos;
-    }
-
-    objScrollY.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.scrollFactor.y = objScrollY.pos;
-    }
-
-    objDance.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.danceEvery = Std.int(objDance.pos);
-    }
-
-    // Boolean callbacks.
-    objPixel.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.antialiasing = objPixel.selected; // Kind of misleading, but objPixel has the 'Antialiasing' label attached to it!
-    }
-
-    objFlipX.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.flipX = objFlipX.selected;
-    }
-
-    objFlipY.onChange = function(_)
-    {
-      if (linkedObj != null) linkedObj.flipY = objFlipY.selected;
-    }
-
-    objBlend.onChange = function(_)
-    {
-      if (linkedObj != null)
-      {
-        linkedObj.blend = (objBlend.selectedItem?.text ?? 'NONE') == 'NONE' ? null : AssetDataHandler.blendFromString(objBlend.selectedItem.text);
-      }
-    }
-
-    objTint.onChange = function(_)
-    {
-      if (linkedObj != null)
-      {
-        linkedObj.color = FlxColor.fromString(_.value) ?? 0xFFFFFFFF;
-      }
-    }
+    initialize();
 
     this.onDialogClosed = onClose;
   }
@@ -142,64 +47,171 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     stageEditorState.menubarItemWindowObjectProps.selected = false;
   }
 
-  override public function refresh()
+  function initialize():Void
   {
-    linkedObj = stageEditorState.selectedSprite;
+    DropDownBuilder.HANDLER_MAP.set('inputObjectTint', Type.getClassName(ObjectTintHandler));
 
-    objPosX.step = stageEditorState.moveStep;
-    objPosY.step = stageEditorState.moveStep;
-    objAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
-
-    if (linkedObj == null)
+    inputObjectPositionX.onChange = event ->
     {
-      // If there is no selected object, reset displays.
-      objPosX.pos = 0;
-      objPosY.pos = 0;
-      objZIdx.pos = 0;
-      objAlpha.pos = 1;
-      objAngle.pos = 0;
-      objScaleX.pos = 1;
-      objScaleY.pos = 1;
-      objScrollX.pos = 1;
-      objScrollY.pos = 1;
-      objDance.pos = 0;
+      if (linkedObject == null) return;
+      dataObject.position[0] = event.value;
+      linkedObject.x = event.value;
+    }
 
-      objPixel.selected = true;
-      objFlipX.selected = false;
-      objFlipY.selected = false;
+    inputObjectPositionY.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.position[1] = event.value;
+      linkedObject.y = event.value;
+    }
 
-      objBlend.selectedIndex = 0;
-      objTint.selectedItem = Color.fromString('white');
+    inputObjectScaleX.onChange = inputObjectScaleX.onChange = _ ->
+    {
+      if (linkedObject == null) return;
+
+      dataObject.scale = inputObjectScaleX.pos == inputObjectScaleY.pos ? Left(inputObjectScaleX.pos) : Right([inputObjectScaleX.pos, inputObjectScaleY.pos]);
+
+      linkedObject.scale.set(inputObjectScaleX.pos, inputObjectScaleY.pos);
+      linkedObject.updateHitbox();
+    }
+
+    inputObjectZIndex.max = StageEditorState.MAX_Z_INDEX;
+    inputObjectZIndex.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.zIndex = event.value;
+      linkedObject.zIndex = event.value;
+      stageEditorState.sortObjects();
+    }
+
+    inputObjectScrollX.onChange = inputObjectScrollY.onChange = _ ->
+    {
+      if (linkedObject == null) return;
+      dataObject.scroll = [inputObjectScrollX.pos, inputObjectScrollY.pos];
+      linkedObject.scrollFactor.set(inputObjectScrollX.pos, inputObjectScrollY.pos);
+    }
+
+    inputObjectAlpha.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.alpha = event.value;
+      linkedObject.alpha = event.value;
+    }
+
+    inputObjectAngle.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.angle = event.value;
+      linkedObject.angle = event.value;
+    }
+
+    inputObjectDanceEvery.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.danceEvery = event.value;
+      linkedObject.danceEvery = event.value;
+    }
+
+    inputObjectBlend.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      @:privateAccess
+      linkedObject.blend = (inputObjectBlend.selectedItem?.text ?? "NONE") == "NONE" ? null : BlendMode.fromString(inputObjectBlend.selectedItem.text.toLowerCase()
+        .trim());
+      trace(linkedObject.blend);
+      trace(event);
+      trace(event.data);
+    }
+
+    inputObjectTint.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.color = event.value.toString();
+      linkedObject.color = FlxColor.fromString(event.value) ?? 0xFFFFFFFF;
+    }
+
+    inputObjectFlipX.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.flipX = event.value;
+      linkedObject.flipX = event.value;
+    }
+
+    inputObjectFlipY.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.flipY = event.value;
+      linkedObject.flipY = event.value;
+    }
+
+    inputObjectAntialiasing.onChange = event ->
+    {
+      if (linkedObject == null) return;
+      dataObject.isPixel = event.value;
+      linkedObject.antialiasing = event.value;
+    }
+  }
+
+  public override function refresh():Void
+  {
+    linkedObject = stageEditorState.selectedProp;
+
+    inputObjectPositionX.step = inputObjectPositionY.step = stageEditorState.moveStep;
+    inputObjectAngle.step = stageEditorState.angleStep;
+
+    // If there is no selected object, reset displays.
+    if (linkedObject == null)
+    {
+      inputObjectPositionX.pos = 0;
+      inputObjectPositionY.pos = 0;
+      inputObjectScaleX.pos = 1;
+      inputObjectScaleY.pos = 1;
+      inputObjectZIndex.pos = 0;
+      inputObjectScrollX.pos = 1;
+      inputObjectScrollY.pos = 1;
+      inputObjectAlpha.pos = 1;
+      inputObjectAngle.pos = 0;
+      inputObjectDanceEvery.pos = 0;
+      inputObjectBlend.selectedIndex = 0;
+      inputObjectTint.selectedItem = Color.fromString("white");
+
+      inputObjectFlipX.selected = false;
+      inputObjectFlipY.selected = false;
+      inputObjectAntialiasing.selected = true;
 
       return;
     }
 
-    // Otherwise, only update components whose linked object values have been changed.
-    if (objPosX.pos != linkedObj.x) objPosX.pos = linkedObj.x;
-    if (objPosY.pos != linkedObj.y) objPosY.pos = linkedObj.y;
-    if (objZIdx.pos != linkedObj.zIndex) objZIdx.pos = linkedObj.zIndex;
-    if (objAlpha.pos != linkedObj.alpha) objAlpha.pos = linkedObj.alpha;
-    if (objAngle.pos != linkedObj.angle) objAngle.pos = linkedObj.angle;
-    if (objScaleX.pos != linkedObj.scale.x) objScaleX.pos = linkedObj.scale.x;
-    if (objScaleY.pos != linkedObj.scale.y) objScaleY.pos = linkedObj.scale.y;
-    if (objScrollX.pos != linkedObj.scrollFactor.x) objScrollX.pos = linkedObj.scrollFactor.x;
-    if (objScrollY.pos != linkedObj.scrollFactor.y) objScrollY.pos = linkedObj.scrollFactor.y;
-    if (objDance.pos != linkedObj.danceEvery) objDance.pos = linkedObj.danceEvery;
+    dataObject = stageEditorState.currentProps.find(prop -> prop.name == linkedObject.name);
 
-    if (objPixel.selected != linkedObj.antialiasing) objPixel.selected = linkedObj.antialiasing;
-    if (objFlipX.selected != linkedObj.flipX) objFlipX.selected = linkedObj.flipX;
-    if (objFlipY.selected != linkedObj.flipY) objFlipY.selected = linkedObj.flipY;
+    // Otherwise, only update components whose linked character values have been changed.
+    if (inputObjectPositionX.pos != dataObject.position[0]) inputObjectPositionX.pos = dataObject.position[0];
+    if (inputObjectPositionY.pos != dataObject.position[1]) inputObjectPositionY.pos = dataObject.position[1];
+    // scale
+    if (inputObjectZIndex.pos != dataObject.zIndex) inputObjectZIndex.pos = dataObject.zIndex;
+    if (inputObjectScrollX.pos != dataObject.scroll[0]) inputObjectScrollX.pos = dataObject.scroll[0];
+    if (inputObjectScrollY.pos != dataObject.scroll[1]) inputObjectScrollY.pos = dataObject.scroll[1];
+    if (inputObjectAlpha.pos != dataObject.alpha) inputObjectAlpha.pos = dataObject.alpha;
+    if (inputObjectAngle.pos != dataObject.angle) inputObjectAngle.pos = dataObject.angle;
+    if (inputObjectDanceEvery.pos != dataObject.danceEvery) inputObjectDanceEvery.pos = dataObject.danceEvery;
 
-    var blendMode:String = Std.string(linkedObj.blend) ?? 'NONE';
-    if (objBlend.selectedItem != blendMode.toUpperCase()) objBlend.selectedItem = blendMode.toUpperCase();
+    var objectBlend:String = dataObject.blend.toUpperCase() ?? 'NONE';
+    if (inputObjectBlend.selectedItem != objectBlend) inputObjectBlend.selectedItem = objectBlend;
 
-    var objColor:Color = Color.fromComponents(linkedObj.color.red, linkedObj.color.green, linkedObj.color.blue, linkedObj.color.alpha);
-    if (objTint.selectedItem != objColor) objTint.selectedItem = objColor;
+    var haxeColor:FlxColor = FlxColor.fromString(dataObject.color);
+    var objectColor:Color = Color.fromComponents(haxeColor.red, haxeColor.green, haxeColor.blue, haxeColor.alpha);
+    if (inputObjectTint.selectedItem != objectColor) inputObjectTint.selectedItem = objectColor;
+
+    if (inputObjectFlipX.selected != dataObject.flipX) inputObjectFlipX.selected = dataObject.flipX;
+    if (inputObjectFlipY.selected != dataObject.flipY) inputObjectFlipY.selected = dataObject.flipY;
+    if (inputObjectAntialiasing.selected != dataObject.isPixel) inputObjectAntialiasing.selected = dataObject.isPixel;
+  }
+
+  public static function build(stageEditorState:StageEditorState):StageEditorObjectPropertiesToolbox
+  {
+    return new StageEditorObjectPropertiesToolbox(stageEditorState);
   }
 }
-
-// The following two classes are mostly carbon copies of ColorPickerPopup's handlers, just with an actually functioning onChange callback.
-// The code looks like a bit of a mess though.
 
 @:access(haxe.ui.core.Component)
 private class ObjectTintHandler extends DropDownHandler
@@ -219,7 +231,7 @@ private class ObjectTintHandler extends DropDownHandler
     return _view;
   }
 
-  override public function prepare(_)
+  public override function prepare(_)
   {
     super.prepare(_);
     if (_view != null) _view.currentColor = _cachedSelectedColor;
@@ -304,4 +316,3 @@ private class ObjectTintView extends VBox
     dropdown.dispatch(event);
   }
 }
-#end

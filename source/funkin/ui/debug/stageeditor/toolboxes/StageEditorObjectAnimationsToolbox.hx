@@ -52,7 +52,5 @@ class StageEditorObjectAnimationsToolbox extends StageEditorBaseToolbox
   public override function refresh():Void
   {
     super.refresh();
-
-
   }
 }

@@ -11,7 +11,6 @@ import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
-import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 import haxe.ui.events.MouseEvent;
 
 @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/stage-editor/dialogs/welcome.xml"))
@@ -128,19 +127,16 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
 
   public function onClickStageBox():Void
   {
-    // TODO / BUG: File filtering not working on mac finder dialog, so we don't use it for now
-    #if !mac
-    FileUtil.browseForBinaryFile('Open Stage', [FileUtil.FILE_EXTENSION_INFO_FNFS], onSelectFile);
-    #else
-    FileUtil.browseForBinaryFile('Open Stage', null, onSelectFile);
-    #end
+    FileUtil.browseForFile('Open Stage', [FileUtil.FILE_FILTER_FNFS], onSelectFile);
   }
 
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Stage box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
+    this.unlock();
+
     if (selectedFile != null && selectedFile.bytes != null)
     {
       try
@@ -160,6 +156,11 @@ class StageEditorWelcomeDialog extends StageEditorBaseDialog
         stageEditorState.failure('Failed to Load Stage', 'Failed to load stage (${selectedFile.name}): ${err}');
       }
     }
+  }
+
+  function onCancelBrowse():Void
+  {
+    this.unlock();
   }
 
   public function buildTemplateStageList(state:StageEditorState):Void

@@ -182,10 +182,11 @@ class StageEditorDialogHandler
 
   static final EPSILON:Float = 0.01;
 
-  static function onDropFile(path:String):Void
+  static function onDropFile(path:String, state:String, x:Float, y:Float):Void
   {
     // a VERY short timer to wait for the mouse position to update
-    new FlxTimer().start(EPSILON, function(_) {
+    new FlxTimer().start(EPSILON, function(_)
+    {
       for (handler in dropHandlers)
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))

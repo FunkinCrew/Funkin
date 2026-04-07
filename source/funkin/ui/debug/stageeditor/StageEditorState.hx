@@ -86,6 +86,7 @@ class StageEditorState extends UIState
    * ==============================
    */
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_GRAPHIC_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-graphic');
+
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_PROPERTIES_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-properties');
   public static final STAGE_EDITOR_TOOLBOX_OBJECT_ANIMATIONS_LAYOUT:String = Paths.ui('stage-editor/toolboxes/object-anims');
   public static final STAGE_EDITOR_TOOLBOX_CHARACTER_LAYOUT:String = Paths.ui('stage-editor/toolboxes/character-properties');
@@ -99,7 +100,16 @@ class StageEditorState extends UIState
   /**
    * Step value you can change the object position with.
    */
-  public static final BASE_STEPS:Array<Int> = [1, 2, 3, 5, 10, 25, 50, 100];
+  public static final BASE_STEPS:Array<Int> = [
+    1,
+    2,
+    3,
+    5,
+    10,
+    25,
+    50,
+    100
+  ];
 
   /**
    * The default object step value.
@@ -114,7 +124,18 @@ class StageEditorState extends UIState
   /**
    * Angle step value you can change the object angle with.
    */
-  public static final BASE_ANGLES:Array<Float> = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
+  public static final BASE_ANGLES:Array<Float> = [
+    0.5,
+    1,
+    2,
+    5,
+    10,
+    15,
+    45,
+    75,
+    90,
+    180
+  ];
 
   /**
    * The default object angle change value.
@@ -164,7 +185,6 @@ class StageEditorState extends UIState
   public static final TIME_BEFORE_ANIM_STOP:Float = 3.0;
 
   var CHARACTER_DESELECT_SHADER:Grayscale = new Grayscale();
-
   /**
    * ==============================
    * INSTANCE DATA
@@ -359,12 +379,12 @@ class StageEditorState extends UIState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.instance.stageEditorHasBackup && StageEditorImportExportHandler.getLatestBackupPath() != null;
+    return Save.instance.stageEditorHasBackup.value && StageEditorImportExportHandler.getLatestBackupPath() != null;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.instance.stageEditorHasBackup = value;
+    return Save.instance.stageEditorHasBackup.value = value;
   }
 
   /**
@@ -402,7 +422,8 @@ class StageEditorState extends UIState
     if (previousWorkingFilePaths.contains(null))
     {
       // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool
+      {
         return x != null;
       });
     }
@@ -881,7 +902,7 @@ class StageEditorState extends UIState
 
   function playWelcomeMusic():Void
   {
-    FunkinSound.playMusic('chartEditorLoop', { startingVolume: 0.0 });
+    FunkinSound.playMusic('chartEditorLoop', {startingVolume: 0.0});
     FlxG.sound.music.fadeIn(10, 0, 1);
   }
 
@@ -891,16 +912,16 @@ class StageEditorState extends UIState
 
     if (previousWorkingFilePaths[0] == null)
     {
-      previousWorkingFilePaths = [null].concat(save.stageEditorPreviousFiles);
+      previousWorkingFilePaths = [null].concat(save.stageEditorPreviousFiles.value);
     }
     else
     {
-      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.stageEditorPreviousFiles);
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.stageEditorPreviousFiles.value);
     }
 
-    moveStepIndex = BASE_STEPS.indexOf(Std.parseInt(StringTools.replace(save.stageEditorMoveStep ?? "0px", "px", "")) ?? BASE_STEP);
-    angleStepIndex = BASE_ANGLES.indexOf(save.stageEditorAngleStep);
-    currentTheme = save.stageEditorTheme;
+    moveStepIndex = BASE_STEPS.indexOf(Std.parseInt(StringTools.replace(save.stageEditorMoveStep.value ?? "0px", "px", "")) ?? BASE_STEP);
+    angleStepIndex = BASE_ANGLES.indexOf(save.stageEditorAngleStep.value);
+    currentTheme = save.stageEditorTheme.value;
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -908,16 +929,15 @@ class StageEditorState extends UIState
     var save:Save = Save.instance;
 
     var filteredWorkingFilePaths:Array<String> = [];
-    for (path in previousWorkingFilePaths)
-      if (path != null) filteredWorkingFilePaths.push(path);
-    save.stageEditorPreviousFiles = filteredWorkingFilePaths;
+    for (path in previousWorkingFilePaths) if (path != null) filteredWorkingFilePaths.push(path);
+    save.stageEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
-    save.stageEditorHasBackup = hasBackup;
+    save.stageEditorHasBackup.value = hasBackup;
 
-    save.stageEditorMoveStep = '${moveStep}px';
-    save.stageEditorAngleStep = angleStep;
-    save.stageEditorTheme = currentTheme;
+    save.stageEditorMoveStep.value = '${moveStep}px';
+    save.stageEditorAngleStep.value = angleStep;
+    save.stageEditorTheme.value = currentTheme;
   }
 
   public function populateOpenRecentMenu():Void
@@ -999,13 +1019,13 @@ class StageEditorState extends UIState
 
   function initCharacters():Void
   {
-    var girlfriend = CharacterDataParser.fetchCharacter(Save.instance.stageGirlfriendChar, true);
+    var girlfriend = CharacterDataParser.fetchCharacter(params?.targetGfCharacter ?? Save.instance.stageGirlfriendChar, true);
     if (girlfriend != null) addCharacter(girlfriend, CharacterType.GF);
 
-    var dad = CharacterDataParser.fetchCharacter(Save.instance.stageDadChar, true);
+    var dad = CharacterDataParser.fetchCharacter(params?.targetDadCharacter ?? Save.instance.stageDadChar, true);
     if (dad != null) addCharacter(dad, CharacterType.DAD);
 
-    var boyfriend = CharacterDataParser.fetchCharacter(Save.instance.stageBoyfriendChar, true);
+    var boyfriend = CharacterDataParser.fetchCharacter(params?.targetBfCharacter ?? Save.instance.stageBoyfriendChar, true);
     if (boyfriend != null) addCharacter(boyfriend, CharacterType.BF);
   }
 
@@ -1103,7 +1123,10 @@ class StageEditorState extends UIState
     if (needsAutoSave)
     {
       this.exportAllStageData(true, null);
-      var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorImportExportHandler.BACKUPS_PATH]);
+      var absoluteBackupsPath:String = Path.join([
+        Sys.getCwd(),
+        StageEditorImportExportHandler.BACKUPS_PATH
+      ]);
       this.infoWithActions('Auto-Save', 'Stage auto-saved to ${absoluteBackupsPath}.', [
         {
           text: "Take Me There",
@@ -1122,7 +1145,10 @@ class StageEditorState extends UIState
   {
     #if sys
     // TODO: Is there a way to open a folder and highlight a file in it?
-    var absoluteBackupsPath:String = Path.join([Sys.getCwd(), StageEditorImportExportHandler.BACKUPS_PATH]);
+    var absoluteBackupsPath:String = Path.join([
+      Sys.getCwd(),
+      StageEditorImportExportHandler.BACKUPS_PATH
+    ]);
     FileUtil.openFolder(absoluteBackupsPath);
     return true;
     #else
@@ -1195,8 +1221,7 @@ class StageEditorState extends UIState
     {
       if (conductorInUse.currentBeat % 2 == 0)
       {
-        for (characterType => character in characters)
-          character.dance(true);
+        for (characterType => character in characters) character.dance(true);
       }
 
       for (prop in spriteArray)
@@ -1204,9 +1229,10 @@ class StageEditorState extends UIState
         if (prop.danceEvery > 0 && conductorInUse.currentBeat % prop.danceEvery == 0) prop.dance(true);
       }
 
-      if (conductorInUse.currentBeat % 8 == 0 && !FlxG.keys.pressed.SHIFT) {
+      if (conductorInUse.currentBeat % 8 == 0 && !FlxG.keys.pressed.SHIFT)
+      {
         currentPreviewedCharacter++;
-        if (currentPreviewedCharacter >= [for (c in characters) c].length) currentPreviewedCharacter = 0;
+        if (currentPreviewedCharacter >=[for (c in characters) c].length) currentPreviewedCharacter = 0;
       }
     }
 
@@ -1263,31 +1289,33 @@ class StageEditorState extends UIState
     /**
      * VIEW
      */
-    menubarItemThemeLight.onChange = function(event:UIEvent) {
+    menubarItemThemeLight.onChange = function(event:UIEvent)
+    {
       if (event.target.value) currentTheme = StageEditorTheme.Light;
     };
     menubarItemThemeLight.selected = currentTheme == StageEditorTheme.Light;
 
-    menubarItemThemeDark.onChange = function(event:UIEvent) {
+    menubarItemThemeDark.onChange = function(event:UIEvent)
+    {
       if (event.target.value) currentTheme = StageEditorTheme.Dark;
     };
     menubarItemThemeDark.selected = currentTheme == StageEditorTheme.Dark;
 
-    menubarItemViewCharacters.onChange = _ -> {
-      for (charType => character in characters)
-        character.visible = menubarItemViewCharacters.selected;
+    menubarItemViewCharacters.onChange = _ ->
+    {
+      for (charType => character in characters) character.visible = menubarItemViewCharacters.selected;
     }
 
     menubarItemViewNameText.onChange = _ -> objectNameText.visible = menubarItemViewNameText.selected;
 
-    menubarItemViewFloorLines.onChange = _ -> {
-      for (floorLine in characterFloorLines)
-        floorLine.visible = menubarItemViewFloorLines.selected;
+    menubarItemViewFloorLines.onChange = _ ->
+    {
+      for (floorLine in characterFloorLines) floorLine.visible = menubarItemViewFloorLines.selected;
     }
 
-    menubarItemViewPosMarkers.onChange = _ -> {
-      for (positionMarker in characterPositionMarkers)
-        positionMarker.visible = menubarItemViewPosMarkers.selected;
+    menubarItemViewPosMarkers.onChange = _ ->
+    {
+      for (positionMarker in characterPositionMarkers) positionMarker.visible = menubarItemViewPosMarkers.selected;
     }
 
     menubarItemViewCamBounds.onChange = _ -> cameraBounds.visible = menubarItemViewCamBounds.selected;
@@ -1319,7 +1347,8 @@ class StageEditorState extends UIState
     /**
      * BOTTOM BAR
      */
-    bottomBarModeText.onClick = _ -> {
+    bottomBarModeText.onClick = _ ->
+    {
       // This is by far the worst code that I have ever written.
       if (isInTestMode) return;
       switch (currentSelectionMode)
@@ -1329,19 +1358,18 @@ class StageEditorState extends UIState
         case OBJECTS:
           if (selectedProp != null) selectedProp = null;
           currentSelectionMode = CHARACTERS;
-          for (charType => character in characters)
-            if (character != null) character.shader = CHARACTER_DESELECT_SHADER;
+          for (charType => character in characters) if (character != null) character.shader = CHARACTER_DESELECT_SHADER;
         case CHARACTERS:
           currentSelectionMode = NONE;
           if (selectedCharacter != null) selectedCharacter = null;
-          for (charType => character in characters)
-            if (character != null) character.shader = cast null;
+          for (charType => character in characters) if (character != null) character.shader = cast null;
         default:
           currentSelectionMode = NONE;
       }
     }
 
-    bottomBarSelectText.onClick = _ -> {
+    bottomBarSelectText.onClick = _ ->
+    {
       if (isInTestMode)
       {
         currentPreviewedCharacter++;
@@ -1379,7 +1407,8 @@ class StageEditorState extends UIState
       }
     }
 
-    bottomBarMoveStepText.onClick = _ -> {
+    bottomBarMoveStepText.onClick = _ ->
+    {
       if (FlxG.keys.pressed.SHIFT)
       {
         moveStepIndex = BASE_STEP_INDEX;
@@ -1390,11 +1419,13 @@ class StageEditorState extends UIState
         if (moveStepIndex >= BASE_STEPS.length) moveStepIndex = 0;
       }
     }
-    bottomBarMoveStepText.onRightClick = _ -> {
+    bottomBarMoveStepText.onRightClick = _ ->
+    {
       moveStepIndex--;
       if (moveStepIndex < 0) moveStepIndex = BASE_STEPS.length - 1;
     }
-    bottomBarAngleStepText.onClick = _ -> {
+    bottomBarAngleStepText.onClick = _ ->
+    {
       if (FlxG.keys.pressed.SHIFT)
       {
         angleStepIndex = BASE_ANGLE_INDEX;
@@ -1405,7 +1436,8 @@ class StageEditorState extends UIState
         if (angleStepIndex >= BASE_ANGLES.length) angleStepIndex = 0;
       }
     }
-    bottomBarAngleStepText.onRightClick = _ -> {
+    bottomBarAngleStepText.onRightClick = _ ->
+    {
       angleStepIndex--;
       if (angleStepIndex < 0) angleStepIndex = BASE_ANGLES.length - 1;
     }
@@ -1496,8 +1528,7 @@ class StageEditorState extends UIState
    */
   function handleMenubar():Void
   {
-    for (item in menubarSpriteDependent)
-      item.disabled = (selectedProp == null || currentSelectionMode != OBJECTS);
+    for (item in menubarSpriteDependent) item.disabled = (selectedProp == null || currentSelectionMode != OBJECTS);
 
     if (commandHistoryDirty)
     {
@@ -1562,8 +1593,12 @@ class StageEditorState extends UIState
         cameraBounds.members[i].redrawShape();
       }
 
-      cameraBounds.members[i].x = character.cameraFocusPoint.x + Reflect.field(currentCharacters, charType).cameraOffsets[0] - cameraBounds.members[i].shapeWidth / 2;
-      cameraBounds.members[i].y = character.cameraFocusPoint.y + Reflect.field(currentCharacters, charType).cameraOffsets[1] - cameraBounds.members[i].shapeHeight / 2;
+      cameraBounds.members[i].x = character.cameraFocusPoint.x
+        + Reflect.field(currentCharacters, charType).cameraOffsets[0]
+        - cameraBounds.members[i].shapeWidth / 2;
+      cameraBounds.members[i].y = character.cameraFocusPoint.y
+        + Reflect.field(currentCharacters, charType).cameraOffsets[1]
+        - cameraBounds.members[i].shapeHeight / 2;
     }
   }
 
@@ -1706,7 +1741,10 @@ class StageEditorState extends UIState
 
           if (selectedCharacter == null) return;
 
-          if (FlxG.mouse.justPressed && FlxG.mouse.pixelPerfectCheck(selectedCharacter) && !FlxG.keys.pressed.SHIFT && !isCursorOverHaxeUI)
+          if (FlxG.mouse.justPressed
+            && FlxG.mouse.pixelPerfectCheck(selectedCharacter)
+            && !FlxG.keys.pressed.SHIFT
+            && !isCursorOverHaxeUI)
           {
             dragTargetItem = selectedCharacter;
             dragStartPositions = [selectedCharacter.x, selectedCharacter.y];
@@ -1774,10 +1812,12 @@ class StageEditorState extends UIState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        this.exportAllStageData(false, null, function(path:String) {
+        this.exportAllStageData(false, null, function(path:String)
+        {
           // CTRL + SHIFT + S Successful
           this.success('Saved Stage', 'Stage saved successfully to ${path}.');
-        }, function() {
+        }, function()
+        {
           // CTRL + SHIFT + S Cancelled
         });
       }
@@ -1814,7 +1854,9 @@ class StageEditorState extends UIState
     }
 
     // CTRL + F = Find Object
-    if (pressingControl() && FlxG.keys.justPressed.F) {}
+    if (pressingControl() && FlxG.keys.justPressed.F)
+    {
+    }
 
     // CTRL + C = Copy Object
     if (pressingControl() && FlxG.keys.justPressed.C)
@@ -1823,10 +1865,14 @@ class StageEditorState extends UIState
     }
 
     // CTRL + X = Cut Object
-    if (pressingControl() && FlxG.keys.justPressed.X) {}
+    if (pressingControl() && FlxG.keys.justPressed.X)
+    {
+    }
 
     // CTRL + V = Paste Object
-    if (pressingControl() && FlxG.keys.justPressed.V) {}
+    if (pressingControl() && FlxG.keys.justPressed.V)
+    {
+    }
 
     // CTRL + H = Flip Horizontally
     if (pressingControl() && FlxG.keys.justPressed.H)
@@ -1929,7 +1975,7 @@ class StageEditorState extends UIState
     {
       if (character == selectedCharacter) continue;
 
-      character.shader = isInTestMode? (currentSelectionMode == CHARACTERS ? CHARACTER_DESELECT_SHADER : cast null) : cast null;
+      character.shader = isInTestMode ? (currentSelectionMode == CHARACTERS ? CHARACTER_DESELECT_SHADER : cast null) : cast null;
     }
     isInTestMode = !isInTestMode;
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = isInTestMode;
@@ -1997,6 +2043,21 @@ typedef StageEditorParams =
    * If non-null, load this stage immediately instead of the welcome screen.
    */
   var ?targetStageId:String;
+
+  /**
+   * If non-null, load this character as Boyfriend.
+   */
+  var ?targetBfCharacter:String;
+
+  /**
+   * If non-null, load this character as Girlfriend.
+   */
+  var ?targetGfCharacter:String;
+
+  /**
+   * If non-null, load this character as Dad.
+   */
+  var ?targetDadCharacter:String;
 };
 
 /**
@@ -2032,3 +2093,4 @@ enum abstract StageEditorSelectionMode(String) from String to String
    */
   var CHARACTERS;
 }
+#end

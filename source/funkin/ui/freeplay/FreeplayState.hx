@@ -1972,9 +1972,9 @@ class FreeplayState extends MusicBeatSubState
 
       FlxG.switchState(() -> new StageEditorState({
         targetStageId: targetDifficulty.stage,
-        targetBfChar: targetDifficulty.characters.player,
-        targetGfChar: targetDifficulty.characters.girlfriend,
-        targetDadChar: targetDifficulty.characters.opponent
+        targetBfCharacter: targetDifficulty.characters.player,
+        targetGfCharacter: targetDifficulty.characters.girlfriend,
+        targetDadCharacter: targetDifficulty.characters.opponent
       }));
       return;
     }
