@@ -999,9 +999,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     this.currentVariation = target;
 
     // Maybe make this changeable in the ui?
-    if (target == 'erect') currentDifficulty = 'nightmare';
-    else
-      currentDifficulty = 'hard';
+    currentDifficulty = (target == 'erect') ? 'nightmare' : 'hard';
 
     onChartLoaded();
   }
@@ -1272,6 +1270,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.songLength = currentInstrumental.length;
     timeline.songPosition = 0;
     timeline.setStepLengthMs(conductorInUse.stepLengthMs);
+
+    cachedEventIndex = 0;
+    cachedNoteIndex = 0;
   }
 
   /**
