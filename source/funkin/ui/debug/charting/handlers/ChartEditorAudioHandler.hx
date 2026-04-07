@@ -209,7 +209,8 @@ class ChartEditorAudioHandler
 
     if (vocalTrackIds.length == 0)
     {
-      state.warning('Failed to play vocals', 'No vocal tracks found in chart data for character type $charType.');
+      // Didn't play vocals because there are no vocal tracks for this character type on this variation.
+      // state.warning('Failed to play vocals', 'No vocal tracks found in chart data for character type $charType.');
       return false;
     }
 
