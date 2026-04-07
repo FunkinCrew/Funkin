@@ -124,18 +124,23 @@ class ChartEditorAudioHandler
     return true;
   }
 
-  public static function switchToInstrumental(state:ChartEditorState, instId:String = '', playerId:String, opponentId:String):Bool
+  /**
+   * Switches to a specific instrumental track, and the corresponding vocal tracks for each character, if they exist.
+   *
+   * @param state The chart editor state.
+   * @param instId The instrumental track to switch to.
+   * @return `true` if the switch was successful, `false` otherwise.
+   */
+  public static function switchToInstrumental(state:ChartEditorState, instId:String = ''):Bool
   {
     var result:Bool = playInstrumental(state, instId);
     if (!result) return false;
 
     stopExistingVocals(state);
 
-    result = playVocals(state, BF, playerId, instId);
-
-    // if (!result) return false;
-    result = playVocals(state, DAD, opponentId, instId);
-    // if (!result) return false;
+    // We assume that the `currentSongMetadata` is correctly loaded.
+    result = playVocals(state, BF, instId);
+    result = playVocals(state, DAD, instId);
 
     state.postLoadVocals();
 
@@ -179,27 +184,78 @@ class ChartEditorAudioHandler
   }
 
   /**
-   * Tell the Chart Editor to select a specific vocal track, that is already loaded.
+   * Tell the Chart Editor to select a specific set of vocal tracks, that is already loaded.
+   *
+   * @param state The chart editor state.
+   * @param charType The character type to play vocals for.
+   * @param instId The instrumental this vocal track will be for.
+   *
+   * @return `true` if the vocal track(s) were successfully loaded and played, `false` otherwise.
    */
-  public static function playVocals(state:ChartEditorState, charType:CharacterType, charId:String, instId:String = ''):Bool
+  public static function playVocals(state:ChartEditorState, charType:CharacterType, instId:String = ''):Bool
   {
-    var trackId:String = '${charId}${instId == '' ? '' : '-${instId}'}';
-    var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackId);
-    var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+    var vocalTrackIds:Array<String> = [];
+
+    // We assume that the `currentSongMetadata` is correctly loaded to retrieve info about what vocal tracks to play.
+    switch (charType)
+    {
+      case BF:
+        vocalTrackIds = state.currentSongMetadata.playData.characters.playerVocals ?? [];
+      case DAD:
+        vocalTrackIds = state.currentSongMetadata.playData.characters.opponentVocals ?? [];
+      default:
+        // Do nothing.
+    }
+
+    if (vocalTrackIds.length == 0)
+    {
+      state.warning('Failed to play vocals', 'No vocal tracks found in chart data for character type $charType.');
+      return false;
+    }
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
-    // early return
-    if (vocalTrack == null) return false;
+    var vocalTracks:Array<FunkinSound> = [];
 
-    vocalTrack.important = true;
+    for (trackBaseKey in vocalTrackIds)
+    {
+      // instId will be '' for the default variation.
+      var trackKeySuffix:String = instId == '' ? '' : '-${instId}';
+
+      var trackKey:String = '$trackBaseKey$trackKeySuffix';
+
+      var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
+
+      if (vocalTrackData == null)
+      {
+        state.warning('Failed to play vocals', 'Failed to load vocal track "$trackKey" for character type $charType.');
+        continue;
+      }
+
+      var vocalTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(vocalTrackData);
+
+      if (vocalTrack == null)
+      {
+        state.warning('Failed to play vocals', 'Failed to parse vocal track "$trackKey" for character type $charType.');
+        continue;
+      }
+
+      vocalTrack.important = true;
+      vocalTracks.push(vocalTrack);
+    }
+
+    var firstVocalTrack:Null<FunkinSound> = vocalTracks[0];
+    if (firstVocalTrack == null) return false;
 
     switch (charType)
     {
       case BF:
-        state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+        for (vocalTrack in vocalTracks)
+        {
+          state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+        }
 
-        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+        var waveformData:Null<WaveformData> = firstVocalTrack.waveformData;
 
         if (waveformData != null)
         {
@@ -213,10 +269,14 @@ class ChartEditorAudioHandler
 
         state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
         return true;
-      case DAD:
-        state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+      case DAD:
+        for (vocalTrack in vocalTracks)
+        {
+          state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+        }
+
+        var waveformData:Null<WaveformData> = firstVocalTrack.waveformData;
 
         if (waveformData != null)
         {
@@ -231,12 +291,9 @@ class ChartEditorAudioHandler
         state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
         return true;
-      case OTHER:
-        state.audioVocalTrackGroup.add(vocalTrack);
-        // TODO: Add offset for other characters.
-        return true;
+
       default:
-        // Do nothing.
+        // Fallthrough
     }
 
     return false;
