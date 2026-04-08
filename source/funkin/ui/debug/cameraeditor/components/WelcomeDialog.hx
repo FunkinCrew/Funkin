@@ -1,41 +1,63 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
-import haxe.io.Bytes;
 import funkin.Conductor;
+import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
-import funkin.ui.debug.cameraeditor.handlers.CameraEditorFileDropHandler;
+import funkin.play.song.Song;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
+import funkin.ui.debug.cameraeditor.handlers.CameraEditorFileDropHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
+import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
+import funkin.ui.debug.charting.util.FNFCData;
 import funkin.util.FileUtil;
+import funkin.util.SortUtil;
 import haxe.io.Path;
+import haxe.io.Bytes;
+import haxe.ui.components.Label;
+import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
-import funkin.ui.debug.charting.util.FNFCData;
 
-@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
-class UploadChartDialog extends Dialog
+/**
+ * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
+ * Opens when the chart editor first opens.
+ */
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/camera-editor/dialogs/welcome.xml')) @:access(funkin.ui.debug.charting.CameraEditorState)
+class WelcomeDialog extends Dialog
 {
   var locked:Bool = false;
+  var defaultClosable:Bool = false;
   var cameraEditorState:CameraEditorState = null;
   var dropHandlers:Array<DialogDropTarget> = [];
 
-  public function new(state:CameraEditorState)
+  public function new(state:CameraEditorState, closable:Bool = false)
   {
     super();
 
     this.cameraEditorState = state;
-
-    this.dialogCancel.onClick = (_) -> this.hideDialog(DialogButton.CANCEL);
+    this.defaultClosable = closable;
+    this.closable = this.defaultClosable;
 
     this.destroyOnClose = true;
     this.onDialogClosed = event -> onClose(event);
+
+    // Add items to the Recent Charts list
+    #if sys
+    for (chartPath in cameraEditorState.previousWorkingFilePaths)
+    {
+      if (chartPath == null) continue;
+      this.addRecentFilePath(cameraEditorState, chartPath);
+    }
+    #else
+    this.addHTML5RecentFileMessage();
+    #end
 
     this.chartBox.onMouseOver = (_) ->
     {
@@ -67,7 +89,6 @@ class UploadChartDialog extends Dialog
   public function lock():Void
   {
     this.locked = true;
-
     this.closable = false;
   }
 
@@ -77,12 +98,11 @@ class UploadChartDialog extends Dialog
   public function unlock():Void
   {
     this.locked = false;
-
-    this.closable = true;
+    this.closable = this.defaultClosable;
   }
 
   /**
-   * Called when the upload chart dialog is closed.
+   * Called when the welcome dialog is closed.
    */
   public function onClose(_:DialogEvent):Void
   {
@@ -92,6 +112,9 @@ class UploadChartDialog extends Dialog
     }
   }
 
+  /**
+   * Called when the user clicks the "Upload Chart" box in the dialog.
+   */
   @:bind(chartBox, MouseEvent.CLICK)
   public function onClickChartBox(_):Void
   {
@@ -100,6 +123,14 @@ class UploadChartDialog extends Dialog
     this.lock();
 
     FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
+  }
+
+  /**
+   * Called when the user clicks the "Upload Chart" box in the dialog, then cancels out of the file browser.
+   */
+  function onCancelBrowse():Void
+  {
+    this.unlock();
   }
 
   /**
@@ -172,9 +203,55 @@ class UploadChartDialog extends Dialog
     this.hideDialog(DialogButton.APPLY);
   }
 
-  function onCancelBrowse():Void
+  /**
+   * Add a file path to the "Open Recent" scroll box on the left.
+   * @param state The current state of the chart editor.
+   * @param chartPath The file path to add to the recent charts list.
+   */
+  public function addRecentFilePath(state:CameraEditorState, chartPath:String):Void
   {
-    this.unlock();
+    var linkRecentChart:Link = new Link();
+
+    var fileNamePattern:EReg = new EReg('([^/\\\\]+)$', '');
+    var fileName:String = fileNamePattern.match(chartPath) ? fileNamePattern.matched(1) : chartPath;
+    linkRecentChart.text = fileName;
+
+    linkRecentChart.tooltip = chartPath;
+
+    #if sys
+    if (!FileUtil.fileExists(chartPath))
+    {
+      trace('Previously loaded chart file (${chartPath}) does not exist, disabling link...');
+      linkRecentChart.disabled = true;
+    }
+    else
+    {
+      var lastModified:String = 'Last Modified: ' + sys.FileSystem.stat(chartPath).mtime.toString();
+      linkRecentChart.tooltip += '\n' + lastModified;
+    }
+    #end
+
+    linkRecentChart.onClick = function(_event)
+    {
+      linkRecentChart.hide();
+
+      this.hideDialog(DialogButton.CANCEL);
+
+      // Load chart from file
+      var result:Bool = CameraEditorImportExportHandler.loadFNFCFromPath(state, chartPath);
+
+      if (result)
+      {
+        CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${chartPath})');
+        state.currentWorkingFilePath = chartPath;
+      }
+      else
+      {
+        CameraEditorNotificationHandler.failure(state, 'Failed to Load Chart', 'Failed to load chart (${chartPath})');
+      }
+    }
+
+    splashRecentContainer.addComponent(linkRecentChart);
   }
 }
 #end
