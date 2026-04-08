@@ -44,6 +44,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     return new FlxPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
   }
 
+  public var isRelative:Bool = false;
+
   var isClassicEase:Bool = false;
 
   var lastVCamPoint:FlxPoint = new FlxPoint();
@@ -66,9 +68,9 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   {
     zoom = value;
 
-    mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+    if (!isRelative) mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+    else mainView.setGraphicSize(FlxG.width, FlxG.height);
     mainView.updateHitbox();
-
     camSlice.width = mainView.width;
     camSlice.height = mainView.height;
 
@@ -610,10 +612,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     camSliceOverlay.setPosition(camSlice.x, camSlice.y);
 
     leftExt.width = pieceSize / zoom;
+    if (!isRelative) leftExt.width = pieceSize;
     leftExt.height = camSlice.height;
     leftExt.setPosition(camSlice.x - leftExt.width, camSlice.y);
 
     rightExt.width = pieceSize / zoom;
+    if (!isRelative) rightExt.width = pieceSize;
     rightExt.height = camSlice.height;
     rightExt.setPosition(camSlice.x + camSlice.width, camSlice.y);
 
