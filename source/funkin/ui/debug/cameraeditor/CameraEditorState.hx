@@ -327,6 +327,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemRelativeView.selected)
   var isCameraRelative:Bool = false;
 
+  var relativeZoom:Float = 1.0;
+
   @:bind(menubarItemExtendedBounds.selected)
   public var showCameraExtendedBounds(default, set):Bool = false;
 
@@ -770,6 +772,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     super.update(elapsed);
+
+    if (isCameraRelative) FlxG.camera.zoom = cameraRect.zoom * relativeZoom;
 
     MouseUtil.mouseCamDrag(goToPoint);
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
@@ -1852,11 +1856,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
+    if (isCameraRelative) {
+      relativeZoom = 1.0;
+      return;
+    }
     FlxG.camera.zoom = 1.0;
   }
 
   function onViewportZoom(e:CameraViewportEvent):Void
   {
+    if (isCameraRelative) {
+      relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
+      return;
+    }
     // TODO: make this wheel zoom sensitivity configurable
     MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
   }
