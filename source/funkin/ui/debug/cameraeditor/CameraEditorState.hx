@@ -106,7 +106,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The path to save backups to, when the editor is closed unexpectedly.
    */
-  public static final BACKUPS_PATH:String = "./backups/camera/";
+  public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
    * The current instance of the Camera Editor.
