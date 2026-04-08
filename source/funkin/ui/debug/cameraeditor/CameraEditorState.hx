@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
+import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
 import haxe.ui.containers.Panel;
@@ -53,7 +54,9 @@ import funkin.ui.debug.cameraeditor.commands.AddEventCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
+import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
+import funkin.ui.debug.cameraeditor.components.WelcomeDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
@@ -188,6 +191,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   public var selectedSongEvent(default, set):Null<SongEventData> = null;
+
   var hasClipboardEvent:Bool = false;
 
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
@@ -203,9 +207,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   // simple getter to remove bunch of `if (selectedSongEvent != null)` esque checks
   var isSelectingSongEvent(get, never):Bool;
-  inline function get_isSelectingSongEvent():Bool
-    return selectedSongEvent != null;
 
+  inline function get_isSelectingSongEvent():Bool
+  {
+    return selectedSongEvent != null;
+  }
 
   /**
    * A list of previous working file paths.
@@ -381,11 +387,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var wasCursorOverHaxeUI:Bool = false;
 
   /**
-   * Set by CameraEditorDialogHandler, used to prevent background interaction while a dialog is open.
-   */
-  var isHaxeUIDialogOpen:Bool = false;
-
-  /**
    * The camera that the HUD is rendered to.
    */
   var camHUD:FlxCamera;
@@ -479,6 +480,17 @@ class CameraEditorState extends UIState implements ConsoleClass
   var songEvents:Array<SongEventData> = [];
 
   var addEventMenu:AddEventMenu;
+  var shouldShowBackupAvailableDialog(get, set):Bool;
+
+  function get_shouldShowBackupAvailableDialog():Bool
+  {
+    return Save.instance.cameraEditorHasBackup.value && CameraEditorImportExportHandler.getLatestBackupPath() != null;
+  }
+
+  function set_shouldShowBackupAvailableDialog(value:Bool):Bool
+  {
+    return Save.instance.cameraEditorHasBackup.value = value;
+  }
 
   /**
    * LIFE CYCLE FUNCTIONS
@@ -567,6 +579,44 @@ class CameraEditorState extends UIState implements ConsoleClass
     menubarItemUndo.shortcutText = '⌘+Z';
     menubarItemRedo.shortcutText = '⌘+Y';
     #end
+
+    if (params != null && params.fnfcTargetPath != null)
+    {
+      // Chart editor was opened from the command line. Open the FNFC file now!
+      var selectedFileBytes:Null<Bytes> = FileUtil.readBytesFromPath(params.fnfcTargetPath);
+      if (selectedFileBytes == null)
+      {
+        trace('Failed to load bytes for FNFC from ${params.fnfcTargetPath}');
+        return;
+      }
+
+      var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFileBytes, true);
+      if (entries == null)
+      {
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${params.fnfcTargetPath})');
+        return;
+      }
+
+      CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+
+      this.currentWorkingFilePath = params.fnfcTargetPath;
+      this.saved = true; // Just loaded file!
+
+      this.songMetadatas = entries.songMetadatas;
+      this.songDatas = entries.songChartDatas;
+      this.songManifestData = entries.manifest;
+      this.audioInstTrackData = entries.instrumentals;
+      this.audioVocalTrackData = entries.vocals;
+      this.onChartLoaded();
+    }
+    else
+    {
+      var welcomeDialog = this.openWelcomeDialog();
+      if (shouldShowBackupAvailableDialog)
+      {
+        // this.openBackupAvailableDialog(welcomeDialog);
+      }
+    }
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
@@ -913,7 +963,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     // Maybe make this changeable in the ui?
     if (target == 'erect') currentDifficulty = 'nightmare';
-    else currentDifficulty = 'hard';
+    else
+      currentDifficulty = 'hard';
 
     onChartLoaded();
   }
@@ -1590,6 +1641,34 @@ class CameraEditorState extends UIState implements ConsoleClass
     aboutDialog.showDialog();
 
     aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
+  }
+
+  function showBackupAvailableDialog():Void
+  {
+    // var backupDialog = new BackupAvailableDialog(welcomeDialog);
+    // backupDialog.showDialog();
+
+    // backupDialog.onDialogClosed = (_) -> backupDialog = null;
+  }
+
+  /**
+   * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
+   * @param state The current chart editor state.
+   * @param closable Whether the dialog can be closed by the user.
+   * @return The dialog that was opened.
+   */
+  function openWelcomeDialog():Null<Dialog>
+  {
+    final CLOSABLE:Bool = false;
+    final MODAL:Bool = true;
+
+    var dialog = new WelcomeDialog(this, CLOSABLE);
+
+    dialog.zIndex = 1_000;
+
+    dialog.showDialog(MODAL);
+
+    return dialog;
   }
 }
 #end
