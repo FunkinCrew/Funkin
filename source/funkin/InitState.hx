@@ -1,5 +1,6 @@
 package funkin;
 
+import funkin.ui.debug.cameraeditor.CameraEditorState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.TransitionData;
@@ -439,6 +440,16 @@ class InitState extends FlxState
     {
       #if FEATURE_CHART_EDITOR
       FlxG.switchState(() -> new ChartEditorState({
+        fnfcTargetPath: params.chart.chartPath,
+      }));
+      #else
+      FlxG.switchState(() -> new TitleState());
+      #end
+    }
+    else if (params.camera.shouldLoadChart)
+    {
+      #if FEATURE_CAMERA_EDITOR
+      FlxG.switchState(() -> new CameraEditorState({
         fnfcTargetPath: params.chart.chartPath,
       }));
       #else

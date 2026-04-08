@@ -75,7 +75,7 @@ class CLIUtil
           case '--chart':
             if (args.length == 0)
             {
-              trace('No chart path provided.');
+              trace('No chart path provided for Chart Editor.');
               printUsage();
             }
             else
@@ -83,10 +83,21 @@ class CLIUtil
               result.chart.shouldLoadChart = true;
               result.chart.chartPath = args.shift();
             }
+          case '--camera':
+            if (args.length == 0)
+            {
+              trace('No chart path provided for Camera Editor.');
+              printUsage();
+            }
+            else
+            {
+              result.camera.shouldLoadChart = true;
+              result.camera.chartPath = args.shift();
+            }
           case '--stage':
             if (args.length == 0)
             {
-              trace('No stage path provided.');
+              trace('No stage path provided for Stage Editor.');
               printUsage();
             }
             else
@@ -97,7 +108,7 @@ class CLIUtil
           case '--song':
             if (args.length == 0)
             {
-              trace('No chart path provided.');
+              trace('No chart path provided for playback.');
               printUsage();
             }
             else
@@ -146,6 +157,10 @@ class CLIUtil
         shouldLoadChart: false,
         chartPath: null
       },
+      camera: {
+        shouldLoadChart: false,
+        chartPath: null
+      },
       stage: {
         shouldLoadStage: false,
         stagePath: null
@@ -184,6 +199,7 @@ typedef CLIParams =
 {
   var args:Array<String>;
   var chart:CLIChartParams;
+  var camera:CLIChartParams;
   var stage:CLIStageParams;
   var song:CLISongParams;
 }
