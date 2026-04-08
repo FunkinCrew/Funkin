@@ -398,6 +398,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   var camGame:FlxCamera;
 
+  var camRelative:FlxCamera;
+
   /**
    * The default zoom level of the stage's camera, used for calculating relative zoom levels for events like ZoomCamera. Updated whenever a new stage is built.
    */
@@ -520,10 +522,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     loadPreferences();
 
     camGame = new FlxCamera();
+    camGame.bgColor.alpha = 0;
+    camRelative = new FlxCamera();
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
 
-    FlxG.cameras.reset(camGame);
+    FlxG.cameras.reset(camRelative); // Cam relative is default
+    FlxG.cameras.add(camGame, false);
     FlxG.cameras.add(camHUD, false);
     FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
@@ -579,6 +584,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     });
 
     add(cameraRect);
+    cameraRect.cameras = [camGame];
     // add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
 
@@ -735,7 +741,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
 
-  public override function update(elapsed:Float):Void
+  var _wasRelative:Bool = false;
+
+  override public function update(elapsed:Float):Void
   {
     // Save the stage if exiting through the F4 keybind.
     // Soon the EvacuateDebugPlugin will move us to the new state.
@@ -781,18 +789,38 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
-    if (isCameraRelative) FlxG.camera.zoom = cameraRect.zoom * relativeZoom;
+    MouseUtil.mouseCamDrag(goToPoint);
 
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
 
-    FlxG.camera.scroll.copyFrom(_cameraTarget);
+    cameraRect.isRelative = isCameraRelative;
 
     if (!isCameraRelative)
     {
+      _wasRelative = false;
+      FlxG.camera.scroll.copyFrom(_cameraTarget);
+
+      camGame.zoom = FlxG.camera.zoom;
+
       // subtract the vcam point since it moves everything
       FlxG.camera.scroll.x -= cameraRect.vCamPoint.x;
       FlxG.camera.scroll.y -= cameraRect.vCamPoint.y;
+
+      camGame.scroll.copyFrom(FlxG.camera.scroll);
+    }
+    else
+    {
+
+      if (!_wasRelative)
+      {
+        _wasRelative = true;
+        cameraRect.zoom = cameraRect.zoom;
+      }
+      camRelative.zoom = cameraRect.zoom * relativeZoom;
+      camRelative.scroll.copyFrom(_cameraTarget);
+      camGame.zoom = relativeZoom;
+      camGame.scroll.copyFrom(camRelative.scroll);
     }
 
     handleKeybinds(elapsed);
@@ -921,6 +949,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     add(currentStage);
     currentStage.vcamPoint = cameraRect.vCamPoint;
     currentStage.onCreate(null);
+    currentStage.cameras = [camRelative];
 
     var songCharacterData = currentSongMetadata.playData.characters;
 
@@ -940,6 +969,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       char.currentStage = currentStage;
       char.debug = true;
+      char.cameras = [camRelative];
 
       char.onCreate(null);
 
