@@ -627,7 +627,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       var welcomeDialog = this.openWelcomeDialog();
       if (shouldShowBackupAvailableDialog)
       {
-        // this.openBackupAvailableDialog(welcomeDialog);
+        openBackupAvailableDialog(welcomeDialog);
       }
     }
   }
@@ -1091,6 +1091,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
     save.cameraEditorHasBackup.value = hasBackup;
+    trace(save.cameraEditorHasBackup.value);
 
     // save.cameraEditorTheme.value = currentTheme;
   }
@@ -1548,21 +1549,23 @@ class CameraEditorState extends UIState implements ConsoleClass
           exitConfirmDialog = null;
           if (btn == DialogButton.YES)
           {
+            // Write a backup, and remember we have one for next time.
             saveBackup();
 
-            // LMAO this prevents infinite recursion.
-            this.saved = true;
-
-            onMenubarExit(null);
+            performCleanup();
+            FlxG.switchState(() -> new MainMenuState());
           }
         });
       }
 
       return;
     }
-
-    performCleanup();
-    FlxG.switchState(() -> new MainMenuState());
+    else
+    {
+      // No need to show confirmation, just exit immediately.
+      performCleanup();
+      FlxG.switchState(() -> new MainMenuState());
+    }
   }
 
   @:bind(menubarItemUndo, MouseEvent.CLICK)
@@ -1752,21 +1755,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
   }
 
-  function showBackupAvailableDialog():Void
-  {
-    // var backupDialog = new BackupAvailableDialog(welcomeDialog);
-    // backupDialog.showDialog();
-
-    // backupDialog.onDialogClosed = (_) -> backupDialog = null;
-  }
-
   /**
    * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
    * @param state The current chart editor state.
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
-  function openWelcomeDialog():Null<Dialog>
+  function openWelcomeDialog():WelcomeDialog
   {
     final CLOSABLE:Bool = false;
     final MODAL:Bool = true;
@@ -1774,6 +1769,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     var dialog = new WelcomeDialog(this, CLOSABLE);
 
     dialog.zIndex = 1_000;
+
+    dialog.showDialog(MODAL);
+
+    return dialog;
+  }
+
+  function openBackupAvailableDialog(?welcomeDialog:WelcomeDialog):BackupAvailableDialog
+  {
+    final MODAL:Bool = true;
+
+    var dialog = new BackupAvailableDialog(this, welcomeDialog);
+
+    dialog.zIndex = 2_000;
 
     dialog.showDialog(MODAL);
 

@@ -1064,7 +1064,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.instance.chartEditorHasBackup.value && ChartEditorImportExportHandler.getLatestBackupPath() != null;
+    return Save.instance.chartEditorHasBackup.value && ChartEditorImportExportHandler.getLatestBackupPath('chart-editor-') != null;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
