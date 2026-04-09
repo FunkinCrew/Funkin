@@ -1350,6 +1350,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function playSingAnimation(note:SongNoteData):Void
   {
+    if (currentStage == null) return;
+
     var isPlayer = note.getStrumlineIndex() == 0;
     var char:BaseCharacter = isPlayer ? currentStage.getBoyfriend() : currentStage.getDad();
 
