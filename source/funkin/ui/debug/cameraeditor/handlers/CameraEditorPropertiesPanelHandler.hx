@@ -32,10 +32,6 @@ class CameraEditorPropertiesPanelHandler
         hidePropertiesPanel(state);
       }
     }
-    else
-    {
-      trace(' ERROR '.error() + 'Could not locate properties panel hide button.');
-    }
 
     hidePropertiesPanel(state);
   }
