@@ -799,6 +799,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
     previousNotes = [null,null,null,null,null,null,null,null];
+    completedEvents = [];
 
     remove(cameraRect);
     if (currentSongMetadata == null) return;
@@ -1231,6 +1232,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       trace('Instrumental track completed playback. Resetting caches.');
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
+      completedEvents = [];
       previousNotes = [null,null,null,null,null,null,null,null];
     };
 
@@ -1278,8 +1280,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.songLength = currentInstrumental.length;
     timeline.songPosition = 0;
     timeline.setStepLengthMs(conductorInUse.stepLengthMs);
-
-    cachedEventIndex = 0;
   }
 
   /**
