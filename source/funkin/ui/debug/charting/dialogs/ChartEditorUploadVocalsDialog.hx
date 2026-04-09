@@ -128,6 +128,15 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
             if (chartEditorState.loadVocalsFromBytes(selectedFile.bytes, charKey, this.instId, !this.hasClearedVocals))
             {
+              if (isPlayer)
+              {
+                chartEditorState.currentSongMetadata.playData.characters.playerVocals = [playerCharId];
+              }
+              else
+              {
+                chartEditorState.currentSongMetadata.playData.characters.opponentVocals = [opponentCharId];
+              }
+
               hasClearedVocals = true;
               // Tell the user the load was successful.
               chartEditorState.success('Loaded Vocals', 'Loaded vocals for $charName (${selectedFile.name}), variation ${chartEditorState.selectedVariation}');
