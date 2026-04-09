@@ -1,32 +1,33 @@
 package funkin.ui.debug.charting.toolboxes;
 
 #if FEATURE_CHART_EDITOR
-import funkin.play.event.SongEventHelper;
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import funkin.data.event.SongEventRegistry;
 import funkin.data.event.SongEventSchema;
+import funkin.play.event.SongEvent;
+import funkin.play.event.SongEventHelper;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import haxe.ui.backend.ImageData;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
+import haxe.ui.components.Image;
 import haxe.ui.components.Label;
 import haxe.ui.components.NumberStepper;
-import haxe.ui.core.Component;
-import funkin.data.event.SongEventRegistry;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
+import haxe.ui.containers.Frame;
+import haxe.ui.containers.Grid;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.VBox;
-import haxe.ui.containers.Frame;
-import haxe.ui.events.UIEvent;
+import haxe.ui.core.Component;
 import haxe.ui.data.ArrayDataSource;
-import haxe.ui.containers.Grid;
-import haxe.ui.components.Image;
-import haxe.ui.backend.ImageData;
+import haxe.ui.events.UIEvent;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.geom.Rectangle;
 import openfl.geom.Point;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.FlxG;
+import openfl.geom.Rectangle;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -243,6 +244,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       if (field == null) continue;
 
       var hbox:HBox = new HBox();
+      hbox.id = 'container${field.name}';
       hbox.percentWidth = 100;
       parent.addComponent(hbox);
 
@@ -458,14 +460,16 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     if (easeGraphImage == null || easeDotImage == null) return;
 
-    final easeVal:Null<String> = chartEditorState.eventDataToPlace.get('ease');
-    final easeDirVal:Null<String> = chartEditorState.eventDataToPlace.get('easeDir');
-    final easeStr:String = easeVal ?? 'linear';
-    final easeDirStr:String = easeDirVal ?? 'In';
-    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
+    var easeStr:Null<String> = chartEditorState.eventDataToPlace.get('ease');
+    var easeDirStr:Null<String> = chartEditorState.eventDataToPlace.get('easeDir');
+
+    var easeType:String = SongEventHelper.resolveEaseTypeFromKey(easeStr ?? SongEvent.DEFAULT_EASE);
+    var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
+
+    var easeKey:String = '$easeType$easeDir';
 
     // Hide preview when easing indicates a non-visual/legacy type such as "CLASSIC"
-    if (easeStr != null && easeStr.toUpperCase().indexOf('CLASSIC') != -1)
+    if (easeType != null && (easeType == 'CLASSIC' || easeType == 'INSTANT'))
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();
@@ -479,8 +483,13 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       easeGraphImage.hidden = true;
       easeDotImage.hidden = true;
       if (currentEaseHBox != null) currentEaseHBox.hidden = true;
+
+      setEaseDirVisible(false);
+
       return;
     }
+
+    setEaseDirVisible(true);
 
     // Reset any previous timers/sprites
     _dotTimer?.cancel();
@@ -490,8 +499,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     _easeDotSprites = [];
     _dotIndex = 0;
 
-    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(key);
-    _easeGraphSprite = SongEventHelper.createSpriteFromKey(key, 100, 100);
+    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(easeKey);
+    _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, 100, 100);
     easeGraphImage.resource = _easeGraphSprite?.frame;
     if (_graphBd == null || easeGraphImage.resource == null)
     {
@@ -507,7 +516,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     easeDotImage.hidden = false;
     if (currentEaseHBox != null) currentEaseHBox.hidden = false;
 
-    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(key, 30, 3, 16);
+    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(easeKey, 30, 3, 16);
     if (dotSprites == null || dotSprites.length == 0)
     {
       // if no dot sprites, still show graph but keep dot empty
@@ -543,6 +552,18 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     _dotTimer ??= new FlxTimer();
     _dotTimer.start(_dotInterval, frameCallback, 0);
+  }
+
+  function setEaseDirVisible(visible:Bool):Void
+  {
+    // Hardcoded behavior for a specific field lmao
+    var easeDirField:Component = toolboxEventsDataBox.findComponent('containereaseDir');
+
+    if (easeDirField != null)
+    {
+      trace('Toggling easeDir visibility: ${visible}');
+      easeDirField.hidden = !visible;
+    }
   }
 
   /**
