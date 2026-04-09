@@ -174,6 +174,7 @@ class ZoomCameraContainer extends VBox
     else if (modeType == 'direct') zoomCameraMode.selectedIndex = 1;
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
+    zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
     zoomCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? ZoomCameraSongEvent.DEFAULT_DURATION;
 
     // Event data from the chart might use the "legacy" ease types where the direction wasn't separate.
@@ -209,7 +210,7 @@ class ZoomCameraContainer extends VBox
   }
 
   /**
-   * Called when the Zoom Level field is changed.
+   * Called when the Zoom Level number stepper is changed.
    */
   @:bind(zoomCameraZoomLevel, UIEvent.CHANGE)
   function onChange_zoomCameraZoomLevel(_):Void
@@ -217,6 +218,30 @@ class ZoomCameraContainer extends VBox
     var value:Float = zoomCameraZoomLevel.value;
 
     trace('Zoom Camera: Zoom Level changed to ' + value);
+
+    if (zoomCameraZoomLevelSlider != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
+    {
+      zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
+    }
+
+    cameraEditorState.selectedSongEvent.set('zoom', value);
+    updateCameraPreview();
+  }
+
+  /**
+   * Called when the Zoom Level slider is changed.
+   */
+  @:bind(zoomCameraZoomLevelSlider, UIEvent.CHANGE)
+  function onChange_zoomCameraZoomLevelSlider(_):Void
+  {
+    var value:Float = zoomCameraZoomLevelSlider.value;
+
+    trace('Zoom Camera: Zoom Level changed to ' + value);
+
+    if (zoomCameraZoomLevel != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
+    {
+      zoomCameraZoomLevel.value = zoomCameraZoomLevelSlider.value;
+    }
 
     cameraEditorState.selectedSongEvent.set('zoom', value);
     updateCameraPreview();
