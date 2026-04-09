@@ -40,6 +40,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   {
     if (currentStage == null) return new FlxPoint();
     var dad = currentStage.getDad();
+    if (dad == null) return new FlxPoint();
     return new FlxPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
   }
 

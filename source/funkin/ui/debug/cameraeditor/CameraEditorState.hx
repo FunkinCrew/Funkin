@@ -1416,11 +1416,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     var notes:Array<SongNoteData> = currentNotes;
     var dad:BaseCharacter = currentStage != null ? currentStage.getDad() : null;
     var bf:BaseCharacter = currentStage != null ? currentStage.getBoyfriend() : null;
+
     var dadShouldKeepSinging:Bool = false;
     var bfShouldKeepSinging:Bool = false;
 
-    var dadSingTime = dad.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
-    var bfSingTime = bf.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
+    var dadSingTime:Float = 0;
+    var bfSingTime:Float = 0;
+
+    if (dad != null) dadSingTime = dad.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
+    if (bf != null) bfSingTime = bf.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
 
     // replay notes
     if (notes != null)
