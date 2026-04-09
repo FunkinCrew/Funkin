@@ -1201,6 +1201,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     });
   }
 
+  var shouldResetScroll:Bool = false;
+
   /**
    * Loads the current instrumental and vocal tracks based on the current variation and song metadata.
    */
@@ -1230,6 +1232,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     currentInstrumental.onComplete = function()
     {
       trace('Instrumental track completed playback. Resetting caches.');
+      shouldResetScroll = true;
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
@@ -1293,14 +1296,17 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
       playAudioPlayback();
 
-
-
     trace(currentInstrumental.playing ? 'Toggled playback ON' : 'Toggled playback OFF');
   }
 
   function playAudioPlayback():Void
   {
     if (currentInstrumental == null) return;
+
+    if (shouldResetScroll) {
+      shouldResetScroll = false;
+      resetScrollPosition();
+    }
 
     currentInstrumental.play(false, currentInstrumental.time);
     for (vocal in currentVocals)
