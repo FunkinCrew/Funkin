@@ -52,14 +52,14 @@
       "name": "flixel",
       "type": "git",
       "dir": null,
-      "ref": "622bb65e7f49f0e1a03826b6593369d3ad5e54fa",
+      "ref": "2bb82d29f52ef25a0da4a3f0157f7bfb0f648c9a",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
       "dir": null,
-      "ref": "187f93b34f93c6a405d634a42913c745e443463a",
+      "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
