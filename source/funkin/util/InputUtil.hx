@@ -64,6 +64,17 @@ class InputUtil
   }
 
   /**
+   * Returns if any key is being pressed (or was just pressed)
+   * @param keyArray An array of FlxKeys
+   * @return `true` if there's any key in keyArray that isn't being pressed
+   */
+  public static function anyPressed(keyArray:Array<FlxKey>):Bool
+  {
+    var isKeyBeingPressed:FlxKey->Bool = key -> return FlxG.keys.checkStatus(key, PRESSED) || FlxG.keys.checkStatus(key, JUST_PRESSED);
+    return keyArray.exists(isKeyBeingPressed);
+  }
+
+  /**
    * Get the key name for a given key code.
    * @param id The key code to get the name of
    * @return The name of the key

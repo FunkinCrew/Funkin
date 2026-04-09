@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
+import funkin.util.InputUtil;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
@@ -558,7 +559,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     addEventMenu = new AddEventMenu(function(eventData)
     {
-      var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
+      var selectedLayer = timeline.viewport.layers[
+        timeline.viewport.selectedLayerIndex
+      ];
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
 
@@ -669,7 +672,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var previousNoteTime:Float = 0;
-  var previousNotes:Array<SongNoteData> = [null,null,null,null,null,null,null,null];
+  var previousNotes:Array<SongNoteData> = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ];
 
   function processNotes():Void
   {
@@ -775,14 +787,80 @@ class CameraEditorState extends UIState implements ConsoleClass
       FlxG.camera.scroll.y -= cameraRect.vCamPoint.y;
     }
 
-    if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
-    if (FlxG.keys.justPressed.R) onStopPlayback(null);
-    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show();
-
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    handleKeybinds(elapsed);
 
     this.updatePropertiesPanel(elapsed);
+  }
+
+  function handleKeybinds(elapsed:Float):Void
+  {
+    //
+    // Click Sounds
+    //
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)
+    {
+      FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
+    }
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight)
+    {
+      FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    }
+
+    //
+    // Timeline Keybinds
+    //
+    if (InputUtil.allPressedWithDebounce([SHIFT, A]) && !InputUtil.anyPressed([CONTROL, ALT]))
+    {
+      addEventMenu.show();
+    }
+
+    //
+    // Menubar Keybinds
+    //
+    if (InputUtil.allPressedWithDebounce([CONTROL, O]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarOpen(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, S]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarSave(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, SHIFT, S]) && !InputUtil.anyPressed([ALT]))
+    {
+      onMenubarSaveAs(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Q]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarExit(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, R]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onResetCameraScroll(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, G]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onResetCameraZoom(null);
+    }
+    if (FlxG.keys.justPressed.SPACE && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onPlayPause(null);
+    }
+    if (FlxG.keys.justPressed.R && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onStopPlayback(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Z]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarUndo(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Y]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarRedo(null);
+    }
+    if (FlxG.keys.justPressed.F1 && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onUserGuide(null);
+    }
   }
 
   /**
@@ -792,7 +870,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
-    previousNotes = [null,null,null,null,null,null,null,null];
+    previousNotes = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ];
     completedEvents = [];
 
     remove(cameraRect);
@@ -1169,12 +1256,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (deleteLayerConfirmDialog == null)
         {
-          var dialog = new DeleteLayerConfirmDialog(layerName, eventCount,
-            () -> {
-              var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
-              CameraEditorCommandHandler.performCommand(this, cmd);
-            },
-            () -> {
+          var dialog = new DeleteLayerConfirmDialog(layerName, eventCount, () ->
+          {
+            var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
+            CameraEditorCommandHandler.performCommand(this, cmd);
+          }, () ->
+            {
               var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
               CameraEditorCommandHandler.performCommand(this, cmd);
             });
@@ -1327,7 +1414,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    * If `forceReplay` is false, the camera timeline will only replay if the seek is large enough (greater than 250m)
    * @param position The time position to set, in milliseconds.
    * @param forceReplay Forcibly replay the timeline, ignoring optimizations
-   **/
+  **/
   public function setTimePosition(position:Float, forceReplay:Bool = false):Void
   {
     if (currentInstrumental == null) return;
@@ -1350,7 +1437,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         replayCameraTimeline(position);
       }
     }
-    else replayCameraTimeline(position);
+    else
+      replayCameraTimeline(position);
     timeline.songPosition = conductorInUse.songPosition;
   }
 
