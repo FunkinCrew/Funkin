@@ -1179,11 +1179,11 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(0.1, _ ->
     {
+      capsuleToRank.fakeRanking.visible = false;
+      capsuleToRank.fakeBlurredRanking.visible = false;
+
       if (fromResults?.oldRank != null)
       {
-        capsuleToRank.fakeRanking.visible = false;
-        capsuleToRank.fakeBlurredRanking.visible = false;
-
         sparks.visible = true;
         sparksADD.visible = true;
         sparks.animation.play('sparks', true);
