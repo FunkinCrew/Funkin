@@ -1226,6 +1226,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
     if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
 
+    currentInstrumental.onComplete = function()
+    {
+      trace('Instrumental track completed playback. Resetting caches.');
+      cachedEventIndex = 0;
+      cachedNoteIndex = 0;
+      previousNotes = [null,null,null,null,null,null,null,null];
+    };
+
     trace('Loading vocals');
 
     var buildVocal:Null<Array<String>>->Void = (vocals:Null<Array<String>>) ->
@@ -1285,7 +1293,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
       playAudioPlayback();
 
-    trace(currentInstrumental.playing ? "Toggled playback ON" : "Toggled playback OFF");
+
+
+    trace(currentInstrumental.playing ? 'Toggled playback ON' : 'Toggled playback OFF');
   }
 
   function playAudioPlayback():Void
@@ -1713,6 +1723,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var playing:Bool = currentInstrumental != null && currentInstrumental.playing;
     togglePlayback(true);
+    cachedEventIndex = 0;
+    cachedNoteIndex = 0;
+    previousNotes = [null,null,null,null,null,null,null,null];
     completedEvents = [];
     setTimePosition(0);
     resetScrollPosition();
