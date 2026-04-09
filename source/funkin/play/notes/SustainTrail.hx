@@ -419,7 +419,7 @@ class SustainTrail extends FlxSprite
       if (!camera.visible || !camera.exists) continue;
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
-      getScreenPosition(_point, camera).subtractPoint(offset);
+      getScreenPosition(_point, camera).subtract(offset);
       camera.drawTriangles(graphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
