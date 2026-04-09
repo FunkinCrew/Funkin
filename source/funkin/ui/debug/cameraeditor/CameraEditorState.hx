@@ -1262,7 +1262,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.setStepLengthMs(conductorInUse.stepLengthMs);
 
     cachedEventIndex = 0;
-    cachedNoteIndex = 0;
   }
 
   /**
