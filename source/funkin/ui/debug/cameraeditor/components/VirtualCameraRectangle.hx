@@ -255,15 +255,9 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (char != null)
     {
-      if (char == -1)
-      {
-        setFocusPoint(offsetX, offsetY);
-        trace('Focusing camera on coordinates: (' + offsetX + ', ' + offsetY + ')');
-      }
+      if (char == -1) setFocusPoint(offsetX, offsetY);
       else
       {
-        trace('Focusing camera on character: ' + char + ' with offset: (' + offsetX + ', ' + offsetY + ')');
-
         switch (char)
         {
           case 0:
@@ -285,7 +279,6 @@ class VirtualCameraRectangle extends FlxSpriteGroup
               setFocusPoint(gf.cameraFocusPoint.x + offsetX, gf.cameraFocusPoint.y + offsetY);
             }
         }
-        trace('    Camera follow point set to: (' + cameraFollowPoint.x + ', ' + cameraFollowPoint.y + ')');
       }
     }
 
@@ -301,13 +294,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       cameraFollowStart.copyFrom(lastVCamPoint);
       cameraFollowDuration = 0;
       cameraFollowEase = null;
-      trace('    Ease: CLASSIC (exponential decay)');
       return;
     }
 
     isClassicEase = false;
-
-    trace('    Duration: ' + duration + 'ms, Ease: ' + ease);
 
     switch (ease)
     {
@@ -320,11 +310,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
-        if (easeFunction == null)
-        {
-          trace('Invalid ease function: $easeFunctionName');
-          return;
-        }
+        if (easeFunction == null) return;
+
         tweenCameraToFollowPoint(durSeconds, easeFunction);
     }
   }
