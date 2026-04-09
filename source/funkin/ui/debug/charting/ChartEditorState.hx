@@ -3286,13 +3286,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (currentWorkingFilePath != null)
       {
         this.exportAllSongData(true, currentWorkingFilePath);
+        this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
       else
       {
-        this.exportAllSongData(false, null);
+        this.exportAllSongData(false, null, function(path:String)
+        {
+          // CTRL + SHIFT + S Successful
+          this.success('Saved Chart', 'Chart saved successfully to ${path}.');
+        }, function()
+        {
+          // CTRL + SHIFT + S Cancelled
+        });
       }
     };
-    menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null);
+    menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null, function(path:String)
+    {
+      // CTRL + SHIFT + S Successful
+      this.success('Saved Chart', 'Chart saved successfully to ${path}.');
+    }, function()
+    {
+      // CTRL + SHIFT + S Cancelled
+    });
     menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
