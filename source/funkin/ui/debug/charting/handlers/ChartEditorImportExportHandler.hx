@@ -461,9 +461,11 @@ class ChartEditorImportExportHandler
 
   /**
    * Evaluates the list of backups,
+   *
+   * @param prefix An optional prefix to filter the backups by.
    * @return The file path to the latest chart backup, or null if no backups exist.
    */
-  public static function getLatestBackupPath():Null<String>
+  public static function getLatestBackupPath(?prefix:String):Null<String>
   {
     #if sys
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
@@ -472,7 +474,10 @@ class ChartEditorImportExportHandler
     // Filter to only the backups for the chart editor
     files = files.filter((file:String) ->
     {
-      return file.endsWith(Constants.EXT_CHART);
+      if (!file.endsWith(Constants.EXT_CHART)) return false;
+      if (prefix != null && !file.startsWith(prefix)) return false;
+
+      return true;
     });
     if (files.length == 0) return null; // No backups.
     if (files.length == 1) return haxe.io.Path.join([BACKUPS_PATH, files[0]]);
@@ -501,17 +506,18 @@ class ChartEditorImportExportHandler
    * Retrieve the latest chart backup file, then return a string containing identifying info like the full filename and timestamp.
    * @return The formatted info.
    */
-  public static function getLatestBackupInfo():Null<String>
+  public static function getLatestBackupInfo(?prefix:String):Null<String>
   {
     #if sys
-    var latestBackupPath:Null<String> = getLatestBackupPath();
+    var latestBackupPath:Null<String> = getLatestBackupPath(prefix);
     if (latestBackupPath == null) return null;
 
     var latestBackupName:String = haxe.io.Path.withoutDirectory(latestBackupPath);
     latestBackupName = haxe.io.Path.withoutExtension(latestBackupName);
 
+    final BYTES_PER_MB:Float = 1_000_000;
     var stat = sys.FileSystem.stat(latestBackupPath);
-    var sizeInMB = (stat.size / 1000000).round(3);
+    var sizeInMB = (stat.size / BYTES_PER_MB).round(3);
 
     return "Full Name: " + latestBackupName + "\nLast Modified: " + stat.mtime.toString() + "\nSize: " + sizeInMB + " MB";
     #else
