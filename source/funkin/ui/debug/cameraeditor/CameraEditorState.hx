@@ -120,6 +120,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public static var instance:CameraEditorState = null;
 
+  public static final SEEK_TOLERANCE_MS:Float = 300;
+
   /**
    * INSTANCE DATA
    */
@@ -144,6 +146,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var vCamDebug:FunkinSprite = null;
 
   var cachedEventIndex = 0;
+  var cachedNoteIndex = 0;
 
   function get_currentSongMetadata():Null<SongMetadata>
   {
@@ -677,6 +680,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var previousNoteTime:Float = 0;
+  var previousNotes:Array<SongNoteData> = [null,null,null,null,null,null,null,null];
 
   function processNotes():Void
   {
@@ -686,30 +690,39 @@ class CameraEditorState extends UIState implements ConsoleClass
     var dad:BaseCharacter = currentStage.getDad();
     var bf:BaseCharacter = currentStage.getBoyfriend();
 
-    for (i in 0...notes.length)
+    for (i in cachedNoteIndex...notes.length)
     {
       var note = notes[i];
-      if (note.time > conductorInUse.songPosition || note.time + note.length < previousNoteTime) continue;
+      if (note.time > conductorInUse.songPosition || note.time < previousNoteTime) continue;
 
       var isPlayer = note.getStrumlineIndex() == 0;
       var char:BaseCharacter = isPlayer ? bf : dad;
 
       if (char != null)
       {
-        if (note.length > 0 && note.time < previousNoteTime)
-        {
-          // hold note trigger
-          char.holdTimer = 0;
-          continue;
-        }
+        previousNotes[note.data] = note;
         playSingAnimation(note);
       }
+      cachedNoteIndex = i + 1;
     }
 
     previousNoteTime = conductorInUse.songPosition;
+
+    // Hold notes
+    for (note in previousNotes)
+    {
+      if (note == null) continue;
+      if (note.length <= 0 || note.time + note.length < conductorInUse.songPosition || note.time > conductorInUse.songPosition) continue;
+
+      var isPlayer = note.getStrumlineIndex() == 0;
+      var char:BaseCharacter = isPlayer ? bf : dad;
+
+      if (char != null) char.holdTimer = 0;
+    }
   }
 
   var _cameraTarget:FlxPoint = new FlxPoint();
+  var _autoSeekTimer:Float = 0;
 
   public override function update(elapsed:Float):Void
   {
@@ -719,6 +732,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       performCleanup();
       return;
+    }
+
+    if (autoSeek)
+    {
+      _autoSeekTimer += elapsed;
+
+      if (_autoSeekTimer >= 0.5)
+      {
+        trace('Auto-seek elapsed: ' + conductorInUse.songPosition);
+        autoSeek = false;
+        _autoSeekTimer = 0;
+        replayCameraTimeline(conductorInUse.songPosition);
+      }
     }
 
     if (currentStage != null)
@@ -773,6 +799,10 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function buildStage():Void
   {
+    cachedEventIndex = 0;
+    cachedNoteIndex = 0;
+    previousNotes = [null,null,null,null,null,null,null,null];
+
     remove(cameraRect);
     if (currentSongMetadata == null) return;
     var stageID = currentSongMetadata.playData.stage;
@@ -1276,11 +1306,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.isPlaying = false;
   }
 
+  var lastSeekReplay:Float = 0;
+  var autoSeek:Bool = false;
+
   /**
-   * Sets the time position of the current instrumental and vocal tracks. Replays any song events that should be active at the new time position.
+   * Sets the time position of the current instrumental and vocal tracks.
+   * If `forceReplay` is false, the camera timeline will only replay if the seek is large enough (greater than 250m)
    * @param position The time position to set, in milliseconds.
-   */
-  public function setTimePosition(position:Float):Void
+   * @param forceReplay Forcibly replay the timeline, ignoring optimizations
+   **/
+  public function setTimePosition(position:Float, forceReplay:Bool = false):Void
   {
     if (currentInstrumental == null) return;
 
@@ -1290,7 +1325,19 @@ class CameraEditorState extends UIState implements ConsoleClass
       vocal.time = position;
     }
 
-    replayCameraTimeline(position);
+    if (!forceReplay)
+    {
+      var diff = Math.abs(position - lastSeekReplay);
+      autoSeek = true;
+
+      if (diff > SEEK_TOLERANCE_MS)
+      {
+        autoSeek = false;
+        lastSeekReplay = position;
+        replayCameraTimeline(position);
+      }
+    }
+    else replayCameraTimeline(position);
     timeline.songPosition = conductorInUse.songPosition;
   }
 
@@ -1379,6 +1426,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (note == null) continue;
         if (note.time > position) continue;
 
+        previousNotes[note.data] = note;
+
         var isPlayer = note.getStrumlineIndex() == 0;
         if (isPlayer)
         {
@@ -1405,6 +1454,14 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (latestBFNote.length == 0) bfShouldKeepSinging = latestBFNote.time + 300 > position;
         else if (latestBFNote.length > 0) bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
       }
+
+      if (latestDadNote != null && latestBFNote != null)
+      {
+        var latestNote = latestDadNote.time > latestBFNote.time ? latestDadNote : latestBFNote;
+        cachedNoteIndex = notes.indexOf(latestNote);
+      }
+      else if (latestDadNote != null) cachedNoteIndex = notes.indexOf(latestDadNote);
+      else if (latestBFNote != null) cachedNoteIndex = notes.indexOf(latestBFNote);
     }
 
     if (dad != null) dad.animation.update(0);
@@ -1412,14 +1469,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (!dadShouldKeepSinging && dad != null)
     {
-      trace(dad.animation.curAnim.name);
-      if (!StringTools.startsWith(dad.animation.curAnim.name, "idle")) dad.dance(true);
+      if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
     }
     if (!bfShouldKeepSinging && bf != null)
     {
       if (!StringTools.startsWith(bf.animation.curAnim.name, "idle")) bf.dance(true);
     }
-
     conductorInUse.update(position);
 
     cameraRect.update(0);
