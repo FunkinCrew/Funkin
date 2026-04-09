@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor;
 
+import funkin.util.InputUtil;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
@@ -130,19 +131,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
   public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
-
   public var currentSongMetadata(get, never):Null<SongMetadata>;
   public var currentSongChartData(get, never):Null<SongChartData>;
-
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
-
   public var currentDifficulty:String = "hard";
-
   public var currentNotes(get, never):Array<SongNoteData>;
-
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
-
   public var vCamDebug:FunkinSprite = null;
 
   var cachedEventIndex = 0;
@@ -168,7 +163,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   public var currentStage:Null<Stage> = null;
-
   // Song chart data we have to hold onto just to save properly later.
   public var audioInstTrackData:Map<String, Bytes> = [];
   public var audioVocalTrackData:Map<String, Bytes> = [];
@@ -255,7 +249,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (previousWorkingFilePaths.contains(null))
     {
       // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool {
+      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool
+      {
         return x != null;
       });
     }
@@ -304,7 +299,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         autoSaveTimer.cancel();
       }
 
-      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer) {
+      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer)
+      {
         saveBackup();
       });
     }
@@ -484,7 +480,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var criticalFailure:Bool = false;
 
   var songEvents:Array<SongEventData> = [];
-
   var addEventMenu:AddEventMenu;
   var shouldShowBackupAvailableDialog(get, set):Bool;
 
@@ -552,10 +547,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Save.instance.cameraEditorHasBackup.value = false;
 
     Cursor.show();
-    FunkinSound.playMusic('chartEditorLoop',
-      {
-        startingVolume: 0.0
-      });
+    FunkinSound.playMusic('chartEditorLoop', {
+      startingVolume: 0.0
+    });
     FlxG.sound.music.fadeIn(10, 0, 1);
 
     populateLoadVariationMenu();
@@ -565,7 +559,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     addEventMenu = new AddEventMenu(function(eventData)
     {
-      var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
+      var selectedLayer = timeline.viewport.layers[
+        timeline.viewport.selectedLayerIndex
+      ];
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
 
@@ -630,7 +626,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
-
   var previousTime:Float = 0;
   var completedEvents:Array<SongEventData> = [];
 
@@ -677,7 +672,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   var previousNoteTime:Float = 0;
-  var previousNotes:Array<SongNoteData> = [null,null,null,null,null,null,null,null];
+  var previousNotes:Array<SongNoteData> = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ];
 
   function processNotes():Void
   {
@@ -762,8 +766,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
     {
-      for (vocal in currentVocals)
-        if (vocal.playing) vocal.pause();
+      for (vocal in currentVocals) if (vocal.playing) vocal.pause();
     }
 
     super.update(elapsed);
@@ -781,14 +784,80 @@ class CameraEditorState extends UIState implements ConsoleClass
       FlxG.camera.scroll.y -= cameraRect.vCamPoint.y;
     }
 
-    if (FlxG.keys.justPressed.SPACE) onPlayPause(null);
-    if (FlxG.keys.justPressed.R) onStopPlayback(null);
-    if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.A) addEventMenu.show();
-
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+    handleKeybinds(elapsed);
 
     this.updatePropertiesPanel(elapsed);
+  }
+
+  function handleKeybinds(elapsed:Float):Void
+  {
+    //
+    // Click Sounds
+    //
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)
+    {
+      FunkinSound.playOnce(Paths.sound('chartingSounds/ClickDown'));
+    }
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight)
+    {
+      FunkinSound.playOnce(Paths.sound('chartingSounds/ClickUp'));
+    }
+
+    //
+    // Timeline Keybinds
+    //
+    if (InputUtil.allPressedWithDebounce([SHIFT, A]) && !InputUtil.anyPressed([CONTROL, ALT]))
+    {
+      addEventMenu.show();
+    }
+
+    //
+    // Menubar Keybinds
+    //
+    if (InputUtil.allPressedWithDebounce([CONTROL, O]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarOpen(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, S]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarSave(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, SHIFT, S]) && !InputUtil.anyPressed([ALT]))
+    {
+      onMenubarSaveAs(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Q]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarExit(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, R]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onResetCameraScroll(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, G]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onResetCameraZoom(null);
+    }
+    if (FlxG.keys.justPressed.SPACE && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onPlayPause(null);
+    }
+    if (FlxG.keys.justPressed.R && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onStopPlayback(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Z]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarUndo(null);
+    }
+    if (InputUtil.allPressedWithDebounce([CONTROL, Y]) && !InputUtil.anyPressed([SHIFT, ALT]))
+    {
+      onMenubarRedo(null);
+    }
+    if (FlxG.keys.justPressed.F1 && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
+    {
+      onUserGuide(null);
+    }
   }
 
   /**
@@ -798,7 +867,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
-    previousNotes = [null,null,null,null,null,null,null,null];
+    previousNotes = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ];
     completedEvents = [];
 
     remove(cameraRect);
@@ -1047,9 +1125,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String) {
+    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String)
+    {
       notifyChange("Auto-Save", "A Backup of this Chart has been made.");
-    }, function() {
+    }, function()
+    {
       // Failed to save backup?
     });
   }
@@ -1081,8 +1161,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Can't use filter() because of null safety checking!
     trace('Saving previous files: ${previousWorkingFilePaths.toString()}');
     var filteredWorkingFilePaths:Array<String> = [];
-    for (chartPath in previousWorkingFilePaths)
-      if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
     save.cameraEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
@@ -1094,12 +1173,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public function notifyChange(change:String, notif:String, isError:Bool = false)
   {
-    NotificationManager.instance.addNotification(
-      {
-        title: change,
-        body: notif,
-        type: isError ? NotificationType.Error : NotificationType.Info
-      });
+    NotificationManager.instance.addNotification({
+      title: change,
+      body: notif,
+      type: isError ? NotificationType.Error : NotificationType.Info
+    });
   }
 
   /**
@@ -1179,12 +1257,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         if (deleteLayerConfirmDialog == null)
         {
-          var dialog = new DeleteLayerConfirmDialog(layerName, eventCount,
-            () -> {
-              var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
-              CameraEditorCommandHandler.performCommand(this, cmd);
-            },
-            () -> {
+          var dialog = new DeleteLayerConfirmDialog(layerName, eventCount, () ->
+          {
+            var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
+            CameraEditorCommandHandler.performCommand(this, cmd);
+          }, () ->
+            {
               var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
               CameraEditorCommandHandler.performCommand(this, cmd);
             });
@@ -1236,7 +1314,16 @@ class CameraEditorState extends UIState implements ConsoleClass
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
-      previousNotes = [null,null,null,null,null,null,null,null];
+      previousNotes = [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ];
     };
 
     trace('Loading vocals');
@@ -1303,7 +1390,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentInstrumental == null) return;
 
-    if (shouldResetScroll) {
+    if (shouldResetScroll)
+    {
       shouldResetScroll = false;
       resetScrollPosition();
     }
@@ -1337,7 +1425,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    * If `forceReplay` is false, the camera timeline will only replay if the seek is large enough (greater than 250m)
    * @param position The time position to set, in milliseconds.
    * @param forceReplay Forcibly replay the timeline, ignoring optimizations
-   **/
+  **/
   public function setTimePosition(position:Float, forceReplay:Bool = false):Void
   {
     if (currentInstrumental == null) return;
@@ -1360,7 +1448,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         replayCameraTimeline(position);
       }
     }
-    else replayCameraTimeline(position);
+    else
+      replayCameraTimeline(position);
     timeline.songPosition = conductorInUse.songPosition;
   }
 
@@ -1541,9 +1630,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String) {
+      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String)
+      {
         notifyChange("Chart Save", 'This chart has been saved to ${path}');
-      }, function() {
+      }, function()
+      {
         // Failed to save backup?
       });
     }
@@ -1556,10 +1647,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String) {
+    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String)
+    {
       notifyChange("Chart Save", 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
-    }, function() {
+    }, function()
+    {
       // Failed to save backup?
     });
   }
@@ -1731,7 +1824,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     togglePlayback(true);
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
-    previousNotes = [null,null,null,null,null,null,null,null];
+    previousNotes = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ];
     completedEvents = [];
     setTimePosition(0);
     resetScrollPosition();
