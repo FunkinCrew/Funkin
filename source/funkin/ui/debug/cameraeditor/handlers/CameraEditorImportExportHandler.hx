@@ -67,7 +67,7 @@ class CameraEditorImportExportHandler
    */
   public static function getLatestBackupPath():Null<String>
   {
-    return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupPath();
+    return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupPath('camera-editor-');
   }
 
   /**
@@ -76,7 +76,7 @@ class CameraEditorImportExportHandler
    */
   public static function getLatestBackupInfo():Null<String>
   {
-    return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupInfo();
+    return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupInfo('camera-editor-');
   }
 
   /**

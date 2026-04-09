@@ -173,7 +173,7 @@ class ChartEditorDialogHandler
     var backupTimeLabel:Null<Label> = dialog.findComponent('backupTimeLabel', Label);
     if (backupTimeLabel == null) throw 'Could not locate backupTimeLabel button in Backup Available dialog';
 
-    var latestBackupInfo:Null<String> = ChartEditorImportExportHandler.getLatestBackupInfo();
+    var latestBackupInfo:Null<String> = ChartEditorImportExportHandler.getLatestBackupInfo('chart-editor-');
     if (latestBackupInfo != null)
     {
       backupTimeLabel.text = latestBackupInfo;
@@ -200,7 +200,7 @@ class ChartEditorDialogHandler
     if (buttonOpenBackup == null) throw 'Could not locate buttonOpenBackup button in Backup Available dialog';
     buttonOpenBackup.onClick = function(_)
     {
-      var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath();
+      var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath('chart-editor-');
 
       var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadFromFNFCPath(latestBackupPath) : null;
       if (result != null)
