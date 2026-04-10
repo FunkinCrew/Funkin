@@ -171,9 +171,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     camera = menuCamera;
 
     blackRect = new FlxSprite(0, 0);
-    blackRect.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    blackRect.makeGraphic(FlxG.width + 50, FlxG.height + 50, FlxColor.BLACK);
     blackRect.alpha = 0;
     blackRect.scrollFactor.set(0, 0);
+    blackRect.screenCenter();
     add(blackRect);
 
     receptor = new FunkinSprite(0, 0);
