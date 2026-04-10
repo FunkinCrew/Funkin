@@ -12,6 +12,7 @@ import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.core.CompositeBuilder;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.core.Screen;
 import haxe.ui.layouts.DefaultLayout;
 
 @:composite(TimelineViewportEvents, TimelineViewportBuilder, TimelineViewportLayout)
@@ -304,7 +305,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (!hasEvent(MouseEvent.MOUSE_DOWN, _onMouseDown)) registerEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
     if (!hasEvent(MouseEvent.MOUSE_MOVE, _onMouseMove)) registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
-    if (!hasEvent(MouseEvent.MOUSE_UP, _onMouseUp)) registerEvent(MouseEvent.MOUSE_UP, _onMouseUp);
     if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
   }
 
@@ -312,8 +312,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     unregisterEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
     unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
-    unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
     unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
   }
 
   function _hitTestBlocks(localX:Float, localY:Float):TimelineEventBlock
@@ -530,6 +531,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         _viewport.dispatch(seekEvent);
       }
     }
+
+    // Promote move/up to screen-level so dragging continues outside viewport bounds
+    Screen.instance.registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    Screen.instance.registerEvent(MouseEvent.MOUSE_UP, _onMouseUp);
   }
 
   function _onMouseMove(e:MouseEvent):Void
@@ -559,6 +564,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseUp(e:MouseEvent):Void
   {
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
+
     if (_dragMode == SEEKING) _dragMode = NONE;
     else if (_dragMode != NONE) _endDrag();
   }
