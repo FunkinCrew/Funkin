@@ -3102,6 +3102,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (!isCursorOverHaxeUI && !isPlaytesting)
       {
+        if (FlxG.keys.pressed.SHIFT) return;
         if (pressingControl())
         {
           this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, true);
@@ -3117,6 +3118,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (!isCursorOverHaxeUI && !isPlaytesting)
       {
+        if (FlxG.keys.pressed.SHIFT) return;
         if (pressingControl())
         {
           this.setToolboxState(CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT, true);
@@ -3836,6 +3838,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   override public function onFocusLost():Void
   {
     super.onFocusLost();
+
+    if (selectionBoxStartPos != null)
+    {
+      if (selectionBoxSprite != null) selectionBoxSprite.visible = false;
+      selectionBoxStartPos = null;
+    }
 
     // Stop the song upon tabbing out.
     if (Preferences.autoPause)
