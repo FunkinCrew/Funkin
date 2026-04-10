@@ -3336,22 +3336,22 @@ class FreeplaySongData
 
   /**
    * The default opponent for the song.
-   * Does the getter stuff for you depending on your current (or rather, rememberd) variation and difficulty.
+   * Does the getter stuff for you depending on your current (or rather, remembered) variation and difficulty.
    */
   public var songCharacter(get, never):String;
 
   /**
-   * The full song name, dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
+   * The full song name, dynamically generated depending on your current (or rather, remembered) variation and difficulty.
    */
   public var fullSongName(get, never):String;
 
   /**
-   * The song's id and variation, combined with a colon. Dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
+   * The song's id and variation, combined with a colon. Dynamically generated depending on your current (or rather, remembered) variation and difficulty.
    */
   public var idAndVariation(get, never):String;
 
   /**
-   * The starting BPM of the song, dynamically generated depending on your current (or rather, rememberd) variation and difficulty.
+   * The starting BPM of the song, dynamically generated depending on your current (or rather, remembered) variation and difficulty.
    */
   public var songStartingBpm(get, never):Float;
 
