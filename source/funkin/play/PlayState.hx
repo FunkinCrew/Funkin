@@ -1851,8 +1851,8 @@ class PlayState extends MusicBeatSubState
       && (Conductor.instance.currentStep + cameraZoomRateOffset * Constants.STEPS_PER_BEAT) % (cameraZoomRate * Constants.STEPS_PER_BEAT) == 0
     )
     {
-      // Set zoom multiplier for camera bop.
-      cameraBopMultiplier = cameraBopIntensity;
+      // Add zoom multiplier to camera bop.
+      cameraBopMultiplier += cameraBopIntensity - 1;
       // HUD camera zoom still uses old system. To change. (+3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
