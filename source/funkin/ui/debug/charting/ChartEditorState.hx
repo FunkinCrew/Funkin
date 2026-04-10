@@ -4841,30 +4841,34 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         scrollAnchorScreenPos = null;
       }
-      else if (measureTicks != null && gridPlayheadScrollArea.containsXY(FlxG.mouse.viewX, FlxG.mouse.viewY) && !isCursorOverHaxeUI)
+      else
       {
-        gridPlayheadScrollAreaPressed = true;
-        // Stop audio playback while dragging on the grid playhead.
-        if ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing)
+        if (!FlxG.keys.pressed.SHIFT)
         {
-          playbarHeadDraggingWasPlaying = true;
-          stopAudioPlayback();
+          // Dragging playhead
+          if (measureTicks != null && gridPlayheadScrollArea.containsXY(FlxG.mouse.viewX, FlxG.mouse.viewY) && !isCursorOverHaxeUI)
+          {
+            gridPlayheadScrollAreaPressed = true;
+            // Stop audio playback while dragging on the grid playhead.
+            if ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing)
+            {
+              playbarHeadDraggingWasPlaying = true;
+              stopAudioPlayback();
+            }
+          }
+          else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
+          {
+            // Clicked note preview
+            notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          }
         }
-      }
-      else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
-      {
-        // Clicked note preview
-        notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
-      }
-      else if (!isCursorOverHaxeUI && (!overlapsGrid || overlapsSelectionBorder))
-      {
-        selectionBoxStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
-        // Drawing selection box.
-        targetCursorMode = Crosshair;
-      }
-      else if (overlapsSelection)
-      {
-        // Do nothing
+        else if (!isCursorOverHaxeUI && FlxG.keys.pressed.SHIFT)
+        {
+          trace('Started selection box at (${FlxG.mouse.viewX}, ${FlxG.mouse.viewY})');
+          selectionBoxStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          // Drawing selection box.
+          targetCursorMode = Crosshair;
+        }
       }
     }
 
@@ -5342,7 +5346,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
-      if (FlxG.mouse.justPressed)
+      if (FlxG.mouse.justPressed && !FlxG.keys.pressed.SHIFT)
       {
         // Just clicked to place a note.
         if (!isCursorOverHaxeUI && overlapsGrid && !overlapsSelectionBorder)
