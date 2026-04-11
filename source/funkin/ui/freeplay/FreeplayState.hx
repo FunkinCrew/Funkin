@@ -1135,7 +1135,6 @@ class FreeplayState extends MusicBeatSubState
 
     originalPos.x = (CUTOUT_WIDTH * SONGS_POS_MULTI) + 320.488;
     originalPos.y = 235.6;
-    trace(originalPos);
 
     capsuleToRank.ranking.visible = false;
     capsuleToRank.blurredRanking.visible = false;

@@ -107,9 +107,7 @@ class PlayerFreeplayDJData
   @:optional @:default('PROTECT YO NUTS')
   var text3:String;
   @:jignored
-  var animationMap:Map<String, AnimationData>;
-  @:jignored
-  var prefixToOffsetsMap:Map<String, Array<Float>>;
+  var animationOffsets:Map<String, Array<Float>>;
   @:optional
   var charSelect:Null<PlayerFreeplayDJCharSelectData>;
   @:optional
@@ -129,29 +127,6 @@ class PlayerFreeplayDJData
 
   public function new()
   {
-    animationMap = new Map();
-  }
-
-  function mapAnimations():Void
-  {
-    if (animationMap == null) animationMap = new Map();
-    if (prefixToOffsetsMap == null) prefixToOffsetsMap = new Map();
-
-    animationMap.clear();
-    prefixToOffsetsMap.clear();
-    for (anim in animations)
-    {
-      animationMap.set(anim.name, anim);
-
-      if (this.renderType != 'animateatlas')
-      {
-        prefixToOffsetsMap.set(anim.name, anim.offsets);
-      }
-      else
-      {
-        prefixToOffsetsMap.set(anim.prefix, anim.offsets);
-      }
-    }
   }
 
   public function getAtlasPath():String
@@ -164,7 +139,7 @@ class PlayerFreeplayDJData
     return applyStageMatrix;
   }
 
-  public inline function getAssetPath():String return assetPath; // return assetPath;
+  public inline function getAssetPath():String return assetPath;
 
   public inline function getAnimationsList():Array<AnimationData> return animations;
 
@@ -207,26 +182,23 @@ class PlayerFreeplayDJData
     }
   }
 
-  public function getAnimationPrefix(name:String):Null<String>
-  {
-    if (animationMap.size() == 0) mapAnimations();
-
-    var anim = animationMap.get(name);
-    if (anim == null) return null;
-
-    return anim.name;
-  }
-
-  public function getAnimationOffsetsByPrefix(?prefix:String):Array<Float>
-  {
-    if (prefixToOffsetsMap.size() == 0) mapAnimations();
-    if (prefix == null) return [0, 0];
-    return prefixToOffsetsMap.get(prefix);
-  }
-
   public function getAnimationOffsets(name:String):Array<Float>
   {
-    return getAnimationOffsetsByPrefix(getAnimationPrefix(name));
+    if (animationOffsets == null)
+    {
+      animationOffsets = new Map<String, Array<Float>>();
+
+      animationOffsets.clear();
+
+      for (anim in animations)
+      {
+        animationOffsets.set(anim.name, anim.offsets);
+      }
+    }
+
+    if (name == null) return [0, 0];
+
+    return animationOffsets.get(name);
   }
 
   public function getFistPumpIntroStartFrame():Int
