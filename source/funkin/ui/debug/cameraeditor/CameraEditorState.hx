@@ -326,7 +326,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   @:bind(menubarItemRelativeView.selected)
   var isCameraRelative:Bool = false;
-
   var relativeZoom:Float = 1.0;
 
   @:bind(menubarItemExtendedBounds.selected)
@@ -1065,8 +1064,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       variations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
       for (variation in variations)
       {
-        var menuItemVariation:MenuItem = new MenuItem();
+        var menuItemVariation:MenuOptionBox = new MenuOptionBox();
+        menuItemVariation.id = variation;
         menuItemVariation.text = variation.toTitleCase();
+        menuItemVariation.componentGroup = 'variation';
+        if (variation == currentVariation) menuItemVariation.selected = true;
         menuItemVariation.onClick = function(_:MouseEvent):Void
         {
           switchVariation(variation);
@@ -1857,7 +1859,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
-    if (isCameraRelative) {
+    if (isCameraRelative)
+    {
       relativeZoom = 1.0;
       return;
     }
@@ -1866,7 +1869,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onViewportZoom(e:CameraViewportEvent):Void
   {
-    if (isCameraRelative) {
+    if (isCameraRelative)
+    {
       relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
       return;
     }
