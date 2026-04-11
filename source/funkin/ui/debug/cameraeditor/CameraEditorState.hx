@@ -326,7 +326,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   @:bind(menubarItemRelativeView.selected)
   var isCameraRelative:Bool = false;
-
   var relativeZoom:Float = 1.0;
 
   @:bind(menubarItemExtendedBounds.selected)
@@ -1064,8 +1063,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       variations.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_VARIATION_LIST));
       for (variation in variations)
       {
-        var menuItemVariation:MenuItem = new MenuItem();
+        var menuItemVariation:MenuOptionBox = new MenuOptionBox();
+        menuItemVariation.id = variation;
         menuItemVariation.text = variation.toTitleCase();
+        menuItemVariation.componentGroup = 'variation';
+        if (variation == currentVariation) menuItemVariation.selected = true;
         menuItemVariation.onClick = function(_:MouseEvent):Void
         {
           switchVariation(variation);
@@ -1318,7 +1320,16 @@ class CameraEditorState extends UIState implements ConsoleClass
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
-      previousNotes = [null,null,null,null,null,null,null,null];
+      previousNotes = [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ];
     };
 
     trace('Loading vocals');
@@ -1385,7 +1396,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentInstrumental == null) return;
 
-    if (shouldResetScroll) {
+    if (shouldResetScroll)
+    {
       shouldResetScroll = false;
       resetScrollPosition();
     }
@@ -1818,7 +1830,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     togglePlayback(true);
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
-    previousNotes = [null,null,null,null,null,null,null,null];
+    previousNotes = [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ];
     completedEvents = [];
     setTimePosition(0);
     resetScrollPosition();
@@ -1837,7 +1858,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
-    if (isCameraRelative) {
+    if (isCameraRelative)
+    {
       relativeZoom = 1.0;
       return;
     }
@@ -1846,7 +1868,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onViewportZoom(e:CameraViewportEvent):Void
   {
-    if (isCameraRelative) {
+    if (isCameraRelative)
+    {
       relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
       return;
     }
