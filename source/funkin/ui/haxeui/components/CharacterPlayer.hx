@@ -234,7 +234,8 @@ class CharacterPlayer extends Box
       character.onNoteHit(event);
 
       if ((event.note.noteData.getMustHitNote() && characterType == BF)
-        || (!event.note.noteData.getMustHitNote() && characterType == DAD)) character.holdTimer = -event.note.noteData?.length / 1000;
+        || (!event.note.noteData.getMustHitNote()
+          && characterType == DAD)) character.holdTimer = -event.note.noteData?.length / Constants.MS_PER_SEC;
       // At least i tried yaknow?
     }
   }

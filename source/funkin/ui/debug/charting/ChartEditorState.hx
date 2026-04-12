@@ -5775,18 +5775,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     playbarHeadLayout.y = FlxG.height - 48 - 8;
 
     var songPos:Float = Conductor.instance.songPosition + Conductor.instance.instrumentalOffset;
-    var songPosMilliseconds:String = Std.string(Math.floor(Math.abs(songPos) % 1000)).lpad('0', 3).substr(0, 2);
-    var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / 1000) % 60)).lpad('0', 2);
-    var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / 1000) / 60)).lpad('0', 2);
+    var songPosMilliseconds:String = Std.string(Math.floor(Math.abs(songPos) % Constants.MS_PER_SEC)).lpad('0', 3).substr(0, 2);
+    var songPosSeconds:String = Std.string(Math.floor((Math.abs(songPos) / Constants.MS_PER_SEC) % Constants.SECS_PER_MIN)).lpad('0', 2);
+    var songPosMinutes:String = Std.string(Math.floor((Math.abs(songPos) / Constants.MS_PER_SEC) / Constants.SECS_PER_MIN)).lpad('0', 2);
     if (songPos < 0) songPosMinutes = '-' + songPosMinutes;
     var songPosString:String = '${songPosMinutes}:${songPosSeconds}.${songPosMilliseconds}';
 
     if (playbarSongPos.value != songPosString) playbarSongPos.value = songPosString;
 
     var songRemaining:Float = Math.max(songLengthInMs - songPos, 0.0);
-    var songRemainingMilliseconds:String = Std.string(Math.floor(Math.abs(songRemaining) % 1000)).lpad('0', 3).substr(0, 2);
-    var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / 1000) % 60)).lpad('0', 2);
-    var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / 1000) / 60)).lpad('0', 2);
+    var songRemainingMilliseconds:String = Std.string(Math.floor(Math.abs(songRemaining) % Constants.MS_PER_SEC)).lpad('0', 3).substr(0, 2);
+    var songRemainingSeconds:String = Std.string(Math.floor((songRemaining / Constants.MS_PER_SEC) % Constants.SECS_PER_MIN)).lpad('0', 2);
+    var songRemainingMinutes:String = Std.string(Math.floor((songRemaining / Constants.MS_PER_SEC) / Constants.SECS_PER_MIN)).lpad('0', 2);
     var songRemainingString:String = '-${songRemainingMinutes}:${songRemainingSeconds}.${songRemainingMilliseconds}';
 
     if (playbarSongRemaining.value != songRemainingString) playbarSongRemaining.value = songRemainingString;

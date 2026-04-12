@@ -72,7 +72,7 @@ class FunkinSoundTray extends FlxSoundTray
 
   override public function update(ms:Float):Void
   {
-    var elapsed = ms / 1000.0;
+    var elapsed = ms / Constants.MS_PER_SEC;
 
     // If it has volume, we want to auto-hide after 1 second (1000ms), we simply decrement a timer
     var hasVolume:Bool = (!FlxG.sound.muted && FlxG.sound.volume > 0);

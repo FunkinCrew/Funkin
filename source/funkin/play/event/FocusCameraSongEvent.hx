@@ -146,7 +146,7 @@ class FocusCameraSongEvent extends SongEvent
       case 'INSTANT': // Instant ease. Duration is automatically 0.
         PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
       default:
-        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
