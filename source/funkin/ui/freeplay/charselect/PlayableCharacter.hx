@@ -128,19 +128,19 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
     switch (rank)
     {
       case PERFECT_GOLD:
-        return _data?.results?.music?.PERFECT_GOLD ?? "resultsPERFECT";
+        return _data?.results?.music?.PERFECT_GOLD ?? "results/bf/resultsPERFECT/resultsPERFECT";
       case PERFECT:
-        return _data?.results?.music?.PERFECT ?? "resultsPERFECT";
+        return _data?.results?.music?.PERFECT ?? "results/bf/resultsPERFECT/resultsPERFECT";
       case EXCELLENT:
-        return _data?.results?.music?.EXCELLENT ?? "resultsEXCELLENT";
+        return _data?.results?.music?.EXCELLENT ?? "results/bf/resultsEXCELLENT/resultsEXCELLENT";
       case GREAT:
-        return _data?.results?.music?.GREAT ?? "resultsNORMAL";
+        return _data?.results?.music?.GREAT ?? "results/bf/resultsNORMAL/resultsNORMAL";
       case GOOD:
-        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+        return _data?.results?.music?.GOOD ?? "results/bf/resultsNORMAL/resultsNORMAL";
       case SHIT:
-        return _data?.results?.music?.SHIT ?? "resultsSHIT";
+        return _data?.results?.music?.SHIT ?? "results/bf/resultsSHIT/resultsSHIT";
       default:
-        return _data?.results?.music?.GOOD ?? "resultsNORMAL";
+        return _data?.results?.music?.GOOD ?? "results/bf/resultsNORMAL/resultsNORMAL";
     }
   }
 

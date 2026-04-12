@@ -502,11 +502,11 @@ class ResultState extends MusicBeatSubState
     new FlxTimer().start(rank.getMusicDelay(), _ ->
     {
       var musicPath = getMusicPath(playerCharacter, rank);
-      var introMusic:String = Paths.music('$musicPath/$musicPath-intro');
+      var introMusic:String = Paths.music('$musicPath-intro');
 
       if (Assets.exists(introMusic))
       {
-        var mainMusic:String = Paths.music('$musicPath/$musicPath'); // wraps how FunkinSound load audios
+        var mainMusic:String = Paths.music('$musicPath'); // wraps how FunkinSound load audios
 
         // preload the loop music
         @:nullSafety(Off)
@@ -528,14 +528,24 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        if (!isChartingMode) FunkinSound.playMusic(musicPath, {
-          startingVolume: 1.0,
-          overrideExisting: true,
-          restartTrack: true
-        });
+        if (!isChartingMode)
+        {
+          var mainMusic:String = Paths.music('$musicPath'); // wraps how FunkinSound load audios
+          // preload the loop music
+          @:nullSafety(Off)
+          var musicLoop:FunkinSound = FunkinSound.load(mainMusic, 1.0, true, true, false, false, null, null, true);
+          musicLoop.play();
+          if (!isChartingMode) // Don't override the music and cause problems on the chart editor
+            FunkinSound.setMusic(musicLoop);
+          else // Play the results music as a looped sound instead (that we cancel before closing and returning to the chart editor)
+          {
+            resultsMusic = musicLoop;
+            false; // Why is this necessary for this to work?
+          }
+        }
         else
         {
-          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank) + '/' + getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
+          resultsMusic = FunkinSound.load(Paths.music(getMusicPath(playerCharacter, rank)), 1.0, true, false, true);
         }
       }
     });
