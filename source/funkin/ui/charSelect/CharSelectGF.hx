@@ -1,5 +1,6 @@
 package funkin.ui.charSelect;
 
+import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -125,6 +126,23 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     animation.play('idle', true);
 
     updateHitbox();
+  }
+
+  override function checkRenderTexture():Bool
+  {
+    // GF and Nene have an overlay blend on their deselect animation
+    // Nene also has a blush overlay on her idle animation
+    // We enable render texture here on devices that don't support KHR_blend_equation_advanced to save on performance
+    // TODO: Softcode this in scripts when character select data is refactored!!
+    if (!FunkinCamera.hasKhronosExtension)
+    {
+      if (animation.curAnim.name.startsWith('deselect') || (currentGFPath.contains('nene') && animation.curAnim.name.startsWith('idle')))
+      {
+        return true;
+      }
+    }
+
+    return super.checkRenderTexture();
   }
 
   function loadAnimations():Void

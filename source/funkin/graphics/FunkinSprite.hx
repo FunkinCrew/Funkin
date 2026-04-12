@@ -876,6 +876,13 @@ class FunkinSprite extends FlxAnimate
 
       if (_renderTextureDirty)
       {
+        @:privateAccess
+        if (_renderTexture._camera.width != Math.ceil(bounds.width) || _renderTexture._camera.height != Math.ceil(bounds.height))
+        {
+          // TODO: This is shitty, but resizing doesn't seem to work properly!!!
+          _renderTexture._camera.destroy();
+          _renderTexture._camera = new FunkinCamera('', 0, 0, Math.ceil(bounds.width), Math.ceil(bounds.height));
+        }
         _renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
         _renderTexture.drawToCamera((camera, matrix) ->
         {

@@ -1,5 +1,6 @@
 package funkin.ui.charSelect;
 
+import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -102,6 +103,19 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
       anim.addByFrameLabel('deselect', 'deselect', 24, false);
       anim.addByFrameLabel('deselect-loop', 'deselect loop start', 24);
     }
+  }
+
+  override function checkRenderTexture():Bool
+  {
+    // BF and Pico have an overlay blend on their deselect animation
+    // We enable render texture here on devices that don't support KHR_blend_equation_advanced to save on performance
+    // TODO: Softcode this in scripts when character select data is refactored!!
+    if (!FunkinCamera.hasKhronosExtension && animation.curAnim.name.startsWith('deselect'))
+    {
+      return true;
+    }
+
+    return super.checkRenderTexture();
   }
 
   public function onScriptEvent(event:ScriptEvent):Void
