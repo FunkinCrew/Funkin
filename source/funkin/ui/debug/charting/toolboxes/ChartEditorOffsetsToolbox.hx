@@ -337,14 +337,14 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     var integerSeconds = Math.floor(seconds);
     var decimalSeconds = Math.floor((seconds - integerSeconds) * 10);
 
-    if (integerSeconds < 60)
+    if (integerSeconds < Constants.SECS_PER_MIN)
     {
       return '${integerSeconds}.${decimalSeconds}';
     }
     else
     {
-      var integerMinutes = Math.floor(integerSeconds / 60);
-      var remainingSeconds = integerSeconds % 60;
+      var integerMinutes = Math.floor(integerSeconds / Constants.SECS_PER_MIN);
+      var remainingSeconds = integerSeconds % Constants.SECS_PER_MIN;
       var remainingSecondsPad:String = remainingSeconds < 10 ? '0$remainingSeconds' : '$remainingSeconds';
 
       return '${integerMinutes}:${remainingSecondsPad}${decimalSeconds > 0 ? '.$decimalSeconds' : ''}';

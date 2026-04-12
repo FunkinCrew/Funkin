@@ -65,7 +65,7 @@ class ZoomCameraSongEvent extends SongEvent
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(scaledZoom, 0, isDirectMode);
       default:
-        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)

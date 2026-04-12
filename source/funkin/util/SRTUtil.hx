@@ -161,7 +161,7 @@ class SRTParser
         frac += "0";
       ms = Std.parseInt(frac);
     }
-    return (hh * 3600 + mm * 60 + ss + (ms / 1000.0)) * 1000;
+    return (hh * Constants.SECS_PER_HOUR + mm * Constants.SECS_PER_MIN + ss + (ms / Constants.MS_PER_SEC)) * Constants.MS_PER_SEC;
   }
 }
 

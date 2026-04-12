@@ -398,6 +398,16 @@ class Constants
   public static final NS_PER_SEC:Int = NS_PER_US * US_PER_MS * MS_PER_SEC;
 
   /**
+   * Constant for the number of minutes in an hour.
+   */
+  public static final MIN_PER_HOUR:Int = 60;
+
+  /**
+   * The number of seconds in an hour.
+   */
+  public static final SECS_PER_HOUR:Int = SECS_PER_MIN * MIN_PER_HOUR;
+
+  /**
    * Duration, in milliseconds, until toast notifications are automatically hidden.
    */
   public static final NOTIFICATION_DISMISS_TIME:Int = 5 * MS_PER_SEC;

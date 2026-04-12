@@ -98,7 +98,7 @@ class WaveformTestState extends MusicBeatState
     if (waveformAudio.isPlaying)
     {
       // waveformSprite takes a time in fractional seconds, not milliseconds.
-      var timeSeconds = waveformAudio.time / 1000;
+      var timeSeconds = waveformAudio.time / Constants.MS_PER_SEC;
       // waveformSprite.time = timeSeconds;
       // waveformSprite2.time = timeSeconds;
     }
