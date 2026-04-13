@@ -1,7 +1,7 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
-import haxe.ui.components.Image;
+import funkin.ui.haxeui.components.IconButton;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
@@ -17,8 +17,8 @@ import haxe.ui.events.UIEvent;
 ')
 class TimelineLayerPanel extends VBox
 {
-  public var btnAddLayer:Image;
-  public var btnRemoveLayer:Image;
+  public var btnAddLayer:IconButton;
+  public var btnRemoveLayer:IconButton;
   public var _layerContainer:VBox;
   public var viewport:TimelineViewport;
 
@@ -103,23 +103,21 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     topSpacer.customStyle.paddingLeft = 6;
     topSpacer.customStyle.verticalAlign = "center";
 
-    _panel.btnAddLayer = new Image();
+    _panel.btnAddLayer = new IconButton();
     _panel.btnAddLayer.id = "btn-add-layer";
-    _panel.btnAddLayer.resource = "shared:assets/shared/images/ui/camera-editor/add_layer.png";
+    _panel.btnAddLayer.icon = "shared:assets/shared/images/ui/camera-editor/add_layer.png";
     _panel.btnAddLayer.tooltip = "Add Layer";
     _panel.btnAddLayer.width = 20;
     _panel.btnAddLayer.height = 20;
-    _panel.btnAddLayer.customStyle.cursor = "pointer";
     _panel.btnAddLayer.customStyle.verticalAlign = "center";
     topSpacer.addComponent(_panel.btnAddLayer);
 
-    _panel.btnRemoveLayer = new Image();
+    _panel.btnRemoveLayer = new IconButton();
     _panel.btnRemoveLayer.id = "btn-remove-layer";
-    _panel.btnRemoveLayer.resource = "shared:assets/shared/images/ui/camera-editor/delete_layer.png";
+    _panel.btnRemoveLayer.icon = "shared:assets/shared/images/ui/camera-editor/delete_layer.png";
     _panel.btnRemoveLayer.tooltip = "Remove Selected Layer(s)";
     _panel.btnRemoveLayer.width = 20;
     _panel.btnRemoveLayer.height = 20;
-    _panel.btnRemoveLayer.customStyle.cursor = "pointer";
     _panel.btnRemoveLayer.customStyle.marginLeft = 4;
     _panel.btnRemoveLayer.customStyle.verticalAlign = "center";
     topSpacer.addComponent(_panel.btnRemoveLayer);
@@ -133,5 +131,6 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel._layerContainer.customStyle.horizontalSpacing = 0;
     _panel.addComponent(_panel._layerContainer);
   }
+
 }
 #end
