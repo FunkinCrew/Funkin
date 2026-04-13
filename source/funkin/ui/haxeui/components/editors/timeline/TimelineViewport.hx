@@ -41,7 +41,7 @@ class TimelineViewport extends Box
   public var songLengthMs:Float = 0;
   public var beatsPerGroup:Int = 1;
   public var playhead:Box;
-  public var layerTopOffset:Float = 0;
+  public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
 
   public var pixelsPerMs(get, never):Float;
@@ -60,6 +60,30 @@ class TimelineViewport extends Box
     return PIXELS_PER_STEP_BASE * 4;
   }
 
+  public var totalLayerHeight(get, never):Float;
+
+  function get_totalLayerHeight():Float
+  {
+    return layers.length * LAYER_HEIGHT;
+  }
+
+  public var viewableHeightPx(get, never):Float;
+
+  function get_viewableHeightPx():Float
+  {
+    return Math.max(0, componentHeight - TOP_BAR_HEIGHT);
+  }
+
+  public var maxLayerScrollPx(get, never):Float;
+
+  function get_maxLayerScrollPx():Float
+  {
+    var viewableHeight = componentHeight - TOP_BAR_HEIGHT;
+    if (viewableHeight <= 0) return 0;
+    var max = totalLayerHeight - viewableHeight;
+    return max > 0 ? max : 0;
+  }
+
   public function msToPixelX(ms:Float):Float
   {
     return (ms - scrollOffsetMs) * pixelsPerMs * zoomLevel;
@@ -75,7 +99,7 @@ class TimelineViewport extends Box
   public function pixelYToLayerIndex(py:Float):Int
   {
     if (layers.length == 0) return 0;
-    var idx = Std.int((py - layerTopOffset) / LAYER_HEIGHT);
+    var idx = Std.int((py + layerScrollOffsetPx) / LAYER_HEIGHT);
     if (idx < 0) return 0;
     if (idx >= layers.length) return layers.length - 1;
     return idx;
@@ -151,11 +175,12 @@ class TimelineViewport extends Box
     return 0;
   }
 
-  public static function getBlockTopPositionFromLayerIndex(layerIndex:Int):Float
+  public function getBlockTopPositionFromLayerIndex(layerIndex:Int):Float
   {
     return (layerIndex * TimelineViewport.LAYER_HEIGHT
       + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2)
-      + TimelineViewport.TOP_BAR_HEIGHT;
+      + TimelineViewport.TOP_BAR_HEIGHT
+      - layerScrollOffsetPx;
   }
 }
 
@@ -218,14 +243,16 @@ private class TimelineViewportLayout extends DefaultLayout
 
       var blockLeftPos = (block.eventData.time - vp.scrollOffsetMs) * vp.pixelsPerMs * vp.zoomLevel;
       var blockWidthVal = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, durationMs * vp.pixelsPerMs * vp.zoomLevel);
+      var blockTopPos = vp.getBlockTopPositionFromLayerIndex(block.layerIndex);
 
-      var isOffscreen = (blockLeftPos + blockWidthVal < 0) || (blockLeftPos > w);
+      var isOffscreen = (blockLeftPos + blockWidthVal < 0)
+        || (blockLeftPos > w)
+        || (blockTopPos + TimelineEventBlock.BLOCK_HEIGHT < TimelineViewport.TOP_BAR_HEIGHT)
+        || (blockTopPos > h);
 
       if (isOffscreen != block.hidden) block.hidden = isOffscreen;
 
       if (isOffscreen) continue;
-
-      var blockTopPos = TimelineViewport.getBlockTopPositionFromLayerIndex(block.layerIndex);
       if (block.left != blockLeftPos) block.left = blockLeftPos;
       if (block.top != blockTopPos) block.top = blockTopPos;
       if (block.width != blockWidthVal) block.width = blockWidthVal;
@@ -428,7 +455,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (_ghost == null) return;
     var durationMs = _ghostDurationSteps * _viewport.stepLengthMs;
     var ghostLeft = (_ghostTimeMs - _viewport.scrollOffsetMs) * _viewport.pixelsPerMs * _viewport.zoomLevel;
-    var ghostTop = TimelineViewport.getBlockTopPositionFromLayerIndex(_ghostLayerIndex);
+    var ghostTop = _viewport.getBlockTopPositionFromLayerIndex(_ghostLayerIndex);
     var ghostWidth = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, durationMs * _viewport.pixelsPerMs * _viewport.zoomLevel);
     _ghost.left = ghostLeft;
     _ghost.top = ghostTop;
@@ -540,14 +567,14 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   function _onMouseMove(e:MouseEvent):Void
   {
     var localX = e.screenX - _viewport.screenLeft;
-    var localY = e.screenY - _viewport.screenTop - TimelineViewport.TOP_BAR_HEIGHT;
+    var localY = e.screenY - _viewport.screenTop;
 
     switch (_dragMode)
     {
       case NONE:
         _updateHoverCursor(localX, localY);
       case MOVE:
-        _handleDragMove(localX, localY, e.shiftKey);
+        _handleDragMove(localX, localY - TimelineViewport.TOP_BAR_HEIGHT, e.shiftKey);
       case RESIZE_LEFT:
         _handleDragResizeLeft(localX, e.shiftKey);
       case RESIZE_RIGHT:
@@ -585,6 +612,15 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       var pxPerMs = _viewport.pixelsPerMs * newZoom;
       if (pxPerMs > 0) _viewport.scrollOffsetMs = mouseMs - (localX / pxPerMs);
       if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
+    }
+    else if (e.ctrlKey)
+    {
+      var scrollPx = e.delta * TimelineViewport.LAYER_HEIGHT;
+      _viewport.layerScrollOffsetPx -= scrollPx;
+      if (_viewport.layerScrollOffsetPx < 0) _viewport.layerScrollOffsetPx = 0;
+      var halfOvershoot = _viewport.viewableHeightPx / 2;
+      var maxScroll = _viewport.totalLayerHeight - halfOvershoot;
+      if (_viewport.layerScrollOffsetPx > maxScroll) _viewport.layerScrollOffsetPx = maxScroll;
     }
     else
     {
