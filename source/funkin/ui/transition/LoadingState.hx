@@ -269,6 +269,8 @@ class LoadingState extends MusicBeatSubState
 
     if (shouldPreloadLevelAssets)
     {
+      funkin.memory.FunkinMemory.purgeCache(true);
+
       preloadLevelAssets();
 
       // Cache the note style.
@@ -345,7 +347,6 @@ class LoadingState extends MusicBeatSubState
       FlxG.signals.preStateSwitch.addOnce(function()
       {
         funkin.memory.FunkinMemory.clearFreeplay();
-        funkin.memory.FunkinMemory.purgeCache(true);
       });
       FlxG.switchState(playStateCtor);
     }
@@ -365,48 +366,39 @@ class LoadingState extends MusicBeatSubState
   #else
   static function preloadLevelAssets():Void
   {
-    // TODO: This section is a hack! Redo this later when we have a proper asset caching system.
-    // FunkinSprite.preparePurgeCache();
-    // funkin.memory.FunkinMemory.purgeSoundCache();
+    // TODO: For moon! replace this shit with the new restructured caching from Eric! Make that work with FunkinMemory! -Moon
+    if (Paths.currentLevel == null || Paths.currentLevel == "shared" || Paths.currentLevel == "") return;
+    var lib = openfl.Assets.getLibrary(Paths.currentLevel);
 
-    // List all image assets in the level's library.
+    var ids = lib.list("IMAGE").concat(lib.list("SOUND"));
+    for (id in ids)
+    {
+      if (id.endsWith('.ogg') || id.endsWith('.mp3') || id.endsWith('.wav'))
+      {
+        var path = Paths.sound(id, Paths.currentLevel);
+        new Future<String>(function()
+        {
+          if (path != null)
+          {
+            funkin.memory.FunkinMemory.cacheSound(path);
+          }
+          return '${path} successfully loaded.';
+        }, true);
+      }
 
-    // var assets = library.list(lime.utils.AssetType.IMAGE);
-    // trace('Got ${assets.length} assets: ${assets}');
-
-    // TODO: assets includes non-images! This is a bug with Polymod
-    // for (asset in assets)
-    // {
-    //   // Exclude items of the wrong type.
-    //   var path = '${PlayStatePlaylist.campaignId}:${asset}';
-    //   // TODO DUMB HACK DUMB HACK why doesn't filtering by AssetType.IMAGE above work
-    //   // I will fix this properly later I swear -eric
-    //   if (!path.endsWith('.png')) continue;
-
-    //   new Future<String>(function() {
-    //     FunkinSprite.cacheTexture(path);
-    //     // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
-    //     // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-    //     if (path.endsWith('spritemap1.png'))
-    //     {
-    //       trace('Preloading FlxAnimate asset: ${path}');
-    //       openfl.Assets.getBitmapData(path, true);
-    //     }
-    //     return 'Done precaching ${path}';
-    //   }, true);
-
-    //   trace('Queued ${path} for precaching');
-    //   // FunkinSprite.cacheTexture(path);
-    // }
-
-    // FunkinSprite.cacheAllNoteStyleTextures(noteStyle) // This will replace the stuff above!
-    // FunkinSprite.cacheAllCharacterTextures(player)
-    // FunkinSprite.cacheAllCharacterTextures(girlfriend)
-    // FunkinSprite.cacheAllCharacterTextures(opponent)
-    // FunkinSprite.cacheAllStageTextures(stage)
-    // FunkinSprite.cacheAllSongTextures(stage)
-
-    // FunkinSprite.purgeCache();
+      if (id.endsWith('.png') || id.endsWith('.jpg') || id.endsWith('.jpeg'))
+      {
+        var path = Paths.image(id, Paths.currentLevel);
+        new Future<String>(function()
+        {
+          if (path != null)
+          {
+            funkin.memory.FunkinMemory.cacheTexture(path);
+          }
+          return '${path} successfully loaded.';
+        }, true);
+      }
+    }
   }
   #end
 
