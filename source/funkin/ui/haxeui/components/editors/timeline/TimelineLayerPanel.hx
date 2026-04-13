@@ -20,7 +20,14 @@ class TimelineLayerPanel extends VBox
   public var btnAddLayer:IconButton;
   public var btnRemoveLayer:IconButton;
   public var _layerContainer:VBox;
+  public var _layerClipBox:Box;
   public var viewport:TimelineViewport;
+
+  public function setScrollOffset(offsetPx:Float):Void
+  {
+    if (_layerContainer == null) return;
+    _layerContainer.top = -offsetPx;
+  }
 
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
   {
@@ -124,12 +131,20 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
 
     _panel.addComponent(topSpacer);
 
+    _panel._layerClipBox = new Box();
+    _panel._layerClipBox.id = "layer-clip-box";
+    _panel._layerClipBox.percentWidth = 100;
+    _panel._layerClipBox.percentHeight = 100;
+    _panel._layerClipBox.customStyle.clip = true;
+
     _panel._layerContainer = new VBox();
     _panel._layerContainer.id = "layer-container";
     _panel._layerContainer.percentWidth = 100;
     _panel._layerContainer.customStyle.verticalSpacing = 2;
     _panel._layerContainer.customStyle.horizontalSpacing = 0;
-    _panel.addComponent(_panel._layerContainer);
+
+    _panel._layerClipBox.addComponent(_panel._layerContainer);
+    _panel.addComponent(_panel._layerClipBox);
   }
 
 }
