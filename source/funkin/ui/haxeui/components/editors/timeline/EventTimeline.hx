@@ -6,6 +6,7 @@ import funkin.data.song.SongData.SongEventData;
 import haxe.ui.behaviours.DataBehaviour;
 import haxe.ui.behaviours.DefaultBehaviour;
 import haxe.ui.components.HorizontalScroll;
+import haxe.ui.components.VerticalScroll;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
@@ -26,6 +27,7 @@ class EventTimeline extends VBox
   public var layerPanel:TimelineLayerPanel;
   public var viewport:TimelineViewport;
   public var scrollbar:HorizontalScroll;
+  public var vscrollbar:VerticalScroll;
   public var scrollbarPlayhead:Box;
   @:clonable @:behaviour(SongPositionBehaviour, 0)
   public var songPosition:Float;
@@ -189,6 +191,15 @@ private class TimelineBuilder extends CompositeBuilder
     _timeline.viewport.percentHeight = 100;
     contentRow.addComponent(_timeline.viewport);
 
+    _timeline.vscrollbar = new VerticalScroll();
+    _timeline.vscrollbar.id = "timeline-vscrollbar";
+    _timeline.vscrollbar.percentHeight = 100;
+    _timeline.vscrollbar.width = 14;
+    _timeline.vscrollbar.min = 0;
+    _timeline.vscrollbar.max = 0;
+    _timeline.vscrollbar.pos = 0;
+    contentRow.addComponent(_timeline.vscrollbar);
+
     _timeline.layerPanel.viewport = _timeline.viewport;
 
     _timeline.addComponent(contentRow);
@@ -214,6 +225,7 @@ private class EventTimelineEvents extends Events
     if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(MouseEvent.CLICK,
       _onRemoveLayer)) _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
     if (!_timeline.scrollbar.hasEvent(UIEvent.CHANGE, _onScrollbarChange)) _timeline.scrollbar.registerEvent(UIEvent.CHANGE, _onScrollbarChange);
+    if (!_timeline.vscrollbar.hasEvent(UIEvent.CHANGE, _onVScrollbarChange)) _timeline.vscrollbar.registerEvent(UIEvent.CHANGE, _onVScrollbarChange);
     if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
       _onAutoScrollChange)) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
 
@@ -228,6 +240,7 @@ private class EventTimelineEvents extends Events
     _timeline.layerPanel.btnAddLayer.unregisterEvent(MouseEvent.CLICK, _onAddLayer);
     _timeline.layerPanel.btnRemoveLayer.unregisterEvent(MouseEvent.CLICK, _onRemoveLayer);
     _timeline.scrollbar.unregisterEvent(UIEvent.CHANGE, _onScrollbarChange);
+    _timeline.vscrollbar.unregisterEvent(UIEvent.CHANGE, _onVScrollbarChange);
     _timeline.toolbar.ddAutoScroll.unregisterEvent(UIEvent.CHANGE, _onAutoScrollChange);
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider");
@@ -282,6 +295,13 @@ private class EventTimelineEvents extends Events
     _timeline.viewport.refreshLayout();
   }
 
+  function _onVScrollbarChange(_:UIEvent):Void
+  {
+    if (_updatingScrollbar) return;
+    _timeline.viewport.layerScrollOffsetPx = _timeline.vscrollbar.pos;
+    _timeline.viewport.refreshLayout();
+  }
+
   function _updateScrollbar():Void
   {
     _updatingScrollbar = true;
@@ -307,6 +327,25 @@ private class EventTimelineEvents extends Events
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider", Slider);
     if (zoomSlider != null && zoomSlider.pos != _timeline.viewport.zoomLevel) zoomSlider.pos = _timeline.viewport.zoomLevel;
 
+    var maxVScroll = _timeline.viewport.maxLayerScrollPx;
+    if (maxVScroll > 0)
+    {
+      var viewableHeight = _timeline.viewport.viewableHeightPx;
+      var halfOvershoot = viewableHeight / 2;
+      _timeline.vscrollbar.max = _timeline.viewport.totalLayerHeight - halfOvershoot;
+      if (viewableHeight > 0) _timeline.vscrollbar.pageSize = viewableHeight;
+      _timeline.vscrollbar.pos = _timeline.viewport.layerScrollOffsetPx;
+      _timeline.vscrollbar.hidden = false;
+    }
+    else
+    {
+      _timeline.vscrollbar.max = 0;
+      _timeline.vscrollbar.pos = 0;
+      _timeline.vscrollbar.hidden = true;
+    }
+
+    _timeline.layerPanel.setScrollOffset(_timeline.viewport.layerScrollOffsetPx);
+
     _updateTimelineVisuals();
 
     _updatingScrollbar = false;
@@ -321,7 +360,7 @@ private class EventTimelineEvents extends Events
     _timeline.viewport.timelineShader.beatLength = pxPerBeat;
 
     var correctedOffset = _timeline.viewport.scrollOffsetMs * _timeline.viewport.pixelsPerMs * _timeline.viewport.zoomLevel;
-    _timeline.viewport.timelineShader.setOffset(correctedOffset, 0);
+    _timeline.viewport.timelineShader.setOffset(correctedOffset, _timeline.viewport.layerScrollOffsetPx);
 
     var lengthInBeats = (_timeline.viewport.songLengthMs / _timeline.viewport.stepLengthMs) / 4;
     _timeline.viewport.timelineShader.beatCount = lengthInBeats;
