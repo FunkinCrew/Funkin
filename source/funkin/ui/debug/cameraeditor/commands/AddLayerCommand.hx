@@ -23,6 +23,7 @@ class AddLayerCommand implements CameraEditorCommand
     else
       layers.push(layer);
 
+    state.timeline.viewport.selectedLayerIndex = insertIndex >= 0 && insertIndex < layers.length ? insertIndex : layers.length - 1;
     state.timeline.layerPanel.rebuildLayers(layers);
     state.timeline.viewport.refreshLayout();
     state.saved = false;
@@ -30,9 +31,14 @@ class AddLayerCommand implements CameraEditorCommand
 
   public function undo(state:CameraEditorState):Void
   {
-    state.timeline.viewport.layers.remove(layer);
-    state.timeline.layerPanel.rebuildLayers(state.timeline.viewport.layers);
-    state.timeline.viewport.refreshLayout();
+    var viewport = state.timeline.viewport;
+    viewport.layers.remove(layer);
+    if (viewport.selectedLayerIndex >= viewport.layers.length)
+      viewport.selectedLayerIndex = viewport.layers.length - 1;
+    if (viewport.selectedLayerIndex < 0)
+      viewport.selectedLayerIndex = 0;
+    state.timeline.layerPanel.rebuildLayers(viewport.layers);
+    viewport.refreshLayout();
     state.saved = false;
   }
 
