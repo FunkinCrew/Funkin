@@ -554,7 +554,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   /**
    * Retrieves a given character from the stage.
    */
-  public function getCharacter(id:String):BaseCharacter
+  public function getCharacter(id:String):Null<BaseCharacter>
   {
     return this.characters.get(id);
   }
@@ -564,11 +564,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Boyfriend character.
    */
-  public function getBoyfriend(pop:Bool = false):BaseCharacter
+  public function getBoyfriend(pop:Bool = false):Null<BaseCharacter>
   {
     if (pop)
     {
-      var boyfriend:BaseCharacter = getCharacter('bf');
+      var boyfriend:BaseCharacter = getCharacter('bf') ?? return null;
 
       // Remove the character from the stage.
       this.remove(boyfriend);
@@ -587,7 +587,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param pop If true, the character will be removed from the stage as well.
    * @return The player/Boyfriend character.
    */
-  public function getPlayer(pop:Bool = false):BaseCharacter
+  public function getPlayer(pop:Bool = false):Null<BaseCharacter>
   {
     return getBoyfriend(pop);
   }
@@ -597,11 +597,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Girlfriend character.
    */
-  public function getGirlfriend(pop:Bool = false):BaseCharacter
+  public function getGirlfriend(pop:Bool = false):Null<BaseCharacter>
   {
     if (pop)
     {
-      var girlfriend:BaseCharacter = getCharacter('gf');
+      var girlfriend:BaseCharacter = getCharacter('gf') ?? return null;
 
       // Remove the character from the stage.
       this.remove(girlfriend);
@@ -620,11 +620,11 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param pop If true, the character will be removed from the stage as well.
    * @return The Dad character.
    */
-  public function getDad(pop:Bool = false):BaseCharacter
+  public function getDad(pop:Bool = false):Null<BaseCharacter>
   {
     if (pop)
     {
-      var dad:BaseCharacter = getCharacter('dad');
+      var dad:BaseCharacter = getCharacter('dad') ?? return null;
 
       // Remove the character from the stage.
       this.remove(dad);
@@ -643,7 +643,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param pop If true, the character will be removed from the stage as well.
    * @return The opponent character.
    */
-  public function getOpponent(pop:Bool = false):BaseCharacter
+  public function getOpponent(pop:Bool = false):Null<BaseCharacter>
   {
     return getDad(pop);
   }
@@ -653,7 +653,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    * @param name The name of the prop to retrieve.
    * @return The corresponding FlxSprite.
    */
-  public function getNamedProp(name:String):StageProp
+  public function getNamedProp(name:String):Null<StageProp>
   {
     return this.namedProps.get(name);
   }
@@ -738,7 +738,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function dispatchToCharacter(characterId:String, event:ScriptEvent):Void
   {
-    var character:BaseCharacter = getCharacter(characterId);
+    var character:Null<BaseCharacter> = getCharacter(characterId);
     if (character != null)
     {
       ScriptEventDispatcher.callEvent(character, event);
