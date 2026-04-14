@@ -469,7 +469,8 @@ class CharacterDataParser
     cacheOnLoad: false,
     filterQuality: 1,
     applyStageMatrix: false,
-    useRenderTexture: false
+    useRenderTexture: false,
+    postStageMatrixApply: false
   };
 
   /**

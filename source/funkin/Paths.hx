@@ -199,7 +199,8 @@ class Paths implements ConsoleClass
       uniqueInCache: settings?.uniqueInCache ?? false,
       onSymbolCreate: settings?.onSymbolCreate ?? null,
       applyStageMatrix: settings?.applyStageMatrix ?? false,
-      useRenderTexture: settings?.useRenderTexture ?? false
+      postStageMatrixApply: settings?.postStageMatrixApply ?? false,
+      useRenderTexture: settings?.useRenderTexture ?? false,
     };
 
     // Validate asset path.

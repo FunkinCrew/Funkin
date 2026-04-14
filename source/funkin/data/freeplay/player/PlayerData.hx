@@ -176,6 +176,7 @@ class PlayerFreeplayDJData
       cacheOnLoad: atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
       applyStageMatrix: atlasSettings?.applyStageMatrix ?? false,
+      postStageMatrixApply: atlasSettings?.postStageMatrixApply ?? false,
       useRenderTexture: atlasSettings?.useRenderTexture ?? false
     }
   }

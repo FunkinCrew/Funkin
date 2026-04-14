@@ -215,6 +215,7 @@ class Assets implements ConsoleClass
       uniqueInCache: settings?.uniqueInCache ?? false,
       onSymbolCreate: settings?.onSymbolCreate ?? null,
       applyStageMatrix: settings?.applyStageMatrix ?? false,
+      postStageMatrixApply: settings?.postStageMatrixApply ?? false,
       useRenderTexture: settings?.useRenderTexture ?? false
     };
 

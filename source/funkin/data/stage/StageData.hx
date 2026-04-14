@@ -296,6 +296,17 @@ typedef TextureAtlasData =
   var applyStageMatrix:Bool;
 
   /**
+   * Whether to apply the stage matrix of the Texture Atlas before or after FlxSprite calculations.
+   * Changes the behaviour of a sprite in relation to the position, scale and rotation of the matrix.
+   * When set to ``false`` the stage matrix will apply before other FlxSprite matrix calculations,
+   * as if the symbol was contained inside of the sprite.
+   * When set to ``true`` the stage matrix will apply after FlxSprite matrix calculations,
+   * as if the sprite was contained inside of the symbol.
+   */
+  @:optional
+  var postStageMatrixApply:Bool;
+
+  /**
    * If enabled, the sprite will render as one texture instead of rendering multiple limbs.
    * This is useful for stuff like changing alpha, and shaders that require the whole sprite.
    *
