@@ -852,10 +852,8 @@ class Project extends HXProject
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
 
-    // Should be true on Android.
-    // Some Android devices support native blends, but it causes issues
-    // with other shaders, so we'll disable it for now.
-    FORCE_BLEND_SHADER.apply(this, isAndroid());
+    // Should be false by default.
+    FORCE_BLEND_SHADER.apply(this, false);
 
     //
     // FEATURE FLAGS
