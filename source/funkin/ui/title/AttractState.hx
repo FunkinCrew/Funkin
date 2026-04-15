@@ -1,5 +1,11 @@
 package funkin.ui.title;
 
+import funkin.ui.MusicBeatState;
+import funkin.ui.FullScreenScaleMode;
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
+import flixel.addons.display.FlxRadialGauge;
 #if html5
 import funkin.graphics.video.FlxVideo;
 #end
@@ -9,12 +15,14 @@ import funkin.graphics.video.FunkinVideoSprite;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #end
-import funkin.ui.MusicBeatState;
-import funkin.ui.FullScreenScaleMode;
-import flixel.FlxG;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
-import flixel.addons.display.FlxRadialGauge;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets as Assets;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * After 40 seconds of inactivity on the title screen,
@@ -30,13 +38,15 @@ class AttractState extends MusicBeatState
    * @param path The path to the video to play.
    * This used
    */
-  static final VIDEO_PATHS:Array<
-    {path:String}> = [
-    {path: Paths.videos('ui/title/attract/rift-collab-trailer')},
-    {path: Paths.videos('ui/title/attract/mobile-release')},
-    {path: Paths.videos('ui/title/attract/boyfriend-everywhere')}
+  static final VIDEO_PATHS:Array<AssetPath> = [
+    Paths.video('ui/title/attract/rift-collab-trailer'),
+    Paths.video('ui/title/attract/mobile-release'),
+    Paths.video('ui/title/attract/boyfriend-everywhere')
   ];
 
+  /**
+   * We used to play videos with a random weight, but now we use a pre-determined order.
+   */
   static var nextVideoToPlay:Int = 0;
 
   /**
@@ -57,13 +67,13 @@ class AttractState extends MusicBeatState
     }
 
     #if html5
-    var videoPath:String = getVideoPath();
+    var videoPath:AssetPath = getVideoPath();
     trace('Playing web video ${videoPath}');
     playVideoHTML5(videoPath);
     #end
 
     #if hxvlc
-    var videoPath:String = getVideoPath();
+    var videoPath:AssetPath = getVideoPath();
     trace('Playing native video ${videoPath}');
     playVideoNative(videoPath);
     #end
@@ -81,15 +91,11 @@ class AttractState extends MusicBeatState
    * Get the path of a random video to display to the user.
    * @return The video path to play.
    */
-  function getVideoPath():String
+  function getVideoPath():AssetPath
   {
-    var result:String = VIDEO_PATHS[nextVideoToPlay].path;
+    var result:AssetPath = VIDEO_PATHS[nextVideoToPlay];
 
     nextVideoToPlay = (nextVideoToPlay + 1) % VIDEO_PATHS.length;
-
-    #if html5
-    result = Paths.stripLibrary(result);
-    #end
 
     return result;
   }
@@ -97,10 +103,10 @@ class AttractState extends MusicBeatState
   #if html5
   var vid:FlxVideo;
 
-  function playVideoHTML5(filePath:String):Void
+  function playVideoHTML5(assetPath:AssetPath):Void
   {
     // Video displays OVER the FlxState.
-    vid = new FlxVideo(filePath);
+    vid = new FlxVideo(assetPath.toString());
     if (vid != null)
     {
       vid.zIndex = 0;
@@ -119,7 +125,7 @@ class AttractState extends MusicBeatState
   #if hxvlc
   var vid:FunkinVideoSprite;
 
-  function playVideoNative(filePath:String):Void
+  function playVideoNative(assetPath:AssetPath):Void
   {
     // Video displays OVER the FlxState.
     vid = new FunkinVideoSprite(0, 0);
@@ -144,7 +150,7 @@ class AttractState extends MusicBeatState
 
       add(vid);
 
-      if (vid.load(filePath)) vid.play();
+      if (vid.load(assetPath.toString())) vid.play();
     }
     else
     {

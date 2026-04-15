@@ -32,9 +32,6 @@ class FlxVideo extends FunkinSprite
 
     this.videoPath = videoPath;
 
-    @:nullSafety(Off) // Why do I to do this here as well for this to build?
-    makeGraphic(2, 2, FlxColor.TRANSPARENT);
-
     video = new Video();
     video.x = 0;
     video.y = 0;
@@ -49,6 +46,8 @@ class FlxVideo extends FunkinSprite
     netStream.client = {onMetaData: onClientMetaData};
     netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
     netStream.play(videoPath);
+
+    makeSolidColor(2, 2, FlxColor.TRANSPARENT);
   }
 
   /**
@@ -150,7 +149,7 @@ class FlxVideo extends FunkinSprite
     FunkinSound.onVolumeChanged.add(onVolumeChanged);
     onVolumeChanged(FlxG.sound.muted ? 0 : FlxG.sound.volume);
 
-    makeGraphic(Std.int(video.width), Std.int(video.height), FlxColor.TRANSPARENT);
+    makeSolidColor(Std.int(video.width), Std.int(video.height), FlxColor.TRANSPARENT);
   }
 
   function onVolumeChanged(volume:Float):Void
