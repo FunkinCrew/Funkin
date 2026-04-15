@@ -20,7 +20,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   /**
    * The children of this FunkinGroup.
    */
-  public var children:Null<Array<T>>;
+  public var children:Array<T>;
 
   /**
    * The size of this FunkinGroup. Read only.

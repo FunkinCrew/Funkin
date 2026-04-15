@@ -52,33 +52,42 @@ class FunkinPreloader extends FlxBasePreloader
   var ratio:Float = 0;
   var currentState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
   // private var downloadingAssetsStartTime:Float = -1;
-  var downloadingAssetsPercent:Float = -1;
-  var downloadingAssetsComplete:Bool = false;
-  var preloadingPlayAssetsPercent:Float = -1;
-  var preloadingPlayAssetsStartTime:Float = -1;
-  var preloadingPlayAssetsComplete:Bool = false;
-  var cachingGraphicsPercent:Float = -1;
-  var cachingGraphicsStartTime:Float = -1;
-  var cachingGraphicsComplete:Bool = false;
-  var cachingAudioPercent:Float = -1;
-  var cachingAudioStartTime:Float = -1;
-  var cachingAudioComplete:Bool = false;
-  var cachingDataPercent:Float = -1;
-  var cachingDataStartTime:Float = -1;
-  var cachingDataComplete:Bool = false;
-  var parsingSpritesheetsPercent:Float = -1;
-  var parsingSpritesheetsStartTime:Float = -1;
-  var parsingSpritesheetsComplete:Bool = false;
-  var parsingStagesPercent:Float = -1;
-  var parsingStagesStartTime:Float = -1;
-  var parsingStagesComplete:Bool = false;
-  var parsingCharactersPercent:Float = -1;
-  var parsingCharactersStartTime:Float = -1;
-  var parsingCharactersComplete:Bool = false;
-  var parsingSongsPercent:Float = -1;
-  var parsingSongsStartTime:Float = -1;
-  var parsingSongsComplete:Bool = false;
-  var initializingScriptsPercent:Float = -1;
+  private var downloadingAssetsPercent:Float = -1;
+  private var downloadingAssetsComplete:Bool = false;
+
+  private var preloadingPlayAssetsPercent:Float = -1;
+  private var preloadingPlayAssetsStartTime:Float = -1;
+  private var preloadingPlayAssetsComplete:Bool = false;
+
+  private var cachingGraphicsPercent:Float = -1;
+  private var cachingGraphicsStartTime:Float = -1;
+  private var cachingGraphicsComplete:Bool = false;
+
+  private var cachingAudioPercent:Float = -1;
+  private var cachingAudioStartTime:Float = -1;
+  private var cachingAudioComplete:Bool = false;
+
+  private var cachingDataPercent:Float = -1;
+  private var cachingDataStartTime:Float = -1;
+  private var cachingDataComplete:Bool = false;
+
+  private var parsingSpritesheetsPercent:Float = -1;
+  private var parsingSpritesheetsStartTime:Float = -1;
+  private var parsingSpritesheetsComplete:Bool = false;
+
+  private var parsingStagesPercent:Float = -1;
+  private var parsingStagesStartTime:Float = -1;
+  private var parsingStagesComplete:Bool = false;
+
+  private var parsingCharactersPercent:Float = -1;
+  private var parsingCharactersStartTime:Float = -1;
+  private var parsingCharactersComplete:Bool = false;
+
+  private var parsingSongsPercent:Float = -1;
+  private var parsingSongsStartTime:Float = -1;
+  private var parsingSongsComplete:Bool = false;
+
+  private var initializingScriptsPercent:Float = -1;
 
   /**
    * The timestamp when the other steps completed and the `Finishing up` step started.
@@ -437,8 +446,8 @@ class FunkinPreloader extends FlxBasePreloader
           cachingAudioStartTime = elapsed;
 
           /*
-            var assetsToCache:Array<String> = []; // Assets.listSound('core');
-              var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
+          var assetsToCache:Array<String> = []; // Assets.listSound('core');
+            var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
 
               future.onProgress((loaded:Int, total:Int) -> {
                 cachingAudioPercent = loaded / total;

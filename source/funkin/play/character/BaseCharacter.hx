@@ -730,7 +730,8 @@ class BaseCharacter extends Bopper
       {
         PlayState.instance.vocals.opponentVolume = 1;
       }
-      else if (characterType != BF || characterType != DAD) tempVocals = false;
+      else if (characterType != BF || characterType != DAD)
+        tempVocals = false;
     }
 
     super.playAnimation(name, restart, ignoreOther, reversed);

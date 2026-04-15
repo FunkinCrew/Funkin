@@ -4,7 +4,6 @@ package funkin.ui.debug.charting.toolboxes;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
 import funkin.data.freeplay.album.AlbumRegistry;
-import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -13,7 +12,6 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
-import funkin.ui.freeplay.Album;
 import funkin.ui.freeplay.Album;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
@@ -38,8 +36,6 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
-  var inputAlbum:DropDown;
-  var inputStickerPack:DropDown;
   var inputAlbum:DropDown;
   var inputStickerPack:DropDown;
   var buttonCharacterPlayer:Button;
@@ -392,6 +388,15 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     if (inputNoteStyle != null)
     {
       inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: 'Funkin', text: "Funkin'"};
+    }
+
+    var albumId:String = chartEditorState.currentSongAlbum;
+    var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+    if (inputAlbum != null)
+    {
+      inputAlbum.value = (album != null) ?
+        {id: album.id, text: album.getAlbumName()} :
+          {id: "volume1", text: "Volume 1"};
     }
 
     var albumId:String = chartEditorState.currentSongAlbum;

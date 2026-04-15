@@ -18,6 +18,7 @@ class ReflectUtil
    * @param value The new value to apply.
    * @throws error When trying to call a blacklisted method.
    */
+  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function callMethod(obj:Any, name:String, args:Array<Any>):Any
   {
     if (!isAccessAllowed(obj, name))
@@ -299,7 +300,6 @@ class ReflectUtil
    *
    * @param obj The object to modify.
    * @param name The field to modify.
-   * @param value The new value to apply.
    * @throws error When trying to set a blacklisted field.
    */
   public static function setProperty(obj:Any, name:String, value:Any):Void
@@ -346,6 +346,7 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
+  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function resolveClass(name:String):Null<Class<Any>>
   {
     var resolved = getReflectionParent(getClassOrEnumFromName(name));
@@ -362,7 +363,7 @@ class ReflectUtil
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings('checkstyle:FieldDocComment')
+  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function resolveEnum(name:String):Null<Enum<Any>>
   {
     var resolved = getReflectionParent(getClassOrEnumFromName(name));
@@ -450,7 +451,7 @@ class ReflectUtil
    */
   public static function getClassNameOf(obj:Any):String
   {
-    if (obj == null) return 'Unknown';
+    if (obj == null) return "Unknown";
     if (obj is String && Type.resolveClass(obj) != null) return obj;
     @:nullSafety(Off)
     var cls = Type.getClass(obj);
@@ -471,11 +472,13 @@ class ReflectUtil
   }
 
   @:unreflective
-  static var pathResolveCache:Map<String, Any> = new Map();
-  @:unreflective
-  static var blacklistedFieldsCache:Map<String, Any> = new Map();
+  static final pathResolveCache:Map<String, Any> = new Map();
 
-  @:unreflective @:nullSafety(Off)
+  @:unreflective
+  static final blacklistedFieldsCache:Map<String, Any> = new Map();
+
+  @:unreflective
+  @:nullSafety(Off)
   static function getClassOrEnumFromName(path:String):Any
   {
     if (pathResolveCache.exists(path)) return pathResolveCache.get(path);
@@ -493,30 +496,27 @@ class ReflectUtil
     }
   }
 
-  @:unreflective @:nullSafety(Off)
+  @:unreflective
+  @:nullSafety(Off)
   static function getReflectionParent(obj:Dynamic):Dynamic
   {
     var clsName = getClassNameOf(obj);
-    if (clsName == 'Unknown') clsName = null;
+    if (clsName == "Unknown") clsName = null;
     var objName = obj is String ? obj : (clsName ?? obj);
     return PolymodScriptClass.importOverrides.exists(objName) ? PolymodScriptClass.importOverrides.get(objName) : obj;
   }
 
-  @:unreflective @:nullSafety(Off)
+  @:unreflective
+  @:nullSafety(Off)
   static function isAccessAllowed(obj:Dynamic, ?varName:String):Bool
   {
     var reflectedObj = getReflectionParent(obj);
     var isClassReflect = Std.isOfType(reflectedObj, Class);
 
     var key:String;
-    if (isClassReflect)
-    {
-      key = Type.getClassName(cast reflectedObj);
-    }
+    if (isClassReflect) key = Type.getClassName(cast reflectedObj);
     else
-    {
       key = getClassNameOf(reflectedObj);
-    }
 
     if (varName != null)
     {
@@ -524,14 +524,9 @@ class ReflectUtil
       var blacklistedFields:Array<String> = blacklistedFieldsCache.get(cacheKey);
       if (blacklistedFields == null)
       {
-        if (isClassReflect)
-        {
-          blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
-        }
+        if (isClassReflect) blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
         else
-        {
           blacklistedFields = PolymodScriptClass.blacklistedInstanceFields.get(key);
-        }
 
         if (blacklistedFields == null) blacklistedFields = [];
         blacklistedFieldsCache.set(cacheKey, blacklistedFields);

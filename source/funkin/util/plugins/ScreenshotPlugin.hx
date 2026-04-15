@@ -545,7 +545,7 @@ class ScreenshotPlugin extends FlxBasic
     var a:js.html.AnchorElement = cast js.Browser.document.createElement('a');
     js.Browser.document.body.appendChild(a);
     a.style.display = 'none';
-    a.href = bitmap.bitmapData.image.src.toDataURL('image/png');
+    a.href = bitmap.bitmapData.image.src.toDataURL("image/png");
     a.download = targetPath;
     a.click();
 
