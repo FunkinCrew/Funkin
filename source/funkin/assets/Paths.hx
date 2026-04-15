@@ -225,24 +225,15 @@ class Paths implements ConsoleClass
 
   /**
    * Construct an asset path for a video file.
+   *
    * @param key The path to the video file.
+   * @param ext The file extension of the video, defaults to `mp4`
    * @param validate Whether to validate the file exists, and throw a warning if it doesn't.
-   * @param library The asset path that the file is in
    * @return The constructed asset path.
    */
-  public static function videos(key:String, validate:Bool = true):AssetPath
+  public static function video(key:String, ext:String = 'mp4', validate:Bool = true):AssetPath
   {
-    final path:Path = new Path(key);
-
-    if (path.ext != null)
-    {
-      // Split path and extension.
-      var pathNoExt = new Path(key);
-      pathNoExt.ext = null;
-      return Paths.build(pathNoExt.toString(), path.ext, validate);
-    }
-
-    return Paths.build(key, Constants.EXT_VIDEO, validate);
+    return Paths.build(key, ext, validate);
   }
 
   /**
