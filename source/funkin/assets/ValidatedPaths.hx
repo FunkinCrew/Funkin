@@ -19,15 +19,24 @@ class ValidatedPaths
   /**
    * Constructs an asset path for a `.txt` text file.
    * @param key The path to the text file, without file extension.
+   * @param validate Whether to try to validate that the file path exists at compile time. Defaults to `true`.
    * @return An AssetPath pointing to the text file.
    */
-  public static macro function txt(key:Expr):Expr
+  public static macro function txt(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['txt'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['txt'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.txt(key)` got called.
-    return macro funkin.assets.Paths.txt($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.txt($e{key});
   }
 
   /**
@@ -35,13 +44,21 @@ class ValidatedPaths
    * @param key The path to the shader file, without file extension.
    * @return An AssetPath pointing to the shader file.
    */
-  public static macro function frag(key:Expr):Expr
+  public static macro function frag(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['frag'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['frag'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.frag(key)` got called.
-    return macro funkin.assets.Paths.frag($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.frag($e{key});
   }
 
   /**
@@ -49,13 +66,21 @@ class ValidatedPaths
    * @param key The path to the shader file, without file extension.
    * @return An AssetPath pointing to the shader file.
    */
-  public static macro function vert(key:Expr):Expr
+  public static macro function vert(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['vert'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['vert'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.vert(key)` got called.
-    return macro funkin.assets.Paths.vert($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.vert($e{key});
   }
 
   /**
@@ -80,7 +105,7 @@ class ValidatedPaths
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.font(key)` got called.
-    return macro funkin.assets.Paths.font($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.font($e{key});
   }
 
   /**
@@ -92,13 +117,18 @@ class ValidatedPaths
   public static macro function xml(key:Expr, ?validate:Expr):Expr
   {
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
-    if (!shouldValidate) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
-
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['xml'], key.pos);
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['xml'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.xml(key)` got called.
-    return macro funkin.assets.Paths.xml($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.xml($e{key});
   }
 
   /**
@@ -110,13 +140,18 @@ class ValidatedPaths
   public static macro function json(key:Expr, ?validate:Expr):Expr
   {
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
-    if (!shouldValidate) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
-
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['json'], key.pos);
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['json'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.json(key)` got called.
-    return macro funkin.assets.Paths.json($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.json($e{key});
   }
 
   /**
@@ -126,11 +161,19 @@ class ValidatedPaths
    */
   public static macro function sound(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['ogg'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['ogg'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.sound(key)` got called.
-    return macro funkin.assets.Paths.sound($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.sound($e{key});
   }
 
   /**
@@ -144,27 +187,32 @@ class ValidatedPaths
   public static macro function music(key:Expr, ?suffix:Expr, ?validate:Expr):Expr
   {
     var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
-    if (!shouldValidate) Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
-
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-
-    if (staticPath != null)
+    if (!shouldValidate)
     {
-      var suffix:String = MacroUtil.extractStringConstant(suffix) ?? '';
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
 
-      var parts:Array<String> = staticPath.split('/');
-      var staticId:String = parts[parts.length - 1];
-      var staticDir:String = parts.slice(0, (parts.length - 1)).join('/');
+      if (staticPath != null)
+      {
+        var suffix:String = MacroUtil.extractStringConstant(suffix) ?? '';
 
-      var audioPath:String = '$staticDir/$staticId/$staticId$suffix';
-      validateAssetPath(audioPath, ['ogg'], key.pos);
+        var parts:Array<String> = staticPath.split('/');
+        var staticId:String = parts[parts.length - 1];
+        var staticDir:String = parts.slice(0, (parts.length - 1)).join('/');
 
-      var metadataPath:String = '$staticDir/$staticId/$staticId$suffix-metadata';
-      validateAssetPath(metadataPath, ['json'], key.pos);
+        var audioPath:String = '$staticDir/$staticId/$staticId$suffix';
+        validateAssetPath(audioPath, ['ogg'], key.pos);
+
+        var metadataPath:String = '$staticDir/$staticId/$staticId$suffix-metadata';
+        validateAssetPath(metadataPath, ['json'], key.pos);
+      }
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.music(key)` got called.
-    return macro funkin.assets.Paths.music($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.music($e{key});
   }
 
   /**
@@ -172,13 +220,22 @@ class ValidatedPaths
    * @param key The path to the video file, without file extension.
    * @return An AssetPath pointing to the video file.
    */
-  public static macro function video(key:Expr):Expr
+  public static macro function video(key:Expr, ?ext:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['mp4', 'mkv'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      var staticExt:String = MacroUtil.extractStringConstant(ext) ?? 'mp4';
+      if (staticPath != null) validateAssetPath(staticPath, [staticExt], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.video(key)` got called.
-    return macro funkin.assets.Paths.video($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.video($e{key});
   }
 
   /**
@@ -186,13 +243,21 @@ class ValidatedPaths
    * @param key The path to the image file, without file extension.
    * @return An AssetPath pointing to the image file.
    */
-  public static macro function image(key:Expr):Expr
+  public static macro function image(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null) validateAssetPath(staticPath, ['png'], key.pos);
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['png'], key.pos);
+    }
 
     // This expression gets inserted at the location that `ValidatedPaths.image(key)` got called.
-    return macro funkin.assets.Paths.image($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.image($e{key});
   }
 
   /**
@@ -202,15 +267,24 @@ class ValidatedPaths
    */
   public static macro function animateAtlas(key:Expr, ?validate:Expr):Expr
   {
-    var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
-    if (staticPath != null)
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
     {
-      // Check if `Animation.json` exists.
-      validateAssetPath('${staticPath}/Animation', ['json'], key.pos);
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null)
+      {
+        // Check if `Animation.json` exists.
+        validateAssetPath('${staticPath}/Animation', ['json'], key.pos);
+        // TODO: Possibly check for other files at compile time?
+      }
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.animateAtlas(key)` got called.
-    return macro funkin.assets.Paths.animateAtlas($e{key});
+    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.animateAtlas($e{key});
   }
 
   #if macro
