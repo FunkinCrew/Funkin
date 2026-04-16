@@ -61,8 +61,14 @@ class EventTimeline extends VBox
         overflow: hidden;
       }
       .timeline-playhead {
-        background-color: #FFFFFF;
-        width: 2px;
+        background-color: #5BA3FF;
+        pointer-events: none;
+      }
+      .timeline-playhead-topper {
+        background-color: #5BA3FF;
+        background-opacity: 0.6;
+        border: 1px solid #5BA3FF;
+        border-radius: 3px;
         pointer-events: none;
       }
       .resize-left {
