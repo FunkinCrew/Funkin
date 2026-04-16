@@ -41,6 +41,10 @@ class TimelineViewport extends Box
   public var songLengthMs:Float = 0;
   public var beatsPerGroup:Int = 1;
   public var playhead:Box;
+  public var playheadTopper:Box;
+  public static inline var PLAYHEAD_LINE_WIDTH:Int = 2;
+  public static inline var PLAYHEAD_TOPPER_WIDTH:Int = 14;
+  public static inline var PLAYHEAD_TOPPER_HEIGHT:Int = 22;
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
 
@@ -217,9 +221,17 @@ private class TimelineViewportBuilder extends CompositeBuilder
     var playhead = new Box();
     playhead.id = "timeline-playhead";
     playhead.addClass("timeline-playhead");
-    playhead.width = 2;
+    playhead.width = TimelineViewport.PLAYHEAD_LINE_WIDTH;
     _viewport.addComponent(playhead);
     _viewport.playhead = playhead;
+
+    var topper = new Box();
+    topper.id = "timeline-playhead-topper";
+    topper.addClass("timeline-playhead-topper");
+    topper.width = TimelineViewport.PLAYHEAD_TOPPER_WIDTH;
+    topper.height = TimelineViewport.PLAYHEAD_TOPPER_HEIGHT;
+    _viewport.addComponent(topper);
+    _viewport.playheadTopper = topper;
   }
 }
 
@@ -239,11 +251,20 @@ private class TimelineViewportLayout extends DefaultLayout
 
     if (vp.playhead != null)
     {
-      var phLeft = (vp.songPositionMs - vp.scrollOffsetMs) * vp.pixelsPerMs * vp.zoomLevel;
-      vp.playhead.left = phLeft;
-      vp.playhead.top = 0;
-      vp.playhead.height = h;
-      vp.playhead.hidden = (phLeft < -2 || phLeft > w);
+      var phCenter = (vp.songPositionMs - vp.scrollOffsetMs) * vp.pixelsPerMs * vp.zoomLevel;
+      var offscreen = (phCenter < -2 || phCenter > w);
+      var topperTop = (TimelineViewport.TOP_BAR_HEIGHT - TimelineViewport.PLAYHEAD_TOPPER_HEIGHT) / 2;
+      var lineTop = topperTop + TimelineViewport.PLAYHEAD_TOPPER_HEIGHT;
+      vp.playhead.left = phCenter - TimelineViewport.PLAYHEAD_LINE_WIDTH / 2;
+      vp.playhead.top = lineTop;
+      vp.playhead.height = Math.max(0, h - lineTop);
+      vp.playhead.hidden = offscreen;
+      if (vp.playheadTopper != null)
+      {
+        vp.playheadTopper.left = phCenter - TimelineViewport.PLAYHEAD_TOPPER_WIDTH / 2;
+        vp.playheadTopper.top = topperTop;
+        vp.playheadTopper.hidden = offscreen;
+      }
     }
 
     for (block in vp.eventBlocks)
