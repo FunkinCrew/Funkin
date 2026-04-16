@@ -328,7 +328,11 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           if (field.collapsible != null)
           {
             var targetFrame:Frame = cast(input, Frame);
-            if (targetFrame != null) targetFrame.collapsible = field.collapsible;
+            if (targetFrame != null)
+            {
+              targetFrame.collapsible = field.collapsible;
+              if (field.collapsed != null) targetFrame.collapsed = field.collapsed;
+            }
           }
 
           var frameVBox:VBox = new VBox();
