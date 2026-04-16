@@ -796,11 +796,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     cameraRect.isRelative = isCameraRelative;
 
+    FlxG.camera.scroll.copyFrom(_cameraTarget);
+
     if (!isCameraRelative)
     {
       _wasRelative = false;
-      FlxG.camera.scroll.copyFrom(_cameraTarget);
-
       camGame.zoom = FlxG.camera.zoom;
 
       // subtract the vcam point since it moves everything
@@ -817,10 +817,21 @@ class CameraEditorState extends UIState implements ConsoleClass
         _wasRelative = true;
         cameraRect.zoom = cameraRect.zoom;
       }
-      camRelative.zoom = cameraRect.zoom * relativeZoom;
-      camRelative.scroll.copyFrom(_cameraTarget);
+      FlxG.camera.zoom = cameraRect.zoom * relativeZoom;
       camGame.zoom = relativeZoom;
-      camGame.scroll.copyFrom(camRelative.scroll);
+
+      // Keep camGame offset based only on pan scroll, never cameraRect.zoom.
+      // Compensate on FlxG.camera scroll instead since it includes the extra cameraRect zoom.
+      var zoomFactor:Float = (camGame.zoom != 0) ? (FlxG.camera.zoom / camGame.zoom) : 1.0;
+      if (zoomFactor != 0)
+      {
+        FlxG.camera.scroll.set(_cameraTarget.x / zoomFactor, _cameraTarget.y / zoomFactor);
+      }
+      else
+      {
+        FlxG.camera.scroll.copyFrom(_cameraTarget);
+      }
+      camGame.scroll.copyFrom(_cameraTarget);
     }
 
     handleKeybinds(elapsed);
