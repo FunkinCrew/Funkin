@@ -584,11 +584,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       case NONE:
         _updateHoverCursor(localX, localY);
       case MOVE:
-        _handleDragMove(localX, localY - TimelineViewport.TOP_BAR_HEIGHT, e.shiftKey);
+        _handleDragMove(localX, localY - TimelineViewport.TOP_BAR_HEIGHT, _snapEnabled() != e.shiftKey);
       case RESIZE_LEFT:
-        _handleDragResizeLeft(localX, e.shiftKey);
+        _handleDragResizeLeft(localX, _snapEnabled() != e.shiftKey);
       case RESIZE_RIGHT:
-        _handleDragResizeRight(localX, e.shiftKey);
+        _handleDragResizeRight(localX, _snapEnabled() != e.shiftKey);
       case SEEKING:
         var seekMs = _viewport.pixelXToMs(localX);
         if (seekMs < 0) seekMs = 0;
@@ -768,6 +768,12 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     _dragTarget.eventData.time = newStartMs;
     TimelineUtil.setEventDurationSteps(_dragTarget.eventData, newDurationSteps);
     _viewport.refreshLayout();
+  }
+
+  function _snapEnabled():Bool
+  {
+    var timeline = _viewport.findAncestor(EventTimeline);
+    return timeline == null ? true : timeline.snapEnabled;
   }
 }
 #end
