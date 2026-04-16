@@ -3,14 +3,14 @@ package funkin.memory;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
 import openfl.utils.AssetType;
-import openfl.Assets;
+// import openfl.Assets;
+import funkin.assets.Assets;
 import openfl.media.Sound;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
 
 // dude i lowk dunno if this is even worth it but whatever
-@:nullSafety
-@:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
+@:nullSafety @:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
 class CacheLifeCycle
 {
   static function preparePurge<T>(cache:CacheTriplet<T>):Void

@@ -23,6 +23,8 @@ import animate.FlxAnimateFrames.SpritemapInput;
 import animate.internal.RenderTexture;
 import openfl.filters.BitmapFilter;
 import haxe.io.Path;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 using StringTools;
 
@@ -242,9 +244,9 @@ class FunkinSprite extends FlxAnimate
    */
   public function loadTexture(key:String):FunkinSprite
   {
-    var graphicKey:String = Paths.image(key);
+    var graphicKey:AssetPath = Paths.image(key);
 
-    if (!Assets.exists(graphicKey, IMAGE))
+    if (!Assets.exists(graphicKey.toString(), IMAGE))
     {
       FlxG.log.error('Texture not found, check your path! $graphicKey');
       return this;
@@ -255,7 +257,7 @@ class FunkinSprite extends FlxAnimate
       FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
     }
 
-    loadGraphic(graphicKey);
+    loadGraphic(graphicKey.toFlxGraphicAsset());
 
     return this;
   }
@@ -372,7 +374,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function loadSparrow(key:String):FunkinSprite
   {
-    var graphicKey:String = Paths.image(key);
+    var graphicKey:AssetPath = Paths.image(key);
     if (!FunkinMemory.isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getSparrowAtlas(key);
@@ -387,7 +389,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function loadPacker(key:String):FunkinSprite
   {
-    var graphicKey:String = Paths.image(key);
+    var graphicKey:AssetPath = Paths.image(key);
     if (!FunkinMemory.isTextureCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getPackerAtlas(key);

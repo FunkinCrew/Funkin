@@ -366,39 +366,39 @@ class LoadingState extends MusicBeatSubState
   #else
   static function preloadLevelAssets():Void
   {
-    // TODO: For moon! replace this shit with the new restructured caching from Eric! Make that work with FunkinMemory! -Moon
-    if (Paths.currentLevel == null || Paths.currentLevel == "shared" || Paths.currentLevel == "") return;
-    var lib = openfl.Assets.getLibrary(Paths.currentLevel);
+    // // TODO: For moon! replace this shit with the new restructured caching from Eric! Make that work with FunkinMemory! -Moon
+    // if (Paths.currentLevel == null || Paths.currentLevel == "shared" || Paths.currentLevel == "") return;
+    // var lib = openfl.Assets.getLibrary(Paths.currentLevel);
 
-    var ids = lib.list("IMAGE").concat(lib.list("SOUND"));
-    for (id in ids)
-    {
-      if (id.endsWith('.ogg') || id.endsWith('.mp3') || id.endsWith('.wav'))
-      {
-        var path = Paths.sound(id, Paths.currentLevel);
-        new Future<String>(function()
-        {
-          if (path != null)
-          {
-            funkin.memory.FunkinMemory.cacheSound(path);
-          }
-          return '${path} successfully loaded.';
-        }, true);
-      }
+    // var ids = lib.list("IMAGE").concat(lib.list("SOUND"));
+    // for (id in ids)
+    // {
+    //   if (id.endsWith('.ogg') || id.endsWith('.mp3') || id.endsWith('.wav'))
+    //   {
+    //     var path = Paths.sound(id, Paths.currentLevel);
+    //     new Future<String>(function()
+    //     {
+    //       if (path != null)
+    //       {
+    //         funkin.memory.FunkinMemory.cacheSound(path);
+    //       }
+    //       return '${path} successfully loaded.';
+    //     }, true);
+    //   }
 
-      if (id.endsWith('.png') || id.endsWith('.jpg') || id.endsWith('.jpeg'))
-      {
-        var path = Paths.image(id, Paths.currentLevel);
-        new Future<String>(function()
-        {
-          if (path != null)
-          {
-            funkin.memory.FunkinMemory.cacheTexture(path);
-          }
-          return '${path} successfully loaded.';
-        }, true);
-      }
-    }
+    //   if (id.endsWith('.png') || id.endsWith('.jpg') || id.endsWith('.jpeg'))
+    //   {
+    //     var path = Paths.image(id, Paths.currentLevel);
+    //     new Future<String>(function()
+    //     {
+    //       if (path != null)
+    //       {
+    //         funkin.memory.FunkinMemory.cacheTexture(path);
+    //       }
+    //       return '${path} successfully loaded.';
+    //     }, true);
+    //   }
+    // }
   }
   #end
 

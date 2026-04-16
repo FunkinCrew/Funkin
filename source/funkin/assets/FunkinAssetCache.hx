@@ -36,6 +36,21 @@ import funkin.assets.ValidatedPaths as Paths;
 class FunkinAssetCache implements OpenFLIAssetCache
 {
   /**
+    BitmapData cache map
+  **/
+  public var bitmapData:Map<String, BitmapData> = [];
+
+  /**
+    Font cache map
+  **/
+  public var font:Map<String, Font> = [];
+
+  /**
+    Sound cache map
+  **/
+  public var sound:Map<String, Sound> = [];
+
+  /**
    * Cache containing FlxGraphics
    */
   var current_flxGraphic:Map<String, FlxGraphic>;

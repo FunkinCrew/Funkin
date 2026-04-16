@@ -1,11 +1,15 @@
 package funkin.memory;
 
+import funkin.assets.Paths.AssetPath;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
-import openfl.utils.AssetType;
-import openfl.Assets;
+// import openfl.utils.AssetType;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
+import openfl.Assets as OpenFLAssets;
 import openfl.media.Sound;
+import funkin.assets.Assets;
 import funkin.util.flixel.sound.FlxPartialSound;
 
 /**
@@ -21,20 +25,21 @@ class FunkinMemory
   public static function initialCache():Void
   {
     BitmapCache.init();
-    var allImages:Array<String> = Assets.list();
+    var allImages:Array<AssetPath> = Assets.list(AssetType.IMAGE);
 
     // Looks for the UI
     for (file in allImages)
     {
-      if (!(file.endsWith('.png') #if FEATURE_COMPRESSED_TEXTURES || file.endsWith('.astc') #end)
-        || file.contains('chart-editor')
-        || !file.contains('ui/')
-        || file.contains('flixel'))
+      var fileStr:String = file;
+      if (!(fileStr.endsWith('.png') #if FEATURE_COMPRESSED_TEXTURES || fileStr.endsWith('.astc') #end)
+        || fileStr.contains('chart-editor')
+        || !fileStr.contains('ui/')
+        || fileStr.contains('flixel'))
       {
         continue;
       }
 
-      file = file.replace(' ', ''); // Handle stray spaces.
+      fileStr = fileStr.replace(' ', ''); // Handle stray spaces.
 
       permanentCacheTexture(file);
     }
@@ -50,13 +55,14 @@ class FunkinMemory
     permanentCacheTexture(Paths.image('ui/fonts/freeplay-clear'));
 
     // Looks for countdown sounds
-    var allSounds:Array<String> = Assets.list(AssetType.SOUND);
+    var allSounds:Array<AssetPath> = Assets.list(AssetType.SOUND);
 
     for (file in allSounds)
     {
-      if (!file.endsWith('.ogg') || !file.contains('countdown/') || file.contains('flixel')) continue;
+      var fileStr:String = file;
+      if (!fileStr.endsWith('.ogg') || !fileStr.contains('countdown/') || fileStr.contains('flixel')) continue;
 
-      file = file.replace(' ', '');
+      fileStr = fileStr.replace(' ', '');
 
       permanentCacheSound(file);
     }
@@ -100,7 +106,7 @@ class FunkinMemory
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
-  public static function cacheTexture(key:String):Void
+  public static function cacheTexture(key:AssetPath):Void
   {
     BitmapCache.cache(key);
   }
@@ -109,7 +115,7 @@ class FunkinMemory
    * Permanently caches a texture with the given key.
    * @param key The key of the texture to cache.
    */
-  static function permanentCacheTexture(key:String):Void
+  static function permanentCacheTexture(key:AssetPath):Void
   {
     BitmapCache.permanentCache(key);
   }
@@ -125,7 +131,7 @@ class FunkinMemory
   /**
    * Checks, if graphic with given path cached in memory.
    */
-  public static function getCachedGraphic(path:String):Null<FlxGraphic>
+  public static function getCachedGraphic(path:AssetPath):Null<FlxGraphic>
   {
     return BitmapCache.getCachedGraphic(path);
   }
@@ -151,7 +157,7 @@ class FunkinMemory
    * @param key The key of the texture to check.
    * @return Whether the texture is cached.
    */
-  public static function isTextureCached(key:String):Bool
+  public static function isTextureCached(key:AssetPath):Bool
   {
     return BitmapCache.isCached(key);
   }
@@ -213,7 +219,7 @@ class FunkinMemory
    * Caches a sound with the given key.
    * @param key The key of the sound to cache.
    */
-  public static function cacheSound(key:String):Void
+  public static function cacheSound(key:AssetPath):Void
   {
     SoundCache.cache(key);
   }
@@ -222,7 +228,7 @@ class FunkinMemory
    * Permanently caches a sound with the given key.
    * @param key The key of the sound to cache.
    */
-  public static function permanentCacheSound(key:String):Void
+  public static function permanentCacheSound(key:AssetPath):Void
   {
     SoundCache.permanentCache(key);
   }
@@ -248,45 +254,45 @@ class FunkinMemory
 
   public static function cleanCurrentLevel():Void
   {
-    log('Cleaning assets for level ${Paths.currentLevel}');
-    if (Paths.currentLevel == null || Paths.currentLevel == "") return;
-    for (key in BitmapCache.cacheTriplet.previous.keys())
-    {
-      if (!key.startsWith(Paths.currentLevel)) continue;
-      var obj:Null<FlxGraphic> = BitmapCache.cacheTriplet.previous.get(key);
-      if (obj != null)
-      {
-        obj.destroy();
-      }
-      BitmapCache.cacheTriplet.previous.remove(key);
-      Assets.cache.removeBitmapData(key);
-    }
+    // log('Cleaning assets for level ${Paths.currentLevel}');
+    // if (Paths.currentLevel == null || Paths.currentLevel == "") return;
+    // for (key in BitmapCache.cacheTriplet.previous.keys())
+    // {
+    //   if (!key.startsWith(Paths.currentLevel)) continue;
+    //   var obj:Null<FlxGraphic> = BitmapCache.cacheTriplet.previous.get(key);
+    //   if (obj != null)
+    //   {
+    //     obj.destroy();
+    //   }
+    //   BitmapCache.cacheTriplet.previous.remove(key);
+    //   Assets.cache.removeBitmapData(key);
+    // }
 
-    @:privateAccess
-    for (key in FlxG.bitmap._cache.keys())
-    {
-      if (!FlxG.bitmap._cache.exists(key)) continue;
+    // @:privateAccess
+    // for (key in FlxG.bitmap._cache.keys())
+    // {
+    //   if (!FlxG.bitmap._cache.exists(key)) continue;
 
-      if (!key.startsWith(Paths.currentLevel)) continue;
-      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
-      if (obj != null)
-      {
-        obj.destroy();
-      }
-      FlxG.bitmap.removeKey(key);
-      BitmapCache.cacheTriplet.previous.remove(key);
-      Assets.cache.removeBitmapData(key);
-    }
+    //   if (!key.startsWith(Paths.currentLevel)) continue;
+    //   var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+    //   if (obj != null)
+    //   {
+    //     obj.destroy();
+    //   }
+    //   FlxG.bitmap.removeKey(key);
+    //   BitmapCache.cacheTriplet.previous.remove(key);
+    //   Assets.cache.removeBitmapData(key);
+    // }
 
-    for (key in SoundCache.cacheTriplet.previous.keys())
-    {
-      if (!key.startsWith(Paths.currentLevel)) continue;
-      SoundCache.cacheTriplet.previous.remove(key);
-      Assets.cache.removeSound(key);
-      log('Cleaning SOUND asset $key');
-    }
+    // for (key in SoundCache.cacheTriplet.previous.keys())
+    // {
+    //   if (!key.startsWith(Paths.currentLevel)) continue;
+    //   SoundCache.cacheTriplet.previous.remove(key);
+    //   Assets.cache.removeSound(key);
+    //   log('Cleaning SOUND asset $key');
+    // }
 
-    Assets.cache.clear(Paths.currentLevel);
+    // Assets.cache.clear(Paths.currentLevel);
   }
 
   /**
@@ -305,18 +311,12 @@ class FunkinMemory
       keysToRemove.push(key);
     }
 
-    @:privateAccess
     for (key in keysToRemove)
     {
       log('Cleaning asset $key');
-      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
-      if (obj != null)
-      {
-        obj.destroy();
-      }
-      FlxG.bitmap.removeKey(key);
       if (BitmapCache.cacheTriplet.current.exists(key)) BitmapCache.cacheTriplet.current.remove(key);
-      Assets.cache.removeBitmapData(key);
+      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
+      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
     }
 
     preparePurgeSoundCache();
@@ -339,18 +339,12 @@ class FunkinMemory
       keysToRemove.push(key);
     }
 
-    @:privateAccess
     for (key in keysToRemove)
     {
       log('Cleaning asset $key');
-      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
-      if (obj != null)
-      {
-        obj.destroy();
-      }
-      FlxG.bitmap.removeKey(key);
       if (BitmapCache.cacheTriplet.current.exists(key)) BitmapCache.cacheTriplet.current.remove(key);
-      Assets.cache.removeBitmapData(key);
+      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
+      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
     }
   }
 
@@ -368,7 +362,7 @@ class FunkinMemory
 
 typedef CacheTriplet<T> =
 {
-  permanent:Map<String, T>,
-  current:Map<String, T>,
-  previous:Map<String, T>
+  permanent:Map<AssetPath, T>,
+  current:Map<AssetPath, T>,
+  previous:Map<AssetPath, T>
 }

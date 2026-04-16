@@ -3,38 +3,38 @@ package funkin.memory;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
 import openfl.utils.AssetType;
-import openfl.Assets;
+// import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
 import openfl.media.Sound;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
 import funkin.memory.CacheLifeCycle;
+import funkin.assets.Paths.AssetPath;
 
-@:nullSafety
-@:allow(funkin.memory.FunkinMemory)
+@:nullSafety @:allow(funkin.memory.FunkinMemory)
 class SoundCache
 {
   // after thinking about it, I don't think we should combine sounds and textures in one structure.
-  static var cacheTriplet:CacheTriplet<Sound> =
-    {
-      permanent: [],
-      current: [],
-      previous: []
-    };
+  static var cacheTriplet:CacheTriplet<Sound> = {
+    permanent: [],
+    current: [],
+    previous: []
+  };
 
-  static function cache(key:String):Void
+  static function cache(key:AssetPath):Void
   {
     if (cacheTriplet.current.exists(key)) return;
 
-    var sound:Null<Sound> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? Assets.getSound(key, true);
+    var sound:Null<Sound> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? Assets.getSound(key);
 
     if (sound != null) cacheTriplet.current.set(key, sound);
   }
 
-  static function permanentCache(key:String):Void
+  static function permanentCache(key:AssetPath):Void
   {
     if (cacheTriplet.permanent.exists(key)) return;
 
-    var sound:Null<Sound> = Assets.getSound(key, true);
+    var sound:Null<Sound> = Assets.getSound(key);
     if (sound != null) cacheTriplet.permanent.set(key, sound);
   }
 
@@ -59,7 +59,7 @@ class SoundCache
       if (sound != null)
       {
         FunkinMemory.log('Cleaning SOUND asset $key');
-        Assets.cache.removeSound(key);
+        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeSound(key);
         cacheTriplet.previous.remove(key);
       }
     }
@@ -73,14 +73,9 @@ class SoundCache
 
       file = file.replace(" ", "");
 
-      if (file.contains("shared") || Assets.exists('shared:$file', AssetType.SOUND))
-      {
-        file = 'shared:$file';
-      }
-
-      if (cacheTriplet.permanent.exists(file) || !Assets.cache.hasSound(file)) continue;
+      if (cacheTriplet.permanent.exists(file) || !funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.hasSound(file)) continue;
       FunkinMemory.log('Cleaning SOUND asset $file');
-      Assets.cache.removeSound(file);
+      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeSound(file);
     }
 
     FlxPartialSound.clearCache();

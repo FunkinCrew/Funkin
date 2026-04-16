@@ -1,17 +1,18 @@
 package funkin.memory;
 
+import funkin.assets.Paths.AssetPath;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
 import openfl.utils.AssetType;
-import openfl.Assets;
+// import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
 import openfl.media.Sound;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
 import funkin.memory.CacheLifeCycle;
 
-@:nullSafety
-@:allow(funkin.memory.FunkinMemory)
+@:nullSafety @:allow(funkin.memory.FunkinMemory)
 class BitmapCache
 {
   static var cacheTriplet:CacheTriplet<FlxGraphic> = {
@@ -19,9 +20,7 @@ class BitmapCache
     current: [],
     previous: []
   };
-
   static final purgeFilter:Array<String> = ["/week", "/characters", "/charSelect", "/results"];
-
   // helper var
   static var flixelCache:Map<String, FlxGraphic> = new Map();
 
@@ -42,7 +41,7 @@ class BitmapCache
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
-  static function cache(key:String, warm:Bool = false):Void
+  static function cache(key:AssetPath, warm:Bool = false):Void
   {
     if (cacheTriplet.current.exists(key)) return;
 
@@ -64,7 +63,7 @@ class BitmapCache
    * Permanently caches a texture with the given key.
    * @param key The key of the texture to cache.
    */
-  static function permanentCache(key:String):Void
+  static function permanentCache(key:AssetPath):Void
   {
     if (cacheTriplet.permanent.exists(key)) return;
 
@@ -101,12 +100,12 @@ class BitmapCache
   /**
    * Checks, if graphic with given path cached in memory.
    */
-  static function isCached(path:String):Bool
+  static function isCached(path:AssetPath):Bool
   {
     return (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
   }
 
-  static function getCachedGraphic(path:String):Null<FlxGraphic>
+  static function getCachedGraphic(path:AssetPath):Null<FlxGraphic>
   {
     if (cacheTriplet.permanent.exists(path)) return cacheTriplet.permanent.get(path);
     if (cacheTriplet.current.exists(path)) return cacheTriplet.current.get(path);
@@ -136,14 +135,14 @@ class BitmapCache
         continue;
       }
 
-      if (key.contains("fonts")) continue;
+      if (key.toString().contains("fonts")) continue;
 
       var graphic:Null<FlxGraphic> = cacheTriplet.previous.get(key);
       if (graphic != null)
       {
-        FlxG.bitmap.removeByKey(key);
         cacheTriplet.previous.remove(key);
-        Assets.cache.removeBitmapData(key);
+        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
+        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
       }
     }
 
@@ -160,8 +159,8 @@ class BitmapCache
       {
         if (!key.contains(purgeEntry)) continue;
 
-        FlxG.bitmap.removeByKey(key);
-        Assets.cache.removeBitmapData(key);
+        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
+        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
       }
     }
   }
