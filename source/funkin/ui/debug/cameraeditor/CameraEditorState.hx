@@ -911,9 +911,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     currentStage.revive();
 
-    var event:ScriptEvent = new ScriptEvent(CREATE, false);
-    ScriptEventDispatcher.callEvent(currentStage, event);
-
     add(currentStage);
     currentStage.vcamPoint = cameraRect.vCamPoint;
     currentStage.onCreate(null);
