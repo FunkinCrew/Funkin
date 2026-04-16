@@ -612,12 +612,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     camSliceOverlay.setPosition(camSlice.x, camSlice.y);
 
     leftExt.width = pieceSize / zoom;
-    if (!isRelative) leftExt.width = pieceSize;
+    if (isRelative) leftExt.width = pieceSize;
     leftExt.height = camSlice.height;
     leftExt.setPosition(camSlice.x - leftExt.width, camSlice.y);
 
     rightExt.width = pieceSize / zoom;
-    if (!isRelative) rightExt.width = pieceSize;
+    if (isRelative) rightExt.width = pieceSize;
     rightExt.height = camSlice.height;
     rightExt.setPosition(camSlice.x + camSlice.width, camSlice.y);
 
