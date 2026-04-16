@@ -317,6 +317,10 @@ private class TimelineViewportLayout extends DefaultLayout
 @:dox(hide) @:noCompletion
 private class TimelineViewportEvents extends haxe.ui.events.Events
 {
+  static inline var PLAYHEAD_GRAB_TOLERANCE_PX:Float = 5.0;
+  static inline var DOUBLE_CLICK_MAX_DELAY:Float = 0.4;
+  static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
+
   var _viewport:TimelineViewport;
 
   var _dragMode:TimelineDragMode = NONE;
@@ -331,6 +335,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _ghostTimeMs:Float = 0;
   var _ghostDurationSteps:Float = 0;
   var _ghostLayerIndex:Int = 0;
+  var _lastClickTime:Float = 0;
+  var _lastClickX:Float = 0;
+  var _lastClickY:Float = 0;
 
   public function new(viewport:TimelineViewport)
   {
@@ -530,6 +537,21 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     _dragTarget = null;
   }
 
+  function _isOnPlayhead(localX:Float):Bool
+  {
+    var playheadX = _viewport.msToPixelX(_viewport.songPositionMs);
+    return Math.abs(localX - playheadX) <= PLAYHEAD_GRAB_TOLERANCE_PX;
+  }
+
+  function _dispatchClampedSeek(clickMs:Float):Void
+  {
+    if (clickMs < 0) clickMs = 0;
+    if (clickMs > _viewport.songLengthMs) clickMs = _viewport.songLengthMs;
+    var seekEvent = new TimelineEvent(TimelineEvent.SEEK);
+    seekEvent.seekPositionMs = clickMs;
+    _viewport.dispatch(seekEvent);
+  }
+
   function _onMouseDown(e:MouseEvent):Void
   {
     var localX = e.screenX - _viewport.screenLeft;
@@ -542,6 +564,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       var hitZone = hitBlock.getHitZone(localX - hitBlock.blockLeft);
       _beginDrag(hitBlock, hitZone, localX);
       _selectBlock(hitBlock);
+      _lastClickTime = 0;
     }
     else
     {
@@ -559,13 +582,45 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
           timeline.layerPanel.rebuildLayers(_viewport.layers);
       }
 
-      _dragMode = SEEKING;
-      var clickMs = _viewport.pixelXToMs(localX);
-      if (clickMs >= 0 && clickMs <= _viewport.songLengthMs)
+      var inTopBar = localY < TimelineViewport.TOP_BAR_HEIGHT;
+      var onPlayhead = _isOnPlayhead(localX);
+
+      if (inTopBar)
       {
-        var seekEvent = new TimelineEvent(TimelineEvent.SEEK);
-        seekEvent.seekPositionMs = clickMs;
-        _viewport.dispatch(seekEvent);
+        _dragMode = SEEKING;
+        Screen.instance.setCursor("grabbing");
+        _dispatchClampedSeek(_viewport.pixelXToMs(localX));
+        _lastClickTime = 0;
+      }
+      else if (onPlayhead)
+      {
+        _dragMode = SEEKING;
+        Screen.instance.setCursor("grabbing");
+        _dispatchClampedSeek(_viewport.pixelXToMs(localX));
+        _lastClickTime = 0;
+      }
+      else
+      {
+        // note: we do double click this way since haxeui's double click dispatches on mouse up,
+        // while we want to get it on mouse down, so we can drag right after hitting the second click
+        var now = haxe.Timer.stamp();
+        var isDoubleClick = (now - _lastClickTime) <= DOUBLE_CLICK_MAX_DELAY
+          && Math.abs(localX - _lastClickX) <= DOUBLE_CLICK_MAX_DIST_PX
+          && Math.abs(localY - _lastClickY) <= DOUBLE_CLICK_MAX_DIST_PX;
+
+        if (isDoubleClick)
+        {
+          _dragMode = SEEKING;
+          Screen.instance.setCursor("grabbing");
+          _dispatchClampedSeek(_viewport.pixelXToMs(localX));
+          _lastClickTime = 0;
+        }
+        else
+        {
+          _lastClickTime = now;
+          _lastClickX = localX;
+          _lastClickY = localY;
+        }
       }
     }
 
@@ -590,6 +645,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       case RESIZE_RIGHT:
         _handleDragResizeRight(localX, _snapEnabled() != e.shiftKey);
       case SEEKING:
+        Screen.instance.setCursor("grabbing");
         var seekMs = _viewport.pixelXToMs(localX);
         if (seekMs < 0) seekMs = 0;
         if (seekMs > _viewport.songLengthMs) seekMs = _viewport.songLengthMs;
@@ -604,8 +660,16 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
 
-    if (_dragMode == SEEKING) _dragMode = NONE;
+    var wasSeeking = _dragMode == SEEKING;
+    if (wasSeeking) _dragMode = NONE;
     else if (_dragMode != NONE) _endDrag();
+
+    if (wasSeeking)
+    {
+      var localX = e.screenX - _viewport.screenLeft;
+      var localY = e.screenY - _viewport.screenTop;
+      _updateHoverCursor(localX, localY);
+    }
   }
 
   function _onMouseWheel(e:MouseEvent):Void
@@ -662,6 +726,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       _hoverBlock = null;
     }
 
+    var desiredCursor:String = "default";
+
     var hitBlock = _hitTestBlocks(localX, localY);
     if (hitBlock != null)
     {
@@ -670,31 +736,35 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       switch (hitZone)
       {
         case LEFT_EDGE:
-          _viewport.customStyle.cursor = fixed ? "move" : "col-resize";
-          _viewport.invalidateComponentStyle();
+          desiredCursor = "move";
           if (!fixed)
           {
             hitBlock.addClass("resize-left");
             _hoverBlock = hitBlock;
           }
         case RIGHT_EDGE:
-          _viewport.customStyle.cursor = fixed ? "move" : "col-resize";
-          _viewport.invalidateComponentStyle();
+          desiredCursor = "move";
           if (!fixed)
           {
             hitBlock.addClass("resize-right");
             _hoverBlock = hitBlock;
           }
         case BODY:
-          _viewport.customStyle.cursor = "move";
-          _viewport.invalidateComponentStyle();
+          desiredCursor = "move";
       }
     }
-    else
+    else if (localY < TimelineViewport.TOP_BAR_HEIGHT)
     {
-      _viewport.customStyle.cursor = "default";
-      _viewport.invalidateComponentStyle();
+      desiredCursor = "pointer";
     }
+    else if (_isOnPlayhead(localX))
+    {
+      desiredCursor = "pointer";
+    }
+
+    _viewport.customStyle.cursor = desiredCursor;
+    _viewport.invalidateComponentStyle();
+    Screen.instance.setCursor(desiredCursor);
   }
 
   function _handleDragMove(mouseX:Float, mouseY:Float, snapToGrid:Bool):Void
