@@ -86,6 +86,8 @@ class TimelineLayerPanel extends VBox
       row.addComponent(field);
       _layerContainer.addComponent(row);
     }
+
+    _layerContainer.syncComponentValidation();
   }
 }
 
