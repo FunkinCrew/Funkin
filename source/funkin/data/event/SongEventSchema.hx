@@ -242,6 +242,11 @@ typedef SongEventSchemaField =
    */
   ?collapsible:Bool,
   /**
+   * Used for FRAME values.
+   * Whether to make the collapsible frame start collapsed.
+   */
+  ?collapsed:Bool,
+  /**
    * An optional default value for the field.
    */
   ?defaultValue:Dynamic,
