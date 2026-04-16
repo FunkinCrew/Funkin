@@ -42,6 +42,8 @@ class EventTimeline extends VBox
 
   @:clonable @:behaviour(DefaultBehaviour, 1)
   public var autoScrollMode:Int;
+  @:clonable @:behaviour(DefaultBehaviour, true)
+  public var snapEnabled:Bool;
 
   public function new()
   {
@@ -233,6 +235,7 @@ private class EventTimelineEvents extends Events
     if (!_timeline.vscrollbar.hasEvent(UIEvent.CHANGE, _onVScrollbarChange)) _timeline.vscrollbar.registerEvent(UIEvent.CHANGE, _onVScrollbarChange);
     if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
       _onAutoScrollChange)) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
+    if (!_timeline.toolbar.chkSnap.hasEvent(UIEvent.CHANGE, _onSnapChange)) _timeline.toolbar.chkSnap.registerEvent(UIEvent.CHANGE, _onSnapChange);
 
     _timeline.viewport.onRefresh = _updateScrollbar;
 
@@ -247,6 +250,7 @@ private class EventTimelineEvents extends Events
     _timeline.scrollbar.unregisterEvent(UIEvent.CHANGE, _onScrollbarChange);
     _timeline.vscrollbar.unregisterEvent(UIEvent.CHANGE, _onVScrollbarChange);
     _timeline.toolbar.ddAutoScroll.unregisterEvent(UIEvent.CHANGE, _onAutoScrollChange);
+    _timeline.toolbar.chkSnap.unregisterEvent(UIEvent.CHANGE, _onSnapChange);
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider");
     if (zoomSlider != null) zoomSlider.unregisterEvent(UIEvent.CHANGE, _onZoomChange);
@@ -291,6 +295,11 @@ private class EventTimelineEvents extends Events
   function _onAutoScrollChange(_:UIEvent):Void
   {
     _timeline.autoScrollMode = _timeline.toolbar.ddAutoScroll.selectedIndex;
+  }
+
+  function _onSnapChange(_:UIEvent):Void
+  {
+    _timeline.snapEnabled = _timeline.toolbar.chkSnap.selected;
   }
 
   function _onScrollbarChange(_:UIEvent):Void
