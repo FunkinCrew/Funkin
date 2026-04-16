@@ -336,9 +336,12 @@ private class EventTimelineEvents extends Events
     if (maxVScroll > 0)
     {
       var viewableHeight = _timeline.viewport.viewableHeightPx;
-      var halfOvershoot = viewableHeight / 2;
-      _timeline.vscrollbar.max = _timeline.viewport.totalLayerHeight - halfOvershoot;
-      if (viewableHeight > 0) _timeline.vscrollbar.pageSize = viewableHeight;
+      // HaxeUI: thumbHeight = (pageSize / (max - min)) * usableHeight.
+      // virtualTotal = maxScroll + visible (the full span of content that passes
+      // through the viewport across scroll range [0, max]).
+      var virtualTotal = maxVScroll + viewableHeight;
+      _timeline.vscrollbar.max = maxVScroll;
+      _timeline.vscrollbar.pageSize = (viewableHeight / virtualTotal) * maxVScroll;
       _timeline.vscrollbar.pos = _timeline.viewport.layerScrollOffsetPx;
       _timeline.vscrollbar.hidden = false;
     }
