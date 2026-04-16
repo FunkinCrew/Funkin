@@ -1,5 +1,6 @@
 package funkin.ui.debug.cameraeditor.handlers;
 
+#if FEATURE_CAMERA_EDITOR
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.debug.cameraeditor.commands.GenerateEventsCommand;
 import funkin.data.song.SongData.SongTimeChange;
@@ -138,3 +139,4 @@ enum abstract CameraEditorAutoGenPlacementMode(String) from String
 
   // If you think up any other algorithms, enumerate them here.
 }
+#end
