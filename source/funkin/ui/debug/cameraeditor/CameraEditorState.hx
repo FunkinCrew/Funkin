@@ -1461,7 +1461,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
       replayCameraTimeline(position);
-    timeline.songPosition = conductorInUse.songPosition;
+    timeline.songPosition = position;
   }
 
   function playSingAnimation(note:SongNoteData):Void
