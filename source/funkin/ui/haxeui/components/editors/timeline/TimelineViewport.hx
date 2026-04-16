@@ -80,7 +80,13 @@ class TimelineViewport extends Box
   {
     var viewableHeight = componentHeight - TOP_BAR_HEIGHT;
     if (viewableHeight <= 0) return 0;
-    var max = totalLayerHeight - viewableHeight;
+    // Reserve one row as a safety margin: componentHeight can over-report the
+    // actually-rendered area when the timeline extends past the window edge.
+    var safeViewable = viewableHeight - LAYER_HEIGHT;
+    if (safeViewable < 0) safeViewable = 0;
+    if (totalLayerHeight <= safeViewable) return 0;
+    // Allow overshoot so the last row can scroll to the middle of the safe area.
+    var max = totalLayerHeight - safeViewable / 2;
     return max > 0 ? max : 0;
   }
 
@@ -108,6 +114,10 @@ class TimelineViewport extends Box
   public function refreshLayout():Void
   {
     if (songLengthMs > 0 && scrollOffsetMs > songLengthMs) scrollOffsetMs = songLengthMs;
+    var maxScroll = maxLayerScrollPx;
+    if (maxScroll <= 0) layerScrollOffsetPx = 0;
+    else if (layerScrollOffsetPx > maxScroll) layerScrollOffsetPx = maxScroll;
+    else if (layerScrollOffsetPx < 0) layerScrollOffsetPx = 0;
     invalidateComponentLayout();
     if (onRefresh != null) onRefresh();
   }
@@ -615,12 +625,19 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     }
     else if (e.ctrlKey)
     {
-      var scrollPx = e.delta * TimelineViewport.LAYER_HEIGHT;
-      _viewport.layerScrollOffsetPx -= scrollPx;
-      if (_viewport.layerScrollOffsetPx < 0) _viewport.layerScrollOffsetPx = 0;
-      var halfOvershoot = _viewport.viewableHeightPx / 2;
-      var maxScroll = _viewport.totalLayerHeight - halfOvershoot;
-      if (_viewport.layerScrollOffsetPx > maxScroll) _viewport.layerScrollOffsetPx = maxScroll;
+      var maxScroll = _viewport.maxLayerScrollPx;
+      if (maxScroll <= 0)
+      {
+        _viewport.layerScrollOffsetPx = 0;
+      }
+      else
+      {
+        var scrollPx = e.delta * TimelineViewport.LAYER_HEIGHT;
+        var newOffset = _viewport.layerScrollOffsetPx - scrollPx;
+        if (newOffset < 0) newOffset = 0;
+        if (newOffset > maxScroll) newOffset = maxScroll;
+        _viewport.layerScrollOffsetPx = newOffset;
+      }
     }
     else
     {
