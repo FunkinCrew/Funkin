@@ -3,25 +3,20 @@ package funkin.graphics;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.FlxCamera;
-import flixel.addons.display.FlxSliceSprite;
+import flixel.addons.display.FlxTiledSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
- * An FlxSliceSprite that inherits the vcam positioning from FunkinSprite.
+ * An FlxTiledSprite that inherits the vcam positioning from FunkinSprite.
  **/
 @:nullSafety
-class FunkinSliceSprite extends FlxSliceSprite
+class FunkinTiledSprite extends FlxTiledSprite
 {
   public var vcamPoint:Null<FlxPoint> = null;
 
-  public function new(graphic:FlxGraphicAsset, sliceRect:FlxRect, width:Float, height:Float, ?sourceRect:FlxRect)
-  {
-    super(graphic, sliceRect, width, height, sourceRect);
-    stretchCenter = true;
-    stretchTop = true;
-    stretchBottom = true;
-    stretchLeft = true;
-    stretchRight = true;
+	public function new(?graphic:FlxGraphicAsset, width:Float, height:Float, repeatX = true, repeatY = true)
+	{
+    super(graphic, width, height, repeatX, repeatY);
   }
 
   /**
