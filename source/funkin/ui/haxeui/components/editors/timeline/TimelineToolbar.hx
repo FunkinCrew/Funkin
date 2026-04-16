@@ -14,6 +14,8 @@ import haxe.ui.data.ArrayDataSource;
   <label text="Auto-scroll:" style="vertical-align: center; padding-right: 4px;" />
   <dropdown id="ddAutoScroll" width="130" allowFocus="false" style="vertical-align: center;" />
   <spacer width="8" />
+  <checkbox id="chkSnap" text="Snap" selected="true" allowFocus="false" tooltip="Snap to nearest step (Hold SHIFT to temporarily toggle this)" style="vertical-align: center;" />
+  <spacer width="8" />
   <label text="Zoom:" style="vertical-align: center; padding-right: 4px;" />
   <slider id="zoomSlider" min="0.1" max="5.0" pos="1.0" width="120" style="vertical-align: center;" />
 </hbox>

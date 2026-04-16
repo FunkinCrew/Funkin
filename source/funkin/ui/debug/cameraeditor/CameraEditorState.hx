@@ -567,6 +567,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
 
+      if (timeline.snapEnabled)
+      {
+        var stepMs = timeline.viewport.stepLengthMs;
+        if (stepMs > 0) raw.time = Math.fround(raw.time / stepMs) * stepMs;
+      }
+
       var cmd = new AddEventCommand(eventData);
       CameraEditorCommandHandler.performCommand(this, cmd);
       selectedSongEvent = eventData;
