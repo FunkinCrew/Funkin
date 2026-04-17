@@ -369,6 +369,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _lastClickTime:Float = 0;
   var _lastClickX:Float = 0;
   var _lastClickY:Float = 0;
+  var _panLastScreenX:Float = 0;
+  var _panLastScreenY:Float = 0;
 
   public function new(viewport:TimelineViewport)
   {
@@ -381,6 +383,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (!hasEvent(MouseEvent.MOUSE_DOWN, _onMouseDown)) registerEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
     if (!hasEvent(MouseEvent.MOUSE_MOVE, _onMouseMove)) registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+    if (!hasEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown)) registerEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
   }
 
   override public function unregister():Void
@@ -388,8 +391,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     unregisterEvent(MouseEvent.MOUSE_DOWN, _onMouseDown);
     unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+    unregisterEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
+    Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
   }
 
   function _hitTestBlocks(localX:Float, localY:Float):TimelineEventBlock
@@ -683,6 +688,19 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         var seekEvent = new TimelineEvent(TimelineEvent.SEEK);
         seekEvent.seekPositionMs = seekMs;
         _viewport.dispatch(seekEvent);
+      case PANNING:
+        Screen.instance.setCursor("grabbing");
+        var dx = e.screenX - _panLastScreenX;
+        var dy = e.screenY - _panLastScreenY;
+        _panLastScreenX = e.screenX;
+        _panLastScreenY = e.screenY;
+
+        var pxPerMs = _viewport.pixelsPerMs * _viewport.zoomLevel;
+        if (pxPerMs > 0) _viewport.scrollOffsetMs = _viewport.scrollOffsetMs - dx / pxPerMs;
+        if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
+
+        _viewport.layerScrollOffsetPx = _viewport.layerScrollOffsetPx - dy;
+        _viewport.refreshLayout();
     }
   }
 
@@ -701,6 +719,31 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       var localY = e.screenY - _viewport.screenTop;
       _updateHoverCursor(localX, localY);
     }
+  }
+
+  function _onMiddleMouseDown(e:MouseEvent):Void
+  {
+    if (_dragMode != NONE) return;
+
+    _dragMode = PANNING;
+    _panLastScreenX = e.screenX;
+    _panLastScreenY = e.screenY;
+    Screen.instance.setCursor("grabbing");
+
+    Screen.instance.registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    Screen.instance.registerEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
+  }
+
+  function _onMiddleMouseUp(e:MouseEvent):Void
+  {
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
+    Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
+
+    if (_dragMode == PANNING) _dragMode = NONE;
+
+    var localX = e.screenX - _viewport.screenLeft;
+    var localY = e.screenY - _viewport.screenTop;
+    _updateHoverCursor(localX, localY);
   }
 
   function _onMouseWheel(e:MouseEvent):Void

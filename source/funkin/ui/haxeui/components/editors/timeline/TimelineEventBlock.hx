@@ -124,5 +124,6 @@ enum TimelineDragMode
   RESIZE_LEFT;
   RESIZE_RIGHT;
   SEEKING;
+  PANNING;
 }
 #end
