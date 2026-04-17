@@ -1064,14 +1064,14 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       switch (hitZone)
       {
         case LEFT_EDGE:
-          desiredCursor = "move";
+          desiredCursor = fixed ? "move" : "col-resize";
           if (!fixed)
           {
             hitBlock.addClass("resize-left");
             _hoverBlock = hitBlock;
           }
         case RIGHT_EDGE:
-          desiredCursor = "move";
+          desiredCursor = fixed ? "move" : "col-resize";
           if (!fixed)
           {
             hitBlock.addClass("resize-right");
