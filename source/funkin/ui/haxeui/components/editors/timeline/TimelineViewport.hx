@@ -115,6 +115,23 @@ class TimelineViewport extends Box
     return idx;
   }
 
+  public function ensureLayerVisible(layerIndex:Int):Void
+  {
+    if (layerIndex < 0 || layerIndex >= layers.length) return;
+    var viewH = viewableHeightPx - LAYER_HEIGHT;
+    if (viewH <= 0) return;
+
+    var layerTop = layerIndex * LAYER_HEIGHT;
+    var layerBottom = layerTop + LAYER_HEIGHT;
+    var viewTop = layerScrollOffsetPx;
+    var viewBottom = viewTop + viewH;
+
+    if (layerTop < viewTop) layerScrollOffsetPx = layerTop;
+    else if (layerBottom > viewBottom) layerScrollOffsetPx = layerBottom - viewH;
+
+    refreshLayout();
+  }
+
   public function refreshLayout():Void
   {
     if (songLengthMs > 0 && scrollOffsetMs > songLengthMs) scrollOffsetMs = songLengthMs;
