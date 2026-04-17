@@ -25,7 +25,7 @@ class AddLayerCommand implements CameraEditorCommand
 
     state.timeline.viewport.selectedLayerIndex = insertIndex >= 0 && insertIndex < layers.length ? insertIndex : layers.length - 1;
     state.timeline.layerPanel.rebuildLayers(layers);
-    state.timeline.viewport.refreshLayout();
+    state.timeline.viewport.ensureLayerVisible(state.timeline.viewport.selectedLayerIndex);
     state.saved = false;
   }
 
@@ -38,7 +38,7 @@ class AddLayerCommand implements CameraEditorCommand
     if (viewport.selectedLayerIndex < 0)
       viewport.selectedLayerIndex = 0;
     state.timeline.layerPanel.rebuildLayers(viewport.layers);
-    viewport.refreshLayout();
+    viewport.ensureLayerVisible(viewport.selectedLayerIndex);
     state.saved = false;
   }
 
