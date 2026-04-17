@@ -123,7 +123,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public static var instance:CameraEditorState = null;
 
-  public static final SEEK_TOLERANCE_MS:Float = 300;
+  public static final SEEK_TOLERANCE_MS:Float = 100;
 
   /**
    * INSTANCE DATA
@@ -649,6 +649,64 @@ class CameraEditorState extends UIState implements ConsoleClass
   var previousTime:Float = 0;
   var completedEvents:Array<SongEventData> = [];
 
+  // Maybe in the future we can handle the special tankman picospeaker/otisspeaker events?
+
+  public function handlePlayAnimationEvent(data:SongEventData):Void
+  {
+    if (currentStage == null) return;
+
+    var targetName:Null<String> = data.getString('target');
+    if (targetName == null) targetName = 'boyfriend';
+
+    var anim = data.getString('anim');
+    if (anim == null) anim = 'idle';
+
+    var force = data.getBool('force');
+    if (force == null) force = false;
+
+    var target:FlxSprite = null;
+
+    switch (targetName)
+    {
+      case 'boyfriend' | 'bf' | 'player':
+        target = currentStage.getBoyfriend();
+      case 'dad' | 'opponent':
+        target = currentStage.getDad();
+      case 'girlfriend' | 'gf':
+        target = currentStage.getGirlfriend();
+      default:
+        target = currentStage.getNamedProp(targetName);
+        if (target == null) trace('Unknown animation target: $targetName');
+        else
+          trace('Fetched animation target $targetName from stage.');
+    }
+
+    if (target != null)
+    {
+      if (target.animation == null)
+      {
+        trace('Target $targetName does not have an animation controller.');
+        return;
+      }
+
+      if (target.animation.name == anim && target.animation.finished) return;
+
+      if (Std.isOfType(target, BaseCharacter))
+      {
+        var targetChar:BaseCharacter = cast target;
+        targetChar.playAnimation(anim, force, force);
+      }
+      else
+      {
+        target.animation.play(anim, force);
+      }
+    }
+    else
+    {
+      trace('Unknown PlayAnimation target: $targetName');
+    }
+  }
+
   /**
    * Process song events for the current chart.
    * This never removes them as we need to maybe reprocess events depending on the time of the song.
@@ -670,6 +728,8 @@ class CameraEditorState extends UIState implements ConsoleClass
           cameraRect.handleFocusCamera(eventData);
         case 'ZoomCamera':
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+        case 'PlayAnimation':
+          handlePlayAnimationEvent(eventData);
       }
 
       completedEvents.push(eventData);
@@ -681,6 +741,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   override public function dispatchEvent(event:ScriptEvent):Void
   {
+    if (noEvents) return;
+
     super.dispatchEvent(event);
 
     if (currentStage != null)
@@ -1445,6 +1507,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var lastSeekReplay:Float = 0;
   var autoSeek:Bool = false;
+  var noEvents:Bool = false;
 
   /**
    * Sets the time position of the current instrumental and vocal tracks.
@@ -1466,6 +1529,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var diff = Math.abs(position - lastSeekReplay);
       autoSeek = true;
+      noEvents = true;
 
       if (diff > SEEK_TOLERANCE_MS)
       {
@@ -1502,6 +1566,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentSongChartData == null) return;
 
+    noEvents = false;
+
     cameraRect.cancelAllTweens();
     cameraRect.zoom = defaultStageZoom;
     cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
@@ -1511,6 +1577,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     completedEvents = [];
     previousNoteTime = 0;
+
+    var bfLastPlayAnimationTime:Null<Float> = null;
+    var dadLastPlayAnimationTime:Null<Float> = null;
+    var bfLastPlayAnimationEvent:Null<SongEventData> = null;
+    var dadLastPlayAnimationEvent:Null<SongEventData> = null;
+    var bfPlayAnimationWindowEnd:Float = -1;
+    var dadPlayAnimationWindowEnd:Float = -1;
 
     if (songEvents != null && songEvents.length > 0)
     {
@@ -1537,6 +1610,34 @@ class CameraEditorState extends UIState implements ConsoleClass
             cameraRect.handleFocusCamera(eventData);
           case 'ZoomCamera':
             cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+          case 'PlayAnimation':
+            handlePlayAnimationEvent(eventData);
+
+            var targetName:Null<String> = eventData.getString('target');
+            if (targetName == null) targetName = 'boyfriend';
+
+            var eventBeatTime:Float = conductorInUse.getTimeInSteps(eventData.time) / Constants.STEPS_PER_BEAT;
+            var nextBeatIndex:Int = Math.floor(eventBeatTime) + 1;
+            var nextBeatTimeMs:Float = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+            if (nextBeatTimeMs <= eventData.time)
+            {
+              nextBeatIndex += 1;
+              nextBeatTimeMs = conductorInUse.getBeatTimeInMs(nextBeatIndex);
+            }
+
+            switch (targetName)
+            {
+              case 'boyfriend' | 'bf' | 'player':
+                bfLastPlayAnimationTime = eventData.time;
+                bfLastPlayAnimationEvent = eventData;
+                bfPlayAnimationWindowEnd = nextBeatTimeMs;
+              case 'dad' | 'opponent':
+                dadLastPlayAnimationTime = eventData.time;
+                dadLastPlayAnimationEvent = eventData;
+                dadPlayAnimationWindowEnd = nextBeatTimeMs;
+              default:
+                // Non-singing targets (props/GF/etc.) do not affect note replay suppression.
+            }
         }
 
         completedEvents.push(eventData);
@@ -1552,6 +1653,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     var dadShouldKeepSinging:Bool = false;
     var bfShouldKeepSinging:Bool = false;
+    var dadHasNoteAfterPlayAnimation:Bool = false;
+    var bfHasNoteAfterPlayAnimation:Bool = false;
 
     var dadSingTime:Float = 0;
     var bfSingTime:Float = 0;
@@ -1585,18 +1688,28 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       if (latestDadNote != null)
       {
-        conductorInUse.update(latestDadNote.time);
-        playSingAnimation(latestDadNote);
-        if (latestDadNote.length == 0) dadShouldKeepSinging = latestDadNote.time + 300 > position;
-        else if (latestDadNote.length > 0) dadShouldKeepSinging = latestDadNote.time + latestDadNote.length > position;
+        dadHasNoteAfterPlayAnimation = dadLastPlayAnimationTime == null || latestDadNote.time > dadLastPlayAnimationTime;
+
+        if (dadHasNoteAfterPlayAnimation)
+        {
+          conductorInUse.update(latestDadNote.time);
+          playSingAnimation(latestDadNote);
+          if (latestDadNote.length == 0) dadShouldKeepSinging = latestDadNote.time + 300 > position;
+          else if (latestDadNote.length > 0) dadShouldKeepSinging = latestDadNote.time + latestDadNote.length > position;
+        }
       }
 
       if (latestBFNote != null)
       {
-        conductorInUse.update(latestBFNote.time);
-        playSingAnimation(latestBFNote);
-        if (latestBFNote.length == 0) bfShouldKeepSinging = latestBFNote.time + 300 > position;
-        else if (latestBFNote.length > 0) bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
+        bfHasNoteAfterPlayAnimation = bfLastPlayAnimationTime == null || latestBFNote.time > bfLastPlayAnimationTime;
+
+        if (bfHasNoteAfterPlayAnimation)
+        {
+          conductorInUse.update(latestBFNote.time);
+          playSingAnimation(latestBFNote);
+          if (latestBFNote.length == 0) bfShouldKeepSinging = latestBFNote.time + 300 > position;
+          else if (latestBFNote.length > 0) bfShouldKeepSinging = latestBFNote.time + latestBFNote.length > position;
+        }
       }
 
       if (latestDadNote != null && latestBFNote != null)
@@ -1608,18 +1721,21 @@ class CameraEditorState extends UIState implements ConsoleClass
       else if (latestBFNote != null) cachedNoteIndex = notes.indexOf(latestBFNote);
     }
 
-    if (dad != null) dad.animation.update(0);
-    if (bf != null) bf.animation.update(0);
+    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
 
-    if (!dadShouldKeepSinging && dad != null)
+    if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
       if (!StringTools.startsWith(dad.animation.curAnim.name, 'idle')) dad.dance(true);
     }
-    if (!bfShouldKeepSinging && bf != null)
+    if (!bfShouldKeepSinging && bf != null && !bfInPlayAnimationWindow)
     {
       if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
     }
     conductorInUse.update(position);
+
+    if (dad != null) dad.animation.update(0);
+    if (bf != null) bf.animation.update(0);
 
     cameraRect.update(0);
 
