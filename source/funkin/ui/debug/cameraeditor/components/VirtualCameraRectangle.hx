@@ -22,6 +22,11 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   public var zoom(default, set):Float = 1;
 
   /**
+   * When in relative mode, this is used in the passepartout scaling computation.
+   */
+  public var relativeZoom:Float = 1;
+
+  /**
    * The current position of the virtual camera in world space.
    */
   public var vCamPoint:FlxPoint = new FlxPoint();
@@ -635,6 +640,16 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vCamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
     var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
+
+    if (isRelative)
+    {
+      var safeRelativeZoom:Float = (relativeZoom != 0) ? relativeZoom : 1.0;
+      var zoomFactor:Float = FlxG.camera.zoom / safeRelativeZoom;
+      var compensatedScrollX:Float = FlxG.camera.scroll.x * zoomFactor;
+
+      scaleAmt = ((Math.abs(compensatedScrollX - vCamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
+      extraSize = showExtendedBounds ? pieceSize : 0;
+    }
 
     passeT.setGraphicSize(scaleAmt, scaleAmt);
     passeB.setGraphicSize(scaleAmt, scaleAmt);
