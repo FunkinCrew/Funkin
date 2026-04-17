@@ -218,7 +218,7 @@ class Main extends Sprite
     haxe.ui.Toolkit.autoScale = false;
     // Don't focus on UI elements when they first appear.
     haxe.ui.focus.FocusManager.instance.autoFocus = false;
-    funkin.input.Cursor.registerHaxeUICursors();
+    funkin.input.Cursor.setupHaxeUICursors();
     haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
   #end
