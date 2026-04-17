@@ -824,6 +824,9 @@ class CameraEditorState extends UIState implements ConsoleClass
           handleSetCameraBopEvent(eventData);
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
+        default:
+          var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+          currentStage.onSongEvent(ev);
       }
 
       completedEvents.push(eventData);
@@ -1939,6 +1942,9 @@ class CameraEditorState extends UIState implements ConsoleClass
               default:
                 // Non-singing targets (props/GF/etc.) do not affect note replay suppression.
             }
+          default:
+            var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+            currentStage.onSongEvent(ev);
         }
 
         completedEvents.push(eventData);
