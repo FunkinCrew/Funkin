@@ -530,7 +530,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.cameras.reset(camRelative); // Cam relative is default
     FlxG.cameras.add(camGame, false);
     FlxG.cameras.add(camHUD, false);
-    FlxG.cameras.setDefaultDrawTarget(camGame, true);
+    FlxG.cameras.setDefaultDrawTarget(camRelative, true);
 
     persistentUpdate = false;
 
@@ -960,7 +960,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     add(currentStage);
     currentStage.vcamPoint = cameraRect.vCamPoint;
     currentStage.onCreate(null);
-    currentStage.cameras = [camRelative];
 
     var songCharacterData = currentSongMetadata.playData.characters;
 
@@ -980,7 +979,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       char.currentStage = currentStage;
       char.debug = true;
-      char.cameras = [camRelative];
 
       char.onCreate(null);
 
