@@ -795,6 +795,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
 
     cameraRect.isRelative = isCameraRelative;
+    cameraRect.relativeZoom = relativeZoom;
 
     FlxG.camera.scroll.copyFrom(_cameraTarget);
 
