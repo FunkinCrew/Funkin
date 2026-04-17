@@ -801,6 +801,17 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (!isCameraRelative)
     {
+      if (_wasRelative)
+      {
+        var safeCameraRectZoom:Float = (cameraRect.zoom != 0) ? cameraRect.zoom : 1.0;
+
+        // Leaving relative mode: remove the virtual zoom multiplier from the editor camera.
+        FlxG.camera.zoom /= safeCameraRectZoom;
+
+        // Re-apply non-relative rectangle sizing rules immediately.
+        cameraRect.zoom = cameraRect.zoom;
+      }
+
       _wasRelative = false;
       camGame.zoom = FlxG.camera.zoom;
 
