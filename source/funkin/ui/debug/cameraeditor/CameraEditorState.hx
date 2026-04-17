@@ -361,6 +361,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     return val;
   }
 
+  @:bind(menubarItemDoBopping.selected)
+  public var doBopping(default, set):Bool = false;
+
+  function set_doBopping(val:Bool):Bool
+  {
+    doBopping = val;
+    cameraRect.doBopping = val;
+    return val;
+  }
+
   @:bind(menubarSliderPassepartoutTransparency.pos)
   public var cameraPassepartoutTransparency(default, set):Float = 50;
 
@@ -709,6 +719,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
+  public function handleSetCameraBopEvent(data:SongEventData, preserveCurrentState:Bool = false):Void
+  {
+    var rate:Float = data.getFloat('rate') ?? Constants.DEFAULT_ZOOM_RATE;
+    var offset:Float = data.getFloat('offset') ?? Constants.DEFAULT_ZOOM_OFFSET;
+    var intensity:Float = data.getFloat('intensity') ?? 1.0;
+
+    cameraRect.setCameraBop(rate, offset, intensity, preserveCurrentState);
+  }
+
   /**
    * Process song events for the current chart.
    * This never removes them as we need to maybe reprocess events depending on the time of the song.
@@ -730,6 +749,8 @@ class CameraEditorState extends UIState implements ConsoleClass
           cameraRect.handleFocusCamera(eventData);
         case 'ZoomCamera':
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+        case 'SetCameraBop':
+          handleSetCameraBopEvent(eventData);
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
       }
@@ -740,6 +761,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     previousTime = conductorInUse.songPosition;
   }
+
 
   override public function dispatchEvent(event:ScriptEvent):Void
   {
@@ -1510,7 +1532,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (shouldResetScroll)
     {
       shouldResetScroll = false;
-      resetScrollPosition();
+      replayCameraTimeline(0);
     }
 
     currentInstrumental.play(false, currentInstrumental.time);
@@ -1608,11 +1630,13 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentSongChartData == null) return;
 
-    noEvents = false;
-
     cameraRect.cancelAllTweens();
     cameraRect.zoom = defaultStageZoom;
     cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
+
+    cameraRect.hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * 2.0;
+    cameraRect.cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+    cameraRect.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
     conductorInUse.update(0);
     cameraRect.update(0);
@@ -1644,7 +1668,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       for (eventData in replayEvents)
       {
         conductorInUse.update(eventData.time);
-        cameraRect.update(0);
 
         switch (eventData.eventKind)
         {
@@ -1652,6 +1675,8 @@ class CameraEditorState extends UIState implements ConsoleClass
             cameraRect.handleFocusCamera(eventData);
           case 'ZoomCamera':
             cameraRect.handleZoomCamera(defaultStageZoom, eventData);
+          case 'SetCameraBop':
+            handleSetCameraBopEvent(eventData, false);
           case 'PlayAnimation':
             handlePlayAnimationEvent(eventData);
 
@@ -1683,6 +1708,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         }
 
         completedEvents.push(eventData);
+        cameraRect.update(0);
       }
 
       var lastEvent = replayEvents[replayEvents.length - 1];
@@ -1774,11 +1800,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
     }
+
+    noEvents = false;
+
     conductorInUse.update(position);
 
     if (dad != null) dad.animation.update(0);
     if (bf != null) bf.animation.update(0);
 
+    cameraRect.replayBop();
     cameraRect.update(0);
 
     previousTime = conductorInUse.songPosition;
