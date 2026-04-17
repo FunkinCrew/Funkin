@@ -13,13 +13,15 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxRect;
 import funkin.graphics.FunkinSliceSprite;
 import funkin.ui.FullScreenScaleMode;
+import flixel.FlxCamera;
 
 class VirtualCameraRectangle extends FlxSpriteGroup
 {
   /**
    * The zoom level of the virtual camera. Setting this will adjust the scale of the rectangle accordingly.
    */
-  public var zoom(default, set):Float = 1;
+  @:isVar
+  public var zoom(get, set):Float = 1;
 
   /**
    * When in relative mode, this is used in the passepartout scaling computation.
@@ -36,6 +38,18 @@ class VirtualCameraRectangle extends FlxSpriteGroup
    */
   public var currentStage:Stage;
 
+  var defaultHUDCameraZoom:Float = FlxCamera.defaultZoom;
+
+  public var cameraZoomRate:Float = Constants.DEFAULT_ZOOM_RATE;
+  public var cameraZoomRateOffset:Float = Constants.DEFAULT_ZOOM_OFFSET;
+  public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
+
+  public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
+
+  public var conductorElapsed:Float = 0;
+
+  public var doBopping:Bool = false;
+
   /**
    * The default position of the camera in the stage.
    */
@@ -50,6 +64,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   }
 
   public var isRelative:Bool = false;
+
+  public var hudZoom(default, set):Float = 1;
 
   var isClassicEase:Bool = false;
 
@@ -69,17 +85,35 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   var scrollTarget:FlxPoint = new FlxPoint();
 
-  function set_zoom(value:Float):Float
+  function resize():Void
   {
-    zoom = value;
-
     if (!isRelative) mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
     else mainView.setGraphicSize(FlxG.width, FlxG.height);
     mainView.updateHitbox();
     camSlice.width = mainView.width;
     camSlice.height = mainView.height;
+  }
 
+  function set_zoom(value:Float):Float
+  {
+    zoom = value;
+
+    resize();
     return zoom;
+  }
+
+  function get_zoom():Float
+  {
+    if (!doBopping) return zoom;
+    return zoom + (hudZoom - 1);
+  }
+
+  function set_hudZoom(value:Float):Float
+  {
+    hudZoom = value;
+
+    resize();
+    return hudZoom;
   }
 
   public var showExtendedBounds(default, set):Bool = false;
@@ -215,11 +249,16 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     var targetZoom:Float = z;
     if (!direct) targetZoom *= stageZoom;
 
+    // ZoomCamera should tween the base camera zoom only, not the effective zoom that includes HUD bop.
+    var currentBaseZoom:Float = zoom - (hudZoom - 1);
+
+    if (!doBopping) currentBaseZoom = zoom;
+
     if (duration == 0) zoom = targetZoom;
     else
     {
       cameraZoomTween = Conductor.instance.songPosition;
-      cameraZoomStart = zoom;
+      cameraZoomStart = currentBaseZoom;
       cameraZoomEnd = targetZoom;
       cameraZoomDuration = duration;
       cameraZoomEase = ease;
@@ -530,9 +569,69 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     passepartoutTransparency = 0.5;
   }
 
-  public override function update(elapsed:Float):Void
+  public function replayBop():Void
+  {
+    var zoomStep:Float = cameraZoomRate * Constants.STEPS_PER_BEAT;
+    var pastStep:Float = Conductor.instance.currentStep - (Conductor.instance.currentStep % zoomStep);
+    _hitTime = pastStep * Conductor.instance.stepLengthMs;
+    _lastBopTriggerStep = Std.int(Math.floor(pastStep));
+    _hitHudZoom = getHitHudZoom();
+    hudZoom = _hitHudZoom;
+  }
+
+  function getHitHudZoom():Float
+  {
+    return defaultHUDCameraZoom + (hudCameraZoomIntensity * defaultHUDCameraZoom);
+  }
+
+  public function setCameraBop(rate:Float, offset:Float, intensity:Float, preserveCurrentState:Bool = true):Void
+  {
+    cameraZoomRate = rate;
+    cameraZoomRateOffset = offset;
+    cameraBopIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity + 1.0;
+    hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity * 2.0;
+
+    _lastBopTriggerStep = Std.int(Math.floor(Conductor.instance.currentStep));
+  }
+
+  var _hitTime:Float = 0;
+  var _hitHudZoom:Float = FlxCamera.defaultZoom;
+  var _lastBopTriggerStep:Int = -1;
+
+  function isBopStep(step:Float, zoomStep:Float, zoomOffsetStep:Float):Bool
+  {
+    if (zoomStep <= 0) return false;
+
+    var cyclePos:Float = (step + zoomOffsetStep) % zoomStep;
+    return Math.abs(cyclePos) < 0.0001 || Math.abs(cyclePos - zoomStep) < 0.0001;
+  }
+
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    var currentStep:Float = Conductor.instance.currentStep;
+    var currentStepInt:Int = Std.int(Math.floor(currentStep));
+    var zoomStep:Float = cameraZoomRate * Constants.STEPS_PER_BEAT;
+    var zoomOffsetStep:Float = cameraZoomRateOffset * Constants.STEPS_PER_BEAT;
+
+    if (isBopStep(currentStep, zoomStep, zoomOffsetStep) && currentStepInt != _lastBopTriggerStep)
+    {
+      _lastBopTriggerStep = currentStepInt;
+      _hitTime = Conductor.instance.songPosition;
+      _hitHudZoom = getHitHudZoom();
+      hudZoom = _hitHudZoom;
+    }
+
+    if (cameraZoomRate > 0)
+    {
+      var decayRate:Float = 0.98;
+      var hitElapsedMs:Float = Math.max(0, Conductor.instance.songPosition - _hitTime);
+      var dt:Float = hitElapsedMs / 1000 * 60;
+      var decayFactor:Float = Math.pow(decayRate, dt);
+
+      hudZoom = FlxMath.lerp(defaultHUDCameraZoom, _hitHudZoom, decayFactor);
+    }
 
     scrollTarget.set(cameraFollowPoint.x - (FlxG.width / 2), cameraFollowPoint.y - (FlxG.height / 2));
 
