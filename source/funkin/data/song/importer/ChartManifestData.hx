@@ -75,8 +75,11 @@ class ChartManifestData
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
     var instId:String = variation == Constants.DEFAULT_VARIATION ? '' : '-$variation';
+
     // Get the file name as it would be in the assets folder.
-    return funkin.assets.Paths.inst(this.songId, instId, false).fileName;
+    // return funkin.assets.Paths.inst(this.songId, instId, false).fileName;
+
+    return 'Inst${instId}.${Constants.EXT_SOUND}';
   }
 
   /**
@@ -90,8 +93,11 @@ class ChartManifestData
     if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
 
     var vocalId:String = variation == Constants.DEFAULT_VARIATION ? '-$charId' : '-$charId-$variation';
+
     // Get the file name as it would be in the assets folder.
-    return funkin.assets.Paths.voices(this.songId, vocalId, false).fileName;
+    // return funkin.assets.Paths.voices(this.songId, vocalId, false).fileName;
+
+    return 'Voices${vocalId}.${Constants.EXT_SOUND}';
   }
 
   /**
