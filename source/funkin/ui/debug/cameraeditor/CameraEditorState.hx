@@ -136,7 +136,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentSongChartData(get, never):Null<SongChartData>;
   public var currentInstrumental:Null<FunkinSound> = null;
   public var currentVocals:Array<FunkinSound> = [];
-  public var currentDifficulty:String = "hard";
+  public var currentDifficulty:String = 'hard';
   public var currentNotes(get, never):Array<SongNoteData>;
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
   public var vCamDebug:FunkinSprite = null;
@@ -312,7 +312,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The path to the current file being operated on.
    */
-  public var currentFile(default, set):String = "";
+  public var currentFile(default, set):String = '';
 
   function set_currentFile(value:String):String
   {
@@ -503,7 +503,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     this.params = params;
   }
 
-  public override function create():Void
+  override public function create():Void
   {
     vCamDebug = new FunkinSprite(0, 0);
     vCamDebug.makeGraphic(32, 32, FlxColor.RED);
@@ -657,9 +657,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       switch (eventData.eventKind)
       {
-        case "FocusCamera":
+        case 'FocusCamera':
           cameraRect.handleFocusCamera(eventData);
-        case "ZoomCamera":
+        case 'ZoomCamera':
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
       }
 
@@ -670,7 +670,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     previousTime = conductorInUse.songPosition;
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -778,7 +778,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else if (currentVocals.length > 0 && currentVocals[0].playing)
     {
-      for (vocal in currentVocals) if (vocal.playing) vocal.pause();
+      for (vocal in currentVocals)
+      {
+        if (vocal.playing) vocal.pause();
+      }
     }
 
     super.update(elapsed);
@@ -963,7 +966,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
 
-    trace("Built stage: " + stageID);
+    trace('Built stage: ' + stageID);
     add(cameraRect);
     cameraRect.currentStage = currentStage;
 
@@ -979,7 +982,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function autosavePerCrash(message:String)
   {
-    trace("Crashed the game for the reason: " + message);
+    trace('Crashed the game for the reason: ' + message);
 
     if (!saved)
     {
@@ -992,7 +995,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function windowClose(exitCode:Int)
   {
-    trace("Closing the game window.");
+    trace('Closing the game window.');
 
     if (!saved)
     {
@@ -1099,11 +1102,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var defaultTitle = "Friday Night Funkin\' Camera Editor";
 
-    if (currentWorkingFilePath == "") defaultTitle += " - New File"
+    if (currentWorkingFilePath == '') defaultTitle += ' - New File'
     else
-      defaultTitle += " - " + currentWorkingFilePath;
+      defaultTitle += ' - ' + currentWorkingFilePath;
 
-    if (!saved) defaultTitle += "*";
+    if (!saved) defaultTitle += '*';
 
     WindowUtil.setWindowTitle(defaultTitle);
   }
@@ -1136,7 +1139,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String)
     {
-      notifyChange("Auto-Save", "A Backup of this Chart has been made.");
+      notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
     {
       // Failed to save backup?
@@ -1516,9 +1519,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
         switch (eventData.eventKind)
         {
-          case "FocusCamera":
+          case 'FocusCamera':
             cameraRect.handleFocusCamera(eventData);
-          case "ZoomCamera":
+          case 'ZoomCamera':
             cameraRect.handleZoomCamera(defaultStageZoom, eventData);
         }
 
@@ -1600,7 +1603,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     if (!bfShouldKeepSinging && bf != null)
     {
-      if (!StringTools.startsWith(bf.animation.curAnim.name, "idle")) bf.dance(true);
+      if (!StringTools.startsWith(bf.animation.curAnim.name, 'idle')) bf.dance(true);
     }
     conductorInUse.update(position);
 
@@ -1641,7 +1644,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String)
       {
-        notifyChange("Chart Save", 'This chart has been saved to ${path}');
+        notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
       {
         // Failed to save backup?
@@ -1658,7 +1661,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String)
     {
-      notifyChange("Chart Save", 'This chart has been saved to ${path}');
+      notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
     }, function()
     {
@@ -1995,12 +1998,12 @@ enum abstract CameraEditorTheme(String)
   /**
    * The default theme for the stage editor.
    */
-  var Light;
+  public var Light;
 
   /**
    * A theme which introduces stage colors.
    */
-  var Dark;
+  public var Dark;
 }
 
 typedef CameraEditorParams =
