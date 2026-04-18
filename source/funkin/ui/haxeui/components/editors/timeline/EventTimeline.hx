@@ -242,6 +242,8 @@ private class EventTimelineEvents extends Events
     if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
       _onAutoScrollChange)) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
     if (!_timeline.toolbar.chkSnap.hasEvent(UIEvent.CHANGE, _onSnapChange)) _timeline.toolbar.chkSnap.registerEvent(UIEvent.CHANGE, _onSnapChange);
+    if (!_timeline.viewport.hasEvent(UIEvent.RESIZE,
+      _onViewportResized)) _timeline.viewport.registerEvent(UIEvent.RESIZE, _onViewportResized);
 
     _timeline.viewport.onRefresh = _updateScrollbar;
 
@@ -257,6 +259,7 @@ private class EventTimelineEvents extends Events
     _timeline.vscrollbar.unregisterEvent(UIEvent.CHANGE, _onVScrollbarChange);
     _timeline.toolbar.ddAutoScroll.unregisterEvent(UIEvent.CHANGE, _onAutoScrollChange);
     _timeline.toolbar.chkSnap.unregisterEvent(UIEvent.CHANGE, _onSnapChange);
+    _timeline.viewport.unregisterEvent(UIEvent.RESIZE, _onViewportResized);
 
     var zoomSlider = _timeline.toolbar.findComponent("zoomSlider");
     if (zoomSlider != null) zoomSlider.unregisterEvent(UIEvent.CHANGE, _onZoomChange);
@@ -306,6 +309,11 @@ private class EventTimelineEvents extends Events
   function _onSnapChange(_:UIEvent):Void
   {
     _timeline.snapEnabled = _timeline.toolbar.chkSnap.selected;
+  }
+
+  function _onViewportResized(_:UIEvent):Void
+  {
+    _updateScrollbar();
   }
 
   function _onScrollbarChange(_:UIEvent):Void
