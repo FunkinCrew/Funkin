@@ -1798,7 +1798,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       // Playback menu
       case [FlxKey.SPACE, false, false, false, _]: // space -> play/pause
         onPlayPause(null);
-      case [FlxKey.R, false, false, false, _]: // r -> stop playback
+      case [FlxKey.HOME, false, false, false, _]: // home -> jump to beginning
         onStopPlayback(null);
 
       // Edit menu
