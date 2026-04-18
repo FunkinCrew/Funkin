@@ -411,11 +411,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   // ==============================
 
   /**
-   * The User Guide dialog, opened from the menu bar.
-   */
-  public var userGuideDialog:UserGuideDialog;
-
-  /**
    * The About dialog, opened from the menu bar.
    */
   public var aboutDialog:AboutDialog;
@@ -740,7 +735,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
-
   var _wasRelative:Bool = false;
 
   override public function update(elapsed:Float):Void
@@ -823,7 +817,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
     {
-
       if (!_wasRelative)
       {
         _wasRelative = true;
@@ -873,53 +866,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       addEventMenu.show();
     }
 
-    //
-    // Menubar Keybinds
-    //
-    if (InputUtil.allPressedWithDebounce([CONTROL, O]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onMenubarOpen(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, S]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onMenubarSave(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, SHIFT, S]) && !InputUtil.anyPressed([ALT]))
-    {
-      onMenubarSaveAs(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, Q]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onMenubarExit(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, R]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onResetCameraScroll(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, G]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onResetCameraZoom(null);
-    }
-    if (FlxG.keys.justPressed.SPACE && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
-    {
-      onPlayPause(null);
-    }
-    if (FlxG.keys.justPressed.R && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
-    {
-      onStopPlayback(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, Z]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onMenubarUndo(null);
-    }
-    if (InputUtil.allPressedWithDebounce([CONTROL, Y]) && !InputUtil.anyPressed([SHIFT, ALT]))
-    {
-      onMenubarRedo(null);
-    }
-    if (FlxG.keys.justPressed.F1 && !InputUtil.anyPressed([CONTROL, SHIFT, ALT]))
-    {
-      onUserGuide(null);
-    }
+    // NOTE: Menubar commands are handled in `onScreenKeyDown()`
   }
 
   /**
@@ -1826,21 +1773,47 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (isHaxeUIFocused) return;
 
+    // @formatter:off
+
     // see: https://haxe.org/manual/lf-pattern-matching-tuples.html
     // for how this multiple pattern matching works
-    switch ([event.keyCode, event.ctrlKey, isSelectingSongEvent])
+    switch ([ event.keyCode, event.ctrlKey, event.altKey, event.shiftKey, isSelectingSongEvent])
     {
-      case [FlxKey.Z, true, _]: // ctrl + z -> undo
+      // File menu
+      case [FlxKey.O, true, false, false, _]: // ctrl + o -> open
+        onMenubarOpen(null);
+      case [FlxKey.S, true, false, false, _]: // ctrl + s -> save
+        onMenubarSave(null);
+      case [FlxKey.S, true, false, true, _]: // ctrl + shift + s -> save as
+        onMenubarSaveAs(null);
+      case [FlxKey.Q, true, false, false, _]: // ctrl + q -> exit
+        onMenubarExit(null);
+
+      // View menu
+      case [FlxKey.R, true, false, false, _]: // ctrl + r -> reset camera scroll
+        onResetCameraScroll(null);
+      case [FlxKey.G, true, false, false, _]: // ctrl + g -> reset camera zoom
+        onResetCameraZoom(null);
+
+      // Playback menu
+      case [FlxKey.SPACE, false, false, false, _]: // space -> play/pause
+        onPlayPause(null);
+      case [FlxKey.R, false, false, false, _]: // r -> stop playback
+        onStopPlayback(null);
+
+      // Edit menu
+      case [FlxKey.Z, true, false, false, _]: // ctrl + z -> undo
         CameraEditorCommandHandler.undoLastCommand(this);
-      case [FlxKey.Y, true, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
+      case [FlxKey.Y, true, false, false, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
         CameraEditorCommandHandler.redoLastCommand(this);
-      case [FlxKey.C, true, true]: // ctrl + c -> copy
+
+      case [FlxKey.C, true, false, false, true]: // ctrl + c -> copy
         SongDataUtils.writeItemsToClipboard({
           notes: [],
           events: [selectedSongEvent]
         });
         hasClipboardEvent = true;
-      case [FlxKey.X, true, true]: // ctrl + x -> cut
+      case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
           events: [selectedSongEvent]
@@ -1848,9 +1821,9 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
         CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
         selectedSongEvent = null;
-      case [FlxKey.V, true, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
+      case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
         var clipboard = SongDataUtils.readItemsFromClipboard();
-        if (clipboard.valid != true || clipboard.events.length == 0) return;
+        if (!clipboard.valid || clipboard.events.length == 0) return;
 
         var pasteMs = Conductor.instance.songPosition;
 
@@ -1863,7 +1836,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
         selectedSongEvent = newEvent;
 
-      case [FlxKey.DELETE, _, true] | [FlxKey.BACKSPACE, _, true]: // delete/backspace (with a note selected) -> delete selected note
+      case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected note
         var cmd = new RemoveEventCommand(selectedSongEvent);
         CameraEditorCommandHandler.performCommand(this, cmd);
         selectedSongEvent = null;
@@ -1871,6 +1844,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       default:
         // unbound/do nothing
     }
+
+    // @formatter:on
   }
 
   @:bind(menubarItemPlayPause, MouseEvent.CLICK)
