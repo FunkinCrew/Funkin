@@ -4,14 +4,13 @@ import flixel.FlxSprite;
 import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
 import funkin.util.TimerUtil;
+import flixel.math.FlxPoint;
 
 @:nullSafety
 class Nametag extends FlxSprite
 {
-  @:allow(funkin.ui.charSelect.CharSelectSubState)
-  var midpointX(default, set):Float = 1008;
-  @:allow(funkin.ui.charSelect.CharSelectSubState)
-  var midpointY(default, set):Float = 100;
+  public var midpoint(default, set):FlxPoint = FlxPoint.get(1008, 100);
+
   var mosaicShader:MosaicEffect;
   var currentMosaicSequence:Null<Sequence>;
 
@@ -24,18 +23,29 @@ class Nametag extends FlxSprite
 
     // So that's why there was that cursed sight (originally defaulted to bf)
     // Made it not play the shader effect to prevent its being stuck, can't see it anyway.
-    if (character != null) switchChar(character, false);
-    else
-      switchChar(Constants.DEFAULT_CHARACTER, false);
+    final targetCharacter = (character != null) ? character : Constants.DEFAULT_CHARACTER;
+    switchChar(targetCharacter, false);
   }
 
   public function updatePosition():Void
   {
-    var offsetX:Float = getMidpoint().x - midpointX;
-    var offsetY:Float = getMidpoint().y - midpointY;
+    var offsetX:Float = getMidpoint().x - midpoint.x;
+    var offsetY:Float = getMidpoint().y - midpoint.y;
 
     x -= offsetX;
     y -= offsetY;
+  }
+
+  function resetMosaicEffect():Void
+  {
+    if (currentMosaicSequence != null)
+    {
+      currentMosaicSequence.destroy();
+
+      currentMosaicSequence = null;
+    }
+
+    mosaicShader.setBlockSize(1, 1);
   }
 
   public function switchChar(str:String, playMosaicSequence:Bool = true):Void
@@ -48,37 +58,23 @@ class Nametag extends FlxSprite
     scale.set(0.77, 0.77);
     updatePosition();
 
-    // Reset shader to ensure the nametag doesn't get stuck
-    if (playMosaicSequence)
-    {
-      mosaicShader.setBlockSize(1, 1);
-      shaderEffect();
+    resetMosaicEffect();
 
-      // Delay the shader effect by a bit to prevent lag.
-      new FlxTimer().start(2 / 30, _ ->
-      {
-        shaderEffect(true);
-      });
-    }
-    else
+    if (!playMosaicSequence) return;
+
+    shaderEffect();
+
+    // Delay the shader effect by a bit to prevent lag.
+    new FlxTimer().start(2 / 30, _ ->
     {
-      mosaicShader.setBlockSize(1, 1);
-    }
+      shaderEffect(true);
+    });
   }
 
   function shaderEffect(fadeOut:Bool = false):Void
   {
     // Skip the shader effect if the width is too small.
     if (width <= 1) return;
-
-    if (currentMosaicSequence != null)
-    {
-      // Forcibly reset the shader to prevent overlapping blur sequences
-      mosaicShader.setBlockSize(1, 1);
-      currentMosaicSequence.destroy();
-      @:nullSafety(Off)
-      currentMosaicSequence = null;
-    }
 
     if (fadeOut)
     {
@@ -114,16 +110,9 @@ class Nametag extends FlxSprite
     }
   }
 
-  function set_midpointX(val:Float):Float
+  function set_midpoint(val:FlxPoint):FlxPoint
   {
-    this.midpointX = val;
-    updatePosition();
-    return val;
-  }
-
-  function set_midpointY(val:Float):Float
-  {
-    this.midpointY = val;
+    this.midpoint = val;
     updatePosition();
     return val;
   }
