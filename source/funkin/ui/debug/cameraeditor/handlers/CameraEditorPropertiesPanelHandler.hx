@@ -96,13 +96,14 @@ class CameraEditorPropertiesPanelHandler
    */
   public static function loadSelectedSongEvent(state:CameraEditorState):Void
   {
-    if (state.selectedSongEvent == null)
+    var selected:Null<funkin.data.song.SongData.SongEventData> = state.selectedSongEvent;
+    if (selected == null)
     {
       hidePropertiesPanel(state);
       return;
     }
 
-    switch (state.selectedSongEvent.eventKind)
+    switch (selected.eventKind)
     {
       case 'ZoomCamera':
         useZoomCameraContainer(state);
