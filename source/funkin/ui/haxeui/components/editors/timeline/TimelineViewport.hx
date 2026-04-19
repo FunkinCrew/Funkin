@@ -4,6 +4,7 @@ package funkin.ui.haxeui.components.editors.timeline;
 import funkin.graphics.shaders.TimelineShader;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.ui.haxeui.components.editors.timeline.TimelineEvent.EventMoveDelta;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock.TimelineBlockHitZone;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock.TimelineDragMode;
 import haxe.ui.behaviours.DataBehaviour;
@@ -42,9 +43,11 @@ class TimelineViewport extends Box
   public var beatsPerGroup:Int = 1;
   public var playhead:Box;
   public var playheadTopper:Box;
+  public var selectionBoxOverlay:Box;
   public static inline var PLAYHEAD_LINE_WIDTH:Int = 2;
   public static inline var PLAYHEAD_TOPPER_WIDTH:Int = 14;
   public static inline var PLAYHEAD_TOPPER_HEIGHT:Int = 22;
+  public static inline var SELECTION_DRAG_THRESHOLD_PX:Float = 4.0;
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
 
@@ -197,6 +200,35 @@ class TimelineViewport extends Box
     }
   }
 
+  public function getSelectedEvents():Array<SongEventData>
+  {
+    var out:Array<SongEventData> = [];
+    for (block in eventBlocks)
+      if (block.selected) out.push(block.eventData);
+    return out;
+  }
+
+  public function setSelectedEvents(target:Array<SongEventData>):Void
+  {
+    for (block in eventBlocks)
+    {
+      var isSel:Bool = target.indexOf(block.eventData) != -1;
+      if (block.selected != isSel)
+      {
+        block.selected = isSel;
+        if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
+        block.updateVisuals();
+      }
+    }
+  }
+
+  public function isEventSelected(event:SongEventData):Bool
+  {
+    for (block in eventBlocks)
+      if (block.eventData == event) return block.selected;
+    return false;
+  }
+
   public function getLayerIndex(layerName:String):Int
   {
     for (i in 0...layers.length)
@@ -212,6 +244,16 @@ class TimelineViewport extends Box
       + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2)
       + TimelineViewport.TOP_BAR_HEIGHT
       - layerScrollOffsetPx;
+  }
+
+  override public function onDestroy():Void
+  {
+    if (selectionBoxOverlay != null)
+    {
+      if (selectionBoxOverlay.parentComponent != null) selectionBoxOverlay.parentComponent.removeComponent(selectionBoxOverlay);
+      selectionBoxOverlay = null;
+    }
+    super.onDestroy();
   }
 }
 
@@ -249,6 +291,19 @@ private class TimelineViewportBuilder extends CompositeBuilder
     topper.height = TimelineViewport.PLAYHEAD_TOPPER_HEIGHT;
     _viewport.addComponent(topper);
     _viewport.playheadTopper = topper;
+
+    var overlay:Box = new Box();
+    overlay.id = "timeline-selection-box";
+    overlay.addClass("timeline-selection-box");
+    overlay.customStyle.pointerEvents = "none";
+    overlay.customStyle.backgroundColor = 0x5BA3FF;
+    overlay.customStyle.backgroundOpacity = 0.18;
+    overlay.customStyle.borderColor = 0x5BA3FF;
+    overlay.customStyle.borderSize = 1;
+    overlay.hidden = true;
+    overlay.includeInLayout = false;
+    overlay.zIndex = 100000;
+    _viewport.selectionBoxOverlay = overlay;
   }
 }
 
@@ -368,8 +423,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _dragOriginalDuration:Float = 0;
   var _dragOriginalLayerIndex:Int = 0;
   var _hoverBlock:TimelineEventBlock;
-
-  var _ghost:Box;
   var _ghostTimeMs:Float = 0;
   var _ghostDurationSteps:Float = 0;
   var _ghostLayerIndex:Int = 0;
@@ -378,6 +431,17 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _lastClickY:Float = 0;
   var _panLastScreenX:Float = 0;
   var _panLastScreenY:Float = 0;
+
+  var _selectionBoxStartX:Float = 0;
+  var _selectionBoxStartY:Float = 0;
+  var _selectionBoxAdditive:Bool = false;
+  var _selectionBoxArmed:Bool = false;
+  var _selectionBoxStartSelection:Array<SongEventData> = [];
+
+  var _dragGroupEvents:Array<TimelineEventBlock> = [];
+  var _dragGroupOriginalTimes:Array<Float> = [];
+  var _dragGroupOriginalLayerIndices:Array<Int> = [];
+  var _dragGhosts:Array<Box> = [];
 
   public function new(viewport:TimelineViewport)
   {
@@ -422,33 +486,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     return null;
   }
 
-  function _selectBlock(block:TimelineEventBlock):Void
-  {
-    _deselectAll();
-    block.selected = true;
-    if (block.layerIndex >= 0 && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
-
-    block.updateVisuals();
-
-    var selectEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
-    selectEvent.eventData = block.eventData;
-    _viewport.dispatch(selectEvent);
-  }
-
-  function _deselectAll():Void
-  {
-    for (block in _viewport.eventBlocks)
-    {
-      if (block.selected)
-      {
-        block.selected = false;
-        if (block.layerIndex >= 0
-          && block.layerIndex < _viewport.layers.length) block.applyColor(_viewport.layers[block.layerIndex].color);
-      }
-      block.updateVisuals();
-    }
-  }
-
   function _beginDrag(block:TimelineEventBlock, hitZone:TimelineBlockHitZone, mouseX:Float):Void
   {
     _dragTarget = block;
@@ -460,7 +497,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     _ghostDurationSteps = _dragOriginalDuration;
     _ghostLayerIndex = _dragOriginalLayerIndex;
 
-    var fixed = TimelineUtil.isFixedDuration(block.eventData);
+    var fixed:Bool = TimelineUtil.isFixedDuration(block.eventData);
 
     switch (hitZone)
     {
@@ -474,93 +511,137 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         _dragMode = MOVE;
         _dragOffsetMs = _viewport.pixelXToMs(mouseX) - block.eventData.time;
     }
-  }
 
-  function _createGhost():Void
-  {
-    _removeGhost();
-    _ghost = new Box();
-    _ghost.addClass("timeline-ghost");
-    _ghost.height = TimelineEventBlock.BLOCK_HEIGHT;
-    _ghost.customStyle.borderRadius = 3;
-    _ghost.customStyle.pointerEvents = "none";
-    _updateGhostColor();
-    _viewport.addComponent(_ghost);
-    _positionGhost();
-  }
-
-  function _removeGhost():Void
-  {
-    if (_ghost != null)
+    if (_dragMode == MOVE)
     {
-      _viewport.removeComponent(_ghost);
-      _ghost = null;
+      _dragGroupEvents = [];
+      _dragGroupOriginalTimes = [];
+      _dragGroupOriginalLayerIndices = [];
+      for (b in _viewport.eventBlocks)
+      {
+        if (!b.selected) continue;
+        _dragGroupEvents.push(b);
+        _dragGroupOriginalTimes.push(b.eventData.time);
+        _dragGroupOriginalLayerIndices.push(b.layerIndex);
+      }
+      if (_dragGroupEvents.length == 0)
+      {
+        _dragGroupEvents.push(block);
+        _dragGroupOriginalTimes.push(block.eventData.time);
+        _dragGroupOriginalLayerIndices.push(block.layerIndex);
+      }
     }
   }
 
-  function _updateGhostColor():Void
+  function _createGhosts():Void
   {
-    if (_ghost == null) return;
-    var color = 0x888888;
-    if (_ghostLayerIndex >= 0 && _ghostLayerIndex < _viewport.layers.length) color = _viewport.layers[_ghostLayerIndex].color;
-    _ghost.customStyle.backgroundColor = color;
-    _ghost.customStyle.backgroundOpacity = 0.4;
-    _ghost.customStyle.borderColor = color;
-    _ghost.customStyle.borderSize = 1;
-    _ghost.invalidateComponentStyle();
+    _removeGhosts();
+    _dragGhosts = [];
+    for (i in 0..._dragGroupEvents.length)
+    {
+      var block:TimelineEventBlock = _dragGroupEvents[i];
+      var ghost:Box = new Box();
+      ghost.addClass("timeline-ghost");
+      ghost.height = TimelineEventBlock.BLOCK_HEIGHT;
+      ghost.customStyle.borderRadius = 3;
+      ghost.customStyle.pointerEvents = "none";
+      _viewport.addComponent(ghost);
+      _dragGhosts.push(ghost);
+      _applyGhostStyle(ghost, _dragGroupOriginalLayerIndices[i]);
+    }
   }
 
-  function _positionGhost():Void
+  function _removeGhosts():Void
   {
-    if (_ghost == null) return;
-    var durationMs = _ghostDurationSteps * _viewport.stepLengthMs;
-    var ghostLeft = (_ghostTimeMs - _viewport.scrollOffsetMs) * _viewport.pixelsPerMs * _viewport.zoomLevel;
-    var ghostTop = _viewport.getBlockTopPositionFromLayerIndex(_ghostLayerIndex);
-    var ghostWidth = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, durationMs * _viewport.pixelsPerMs * _viewport.zoomLevel);
-    _ghost.left = ghostLeft;
-    _ghost.top = ghostTop;
-    _ghost.width = ghostWidth;
+    if (_dragGhosts == null) return;
+    for (ghost in _dragGhosts)
+    {
+      if (ghost != null) _viewport.removeComponent(ghost);
+    }
+    _dragGhosts = [];
+  }
+
+  function _applyGhostStyle(ghost:Box, layerIndex:Int):Void
+  {
+    var color:Int = 0x888888;
+    if (layerIndex >= 0 && layerIndex < _viewport.layers.length) color = _viewport.layers[layerIndex].color;
+    ghost.customStyle.backgroundColor = color;
+    ghost.customStyle.backgroundOpacity = 0.4;
+    ghost.customStyle.borderColor = color;
+    ghost.customStyle.borderSize = 1;
+    ghost.invalidateComponentStyle();
+  }
+
+  function _positionGhost(ghost:Box, timeMs:Float, durationSteps:Float, layerIndex:Int):Void
+  {
+    var durationMs:Float = durationSteps * _viewport.stepLengthMs;
+    var ghostLeft:Float = (timeMs - _viewport.scrollOffsetMs) * _viewport.pixelsPerMs * _viewport.zoomLevel;
+    var ghostTop:Float = _viewport.getBlockTopPositionFromLayerIndex(layerIndex);
+    var ghostWidth:Float = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, durationMs * _viewport.pixelsPerMs * _viewport.zoomLevel);
+    ghost.left = ghostLeft;
+    ghost.top = ghostTop;
+    ghost.width = ghostWidth;
   }
 
   function _endDrag():Void
   {
     if (_dragTarget == null || _dragMode == NONE) return;
 
-    var isMove = _dragMode == MOVE;
+    var isMove:Bool = _dragMode == MOVE;
 
     if (isMove)
     {
-      var timeMoved = Math.abs(_ghostTimeMs - _dragOriginalTime) > 0.5;
-      var layerChanged = _dragOriginalLayerIndex != _ghostLayerIndex;
+      var deltaMs:Float = _ghostTimeMs - _dragOriginalTime;
+      var deltaLayer:Int = _ghostLayerIndex - _dragOriginalLayerIndex;
+      var deltas:Array<EventMoveDelta> = [];
+      var anyMoved:Bool = false;
 
-      if (timeMoved || layerChanged)
+      for (i in 0..._dragGroupEvents.length)
       {
-        _dragTarget.eventData.time = _ghostTimeMs;
-        _dragTarget.layerIndex = _ghostLayerIndex;
-        if (_ghostLayerIndex < _viewport.layers.length)
-        {
-          var raw:SongEventDataRaw = _dragTarget.eventData;
-          raw.editorLayer = _viewport.layers[_ghostLayerIndex].name;
-          _dragTarget.applyColor(_viewport.layers[_ghostLayerIndex].color);
-        }
+        var block:TimelineEventBlock = _dragGroupEvents[i];
+        var origTime:Float = _dragGroupOriginalTimes[i];
+        var origLayer:Int = _dragGroupOriginalLayerIndices[i];
 
-        var moveEvent = new TimelineEvent(TimelineEvent.EVENT_MOVED);
-        moveEvent.eventData = _dragTarget.eventData;
-        moveEvent.oldTime = _dragOriginalTime;
-        moveEvent.newTime = _ghostTimeMs;
-        if (_dragOriginalLayerIndex < _viewport.layers.length) moveEvent.oldLayerName = _viewport.layers[_dragOriginalLayerIndex].name;
-        if (_ghostLayerIndex < _viewport.layers.length) moveEvent.newLayerName = _viewport.layers[_ghostLayerIndex].name;
-        _viewport.dispatch(moveEvent);
+        var newTime:Float = origTime + deltaMs;
+        if (newTime < 0) newTime = 0;
+        var newLayer:Int = origLayer + deltaLayer;
+        if (newLayer < 0) newLayer = 0;
+        if (newLayer >= _viewport.layers.length) newLayer = _viewport.layers.length - 1;
+
+        var moved:Bool = Math.abs(newTime - origTime) > 0.5 || newLayer != origLayer;
+        if (moved) anyMoved = true;
+
+        var origLayerName:String = origLayer < _viewport.layers.length ? _viewport.layers[origLayer].name : "Default";
+        var newLayerName:String = newLayer < _viewport.layers.length ? _viewport.layers[newLayer].name : "Default";
+        var durationSteps:Float = TimelineUtil.getEventDurationSteps(block.eventData);
+
+        deltas.push(
+          {
+            event: block.eventData,
+            oldTime: origTime,
+            newTime: newTime,
+            oldDuration: durationSteps,
+            newDuration: durationSteps,
+            oldLayerName: origLayerName,
+            newLayerName: newLayerName
+          });
+      }
+
+      if (anyMoved)
+      {
+        var movedEvent:TimelineEvent = new TimelineEvent(TimelineEvent.EVENTS_MOVED);
+        movedEvent.moveDeltas = deltas;
+        _viewport.dispatch(movedEvent);
       }
     }
     else
     {
-      var newDuration = TimelineUtil.getEventDurationSteps(_dragTarget.eventData);
-      var durationChanged = Math.abs(newDuration - _dragOriginalDuration) > 0.01;
+      var newDuration:Float = TimelineUtil.getEventDurationSteps(_dragTarget.eventData);
+      var durationChanged:Bool = Math.abs(newDuration - _dragOriginalDuration) > 0.01;
 
       if (durationChanged)
       {
-        var resizeEvent = new TimelineEvent(TimelineEvent.EVENT_RESIZED);
+        var resizeEvent:TimelineEvent = new TimelineEvent(TimelineEvent.EVENT_RESIZED);
         resizeEvent.eventData = _dragTarget.eventData;
         resizeEvent.oldDuration = _dragOriginalDuration;
         resizeEvent.newDuration = newDuration;
@@ -573,7 +654,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       }
     }
 
-    _removeGhost();
+    _removeGhosts();
+    _dragGroupEvents = [];
+    _dragGroupOriginalTimes = [];
+    _dragGroupOriginalLayerIndices = [];
     _viewport.refreshLayout();
 
     _dragMode = NONE;
@@ -597,45 +681,43 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseDown(e:MouseEvent):Void
   {
-    var localX = e.screenX - _viewport.screenLeft;
-    var localY = e.screenY - _viewport.screenTop;
+    var localX:Float = e.screenX - _viewport.screenLeft;
+    var localY:Float = e.screenY - _viewport.screenTop;
+    var additive:Bool = e.ctrlKey;
 
-    var hitBlock = _hitTestBlocks(localX, localY);
-
+    var hitBlock:Null<TimelineEventBlock> = _hitTestBlocks(localX, localY);
     if (hitBlock != null)
     {
-      var hitZone = hitBlock.getHitZone(localX - hitBlock.blockLeft);
-      _beginDrag(hitBlock, hitZone, localX);
-      _selectBlock(hitBlock);
+      var hitZone:TimelineBlockHitZone = hitBlock.getHitZone(localX - hitBlock.blockLeft);
+      if (additive)
+      {
+        var newSelection:Array<SongEventData> = _viewport.getSelectedEvents();
+        if (_viewport.isEventSelected(hitBlock.eventData)) newSelection.remove(hitBlock.eventData);
+        else
+          newSelection.push(hitBlock.eventData);
+        _applySelection(newSelection);
+      }
+      else
+      {
+        if (!_viewport.isEventSelected(hitBlock.eventData)) _applySelection([hitBlock.eventData]);
+        _beginDrag(hitBlock, hitZone, localX);
+      }
       _lastClickTime = 0;
     }
     else
     {
-      _deselectAll();
-      var deselectEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
-      deselectEvent.eventData = null;
-      _viewport.dispatch(deselectEvent);
+      var inTopBar:Bool = localY < TimelineViewport.TOP_BAR_HEIGHT;
+      var onPlayhead:Bool = _isOnPlayhead(localX);
 
-      var clickedLayer = _viewport.pixelYToLayerIndex(localY - TimelineViewport.TOP_BAR_HEIGHT);
-      if (clickedLayer != _viewport.selectedLayerIndex)
+      var clickedLayer:Int = _viewport.pixelYToLayerIndex(localY - TimelineViewport.TOP_BAR_HEIGHT);
+      if (!inTopBar && clickedLayer != _viewport.selectedLayerIndex)
       {
         _viewport.selectedLayerIndex = clickedLayer;
-        var timeline = _viewport.findAncestor(EventTimeline);
-        if (timeline != null)
-          timeline.layerPanel.rebuildLayers(_viewport.layers);
+        var timeline:Null<EventTimeline> = _viewport.findAncestor(EventTimeline);
+        if (timeline != null) timeline.layerPanel.rebuildLayers(_viewport.layers);
       }
 
-      var inTopBar = localY < TimelineViewport.TOP_BAR_HEIGHT;
-      var onPlayhead = _isOnPlayhead(localX);
-
-      if (inTopBar)
-      {
-        _dragMode = SEEKING;
-        Screen.instance.setCursor("grabbing");
-        _dispatchClampedSeek(_viewport.pixelXToMs(localX));
-        _lastClickTime = 0;
-      }
-      else if (onPlayhead)
+      if (inTopBar || onPlayhead)
       {
         _dragMode = SEEKING;
         Screen.instance.setCursor("grabbing");
@@ -646,8 +728,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       {
         // note: we do double click this way since haxeui's double click dispatches on mouse up,
         // while we want to get it on mouse down, so we can drag right after hitting the second click
-        var now = haxe.Timer.stamp();
-        var isDoubleClick = (now - _lastClickTime) <= DOUBLE_CLICK_MAX_DELAY
+        var now:Float = haxe.Timer.stamp();
+        var isDoubleClick:Bool = (now - _lastClickTime) <= DOUBLE_CLICK_MAX_DELAY
           && Math.abs(localX - _lastClickX) <= DOUBLE_CLICK_MAX_DIST_PX
           && Math.abs(localY - _lastClickY) <= DOUBLE_CLICK_MAX_DIST_PX;
 
@@ -663,6 +745,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
           _lastClickTime = now;
           _lastClickX = localX;
           _lastClickY = localY;
+
+          _selectionBoxArmed = true;
+          _selectionBoxStartX = localX;
+          _selectionBoxStartY = localY;
+          _selectionBoxAdditive = additive;
         }
       }
     }
@@ -674,8 +761,26 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseMove(e:MouseEvent):Void
   {
-    var localX = e.screenX - _viewport.screenLeft;
-    var localY = e.screenY - _viewport.screenTop;
+    var localX:Float = e.screenX - _viewport.screenLeft;
+    var localY:Float = e.screenY - _viewport.screenTop;
+
+    if (_selectionBoxArmed && _dragMode == NONE)
+    {
+      var dx:Float = localX - _selectionBoxStartX;
+      var dy:Float = localY - _selectionBoxStartY;
+      if (Math.abs(dx) > TimelineViewport.SELECTION_DRAG_THRESHOLD_PX || Math.abs(dy) > TimelineViewport.SELECTION_DRAG_THRESHOLD_PX)
+      {
+        _dragMode = BOX_SELECTING;
+        _selectionBoxArmed = false;
+        _selectionBoxStartSelection = _viewport.getSelectedEvents();
+        if (_viewport.selectionBoxOverlay != null)
+        {
+          _attachSelectionBoxIfNeeded();
+          _updateSelectionBoxOverlay(e.screenX, e.screenY);
+          _viewport.selectionBoxOverlay.hidden = false;
+        }
+      }
+    }
 
     switch (_dragMode)
     {
@@ -708,7 +813,71 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
         _viewport.layerScrollOffsetPx = _viewport.layerScrollOffsetPx - dy;
         _viewport.refreshLayout();
+      case BOX_SELECTING:
+        _updateSelectionBoxOverlay(e.screenX, e.screenY);
+        _viewport.setSelectedEvents(_computeBoxSelection(localX, localY));
+        Screen.instance.setCursor("crosshair");
     }
+  }
+
+  function _computeBoxSelection(endX:Float, endY:Float):Array<SongEventData>
+  {
+    var minX:Float = Math.min(_selectionBoxStartX, endX);
+    var maxX:Float = Math.max(_selectionBoxStartX, endX);
+    var minY:Float = Math.min(_selectionBoxStartY, endY);
+    var maxY:Float = Math.max(_selectionBoxStartY, endY);
+
+    var hits:Array<SongEventData> = [];
+    for (block in _viewport.eventBlocks)
+    {
+      if (block.hidden) continue;
+      var bx1:Float = block.blockLeft;
+      var bx2:Float = block.blockLeft + block.blockWidth;
+      var by1:Float = block.blockTop;
+      var by2:Float = block.blockTop + TimelineEventBlock.BLOCK_HEIGHT;
+      var intersects:Bool = bx1 < maxX && bx2 > minX && by1 < maxY && by2 > minY;
+      if (intersects) hits.push(block.eventData);
+    }
+
+    if (_selectionBoxAdditive)
+    {
+      var combined:Array<SongEventData> = _selectionBoxStartSelection.copy();
+      for (ev in hits)
+      {
+        if (combined.indexOf(ev) == -1) combined.push(ev);
+        else
+          combined.remove(ev);
+      }
+      return combined;
+    }
+    return hits;
+  }
+
+  function _attachSelectionBoxIfNeeded():Void
+  {
+    var overlay:Box = _viewport.selectionBoxOverlay;
+    if (overlay == null || overlay.parentComponent != null) return;
+    var timeline:Null<EventTimeline> = _viewport.findAncestor(EventTimeline);
+    if (timeline != null) timeline.addComponent(overlay);
+  }
+
+  function _updateSelectionBoxOverlay(screenX:Float, screenY:Float):Void
+  {
+    var overlay:Box = _viewport.selectionBoxOverlay;
+    if (overlay == null) return;
+    var parent:haxe.ui.core.Component = overlay.parentComponent;
+    var originX:Float = parent != null ? parent.screenLeft : 0;
+    var originY:Float = parent != null ? parent.screenTop : 0;
+    var startScreenX:Float = _viewport.screenLeft + _selectionBoxStartX;
+    var startScreenY:Float = _viewport.screenTop + _selectionBoxStartY;
+    var minX:Float = Math.min(startScreenX, screenX);
+    var maxX:Float = Math.max(startScreenX, screenX);
+    var minY:Float = Math.min(startScreenY, screenY);
+    var maxY:Float = Math.max(startScreenY, screenY);
+    overlay.left = minX - originX;
+    overlay.top = minY - originY;
+    overlay.width = maxX - minX;
+    overlay.height = maxY - minY;
   }
 
   function _onMouseUp(e:MouseEvent):Void
@@ -716,16 +885,47 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
 
-    var wasSeeking = _dragMode == SEEKING;
-    if (wasSeeking) _dragMode = NONE;
-    else if (_dragMode != NONE) _endDrag();
+    var wasMode:TimelineDragMode = _dragMode;
 
-    if (wasSeeking)
+    switch (wasMode)
     {
-      var localX = e.screenX - _viewport.screenLeft;
-      var localY = e.screenY - _viewport.screenTop;
-      _updateHoverCursor(localX, localY);
+      case BOX_SELECTING:
+        _finishBoxSelection(e);
+        if (_viewport.selectionBoxOverlay != null) _viewport.selectionBoxOverlay.hidden = true;
+        _dragMode = NONE;
+      case SEEKING:
+        _dragMode = NONE;
+      case MOVE | RESIZE_LEFT | RESIZE_RIGHT:
+        _endDrag();
+      case NONE:
+        if (_selectionBoxArmed)
+        {
+          _selectionBoxArmed = false;
+          if (!_selectionBoxAdditive) _applySelection([]);
+        }
+      case PANNING:
     }
+
+    var localX:Float = e.screenX - _viewport.screenLeft;
+    var localY:Float = e.screenY - _viewport.screenTop;
+    if (wasMode == SEEKING || wasMode == BOX_SELECTING) _updateHoverCursor(localX, localY);
+  }
+
+  function _finishBoxSelection(e:MouseEvent):Void
+  {
+    var endX:Float = e.screenX - _viewport.screenLeft;
+    var endY:Float = e.screenY - _viewport.screenTop;
+    _applySelection(_computeBoxSelection(endX, endY));
+    _selectionBoxStartSelection = [];
+  }
+
+  function _applySelection(selected:Array<SongEventData>):Void
+  {
+    _viewport.setSelectedEvents(selected);
+    var ev:TimelineEvent = new TimelineEvent(TimelineEvent.EVENT_SELECTED);
+    ev.eventsData = selected;
+    ev.eventData = selected.length == 1 ? selected[0] : null;
+    _viewport.dispatch(ev);
   }
 
   function _onMiddleMouseDown(e:MouseEvent):Void
@@ -852,29 +1052,46 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     if (_dragTarget == null) return;
 
-    var newTimeMs = _viewport.pixelXToMs(mouseX) - _dragOffsetMs;
+    var newTimeMs:Float = _viewport.pixelXToMs(mouseX) - _dragOffsetMs;
     if (newTimeMs < 0) newTimeMs = 0;
 
     if (snapToGrid && _viewport.stepLengthMs > 0)
     {
-      var stepMs = _viewport.stepLengthMs;
+      var stepMs:Float = _viewport.stepLengthMs;
       newTimeMs = Math.fround(newTimeMs / stepMs) * stepMs;
     }
 
-    var newLayerIndex = _viewport.pixelYToLayerIndex(mouseY);
-    var moved = Math.abs(newTimeMs - _dragOriginalTime) > 0.5 || newLayerIndex != _dragOriginalLayerIndex;
+    var newLayerIndex:Int = _viewport.pixelYToLayerIndex(mouseY);
+    var moved:Bool = Math.abs(newTimeMs - _dragOriginalTime) > 0.5 || newLayerIndex != _dragOriginalLayerIndex;
 
     _ghostTimeMs = newTimeMs;
 
-    if (newLayerIndex != _ghostLayerIndex && newLayerIndex < _viewport.layers.length)
+    if (newLayerIndex != _ghostLayerIndex && newLayerIndex < _viewport.layers.length) _ghostLayerIndex = newLayerIndex;
+
+    if (moved && _dragGhosts.length == 0) _createGhosts();
+
+    if (_dragGhosts.length > 0)
     {
-      _ghostLayerIndex = newLayerIndex;
-      if (_ghost != null) _updateGhostColor();
+      var deltaMs:Float = _ghostTimeMs - _dragOriginalTime;
+      var deltaLayer:Int = _ghostLayerIndex - _dragOriginalLayerIndex;
+      for (i in 0..._dragGroupEvents.length)
+      {
+        var ghost:Box = _dragGhosts[i];
+        if (ghost == null) continue;
+        var block:TimelineEventBlock = _dragGroupEvents[i];
+        var origTime:Float = _dragGroupOriginalTimes[i];
+        var origLayer:Int = _dragGroupOriginalLayerIndices[i];
+        var gTime:Float = origTime + deltaMs;
+        if (gTime < 0) gTime = 0;
+        var gLayer:Int = origLayer + deltaLayer;
+        if (gLayer < 0) gLayer = 0;
+        if (gLayer >= _viewport.layers.length) gLayer = _viewport.layers.length - 1;
+
+        var durationSteps:Float = TimelineUtil.getEventDurationSteps(block.eventData);
+        _applyGhostStyle(ghost, gLayer);
+        _positionGhost(ghost, gTime, durationSteps, gLayer);
+      }
     }
-
-    if (moved && _ghost == null) _createGhost();
-
-    if (_ghost != null) _positionGhost();
   }
 
   function _handleDragResizeRight(mouseX:Float, snapToGrid:Bool):Void

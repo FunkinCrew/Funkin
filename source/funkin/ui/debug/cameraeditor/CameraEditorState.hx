@@ -48,6 +48,7 @@ import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
 import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
+import funkin.ui.debug.cameraeditor.commands.CompoundCommand;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.data.song.SongData.SongEventDataRaw;
@@ -192,25 +193,33 @@ class CameraEditorState extends UIState implements ConsoleClass
     return _songManifestData = value;
   }
 
-  public var selectedSongEvent(default, set):Null<SongEventData> = null;
+  public var selectedSongEvents(default, set):Array<SongEventData> = [];
 
   var hasClipboardEvent:Bool = false;
 
+  function set_selectedSongEvents(value:Array<SongEventData>):Array<SongEventData>
+  {
+    selectedSongEvents = value ?? [];
+    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+    if (timeline != null && timeline.viewport != null) timeline.viewport.setSelectedEvents(selectedSongEvents);
+    return selectedSongEvents;
+  }
+
+  public var selectedSongEvent(get, set):Null<SongEventData>;
+
+  inline function get_selectedSongEvent():Null<SongEventData>
+    return selectedSongEvents.length == 1 ? selectedSongEvents[0] : null;
+
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
   {
-    if (value == null && selectedSongEvent == null) return value;
-    if (value != null && selectedSongEvent != null && value == selectedSongEvent) return value;
-
-    selectedSongEvent = value;
-    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
-
+    selectedSongEvents = value == null ? [] : [value];
     return value;
   }
 
-  // simple getter to remove bunch of `if (selectedSongEvent != null)` esque checks
-  var isSelectingSongEvent(get, never):Bool;
+  var hasSelection(get, never):Bool;
 
-  inline function get_isSelectingSongEvent():Bool return selectedSongEvent != null;
+  inline function get_hasSelection():Bool
+    return selectedSongEvents.length > 0;
 
   /**
    * A list of previous working file paths.
@@ -1228,14 +1237,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   function registerTimelineEvents():Void
   {
     timeline.viewport.registerEvent(MouseEvent.RIGHT_MOUSE_DOWN, _ -> addEventMenu.show());
-    timeline.viewport.registerEvent(TimelineEvent.EVENT_SELECTED, (e:TimelineEvent) -> selectedSongEvent = e.eventData);
+    timeline.viewport.registerEvent(TimelineEvent.EVENT_SELECTED, (e:TimelineEvent) -> selectedSongEvents = e.eventsData ?? []);
     timeline.viewport.registerEvent(TimelineEvent.SEEK, (e:TimelineEvent) -> setTimePosition(e.seekPositionMs));
 
-    timeline.viewport.registerEvent(TimelineEvent.EVENT_MOVED, function(e:TimelineEvent)
+    timeline.viewport.registerEvent(TimelineEvent.EVENTS_MOVED, function(e:TimelineEvent)
     {
-      var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, TimelineUtil.getEventDurationSteps(e.eventData), e.oldLayerName, e.newTime,
-        TimelineUtil.getEventDurationSteps(e.eventData), e.newLayerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      var children:Array<CameraEditorCommand> = [];
+      var finalSelection:Array<SongEventData> = [];
+      for (d in e.moveDeltas)
+      {
+        children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName));
+        finalSelection.push(d.event);
+      }
+      CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
     });
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
@@ -1780,7 +1794,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     // see: https://haxe.org/manual/lf-pattern-matching-tuples.html
     // for how this multiple pattern matching works
-    switch ([ event.keyCode, event.ctrlKey, event.altKey, event.shiftKey, isSelectingSongEvent])
+    switch ([ event.keyCode, event.ctrlKey, event.altKey, event.shiftKey, hasSelection])
     {
       // File menu
       case [FlxKey.O, true, false, false, _]: // ctrl + o -> open
@@ -1810,20 +1824,23 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.Y, true, false, false, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
         CameraEditorCommandHandler.redoLastCommand(this);
 
+      case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all camera events
+        selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera' || e.eventKind == 'ZoomCamera');
+
       case [FlxKey.C, true, false, false, true]: // ctrl + c -> copy
         SongDataUtils.writeItemsToClipboard({
           notes: [],
-          events: [selectedSongEvent]
+          events: selectedSongEvents.copy()
         });
         hasClipboardEvent = true;
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
-          events: [selectedSongEvent]
+          events: selectedSongEvents.copy()
         });
         hasClipboardEvent = true;
-        CameraEditorCommandHandler.performCommand(this, new RemoveEventCommand(selectedSongEvent));
-        selectedSongEvent = null;
+        var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
+        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
         var clipboard = SongDataUtils.readItemsFromClipboard();
         if (!clipboard.valid || clipboard.events.length == 0) return;
@@ -1833,16 +1850,18 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (pasteMs < 0) pasteMs = 0;
         if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
 
-        var newEvent = clipboard.events[0];
-        newEvent.time = pasteMs;
+        var earliest:Float = Math.POSITIVE_INFINITY;
+        for (ev in clipboard.events) if (ev.time < earliest) earliest = ev.time;
+        var offset:Float = pasteMs - earliest;
 
-        CameraEditorCommandHandler.performCommand(this, new AddEventCommand(newEvent));
-        selectedSongEvent = newEvent;
+        for (ev in clipboard.events) ev.time += offset;
 
-      case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected note
-        var cmd = new RemoveEventCommand(selectedSongEvent);
-        CameraEditorCommandHandler.performCommand(this, cmd);
-        selectedSongEvent = null;
+        var addCmds:Array<CameraEditorCommand> = [for (ev in clipboard.events) new AddEventCommand(ev)];
+        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(addCmds, 'Paste ${addCmds.length} Events', clipboard.events));
+
+      case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
+        var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
+        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
 
       default:
         // unbound/do nothing
