@@ -90,6 +90,11 @@ class EventTimeline extends VBox
         border: none;
         filter: none;
       }
+      .timeline-selection-box {
+        background-color: #5BA3FF;
+        background-opacity: 0.18;
+        border: 1px solid #5BA3FF;
+      }
     ');
   }
 

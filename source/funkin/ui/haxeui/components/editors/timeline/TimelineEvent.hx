@@ -6,9 +6,21 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import haxe.ui.events.EventType;
 import haxe.ui.events.UIEvent;
 
+typedef EventMoveDelta =
+{
+  event:SongEventData,
+  oldTime:Float,
+  newTime:Float,
+  oldDuration:Float,
+  newDuration:Float,
+  oldLayerName:String,
+  newLayerName:String
+};
+
 class TimelineEvent extends UIEvent
 {
   public static inline var EVENT_MOVED:EventType<TimelineEvent> = "timelineEventMoved";
+  public static inline var EVENTS_MOVED:EventType<TimelineEvent> = "timelineEventsMoved";
   public static inline var EVENT_RESIZED:EventType<TimelineEvent> = "timelineEventResized";
   /** Reserved for future use — not currently dispatched. */
   public static inline var EVENT_LAYER_CHANGED:EventType<TimelineEvent> = "timelineEventLayerChanged";
@@ -20,6 +32,8 @@ class TimelineEvent extends UIEvent
   public static inline var LAYER_REMOVED:EventType<TimelineEvent> = "timelineLayerRemoved";
 
   public var eventData:Null<SongEventData>;
+  public var eventsData:Array<SongEventData> = [];
+  public var moveDeltas:Array<EventMoveDelta> = [];
   public var layerData:Null<TimelineLayerData>;
   public var layerIndex:Int = 0;
   public var oldTime:Float = 0;
@@ -44,6 +58,8 @@ class TimelineEvent extends UIEvent
     c.data = data;
     c.canceled = canceled;
     c.eventData = eventData;
+    c.eventsData = eventsData.copy();
+    c.moveDeltas = moveDeltas.copy();
     c.oldTime = oldTime;
     c.newTime = newTime;
     c.oldDuration = oldDuration;
