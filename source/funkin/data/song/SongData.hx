@@ -1074,7 +1074,9 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
    */
   public function clone():SongEventData
   {
-    return new SongEventData(this.time, this.eventKind, this.value);
+    var result:SongEventData = new SongEventData(this.time, this.eventKind, this.value);
+    result.editorLayer = this.editorLayer;
+    return result;
   }
 
   /**
