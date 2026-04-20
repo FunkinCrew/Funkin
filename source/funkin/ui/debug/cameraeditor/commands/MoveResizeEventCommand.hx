@@ -37,8 +37,15 @@ class MoveResizeEventCommand implements CameraEditorCommand
     TimelineUtil.setEventDurationSteps(event, newDuration);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = newLayerName == "Default" ? null : newLayerName;
+
+    if (oldLayerName != newLayerName)
+    {
+      var block = state.timeline.viewport.findBlockByEvent(event);
+      if (block != null) state.timeline.viewport.syncEventBlockLayer(block, newLayerName);
+    }
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function undo(state:CameraEditorState):Void
@@ -47,8 +54,15 @@ class MoveResizeEventCommand implements CameraEditorCommand
     TimelineUtil.setEventDurationSteps(event, oldDuration);
     var raw:SongEventDataRaw = event;
     raw.editorLayer = oldLayerName == "Default" ? null : oldLayerName;
+
+    if (oldLayerName != newLayerName)
+    {
+      var block = state.timeline.viewport.findBlockByEvent(event);
+      if (block != null) state.timeline.viewport.syncEventBlockLayer(block, oldLayerName);
+    }
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   /**
