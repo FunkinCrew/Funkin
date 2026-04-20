@@ -3,6 +3,7 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
@@ -22,6 +23,7 @@ class FlattenLayerCommand implements CameraEditorCommand
   public function execute(state:CameraEditorState):Void
   {
     flattenedEvents = [];
+    var viewport = state.timeline.viewport;
 
     for (event in state.currentSongChartData.events)
     {
@@ -36,36 +38,51 @@ class FlattenLayerCommand implements CameraEditorCommand
       }
     }
 
-    state.timeline.viewport.layers.remove(layer);
+    var removedIdx:Int = viewport.layers.indexOf(layer);
+    viewport.layers.remove(layer);
 
-    var viewport = state.timeline.viewport;
-    if (viewport.selectedLayerIndex >= viewport.layers.length)
-      viewport.selectedLayerIndex = viewport.layers.length - 1;
-    if (viewport.selectedLayerIndex < 0)
-      viewport.selectedLayerIndex = 0;
+    // remap first so indices are consistent, then re-sync flattened blocks to "Default".
+    // the sync writes an authoritative index, so doing it after remap makes this order-independent of where "Default" sits.
+    if (removedIdx >= 0) viewport.remapForRemove(removedIdx);
+
+    for (entry in flattenedEvents)
+    {
+      var block:TimelineEventBlock = viewport.findBlockByEvent(entry.event);
+      if (block != null) viewport.syncEventBlockLayer(block, "Default");
+    }
+
+    if (viewport.selectedLayerIndex >= viewport.layers.length) viewport.selectedLayerIndex = viewport.layers.length - 1;
+    if (viewport.selectedLayerIndex < 0) viewport.selectedLayerIndex = 0;
+
+    state.timeline.layerPanel.removeLayerRow(layer);
+    viewport.refreshLayout();
 
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function undo(state:CameraEditorState):Void
   {
-    var layers = state.timeline.viewport.layers;
-    if (layerIndex >= 0 && layerIndex <= layers.length)
-      layers.insert(layerIndex, layer);
-    else
-      layers.push(layer);
+    var viewport = state.timeline.viewport;
+    var layers = viewport.layers;
+    var idx = (layerIndex >= 0 && layerIndex <= layers.length) ? layerIndex : layers.length;
+
+    viewport.remapForInsert(idx);
+    layers.insert(idx, layer);
 
     for (entry in flattenedEvents)
     {
       var raw:SongEventDataRaw = entry.event;
       raw.editorLayer = entry.originalLayer;
+      var block = viewport.findBlockByEvent(entry.event);
+      if (block != null) viewport.syncEventBlockLayer(block, entry.originalLayer ?? "Default");
     }
 
-    state.timeline.viewport.selectedLayerIndex = layerIndex;
+    viewport.selectedLayerIndex = idx;
+
+    state.timeline.layerPanel.insertLayerRow(layer, idx);
+    viewport.refreshLayout();
 
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function shouldAddToHistory(state:CameraEditorState):Bool

@@ -98,6 +98,12 @@ class EventTimeline extends VBox
     ');
   }
 
+  /**
+   * "cold path" — only called from `CameraEditorState.loadTimeline()` (initial load and variation switches).
+   * Rebuilds every row and block from scratch via `rebuildLayers` / `rebuildBlocks`.
+   * Commands must use the surgical methods on `viewport` / `layerPanel` (`addEventBlock`, `insertLayerRow`, etc.)
+   * rather than calling this — otherwise every edit flickers the whole timeline.
+   */
   public function setEvents(events:Array<SongEventData>):Void
   {
     var newLayers = TimelineLayerData.buildLayersFromEvents(events);
