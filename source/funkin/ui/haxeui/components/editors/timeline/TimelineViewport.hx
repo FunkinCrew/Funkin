@@ -146,49 +146,89 @@ class TimelineViewport extends Box
     if (onRefresh != null) onRefresh();
   }
 
+  /**
+   * "cold load" path — tears down every block and rebuilds from scratch.
+   * commands should use `addEventBlock` / `removeEventBlock` / `syncEventBlockLayer`
+   * to avoid the flicker from the full teardown.
+   */
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
     for (block in eventBlocks)
       removeComponent(block);
     eventBlocks = [];
 
-    for (event in events)
-    {
-      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") continue;
-
-      var block = new TimelineEventBlock();
-      block.eventData = event;
-
-      var raw:SongEventDataRaw = event;
-      var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
-      block.layerIndex = getLayerIndex(layerName);
-
-      if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
-
-      addComponent(block);
-
-      var triangle = block.findComponent("block-instantTriangle", Image);
-      if (triangle != null)
-      {
-        if (!block.isInstant())
-        {
-          triangle.opacity = 0;
-        }
-        block._cachedTriangle = triangle;
-      }
-
-      var icon = block.findComponent("block-icon", Image);
-      if (icon != null)
-      {
-        var iconRes = TimelineEventBlock.getIconResource(event.eventKind);
-        if (iconRes != null) icon.resource = iconRes;
-        block._cachedIcon = icon;
-      }
-
-      eventBlocks.push(block);
-    }
+    for (event in events) addEventBlock(event);
 
     refreshLayout();
+  }
+
+  public function addEventBlock(event:SongEventData):TimelineEventBlock
+  {
+    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") return null;
+
+    var block = new TimelineEventBlock();
+    block.eventData = event;
+
+    var raw:SongEventDataRaw = event;
+    var layerName = raw.editorLayer != null ? raw.editorLayer : "Default";
+    block.layerIndex = getLayerIndex(layerName);
+
+    if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
+
+    addComponent(block);
+
+    var triangle = block.findComponent("block-instantTriangle", Image);
+    if (triangle != null)
+    {
+      if (!block.isInstant()) triangle.opacity = 0;
+      block._cachedTriangle = triangle;
+    }
+
+    var icon = block.findComponent("block-icon", Image);
+    if (icon != null)
+    {
+      var iconRes = TimelineEventBlock.getIconResource(event.eventKind);
+      if (iconRes != null) icon.resource = iconRes;
+      block._cachedIcon = icon;
+    }
+
+    eventBlocks.push(block);
+    return block;
+  }
+
+  public function findBlockByEvent(event:SongEventData):Null<TimelineEventBlock>
+  {
+    for (block in eventBlocks)
+      if (block.eventData == event) return block;
+    return null;
+  }
+
+  public function removeEventBlock(event:SongEventData):Bool
+  {
+    var block = findBlockByEvent(event);
+    if (block == null) return false;
+    removeComponent(block);
+    eventBlocks.remove(block);
+    return true;
+  }
+
+  public function syncEventBlockLayer(block:TimelineEventBlock, layerName:String):Void
+  {
+    block.layerIndex = getLayerIndex(layerName);
+    if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
+    block.updateVisuals();
+  }
+
+  public function remapForInsert(insertIndex:Int):Void
+  {
+    for (block in eventBlocks)
+      if (block.layerIndex >= insertIndex) block.layerIndex++;
+  }
+
+  public function remapForRemove(removedLayerIndex:Int):Void
+  {
+    for (block in eventBlocks)
+      if (block.layerIndex > removedLayerIndex) block.layerIndex--;
   }
 
   public function refreshBlockVisuals(targetSelected:Bool = false):Void
@@ -235,7 +275,14 @@ class TimelineViewport extends Box
     {
       if (layers[i].name == layerName) return i;
     }
-    return 0;
+    return -1;
+  }
+
+  public function findLayerByName(layerName:String):Null<TimelineLayerData>
+  {
+    for (layer in layers)
+      if (layer.name == layerName) return layer;
+    return null;
   }
 
   public function getBlockTopPositionFromLayerIndex(layerIndex:Int):Float
@@ -714,7 +761,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       {
         _viewport.selectedLayerIndex = clickedLayer;
         var timeline:Null<EventTimeline> = _viewport.findAncestor(EventTimeline);
-        if (timeline != null) timeline.layerPanel.rebuildLayers(_viewport.layers);
+        if (timeline != null) timeline.layerPanel.refreshSelectedHighlight();
       }
 
       if (inTopBar || onPlayhead)

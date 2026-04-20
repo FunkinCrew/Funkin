@@ -22,15 +22,21 @@ class AddEventCommand implements CameraEditorCommand
       if (a.time > b.time) return 1;
       return 0;
     });
+
+    state.timeline.viewport.addEventBlock(event);
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function undo(state:CameraEditorState):Void
   {
     state.currentSongChartData.events.remove(event);
+
+    state.timeline.viewport.removeEventBlock(event);
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   /**
