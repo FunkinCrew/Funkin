@@ -738,7 +738,7 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
-   * Ensure scale is applied when cloning a sprite.R
+   * Ensure scale is applied when cloning a sprite.
    * The default `clone()` method acts kinda weird TBH.
    * @return A clone of this sprite.
    */
