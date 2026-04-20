@@ -5067,52 +5067,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         if (overlapsGrid)
         {
-          // We clicked on the grid without moving the mouse.
-
-          if (pressingControl())
-          {
-            if (highlightedNote != null && highlightedNote.noteData != null)
-            {
-              // Control click to select/deselect an individual note.
-              if (isNoteSelected(highlightedNote.noteData))
-              {
-                performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
-              }
-              else
-              {
-                performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
-              }
-            }
-            else if (highlightedEvent != null && highlightedEvent.eventData != null)
-            {
-              // Control click to select/deselect an individual note.
-              if (isEventSelected(highlightedEvent.eventData))
-              {
-                performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
-              }
-              else
-              {
-                performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
-              }
-            }
-            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-            {
-              // Control click to select/deselect an individual note.
-              if (isNoteSelected(highlightedHoldNote.noteData))
-              {
-                performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
-              }
-              else
-              {
-                performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
-              }
-            }
-            else
-            {
-              // Do nothing if you control-clicked on an empty space.
-            }
-          }
-          else
+          if (!pressingControl())
           {
             if (highlightedNote != null && highlightedNote.noteData != null)
             {
@@ -5140,19 +5095,60 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
           }
         }
+      }
+    }
+    else if (pressingControl() && FlxG.mouse.justPressed)
+    {
+      if (highlightedNote != null && highlightedNote.noteData != null)
+      {
+        // Control click to select/deselect an individual note.
+        if (isNoteSelected(highlightedNote.noteData))
+        {
+          performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
+        }
         else
         {
-          // If we clicked and released outside the grid.
-
-          if (!pressingControl())
-          {
-            // Deselect all items.
-            var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
-            if (shouldDeselect)
-            {
-              performCommand(new DeselectAllItemsCommand());
-            }
-          }
+          performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
+        }
+      }
+      else if (highlightedEvent != null && highlightedEvent.eventData != null)
+      {
+        // Control click to select/deselect an individual note.
+        if (isEventSelected(highlightedEvent.eventData))
+        {
+          performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
+        }
+        else
+        {
+          performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
+        }
+      }
+      else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+      {
+        // Control click to select/deselect an individual note.
+        if (isNoteSelected(highlightedHoldNote.noteData))
+        {
+          performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
+        }
+        else
+        {
+          performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
+        }
+      }
+      else
+      {
+        // Do nothing if you control-clicked on an empty space.
+      }
+    }
+    else if (!pressingControl() && FlxG.mouse.justReleased)
+    {
+      if (!overlapsGrid && !overlapsHealthIcons)
+      {
+        // Clicked somewhere that isn't the grid or the health icons. Deselect everything.
+        var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+        if (shouldDeselect)
+        {
+          performCommand(new DeselectAllItemsCommand());
         }
       }
     }
