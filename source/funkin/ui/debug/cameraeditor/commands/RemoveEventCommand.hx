@@ -19,8 +19,11 @@ class RemoveEventCommand implements CameraEditorCommand
     index = state.currentSongChartData.events.indexOf(event);
     state.currentSongChartData.events.remove(event);
     if (state.selectedSongEvents.contains(event)) state.selectedSongEvents = state.selectedSongEvents.filter(e -> e != event);
+
+    state.timeline.viewport.removeEventBlock(event);
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function undo(state:CameraEditorState):Void
@@ -30,8 +33,11 @@ class RemoveEventCommand implements CameraEditorCommand
     else
       state.currentSongChartData.events.push(event);
     state.selectedSongEvents = [event];
+
+    state.timeline.viewport.addEventBlock(event);
+    state.timeline.viewport.refreshLayout();
+
     state.saved = false;
-    state.loadTimeline();
   }
 
   /**
