@@ -23,72 +23,112 @@ class TimelineLayerPanel extends VBox
   public var _layerClipBox:Box;
   public var viewport:TimelineViewport;
 
+  // "cold load" path rebuilds this; surgical commands mutate it via
+  // insertLayerRow / removeLayerRow so we don't do a full rebuild each update.
+  var _rowByLayer:Map<TimelineLayerData, HBox> = new Map();
+
   public function setScrollOffset(offsetPx:Float):Void
   {
     if (_layerContainer == null) return;
     _layerContainer.top = -offsetPx;
   }
 
+  /**
+   * "cold load" path — rebuilds every layer row from scratch.
+   * commands should use `insertLayerRow` / `removeLayerRow` / `refreshSelectedHighlight`
+   * to avoid the flicker from the full teardown.
+   */
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
   {
     _layerContainer.removeAllComponents();
+    _rowByLayer = new Map();
 
-    for (i in 0...layers.length)
-    {
-      var layer = layers[i];
-      var layerIdx = i;
-
-      var row = new HBox();
-      row.percentWidth = 100;
-      row.height = TimelineViewport.LAYER_HEIGHT - 2;
-      row.customStyle.backgroundColor = 0x3A3A3A;
-      row.customStyle.verticalAlign = "center";
-      row.customStyle.paddingLeft = 6;
-
-      if (viewport != null && viewport.selectedLayerIndex == i)
-        row.customStyle.backgroundColor = 0x505050;
-      else
-        row.customStyle.backgroundColor = 0x3A3A3A;
-
-      row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) -> {
-        if (viewport != null)
-        {
-          viewport.selectedLayerIndex = layerIdx;
-          rebuildLayers(viewport.layers);
-        }
-      });
-
-      var swatch = new Box();
-      swatch.width = 12;
-      swatch.height = 12;
-      swatch.customStyle.backgroundColor = layer.color;
-      swatch.customStyle.borderRadius = 2;
-      swatch.customStyle.verticalAlign = "center";
-
-      // we make the layer name a text field, rather than a label
-      // so we can easily click on it to modify/edit
-      var field = new TextField();
-      field.text = layer.name;
-      field.percentWidth = 100;
-      field.addClass("no-border");
-      field.addClass("no-background");
-      field.addClass("no-padding");
-      field.addClass("layer-name-field");
-      field.customStyle.fontName = "Inconsolata";
-      field.customStyle.fontSize = 13;
-      field.customStyle.color = 0xCCCCCC;
-      field.customStyle.filter = null;
-      field.customStyle.paddingLeft = 4;
-      field.customStyle.verticalAlign = "center";
-
-      field.registerEvent(UIEvent.CHANGE, (_:UIEvent) -> layer.name = field.text);
-
-      row.addComponent(swatch);
-      row.addComponent(field);
-      _layerContainer.addComponent(row);
-    }
+    for (i in 0...layers.length) _insertLayerRowInternal(layers[i], i);
 
     _layerContainer.syncComponentValidation();
+  }
+
+  public function insertLayerRow(layer:TimelineLayerData, index:Int):Void
+  {
+    _insertLayerRowInternal(layer, index);
+    refreshSelectedHighlight();
+    _layerContainer.syncComponentValidation();
+  }
+
+  public function removeLayerRow(layer:TimelineLayerData):Void
+  {
+    var row = _rowByLayer.get(layer);
+    if (row == null) return;
+    _layerContainer.removeComponent(row);
+    _rowByLayer.remove(layer);
+    refreshSelectedHighlight();
+    _layerContainer.syncComponentValidation();
+  }
+
+  public function refreshSelectedHighlight():Void
+  {
+    if (viewport == null) return;
+    for (layer => row in _rowByLayer)
+    {
+      var idx = viewport.layers.indexOf(layer);
+      row.customStyle.backgroundColor = (idx == viewport.selectedLayerIndex) ? 0x505050 : 0x3A3A3A;
+      row.invalidateComponentStyle();
+    }
+  }
+
+  function _insertLayerRowInternal(layer:TimelineLayerData, index:Int):Void
+  {
+    var row = new HBox();
+    row.percentWidth = 100;
+    row.height = TimelineViewport.LAYER_HEIGHT - 2;
+    row.customStyle.verticalAlign = "center";
+    row.customStyle.paddingLeft = 6;
+    row.customStyle.backgroundColor = 0x3A3A3A;
+
+    if (viewport != null && viewport.layers.indexOf(layer) == viewport.selectedLayerIndex) row.customStyle.backgroundColor = 0x505050;
+
+    // Click handler captures `layer` (stable) and resolves current index at click time.
+    row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) -> {
+      if (viewport == null) return;
+      var idx = viewport.layers.indexOf(layer);
+      if (idx < 0) return;
+      viewport.selectedLayerIndex = idx;
+      refreshSelectedHighlight();
+    });
+
+    var swatch = new Box();
+    swatch.width = 12;
+    swatch.height = 12;
+    swatch.customStyle.backgroundColor = layer.color;
+    swatch.customStyle.borderRadius = 2;
+    swatch.customStyle.verticalAlign = "center";
+
+    // we make the layer name a text field, rather than a label
+    // so we can easily click on it to modify/edit
+    var field = new TextField();
+    field.text = layer.name;
+    field.percentWidth = 100;
+    field.addClass("no-border");
+    field.addClass("no-background");
+    field.addClass("no-padding");
+    field.addClass("layer-name-field");
+    field.customStyle.fontName = "Inconsolata";
+    field.customStyle.fontSize = 13;
+    field.customStyle.color = 0xCCCCCC;
+    field.customStyle.filter = null;
+    field.customStyle.paddingLeft = 4;
+    field.customStyle.verticalAlign = "center";
+
+    field.registerEvent(UIEvent.CHANGE, (_:UIEvent) -> layer.name = field.text);
+
+    row.addComponent(swatch);
+    row.addComponent(field);
+
+    if (index >= 0 && index < _layerContainer.childComponents.length) _layerContainer.addComponentAt(row, index);
+    else
+      _layerContainer.addComponent(row);
+
+    _rowByLayer.set(layer, row);
   }
 }
 

@@ -23,7 +23,9 @@ class RemoveLayerCommand implements CameraEditorCommand
   {
     deletedEvents = [];
 
+    var viewport = state.timeline.viewport;
     var eventsToRemove:Array<SongEventData> = [];
+
     for (event in state.currentSongChartData.events)
     {
       var eventLayer:String = event.editorLayer ?? "Default";
@@ -35,27 +37,32 @@ class RemoveLayerCommand implements CameraEditorCommand
     }
 
     for (event in eventsToRemove)
+    {
       state.currentSongChartData.events.remove(event);
+      viewport.removeEventBlock(event);
+    }
 
-    state.timeline.viewport.layers.remove(layer);
+    var removedIdx = viewport.layers.indexOf(layer);
+    viewport.layers.remove(layer);
+    if (removedIdx >= 0) viewport.remapForRemove(removedIdx);
 
-    var viewport = state.timeline.viewport;
-    if (viewport.selectedLayerIndex >= viewport.layers.length)
-      viewport.selectedLayerIndex = viewport.layers.length - 1;
-    if (viewport.selectedLayerIndex < 0)
-      viewport.selectedLayerIndex = 0;
+    if (viewport.selectedLayerIndex >= viewport.layers.length) viewport.selectedLayerIndex = viewport.layers.length - 1;
+    if (viewport.selectedLayerIndex < 0) viewport.selectedLayerIndex = 0;
+
+    state.timeline.layerPanel.removeLayerRow(layer);
+    viewport.refreshLayout();
 
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function undo(state:CameraEditorState):Void
   {
-    var layers = state.timeline.viewport.layers;
-    if (layerIndex >= 0 && layerIndex <= layers.length)
-      layers.insert(layerIndex, layer);
-    else
-      layers.push(layer);
+    var viewport = state.timeline.viewport;
+    var layers = viewport.layers;
+    var idx = (layerIndex >= 0 && layerIndex <= layers.length) ? layerIndex : layers.length;
+
+    viewport.remapForInsert(idx);
+    layers.insert(idx, layer);
 
     for (entry in deletedEvents)
       state.currentSongChartData.events.push(entry.event);
@@ -67,10 +74,14 @@ class RemoveLayerCommand implements CameraEditorCommand
       return 0;
     });
 
-    state.timeline.viewport.selectedLayerIndex = layerIndex;
+    for (entry in deletedEvents) viewport.addEventBlock(entry.event);
+
+    viewport.selectedLayerIndex = idx;
+
+    state.timeline.layerPanel.insertLayerRow(layer, idx);
+    viewport.refreshLayout();
 
     state.saved = false;
-    state.loadTimeline();
   }
 
   public function shouldAddToHistory(state:CameraEditorState):Bool
