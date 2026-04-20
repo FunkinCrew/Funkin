@@ -138,7 +138,7 @@ class NoteSprite extends FunkinSprite
   public var lowPriority:Bool = false;
 
   /**
-   * This is true if the note is later than 10 frames within the strumline,
+   * This is true if the note is later than the strumline's hitzone (`HIT_WINDOW_MS`),
    * and thus can't be hit by the player.
    * It will be destroyed after it moves offscreen.
    * Managed by PlayState.
@@ -146,14 +146,14 @@ class NoteSprite extends FunkinSprite
   public var hasMissed:Bool;
 
   /**
-   * This is true if the note is earlier than 10 frames within the strumline.
+   * This is true if the note is earlier than the strumline's hitzone (`HIT_WINDOW_MS`),
    * and thus can't be hit by the player.
    * Managed by PlayState.
    */
   public var tooEarly:Bool;
 
   /**
-   * This is true if the note is within 10 frames of the strumline,
+   * This is true if the note is within the strumline's hitzone (`HIT_WINDOW_MS`),
    * and thus may be hit by the player.
    * Managed by PlayState.
    */
