@@ -138,31 +138,29 @@ class NoteSprite extends FunkinSprite
   public var lowPriority:Bool = false;
 
   /**
-   * This is true if the note is later than 10 frames within the strumline,
-   * and thus can't be hit by the player.
+   * This is true if the note is past HIT_WINDOW_MS milliseconds
+   * after the strumline, and thus can't be hit by the player.
    * It will be destroyed after it moves offscreen.
-   * Managed by PlayState.
-   */
+   * Managed by PlayState via GRhythmUtil.
+  */
   public var hasMissed:Bool;
 
   /**
-   * This is true if the note is earlier than 10 frames within the strumline.
-   * and thus can't be hit by the player.
-   * Managed by PlayState.
-   */
+   * This is true if the note is more than HIT_WINDOW_MS milliseconds
+   * before the strumline, and thus can't be hit yet.
+  */
   public var tooEarly:Bool;
 
   /**
-   * This is true if the note is within 10 frames of the strumline,
-   * and thus may be hit by the player.
-   * Managed by PlayState.
-   */
+   * This is true if the note is within HIT_WINDOW_MS milliseconds
+   * of the strumline, and thus may be hit by the player.
+  */
   public var mayHit:Bool;
 
   /**
    * This is true if the PlayState has performed the logic for missing this note.
    * Subtracting score, subtracting health, etc.
-   */
+  */
   public var handledMiss:Bool;
 
   public function new(noteStyle:NoteStyle, direction:Int = 0)
