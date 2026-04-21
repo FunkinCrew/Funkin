@@ -8,13 +8,18 @@ import haxe.ui.data.ArrayDataSource;
 
 @:xml('
 <hbox width="100%" style="background-color: #3A3A3A; padding: 4px;">
-  <button id="btnTogglePlayback" text="Play/Pause" allowFocus="false" />
   <label id="lblTime" text="0:00.00/0:00.00" style="vertical-align: center; padding-left: 8px;" />
+  <IconButton id="btnTogglePlayback" height="100%" tooltip="Play/Pause\nSPACEBAR to toggle" icon="shared:assets/shared/images/ui/camera-editor/play.png" selectedIcon="shared:assets/shared/images/ui/camera-editor/pause.png" toggle="true" allowFocus="false" style="horizontal-align: center;"/>
   <spacer width="100%" />
   <label text="Auto-scroll:" style="vertical-align: center; padding-right: 4px;" />
   <dropdown id="ddAutoScroll" width="130" allowFocus="false" style="vertical-align: center;" />
   <spacer width="8" />
-  <checkbox id="chkSnap" text="Snap" selected="true" allowFocus="false" tooltip="Snap to nearest step (Hold SHIFT to temporarily toggle this)" style="vertical-align: center;" />
+  <SnapButton id="chkSnap" height="100%" selected="true" allowFocus="false" tooltip="Snap to nearest step\nHold SHIFT in the timeline to temporarily toggle this"
+              iconSnapOn="shared:assets/shared/images/ui/camera-editor/magnet_snap_on.png"
+              iconSnapOff="shared:assets/shared/images/ui/camera-editor/magnet_snap_off.png"
+              iconShiftOn="shared:assets/shared/images/ui/camera-editor/magnet_shift_on.png"
+              iconShiftOff="shared:assets/shared/images/ui/camera-editor/magnet_shift_off.png"
+              style="vertical-align: center;" />
   <spacer width="8" />
   <label text="Zoom:" style="vertical-align: center; padding-right: 4px;" />
   <slider id="zoomSlider" min="0.1" max="5.0" pos="1.0" width="120" style="vertical-align: center;" />
