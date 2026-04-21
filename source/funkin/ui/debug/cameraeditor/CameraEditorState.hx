@@ -97,6 +97,7 @@ import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.core.Screen;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
@@ -841,6 +842,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     conductorInUse.update();
 
+    syncSnapShiftState();
+
     // TODO: sync vocals if they desync, im just too lazy to put this in rn
     if (currentInstrumental != null && currentInstrumental.playing)
     {
@@ -1321,7 +1324,16 @@ class CameraEditorState extends UIState implements ConsoleClass
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
-    timeline.toolbar.findComponent('btnTogglePlayback').registerEvent(MouseEvent.CLICK, _ -> togglePlayback());
+    timeline.toolbar.btnTogglePlayback.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
+      if (currentInstrumental == null)
+      {
+        timeline.toolbar.btnTogglePlayback.selected = false;
+        return;
+      }
+      if (timeline.toolbar.btnTogglePlayback.selected) playAudioPlayback();
+      else pauseAudioPlayback();
+    });
 
     timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
     {
@@ -1414,6 +1426,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
       completedEvents = [];
+      syncTogglePlaybackButton();
       previousNotes = [
         null,
         null,
@@ -1503,6 +1516,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       vocal.play(false, vocal.time);
     }
     timeline.isPlaying = true;
+    syncTogglePlaybackButton();
   }
 
   function pauseAudioPlayback():Void
@@ -1515,6 +1529,18 @@ class CameraEditorState extends UIState implements ConsoleClass
       vocal.pause();
     }
     timeline.isPlaying = false;
+    syncTogglePlaybackButton();
+  }
+
+  function syncSnapShiftState():Void
+  {
+    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.SHIFT
+      && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+  }
+
+  function syncTogglePlaybackButton():Void
+  {
+    timeline.toolbar.btnTogglePlayback.selected = currentInstrumental != null && currentInstrumental.playing;
   }
 
   var lastSeekReplay:Float = 0;
