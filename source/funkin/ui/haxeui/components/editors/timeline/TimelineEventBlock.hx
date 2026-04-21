@@ -1,7 +1,6 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.play.event.SongEvent;
 import funkin.data.song.SongData.SongEventData;
 import haxe.ui.behaviours.DefaultBehaviour;
 import haxe.ui.components.Image;
@@ -84,13 +83,7 @@ class TimelineEventBlock extends Box
 
   public function isInstant():Bool
   {
-    var easeStr:String = eventData.getString('ease') ?? SongEvent.DEFAULT_EASE;
-    if (easeStr != null && (easeStr == 'CLASSIC' || easeStr == 'INSTANT'))
-    {
-      return true;
-    }
-
-    return false;
+    return TimelineUtil.isFixedDuration(eventData);
   }
 }
 
