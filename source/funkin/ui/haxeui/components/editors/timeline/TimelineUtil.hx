@@ -3,16 +3,17 @@ package funkin.ui.haxeui.components.editors.timeline;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.play.event.FocusCameraSongEvent;
+import funkin.play.event.ZoomCameraSongEvent;
 
 class TimelineUtil
 {
   public static function isFixedDuration(event:SongEventData):Bool
   {
-    if (event.eventKind != "FocusCamera")
-      return false;
-    var ease = event.getString('ease');
-    if (ease == null)
-      return true;
+    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") return false;
+    var ease:Null<String> = event.getString('ease');
+    // FocusCamera historically treats a missing ease as classic/instant; ZoomCamera's
+    // missing ease resolves to the default easing at runtime, which is not instant.
+    if (ease == null) return event.eventKind == "FocusCamera";
     return ease == 'CLASSIC' || ease == 'INSTANT';
   }
 
@@ -31,11 +32,12 @@ class TimelineUtil
   public static function getEventDurationSteps(event:SongEventData):Float
   {
     if (isFixedDuration(event))
-      return FocusCameraSongEvent.DEFAULT_DURATION;
+    {
+      return event.eventKind == "ZoomCamera" ? ZoomCameraSongEvent.DEFAULT_DURATION : FocusCameraSongEvent.DEFAULT_DURATION;
+    }
     var duration:Null<Float> = event.getFloat('duration');
-    var minSteps = getMinDurationSteps(event);
-    if (duration == null || duration < minSteps)
-      return minSteps;
+    var minSteps:Float = getMinDurationSteps(event);
+    if (duration == null || duration < minSteps) return minSteps;
     return duration;
   }
 
