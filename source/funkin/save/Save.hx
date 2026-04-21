@@ -723,7 +723,18 @@ class Save implements ConsoleClass
     return true;
     #end
 
-    difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST;
+    // isBlank always catches if the string is null but the Haxe compiler's null safety is too stupid to figure that out
+    // so we need TWO null checks ugh...
+    variation ??= Constants.DEFAULT_VARIATION;
+    if (variation.isBlank()) variation = Constants.DEFAULT_VARIATION;
+
+    switch (variation)
+    {
+      case Constants.DEFAULT_VARIATION:
+        difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST;
+      case 'erect':
+        difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST_ERECT;
+    }
 
     // Check each difficulty for a score.
     for (difficulty in difficultyList)
