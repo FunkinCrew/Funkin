@@ -48,7 +48,13 @@ class SongMetadata implements ICloneable<SongMetadata>
    */
   public var playData:SongPlayData;
 
+  /**
+   * Provides info about the song that output this chart.
+   * When exporting, this should always be re-updated to `SongRegistry.DEFAULT_GENERATEDBY`,
+   * so we know the last version that modified it.
+   */
   public var generatedBy:String;
+
   @:optional @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
   public var timeChanges:Array<SongTimeChange>;
@@ -354,8 +360,14 @@ class SongMusicData implements ICloneable<SongMusicData>
   public var divisions:Null<Int>; // Optional field
   @:optional @:default(false)
   public var looped:Null<Bool>;
-  // @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
+
+  /**
+   * Provides info about the song that output this chart.
+   * When exporting, this should always be re-updated to `SongRegistry.DEFAULT_GENERATEDBY`,
+   * so we know the last version that modified it.
+   */
   public var generatedBy:String;
+
   // @:default(funkin.data.song.SongData.SongTimeFormat.MILLISECONDS)
   public var timeFormat:SongTimeFormat;
   // @:default(funkin.data.song.SongData.SongTimeChange.DEFAULT_SONGTIMECHANGES)
@@ -573,8 +585,7 @@ class SongChartData implements ICloneable<SongChartData>
    * Data used by the ingame editors, not necessary for gameplay.
    * @default `null`, to be populated only when needed by the game.
    */
-  @:alias("_editor")
-  @:optional
+  @:alias("_editor") @:optional
   public var editorData:Null<SongChartEditorData>;
 
   /**
@@ -582,7 +593,6 @@ class SongChartData implements ICloneable<SongChartData>
    * When exporting, this should always be re-updated to `SongRegistry.DEFAULT_GENERATEDBY`,
    * so we know the last version that modified it.
    */
-  @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
 
   /**
@@ -781,8 +791,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * The name of the layer this event appears on in the Camera Editor.
    * @default `null`, excluded from chart data unless explicitly set by the editor.
    */
-  @:alias("_layer")
-  @:optional
+  @:alias("_layer") @:optional
   public var editorLayer:Null<String>;
 
   /**
