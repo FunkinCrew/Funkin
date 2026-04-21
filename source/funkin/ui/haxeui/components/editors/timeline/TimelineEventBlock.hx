@@ -100,17 +100,20 @@ private class TimelineBlockBuilder extends CompositeBuilder
   override public function create():Void
   {
     var triangle = new Image();
+    var triangle:Image = new Image();
     triangle.id = "block-instantTriangle";
     triangle.addClass("timeline-block-instant-triangle");
     triangle.customStyle.pointerEvents = "none";
     triangle.resource = 'shared:assets/shared/images/ui/camera-editor/triangle.png';
     triangle.opacity = 0.3;
+    triangle.includeInLayout = false;
     _component.addComponent(triangle);
 
-    var icon = new Image();
+    var icon:Image = new Image();
     icon.id = "block-icon";
     icon.addClass("timeline-block-icon");
     icon.customStyle.pointerEvents = "none";
+    icon.includeInLayout = false;
     _component.addComponent(icon);
   }
 }
