@@ -7,11 +7,22 @@ import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.CompositeBuilder;
+import haxe.ui.core.Platform;
+import haxe.ui.core.Screen;
+import haxe.ui.events.FocusEvent;
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
-@:composite(TimelineLayerPanelBuilder)
-@:xml('
+typedef LayerRowHandles =
+{
+  row:HBox,
+  field:TextField,
+  editOriginal:Null<String>,
+  cancelling:Bool
+};
+
+@:composite(TimelineLayerPanelBuilder) @:xml('
 <vbox width="120" style="background-color: #2A2A2A; spacing: 0; clip: true; overflow: hidden;">
 </vbox>
 ')
@@ -25,7 +36,11 @@ class TimelineLayerPanel extends VBox
 
   // "cold load" path rebuilds this; surgical commands mutate it via
   // insertLayerRow / removeLayerRow so we don't do a full rebuild each update.
-  var _rowByLayer:Map<TimelineLayerData, HBox> = new Map();
+  var _handlesByLayer:Map<TimelineLayerData, LayerRowHandles> = new Map();
+
+  var _editingLayer:TimelineLayerData = null;
+  var _editingHandles:LayerRowHandles = null;
+  var _screenMouseDownBound:MouseEvent->Void;
 
   public function setScrollOffset(offsetPx:Float):Void
   {
@@ -41,7 +56,7 @@ class TimelineLayerPanel extends VBox
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
   {
     _layerContainer.removeAllComponents();
-    _rowByLayer = new Map();
+    _handlesByLayer = new Map();
 
     for (i in 0...layers.length) _insertLayerRowInternal(layers[i], i);
 
@@ -57,10 +72,10 @@ class TimelineLayerPanel extends VBox
 
   public function removeLayerRow(layer:TimelineLayerData):Void
   {
-    var row = _rowByLayer.get(layer);
-    if (row == null) return;
-    _layerContainer.removeComponent(row);
-    _rowByLayer.remove(layer);
+    var handles:LayerRowHandles = _handlesByLayer.get(layer);
+    if (handles == null) return;
+    _layerContainer.removeComponent(handles.row);
+    _handlesByLayer.remove(layer);
     refreshSelectedHighlight();
     _layerContainer.syncComponentValidation();
   }
@@ -68,21 +83,29 @@ class TimelineLayerPanel extends VBox
   public function refreshSelectedHighlight():Void
   {
     if (viewport == null) return;
-    for (layer => row in _rowByLayer)
+    for (layer => handles in _handlesByLayer)
     {
-      var idx = viewport.layers.indexOf(layer);
-      row.customStyle.backgroundColor = (idx == viewport.selectedLayerIndex) ? 0x505050 : 0x3A3A3A;
-      row.invalidateComponentStyle();
+      var idx:Int = viewport.layers.indexOf(layer);
+      handles.row.customStyle.backgroundColor = (idx == viewport.selectedLayerIndex) ? 0x505050 : 0x3A3A3A;
+      handles.row.invalidateComponentStyle();
     }
+  }
+
+  public function refreshLayerName(layer:TimelineLayerData):Void
+  {
+    var handles:LayerRowHandles = _handlesByLayer.get(layer);
+    if (handles == null) return;
+    if (handles.field.text != layer.name) handles.field.text = layer.name;
   }
 
   function _insertLayerRowInternal(layer:TimelineLayerData, index:Int):Void
   {
-    var row = new HBox();
+    var row:HBox = new HBox();
     row.percentWidth = 100;
     row.height = TimelineViewport.LAYER_HEIGHT - 2;
     row.customStyle.verticalAlign = "center";
     row.customStyle.paddingLeft = 6;
+    row.customStyle.paddingRight = 6;
     row.customStyle.backgroundColor = 0x3A3A3A;
 
     if (viewport != null && viewport.layers.indexOf(layer) == viewport.selectedLayerIndex) row.customStyle.backgroundColor = 0x505050;
@@ -90,22 +113,21 @@ class TimelineLayerPanel extends VBox
     // Click handler captures `layer` (stable) and resolves current index at click time.
     row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) -> {
       if (viewport == null) return;
-      var idx = viewport.layers.indexOf(layer);
+      var idx:Int = viewport.layers.indexOf(layer);
       if (idx < 0) return;
       viewport.selectedLayerIndex = idx;
       refreshSelectedHighlight();
     });
 
-    var swatch = new Box();
+    var swatch:Box = new Box();
     swatch.width = 12;
     swatch.height = 12;
     swatch.customStyle.backgroundColor = layer.color;
     swatch.customStyle.borderRadius = 2;
     swatch.customStyle.verticalAlign = "center";
 
-    // we make the layer name a text field, rather than a label
-    // so we can easily click on it to modify/edit
-    var field = new TextField();
+    // text field (not label) so it can be enabled in-place for inline editing
+    var field:TextField = new TextField();
     field.text = layer.name;
     field.percentWidth = 100;
     field.addClass("no-border");
@@ -119,7 +141,35 @@ class TimelineLayerPanel extends VBox
     field.customStyle.paddingLeft = 4;
     field.customStyle.verticalAlign = "center";
 
-    field.registerEvent(UIEvent.CHANGE, (_:UIEvent) -> layer.name = field.text);
+    field.disabled = true;
+
+    var handles:LayerRowHandles = {row: row, field: field, editOriginal: null, cancelling: false};
+
+    row.registerEvent(MouseEvent.DBL_CLICK, (_:MouseEvent) -> _enterEditMode(layer));
+
+    field.registerEvent(UIEvent.CHANGE, (_:UIEvent) -> {
+      if (_editingHandles != handles) return;
+      _refreshInvalidStyle(layer, handles);
+    });
+
+    field.registerEvent(UIEvent.SUBMIT, (_:UIEvent) -> {
+      if (_editingHandles != handles) return;
+      _attemptSubmit();
+    });
+
+    field.registerEvent(FocusEvent.FOCUS_OUT, (_:FocusEvent) -> _commitEdit(layer, handles));
+
+    // Escape cancels the edit. TextField already handles Enter via UIEvent.SUBMIT.
+    // KEY_DOWN fires on focused components via KeyboardHelper's focus-chain dispatch,
+    // so a field-level listener runs without needing a Screen-level handler.
+    field.registerEvent(KeyboardEvent.KEY_DOWN, (e:KeyboardEvent) -> {
+      if (_editingHandles != handles) return;
+      if (e.keyCode != Platform.instance.KeyEscape) return;
+      handles.cancelling = true;
+      handles.field.text = handles.editOriginal ?? layer.name;
+      handles.field.focus = false;
+      e.cancel();
+    });
 
     row.addComponent(swatch);
     row.addComponent(field);
@@ -128,7 +178,152 @@ class TimelineLayerPanel extends VBox
     else
       _layerContainer.addComponent(row);
 
-    _rowByLayer.set(layer, row);
+    _handlesByLayer.set(layer, handles);
+  }
+
+  function _enterEditMode(layer:TimelineLayerData):Void
+  {
+    if (layer.name == "Default")
+    {
+      var ev:TimelineEvent = new TimelineEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED);
+      ev.bubble = true;
+      dispatch(ev);
+      return;
+    }
+
+    var handles:LayerRowHandles = _handlesByLayer.get(layer);
+    if (handles == null) return;
+    if (_editingHandles == handles) return;
+
+    if (_editingHandles != null) _editingHandles.field.focus = false;
+
+    _editingLayer = layer;
+    _editingHandles = handles;
+    handles.editOriginal = layer.name;
+    handles.cancelling = false;
+
+    handles.field.disabled = false;
+    handles.field.focus = true;
+
+    _screenMouseDownBound = _onScreenMouseDown;
+    Screen.instance.registerEvent(MouseEvent.MOUSE_DOWN, _screenMouseDownBound);
+  }
+
+  function _onScreenMouseDown(e:MouseEvent):Void
+  {
+    if (_editingHandles.field.hitTest(e.screenX, e.screenY)) return;
+    _editingHandles.field.focus = false;
+  }
+
+  function _layerNameExists(name:String, exclude:TimelineLayerData):Bool
+  {
+    if (viewport == null) return false;
+    for (other in viewport.layers)
+    {
+      if (other == exclude) continue;
+      if (other.name == name) return true;
+    }
+    return false;
+  }
+
+  function _validateLayerName(trimmed:String, original:String, layer:TimelineLayerData):Null<String>
+  {
+    if (trimmed == "") return 'Layer name cannot be empty.';
+    if (trimmed == original) return null;
+    if (_layerNameExists(trimmed, layer)) return 'A layer named "$trimmed" already exists.';
+    return null;
+  }
+
+  function _refreshInvalidStyle(layer:TimelineLayerData, handles:LayerRowHandles):Void
+  {
+    var text:String = handles.field.text;
+    var trimmed:String = (text != null) ? StringTools.trim(text) : '';
+    var original:String = handles.editOriginal ?? layer.name;
+    var err:Null<String> = _validateLayerName(trimmed, original, layer);
+    _setInvalidStyle(handles.field, err != null);
+  }
+
+  function _setInvalidStyle(field:TextField, invalid:Bool):Void
+  {
+    if (invalid) field.addClass('invalid');
+    else field.removeClass('invalid');
+  }
+
+  function _attemptSubmit():Void
+  {
+    var handles:LayerRowHandles = _editingHandles;
+    var layer:TimelineLayerData = _editingLayer;
+    var text:String = handles.field.text;
+    var trimmed:String = (text != null) ? StringTools.trim(text) : '';
+    var original:String = handles.editOriginal ?? layer.name;
+
+    var err:Null<String> = _validateLayerName(trimmed, original, layer);
+    if (err != null)
+    {
+      _dispatchNameInvalid(err);
+      _setInvalidStyle(handles.field, true);
+      return;
+    }
+
+    handles.field.text = trimmed;
+    handles.field.focus = false;
+  }
+
+  function _dispatchNameInvalid(msg:String):Void
+  {
+    var ev:TimelineEvent = new TimelineEvent(TimelineEvent.LAYER_NAME_INVALID);
+    ev.message = msg;
+    ev.bubble = true;
+    dispatch(ev);
+  }
+
+  function _commitEdit(layer:TimelineLayerData, handles:LayerRowHandles):Void
+  {
+    if (_editingHandles != handles) return;
+
+    handles.field.disabled = true;
+    handles.field.removeClass(":active");
+    _setInvalidStyle(handles.field, false);
+    handles.field.invalidateComponentStyle();
+
+    Screen.instance.unregisterEvent(MouseEvent.MOUSE_DOWN, _screenMouseDownBound);
+
+    var original:String = handles.editOriginal ?? layer.name;
+    handles.editOriginal = null;
+    _editingLayer = null;
+    _editingHandles = null;
+
+    if (handles.cancelling)
+    {
+      handles.cancelling = false;
+      return;
+    }
+
+    var rawName:String = handles.field.text;
+    var trimmed:String = (rawName != null) ? StringTools.trim(rawName) : '';
+
+    var err:Null<String> = _validateLayerName(trimmed, original, layer);
+    if (err != null)
+    {
+      handles.field.text = original;
+      _dispatchNameInvalid(err);
+      return;
+    }
+
+    if (trimmed == original)
+    {
+      handles.field.text = original;
+      return;
+    }
+
+    handles.field.text = trimmed;
+
+    var ev:TimelineEvent = new TimelineEvent(TimelineEvent.LAYER_RENAMED);
+    ev.layerData = layer;
+    ev.oldLayerName = original;
+    ev.newLayerName = trimmed;
+    ev.bubble = true;
+    dispatch(ev);
   }
 }
 
@@ -188,6 +383,5 @@ private class TimelineLayerPanelBuilder extends CompositeBuilder
     _panel._layerClipBox.addComponent(_panel._layerContainer);
     _panel.addComponent(_panel._layerClipBox);
   }
-
 }
 #end
