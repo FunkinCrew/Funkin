@@ -76,6 +76,8 @@ class VideoCutscene
   {
     if (PlayState.instance == null) return;
 
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.video()?';
+
     #if FEATURE_VIDEO_PLAYBACK
     if (!assetPath.exists())
     {
