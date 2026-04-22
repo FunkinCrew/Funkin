@@ -2051,6 +2051,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     // TODO: make this wheel zoom sensitivity configurable
     MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+    if(FlxG.camera.zoom < 0.11) FlxG.camera.zoom = 0.11;
   }
 
   function onViewportPanStart(_:CameraViewportEvent):Void
