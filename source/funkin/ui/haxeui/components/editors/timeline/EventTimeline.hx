@@ -85,8 +85,20 @@ class EventTimeline extends VBox
         filter: none;
         padding-left: 4px;
       }
-      .layer-name-field:active {
+      .layer-name-field:disabled {
         background-color: none;
+        color: #CCCCCC;
+        filter: none;
+        border: none;
+      }
+      .layer-name-field:active {
+        background-color: #1F1F1F;
+        border: none;
+        filter: none;
+      }
+      .layer-name-field.invalid {
+        background-color: #5A1F1F;
+        color: #FF9999;
         border: none;
         filter: none;
       }
@@ -290,11 +302,17 @@ private class EventTimelineEvents extends Events
 
   function _onRemoveLayer(_:MouseEvent):Void
   {
-    if (_timeline.viewport.layers.length <= 1) return;
+    var selectedIdx:Int = _timeline.viewport.selectedLayerIndex;
+    if (selectedIdx < 0 || selectedIdx >= _timeline.viewport.layers.length) return;
 
-    var selectedIdx = _timeline.viewport.selectedLayerIndex;
-    var layer = _timeline.viewport.layers[selectedIdx];
-    if (layer.name == "Default") return;
+    var layer:TimelineLayerData = _timeline.viewport.layers[selectedIdx];
+    if (layer.name == "Default")
+    {
+      _timeline.dispatch(new TimelineEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED));
+      return;
+    }
+
+    if (_timeline.viewport.layers.length <= 1) return;
 
     var removeEvent = new TimelineEvent(TimelineEvent.LAYER_REMOVED);
     removeEvent.layerData = layer;
