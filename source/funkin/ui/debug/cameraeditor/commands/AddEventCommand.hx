@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class AddEventCommand implements CameraEditorCommand
@@ -23,6 +24,8 @@ class AddEventCommand implements CameraEditorCommand
       return 0;
     });
 
+    FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
+
     state.timeline.viewport.addEventBlock(event);
     state.timeline.viewport.refreshLayout();
 
@@ -32,6 +35,8 @@ class AddEventCommand implements CameraEditorCommand
   public function undo(state:CameraEditorState):Void
   {
     state.currentSongChartData.events.remove(event);
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
 
     state.timeline.viewport.removeEventBlock(event);
     state.timeline.viewport.refreshLayout();
