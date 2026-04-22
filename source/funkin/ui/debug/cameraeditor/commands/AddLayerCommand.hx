@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class AddLayerCommand implements CameraEditorCommand
@@ -26,6 +27,8 @@ class AddLayerCommand implements CameraEditorCommand
 
     viewport.selectedLayerIndex = (idx < layers.length) ? idx : layers.length - 1;
 
+    FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
+
     state.timeline.layerPanel.insertLayerRow(layer, idx);
     viewport.ensureLayerVisible(viewport.selectedLayerIndex);
 
@@ -43,6 +46,8 @@ class AddLayerCommand implements CameraEditorCommand
 
     if (viewport.selectedLayerIndex >= viewport.layers.length) viewport.selectedLayerIndex = viewport.layers.length - 1;
     if (viewport.selectedLayerIndex < 0) viewport.selectedLayerIndex = 0;
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
 
     state.timeline.layerPanel.removeLayerRow(layer);
     viewport.ensureLayerVisible(viewport.selectedLayerIndex);
