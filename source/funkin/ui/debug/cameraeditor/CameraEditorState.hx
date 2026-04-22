@@ -1209,17 +1209,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * Modify the title of the game window to reflect the current state of the editor.
    */
-  public function updateWindowTitle()
+  public function updateWindowTitle():Void
   {
-    var defaultTitle = "Friday Night Funkin\' Camera Editor";
-
-    if (currentWorkingFilePath == '') defaultTitle += ' - New File'
-    else
-      defaultTitle += ' - ' + currentWorkingFilePath;
-
-    if (!saved) defaultTitle += '*';
-
-    WindowUtil.setWindowTitle(defaultTitle);
+    var inner:String = 'New File';
+    var cwfp:Null<String> = currentWorkingFilePath;
+    if (cwfp != null)
+    {
+      inner = cwfp;
+    }
+    if (currentWorkingFilePath == null || !saved)
+    {
+      inner += '*';
+    }
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Camera Editor - ${inner}');
   }
 
   /**
