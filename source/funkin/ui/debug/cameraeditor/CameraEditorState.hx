@@ -58,6 +58,7 @@ import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
+import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
@@ -1365,6 +1366,18 @@ class CameraEditorState extends UIState implements ConsoleClass
         CameraEditorCommandHandler.performCommand(this, cmd);
       }
     });
+
+    timeline.registerEvent(TimelineEvent.LAYER_RENAMED, function(e:TimelineEvent)
+    {
+      var cmd:RenameLayerCommand = new RenameLayerCommand(e.layerData, e.oldLayerName, e.newLayerName);
+      CameraEditorCommandHandler.performCommand(this, cmd);
+    });
+
+    timeline.registerEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED,
+      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed'));
+
+    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID,
+      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
   }
 
   var shouldResetScroll:Bool = false;
