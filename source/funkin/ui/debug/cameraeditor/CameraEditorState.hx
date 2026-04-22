@@ -2273,17 +2273,17 @@ class CameraEditorState extends UIState implements ConsoleClass
 #end
 
 /**
- * Available themes for the stage editor state.
+ * Available themes for the camera editor state.
  */
 enum abstract CameraEditorTheme(String)
 {
   /**
-   * The default theme for the stage editor.
+   * The default theme for the camera editor.
    */
   public var Light;
 
   /**
-   * A theme which introduces stage colors.
+   * A theme which introduces camera editor colors.
    */
   public var Dark;
 }
