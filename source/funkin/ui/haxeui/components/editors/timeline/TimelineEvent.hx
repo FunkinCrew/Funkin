@@ -30,6 +30,9 @@ class TimelineEvent extends UIEvent
   public static inline var ADD_EVENT_REQUESTED:EventType<TimelineEvent> = "timelineAddEventRequested";
   public static inline var LAYER_ADDED:EventType<TimelineEvent> = "timelineLayerAdded";
   public static inline var LAYER_REMOVED:EventType<TimelineEvent> = "timelineLayerRemoved";
+  public static inline var LAYER_RENAMED:EventType<TimelineEvent> = "timelineLayerRenamed";
+  public static inline var DEFAULT_LAYER_PROTECTED:EventType<TimelineEvent> = "timelineDefaultLayerProtected";
+  public static inline var LAYER_NAME_INVALID:EventType<TimelineEvent> = "timelineLayerNameInvalid";
 
   public var eventData:Null<SongEventData>;
   public var eventsData:Array<SongEventData> = [];
@@ -43,6 +46,7 @@ class TimelineEvent extends UIEvent
   public var oldLayerName:Null<String>;
   public var newLayerName:Null<String>;
   public var seekPositionMs:Float = 0;
+  public var message:Null<String>;
 
   public function new(type:String)
   {
@@ -69,6 +73,7 @@ class TimelineEvent extends UIEvent
     c.seekPositionMs = seekPositionMs;
     c.layerData = layerData;
     c.layerIndex = layerIndex;
+    c.message = message;
     postClone(c);
     return c;
   }
