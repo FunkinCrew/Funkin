@@ -55,12 +55,28 @@ class TimelineLayerPanel extends VBox
    */
   public function rebuildLayers(layers:Array<TimelineLayerData>):Void
   {
+    _abandonActiveEdit();
+
     _layerContainer.removeAllComponents();
     _handlesByLayer = new Map();
 
     for (i in 0...layers.length) _insertLayerRowInternal(layers[i], i);
 
     _layerContainer.syncComponentValidation();
+  }
+
+  function _abandonActiveEdit():Void
+  {
+    if (_editingHandles == null) return;
+    if (_screenMouseDownBound != null)
+    {
+      Screen.instance.unregisterEvent(MouseEvent.MOUSE_DOWN, _screenMouseDownBound);
+      _screenMouseDownBound = null;
+    }
+    _editingHandles.editOriginal = null;
+    _editingHandles.cancelling = false;
+    _editingHandles = null;
+    _editingLayer = null;
   }
 
   public function insertLayerRow(layer:TimelineLayerData, index:Int):Void
@@ -211,6 +227,7 @@ class TimelineLayerPanel extends VBox
 
   function _onScreenMouseDown(e:MouseEvent):Void
   {
+    if (_editingHandles == null) return;
     if (_editingHandles.field.hitTest(e.screenX, e.screenY)) return;
     _editingHandles.field.focus = false;
   }
