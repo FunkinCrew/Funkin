@@ -13,6 +13,8 @@ import flixel.math.FlxMath;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import funkin.play.event.SongEvent;
+import funkin.play.event.SetCameraBopSongEvent;
+import funkin.play.stage.Bopper;
 import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
 import funkin.data.song.SongData.SongNoteData;
@@ -207,8 +209,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var selectedSongEvent(get, set):Null<SongEventData>;
 
-  inline function get_selectedSongEvent():Null<SongEventData>
-    return selectedSongEvents.length == 1 ? selectedSongEvents[0] : null;
+  inline function get_selectedSongEvent():Null<SongEventData> return selectedSongEvents.length == 1 ? selectedSongEvents[0] : null;
 
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
   {
@@ -218,8 +219,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var hasSelection(get, never):Bool;
 
-  inline function get_hasSelection():Bool
-    return selectedSongEvents.length > 0;
+  inline function get_hasSelection():Bool return selectedSongEvents.length > 0;
 
   /**
    * A list of previous working file paths.
@@ -413,6 +413,18 @@ class CameraEditorState extends UIState implements ConsoleClass
    * The default zoom level of the stage's camera, used for calculating relative zoom levels for events like ZoomCamera. Updated whenever a new stage is built.
    */
   var defaultStageZoom:Float = 1.0;
+
+  /**
+   * Camera bop settings mirrored from PlayState.
+   */
+  public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
+
+  public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
+  public var cameraZoomRate:Float = Constants.DEFAULT_ZOOM_RATE;
+  public var cameraZoomRateOffset:Float = Constants.DEFAULT_ZOOM_OFFSET;
+  public var cameraBopMultiplier:Float = 1.0;
+
+  var lastCameraBopStep:Int = -1;
 
   /**
    * HAXEUI COMPONENTS
@@ -707,6 +719,52 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
+  public function handleSetCameraBopEvent(data:SongEventData):Void
+  {
+    var rate:Float = data.getFloat('rate') ?? Constants.DEFAULT_ZOOM_RATE;
+    var offset:Float = data.getFloat('offset') ?? Constants.DEFAULT_ZOOM_OFFSET;
+    var intensity:Float = data.getFloat('intensity') ?? 1.0;
+
+    cameraBopIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity + 1.0;
+    hudCameraZoomIntensity = (Constants.DEFAULT_BOP_INTENSITY - 1.0) * intensity * 2.0;
+    cameraZoomRate = rate;
+    cameraZoomRateOffset = offset;
+  }
+
+  function isCameraBopStep(step:Int):Bool
+  {
+    if (cameraZoomRate <= 0) return false;
+    var beatStep:Float = cameraZoomRate * Constants.STEPS_PER_BEAT;
+    if (beatStep <= 0) return false;
+    var offsetStep:Float = cameraZoomRateOffset * Constants.STEPS_PER_BEAT;
+    return ((step + offsetStep) % beatStep) == 0;
+  }
+
+  function updateCameraBop(elapsed:Float):Void
+  {
+    if (cameraZoomRate <= 0 || conductorInUse == null || cameraRect == null) return;
+
+    var stepLength:Float = conductorInUse.stepLengthMs;
+    if (stepLength <= 0) return;
+
+    var currentStep:Int = Std.int(Math.floor(conductorInUse.songPosition / stepLength));
+    if (lastCameraBopStep < 0) lastCameraBopStep = currentStep - 1;
+
+    for (step in lastCameraBopStep + 1...currentStep + 1)
+    {
+      if (isCameraBopStep(step))
+      {
+        cameraBopMultiplier = cameraBopIntensity;
+      }
+    }
+
+    lastCameraBopStep = currentStep;
+
+    var decayRate:Float = 0.95;
+    var dt:Float = elapsed * 60;
+    cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, Math.pow(decayRate, dt));
+  }
+
   /**
    * Process song events for the current chart.
    * This never removes them as we need to maybe reprocess events depending on the time of the song.
@@ -730,6 +788,8 @@ class CameraEditorState extends UIState implements ConsoleClass
           cameraRect.handleZoomCamera(defaultStageZoom, eventData);
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
+        case 'SetCameraBop':
+          handleSetCameraBopEvent(eventData);
       }
 
       completedEvents.push(eventData);
@@ -867,6 +927,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     FlxG.camera.scroll.copyFrom(_cameraTarget);
 
+    var baseCamGameZoom:Float = 1.0;
+
     if (!isCameraRelative)
     {
       if (_wasRelative)
@@ -881,7 +943,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
 
       _wasRelative = false;
-      camGame.zoom = FlxG.camera.zoom;
+      baseCamGameZoom = FlxG.camera.zoom;
 
       // subtract the vcam point since it moves everything
       FlxG.camera.scroll.x -= cameraRect.vCamPoint.x;
@@ -897,11 +959,11 @@ class CameraEditorState extends UIState implements ConsoleClass
         cameraRect.zoom = cameraRect.zoom;
       }
       FlxG.camera.zoom = cameraRect.zoom * relativeZoom;
-      camGame.zoom = relativeZoom;
+      baseCamGameZoom = relativeZoom;
 
       // Keep camGame offset based only on pan scroll, never cameraRect.zoom.
       // Compensate on FlxG.camera scroll instead since it includes the extra cameraRect zoom.
-      var zoomFactor:Float = (camGame.zoom != 0) ? (FlxG.camera.zoom / camGame.zoom) : 1.0;
+      var zoomFactor:Float = (baseCamGameZoom != 0) ? (FlxG.camera.zoom / baseCamGameZoom) : 1.0;
       if (zoomFactor != 0)
       {
         FlxG.camera.scroll.set(_cameraTarget.x / zoomFactor, _cameraTarget.y / zoomFactor);
@@ -912,6 +974,9 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
       camGame.scroll.copyFrom(_cameraTarget);
     }
+
+    updateCameraBop(elapsed);
+    camGame.zoom = baseCamGameZoom / cameraBopMultiplier;
 
     handleKeybinds(elapsed);
 
@@ -1044,6 +1109,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
+  }
+
+  function resetCameraBopSettings():Void
+  {
+    cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+    hudCameraZoomIntensity = 0.015 * 2.0;
+    cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+    cameraZoomRateOffset = Constants.DEFAULT_ZOOM_OFFSET;
+    cameraBopMultiplier = 1.0;
+    lastCameraBopStep = -1;
   }
 
   function resetScrollPosition()
@@ -1278,6 +1353,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function onChartLoaded():Void
   {
+    resetCameraBopSettings();
     populateLoadVariationMenu();
     loadCurrentInstrumentalAndVocals();
     buildStage();
@@ -1577,6 +1653,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     completedEvents = [];
     previousNoteTime = 0;
+    lastCameraBopStep = conductorInUse.stepLengthMs > 0 ? Std.int(Math.floor(position / conductorInUse.stepLengthMs)) - 1 : -1;
+    cameraBopMultiplier = 1.0;
 
     var bfLastPlayAnimationTime:Null<Float> = null;
     var dadLastPlayAnimationTime:Null<Float> = null;
@@ -1638,6 +1716,8 @@ class CameraEditorState extends UIState implements ConsoleClass
               default:
                 // Non-singing targets (props/GF/etc.) do not affect note replay suppression.
             }
+          case 'SetCameraBop':
+            handleSetCameraBopEvent(eventData);
         }
 
         completedEvents.push(eventData);
@@ -1721,8 +1801,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       else if (latestBFNote != null) cachedNoteIndex = notes.indexOf(latestBFNote);
     }
 
-    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
+    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null
+      && position <= dadPlayAnimationWindowEnd
+      && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null
+      && position <= bfPlayAnimationWindowEnd
+      && !bfHasNoteAfterPlayAnimation;
 
     if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
@@ -1741,6 +1825,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     previousTime = conductorInUse.songPosition;
     previousNoteTime = position;
+    updateCameraBop(0);
   }
 
   // ui function bindings

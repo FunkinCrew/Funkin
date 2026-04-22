@@ -8,14 +8,14 @@ import haxe.ui.components.NumberStepper;
 import haxe.ui.components.DropDown;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
+import funkin.ui.debug.cameraeditor.components.GenericSongEventContainer;
 
 /**
  * Handles the properties panel on the right of the camera editor.
  *
  * The `using` statement in `import.hx` allows you to call these functions on the CameraEditorState instance directly.
  */
-@:nullSafety
-@:access(funkin.ui.debug.cameraeditor.CameraEditorState)
+@:nullSafety @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class CameraEditorPropertiesPanelHandler
 {
   /**
@@ -41,7 +41,9 @@ class CameraEditorPropertiesPanelHandler
    * @param state The CameraEditorState to target.
    * @param elapsed The elapsed time in seconds since the last frame.
    */
-  public static function updatePropertiesPanel(state:CameraEditorState, elapsed:Float):Void {}
+  public static function updatePropertiesPanel(state:CameraEditorState, elapsed:Float):Void
+  {
+  }
 
   /**
    * Hides the Properties panel and disables input.
@@ -109,6 +111,8 @@ class CameraEditorPropertiesPanelHandler
         useZoomCameraContainer(state);
       case 'FocusCamera':
         useFocusCameraContainer(state);
+      case 'SetCameraBop':
+        useGenericSongEventContainer(state);
       default:
         hidePropertiesPanel(state);
     }
@@ -130,6 +134,23 @@ class CameraEditorPropertiesPanelHandler
     zoomCameraContainer.loadCurrentEventData();
 
     state.setPropertiesContainerTitle('Zoom Camera');
+  }
+
+  /**
+   * Update the Properties panel to display a generic schema-driven event editor.
+   * @param state The CameraEditorState to target.
+   */
+  public static function useGenericSongEventContainer(state:CameraEditorState):Void
+  {
+    state.propertiesPanel.hidden = false;
+    state.removePropertiesContainer();
+
+    var genericContainer = new GenericSongEventContainer(state);
+    state.propertiesPanel.addComponent(genericContainer);
+
+    var selectedEvent:Null<funkin.data.song.SongData.SongEventData> = state.selectedSongEvent;
+    var handler = selectedEvent == null ? null : selectedEvent.getHandler();
+    state.setPropertiesContainerTitle(handler == null ? 'Event' : handler.getTitle());
   }
 
   /**

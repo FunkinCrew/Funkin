@@ -15,18 +15,16 @@ class TimelineEventBlock extends Box
   static inline var CORNER_RADIUS:Int = 5;
   public static inline var TRIANGLE_OPACITY:Float = 0.3;
   public static inline var EDGE_DRAG_ZONE:Float = 6.0;
-
   public static final ICON_RESOURCES:Map<String, String> = [
     "FocusCamera" => "shared:assets/shared/images/ui/camera-editor/event-icons/focus_event.png",
     "ZoomCamera" => "shared:assets/shared/images/ui/camera-editor/event-icons/zoom_event.png",
+    "SetCameraBop" => "shared:assets/shared/images/ui/camera-editor/event-icons/zoom_event.png",
   ];
 
   public var eventData:SongEventData;
   public var layerIndex:Int = 0;
-
   @:clonable @:behaviour(DefaultBehaviour, false)
   public var selected:Bool;
-
   public var blockLeft:Float = 0;
   public var blockTop:Float = 0;
   public var blockWidth:Float = 0;
@@ -42,7 +40,7 @@ class TimelineEventBlock extends Box
 
   public function applyColor(layerColor:Int):Void
   {
-    var bodyColor = selected ? FlxColor.fromInt(layerColor).getLightened(0.3) : layerColor ;
+    var bodyColor = selected ? FlxColor.fromInt(layerColor).getLightened(0.3) : layerColor;
     var borderColor = selected ? 0xFFFFFF : layerColor;
 
     customStyle.backgroundColor = bodyColor;
@@ -69,10 +67,8 @@ class TimelineEventBlock extends Box
 
   public function getHitZone(localX:Float):TimelineBlockHitZone
   {
-    if (localX < EDGE_DRAG_ZONE)
-      return LEFT_EDGE;
-    if (localX > this.componentWidth - EDGE_DRAG_ZONE)
-      return RIGHT_EDGE;
+    if (localX < EDGE_DRAG_ZONE) return LEFT_EDGE;
+    if (localX > this.componentWidth - EDGE_DRAG_ZONE) return RIGHT_EDGE;
     return BODY;
   }
 

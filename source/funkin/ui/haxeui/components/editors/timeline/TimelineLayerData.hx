@@ -30,17 +30,26 @@ class TimelineLayerData
     0xFFFFCC
   ];
 
+  static inline function isCameraEditorEventKind(eventKind:String):Bool
+  {
+    return switch (eventKind)
+    {
+      case "FocusCamera" | "ZoomCamera" | "SetCameraBop":
+        true;
+      default:
+        false;
+    }
+  }
+
   public static function buildLayersFromEvents(events:Array<SongEventData>):Array<TimelineLayerData>
   {
     var layerNames:Array<String> = ["Default"];
     for (event in events)
     {
-      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera")
-        continue;
+      if (!isCameraEditorEventKind(event.eventKind)) continue;
       var raw:SongEventDataRaw = event;
       var layer:String = raw.editorLayer != null ? raw.editorLayer : "Default";
-      if (!layerNames.contains(layer))
-        layerNames.push(layer);
+      if (!layerNames.contains(layer)) layerNames.push(layer);
     }
 
     var result:Array<TimelineLayerData> = [];

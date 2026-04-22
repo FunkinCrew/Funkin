@@ -28,13 +28,10 @@ class TimelineViewport extends Box
 
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var scrollOffsetMs:Float;
-
   @:clonable @:behaviour(DataBehaviour, 1.0)
   public var zoomLevel:Float;
-
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var songPositionMs:Float;
-
   public var eventBlocks:Array<TimelineEventBlock> = [];
   public var layers:Array<TimelineLayerData> = [];
   public var selectedLayerIndex:Int = 0;
@@ -44,13 +41,14 @@ class TimelineViewport extends Box
   public var playhead:Box;
   public var playheadTopper:Box;
   public var selectionBoxOverlay:Box;
+
   public static inline var PLAYHEAD_LINE_WIDTH:Int = 2;
   public static inline var PLAYHEAD_TOPPER_WIDTH:Int = 14;
   public static inline var PLAYHEAD_TOPPER_HEIGHT:Int = 22;
   public static inline var SELECTION_DRAG_THRESHOLD_PX:Float = 4.0;
+
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
-
   public var pixelsPerMs(get, never):Float;
 
   function get_pixelsPerMs():Float
@@ -151,10 +149,20 @@ class TimelineViewport extends Box
    * commands should use `addEventBlock` / `removeEventBlock` / `syncEventBlockLayer`
    * to avoid the flicker from the full teardown.
    */
+  static inline function isCameraEditorEventKind(eventKind:String):Bool
+  {
+    return switch (eventKind)
+    {
+      case "FocusCamera" | "ZoomCamera" | "SetCameraBop":
+        true;
+      default:
+        false;
+    }
+  }
+
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
-    for (block in eventBlocks)
-      removeComponent(block);
+    for (block in eventBlocks) removeComponent(block);
     eventBlocks = [];
 
     for (event in events) addEventBlock(event);
@@ -164,7 +172,7 @@ class TimelineViewport extends Box
 
   public function addEventBlock(event:SongEventData):TimelineEventBlock
   {
-    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") return null;
+    if (!isCameraEditorEventKind(event.eventKind)) return null;
 
     var block = new TimelineEventBlock();
     block.eventData = event;
@@ -198,8 +206,7 @@ class TimelineViewport extends Box
 
   public function findBlockByEvent(event:SongEventData):Null<TimelineEventBlock>
   {
-    for (block in eventBlocks)
-      if (block.eventData == event) return block;
+    for (block in eventBlocks) if (block.eventData == event) return block;
     return null;
   }
 
@@ -221,14 +228,12 @@ class TimelineViewport extends Box
 
   public function remapForInsert(insertIndex:Int):Void
   {
-    for (block in eventBlocks)
-      if (block.layerIndex >= insertIndex) block.layerIndex++;
+    for (block in eventBlocks) if (block.layerIndex >= insertIndex) block.layerIndex++;
   }
 
   public function remapForRemove(removedLayerIndex:Int):Void
   {
-    for (block in eventBlocks)
-      if (block.layerIndex > removedLayerIndex) block.layerIndex--;
+    for (block in eventBlocks) if (block.layerIndex > removedLayerIndex) block.layerIndex--;
   }
 
   public function refreshBlockVisuals(targetSelected:Bool = false):Void
@@ -243,8 +248,7 @@ class TimelineViewport extends Box
   public function getSelectedEvents():Array<SongEventData>
   {
     var out:Array<SongEventData> = [];
-    for (block in eventBlocks)
-      if (block.selected) out.push(block.eventData);
+    for (block in eventBlocks) if (block.selected) out.push(block.eventData);
     return out;
   }
 
@@ -264,8 +268,7 @@ class TimelineViewport extends Box
 
   public function isEventSelected(event:SongEventData):Bool
   {
-    for (block in eventBlocks)
-      if (block.eventData == event) return block.selected;
+    for (block in eventBlocks) if (block.eventData == event) return block.selected;
     return false;
   }
 
@@ -280,8 +283,7 @@ class TimelineViewport extends Box
 
   public function findLayerByName(layerName:String):Null<TimelineLayerData>
   {
-    for (layer in layers)
-      if (layer.name == layerName) return layer;
+    for (layer in layers) if (layer.name == layerName) return layer;
     return null;
   }
 
@@ -462,7 +464,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
 
   var _viewport:TimelineViewport;
-
   var _dragMode:TimelineDragMode = NONE;
   var _dragTarget:TimelineEventBlock;
   var _dragOffsetMs:Float = 0;
@@ -478,13 +479,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _lastClickY:Float = 0;
   var _panLastScreenX:Float = 0;
   var _panLastScreenY:Float = 0;
-
   var _selectionBoxStartX:Float = 0;
   var _selectionBoxStartY:Float = 0;
   var _selectionBoxAdditive:Bool = false;
   var _selectionBoxArmed:Bool = false;
   var _selectionBoxStartSelection:Array<SongEventData> = [];
-
   var _dragGroupEvents:Array<TimelineEventBlock> = [];
   var _dragGroupOriginalTimes:Array<Float> = [];
   var _dragGroupOriginalLayerIndices:Array<Int> = [];
@@ -662,16 +661,15 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         var newLayerName:String = newLayer < _viewport.layers.length ? _viewport.layers[newLayer].name : "Default";
         var durationSteps:Float = TimelineUtil.getEventDurationSteps(block.eventData);
 
-        deltas.push(
-          {
-            event: block.eventData,
-            oldTime: origTime,
-            newTime: newTime,
-            oldDuration: durationSteps,
-            newDuration: durationSteps,
-            oldLayerName: origLayerName,
-            newLayerName: newLayerName
-          });
+        deltas.push({
+          event: block.eventData,
+          oldTime: origTime,
+          newTime: newTime,
+          oldDuration: durationSteps,
+          newDuration: durationSteps,
+          oldLayerName: origLayerName,
+          newLayerName: newLayerName
+        });
       }
 
       if (anyMoved)
