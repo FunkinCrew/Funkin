@@ -1418,6 +1418,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
     {
+      CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
       var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
