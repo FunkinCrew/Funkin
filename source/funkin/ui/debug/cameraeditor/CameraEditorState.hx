@@ -239,7 +239,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
-   * The current file path which the chart editor is working with.
+   * The current file path which the camera editor is working with.
    * If `null`, the current chart has not been saved yet.
    */
   public var currentWorkingFilePath(get, set):Null<String>;
@@ -482,7 +482,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
-   * If true, we are currently in the process of quitting the chart editor.
+   * If true, we are currently in the process of quitting the camera editor.
    * Skip any update functions as most of them will call a crash.
    */
   var criticalFailure:Bool = false;
@@ -608,7 +608,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (params != null && params.fnfcTargetPath != null)
     {
-      // Chart editor was opened from the command line. Open the FNFC file now!
+      // Camera editor was opened from the command line. Open the FNFC file now!
       var selectedFileBytes:Null<Bytes> = FileUtil.readBytesFromPath(params.fnfcTargetPath);
       if (selectedFileBytes == null)
       {
