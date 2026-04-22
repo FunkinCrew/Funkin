@@ -5,13 +5,15 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class FlattenLayerCommand implements CameraEditorCommand
 {
   var layer:TimelineLayerData;
   var layerIndex:Int;
-  var flattenedEvents:Array<{event:SongEventData, originalLayer:Null<String>}>;
+  var flattenedEvents:Array<
+    {event:SongEventData, originalLayer:Null<String>}>;
 
   public function new(layer:TimelineLayerData, layerIndex:Int)
   {
@@ -69,6 +71,8 @@ class FlattenLayerCommand implements CameraEditorCommand
     viewport.remapForInsert(idx);
     layers.insert(idx, layer);
 
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
+
     for (entry in flattenedEvents)
     {
       var raw:SongEventDataRaw = entry.event;
@@ -93,8 +97,7 @@ class FlattenLayerCommand implements CameraEditorCommand
   public function toString():String
   {
     var eventCount = flattenedEvents.length;
-    if (eventCount > 0)
-      return 'Flatten Layer "${layer.name}" (${eventCount} events moved to Default)';
+    if (eventCount > 0) return 'Flatten Layer "${layer.name}" (${eventCount} events moved to Default)';
     return 'Flatten Layer "${layer.name}"';
   }
 }
