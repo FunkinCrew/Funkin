@@ -4,13 +4,15 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class RemoveLayerCommand implements CameraEditorCommand
 {
   var layer:TimelineLayerData;
   var layerIndex:Int;
-  var deletedEvents:Array<{event:SongEventData, originalLayer:Null<String>}>;
+  var deletedEvents:Array<
+    {event:SongEventData, originalLayer:Null<String>}>;
 
   public function new(layer:TimelineLayerData, layerIndex:Int)
   {
@@ -35,6 +37,8 @@ class RemoveLayerCommand implements CameraEditorCommand
         eventsToRemove.push(event);
       }
     }
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/noteErase'));
 
     for (event in eventsToRemove)
     {
@@ -64,8 +68,7 @@ class RemoveLayerCommand implements CameraEditorCommand
     viewport.remapForInsert(idx);
     layers.insert(idx, layer);
 
-    for (entry in deletedEvents)
-      state.currentSongChartData.events.push(entry.event);
+    for (entry in deletedEvents) state.currentSongChartData.events.push(entry.event);
 
     state.currentSongChartData.events.sort(function(a:SongEventData, b:SongEventData):Int
     {
@@ -77,6 +80,8 @@ class RemoveLayerCommand implements CameraEditorCommand
     for (entry in deletedEvents) viewport.addEventBlock(entry.event);
 
     viewport.selectedLayerIndex = idx;
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
 
     state.timeline.layerPanel.insertLayerRow(layer, idx);
     viewport.refreshLayout();
@@ -92,8 +97,7 @@ class RemoveLayerCommand implements CameraEditorCommand
   public function toString():String
   {
     var eventCount = deletedEvents.length;
-    if (eventCount > 0)
-      return 'Remove Layer "${layer.name}" (${eventCount} events deleted)';
+    if (eventCount > 0) return 'Remove Layer "${layer.name}" (${eventCount} events deleted)';
     return 'Remove Layer "${layer.name}"';
   }
 }
