@@ -348,7 +348,7 @@ class Cursor
 
     if (CursorHelper.hasCursor(name) || openfl.Assets.exists(name))
     {
-      container.visible = true;
+      container.visible = FlxG.mouse.visible;
       window.cursor = cast null;
       return;
     }
