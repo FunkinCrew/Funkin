@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor;
 
 import funkin.util.InputUtil;
 import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
 import haxe.ui.containers.Panel;
@@ -557,6 +558,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     root.height = FlxG.height;
 
     menubar.height = 35;
+    if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
+
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
