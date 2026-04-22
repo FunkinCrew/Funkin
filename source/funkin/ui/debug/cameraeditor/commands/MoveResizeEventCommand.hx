@@ -1,6 +1,7 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
@@ -38,6 +39,8 @@ class MoveResizeEventCommand implements CameraEditorCommand
     var raw:SongEventDataRaw = event;
     raw.editorLayer = newLayerName == "Default" ? null : newLayerName;
 
+    FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
+
     if (oldLayerName != newLayerName)
     {
       var block = state.timeline.viewport.findBlockByEvent(event);
@@ -60,6 +63,9 @@ class MoveResizeEventCommand implements CameraEditorCommand
       var block = state.timeline.viewport.findBlockByEvent(event);
       if (block != null) state.timeline.viewport.syncEventBlockLayer(block, oldLayerName);
     }
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
+
     state.timeline.viewport.refreshLayout();
 
     state.saved = false;
