@@ -3,14 +3,13 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class GenerateEventsCommand implements CameraEditorCommand
 {
   var events:Array<SongEventData>;
-
   var newLayerName:String;
-
   // Layer created by execute(), or null if the target layer already existed.
   // Undo reverses the creation only if no other events are still referencing it.
   var addedLayer:Null<TimelineLayerData>;
@@ -51,6 +50,8 @@ class GenerateEventsCommand implements CameraEditorCommand
       return 0;
     });
 
+    FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
+
     for (event in events) viewport.addEventBlock(event);
     viewport.refreshLayout();
 
@@ -84,6 +85,8 @@ class GenerateEventsCommand implements CameraEditorCommand
       }
       addedLayer = null;
     }
+
+    FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));
 
     viewport.refreshLayout();
 
