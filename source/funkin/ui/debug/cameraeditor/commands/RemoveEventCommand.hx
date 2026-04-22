@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
+import funkin.audio.FunkinSound;
 
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class RemoveEventCommand implements CameraEditorCommand
@@ -20,6 +21,8 @@ class RemoveEventCommand implements CameraEditorCommand
     state.currentSongChartData.events.remove(event);
     if (state.selectedSongEvents.contains(event)) state.selectedSongEvents = state.selectedSongEvents.filter(e -> e != event);
 
+    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'));
+
     state.timeline.viewport.removeEventBlock(event);
     state.timeline.viewport.refreshLayout();
 
@@ -32,6 +35,8 @@ class RemoveEventCommand implements CameraEditorCommand
     else
       state.currentSongChartData.events.push(event);
     state.selectedSongEvents = [event];
+
+    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.timeline.viewport.addEventBlock(event);
     state.timeline.viewport.refreshLayout();
