@@ -1279,6 +1279,9 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public function onChartLoaded():Void
   {
+    undoHistory = [];
+    redoHistory = [];
+    commandHistoryDirty = true;
     populateLoadVariationMenu();
     loadCurrentInstrumentalAndVocals();
     buildStage();
