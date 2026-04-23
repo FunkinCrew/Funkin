@@ -12,7 +12,7 @@ class StringTools
    * @param value The string to check.
    * @return True... or False...
    */
-  public static function isBlank(value:String):Bool
+  public static function isBlank(?value:String):Bool
   {
     return value == null || value.trim().length == 0;
   }
