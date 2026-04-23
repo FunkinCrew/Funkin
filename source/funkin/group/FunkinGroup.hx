@@ -290,7 +290,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
         child.scale.x = scale.x * child.localScale.x;
         child.scale.y = scale.y * child.localScale.y;
 
-        var displace = new FlxPoint(child.localX, child.localY);
+        var displace = FlxPoint.weak(child.localX, child.localY);
 
         var dx:Float = 0;
         var dy:Float = 0;
@@ -333,6 +333,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
 
         child.x = x + displace.x;
         child.y = y + displace.y;
+
+        displace.put();
 
         child.alpha = alpha * child.localAlpha;
         child.visible = visible && child.localVisible;
