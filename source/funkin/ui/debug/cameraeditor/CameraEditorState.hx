@@ -32,6 +32,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent.SongEventScriptEvent;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEvent.PauseScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.util.SortUtil;
@@ -219,7 +220,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var cameraRect:VirtualCameraRectangle = new VirtualCameraRectangle(0, 0);
 
   public var vCamDebug:FunkinSprite = null;
-
   var cachedEventIndex = 0;
   var cachedNoteIndex = 0;
 
@@ -903,9 +903,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentStage != null)
     {
-      ScriptEventDispatcher.callEvent(currentStage, event);
-
-      currentStage.dispatchToCharacters(event);
+      if (event.type != UPDATE || !paused)
+      {
+        ScriptEventDispatcher.callEvent(currentStage, event);
+        currentStage.dispatchToCharacters(event);
+      }
     }
   }
 
@@ -992,6 +994,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentStage != null)
     {
+      currentStage.active = !paused;
       currentStage.vcamPoint = cameraRect.vcamPoint;
       vCamDebug.x = cameraRect.vcamPoint.x;
       vCamDebug.y = cameraRect.vcamPoint.y;
@@ -1222,6 +1225,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     _shouldResetCameraPosition = true;
 
     currentStage.onEventReset();
+    pauseStage();
   }
 
   function resetScrollPosition()
@@ -1829,6 +1833,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.setStepLengthMs(conductorInUse.stepLengthMs);
   }
 
+  var paused:Bool = true;
+
   /**
    * Toggles playback of the current instrumental and vocal tracks.
    *
@@ -1840,10 +1846,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentInstrumental.playing || forceStop)
     {
+      pauseStage();
       pauseAudioPlayback();
     }
     else
     {
+      resumeStage();
       playAudioPlayback();
     }
 
@@ -1893,6 +1901,20 @@ class CameraEditorState extends UIState implements ConsoleClass
   function syncTogglePlaybackButton():Void
   {
     timeline.toolbar.btnTogglePlayback.selected = currentInstrumental != null && currentInstrumental.playing;
+  }
+
+  function pauseStage():Void
+  {
+    paused = true;
+    
+    dispatchEvent(new PauseScriptEvent(false));
+  }
+
+  function resumeStage():Void
+  {
+    paused = false;
+    
+    dispatchEvent(new ScriptEvent(RESUME));
   }
 
   var lastSeekReplay:Float = 0;
