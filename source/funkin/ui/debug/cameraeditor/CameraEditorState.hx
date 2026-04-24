@@ -966,6 +966,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       addEventMenu.show();
     }
 
+    // For some reason, HaxeUI elements are constantly focused
+    // when you press TAB, only in this state!
+    //
+    // So I had to ignore the menubar logic below.
+    handleQuickSwapKeybinds();
+
     // NOTE: Menubar commands are handled in `onScreenKeyDown()`
   }
 
@@ -1971,6 +1977,23 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       menubarItemRedo.disabled = false;
       menubarItemRedo.text = 'Redo ${redoHistory[redoHistory.length - 1].toString()}';
+    }
+  }
+
+  /**
+   * Handle keybinds from quick-swapping between the Camera and Chart editors.
+   */
+  function handleQuickSwapKeybinds():Void
+  {
+    if (currentWorkingFilePath == null) return;
+
+    if (FlxG.keys.justPressed.TAB)
+    {
+      performCleanup();
+
+      FlxG.switchState(() -> new funkin.ui.debug.charting.ChartEditorState({
+        fnfcTargetPath: currentWorkingFilePath
+      }));
     }
   }
 

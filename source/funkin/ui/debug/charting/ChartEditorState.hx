@@ -3817,6 +3817,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleTestKeybinds();
     handleHelpKeybinds();
     handleAudioKeybinds();
+    handleQuickSwapKeybinds();
 
     #if FEATURE_DEBUG_FUNCTIONS
     handleQuickWatch();
@@ -6486,6 +6487,27 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var oldValue = previousAudioVolumes[5];
       previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
       menubarItemVolumeVocalsOpponent.value = (menubarItemVolumeVocalsOpponent.value == 0) ? (oldValue > menubarItemVolumeVocalsOpponent.value) ? oldValue : 100 : 0;
+    }
+  }
+
+  /**
+   * Handle keybinds from quick-swapping between the Camera and Chart editors.
+   */
+  function handleQuickSwapKeybinds():Void
+  {
+    if (currentWorkingFilePath == null) return;
+
+    if (!isHaxeUIFocused && FlxG.keys.justPressed.TAB)
+    {
+      this.hideAllToolboxes();
+      stopWelcomeMusic();
+      resetWindowTitle();
+
+      criticalFailure = true;
+
+      FlxG.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState({
+        fnfcTargetPath: currentWorkingFilePath
+      }));
     }
   }
 
