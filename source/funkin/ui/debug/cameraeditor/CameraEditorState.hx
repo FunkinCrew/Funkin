@@ -213,8 +213,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   public var selectedSongEvent(get, set):Null<SongEventData>;
 
-  inline function get_selectedSongEvent():Null<SongEventData>
-    return selectedSongEvents.length == 1 ? selectedSongEvents[0] : null;
+  inline function get_selectedSongEvent():Null<SongEventData> return selectedSongEvents.length == 1 ? selectedSongEvents[0] : null;
 
   function set_selectedSongEvent(value:Null<SongEventData>):Null<SongEventData>
   {
@@ -224,8 +223,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var hasSelection(get, never):Bool;
 
-  inline function get_hasSelection():Bool
-    return selectedSongEvents.length > 0;
+  inline function get_hasSelection():Bool return selectedSongEvents.length > 0;
 
   /**
    * A list of previous working file paths.
@@ -615,6 +613,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
     mainView.registerEvent(CameraViewportEvent.PAN_START, onViewportPanStart);
     mainView.registerEvent(CameraViewportEvent.PAN, onViewportPan);
+    mainView.registerEvent(CameraViewportEvent.GESTURE_PAN, onViewportGesturePan);
 
     CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
 
@@ -1858,8 +1857,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       else if (latestBFNote != null) cachedNoteIndex = notes.indexOf(latestBFNote);
     }
 
-    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
+    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null
+      && position <= dadPlayAnimationWindowEnd
+      && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null
+      && position <= bfPlayAnimationWindowEnd
+      && !bfHasNoteAfterPlayAnimation;
 
     if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
@@ -2208,6 +2211,14 @@ class CameraEditorState extends UIState implements ConsoleClass
   function onViewportPan(_:CameraViewportEvent):Void
   {
     MouseUtil.mouseCamDrag(goToPoint, false, true);
+  }
+
+  function onViewportGesturePan(e:CameraViewportEvent):Void
+  {
+    var zoom = FlxG.camera.zoom;
+    if (zoom <= 0) zoom = 1;
+    goToPoint.x -= e.panDeltaX / zoom;
+    goToPoint.y -= e.panDeltaY / zoom;
   }
 
   @:bind(menubarItemUserGuide, MouseEvent.CLICK)

@@ -16,6 +16,11 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.core.Screen;
 import haxe.ui.layouts.AbsoluteLayout;
 import haxe.ui.layouts.DefaultLayout;
+#if FEATURE_MACOS_GESTURES
+import lime.ui.Gesture;
+import lime.ui.Gesture.GestureType;
+import funkin.input.macos.FunkinGesture;
+#end
 
 @:composite(TimelineViewportEvents, TimelineViewportBuilder, TimelineViewportLayout)
 class TimelineViewport extends Box
@@ -46,10 +51,12 @@ class TimelineViewport extends Box
   public var playheadTopper:Box;
   public var selectionBoxOverlay:Box;
   public var contentArea:Box;
+
   public static inline var PLAYHEAD_LINE_WIDTH:Int = 2;
   public static inline var PLAYHEAD_TOPPER_WIDTH:Int = 14;
   public static inline var PLAYHEAD_TOPPER_HEIGHT:Int = 22;
   public static inline var SELECTION_DRAG_THRESHOLD_PX:Float = 4.0;
+
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
 
@@ -199,8 +206,7 @@ class TimelineViewport extends Box
 
   public function findBlockByEvent(event:SongEventData):Null<TimelineEventBlock>
   {
-    for (block in eventBlocks)
-      if (block.eventData == event) return block;
+    for (block in eventBlocks) if (block.eventData == event) return block;
     return null;
   }
 
@@ -222,14 +228,12 @@ class TimelineViewport extends Box
 
   public function remapForInsert(insertIndex:Int):Void
   {
-    for (block in eventBlocks)
-      if (block.layerIndex >= insertIndex) block.layerIndex++;
+    for (block in eventBlocks) if (block.layerIndex >= insertIndex) block.layerIndex++;
   }
 
   public function remapForRemove(removedLayerIndex:Int):Void
   {
-    for (block in eventBlocks)
-      if (block.layerIndex > removedLayerIndex) block.layerIndex--;
+    for (block in eventBlocks) if (block.layerIndex > removedLayerIndex) block.layerIndex--;
   }
 
   public function refreshBlockVisuals(targetSelected:Bool = false):Void
@@ -244,8 +248,7 @@ class TimelineViewport extends Box
   public function getSelectedEvents():Array<SongEventData>
   {
     var out:Array<SongEventData> = [];
-    for (block in eventBlocks)
-      if (block.selected) out.push(block.eventData);
+    for (block in eventBlocks) if (block.selected) out.push(block.eventData);
     return out;
   }
 
@@ -265,8 +268,7 @@ class TimelineViewport extends Box
 
   public function isEventSelected(event:SongEventData):Bool
   {
-    for (block in eventBlocks)
-      if (block.eventData == event) return block.selected;
+    for (block in eventBlocks) if (block.eventData == event) return block.selected;
     return false;
   }
 
@@ -281,8 +283,7 @@ class TimelineViewport extends Box
 
   public function findLayerByName(layerName:String):Null<TimelineLayerData>
   {
-    for (layer in layers)
-      if (layer.name == layerName) return layer;
+    for (layer in layers) if (layer.name == layerName) return layer;
     return null;
   }
 
@@ -480,6 +481,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   static inline var DOUBLE_CLICK_MAX_DELAY:Float = 0.4;
   static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
 
+  #if FEATURE_MACOS_GESTURES
+  var gesture:FunkinGesture;
+  #end
   var _viewport:TimelineViewport;
 
   var _dragMode:TimelineDragMode = NONE;
@@ -497,13 +501,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   var _lastClickY:Float = 0;
   var _panLastScreenX:Float = 0;
   var _panLastScreenY:Float = 0;
-
   var _selectionBoxStartX:Float = 0;
   var _selectionBoxStartY:Float = 0;
   var _selectionBoxAdditive:Bool = false;
   var _selectionBoxArmed:Bool = false;
   var _selectionBoxStartSelection:Array<SongEventData> = [];
-
   var _dragGroupEvents:Array<TimelineEventBlock> = [];
   var _dragGroupOriginalTimes:Array<Float> = [];
   var _dragGroupOriginalLayerIndices:Array<Int> = [];
@@ -521,6 +523,18 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (!hasEvent(MouseEvent.MOUSE_MOVE, _onMouseMove)) registerEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
     if (!hasEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown)) registerEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
+
+    #if FEATURE_MACOS_GESTURES
+    if (gesture == null)
+    {
+      var gestureParams:FunkinGestureParams = {};
+      gestureParams.preGestureStart = preGestureStart;
+      gestureParams.onMagnificationGesture = onMagnificationGesture;
+      gestureParams.onScrollGesture = onScrollGesture;
+
+      gesture = new FunkinGesture(gestureParams);
+    }
+    #end
   }
 
   override public function unregister():Void
@@ -532,6 +546,14 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
     Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
+
+    #if FEATURE_MACOS_GESTURES
+    if (gesture != null)
+    {
+      gesture.destroy();
+      gesture = null;
+    }
+    #end
   }
 
   function _hitTestBlocks(localX:Float, localY:Float):TimelineEventBlock
@@ -685,16 +707,15 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         var newLayerName:String = newLayer < _viewport.layers.length ? _viewport.layers[newLayer].name : "Default";
         var durationSteps:Float = TimelineUtil.getEventDurationSteps(block.eventData);
 
-        deltas.push(
-          {
-            event: block.eventData,
-            oldTime: origTime,
-            newTime: newTime,
-            oldDuration: durationSteps,
-            newDuration: durationSteps,
-            oldLayerName: origLayerName,
-            newLayerName: newLayerName
-          });
+        deltas.push({
+          event: block.eventData,
+          oldTime: origTime,
+          newTime: newTime,
+          oldDuration: durationSteps,
+          newDuration: durationSteps,
+          oldLayerName: origLayerName,
+          newLayerName: newLayerName
+        });
       }
 
       if (anyMoved)
@@ -751,6 +772,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseDown(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     var localX:Float = e.screenX - _viewport.screenLeft;
     var localY:Float = e.screenY - _viewport.screenTop;
     var additive:Bool = e.ctrlKey;
@@ -831,6 +856,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseMove(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     var localX:Float = e.screenX - _viewport.screenLeft;
     var localY:Float = e.screenY - _viewport.screenTop;
 
@@ -952,6 +981,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseUp(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
 
@@ -1000,6 +1033,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseDown(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     if (_dragMode != NONE) return;
 
     _dragMode = PANNING;
@@ -1013,6 +1050,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseUp(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
 
@@ -1025,6 +1066,10 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseWheel(e:MouseEvent):Void
   {
+    #if FEATURE_MACOS_GESTURES
+    if (gesture.gestureActive) return;
+    #end
+
     if (e.shiftKey)
     {
       var localX = e.screenX - _viewport.screenLeft;
@@ -1213,5 +1258,46 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     var timeline = _viewport.findAncestor(EventTimeline);
     return timeline == null ? true : timeline.snapEnabled;
   }
+
+  #if FEATURE_MACOS_GESTURES
+  function _hitTest(x:Float, y:Float):Bool
+  {
+    return x >= _viewport.screenLeft
+      && x <= _viewport.screenLeft + _viewport.width
+      && y >= _viewport.screenTop
+      && y <= _viewport.screenTop + _viewport.height;
+  }
+
+  function preGestureStart(g:Gesture):Bool
+  {
+    return _hitTest(g.x, g.y);
+  }
+
+  function onMagnificationGesture(delta:Float):Void
+  {
+    var event = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
+
+    var newZoom = _viewport.zoomLevel * (1.0 + delta);
+    if (newZoom < 0.1) newZoom = 0.1;
+    if (newZoom > 10.0) newZoom = 10.0;
+    _viewport.zoomLevel = newZoom;
+
+    _viewport.refreshLayout();
+    _viewport.dispatch(event);
+  }
+
+  function onScrollGesture(delta:Array<Float>):Void
+  {
+    var pxPerMs = _viewport.pixelsPerMs * _viewport.zoomLevel;
+    var scrollMs = pxPerMs > 0 ? (delta[0] * 100) / pxPerMs : 0;
+    _viewport.scrollOffsetMs = _viewport.scrollOffsetMs - scrollMs;
+    if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
+
+    _viewport.refreshLayout();
+
+    var zoomEvent = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
+    _viewport.dispatch(zoomEvent);
+  }
+  #end
 }
 #end
