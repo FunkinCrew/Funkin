@@ -9,8 +9,11 @@ class CameraViewportEvent extends UIEvent
   public static inline var PAN_START:EventType<CameraViewportEvent> = "cameraViewportPanStart";
   public static inline var PAN:EventType<CameraViewportEvent> = "cameraViewportPan";
   public static inline var PAN_END:EventType<CameraViewportEvent> = "cameraViewportPanEnd";
+  public static inline var GESTURE_PAN:EventType<CameraViewportEvent> = "cameraViewportGesturePan";
 
   public var zoomDelta:Float = 0;
+  public var panDeltaX:Float = 0;
+  public var panDeltaY:Float = 0;
 
   public function new(type:String)
   {
@@ -26,6 +29,8 @@ class CameraViewportEvent extends UIEvent
     c.data = data;
     c.canceled = canceled;
     c.zoomDelta = zoomDelta;
+    c.panDeltaX = panDeltaX;
+    c.panDeltaY = panDeltaY;
     postClone(c);
     return c;
   }
