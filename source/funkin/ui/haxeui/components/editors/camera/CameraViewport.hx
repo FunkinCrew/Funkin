@@ -13,7 +13,7 @@ private enum PanSource
 {
   NONE;
   MIDDLE_MOUSE;
-  SHIFT_KEY;
+  ALT_KEY;
 }
 
 @:dox(hide) @:noCompletion
@@ -90,16 +90,16 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onKeyDown(e:KeyboardEvent):Void
   {
-    if (e.keyCode != FlxKey.SHIFT) return;
+    if (e.keyCode != FlxKey.ALT) return;
     if (!_isMouseOverViewport) return;
     if (_panSource != NONE) return;
-    _beginPan(SHIFT_KEY);
+    _beginPan(ALT_KEY);
   }
 
   function _onKeyUp(e:KeyboardEvent):Void
   {
-    if (e.keyCode != FlxKey.SHIFT) return;
-    if (_panSource != SHIFT_KEY) return;
+    if (e.keyCode != FlxKey.ALT) return;
+    if (_panSource != ALT_KEY) return;
     _endPan();
   }
 
