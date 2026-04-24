@@ -509,6 +509,13 @@ class Project extends HXProject
   static final FEATURE_TOUCH_HERE_TO_PLAY:FeatureFlag = "FEATURE_TOUCH_HERE_TO_PLAY";
 
   /**
+   * `-DFEATURE_MACOS_GESTURES`
+   * If this flag is enabled, the game will handle gestures on MacOS.
+   * Currently used just for editors.
+   */
+  static final FEATURE_MACOS_GESTURES:FeatureFlag = "FEATURE_MACOS_GESTURES";
+
+  /**
    * `-DFEATURE_VIDEO_PLAYBACK`
    * If this flag is enabled, the game will enable support for video playback.
    * This requires the hxvlc library on desktop platforms.
@@ -971,6 +978,12 @@ class Project extends HXProject
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease()) && envConfig != null);
     FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
+
+    // Should be true only on mac builds.
+    FEATURE_MACOS_GESTURES.apply(this, isMac());
+
+    // Should be true only on debug mobile builds which have ads enabled.
+    TESTING_ADS.apply(this, isDebug() && FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this));
 
     // The coveted ghost tapping feature.
     // Essential on mobile but delayed on desktop.
