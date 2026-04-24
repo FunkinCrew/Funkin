@@ -60,7 +60,10 @@ import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
+import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand;
+import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand.AutoSortPlan;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
+import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
@@ -443,6 +446,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var exitConfirmDialog:Dialog;
 
   var deleteLayerConfirmDialog:Dialog;
+
+  var autoSortLayersDialog:Dialog;
 
   /**
    * The properties panel on the right side.
@@ -1317,6 +1322,67 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.viewport.layers = [];
     timeline.viewport.selectedLayerIndex = 0;
     loadTimeline();
+    promptAutoSortLayersIfNeeded();
+  }
+
+  /**
+   * If the loaded chart has only a single layer AND any of its camera events overlap in time,
+   * prompt the user to auto-sort events onto separate layers grouped by event type.
+   */
+  function promptAutoSortLayersIfNeeded():Void
+  {
+    if (autoSortLayersDialog != null) return;
+    if (timeline.viewport.layers.length != 1) return;
+    if (currentSongChartData == null) return;
+
+    var cameraEvents:Array<SongEventData> = currentSongChartData.events.filter(e -> e.eventKind == "FocusCamera"
+      || e.eventKind == "ZoomCamera");
+    if (!hasOverlappingCameraEvents(cameraEvents)) return;
+
+    var plan:AutoSortPlan = AutoSortLayersCommand.planSort(currentSongChartData.events, conductorInUse.stepLengthMs);
+    var currentLayerName:String = timeline.viewport.layers[0].name;
+
+    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(currentLayerName, cameraEvents.length, plan,
+      () -> performAutoSortLayersByType());
+    dialog.showDialog(true);
+    autoSortLayersDialog = dialog;
+    dialog.onDialogClosed = (_) -> autoSortLayersDialog = null;
+  }
+
+  /**
+   * Run the auto-sort layers command. Used by the auto-prompt's confirm callback
+   * and by the menu-bar item.
+   */
+  function performAutoSortLayersByType():Void
+  {
+    CameraEditorCommandHandler.performCommand(this, new AutoSortLayersCommand());
+  }
+
+  /**
+   * Whether any two FocusCamera/ZoomCamera events have overlapping time intervals.
+   * Treats zero-duration events as point events (non-overlapping at boundaries).
+   */
+  function hasOverlappingCameraEvents(events:Array<SongEventData>):Bool
+  {
+    if (events.length < 2) return false;
+
+    var stepMs:Float = conductorInUse.stepLengthMs;
+    var sorted:Array<SongEventData> = events.copy();
+    sorted.sort(function(a:SongEventData, b:SongEventData):Int
+    {
+      if (a.time < b.time) return -1;
+      if (a.time > b.time) return 1;
+      return 0;
+    });
+
+    // Sorted by start time, so checking each event against its immediate successor is sufficient:
+    // if sorted[i] overlaps any sorted[j] (j > i+1), it must also overlap sorted[i+1].
+    for (i in 0...sorted.length - 1)
+    {
+      var aEnd:Float = sorted[i].time + TimelineUtil.getEventDurationSteps(sorted[i]) * stepMs;
+      if (sorted[i + 1].time < aEnd) return true;
+    }
+    return false;
   }
 
   /**
@@ -2115,6 +2181,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     var autoGenDialog = new AutoGenDialog(this);
     autoGenDialog.showDialog();
+  }
+
+  @:bind(menubarItemAutoSortByType, MouseEvent.CLICK)
+  function onMenubarAutoSortByType(_)
+  {
+    performAutoSortLayersByType();
   }
 
   function onViewportZoom(e:CameraViewportEvent):Void
