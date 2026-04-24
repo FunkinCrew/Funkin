@@ -610,6 +610,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     {
       var block:TimelineEventBlock = _dragGroupEvents[i];
       var ghost:Box = new Box();
+      ghost.includeInLayout = false;
       ghost.addClass("timeline-ghost");
       ghost.height = TimelineEventBlock.BLOCK_HEIGHT;
       ghost.customStyle.borderRadius = 3;
