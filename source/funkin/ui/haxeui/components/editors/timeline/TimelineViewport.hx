@@ -14,6 +14,7 @@ import haxe.ui.core.Component;
 import haxe.ui.core.CompositeBuilder;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.core.Screen;
+import haxe.ui.layouts.AbsoluteLayout;
 import haxe.ui.layouts.DefaultLayout;
 
 @:composite(TimelineViewportEvents, TimelineViewportBuilder, TimelineViewportLayout)
@@ -44,6 +45,7 @@ class TimelineViewport extends Box
   public var playhead:Box;
   public var playheadTopper:Box;
   public var selectionBoxOverlay:Box;
+  public var contentArea:Box;
   public static inline var PLAYHEAD_LINE_WIDTH:Int = 2;
   public static inline var PLAYHEAD_TOPPER_WIDTH:Int = 14;
   public static inline var PLAYHEAD_TOPPER_HEIGHT:Int = 22;
@@ -153,8 +155,7 @@ class TimelineViewport extends Box
    */
   public function rebuildBlocks(events:Array<SongEventData>):Void
   {
-    for (block in eventBlocks)
-      removeComponent(block);
+    for (block in eventBlocks) contentArea.removeComponent(block);
     eventBlocks = [];
 
     for (event in events) addEventBlock(event);
@@ -175,7 +176,7 @@ class TimelineViewport extends Box
 
     if (block.layerIndex >= 0 && block.layerIndex < layers.length) block.applyColor(layers[block.layerIndex].color);
 
-    addComponent(block);
+    contentArea.addComponent(block);
 
     var triangle = block.findComponent("block-instantTriangle", Image);
     if (triangle != null)
@@ -207,7 +208,7 @@ class TimelineViewport extends Box
   {
     var block = findBlockByEvent(event);
     if (block == null) return false;
-    removeComponent(block);
+    contentArea.removeComponent(block);
     eventBlocks.remove(block);
     return true;
   }
@@ -289,7 +290,6 @@ class TimelineViewport extends Box
   {
     return (layerIndex * TimelineViewport.LAYER_HEIGHT
       + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2)
-      + TimelineViewport.TOP_BAR_HEIGHT
       - layerScrollOffsetPx;
   }
 
@@ -339,6 +339,16 @@ private class TimelineViewportBuilder extends CompositeBuilder
     _viewport.addComponent(topper);
     _viewport.playheadTopper = topper;
 
+    var contentArea:Box = new Box();
+    contentArea.id = "timeline-content-area";
+    contentArea.layout = new AbsoluteLayout();
+    contentArea.left = 0;
+    contentArea.top = TimelineViewport.TOP_BAR_HEIGHT;
+    contentArea.customStyle.clip = true;
+    contentArea.customStyle.pointerEvents = "none";
+    _viewport.addComponent(contentArea);
+    _viewport.contentArea = contentArea;
+
     var overlay:Box = new Box();
     overlay.id = "timeline-selection-box";
     overlay.addClass("timeline-selection-box");
@@ -386,6 +396,15 @@ private class TimelineViewportLayout extends DefaultLayout
       }
     }
 
+    var caHeight:Float = Math.max(0, h - TimelineViewport.TOP_BAR_HEIGHT);
+    if (vp.contentArea != null)
+    {
+      if (vp.contentArea.left != 0) vp.contentArea.left = 0;
+      if (vp.contentArea.top != TimelineViewport.TOP_BAR_HEIGHT) vp.contentArea.top = TimelineViewport.TOP_BAR_HEIGHT;
+      if (vp.contentArea.width != w) vp.contentArea.width = w;
+      if (vp.contentArea.height != caHeight) vp.contentArea.height = caHeight;
+    }
+
     for (block in vp.eventBlocks)
     {
       var durationSteps = TimelineUtil.getEventDurationSteps(block.eventData);
@@ -397,8 +416,8 @@ private class TimelineViewportLayout extends DefaultLayout
 
       var isOffscreen = (blockLeftPos + blockWidthVal < 0)
         || (blockLeftPos > w)
-        || (blockTopPos + TimelineEventBlock.BLOCK_HEIGHT < TimelineViewport.TOP_BAR_HEIGHT)
-        || (blockTopPos > h);
+        || (blockTopPos + TimelineEventBlock.BLOCK_HEIGHT < 0)
+        || (blockTopPos > caHeight);
 
       if (isOffscreen != block.hidden) block.hidden = isOffscreen;
 
@@ -517,15 +536,18 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _hitTestBlocks(localX:Float, localY:Float):TimelineEventBlock
   {
-    var i = _viewport.eventBlocks.length;
+    var contentY:Float = localY - TimelineViewport.TOP_BAR_HEIGHT;
+    if (contentY < 0) return null;
+
+    var i:Int = _viewport.eventBlocks.length;
     while (i-- > 0)
     {
-      var block = _viewport.eventBlocks[i];
+      var block:TimelineEventBlock = _viewport.eventBlocks[i];
       if (block.hidden) continue;
       if (localX >= block.blockLeft
         && localX <= block.blockLeft + block.blockWidth
-        && localY >= block.blockTop
-        && localY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT)
+        && contentY >= block.blockTop
+        && contentY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT)
       {
         return block;
       }
@@ -592,7 +614,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       ghost.height = TimelineEventBlock.BLOCK_HEIGHT;
       ghost.customStyle.borderRadius = 3;
       ghost.customStyle.pointerEvents = "none";
-      _viewport.addComponent(ghost);
+      _viewport.contentArea.addComponent(ghost);
       _dragGhosts.push(ghost);
       _applyGhostStyle(ghost, _dragGroupOriginalLayerIndices[i]);
     }
@@ -603,7 +625,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (_dragGhosts == null) return;
     for (ghost in _dragGhosts)
     {
-      if (ghost != null) _viewport.removeComponent(ghost);
+      if (ghost != null) _viewport.contentArea.removeComponent(ghost);
     }
     _dragGhosts = [];
   }
@@ -880,8 +902,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       if (block.hidden) continue;
       var bx1:Float = block.blockLeft;
       var bx2:Float = block.blockLeft + block.blockWidth;
-      var by1:Float = block.blockTop;
-      var by2:Float = block.blockTop + TimelineEventBlock.BLOCK_HEIGHT;
+      var by1:Float = block.blockTop + TimelineViewport.TOP_BAR_HEIGHT;
+      var by2:Float = by1 + TimelineEventBlock.BLOCK_HEIGHT;
       var intersects:Bool = bx1 < maxX && bx2 > minX && by1 < maxY && by2 > minY;
       if (intersects) hits.push(block.eventData);
     }
