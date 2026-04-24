@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
+import funkin.audio.FunkinSound;
 
 typedef AutoSortPlanLayer =
 {
@@ -63,8 +64,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
       }
       else
       {
-        for (i => track in tracks)
-          plan.layers.push({name: '$kind (${i + 1})', events: track});
+        for (i => track in tracks) plan.layers.push({name: '$kind ${i + 1}', events: track});
       }
     }
     return plan;
@@ -139,6 +139,8 @@ class AutoSortLayersCommand implements CameraEditorCommand
       }
     }
 
+    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+
     viewport.layers = newLayers;
     viewport.selectedLayerIndex = 0;
     state.timeline.layerPanel.rebuildLayers(viewport.layers);
@@ -163,6 +165,8 @@ class AutoSortLayersCommand implements CameraEditorCommand
       var raw:SongEventDataRaw = entry.event;
       raw.editorLayer = entry.layer;
     }
+
+    FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     viewport.layers = previousLayers.copy();
     viewport.selectedLayerIndex = 0;
