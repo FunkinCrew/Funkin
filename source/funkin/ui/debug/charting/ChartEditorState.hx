@@ -78,6 +78,7 @@ import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
+import funkin.ui.debug.charting.components.ChartEditorEventStack;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
@@ -2328,6 +2329,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var gridGhostEvent:Null<ChartEditorEventSprite> = null;
 
   /**
+   * The event stack that contains events overlapping the current selected one.
+   */
+  var eventStack:Null<ChartEditorEventStack> = null;
+
+  /**
    * The sprite used to display the note preview area.
    * We move this up and down to scroll the preview.
    */
@@ -2816,6 +2822,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridGhostEvent.visible = false;
     add(gridGhostEvent);
     gridGhostEvent.zIndex = 22;
+
+    eventStack = new ChartEditorEventStack(this);
+    eventStack.x = gridTiledSprite.x + gridTiledSprite.width;
+    eventStack.y = gridTiledSprite.y;
+    eventStack.zIndex = 24;
+    eventStack.kill();
+    add(eventStack);
 
     buildNoteGroup();
 
@@ -4357,6 +4370,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (noteTooltipsDirty) noteSprite.updateTooltipText();
       }
 
+      var stackedEvents:Array<ChartEditorEventSprite> = [];
       for (eventSprite in renderedEvents.members)
       {
         if (eventSprite == null || eventSprite.eventData == null || !eventSprite.exists || !eventSprite.visible) continue;
@@ -4380,6 +4394,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               // Then reapply the note sprite's position relative to the grid.
               eventSprite.updateEventPosition(renderedEvents);
             }
+
+            // Add notes to the stack array. Update the stack after the for-loop to prevent later notes not being positioned properly!
+            if (eventStack.parentEvent == eventSprite && eventStack.alive)
+            {
+              for (event in renderedEvents.members)
+              {
+                if (event == null || event.eventData == null || !event.exists || !event.visible) continue;
+                if (event != eventSprite && event.x == eventSprite.x && event.y == eventSprite.y) stackedEvents.push(event);
+              }
+            }
           }
 
           // Then, render the selection square.
@@ -4397,6 +4421,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         // Additional cleanup on notes.
         if (noteTooltipsDirty) eventSprite.updateTooltipText();
+      }
+
+      // Now we update the stack.
+      if (stackedEvents.length > 0)
+      {
+        eventStack.clearStack();
+        eventStack.addMultipleToStack(stackedEvents);
+      }
+      else
+      {
+        eventStack.kill();
       }
 
       noteTooltipsDirty = false;
@@ -4706,6 +4741,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
       if (gridGhostEvent != null) gridGhostEvent.visible = false;
 
+      eventStack.kill();
+
       // Do not set Cursor.cursorMode here, because it will be set by the HaxeUI.
       return;
     }
@@ -4718,6 +4755,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (gridTiledSprite == null) throw 'ERROR: Tried to handle cursor, but gridTiledSprite is null! Check ChartEditorState.buildGrid()';
 
     var overlapsGrid:Bool = FlxG.mouse.overlaps(gridTiledSprite);
+    var overlapsStack:Bool = (FlxG.mouse.overlaps(eventStack) && eventStack.alive);
 
     var overlapsRenderedNotes:Bool = true;
     var overlapsRenderedEvents:Bool = true;
@@ -4745,7 +4783,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Find the first event that is at the cursor position.
     // Skip this if we're already highlighting a note.
-    if (overlapsGrid && !overlapsRenderedNotes && FlxG.mouse.overlaps(renderedEvents))
+    if ((overlapsGrid || overlapsStack) && !overlapsRenderedNotes && FlxG.mouse.overlaps(renderedEvents))
     {
       highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool
       {
@@ -4758,6 +4796,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Cursor is not overlapping an event
       overlapsRenderedEvents = false;
+    }
+
+    // If the stack's event is no longer hovered over, remove the stack.
+    if (eventStack.parentEvent != highlightedEvent && !overlapsStack) eventStack.kill();
+
+    // If there's no event tied to the stack, use the current overlapped one.
+    if (eventStack.parentEvent == null && highlightedEvent != null)
+    {
+      var stackedEvents:Array<ChartEditorEventSprite> = [];
+      for (event in renderedEvents.members)
+      {
+        if (event == null || event.eventData == null || !event.exists || !event.visible) continue;
+        if (event != highlightedEvent && event.x == highlightedEvent.x && event.y == highlightedEvent.y) stackedEvents.push(event);
+      }
+
+      if (stackedEvents.length > 0)
+      {
+        eventStack.revive();
+        eventStack.parentEvent = highlightedEvent;
+        eventStack.y = highlightedEvent.y;
+        eventStack.addMultipleToStack(stackedEvents);
+      }
     }
 
     // Find the first hold note that is at the cursor position.
@@ -5047,7 +5107,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         selectionBoxStartPos = null;
         setSelectionBoxBounds();
 
-        if (overlapsGrid)
+        if (overlapsGrid || (overlapsStack && highlightedEvent != null))
         {
           // We clicked on the grid without moving the mouse.
 
@@ -5104,6 +5164,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
             {
               // Click an event to select it.
+              if (eventStack.alive) eventStack.parentEvent = highlightedEvent;
               performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
             }
             else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
@@ -5339,7 +5400,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (FlxG.mouse.justPressed)
       {
         // Just clicked to place a note.
-        if (!isCursorOverHaxeUI && overlapsGrid && !overlapsSelectionBorder)
+        if (!isCursorOverHaxeUI && (overlapsGrid || (overlapsStack && highlightedEvent != null)) && !overlapsSelectionBorder)
         {
           // We clicked on the grid without moving the mouse.
 
@@ -5405,10 +5466,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 // Clicked a selected event, start dragging.
                 dragTargetEvent = highlightedEvent;
+                if (eventStack.alive && eventStack.parentEvent == highlightedEvent) eventStack.kill();
               }
               else
               {
                 // If you click an unselected event, and aren't holding Control, deselect everything else.
+                if (eventStack.alive) eventStack.parentEvent = highlightedEvent;
                 performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
               }
             }
@@ -5450,7 +5513,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var rightMouseUpdated:Bool = (FlxG.mouse.justPressedRight)
         || (FlxG.mouse.pressedRight && (FlxG.mouse.deltaX > 0 || FlxG.mouse.deltaY > 0));
-      if (rightMouseUpdated && overlapsGrid)
+      if (rightMouseUpdated && (overlapsGrid || (overlapsStack && highlightedEvent != null)))
       {
         // We right clicked on the grid.
 
@@ -5504,6 +5567,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else
           {
             // Right click removes the event.
+            // Remove from stack, if available.
+            if (eventStack.stack.contains(highlightedEvent))
+            {
+              eventStack.stack.remove(highlightedEvent);
+            }
+
+            // Make the stack parent use the first stack member, if possible.
+            if (eventStack.parentEvent == highlightedEvent)
+            {
+              var firstEvent:ChartEditorEventSprite = eventStack.stack.shift();
+              eventStack.parentEvent = firstEvent;
+              if (eventStack.stack.length == 0) eventStack.kill();
+            }
+
             performCommand(new RemoveEventsCommand([highlightedEvent.eventData]));
           }
         }
