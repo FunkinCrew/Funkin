@@ -41,6 +41,7 @@ import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.input.Cursor;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEvent.SongEventScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
@@ -743,6 +744,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
       trace('Processing event: ' + eventData.eventKind + ' at ' + eventData.time);
 
+      dispatchEvent(new SongEventScriptEvent(eventData));
+      
       switch (eventData.eventKind)
       {
         case 'FocusCamera':
