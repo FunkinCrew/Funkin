@@ -19,6 +19,7 @@ class TimelineEventBlock extends Box
   public static final ICON_RESOURCES:Map<String, String> = [
     "FocusCamera" => "shared:assets/shared/images/ui/camera-editor/event-icons/focus_event.png",
     "ZoomCamera" => "shared:assets/shared/images/ui/camera-editor/event-icons/zoom_event.png",
+    "PlayAnimation" => "shared:assets/shared/images/ui/camera-editor/event-icons/playanim_event.png",
   ];
 
   public var eventData:SongEventData;

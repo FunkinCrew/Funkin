@@ -2342,8 +2342,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.Y, true, false, false, _]: // ctrl + y -> redo -- note: I sorta like the ctrl + shift + z method to redo...
         CameraEditorCommandHandler.redoLastCommand(this);
 
-      case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all camera events
-        selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera' || e.eventKind == 'ZoomCamera');
+      case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
+        selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera'
+          || e.eventKind == 'ZoomCamera'
+          || e.eventKind == 'PlayAnimation');
 
       case [FlxKey.C, true, false, false, true]: // ctrl + c -> copy
         SongDataUtils.writeItemsToClipboard({
