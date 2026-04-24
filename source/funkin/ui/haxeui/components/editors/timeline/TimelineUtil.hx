@@ -1,6 +1,7 @@
 package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.data.event.SongEventSchema;
 import funkin.data.song.SongData.SongEventData;
 import funkin.play.event.FocusCameraSongEvent;
 import funkin.play.event.ZoomCameraSongEvent;
@@ -9,6 +10,11 @@ class TimelineUtil
 {
   public static function isFixedDuration(event:SongEventData):Bool
   {
+    // If the event's schema has no 'duration' field, it is inherently fixed-duration.
+    // Prevents edge-drag from writing a spurious 'duration' key into event.value.
+    var schema:Null<SongEventSchema> = event.getSchema();
+    if (schema != null && !schema.hasField('duration')) return true;
+
     if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") return false;
     var ease:Null<String> = event.getString('ease');
     // FocusCamera historically treats a missing ease as classic/instant; ZoomCamera's
