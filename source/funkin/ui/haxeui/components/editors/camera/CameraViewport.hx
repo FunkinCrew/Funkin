@@ -25,7 +25,8 @@ private enum PanSource
 private class CameraViewportEvents extends haxe.ui.events.Events
 {
   #if FEATURE_MACOS_GESTURES
-  static final MAGNIFICATION_SCALE:Float = 6.0;
+  static final MAGNIFICATION_SCALE:Float = 10.0;
+  static final PAN_SCALE:Float = 0.5;
 
   var gesture:FunkinGesture;
   #end
@@ -209,8 +210,8 @@ private class CameraViewportEvents extends haxe.ui.events.Events
   function onScrollGesture(delta:Array<Float>):Void
   {
     var event = new CameraViewportEvent(CameraViewportEvent.GESTURE_PAN);
-    event.panDeltaX = delta[0];
-    event.panDeltaY = delta[1];
+    event.panDeltaX = delta[0] * PAN_SCALE;
+    event.panDeltaY = delta[1] * PAN_SCALE;
     _viewport.dispatch(event);
   }
   #end
