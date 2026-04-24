@@ -35,8 +35,9 @@ class TimelineLayerData
     var layerNames:Array<String> = ["Default"];
     for (event in events)
     {
-      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera")
-        continue;
+      if (event.eventKind != "FocusCamera"
+        && event.eventKind != "ZoomCamera"
+        && event.eventKind != "PlayAnimation") continue;
       var raw:SongEventDataRaw = event;
       var layer:String = raw.editorLayer != null ? raw.editorLayer : "Default";
       if (!layerNames.contains(layer))
