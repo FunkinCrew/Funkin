@@ -2084,6 +2084,26 @@ class CameraEditorState extends UIState implements ConsoleClass
       case [FlxKey.HOME, false, false, false, _]: // home -> jump to beginning
         onStopPlayback(null);
 
+      case [FlxKey.COMMA, false, false, false, _]:
+        var eventData = new SongEventData(0, 'FocusCamera', 1);
+
+        var stepMs = timeline.viewport.stepLengthMs;
+        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+
+        var cmd = new AddEventCommand(eventData);
+        CameraEditorCommandHandler.performCommand(this, cmd);
+        selectedSongEvent = eventData;
+
+      case [FlxKey.PERIOD, false, false, false, _]:
+        var eventData = new SongEventData(0, 'FocusCamera', 0);
+
+        var stepMs = timeline.viewport.stepLengthMs;
+        if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
+
+        var cmd = new AddEventCommand(eventData);
+        CameraEditorCommandHandler.performCommand(this, cmd);
+        selectedSongEvent = eventData;
+
       // Edit menu
       case [FlxKey.Z, true, false, false, _]: // ctrl + z -> undo
         CameraEditorCommandHandler.undoLastCommand(this);
