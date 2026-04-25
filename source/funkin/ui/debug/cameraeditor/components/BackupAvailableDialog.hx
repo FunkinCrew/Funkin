@@ -55,35 +55,18 @@ class BackupAvailableDialog extends Dialog
   function onClickOpenBackup(_:MouseEvent):Void
   {
     var targetPath = CameraEditorImportExportHandler.getLatestBackupPath();
-    var selectedFileBytes:Null<Bytes> = FileUtil.readBytesFromPath(targetPath);
-    if (selectedFileBytes == null)
-    {
-      trace('Failed to load bytes for FNFC from ${targetPath}');
-      return;
-    }
 
-    var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFileBytes, true);
-    if (entries == null)
+    try
     {
-      CameraEditorNotificationHandler.failure(cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${targetPath})');
+      CameraEditorImportExportHandler.loadSongFromFNFCPath(cameraEditorState, targetPath);
+    }
+    catch (e)
+    {
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${path}): $e');
       // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
-      this.hideDialog(DialogButton.CANCEL);
+      this.hideDialog(DialogButton.APPLY);
       return;
     }
-
-    CameraEditorNotificationHandler.success(cameraEditorState, 'Loaded Chart', 'Loaded chart (${targetPath})');
-    // Close the welcome dialog behind this.
-    this.hideDialog(DialogButton.APPLY);
-
-    cameraEditorState.currentWorkingFilePath = targetPath;
-    cameraEditorState.saved = true; // Just loaded file!
-
-    cameraEditorState.songMetadatas = entries.songMetadatas;
-    cameraEditorState.songDatas = entries.songChartDatas;
-    cameraEditorState.songManifestData = entries.manifest;
-    cameraEditorState.audioInstTrackData = entries.instrumentals;
-    cameraEditorState.audioVocalTrackData = entries.vocals;
-    cameraEditorState.onChartLoaded();
   }
 
   @:bind(buttonGoToFolder, MouseEvent.CLICK)

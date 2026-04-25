@@ -41,24 +41,6 @@ class ChartEditorAudioHandler
   }
 
   /**
-   * Loads and stores byte data for a vocal track from an asset
-   *
-   * @param path The path to the asset. Use `Paths` to build this.
-   * @param charId The character this vocal track will be for.
-   * @param instId The instrumental this vocal track will be for.
-   * @return Success or failure.
-   */
-  public static function loadVocalsFromAsset(state:ChartEditorState, path:String, charId:String, instId:String = '', wipeFirst:Bool = false):Bool
-  {
-    var trackData:Null<Bytes> = Assets.getBytes(path);
-    if (trackData != null)
-    {
-      return loadVocalsFromBytes(state, trackData, charId, instId, wipeFirst);
-    }
-    return false;
-  }
-
-  /**
    * Loads and stores byte data for a vocal track
    *
    * @param bytes The audio byte data.
@@ -90,23 +72,6 @@ class ChartEditorAudioHandler
     trace(" WARNING '.bold().bg_yellow() + ' This platform can't load audio from a file path, you'll need to fetch the bytes some other way.");
     return false;
     #end
-  }
-
-  /**
-   * Loads and stores byte data for an instrumental track from an asset
-   *
-   * @param path The path to the asset. Use `Paths` to build this.
-   * @param instId The instrumental this vocal track will be for.
-   * @return Success or failure.
-   */
-  public static function loadInstFromAsset(state:ChartEditorState, path:String, instId:String = '', wipeFirst:Bool = false):Bool
-  {
-    var trackData:Null<Bytes> = Assets.getBytes(path);
-    if (trackData != null)
-    {
-      return loadInstFromBytes(state, trackData, instId, wipeFirst);
-    }
-    return false;
   }
 
   /**
@@ -387,66 +352,6 @@ class ChartEditorAudioHandler
   {
     state.audioVocalTrackData.clear();
     stopExistingVocals(state);
-  }
-
-  /**
-   * Create a list of ZIP file entries from the current loaded instrumental tracks in the chart eidtor.
-   * @param state The chart editor state.
-   * @return `Array<haxe.zip.Entry>`
-   */
-  public static function makeZIPEntriesFromInstrumentals(state:ChartEditorState):Array<haxe.zip.Entry>
-  {
-    var zipEntries = [];
-
-    var instTrackIds = state.audioInstTrackData.keys().array();
-    for (key in instTrackIds)
-    {
-      if (key == 'default')
-      {
-        var data:Null<Bytes> = state.audioInstTrackData.get('default');
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst.ogg', data));
-      }
-      else
-      {
-        var data:Null<Bytes> = state.audioInstTrackData.get(key);
-        if (data == null)
-        {
-          trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-          continue;
-        }
-        zipEntries.push(FileUtil.makeZIPEntryFromBytes('Inst-${key}.ogg', data));
-      }
-    }
-
-    return zipEntries;
-  }
-
-  /**
-   * Create a list of ZIP file entries from the current loaded vocal tracks in the chart eidtor.
-   * @param state The chart editor state.
-   * @return `Array<haxe.zip.Entry>`
-   */
-  public static function makeZIPEntriesFromVocals(state:ChartEditorState):Array<haxe.zip.Entry>
-  {
-    var zipEntries = [];
-
-    for (key in state.audioVocalTrackData.keys())
-    {
-      var data:Null<Bytes> = state.audioVocalTrackData.get(key);
-      if (data == null)
-      {
-        trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
-        continue;
-      }
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes('Voices-${key}.ogg', data));
-    }
-
-    return zipEntries;
   }
 }
 #end

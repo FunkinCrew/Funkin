@@ -106,7 +106,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       this.hideDialog(DialogButton.CANCEL);
 
       // Load chart from file
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(state, chartPath);
+      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
       if (result != null)
       {
         chartEditorState.success('Loaded Chart',
@@ -159,7 +159,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
         this.hideDialog(DialogButton.CANCEL);
 
         // Load song from template
-        chartEditorState.loadSongAsTemplate(targetSongId);
+        chartEditorState.loadSongFromTemplate(targetSongId);
       });
     }
   }
