@@ -142,9 +142,14 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
     {
-      final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
-      @:privateAccess
-      var path:String = variationSongId._asc._c.name;
+      var classDecl:polymod.hscript._internal.Expr.ClassDecl = @:privateAccess
+        {
+          final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
+          variationSongId._asc._c;
+        };
+
+      var path:String = classDecl.name;
+      if (classDecl.pkg != null) path = '${classDecl.pkg.join('.')}.${path}';
       return path;
     }
     return super.getScriptedEntryClassName(id, params);
