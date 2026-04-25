@@ -57,14 +57,14 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_CHART_EDITOR
     createItem("CHART EDITOR", openChartEditor);
     #end
+    #if FEATURE_CAMERA_EDITOR
+    createItem("CAMERA EDITOR", openCameraEditor);
+    #end
     #if FEATURE_ANIMATION_EDITOR
     createItem("ANIMATION EDITOR", openAnimationEditor);
     #end
     #if FEATURE_STAGE_EDITOR
     createItem("STAGE EDITOR", openStageEditor);
-    #end
-    #if FEATURE_CAMERA_EDITOR
-    createItem("CAMERA EDITOR", openCameraEditor);
     #end
     #if FEATURE_RESULTS_DEBUG
     createItem("RESULTS SCREEN DEBUG", openTestResultsScreen);
