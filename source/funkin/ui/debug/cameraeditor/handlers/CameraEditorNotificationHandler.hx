@@ -23,7 +23,7 @@ class CameraEditorNotificationHandler
   {
     // Setup notifications.
     @:privateAccess
-    NotificationManager.GUTTER_SIZE = 8;
+    NotificationManager.GUTTER_SIZE = 10;
 
     NotificationManager.instance.animationFn = AnimateFromBottom;
   }
@@ -42,7 +42,7 @@ class CameraEditorNotificationHandler
     var builders = [];
 
     var scy = Screen.instance.height;
-    var baselineY = scy - 65;
+    var baselineY = scy - 35;
 
     for (notification in notifications)
     {
