@@ -11,6 +11,19 @@ package funkin.util.tools;
 class MapTools
 {
   /**
+   * Append each element of the second map to the first map.
+   * If a key exists in both, the second map's value will take precedence.
+   *
+   * @param array The map to append to.
+   * @param elements The elements to append.
+   * @return The map with the elements appended.
+   */
+  public static function append<K, T>(array:Map<K, T>, elements:Map<K, T>):Void
+  {
+    for (key => value in elements) array.set(key, value);
+  }
+
+  /**
    * Return the quantity of keys in the map.
    */
   public static function size<K, T>(map:Null<Map<K, T>>):Int
