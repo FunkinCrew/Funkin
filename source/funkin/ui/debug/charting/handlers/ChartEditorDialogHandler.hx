@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.handlers;
 
+import funkin.data.song.importer.ChartManifestData;
 #if FEATURE_CHART_EDITOR
 import flixel.util.FlxTimer;
 import funkin.data.song.importer.FNFLegacyData;
@@ -200,7 +201,7 @@ class ChartEditorDialogHandler
     {
       var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath('chart-editor-');
 
-      var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadFromFNFCPath(latestBackupPath) : null;
+      var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadSongFromFNFCPath(latestBackupPath) : null;
       if (result != null)
       {
         if (result.length == 0)
@@ -826,7 +827,15 @@ class ChartEditorDialogHandler
     if (buttonContinue == null) throw 'Could not locate dialogContinue button in Open Chart dialog';
     buttonContinue.onClick = function(_)
     {
-      state.loadSong(songMetadata, songChartData);
+      state.loadSongFromFNFCData({
+        manifest: new ChartManifestData(state.currentSongId),
+
+        songMetadatas: songMetadata,
+        songChartDatas: songChartData,
+
+        instrumentals: [],
+        vocals: []
+      });
 
       dialog.hideDialog(DialogButton.APPLY);
     }
@@ -1273,11 +1282,19 @@ class ChartEditorDialogHandler
         state.error('Failure', 'Failed to load song (${path.file}.${path.ext})');
         return;
       }
-      state.loadSong([
-        Constants.DEFAULT_VARIATION => songMetadata
-      ], [
-        Constants.DEFAULT_VARIATION => songChartData
-      ]);
+      state.loadSongFromFNFCData({
+        manifest: new ChartManifestData(state.currentSongId),
+
+        songMetadatas: [
+          Constants.DEFAULT_VARIATION => songMetadata
+        ],
+        songChartDatas: [
+          Constants.DEFAULT_VARIATION => songChartData
+        ],
+
+        instrumentals: [],
+        vocals: []
+      });
 
       dialog.hideDialog(DialogButton.APPLY);
       state.success('Success', '$loadedText (${path.file}.${path.ext})');

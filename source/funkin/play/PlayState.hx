@@ -3280,7 +3280,7 @@ class PlayState extends MusicBeatSubState
       {
         if (currentStage != null) this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState({
-          targetSongId: currentSong.id,
+          loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
           targetSongPosition: Conductor.instance.songPosition
