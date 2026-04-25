@@ -5,10 +5,8 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import funkin.util.DateUtil;
 import funkin.util.FileUtil;
-import funkin.data.song.SongData.SongChartData;
-import funkin.data.song.SongData.SongMetadata;
-import funkin.data.song.importer.ChartManifestData;
-import funkin.ui.debug.charting.util.FNFCData;
+import funkin.util.file.FNFCUtil;
+import funkin.util.file.FNFCUtil.FNFCData;
 
 /**
  * Handles saving, loading, importing, and exporting for the camera editor.
@@ -19,22 +17,17 @@ class CameraEditorImportExportHandler
   public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
-   * Loads an FNFC chart from byte data and returns its parsed contents.
+   * Loads an FNFC chart into the Camera Editor from its parsed contents.
+   *
    * @param state The Camera Editor state to apply the loaded data to.
-   * @param bytes The byte data for the FNFC file to load.
-   * @return `true` if the file was successfully loaded, `false` otherwise.
+   * @param data The parsed data of the FNFC file to load.
+   * @param path The path of the FNFC file, if it is known.
    */
-  public static function loadFNFCFromBytes(state:CameraEditorState, bytes:Bytes):Bool
+  public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Void
   {
-    var entries:FNFCData = funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.genericLoadFNFC(bytes, true);
+    state.currentWorkingFilePath = path;
+    state.saved = true; // Just loaded file!
 
-    if (entries == null)
-    {
-      throw 'Invalid or corrupted FNFC file.';
-      return false;
-    }
-
-    state.currentVariation = Constants.DEFAULT_VARIATION;
     state.songMetadatas = entries.songMetadatas;
     state.songDatas = entries.songChartDatas;
     state.songManifestData = entries.manifest;
@@ -42,23 +35,81 @@ class CameraEditorImportExportHandler
     state.audioVocalTrackData = entries.vocals;
     state.onChartLoaded();
 
-    trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals.');
+    trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals from FNFC file at "$path".');
+    CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${path})');
 
     return true;
   }
 
   /**
+   * Loads an FNFC chart into the Camera Editor from the FNFC file's byte data.
+   *
+   * @param state The Camera Editor state to apply the loaded data to.
+   * @param bytes The byte data for the FNFC file to load.
+   * @param path The path of the FNFC file. Optional, only for logging purposes.
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
+   */
+  public static function loadSongFromFNFCBytes(state:CameraEditorState, bytes:Bytes, ?path:String):Null<Array<String>>
+  {
+    try
+    {
+      var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(selectedFileBytes, true);
+      loadSongFromFNFCData(state, entries, path);
+      return [];
+    }
+    catch (e)
+    {
+      return [e];
+    }
+  }
+
+  /**
    * Loads an FNFC chart from an absolute file path and returns its parsed contents.
+   *
    * @param state The Camera Editor state to apply the loaded data to.
    * @param path The absolute path to the FNFC file to load.
-   * @return `true` if the file was successfully loaded, `false` otherwise.
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadFNFCFromPath(state:CameraEditorState, path:String):Bool
+  public static function loadSongFromFNFCPath(state:CameraEditorState, path:String):Null<Array<String>>
   {
-    var bytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
-    if (bytes == null) return false;
+    try
+    {
+      var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
+      loadSongFromFNFCData(state, entries, path);
+      return [];
+    }
+    catch (e)
+    {
+      return [e];
+    }
+  }
 
-    return loadFNFCFromBytes(state, bytes);
+  /**
+   * Fetch's a song's existing chart and audio and loads it, replacing the current song.
+   *
+   * @param state The current chart editor state.
+   * @param songId The internal song ID to load. This is the same as the song's folder name in the assets/songs directory.
+   * @param difficulty The difficulty to select after loading the song. If null, it will default to the first available difficulty.
+   * @param variation The variation to select after loading the song. If null, it will default to the first available variation.
+   *
+   * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
+   */
+  public static function loadSongAsTemplate(state:CameraEditorState, songId:String, ?difficulty:String, ?variation:String):Null<Array<String>>
+  {
+    try
+    {
+      var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
+      loadSongFromFNFCData(state, entries, 'template:$songId');
+
+      if (difficulty != null) state.currentDifficulty = difficulty;
+      if (variation != null) state.switchVariation(variation);
+
+      return [];
+    }
+    catch (e)
+    {
+      return ['$e'];
+    }
   }
 
   /**
@@ -67,6 +118,7 @@ class CameraEditorImportExportHandler
    */
   public static function getLatestBackupPath():Null<String>
   {
+    // lmao just reuse code who gaf
     return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupPath('camera-editor-');
   }
 
@@ -76,74 +128,37 @@ class CameraEditorImportExportHandler
    */
   public static function getLatestBackupInfo():Null<String>
   {
+    // lmao just reuse code who gaf
     return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupInfo('camera-editor-');
   }
 
-  /**
-   * Save the current chart data to the specified path.
-   * @param state The current state of the camera editor, containing the chart data to save.
-   * @param force If `true`, will write the file without prompting the user.
-   *    If a `targetPath` to save to is not specified, save to the `backups` directory.
-   * @param targetPath The path to save to.
-   * @param onSaveCb Callback to call when the file is saved.
-   * @param onCancelCb Callback to call when the file is not saved.
-   */
-  public static function saveFNFCToPath(state:CameraEditorState, force:Bool = false, ?targetPath:String, onSaveCb:Null<String->Void>,
-      onCancelCb:Null<Void->Void>):Void
+  static function buildFNFCDataFromCurrentChart(state:CameraEditorState):FNFCData
   {
-    var zipEntries:Array<haxe.zip.Entry> = [];
+    return {
+      songMetadatas: state.songMetadatas,
+      songChartDatas: state.songDatas,
+      manifest: state.songManifestData,
+      instrumentals: state.audioInstTrackData,
+      vocals: state.audioVocalTrackData
+    };
+  }
 
-    var songId:String = state.songManifestData.songId;
+  /**
+   * Build an `.fnfc` file from the current chart data and export it to a user-defined location or an autosave location.
+   *
+   * @param state The Camera Editor state containing the chart data to export.
+   * @param force Whether to export without prompting. `false` will prompt the user for a location.
+   * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
+   * @param onSaveCb Callback for when the file is saved.
+   * @param onCancelCb Callback for when saving is cancelled.
+   */
+  public static function exportCurrentChartToFNFC(state:CameraEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void,
+      ?onCancelCb:Void->Void):Void
+  {
+    var fnfcData:FNFCData = CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
+    var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
 
-    var variations:Array<String> = state.songMetadatas.keyValues();
-
-    for (variation in variations)
-    {
-      var variationId:String = variation;
-      if (variation == '' || variation == 'default' || variation == 'normal')
-      {
-        variationId = '';
-      }
-
-      if (variationId == '')
-      {
-        var variationMetadata:Null<SongMetadata> = state.songMetadatas.get(variation);
-        if (variationMetadata != null)
-        {
-          variationMetadata.version = funkin.data.song.SongRegistry.SONG_METADATA_VERSION;
-          variationMetadata.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtil.makeZIPEntry('${songId}-metadata.json', variationMetadata.serialize()));
-          trace('Metadata: ' + variationMetadata.generatedBy);
-        }
-        var variationChart:Null<SongChartData> = state.songDatas.get(variation);
-        if (variationChart != null)
-        {
-          variationChart.version = funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION;
-          variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtil.makeZIPEntry('${songId}-chart.json', variationChart.serialize()));
-        }
-      }
-      else
-      {
-        var variationMetadata:Null<SongMetadata> = state.songMetadatas.get(variation);
-        if (variationMetadata != null)
-        {
-          zipEntries.push(FileUtil.makeZIPEntry('${songId}-metadata-$variationId.json', variationMetadata.serialize()));
-        }
-        var variationChart:Null<SongChartData> = state.songDatas.get(variation);
-        if (variationChart != null)
-        {
-          variationChart.version = funkin.data.song.SongRegistry.SONG_CHART_DATA_VERSION;
-          variationChart.generatedBy = funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY;
-          zipEntries.push(FileUtil.makeZIPEntry('${songId}-chart-$variationId.json', variationChart.serialize()));
-        }
-      }
-    }
-
-    if (state.audioInstTrackData != null) zipEntries = zipEntries.concat(makeZIPEntriesFromInstrumentals(state));
-    if (state.audioVocalTrackData != null) zipEntries = zipEntries.concat(makeZIPEntriesFromVocals(state));
-
-    zipEntries.push(FileUtil.makeZIPEntry('manifest.json', state.songManifestData.serialize()));
+    var songId:String = fnfcData.manifest.songId;
 
     trace('Exporting ${zipEntries.length} files to ZIP...');
 
@@ -221,56 +236,6 @@ class CameraEditorImportExportHandler
       }
       catch (e) {}
     }
-  }
-
-  /**
-   * Create a list of ZIP file entries from the current loaded instrumental tracks in the chart eidtor.
-   * @param state The chart editor state.
-   * @return `Array<haxe.zip.Entry>`
-   */
-  public static function makeZIPEntriesFromInstrumentals(state:CameraEditorState):Array<haxe.zip.Entry>
-  {
-    var zipEntries = [];
-
-    var instTrackIds:Array<String> = state.audioInstTrackData.keys().array();
-    for (key in instTrackIds)
-    {
-      var instAudioData:Null<Bytes> = state.audioInstTrackData.get(key);
-      if (instAudioData == null)
-      {
-        trace(' WARNING '.warning() + ' Failed to access inst track ($key)');
-        continue;
-      }
-      var instPath:String = state.songManifestData.getInstFileName(key);
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes(instPath, instAudioData));
-    }
-
-    return zipEntries;
-  }
-
-  /**
-   * Create a list of ZIP file entries from the current loaded vocal tracks in the chart eidtor.
-   * @param state The chart editor state.
-   * @return `Array<haxe.zip.Entry>`
-   */
-  public static function makeZIPEntriesFromVocals(state:CameraEditorState):Array<haxe.zip.Entry>
-  {
-    var zipEntries = [];
-
-    var vocalTrackIds:Array<String> = state.audioVocalTrackData.keys().array();
-    for (key in vocalTrackIds)
-    {
-      var vocalAudioData:Null<Bytes> = state.audioVocalTrackData.get(key);
-      if (vocalAudioData == null)
-      {
-        trace(' WARNING '.warning() + ' Failed to access vocal track ($key)');
-        continue;
-      }
-      var vocalPath:String = state.songManifestData.getVocalsFileName(key);
-      zipEntries.push(FileUtil.makeZIPEntryFromBytes(vocalPath, vocalAudioData));
-    }
-
-    return zipEntries;
   }
 }
 #end
