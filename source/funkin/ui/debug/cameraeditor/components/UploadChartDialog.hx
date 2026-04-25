@@ -17,7 +17,7 @@ import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
-import funkin.ui.debug.charting.util.FNFCData;
+import funkin.util.file.FNFCUtil.FNFCData;
 
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
 class UploadChartDialog extends Dialog
@@ -111,30 +111,18 @@ class UploadChartDialog extends Dialog
 
     if (selectedFile == null || selectedFile.bytes == null) return;
 
-    var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFile.bytes, true);
-    if (entries == null)
+    try
+    {
+      ChartEditorImportExportHandler.loadDataFromFNFCBytes(cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
+
+      this.hideDialog(DialogButton.APPLY);
+    }
+    catch (e)
     {
       CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
       this.hideDialog(DialogButton.APPLY);
       return;
     }
-
-    CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${selectedFile.name})');
-
-    if (selectedFile.fullPath != null)
-    {
-      this.cameraEditorState.currentWorkingFilePath = selectedFile.fullPath;
-      this.cameraEditorState.saved = true; // Just loaded file!
-    }
-
-    this.cameraEditorState.songMetadatas = entries.songMetadatas;
-    this.cameraEditorState.songDatas = entries.songChartDatas;
-    this.cameraEditorState.songManifestData = entries.manifest;
-    this.cameraEditorState.audioInstTrackData = entries.instrumentals;
-    this.cameraEditorState.audioVocalTrackData = entries.vocals;
-    this.cameraEditorState.onChartLoaded();
-
-    this.hideDialog(DialogButton.APPLY);
   }
 
   /**
@@ -142,34 +130,16 @@ class UploadChartDialog extends Dialog
    */
   function onDropFileChartBox(path:String):Void
   {
-    var selectedFileBytes:Null<Bytes> = FileUtil.readBytesFromPath(path);
-    if (selectedFileBytes == null)
+    try
     {
-      trace('Failed to load bytes for FNFC from $path');
-      return;
+      CameraEditorImportExportHandler.loadSongFromFNFCBytes(cameraEditorState, path);
     }
-
-    var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFileBytes, true);
-    if (entries == null)
+    catch (e)
     {
-      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${path})');
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
       this.hideDialog(DialogButton.APPLY);
       return;
     }
-
-    CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${path})');
-
-    this.cameraEditorState.currentWorkingFilePath = path;
-    this.cameraEditorState.saved = true; // Just loaded file!
-
-    this.cameraEditorState.songMetadatas = entries.songMetadatas;
-    this.cameraEditorState.songDatas = entries.songChartDatas;
-    this.cameraEditorState.songManifestData = entries.manifest;
-    this.cameraEditorState.audioInstTrackData = entries.instrumentals;
-    this.cameraEditorState.audioVocalTrackData = entries.vocals;
-    this.cameraEditorState.onChartLoaded();
-
-    this.hideDialog(DialogButton.APPLY);
   }
 
   function onCancelBrowse():Void

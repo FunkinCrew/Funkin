@@ -1029,11 +1029,17 @@ class FileUtil
     return o.getBytes();
   }
 
+  /**
+   * Parse a ZIP file from a Bytes object, returning a list of file Entries.
+   *
+   * @param input The Bytes object containing the ZIP data to parse.
+   * @return The parsed entries for each individual file.
+   */
   public static function readZIPFromBytes(input:Bytes):Array<Entry>
   {
     var bytesInput = new haxe.io.BytesInput(input);
     var zippedEntries = haxe.zip.Reader.readZip(bytesInput);
-    var results:Array<Entry> = new Array<Entry>();
+    var results:Array<Entry> = [];
     for (entry in zippedEntries)
     {
       if (entry.compressed)
@@ -1047,9 +1053,27 @@ class FileUtil
     return results;
   }
 
+  /**
+   * Parse a ZIP file from a path, returning a list of file Entries.
+   *
+   * @param input The path to the ZIP file.
+   * @return The parsed entries for each individual file.
+   */
+  public static function readZIPFromPath(input:String):Array<Entry>
+  {
+    var bytes:Bytes = readBytesFromPath(input);
+    return readZIPFromBytes(bytes);
+  }
+
+  /**
+   * Given a list of ZIP file entries, create a Map to access entries by filename.
+   *
+   * @param input The unsorted list of entries.
+   * @return A sorted map of entries by filename.
+   */
   public static function mapZIPEntriesByName(input:Array<Entry>):Map<String, Entry>
   {
-    var results:Map<String, Entry> = new Map<String, Entry>();
+    var results:Map<String, Entry> = [];
     for (entry in input)
     {
       results.set(entry.fileName, entry);
@@ -1072,7 +1096,7 @@ class FileUtil
   }
 
   /**
-   * Create a ZIP file entry from a file name and its string contents.
+   * Create a ZIP file entry from a file name and its byte data.
    *
    * @param name The name of the file. You can use slashes to create subdirectories.
    * @param data The byte data of the file.

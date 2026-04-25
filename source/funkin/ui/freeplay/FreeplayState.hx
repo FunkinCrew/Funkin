@@ -1896,7 +1896,7 @@ class FreeplayState extends MusicBeatSubState
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
         FlxG.switchState(() -> new ChartEditorState({
-          targetSongId: targetSongID,
+          loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
         }));
