@@ -753,7 +753,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
       trace('Processing event: ' + eventData.eventKind + ' at ' + eventData.time);
 
-      dispatchEvent(new SongEventScriptEvent(eventData));
+      var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+      dispatchEvent(eventEvent);
+      
+      if (eventEvent.eventCanceled) continue;
       
       switch (eventData.eventKind)
       {
