@@ -72,7 +72,7 @@ class ChartManifestData
    */
   public function getInstFileName(?variation:String):String
   {
-    if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
+    if (variation.isBlank()) variation = Constants.DEFAULT_VARIATION;
 
     var instId:String = variation == Constants.DEFAULT_VARIATION ? '' : '-$variation';
 
@@ -90,7 +90,7 @@ class ChartManifestData
    */
   public function getVocalsFileName(charId:String, ?variation:String):String
   {
-    if (variation == null || variation == '') variation = Constants.DEFAULT_VARIATION;
+    if (variation.isBlank()) variation = Constants.DEFAULT_VARIATION;
 
     var vocalId:String = variation == Constants.DEFAULT_VARIATION ? '-$charId' : '-$charId-$variation';
 

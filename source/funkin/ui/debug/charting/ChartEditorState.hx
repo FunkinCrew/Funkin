@@ -2521,24 +2521,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     refresh();
 
-    if (params != null && params.fnfcTargetPath != null)
+    if (params != null && params.loadFromPath != null)
     {
       // Chart editor was opened from the command line. Open the FNFC file now!
-      var result:Null<Array<String>> = this.loadFromFNFCPath(params.fnfcTargetPath);
+      var result:Null<Array<String>> = this.loadSongFromFNFCPath(params.loadFromPath);
       if (result != null)
       {
         if (result.length == 0)
         {
-          this.success('Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+          this.success('Loaded Chart', 'Loaded chart (${params.loadFromPath})');
         }
         else
         {
-          this.warning('Loaded Chart', 'Loaded chart with issues (${params.fnfcTargetPath})\n${result.join("\n")}');
+          this.warning('Loaded Chart', 'Loaded chart with issues (${params.loadFromPath})\n${result.join("\n")}');
         }
       }
       else
       {
-        this.error('Failure', 'Failed to load chart (${params.fnfcTargetPath})');
+        this.error('Failure', 'Failed to load chart (${params.loadFromPath})');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog(false);
@@ -2548,11 +2548,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
     }
-    else if (params != null && params.targetSongId != null)
+    else if (params != null && params.loadFromTemplate != null)
     {
+      var targetSongId = params.loadFromTemplate;
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
-      this.loadSongAsTemplate(params.targetSongId, targetSongDifficulty, targetSongVariation);
+      this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
 
       // Set the scroll position to the current song time.
       scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
@@ -2678,7 +2679,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menuItemRecentChart.onClick = function(_event)
       {
         // Load chart from file
-        var result:Null<Array<String>> = this.loadFromFNFCPath(chartPath);
+        var result:Null<Array<String>> = this.loadSongFromFNFCPath(chartPath);
         if (result != null)
         {
           if (result.length == 0)
@@ -3286,12 +3287,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (currentWorkingFilePath != null)
       {
-        this.exportAllSongData(true, currentWorkingFilePath);
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath);
         this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
       else
       {
-        this.exportAllSongData(false, null, function(path:String)
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
         {
           // CTRL + SHIFT + S Successful
           this.success('Saved Chart', 'Chart saved successfully to ${path}.');
@@ -3301,7 +3302,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         });
       }
     };
-    menubarItemSaveChartAs.onClick = _ -> this.exportAllSongData(false, null, function(path:String)
+    menubarItemSaveChartAs.onClick = _ -> this.exportCurrentChartToFNFC(false, null, function(path:String)
     {
       // CTRL + SHIFT + S Successful
       this.success('Saved Chart', 'Chart saved successfully to ${path}.');
@@ -3690,7 +3691,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Auto-save to temp file.
     if (needsAutoSave)
     {
-      this.exportAllSongData(true, null);
+      this.exportCurrentChartToFNFC(true, null);
       if (beforePlaytest)
       {
         displayAutosavePopup = true;
@@ -3748,7 +3749,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (needsAutoSave)
     {
-      this.exportAllSongData(true, null);
+      this.exportCurrentChartToFNFC(true, null);
     }
   }
 
@@ -3765,7 +3766,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (needsAutoSave)
     {
-      this.exportAllSongData(true, null);
+      this.exportCurrentChartToFNFC(true, null);
     }
   }
 
@@ -6119,7 +6120,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (currentWorkingFilePath == null || FlxG.keys.pressed.SHIFT)
       {
         // CTRL + SHIFT + S = Save As
-        this.exportAllSongData(false, null, function(path:String)
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
         {
           // CTRL + SHIFT + S Successful
           this.success('Saved Chart', 'Chart saved successfully to ${path}.');
@@ -6131,7 +6132,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else
       {
         // CTRL + S = Save Chart
-        this.exportAllSongData(true, currentWorkingFilePath);
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath);
         this.success('Saved Chart', 'Chart saved successfully to ${currentWorkingFilePath}.');
       }
     }
@@ -7624,17 +7625,25 @@ enum abstract ChartEditorLiveInputStyle(String)
   public var WASDKeys;
 }
 
+/**
+ * Parameters to initialize the Chart Editor with.
+ * Most of these are optional.
+ */
 typedef ChartEditorParams =
 {
-  /**
-   * If non-null, load this song immediately instead of the welcome screen.
-   */
-  var ?fnfcTargetPath:String;
+  // CHART LOADING
 
   /**
-   * If non-null, load this song immediately instead of the welcome screen.
+   * If non-null, load an existing song directly from a file path.
    */
-  var ?targetSongId:String;
+  var ?loadFromPath:String;
+
+  /**
+   * If non-null, load an existing song directly from the game's assets.
+   */
+  var ?loadFromTemplate:String;
+
+  // STARTING POSITION
 
   /**
    * If non-null, load this difficulty immediately instead of the default difficulty.
@@ -7647,7 +7656,8 @@ typedef ChartEditorParams =
   var ?targetSongVariation:String;
 
   /**
-   * If non-null, set this as the song position immediately instead of the default song position.
+   * If non-null, load into the editor with the cursor directly at the given song position,
+   * instead of at the start of the song.
    */
   var ?targetSongPosition:Float;
 };

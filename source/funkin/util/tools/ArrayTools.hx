@@ -7,6 +7,31 @@ package funkin.util.tools;
 class ArrayTools
 {
   /**
+   * Append each element of the second array to the first array.
+   * Modifies the array in place, unlike `Array.concat` which creates a copy.
+   *
+   * @param array The array to append to.
+   * @param elements The elements to append.
+   * @return The array with the elements appended.
+   */
+  public static function append<T>(array:Array<T>, elements:Array<T>):Void
+  {
+    for (element in elements) array.push(element);
+  }
+
+  /**
+   * Append each element of the second array to the first array, but only if the element is not already present.
+   *
+   * @param array The array to append to.
+   * @param elements The elements to append.
+   * @return The array with the elements appended.
+   */
+  public static function appendUnique<T>(array:Array<T>, elements:Array<T>):Void
+  {
+    for (element in elements) pushUnique(array, element);
+  }
+
+  /**
    * Push an element to the array if it is not already present.
    *
    * @param input The array to push to
@@ -22,6 +47,7 @@ class ArrayTools
 
   /**
    * Remove all elements from the array, without creating a new array.
+   *
    * @param array The array to clear.
    */
   public static function clear<T>(array:Array<T>):Void
@@ -60,6 +86,7 @@ class ArrayTools
 
   /**
    * Return true only if both arrays contain the same elements (possibly in a different order).
+   *
    * @param a The first array to compare.
    * @param b The second array to compare.
    * @return Weather both arrays contain the same elements.
@@ -80,6 +107,7 @@ class ArrayTools
 
   /**
    * Returns true if `superset` contains all elements of `subset`.
+   *
    * @param superset The array to query for each element.
    * @param subset The array containing the elements to query for.
    * @return Weather `superset` contains all elements of `subset`.
@@ -100,6 +128,7 @@ class ArrayTools
 
   /**
    * Returns true if `superset` contains all elements of `subset`.
+   *
    * @param subset The array containing the elements to query for.
    * @param superset The array to query for each element.
    * @return Weather `superset` contains all elements of `subset`.
@@ -112,6 +141,7 @@ class ArrayTools
 
   /**
    * Like `join` but adds a word before the last element.
+   *
    * @param array The array to join.
    * @param separator The separator to use between elements.
    * @param andWord The word to use before the last element.

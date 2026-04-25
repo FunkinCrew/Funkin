@@ -473,13 +473,6 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   var redoHistory:Array<CameraEditorCommand> = [];
 
-  // Parameters
-
-  /**
-   * The params which were passed in when the Camera Editor was initialized.
-   */
-  var params:Null<CameraEditorParams>;
-
   /**
    * Whether the undo/redo histories have changed since the last time the UI was updated.
    */
@@ -522,6 +515,11 @@ class CameraEditorState extends UIState implements ConsoleClass
    * LIFE CYCLE FUNCTIONS
    */
   // ==============================
+
+  /**
+   * The params which were passed in when the Camera Editor was initialized.
+   */
+  var params:Null<CameraEditorParams>;
 
   public function new(?params:CameraEditorParams)
   {
@@ -628,34 +626,74 @@ class CameraEditorState extends UIState implements ConsoleClass
     menubarItemRedo.shortcutText = '⌘+Y';
     #end
 
-    if (params != null && params.fnfcTargetPath != null)
+    if (params != null && params.loadFromPath != null)
     {
-      // Camera editor was opened from the command line. Open the FNFC file now!
-      var selectedFileBytes:Null<Bytes> = FileUtil.readBytesFromPath(params.fnfcTargetPath);
-      if (selectedFileBytes == null)
+      try
       {
-        trace('Failed to load bytes for FNFC from ${params.fnfcTargetPath}');
-        return;
-      }
+        var success:Bool = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
 
-      var entries = ChartEditorImportExportHandler.genericLoadFNFC(selectedFileBytes, true);
-      if (entries == null)
+        if (success)
+        {
+          CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.loadFromPath})');
+
+          // If a specific difficulty/variation/position was requested, load those now.
+          if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
+          if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
+          setTimePosition(params.targetSongPosition ?? 0);
+        }
+        else
+        {
+          CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${params.loadFromPath})');
+          // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+          var welcomeDialog = this.openWelcomeDialog();
+          if (shouldShowBackupAvailableDialog)
+          {
+            openBackupAvailableDialog(welcomeDialog);
+          }
+        }
+      }
+      catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${params.fnfcTargetPath})');
-        return;
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog();
+        if (shouldShowBackupAvailableDialog)
+        {
+          openBackupAvailableDialog(welcomeDialog);
+        }
       }
+    }
+    else if (params != null && params.loadFromTemplate != null)
+    {
+      var targetSongId = params.loadFromTemplate;
+      var targetSongDifficulty = params.targetSongDifficulty ?? null;
+      var targetSongVariation = params.targetSongVariation ?? null;
 
-      CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.fnfcTargetPath})');
+      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongAsTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
 
-      this.currentWorkingFilePath = params.fnfcTargetPath;
-      this.saved = true; // Just loaded file!
+      var success:Bool = result != null && result.length == 0;
 
-      this.songMetadatas = entries.songMetadatas;
-      this.songDatas = entries.songChartDatas;
-      this.songManifestData = entries.manifest;
-      this.audioInstTrackData = entries.instrumentals;
-      this.audioVocalTrackData = entries.vocals;
-      this.onChartLoaded();
+      if (result != null && result.length >= 0)
+      {
+        // TODO: Display warnings from loading the song.
+        CameraEditorNotificationHandler.success(this, 'Loaded Song', 'Loaded Song (${targetSongId})');
+        setTimePosition(params.targetSongPosition ?? 0);
+      }
+      else if (result != null)
+      {
+        CameraEditorNotificationHandler.success(this, 'Loaded Song', 'Loaded Song (${targetSongId})');
+        setTimePosition(params.targetSongPosition ?? 0);
+      }
+      else
+      {
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', 'Failed to load song (${params.loadFromPath})');
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog();
+        if (shouldShowBackupAvailableDialog)
+        {
+          openBackupAvailableDialog(welcomeDialog);
+        }
+      }
     }
     else
     {
@@ -2311,6 +2349,44 @@ class CameraEditorState extends UIState implements ConsoleClass
     return dialog;
   }
 }
+
+/**
+ * Parameters to initialize the Camera Editor with.
+ * Most of these are optional.
+ */
+typedef CameraEditorParams =
+{
+  // CHART LOADING
+
+  /**
+   * If non-null, load an existing song directly from a file path.
+   */
+  var ?loadFromPath:String;
+
+  /**
+   * If non-null, load an existing song directly from the game's assets.
+   */
+  var ?loadFromTemplate:String;
+
+  // STARTING POSITION
+
+  /**
+   * If non-null, load this difficulty immediately instead of the default difficulty.
+   */
+  var ?targetSongDifficulty:String;
+
+  /**
+   * If non-null, load this variation immediately instead of the default variation.
+   */
+  var ?targetSongVariation:String;
+
+  /**
+   * If non-null, load into the editor with the cursor directly at the given song position,
+   * instead of at the start of the song.
+   */
+  var ?targetSongPosition:Float;
+};
+
 #end
 
 /**
@@ -2328,11 +2404,3 @@ enum abstract CameraEditorTheme(String)
    */
   public var Dark;
 }
-
-typedef CameraEditorParams =
-{
-  /**
-   * If non-null, load this chart immediately instead of the welcome screen.
-   */
-  var ?fnfcTargetPath:String;
-};
