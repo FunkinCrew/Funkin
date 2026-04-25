@@ -35,6 +35,11 @@ typedef FreeplayStyleData =
   public var capsuleAsset:String;
 
   /**
+   * Asset key for the freeplay random ost.
+   */
+  public var randomSong:String;
+
+  /**
    * Color data for the capsule text outline.
    * the order of this array goes as follows: [DESELECTED, SELECTED]
    */
