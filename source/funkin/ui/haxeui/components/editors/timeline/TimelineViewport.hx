@@ -527,6 +527,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     {
       var gestureParams:FunkinGestureParams = {};
       gestureParams.preGestureStart = preGestureStart;
+      gestureParams.onGestureStart = onGestureStart;
+      gestureParams.onGestureEnd = onGestureEnd;
       gestureParams.onMagnificationGesture = onMagnificationGesture;
       gestureParams.onScrollGesture = onScrollGesture;
       gestureParams.onMomentumScrollGesture = onScrollGesture;
@@ -771,10 +773,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseDown(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     var localX:Float = e.screenX - _viewport.screenLeft;
     var localY:Float = e.screenY - _viewport.screenTop;
     var additive:Bool = e.ctrlKey;
@@ -855,10 +853,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseMove(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     var localX:Float = e.screenX - _viewport.screenLeft;
     var localY:Float = e.screenY - _viewport.screenTop;
 
@@ -980,10 +974,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseUp(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
 
@@ -1032,10 +1022,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseDown(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     if (_dragMode != NONE) return;
 
     _dragMode = PANNING;
@@ -1049,10 +1035,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseUp(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
 
@@ -1065,10 +1047,6 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseWheel(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     if (e.shiftKey)
     {
       var localX = e.screenX - _viewport.screenLeft;
@@ -1270,6 +1248,16 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   function preGestureStart(g:Gesture):Bool
   {
     return _hitTest(g.x, g.y);
+  }
+
+  function onGestureStart(g:Gesture):Void
+  {
+    if (hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+  }
+
+  function onGestureEnd(g:Gesture):Void
+  {
+    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
   }
 
   function onMagnificationGesture(delta:Float):Void

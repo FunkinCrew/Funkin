@@ -87,10 +87,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onMouseWheel(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     var event:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.ZOOM);
     event.zoomDelta = e.delta;
     _viewport.dispatch(event);
@@ -108,10 +104,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseDown(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     if (_panSource != NONE) return;
     Screen.instance.registerEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
     _beginPan(MIDDLE_MOUSE);
@@ -124,10 +116,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function _onMiddleMouseUp(e:MouseEvent):Void
   {
-    #if FEATURE_MACOS_GESTURES
-    if (gesture.gestureActive) return;
-    #end
-
     Screen.instance.unregisterEvent(MouseEvent.MIDDLE_MOUSE_UP, _onMiddleMouseUp);
     if (_panSource != MIDDLE_MOUSE) return;
     _endPan();
@@ -186,6 +174,8 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function onGestureStart(g:Gesture):Void
   {
+    if (hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+
     if (g.type == SCROLL)
     {
       _viewport.dispatch(new CameraViewportEvent(CameraViewportEvent.PAN_START));
@@ -194,6 +184,8 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function onGestureEnd(g:Gesture):Void
   {
+    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
+
     if (g.type == SCROLL)
     {
       _viewport.dispatch(new CameraViewportEvent(CameraViewportEvent.PAN_END));
