@@ -13,6 +13,7 @@ typedef FunkinGestureParams =
   var ?onMagnificationGesture:Float->Void;
   var ?onPanGesture:Array<Float>->Void;
   var ?onScrollGesture:Array<Float>->Void;
+  var ?onMomentumScrollGesture:Array<Float>->Void;
 }
 
 class FunkinGesture
@@ -24,6 +25,7 @@ class FunkinGesture
   public var onMagnificationGesture:Float->Void;
   public var onPanGesture:Array<Float>->Void;
   public var onScrollGesture:Array<Float>->Void;
+  public var onMomentumScrollGesture:Array<Float>->Void;
 
   // Gesture values.
   var _lastMagnification:Float = 0;
@@ -44,11 +46,11 @@ class FunkinGesture
       this.onMagnificationGesture = params.onMagnificationGesture;
       this.onPanGesture = params.onPanGesture;
       this.onScrollGesture = params.onScrollGesture;
+      this.onMomentumScrollGesture = params.onMomentumScrollGesture;
     }
 
     Gesture.onStart.add(_onGestureStart);
     Gesture.onMove.add(_onGestureMove);
-    Gesture.onMove.add(_onGestureScroll);
     Gesture.onEnd.add(_onGestureEnd);
     Gesture.onCancel.add(_onGestureCancel);
     #end
@@ -59,7 +61,6 @@ class FunkinGesture
     #if FEATURE_MACOS_GESTURES
     Gesture.onStart.remove(_onGestureStart);
     Gesture.onMove.remove(_onGestureMove);
-    Gesture.onMove.remove(_onGestureScroll);
     Gesture.onEnd.remove(_onGestureEnd);
     Gesture.onCancel.remove(_onGestureCancel);
     #end
@@ -131,41 +132,16 @@ class FunkinGesture
           onScrollGesture(delta);
         }
 
+      case MOMENTUMSCROLL:
+        final delta:Array<Float> = [g.momentumScrollX, g.momentumScrollY];
+
+        if (onMomentumScrollGesture != null)
+        {
+          onMomentumScrollGesture(delta);
+        }
+
       case ROTATION | UNSPECIFIED:
         // ignored
-    }
-    #end
-  }
-
-  function _onGestureScroll(g:Gesture):Void
-  {
-    #if FEATURE_MACOS_GESTURES
-    if (g.type != SCROLL) return;
-
-    if (!gestureActive)
-    {
-      var cancel:Bool = false;
-
-      if (preGestureStart != null)
-      {
-        cancel = !preGestureStart(g);
-      }
-
-      if (cancel) return;
-
-      gestureActive = true;
-
-      if (onGestureStart != null)
-      {
-        onGestureStart(g);
-      }
-    }
-
-    final delta:Array<Float> = [g.scrollX, g.scrollY];
-
-    if (onScrollGesture != null)
-    {
-      onScrollGesture(delta);
     }
     #end
   }
