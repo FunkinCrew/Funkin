@@ -285,9 +285,7 @@ class TimelineViewport extends Box
 
   public function getBlockTopPositionFromLayerIndex(layerIndex:Int):Float
   {
-    return (layerIndex * TimelineViewport.LAYER_HEIGHT
-      + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2)
-      - layerScrollOffsetPx;
+    return (layerIndex * TimelineViewport.LAYER_HEIGHT + (TimelineViewport.LAYER_HEIGHT - TimelineEventBlock.BLOCK_HEIGHT) / 2) - layerScrollOffsetPx;
   }
 
   override public function onDestroy():Void
@@ -526,6 +524,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       gestureParams.preGestureStart = preGestureStart;
       gestureParams.onMagnificationGesture = onMagnificationGesture;
       gestureParams.onScrollGesture = onScrollGesture;
+      gestureParams.onMomentumScrollGesture = onScrollGesture;
 
       gesture = new FunkinGesture(gestureParams);
     }
