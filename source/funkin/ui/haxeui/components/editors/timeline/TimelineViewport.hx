@@ -31,6 +31,9 @@ class TimelineViewport extends Box
   public static inline var LAYER_HEIGHT:Int = 48;
   public static inline var MIN_BLOCK_WIDTH:Float = 10.0;
   public static inline var PIXELS_PER_STEP_BASE:Float = 12.0;
+  public static inline var EDGE_AUTOSCROLL_ZONE_PX:Float = 40.0;
+  public static inline var EDGE_AUTOSCROLL_MAX_PX_PER_SEC:Float = 1500.0;
+  public static inline var EDGE_AUTOSCROLL_MAX_OVERDRAG_FACTOR:Float = 3.0;
 
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var scrollOffsetMs:Float;
@@ -60,6 +63,11 @@ class TimelineViewport extends Box
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
 
+  @:noCompletion public var _eventsInstance:TimelineViewportEvents;
+  @:noCompletion public var _autoScrollDragActive:Bool = false;
+  @:noCompletion public var _autoScrollScreenX:Float = 0;
+  @:noCompletion public var _autoScrollScreenY:Float = 0;
+  @:noCompletion public var _autoScrollShiftKey:Bool = false;
   public var pixelsPerMs(get, never):Float;
 
   function get_pixelsPerMs():Float
@@ -142,6 +150,11 @@ class TimelineViewport extends Box
     else if (layerBottom > viewBottom) layerScrollOffsetPx = layerBottom - viewH;
 
     refreshLayout();
+  }
+
+  public function tickEdgeAutoScroll(elapsed:Float):Void
+  {
+    _eventsInstance.tickEdgeAutoScroll(elapsed);
   }
 
   public function refreshLayout():Void
@@ -513,6 +526,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     super(viewport);
     _viewport = viewport;
+    _viewport._eventsInstance = this;
   }
 
   override public function register():Void
@@ -910,6 +924,14 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         _viewport.setSelectedEvents(_computeBoxSelection(localX, localY));
         Screen.instance.setCursor("crosshair");
     }
+
+    if (_dragMode == SEEKING || _dragMode == MOVE)
+    {
+      _viewport._autoScrollDragActive = true;
+      _viewport._autoScrollScreenX = e.screenX;
+      _viewport._autoScrollScreenY = e.screenY;
+      _viewport._autoScrollShiftKey = e.shiftKey;
+    }
   }
 
   function _computeBoxSelection(endX:Float, endY:Float):Array<SongEventData>
@@ -976,6 +998,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_MOVE, _onMouseMove);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_UP, _onMouseUp);
+
+    _viewport._autoScrollDragActive = false;
 
     var wasMode:TimelineDragMode = _dragMode;
 
@@ -1234,6 +1258,70 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   {
     var timeline = _viewport.findAncestor(EventTimeline);
     return timeline == null ? true : timeline.snapEnabled;
+  }
+
+  public function tickEdgeAutoScroll(elapsed:Float):Void
+  {
+    if (!_viewport._autoScrollDragActive) return;
+
+    var modeEligible:Bool = _dragMode == SEEKING || _dragMode == MOVE;
+    if (!modeEligible) return;
+
+    if (_viewport.pixelsPerMs <= 0) return;
+    var w:Float = _viewport.width;
+    if (w <= 0) return;
+
+    var localX:Float = _viewport._autoScrollScreenX - _viewport.screenLeft;
+    var zonePx:Float = TimelineViewport.EDGE_AUTOSCROLL_ZONE_PX;
+    var maxFactor:Float = TimelineViewport.EDGE_AUTOSCROLL_MAX_OVERDRAG_FACTOR;
+    var maxSpeed:Float = TimelineViewport.EDGE_AUTOSCROLL_MAX_PX_PER_SEC;
+    var velocityPx:Float = 0;
+
+    if (localX < zonePx)
+    {
+      var t:Float = (zonePx - localX) / zonePx;
+      if (t > maxFactor) t = maxFactor;
+      velocityPx = -t * maxSpeed;
+    }
+    else if (localX > w - zonePx)
+    {
+      var t:Float = (localX - (w - zonePx)) / zonePx;
+      if (t > maxFactor) t = maxFactor;
+      velocityPx = t * maxSpeed;
+    }
+    else
+    {
+      return;
+    }
+
+    var pxPerMs:Float = _viewport.pixelsPerMs * _viewport.zoomLevel;
+    if (pxPerMs <= 0) return;
+
+    var deltaMs:Float = (velocityPx / pxPerMs) * elapsed;
+    var prevScroll:Float = _viewport.scrollOffsetMs;
+    _viewport.scrollOffsetMs = _viewport.scrollOffsetMs + deltaMs;
+    if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
+    if (_viewport.songLengthMs > 0 && _viewport.scrollOffsetMs > _viewport.songLengthMs) _viewport.scrollOffsetMs = _viewport.songLengthMs;
+    if (_viewport.scrollOffsetMs == prevScroll) return;
+
+    _viewport.refreshLayout();
+
+    var shiftKey:Bool = _viewport._autoScrollShiftKey;
+    var localY:Float = _viewport._autoScrollScreenY - _viewport.screenTop;
+
+    switch (_dragMode)
+    {
+      case SEEKING:
+        var seekMs:Float = _viewport.pixelXToMs(localX);
+        if (seekMs < 0) seekMs = 0;
+        if (seekMs > _viewport.songLengthMs) seekMs = _viewport.songLengthMs;
+        var seekEvent:TimelineEvent = new TimelineEvent(TimelineEvent.SEEK);
+        seekEvent.seekPositionMs = seekMs;
+        _viewport.dispatch(seekEvent);
+      case MOVE:
+        _handleDragMove(localX, localY - TimelineViewport.TOP_BAR_HEIGHT, _snapEnabled() != shiftKey);
+      case _:
+    }
   }
 
   #if FEATURE_MACOS_GESTURES
