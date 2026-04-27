@@ -192,16 +192,22 @@ class WelcomeDialog extends Dialog
       this.hideDialog(DialogButton.CANCEL);
 
       // Load chart from file
-      var result:Bool = CameraEditorImportExportHandler.loadFNFCFromPath(state, chartPath);
+      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
 
-      if (result)
+      if (result != null)
       {
-        CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${chartPath})');
-        state.currentWorkingFilePath = chartPath;
+        if (result.length == 0)
+        {
+          CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${chartPath})');
+        }
+        else
+        {
+          CameraEditorNotificationHandler.warning(state, 'Loaded Chart', 'Loaded chart with issues (${chartPath})\n${result.join("\n")}');
+        }
       }
       else
       {
-        CameraEditorNotificationHandler.failure(state, 'Failed to Load Chart', 'Failed to load chart (${chartPath})');
+        CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath})');
       }
     }
 

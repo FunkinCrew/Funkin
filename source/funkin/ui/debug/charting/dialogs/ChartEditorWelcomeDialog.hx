@@ -156,10 +156,29 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 
       this.addTemplateSong(songName, targetSongId, (_) ->
       {
-        this.hideDialog(DialogButton.CANCEL);
-
         // Load song from template
-        chartEditorState.loadSongFromTemplate(targetSongId);
+        var result:Null<Array<String>> = state.loadSongFromTemplate(targetSongId);
+
+        if (result != null)
+        {
+          if (result.length == 0)
+          {
+            state.success('Loaded Song', 'Loaded song (${targetSongId})');
+          }
+          else
+          {
+            state.warning('Loaded Song', 'Loaded song with issues (${targetSongId})\n${result.join("\n")}');
+          }
+
+          // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
+          this.hideDialog(DialogButton.CANCEL);
+        }
+        else
+        {
+          state.error('Failure', 'Failed to load chart (${targetSongId})');
+
+          // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
+        }
       });
     }
   }

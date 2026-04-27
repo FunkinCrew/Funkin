@@ -2553,12 +2553,35 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var targetSongId = params.loadFromTemplate;
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
-      this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
 
-      // Set the scroll position to the current song time.
-      scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
-      currentScrollEase = scrollPositionInPixels;
-      moveSongToScrollPosition();
+      var result:Null<Array<String>> = this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
+      if (result != null)
+      {
+        if (result.length == 0)
+        {
+          this.success('Loaded Song', 'Loaded song (${targetSongId})');
+        }
+        else
+        {
+          this.warning('Loaded Song', 'Loaded song with issues (${targetSongId})\n${result.join("\n")}');
+        }
+
+        // Set the scroll position to the current song time.
+        scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
+        currentScrollEase = scrollPositionInPixels;
+        moveSongToScrollPosition();
+      }
+      else
+      {
+        this.error('Failure', 'Failed to load chart (${targetSongId})');
+
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog)
+        {
+          this.openBackupAvailableDialog(welcomeDialog);
+        }
+      }
     }
     else
     {
