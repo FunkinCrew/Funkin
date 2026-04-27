@@ -331,12 +331,20 @@ private class EventTimelineEvents extends Events
 
   function _onZoomChange(_:UIEvent):Void
   {
-    var slider = _timeline.toolbar.findComponent("zoomSlider", Slider);
-    if (slider != null)
-    {
-      _timeline.viewport.zoomLevel = slider.pos;
-      _timeline.viewport.refreshLayout();
-    }
+    var slider:Slider = _timeline.toolbar.findComponent("zoomSlider", Slider);
+    if (slider == null) return;
+
+    var viewport:TimelineViewport = _timeline.viewport;
+    var anchorX:Float = viewport.width / 2;
+    var anchorMs:Float = viewport.pixelXToMs(anchorX);
+
+    viewport.zoomLevel = slider.pos;
+
+    var pxPerMs:Float = viewport.pixelsPerMs * viewport.zoomLevel;
+    if (pxPerMs > 0) viewport.scrollOffsetMs = anchorMs - (anchorX / pxPerMs);
+    if (viewport.scrollOffsetMs < 0) viewport.scrollOffsetMs = 0;
+
+    viewport.refreshLayout();
   }
 
   function _onAutoScrollChange(_:UIEvent):Void
