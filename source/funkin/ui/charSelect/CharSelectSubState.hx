@@ -687,7 +687,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(cursors, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
 
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
-    FlxTween.tween(nametag, {y: nametag.y + 80}, 0.8, {ease: FlxEase.backIn});
+    FlxTween.tween(nametag.midpoint, {y: nametag.midpoint.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
