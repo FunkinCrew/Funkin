@@ -98,7 +98,7 @@ class FNFCUtil
    */
   public static function loadDataFromFNFCPath(fnfcPath:String, loadAudio:Bool = true):FNFCData
   {
-    return loadDataFromFNFCBytes(FileUtil.readBytesFromFile(fnfcPath), loadAudio);
+    return loadDataFromFNFCBytes(FileUtil.readBytesFromPath(fnfcPath), loadAudio);
   }
 
   /**
@@ -151,11 +151,8 @@ class FNFCUtil
       var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
       instrumentals.set(Constants.DEFAULT_VARIATION, instBytes);
 
-      var vocalsBytes:Map<String, Bytes> = loadVocalsBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-      for (vocalId in vocalsBytes)
-      {
-        vocals.set(vocalId, vocalsBytes.get(vocalId));
-      }
+      var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+      vocals.append(vocalsBytes);
     }
 
     // Alternate variation instrumental and vocal audio data
@@ -167,13 +164,10 @@ class FNFCUtil
         if (metadata == null) throw 'Could not locate variation metadata for audio loading.';
 
         var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-        instrumentals.set(Constants.DEFAULT_VARIATION, instBytes);
+        instrumentals.set(variation, instBytes);
 
-        var vocalsBytes:Map<String, Bytes> = loadVocalsBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-        for (vocalId in vocalsBytes)
-        {
-          vocals.set(vocalId, vocalsBytes.get(vocalId));
-        }
+        var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+        vocals.append(vocalsBytes);
       }
     }
 
@@ -229,6 +223,8 @@ class FNFCUtil
   {
     var song:Null<Song> = SongRegistry.instance.fetchEntry(songId);
 
+    if (song == null) throw 'Could not find song with ID: $songId';
+
     var songManifest:ChartManifestData = new ChartManifestData(songId);
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
@@ -261,7 +257,7 @@ class FNFCUtil
         if (metadata == null) continue;
 
         var instBytes:Bytes = loadInstBytesFromTemplate(songId, metadata);
-        instrumentals.set(Constants.DEFAULT_VARIATION, instBytes);
+        instrumentals.set(variation, instBytes);
 
         var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromTemplate(songId, metadata);
         vocals.append(vocalsBytes);
@@ -290,8 +286,7 @@ class FNFCUtil
   static function loadInstBytesFromTemplate(songId:String, metadata:SongMetadata):Bytes
   {
     var instId:String = metadata?.playData?.characters?.instrumental ?? '';
-    if (instId.isBlank()) instId = Constants.DEFAULT_VARIATION;
-    var instFileName:String = funkin.Paths.inst(songId, instId == Constants.DEFAULT_VARIATION ? '' : '-$instId');
+    var instFileName:String = funkin.Paths.inst(songId, instId == '' ? '' : '-$instId');
 
     var instBytes:Null<Bytes> = Assets.getBytes(instFileName);
     if (instBytes == null) throw 'Could not load instrumental: $instFileName';
@@ -325,16 +320,32 @@ class FNFCUtil
     return vocals;
   }
 
-  static function loadVocalBytesFromTemplate(songId:String, metadata:SongMetadata):Bytes
+  static function loadVocalBytesFromTemplate(songId:String, metadata:SongMetadata):Map<String, Bytes>
   {
-    var instId:String = metadata?.playData?.characters?.instrumental ?? '';
-    if (instId.isBlank()) instId = Constants.DEFAULT_VARIATION;
-    var instFileName:String = funkin.Paths.inst(songId, instId == Constants.DEFAULT_VARIATION ? '' : '-$instId');
+    var vocals:Map<String, Bytes> = [];
 
-    var instBytes:Null<Bytes> = Assets.getBytes(instFileName);
-    if (instBytes == null) throw 'Could not load instrumental: $instFileName';
+    var variation:String = metadata.variation.isBlank() ? Constants.DEFAULT_VARIATION : metadata.variation;
 
-    return instBytes;
+    // Get the player vocal list and opponent vocal list
+    // If either are null, default to the player and opponent characters
+    // If either are empty, don't load vocals for them
+    var playerVoiceList:Array<String> = metadata?.playData.characters?.playerVocals ?? [
+      metadata?.playData?.characters?.player ?? Constants.DEFAULT_CHARACTER
+    ];
+    var opponentVoiceList:Array<String> = metadata?.playData.characters?.opponentVocals ?? [
+      metadata?.playData?.characters?.opponent ?? 'dad'
+    ];
+    var voicesList:Array<String> = playerVoiceList.concat(opponentVoiceList);
+
+    for (voiceId in voicesList)
+    {
+      var vocalSuffix:String = variation == Constants.DEFAULT_VARIATION ? '-$voiceId' : '-$voiceId-$variation';
+      var voiceFileName:String = funkin.Paths.voices(songId, vocalSuffix);
+      var voiceBytes:Null<Bytes> = Assets.getBytes(voiceFileName);
+      vocals.set(voiceId, voiceBytes);
+    }
+
+    return vocals;
   }
 
   /**
@@ -406,7 +417,7 @@ class FNFCUtil
    * @param fileName The name of the file to load.
    * @return The string data of the file.
    */
-  static function loadStringFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):Bytes
+  static function loadStringFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):String
   {
     return loadBytesFromFNFCZipEntries(mappedFileEntries, fileName).toString();
   }
@@ -421,7 +432,7 @@ class FNFCUtil
   static function loadBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):Bytes
   {
     var data:Null<haxe.zip.Entry> = mappedFileEntries.get(fileName);
-    if (data == null) throw 'Could not locate file: $fileName';
+    if (data == null || data.data == null) throw 'Could not locate file: $fileName';
 
     return data.data;
   }
