@@ -113,7 +113,7 @@ class UploadChartDialog extends Dialog
 
     try
     {
-      ChartEditorImportExportHandler.loadDataFromFNFCBytes(cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
+      CameraEditorImportExportHandler.loadSongFromFNFCBytes(cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
 
       this.hideDialog(DialogButton.APPLY);
     }
@@ -132,11 +132,11 @@ class UploadChartDialog extends Dialog
   {
     try
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCBytes(cameraEditorState, path);
+      CameraEditorImportExportHandler.loadSongFromFNFCPath(cameraEditorState, path);
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${selectedFile.name})');
+      CameraEditorNotificationHandler.failure(this.cameraEditorState, 'Failed to Load Chart', 'Failed to load chart (${path})');
       this.hideDialog(DialogButton.APPLY);
       return;
     }

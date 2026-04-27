@@ -630,25 +630,28 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       try
       {
-        var success:Bool = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
-
-        if (success)
+        // Chart editor was opened from the command line. Open the FNFC file now!
+        var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
+        if (result != null)
         {
-          CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.loadFromPath})');
-
-          // If a specific difficulty/variation/position was requested, load those now.
-          if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
-          if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
-          setTimePosition(params.targetSongPosition ?? 0);
+          if (result.length == 0)
+          {
+            CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.loadFromPath})');
+          }
+          else
+          {
+            CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${params.loadFromPath})\n${result.join("\n")}');
+          }
         }
         else
         {
-          CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${params.loadFromPath})');
+          CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${params.loadFromPath})');
+
           // Song failed to load, open the Welcome dialog so we aren't in a broken state.
           var welcomeDialog = this.openWelcomeDialog();
           if (shouldShowBackupAvailableDialog)
           {
-            openBackupAvailableDialog(welcomeDialog);
+            this.openBackupAvailableDialog(welcomeDialog);
           }
         }
       }
@@ -669,7 +672,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
 
-      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongAsTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
+      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
 
       var success:Bool = result != null && result.length == 0;
 
@@ -1289,7 +1292,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.saveFNFCToPath(this, true, null, function(path:String)
+    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, null, function(path:String)
     {
       notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
@@ -1946,16 +1949,22 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onMenubarOpenRecent(_event:MouseEvent, chartPath:String)
   {
-    var result:Bool = CameraEditorImportExportHandler.loadFNFCFromPath(this, chartPath);
+    var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
 
-    if (result)
+    if (result != null)
     {
-      CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath})');
-      this.currentWorkingFilePath = chartPath;
+      if (result.length == 0)
+      {
+        CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath})');
+      }
+      else
+      {
+        CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${chartPath})\n${result.join("\n")}');
+      }
     }
     else
     {
-      CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', 'Failed to load chart (${chartPath})');
+      CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
     }
   }
 
@@ -1964,7 +1973,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.saveFNFCToPath(this, true, currentWorkingFilePath, function(path:String)
+      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
       {
         notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
@@ -1981,7 +1990,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.saveFNFCToPath(this, false, null, function(path:String)
+    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
     {
       notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;

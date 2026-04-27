@@ -123,7 +123,7 @@ class ChartEditorAudioHandler
    */
   public static function playInstrumental(state:ChartEditorState, instId:String = ''):Bool
   {
-    if (instId == '') instId = 'default';
+    if (instId == '') instId = Constants.DEFAULT_VARIATION;
     var instTrackData:Null<Bytes> = state.audioInstTrackData.get(instId);
     var instTrack:Null<FunkinSound> = SoundUtil.buildSoundFromBytes(instTrackData);
     if (instTrack == null) return false;
@@ -189,6 +189,8 @@ class ChartEditorAudioHandler
       var trackKeySuffix:String = instId == '' ? '' : '-${instId}';
 
       var trackKey:String = '$trackBaseKey$trackKeySuffix';
+
+      trace('CHART EDITOR: Switching vocals to "$instId"');
 
       var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
 
