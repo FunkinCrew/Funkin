@@ -1,9 +1,8 @@
 package funkin.input.macos;
 
-#if macos
+#if FEATURE_MACOS_GESTURES
 import lime.ui.Gesture;
 import lime.ui.Gesture.GestureType;
-#end
 
 typedef FunkinGestureParams =
 {
@@ -167,3 +166,4 @@ class FunkinGesture
     _onGestureEnd(g);
   }
 }
+#end
