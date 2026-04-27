@@ -1499,7 +1499,7 @@ class PlayState extends MusicBeatSubState
           dispatchEvent(eventEvent);
 
           // Calling event.cancelEvent() skips the event. Neat!
-          if (!eventEvent.eventCanceled && !shouldSubstatePause)
+          if (!eventEvent.eventCanceled)
           {
             SongEventRegistry.handleEvent(event);
           }
@@ -3941,6 +3941,8 @@ class PlayState extends MusicBeatSubState
     FlxG.camera.follow(cameraFollowPoint, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
     FlxG.camera.targetOffset.set();
 
+    if (shouldSubstatePause) FlxG.camera.followLerp = 0;
+
     if (resetZoom)
     {
       resetCameraZoom();
@@ -3989,6 +3991,12 @@ class PlayState extends MusicBeatSubState
           resetCamera(false, false); // Re-enable camera following when the tween is complete.
         }
       });
+
+      if (shouldSubstatePause)
+      {
+        cameraFollowTween.active = false;
+        cameraTweensPausedBySubState.add(cameraFollowTween);
+      }
     }
   }
 
@@ -4022,6 +4030,12 @@ class PlayState extends MusicBeatSubState
       // Zoom tween! Caching it so we can cancel/pause it later if needed.
       var adjustedDuration:Float = duration / playbackRate;
       cameraZoomTween = FlxTween.tween(this, {currentCameraZoom: targetZoom}, adjustedDuration, {ease: ease});
+
+      if (shouldSubstatePause)
+      {
+        cameraZoomTween.active = false;
+        cameraTweensPausedBySubState.add(cameraZoomTween);
+      }
     }
   }
 
