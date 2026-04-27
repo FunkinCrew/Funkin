@@ -22,7 +22,7 @@ typedef DialogueBoxData =
 
   /**
    * The asset path for the sprite to use for the dialogue box.
-   * It can take both a static image or a spritesheet.
+   * Takes either a static image or a spritesheet.
    */
   public var assetPath:String;
 
@@ -51,8 +51,7 @@ typedef DialogueBoxData =
   public var offsets:Array<Float>;
 
   /**
-   * The dialogue box text display options.
-   * Here, you can set options like the font of the text.
+   * The dialogue box text display options such as font size.
    */
   public var text:DialogueBoxTextData;
 
@@ -63,7 +62,7 @@ typedef DialogueBoxData =
   public var scale:Float;
 
   /**
-   * A set of animations to play on the dialogue box sprite.
+   * The set of animations to play on the dialogue box sprite.
    * If default/empty, the sprite will be static.
    */
   @:optional @:default([])
@@ -108,13 +107,13 @@ typedef DialogueBoxTextData =
   var fontFamily:String;
 
   /**
-   * The color to use for the text's shadow.
+   * The color to use for the shadow of the text.
    * @default `#00000000`, which is transparent.
    */
   var shadowColor:String;
 
   /**
-   * The width of the text's shadow.
+   * The width of the shadow of the text.
    * @default `0`
    */
   @:optional @:default(0)
