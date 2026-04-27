@@ -8,6 +8,8 @@ import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxPoint;
+import funkin.play.notes.notehitsound.NoteHitsound;
+import funkin.play.notes.notehitsound.NoteHitsound.NoteHitsoundType;
 import funkin.ui.AtlasText.AtlasFont;
 import funkin.ui.Page;
 import funkin.graphics.FunkinCamera;
@@ -125,6 +127,26 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
+    createPrefItemEnum('Note Hitsound Type', 'The sound played when a note is hit.', [
+      NoteHitsoundType.None => "None",
+      NoteHitsoundType.Default => "Default",
+      NoteHitsoundType.PingPong => "Ping Pong",
+    ], (key:String, value:NoteHitsoundType) ->
+      {
+        Preferences.hitsoundType = value;
+        if (Preferences.hitsoundType != NoteHitsoundType.None)
+        {
+          NoteHitsound.playType(value, Preferences.hitsoundVolume / 100.0);
+        }
+      }, Preferences.hitsoundType);
+    createPrefItemPercentage('Note Hitsound Volume', 'Adjust the volume of the note hitsound type.', function(value:Int):Void
+    {
+      Preferences.hitsoundVolume = value;
+      if (Preferences.hitsoundType != NoteHitsoundType.None)
+      {
+        NoteHitsound.playType(Preferences.hitsoundType, value / 100.0);
+      }
+    }, Preferences.hitsoundVolume);
     #if FEATURE_HAPTICS
     createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
       "All" => HapticsMode.ALL,

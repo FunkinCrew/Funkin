@@ -9,8 +9,11 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.data.song.SongData.SongNoteData;
+import funkin.play.notes.notehitsound.NoteHitsound;
 import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKind;
@@ -1007,6 +1010,11 @@ class Strumline extends FlxSpriteGroup
         note.holdNoteSprite.fullSustainLength,
         (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition
       );
+    }
+
+    if (isPlayer && Preferences.hitsoundVolume > 0)
+    {
+      NoteHitsound.playType(Preferences.hitsoundType, Preferences.hitsoundVolume / 100.0);
     }
 
     #if FEATURE_GHOST_TAPPING
