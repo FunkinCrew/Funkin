@@ -1,14 +1,9 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
-import flixel.FlxSprite;
-import flixel.util.FlxTimer;
-import funkin.play.event.SongEvent;
-import funkin.play.event.SongEventHelper;
 import funkin.play.event.FocusCameraSongEvent;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
-import openfl.display.BitmapData;
 
 /**
  * The contents of the Properties panel, while a Focus Camera event is selected.
@@ -16,136 +11,22 @@ import openfl.display.BitmapData;
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/components/properties/focus-camera.xml'))
 class FocusCameraContainer extends VBox
 {
-  /**
-   * The CameraEditorState to attach to.
-   */
   public var cameraEditorState:CameraEditorState;
 
   public function new(state:CameraEditorState)
   {
     super();
     cameraEditorState = state;
-    updateEasePreview();
+    focusCameraEasePreview.defaultEase = FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
+    focusCameraEasePreview.classicEnabled = true;
+    focusCameraEasePreview.event = cameraEditorState.selectedSongEvent;
   }
 
-  var _easeGraphSprite:Null<FlxSprite> = null;
-  var _easeDotSprites:Array<FlxSprite> = [];
-  var _dotTimer:Null<FlxTimer> = null;
-  var _pauseTimer:Null<FlxTimer> = null;
-  var _dotIndex:Int = 0;
-
-  static final _dotInterval:Float = 1.0 / 30.0;
-  static final _loopPause:Float = 0.15;
-
-  function updateEasePreview():Void
+  @:bind(focusCameraEasePreview, UIEvent.CHANGE)
+  function onChange_focusCameraEasePreview(_):Void
   {
-    if (focusCameraEaseGraph == null || focusCameraEaseDot == null)
-    {
-      throw 'Could not find ease graph or ease dot!';
-    }
-
-    var easeStr:String = cameraEditorState.selectedSongEvent.getString('ease');
-    var easeDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
-
-    var easeType:String = SongEventHelper.resolveEaseTypeFromKey(easeStr ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE);
-    var easeDir:String = easeDirStr ?? SongEventHelper.resolveEaseDirFromKey(easeStr);
-
-    final easeKey:String = '$easeType$easeDir';
-
-    // Hide preview when easing indicates a non-visual/legacy type such as "CLASSIC"
-    if (easeType != null && (easeType == 'CLASSIC' || easeType == 'INSTANT'))
-    {
-      _dotTimer?.cancel();
-      _pauseTimer?.cancel();
-      _dotTimer = null;
-      _pauseTimer = null;
-      _easeDotSprites = [];
-      _dotIndex = 0;
-
-      focusCameraEaseGraph.resource = null;
-      focusCameraEaseDot.resource = null;
-      focusCameraEaseGraph.hidden = true;
-      focusCameraEaseDot.hidden = true;
-      if (focusCameraEaseBox != null) focusCameraEaseBox.hidden = true;
-
-      focusCameraEaseDir.hidden = true;
-
-      return;
-    }
-    else
-    {
-      focusCameraEaseDir.hidden = false;
-    }
-
-    // Reset any previous timers/sprites
-    _dotTimer?.cancel();
-    _pauseTimer?.cancel();
-    _dotTimer = null;
-    _pauseTimer = null;
-    _easeDotSprites = [];
-    _dotIndex = 0;
-
-    final EASE_GRAPH_SIZE:Int = 100;
-
-    final _graphBd:BitmapData = SongEventHelper.getEaseBitmap(easeKey);
-    _easeGraphSprite = SongEventHelper.createSpriteFromKey(easeKey, EASE_GRAPH_SIZE, EASE_GRAPH_SIZE);
-    focusCameraEaseGraph.resource = _easeGraphSprite?.frame;
-    if (_graphBd == null || focusCameraEaseGraph.resource == null)
-    {
-      focusCameraEaseDot.resource = null;
-      focusCameraEaseGraph.hidden = true;
-      focusCameraEaseDot.hidden = true;
-      if (focusCameraEaseBox != null) focusCameraEaseBox.hidden = true;
-      return;
-    }
-
-    // show preview and start dot animation
-    focusCameraEaseGraph.hidden = false;
-    focusCameraEaseDot.hidden = false;
-    if (focusCameraEaseBox != null) focusCameraEaseBox.hidden = false;
-
-    var dotSprites:Array<flixel.FlxSprite> = SongEventHelper.getOrCreateEaseDotSprites(easeKey, 30, 3, 16);
-    if (dotSprites == null || dotSprites.length == 0)
-    {
-      // if no dot sprites, still show graph but keep dot empty
-      focusCameraEaseDot.resource = null;
-      return;
-    }
-    _easeDotSprites = dotSprites;
-    focusCameraEaseDot.resource = _easeDotSprites[0].frame;
-
-    var frameCallback:Dynamic = null;
-    frameCallback = (tmr:FlxTimer) -> {
-      if (_dotTimer == null) return;
-
-      _dotIndex++;
-      if (_dotIndex >= _easeDotSprites.length)
-      {
-        _dotTimer?.cancel();
-        _pauseTimer ??= new FlxTimer();
-        _pauseTimer.start(_loopPause, function(p:FlxTimer):Void {
-          if (_pauseTimer == null) return;
-
-          if (focusCameraEaseDot != null)
-          {
-            _dotIndex = 0;
-            if (_easeDotSprites[0] != null && _easeDotSprites[0].frame != null)
-            {
-              focusCameraEaseDot.resource = _easeDotSprites[0].frame;
-            }
-            _dotTimer ??= new FlxTimer();
-            _dotTimer.start(_dotInterval, frameCallback, 0);
-          }
-        }, 1);
-      }
-      else if (focusCameraEaseDot != null && _easeDotSprites[_dotIndex].frame != null)
-      {
-        focusCameraEaseDot.resource = _easeDotSprites[_dotIndex].frame;
-      }
-    };
-
-    _dotTimer ??= new FlxTimer();
-    _dotTimer.start(_dotInterval, frameCallback, 0);
+    updateCameraPreview();
+    updateBlockVisuals();
   }
 
   function updateCameraPreview():Void
@@ -163,7 +44,7 @@ class FocusCameraContainer extends VBox
    */
   public function loadCurrentEventData():Void
   {
-    var eventTarget = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
+    var eventTarget:Int = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
     focusCameraTarget.selectItemBy(function(data):Bool
     {
       var dataId:Int = Std.parseInt(data.id);
@@ -175,36 +56,7 @@ class FocusCameraContainer extends VBox
     focusCameraYPos.value = cameraEditorState.selectedSongEvent.getFloat('y') ?? FocusCameraSongEvent.DEFAULT_Y_POSITION;
     focusCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? FocusCameraSongEvent.DEFAULT_DURATION;
 
-    // Event data from the chart might use the "legacy" ease types where the direction wasn't separate.
-    var eventEaseStr:String = cameraEditorState.selectedSongEvent.getString('ease') ?? FocusCameraSongEvent.DEFAULT_CAMERA_EASE;
-    var eventEase:String = SongEventHelper.resolveEaseTypeFromKey(eventEaseStr);
-
-    focusCameraEase.selectItemBy(function(data):Bool
-    {
-      return data.id == eventEase;
-    });
-
-    if (eventEaseStr == 'CLASSIC' || eventEaseStr == 'INSTANT')
-    {
-      focusCameraEaseDir.hidden = true;
-    }
-    else
-    {
-      focusCameraEaseDir.hidden = false;
-    }
-
-    var eventEaseDirStr:Null<String> = cameraEditorState.selectedSongEvent.getString('easeDir');
-    if (eventEaseDirStr == '') eventEaseDirStr = null;
-    var eventEaseDir:String = eventEaseDirStr ?? SongEventHelper.resolveEaseDirFromKey(eventEaseStr);
-
-    trace('eventEaseDir: $eventEaseDir (from "$eventEaseDirStr")');
-
-    focusCameraEaseDir.selectItemBy(function(data):Bool
-    {
-      return data.id == eventEaseDir;
-    });
-
-    updateEasePreview();
+    focusCameraEasePreview.event = cameraEditorState.selectedSongEvent;
     updateCameraPreview();
     updateBlockVisuals();
   }
@@ -264,88 +116,10 @@ class FocusCameraContainer extends VBox
     updateBlockVisuals();
   }
 
-  /**
-   * Called when the Focus Camera Ease Type field is changed.
-   */
-  @:bind(focusCameraEase, UIEvent.CHANGE)
-  function onChange_focusCameraEase(_):Void
-  {
-    if (focusCameraEase.selectedItem == null)
-    {
-      cameraEditorState.selectedSongEvent.set('ease', FocusCameraSongEvent.DEFAULT_CAMERA_EASE);
-      return;
-    }
-
-    var label:String = focusCameraEase.selectedItem.text;
-    var value:String = focusCameraEase.selectedItem.id;
-
-    trace('Focus Camera: Ease Type changed to $label ($value)');
-
-    cameraEditorState.selectedSongEvent.set('ease', value);
-
-    // If the ease type is CLASSIC or INSTANT, don't display ease direction
-    if (value == 'CLASSIC' || value == 'INSTANT')
-    {
-      focusCameraEaseDir.hidden = true;
-    }
-    else
-    {
-      focusCameraEaseDir.hidden = false;
-    }
-
-    updateEasePreview();
-    updateCameraPreview();
-    updateBlockVisuals();
-  }
-
-  /**
-   * Called when the Focus Camera Ease Dir field is changed.
-   */
-  @:bind(focusCameraEaseDir, UIEvent.CHANGE)
-  function onChange_focusCameraEaseDir(_):Void
-  {
-    if (focusCameraEaseDir.selectedItem == null)
-    {
-      trace('Focus Camera: No ease direction selected!');
-      cameraEditorState.selectedSongEvent.set('easeDir', SongEvent.DEFAULT_EASE_DIR);
-      return;
-    }
-
-    var label:String = focusCameraEaseDir.selectedItem.text;
-    var value:String = focusCameraEaseDir.selectedItem.id;
-
-    trace('Focus Camera: Ease Dir changed to $label ($value)');
-
-    cameraEditorState.selectedSongEvent.set('easeDir', value);
-
-    updateEasePreview();
-    updateCameraPreview();
-    updateBlockVisuals();
-  }
-
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
-
-    focusCameraEaseGraph.destroy();
-    focusCameraEaseGraph = null;
-    focusCameraEaseDot.destroy();
-    focusCameraEaseDot = null;
-
-    _easeGraphSprite = null;
-    _easeDotSprites = [];
-
-    if (_dotTimer != null)
-    {
-      _dotTimer.cancel();
-      _dotTimer = null;
-    }
-
-    if (_pauseTimer != null)
-    {
-      _pauseTimer.cancel();
-      _pauseTimer = null;
-    }
+    focusCameraEasePreview.cleanup();
   }
 }
 #end
