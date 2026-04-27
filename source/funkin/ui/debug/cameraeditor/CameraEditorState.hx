@@ -27,6 +27,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinAnimationController;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -444,7 +445,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var exitConfirmDialog:Dialog;
 
   var deleteLayerConfirmDialog:Dialog;
-
   var autoSortLayersDialog:Dialog;
 
   /**
@@ -541,10 +541,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     loadPreferences();
 
-    camGame = new FlxCamera();
+    // NOTE: Always use `FunkinCamera` instead of `FlxCamera` when manually instantiating cameras.
+    // This allows the blend mode shader used on some devices to work properly.
+    camGame = new FunkinCamera();
     camGame.bgColor.alpha = 0;
-    camRelative = new FlxCamera();
-    camHUD = new FlxCamera();
+    camRelative = new FunkinCamera();
+    camHUD = new FunkinCamera();
     camHUD.bgColor.alpha = 0;
 
     FlxG.cameras.reset(camRelative); // Cam relative is default
@@ -768,7 +770,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     previousTime = conductorInUse.songPosition;
   }
-
 
   override public function dispatchEvent(event:ScriptEvent):Void
   {
@@ -1334,15 +1335,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (timeline.viewport.layers.length != 1) return;
     if (currentSongChartData == null) return;
 
-    var cameraEvents:Array<SongEventData> = currentSongChartData.events.filter(e -> e.eventKind == "FocusCamera"
-      || e.eventKind == "ZoomCamera");
+    var cameraEvents:Array<SongEventData> = currentSongChartData.events.filter(e -> e.eventKind == "FocusCamera" || e.eventKind == "ZoomCamera");
     if (!hasOverlappingCameraEvents(cameraEvents)) return;
 
     var plan:AutoSortPlan = AutoSortLayersCommand.planSort(currentSongChartData.events, conductorInUse.stepLengthMs);
     var currentLayerName:String = timeline.viewport.layers[0].name;
 
-    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(currentLayerName, cameraEvents.length, plan,
-      () -> performAutoSortLayersByType());
+    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(currentLayerName, cameraEvents.length, plan, () -> performAutoSortLayersByType());
     dialog.showDialog(true);
     autoSortLayersDialog = dialog;
     dialog.onDialogClosed = (_) -> autoSortLayersDialog = null;
@@ -1426,7 +1425,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         return;
       }
       if (timeline.toolbar.btnTogglePlayback.selected) playAudioPlayback();
-      else pauseAudioPlayback();
+      else
+        pauseAudioPlayback();
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
