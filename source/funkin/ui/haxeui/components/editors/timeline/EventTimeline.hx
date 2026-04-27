@@ -440,15 +440,17 @@ private class SongPositionBehaviour extends DataBehaviour
     tl.viewport.songPositionMs = pos;
     tl.toolbar.songPosition = pos;
 
-    if (tl.isPlaying)
+    // Suppress playback auto-scroll while the user is actively dragging
+    // (SEEKING/MOVE) — their drag-driven edge scroll wins.
+    if (tl.isPlaying && !tl.viewport._autoScrollDragActive)
     {
       var viewWidth = tl.viewport.width;
       var pxPerMs = tl.viewport.pixelsPerMs * tl.viewport.zoomLevel;
 
-      switch (tl.autoScrollMode)
+      switch ((tl.autoScrollMode : TimelinePlaybackAutoScrollMode))
       {
-        case 0: // No Scroll
-        case 1: // Page Scroll
+        case NONE:
+        case PAGE:
           if (viewWidth > 0 && pxPerMs > 0)
           {
             var playheadPx = tl.viewport.msToPixelX(pos);
@@ -458,13 +460,12 @@ private class SongPositionBehaviour extends DataBehaviour
               if (tl.viewport.scrollOffsetMs < 0) tl.viewport.scrollOffsetMs = 0;
             }
           }
-        case 2: // Smooth Scroll
+        case SMOOTH:
           if (viewWidth > 0 && pxPerMs > 0)
           {
             tl.viewport.scrollOffsetMs = pos - (viewWidth * 0.5 / pxPerMs);
             if (tl.viewport.scrollOffsetMs < 0) tl.viewport.scrollOffsetMs = 0;
           }
-        default:
       }
     }
 
@@ -481,5 +482,12 @@ private class SongLengthBehaviour extends DataBehaviour
     tl.viewport.songLengthMs = _value;
     tl.toolbar.songLength = _value;
   }
+}
+
+enum abstract TimelinePlaybackAutoScrollMode(Int) from Int to Int
+{
+  var NONE = 0;
+  var PAGE = 1;
+  var SMOOTH = 2;
 }
 #end
