@@ -22,21 +22,22 @@ class CameraEditorImportExportHandler
    * @param state The Camera Editor state to apply the loaded data to.
    * @param data The parsed data of the FNFC file to load.
    * @param path The path of the FNFC file, if it is known.
+   * @return `true` if the chart was loaded successfully, `false` otherwise.
    */
-  public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Void
+  public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Bool
   {
     state.currentWorkingFilePath = path;
     state.saved = true; // Just loaded file!
 
-    state.songMetadatas = entries.songMetadatas;
-    state.songDatas = entries.songChartDatas;
-    state.songManifestData = entries.manifest;
-    state.audioInstTrackData = entries.instrumentals;
-    state.audioVocalTrackData = entries.vocals;
+    state.songMetadatas = data.songMetadatas;
+    state.songDatas = data.songChartDatas;
+    state.songManifestData = data.manifest;
+    state.audioInstTrackData = data.instrumentals;
+    state.audioVocalTrackData = data.vocals;
     state.onChartLoaded();
 
     trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals from FNFC file at "$path".');
-    CameraEditorNotificationHandler.success(this.cameraEditorState, 'Loaded Chart', 'Loaded chart (${path})');
+    CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${path})');
 
     return true;
   }
@@ -53,13 +54,13 @@ class CameraEditorImportExportHandler
   {
     try
     {
-      var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(selectedFileBytes, true);
+      var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
       loadSongFromFNFCData(state, entries, path);
       return [];
     }
     catch (e)
     {
-      return [e];
+      return ['$e'];
     }
   }
 
@@ -80,7 +81,7 @@ class CameraEditorImportExportHandler
     }
     catch (e)
     {
-      return [e];
+      return ['$e'];
     }
   }
 
@@ -94,7 +95,7 @@ class CameraEditorImportExportHandler
    *
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongAsTemplate(state:CameraEditorState, songId:String, ?difficulty:String, ?variation:String):Null<Array<String>>
+  public static function loadSongFromTemplate(state:CameraEditorState, songId:String, ?difficulty:String, ?variation:String):Null<Array<String>>
   {
     try
     {
