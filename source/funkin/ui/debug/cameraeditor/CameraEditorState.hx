@@ -936,6 +936,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
+    if (timeline != null && timeline.viewport != null) timeline.viewport.tickEdgeAutoScroll(elapsed);
+
     super.update(elapsed);
 
     MouseUtil.mouseCamDrag(goToPoint);
