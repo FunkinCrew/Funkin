@@ -1,15 +1,16 @@
 package funkin.ui.charSelect;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import funkin.graphics.shaders.MosaicEffect;
 import flixel.util.FlxTimer;
-import funkin.util.TimerUtil;
+import funkin.util.TimerUtil.Sequence;
 import flixel.math.FlxPoint;
 
 @:nullSafety
 class Nametag extends FlxSprite
 {
-  public var midpoint(default, set):FlxPoint = FlxPoint.get(1008, 100);
+  public var midpoint:FlxPoint = FlxPoint.get(1008, 100);
 
   var mosaicShader:MosaicEffect;
   var currentMosaicSequence:Null<Sequence>;
@@ -27,13 +28,17 @@ class Nametag extends FlxSprite
     switchChar(targetCharacter, false);
   }
 
-  public function updatePosition():Void
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
-    var offsetX:Float = getMidpoint().x - midpoint.x;
-    var offsetY:Float = getMidpoint().y - midpoint.y;
+    var pos:FlxPoint = super.getScreenPosition(result, camera);
+    var originalMidpoint:FlxPoint = getMidpoint();
+    var offset:FlxPoint = originalMidpoint - midpoint;
 
-    x -= offsetX;
-    y -= offsetY;
+    originalMidpoint.put();
+    pos -= offset;
+    offset.put();
+
+    return pos;
   }
 
   function resetMosaicEffect():Void
@@ -53,7 +58,6 @@ class Nametag extends FlxSprite
     loadGraphic(Paths.image('ui/character-select/characters/nametag-$str'));
     updateHitbox();
     scale.set(0.77, 0.77);
-    updatePosition();
 
     resetMosaicEffect();
 
@@ -105,12 +109,5 @@ class Nametag extends FlxSprite
         {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
       ]);
     }
-  }
-
-  function set_midpoint(val:FlxPoint):FlxPoint
-  {
-    this.midpoint = val;
-    updatePosition();
-    return val;
   }
 }
