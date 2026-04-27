@@ -9,7 +9,7 @@ typedef FunkinGestureParams =
   var ?preGestureStart:Gesture->Bool;
   var ?onGestureStart:Gesture->Void;
   var ?onGestureEnd:Gesture->Void;
-  var ?onMagnificationGesture:Float->Void;
+  var ?onMagnificationGesture:(Float, Float, Float) -> Void;
   var ?onPanGesture:Array<Float>->Void;
   var ?onScrollGesture:Array<Float>->Void;
   var ?onMomentumScrollGesture:Array<Float>->Void;
@@ -21,7 +21,7 @@ class FunkinGesture
   public var preGestureStart:Gesture->Bool;
   public var onGestureStart:Gesture->Void;
   public var onGestureEnd:Gesture->Void;
-  public var onMagnificationGesture:Float->Void;
+  public var onMagnificationGesture:(Float, Float, Float) -> Void;
   public var onPanGesture:Array<Float>->Void;
   public var onScrollGesture:Array<Float>->Void;
   public var onMomentumScrollGesture:Array<Float>->Void;
@@ -107,7 +107,7 @@ class FunkinGesture
 
         if (onMagnificationGesture != null)
         {
-          onMagnificationGesture(delta);
+          onMagnificationGesture(delta, g.x, g.y);
         }
 
       case PAN:
