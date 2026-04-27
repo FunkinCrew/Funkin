@@ -43,11 +43,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   public var cameraZoomRate:Float = Constants.DEFAULT_ZOOM_RATE;
   public var cameraZoomRateOffset:Float = Constants.DEFAULT_ZOOM_OFFSET;
   public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
-
   public var hudCameraZoomIntensity:Float = 0.015 * 2.0;
-
   public var conductorElapsed:Float = 0;
-
   public var doBopping:Bool = false;
 
   /**
@@ -57,14 +54,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   function get_defaultPosition():FlxPoint
   {
-    if (currentStage == null) return new FlxPoint();
-    var dad = currentStage.getDad();
-    if (dad == null) return new FlxPoint();
-    return new FlxPoint(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+    if (currentStage == null || currentStage.getDad() == null) return FlxPoint.get();
+
+    return FlxPoint.get(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
   }
 
   public var isRelative:Bool = false;
-
   public var hudZoom(default, set):Float = 1;
 
   var isClassicEase:Bool = false;
@@ -88,7 +83,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   function resize():Void
   {
     if (!isRelative) mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
-    else mainView.setGraphicSize(FlxG.width, FlxG.height);
+    else
+      mainView.setGraphicSize(FlxG.width, FlxG.height);
     mainView.updateHitbox();
     camSlice.width = mainView.width;
     camSlice.height = mainView.height;
@@ -662,10 +658,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     {
       // Handle regular easing
       var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
-      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x,
-        cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
-      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y,
-        cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
+      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
+      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
 
       if (cameraFollowElapsed >= cameraFollowDuration * 1000)
       {
