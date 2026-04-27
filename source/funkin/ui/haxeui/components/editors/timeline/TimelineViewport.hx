@@ -1352,17 +1352,22 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
   }
 
-  function onMagnificationGesture(delta:Float):Void
+  function onMagnificationGesture(delta:Float, x:Float, y:Float):Void
   {
-    var event = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
+    var localX:Float = x - _viewport.screenLeft;
+    var mouseMs:Float = _viewport.pixelXToMs(localX);
 
-    var newZoom = _viewport.zoomLevel * (1.0 + delta);
+    var newZoom:Float = _viewport.zoomLevel * (1.0 + delta);
     if (newZoom < 0.1) newZoom = 0.1;
     if (newZoom > 10.0) newZoom = 10.0;
     _viewport.zoomLevel = newZoom;
 
+    var pxPerMs:Float = _viewport.pixelsPerMs * newZoom;
+    if (pxPerMs > 0) _viewport.scrollOffsetMs = mouseMs - (localX / pxPerMs);
+    if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
+
     _viewport.refreshLayout();
-    _viewport.dispatch(event);
+    _viewport.dispatch(new TimelineEvent(TimelineEvent.ZOOM_CHANGED));
   }
 
   function onScrollGesture(delta:Array<Float>):Void

@@ -192,9 +192,9 @@ private class CameraViewportEvents extends haxe.ui.events.Events
     }
   }
 
-  function onMagnificationGesture(delta:Float):Void
+  function onMagnificationGesture(delta:Float, x:Float, y:Float):Void
   {
-    var event = new CameraViewportEvent(CameraViewportEvent.ZOOM);
+    var event:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.ZOOM);
     event.zoomDelta = delta * MAGNIFICATION_SCALE;
     _viewport.dispatch(event);
   }
