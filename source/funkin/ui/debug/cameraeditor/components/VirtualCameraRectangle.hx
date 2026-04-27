@@ -54,9 +54,14 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   function get_defaultPosition():FlxPoint
   {
-    if (currentStage == null || currentStage.getDad() == null) return FlxPoint.get();
+    if (currentStage != null && currentStage.getDad() != null)
+    {
+      var dad = currentStage.getDad();
 
-    return FlxPoint.get(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+      return FlxPoint.get(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+    }
+
+    return FlxPoint.get();
   }
 
   public var isRelative:Bool = false;
