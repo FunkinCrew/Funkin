@@ -1,26 +1,27 @@
 package funkin.play;
 
-import funkin.play.event.SongEvent;
-import funkin.play.PauseSubState.PauseMode;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.Transition;
-import funkin.ui.FullScreenScaleMode;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.Transition;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.text.FlxBitmapFont;
 import flixel.text.FlxBitmapText;
-import flixel.tweens.FlxTween;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import funkin.Highscore.Tallies;
+import funkin.api.newgrounds.Events;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -31,44 +32,47 @@ import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
-import funkin.Highscore.Tallies;
 import funkin.input.PreciseInputManager;
 import funkin.modding.events.ScriptEvent;
-import funkin.api.newgrounds.Events;
 import funkin.modding.events.ScriptEventDispatcher;
+import funkin.play.PauseSubState.PauseMode;
 import funkin.play.character.BaseCharacter;
-import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.components.Subtitles;
-import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.dialogue.Conversation;
+import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteDirection;
-import funkin.play.notes.notekind.NoteKindManager;
-import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.NoteSprite;
-import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.NoteVibrationsHandler;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
-import funkin.play.notes.NoteVibrationsHandler;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
+import funkin.ui.FullScreenScaleMode;
+import funkin.ui.MusicBeatSubState;
+import funkin.ui.debug.stage.StageOffsetSubState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.LoadingState;
+import funkin.util.GRhythmUtil;
+import funkin.util.HapticUtil;
+import funkin.util.SerializerUtil;
+import haxe.Int64;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
+#end
+#if FEATURE_CAMERA_EDITOR
+import funkin.ui.debug.cameraeditor.CameraEditorState;
 #end
 #if FEATURE_STAGE_EDITOR
 import funkin.ui.debug.stageeditor.StageEditorState;
 #end
-import funkin.ui.debug.stage.StageOffsetSubState;
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.MusicBeatSubState;
-import funkin.ui.transition.LoadingState;
-import funkin.util.SerializerUtil;
-import funkin.util.HapticUtil;
-import funkin.util.GRhythmUtil;
-import haxe.Int64;
 #if mobile
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinHitbox;
@@ -3280,6 +3284,33 @@ class PlayState extends MusicBeatSubState
       {
         if (currentStage != null) this.remove(currentStage);
         FlxG.switchState(() -> new ChartEditorState({
+          loadFromTemplate: currentSong.id,
+          targetSongDifficulty: currentDifficulty,
+          targetSongVariation: currentVariation,
+          targetSongPosition: Conductor.instance.songPosition
+        }));
+      }
+    }
+    #end
+
+    #if FEATURE_CAMERA_EDITOR
+    // Redirect to the camera editor playing the current song.
+    if (controls.DEBUG_CAMERA)
+    {
+      disableKeys = true;
+      persistentUpdate = false;
+      if (isChartingMode)
+      {
+        // Close the playtest substate.
+        FlxG.sound.music?.pause();
+        this.close();
+
+        // TODO: Finish swapping to the Camera Editor?
+      }
+      else
+      {
+        if (currentStage != null) this.remove(currentStage);
+        FlxG.switchState(() -> new CameraEditorState({
           loadFromTemplate: currentSong.id,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,
