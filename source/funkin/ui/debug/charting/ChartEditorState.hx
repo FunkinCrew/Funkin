@@ -6538,9 +6538,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
 
-    var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
-    playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
+    var playbackRate:Float = 1.0;
+    if (playtestAudioSettings)
+    {
+      playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
+      playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
+      playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
+    }
 
     var targetSong:Song;
     try
