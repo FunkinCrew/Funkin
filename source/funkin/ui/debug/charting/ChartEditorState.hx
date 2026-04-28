@@ -1020,12 +1020,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Whether the note preview graphic needs to be FULLY rebuilt.
    */
-  var notePreviewDirty(default, set):Bool = true;
-
-  function set_notePreviewDirty(value:Bool):Bool
-  {
-    return notePreviewDirty = value;
-  }
+  var notePreviewDirty:Bool = true;
 
   var notePreviewViewportBoundsDirty:Bool = true;
 
@@ -1424,6 +1419,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return result.flatten();
   }
 
+  var hasInstrumentalData(get, never):Bool;
+
+  function get_hasInstrumentalData():Bool
+  {
+    return audioInstTrackData.size() > 0;
+  }
+
   /**
    * The song chart data.
    * - Keys are the variation IDs. At least one (`default`) must exist.
@@ -1463,9 +1465,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongChartData():SongChartData
   {
+    trace('QUERYING CHART DATA');
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
+      if (songChartData.size() == 0)
+      {
+        // There's no chart data at all.
+      }
+      else
+      {
+        // There's no chart data for the selected variation.
+        this.warning('Missing Chart Data', 'No chart data found for variation ${selectedVariation}.');
+      }
       result = new SongChartData([
         Constants.DEFAULT_DIFFICULTY => 1.0
       ], [], [
@@ -1527,9 +1539,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var result:Null<Array<SongNoteData>> = currentSongChartData.notes.get(selectedDifficulty);
     if (result == null)
     {
+      if (!hasInstrumentalData)
+      {
+        // There's no chart data at all.
+      }
+      else
+      {
+        // There's no chart data for the selected variation.
+        this.warning('Missing Chart Data',
+          'No chart data found for difficulty ${selectedDifficulty} (variation ${selectedVariation} has ${availableDifficulties.join(", ")}).');
+      }
       // Initialize to the default value if not set.
       result = [];
-      trace('Initializing blank chart for difficulty ' + selectedDifficulty);
       currentSongChartData.notes.set(selectedDifficulty, result);
       return result;
     }
@@ -1858,7 +1879,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentEventSelection = [];
 
     switchToCurrentInstrumental();
+    trace('F');
     postLoadInstrumental();
+    trace('G');
 
     return selectedVariation;
   }
@@ -1870,7 +1893,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_selectedDifficulty(value:String):String
   {
-    if (value == null) value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+    if (value == null)
+    {
+      this.warning('Invalid Difficulty', 'Difficulty cannot be null. Defaulting to ${Constants.DEFAULT_DIFFICULTY}.');
+      value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+    }
+
+    if (!availableDifficulties.contains(value))
+    {
+      this.warning('Invalid Difficulty',
+        'Difficulty ${value} does not exist for variation ${selectedVariation}. Defaulting to ${Constants.DEFAULT_DIFFICULTY}.');
+      value = availableDifficulties[0] ?? Constants.DEFAULT_DIFFICULTY;
+    }
 
     selectedDifficulty = value;
 
@@ -1879,6 +1913,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
+
+    if (hasInstrumentalData && (songChartData.size() == 0 || currentSongChartNoteData == null || currentSongChartNoteData.length == 0))
+    {
+      this.warning('No Notes', 'No note data found for difficulty ${selectedDifficulty} (variation ${selectedVariation}).');
+    }
 
     // Switching difficulties should automatically clear the selection.
     currentNoteSelection = [];
@@ -6775,11 +6814,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       measureTicks.setHeight(gridTiledSprite.height);
     }
 
-    // Remove any notes past the end of the song.
-    var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
-    var songCutoffPointMs:Float = Conductor.instance.getStepTimeInMs(songCutoffPointSteps);
-    currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
-    currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);
+    if (currentSongChartData.notes.get(selectedDifficulty) != null)
+    {
+      // Remove any notes past the end of the song, if this difficulty exists.
+      var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
+      var songCutoffPointMs:Float = Conductor.instance.getStepTimeInMs(songCutoffPointSteps);
+      currentSongChartNoteData = SongDataUtils.clampSongNoteData(currentSongChartNoteData, 0.0, songCutoffPointMs);
+      currentSongChartEventData = SongDataUtils.clampSongEventData(currentSongChartEventData, 0.0, songCutoffPointMs);
+    }
+    else
+    {
+      // We end up here if we're midway through switching variation AND difficulty,
+      // and we're on the new variation but the old difficulty, so the current difficulty doesn't exist.
+      trace('Skipping difficulty that does not exist');
+    }
 
     scrollPositionInPixels = 0;
     playheadPositionInPixels = 0;
@@ -7396,6 +7444,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   public function postLoadInstrumental():Void
   {
+    trace('postLoadInst(A)');
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
@@ -7423,18 +7472,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       trace('ERROR: Instrumental track is null!');
     }
-
+    trace('postLoadInst(B)');
     Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
     updateTimeSignature();
     @:privateAccess measureTicks?.updateMeasureNumbers(true);
 
+    trace('postLoadInst(C)');
     this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
+    trace('postLoadInst(C)');
     Conductor.instance.currentTimeChange.bpm = currentSongMetadata.timeChanges[0].bpm;
+    trace('postLoadInst(D)');
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
     playerPreviewDirty = true;
     opponentPreviewDirty = true;
+    trace('postLoadInst(Z)');
   }
 
   public function loadSubtitles():Void
