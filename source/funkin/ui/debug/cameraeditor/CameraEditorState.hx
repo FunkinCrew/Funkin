@@ -796,9 +796,9 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
       dispatchEvent(eventEvent);
-      
+
       if (eventEvent.eventCanceled) continue;
-      
+
       switch (eventData.eventKind)
       {
         case 'FocusCamera':
@@ -886,6 +886,8 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
   var _wasRelative:Bool = false;
+
+  var _shouldResetCameraPosition:Bool = false;
 
   override public function update(elapsed:Float):Void
   {
@@ -994,6 +996,12 @@ class CameraEditorState extends UIState implements ConsoleClass
         FlxG.camera.scroll.copyFrom(_cameraTarget);
       }
       camGame.scroll.copyFrom(_cameraTarget);
+    }
+
+    if (_shouldResetCameraPosition)
+    {
+      _shouldResetCameraPosition = false;
+      onResetCameraScroll(null);
     }
 
     handleKeybinds(elapsed);
@@ -1128,6 +1136,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
+    onResetCameraZoom(null);
+    _shouldResetCameraPosition = true;
   }
 
   function resetScrollPosition()
@@ -2202,6 +2212,9 @@ class CameraEditorState extends UIState implements ConsoleClass
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
         CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
 
+      // User Guide
+      case [FlxKey.F1, false, false, false, _]: // F1 -> open user guide
+        onUserGuide(null);
       default:
         // unbound/do nothing
     }
@@ -2243,6 +2256,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     goToPoint.x = 0;
     goToPoint.y = 0;
+
+    if (!isCameraRelative){
+      goToPoint.x = cameraRect.vCamPoint.x;
+      goToPoint.y = cameraRect.vCamPoint.y;
+    }
+
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
   }
@@ -2252,10 +2271,10 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (isCameraRelative)
     {
-      relativeZoom = 1.0;
+      relativeZoom = defaultStageZoom;
       return;
     }
-    FlxG.camera.zoom = 1.0;
+    FlxG.camera.zoom = defaultStageZoom * 0.8;
   }
 
   @:bind(menubarItemAutoGen, MouseEvent.CLICK)
