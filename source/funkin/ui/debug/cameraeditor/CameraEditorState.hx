@@ -1559,14 +1559,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     currentVocals = [];
 
-    trace('Loading instrumental for variation: ' + currentVariation);
-
     var instData:Null<Bytes> = audioInstTrackData.get(currentVariation);
     if (instData != null) currentInstrumental = SoundUtil.buildSoundFromBytes(instData);
 
     currentInstrumental.onComplete = function()
     {
-      trace('Instrumental track completed playback. Resetting caches.');
       shouldResetScroll = true;
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
@@ -1584,16 +1581,16 @@ class CameraEditorState extends UIState implements ConsoleClass
       ];
     };
 
-    trace('Loading vocals');
-
-    var buildVocal:Null<Array<String>>->Void = (vocals:Null<Array<String>>) ->
+    var buildVocal:Null<Array<String>>->Void = (voiceIds:Null<Array<String>>) ->
     {
-      for (voice in vocals)
+      for (voiceId in voiceIds)
       {
-        var variSuffix:String = currentVariation == Constants.DEFAULT_VARIATION ? '' : '-$currentVariation';
-        var vocalTrackKey:String = '$voice$variSuffix';
+        var trackKeySuffix:String = (currentVariation.isBlank()
+          || currentVariation == Constants.DEFAULT_VARIATION) ? '' : '-${currentVariation}';
+        var trackKey:String = '$voiceId$trackKeySuffix';
+        // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
-        var vocalData:Null<Bytes> = audioVocalTrackData.get(vocalTrackKey);
+        var vocalData:Null<Bytes> = audioVocalTrackData.get(trackKey);
         if (vocalData != null)
         {
           var vocalSound = SoundUtil.buildSoundFromBytes(vocalData);
@@ -1601,7 +1598,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         }
         else
         {
-          trace('Missing vocal track "$vocalTrackKey" (available: ${audioVocalTrackData.keyValues()})');
+          trace('Missing vocal track "$trackKey" (available: ${audioVocalTrackData.keyValues()})');
         }
       }
     };
