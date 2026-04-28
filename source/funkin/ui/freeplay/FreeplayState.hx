@@ -59,6 +59,9 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.ChartEditorState;
 #end
+#if FEATURE_CAMERA_EDITOR
+import funkin.ui.debug.cameraeditor.CameraEditorState;
+#end
 #if FEATURE_STAGE_EDITOR
 import funkin.ui.debug.stageeditor.StageEditorState;
 #end
@@ -1855,8 +1858,9 @@ class FreeplayState extends MusicBeatSubState
 
   function handleDebugKeys():Void
   {
-    #if FEATURE_CHART_EDITOR
     if (!uiStateMachine.canInteract()) return;
+
+    #if FEATURE_CHART_EDITOR
     if (controls.DEBUG_CHART)
     {
       uiStateMachine.transition(Exiting);
@@ -1896,6 +1900,55 @@ class FreeplayState extends MusicBeatSubState
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
       {
         FlxG.switchState(() -> new ChartEditorState({
+          loadFromTemplate: targetSongID,
+          targetSongDifficulty: currentDifficulty,
+          targetSongVariation: currentVariation,
+        }));
+      });
+      return;
+    }
+    #end
+
+    #if FEATURE_CAMERA_EDITOR
+    if (controls.DEBUG_CAMERA)
+    {
+      uiStateMachine.transition(Exiting);
+
+      var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      if (targetSongID == 'unknown')
+      {
+        var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem)
+        {
+          // Dead capsules are ones which were removed from the list when changing filters.
+          return cap.alive && cap.freeplayData != null;
+        });
+
+        trace('Available songs: ${availableSongCapsules.map(function(cap) {
+            return cap?.freeplayData?.data.songName;
+          })}');
+
+        if (availableSongCapsules.length == 0)
+        {
+          trace('No songs available!');
+          uiStateMachine.transition(Idle);
+          FunkinSound.playOnce(Paths.sound('cancelMenu'));
+          return;
+        }
+
+        var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
+
+        // Seeing if I can do an animation...
+        curSelected = grpCapsules.members.indexOf(targetSong);
+        changeSelection(0);
+        targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
+      }
+      // Play the confirm animation so the user knows they actually did something.
+      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      // if (dj != null) dj.confirm();
+      dj?.onConfirm();
+      new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
+      {
+        FlxG.switchState(() -> new CameraEditorState({
           loadFromTemplate: targetSongID,
           targetSongDifficulty: currentDifficulty,
           targetSongVariation: currentVariation,

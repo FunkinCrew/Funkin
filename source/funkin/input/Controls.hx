@@ -47,6 +47,9 @@ class Controls extends FlxActionSet
   #if FEATURE_CHART_EDITOR
   var _debug_chart:FunkinAction = new FunkinAction(Action.DEBUG_CHART);
   #end
+  #if FEATURE_CAMERA_EDITOR
+  var _debug_camera:FunkinAction = new FunkinAction(Action.DEBUG_CAMERA);
+  #end
   #if FEATURE_STAGE_EDITOR
   var _debug_stage:FunkinAction = new FunkinAction(Action.DEBUG_STAGE);
   #end
@@ -393,6 +396,15 @@ class Controls extends FlxActionSet
   }
   #end
 
+  #if FEATURE_CAMERA_EDITOR
+  public var DEBUG_CAMERA(get, never):Bool;
+
+  inline function get_DEBUG_CAMERA():Bool
+  {
+    return _debug_camera.check();
+  }
+  #end
+
   #if FEATURE_STAGE_EDITOR
   public var DEBUG_STAGE(get, never):Bool;
 
@@ -457,6 +469,7 @@ class Controls extends FlxActionSet
     add(_cutscene_advance);
     #if FEATURE_DEBUG_MENU add(_debug_menu); #end
     #if FEATURE_CHART_EDITOR add(_debug_chart); #end
+    #if FEATURE_CAMERA_EDITOR add(_debug_camera); #end
     #if FEATURE_STAGE_EDITOR add(_debug_stage); #end
     add(_debug_display);
     add(_volume_up);
@@ -628,6 +641,10 @@ class Controls extends FlxActionSet
       case DEBUG_CHART:
         _debug_chart;
       #end
+      #if FEATURE_CAMERA_EDITOR
+      case DEBUG_CAMERA:
+        _debug_camera;
+      #end
       #if FEATURE_STAGE_EDITOR
       case DEBUG_STAGE:
         _debug_stage;
@@ -727,6 +744,10 @@ class Controls extends FlxActionSet
       #if FEATURE_CHART_EDITOR
       case DEBUG_CHART:
         func(_debug_chart, JUST_PRESSED);
+      #end
+      #if FEATURE_CAMERA_EDITOR
+      case DEBUG_CAMERA:
+        func(_debug_camera, JUST_PRESSED);
       #end
       #if FEATURE_STAGE_EDITOR
       case DEBUG_STAGE:
@@ -953,6 +974,9 @@ class Controls extends FlxActionSet
     #if FEATURE_CHART_EDITOR
     bindKeys(Control.DEBUG_CHART, getDefaultKeybinds(scheme, Control.DEBUG_CHART));
     #end
+    #if FEATURE_CAMERA_EDITOR
+    bindKeys(Control.DEBUG_CAMERA, getDefaultKeybinds(scheme, Control.DEBUG_CAMERA));
+    #end
     #if FEATURE_STAGE_EDITOR
     bindKeys(Control.DEBUG_STAGE, getDefaultKeybinds(scheme, Control.DEBUG_STAGE));
     #end
@@ -1019,6 +1043,10 @@ class Controls extends FlxActionSet
           #end
           #if FEATURE_CHART_EDITOR
           case Control.DEBUG_CHART:
+            return [];
+          #end
+          #if FEATURE_CAMERA_EDITOR
+          case Control.DEBUG_CAMERA:
             return [];
           #end
           #if FEATURE_STAGE_EDITOR
@@ -1089,6 +1117,10 @@ class Controls extends FlxActionSet
           case Control.DEBUG_CHART:
             return [];
           #end
+          #if FEATURE_CAMERA_EDITOR
+          case Control.DEBUG_CAMERA:
+            return [];
+          #end
           #if FEATURE_STAGE_EDITOR
           case Control.DEBUG_STAGE:
             return [];
@@ -1155,6 +1187,10 @@ class Controls extends FlxActionSet
           #end
           #if FEATURE_CHART_EDITOR
           case Control.DEBUG_CHART:
+            return [];
+          #end
+          #if FEATURE_CAMERA_EDITOR
+          case Control.DEBUG_CAMERA:
             return [];
           #end
           #if FEATURE_STAGE_EDITOR
@@ -1248,6 +1284,7 @@ class Controls extends FlxActionSet
       Control.VOLUME_MUTE => getDefaultGamepadBinds(Control.VOLUME_MUTE),
       #if FEATURE_DEBUG_MENU Control.DEBUG_MENU => getDefaultGamepadBinds(Control.DEBUG_MENU), #end
       #if FEATURE_CHART_EDITOR Control.DEBUG_CHART => getDefaultGamepadBinds(Control.DEBUG_CHART), #end
+      #if FEATURE_CAMERA Control.DEBUG_CAMERA => getDefaultGamepadBinds(Control.DEBUG_CAMERA), #end
       #if FEATURE_STAGE_EDITOR Control.DEBUG_STAGE => getDefaultGamepadBinds(Control.DEBUG_STAGE), #end
       Control.DEBUG_DISPLAY => getDefaultGamepadBinds(Control.DEBUG_DISPLAY),
     ]);
@@ -1313,6 +1350,10 @@ class Controls extends FlxActionSet
       #end
       #if FEATURE_CHART_EDITOR
       case Control.DEBUG_CHART:
+        [];
+      #end
+      #if FEATURE_CAMERA_EDITOR
+      case Control.DEBUG_CAMERA:
         [];
       #end
       #if FEATURE_STAGE_EDITOR
@@ -1750,6 +1791,7 @@ enum Control
   // DEBUG
   #if FEATURE_DEBUG_MENU DEBUG_MENU; #end
   #if FEATURE_CHART_EDITOR DEBUG_CHART; #end
+  #if FEATURE_CAMERA_EDITOR DEBUG_CAMERA; #end
   #if FEATURE_STAGE_EDITOR DEBUG_STAGE; #end
   DEBUG_DISPLAY;
 }
@@ -1794,6 +1836,9 @@ enum abstract Action(String) to String from String
   #end
   #if FEATURE_CHART_EDITOR
   var DEBUG_CHART = 'debug_chart';
+  #end
+  #if FEATURE_CAMERA_EDITOR
+  var DEBUG_CAMERA = 'debug_camera';
   #end
   #if FEATURE_STAGE_EDITOR
   var DEBUG_STAGE = 'debug_stage';
