@@ -899,8 +899,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     super.update(elapsed);
 
-    MouseUtil.mouseCamDrag(goToPoint);
-
     _cameraTarget.x = FlxMath.lerp(_cameraTarget.x, goToPoint.x, 0.8);
     _cameraTarget.y = FlxMath.lerp(_cameraTarget.y, goToPoint.y, 0.8);
 
