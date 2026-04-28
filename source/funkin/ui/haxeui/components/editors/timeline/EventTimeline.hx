@@ -260,6 +260,8 @@ private class EventTimelineEvents extends Events
       _onAddLayer)) _timeline.layerPanel.btnAddLayer.registerEvent(MouseEvent.CLICK, _onAddLayer);
     if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(MouseEvent.CLICK,
       _onRemoveLayer)) _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
+    if (!_timeline.layerPanel.hasEvent(MouseEvent.MOUSE_WHEEL,
+      _onLayerPanelWheel)) _timeline.layerPanel.registerEvent(MouseEvent.MOUSE_WHEEL, _onLayerPanelWheel);
     if (!_timeline.scrollbar.hasEvent(UIEvent.CHANGE, _onScrollbarChange)) _timeline.scrollbar.registerEvent(UIEvent.CHANGE, _onScrollbarChange);
     if (!_timeline.vscrollbar.hasEvent(UIEvent.CHANGE, _onVScrollbarChange)) _timeline.vscrollbar.registerEvent(UIEvent.CHANGE, _onVScrollbarChange);
     if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
@@ -278,6 +280,7 @@ private class EventTimelineEvents extends Events
   {
     _timeline.layerPanel.btnAddLayer.unregisterEvent(MouseEvent.CLICK, _onAddLayer);
     _timeline.layerPanel.btnRemoveLayer.unregisterEvent(MouseEvent.CLICK, _onRemoveLayer);
+    _timeline.layerPanel.unregisterEvent(MouseEvent.MOUSE_WHEEL, _onLayerPanelWheel);
     _timeline.scrollbar.unregisterEvent(UIEvent.CHANGE, _onScrollbarChange);
     _timeline.vscrollbar.unregisterEvent(UIEvent.CHANGE, _onVScrollbarChange);
     _timeline.toolbar.ddAutoScroll.unregisterEvent(UIEvent.CHANGE, _onAutoScrollChange);
@@ -318,6 +321,12 @@ private class EventTimelineEvents extends Events
     removeEvent.layerData = layer;
     removeEvent.layerIndex = selectedIdx;
     _timeline.dispatch(removeEvent);
+  }
+
+  function _onLayerPanelWheel(e:MouseEvent):Void
+  {
+    _timeline.viewport.scrollVertical(e.delta);
+    _timeline.viewport.refreshLayout();
   }
 
   function _onZoomChange(_:UIEvent):Void
