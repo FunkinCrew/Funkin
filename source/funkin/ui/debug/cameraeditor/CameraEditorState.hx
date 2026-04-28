@@ -1,35 +1,17 @@
 package funkin.ui.debug.cameraeditor;
 
-import funkin.util.InputUtil;
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
-import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
-import funkin.util.SortUtil;
 #if FEATURE_CAMERA_EDITOR
-import haxe.ui.containers.Panel;
-import haxe.ui.containers.Panel;
-import haxe.ui.focus.FocusManager;
 import flixel.FlxCamera;
-import funkin.graphics.FunkinCamera;
-import flixel.math.FlxMath;
-import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxPoint;
-import funkin.play.event.SongEvent;
-import funkin.data.song.SongData.SongEventData;
 import flixel.FlxObject;
-import funkin.data.song.SongData.SongNoteData;
-import funkin.play.character.BaseCharacter;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import funkin.play.notes.NoteSprite;
 import flixel.FlxSprite;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.util.FlxColor;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.graphics.FunkinSprite;
-import funkin.graphics.FunkinCamera;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.graphics.FunkinAnimationController;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -37,51 +19,58 @@ import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
+import funkin.graphics.FunkinAnimationController;
 import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
 import funkin.input.Cursor;
-import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEvent.SongEventScriptEvent;
+import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
 import funkin.play.character.BaseCharacter;
+import funkin.play.event.SongEvent;
+import funkin.play.notes.NoteSprite;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
-import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
-import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
-import funkin.ui.debug.cameraeditor.commands.CompoundCommand;
-import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
-import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
-import funkin.data.song.SongData.SongEventDataRaw;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.cameraeditor.commands.AddEventCommand;
 import funkin.ui.debug.cameraeditor.commands.AddLayerCommand;
+import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand.AutoSortPlan;
+import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand;
+import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
+import funkin.ui.debug.cameraeditor.commands.CompoundCommand;
+import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
-import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
-import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand;
-import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand.AutoSortPlan;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
+import funkin.ui.debug.cameraeditor.components.AutoGenDialog;
 import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
-import funkin.ui.debug.cameraeditor.components.AutoGenDialog;
-import funkin.ui.debug.cameraeditor.components.WelcomeDialog;
 import funkin.ui.debug.cameraeditor.components.UserGuideDialog;
+import funkin.ui.debug.cameraeditor.components.VirtualCameraRectangle;
+import funkin.ui.debug.cameraeditor.components.WelcomeDialog;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
-import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
+import funkin.ui.debug.charting.ChartEditorState;
+import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.FileUtil;
+import funkin.util.InputUtil;
 import funkin.util.MouseUtil;
+import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.util.assets.SoundUtil;
 import funkin.util.logging.CrashHandler;
@@ -630,7 +619,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       try
       {
-        // Chart editor was opened from the command line. Open the FNFC file now!
+        // Camera editor was opened from the command line. Open the FNFC file now!
         CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
       }
       catch (e)
@@ -2304,9 +2293,66 @@ class CameraEditorState extends UIState implements ConsoleClass
     aboutDialog.onDialogClosed = (_) -> aboutDialog = null;
   }
 
+  @:bind(menubarItemChartEditor, MouseEvent.CLICK)
+  function onMoveToChartEditor(_)
+  {
+    tryMoveToChartEditor();
+  }
+
+  function tryMoveToChartEditor(hasSaved:Bool = false):Void
+  {
+    if (!hasSaved)
+    {
+      if (currentWorkingFilePath != null)
+      {
+        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+        {
+          notifyChange('Chart Save', 'This chart has been saved to ${path}');
+          tryMoveToChartEditor(true);
+        }, function()
+        {
+          // Failed to save
+          notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
+        });
+      }
+      else
+      {
+        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+        {
+          notifyChange('Chart Save', 'This chart has been saved to ${path}');
+          currentWorkingFilePath = path;
+          tryMoveToChartEditor(true);
+        }, function()
+        {
+          // Failed to save
+          notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
+        });
+      }
+    }
+    else
+    {
+      if (currentWorkingFilePath == null)
+      {
+        notifyChange("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.', true);
+        return;
+      }
+
+      var startTimestamp:Float = timeline.songPosition;
+
+      performCleanup();
+
+      FlxG.switchState(() -> new ChartEditorState({
+        loadFromPath: this.currentWorkingFilePath,
+        targetSongDifficulty: this.currentDifficulty,
+        targetSongVariation: this.currentVariation,
+        targetSongPosition: startTimestamp,
+      }));
+    }
+  }
+
   /**
    * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
-   * @param state The current chart editor state.
+   * @param state The current camera editor state.
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
