@@ -1645,10 +1645,13 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentInstrumental == null) return;
 
-    if (shouldResetScroll)
+    var atEnd:Bool = shouldResetScroll
+      || currentInstrumental.time >= currentInstrumental.length - conductorInUse.stepLengthMs;
+
+    if (atEnd)
     {
       shouldResetScroll = false;
-      replayCameraTimeline(0);
+      setTimePosition(0, true);
     }
 
     currentInstrumental.play(false, currentInstrumental.time);
