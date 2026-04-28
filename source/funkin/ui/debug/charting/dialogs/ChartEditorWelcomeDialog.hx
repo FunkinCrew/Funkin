@@ -164,14 +164,16 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
           if (result.length == 0)
           {
             state.success('Loaded Song', 'Loaded song (${targetSongId})');
+
+            // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
+            this.hideDialog(DialogButton.CANCEL);
           }
           else
           {
-            state.warning('Loaded Song', 'Loaded song with issues (${targetSongId})\n${result.join("\n")}');
-          }
+            state.error('Failure', 'Failed to load chart (${targetSongId})\n${result.join("\n")}');
 
-          // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
-          this.hideDialog(DialogButton.CANCEL);
+            // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
+          }
         }
         else
         {
