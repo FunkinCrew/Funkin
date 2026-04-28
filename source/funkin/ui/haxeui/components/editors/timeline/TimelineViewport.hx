@@ -157,6 +157,22 @@ class TimelineViewport extends Box
     _eventsInstance.tickEdgeAutoScroll(elapsed);
   }
 
+  // Caller is responsible for `refreshLayout()` afterwards.
+  public function scrollVertical(delta:Float):Void
+  {
+    var maxScroll:Float = maxLayerScrollPx;
+    if (maxScroll <= 0)
+    {
+      layerScrollOffsetPx = 0;
+      return;
+    }
+    var scrollPx:Float = delta * LAYER_HEIGHT;
+    var newOffset:Float = layerScrollOffsetPx - scrollPx;
+    if (newOffset < 0) newOffset = 0;
+    if (newOffset > maxScroll) newOffset = maxScroll;
+    layerScrollOffsetPx = newOffset;
+  }
+
   public function refreshLayout():Void
   {
     if (songLengthMs > 0 && scrollOffsetMs > songLengthMs) scrollOffsetMs = songLengthMs;
@@ -1086,19 +1102,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     }
     else if (e.ctrlKey)
     {
-      var maxScroll = _viewport.maxLayerScrollPx;
-      if (maxScroll <= 0)
-      {
-        _viewport.layerScrollOffsetPx = 0;
-      }
-      else
-      {
-        var scrollPx = e.delta * TimelineViewport.LAYER_HEIGHT;
-        var newOffset = _viewport.layerScrollOffsetPx - scrollPx;
-        if (newOffset < 0) newOffset = 0;
-        if (newOffset > maxScroll) newOffset = maxScroll;
-        _viewport.layerScrollOffsetPx = newOffset;
-      }
+      _viewport.scrollVertical(e.delta);
     }
     else
     {
