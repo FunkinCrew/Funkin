@@ -26,7 +26,9 @@ class SwitchDifficultyCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
+    trace('Start switching variation.');
     state.selectedVariation = newVariation != null ? newVariation : prevVariation;
+    trace('Done switching variation.');
     state.selectedDifficulty = newDifficulty != null ? newDifficulty : prevDifficulty;
 
     markDirty(state);

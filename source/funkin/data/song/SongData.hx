@@ -643,12 +643,35 @@ class SongChartData implements ICloneable<SongChartData>
   }
 
   /**
+   * Remove any difficulties in this chart which contain no notes.
+   * You can add a blank difficulty back later from the Chart Editor Difficulty Toolbox.
+   */
+  public function removeEmptyDifficulties():Void
+  {
+    var difficultiesToRemove:Array<String> = [];
+    for (key in this.notes.keys())
+    {
+      if (this.notes.get(key).length == 0)
+      {
+        difficultiesToRemove.push(key);
+      }
+    }
+
+    for (diff in difficultiesToRemove)
+    {
+      this.notes.remove(diff);
+      this.scrollSpeed.remove(diff);
+    }
+  }
+
+  /**
    * Convert this SongChartData into a JSON string.
    */
   public function serialize(pretty:Bool = true):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
+    removeEmptyDifficulties();
 
     var ignoreNullOptionals = true;
     var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
