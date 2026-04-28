@@ -407,7 +407,7 @@ class FNFCUtil
    */
   static function loadSongChartDataFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, variation:String):SongChartData
   {
-    var chartDataPath:String = manifest.getChartDataFileName();
+    var chartDataPath:String = manifest.getChartDataFileName(variation);
 
     var chartDataStr:String = loadStringFromFNFCZipEntries(mappedFileEntries, chartDataPath);
 
