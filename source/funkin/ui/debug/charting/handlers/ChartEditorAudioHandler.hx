@@ -108,11 +108,8 @@ class ChartEditorAudioHandler
     result = playVocals(state, DAD, instId);
 
     state.postLoadVocals();
-
     state.hardRefreshOffsetsToolbox();
-
     state.hardRefreshFreeplayToolbox();
-
     state.loadSubtitles();
 
     return true;
@@ -153,11 +150,11 @@ class ChartEditorAudioHandler
    *
    * @param state The chart editor state.
    * @param charType The character type to play vocals for.
-   * @param instId The instrumental this vocal track will be for.
+   * @param variation The variation this vocal track will be for.
    *
    * @return `true` if the vocal track(s) were successfully loaded and played, `false` otherwise.
    */
-  public static function playVocals(state:ChartEditorState, charType:CharacterType, instId:String = ''):Bool
+  public static function playVocals(state:ChartEditorState, charType:CharacterType, variation:String = ''):Bool
   {
     var vocalTrackIds:Array<String> = [];
 
@@ -185,12 +182,11 @@ class ChartEditorAudioHandler
 
     for (trackBaseKey in vocalTrackIds)
     {
-      // instId will be '' for the default variation.
-      var trackKeySuffix:String = instId == '' ? '' : '-${instId}';
-
+      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
       var trackKey:String = '$trackBaseKey$trackKeySuffix';
+      // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
-      trace('CHART EDITOR: Switching vocals to "$instId"');
+      trace('CHART EDITOR: Switching vocals to "$trackKey"');
 
       var vocalTrackData:Null<Bytes> = state.audioVocalTrackData.get(trackKey);
 
