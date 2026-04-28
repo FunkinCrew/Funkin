@@ -1466,7 +1466,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_currentSongChartData():SongChartData
   {
-    trace('QUERYING CHART DATA');
     var result:Null<SongChartData> = songChartData.get(selectedVariation);
     if (result == null)
     {
@@ -2226,6 +2225,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The `Audio -> Playback Speed` slider.
    */
   var menubarItemPlaybackSpeed:Slider;
+
+  /**
+   * The `Camera Editor` menu item.
+   */
+  var menubarItemCameraEditor:MenuItem;
 
   /**
    * The label by the playbar telling the song position.
@@ -3628,6 +3632,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       this.setToolboxState(CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT, event.value);
       opponentPreviewDirty = event.value;
     }
+
+    menubarItemCameraEditor.onClick = _ ->
+    {
+      this.moveToCameraEditor();
+    };
 
     // TODO: Pass specific HaxeUI components to add context menus to them.
     // registerContextMenu(null, Paths.ui('chart-editor/context/test'));
@@ -6548,6 +6557,51 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handlePostUpdate():Void
   {
     wasCursorOverHaxeUI = isCursorOverHaxeUI;
+  }
+
+  function moveToCameraEditor(hasSaved:Bool = false):Void
+  {
+    if (!hasSaved)
+    {
+      // Save the current chart as a file.
+      if (currentWorkingFilePath != null)
+      {
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath);
+        moveToCameraEditor(true);
+      }
+      else
+      {
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
+        {
+          // CTRL + SHIFT + S Successful
+          // Just to be sure
+          currentWorkingFilePath = path;
+
+          moveToCameraEditor(true);
+        }, function()
+        {
+          // CTRL + SHIFT + S Cancelled, do NOTHING
+          return;
+        });
+      }
+    }
+    else
+    {
+      if (currentWorkingFilePath == null)
+      {
+        this.error("Can't Move To Camera Editor", 'Camera Editor can only be accessed when the current chart has been saved to a file.');
+        return;
+      }
+
+      var startTimestamp:Float = scrollPositionInMs + playheadPositionInMs;
+
+      FlxG.switchState(() -> new CameraEditorState({
+        loadFromPath: this.currentWorkingFilePath,
+        targetSongDifficulty: this.selectedDifficulty,
+        targetSongVariation: this.selectedVariation,
+        targetSongPosition: startTimestamp,
+      }));
+    }
   }
 
   /**
