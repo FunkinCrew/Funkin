@@ -676,7 +676,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       var success:Bool = result != null && result.length == 0;
 
-      if (result != null && result.length >= 0)
+      if (result != null && result.length == 0)
       {
         // TODO: Display warnings from loading the song.
         CameraEditorNotificationHandler.success(this, 'Loaded Song', 'Loaded Song (${targetSongId})');
@@ -684,8 +684,13 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
       else if (result != null)
       {
-        CameraEditorNotificationHandler.success(this, 'Loaded Song', 'Loaded Song (${targetSongId})');
-        setTimePosition(params.targetSongPosition ?? 0);
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', 'Failed to load song (${params.loadFromPath})\n${result.join("\n")}');
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog();
+        if (shouldShowBackupAvailableDialog)
+        {
+          openBackupAvailableDialog(welcomeDialog);
+        }
       }
       else
       {
