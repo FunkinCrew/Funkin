@@ -349,9 +349,40 @@ class FNFCUtil
       var trackKey:String = '$voiceId$trackKeySuffix';
       // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
-      var voiceFileName:String = funkin.Paths.voices(songId, '-$trackKey');
-      var voiceBytes:Null<Bytes> = Assets.getBytes(voiceFileName);
-      if (voiceBytes == null) throw 'Could not load vocals: $voiceFileName';
+      // CUE AWFUL SUFFIX-STRIPPING LOGIC
+      // TODO: Merge this with the logic in Song.buildPlayerVoiceList()
+
+      var originalVoiceId:String = voiceId;
+      var voicePath:Null<String> = funkin.Paths.voices(songId, '-$voiceId$trackKeySuffix');
+
+      while (voicePath != null && !Assets.exists(voicePath))
+      {
+        // Continously strip the suffix (leaving the variation) until we find a valid voice file.
+        // For example if "Voices-bf-car-pico.ogg" doesn't exist, try "Voices-bf-pico.ogg"
+        voiceId = voiceId.split('-').slice(0, -1).join('-');
+        voicePath = voiceId == '' ? null : funkin.Paths.voices(songId, '-$voiceId$trackKeySuffix');
+      }
+      if (voicePath == null)
+      {
+        voiceId = originalVoiceId;
+        voicePath = funkin.Paths.voices(songId, '-$voiceId');
+        while (voicePath != null && !Assets.exists(voicePath))
+        {
+          // Continously strip the suffix (omitting the variation) until we find a valid voice file.
+          // For example if "Voices-bf-car.ogg" doesn't exist, try "Voices-bf.ogg"
+          voiceId = voiceId.split('-').slice(0, -1).join('-');
+          voicePath = voiceId == '' ? null : funkin.Paths.voices(songId, '-$voiceId');
+        }
+      }
+
+      if (voicePath == null)
+      {
+        var originalVoicePath:String = funkin.Paths.voices(songId, '-$originalVoiceId$trackKeySuffix');
+        throw 'Could not locate vocal track: $originalVoicePath';
+      }
+
+      var voiceBytes:Null<Bytes> = Assets.getBytes(voicePath);
+      if (voiceBytes == null) throw 'Could not load vocals: $voicePath';
       vocals.set(trackKey, voiceBytes);
     }
 
