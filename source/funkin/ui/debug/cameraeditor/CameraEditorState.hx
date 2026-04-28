@@ -957,6 +957,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (_shouldResetCameraPosition)
     {
       _shouldResetCameraPosition = false;
+      onResetCameraZoom(null);
       onResetCameraScroll(null);
     }
 
@@ -1092,7 +1093,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
-    onResetCameraZoom(null);
     _shouldResetCameraPosition = true;
   }
 
@@ -2200,27 +2200,68 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
   function onResetCameraScroll(_)
   {
-    goToPoint.x = 0;
-    goToPoint.y = 0;
+    var offset:FlxPoint = computeViewportCenterOffset();
 
-    if (!isCameraRelative){
-      goToPoint.x = cameraRect.vCamPoint.x;
-      goToPoint.y = cameraRect.vCamPoint.y;
+    goToPoint.x = offset.x;
+    goToPoint.y = offset.y;
+
+    if (!isCameraRelative)
+    {
+      goToPoint.x += cameraRect.vCamPoint.x;
+      goToPoint.y += cameraRect.vCamPoint.y;
     }
 
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
+
+    offset.put();
   }
 
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
+    var oldOffset:FlxPoint = computeViewportCenterOffset();
+    goToPoint.x -= oldOffset.x;
+    goToPoint.y -= oldOffset.y;
+    oldOffset.put();
+
+    var fitZoom:Float = computeViewportFitZoom();
     if (isCameraRelative)
     {
-      relativeZoom = defaultStageZoom;
-      return;
+      relativeZoom = fitZoom;
     }
-    FlxG.camera.zoom = defaultStageZoom * 0.8;
+    else
+    {
+      FlxG.camera.zoom = fitZoom;
+    }
+
+    var newOffset:FlxPoint = computeViewportCenterOffset();
+    goToPoint.x += newOffset.x;
+    goToPoint.y += newOffset.y;
+    newOffset.put();
+  }
+
+  static final VIEWPORT_FIT_MARGIN:Float = 0.95;
+
+  function computeViewportFitZoom():Float
+  {
+    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return defaultStageZoom * 0.8;
+
+    var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.width;
+    var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.height;
+    return Math.min(fitW, fitH);
+  }
+
+  function computeViewportCenterOffset():FlxPoint
+  {
+    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
+
+    var dx:Float = (FlxG.width / 2) - (mainView.screenLeft + mainView.width / 2);
+    var dy:Float = (FlxG.height / 2) - (mainView.screenTop + mainView.height / 2);
+
+    var zoom:Float = isCameraRelative ? (cameraRect.zoom * relativeZoom) : FlxG.camera.zoom;
+    if (zoom <= 0) zoom = 1.0;
+    return FlxPoint.get(dx / zoom, dy / zoom);
   }
 
   @:bind(menubarItemAutoGen, MouseEvent.CLICK)
@@ -2259,7 +2300,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onViewportGesturePan(e:CameraViewportEvent):Void
   {
-    var zoom = FlxG.camera.zoom;
+    var zoom:Float = FlxG.camera.zoom;
     if (zoom <= 0) zoom = 1;
     goToPoint.x -= e.panDeltaX / zoom;
     goToPoint.y -= e.panDeltaY / zoom;
