@@ -121,7 +121,7 @@
       "name": "hxcpp",
       "type": "git",
       "dir": null,
-      "ref": "1a468335a0016aa87439c1878b5b845f88a4bae0",
+      "ref": "c79483a7bf1c0afa77d35a8c564cecac83d5c890",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -179,7 +179,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "dca955c3ca078585284a30206c7481f42745df1a",
+      "ref": "9ccf5bab6bddc0199def5a47a97fd7094cdd5568",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
