@@ -547,17 +547,17 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.instrumental = instrumental;
 
     this.altInstrumentals = altInstrumentals ?? [];
-    this.opponentVocals = opponentVocals;
-    this.playerVocals = playerVocals;
-
-    if (opponentVocals == null) this.opponentVocals = [opponent];
-    if (playerVocals == null) this.playerVocals = [player];
+    this.opponentVocals = opponentVocals ?? [opponent];
+    this.playerVocals = playerVocals ?? [player];
   }
 
   public function clone():SongCharacterData
   {
     var result:SongCharacterData = new SongCharacterData(this.player, this.girlfriend, this.opponent, this.instrumental);
-    result.altInstrumentals = this.altInstrumentals.clone();
+
+    if (this.altInstrumentals != null) result.altInstrumentals = this.altInstrumentals.clone();
+    if (this.opponentVocals != null) result.opponentVocals = this.opponentVocals.clone();
+    if (this.playerVocals != null) result.playerVocals = this.playerVocals.clone();
 
     return result;
   }
