@@ -299,6 +299,8 @@ class FNFCUtil
   {
     var vocals:Map<String, Bytes> = [];
 
+    var variation:String = metadata.variation.isBlank() ? Constants.DEFAULT_VARIATION : metadata.variation;
+
     // Get the player vocal list and opponent vocal list
     // If either are null, default to the player and opponent characters
     // If either are empty, don't load vocals for them
@@ -312,9 +314,13 @@ class FNFCUtil
 
     for (voiceId in voicesList)
     {
-      var voiceFileName = manifest.getVocalsFileName(voiceId, metadata.variation);
-      var voiceBytes = loadBytesFromFNFCZipEntries(mappedFileEntries, voiceFileName);
-      vocals.set(voiceId, voiceBytes);
+      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+      var trackKey:String = '$voiceId$trackKeySuffix';
+      // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
+
+      var voiceFileName:String = manifest.getVocalsFileName(voiceId, metadata.variation);
+      var voiceBytes:Bytes = loadBytesFromFNFCZipEntries(mappedFileEntries, voiceFileName);
+      vocals.set(trackKey, voiceBytes);
     }
 
     return vocals;
@@ -339,10 +345,14 @@ class FNFCUtil
 
     for (voiceId in voicesList)
     {
-      var vocalSuffix:String = variation == Constants.DEFAULT_VARIATION ? '-$voiceId' : '-$voiceId-$variation';
-      var voiceFileName:String = funkin.Paths.voices(songId, vocalSuffix);
+      var trackKeySuffix:String = (variation.isBlank() || variation == Constants.DEFAULT_VARIATION) ? '' : '-${variation}';
+      var trackKey:String = '$voiceId$trackKeySuffix';
+      // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
+
+      var voiceFileName:String = funkin.Paths.voices(songId, '-$trackKey');
       var voiceBytes:Null<Bytes> = Assets.getBytes(voiceFileName);
-      vocals.set(voiceId, voiceBytes);
+      if (voiceBytes == null) throw 'Could not load vocals: $voiceFileName';
+      vocals.set(trackKey, voiceBytes);
     }
 
     return vocals;
