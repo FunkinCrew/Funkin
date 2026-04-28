@@ -1,12 +1,12 @@
 package funkin.ui.debug.charting;
 
 #if FEATURE_CHART_EDITOR
-import flixel.addons.display.FlxSliceSprite;
-import flixel.addons.display.FlxTiledSprite;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.addons.display.FlxSliceSprite;
+import flixel.addons.display.FlxTiledSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepadInputID;
@@ -21,16 +21,17 @@ import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.VoicesGroup;
+import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.waveform.WaveformSprite;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
-import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
 import funkin.data.song.importer.ChartManifestData;
@@ -40,31 +41,32 @@ import funkin.input.Cursor;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
-import funkin.play.event.SongEvent;
-import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.components.HealthIcon;
 import funkin.play.components.Subtitles;
+import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteSprite;
-import funkin.play.PlayStatePlaylist;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
-import funkin.play.PlayState;
 import funkin.save.Save;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
+import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
-import funkin.ui.debug.charting.commands.AddNotesCommand;
 import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
+import funkin.ui.debug.charting.commands.AddNotesCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
+import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.MoveItemsCommand;
 import funkin.ui.debug.charting.commands.MoveNotesCommand;
@@ -73,8 +75,8 @@ import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
@@ -88,23 +90,24 @@ import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
-import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.MathUtil;
-import funkin.util.logging.CrashHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
+import funkin.util.logging.CrashHandler;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.Path;
+import haxe.ui.Toolkit;
 import haxe.ui.backend.flixel.UIState;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
+import haxe.ui.components.NumberStepper;
 import haxe.ui.components.Slider;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.menus.Menu;
@@ -116,9 +119,7 @@ import haxe.ui.events.DragEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
-import haxe.ui.Toolkit;
 import openfl.display.BitmapData;
-import haxe.ui.components.NumberStepper;
 
 using Lambda;
 
@@ -2599,16 +2600,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (result.length == 0)
         {
           this.success('Loaded Song', 'Loaded song (${targetSongId})');
+
+          // Set the scroll position to the current song time.
+          scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
+          currentScrollEase = scrollPositionInPixels;
+          moveSongToScrollPosition();
         }
         else
         {
-          this.warning('Loaded Song', 'Loaded song with issues (${targetSongId})\n${result.join("\n")}');
-        }
+          this.error('Failure', 'Failed to load chart (${targetSongId})\n${result.join("\n")}');
 
-        // Set the scroll position to the current song time.
-        scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
-        currentScrollEase = scrollPositionInPixels;
-        moveSongToScrollPosition();
+          // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+          var welcomeDialog = this.openWelcomeDialog(false);
+          if (shouldShowBackupAvailableDialog)
+          {
+            this.openBackupAvailableDialog(welcomeDialog);
+          }
+        }
       }
       else
       {
