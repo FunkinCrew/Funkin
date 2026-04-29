@@ -150,7 +150,7 @@ class WelcomeDialog extends Dialog
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath}):\n$e');
+      CameraEditorNotificationHandler.error(this.cameraEditorState, 'Failure', 'Failed to load chart (${selectedFile.fullPath}):\n$e');
       return;
     }
   }
@@ -168,7 +168,7 @@ class WelcomeDialog extends Dialog
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath}):\n$e');
+      CameraEditorNotificationHandler.error(this.cameraEditorState, 'Failure', 'Failed to load chart (${path}):\n$e');
       return;
     }
   }
