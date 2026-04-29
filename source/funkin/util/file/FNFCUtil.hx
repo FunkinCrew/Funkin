@@ -94,6 +94,7 @@ class FNFCUtil
    *
    * @param fnfcPath The absolute file path to the `.fnfc` file to load.
    * @param loadAudio Whether to additionally load the audio tracks from the `.fnfc` file.
+   * @throws error If a critical error occurred that prevents loading a valid chart. Non-critical errors are placed in the `issues` list in the FNFCData.
    * @return An object containing the data from the `.fnfc` file, ready to be opened in a debug editor.
    */
   public static function loadDataFromFNFCPath(fnfcPath:String, loadAudio:Bool = true):FNFCData
@@ -106,12 +107,14 @@ class FNFCUtil
    *
    * @param fnfcBytes The byte data of the `.fnfc` file to load.
    * @param loadAudio Whether to additionally load the audio tracks from the `.fnfc` file.
+   * @throws error If a critical error occurred that prevents loading a valid chart. Non-critical errors are placed in the `issues` list in the FNFCData.
    * @return An object containing the data from the `.fnfc` file, ready to be opened in a debug editor.
    */
   public static function loadDataFromFNFCBytes(fnfcBytes:Bytes, loadAudio:Bool = true):FNFCData
   {
     var mappedFileEntries:Map<String, haxe.zip.Entry> = FileUtil.mapZIPEntriesByName(FileUtil.readZIPFromBytes(fnfcBytes));
 
+    var issues:Array<String> = [];
     var manifest:ChartManifestData = loadChartManifestFromFNFCZipEntries(mappedFileEntries);
 
     var songId:String = manifest.songId;
@@ -119,23 +122,38 @@ class FNFCUtil
     var songMetadatas:Map<String, SongMetadata> = [];
     var songChartDatas:Map<String, SongChartData> = [];
 
-    // Default variation metadata
+    // Default variation metadata (errors here are critical, since it's required to parse the rest of the file)
     var baseMetadata = loadSongMetadataFromFNFCZipEntries(mappedFileEntries, manifest, Constants.DEFAULT_VARIATION);
     songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
 
-    // Default variation chart data
+    // Default variation chart data (errors here are critical, since it's required to parse the rest of the file)
     var baseChartData = loadSongChartDataFromFNFCZipEntries(mappedFileEntries, manifest, Constants.DEFAULT_VARIATION);
     songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
 
     // Additional variation metadata and chart data
+    // Errors here are non-critical and placed in the issues list.
     var variationList:Array<String> = baseMetadata.playData.songVariations;
     for (variation in variationList)
     {
-      var metadata = loadSongMetadataFromFNFCZipEntries(mappedFileEntries, manifest, variation);
-      songMetadatas.set(variation, metadata);
+      try
+      {
+        var metadata = loadSongMetadataFromFNFCZipEntries(mappedFileEntries, manifest, variation);
+        songMetadatas.set(variation, metadata);
+      }
+      catch (e)
+      {
+        issues.push('Failed loading variation metadata "$variation": $e');
+      }
 
-      var chartData = loadSongChartDataFromFNFCZipEntries(mappedFileEntries, manifest, variation);
-      songChartDatas.set(variation, chartData);
+      try
+      {
+        var chartData = loadSongChartDataFromFNFCZipEntries(mappedFileEntries, manifest, variation);
+        songChartDatas.set(variation, chartData);
+      }
+      catch (e)
+      {
+        issues.push('Failed loading variation chart data "$variation": $e');
+      }
     }
 
     // Instrumental and vocal audio data
@@ -148,11 +166,25 @@ class FNFCUtil
       var metadata:Null<SongMetadata> = songMetadatas.get(Constants.DEFAULT_VARIATION);
       if (metadata == null) throw 'Could not locate default variation metadata for audio loading.';
 
-      var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-      instrumentals.set(Constants.DEFAULT_VARIATION, instBytes);
+      try
+      {
+        var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+        instrumentals.set(Constants.DEFAULT_VARIATION, instBytes);
+      }
+      catch (e)
+      {
+        issues.push('Failed loading instrumental for default variation: $e');
+      }
 
-      var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-      vocals.append(vocalsBytes);
+      try
+      {
+        var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+        vocals.append(vocalsBytes);
+      }
+      catch (e)
+      {
+        issues.push('Failed loading vocals for default variation: $e');
+      }
     }
 
     // Alternate variation instrumental and vocal audio data
@@ -163,11 +195,25 @@ class FNFCUtil
         var metadata:Null<SongMetadata> = songMetadatas.get(variation);
         if (metadata == null) throw 'Could not locate variation metadata for audio loading.';
 
-        var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-        instrumentals.set(variation, instBytes);
+        try
+        {
+          var instBytes:Bytes = loadInstBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+          instrumentals.set(variation, instBytes);
+        }
+        catch (e)
+        {
+          issues.push('Failed loading instrumental for variation "$variation": $e');
+        }
 
-        var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
-        vocals.append(vocalsBytes);
+        try
+        {
+          var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromFNFCZipEntries(mappedFileEntries, manifest, metadata);
+          vocals.append(vocalsBytes);
+        }
+        catch (e)
+        {
+          issues.push('Failed loading vocals for variation "$variation": $e');
+        }
       }
     }
 
@@ -179,6 +225,8 @@ class FNFCUtil
 
       instrumentals: instrumentals,
       vocals: vocals,
+
+      issues: issues
     }
   }
 
@@ -217,6 +265,7 @@ class FNFCUtil
    * Useful for testing, or quickly getting started from an existing song's chart.
    *
    * @param songId The ID of the song to load.
+   * @param loadAudio Whether to also load the audio tracks for the song.
    * @return An object containing the data for the chart, ready to save to an `.fnfc` file, or open in a debug editor.
    */
   public static function buildFNFCDataFromTemplate(songId:String, loadAudio:Bool = true):FNFCData
@@ -230,6 +279,7 @@ class FNFCUtil
     var songChartDatas:Map<String, SongChartData> = [];
     var instrumentals:Map<String, Bytes> = [];
     var vocals:Map<String, Bytes> = [];
+    var issues:Array<String> = [];
 
     var rawSongMetadata:Array<SongMetadata> = song.getRawMetadata();
 
@@ -256,11 +306,25 @@ class FNFCUtil
       {
         if (metadata == null) continue;
 
-        var instBytes:Bytes = loadInstBytesFromTemplate(songId, metadata);
-        instrumentals.set(variation, instBytes);
+        try
+        {
+          var instBytes:Bytes = loadInstBytesFromTemplate(songId, metadata);
+          instrumentals.set(variation, instBytes);
+        }
+        catch (e)
+        {
+          issues.push('Failed loading instrumental for variation "$variation": $e');
+        }
 
-        var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromTemplate(songId, metadata);
-        vocals.append(vocalsBytes);
+        try
+        {
+          var vocalsBytes:Map<String, Bytes> = loadVocalBytesFromTemplate(songId, metadata);
+          vocals.append(vocalsBytes);
+        }
+        catch (e)
+        {
+          issues.push('Failed loading vocals for variation "$variation": $e');
+        }
       }
     }
 
@@ -272,6 +336,8 @@ class FNFCUtil
 
       instrumentals: instrumentals,
       vocals: vocals,
+
+      issues: issues
     }
   }
 
@@ -479,6 +545,19 @@ class FNFCUtil
   }
 
   /**
+   * Scan an FNFC file's zip entries for a file with the given name.
+   *
+   * @param mappedFileEntries The zip entries from an FNFC file.
+   * @param fileName The name of the file to look for.
+   * @return Whether a file with that name exists, and has data.
+   */
+  static function hasFileInFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, fileName:String):Bool
+  {
+    var data:Null<haxe.zip.Entry> = mappedFileEntries.get(fileName);
+    return data != null && data.data != null;
+  }
+
+  /**
    * Construct a list of ZIP file entries from the data of a chart, so that it can be written as an `.fnfc` file.
    *
    * @param data The data of the chart to write.
@@ -568,5 +647,7 @@ typedef FNFCData =
   var instrumentals:Map<String, Bytes>;
   // Vocal audio tracks
   var vocals:Map<String, Bytes>;
+  // A list of non-breaking issues encountered when loading the FNFC file.
+  var ?issues:Array<String>;
 }
 #end

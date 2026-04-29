@@ -142,9 +142,17 @@ class WelcomeDialog extends Dialog
 
     if (selectedFile == null || selectedFile.bytes == null) return;
 
-    CameraEditorImportExportHandler.loadSongFromFNFCBytes(this.cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
-
-    this.hideDialog(DialogButton.APPLY);
+    try
+    {
+      CameraEditorImportExportHandler.loadSongFromFNFCBytes(this.cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
+      // If we failed, it'd throw.
+      this.hideDialog(DialogButton.APPLY);
+    }
+    catch (e)
+    {
+      CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath}):\n$e');
+      return;
+    }
   }
 
   /**
@@ -152,9 +160,17 @@ class WelcomeDialog extends Dialog
    */
   function onDropFileChartBox(path:String):Void
   {
-    CameraEditorImportExportHandler.loadSongFromFNFCPath(this.cameraEditorState, path);
-
-    this.hideDialog(DialogButton.APPLY);
+    try
+    {
+      CameraEditorImportExportHandler.loadSongFromFNFCPath(this.cameraEditorState, path);
+      // If we failed, it'd throw.
+      this.hideDialog(DialogButton.APPLY);
+    }
+    catch (e)
+    {
+      CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath}):\n$e');
+      return;
+    }
   }
 
   /**
@@ -189,25 +205,17 @@ class WelcomeDialog extends Dialog
     {
       linkRecentChart.hide();
 
-      this.hideDialog(DialogButton.CANCEL);
-
       // Load chart from file
-      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
-
-      if (result != null)
+      try
       {
-        if (result.length == 0)
-        {
-          CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${chartPath})');
-        }
-        else
-        {
-          CameraEditorNotificationHandler.warning(state, 'Loaded Chart', 'Loaded chart with issues (${chartPath})\n${result.join("\n")}');
-        }
+        CameraEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
+        // If we failed, it'd throw.
+        this.hideDialog(DialogButton.APPLY);
       }
-      else
+      catch (e)
       {
-        CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath})');
+        CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load chart (${chartPath}):\n$e');
+        return;
       }
     }
 

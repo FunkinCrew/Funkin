@@ -201,29 +201,23 @@ class ChartEditorDialogHandler
     {
       var latestBackupPath:Null<String> = ChartEditorImportExportHandler.getLatestBackupPath('chart-editor-');
 
-      var result:Null<Array<String>> = (latestBackupPath != null) ? state.loadSongFromFNFCPath(latestBackupPath) : null;
-      if (result != null)
+      if (latestBackupPath == null)
       {
-        if (result.length == 0)
-        {
-          // No warnings.
-          state.success('Loaded Chart', 'Loaded chart (${latestBackupPath})');
-        }
-        else
-        {
-          // One or more warnings.
-          state.warning('Loaded Chart', 'Loaded chart (${latestBackupPath})\n${result.join("\n")}');
-        }
-
-        // Close the welcome dialog behind this.
-        dialog.hideDialog(DialogButton.APPLY);
+        state.error('No Backup Found', 'No backup file was found to load.');
+        // Don't close the welcome dialog so we aren't in a broken state.
       }
       else
       {
-        state.error('Failed to Load Chart', 'Failed to load chart (${latestBackupPath})');
-
-        // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
-        dialog.hideDialog(DialogButton.CANCEL);
+        try
+        {
+          state.loadSongFromFNFCPath(latestBackupPath);
+          dialog.hideDialog(DialogButton.CANCEL);
+        }
+        catch (e)
+        {
+          state.error('Failed to Load Backup', 'Failed to load backup (${latestBackupPath}):\n$e');
+          // Don't close the welcome dialog so we aren't in a broken state.
+        }
       }
     }
 
