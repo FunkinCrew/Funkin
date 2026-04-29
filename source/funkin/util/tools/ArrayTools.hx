@@ -32,6 +32,21 @@ class ArrayTools
   }
 
   /**
+   * Checks if an array is `null` or empty (contains no non-null elements).
+   *
+   * @param value The array to check.
+   * @return True... or False...
+   */
+  public static function isEmpty(?value:Array<Dynamic>):Bool
+  {
+    if (value == null) return true;
+
+    for (element in value) if (element != null) return false;
+
+    return true;
+  }
+
+  /**
    * Push an element to the array if it is not already present.
    *
    * @param input The array to push to
