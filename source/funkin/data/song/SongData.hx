@@ -796,7 +796,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * This can allow the event to include information used for custom behavior.
    * This is usually a struct containing multiple fields as defined in the event schema.
    */
-  @:alias("v") @:optional @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v") @:optional
   public var value:Dynamic;
 
   /**
@@ -1569,7 +1569,7 @@ class NoteParamData implements ICloneable<NoteParamData>
 {
   @:alias("n")
   public var name:String;
-  @:alias("v") @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v")
   public var value:Dynamic;
 
   public function new(name:String, value:Dynamic)

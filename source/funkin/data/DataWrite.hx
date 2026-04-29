@@ -16,17 +16,6 @@ import haxe.ds.Either;
 class DataWrite
 {
   /**
-   * `@:jcustomwrite(funkin.data.DataWrite.dynamicValue)`
-   * @param value
-   * @return String
-   */
-  public static function dynamicValue(value:Dynamic):String
-  {
-    // Is this cheating? Yes. Do I care? No.
-    return SerializerUtil.toJSON(value);
-  }
-
-  /**
    *
    * `@:jcustomwrite(funkin.data.DataWrite.semverVersion)`
    */
@@ -55,7 +44,8 @@ class DataWrite
       case Left(inner):
         return '$inner';
       case Right(inner):
-        return dynamicValue(inner);
+        // Is this cheating? Yes. Do I care? No.
+        return SerializerUtil.toJSON(inner);
     }
   }
 }

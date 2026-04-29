@@ -78,17 +78,6 @@ class DataParse
   }
 
   /**
-   * Parser which outputs a Dynamic value, either a object or something else.
-   * @param json
-   * @param name
-   * @return The value of the property.
-   */
-  public static function dynamicValue(json:Json, name:String):Dynamic
-  {
-    return Tools.getValue(json);
-  }
-
-  /**
    * Parser which outputs a `Either<Array<LegacyNoteSection>, LegacyNoteData>`.
    * Used by the FNF legacy JSON importer.
    */
