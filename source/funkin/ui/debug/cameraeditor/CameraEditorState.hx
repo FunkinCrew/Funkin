@@ -605,6 +605,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.PAN, onViewportPan);
     mainView.registerEvent(CameraViewportEvent.GESTURE_PAN, onViewportGesturePan);
 
+    CameraEditorPropertiesPanelHandler.initialize();
     CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
