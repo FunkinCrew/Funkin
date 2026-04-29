@@ -2564,22 +2564,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (params != null && params.loadFromPath != null)
     {
       // Chart editor was opened from the command line. Open the FNFC file now!
-      var result:Null<Array<String>> = this.loadSongFromFNFCPath(params.loadFromPath);
-      if (result != null)
+      try
       {
-        if (result.length == 0)
-        {
-          this.success('Loaded Chart', 'Loaded chart (${params.loadFromPath})');
-        }
-        else
-        {
-          this.warning('Loaded Chart', 'Loaded chart with issues (${params.loadFromPath})\n${result.join("\n")}');
-        }
+        this.loadSongFromFNFCPath(params.loadFromPath);
       }
-      else
+      catch (e)
       {
-        this.error('Failure', 'Failed to load chart (${params.loadFromPath})');
-
+        this.error('Failure', 'Failed to load chart (${params.loadFromPath}):\n$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog(false);
         if (shouldShowBackupAvailableDialog)
@@ -2594,33 +2585,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
 
-      var result:Null<Array<String>> = this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
-      if (result != null)
+      try
       {
-        if (result.length == 0)
-        {
-          this.success('Loaded Song', 'Loaded song (${targetSongId})');
-
-          // Set the scroll position to the current song time.
-          scrollPositionInMs = Math.min(params.targetSongPosition ?? 0, songLengthInMs);
-          currentScrollEase = scrollPositionInPixels;
-          moveSongToScrollPosition();
-        }
-        else
-        {
-          this.error('Failure', 'Failed to load chart (${targetSongId})\n${result.join("\n")}');
-
-          // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-          var welcomeDialog = this.openWelcomeDialog(false);
-          if (shouldShowBackupAvailableDialog)
-          {
-            this.openBackupAvailableDialog(welcomeDialog);
-          }
-        }
+        this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
       }
-      else
+      catch (e)
       {
-        this.error('Failure', 'Failed to load chart (${targetSongId})');
+        this.error('Failure', 'Failed to load chart (${targetSongId})\n$e');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog(false);
@@ -2748,24 +2719,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       menuItemRecentChart.text = chartPath;
       menuItemRecentChart.onClick = function(_event)
       {
-        // Load chart from file
-        var result:Null<Array<String>> = this.loadSongFromFNFCPath(chartPath);
-        if (result != null)
+        try
         {
-          if (result.length == 0)
-          {
-            this.success('Loaded Chart', 'Loaded chart (${chartPath.toString()})');
-          }
-          else
-          {
-            this.warning('Loaded Chart', 'Loaded chart with issues (${chartPath.toString()})\n${result.join("\n")}');
-          }
+          this.loadSongFromFNFCPath(chartPath);
         }
-        else
+        catch (e)
         {
-          this.error('Failure', 'Failed to load chart (${chartPath.toString()})');
+          this.error('Failure', 'Failed to load chart (${chartPath.toString()}): $e');
         }
-      }
+      };
 
       if (!FileUtil.fileExists(chartPath))
       {

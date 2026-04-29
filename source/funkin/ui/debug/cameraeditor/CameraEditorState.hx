@@ -631,29 +631,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       try
       {
         // Chart editor was opened from the command line. Open the FNFC file now!
-        var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
-        if (result != null)
-        {
-          if (result.length == 0)
-          {
-            CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${params.loadFromPath})');
-          }
-          else
-          {
-            CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${params.loadFromPath})\n${result.join("\n")}');
-          }
-        }
-        else
-        {
-          CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${params.loadFromPath})');
-
-          // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-          var welcomeDialog = this.openWelcomeDialog();
-          if (shouldShowBackupAvailableDialog)
-          {
-            this.openBackupAvailableDialog(welcomeDialog);
-          }
-        }
+        CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
       }
       catch (e)
       {
@@ -672,35 +650,20 @@ class CameraEditorState extends UIState implements ConsoleClass
       var targetSongDifficulty = params.targetSongDifficulty ?? null;
       var targetSongVariation = params.targetSongVariation ?? null;
 
-      var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
-
-      var success:Bool = result != null && result.length == 0;
-
-      if (result != null && result.length == 0)
+      try
       {
-        // TODO: Display warnings from loading the song.
-        CameraEditorNotificationHandler.success(this, 'Loaded Song', 'Loaded Song (${targetSongId})');
-        setTimePosition(params.targetSongPosition ?? 0);
+        CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
       }
-      else if (result != null)
+      catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', 'Failed to load song (${params.loadFromPath})\n${result.join("\n")}');
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
         {
           openBackupAvailableDialog(welcomeDialog);
         }
-      }
-      else
-      {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', 'Failed to load song (${params.loadFromPath})');
-        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        var welcomeDialog = this.openWelcomeDialog();
-        if (shouldShowBackupAvailableDialog)
-        {
-          openBackupAvailableDialog(welcomeDialog);
-        }
+        return;
       }
     }
     else
@@ -1662,8 +1625,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentInstrumental == null) return;
 
-    var atEnd:Bool = shouldResetScroll
-      || currentInstrumental.time >= currentInstrumental.length - conductorInUse.stepLengthMs;
+    var atEnd:Bool = shouldResetScroll || currentInstrumental.time >= currentInstrumental.length - conductorInUse.stepLengthMs;
 
     if (atEnd)
     {
@@ -1966,20 +1928,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onMenubarOpenRecent(_event:MouseEvent, chartPath:String)
   {
-    var result:Null<Array<String>> = CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
-
-    if (result != null)
+    try
     {
-      if (result.length == 0)
-      {
-        CameraEditorNotificationHandler.success(this, 'Loaded Chart', 'Loaded chart (${chartPath})');
-      }
-      else
-      {
-        CameraEditorNotificationHandler.warning(this, 'Loaded Chart', 'Loaded chart with issues (${chartPath})\n${result.join("\n")}');
-      }
+      CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
     }
-    else
+    catch (e)
     {
       CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
     }
