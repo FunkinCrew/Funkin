@@ -694,7 +694,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * This can allow the event to include information used for custom behavior.
    * Data type depends on the event kind. It can be anything that's JSON serializable.
    */
-  @:alias("v") @:optional @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v")
   public var value:Dynamic = null;
 
   /**
@@ -1413,7 +1413,7 @@ class NoteParamData implements ICloneable<NoteParamData>
 {
   @:alias("n")
   public var name:String;
-  @:alias("v") @:jcustomparse(funkin.data.DataParse.dynamicValue) @:jcustomwrite(funkin.data.DataWrite.dynamicValue)
+  @:alias("v")
   public var value:Dynamic;
 
   public function new(name:String, value:Dynamic)
