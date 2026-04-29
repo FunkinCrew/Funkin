@@ -2,6 +2,7 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.play.event.FocusCameraSongEvent;
+import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
 
@@ -9,7 +10,7 @@ import haxe.ui.events.UIEvent;
  * The contents of the Properties panel, while a Focus Camera event is selected.
  */
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/components/properties/focus-camera.xml'))
-class FocusCameraContainer extends VBox
+class FocusCameraContainer extends VBox implements EditorContainer
 {
   public var cameraEditorState:CameraEditorState;
 

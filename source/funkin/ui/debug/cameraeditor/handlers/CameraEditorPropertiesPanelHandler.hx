@@ -1,16 +1,24 @@
 package funkin.ui.debug.cameraeditor.handlers;
 
 #if FEATURE_CAMERA_EDITOR
-import haxe.ui.containers.Panel;
-import haxe.ui.containers.VBox;
-import haxe.ui.containers.HBox;
-import haxe.ui.components.NumberStepper;
-import haxe.ui.components.DropDown;
+import funkin.data.event.SongEventRegistry;
+import funkin.play.event.SongEvent;
+import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
+import haxe.ui.containers.VBox;
+import haxe.ui.core.Component;
 
 /**
  * Handles the properties panel on the right of the camera editor.
+ *
+ * Uses a `Map<String, Class<EditorContainer>>` registry to dispatch from
+ * `SongEventData.eventKind` to the matching properties container. To add a
+ * new event-kind editor:
+ *   1. Create a new `EditorContainer` implementation under `components/` with
+ *      a `new(state:CameraEditorState)` constructor and a `loadCurrentEventData()`
+ *      method.
+ *   2. Add one line to `initialize()`: `registerContainer('YourKind', YourContainer);`
  *
  * The `using` statement in `import.hx` allows you to call these functions on the CameraEditorState instance directly.
  */
@@ -18,6 +26,32 @@ import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class CameraEditorPropertiesPanelHandler
 {
+  /**
+   * Registry of properties-panel containers, keyed by `SongEventData.eventKind`.
+   *
+   * Populated once by `initialize()` at editor startup. Each registered class
+   * MUST implement `EditorContainer` and expose a constructor
+   * `new(state:CameraEditorState)`.
+   */
+  static final containers:Map<String, Class<EditorContainer>> = new Map();
+
+  /**
+   * Bootstrap the registry. Called once from `CameraEditorState.create()`.
+   */
+  public static function initialize():Void
+  {
+    registerContainer('FocusCamera', FocusCameraContainer);
+    registerContainer('ZoomCamera', ZoomCameraContainer);
+  }
+
+  /**
+   * Register an editor container class for a given event kind.
+   */
+  public static function registerContainer(eventKind:String, containerClass:Class<EditorContainer>):Void
+  {
+    containers.set(eventKind, containerClass);
+  }
+
   /**
    * Initialize the properties panel when first opening the Camera Editor.
    * @param state The CameraEditorState to target.
@@ -103,51 +137,40 @@ class CameraEditorPropertiesPanelHandler
       return;
     }
 
-    switch (selected.eventKind)
+    var containerClass:Null<Class<EditorContainer>> = containers.get(selected.eventKind);
+    if (containerClass == null)
     {
-      case 'ZoomCamera':
-        useZoomCameraContainer(state);
-      case 'FocusCamera':
-        useFocusCameraContainer(state);
-      default:
-        hidePropertiesPanel(state);
+      hidePropertiesPanel(state);
+      return;
     }
+
+    useContainer(state, containerClass, selected.eventKind);
   }
 
   /**
-   * Update the Properties panel to display the Zoom Camera event fields..
-   * @param state The CameraEditorState to target.
+   * Mount a properties container into the panel.
    */
-  public static function useZoomCameraContainer(state:CameraEditorState):Void
+  static function useContainer(state:CameraEditorState, containerClass:Class<EditorContainer>, eventKind:String):Void
   {
     state.propertiesPanel.hidden = false;
     state.removePropertiesContainer();
 
-    var zoomCameraContainer = new ZoomCameraContainer(state);
-    state.propertiesPanel.addComponent(zoomCameraContainer);
+    var container:EditorContainer = Type.createInstance(containerClass, [state]);
+    state.propertiesPanel.addComponent(cast(container, Component));
 
-    // Load current values.
-    zoomCameraContainer.loadCurrentEventData();
+    container.loadCurrentEventData();
 
-    state.setPropertiesContainerTitle('Zoom Camera');
+    state.setPropertiesContainerTitle(resolveTitle(eventKind));
   }
 
   /**
-   * Update the Properties panel to display the Focus Camera event fields..
-   * @param state The CameraEditorState to target.
+   * Resolve the panel title from the SongEventRegistry, falling back to the
+   * eventKind string if the event isn't registered.
    */
-  public static function useFocusCameraContainer(state:CameraEditorState):Void
+  static function resolveTitle(eventKind:String):String
   {
-    state.propertiesPanel.hidden = false;
-    state.removePropertiesContainer();
-
-    var focusCameraContainer = new FocusCameraContainer(state);
-    state.propertiesPanel.addComponent(focusCameraContainer);
-
-    // Load current values.
-    focusCameraContainer.loadCurrentEventData();
-
-    state.setPropertiesContainerTitle('Focus Camera');
+    var event:Null<SongEvent> = SongEventRegistry.getEvent(eventKind);
+    return event != null ? event.getTitle() : eventKind;
   }
 }
 #end
