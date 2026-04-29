@@ -106,21 +106,14 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
     try
     {
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadSongFromFNFCPath(chartEditorState, path.toString());
-      if (result != null)
-      {
-        chartEditorState.success('Loaded Chart',
-          result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
-        this.hideDialog(DialogButton.APPLY);
-      }
-      else
-      {
-        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
-      }
+      ChartEditorImportExportHandler.loadSongFromFNFCPath(chartEditorState, path.toString());
+      // If we failed, it'd throw.
+      this.hideDialog(DialogButton.APPLY);
     }
-    catch (err)
+    catch (e)
     {
-      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
+      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}):\n$e');
+      // Leave the popup open.
     }
   }
 
@@ -135,19 +128,14 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     {
       try
       {
-        var result:Null<Array<String>> = ChartEditorImportExportHandler.loadSongFromFNFCBytes(chartEditorState, selectedFile.bytes);
-        if (result != null)
-        {
-          chartEditorState.success('Loaded Chart',
-            result.length == 0 ? 'Loaded chart (${selectedFile.name})' : 'Loaded chart (${selectedFile.name})\n${result.join("\n")}');
-
-          if (selectedFile.fullPath != null) chartEditorState.currentWorkingFilePath = selectedFile.fullPath;
-          this.hideDialog(DialogButton.APPLY);
-        }
+        ChartEditorImportExportHandler.loadSongFromFNFCBytes(chartEditorState, selectedFile.bytes);
+        // If we failed, it'd throw.
+        this.hideDialog(DialogButton.APPLY);
       }
-      catch (err)
+      catch (e)
       {
-        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${selectedFile.name}): ${err}');
+        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${selectedFile.name}):\n$e');
+        // Leave the popup open.
       }
     }
   }

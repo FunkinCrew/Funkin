@@ -103,18 +103,16 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     {
       linkRecentChart.hide();
 
-      this.hideDialog(DialogButton.CANCEL);
-
       // Load chart from file
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
-      if (result != null)
+      try
       {
-        chartEditorState.success('Loaded Chart',
-          result.length == 0 ? 'Loaded chart (${chartPath.toString()})' : 'Loaded chart (${chartPath.toString()})\n${result.join("\n")}');
+        ChartEditorImportExportHandler.loadSongFromFNFCPath(state, chartPath);
+        // Success, close dialog.
+        this.hideDialog(DialogButton.CANCEL);
       }
-      else
+      catch (e)
       {
-        chartEditorState.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()})');
+        chartEditorState.error('Failed to Load Chart', 'Failed to load chart (${chartPath.toString()}):\n$e');
       }
     }
 
@@ -157,29 +155,15 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
       this.addTemplateSong(songName, targetSongId, (_) ->
       {
         // Load song from template
-        var result:Null<Array<String>> = state.loadSongFromTemplate(targetSongId);
-
-        if (result != null)
+        try
         {
-          if (result.length == 0)
-          {
-            state.success('Loaded Song', 'Loaded song (${targetSongId})');
-
-            // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
-            this.hideDialog(DialogButton.CANCEL);
-          }
-          else
-          {
-            state.error('Failure', 'Failed to load chart (${targetSongId})\n${result.join("\n")}');
-
-            // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
-          }
+          state.loadSongFromTemplate(targetSongId);
+          // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
+          this.hideDialog(DialogButton.CANCEL);
         }
-        else
+        catch (e)
         {
-          state.error('Failure', 'Failed to load chart (${targetSongId})');
-
-          // Song failed to load, don't close the Welcome dialog so we aren't in a broken state.
+          state.error('Failed to Load Chart', 'Failed to load chart (${targetSongId}):\n$e');
         }
       });
     }

@@ -22,9 +22,8 @@ class CameraEditorImportExportHandler
    * @param state The Camera Editor state to apply the loaded data to.
    * @param data The parsed data of the FNFC file to load.
    * @param path The path of the FNFC file, if it is known.
-   * @return `true` if the chart was loaded successfully, `false` otherwise.
    */
-  public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Bool
+  public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Void
   {
     state.currentWorkingFilePath = path;
     state.saved = true; // Just loaded file!
@@ -36,10 +35,14 @@ class CameraEditorImportExportHandler
     state.audioVocalTrackData = data.vocals;
     state.onChartLoaded();
 
-    trace('Loaded ${state.audioInstTrackData.size()} instrumentals and ${state.audioVocalTrackData.size()} vocals from FNFC file at "$path".');
-    CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${path})');
-
-    return true;
+    if (data.issues == null || data.issues.length == 0)
+    {
+      CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${path})');
+    }
+    else
+    {
+      CameraEditorNotificationHandler.warning(state, 'Loaded Chart', 'Loaded chart with issues (${path})\n${data.issues.join("\n")}');
+    }
   }
 
   /**
@@ -50,18 +53,10 @@ class CameraEditorImportExportHandler
    * @param path The path of the FNFC file. Optional, only for logging purposes.
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongFromFNFCBytes(state:CameraEditorState, bytes:Bytes, ?path:String):Null<Array<String>>
+  public static function loadSongFromFNFCBytes(state:CameraEditorState, bytes:Bytes, ?path:String):Void
   {
-    try
-    {
-      var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
-      loadSongFromFNFCData(state, entries, path);
-      return [];
-    }
-    catch (e)
-    {
-      return ['$e'];
-    }
+    var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
+    loadSongFromFNFCData(state, entries, path);
   }
 
   /**
@@ -71,18 +66,10 @@ class CameraEditorImportExportHandler
    * @param path The absolute path to the FNFC file to load.
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongFromFNFCPath(state:CameraEditorState, path:String):Null<Array<String>>
+  public static function loadSongFromFNFCPath(state:CameraEditorState, path:String):Void
   {
-    try
-    {
-      var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
-      loadSongFromFNFCData(state, entries, path);
-      return [];
-    }
-    catch (e)
-    {
-      return ['$e'];
-    }
+    var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
+    loadSongFromFNFCData(state, entries, path);
   }
 
   /**
@@ -95,22 +82,13 @@ class CameraEditorImportExportHandler
    *
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongFromTemplate(state:CameraEditorState, songId:String, ?difficulty:String, ?variation:String):Null<Array<String>>
+  public static function loadSongFromTemplate(state:CameraEditorState, songId:String, ?difficulty:String, ?variation:String):Void
   {
-    try
-    {
-      var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
-      loadSongFromFNFCData(state, entries, 'template:$songId');
+    var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
+    loadSongFromFNFCData(state, entries, 'template:$songId');
 
-      if (difficulty != null) state.currentDifficulty = difficulty;
-      if (variation != null) state.switchVariation(variation);
-
-      return [];
-    }
-    catch (e)
-    {
-      return ['$e'];
-    }
+    if (difficulty != null) state.currentDifficulty = difficulty;
+    if (variation != null) state.switchVariation(variation);
   }
 
   /**
