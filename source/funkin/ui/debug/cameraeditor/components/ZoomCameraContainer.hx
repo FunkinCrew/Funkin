@@ -1,7 +1,8 @@
 package funkin.ui.debug.cameraeditor.components;
 
-import funkin.play.event.ZoomCameraSongEvent;
 #if FEATURE_CAMERA_EDITOR
+import funkin.play.event.ZoomCameraSongEvent;
+import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
 
@@ -9,7 +10,7 @@ import haxe.ui.events.UIEvent;
  * The contents of the Properties panel, while a Zoom Camera event is selected.
  */
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/zoom-camera.xml"))
-class ZoomCameraContainer extends VBox
+class ZoomCameraContainer extends VBox implements EditorContainer
 {
   public var cameraEditorState:CameraEditorState;
 
