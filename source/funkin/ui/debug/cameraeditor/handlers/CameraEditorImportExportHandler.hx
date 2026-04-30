@@ -33,6 +33,7 @@ class CameraEditorImportExportHandler
     state.songManifestData = data.manifest;
     state.audioInstTrackData = data.instrumentals;
     state.audioVocalTrackData = data.vocals;
+    state.currentVariation = resolveLoadedVariation(state);
     state.onChartLoaded();
 
     if (data.issues == null || data.issues.length == 0)
@@ -70,6 +71,24 @@ class CameraEditorImportExportHandler
   {
     var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
     loadSongFromFNFCData(state, entries, path);
+  }
+
+  static function resolveLoadedVariation(state:CameraEditorState):String
+  {
+    if (state.songMetadatas.exists(state.currentVariation) && state.songDatas.exists(state.currentVariation)) return state.currentVariation;
+    if (state.songMetadatas.exists(Constants.DEFAULT_VARIATION) && state.songDatas.exists(Constants.DEFAULT_VARIATION)) return Constants.DEFAULT_VARIATION;
+
+    for (variation in state.songMetadatas.keys())
+    {
+      if (state.songDatas.exists(variation)) return variation;
+    }
+
+    for (variation in state.songDatas.keys())
+    {
+      return variation;
+    }
+
+    return Constants.DEFAULT_VARIATION;
   }
 
   /**
