@@ -1048,7 +1048,7 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      var retryEvent = new SongRetryEvent(currentDifficulty);
+      var retryEvent = new SongRetryEvent(currentDifficulty, startTimestamp);
 
       previousDifficulty = currentDifficulty;
 

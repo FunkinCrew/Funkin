@@ -485,10 +485,16 @@ class SongRetryEvent extends ScriptEvent
    */
   public var difficulty(default, null):String;
 
-  public function new(difficulty:String):Void
+  /**
+   * The timestamp the song was started at.
+   */
+  public var startTimestamp(default, null):Float;
+
+  public function new(difficulty:String, startTimestamp:Float):Void
   {
     super(SONG_RETRY, false);
     this.difficulty = difficulty;
+    this.startTimestamp = startTimestamp;
   }
 
   override public function toString():String

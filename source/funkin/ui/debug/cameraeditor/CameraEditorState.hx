@@ -844,7 +844,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
   var _wasRelative:Bool = false;
-
   var _shouldResetCameraPosition:Bool = false;
 
   override public function update(elapsed:Float):Void
@@ -1609,11 +1608,25 @@ class CameraEditorState extends UIState implements ConsoleClass
     trace(currentInstrumental.playing ? 'Toggled playback ON' : 'Toggled playback OFF');
   }
 
-  function playAudioPlayback():Void
+  function playAudioPlayback(skipEvent:Bool = false):Void
   {
     if (currentInstrumental == null) return;
 
     var atEnd:Bool = shouldResetScroll || currentInstrumental.time >= currentInstrumental.length - conductorInUse.stepLengthMs;
+
+    if (!skipEvent)
+    {
+      var event:SongRetryEvent = new SongRetryEvent(currentDifficulty, (atEnd ? 0 : currentInstrumental.time) + conductorInUse.combinedOffset);
+      dispatchEvent(event);
+
+      if (!event.eventCanceled)
+      {
+        // Start the playback one frame later to prevent heavy operations from desyncing the song.
+        FlxG.signals.postUpdate.addOnce(playAudioPlayback.bind(true));
+      }
+
+      return;
+    }
 
     if (atEnd)
     {
