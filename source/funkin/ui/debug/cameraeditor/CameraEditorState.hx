@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -45,6 +46,7 @@ import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
 import funkin.ui.debug.cameraeditor.commands.CompoundCommand;
 import funkin.ui.debug.cameraeditor.commands.FlattenLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.MoveResizeEventCommand;
+import funkin.ui.debug.cameraeditor.commands.PasteEventsCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
@@ -487,6 +489,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   var camRelative:FlxCamera;
 
   /**
+   * The text that pops up when copying events.
+   */
+  var txtCopyNotif:Null<FlxText> = null;
+
+  /**
    * The default zoom level of the stage's camera, used for calculating relative zoom levels for events like ZoomCamera. Updated whenever a new stage is built.
    */
   var defaultStageZoom:Float = 1.0;
@@ -669,6 +676,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.cameras = [camGame];
     // add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
+
+    // Little text that shows up when you copy something.
+    txtCopyNotif = new FlxText(0, 0, 0, '', 24);
+    txtCopyNotif.setBorderStyle(OUTLINE, 0xFF074809, 1);
+    txtCopyNotif.color = 0xFF52FF77;
+    txtCopyNotif.zIndex = 120;
+    txtCopyNotif.visible = false;
+    txtCopyNotif.cameras = [camHUD];
+    add(txtCopyNotif);
 
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
     mainView.registerEvent(CameraViewportEvent.PAN_START, onViewportPanStart);
@@ -2191,6 +2207,29 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
+  function showCopyNotification(copiedEvents:Int):Void
+  {
+    if (copiedEvents <= 0 || txtCopyNotif == null) return;
+
+    var copiedString:String = '${copiedEvents} event';
+    if (copiedEvents > 1) copiedString += 's';
+
+    FlxTween.globalManager.cancelTweensOf(txtCopyNotif);
+
+    txtCopyNotif.visible = true;
+    txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
+    txtCopyNotif.x = FlxG.mouse.x - (txtCopyNotif.width / 2);
+    txtCopyNotif.y = FlxG.mouse.y - 16;
+    FlxTween.tween(txtCopyNotif, {y: txtCopyNotif.y - 32}, 0.5, {
+      type: ONESHOT,
+      ease: FlxEase.quadOut,
+      onComplete: function(_)
+      {
+        if (txtCopyNotif != null) txtCopyNotif.visible = false;
+      }
+    });
+  }
+
   function onScreenKeyDown(event:KeyboardEvent):Void
   {
     if (isHaxeUIFocused) return;
@@ -2258,6 +2297,7 @@ class CameraEditorState extends UIState implements ConsoleClass
           events: selectedSongEvents.copy()
         });
         hasClipboardEvent = true;
+        showCopyNotification(selectedSongEvents.length);
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
@@ -2267,22 +2307,12 @@ class CameraEditorState extends UIState implements ConsoleClass
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
         CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
-        var clipboard = SongDataUtils.readItemsFromClipboard();
-        if (!clipboard.valid || clipboard.events.length == 0) return;
-
         var pasteMs = Conductor.instance.songPosition;
 
         if (pasteMs < 0) pasteMs = 0;
         if (pasteMs > timeline.viewport.songLengthMs) pasteMs = timeline.viewport.songLengthMs;
 
-        var earliest:Float = Math.POSITIVE_INFINITY;
-        for (ev in clipboard.events) if (ev.time < earliest) earliest = ev.time;
-        var offset:Float = pasteMs - earliest;
-
-        for (ev in clipboard.events) ev.time += offset;
-
-        var addCmds:Array<CameraEditorCommand> = [for (ev in clipboard.events) new AddEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(addCmds, 'Paste ${addCmds.length} Events', clipboard.events));
+        CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pasteMs));
 
       case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
