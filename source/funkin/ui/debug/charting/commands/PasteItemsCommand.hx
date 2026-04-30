@@ -68,22 +68,29 @@ class PasteItemsCommand implements ChartEditorCommand
     state.sortChartData();
 
     var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
-    var msgType = removedNotes.length > 0 ? 'warning' : 'success';
-    var msg = if (removedNotes.length == 1)
+    var msg = 'Successfully pasted clipboard contents.';
+
+    if (removedNotes.length == 1)
     {
-      'But 1 overlapped note was overwritten.';
+      msg = 'But 1 overlapped note was overwritten.';
     }
     else if (removedNotes.length > 1)
     {
-      'But ${removedNotes.length} overlapped notes were overwritten.';
+      msg = 'But ${removedNotes.length} overlapped notes were overwritten.';
     }
     else if (isRedo)
     {
-      'Successfully placed pasted note(s) back.';
+      msg = 'Successfully placed pasted note(s) back.';
     }
-    else 'Successfully pasted clipboard contents.';
 
-    Reflect.callMethod(null, Reflect.field(ChartEditorNotificationHandler, msgType), [state, title, msg]);
+    if (removedNotes.length > 0)
+    {
+      ChartEditorNotificationHandler.warning(state, title, msg);
+    }
+    else
+    {
+      ChartEditorNotificationHandler.success(state, title, msg);
+    }
 
     isRedo = false;
   }
