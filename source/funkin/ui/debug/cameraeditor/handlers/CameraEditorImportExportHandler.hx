@@ -197,6 +197,7 @@ class CameraEditorImportExportHandler
         {
           trace('Saved to "${paths[0]}"');
           state.currentWorkingFilePath = paths[0];
+          state.saved = true;
           state.updateWindowTitle();
           if (onSaveCb != null) onSaveCb(paths[0]);
         }
@@ -211,7 +212,6 @@ class CameraEditorImportExportHandler
       try
       {
         FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${songId}.${Constants.EXT_CHART}');
-        state.saved = true;
       }
       catch (e) {}
     }
