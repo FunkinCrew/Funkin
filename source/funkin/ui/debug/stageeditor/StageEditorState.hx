@@ -622,10 +622,10 @@ class StageEditorState extends UIState
     camGame.follow(camFollow);
     // camera movement
 
-    if ((FlxG.mouse.wheel > 0 || (FlxG.mouse.wheel < 0 && camGame.zoom > 0.11))
+    if ((FlxG.mouse.deltaWheel.y > 0 || (FlxG.mouse.deltaWheel.y < 0 && camGame.zoom > 0.11))
       && !isCursorOverHaxeUI) // include the floating poing error thing
     {
-      camGame.zoom += FlxG.mouse.wheel / 10;
+      camGame.zoom += FlxG.mouse.deltaWheel.y / 10;
       updateBGSize();
     }
 

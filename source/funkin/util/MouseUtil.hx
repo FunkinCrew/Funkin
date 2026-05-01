@@ -59,7 +59,7 @@ class MouseUtil
   public static function mouseWheelZoomData(?intensityMult:Float, customWheel:Float = 0):Float
   {
     intensityMult ??= MOUSE_ZOOM_DEFAULT_INTENSITY;
-    if (customWheel == 0) customWheel = FlxG.mouse.wheel;
+    if (customWheel == 0) customWheel = FlxG.mouse.deltaWheel.y;
     if (customWheel != 0) customWheel *= (intensityMult * FlxG.camera.zoom);
     return customWheel;
   }

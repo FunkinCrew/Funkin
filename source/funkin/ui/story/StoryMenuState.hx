@@ -365,7 +365,7 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
-        final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
+        final wheelAmount:Int = Math.round(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
 
         if (wheelAmount != 0)
         {

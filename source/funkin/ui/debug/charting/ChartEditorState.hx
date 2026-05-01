@@ -4507,9 +4507,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // Mouse Wheel = Scroll
-    if (FlxG.mouse.wheel != 0)
+    if (FlxG.mouse.deltaWheel.y != 0)
     {
-      scrollAmount = -50 * FlxG.mouse.wheel;
+      scrollAmount = -50 * FlxG.mouse.deltaWheel.y;
       shouldPause = true;
     }
 
