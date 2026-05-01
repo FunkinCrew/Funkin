@@ -557,14 +557,19 @@ class StageEditorState extends UIState
     {
       @:privateAccess
       if (!autoSaveTimer.finished) autoSaveTimer.onLoopFinished();
-      resetWindowTitle();
 
-      WindowUtil.windowExit.remove(windowClose);
-      CrashHandler.errorSignal.remove(autosavePerCrash);
-      CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+      performCleanup();
+      return;
+    }
 
-      Cursor.hide();
-      FlxG.sound.music.stop();
+    // Escape key to exit.
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+      // Welcome dialog prevents state switching if it's active.
+      if (welcomeDialog != null) welcomeDialog?.hide();
+
+      performCleanup();
+      FlxG.switchState(() -> new MainMenuState());
       return;
     }
 
@@ -1252,6 +1257,18 @@ class StageEditorState extends UIState
     }
   }
 
+  function performCleanup():Void
+  {
+    resetWindowTitle();
+
+    WindowUtil.windowExit.remove(windowClose);
+    CrashHandler.errorSignal.remove(autosavePerCrash);
+    CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+
+    Cursor.hide();
+    FlxG.sound.music.stop();
+  }
+
   public var objNameDialog:NewObjDialog;
   public var findObjDialog:FindObjDialog;
   public var welcomeDialog:WelcomeDialog;
@@ -1350,20 +1367,11 @@ class StageEditorState extends UIState
               }
             });
           }
-
           return;
         }
 
-        resetWindowTitle();
-
-        WindowUtil.windowExit.remove(windowClose);
-        CrashHandler.errorSignal.remove(autosavePerCrash);
-        CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
-
-        Cursor.hide();
+        performCleanup();
         FlxG.switchState(() -> new MainMenuState());
-        FlxG.sound.music.stop();
-
       case 'switch mode':
         if (testingMode) return;
         moveMode = (moveMode == 'assets' ? 'chars' : 'assets');

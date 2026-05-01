@@ -423,6 +423,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    * HAXEUI COMPONENTS
    */
   // ==============================
+  var welcomeDialog:WelcomeDialog;
 
   /**
    * The About dialog, opened from the menu bar.
@@ -626,7 +627,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        var welcomeDialog = this.openWelcomeDialog();
+        welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
         {
           openBackupAvailableDialog(welcomeDialog);
@@ -647,7 +648,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        var welcomeDialog = this.openWelcomeDialog();
+        welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
         {
           openBackupAvailableDialog(welcomeDialog);
@@ -657,7 +658,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
     {
-      var welcomeDialog = this.openWelcomeDialog();
+      welcomeDialog = this.openWelcomeDialog();
       if (shouldShowBackupAvailableDialog)
       {
         openBackupAvailableDialog(welcomeDialog);
@@ -843,7 +844,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
   var _wasRelative:Bool = false;
-
   var _shouldResetCameraPosition:Bool = false;
 
   override public function update(elapsed:Float):Void
@@ -853,6 +853,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.F4)
     {
       performCleanup();
+      return;
+    }
+
+    if (FlxG.keys.justPressed.ESCAPE)
+    {
+      // Welcome dialog being open prevents the state from properly switching.
+      if (welcomeDialog != null) welcomeDialog.hide();
+
+      quitCameraEditor();
       return;
     }
 
@@ -1973,8 +1982,7 @@ class CameraEditorState extends UIState implements ConsoleClass
             // Write a backup, and remember we have one for next time.
             saveBackup();
 
-            performCleanup();
-            FlxG.switchState(() -> new MainMenuState());
+            quitCameraEditor();
           }
         });
       }
@@ -1984,8 +1992,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
     {
       // No need to show confirmation, just exit immediately.
-      performCleanup();
-      FlxG.switchState(() -> new MainMenuState());
+      quitCameraEditor();
     }
   }
 
@@ -2202,7 +2209,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     goToPoint.x = 0;
     goToPoint.y = 0;
 
-    if (!isCameraRelative){
+    if (!isCameraRelative)
+    {
       goToPoint.x = cameraRect.vCamPoint.x;
       goToPoint.y = cameraRect.vCamPoint.y;
     }
@@ -2379,6 +2387,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     dialog.showDialog(MODAL);
 
     return dialog;
+  }
+
+  function quitCameraEditor():Void
+  {
+    performCleanup();
+    FlxG.switchState(() -> new MainMenuState());
   }
 }
 

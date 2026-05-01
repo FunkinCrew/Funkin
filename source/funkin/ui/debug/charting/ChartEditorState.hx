@@ -3821,7 +3821,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   override public function update(elapsed:Float):Void
   {
     // Override F4 behavior to include the autosave.
-    if (FlxG.keys.justPressed.F4 && !criticalFailure)
+    if ((FlxG.keys.justPressed.F4 || FlxG.keys.justPressed.ESCAPE) && !criticalFailure)
     {
       quitChartEditor();
       return;
