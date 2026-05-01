@@ -2220,25 +2220,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
-    var oldOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x -= oldOffset.x;
-    goToPoint.y -= oldOffset.y;
-    oldOffset.put();
-
     var fitZoom:Float = computeViewportFitZoom();
-    if (isCameraRelative)
-    {
-      relativeZoom = fitZoom;
-    }
-    else
-    {
-      FlxG.camera.zoom = fitZoom;
-    }
-
-    var newOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x += newOffset.x;
-    goToPoint.y += newOffset.y;
-    newOffset.put();
+    pivotZoomOnViewport(() -> {
+      if (isCameraRelative) relativeZoom = fitZoom;
+      else FlxG.camera.zoom = fitZoom;
+    });
   }
 
   static final VIEWPORT_FIT_MARGIN:Float = 0.95;
@@ -2264,6 +2250,21 @@ class CameraEditorState extends UIState implements ConsoleClass
     return FlxPoint.get(dx / zoom, dy / zoom);
   }
 
+  function pivotZoomOnViewport(mutateZoom:Void->Void):Void
+  {
+    var oldOffset:FlxPoint = computeViewportCenterOffset();
+    goToPoint.x -= oldOffset.x;
+    goToPoint.y -= oldOffset.y;
+    oldOffset.put();
+
+    mutateZoom();
+
+    var newOffset:FlxPoint = computeViewportCenterOffset();
+    goToPoint.x += newOffset.x;
+    goToPoint.y += newOffset.y;
+    newOffset.put();
+  }
+
   @:bind(menubarItemAutoGen, MouseEvent.CLICK)
   function onMenubarAutoGen(_)
   {
@@ -2277,15 +2278,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     performAutoSortLayersByType();
   }
 
+  // TODO: make this wheel zoom sensitivity configurable
   function onViewportZoom(e:CameraViewportEvent):Void
   {
-    if (isCameraRelative)
-    {
-      relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
-      return;
-    }
-    // TODO: make this wheel zoom sensitivity configurable
-    MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+    pivotZoomOnViewport(() -> {
+      if (isCameraRelative) relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
+      else MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+    });
   }
 
   function onViewportPanStart(_:CameraViewportEvent):Void
