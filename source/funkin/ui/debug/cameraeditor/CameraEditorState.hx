@@ -425,6 +425,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   // ==============================
 
   /**
+   * Appear when opening the editor directing the user to open an .fnfc file.
+   */
+  var welcomeDialog:WelcomeDialog;
+
+  /**
    * The About dialog, opened from the menu bar.
    */
   public var aboutDialog:AboutDialog;
@@ -627,7 +632,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        var welcomeDialog = this.openWelcomeDialog();
+        welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
         {
           openBackupAvailableDialog(welcomeDialog);
@@ -648,7 +653,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
-        var welcomeDialog = this.openWelcomeDialog();
+        welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
         {
           openBackupAvailableDialog(welcomeDialog);
@@ -658,7 +663,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
     else
     {
-      var welcomeDialog = this.openWelcomeDialog();
+      welcomeDialog = this.openWelcomeDialog();
       if (shouldShowBackupAvailableDialog)
       {
         openBackupAvailableDialog(welcomeDialog);
@@ -844,7 +849,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
   var _wasRelative:Bool = false;
-
   var _shouldResetCameraPosition:Bool = false;
 
   override public function update(elapsed:Float):Void
@@ -854,6 +858,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (FlxG.keys.justPressed.F4)
     {
       performCleanup();
+      return;
+    }
+    // Allow the user to use the escape key to go back.
+    if (FlxG.keys.justPressed.ESCAPE && welcomeDialog != null)
+    {
+      // Welcome dialog being open prevents the state from properly switching.
+      welcomeDialog?.hide();
+
+      quitCameraEditor();
       return;
     }
 
@@ -2221,9 +2234,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   function onResetCameraZoom(_)
   {
     var fitZoom:Float = computeViewportFitZoom();
-    pivotZoomOnViewport(() -> {
+    pivotZoomOnViewport(() ->
+    {
       if (isCameraRelative) relativeZoom = fitZoom;
-      else FlxG.camera.zoom = fitZoom;
+      else
+        FlxG.camera.zoom = fitZoom;
     });
   }
 
@@ -2279,11 +2294,14 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   // TODO: make this wheel zoom sensitivity configurable
+
   function onViewportZoom(e:CameraViewportEvent):Void
   {
-    pivotZoomOnViewport(() -> {
+    pivotZoomOnViewport(() ->
+    {
       if (isCameraRelative) relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
-      else MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+      else
+        MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
     });
   }
 
@@ -2420,6 +2438,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     dialog.showDialog(MODAL);
 
     return dialog;
+  }
+
+  function quitCameraEditor():Void
+  {
+    performCleanup();
+    FlxG.switchState(() -> new MainMenuState());
   }
 }
 

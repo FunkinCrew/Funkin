@@ -514,11 +514,9 @@ class StageEditorState extends UIState
       }
       #end
     }
-
     WindowUtil.windowExit.add(windowClose);
     CrashHandler.errorSignal.add(autosavePerCrash);
     CrashHandler.criticalErrorSignal.add(autosavePerCrash);
-
     Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
@@ -557,7 +555,6 @@ class StageEditorState extends UIState
     {
       @:privateAccess
       if (!autoSaveTimer.finished) autoSaveTimer.onLoopFinished();
-      resetWindowTitle();
 
       WindowUtil.windowExit.remove(windowClose);
       CrashHandler.errorSignal.remove(autosavePerCrash);
@@ -565,6 +562,17 @@ class StageEditorState extends UIState
 
       Cursor.hide();
       FlxG.sound.music.stop();
+      return;
+    }
+
+    // Escape key to exit if the user just entered.
+    if (FlxG.keys.justPressed.ESCAPE && welcomeDialog != null)
+    {
+      // Welcome dialog prevents the user from being able to switch causing things to break.
+      welcomeDialog?.hide();
+
+      performCleanup();
+      FlxG.switchState(() -> new MainMenuState());
       return;
     }
 
@@ -1252,6 +1260,18 @@ class StageEditorState extends UIState
     }
   }
 
+  function performCleanup():Void
+  {
+    resetWindowTitle();
+
+    WindowUtil.windowExit.remove(windowClose);
+    CrashHandler.errorSignal.remove(autosavePerCrash);
+    CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
+
+    Cursor.hide();
+    FlxG.sound.music.stop();
+  }
+
   public var objNameDialog:NewObjDialog;
   public var findObjDialog:FindObjDialog;
   public var welcomeDialog:WelcomeDialog;
@@ -1353,17 +1373,8 @@ class StageEditorState extends UIState
 
           return;
         }
-
-        resetWindowTitle();
-
-        WindowUtil.windowExit.remove(windowClose);
-        CrashHandler.errorSignal.remove(autosavePerCrash);
-        CrashHandler.criticalErrorSignal.remove(autosavePerCrash);
-
-        Cursor.hide();
+        performCleanup();
         FlxG.switchState(() -> new MainMenuState());
-        FlxG.sound.music.stop();
-
       case 'switch mode':
         if (testingMode) return;
         moveMode = (moveMode == 'assets' ? 'chars' : 'assets');
@@ -1580,6 +1591,15 @@ class StageEditorState extends UIState
 
     Save.instance.stageEditorHasBackup.value = true;
     Save.system.flush();
+  }
+
+  function quitStageEditor():Void
+  {
+    resetWindowTitle();
+
+    WindowUtil.windowExit.add(windowClose);
+    CrashHandler.errorSignal.add(autosavePerCrash);
+    CrashHandler.criticalErrorSignal.add(autosavePerCrash);
   }
 
   public function clearAssets()
