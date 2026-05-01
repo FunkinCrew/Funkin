@@ -169,7 +169,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function preGestureStart(g:Gesture):Bool
   {
-    return _hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY);
+    return _hitTest(FlxG.mouse.gameX, FlxG.mouse.gameY);
   }
 
   function onGestureStart(g:Gesture):Void
