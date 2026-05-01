@@ -562,11 +562,11 @@ class StageEditorState extends UIState
       return;
     }
 
-    // Escape key to exit.
-    if (FlxG.keys.justPressed.ESCAPE)
+    // Escape key to exit if the user just entered.
+    if (FlxG.keys.justPressed.ESCAPE && welcomeDialog != null)
     {
-      // Welcome dialog prevents state switching if it's active.
-      if (welcomeDialog != null) welcomeDialog?.hide();
+      // Welcome dialog prevents the user from being able to switch causing things to break.
+      welcomeDialog?.hide();
 
       performCleanup();
       FlxG.switchState(() -> new MainMenuState());

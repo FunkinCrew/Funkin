@@ -855,11 +855,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       performCleanup();
       return;
     }
-
-    if (FlxG.keys.justPressed.ESCAPE)
+    // Allow the user to use the escape key to go back.
+    if (FlxG.keys.justPressed.ESCAPE && welcomeDialog != null)
     {
       // Welcome dialog being open prevents the state from properly switching.
-      if (welcomeDialog != null) welcomeDialog.hide();
+      welcomeDialog?.hide();
 
       quitCameraEditor();
       return;
