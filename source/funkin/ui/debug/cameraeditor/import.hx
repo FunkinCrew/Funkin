@@ -5,6 +5,9 @@ package funkin.ui.debug.cameraeditor;
 // as though they were functions in CameraEditorState.
 // This segments functions out, greatly reducing the complexity of the core CameraEditorState class.
 using funkin.ui.debug.cameraeditor.handlers.CameraEditorCommandHandler;
+using funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
+using funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 using funkin.ui.debug.cameraeditor.handlers.CameraEditorPropertiesPanelHandler;
+
 import funkin.ui.debug.cameraeditor.components.AddEventMenu;
 #end

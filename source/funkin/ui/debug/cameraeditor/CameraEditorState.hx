@@ -197,7 +197,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   function set_selectedSongEvents(value:Array<SongEventData>):Array<SongEventData>
   {
     selectedSongEvents = value ?? [];
-    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+    this.loadSelectedSongEvent();
     if (timeline != null && timeline.viewport != null) timeline.viewport.setSelectedEvents(selectedSongEvents);
     return selectedSongEvents;
   }
@@ -556,7 +556,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
-    CameraEditorNotificationHandler.setupNotifications(this);
+    this.setupNotifications();
     applyCanQuickSave();
 
     WindowUtil.windowExit.add(windowClose);
@@ -591,7 +591,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
 
       var cmd = new AddEventCommand(eventData);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
       selectedSongEvent = eventData;
     });
 
@@ -605,8 +605,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.PAN, onViewportPan);
     mainView.registerEvent(CameraViewportEvent.GESTURE_PAN, onViewportGesturePan);
 
-    CameraEditorPropertiesPanelHandler.initialize();
-    CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
+    this.initializePropertiesPanel();
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
 
@@ -621,11 +620,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       try
       {
         // Camera editor was opened from the command line. Open the FNFC file now!
-        CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
+        this.loadSongFromFNFCPath(params.loadFromPath);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
+        this.failure('Failed to Load Chart', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -642,11 +641,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       try
       {
-        CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
+        this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        this.failure('Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -844,7 +843,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var _cameraTarget:FlxPoint = new FlxPoint();
   var _autoSeekTimer:Float = 0;
   var _wasRelative:Bool = false;
-
   var _shouldResetCameraPosition:Bool = false;
 
   override public function update(elapsed:Float):Void
@@ -957,7 +955,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (_shouldResetCameraPosition)
     {
       _shouldResetCameraPosition = false;
-      onResetCameraZoom(null);
       onResetCameraScroll(null);
     }
 
@@ -1093,6 +1090,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
+    onResetCameraZoom(null);
     _shouldResetCameraPosition = true;
   }
 
@@ -1260,7 +1258,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, null, function(path:String)
+    this.exportCurrentChartToFNFC(true, null, function(path:String)
     {
       notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
@@ -1371,7 +1369,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   function performAutoSortLayersByType():Void
   {
-    CameraEditorCommandHandler.performCommand(this, new AutoSortLayersCommand());
+    this.performCommand(new AutoSortLayersCommand());
   }
 
   /**
@@ -1425,7 +1423,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName));
         finalSelection.push(d.event);
       }
-      CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
+      this.performCommand(new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
     });
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
@@ -1433,7 +1431,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
       var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.toolbar.btnTogglePlayback.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
@@ -1451,7 +1449,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
     {
       var cmd = new AddLayerCommand(e.layerData, e.layerIndex);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_REMOVED, function(e:TimelineEvent)
@@ -1473,11 +1471,11 @@ class CameraEditorState extends UIState implements ConsoleClass
           var dialog = new DeleteLayerConfirmDialog(layerName, eventCount, () ->
           {
             var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
-            CameraEditorCommandHandler.performCommand(this, cmd);
+            this.performCommand(cmd);
           }, () ->
             {
               var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-              CameraEditorCommandHandler.performCommand(this, cmd);
+              this.performCommand(cmd);
             });
           dialog.showDialog(true);
           deleteLayerConfirmDialog = dialog;
@@ -1487,21 +1485,20 @@ class CameraEditorState extends UIState implements ConsoleClass
       else
       {
         var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
       }
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_RENAMED, function(e:TimelineEvent)
     {
       var cmd:RenameLayerCommand = new RenameLayerCommand(e.layerData, e.oldLayerName, e.newLayerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED,
-      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed'));
+      (_:TimelineEvent) -> this.warning('Default Layer', 'Default layer cannot be renamed or removed'));
 
-    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID,
-      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
+    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID, (e:TimelineEvent) -> this.warning('Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
   }
 
   var shouldResetScroll:Bool = false;
@@ -1918,11 +1915,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     try
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
+      this.loadSongFromFNFCPath(chartPath);
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
+      this.error('Failure', 'Failed to load chart (${chartPath})');
     }
   }
 
@@ -1931,7 +1928,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+      this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
       {
         notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
@@ -1948,7 +1945,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+    this.exportCurrentChartToFNFC(false, null, function(path:String)
     {
       notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
@@ -1993,13 +1990,13 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemUndo, MouseEvent.CLICK)
   function onMenubarUndo(_)
   {
-    CameraEditorCommandHandler.undoLastCommand(this);
+    this.undoLastCommand();
   }
 
   @:bind(menubarItemRedo, MouseEvent.CLICK)
   function onMenubarRedo(_)
   {
-    CameraEditorCommandHandler.redoLastCommand(this);
+    this.redoLastCommand();
   }
 
   override function reloadAssets():Void
@@ -2100,7 +2097,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       case [FlxKey.PERIOD, false, false, false, _]:
@@ -2110,7 +2107,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (stepMs > 0) eventData.time = Math.fround(Conductor.instance.songPosition / stepMs) * stepMs;
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       // Edit menu
@@ -2135,7 +2132,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         });
         hasClipboardEvent = true;
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
         var clipboard = SongDataUtils.readItemsFromClipboard();
         if (!clipboard.valid || clipboard.events.length == 0) return;
@@ -2152,11 +2149,11 @@ class CameraEditorState extends UIState implements ConsoleClass
         for (ev in clipboard.events) ev.time += offset;
 
         var addCmds:Array<CameraEditorCommand> = [for (ev in clipboard.events) new AddEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(addCmds, 'Paste ${addCmds.length} Events', clipboard.events));
+        this.performCommand(new CompoundCommand(addCmds, 'Paste ${addCmds.length} Events', clipboard.events));
 
       case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
 
       // User Guide
       case [FlxKey.F1, false, false, false, _]: // F1 -> open user guide
@@ -2200,69 +2197,28 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemResetCameraScroll, MouseEvent.CLICK)
   function onResetCameraScroll(_)
   {
-    var offset:FlxPoint = computeViewportCenterOffset();
-
-    goToPoint.x = offset.x;
-    goToPoint.y = offset.y;
+    goToPoint.x = 0;
+    goToPoint.y = 0;
 
     if (!isCameraRelative)
     {
-      goToPoint.x += cameraRect.vCamPoint.x;
-      goToPoint.y += cameraRect.vCamPoint.y;
+      goToPoint.x = cameraRect.vCamPoint.x;
+      goToPoint.y = cameraRect.vCamPoint.y;
     }
 
     FlxG.camera.scroll.x = 0;
     FlxG.camera.scroll.y = 0;
-
-    offset.put();
   }
 
   @:bind(menubarItemResetCameraZoom, MouseEvent.CLICK)
   function onResetCameraZoom(_)
   {
-    var fitZoom:Float = computeViewportFitZoom();
-    pivotZoomOnViewport(() -> {
-      if (isCameraRelative) relativeZoom = fitZoom;
-      else FlxG.camera.zoom = fitZoom;
-    });
-  }
-
-  static final VIEWPORT_FIT_MARGIN:Float = 0.95;
-
-  function computeViewportFitZoom():Float
-  {
-    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return defaultStageZoom * 0.8;
-
-    var fitW:Float = (mainView.width * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.width;
-    var fitH:Float = (mainView.height * VIEWPORT_FIT_MARGIN) * defaultStageZoom / FlxG.height;
-    return Math.min(fitW, fitH);
-  }
-
-  function computeViewportCenterOffset():FlxPoint
-  {
-    if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
-
-    var dx:Float = (FlxG.width / 2) - (mainView.screenLeft + mainView.width / 2);
-    var dy:Float = (FlxG.height / 2) - (mainView.screenTop + mainView.height / 2);
-
-    var zoom:Float = isCameraRelative ? (cameraRect.zoom * relativeZoom) : FlxG.camera.zoom;
-    if (zoom <= 0) zoom = 1.0;
-    return FlxPoint.get(dx / zoom, dy / zoom);
-  }
-
-  function pivotZoomOnViewport(mutateZoom:Void->Void):Void
-  {
-    var oldOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x -= oldOffset.x;
-    goToPoint.y -= oldOffset.y;
-    oldOffset.put();
-
-    mutateZoom();
-
-    var newOffset:FlxPoint = computeViewportCenterOffset();
-    goToPoint.x += newOffset.x;
-    goToPoint.y += newOffset.y;
-    newOffset.put();
+    if (isCameraRelative)
+    {
+      relativeZoom = defaultStageZoom;
+      return;
+    }
+    FlxG.camera.zoom = defaultStageZoom * 0.8;
   }
 
   @:bind(menubarItemAutoGen, MouseEvent.CLICK)
@@ -2278,13 +2234,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     performAutoSortLayersByType();
   }
 
-  // TODO: make this wheel zoom sensitivity configurable
   function onViewportZoom(e:CameraViewportEvent):Void
   {
-    pivotZoomOnViewport(() -> {
-      if (isCameraRelative) relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
-      else MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
-    });
+    if (isCameraRelative)
+    {
+      relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
+      return;
+    }
+    // TODO: make this wheel zoom sensitivity configurable
+    MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
   }
 
   function onViewportPanStart(_:CameraViewportEvent):Void
@@ -2299,7 +2257,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function onViewportGesturePan(e:CameraViewportEvent):Void
   {
-    var zoom:Float = FlxG.camera.zoom;
+    var zoom = FlxG.camera.zoom;
     if (zoom <= 0) zoom = 1;
     goToPoint.x -= e.panDeltaX / zoom;
     goToPoint.y -= e.panDeltaY / zoom;
@@ -2344,7 +2302,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (currentWorkingFilePath != null)
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           tryMoveToChartEditor(true);
@@ -2356,7 +2314,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
       else
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           currentWorkingFilePath = path;
