@@ -1432,7 +1432,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
       var layerName:String = e.eventData.editorLayer ?? 'Default';
-      var cmd = new MoveResizeEventCommand(e.eventData, e.eventData.time, e.oldDuration, layerName, e.eventData.time, e.newDuration, layerName);
+      var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 

@@ -765,6 +765,8 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
       {
         var resizeEvent:TimelineEvent = new TimelineEvent(TimelineEvent.EVENT_RESIZED);
         resizeEvent.eventData = _dragTarget.eventData;
+        resizeEvent.oldTime = _dragOriginalTime;
+        resizeEvent.newTime = _dragTarget.eventData.time;
         resizeEvent.oldDuration = _dragOriginalDuration;
         resizeEvent.newDuration = newDuration;
         _viewport.dispatch(resizeEvent);
