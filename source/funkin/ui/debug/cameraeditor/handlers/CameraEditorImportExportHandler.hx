@@ -98,7 +98,7 @@ class CameraEditorImportExportHandler
   }
 
   /**
-   * Fetch's a song's existing chart and audio and loads it, replacing the current song.
+   * Fetches a song's existing chart and audio and loads it, replacing the current song.
    *
    * @param state The current chart editor state.
    * @param songId The internal song ID to load. This is the same as the song's folder name in the assets/songs directory.
@@ -112,8 +112,8 @@ class CameraEditorImportExportHandler
     var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
     loadSongFromFNFCData(state, entries, 'template:$songId');
 
-    if (difficulty != null) state.currentDifficulty = difficulty;
     if (variation != null) state.switchVariation(variation);
+    if (difficulty != null) state.currentDifficulty = difficulty;
   }
 
   /**

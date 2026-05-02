@@ -204,10 +204,10 @@ class ChartEditorImportExportHandler
       var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
       loadSongFromFNFCData(state, entries, null);
 
-      // Set the difficulty of the song if one was passed in the params, and it isn't the default
-      if (difficulty != null) state.selectedDifficulty = difficulty;
       // Set the variation of the song if one was passed in the params, and it isn't the default
       if (variation != null) state.selectedVariation = variation;
+      // Set the difficulty of the song if one was passed in the params, and it isn't the default
+      if (difficulty != null) state.selectedDifficulty = difficulty;
 
       return [];
     }
