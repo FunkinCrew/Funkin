@@ -2573,7 +2573,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         this.loadSongFromFNFCPath(params.loadFromPath);
         if (params.targetSongVariation != null) this.selectedVariation = params.targetSongVariation;
         if (params.targetSongDifficulty != null) this.selectedDifficulty = params.targetSongDifficulty;
-        if (params.targetSongPosition != null) this.scrollPositionInMs = params.targetSongPosition;
+        if (params.targetSongPosition != null)
+        {
+          this.scrollPositionInMs = params.targetSongPosition;
+          this.currentScrollEase = this.scrollPositionInPixels;
+        }
       }
       catch (e)
       {
