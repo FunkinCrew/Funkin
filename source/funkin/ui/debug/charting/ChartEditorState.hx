@@ -2581,6 +2581,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (params.targetSongPosition != null)
         {
           this.scrollPositionInMs = params.targetSongPosition;
+          moveSongToScrollPosition();
           this.currentScrollEase = this.scrollPositionInPixels;
         }
       }
@@ -2607,6 +2608,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (params.targetSongPosition != null)
         {
           this.scrollPositionInMs = params.targetSongPosition;
+          moveSongToScrollPosition();
           this.currentScrollEase = this.scrollPositionInPixels;
         }
       }
