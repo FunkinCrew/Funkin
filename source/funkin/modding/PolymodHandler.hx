@@ -328,6 +328,10 @@ class PolymodHandler
     // Lib.load() can load malicious DLLs
     Polymod.blacklistImport('cpp.Lib');
 
+    // `haxe.Http`
+    // An alias for `sys.Http`, which is also a blacklisted package.
+    Polymod.blacklistImport('haxe.Http');
+    
     // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
