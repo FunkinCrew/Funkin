@@ -34,6 +34,7 @@ class CameraEditorImportExportHandler
     state.audioInstTrackData = data.instrumentals;
     state.audioVocalTrackData = data.vocals;
     state.currentVariation = resolveLoadedVariation(state);
+    state.currentDifficulty = resolveLoadedDifficulty(state);
     state.onChartLoaded();
 
     if (data.issues == null || data.issues.length == 0)
@@ -89,6 +90,11 @@ class CameraEditorImportExportHandler
     }
 
     return Constants.DEFAULT_VARIATION;
+  }
+
+  static function resolveLoadedDifficulty(state:CameraEditorState):String
+  {
+    return (state.currentVariation == 'erect') ? 'nightmare' : 'hard';
   }
 
   /**
