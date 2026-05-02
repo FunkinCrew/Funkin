@@ -2599,6 +2599,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       try
       {
         this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
+        if (params.targetSongPosition != null)
+        {
+          this.scrollPositionInMs = params.targetSongPosition;
+          this.currentScrollEase = this.scrollPositionInPixels;
+        }
       }
       catch (e)
       {
