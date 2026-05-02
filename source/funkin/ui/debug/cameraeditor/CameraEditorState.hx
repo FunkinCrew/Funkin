@@ -622,6 +622,9 @@ class CameraEditorState extends UIState implements ConsoleClass
       {
         // Camera editor was opened from the command line. Open the FNFC file now!
         CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
+        if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
+        if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
+        if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
       }
       catch (e)
       {
