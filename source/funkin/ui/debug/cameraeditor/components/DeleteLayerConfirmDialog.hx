@@ -4,6 +4,9 @@ package funkin.ui.debug.cameraeditor.components;
 import haxe.ui.components.Button;
 import haxe.ui.containers.dialogs.Dialog;
 
+/**
+ * The dialog to confirm that user wishes to delete a layer from the timeline.
+ */
 @:xml('
 <dialog width="400">
   <vbox width="100%">
@@ -20,37 +23,39 @@ class DeleteLayerConfirmDialog extends Dialog
   {
     super();
 
-    addClass("no-title");
+    addClass('no-title');
     this.onFlatten = onFlatten;
     this.onDelete = onDelete;
 
-    var eventWord = eventCount == 1 ? "event" : "events";
+    var eventWord = eventCount == 1 ? 'event' : 'events';
     messageLabel.text = 'Delete the layer "$layerName" ($eventCount $eventWord)?';
-    var nevermind:DialogButton = "{{Nevermind...}}";
-    var flatten:DialogButton = "{{Flatten}}";
-    var delete_:DialogButton = "{{Delete}}";
+    var nevermind:DialogButton = '{{Nevermind...}}';
+    var flatten:DialogButton = '{{Flatten}}';
+    var delete_:DialogButton = '{{Delete}}';
     buttons = nevermind | flatten | delete_;
-    defaultButton = "{{Flatten}}";
+    defaultButton = '{{Flatten}}';
     destroyOnClose = true;
   }
 
   override private function onReady()
   {
     super.onReady();
-    var flattenBtn = findComponent("{{flatten}}", Button, true);
-    var deleteBtn = findComponent("{{delete}}", Button, true);
-    if (flattenBtn != null)
-      flattenBtn.tooltip = "Remove the layer but move its events to Default layer";
-    if (deleteBtn != null)
-      deleteBtn.tooltip = "Remove the layer and all its events";
+    var flattenBtn = findComponent('{{flatten}}', Button, true);
+    var deleteBtn = findComponent('{{delete}}', Button, true);
+    if (flattenBtn != null) flattenBtn.tooltip = 'Remove the layer but move its events to Default layer';
+    if (deleteBtn != null) deleteBtn.tooltip = 'Remove the layer and all its events';
   }
 
   override public function validateDialog(button:DialogButton, fn:Bool->Void)
   {
-    if (button == "{{Flatten}}" && onFlatten != null)
+    if (button == '{{Flatten}}' && onFlatten != null)
+    {
       onFlatten();
-    else if (button == "{{Delete}}" && onDelete != null)
+    }
+    else if (button == '{{Delete}}' && onDelete != null)
+    {
       onDelete();
+    }
 
     fn(true);
   }

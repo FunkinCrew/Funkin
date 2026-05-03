@@ -7,6 +7,9 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineEventBlock;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to merge a layer into the one above it.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class FlattenLayerCommand implements CameraEditorCommand
 {
@@ -22,6 +25,10 @@ class FlattenLayerCommand implements CameraEditorCommand
     this.flattenedEvents = [];
   }
 
+  /**
+   * Perform the action, merging the layer into the one above it.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     flattenedEvents = [];
@@ -29,7 +36,7 @@ class FlattenLayerCommand implements CameraEditorCommand
 
     for (event in state.currentSongChartData.events)
     {
-      var eventLayer = event.editorLayer ?? "Default";
+      var eventLayer = event.editorLayer ?? 'Default';
       if (layer.name == eventLayer)
       {
         flattenedEvents.push({event: event, originalLayer: eventLayer});
@@ -50,7 +57,7 @@ class FlattenLayerCommand implements CameraEditorCommand
     for (entry in flattenedEvents)
     {
       var block:TimelineEventBlock = viewport.findBlockByEvent(entry.event);
-      if (block != null) viewport.syncEventBlockLayer(block, "Default");
+      if (block != null) viewport.syncEventBlockLayer(block, 'Default');
     }
 
     if (viewport.selectedLayerIndex >= viewport.layers.length) viewport.selectedLayerIndex = viewport.layers.length - 1;
@@ -62,6 +69,10 @@ class FlattenLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Reverse the action, restoring the merged layer and moving the events back to it.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -78,7 +89,7 @@ class FlattenLayerCommand implements CameraEditorCommand
       var raw:SongEventDataRaw = entry.event;
       raw.editorLayer = entry.originalLayer;
       var block = viewport.findBlockByEvent(entry.event);
-      if (block != null) viewport.syncEventBlockLayer(block, entry.originalLayer ?? "Default");
+      if (block != null) viewport.syncEventBlockLayer(block, entry.originalLayer ?? 'Default');
     }
 
     viewport.selectedLayerIndex = idx;
@@ -89,6 +100,13 @@ class FlattenLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
     return true;

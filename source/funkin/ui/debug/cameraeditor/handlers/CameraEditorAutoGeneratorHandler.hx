@@ -14,6 +14,11 @@ import funkin.data.song.SongData.SongChartData;
 @:nullSafety
 class CameraEditorAutoGeneratorHandler
 {
+  /**
+   * Automatically generates Camera Events in the timeline based on the given parameters.
+   * @param state The Camera Editor state to generate events in.
+   * @param params The parameters to use for the auto generation.
+   */
   public static function autoGenEvents(state:CameraEditorState, params:CameraEditorAutoGenParams):Void
   {
     var chartData:Null<SongChartData> = state.currentSongChartData;
@@ -123,11 +128,17 @@ class CameraEditorAutoGeneratorHandler
   }
 }
 
+/**
+ * The parameters for the Camera Editor Auto Generator.
+ */
 typedef CameraEditorAutoGenParams =
 {
   var placementMode:CameraEditorAutoGenPlacementMode;
 }
 
+/**
+ * The various algorithms for automatically generating Camera Events.
+ */
 enum abstract CameraEditorAutoGenPlacementMode(String) from String
 {
   /**
