@@ -75,6 +75,7 @@
       "comment": "If enabled, flags when large blocks of similar code should be extracted to a function.",
       "props": {
         "thresholdSimilar": 120,
+        "severity": "IGNORE",
         "thresholdIdentical": 60,
         "severityIdentical": "IGNORE"
       },
