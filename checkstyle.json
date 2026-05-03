@@ -385,7 +385,7 @@
     },
     {
       "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead to improve code clarity.",
-      "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "INFO" },
+      "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "IGNORE" },
       "type": "MagicNumber"
     },
     {
