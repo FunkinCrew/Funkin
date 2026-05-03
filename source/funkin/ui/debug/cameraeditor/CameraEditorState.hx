@@ -2215,7 +2215,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     txtCopyNotif.visible = true;
     txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
     txtCopyNotif.x = FlxG.mouse.x - (txtCopyNotif.width / 2);
-    txtCopyNotif.y = FlxG.mouse.y - 16;
+    txtCopyNotif.y = FlxG.height / 2;
     FlxTween.tween(txtCopyNotif, {y: txtCopyNotif.y - 32}, 0.5, {
       type: ONESHOT,
       ease: FlxEase.quadOut,
@@ -2447,14 +2447,9 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     pivotZoomOnViewport(() ->
     {
-      if (isCameraRelative)
-      {
-        relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
-      }
+      if (isCameraRelative) relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
       else
-      {
         MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
-      }
     });
   }
 
