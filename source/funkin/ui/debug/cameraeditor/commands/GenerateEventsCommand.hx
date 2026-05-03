@@ -5,6 +5,9 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to automatically generate camera events based on the chart data.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class GenerateEventsCommand implements CameraEditorCommand
 {
@@ -20,6 +23,10 @@ class GenerateEventsCommand implements CameraEditorCommand
     this.newLayerName = newLayerName;
   }
 
+  /**
+   * Perform the action, creating a new layer containing the generated events.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -59,8 +66,8 @@ class GenerateEventsCommand implements CameraEditorCommand
   }
 
   /**
-   * Undo the `execute()` function.
-   * @param state
+   * Reverse the action, removing the generated events and the layer if it was created by this command.
+   * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void
   {

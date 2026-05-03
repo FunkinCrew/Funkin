@@ -11,6 +11,9 @@ import haxe.ui.components.Label;
 import haxe.ui.components.Button;
 import haxe.ui.containers.dialogs.Dialog;
 
+/**
+ * The dialog that displays when the editor is opened, while a recent backup is available.
+ */
 @:build(haxe.ui.macros.ComponentMacros.build('assets/preload/data/ui/chart-editor/dialogs/backup-available.xml'))
 class BackupAvailableDialog extends Dialog
 {
@@ -41,9 +44,6 @@ class BackupAvailableDialog extends Dialog
 
   function populateBackupTimeLabel():Void
   {
-    var backupTimeLabel:Null<Label> = this.findComponent('backupTimeLabel', Label);
-    if (backupTimeLabel == null) throw 'Could not locate backupTimeLabel button in Backup Available dialog';
-
     var latestBackupInfo:Null<String> = CameraEditorImportExportHandler.getLatestBackupInfo();
     if (latestBackupInfo != null)
     {
