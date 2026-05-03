@@ -1103,9 +1103,9 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
   getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
-  public function new(time:Float, eventKind:String, value:Dynamic = null)
+  public function new(time:Float, eventKind:String, ?value:Dynamic, ?editorLayer:String)
   {
-    this = new SongEventDataRaw(time, eventKind, value);
+    this = new SongEventDataRaw(time, eventKind, value, editorLayer);
   }
 
   /**
@@ -1114,7 +1114,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
    */
   public function clone():SongEventData
   {
-    var result:SongEventData = new SongEventData(this.time, this.eventKind, this.value);
+    var result:SongEventData = new SongEventData(this.time, this.eventKind, this.value, this.editorLayer);
     result.editorLayer = this.editorLayer;
     return result;
   }
@@ -1203,7 +1203,7 @@ abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataR
    */
   public function toString():String
   {
-    return 'SongEventData(${this.time}ms, ${this.eventKind}: ${this.value})';
+    return 'SongEventData(${this.editorLayer ?? 'Default'}: ${this.time}ms, ${this.eventKind}: ${this.value})';
   }
 }
 
