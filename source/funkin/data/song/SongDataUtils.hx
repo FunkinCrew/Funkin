@@ -51,7 +51,7 @@ class SongDataUtils
   {
     return events.map(function(event:SongEventData):SongEventData
     {
-      return new SongEventData(event.time + offset, event.eventKind, event.value);
+      return new SongEventData(event.time + offset, event.eventKind, event.value, event.editorLayer);
     });
   }
 
