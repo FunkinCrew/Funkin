@@ -14,6 +14,9 @@ import funkin.util.file.FNFCUtil.FNFCData;
 @:nullSafety
 class CameraEditorImportExportHandler
 {
+  /**
+   * The path to the backups folder for charts.
+   */
   public static final BACKUPS_PATH:String = './backups/charts/';
 
   /**
@@ -76,8 +79,10 @@ class CameraEditorImportExportHandler
 
   static function resolveLoadedVariation(state:CameraEditorState):String
   {
-    if (state.songMetadatas.exists(state.currentVariation) && state.songDatas.exists(state.currentVariation)) return state.currentVariation;
-    if (state.songMetadatas.exists(Constants.DEFAULT_VARIATION) && state.songDatas.exists(Constants.DEFAULT_VARIATION)) return Constants.DEFAULT_VARIATION;
+    if (state.songMetadatas.exists(state.currentVariation)
+      && state.songDatas.exists(state.currentVariation)) return state.currentVariation;
+    if (state.songMetadatas.exists(Constants.DEFAULT_VARIATION)
+      && state.songDatas.exists(Constants.DEFAULT_VARIATION)) return Constants.DEFAULT_VARIATION;
 
     for (variation in state.songMetadatas.keys())
     {

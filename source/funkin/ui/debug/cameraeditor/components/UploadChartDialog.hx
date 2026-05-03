@@ -1,24 +1,21 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
-import haxe.io.Bytes;
-import funkin.Conductor;
 import funkin.input.Cursor;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorFileDropHandler;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
-import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.util.FileUtil;
-import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.MouseEvent;
-import funkin.util.file.FNFCUtil.FNFCData;
 
+/**
+ * The dialog that appears when the user tries to open a chart from a `.fnfc` file.
+ */
 @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/dialogs/upload-chart.xml'))
 class UploadChartDialog extends Dialog
 {

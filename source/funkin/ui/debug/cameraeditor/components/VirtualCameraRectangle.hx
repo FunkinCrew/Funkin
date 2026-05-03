@@ -15,6 +15,9 @@ import funkin.graphics.FunkinSliceSprite;
 import funkin.ui.FullScreenScaleMode;
 import flixel.FlxCamera;
 
+/**
+ * The sprite which displays the current visible area of the camera during previews.
+ */
 class VirtualCameraRectangle extends FlxSpriteGroup
 {
   /**
@@ -31,7 +34,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   /**
    * The current position of the virtual camera in world space.
    */
-  public var vCamPoint:FlxPoint = new FlxPoint();
+  public var vcamPoint:FlxPoint = new FlxPoint();
 
   /**
    * Reference to the current stage, used to access character positions for camera focus events.
@@ -87,9 +90,14 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   function resize():Void
   {
-    if (!isRelative) mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+    if (!isRelative)
+    {
+      mainView.setGraphicSize(FlxG.width / zoom, FlxG.height / zoom);
+    }
     else
+    {
       mainView.setGraphicSize(FlxG.width, FlxG.height);
+    }
     mainView.updateHitbox();
     camSlice.width = mainView.width;
     camSlice.height = mainView.height;
@@ -117,6 +125,9 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     return hudZoom;
   }
 
+  /**
+   * Whether to show the widescreen extended bounds of the camera.
+   */
   public var showExtendedBounds(default, set):Bool = false;
 
   function set_showExtendedBounds(val:Bool):Bool
@@ -131,7 +142,15 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     return val;
   }
 
+  /**
+   * Whether to display a Passepartout around the camera,
+   * darkening the area outside the camera's view.
+   */
   public var showPassepartout(default, set):Bool = false;
+
+  /**
+   * The current opacity of the passepartout.
+   */
   public var passepartoutTransparency(default, set):Float = 0;
 
   function set_showPassepartout(val:Bool):Bool
@@ -255,7 +274,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (!doBopping) currentBaseZoom = zoom;
 
-    if (duration == 0) zoom = targetZoom;
+    if (duration == 0)
+    {
+      zoom = targetZoom;
+    }
     else
     {
       cameraZoomTween = Conductor.instance.songPosition;
@@ -276,7 +298,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
    */
   public function setFocusPoint(x:Float, y:Float, force:Bool = false):Void
   {
-    lastVCamPoint.copyFrom(vCamPoint);
+    lastVCamPoint.copyFrom(vcamPoint);
     cameraFollowPoint.x = x;
     cameraFollowPoint.y = y;
     if (force)
@@ -303,7 +325,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (char != null)
     {
-      if (char == -1) setFocusPoint(offsetX, offsetY);
+      if (char == -1)
+      {
+        setFocusPoint(offsetX, offsetY);
+      }
       else
       {
         switch (char)
@@ -366,6 +391,8 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   /**
    * Handles a camera zoom event, updating the camera zoom level based on the event data.
+   *
+   * @param stageZoom The current zoom level of the stage.
    * @param eventData The event data containing the zoom information.
    */
   public function handleZoomCamera(stageZoom:Float, eventData:SongEventData):Void
@@ -449,15 +476,15 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     for (obj in [passeT, passeB, passeL, passeR])
     {
-      obj.vcamPoint = vCamPoint;
+      obj.vcamPoint = vcamPoint;
       obj.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-      obj.zIndex = 10000;
+      obj.zIndex = 10_000;
       obj.updateHitbox();
       add(obj);
     }
 
     mainView = new FunkinSprite(0, 0);
-    mainView.vcamPoint = vCamPoint;
+    mainView.vcamPoint = vcamPoint;
     mainView.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLUE);
     mainView.updateHitbox();
     mainView.visible = false;
@@ -467,7 +494,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     pieceSize = ((FlxG.width / 16 * FullScreenScaleMode.maxAspectRatio.x) - FlxG.width) / 2;
 
     leftExt = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_left'), new FlxRect(30, 30, 30, 30), 0, 0);
-    leftExt.vcamPoint = vCamPoint;
+    leftExt.vcamPoint = vcamPoint;
     leftExt.alpha = 0.3;
     leftExt.zIndex = 5999;
     leftExt.updateHitbox();
@@ -476,7 +503,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     // flipping x doesnt work.... i HAVE to use another image.... ewwwwwww
     rightExt = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_right'), new FlxRect(30, 30, 30, 30), 0, 0);
-    rightExt.vcamPoint = vCamPoint;
+    rightExt.vcamPoint = vcamPoint;
     rightExt.alpha = 0.3;
     rightExt.zIndex = 5999;
     rightExt.updateHitbox();
@@ -484,7 +511,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     add(rightExt);
 
     camSliceOverlay = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice_solid'), new FlxRect(30, 30, 30, 30), 0, 0);
-    camSliceOverlay.vcamPoint = vCamPoint;
+    camSliceOverlay.vcamPoint = vcamPoint;
     camSliceOverlay.blend = OVERLAY;
     camSliceOverlay.alpha = 0.2;
     camSliceOverlay.zIndex = 6000;
@@ -493,7 +520,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     add(camSliceOverlay);
 
     camSlice = new FunkinSliceSprite(Paths.image('ui/camera-editor/vcam/vcam_slice'), new FlxRect(30, 30, 30, 30), 0, 0);
-    camSlice.vcamPoint = vCamPoint;
+    camSlice.vcamPoint = vcamPoint;
     camSlice.alpha = 0.5;
     camSlice.zIndex = 6001;
     camSlice.updateHitbox();
@@ -501,7 +528,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     add(camSlice);
 
     middle = FunkinSprite.create(0, 0, 'ui/camera-editor/vcam/vcam_center');
-    middle.vcamPoint = vCamPoint;
+    middle.vcamPoint = vcamPoint;
     middle.zIndex = 6002;
     add(middle);
 
@@ -527,7 +554,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     // no fucking way im doing this manually
     for (obj in [cornerTR, cornerBR, cornerTL, cornerBL, cornerTLSmall, cornerBRSmall, cornerTRSmall, cornerBLSmall, lineT, lineB, lineL, lineR, lineLSmall, lineRSmall])
     {
-      obj.vcamPoint = vCamPoint;
+      obj.vcamPoint = vcamPoint;
       obj.color = 0xFF000000;
       obj.zIndex = 6002;
       add(obj);
@@ -638,7 +665,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (forceNextFocus)
     {
-      vCamPoint.copyFrom(scrollTarget);
+      vcamPoint.copyFrom(scrollTarget);
       forceNextFocus = false;
     }
 
@@ -647,15 +674,15 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
 
       // Apply CLASSIC ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
-      final adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
-      final easeProgress = (1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed)).clamp(0, 1);
+      var adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
+      var easeProgress = (1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedProgressElapsed)).clamp(0, 1);
 
-      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, easeProgress);
-      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, easeProgress);
+      vcamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, easeProgress);
+      vcamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, easeProgress);
 
       if (easeProgress >= 0.9999)
       {
-        vCamPoint.copyFrom(scrollTarget);
+        vcamPoint.copyFrom(scrollTarget);
         isClassicEase = false;
       }
     }
@@ -663,13 +690,13 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     {
       // Handle regular easing
       var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
-      vCamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
-      vCamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
+      vcamPoint.x = FlxMath.lerp(cameraFollowStart.x, scrollTarget.x, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
+      vcamPoint.y = FlxMath.lerp(cameraFollowStart.y, scrollTarget.y, cameraFollowEase((cameraFollowElapsed / (cameraFollowDuration * 1000)).clamp(0, 1)));
 
       if (cameraFollowElapsed >= cameraFollowDuration * 1000)
       {
         cameraFollowEase = null;
-        vCamPoint.copyFrom(scrollTarget);
+        vcamPoint.copyFrom(scrollTarget);
       }
     }
     // Handle camera zoom tweening
@@ -690,11 +717,11 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   function updateVisuals():Void
   {
-    mainView.x = (vCamPoint.x + (FlxG.width / 2)) - mainView.width / 2;
-    mainView.y = (vCamPoint.y + (FlxG.height / 2)) - mainView.height / 2;
+    mainView.x = (vcamPoint.x + (FlxG.width / 2)) - mainView.width / 2;
+    mainView.y = (vcamPoint.y + (FlxG.height / 2)) - mainView.height / 2;
 
-    camSlice.x = (vCamPoint.x + (FlxG.width / 2)) - camSlice.width / 2;
-    camSlice.y = (vCamPoint.y + (FlxG.height / 2)) - camSlice.height / 2;
+    camSlice.x = (vcamPoint.x + (FlxG.width / 2)) - camSlice.width / 2;
+    camSlice.y = (vcamPoint.y + (FlxG.height / 2)) - camSlice.height / 2;
 
     cornerTL.setPosition(mainView.x, mainView.y);
     cornerBR.setPosition(mainView.x + mainView.width - cornerBR.width, mainView.y + mainView.height - cornerBR.height);
@@ -736,7 +763,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (!showPassepartout) return;
 
-    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vCamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
+    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vcamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
     var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
 
     if (isRelative)
@@ -745,7 +772,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       var zoomFactor:Float = FlxG.camera.zoom / safeRelativeZoom;
       var compensatedScrollX:Float = FlxG.camera.scroll.x * zoomFactor;
 
-      scaleAmt = ((Math.abs(compensatedScrollX - vCamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
+      scaleAmt = ((Math.abs(compensatedScrollX - vcamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
       extraSize = showExtendedBounds ? pieceSize : 0;
     }
 

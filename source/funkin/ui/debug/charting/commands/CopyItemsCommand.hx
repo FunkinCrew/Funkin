@@ -155,6 +155,13 @@ class CopyItemsCommand implements ChartEditorCommand
     // This command is not undoable. Do nothing.
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is not undoable. Don't add it to the history.

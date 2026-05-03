@@ -4,6 +4,9 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to remove a camera event from the timeline.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class RemoveEventCommand implements CameraEditorCommand
 {
@@ -15,6 +18,10 @@ class RemoveEventCommand implements CameraEditorCommand
     this.event = event;
   }
 
+  /**
+   * Perform the action, removing a camera event from the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     index = state.currentSongChartData.events.indexOf(event);
@@ -29,12 +36,20 @@ class RemoveEventCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Reverse the action, restoring the event to the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     if (index >= 0 && index <= state.currentSongChartData.events.length)
+    {
       state.currentSongChartData.events.insert(index, event);
+    }
     else
+    {
       state.currentSongChartData.events.push(event);
+    }
     state.selectedSongEvents = [event];
 
     FunkinSound.playOnce(Paths.sound('chartingSounds/undo'));

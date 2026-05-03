@@ -2,7 +2,6 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.play.event.ZoomCameraSongEvent;
-import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
 
@@ -12,6 +11,9 @@ import haxe.ui.events.UIEvent;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/zoom-camera.xml"))
 class ZoomCameraContainer extends VBox implements EditorContainer
 {
+  /**
+   * The Camera Editor state associated with this container.
+   */
   public var cameraEditorState:CameraEditorState;
 
   public function new(state:CameraEditorState)
@@ -44,8 +46,14 @@ class ZoomCameraContainer extends VBox implements EditorContainer
   public function loadCurrentEventData():Void
   {
     var modeType:String = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
-    if (modeType == 'stage') zoomCameraMode.selectedIndex = 0;
-    else if (modeType == 'direct') zoomCameraMode.selectedIndex = 1;
+    if (modeType == 'stage')
+    {
+      zoomCameraMode.selectedIndex = 0;
+    }
+    else if (modeType == 'direct')
+    {
+      zoomCameraMode.selectedIndex = 1;
+    }
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
     zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
