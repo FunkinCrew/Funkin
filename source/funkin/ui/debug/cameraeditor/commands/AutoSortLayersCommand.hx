@@ -1,11 +1,11 @@
 package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
-import funkin.audio.FunkinSound;
 
 typedef AutoSortPlanLayer =
 {
@@ -18,11 +18,15 @@ typedef AutoSortPlan =
   var layers:Array<AutoSortPlanLayer>;
 };
 
+/**
+ * Represents a reversible action to automatically sort camera events into layers.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class AutoSortLayersCommand implements CameraEditorCommand
 {
   var previousLayers:Array<TimelineLayerData>;
-  var previousEventLayers:Array<{event:SongEventData, layer:Null<String>}>;
+  var previousEventLayers:Array<
+    {event:SongEventData, layer:Null<String>}>;
   var newLayers:Array<TimelineLayerData>;
 
   public function new()
@@ -45,7 +49,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
     var byKind:Map<String, Array<SongEventData>> = new Map<String, Array<SongEventData>>();
     for (event in events)
     {
-      if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera") continue;
+      if (event.eventKind != 'FocusCamera' && event.eventKind != 'ZoomCamera') continue;
       if (!byKind.exists(event.eventKind))
       {
         orderedKinds.push(event.eventKind);
@@ -105,6 +109,10 @@ class AutoSortLayersCommand implements CameraEditorCommand
     return tracks;
   }
 
+  /**
+   * Perform the action, sorting all events into layers such that they don't overlap.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -126,7 +134,9 @@ class AutoSortLayersCommand implements CameraEditorCommand
     newLayers = [defaultLayer];
     for (i => planLayer in plan.layers)
     {
-      var color:Int = TimelineLayerData.DEFAULT_LAYER_COLORS[(i + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length];
+      var color:Int = TimelineLayerData.DEFAULT_LAYER_COLORS[
+        (i + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length
+      ];
       newLayers.push(new TimelineLayerData(planLayer.name, color));
     }
 
@@ -151,11 +161,14 @@ class AutoSortLayersCommand implements CameraEditorCommand
 
   static function findDefaultLayer(layers:Array<TimelineLayerData>):TimelineLayerData
   {
-    for (layer in layers)
-      if (layer.name == "Default") return layer;
-    return new TimelineLayerData("Default", TimelineLayerData.DEFAULT_LAYER_COLORS[0]);
+    for (layer in layers) if (layer.name == 'Default') return layer;
+    return new TimelineLayerData('Default', TimelineLayerData.DEFAULT_LAYER_COLORS[0]);
   }
 
+  /**
+   * Reverse the action, restoring the previous layers and event layer assignments.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -176,6 +189,13 @@ class AutoSortLayersCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
     return true;

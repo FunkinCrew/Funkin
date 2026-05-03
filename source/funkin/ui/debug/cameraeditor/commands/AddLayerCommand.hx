@@ -4,6 +4,9 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to add a new layer to the timeline.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class AddLayerCommand implements CameraEditorCommand
 {
@@ -16,6 +19,10 @@ class AddLayerCommand implements CameraEditorCommand
     this.insertIndex = insertIndex;
   }
 
+  /**
+   * Reverse the action, adding the new layer to the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -35,6 +42,10 @@ class AddLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Reverse the action, removing the layer from the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -55,6 +66,13 @@ class AddLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
     return true;

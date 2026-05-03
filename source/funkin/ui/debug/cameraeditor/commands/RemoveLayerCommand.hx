@@ -2,10 +2,12 @@ package funkin.ui.debug.cameraeditor.commands;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
-import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to remove a camera layer from the timeline.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class RemoveLayerCommand implements CameraEditorCommand
 {
@@ -21,6 +23,10 @@ class RemoveLayerCommand implements CameraEditorCommand
     this.deletedEvents = [];
   }
 
+  /**
+   * Perform the action, removing a camera layer and all its events from the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     deletedEvents = [];
@@ -30,7 +36,7 @@ class RemoveLayerCommand implements CameraEditorCommand
 
     for (event in state.currentSongChartData.events)
     {
-      var eventLayer:String = event.editorLayer ?? "Default";
+      var eventLayer:String = event.editorLayer ?? 'Default';
       if (layer.name == eventLayer)
       {
         deletedEvents.push({event: event, originalLayer: eventLayer});
@@ -59,6 +65,10 @@ class RemoveLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Reverse the action, restoring the layer and all its events to the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     var viewport = state.timeline.viewport;
@@ -89,6 +99,13 @@ class RemoveLayerCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The CameraEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
+   */
   public function shouldAddToHistory(state:CameraEditorState):Bool
   {
     return true;

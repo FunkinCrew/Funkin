@@ -1,24 +1,14 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
-import funkin.Conductor;
-import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
-import funkin.play.song.Song;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorFileDropHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
-import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
-import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
-import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
-import funkin.util.file.FNFCUtil.FNFCData;
 import funkin.util.FileUtil;
-import funkin.util.SortUtil;
 import haxe.io.Path;
-import haxe.io.Bytes;
-import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
@@ -104,7 +94,7 @@ class WelcomeDialog extends Dialog
   /**
    * Called when the welcome dialog is closed.
    */
-  public function onClose(_:DialogEvent):Void
+  function onClose(_:DialogEvent):Void
   {
     for (dropTarget in dropHandlers)
     {
@@ -116,7 +106,7 @@ class WelcomeDialog extends Dialog
    * Called when the user clicks the "Upload Chart" box in the dialog.
    */
   @:bind(chartBox, MouseEvent.CLICK)
-  public function onClickChartBox(_):Void
+  function onClickChartBox(_):Void
   {
     if (this.locked) return;
 
