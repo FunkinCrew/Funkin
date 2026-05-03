@@ -320,7 +320,7 @@ class MainMenuState extends MusicBeatState
 
     leftWatermarkText.text = Constants.VERSION;
 
-    leftWatermarkText.text += ' | Camera Editor Preview #1';
+    leftWatermarkText.text += ' | Camera Editor Preview #2';
 
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
