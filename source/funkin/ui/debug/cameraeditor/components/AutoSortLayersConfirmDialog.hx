@@ -4,6 +4,10 @@ package funkin.ui.debug.cameraeditor.components;
 import funkin.ui.debug.cameraeditor.commands.AutoSortLayersCommand.AutoSortPlan;
 import haxe.ui.containers.dialogs.Dialog;
 
+/**
+ * The confirmation dialog when loading a chart with overlapping layers,
+ * prompting the user to reorganize the events automatically.
+ */
 @:xml('
 <dialog width="460">
   <vbox width="100%" style="padding: 8px;">
@@ -21,35 +25,35 @@ class AutoSortLayersConfirmDialog extends Dialog
   {
     super();
 
-    addClass("no-title");
+    addClass('no-title');
     this.onSort = onSort;
 
-    var eventWord:String = currentEventCount == 1 ? "event" : "events";
+    var eventWord:String = currentEventCount == 1 ? 'event' : 'events';
     messageLabel.text = 'Detected that Camera events in this chart overlap on a single layer. Organize onto separate layers by event type?';
 
     var lines:Array<String> = [];
-    lines.push("Before");
+    lines.push('Before');
     lines.push('  $currentLayerName ($currentEventCount $eventWord)');
-    lines.push("After");
+    lines.push('After');
     for (planLayer in plan.layers)
     {
-      var moveWord:String = planLayer.events.length == 1 ? "event" : "events";
+      var moveWord:String = planLayer.events.length == 1 ? 'event' : 'events';
       lines.push('  ${planLayer.name} (moving ${planLayer.events.length} $moveWord)');
     }
-    previewLabel.text = lines.join("\n");
+    previewLabel.text = lines.join('\n');
 
     hintLabel.text = "You can run this later from the 'Generate' menu.";
 
-    var skip:DialogButton = "{{Skip}}";
-    var sort:DialogButton = "{{Sort}}";
+    var skip:DialogButton = '{{Skip}}';
+    var sort:DialogButton = '{{Sort}}';
     buttons = skip | sort;
-    defaultButton = "{{Sort}}";
+    defaultButton = '{{Sort}}';
     destroyOnClose = true;
   }
 
   override public function validateDialog(button:DialogButton, fn:Bool->Void)
   {
-    if (button == "{{Sort}}" && onSort != null) onSort();
+    if (button == '{{Sort}}' && onSort != null) onSort();
 
     fn(true);
   }

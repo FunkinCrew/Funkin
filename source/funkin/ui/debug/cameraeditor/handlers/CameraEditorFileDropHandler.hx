@@ -4,6 +4,9 @@ package funkin.ui.debug.cameraeditor.handlers;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import flixel.util.FlxTimer;
 
+/**
+ * Handles dragging and dropping files into the Camera Editor.
+ */
 class CameraEditorFileDropHandler
 {
   // ===============
@@ -23,6 +26,8 @@ class CameraEditorFileDropHandler
    * On OS X you can’t drop on the application window, but rather only the app icon
    * (either in the dock while running or the icon on the hard drive) so this must be disabled
    * and UI updated appropriately.
+   *
+   * @param dropTarget Info on the component and callback to use when a file is dropped on it.
    */
   public static function addDropHandler(dropTarget:DialogDropTarget):Void
   {
@@ -37,6 +42,7 @@ class CameraEditorFileDropHandler
 
   /**
    * Remove a callback for when a file is dropped on a component.
+   * @param dropTarget The drop handler to remove.
    */
   public static function removeDropHandler(dropTarget:DialogDropTarget):Void
   {

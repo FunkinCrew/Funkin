@@ -13,16 +13,19 @@ import haxe.ui.backend.flixel.MouseHelper;
 import haxe.ui.events.UIEvent;
 import haxe.ui.Toolkit;
 
+/**
+ * The dialog that appears when clicking the timeline, prompting the user to add an event.
+ */
 @:access(haxe.ui.core.Component)
 class AddEventMenu
 {
   static final MENU_WIDTH:Float = 150;
   static final ICON_SIZE:Float = 16;
-  static final ICON_PATH:String = "assets/ui/editors/camera-editor/event-icons/";
+  static final ICON_PATH:String = 'assets/ui/editors/camera-editor/event-icons/';
   static final EVENT_ITEMS:Array<
     {kind:String, label:String, icon:String}> = [
-    {kind: "FocusCamera", label: "Focus Camera", icon: "focus_event.png"},
-    {kind: "ZoomCamera", label: "Zoom Camera", icon: "zoom_event.png"},
+    {kind: 'FocusCamera', label: 'Focus Camera', icon: 'focus_event.png'},
+    {kind: 'ZoomCamera', label: 'Zoom Camera', icon: 'zoom_event.png'},
   ];
 
   var menu:Null<Menu> = null;
@@ -33,6 +36,9 @@ class AddEventMenu
     this.onEventSelected = onEventSelected;
   }
 
+  /**
+   * Show the dialog at the current mouse position.
+   */
   public function show():Void
   {
     close();
@@ -41,12 +47,12 @@ class AddEventMenu
     var screenY:Float = MouseHelper.currentWorldY;
 
     var header = new MenuItem();
-    header.text = "Add Event";
-    header.shortcutText = "Shift+A";
+    header.text = 'Add Event';
+    header.shortcutText = 'Shift+A';
     header.disabled = true;
 
     var cameraSubmenu = new Menu();
-    cameraSubmenu.text = "Camera";
+    cameraSubmenu.text = 'Camera';
     cameraSubmenu.width = MENU_WIDTH;
 
     for (info in EVENT_ITEMS)
@@ -56,8 +62,8 @@ class AddEventMenu
       item.id = info.kind;
 
       var icon = new Image();
-      icon.id = "menuitem-icon";
-      icon.addClass("menuitem-icon");
+      icon.id = 'menuitem-icon';
+      icon.addClass('menuitem-icon');
       icon.resource = ICON_PATH + info.icon;
       icon.width = ICON_SIZE;
       icon.height = ICON_SIZE;
@@ -95,12 +101,14 @@ class AddEventMenu
     var top:Float = screenY;
 
     // Right edge: flip to left side of cursor
-    if (left + menuW > scrW) {
+    if (left + menuW > scrW)
+    {
       left = screenX - menuW;
     }
 
     // Bottom edge: clamp so menu bottom aligns with window bottom
-    if (top + menuH > scrH) {
+    if (top + menuH > scrH)
+    {
       top = scrH - menuH;
     }
 
@@ -113,13 +121,18 @@ class AddEventMenu
 
     // Reveal on next frame (matches showSubMenu pattern)
     var menuRef = menu;
-    Toolkit.callLater(() -> {
-      if (menuRef != null) {
+    Toolkit.callLater(() ->
+    {
+      if (menuRef != null)
+      {
         menuRef.handleVisibility(true);
       }
     });
   }
 
+  /**
+   * Close the dialog.
+   */
   public function close():Void
   {
     if (menu != null)
@@ -129,6 +142,9 @@ class AddEventMenu
     }
   }
 
+  /**
+   * @return Whether the dialog is currently open.
+   */
   public function isOpen():Bool
   {
     return menu != null;
@@ -139,7 +155,7 @@ class AddEventMenu
     if (e.menuItem == null) return;
 
     var eventKind:String = e.menuItem.id;
-    if (eventKind == null || eventKind == "") return;
+    if (eventKind == null || eventKind == '') return;
 
     var eventData = createDefaultEvent(eventKind);
     if (onEventSelected != null) onEventSelected(eventData);
@@ -152,8 +168,10 @@ class AddEventMenu
     var time:Float = Conductor.instance.songPosition;
     var schema = SongEventRegistry.getEventSchema(eventKind);
 
-    if (schema == null) return new SongEventDataRaw(time, eventKind, {
-    });
+    if (schema == null)
+    {
+      return new SongEventDataRaw(time, eventKind, {});
+    }
 
     var value:haxe.DynamicAccess<Dynamic> = {};
     for (fieldName in schema.listAllFieldNames())

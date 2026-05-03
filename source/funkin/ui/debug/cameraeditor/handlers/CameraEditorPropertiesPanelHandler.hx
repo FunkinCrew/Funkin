@@ -45,6 +45,9 @@ class CameraEditorPropertiesPanelHandler
 
   /**
    * Register an editor container class for a given event kind.
+   *
+   * @param eventKind The event kind to register.
+   * @param containerClass The container class to register.
    */
   public static function registerContainer(eventKind:String, containerClass:Class<EditorContainer>):Void
   {
@@ -101,7 +104,7 @@ class CameraEditorPropertiesPanelHandler
     }
     else
     {
-      trace(' ERROR '.error() + "Could not locate properties container.");
+      trace(' ERROR '.error() + 'Could not locate properties container.');
     }
   }
 

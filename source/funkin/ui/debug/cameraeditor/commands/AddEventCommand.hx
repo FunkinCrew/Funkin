@@ -4,6 +4,9 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 import funkin.audio.FunkinSound;
 
+/**
+ * Represents a reversible action to add a new camera event to the timeline.
+ */
 @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class AddEventCommand implements CameraEditorCommand
 {
@@ -14,6 +17,10 @@ class AddEventCommand implements CameraEditorCommand
     this.event = event;
   }
 
+  /**
+   * Perform the action, adding a new camera event to the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function execute(state:CameraEditorState):Void
   {
     state.currentSongChartData.events.push(event);
@@ -32,6 +39,10 @@ class AddEventCommand implements CameraEditorCommand
     state.saved = false;
   }
 
+  /**
+   * Reverse the action, removing the camera event from the timeline.
+   * @param state The CameraEditorState to perform the command on.
+   */
   public function undo(state:CameraEditorState):Void
   {
     state.currentSongChartData.events.remove(event);
