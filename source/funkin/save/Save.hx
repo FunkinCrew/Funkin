@@ -723,17 +723,22 @@ class Save implements ConsoleClass
     return true;
     #end
 
-    // isBlank always catches if the string is null but the Haxe compiler's null safety is too stupid to figure that out
+    // isBlank always catches if the value is null but the Haxe compiler's null safety is too stupid to figure that out
     // so we need TWO null checks ugh...
+    difficultyList ??= [];
     variation ??= Constants.DEFAULT_VARIATION;
     if (variation.isBlank()) variation = Constants.DEFAULT_VARIATION;
 
     switch (variation)
     {
       case Constants.DEFAULT_VARIATION:
-        difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST;
+        if (difficultyList.isEmpty()) difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
       case 'erect':
-        difficultyList ??= Constants.DEFAULT_DIFFICULTY_LIST_ERECT;
+        if (difficultyList.isEmpty()) difficultyList = Constants.DEFAULT_DIFFICULTY_LIST_ERECT;
+      case 'pico':
+        if (difficultyList.isEmpty()) difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
+      default:
+        if (difficultyList.isEmpty()) difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
     }
 
     // Check each difficulty for a score.
