@@ -11,7 +11,6 @@ class BlueFade extends FlxShader
   {
     fadeAmt.value = [val];
     fadeVal = val;
-    // trace(fadeVal);
 
     return val;
   }
