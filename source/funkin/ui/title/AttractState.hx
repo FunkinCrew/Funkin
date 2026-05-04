@@ -23,6 +23,7 @@ import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
 import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths as NewPaths;
 
 /**
  * After 40 seconds of inactivity on the title screen,
@@ -39,9 +40,9 @@ class AttractState extends MusicBeatState
    * This used
    */
   static final VIDEO_PATHS:Array<AssetPath> = [
-    Paths.video('ui/title/attract/rift-collab-trailer'),
-    Paths.video('ui/title/attract/mobile-release'),
-    Paths.video('ui/title/attract/boyfriend-everywhere')
+    NewPaths.video('ui/title/attract/rift-collab-trailer'),
+    NewPaths.video('ui/title/attract/mobile-release'),
+    NewPaths.video('ui/title/attract/boyfriend-everywhere')
   ];
 
   /**
