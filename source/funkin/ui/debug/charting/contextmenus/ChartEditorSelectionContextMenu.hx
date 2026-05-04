@@ -21,6 +21,7 @@ import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 @:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/selection.xml"))
 class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 {
+  var contextmenuEdit:MenuItem;
   var contextmenuOffset:NumberStepper;
   var contextmenuUnit:DropDown;
   var contextmenuOffsetMove:MenuItem;
@@ -53,6 +54,11 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
   public function initialize():Void
   {
     // NOTE: Remember to use commands here to ensure undo/redo works properly
+    contextmenuEdit.onClick = function(_)
+    {
+      chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+    }
+
     contextmenuUnit.onChange = function(_)
     {
       // Why does the dropdown do this after I specifically set the value of the damn thing?
