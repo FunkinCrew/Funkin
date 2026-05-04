@@ -60,6 +60,9 @@ class DebugMenuSubState extends MusicBeatSubState
     #if FEATURE_CAMERA_EDITOR
     createItem("CAMERA EDITOR", openCameraEditor);
     #end
+    #if FEATURE_POLYMOD_MODS
+    createItem("MOD MENU", openModMenu);
+    #end
     #if FEATURE_ANIMATION_EDITOR
     createItem("ANIMATION EDITOR", openAnimationEditor);
     #end
@@ -139,6 +142,13 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     trace('Stage Editor');
     FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
+  }
+  #end
+
+  #if FEATURE_POLYMOD_MODS
+  function openModMenu():Void
+  {
+    FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
   }
   #end
 

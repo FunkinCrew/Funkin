@@ -68,7 +68,7 @@ class Main extends Sprite
 
     // Load mods to override assets.
     // TODO: Replace with loadEnabledMods() once the user can configure the mod list.
-    funkin.modding.PolymodHandler.loadAllMods();
+    // funkin.modding.PolymodHandler.loadAllMods(); (disable this for now, until mod menu is further along!)
 
     if (stage != null)
     {

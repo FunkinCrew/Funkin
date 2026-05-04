@@ -1,27 +1,28 @@
 package funkin.modding;
 
-import polymod.fs.ZipFileSystem;
+import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
 import funkin.data.event.SongEventRegistry;
-import funkin.data.story.level.LevelRegistry;
-import funkin.data.notestyle.NoteStyleRegistry;
-import funkin.play.notes.notekind.NoteKindManager;
-import funkin.data.song.SongRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
-import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.modding.module.ModuleHandler;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.play.notes.notekind.NoteKindManager;
 import funkin.save.Save;
 import funkin.util.FileUtil;
+import funkin.util.SortUtil;
 import funkin.util.macro.ClassMacro;
+import polymod.Polymod;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
-import polymod.Polymod;
+import polymod.fs.ZipFileSystem;
 
 /**
  * A class for interacting with Polymod, the atomic modding framework for Haxe.
@@ -49,9 +50,9 @@ class PolymodHandler
   public static final API_VERSION_RULE:String = '>=0.8.0 <0.10.0';
 
   /**
-   * Where relative to the executable that mods are located.
+   * Where relative to the game executable that mods are located.
    */
-  static final MOD_FOLDER:String =
+  public static final MOD_FOLDER:String =
     #if (REDIRECT_ASSETS_FOLDER && mac)
     '../../../../../../../example_mods'
     #elseif REDIRECT_ASSETS_FOLDER
@@ -60,7 +61,10 @@ class PolymodHandler
     'mods'
     #end;
 
-  static final CORE_FOLDER:Null<String> =
+  /**
+   * Where relative to the game executable that core assets are located.
+   */
+  public static final CORE_FOLDER:Null<String> =
     #if (REDIRECT_ASSETS_FOLDER && mac)
     '../../../../../../../assets'
     #elseif REDIRECT_ASSETS_FOLDER
@@ -100,7 +104,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using all mods)...');
-    loadModsByDir(getAllModDirs());
+    loadModsById(getAllModIds());
   }
 
   /**
@@ -113,7 +117,7 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsByDir(Save.instance.enabledModDirs.value);
+    loadModsById(Save.instance.enabledModIds.value);
   }
 
   /**
@@ -127,24 +131,15 @@ class PolymodHandler
     #end
     // We still need to configure the debug print calls etc.
     trace('Initializing Polymod (using no mods)...');
-    loadModsByDir([]);
+    loadModsById([]);
   }
 
   /**
    * Load all the mods with the directories they're in.
-   * @param dirs The ORDERED list of mod ids to load.
+   * @param modIds The ORDERED list of mod IDs to load.
    */
-  public static function loadModsByDir(dirs:Array<String>):Void
+  public static function loadModsById(modIds:Array<String>):Void
   {
-    if (dirs.length == 0)
-    {
-      trace('You attempted to load zero mods.');
-    }
-    else
-    {
-      trace('Attempting to load ${dirs.length} mods...');
-    }
-
     buildImports();
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
@@ -152,8 +147,8 @@ class PolymodHandler
     var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
       // Root directory for all mods.
       modRoot: MOD_FOLDER,
-      // The directories for one or more mods to load.
-      dirs: dirs,
+      // The IDs for one or more mods to load.
+      modIds: modIds,
       // Framework being used to load assets.
       framework: OPENFL,
       // The current version of our API.
@@ -190,11 +185,11 @@ class PolymodHandler
     {
       if (loadedModList.length == 0)
       {
-        trace('Mod loading complete. We loaded no mods / ${dirs.length} mods.');
+        trace('Mod loading complete. We loaded no mods / ${modIds.length} mods.');
       }
       else
       {
-        trace('Mod loading complete. We loaded ${loadedModList.length} / ${dirs.length} mods.');
+        trace('Mod loading complete. We loaded ${loadedModList.length} / ${modIds.length} mods.');
       }
     }
 
@@ -620,21 +615,46 @@ class PolymodHandler
 
   /**
    * Retrieve a list of metadata for all enabled mods.
-   * @return An array of mod metadata
+   * @return An array of mod metadata, in mod load order.
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modDirs:Array<String> = Save.instance.enabledModDirs.value;
+    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
     var modMetadata:Array<ModMetadata> = getAllMods();
-    var enabledMods:Array<ModMetadata> = [];
-    for (item in modMetadata)
+    var enabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
-      if (modDirs.indexOf(item.dirName) != -1)
-      {
-        enabledMods.push(item);
-      }
-    }
+      return enabledModIds.contains(item.id);
+    });
+
+    // Sort the mods by the order they are enabled in.
+    enabledMods.sort((a, b) ->
+    {
+      return enabledModIds.indexOf(a.id) - enabledModIds.indexOf(b.id);
+    });
+
     return enabledMods;
+  }
+
+  /**
+   * Retrieve a list of metadata for all disabled mods.
+   * @return An array of mod metadata, in alphabetical order by mod title.
+   */
+  public static function getDisabledMods():Array<ModMetadata>
+  {
+    var modMetadata:Array<ModMetadata> = getAllMods();
+    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
+    {
+      return !enabledModIds.contains(item.dirName);
+    });
+
+    // Sort the mods by alphabetical mod title.
+    disabledMods.sort((a, b) ->
+    {
+      return SortUtil.alphabetically(a.title, b.title);
+    });
+
+    return disabledMods;
   }
 
   /**

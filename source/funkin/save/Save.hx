@@ -274,7 +274,7 @@ class Save implements ConsoleClass implements ISerializable
   /// MODS
   ///
   @:saveProperty(data.mods.enabledMods)
-  public var enabledModDirs:SaveProperty<Array<String>>;
+  public var enabledModIds:SaveProperty<Array<String>>;
   ///
   /// CHART EDITOR OPTIONS
   ///
