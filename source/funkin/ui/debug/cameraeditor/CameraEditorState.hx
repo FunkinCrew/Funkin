@@ -489,11 +489,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var camRelative:FlxCamera;
 
   /**
-   * The text that pops up when copying events.
-   */
-  var txtCopyNotif:Null<FlxText> = null;
-
-  /**
    * The default zoom level of the stage's camera, used for calculating relative zoom levels for events like ZoomCamera. Updated whenever a new stage is built.
    */
   var defaultStageZoom:Float = 1.0;
@@ -676,15 +671,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     cameraRect.cameras = [camGame];
     // add(vCamDebug);
     vCamDebug.zIndex = cameraRect.zIndex + 1;
-
-    // Little text that shows up when you copy something.
-    txtCopyNotif = new FlxText(0, 0, 0, '', 24);
-    txtCopyNotif.setBorderStyle(OUTLINE, 0xFF074809, 1);
-    txtCopyNotif.color = 0xFF52FF77;
-    txtCopyNotif.zIndex = 120;
-    txtCopyNotif.visible = false;
-    txtCopyNotif.cameras = [camHUD];
-    add(txtCopyNotif);
 
     mainView.registerEvent(CameraViewportEvent.ZOOM, onViewportZoom);
     mainView.registerEvent(CameraViewportEvent.PAN_START, onViewportPanStart);
@@ -2207,29 +2193,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
-  function showCopyNotification(copiedEvents:Int):Void
-  {
-    if (copiedEvents <= 0 || txtCopyNotif == null) return;
-
-    var copiedString:String = '${copiedEvents} event';
-    if (copiedEvents > 1) copiedString += 's';
-
-    FlxTween.globalManager.cancelTweensOf(txtCopyNotif);
-
-    txtCopyNotif.visible = true;
-    txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
-    txtCopyNotif.x = FlxG.mouse.x - (txtCopyNotif.width / 2);
-    txtCopyNotif.y = FlxG.height / 2;
-    FlxTween.tween(txtCopyNotif, {y: txtCopyNotif.y - 32}, 0.5, {
-      type: ONESHOT,
-      ease: FlxEase.quadOut,
-      onComplete: function(_)
-      {
-        if (txtCopyNotif != null) txtCopyNotif.visible = false;
-      }
-    });
-  }
-
   function onScreenKeyDown(event:KeyboardEvent):Void
   {
     if (isHaxeUIFocused) return;
@@ -2297,7 +2260,9 @@ class CameraEditorState extends UIState implements ConsoleClass
           events: selectedSongEvents.copy()
         });
         hasClipboardEvent = true;
-        showCopyNotification(selectedSongEvents.length);
+
+        var plural = selectedSongEvents.length != 1 ? 'events' : 'event';
+        CameraEditorNotificationHandler.success(this, 'Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
