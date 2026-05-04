@@ -7,8 +7,6 @@ import flixel.math.FlxAngle;
 import flixel.graphics.frames.FlxFrame;
 import openfl.display.BitmapData;
 
-import Math;
-
 /**
  * A shader that aims to *mostly recreate how Adobe Animate/Flash handles drop shadows, but its main use here is for rim lighting.
  *
@@ -28,7 +26,7 @@ class DropShadowShader extends FlxShader
   /**
    * The angle of the drop shadow.
    *
-   * for reference, depending on the angle, the affected side will be:
+   * For reference, depending on the angle, the affected side will be:
    * 0 = RIGHT
    * 90 = UP
    * 180 = LEFT
@@ -36,6 +34,10 @@ class DropShadowShader extends FlxShader
    */
   public var angle(default, set):Float;
 
+  /**
+   * An offset for the angle.
+   * Used for rotated frames.
+   */
   public var angleOffset(default, set):Float;
 
   /**
@@ -58,13 +60,6 @@ class DropShadowShader extends FlxShader
   public var threshold(default, set):Float;
 
   /**
-   * The amount of antialias samples per-pixel,
-   * used to smooth out any hard edges the brightness thresholding creates.
-   * Defaults to 2, and 0 will remove any smoothing.
-   */
-  public var antialiasAmt(default, set):Float;
-
-  /**
    * Whether the shader should try and use the alternate mask.
    * False by default.
    */
@@ -72,9 +67,8 @@ class DropShadowShader extends FlxShader
 
   /**
    * The image for the alternate mask.
-   * At the moment, it uses the blue channel to specify what is or isnt going to use the alternate threshold.
-   * (its kinda sloppy rn i need to make it work a little nicer)
-   * TODO: maybe have a sort of "threshold intensity texture" as well? where higher/lower values indicate threshold strength..
+   * At the moment, it uses the blue channel to specify what is or isn't going to use the alternate threshold.
+   * TODO: maybe have a sort of "threshold intensity texture" as well? where higher/lower values indicate threshold strength.
    */
   public var altMaskImage(default, set):BitmapData;
 
@@ -121,9 +115,9 @@ class DropShadowShader extends FlxShader
     var wB = 0.114;
 
     return [
-      wR + (1 - wR)*c - wR*s,   wG - wG*c - wG*s,          wB - wB*c + (1 - wB)*s,
-      wR - wR*c + 0.143*s,      wG + (1 - wG)*c + 0.140*s, wB - wB*c - 0.283*s,
-      wR - wR*c - (1 - wR)*s,   wG - wG*c + wG*s,          wB + (1 - wB)*c + wB*s
+      wR + (1 - wR) * c - wR * s,          wG - wG * c - wG * s, wB - wB * c + (1 - wB) * s,
+         wR - wR * c + 0.143 * s, wG + (1 - wG) * c + 0.140 * s,    wB - wB * c - 0.283 * s,
+      wR - wR * c - (1 - wR) * s,          wG - wG * c + wG * s, wB + (1 - wB) * c + wB * s
     ];
   }
 
@@ -136,13 +130,13 @@ class DropShadowShader extends FlxShader
     var inv = 1.0 - s;
 
     return [
-        lr*inv + s, lg*inv,     lb*inv,
-        lr*inv,     lg*inv + s, lb*inv,
-        lr*inv,     lg*inv,     lb*inv + s
+      lr * inv + s,     lg * inv,   lb * inv,
+          lr * inv, lg * inv + s,   lb * inv,
+          lr * inv,     lg * inv, lb * inv + s
     ];
   }
 
-  function updateAng()
+  function updateAngle():Void
   {
     var newAngle = (angle + angleOffset) * FlxAngle.TO_RAD;
     var cos = Math.cos(newAngle);
@@ -179,8 +173,7 @@ class DropShadowShader extends FlxShader
   {
     baseSaturation = val;
 
-    if (val > 0)
-      val *= 3;
+    if (val > 0) val *= 3;
     val = 1 + (val / 100);
 
     saturationMatrix.value = makeSaturationMatrix(val);
@@ -202,10 +195,11 @@ class DropShadowShader extends FlxShader
     baseContrast = val;
 
     val = 1 + (val / 100);
-    if(val > 1.0){
-		  val = (((0.00852259 * Math.pow(e, 4.76454 * (val - 1.0))) * 1.01) - 0.0086078159) * 10.0; //Just roll with it...
-		  val += 1.0;
-		}
+    if (val > 1.0)
+    {
+      val = (((0.00852259 * Math.pow(e, 4.76454 * (val - 1.0))) * 1.01) - 0.0086078159) * 10.0; // Just roll with it...
+      val += 1.0;
+    }
 
     contrast.value = [val];
     return baseContrast;
@@ -215,13 +209,6 @@ class DropShadowShader extends FlxShader
   {
     threshold = val;
     thr.value = [val];
-    return val;
-  }
-
-  function set_antialiasAmt(val:Float):Float
-  {
-    antialiasAmt = val;
-    AA_STAGES.value = [val];
     return val;
   }
 
@@ -237,7 +224,8 @@ class DropShadowShader extends FlxShader
   {
     angle = val;
 
-    updateAng();
+    updateAngle();
+
     return val;
   }
 
@@ -245,7 +233,8 @@ class DropShadowShader extends FlxShader
   {
     angleOffset = val;
 
-    updateAng();
+    updateAngle();
+
     return val;
   }
 
@@ -363,9 +352,6 @@ class DropShadowShader extends FlxShader
       uniform float str;
       uniform float thr;
 
-      // need to account for rotated frames... oops
-      uniform float angOffset;
-
       uniform float angCos;
       uniform float angSin;
 
@@ -379,8 +365,6 @@ class DropShadowShader extends FlxShader
       uniform float contrast;
       uniform mat3 saturationMatrix;
       uniform float brightness;
-
-      uniform float AA_STAGES; // unused!
 
       const vec3 lumaValue = vec3(0.2126, 0.7152, 0.0722);
 
@@ -412,9 +396,6 @@ class DropShadowShader extends FlxShader
       // Return value range (0.0, 2.0)
       float lwidth_manual(float center, vec2 uv, vec2 px)
       {
-        if (AA_STAGES <= 1.0)
-          return 0.0;
-
         vec3 p2x1 = getTexRGBA(uv + vec2( 1.0,  0.0) * px).rgb;
         vec3 p1x2 = getTexRGBA(uv + vec2( 0.0,  1.0) * px).rgb;
         vec3 p2x2 = getTexRGBA(uv + vec2( 1.0,  1.0) * px).rgb;
@@ -457,12 +438,12 @@ class DropShadowShader extends FlxShader
       {
         vec4 color4 = texture2D(bitmap, uv);
 
-      #ifdef HAS_DERIVATIVES
-        // Increase the pixel distance if the screen is smaller than the sprite!
-        vec2 px = max(ratio, fwidth(uv));
-      #else
-        vec2 px = ratio;
-      #endif
+        #ifdef HAS_DERIVATIVES
+          // Increase the pixel distance if the screen is smaller than the sprite!
+          vec2 px = max(ratio, fwidth(uv));
+        #else
+          vec2 px = ratio;
+        #endif
 
         float color3_light = getLumaRGB(color4.rgb);
 
@@ -505,7 +486,6 @@ class DropShadowShader extends FlxShader
       {
         gl_FragColor = createDropShadowEx(openfl_TextureCoordv, 1.0 / openfl_TextureSize.xy, openfl_TextureSize.xy);
       }
-
     ')
   public function new()
   {
@@ -522,10 +502,6 @@ class DropShadowShader extends FlxShader
     baseBrightness = 0;
     baseContrast = 0;
 
-    antialiasAmt = 2;
-
     useAltMask = false;
-
-    angOffset.value = [0];
   }
 }
