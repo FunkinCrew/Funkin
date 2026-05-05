@@ -392,8 +392,16 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   @:bind(menubarItemRelativeView.selected)
-  var isCameraRelative:Bool = false;
+  var isCameraRelative(default, set):Bool = false;
   var relativeZoom:Float = 1.0;
+
+  function set_isCameraRelative(val:Bool):Bool
+  {
+    isCameraRelative = val;
+    onResetCameraScroll(null);
+
+    return val;
+  }
 
   /**
    * Whether the camera preview should display extended widescreen bounds.
@@ -1042,8 +1050,15 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (_shouldResetCameraPosition)
     {
       _shouldResetCameraPosition = false;
-      onResetCameraZoom(null);
-      onResetCameraScroll(null);
+      if (menubarItemFitCameraToViewport.selected)
+      {
+        applyCameraViewportScale();
+      }
+      else
+      {
+        onResetCameraZoom(null);
+        onResetCameraScroll(null);
+      }
     }
 
     handleKeybinds(elapsed);
@@ -1165,11 +1180,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     currentStage.resetStage();
     currentStage.refresh();
 
-    goToPoint.x = 0;
-    goToPoint.y = 0;
+    if (!menubarItemFitCameraToViewport.selected)
+    {
+      goToPoint.x = 0;
+      goToPoint.y = 0;
 
-    FlxG.camera.scroll.x = 0;
-    FlxG.camera.scroll.y = 0;
+      FlxG.camera.scroll.x = 0;
+      FlxG.camera.scroll.y = 0;
+    }
 
     trace('Built stage: ' + stageID);
     add(cameraRect);
@@ -1500,6 +1518,40 @@ class CameraEditorState extends UIState implements ConsoleClass
     return false;
   }
 
+  @:bind(menubarItemFitCameraToViewport, UIEvent.CHANGE)
+  function onFitCameraToViewportToggle(_:UIEvent):Void
+  {
+    applyCameraViewportScale();
+    onResetCameraScroll(null);
+  }
+
+  function applyCameraViewportScale():Void
+  {
+    if (!menubarItemFitCameraToViewport.selected)
+    {
+      camRelative.flashSprite.scaleX = camRelative.flashSprite.scaleY = 1.0;
+      camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = 1.0;
+      camRelative.y = 0;
+      camGame.y = 0;
+
+      return;
+    }
+    else
+    {
+      var timelineHeight:Float = (timeline.toolbar.height / 2) + timeline.viewport.height;
+      if (timelineHeight <= 0) return;
+
+      var freeHeight:Float = FlxG.height - menubar.height - timelineHeight;
+      var offset:Float = (menubar.height - timelineHeight) / 2;
+      var scale:Float = freeHeight / FlxG.height;
+
+      camRelative.flashSprite.scaleX = camRelative.flashSprite.scaleY = scale;
+      camGame.flashSprite.scaleX = camGame.flashSprite.scaleY = scale;
+      camRelative.y = offset;
+      camGame.y = offset;
+    }
+  }
+
   /**
    * Loads all the events into the timeline so it can display and edit them.
    */
@@ -1534,6 +1586,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
+
+    timeline.viewport.registerEvent(UIEvent.RESIZE, function(_:UIEvent):Void
+    {
+      applyCameraViewportScale();
+    });
+
 
     timeline.toolbar.btnTogglePlayback.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
@@ -2372,6 +2430,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function computeViewportCenterOffset():FlxPoint
   {
+    // The fit camera to viewport logic does something similar to this just a bit more robust to what it actually aims for
+    // So there's no need to have both together
+    if (menubarItemFitCameraToViewport.selected) return FlxPoint.get(0, 0);
+
     if (mainView == null || mainView.width <= 0 || mainView.height <= 0) return FlxPoint.get(0, 0);
 
     var dx:Float = (FlxG.width / 2) - (mainView.screenLeft + mainView.width / 2);
