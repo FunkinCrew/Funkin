@@ -3,10 +3,13 @@ package funkin.ui.modmenu;
 import funkin.input.Cursor;
 import funkin.util.FileUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.title.TitleState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.PolymodHandler;
+import polymod.Polymod;
 import polymod.Polymod.ModMetadata;
+import polymod.Polymod.ModDependencies;
 import funkin.save.Save;
 import funkin.ui.MusicBeatState;
 import flixel.FlxG;
@@ -16,9 +19,11 @@ import flixel.text.FlxText;
 /**
  * The user interface for the mod menu.
  */
-@:nullSafety
 class ModMenuState extends MusicBeatState
 {
+  static inline final BASE_GAME_MOD_ID:String = '__base_game__';
+  static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/mod-menu-base-icon';
+
   var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
   var buttonBackToMenu:FunkinSprite = new FunkinSprite();
@@ -43,6 +48,8 @@ class ModMenuState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+
+    enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
     // Show a simple background.
     var menuBG = FunkinSprite.create('ui/main-menu/menu-desat');
@@ -100,6 +107,9 @@ class ModMenuState extends MusicBeatState
     buildDisabledModList();
     buildEnabledModList();
 
+    enabledModItems.repositionItems();
+    disabledModItems.repositionItems();
+
     applyInitialSelection();
 
     Cursor.show();
@@ -133,20 +143,25 @@ class ModMenuState extends MusicBeatState
       else if (buttonOpenFolder.overlapsPoint(target))
       {
         openModsFolder();
+      } else if (buttonDone.overlapsPoint(target))
+      {
+        applyModlist();
       }
     }
   }
 
   function handleKeyboard():Void
   {
+    var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.UI_UP_P)
     {
       switch (selection)
       {
         case DisabledModList:
-          var shouldDeselect:Bool = disabledModItems.moveUp();
+          disabledModItems.moveUp();
         case EnabledModList:
-          var shouldDeselect:Bool = enabledModItems.moveUp();
+          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
+          else enabledModItems.moveUp();
         case BackToMenu:
           // Don't do anything
         case OpenModsFolder:
@@ -161,9 +176,10 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          var shouldDeselect:Bool = disabledModItems.moveDown();
+          disabledModItems.moveDown();
         case EnabledModList:
-          var shouldDeselect:Bool = enabledModItems.moveDown();
+          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
+          else enabledModItems.moveDown();
         case BackToMenu:
           selection = DisabledModList;
         case OpenModsFolder:
@@ -180,7 +196,12 @@ class ModMenuState extends MusicBeatState
         case DisabledModList:
           // Don't do anything
         case EnabledModList:
-          enabledModItems.moveLeft();
+          if (disabledModItems.children.length > 0)
+          {
+            enabledModItems.deselect();
+            disabledModItems.selectFirstItem();
+            selection = DisabledModList;
+          }
         case BackToMenu:
           // Don't do anything
         case OpenModsFolder:
@@ -195,7 +216,12 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          disabledModItems.moveRight();
+          if (enabledModItems.children.length > 0)
+          {
+            disabledModItems.deselect();
+            enabledModItems.selectFirstItem();
+            selection = EnabledModList;
+          }
         case EnabledModList:
           // Don't do anything
         case BackToMenu:
@@ -212,9 +238,21 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          disabledModItems.onAccept();
+          enableMod(disabledModItems.selectedModItem);
+          if (disabledModItems.children.length == 0)
+          {
+            enabledModItems.selectFirstItem();
+            selection = EnabledModList;
+          }
+          else disabledModItems.selectFirstItem();
         case EnabledModList:
-          enabledModItems.onAccept();
+          disableMod(enabledModItems.selectedModItem);
+          if (enabledModItems.children.length == 0)
+          {
+            disabledModItems.selectFirstItem();
+            selection = DisabledModList;
+          }
+          else enabledModItems.selectFirstItem();
         case BackToMenu:
           backToMainMenu();
         case OpenModsFolder:
@@ -234,6 +272,7 @@ class ModMenuState extends MusicBeatState
 
     for (mod in disabledMods)
     {
+      if (mod.id == BASE_GAME_MOD_ID) continue;
       disabledModItems.addMod(mod);
     }
 
@@ -249,8 +288,16 @@ class ModMenuState extends MusicBeatState
 
     for (mod in enabledMods)
     {
+      if (mod.id == BASE_GAME_MOD_ID) continue;
       enabledModItems.addMod(mod);
     }
+
+    var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Core game content.');
+    baseGameItem.locked = true;
+    // Add base game item to the front (index 0) explicitly
+    enabledModItems.add(baseGameItem);
+    enabledModItems.children.remove(baseGameItem);
+    enabledModItems.children.insert(0, baseGameItem);
 
     add(enabledModItems);
   }
@@ -260,7 +307,249 @@ class ModMenuState extends MusicBeatState
     // Backup the user's save data before switching mods.
     var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
     trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
+
+    // set enabled mods
+    var enabledModIds:Array<String> = [];
+    for (modItem in enabledModItems.children)
+    {
+      var modId = modItem.getModId();
+      if (modId == BASE_GAME_MOD_ID) continue;
+      enabledModIds.push(modId);
+    }
+
+    PolymodHandler.disableAllMods();
+    for (modId in enabledModIds)
+    {
+      PolymodHandler.enableMod(modId);
+    }
+
+    PolymodHandler.forceReloadAssets();
+    FlxG.switchState(() -> new TitleState());
   }
+
+  function enableMod(item:Null<ModMenuItem>):Void
+  {
+    if (item == null) return;
+
+    if (!disabledModItems.children.contains(item)) return;
+
+    if (item.getModId() == BASE_GAME_MOD_ID) return;
+
+    item.selected = false;
+
+    var dependenciesToEnable:Array<String> = checkDependencies(item.mod);
+    trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
+
+    for (dependencyId in dependenciesToEnable)
+    {
+      var dependencyItem = disabledModItems.children.find((item) -> item.getModId() == dependencyId);
+      if (dependencyItem != null)
+      {
+        enableMod(dependencyItem);
+      }
+      else
+      {
+        trace('Error: Dependency ${dependencyId} for mod ${item.getModTitle()} not found!');
+        return;
+      }
+    }
+
+    // check for optional dependencies that depend on this mod, if they exist then add this mod *before* them.
+    for (enabledMod in enabledModItems.children)
+    {
+      if (enabledMod.mod == null) continue;
+
+      var optionalDependencies:ModDependencies = enabledMod.getOptionalDependencies();
+      if (optionalDependencies != null)
+      {
+        var b:Bool = false;
+        for (optionalDependencyId => version in optionalDependencies)
+        {
+          if (optionalDependencyId == item.getModId() && version.isSatisfiedBy(item.getModVersion()))
+          {
+            trace('Mod ${enabledMod.getModTitle()} has an optional dependency on ${item.getModTitle()}, so enabling ${item.getModTitle()} before ${enabledMod.getModTitle()}');
+            // Insert the mod before the mod with the optional dependency, so that the optional dependency is still satisfied.
+            var modList:Array<ModMenuItem> = enabledModItems.children;
+            var index = modList.indexOf(enabledMod);
+            modList.insert(index, item);
+            b = true;
+            break;
+          }
+        }
+
+        if (b) break;
+      }
+    }
+
+    disabledModItems.remove(item);
+    enabledModItems.addModRaw(item);
+
+    disabledModItems.repositionItems();
+    enabledModItems.repositionItems();
+  }
+
+  function disableMod(item:Null<ModMenuItem>):Void
+  {
+    if (item == null) return;
+
+    if (!enabledModItems.children.contains(item)) return;
+    if (enabledModItems.isPinnedItem(item) || item.locked) return;
+
+    item.selected = false;
+
+    // Disable any mods that depend on this mod as well.
+    var brokenDependencies = validateDependencies(item.mod);
+    trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
+    for (dependencyTitle in brokenDependencies)
+    {
+      var dependencyItem = enabledModItems.children.find((item) -> item.getModTitle() == dependencyTitle);
+      if (dependencyItem != null)
+      {
+        trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
+        disableMod(dependencyItem);
+      }
+    }
+
+    enabledModItems.remove(item);
+    disabledModItems.addModRaw(item);
+
+    enabledModItems.repositionItems();
+    disabledModItems.repositionItems();
+  }
+
+  function orderMod(modItem:Null<ModMenuItem>, moveUp:Bool):Void
+  {
+    if (modItem == null) return;
+
+    if (enabledModItems.isPinnedItem(modItem)) return;
+
+    var modList:Array<ModMenuItem> = enabledModItems.children;
+    var index = modList.indexOf(modItem);
+    if (index == -1) return;
+
+    var pinnedItem = enabledModItems.getPinnedTopItem();
+    var pinnedIndex = pinnedItem != null ? modList.indexOf(pinnedItem) : -1;
+    var minMovableIndex = pinnedIndex != -1 ? pinnedIndex + 1 : 0;
+
+    // Can't move items if they're somehow before the pinned item or there's no space to move
+    if (index < minMovableIndex) return;
+    if (minMovableIndex >= modList.length) return;
+
+    var newIndex = moveUp ? index + 1 : index - 1;
+
+    // Prevent wrapping across pinned item boundary; just clamp or return
+    if (newIndex < minMovableIndex || newIndex >= modList.length)
+    {
+      return; // Don't allow moves that would wrap around or go out of bounds
+    }
+
+    trace('Moving mod ${modItem.getModTitle()} from index $index to $newIndex');
+
+    var otherModItem = modList[newIndex];
+
+    var shouldRebuildDepends:Bool = false;
+
+    for (mod => version in modItem.getDependencies())
+    {
+      if (otherModItem.getModId() == mod)
+      {
+        shouldRebuildDepends = true;
+        break;
+      }
+    }
+
+    for (mod => version in otherModItem.getDependencies())
+    {
+      if (modItem.getModId() == mod)
+      {
+        shouldRebuildDepends = true;
+        break;
+      }
+    }
+
+    // Optional dependency check: if the other mod is an optional dependency (of our mod), if so then rebuild.
+    if (!moveUp)
+    {
+      var optionalDependencies:ModDependencies = modItem.getOptionalDependencies();
+      for (mod => version in optionalDependencies)
+      {
+        if (otherModItem.getModId() == mod)
+        {
+          shouldRebuildDepends = true;
+          break;
+        }
+      }
+    }
+
+    modList.splice(index, 1);
+    modList.insert(newIndex, modItem);
+
+    if (shouldRebuildDepends)
+    {
+      trace('Mod ${modItem.getModTitle()} depends on ${otherModItem.getModTitle()}, so rebuilding enabled mod list to update dependencies');
+
+      var modMetadataList:Array<ModMetadata> = [];
+      for (modItem in modList)
+      {
+        if (enabledModItems.isPinnedItem(modItem)) continue;
+        modMetadataList.push(modItem.mod);
+      }
+      var selectedId:Null<String> = null;
+      if (enabledModItems.selectedModItem != null) selectedId = enabledModItems.selectedModItem.getModId();
+      modMetadataList = Polymod.sortModsByDependencies(modMetadataList);
+      enabledModItems.removeAll();
+      var i = 0;
+      for (modMetadata in modMetadataList)
+      {
+        enabledModItems.addMod(modMetadata);
+        if (modMetadata.id == selectedId) modItem = enabledModItems.children[i];
+        i++;
+      }
+    }
+
+    enabledModItems.deselectAll();
+    enabledModItems.selectModItem(modItem);
+    enabledModItems.repositionItems(false);
+  }
+
+  // return an array of mod IDs that depend on the given mod that are currently enabled, which would be broken by disabling this mod
+  function validateDependencies(mod:ModMetadata):Array<String>
+  {
+    var brokenDependencies:Array<String> = [];
+
+    for (enabledModItem in enabledModItems.children)
+    {
+      var enabledMod = enabledModItem.mod;
+      if (enabledMod == null) continue;
+
+      var dependencies:ModDependencies = enabledMod.dependencies;
+      for (dependencyId => version in dependencies)
+      {
+        if (dependencyId == mod.id) brokenDependencies.push(enabledMod.title);
+      }
+    }
+
+    return brokenDependencies;
+  }
+
+  // return an array of mod IDs that the given mod depends on that are currently disabled.
+  function checkDependencies(mod:ModMetadata):Array<String>
+  {
+    var toEnable:Array<String> = [];
+
+    var dependencies:ModDependencies = mod.dependencies;
+    for (dependencyId => version in dependencies)
+    {
+      if (!toEnable.contains(dependencyId) &&
+        !enabledModItems.children.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion())))
+      {
+        toEnable.push(dependencyId);
+      }
+    }
+
+    return toEnable;
+  }
+
 
   /**
    * Open the folder where the user's mods are stored.

@@ -1,16 +1,12 @@
 package funkin.ui.modmenu;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
-import funkin.group.FunkinGroup;
-import funkin.modding.PolymodHandler;
-import funkin.save.Save;
-import funkin.ui.MusicBeatState;
 import polymod.Polymod.ModMetadata;
+import polymod.Polymod.ModDependencies;
+import funkin.Paths;
 
 /**
  * Represents an installed mod visually in the mod menu.
@@ -22,9 +18,18 @@ class ModMenuItem extends FunkinSpriteGroup
   static final DESC_WIDTH:Int = 420 - 96 - 8;
 
   /**
+   * Whether this mod item is immutable in list operations.
+   */
+  public var locked:Bool = false;
+
+  /**
    * The metadata for the mod this item represents.
    */
-  final mod:ModMetadata;
+  public final mod:Null<ModMetadata>;
+
+  var fallbackModId:String;
+  var fallbackTitle:String;
+  var fallbackDescription:String;
 
   /**
    * The icon for the mod's thumbnail.
@@ -54,7 +59,6 @@ class ModMenuItem extends FunkinSpriteGroup
   function set_selected(value:Bool):Bool
   {
     this.selected = value;
-    trace('Mod selected: ${mod.title}');
     updateBackgroundColor();
     return selected;
   }
@@ -71,11 +75,19 @@ class ModMenuItem extends FunkinSpriteGroup
     return enabled;
   }
 
-  public function new(mod:ModMetadata)
+  public function new(
+      mod:Null<ModMetadata>,
+      iconAssetPath:Null<String> = null,
+      fallbackModId:String = '__unknown_mod__',
+      fallbackTitle:String = 'Unknown Mod',
+      fallbackDescription:String = '')
   {
     super();
 
     this.mod = mod;
+    this.fallbackModId = fallbackModId;
+    this.fallbackTitle = fallbackTitle;
+    this.fallbackDescription = fallbackDescription;
 
     background = new FunkinSprite(0, 0).makeSolidColor(ITEM_WIDTH, ICON_HEIGHT, FlxColor.WHITE);
     background.localX = 0;
@@ -83,20 +95,36 @@ class ModMenuItem extends FunkinSpriteGroup
     background.color = 0xFF333333;
     add(background);
 
-    loadModIcon(mod.icon);
+    modIcon = new FunkinSprite(0, 0);
+    if (iconAssetPath != null)
+    {
+      modIcon.loadGraphic(Paths.image(iconAssetPath));
+      add(modIcon);
 
-    var modTitle:FlxText = new FlxText(0, 0, DESC_WIDTH);
-    modTitle.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE);
-    add(modTitle);
-    modTitle.localX = ICON_HEIGHT + 8;
-    modTitle.text = '${mod.title}';
+      modIcon.scrollFactor.set();
+      modIcon.antialiasing = true;
+      modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+      modIcon.localScale.x = modIcon.scale.x;
+      modIcon.localScale.y = modIcon.scale.y;
+      modIcon.updateHitbox();
+    }
+    else if (mod != null)
+    {
+      loadModIcon(mod.icon);
+    }
 
-    var modDesc:FlxText = new FlxText(0, 0, DESC_WIDTH);
-    modDesc.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE);
-    add(modDesc);
-    modDesc.localX = ICON_HEIGHT + 8;
-    modDesc.localY = modTitle.localY + modTitle.height + 4;
-    modDesc.text = '${mod.description}';
+    titleText = new FlxText(0, 0, DESC_WIDTH);
+    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE);
+    titleText.localX = ICON_HEIGHT + 8;
+    titleText.text = getModTitle();
+    add(titleText);
+
+    descriptionText = new FlxText(0, 0, DESC_WIDTH);
+    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE);
+    descriptionText.localX = ICON_HEIGHT + 8;
+    descriptionText.localY = titleText.localY + titleText.height + 4;
+    descriptionText.text = getModDescription();
+    add(descriptionText);
   }
 
   function updateBackgroundColor():Void
@@ -124,7 +152,6 @@ class ModMenuItem extends FunkinSpriteGroup
       // Convert the bytes into bitmap data.
       var bitmapData = openfl.display.BitmapData.fromBytes(openFlBytes);
       // Tie the bitmap data to a sprite.
-      modIcon = new FunkinSprite(0, 0);
       modIcon.loadGraphic(bitmapData);
       add(modIcon);
 
@@ -144,8 +171,38 @@ class ModMenuItem extends FunkinSpriteGroup
     });
   }
 
+  public function getModId():String
+  {
+    return mod != null ? mod.id : fallbackModId;
+  }
+
+  public function getModTitle():String
+  {
+    return mod != null ? mod.title : fallbackTitle;
+  }
+
+  public function getModDescription():String
+  {
+    return mod != null ? mod.description : fallbackDescription;
+  }
+
+  public function getDependencies():ModDependencies
+  {
+    return mod != null ? mod.dependencies : cast [];
+  }
+
+  public function getOptionalDependencies():ModDependencies
+  {
+    return mod != null ? mod.optionalDependencies : cast [];
+  }
+
+  public function getModVersion():Dynamic
+  {
+    return mod != null ? mod.modVersion : null;
+  }
+
   override public function toString():String
   {
-    return 'ModMenuItem(${mod.id})';
+    return 'ModMenuItem(${getModId()})';
   }
 }

@@ -614,6 +614,42 @@ class PolymodHandler
   }
 
   /**
+   * Enable a mod by its ID.
+   * @param modId The ID of the mod to enable, which can be found in the mod's metadata.
+   **/
+  public static function enableMod(modId:String):Void
+  {
+    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    if (!enabledModIds.contains(modId))
+    {
+      enabledModIds.push(modId);
+      Save.instance.enabledModIds.value = enabledModIds;
+      Save.system.flush();
+    }
+  }
+
+  /**
+   * Disable a mod by its ID.
+   * @param modId The ID of the mod to disable, which can be found in the mod's metadata.
+   **/
+  public static function disableMod(modId:String):Void
+  {
+    var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
+    if (enabledModIds.contains(modId))
+    {
+      enabledModIds.remove(modId);
+      Save.instance.enabledModIds.value = enabledModIds;
+      Save.system.flush();
+    }
+  }
+
+  public static function disableAllMods():Void
+  {
+    Save.instance.enabledModIds.value = [];
+    Save.system.flush();
+  }
+
+  /**
    * Retrieve a list of metadata for all enabled mods.
    * @return An array of mod metadata, in mod load order.
    */
@@ -645,7 +681,7 @@ class PolymodHandler
     var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
     var disabledMods:Array<ModMetadata> = modMetadata.filter((item) ->
     {
-      return !enabledModIds.contains(item.dirName);
+      return !enabledModIds.contains(item.id);
     });
 
     // Sort the mods by alphabetical mod title.
@@ -673,8 +709,7 @@ class PolymodHandler
 
     // Forcibly reload Polymod so it finds any new files.
     // This will also register all scripts.
-    // TODO: Replace this with loadEnabledMods().
-    funkin.modding.PolymodHandler.loadAllMods();
+    funkin.modding.PolymodHandler.loadEnabledMods();
 
     // Reload everything that is cached.
     // Currently this freezes the game for a second but I guess that's tolerable?

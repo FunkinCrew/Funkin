@@ -1,17 +1,17 @@
 package funkin.ui.modmenu;
 
 import funkin.group.FunkinGroup;
-import funkin.group.FunkinGroup.FunkinSpriteGroup;
-import funkin.modding.PolymodHandler;
 import polymod.Polymod.ModMetadata;
 
 class ModMenuItemList extends FunkinGroup<ModMenuItem>
 {
   public var selectedModItem:Null<ModMenuItem> = null;
   public var selectedItemIndex(get, never):Int;
+  public var pinnedTopModId:Null<String> = null;
 
   function get_selectedItemIndex():Int
   {
+    if (selectedModItem == null) return -1;
     return this.children.indexOf(selectedModItem);
   }
 
@@ -20,21 +20,90 @@ class ModMenuItemList extends FunkinGroup<ModMenuItem>
     super();
   }
 
+  public function removeAll():Void
+  {
+    var pinnedItem = getPinnedTopItem();
+
+    for (modMenuItem in this.children)
+    {
+      if (modMenuItem == pinnedItem) continue;
+      this.remove(modMenuItem);
+    }
+
+    if (pinnedItem != null)
+    {
+      this.children = [pinnedItem];
+      pinnedItem.localX = 0;
+      pinnedItem.localY = getModItemYPos(0);
+      selectedModItem = pinnedItem;
+      pinnedItem.selected = true;
+    }
+    else
+    {
+      this.children = [];
+      selectedModItem = null;
+    }
+  }
+
+  public function deselectAll():Void
+  {
+    for (modMenuItem in this.children)
+    {
+      modMenuItem.selected = false;
+    }
+    selectedModItem = null;
+  }
+
+  public function removeMod(item:ModMenuItem):Void
+  {
+    if (!this.children.contains(item)) return;
+    if (isPinnedItem(item)) return;
+
+    this.remove(item);
+    repositionItems();
+  }
+
+  public function addModRaw(item:ModMenuItem):Void
+  {
+    // Simply append to end; pinned item will stay at top via orderMod constraints
+    this.add(item);
+
+    var index = this.children.indexOf(item);
+    item.localX = 0;
+    item.localY = getModItemYPos(index);
+  }
+
   public function addMod(mod:ModMetadata):Void
   {
-    trace('- ${mod.title} [${mod.id}]: ${mod.description}');
-
     var modMenuItem = new ModMenuItem(mod);
-    this.add(modMenuItem);
+    addModRaw(modMenuItem);
 
-    var index = this.children.indexOf(modMenuItem);
-    modMenuItem.localX = 0;
-    modMenuItem.localY = getModItemYPos(index);
+    if (selectedModItem == null)
+    {
+      selectedModItem = modMenuItem;
+      selectedModItem.selected = true;
+    }
+  }
+
+  public function getPinnedTopItem():Null<ModMenuItem>
+  {
+    if (pinnedTopModId == null) return null;
+
+    return this.children.find((item) -> item.getModId() == pinnedTopModId);
+  }
+
+  public function isPinnedItem(item:Null<ModMenuItem>):Bool
+  {
+    if (item == null) return false;
+    if (pinnedTopModId == null) return false;
+
+    return item.getModId() == pinnedTopModId;
   }
 
   public function selectFirstItem():Void
   {
-    selectModItem(this.children[0]);
+    if (this.children.length == 0) return;
+    selectModItem(this.children[this.children.length - 1]);
   }
 
   public function deselect():Void
@@ -42,57 +111,37 @@ class ModMenuItemList extends FunkinGroup<ModMenuItem>
     selectModItem(null);
   }
 
-  /**
-   * If there is an item above the current selection, select that.
-   * Otherwise, tell the menu to move outside the list.
-   */
   public function moveUp():Bool
   {
-    if (selectedItemIndex == 0)
-    {
-      deselect();
+    var index = selectedItemIndex + 1;
 
+    if (index >= this.children.length)
+    {
+      index = 0;
       return true;
     }
 
-    selectModItem(this.children[selectedItemIndex - 1]);
-    return false;
+    selectModItem(this.children[index]);
+    return true;
   }
 
-  /**
-   * If there is an item below the current selection, select that.
-   * Otherwise, tell the menu to move outside the list.
-   */
   public function moveDown():Bool
   {
-    if (selectedItemIndex == this.children.length - 1)
-    {
-      deselect();
+    var index = selectedItemIndex - 1;
 
-      return true;
-    }
+    if (index < 0) index = children.length - 1;
 
-    selectModItem(this.children[selectedItemIndex + 1]);
-    return false;
+    selectModItem(this.children[index]);
+    return true;
   }
 
-  public function moveLeft():Void
+  public function selectModItem(item:Null<ModMenuItem>):Void
   {
-  }
+    if (selectedModItem != null) selectedModItem.selected = false;
 
-  public function moveRight():Void
-  {
-  }
-
-  public function onAccept():Void
-  {
-  }
-
-  function selectModItem(item:Null<ModMenuItem>):Void
-  {
-    if (selectedModItem != null)
-    {
-      selectedModItem.selected = false;
+    if (item == null) {
+      selectedModItem = null;
+      return;
     }
 
     selectedModItem = item;
@@ -100,11 +149,16 @@ class ModMenuItemList extends FunkinGroup<ModMenuItem>
     selectedModItem.selected = true;
   }
 
-  function repositionItems():Void
+  public function repositionItems(reposition:Bool = true):Void
   {
     for (index => modMenuItem in this.children)
     {
       modMenuItem.localY = getModItemYPos(index);
+    }
+
+    if (selectedModItem != null && reposition)
+    {
+      selectFirstItem();
     }
   }
 
@@ -114,6 +168,6 @@ class ModMenuItemList extends FunkinGroup<ModMenuItem>
     final ICON_HEIGHT:Float = 96;
     final ITEM_PADDING:Float = ICON_HEIGHT + 16;
 
-    return BASE_HEIGHT + (ITEM_PADDING * index);
+    return BASE_HEIGHT + (ITEM_PADDING * (children.length - 1 - index));
   }
 }
