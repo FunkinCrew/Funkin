@@ -95,6 +95,15 @@ class ChartEditorImportExportHandler
 
     // Detect stacked notes
     detectStackedNotes(state);
+
+    if (data.issues == null || data.issues.length == 0)
+    {
+      state.success('Loaded Chart', 'Loaded chart (${path})');
+    }
+    else
+    {
+      state.warning('Loaded Chart', 'Loaded chart with issues (${path})\n${data.issues.join("\n")}');
+    }
   }
 
   /**
