@@ -128,7 +128,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     {
       try
       {
-        ChartEditorImportExportHandler.loadSongFromFNFCBytes(chartEditorState, selectedFile.bytes);
+        ChartEditorImportExportHandler.loadSongFromFNFCBytes(chartEditorState, selectedFile.bytes, selectedFile.fullPath);
         // If we failed, it'd throw.
         this.hideDialog(DialogButton.APPLY);
       }
