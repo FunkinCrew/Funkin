@@ -13,9 +13,9 @@ import funkin.Paths;
  */
 class ModMenuItem extends FunkinSpriteGroup
 {
-  static final ITEM_WIDTH:Int = 420;
-  static final ICON_HEIGHT:Int = 96;
-  static final DESC_WIDTH:Int = 420 - 96 - 8;
+  public static final ITEM_WIDTH:Int = 420;
+  public static final ICON_HEIGHT:Int = 96;
+  public static final DESC_WIDTH:Int = 280;
 
   /**
    * Whether this mod item is immutable in list operations.
@@ -89,7 +89,8 @@ class ModMenuItem extends FunkinSpriteGroup
     this.fallbackTitle = fallbackTitle;
     this.fallbackDescription = fallbackDescription;
 
-    background = new FunkinSprite(0, 0).makeSolidColor(ITEM_WIDTH, ICON_HEIGHT, FlxColor.WHITE);
+    background = new FunkinSprite(0, 0);
+    background.makeGraphic(ITEM_WIDTH, ICON_HEIGHT, FlxColor.WHITE);
     background.localX = 0;
     background.localY = 0;
     background.color = 0xFF333333;
@@ -119,12 +120,16 @@ class ModMenuItem extends FunkinSpriteGroup
     titleText.text = getModTitle();
     add(titleText);
 
+    titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
+
     descriptionText = new FlxText(0, 0, DESC_WIDTH);
-    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE);
+    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 14, FlxColor.WHITE);
     descriptionText.localX = ICON_HEIGHT + 8;
-    descriptionText.localY = titleText.localY + titleText.height + 4;
+    descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
     descriptionText.text = getModDescription();
     add(descriptionText);
+
+    descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - titleText.height - 4);
   }
 
   function updateBackgroundColor():Void

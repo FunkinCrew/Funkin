@@ -14,6 +14,7 @@ import funkin.save.Save;
 import funkin.ui.MusicBeatState;
 import flixel.FlxG;
 import flixel.util.FlxColor;
+import flixel.math.FlxRect;
 import flixel.text.FlxText;
 
 /**
@@ -89,6 +90,12 @@ class ModMenuState extends MusicBeatState
     bfAndGF.loadTexture('ui/mods/one-million-followers-on-tiktok-or-gf-fucking-dies');
     add(bfAndGF);
 
+    buildDisabledModList();
+    buildEnabledModList();
+
+    enabledModItems.clipRect = new FlxRect(0, 0, rightRectangle.width, rightRectangle.height);
+    disabledModItems.clipRect = new FlxRect(0, 0, leftRectangle.width, leftRectangle.height);
+
     buttonBackToMenu.x = 8;
     buttonBackToMenu.y = 32;
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
@@ -103,9 +110,6 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.y = 640;
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
     add(buttonOpenFolder);
-
-    buildDisabledModList();
-    buildEnabledModList();
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -196,7 +200,7 @@ class ModMenuState extends MusicBeatState
         case DisabledModList:
           // Don't do anything
         case EnabledModList:
-          if (disabledModItems.children.length > 0)
+          if (disabledModItems.modItems.length > 0)
           {
             enabledModItems.deselect();
             disabledModItems.selectFirstItem();
@@ -216,7 +220,7 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          if (enabledModItems.children.length > 0)
+          if (enabledModItems.modItems.length > 0)
           {
             disabledModItems.deselect();
             enabledModItems.selectFirstItem();
@@ -239,7 +243,7 @@ class ModMenuState extends MusicBeatState
       {
         case DisabledModList:
           enableMod(disabledModItems.selectedModItem);
-          if (disabledModItems.children.length == 0)
+          if (disabledModItems.modItems.length == 0)
           {
             enabledModItems.selectFirstItem();
             selection = EnabledModList;
@@ -247,12 +251,6 @@ class ModMenuState extends MusicBeatState
           else disabledModItems.selectFirstItem();
         case EnabledModList:
           disableMod(enabledModItems.selectedModItem);
-          if (enabledModItems.children.length == 0)
-          {
-            disabledModItems.selectFirstItem();
-            selection = DisabledModList;
-          }
-          else enabledModItems.selectFirstItem();
         case BackToMenu:
           backToMainMenu();
         case OpenModsFolder:
@@ -292,12 +290,14 @@ class ModMenuState extends MusicBeatState
       enabledModItems.addMod(mod);
     }
 
-    var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Core game content.');
+    var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Default game content');
     baseGameItem.locked = true;
-    // Add base game item to the front (index 0) explicitly
-    enabledModItems.add(baseGameItem);
-    enabledModItems.children.remove(baseGameItem);
-    enabledModItems.children.insert(0, baseGameItem);
+    enabledModItems.addModRaw(baseGameItem);
+
+    enabledModItems.modItems.remove(baseGameItem);
+    enabledModItems.modItems.insert(0, baseGameItem);
+    enabledModItems.remove(baseGameItem);
+    enabledModItems.insert(baseGameItem, 0);
 
     add(enabledModItems);
   }
@@ -310,7 +310,7 @@ class ModMenuState extends MusicBeatState
 
     // set enabled mods
     var enabledModIds:Array<String> = [];
-    for (modItem in enabledModItems.children)
+    for (modItem in enabledModItems.modItems)
     {
       var modId = modItem.getModId();
       if (modId == BASE_GAME_MOD_ID) continue;
@@ -331,7 +331,7 @@ class ModMenuState extends MusicBeatState
   {
     if (item == null) return;
 
-    if (!disabledModItems.children.contains(item)) return;
+    if (!disabledModItems.modItems.contains(item)) return;
 
     if (item.getModId() == BASE_GAME_MOD_ID) return;
 
@@ -342,7 +342,7 @@ class ModMenuState extends MusicBeatState
 
     for (dependencyId in dependenciesToEnable)
     {
-      var dependencyItem = disabledModItems.children.find((item) -> item.getModId() == dependencyId);
+      var dependencyItem = disabledModItems.modItems.find((item) -> item.getModId() == dependencyId);
       if (dependencyItem != null)
       {
         enableMod(dependencyItem);
@@ -354,8 +354,12 @@ class ModMenuState extends MusicBeatState
       }
     }
 
+    var oldIndex:Int = disabledModItems.modItems.indexOf(item);
+    disabledModItems.removeMod(item);
+
     // check for optional dependencies that depend on this mod, if they exist then add this mod *before* them.
-    for (enabledMod in enabledModItems.children)
+    var insertedAtPosition = false;
+    for (enabledMod in enabledModItems.modItems)
     {
       if (enabledMod.mod == null) continue;
 
@@ -369,9 +373,11 @@ class ModMenuState extends MusicBeatState
           {
             trace('Mod ${enabledMod.getModTitle()} has an optional dependency on ${item.getModTitle()}, so enabling ${item.getModTitle()} before ${enabledMod.getModTitle()}');
             // Insert the mod before the mod with the optional dependency, so that the optional dependency is still satisfied.
-            var modList:Array<ModMenuItem> = enabledModItems.children;
+            var modList:Array<ModMenuItem> = enabledModItems.modItems;
             var index = modList.indexOf(enabledMod);
             modList.insert(index, item);
+            enabledModItems.insert(item, index);
+            insertedAtPosition = true;
             b = true;
             break;
           }
@@ -381,8 +387,29 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    disabledModItems.remove(item);
-    enabledModItems.addModRaw(item);
+    if (!insertedAtPosition)
+    {
+      enabledModItems.addModRaw(item);
+    }
+    else
+    {
+      var index = enabledModItems.modItems.indexOf(item);
+      item.localX = 0;
+      item.localY = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
+    }
+
+    // Update selections: try to keep selection on the source list at the next logical item.
+    if (disabledModItems.modItems.length > 0)
+    {
+      var newIndex:Int = Std.int(Math.min(oldIndex, disabledModItems.modItems.length - 1));
+      disabledModItems.selectModItem(disabledModItems.modItems[newIndex]);
+      selection = DisabledModList;
+    }
+    else
+    {
+      enabledModItems.selectModItem(item);
+      selection = EnabledModList;
+    }
 
     disabledModItems.repositionItems();
     enabledModItems.repositionItems();
@@ -392,7 +419,7 @@ class ModMenuState extends MusicBeatState
   {
     if (item == null) return;
 
-    if (!enabledModItems.children.contains(item)) return;
+    if (!enabledModItems.modItems.contains(item)) return;
     if (enabledModItems.isPinnedItem(item) || item.locked) return;
 
     item.selected = false;
@@ -402,7 +429,7 @@ class ModMenuState extends MusicBeatState
     trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
     for (dependencyTitle in brokenDependencies)
     {
-      var dependencyItem = enabledModItems.children.find((item) -> item.getModTitle() == dependencyTitle);
+      var dependencyItem = enabledModItems.modItems.find((item) -> item.getModTitle() == dependencyTitle);
       if (dependencyItem != null)
       {
         trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
@@ -410,8 +437,21 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    enabledModItems.remove(item);
+    var oldIndex:Int = enabledModItems.modItems.indexOf(item);
+    enabledModItems.removeMod(item);
     disabledModItems.addModRaw(item);
+
+    if (enabledModItems.modItems.length > 0)
+    {
+      var newIndex:Int = Std.int(Math.min(oldIndex, enabledModItems.modItems.length - 1));
+      enabledModItems.selectModItem(enabledModItems.modItems[newIndex]);
+      selection = EnabledModList;
+    }
+    else
+    {
+      disabledModItems.selectModItem(item);
+      selection = DisabledModList;
+    }
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -423,7 +463,7 @@ class ModMenuState extends MusicBeatState
 
     if (enabledModItems.isPinnedItem(modItem)) return;
 
-    var modList:Array<ModMenuItem> = enabledModItems.children;
+    var modList:Array<ModMenuItem> = enabledModItems.modItems;
     var index = modList.indexOf(modItem);
     if (index == -1) return;
 
@@ -502,14 +542,14 @@ class ModMenuState extends MusicBeatState
       for (modMetadata in modMetadataList)
       {
         enabledModItems.addMod(modMetadata);
-        if (modMetadata.id == selectedId) modItem = enabledModItems.children[i];
+        if (modMetadata.id == selectedId) modItem = enabledModItems.modItems[i];
         i++;
       }
     }
 
     enabledModItems.deselectAll();
     enabledModItems.selectModItem(modItem);
-    enabledModItems.repositionItems(false);
+    enabledModItems.repositionItems();
   }
 
   // return an array of mod IDs that depend on the given mod that are currently enabled, which would be broken by disabling this mod
@@ -517,7 +557,7 @@ class ModMenuState extends MusicBeatState
   {
     var brokenDependencies:Array<String> = [];
 
-    for (enabledModItem in enabledModItems.children)
+    for (enabledModItem in enabledModItems.modItems)
     {
       var enabledMod = enabledModItem.mod;
       if (enabledMod == null) continue;
@@ -541,7 +581,7 @@ class ModMenuState extends MusicBeatState
     for (dependencyId => version in dependencies)
     {
       if (!toEnable.contains(dependencyId) &&
-        !enabledModItems.children.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion())))
+        !enabledModItems.modItems.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion())))
       {
         toEnable.push(dependencyId);
       }
