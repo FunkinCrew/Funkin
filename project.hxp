@@ -912,8 +912,7 @@ class Project extends HXProject
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
-    // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !(isIOSSimulator() || isHashLink()));
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isHashLink());
 
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
@@ -967,9 +966,9 @@ class Project extends HXProject
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
-    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease()) && envConfig != null);
+    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease()) && envConfig != null);
+    FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
 
     // Should be true only on mac builds.
