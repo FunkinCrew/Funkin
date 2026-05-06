@@ -111,7 +111,7 @@ class UploadChartDialog extends Dialog
     try
     {
       CameraEditorImportExportHandler.loadSongFromFNFCBytes(cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
-
+      // If we failed, it'd throw.
       this.hideDialog(DialogButton.APPLY);
     }
     catch (e)
