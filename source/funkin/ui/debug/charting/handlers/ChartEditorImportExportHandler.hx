@@ -105,17 +105,15 @@ class ChartEditorImportExportHandler
    * @param path The path of the FNFC file. Optional, only for logging purposes.
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongFromFNFCBytes(state:ChartEditorState, bytes:Bytes, ?path:String):Null<Array<String>>
+  public static function loadSongFromFNFCBytes(state:ChartEditorState, bytes:Bytes, ?path:String):Void
   {
-    try
+    var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
+    loadSongFromFNFCData(state, entries, path);
+
+    if (path != null)
     {
-      var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
-      loadSongFromFNFCData(state, entries, path);
-      return [];
-    }
-    catch (e)
-    {
-      return ['$e'];
+      state.currentWorkingFilePath = path;
+      state.saveDataDirty = false; // Just loaded file!
     }
   }
 
@@ -126,22 +124,10 @@ class ChartEditorImportExportHandler
    * @param path The absolute path to the FNFC file to load.
    * @return `null` on failure, `[]` on success, `[warnings]` on success with warnings.
    */
-  public static function loadSongFromFNFCPath(state:ChartEditorState, path:String):Null<Array<String>>
+  public static function loadSongFromFNFCPath(state:ChartEditorState, path:String):Void
   {
-    try
-    {
-      var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
-      loadSongFromFNFCData(state, entries, path);
-
-      state.currentWorkingFilePath = path;
-      state.saveDataDirty = false; // Just loaded file!
-
-      return [];
-    }
-    catch (e)
-    {
-      return ['$e'];
-    }
+    var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
+    loadSongFromFNFCData(state, entries, path);
   }
 
   static function detectStackedNotes(state:ChartEditorState):Void
