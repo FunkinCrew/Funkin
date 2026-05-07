@@ -3,6 +3,7 @@ package funkin.group;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.math.FlxRect;
 import flixel.util.FlxSort;
 import funkin.util.SortUtil;
 import flixel.math.FlxPoint;
@@ -291,7 +292,51 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   {
     for (child in children)
     {
-      if (child != null && child.exists && child.visible) child.draw();
+      if (child == null || !child.exists || !child.visible) continue;
+      if (clipRect != null)
+      {
+        // Preserve the child's original clip so we can restore it after drawing.
+        var originalClip:Null<FlxRect> = child.clipRect;
+
+        // Convert this group's clipRect into the child's local space.
+        var groupClip:FlxRect = FlxRect.get(x + clipRect.x, y + clipRect.y, clipRect.width, clipRect.height);
+        var childClip:FlxRect = null;
+
+        if (Std.isOfType(child, FunkinGroup))
+        {
+          // Nested groups expect clipRect in group-local world units.
+          childClip = FlxRect.get(groupClip.x - child.x, groupClip.y - child.y, groupClip.width, groupClip.height);
+        }
+        else
+        {
+          // Sprites expect clipRect in texture-local units, so include scale.
+          var sx:Float = child.scale.x != 0 ? child.scale.x : 1.0;
+          var sy:Float = child.scale.y != 0 ? child.scale.y : 1.0;
+          childClip = FlxRect.get((groupClip.x - child.x) / sx, (groupClip.y - child.y) / sy, groupClip.width / sx, groupClip.height / sy);
+        }
+
+        // If the child already has its own clip, intersect it in the same local space.
+        if (originalClip != null)
+        {
+          var ix:Float = Math.max(childClip.x, originalClip.x);
+          var iy:Float = Math.max(childClip.y, originalClip.y);
+          var ir:Float = Math.min(childClip.right, originalClip.right);
+          var ib:Float = Math.min(childClip.bottom, originalClip.bottom);
+
+          childClip.set(ix, iy, Math.max(0, ir - ix), Math.max(0, ib - iy));
+        }
+
+        child.clipRect = childClip;
+        child.draw();
+        childClip.put();
+
+        // Restore the child's original clip object.
+        child.clipRect = originalClip;
+      }
+      else
+      {
+        child.draw();
+      }
     }
   }
 
@@ -736,16 +781,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
     throw 'This function is not supported in FunkinGroup';
     #end
     return this;
-  }
-
-  override function set_pixels(Value:openfl.display.BitmapData):openfl.display.BitmapData
-  {
-    return Value;
-  }
-
-  override function set_frame(Value:flixel.graphics.frames.FlxFrame):flixel.graphics.frames.FlxFrame
-  {
-    return Value;
   }
 
   override function get_pixels():openfl.display.BitmapData
