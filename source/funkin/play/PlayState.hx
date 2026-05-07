@@ -1167,7 +1167,7 @@ class PlayState extends MusicBeatSubState
       // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
       // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
       // The previous method where it "guessed" the song position based on the elapsed time had some flaws
-      // Somtimes the songPosition would exceed the music length causing issues in other places
+      // Sometimes the songPosition would exceed the music length causing issues in other places
       // And it was frame dependant which we don't like!!
       if (FlxG.sound.music.playing)
       {
