@@ -108,6 +108,7 @@ class Save implements ConsoleClass
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
         autoPause: true,
+        checkForUpdates: true,
         vsyncMode: 'Off',
         strumlineBackgroundOpacity: 0,
         autoFullscreen: false,
@@ -1168,6 +1169,12 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var autoPause:Bool;
+
+  /**
+   * If enabled, the title screen shows a banner when a newer GitHub release is available. Desktop only.
+   * @default `true`
+   */
+  var checkForUpdates:Bool;
 
   /**
    * If enabled, the game will utilize VSync (or adaptive VSync) on startup.

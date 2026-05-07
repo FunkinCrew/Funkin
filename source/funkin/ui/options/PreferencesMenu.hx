@@ -183,6 +183,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.autoFullscreen = value;
     }, Preferences.autoFullscreen);
+    #if desktop
+    createPrefItemCheckbox('Check for Updates', 'When enabled, the title screen pings GitHub once per session and shows a banner if a newer release is out.',
+      function(value:Bool):Void
+      {
+        Preferences.checkForUpdates = value;
+      }, Preferences.checkForUpdates);
+    #end
     #end
 
     // disable on mobile and web since it barely has any effect

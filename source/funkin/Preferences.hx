@@ -301,6 +301,33 @@ class Preferences
   }
 
   /**
+   * If enabled, the title screen shows a banner when a newer GitHub release is available. Desktop only.
+   * @default `true`
+   */
+  public static var checkForUpdates(get, set):Bool;
+
+  static function get_checkForUpdates():Bool
+  {
+    #if !desktop
+    return false;
+    #else
+    return Save?.instance?.options?.checkForUpdates ?? true;
+    #end
+  }
+
+  static function set_checkForUpdates(value:Bool):Bool
+  {
+    #if !desktop
+    return false;
+    #else
+    var save:Save = Save.instance;
+    save.options.checkForUpdates = value;
+    Save.system.flush();
+    return value;
+    #end
+  }
+
+  /**
    * If enabled, the game will automatically launch in fullscreen on startup.
    * @default `true`
    */

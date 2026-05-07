@@ -1,7 +1,9 @@
 package funkin.ui.title;
 
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.text.FlxText;
 import funkin.ui.FullScreenScaleMode;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -9,6 +11,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
+import funkin.util.VersionCheck;
 import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
@@ -26,10 +29,18 @@ import funkin.util.SwipeUtil;
 
 class TitleState extends MusicBeatState
 {
+  static final UPDATE_BANNER_HEIGHT:Int = 40;
+  static final UPDATE_BANNER_FONT_SIZE:Int = 18;
+  static final UPDATE_BANNER_BG_COLOR:FlxColor = 0xCC000000;
+  static final UPDATE_BANNER_HOLD_SECONDS:Float = 5.0;
+  static final UPDATE_BANNER_HIDE_SECONDS:Float = 0.5;
+
   /**
    * Only play the credits once per session.
    */
   public static var initialized:Bool = false;
+
+  static var updateBannerShown:Bool = false;
 
   var blackScreen:FunkinSprite;
   var credGroup:FlxGroup;
@@ -38,6 +49,8 @@ class TitleState extends MusicBeatState
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
+  var updateBanner:Null<FlxSpriteGroup> = null;
+  var pendingUpdateTag:Null<String> = null;
 
   override public function create():Void
   {
@@ -46,6 +59,8 @@ class TitleState extends MusicBeatState
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+
+    VersionCheck.check(showUpdateBanner);
 
     // DEBUG BULLSHIT
 
@@ -514,6 +529,49 @@ class TitleState extends MusicBeatState
 
       if (credGroup != null) remove(credGroup);
       skippedIntro = true;
+
+      var tag = pendingUpdateTag;
+      if (tag != null && updateBanner == null) addUpdateBanner(tag);
     }
+  }
+
+  function showUpdateBanner(latestTag:String):Void
+  {
+    if (updateBannerShown) return;
+    pendingUpdateTag = latestTag;
+    if (skippedIntro && updateBanner == null) addUpdateBanner(latestTag);
+  }
+
+  function addUpdateBanner(latestTag:String):Void
+  {
+    updateBannerShown = true;
+    final banner = new FlxSpriteGroup();
+
+    final bg = new FunkinSprite().makeSolidColor(FlxG.width, UPDATE_BANNER_HEIGHT, UPDATE_BANNER_BG_COLOR);
+    bg.scrollFactor.set();
+    banner.add(bg);
+
+    final text = new FlxText(0, 0, FlxG.width, 'A new version is available: $latestTag', UPDATE_BANNER_FONT_SIZE);
+    text.alignment = CENTER;
+    text.color = FlxColor.YELLOW;
+    text.borderStyle = OUTLINE;
+    text.borderColor = FlxColor.BLACK;
+    text.scrollFactor.set();
+    text.y = (UPDATE_BANNER_HEIGHT - text.height) / 2;
+    banner.add(text);
+
+    add(banner);
+    updateBanner = banner;
+
+    FlxTween.tween(banner, {y: -UPDATE_BANNER_HEIGHT}, UPDATE_BANNER_HIDE_SECONDS,
+      {
+        startDelay: UPDATE_BANNER_HOLD_SECONDS,
+        ease: FlxEase.cubeIn,
+        onComplete: function(_) {
+          remove(banner);
+          banner.destroy();
+          updateBanner = null;
+        }
+      });
   }
 }
