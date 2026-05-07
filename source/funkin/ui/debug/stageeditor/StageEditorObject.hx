@@ -2,6 +2,7 @@ package funkin.ui.debug.stageeditor;
 
 #if FEATURE_STAGE_EDITOR
 import funkin.data.animation.AnimationData;
+import funkin.data.stage.StageData.StageDataProp;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.InverseDotsShader;
 
@@ -23,6 +24,12 @@ class StageEditorObject extends FunkinSprite
   public var startingAnimation:String = "";
 
   public var animDatas:Map<String, AnimationData> = [];
+
+  /**
+   * Original prop data preserved verbatim for asset formats the Stage Editor cannot represent (e.g. animate atlas).
+   * When non-null, the editor renders a placeholder for this prop and writes this data unchanged on save.
+   */
+  public var preservedData:Null<StageDataProp> = null;
 
   override public function new()
   {

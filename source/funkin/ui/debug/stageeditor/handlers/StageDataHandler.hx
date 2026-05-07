@@ -1,6 +1,7 @@
 package funkin.ui.debug.stageeditor.handlers;
 
 #if FEATURE_STAGE_EDITOR
+import flixel.util.FlxColor;
 import haxe.io.Bytes;
 import funkin.util.FileUtil;
 import openfl.display.BitmapData;
@@ -9,6 +10,7 @@ import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.BaseCharacter;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
+import funkin.data.stage.StageData.StageDataProp;
 import funkin.data.stage.StageRegistry;
 import openfl.utils.Assets as OpenFLAssets;
 import lime.utils.Assets as LimeAssets;
@@ -17,6 +19,12 @@ using StringTools;
 
 class StageDataHandler
 {
+  static final PRESERVED_PLACEHOLDER_SIZE:Int = 150;
+  static final PRESERVED_PLACEHOLDER_COLOR:FlxColor = FlxColor.MAGENTA;
+  static final PRESERVED_PLACEHOLDER_ALPHA:Float = 0.5;
+  // Editor's grid bg has zIndex 0; the placeholder must sort strictly above it to be visible.
+  static final PRESERVED_PLACEHOLDER_MIN_Z_INDEX:Int = 1;
+
   public static function checkForCharacter(char:BaseCharacter) return char != null;
 
   public static function packShitToZip(state:StageEditorState)
@@ -32,6 +40,12 @@ class StageDataHandler
 
     for (obj in state.spriteArray)
     {
+      if (obj.preservedData != null)
+      {
+        endData.props.push(obj.preservedData);
+        continue;
+      }
+
       var data = obj.toData(false);
       endData.props.push({
         name: data.name,
@@ -197,10 +211,20 @@ class StageDataHandler
     state.loadCharDatas(stageData);
 
     // objects
+    var preservedCount:Int = 0;
+
     for (objData in stageData.props)
     {
-      // make the data and roll with it
       var spr = new StageEditorObject();
+
+      if (!objData.assetPath.startsWith("#") && !state.bitmaps.exists(objData.assetPath))
+      {
+        applyPreservedPlaceholder(spr, objData);
+        state.add(spr);
+        preservedCount++;
+        continue;
+      }
+
       spr.fromData({
         name: objData.name ?? "Unnamed",
         assetPath: objData.assetPath,
@@ -227,6 +251,7 @@ class StageDataHandler
     state.updateArray();
     state.sortAssets();
     state.updateMarkerPos();
+    notifyPreservedProps(state, preservedCount);
   }
 
   static function loadCharDatas(state:StageEditorState, data:StageData)
@@ -302,9 +327,20 @@ class StageDataHandler
 
     state.loadCharDatas(data);
 
+    var preservedCount:Int = 0;
+
     for (objData in data.props)
     {
       var spr = new StageEditorObject();
+
+      if (!objData.assetPath.startsWith("#") && !Assets.exists(Paths.image(objData.assetPath)))
+      {
+        applyPreservedPlaceholder(spr, objData);
+        state.add(spr);
+        preservedCount++;
+        continue;
+      }
+
       if (!objData.assetPath.startsWith("#")) state.bitmaps.set(objData.assetPath, Assets.getBitmapData(Paths.image(objData.assetPath)));
 
       var usePacker:Bool = objData.animType == "packer";
@@ -336,6 +372,25 @@ class StageDataHandler
 
     state.updateArray();
     state.updateMarkerPos();
+    notifyPreservedProps(state, preservedCount);
+  }
+
+  static function applyPreservedPlaceholder(spr:StageEditorObject, objData:StageDataProp):Void
+  {
+    spr.preservedData = objData;
+    spr.name = objData.name ?? "Unnamed";
+    spr.makeGraphic(PRESERVED_PLACEHOLDER_SIZE, PRESERVED_PLACEHOLDER_SIZE, PRESERVED_PLACEHOLDER_COLOR);
+    spr.setPosition(objData.position[0], objData.position[1]);
+    spr.zIndex = objData.zIndex > 0 ? objData.zIndex : PRESERVED_PLACEHOLDER_MIN_Z_INDEX;
+    spr.alpha = PRESERVED_PLACEHOLDER_ALPHA;
+    spr.scrollFactor.set(objData.scroll[0], objData.scroll[1]);
+  }
+
+  static function notifyPreservedProps(state:StageEditorState, count:Int):Void
+  {
+    if (count <= 0) return;
+    state.notifyChange("Unsupported Props",
+      '$count prop(s) use asset formats the Stage Editor cannot edit yet. They will be preserved unchanged on save.');
   }
 
   public static function loadDummyData(state:StageEditorState)
