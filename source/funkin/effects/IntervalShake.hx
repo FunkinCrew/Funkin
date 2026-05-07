@@ -13,6 +13,7 @@ import flixel.math.FlxMath;
  * pretty much a copy of FlxFlicker geared towards making sprites
  * shake around at a set interval and slow down over time.
  */
+@:nullSafety
 class IntervalShake implements IFlxDestroyable
 {
   static var _pool:FlxPool<IntervalShake> = new FlxPool<IntervalShake>(IntervalShake.new);
@@ -47,7 +48,8 @@ class IntervalShake implements IFlxDestroyable
       // else
       // {
       // Ignore this call if object is already flickering.
-      return _boundObjects[Object];
+      final existing = _boundObjects[Object];
+      if (existing != null) return existing;
       // }
     }
 
@@ -78,7 +80,7 @@ class IntervalShake implements IFlxDestroyable
    */
   public static function stopShaking(Object:FlxObject):Void
   {
-    var boundShake:IntervalShake = _boundObjects[Object];
+    var boundShake = _boundObjects[Object];
     if (boundShake != null)
     {
       boundShake.stop();
@@ -88,57 +90,57 @@ class IntervalShake implements IFlxDestroyable
   /**
    * The shaking object.
    */
-  public var object(default, null):FlxObject;
+  public var object(default, null):Null<FlxObject>;
 
   /**
    * The shaking timer. You can check how many seconds has passed since shaking started etc.
    */
-  public var timer(default, null):FlxTimer;
+  public var timer(default, null):Null<FlxTimer>;
 
   /**
    * The starting intensity of the shake.
    */
-  public var startIntensity(default, null):Float;
+  public var startIntensity(default, null):Float = 0;
 
   /**
    * The ending intensity of the shake.
    */
-  public var endIntensity(default, null):Float;
+  public var endIntensity(default, null):Float = 0;
 
   /**
    * How long to shake for (in seconds). `0` means "forever".
    */
-  public var duration(default, null):Float;
+  public var duration(default, null):Float = 0;
 
   /**
    * The interval of the shake.
    */
-  public var interval(default, null):Float;
+  public var interval(default, null):Float = 0;
 
   /**
    * Defines on what axes to `shake()`. Default value is `XY` / both.
    */
-  public var axes(default, null):FlxAxes;
+  public var axes(default, null):FlxAxes = FlxAxes.NONE;
 
   /**
    * Defines the initial position of the object at the beginning of the shake effect.
    */
-  public var initialOffset(default, null):FlxPoint;
+  public var initialOffset(default, null):FlxPoint = new FlxPoint();
 
   /**
    * The callback that will be triggered after the shake has completed.
    */
-  public var completionCallback(default, null):IntervalShake->Void;
+  public var completionCallback(default, null):Null<IntervalShake->Void>;
 
   /**
    * The callback that will be triggered every time the object shakes.
    */
-  public var progressCallback(default, null):IntervalShake->Void;
+  public var progressCallback(default, null):Null<IntervalShake->Void>;
 
   /**
    * The easing of the intensity over the shake.
    */
-  public var ease(default, null):EaseFunction;
+  public var ease(default, null):Null<EaseFunction>;
 
   /**
    * Nullifies the references to prepare object for reuse and avoid memory leaks.
@@ -176,10 +178,13 @@ class IntervalShake implements IFlxDestroyable
    */
   public function stop():Void
   {
-    timer.cancel();
+    if (timer != null) timer.cancel();
     // object.visible = true;
-    object.x = initialOffset.x;
-    object.y = initialOffset.y;
+    if (object != null)
+    {
+      object.x = initialOffset.x;
+      object.y = initialOffset.y;
+    }
     release();
   }
 
@@ -188,7 +193,7 @@ class IntervalShake implements IFlxDestroyable
    */
   function release():Void
   {
-    _boundObjects.remove(object);
+    if (object != null) _boundObjects.remove(object);
     _pool.put(this);
   }
 
@@ -211,8 +216,12 @@ class IntervalShake implements IFlxDestroyable
     var curIntensity:Float = 0;
     curIntensity = FlxMath.lerp(endIntensity, startIntensity, scale);
 
-    if (axes.x) object.x = initialOffset.x + FlxG.random.float((-curIntensity) * object.width, (curIntensity) * object.width);
-    if (axes.y) object.y = initialOffset.y + FlxG.random.float((-curIntensity) * object.width, (curIntensity) * object.width);
+    final obj = object;
+    if (obj != null)
+    {
+      if (axes.x) obj.x = initialOffset.x + FlxG.random.float((-curIntensity) * obj.width, (curIntensity) * obj.width);
+      if (axes.y) obj.y = initialOffset.y + FlxG.random.float((-curIntensity) * obj.width, (curIntensity) * obj.width);
+    }
 
     // object.visible = !object.visible;
 
@@ -220,8 +229,11 @@ class IntervalShake implements IFlxDestroyable
 
     if (timer.loops > 0 && timer.loopsLeft == 0)
     {
-      object.x = initialOffset.x;
-      object.y = initialOffset.y;
+      if (obj != null)
+      {
+        obj.x = initialOffset.x;
+        obj.y = initialOffset.y;
+      }
       if (completionCallback != null)
       {
         completionCallback(this);
