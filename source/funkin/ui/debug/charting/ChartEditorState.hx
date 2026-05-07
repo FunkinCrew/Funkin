@@ -6961,6 +6961,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       var startTimestamp:Float = scrollPositionInMs + playheadPositionInMs;
 
+      @:nullSafety(Off)
+      {
+        final f = FocusManager.instance.focus;
+        if (f != null) f.focus = false;
+      }
+
       FlxG.switchState(() -> new CameraEditorState({
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.selectedDifficulty,

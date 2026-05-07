@@ -2650,6 +2650,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       performCleanup();
 
+      @:nullSafety(Off)
+      {
+        final f = FocusManager.instance.focus;
+        if (f != null) f.focus = false;
+      }
+
       FlxG.switchState(() -> new ChartEditorState({
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.currentDifficulty,
