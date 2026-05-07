@@ -20,17 +20,17 @@ import funkin.external.android.KeyboardUtil;
 class ControlsHandler
 {
   /**
-   * Returns wether the last input was sent through touch.
+   * Returns whether the last input was sent through touch.
    */
   public static var lastInputTouch(default, null):Bool = true;
 
   /**
-   * Returns wether there's a gamepad or keyboard devices connected and active.
+   * Returns whether there's a gamepad or keyboard devices connected and active.
    */
   public static var hasExternalInputDevice(get, never):Bool;
 
   /**
-   * Returns wether an external input device is currently used as the main input.
+   * Returns whether an external input device is currently used as the main input.
    */
   public static var usingExternalInputDevice(get, never):Bool;
 

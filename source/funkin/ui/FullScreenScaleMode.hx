@@ -91,7 +91,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   public static var enabled(default, set):Bool;
 
   /**
-   * Wether fake cutouts are added to the screen.
+   * Whether fake cutouts are added to the screen.
    */
   public static var hasFakeCutouts:Bool = false;
 
