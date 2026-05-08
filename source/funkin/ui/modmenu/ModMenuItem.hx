@@ -6,6 +6,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import polymod.Polymod.ModMetadata;
 import polymod.Polymod.ModDependencies;
+import flixel.math.FlxRect;
 import funkin.Paths;
 
 /**

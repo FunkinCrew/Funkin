@@ -66,9 +66,6 @@ class Main extends Sprite
     // You can remove this line if you want to read debug messages.
     openfl.utils._internal.Log.level = openfl.utils._internal.Log.LogLevel.INFO;
 
-    // Load mods to override assets.
-    funkin.modding.PolymodHandler.loadEnabledMods();
-
     if (stage != null)
     {
       init();
@@ -147,6 +144,9 @@ class Main extends Sprite
 
     // George recommends binding the save before FlxGame is created.
     Save.load();
+
+    // Load mods to override assets.
+    funkin.modding.PolymodHandler.loadEnabledMods();
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.

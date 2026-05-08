@@ -144,6 +144,20 @@ class PolymodHandler
 
     if (modFileSystem == null) modFileSystem = buildFileSystem();
 
+    // Check if the mods to load are actually present before trying to load them.
+    var allModIds:Array<String> = getAllModIds();
+    var toRemove:Array<String> = [];
+    for (modId in modIds)
+    {
+      if (!allModIds.contains(modId))
+      {
+        trace('Warning: Mod with ID "${modId}" was configured to be loaded, but was not found in the mods folder!');
+        toRemove.push(modId);
+      }
+    }
+
+    for (modId in toRemove) modIds.remove(modId);
+
     var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
       // Root directory for all mods.
       modRoot: MOD_FOLDER,

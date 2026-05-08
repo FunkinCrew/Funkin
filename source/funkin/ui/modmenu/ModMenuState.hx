@@ -3,6 +3,7 @@ package funkin.ui.modmenu;
 import funkin.input.Cursor;
 import funkin.util.FileUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.InitState;
 import funkin.ui.title.TitleState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
@@ -16,6 +17,7 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
+import funkin.util.plugins.SidePanelPlugin;
 
 /**
  * The user interface for the mod menu.
@@ -49,6 +51,8 @@ class ModMenuState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+
+    funkin.util.plugins.SidePanelPlugin.showGrabber = false;
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
@@ -113,6 +117,17 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
+
+    if (disabledModItems.modItems.length > 0)
+    {
+      disabledModItems.selectFirstItem();
+      selection = DisabledModList;
+    }
+    else
+    {
+      enabledModItems.selectFirstItem();
+      selection = EnabledModList;
+    }
 
     applyInitialSelection();
 
@@ -323,8 +338,14 @@ class ModMenuState extends MusicBeatState
       PolymodHandler.enableMod(modId);
     }
 
+    InitState.resetTitleState();
+
     PolymodHandler.forceReloadAssets();
-    FlxG.switchState(() -> new TitleState());
+    if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
+    else {
+      SidePanelPlugin.showGrabber = true;
+      FlxG.switchState(() -> InitState.customTitleState);
+    }
   }
 
   function enableMod(item:Null<ModMenuItem>):Void
