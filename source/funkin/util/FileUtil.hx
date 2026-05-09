@@ -1133,6 +1133,28 @@ class FileUtil
   }
 
   /**
+   * Unzips a ZIP file from a Bytes object directly to a target folder.
+   *
+   * @param zipData The Bytes object containing the ZIP data to unzip.
+   * @param targetFolder The path to the folder to unzip to. Will be created if it doesn't exist.
+   **/
+  public static function unzipToFolder(zipData:Bytes, targetFolder:String):Void
+  {
+    var entries = readZIPFromBytes(zipData);
+    for (entry in entries)
+    {
+      if (entry == null || entry.data == null)
+      {
+        trace('WARNING: Skipping ZIP entry with null data');
+        continue;
+      }
+      var outputPath = Path.join([targetFolder, entry.fileName]);
+      createDirIfNotExists(Path.directory(outputPath));
+      writeBytesToPath(outputPath, entry.data, Force);
+    }
+  }
+
+  /**
    * Parse a ZIP file from a path, returning a list of file Entries.
    *
    * @param input The path to the ZIP file.

@@ -110,7 +110,7 @@ class SidePanelPlugin extends FlxBasic
     grabberSprite.addChild(chevronShape);
 
     rootSprite.addChild(grabberSprite);
-    grabberSprite.visible = showGrabber;
+    grabberSprite.visible = false;
 
     layout();
 
@@ -221,8 +221,8 @@ class SidePanelPlugin extends FlxBasic
 
   function layout():Void
   {
-    var screenW:Int = FlxG.width;
-    var screenH:Int = FlxG.height;
+    var screenW:Int = FlxG.stage.stageWidth;
+    var screenH:Int = FlxG.stage.stageHeight;
 
     var panelX:Float = isOpen ? screenW - panelWidth : screenW;
     panelSprite.x = panelX;
@@ -242,11 +242,11 @@ class SidePanelPlugin extends FlxBasic
     var g = panelBackground.graphics;
     g.clear();
     g.beginFill(0xFFFFFF, 0.93);
-    g.drawRoundRectComplex(0, 0, panelWidth, FlxG.height, 12, 0, 12, 0);
+    g.drawRoundRectComplex(0, 0, panelWidth, FlxG.stage.stageHeight, 12, 0, 12, 0);
     g.endFill();
     g.lineStyle(1, 0x000000, 0.5);
     g.moveTo(0, 0);
-    g.lineTo(0, FlxG.height);
+    g.lineTo(0, FlxG.stage.stageHeight);
     g.lineStyle();
   }
 
@@ -287,7 +287,7 @@ class SidePanelPlugin extends FlxBasic
     selectedIndex = 0;
     refreshSelection();
     drawChevron(true);
-    animateTo(FlxG.width - panelWidth);
+    animateTo(FlxG.stage.stageWidth - panelWidth);
   }
 
   public function close():Void
@@ -296,7 +296,7 @@ class SidePanelPlugin extends FlxBasic
     isOpen = false;
     FlxG.keys.enabled = true;
     drawChevron(false);
-    animateTo(FlxG.width);
+    animateTo(FlxG.stage.stageWidth);
   }
 
   public function toggle():Void

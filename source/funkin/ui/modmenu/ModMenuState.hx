@@ -97,6 +97,9 @@ class ModMenuState extends MusicBeatState
     buildDisabledModList();
     buildEnabledModList();
 
+    add(enabledModItems);
+    add(disabledModItems);
+
     enabledModItems.clipRect = new FlxRect(0, 0, rightRectangle.width, rightRectangle.height);
     disabledModItems.clipRect = new FlxRect(0, 0, leftRectangle.width, leftRectangle.height);
 
@@ -129,9 +132,35 @@ class ModMenuState extends MusicBeatState
       selection = EnabledModList;
     }
 
+    FlxG.stage.window.onDropFile.add(onDropFile);
+
     applyInitialSelection();
 
     Cursor.show();
+  }
+
+  public override function destroy():Void
+  {
+    super.destroy();
+
+    FlxG.stage.window.onDropFile.remove(onDropFile);
+  }
+
+  public function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  {
+    // If zip file, move to mods folder.
+    if (StringTools.endsWith(path, '.zip'))
+    {
+      var fileClean = StringTools.replace(path, '\\', '/');
+      var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), ".zip", "");
+      var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName;
+
+      trace('Unzipping mod from $path to $destPath');
+      FileUtil.unzipToFolder(FileUtil.readBytesFromPath(path), destPath);
+
+      buildDisabledModList();
+      disabledModItems.repositionItems();
+    }
   }
 
   override public function update(elapsed:Float):Void
@@ -280,6 +309,8 @@ class ModMenuState extends MusicBeatState
   {
     var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
 
+    disabledModItems.removeAll();
+
     disabledModItems.x = leftRectangle.x;
     disabledModItems.y = leftRectangle.y;
 
@@ -288,13 +319,13 @@ class ModMenuState extends MusicBeatState
       if (mod.id == BASE_GAME_MOD_ID) continue;
       disabledModItems.addMod(mod);
     }
-
-    add(disabledModItems);
   }
 
   function buildEnabledModList():Void
   {
     var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
+
+    enabledModItems.removeAll();
 
     enabledModItems.x = rightRectangle.x;
     enabledModItems.y = rightRectangle.y;
@@ -313,8 +344,6 @@ class ModMenuState extends MusicBeatState
     enabledModItems.modItems.insert(0, baseGameItem);
     enabledModItems.remove(baseGameItem);
     enabledModItems.insert(baseGameItem, 0);
-
-    add(enabledModItems);
   }
 
   function applyModlist():Void
