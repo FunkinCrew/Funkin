@@ -19,6 +19,8 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
 import funkin.util.SortUtil;
+import funkin.util.WindowUtil;
+import funkin.audio.FunkinSound;
 import haxe.ui.components.DropDown;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.core.Screen;
@@ -63,6 +65,16 @@ class DebugBoundingState extends FlxState
   override function create():Void
   {
     Paths.setCurrentLevel('week1');
+    
+    FlxG.sound.music?.stop();
+
+    Cursor.show();
+    FunkinSound.playMusic('chartEditorLoop', {
+      startingVolume: 0.0
+    });
+    FlxG.sound.music.fadeIn(10, 0, 1);
+
+    WindowUtil.setWindowTitle("Friday Night Funkin\' Animation Editor");
 
     hudCam = new FlxCamera();
     hudCam.bgColor.alpha = 0;
@@ -308,7 +320,14 @@ class DebugBoundingState extends FlxState
 
     if (FlxG.keys.justPressed.H) hudCam.visible = !hudCam.visible;
 
-    if (FlxG.keys.justPressed.F4) FlxG.switchState(() -> new MainMenuState());
+    if (FlxG.keys.justPressed.F4)
+    {
+      resetWindowTitle();
+      FlxG.switchState(() -> new MainMenuState());
+    }
+
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedMiddle) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickDown"));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedMiddle) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
 
     MouseUtil.mouseCamDrag();
     if (!haxeUIFocused) MouseUtil.mouseWheelZoom();
@@ -319,6 +338,11 @@ class DebugBoundingState extends FlxState
     bg.setGraphicSize(Std.int(bg.width / FlxG.camera.zoom));
 
     super.update(elapsed);
+  }
+
+  function resetWindowTitle():Void
+  {
+    WindowUtil.setWindowTitle('Friday Night Funkin\'');
   }
 
   override function destroy()
