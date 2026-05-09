@@ -2692,6 +2692,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     #if FEATURE_DISCORD_RPC
     updateDiscordRPC();
     #end
+
+    Toolkit.callLater(() ->
+    {
+      @:nullSafety(Off)
+      {
+        final f = FocusManager.instance.focus;
+        if (f != null) f.focus = false;
+      }
+      for (root in haxe.ui.core.Screen.instance.rootComponents)
+      {
+        root.removeClass(":hover", false, true);
+        root.removeClass(":down", false, true);
+      }
+    });
   }
 
   #if FEATURE_DISCORD_RPC
