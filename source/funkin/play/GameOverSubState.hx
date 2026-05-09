@@ -78,6 +78,8 @@ class GameOverSubState extends MusicBeatSubState
    */
   var gameOverMusic:Null<FunkinSound> = null;
 
+  static var blueBalledSFX:Null<FunkinSound> = null;
+
   /**
    * Whether the player has confirmed and prepared to restart the level or to go back to the freeplay menu.
    * This means the animation and transition have already started.
@@ -366,6 +368,12 @@ class GameOverSubState extends MusicBeatSubState
         deathQuoteSound = null;
       }
 
+      if (blueBalledSFX != null)
+      {
+        blueBalledSFX.stop();
+        blueBalledSFX = null;
+      }
+
       startDeathMusic(1.0, true); // isEnding changes this function's behavior.
 
       if ((parentPlayState?.isMinimalMode ?? true) || boyfriend == null)
@@ -558,6 +566,12 @@ class GameOverSubState extends MusicBeatSubState
       deathQuoteSound = null;
     }
 
+    if (blueBalledSFX != null)
+    {
+      blueBalledSFX.stop();
+      blueBalledSFX = null;
+    }
+
     if (isChartingMode)
     {
       this.close();
@@ -601,9 +615,15 @@ class GameOverSubState extends MusicBeatSubState
   {
     blueballed = true;
 
+    if (blueBalledSFX != null)
+    {
+      blueBalledSFX.stop();
+      blueBalledSFX = null;
+    }
+
     if (Assets.exists(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix)))
     {
-      FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
+      blueBalledSFX = FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf_loss_sfx' + blueBallSuffix));
     }
     else
     {
@@ -620,6 +640,11 @@ class GameOverSubState extends MusicBeatSubState
     {
       gameOverMusic.stop();
       gameOverMusic = null;
+    }
+    if (blueBalledSFX != null)
+    {
+      blueBalledSFX.stop();
+      blueBalledSFX = null;
     }
     blueballed = false;
     instance = null;
