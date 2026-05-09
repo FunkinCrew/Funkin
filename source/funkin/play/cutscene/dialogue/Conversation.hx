@@ -134,24 +134,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     }
   }
 
-  public function pause():Void
-  {
-    if (outroTween != null) outroTween.active = false;
-    pauseMusic();
-  }
-
   public function pauseMusic():Void
   {
     if (music != null)
     {
       music.pause();
     }
-  }
-
-  public function resume():Void
-  {
-    if (outroTween != null) outroTween.active = true;
-    resumeMusic();
   }
 
   public function resumeMusic():Void
