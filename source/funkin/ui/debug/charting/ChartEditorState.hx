@@ -3793,6 +3793,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleMusicPlayback(elapsed);
     handleNoteDisplay();
 
+    if (isHaxeUIFocused
+      && !isCursorOverHaxeUI
+      && (FlxG.mouse.justPressedRight || FlxG.mouse.deltaWheel.y != 0))
+    {
+      ChartEditorToolboxHandler.clearHaxeUIFocus();
+    }
+
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
     handleCursor();

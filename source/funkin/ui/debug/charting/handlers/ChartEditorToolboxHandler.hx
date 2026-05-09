@@ -35,6 +35,14 @@ class ChartEditorToolboxHandler
     }
   }
 
+  public static function clearHaxeUIFocus():Void
+  {
+    @:nullSafety(Off) {
+      final f = FocusManager.instance.focus;
+      if (f != null) f.focus = false;
+    }
+  }
+
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
@@ -44,10 +52,7 @@ class ChartEditorToolboxHandler
     if (toolbox != null)
     {
       toolbox.showDialog(false);
-      @:nullSafety(Off) {
-        final f = FocusManager.instance.focus;
-        if (f != null) f.focus = false;
-      }
+      clearHaxeUIFocus();
 
       state.playSound(Paths.sound('chartingSounds/openWindow'));
 
@@ -91,10 +96,7 @@ class ChartEditorToolboxHandler
 
     if (toolbox != null)
     {
-      @:nullSafety(Off) {
-        final f = FocusManager.instance.focus;
-        if (f != null) f.focus = false;
-      }
+      clearHaxeUIFocus();
       toolbox.hideDialog(DialogButton.CANCEL);
 
       state.playSound(Paths.sound('chartingSounds/exitWindow'));
