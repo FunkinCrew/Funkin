@@ -101,6 +101,7 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.Toolkit;
 import haxe.ui.focus.FocusManager;
 import haxe.ui.notifications.NotificationManager;
 import haxe.ui.notifications.NotificationType;
@@ -740,6 +741,20 @@ class CameraEditorState extends UIState implements ConsoleClass
         openBackupAvailableDialog(welcomeDialog);
       }
     }
+
+    Toolkit.callLater(() ->
+    {
+      @:nullSafety(Off)
+      {
+        final f = FocusManager.instance.focus;
+        if (f != null) f.focus = false;
+      }
+      for (root in haxe.ui.core.Screen.instance.rootComponents)
+      {
+        root.removeClass(":hover", false, true);
+        root.removeClass(":down", false, true);
+      }
+    });
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
