@@ -1363,7 +1363,7 @@ class PlayState extends MusicBeatSubState
         final event = new PauseScriptEvent(false);
         dispatchEvent(event);
 
-        if (!event.eventCanceled) openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pause());
+        if (!event.eventCanceled) openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
@@ -1691,7 +1691,7 @@ class PlayState extends MusicBeatSubState
 
       if (currentConversation != null)
       {
-        currentConversation.resume();
+        currentConversation.resumeMusic();
       }
 
       // Re-sync vocals.
