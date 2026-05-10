@@ -71,20 +71,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   }
 
   /**
-   * The width of all the FunkinGroup's children's displays put together.
-   *
-   * Meant as a replacement of frameWidth.
-   */
-  public var accurateWidth(get, null):Float = 0;
-
-  /**
-   * The height of all the FunkinGroup's children's displays put together.
-   *
-   * Meant as a replacement of frameHeight.
-   */
-  public var accurateHeight(get, null):Float = 0;
-
-  /**
    * If this is false, the FunkinGroup will update children normally. Otherwise,
    * it will not (obviously).
    *
@@ -111,80 +97,51 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
 
   override function get_width():Float
   {
+    updateChildren();
+
     if (size < 1) return 0;
 
-    var leftMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, x + a.localX, x + b.localX);
-    }, false)[0];
+    var minLeft:Float = Math.POSITIVE_INFINITY;
+    var maxRight:Float = Math.NEGATIVE_INFINITY;
 
-    var rightMostSpr:T = sort(function(order:Int, a:T, b:T):Int
+    for (child in children)
     {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (x + a.localX) + a.width, (x + b.localX) + b.width);
-    }, false, FlxSort.DESCENDING)[0];
+      if (child == null || !child.alive || !child.localVisible) continue;
 
-    return Math.abs((x + rightMostSpr.localX) + rightMostSpr.width) - (x + leftMostSpr.localX);
+      var left:Float = child.localX * scale.x;
+      var right:Float = left + child.frameWidth * child.scale.x;
+
+      if (left < minLeft) minLeft = left;
+      if (right > maxRight) maxRight = right;
+    }
+
+    if (minLeft == Math.POSITIVE_INFINITY) return 0;
+    return maxRight - minLeft;
   }
 
   override function get_height():Float
   {
+    updateChildren();
+
     if (size < 1) return 0;
 
-    var downwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
+    var minTop:Float = Math.POSITIVE_INFINITY;
+    var maxBottom:Float = Math.NEGATIVE_INFINITY;
+
+    for (child in children)
     {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (y + a.localY) + a.height, (y + b.localY) + b.height);
-    }, false, FlxSort.DESCENDING)[0];
+      if (child == null || !child.alive || !child.localVisible) continue;
+      if (child.scale.y != scale.y * child.localScale.y) continue;
 
-    var upwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, y + a.localY, y + b.localY);
-    }, false)[0];
+      var top:Float = child.localY;
+      var bottom:Float = top + child.frameHeight * child.scale.y;
 
-    return Math.abs(((y + downwardsMostSpr.localY) + downwardsMostSpr.height) - (y + upwardsMostSpr.localY));
-  }
+      if (top < minTop) minTop = top;
+      if (bottom > maxBottom) maxBottom = bottom;
+    }
 
-  // include scale with frame sizes for better accuracy
-
-  function get_accurateWidth():Float
-  {
-    if (size < 1) return 0;
-
-    var leftMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, x + a.localX, x + b.localX);
-    }, false)[0];
-
-    var rightMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (x + a.localX) + (a.frameWidth * a.scale.x), (x + b.localX) + (b.frameWidth * a.scale.x));
-    }, false, FlxSort.DESCENDING)[0];
-
-    return Math.abs(((x + rightMostSpr.localX) + (rightMostSpr.frameWidth * rightMostSpr.scale.x)) - (x + leftMostSpr.localX));
-  }
-
-  function get_accurateHeight():Float
-  {
-    if (size < 1) return 0;
-
-    var downwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (y + a.localY) + (a.frameHeight * a.scale.y), (y + b.localY) + (b.frameHeight * a.scale.y));
-    }, false, FlxSort.DESCENDING)[0];
-
-    var upwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, y + a.localY, y + b.localY);
-    }, false)[0];
-
-    return Math.abs(((y + downwardsMostSpr.localY) + (downwardsMostSpr.frameHeight * downwardsMostSpr.scale.y)) - (y + upwardsMostSpr.localY));
+    if (minTop == Math.POSITIVE_INFINITY) return 0;
+    return maxBottom - minTop;
   }
 
   /**
@@ -823,4 +780,50 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override inline function updateColorTransform():Void
   {
   }
+
+  /**
+	 * Iterates through every member.
+	 */
+	public inline function iterator(?filter:T->Bool):FunkinGroupIterator<T>
+	{
+		return new FunkinGroupIterator<T>(children, filter);
+	}
+
+	/**
+	 * Iterates through every member and index.
+	 */
+	public inline function keyValueIterator()
+	{
+		return children.keyValueIterator();
+	}
+}
+
+class FunkinGroupIterator<T>
+{
+	var _groupMembers:Array<T>;
+	var _filter:T->Bool;
+	var _cursor:Int;
+	var _length:Int;
+
+	public inline function new(groupMembers:Array<T>, ?filter:T->Bool)
+	{
+		_groupMembers = groupMembers;
+		_filter = filter;
+		_cursor = 0;
+		_length = _groupMembers.length;
+	}
+
+	public inline function next()
+	{
+		return hasNext() ? _groupMembers[_cursor++] : null;
+	}
+
+	public inline function hasNext():Bool
+	{
+		while (_cursor < _length && (_groupMembers[_cursor] == null || _filter != null && !_filter(_groupMembers[_cursor])))
+		{
+			_cursor++;
+		}
+		return _cursor < _length;
+	}
 }
