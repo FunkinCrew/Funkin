@@ -19,13 +19,16 @@ class LevelRegistry extends BaseRegistry<Level, LevelData, LevelEntryParams> imp
 
   public function new()
   {
-    super(
-      {
-        registryId: 'LEVEL',
-        dataFilePath: 'ui/story-mode/levels',
-        nestedEntries: false,
-        versionRule: LEVEL_DATA_VERSION_RULE
-      });
+    super({
+      registryId: 'LEVEL',
+      dataFilePath: 'ui/story-mode/levels',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/levels'
+      ],
+      nestedEntries: false,
+      versionRule: LEVEL_DATA_VERSION_RULE
+    });
   }
 
   /**

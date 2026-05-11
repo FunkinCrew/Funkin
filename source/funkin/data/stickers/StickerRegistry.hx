@@ -23,6 +23,10 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
     super({
       registryId: 'STICKER',
       dataFilePath: 'ui/loading/stickers/stickerpacks',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/stickerpacks'
+      ],
       // nestedEntries: true, // This registry uses custom parsing.
       versionRule: STICKER_DATA_VERSION_RULE
     });

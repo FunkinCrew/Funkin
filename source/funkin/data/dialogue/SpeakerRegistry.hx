@@ -22,6 +22,10 @@ class SpeakerRegistry extends BaseRegistry<Speaker, SpeakerData, SpeakerEntryPar
     super({
       registryId: 'SPEAKER',
       dataFilePath: 'gameplay/dialogue/speakers',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/dialogue/speakers'
+      ],
       nestedEntries: true,
       versionRule: SPEAKER_DATA_VERSION_RULE
     });

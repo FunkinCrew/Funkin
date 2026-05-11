@@ -27,6 +27,10 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
     super({
       registryId: 'PLAYER',
       dataFilePath: 'gameplay/playable-characters',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/players'
+      ],
       nestedEntries: true,
       versionRule: PLAYER_DATA_VERSION_RULE
     });

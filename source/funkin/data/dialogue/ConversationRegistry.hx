@@ -22,6 +22,10 @@ class ConversationRegistry extends BaseRegistry<Conversation, ConversationData, 
     super({
       registryId: 'CONVERSATION',
       dataFilePath: 'gameplay/dialogue/conversations',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/dialogue/conversations'
+      ],
       nestedEntries: true,
       versionRule: CONVERSATION_DATA_VERSION_RULE
     });
