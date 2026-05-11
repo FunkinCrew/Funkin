@@ -16,6 +16,12 @@ typedef RegistryParams =
   var dataFilePath:String;
 
   /**
+   * Paths where data files for this registry used to be found on older versions.
+   * We try to load these for compatibility, but these are deprecated and may be removed in the future.
+   */
+  var ?compatDataFilePaths:Array<String>;
+
+  /**
    * Whether data files are expected to be nested.
    * If `false`, files will be at `<dataFilePath>/<id>.json`
    * If `true`, files will be at `<dataFilePath>/<id>/<id>.json`
@@ -50,7 +56,19 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   public final registryId:String;
 
+  /**
+   * The file path where data files for this registry can be found.
+   */
   final dataFilePath:String;
+
+  /**
+   * File paths where data files for this registry for older versions can be found.
+   */
+  final compatDataFilePaths:Array<String>;
+
+  /**
+   * Whether data files are expected to be nested.
+   */
   final nestedEntries:Bool;
 
   /**
@@ -79,10 +97,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   public function new(params:RegistryParams)
   {
-    final DEFAULT_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+    final DEFAULT_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
 
     this.registryId = params.registryId;
     this.dataFilePath = params.dataFilePath;
+    this.compatDataFilePaths = params.compatDataFilePaths ?? [];
     this.nestedEntries = params.nestedEntries ?? false;
     this.versionRule = params.versionRule ?? DEFAULT_VERSION_RULE;
 
@@ -141,7 +160,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // UNSCRIPTED ENTRIES
     //
     var entryIdList:Array<String> = fetchEntryIdsFromFiles();
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) ->
     {
       return !entries.exists(entryId);
     });
@@ -183,7 +202,16 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   function fetchEntryIdsFromFiles():Array<String>
   {
-    return funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries);
+    var result:Array<String> = [];
+
+    result.append(funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries));
+
+    for (path in compatDataFilePaths)
+    {
+      result.append(funkin.assets.Assets.listDataFilesInPath('${path}/', ASSET_BLACKLIST, false));
+    }
+
+    return result;
   }
 
   /**

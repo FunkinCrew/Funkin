@@ -42,6 +42,10 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     super({
       registryId: 'SONG',
       dataFilePath: 'gameplay/songs',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/songs'
+      ],
       // nestedEntries: true, // This registry uses custom parsing.
       versionRule: SONG_METADATA_VERSION_RULE
     });
@@ -463,7 +467,16 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   override function fetchEntryIdsFromFiles():Array<String>
   {
-    return funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', true);
+    var result = [];
+
+    result.append(funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', ASSET_BLACKLIST, true));
+
+    for (path in compatDataFilePaths)
+    {
+      result.append(funkin.assets.Assets.listDataFilesInPath('${path}/', '-metadata.json', ASSET_BLACKLIST, nestedEntries));
+    }
+
+    return result;
   }
 
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
@@ -472,6 +485,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
+      // TODO: Check each compatDataFilePath
+
       trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       return null;
     }
@@ -485,7 +500,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
-    if (!openfl.Assets.exists(entryFilePath)) return null;
+    if (!openfl.Assets.exists(entryFilePath))
+    {
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      return null;
+    }
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
@@ -496,7 +515,13 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath)) return null;
+    if (!openfl.Assets.exists(entryFilePath))
+    {
+      // TODO: Check each compatDataFilePath
+
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      return null;
+    }
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
     rawJson = rawJson.trim();

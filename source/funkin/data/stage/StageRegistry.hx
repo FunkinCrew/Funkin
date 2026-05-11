@@ -22,6 +22,10 @@ class StageRegistry extends BaseRegistry<Stage, StageData, StageEntryParams> imp
     super({
       registryId: 'STAGE',
       dataFilePath: 'gameplay/stages',
+      compatDataFilePaths: [
+        // v0.3.0-v0.8.4
+        'data/stages'
+      ],
       nestedEntries: true,
       versionRule: STAGE_DATA_VERSION_RULE
     });
