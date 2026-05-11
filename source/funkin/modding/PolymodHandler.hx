@@ -256,6 +256,16 @@ class PolymodHandler
 
   static function buildImports():Void
   {
+    buildConvenienceAliases();
+    buildCompatAliases();
+    buildBlacklist();
+  }
+
+  /**
+   * Build Polymod imports and aliases for general convenience.
+   */
+  static function buildConvenienceAliases():Void
+  {
     // Add default imports for common classes.
     static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
       funkin.Assets,
@@ -269,7 +279,35 @@ class PolymodHandler
     {
       Polymod.addDefaultImport(cls);
     }
+  }
 
+  /**
+   * Build Polymod imports and aliases for compatibility with older mods.
+   */
+  static function buildCompatAliases():Void
+  {
+    Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
+    Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
+    Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+
+    // TODO: Does this work?
+    Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.FunkinSprite);
+  }
+
+  /**
+   * Build Polymod's blacklist for prohibited classes and packages.
+   */
+  static function buildBlacklist():Void
+  {
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);

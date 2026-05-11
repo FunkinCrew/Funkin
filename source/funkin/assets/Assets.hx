@@ -760,7 +760,6 @@ class Assets implements ConsoleClass
    */
   public static function exists(path:String, ?type:openfl.utils.AssetType):Bool
   {
-    trace('Checking for asset: ${path}');
     return openfl.utils.Assets.exists(path, type);
   }
 
@@ -814,7 +813,7 @@ class Assets implements ConsoleClass
 
     // We don't need to cache this filter operation because it only takes a couple nanoseconds.
     var prefix:String = defaultPrefix ? 'assets/$path' : path;
-    return results.filter(function(assetPath:AssetPath):Bool
+    return results.filter((assetPath:AssetPath) ->
     {
       return assetPath.exists() && assetPath.toString().startsWith(prefix);
     });

@@ -300,23 +300,24 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function loadEntryFile(id:String):JsonFile
   {
-    var entryFilePath:AssetPath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
+    var entryFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
 
-    if (!entryFilePath.exists())
+    if (!funkin.assets.Assets.exists(entryFilePath.toString()))
     {
-      // Check each compatDataFilePath
+      // Check each compatDataFilePath to support older versions.
       for (path in compatDataFilePaths)
       {
         entryFilePath = funkin.assets.Paths.json('${path}/${id}');
-        if (entryFilePath.exists()) break;
+        if (funkin.assets.Assets.exists(entryFilePath.toString())) break;
       }
+    }
 
-      if (!entryFilePath.exists())
-      {
-        // Fallthrough if none of the paths exists.
-        entryFilePath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
-        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-      }
+    if (!funkin.assets.Assets.exists(entryFilePath.toString()))
+    {
+      // Fallthrough if none of the paths exists.
+      entryFilePath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      throw 'Could not find file $entryFilePath';
     }
 
     var rawJson:String = funkin.assets.Assets.getText(entryFilePath).trim();

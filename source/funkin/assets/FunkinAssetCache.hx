@@ -481,6 +481,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
       throw 'Text not cached, cannot load synchronously: $id';
       #else
       FlxG.log.warn('Text not cached, may experience stuttering! ${id}');
+
+      if (!OpenFLAssets.exists(id))
+      {
+        trace(' ASSETS '.bg_green() + 'Text file does not exist: $id');
+        funkin.util.DebugUtil.printCallStack();
+        throw 'Text file does not exist: $id';
+      }
+
       var text:String = OpenFLAssets.getText(id);
       setText(id, text);
       return text;

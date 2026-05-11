@@ -40,6 +40,12 @@ class CharacterDataParser
   static final characterScriptedClass:Map<String, String> = new Map<String, String>();
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
   static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
+  static final DATA_FILE_PATH:String = 'gameplay/characters';
+
+  /**
+   * Data files
+   */
+  static final COMPAT_DATA_FILE_PATHS:Array<String> = ['data/characters'];
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
@@ -55,8 +61,8 @@ class CharacterDataParser
     //
     // UNSCRIPTED CHARACTERS
     //
-    var charIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('gameplay/characters/', ASSET_BLACKLIST, true);
-    var unscriptedCharIds:Array<String> = charIdList.filter(function(charId:String):Bool
+    var charIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('$DATA_FILE_PATH/', ASSET_BLACKLIST, true);
+    var unscriptedCharIds:Array<String> = charIdList.filter((charId:String) ->
     {
       return !characterCache.exists(charId);
     });
@@ -414,8 +420,28 @@ class CharacterDataParser
   static function loadCharacterFile(charPath:String):String
   {
     // Nested.
-    var charFilePath:String = Paths.json('gameplay/characters/$charPath/$charPath');
-    var rawJson = Assets.getText(charFilePath).trim();
+    var charFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json('$DATA_FILE_PATH/$charPath/$charPath');
+
+    if (!funkin.assets.Assets.exists(charFilePath.toString()))
+    {
+      // Check each compatDataFilePath to support older versions.
+      for (path in COMPAT_DATA_FILE_PATHS)
+      {
+        // Not nested.
+        charFilePath = funkin.assets.Paths.json('${path}/${charPath}');
+        if (funkin.assets.Assets.exists(charFilePath.toString())) break;
+      }
+    }
+
+    if (!funkin.assets.Assets.exists(charFilePath.toString()))
+    {
+      // Fallthrough if none of the paths exists.
+      charFilePath = funkin.assets.Paths.json('gameplay/characters/$charPath/$charPath');
+      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $charFilePath');
+      throw 'Could not find file $charFilePath';
+    }
+
+    var rawJson = funkin.assets.Assets.getText(charFilePath).trim();
 
     while (!StringTools.endsWith(rawJson, '}'))
     {
