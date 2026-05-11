@@ -34,11 +34,22 @@ class CacheLifeCycle
 
   static function reuseIfPossible<T>(cache:CacheTriplet<T>, key:String):Null<T>
   {
-    if (!cache.previous.exists(key)) return null;
-
     var asset:Null<T> = cache.previous.get(key);
-    cache.previous.remove(key);
-    if (asset != null) cache.current.set(key, asset);
+
+    if (asset != null)
+    {
+      cache.previous.remove(key);
+    }
+    else
+    {
+      asset = cache.permanent.get(key);
+    }
+
+    if (asset != null)
+    {
+      cache.current.set(key, asset);
+    }
+
     return asset;
   }
 }

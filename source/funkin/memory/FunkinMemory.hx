@@ -10,13 +10,15 @@ import funkin.assets.Paths.AssetPath;
 import openfl.Assets as OpenFLAssets;
 import openfl.media.Sound;
 import funkin.assets.Assets;
-import funkin.util.flixel.sound.FlxPartialSound;
+import funkin.assets.FunkinAssetCache;
+import lime.app.Future;
 
 /**
  * Handles caching of textures and sounds for the game.
  * I did this hello, this can be improved later on and I have ideas on how, but for now this functions well enough. -Zack
  */
-@:nullSafety @:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
+@:nullSafety
+@:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
 class FunkinMemory
 {
   /**
@@ -25,61 +27,6 @@ class FunkinMemory
   public static function initialCache():Void
   {
     BitmapCache.init();
-    var allImages:Array<AssetPath> = Assets.list(AssetType.IMAGE);
-
-    // Looks for the UI
-    for (file in allImages)
-    {
-      var fileStr:String = file;
-      if (!(fileStr.endsWith('.png') #if FEATURE_COMPRESSED_TEXTURES || fileStr.endsWith('.astc') #end)
-        || fileStr.contains('chart-editor')
-        || !fileStr.contains('ui/')
-        || fileStr.contains('flixel'))
-      {
-        continue;
-      }
-
-      fileStr = fileStr.replace(' ', ''); // Handle stray spaces.
-
-      permanentCacheTexture(file);
-    }
-
-    permanentCacheTexture(Paths.image('gameplay/general/health-bar'));
-    permanentCacheTexture(Paths.image('ui/main-menu/menu-desat'));
-    permanentCacheTexture(Paths.image('gameplay/notestyles/funkin/notes'));
-    permanentCacheTexture(Paths.image('gameplay/notestyles/funkin/note-splashes'));
-    permanentCacheTexture(Paths.image('gameplay/notestyles/funkin/note-strumline'));
-    permanentCacheTexture(Paths.image('gameplay/notestyles/funkin/note-holds'));
-    permanentCacheTexture(Paths.image('ui/fonts/bold'));
-    permanentCacheTexture(Paths.image('ui/fonts/default'));
-    permanentCacheTexture(Paths.image('ui/fonts/freeplay-clear'));
-
-    // Looks for countdown sounds
-    var allSounds:Array<AssetPath> = Assets.list(AssetType.SOUND);
-
-    for (file in allSounds)
-    {
-      var fileStr:String = file;
-      if (!fileStr.endsWith('.ogg') || !fileStr.contains('countdown/') || fileStr.contains('flixel')) continue;
-
-      fileStr = fileStr.replace(' ', '');
-
-      permanentCacheSound(file);
-    }
-
-    permanentCacheSound(Paths.sound('ui/main-menu/cancel-menu'));
-    permanentCacheSound(Paths.sound('ui/main-menu/confirm-menu'));
-    permanentCacheSound(Paths.sound('ui/main-menu/screenshot'));
-    permanentCacheSound(Paths.sound('ui/main-menu/scroll-menu'));
-    permanentCacheSound(Paths.sound('ui/soundtray/volume-down'));
-    permanentCacheSound(Paths.sound('ui/soundtray/volume-max'));
-    permanentCacheSound(Paths.sound('ui/soundtray/volume-up'));
-    permanentCacheSound(Paths.music('ui/main-menu/freaky-menu/freaky-menu'));
-    permanentCacheSound(Paths.music('ui/input-offsets/offsets-loop/offsets-loop'));
-    permanentCacheSound(Paths.music('ui/input-offsets/drums-loop/drums-loop'));
-    permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-1'));
-    permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-2'));
-    permanentCacheSound(Paths.sound('gameplay/general/sounds/miss-note-3'));
   }
 
   /**
@@ -88,12 +35,11 @@ class FunkinMemory
    */
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
-    trace(' CLEARING CACHE '.bg_bright_lilac().bold() +  ' Disposing all cached textures, assets and sounds...');
-
-    preparePurgeTextureCache();
+    FunkinAssetCache.instance.preparePurgeCache();
+    FunkinAssetCache.instance.purgeCache();
+    // preparePurgeTextureCache();
     preparePurgeSoundCache();
-    cleanCurrentLevel();
-    purgeTextureCache();
+    // purgeTextureCache();
     purgeSoundCache();
     #if (cpp || neko || hl)
     if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
@@ -108,7 +54,8 @@ class FunkinMemory
    */
   public static function cacheTexture(key:AssetPath):Void
   {
-    BitmapCache.cache(key);
+    // BitmapCache.cache(key);
+    FunkinAssetCache.instance.cacheFlxGraphic(key);
   }
 
   /**
@@ -117,7 +64,7 @@ class FunkinMemory
    */
   static function permanentCacheTexture(key:AssetPath):Void
   {
-    BitmapCache.permanentCache(key);
+    // BitmapCache.permanentCache(key);
   }
 
   /**
@@ -131,9 +78,9 @@ class FunkinMemory
   /**
    * Checks, if graphic with given path cached in memory.
    */
-  public static function getCachedGraphic(path:AssetPath):Null<FlxGraphic>
+  public static function getCachedGraphic(path:AssetPath):Future<FlxGraphic>
   {
-    return BitmapCache.getCachedGraphic(path);
+    return FunkinAssetCache.instance.fetchFlxGraphic(path, true);
   }
 
   /**
@@ -250,50 +197,6 @@ class FunkinMemory
   }
 
   ///// MISC /////
-  // call after prep purge and before purge
-
-  public static function cleanCurrentLevel():Void
-  {
-    // log('Cleaning assets for level ${Paths.currentLevel}');
-    // if (Paths.currentLevel == null || Paths.currentLevel == "") return;
-    // for (key in BitmapCache.cacheTriplet.previous.keys())
-    // {
-    //   if (!key.startsWith(Paths.currentLevel)) continue;
-    //   var obj:Null<FlxGraphic> = BitmapCache.cacheTriplet.previous.get(key);
-    //   if (obj != null)
-    //   {
-    //     obj.destroy();
-    //   }
-    //   BitmapCache.cacheTriplet.previous.remove(key);
-    //   Assets.cache.removeBitmapData(key);
-    // }
-
-    // @:privateAccess
-    // for (key in FlxG.bitmap._cache.keys())
-    // {
-    //   if (!FlxG.bitmap._cache.exists(key)) continue;
-
-    //   if (!key.startsWith(Paths.currentLevel)) continue;
-    //   var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
-    //   if (obj != null)
-    //   {
-    //     obj.destroy();
-    //   }
-    //   FlxG.bitmap.removeKey(key);
-    //   BitmapCache.cacheTriplet.previous.remove(key);
-    //   Assets.cache.removeBitmapData(key);
-    // }
-
-    // for (key in SoundCache.cacheTriplet.previous.keys())
-    // {
-    //   if (!key.startsWith(Paths.currentLevel)) continue;
-    //   SoundCache.cacheTriplet.previous.remove(key);
-    //   Assets.cache.removeSound(key);
-    //   log('Cleaning SOUND asset $key');
-    // }
-
-    // Assets.cache.clear(Paths.currentLevel);
-  }
 
   /**
    * Clears all Freeplay assets from memory.
@@ -315,8 +218,8 @@ class FunkinMemory
     {
       log('Cleaning asset $key');
       if (BitmapCache.cacheTriplet.current.exists(key)) BitmapCache.cacheTriplet.current.remove(key);
-      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
-      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
+      FunkinAssetCache.instance.removeFlxGraphic(key);
+      FunkinAssetCache.instance.removeBitmapData(key);
     }
 
     preparePurgeSoundCache();
@@ -343,8 +246,8 @@ class FunkinMemory
     {
       log('Cleaning asset $key');
       if (BitmapCache.cacheTriplet.current.exists(key)) BitmapCache.cacheTriplet.current.remove(key);
-      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
-      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
+      FunkinAssetCache.instance.removeFlxGraphic(key);
+      FunkinAssetCache.instance.removeBitmapData(key);
     }
   }
 

@@ -10,6 +10,7 @@ import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
 import funkin.memory.CacheLifeCycle;
 import funkin.assets.Paths.AssetPath;
+import funkin.assets.FunkinAssetCache;
 
 @:nullSafety @:allow(funkin.memory.FunkinMemory)
 class SoundCache
@@ -59,7 +60,7 @@ class SoundCache
       if (sound != null)
       {
         FunkinMemory.log('Cleaning SOUND asset $key');
-        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeSound(key);
+        FunkinAssetCache.instance.removeSound(key);
         cacheTriplet.previous.remove(key);
       }
     }
@@ -73,9 +74,9 @@ class SoundCache
 
       file = file.replace(" ", "");
 
-      if (cacheTriplet.permanent.exists(file) || !funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.hasSound(file)) continue;
+      if (cacheTriplet.permanent.exists(file) || !FunkinAssetCache.instance.hasSound(file)) continue;
       FunkinMemory.log('Cleaning SOUND asset $file');
-      funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeSound(file);
+      FunkinAssetCache.instance.removeSound(file);
     }
 
     FlxPartialSound.clearCache();

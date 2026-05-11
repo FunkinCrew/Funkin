@@ -4,13 +4,9 @@ import funkin.assets.Paths.AssetPath;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
 import funkin.play.notes.notestyle.NoteStyle;
-import openfl.utils.AssetType;
-// import funkin.assets.Assets.AssetType;
-import funkin.assets.Assets;
-import openfl.media.Sound;
-import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
 import funkin.memory.CacheLifeCycle;
+import funkin.assets.FunkinAssetCache;
 
 @:nullSafety @:allow(funkin.memory.FunkinMemory)
 class BitmapCache
@@ -102,7 +98,8 @@ class BitmapCache
    */
   static function isCached(path:AssetPath):Bool
   {
-    return (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path) || cacheTriplet.previous.exists(path));
+    if (cacheTriplet.previous.exists(path)) return false;
+    return (cacheTriplet.permanent.exists(path) || cacheTriplet.current.exists(path));
   }
 
   static function getCachedGraphic(path:AssetPath):Null<FlxGraphic>
@@ -141,8 +138,8 @@ class BitmapCache
       if (graphic != null)
       {
         cacheTriplet.previous.remove(key);
-        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
-        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
+        FunkinAssetCache.instance.removeFlxGraphic(key);
+        FunkinAssetCache.instance.removeBitmapData(key);
       }
     }
 
@@ -159,8 +156,8 @@ class BitmapCache
       {
         if (!key.contains(purgeEntry)) continue;
 
-        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeFlxGraphic(key);
-        funkin.assets.FunkinAssetCache.FunkinAssetCache.instance.removeBitmapData(key);
+        FunkinAssetCache.instance.removeFlxGraphic(key);
+        FunkinAssetCache.instance.removeBitmapData(key);
       }
     }
   }

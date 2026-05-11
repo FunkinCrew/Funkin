@@ -1,5 +1,7 @@
 package funkin.assets;
 
+import funkin.memory.StagedCache;
+// import funkin.assets.ugh.BitmapDataSC;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxDestroyUtil;
@@ -32,33 +34,28 @@ import funkin.assets.ValidatedPaths as Paths;
  * An override for the OpenFL AssetCache class to override the internal cache with our own.
  * This allows us to be more specific about when assets are cached, and when they are purged.
  */
-@:nullSafety
+// @:nullSafety
+
 class FunkinAssetCache implements OpenFLIAssetCache
 {
   /**
-    BitmapData cache map
+    Openfl BitmapData cache map
   **/
   public var bitmapData:Map<String, BitmapData> = [];
 
   /**
-    Font cache map
+    Openfl Font cache map
   **/
   public var font:Map<String, Font> = [];
 
   /**
-    Sound cache map
+    Openfl Sound cache map
   **/
   public var sound:Map<String, Sound> = [];
 
-  /**
-   * Cache containing FlxGraphics
-   */
-  var current_flxGraphic:Map<String, FlxGraphic>;
-
-  /**
-   * Cache containing BitmapDatas (usually for FlxGraphics)
-   */
-  var current_bitmapData:Map<String, BitmapData>;
+  // var stagedFlxGraphic:StagedCache<FlxGraphic>;
+  // var stagedBitmapData:BitmapDataSC<BitmapData>;
+  var stagedBitmapData:StagedCache<BitmapData>;
 
   /**
    * Cache containing Fonts
@@ -82,8 +79,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   // Previous caches hold the assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
   // If `purgeCache()` is called, any assets in these caches will be destroyed, and their memory will be freed.
-  var previous_flxGraphic:Map<String, FlxGraphic>;
-  var previous_bitmapData:Map<String, BitmapData>;
   var previous_font:Map<String, Font>;
   var previous_sound:Map<String, Sound>;
   var previous_text:Map<String, String>;
@@ -132,14 +127,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   public function new()
   {
-    current_flxGraphic = [];
-    current_bitmapData = [];
+    // stagedFlxGraphic = new StagedCache<FlxGraphic>(FlxG.bitmap.remove, function(graphic:FlxGraphic)
+    // {
+    //   graphic.persist = true;
+    //   graphic.destroyOnNoUse = false;
+    // });
+
+    stagedBitmapData = new StagedCache<BitmapData>(FlxDestroyUtil.dispose, function(_:BitmapData)
+    {
+    });
     current_font = [];
     current_sound = [];
     current_text = [];
     current_bytes = [];
-    previous_flxGraphic = [];
-    previous_bitmapData = [];
     previous_font = [];
     previous_sound = [];
     previous_text = [];
@@ -158,14 +158,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       trace('[ASSETS] Force clearing asset cache...');
 
-      current_flxGraphic = [];
-      current_bitmapData = [];
+      // for (key in stagedFlxGraphic.allKeys())
+      // {
+      //   removeFlxGraphic(key);
+      // }
+      FunkinBitmapFrontend.instance.reset();
+
+      for (key in stagedBitmapData.allKeys())
+      {
+        removeBitmapData(key);
+      }
+
       current_font = [];
       current_sound = [];
       current_text = [];
       current_bytes = [];
-      previous_flxGraphic = [];
-      previous_bitmapData = [];
       previous_font = [];
       previous_sound = [];
       previous_text = [];
@@ -177,15 +184,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
     else
     {
       trace('[ASSETS] Force clearing cached assets with prefix: $prefix');
+      FunkinBitmapFrontend.instance.resetByPrefix(prefix);
 
-      for (key in current_flxGraphic.keys())
-      {
-        if (key.startsWith(prefix))
-        {
-          removeFlxGraphic(key);
-        }
-      }
-      for (key in current_bitmapData.keys())
+      // for (key in stagedFlxGraphic.allKeys())
+      // {
+      //   if (key.startsWith(prefix))
+      //   {
+      //     removeFlxGraphic(key);
+      //   }
+      // }
+      for (key in stagedBitmapData.allKeys())
       {
         if (key.startsWith(prefix))
         {
@@ -220,8 +228,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
           removeBytes(key);
         }
       }
-      previous_flxGraphic = [];
-      previous_bitmapData = [];
       previous_font = [];
       previous_sound = [];
       previous_text = [];
@@ -238,18 +244,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache(recachePersistent:Bool = true):Void
   {
-    previous_flxGraphic = current_flxGraphic;
-    current_flxGraphic = [];
-    previous_bitmapData = current_bitmapData;
-    current_bitmapData = [];
-    previous_font = current_font;
-    current_font = [];
-    previous_sound = current_sound;
-    current_sound = [];
-    previous_text = current_text;
-    current_text = [];
-    previous_bytes = current_bytes;
-    current_bytes = [];
+    stagedBitmapData.preparePurge();
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurge();
+    // previous_font = current_font;
+    // current_font = [];
+    // previous_sound = current_sound;
+    // current_sound = [];
+    // previous_text = current_text;
+    // current_text = [];
+    // previous_bytes = current_bytes;
+    // current_bytes = [];
 
     if (recachePersistent) recachePersistentAssets();
   }
@@ -260,55 +264,34 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   function recachePersistentAssets():Void
   {
+    // Handle Images (Special case with two calls)
     for (asset in Assets.queryPersistentAssets(IMAGE))
     {
       recacheBitmapData(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(IMAGE))
-    {
       recacheFlxGraphic(asset);
     }
 
-    for (asset in Assets.queryPersistentAssets(SOUND))
+    // Handle Text-based assets (JSON, XML, Scripts, etc.)
+    var textTypes = [
+      TEXT,
+      JSON,
+      SHADER,
+      SCRIPT,
+      SCRIPTED_CLASS,
+      XML
+    ];
+
+    for (type in textTypes)
     {
-      recacheSound(asset);
+      for (asset in Assets.queryPersistentAssets(type))
+      {
+        recacheText(asset);
+      }
     }
 
-    for (asset in Assets.queryPersistentAssets(TEXT))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(JSON))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(SHADER))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(SCRIPT))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(SCRIPTED_CLASS))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(XML))
-    {
-      recacheText(asset);
-    }
-
-    for (asset in Assets.queryPersistentAssets(UNKNOWN))
-    {
-      recacheBytes(asset);
-    }
+    // Handle specific single-call types
+    for (asset in Assets.queryPersistentAssets(SOUND)) recacheSound(asset);
+    for (asset in Assets.queryPersistentAssets(UNKNOWN)) recacheBytes(asset);
   }
 
   /**
@@ -316,59 +299,45 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function purgeCache():Void
   {
-    for (key in previous_flxGraphic.keys())
-    {
-      var graphic:Null<FlxGraphic> = previous_flxGraphic.get(key);
-      if (graphic == null) continue;
-      previous_flxGraphic.remove(key);
-      // Actually destroy the graphic.
-      FlxG.bitmap.remove(graphic);
-      graphic.destroy();
-    }
-    for (key in previous_bitmapData.keys())
-    {
-      var bitmapData:Null<BitmapData> = previous_bitmapData.get(key);
-      if (bitmapData == null) continue;
-      previous_bitmapData.remove(key);
-      // Actually destroy the bitmap data.
-      FlxDestroyUtil.dispose(bitmapData);
-      FunkinLimeAssetCache.instance.removeImage(key);
-    }
-    for (key in previous_font.keys())
-    {
-      var font:Null<Font> = previous_font.get(key);
-      if (font == null) continue;
-      previous_font.remove(key);
-      // Actually destroy the font.
-      FunkinLimeAssetCache.instance.removeFont(key);
-    }
-    for (key in previous_sound.keys())
-    {
-      var sound:Null<Sound> = previous_sound.get(key);
-      if (sound == null) continue;
-      previous_sound.remove(key);
-      // Actually destroy the sound.
-      sound.close();
-      FunkinLimeAssetCache.instance.removeAudio(key);
-    }
-    for (key in previous_text.keys())
-    {
-      var text:Null<String> = previous_text.get(key);
-      if (text == null) continue;
-      previous_text.remove(key);
-      // Actually destroy the text.
-      // FunkinLimeAssetCache.instance.removeText(key);
-    }
-    for (key in previous_bytes.keys())
-    {
-      var bytes:Null<openfl.utils.ByteArray> = previous_bytes.get(key);
-      if (bytes == null) continue;
-      previous_bytes.remove(key);
-      // Actually destroy the binary.
-      // FunkinLimeAssetCache.instance.removeBinary(key);
-    }
-    // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
-    MemoryUtil.compact();
+    // stagedFlxGraphic.purge();
+    stagedBitmapData.purge();
+    FunkinBitmapFrontend.instance.clearCache();
+
+    // for (key in previous_font.keys())
+    // {
+    //   var font:Null<Font> = previous_font.get(key);
+    //   if (font == null) continue;
+    //   previous_font.remove(key);
+    //   // Actually destroy the font.
+    //   FunkinLimeAssetCache.instance.removeFont(key);
+    // }
+    // for (key in previous_sound.keys())
+    // {
+    //   var sound:Null<Sound> = previous_sound.get(key);
+    //   if (sound == null) continue;
+    //   previous_sound.remove(key);
+    //   // Actually destroy the sound.
+    //   sound.close();
+    //   FunkinLimeAssetCache.instance.removeAudio(key);
+    // }
+    // for (key in previous_text.keys())
+    // {
+    //   var text:Null<String> = previous_text.get(key);
+    //   if (text == null) continue;
+    //   previous_text.remove(key);
+    //   // Actually destroy the text.
+    //   // FunkinLimeAssetCache.instance.removeText(key);
+    // }
+    // for (key in previous_bytes.keys())
+    // {
+    //   var bytes:Null<openfl.utils.ByteArray> = previous_bytes.get(key);
+    //   if (bytes == null) continue;
+    //   previous_bytes.remove(key);
+    //   // Actually destroy the binary.
+    //   // FunkinLimeAssetCache.instance.removeBinary(key);
+    // }
+    // // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
+    // MemoryUtil.collect(true);
   }
 
   /**
@@ -379,22 +348,18 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFlxGraphic(id:String):FlxGraphic
   {
-    var result:Null<FlxGraphic> = current_flxGraphic.get(id);
-    if (result != null)
-    {
-      return result;
-    }
-    else
-    {
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Flixel graphic not cached, cannot load synchronously: $id';
-      #else
-      // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
-      var graphic:FlxGraphic = FlxGraphic.fromBitmapData(getBitmapData(id));
-      setFlxGraphic(id, graphic);
-      return graphic;
-      #end
-    }
+    // var result:Null<FlxGraphic> = stagedFlxGraphic.get(id);
+    // if (result != null) return result;
+
+    // #if FEATURE_STRICT_ASSET_CACHING
+    // throw 'Flixel graphic not cached, cannot load synchronously: $id';
+    // #else
+    // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
+    // var graphic:FlxGraphic = FlxGraphic.fromBitmapData(getBitmapData(id));
+    // setFlxGraphic(id, graphic);
+    // return graphic;
+    // #end
+    return FunkinBitmapFrontend.instance.getSafe(id);
   }
 
   /**
@@ -405,7 +370,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getBitmapData(id:String):BitmapData
   {
-    var result:Null<BitmapData> = current_bitmapData.get(id);
+    var result:Null<BitmapData> = stagedBitmapData.get(id);
     if (result != null)
     {
       return result;
@@ -579,7 +544,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasFlxGraphic(path:AssetPath):Bool
   {
-    return current_flxGraphic.exists(path.toString());
+    // return stagedFlxGraphic.exists(path.toString());
+    return FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(path.toString());
   }
 
   /**
@@ -589,7 +555,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasBitmapData(id:String):Bool
   {
-    return current_bitmapData.exists(id);
+    return stagedBitmapData.exists(id);
   }
 
   /**
@@ -639,22 +605,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeFlxGraphic(id:String):Bool
   {
-    var result:Bool = false;
-    var graphic:Null<FlxGraphic> = previous_flxGraphic.get(id);
-    if (graphic != null)
+    // return stagedFlxGraphic.remove(id);
+    if (FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(id))
     {
-      FlxG.bitmap.remove(graphic);
-      graphic.destroy();
-      result = previous_flxGraphic.remove(id) || result;
+      FunkinBitmapFrontend.instance.removeByKey(id);
+      return true;
     }
-    graphic = current_flxGraphic.get(id);
-    if (graphic != null)
-    {
-      FlxG.bitmap.remove(graphic);
-      graphic.destroy();
-      result = current_flxGraphic.remove(id) || result;
-    }
-    return result;
+
+    return false;
   }
 
   /**
@@ -664,20 +622,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeBitmapData(id:String):Bool
   {
-    var result:Bool = false;
-    var bitmap:Null<BitmapData> = previous_bitmapData.get(id);
-    if (bitmap != null)
-    {
-      FlxDestroyUtil.dispose(bitmap);
-      result = previous_bitmapData.remove(id) || result;
-    }
-    bitmap = current_bitmapData.get(id);
-    if (bitmap != null)
-    {
-      FlxDestroyUtil.dispose(bitmap);
-      result = current_bitmapData.remove(id) || result;
-    }
-    return result;
+    return stagedBitmapData.remove(id);
   }
 
   /**
@@ -727,11 +672,30 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   function setFlxGraphic(id:String, flxGraphic:FlxGraphic):Void
   {
+    // #if FEATURE_DEBUG_TRACY
+    // cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
+    // #end
+    // // Make sure we don't accidentally dispose the bitmap associated with this FlxGraphic.
+    // var bitmap:Null<BitmapData> = stagedBitmapData.get(id);
+    // if (bitmap != null)
+    // {
+    //   setBitmapData(id, bitmap);
+    // }
+    // else
+    // {
+    //   throw 'Could not locate bitmap data for cached graphic ($id)';
+    // }
+    // // Make sure we don't accidentally destroy the graphic while we're using it.
+    // flxGraphic.persist = true;
+    // flxGraphic.destroyOnNoUse = false;
+    // stagedFlxGraphic.current.set(id, flxGraphic);
+    // stagedFlxGraphic.previous.remove(id);
+
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
     #end
     // Make sure we don't accidentally dispose the bitmap associated with this FlxGraphic.
-    var bitmap:Null<BitmapData> = previous_bitmapData.get(id) ?? current_bitmapData.get(id);
+    var bitmap:Null<BitmapData> = stagedBitmapData.get(id);
     if (bitmap != null)
     {
       setBitmapData(id, bitmap);
@@ -743,8 +707,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // Make sure we don't accidentally destroy the graphic while we're using it.
     flxGraphic.persist = true;
     flxGraphic.destroyOnNoUse = false;
-    current_flxGraphic.set(id, flxGraphic);
-    previous_flxGraphic.remove(id);
+    FunkinBitmapFrontend.instance.addGraphicByKey(id, flxGraphic);
   }
 
   /**
@@ -757,8 +720,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setBitmapData($id)');
     #end
-    current_bitmapData.set(id, bitmapData);
-    previous_bitmapData.remove(id);
+    stagedBitmapData.current.set(id, bitmapData);
+    stagedBitmapData.previous.remove(id);
   }
 
   /**
@@ -1163,6 +1126,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(value);
     }
 
+    // bitmap is NULL augghghggh
     var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(assetPath.toString(), false).then((bitmapData:BitmapData) ->
     {
       if (uploadToGPU)
@@ -1180,13 +1144,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   function recacheBitmapData(assetPath:AssetPath):Null<BitmapData>
   {
-    if (!previous_bitmapData.exists(assetPath.toString())) return null;
+    if (!stagedBitmapData.exists(assetPath.toString())) return null;
 
     // Move the graphic from the previous cache to the current cache.
-    var cacheValue:Null<BitmapData> = previous_bitmapData.get(assetPath.toString());
+    var cacheValue:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
     if (cacheValue == null) throw 'Whuh?';
     var validCacheValue:BitmapData = cacheValue;
-    setBitmapData(assetPath.toString(), validCacheValue);
     return validCacheValue;
   }
 
@@ -1226,16 +1189,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   function recacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool):Null<Future<FlxGraphic>>
   {
-    if (!previous_flxGraphic.exists(assetPath.toString())) return null;
+    if (!FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(assetPath.toString())) return null;
 
     // NOTE: This moves the bitmap data from the previous cache to the current cache.
     var future:Future<FlxGraphic> = this.cacheBitmapData(assetPath, uploadToGPU).then((_bitmapData:BitmapData) ->
     {
-      // Move the graphic from the previous cache to the current cache.
-      var cacheValue:Null<FlxGraphic> = previous_flxGraphic.get(assetPath.toString());
+      var cacheValue:Null<FlxGraphic> = FunkinBitmapFrontend.instance.stagedFlxGraphic.get(assetPath.toString());
       if (cacheValue == null) throw 'Whuh?';
       var validCacheValue:FlxGraphic = cacheValue;
-      setFlxGraphic(assetPath.toString(), validCacheValue);
       return Future.withValue(validCacheValue);
     });
     return future;
@@ -1377,20 +1338,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     trace('[ASSETS] Cached assets:');
     trace('[ASSETS] BITMAP DATA:');
-    var keys:Array<String> = current_bitmapData.keys().array();
+    var keys:Array<String> = stagedBitmapData.current.keys().array();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
       trace('[ASSETS] - $key');
     }
 
-    trace('[ASSETS] FLX GRAPHIC:');
-    var keys:Array<String> = current_flxGraphic.keys().array();
-    keys.sort(SortUtil.alphabetically);
-    for (key in keys)
-    {
-      trace('[ASSETS] - $key');
-    }
+    // trace('[ASSETS] FLX GRAPHIC:');
+    // var keys:Array<String> = stagedFlxGraphic.current.keys().array();
+    // keys.sort(SortUtil.alphabetically);
+    // for (key in keys)
+    // {
+    //   trace('[ASSETS] - $key');
+    // }
 
     trace('[ASSETS] FONT:');
     var keys:Array<String> = current_font.keys().array();
@@ -1627,53 +1588,5 @@ class FunkinLimeAssetCache extends LimeAssetCache
   public function toString():String
   {
     return 'FunkinLimeAssetCache';
-  }
-}
-
-/**
- * An override for the HaxeFlixel BitmapFrontend class to provide additional logging.
- */
-class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
-{
-  /**
-   * The singleton instance of the FunkinBitmapFrontend.
-   */
-  public static var instance(get, never):FunkinBitmapFrontend;
-
-  static var _instance:Null<FunkinBitmapFrontend> = null;
-
-  static function get_instance():FunkinBitmapFrontend
-  {
-    if (FunkinBitmapFrontend._instance == null) _instance = new FunkinBitmapFrontend();
-    if (FunkinBitmapFrontend._instance == null) throw 'Could not initialize singleton FunkinBitmapFrontend!';
-    return FunkinBitmapFrontend._instance;
-  }
-
-  public function new()
-  {
-    super();
-  }
-
-  /**
-   * Add an asset to the cache.
-   * @param graphic The asset to add.
-   * @param unique Whether or not the asset is unique.
-   * @param key The key of the asset.
-   * @return The FlxGraphic, if added.
-   */
-  override public function add(graphic:flixel.system.FlxAssets.FlxGraphicAsset, unique:Bool = false, ?key:String):FlxGraphic
-  {
-    if ((graphic is FlxGraphic))
-    {
-      return FlxGraphic.fromGraphic(cast graphic, unique, key);
-    }
-    else if ((graphic is BitmapData))
-    {
-      return FlxGraphic.fromBitmapData(cast graphic, unique, key);
-    }
-
-    // String case
-    // Try to retreive a cached FlxGraphic for the asset path if one already exists.
-    return FunkinAssetCache.instance.getFlxGraphic(graphic);
   }
 }

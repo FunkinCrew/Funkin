@@ -61,7 +61,7 @@ class Assets implements ConsoleClass
     LimeAssets.cache = funkin.assets.FunkinAssetCache.FunkinLimeAssetCache.instance;
     OpenFLAssets.cache = funkin.assets.FunkinAssetCache.FunkinAssetCache.instance;
     @:privateAccess
-    FlxG.bitmap = funkin.assets.FunkinAssetCache.FunkinBitmapFrontend.instance;
+    FlxG.bitmap = funkin.assets.FunkinBitmapFrontend.instance;
 
     // Cache the results of Assets.list()
     for (type in ASSET_TYPES)
@@ -230,19 +230,12 @@ class Assets implements ConsoleClass
       throw 'No texture exists at the specified path (${assetPath})';
     }
 
-    return FlxAnimateFrames.fromAnimate(
-      assetPath.toString(),
-      validatedSettings.spritemaps,
-      validatedSettings.metadataJson,
-      validatedSettings.cacheKey,
-      validatedSettings.uniqueInCache,
-      {
-        swfMode: validatedSettings.swfMode,
-        cacheOnLoad: validatedSettings.cacheOnLoad,
-        filterQuality: validatedSettings.filterQuality,
-        onSymbolCreate: validatedSettings.onSymbolCreate
-      }
-    );
+    return FlxAnimateFrames.fromAnimate(assetPath.toString(), validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
+      swfMode: validatedSettings.swfMode,
+      cacheOnLoad: validatedSettings.cacheOnLoad,
+      filterQuality: validatedSettings.filterQuality,
+      onSymbolCreate: validatedSettings.onSymbolCreate
+    });
   }
 
   /**
@@ -672,8 +665,6 @@ class Assets implements ConsoleClass
         ]);
 
         results = results.concat(Paths.animateAtlas('ui/medals/medal-popup').image());
-
-      case SOUND:
         results = results.concat([
           // Built-in
           Paths.file('sounds/beep', 'ogg', 'flixel'), // Menus
@@ -704,7 +695,6 @@ class Assets implements ConsoleClass
         // Nothing
         // results = results.concat([]);
     }
-
     return results;
   }
 
