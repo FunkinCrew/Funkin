@@ -300,8 +300,26 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function loadEntryFile(id:String):JsonFile
   {
-    var entryFilePath:String = Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
-    var rawJson:String = Assets.getText(entryFilePath).trim();
+    var entryFilePath:AssetPath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
+
+    if (!entryFilePath.exists())
+    {
+      // Check each compatDataFilePath
+      for (path in compatDataFilePaths)
+      {
+        entryFilePath = funkin.assets.Paths.json('${path}/${id}');
+        if (entryFilePath.exists()) break;
+      }
+
+      if (!entryFilePath.exists())
+      {
+        // Fallthrough if none of the paths exists.
+        entryFilePath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
+        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      }
+    }
+
+    var rawJson:String = funkin.assets.Assets.getText(entryFilePath).trim();
     return {
       fileName: entryFilePath.toString(),
       contents: rawJson
