@@ -1964,9 +1964,13 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (dad != null) dadSingTime = dad.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
     if (bf != null) bfSingTime = bf.singTimeSteps * (conductorInUse.stepLengthMs / Constants.MS_PER_SEC);
 
-    // replay notes
-    if (notes != null)
+    if (notes == null || notes.length > 0 && notes[0].time > position)
     {
+      cachedNoteIndex = 0;
+    }
+    else
+    {
+      // replay notes
       var latestDadNote:SongNoteData = null;
       var latestBFNote:SongNoteData = null;
 
