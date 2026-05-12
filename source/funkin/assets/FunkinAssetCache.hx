@@ -24,6 +24,7 @@ import openfl.text.Font;
 import openfl.utils.Assets as OpenFLAssets;
 import openfl.utils.ByteArray;
 import openfl.utils.IAssetCache as OpenFLIAssetCache;
+import funkin.assets.FunkinBitmapFrontend;
 //
 // ~PATHS~
 //

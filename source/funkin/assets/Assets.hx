@@ -17,6 +17,7 @@ import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.utils.Assets as OpenFLAssets;
+import funkin.assets.FunkinBitmapFrontend;
 //
 // ~PATHS~
 //
