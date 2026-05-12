@@ -12,6 +12,8 @@ import openfl.events.KeyboardEvent;
 import openfl.events.TouchEvent;
 #if android
 import funkin.external.android.KeyboardUtil;
+#elseif ios
+import funkin.external.apple.KeyboardUtil;
 #end
 
 /**
@@ -132,9 +134,11 @@ class ControlsHandler
   @:noCompletion
   static function get_hasExternalInputDevice():Bool
   {
-    return FlxG.gamepads.numActiveGamepads > 0 #if android
-    || KeyboardUtil.keyboardConnected
-    || extension.androidtools.Tools.isChromebook() #end;
+    var gamepads:Bool = FlxG.gamepads.numActiveGamepads > 0;
+    var keyboards:Bool = #if android KeyboardUtil.keyboardConnected #elseif ios KeyboardUtil.isKeyboardConnected() #else false #end;
+    var chromebook:Bool = #if android extension.androidtools.Tools.isChromebook() #else false #end;
+
+    return gamepads || keyboards || chromebook;
   }
 
   @:noCompletion
