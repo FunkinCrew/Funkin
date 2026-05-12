@@ -8,13 +8,14 @@ import funkin.input.Controls;
 import funkin.mobile.ui.FunkinButton;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
-import openfl.events.KeyboardEvent;
-import openfl.events.TouchEvent;
 #if android
 import funkin.external.android.KeyboardUtil;
 #elseif ios
 import funkin.external.apple.KeyboardUtil;
 #end
+import lime.ui.Gamepad as LimeGamepad;
+import openfl.events.KeyboardEvent;
+import openfl.events.TouchEvent;
 
 /**
  * Handles setting up and managing input controls for the game.
@@ -43,6 +44,15 @@ class ControlsHandler
   {
     FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (_) -> lastInputTouch = false);
     FlxG.stage.addEventListener(TouchEvent.TOUCH_BEGIN, (_) -> lastInputTouch = true);
+
+    function doGamepad(gamepad:LimeGamepad)
+    {
+      gamepad.onButtonDown.add((_) -> lastInputTouch = false);
+    }
+
+    for (gamepad in LimeGamepad.devices.values()) doGamepad(gamepad);
+
+    LimeGamepad.onConnect.add((gamepad) -> doGamepad(gamepad));
   }
 
   /**
