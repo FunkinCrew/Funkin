@@ -128,6 +128,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     debugIconGroup.zIndex = 1000000;
   }
 
+  /**
+   * Called by the camera editor to reset the event state.
+   **/
+  public function onEventReset():Void
+  {
+  }
+
   public function resetStage():Void
   {
     // Reset positions of characters.
