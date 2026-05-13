@@ -50,6 +50,7 @@ import funkin.ui.debug.cameraeditor.commands.PasteEventsCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveEventCommand;
 import funkin.ui.debug.cameraeditor.commands.RemoveLayerCommand;
 import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
+import funkin.ui.debug.cameraeditor.data.ChartDocument;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.AutoGenDialog;
 import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog;
@@ -135,27 +136,50 @@ class CameraEditorState extends UIState implements ConsoleClass
    * INSTANCE DATA
    */
   // ==============================
-  public var currentVariation:String = Constants.DEFAULT_VARIATION;
+
+  /**
+   * The chart data document. Holds metadata, variations, audio bytes, manifest,
+   * working file path, and the dirty flag — everything that gets read from or
+   * written to the on-disk `.fnfc`. UI side-effects (window title, autosave
+   * timer, recent-files menu) listen on document signals.
+   */
+  public var chart:ChartDocument;
+
+  public var currentVariation(get, set):String;
+
+  inline function get_currentVariation():String return chart.currentVariation;
+
+  inline function set_currentVariation(value:String):String return chart.currentVariation = value;
 
   /**
    * The song chart data for all this chart's variations.
    */
-  public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
+  public var songDatas(get, set):Map<String, SongChartData>;
+
+  inline function get_songDatas():Map<String, SongChartData> return chart.songDatas;
+  inline function set_songDatas(value:Map<String, SongChartData>):Map<String, SongChartData> return chart.songDatas = value;
 
   /**
    * The song metadata for all this chart's variations.
    */
-  public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
+  public var songMetadatas(get, set):Map<String, SongMetadata>;
+
+  inline function get_songMetadatas():Map<String, SongMetadata> return chart.songMetadatas;
+  inline function set_songMetadatas(value:Map<String, SongMetadata>):Map<String, SongMetadata> return chart.songMetadatas = value;
 
   /**
    * The song metadata for the currently selected variation.
    */
   public var currentSongMetadata(get, never):Null<SongMetadata>;
 
+  inline function get_currentSongMetadata():Null<SongMetadata> return chart.currentSongMetadata;
+
   /**
    * The song chart data for the currently selected variation.
    */
   public var currentSongChartData(get, never):Null<SongChartData>;
+
+  inline function get_currentSongChartData():Null<SongChartData> return chart.currentSongChartData;
 
   /**
    * The currently playing instrumental track for this chart.
@@ -170,12 +194,17 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The currently selected difficulty.
    */
-  public var currentDifficulty:String = 'hard';
+  public var currentDifficulty(get, set):String;
+
+  inline function get_currentDifficulty():String return chart.currentDifficulty;
+  inline function set_currentDifficulty(value:String):String return chart.currentDifficulty = value;
 
   /**
    * The note data for the currently selected difficulty.
    */
   public var currentNotes(get, never):Array<SongNoteData>;
+
+  inline function get_currentNotes():Array<SongNoteData> return chart.currentNotes;
 
   /**
    * The sprite which visualizes the camera rectangle during song previews.
@@ -187,25 +216,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   var cachedEventIndex = 0;
   var cachedNoteIndex = 0;
 
-  function get_currentSongMetadata():Null<SongMetadata>
-  {
-    return songMetadatas.get(currentVariation);
-  }
-
-  function get_currentSongChartData():Null<SongChartData>
-  {
-    return songDatas.get(currentVariation);
-  }
-
-  function get_currentNotes():Array<SongNoteData>
-  {
-    var chartData = currentSongChartData;
-    if (chartData == null) return [];
-    var notes = chartData.notes.get(currentDifficulty);
-    if (notes == null) return [];
-    return notes;
-  }
-
   /**
    * The current stage being displayed in the background.
    */
@@ -214,39 +224,27 @@ class CameraEditorState extends UIState implements ConsoleClass
   /**
    * The instrumental track data for all this chart's variations.
    */
-  public var audioInstTrackData:Map<String, Bytes> = [];
+  public var audioInstTrackData(get, set):Map<String, Bytes>;
+
+  inline function get_audioInstTrackData():Map<String, Bytes> return chart.audioInstTrackData;
+  inline function set_audioInstTrackData(value:Map<String, Bytes>):Map<String, Bytes> return chart.audioInstTrackData = value;
 
   /**
    * The vocal track data for all this chart's variations.
    */
-  public var audioVocalTrackData:Map<String, Bytes> = [];
+  public var audioVocalTrackData(get, set):Map<String, Bytes>;
 
-  /**
-   * The song manifest data.
-   * If none already exists, it's initialized with the current song name in lower-kebab-case.
-   */
-  var _songManifestData:Null<ChartManifestData> = null;
+  inline function get_audioVocalTrackData():Map<String, Bytes> return chart.audioVocalTrackData;
+  inline function set_audioVocalTrackData(value:Map<String, Bytes>):Map<String, Bytes> return chart.audioVocalTrackData = value;
 
   /**
    * The song manifest data for this chart, used for parsing data from the FNFC file.
+   * If none already exists, it's initialized with the current song name in lower-kebab-case.
    */
   public var songManifestData(get, set):ChartManifestData;
 
-  function get_songManifestData():ChartManifestData
-  {
-    if (_songManifestData != null) return _songManifestData;
-
-    var defaultSongId:String = (currentSongMetadata.songName ?? 'New Song').trim().toLowerKebabCase().sanitize();
-    if (defaultSongId == '') defaultSongId = 'new-song';
-    _songManifestData = new ChartManifestData(defaultSongId);
-
-    return _songManifestData;
-  }
-
-  function set_songManifestData(value:ChartManifestData):ChartManifestData
-  {
-    return _songManifestData = value;
-  }
+  inline function get_songManifestData():ChartManifestData return chart.songManifestData;
+  inline function set_songManifestData(value:ChartManifestData):ChartManifestData return chart.songManifestData = value;
 
   /**
    * The list of events currently selected in the timeline.
@@ -286,17 +284,10 @@ class CameraEditorState extends UIState implements ConsoleClass
    * Also known as the "recent files" list.
    * The first element is [null] if the current working file has not been saved anywhere yet.
    */
-  public var previousWorkingFilePaths(default, set):Array<Null<String>> = [null];
+  public var previousWorkingFilePaths(get, set):Array<Null<String>>;
 
-  function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>>
-  {
-    // Called only when the WHOLE LIST is overridden.
-    previousWorkingFilePaths = value;
-    updateWindowTitle();
-    populateOpenRecentMenu();
-    applyCanQuickSave();
-    return value;
-  }
+  inline function get_previousWorkingFilePaths():Array<Null<String>> return chart.previousWorkingFilePaths;
+  inline function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>> return chart.previousWorkingFilePaths = value;
 
   /**
    * The current file path which the camera editor is working with.
@@ -304,78 +295,41 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   public var currentWorkingFilePath(get, set):Null<String>;
 
-  function get_currentWorkingFilePath():Null<String>
-  {
-    return previousWorkingFilePaths[0];
-  }
-
-  function set_currentWorkingFilePath(value:Null<String>):Null<String>
-  {
-    // Do nothing if the value hasn't changed.
-    if (value == previousWorkingFilePaths[0]) return value;
-
-    // Update the recent files list.
-
-    if (previousWorkingFilePaths.contains(null))
-    {
-      // Filter all instances of `null` from the array.
-      previousWorkingFilePaths = previousWorkingFilePaths.filter(function(x:Null<String>):Bool
-      {
-        return x != null;
-      });
-    }
-
-    if (previousWorkingFilePaths.contains(value))
-    {
-      // Move the path to the front of the list.
-      previousWorkingFilePaths.remove(value);
-      previousWorkingFilePaths.unshift(value);
-    }
-    else
-    {
-      // Add the path to the front of the list.
-      previousWorkingFilePaths.unshift(value);
-    }
-
-    while (previousWorkingFilePaths.length > Constants.MAX_PREVIOUS_WORKING_FILES)
-    {
-      // Remove the last path in the list.
-      previousWorkingFilePaths.pop();
-    }
-
-    populateOpenRecentMenu();
-    updateWindowTitle();
-
-    return value;
-  }
+  inline function get_currentWorkingFilePath():Null<String> return chart.currentWorkingFilePath;
+  inline function set_currentWorkingFilePath(value:Null<String>):Null<String> return chart.currentWorkingFilePath = value;
 
   /**
    * Whether the current chart being worked on has been modified since it was last saved.
    */
-  public var saved(default, set):Bool = true;
+  public var saved(get, set):Bool;
 
-  function set_saved(value:Bool):Bool
+  inline function get_saved():Bool return chart.saved;
+  inline function set_saved(value:Bool):Bool return chart.saved = value;
+
+  function onChartSavedChanged():Void
   {
-    saved = value;
-
     updateWindowTitle();
 
-    if (!saved)
+    if (!chart.saved)
     {
       if (autoSaveTimer == null) autoSaveTimer = new FlxTimer();
-
-      if (!autoSaveTimer.finished)
-      {
-        autoSaveTimer.cancel();
-      }
-
-      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, function(tmr:FlxTimer)
-      {
-        saveBackup();
-      });
+      if (!autoSaveTimer.finished) autoSaveTimer.cancel();
+      autoSaveTimer.start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_:FlxTimer) -> saveBackup());
     }
+  }
 
-    return value;
+  function onChartWorkingFileChanged():Void
+  {
+    populateOpenRecentMenu();
+    updateWindowTitle();
+    applyCanQuickSave();
+  }
+
+  function onChartRecentsChanged():Void
+  {
+    updateWindowTitle();
+    populateOpenRecentMenu();
+    applyCanQuickSave();
   }
 
   /**
@@ -599,6 +553,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     super();
     this.params = params;
+    this.chart = new ChartDocument();
   }
 
   override public function create():Void
@@ -609,6 +564,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     WindowManager.instance.reset();
     instance = this;
+
+    chart.savedChanged.add(onChartSavedChanged);
+    chart.workingFileChanged.add(onChartWorkingFileChanged);
+    chart.recentsChanged.add(onChartRecentsChanged);
+
     FlxG.sound.music?.stop();
     WindowUtil.setWindowTitle("Friday Night Funkin\' Camera Editor");
 
@@ -2240,6 +2200,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     Cursor.hide();
     FlxG.sound.music.stop();
+
+    chart.savedChanged.remove(onChartSavedChanged);
+    chart.workingFileChanged.remove(onChartWorkingFileChanged);
+    chart.recentsChanged.remove(onChartRecentsChanged);
   }
 
   function updateUndoRedoMenuItems():Void
