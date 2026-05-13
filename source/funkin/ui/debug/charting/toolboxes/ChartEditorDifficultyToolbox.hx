@@ -109,17 +109,17 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent)
     {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-metadata.json', chartEditorState.currentSongMetadata.serialize(),
+      FileUtil.writeFileReference('${chartEditorState.currentSongId-metadata$vari.json', chartEditorState.currentSongMetadata.serialize(),
         function(notification:String)
         {
           switch (notification)
           {
             case 'success':
-              chartEditorState.success('Saved Metadata', 'Successfully wrote file (${chartEditorState.currentSongId}$vari-metadata.json).');
+              chartEditorState.success('Saved Metadata', 'Successfully wrote file (${chartEditorState.currentSongId}-metadata$vari.json).');
             case 'info':
-              chartEditorState.info('Canceled Save Metadata', '(${chartEditorState.currentSongId}$vari-metadata.json)');
+              chartEditorState.info('Canceled Save Metadata', '(${chartEditorState.currentSongId}-metadata$vari.json)');
             case 'error':
-              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}$vari-metadata.json).');
+              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}-metadata$vari.json).');
           }
         });
     };
@@ -127,17 +127,17 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxSaveChart.onClick = function(_:UIEvent)
     {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}$vari-chart.json', chartEditorState.currentSongChartData.serialize(),
+      FileUtil.writeFileReference('${chartEditorState.currentSongId}-chart$vari.json', chartEditorState.currentSongChartData.serialize(),
         function(notification:String)
         {
           switch (notification)
           {
             case 'success':
-              chartEditorState.success('Saved Chart Data', 'Successfully wrote file (${chartEditorState.currentSongId}$vari-chart.json).');
+              chartEditorState.success('Saved Chart Data', 'Successfully wrote file (${chartEditorState.currentSongId}-chart$vari.json).');
             case 'info':
-              chartEditorState.info('Canceled Save Chart Data', '(${chartEditorState.currentSongId}$vari-chart.json)');
+              chartEditorState.info('Canceled Save Chart Data', '(${chartEditorState.currentSongId}-chart$vari.json)');
             case 'error':
-              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}$vari-chart.json).');
+              chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}-chart$vari.json).');
           }
         });
     };
