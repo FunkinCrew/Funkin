@@ -109,7 +109,7 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent)
     {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId-metadata$vari.json', chartEditorState.currentSongMetadata.serialize(),
+      FileUtil.writeFileReference('${chartEditorState.currentSongId}-metadata$vari.json', chartEditorState.currentSongMetadata.serialize(),
         function(notification:String)
         {
           switch (notification)
