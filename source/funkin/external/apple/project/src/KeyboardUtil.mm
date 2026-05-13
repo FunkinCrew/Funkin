@@ -1,15 +1,10 @@
-#if TARGET_OS_IOS
-#import <UIKit/UIKit.h>
-#endif
+#import <GameController/GameController.h>
 
 bool Apple_KeyboardUtil_isKeyboardConnected()
 {
-  #if TARGET_OS_IOS
-  if (@available(iOS 16.4, *))
-  {
-    return UITextInputContext.current.isHardwareKeyboardInputExpected;
-  }
-  #endif
-
-  return false;
+    if ([GCKeyboard class])
+    {
+        return GCKeyboard.coalescedKeyboard != nil;
+    }
+    return false;
 }

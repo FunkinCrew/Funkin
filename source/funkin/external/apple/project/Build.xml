@@ -24,6 +24,7 @@
 		<vflag name="-framework" value="UIKit" unless="macos" />
 		<vflag name="-framework" value="Foundation" />
 		<vflag name="-framework" value="AVFAudio" />
+		<vflag name="-framework" value="GameController" />
 
 		<files id="external-apple" />
 	</target>
