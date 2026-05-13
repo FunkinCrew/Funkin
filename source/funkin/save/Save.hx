@@ -172,7 +172,7 @@ class Save implements ConsoleClass
       },
       unlocks: {
         // Default to having seen the default character.
-        charactersSeen: ["bf"],
+        charactersSeen: ['bf'],
         oldChar: false
       },
       optionsChartEditor: {

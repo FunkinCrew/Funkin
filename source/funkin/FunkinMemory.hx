@@ -43,10 +43,6 @@ class FunkinMemory
 
       file = file.replace(' ', ''); // Handle stray spaces.
 
-      if (file.contains('shared') || Assets.exists('shared:$file', AssetType.IMAGE))
-      {
-        file = 'shared:$file';
-      }
       permanentCacheTexture(file);
     }
 
@@ -68,11 +64,6 @@ class FunkinMemory
       if (!file.endsWith('.ogg') || !file.contains('countdown/')) continue;
 
       file = file.replace(' ', '');
-
-      if (file.contains('shared') || Assets.exists('shared:$file', AssetType.SOUND))
-      {
-        file = 'shared:$file';
-      }
 
       permanentCacheSound(file);
     }

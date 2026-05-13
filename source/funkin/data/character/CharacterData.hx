@@ -36,8 +36,8 @@ class CharacterDataParser
    */
   public static final CHARACTER_DATA_VERSION_RULE:String = '1.0.x';
 
-  static final characterCache:Map<String, CharacterData> = new Map<String, CharacterData>();
-  static final characterScriptedClass:Map<String, String> = new Map<String, String>();
+  static final characterCache:Map<String, CharacterData> = [];
+  static final characterScriptedClass:Map<String, String> = [];
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
   static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
   static final DATA_FILE_PATH:String = 'gameplay/characters';
@@ -62,6 +62,10 @@ class CharacterDataParser
     // UNSCRIPTED CHARACTERS
     //
     var charIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('$DATA_FILE_PATH/', ASSET_BLACKLIST, true);
+    for (dataFilePath in COMPAT_DATA_FILE_PATHS)
+    {
+      charIdList.append(funkin.assets.Assets.listDataFilesInPath('$dataFilePath/', ASSET_BLACKLIST, true));
+    }
     var unscriptedCharIds:Array<String> = charIdList.filter((charId:String) ->
     {
       return !characterCache.exists(charId);
@@ -88,9 +92,7 @@ class CharacterDataParser
     //
     // SCRIPTED CHARACTERS
     //
-
     // Fuck I wish scripted classes supported static functions.
-
     var scriptedCharClassNames1:Array<String> = ScriptedSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames1.length > 0)
     {
@@ -110,7 +112,6 @@ class CharacterDataParser
         }
       }
     }
-
     var scriptedCharClassNames2:Array<String> = ScriptedPackerCharacter.listScriptClasses();
     if (scriptedCharClassNames2.length > 0)
     {
@@ -130,7 +131,6 @@ class CharacterDataParser
         }
       }
     }
-
     var scriptedCharClassNames3:Array<String> = ScriptedMultiSparrowCharacter.listScriptClasses();
     if (scriptedCharClassNames3.length > 0)
     {
@@ -150,7 +150,6 @@ class CharacterDataParser
         }
       }
     }
-
     var scriptedCharClassNames4:Array<String> = ScriptedAnimateAtlasCharacter.listScriptClasses();
     if (scriptedCharClassNames4.length > 0)
     {
@@ -170,7 +169,6 @@ class CharacterDataParser
         }
       }
     }
-
     var scriptedCharClassNames5:Array<String> = ScriptedMultiAnimateAtlasCharacter.listScriptClasses();
     if (scriptedCharClassNames5.length > 0)
     {
@@ -190,10 +188,10 @@ class CharacterDataParser
         }
       }
     }
-
     // NOTE: Only instantiate the ones not populated above.
     // ScriptedBaseCharacter.listScriptClasses() will pick up scripts extending the other classes.
     var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
+
     scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool
     {
       return !(scriptedCharClassNames1.contains(charCls)
@@ -221,7 +219,6 @@ class CharacterDataParser
         }
       }
     }
-
     log(' INFO '.info() + 'Successfully loaded ${characterCache.size()} stages.');
   }
 

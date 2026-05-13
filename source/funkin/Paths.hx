@@ -20,10 +20,10 @@ class Paths implements ConsoleClass
    * @param path The asset path string to remove the library from.
    * @return The asset path string without the library prefix.
    */
-  public static function stripLibrary(path:String):String
+  public static function stripLibrary(key:String):String
   {
-    var parts:Array<String> = path.split(':');
-    if (parts.length < 2) return path;
+    var parts:Array<String> = key.split(':');
+    if (parts.length < 2) return key;
     return parts[1];
   }
 
@@ -32,49 +32,34 @@ class Paths implements ConsoleClass
    * @param path The asset path string to get the library from.
    * @return The library name, or 'default' if no library is specified.
    */
-  public static function getLibrary(path:String):String
+  public static function getLibrary(key:String):String
   {
-    var parts:Array<String> = path.split(':');
+    var parts:Array<String> = key.split(':');
     if (parts.length < 2) return 'default';
     return parts[0];
   }
 
-  static function getPath(file:String, type:AssetType, ?library:String):String
+  static function getPath(key:String, type:AssetType, ?library:String):String
   {
-    if (library != null) return getLibraryPath(file, library);
-
-    var levelPath = getLibraryPath(file, 'default');
-
-    // var areAssetsLoaded:Bool = Assets.list(type).length > 0;
-    // if (!areAssetsLoaded)
-    // {
-    //   return levelPath;
-    // }
-
-    // trace('[ASSETS] Checking for $levelPath');
-    if (Assets.exists(levelPath, type))
-    {
-      return levelPath;
-    }
-
-    return levelPath;
+    return funkin.modding.compat.Paths.getPath(key, type, library);
   }
 
-  public static function getLibraryPath(file:String, library = 'default'):String
+  public static function getLibraryPath(key:String, library = 'default'):String
   {
-    if (library == 'default' || library == 'preload') return 'assets/$file';
+    if (library == 'default' || library == 'preload') return 'assets/$key';
 
-    return '$library:assets/$file';
+    return '$library:assets/$key';
   }
 
-  public static function file(file:String, type:AssetType = TEXT, ?library:String):String
+  public static function file(key:String, type:AssetType = TEXT, ?library:String):String
   {
-    return getPath(file, type, library);
+    return getPath(key, type, library);
   }
 
-  public static function animateAtlas(path:String, ?library:String):String
+  public static function animateAtlas(key:String, ?library:String):String
   {
-    return getLibraryPath('$path', library);
+    var animPath:String = Paths.json('$key/Animation', library);
+    return haxe.io.Path.directory(animPath);
   }
 
   public static function txt(key:String, ?library:String):String
@@ -164,17 +149,24 @@ class Paths implements ConsoleClass
     return getPath('$key.png', IMAGE, library);
   }
 
-  public static var font:(String, ?String, ?Bool) -> String = funkin.assets.Paths.font;
+  public static function font(key:String, ext:String = 'ttf', validate:Bool = true):String
+  {
+    return funkin.assets.Paths.font(key, ext, validate);
+  }
 
   public static function ui(key:String, ?library:String):String
   {
     return xml('ui/$key', library);
   }
 
+  // deprecated("Use funkin.assets.Assets.getSparrowAtlas() instead")
+
   public static function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
   {
-    return FlxAtlasFrames.fromSparrow(image(key, library), xml(key, library));
+    return FlxAtlasFrames.fromSparrow(Paths.image(key, library), Paths.xml(key, library));
   }
+
+  // deprecated("Use funkin.assets.Assets.getAnimateAtlas() instead")
 
   public static function getAnimateAtlas(key:String, ?library:String, settings:AtlasSpriteSettings):FlxAnimateFrames
   {
@@ -217,6 +209,8 @@ class Paths implements ConsoleClass
         onSymbolCreate: validatedSettings.onSymbolCreate
       });
   }
+
+  // deprecated("Use funkin.assets.Assets.getPackerAtlas() instead")
 
   public static function getPackerAtlas(key:String, ?library:String):FlxAtlasFrames
   {

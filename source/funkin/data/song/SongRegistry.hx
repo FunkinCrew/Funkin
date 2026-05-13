@@ -485,10 +485,18 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
-      // TODO: Check each compatDataFilePath
+      // COMPAT: Support older data file paths.
+      for (path in compatDataFilePaths)
+      {
+        entryFilePath = Paths.json('$path/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
+        if (openfl.Assets.exists(entryFilePath)) break;
+      }
 
-      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-      return null;
+      if (!openfl.Assets.exists(entryFilePath))
+      {
+        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+        return null;
+      }
     }
     var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
@@ -517,10 +525,18 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
     if (!openfl.Assets.exists(entryFilePath))
     {
-      // TODO: Check each compatDataFilePath
+      // COMPAT: Support older data file paths.
+      for (path in compatDataFilePaths)
+      {
+        entryFilePath = Paths.json('$path/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
+        if (openfl.Assets.exists(entryFilePath)) break;
+      }
 
-      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-      return null;
+      if (!openfl.Assets.exists(entryFilePath))
+      {
+        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+        return null;
+      }
     }
     var rawJson:String = openfl.Assets.getText(entryFilePath);
     if (rawJson == null) return null;
