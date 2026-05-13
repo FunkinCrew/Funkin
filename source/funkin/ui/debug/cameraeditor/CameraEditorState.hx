@@ -401,6 +401,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   }
 
   /**
+   * Whether the camera preview should display song events.
+   */
+  @:bind(menubarItemDoSongEvents.selected)
+  public var doSongEvents(default, set):Bool = false;
+
+  function set_doSongEvents(val:Bool):Bool
+  {
+    doSongEvents = val;
+    replayCameraTimeline(conductorInUse.songPosition);
+    return val;
+  }
+
+  /**
    * The opacity of the camera preview's passepartout.
    */
   @:bind(menubarSliderPassepartoutTransparency.pos)
@@ -807,10 +820,10 @@ class CameraEditorState extends UIState implements ConsoleClass
       var eventData = songEvents[i];
       if (completedEvents.contains(eventData)) continue;
       if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
-      trace('Processing event: ' + eventData.eventKind + ' at ' + eventData.time);
 
       var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
-      dispatchEvent(eventEvent);
+
+      var doDispatch:Bool = true;
 
       if (eventEvent.eventCanceled) continue;
 
@@ -825,8 +838,17 @@ class CameraEditorState extends UIState implements ConsoleClass
         case 'PlayAnimation':
           handlePlayAnimationEvent(eventData);
         default:
-          var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
-          currentStage.onSongEvent(ev);
+          if (doSongEvents)
+          {
+            var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+            currentStage.onSongEvent(ev);
+          }
+          else doDispatch = false;
+      }
+
+      if (doDispatch)
+      {
+        dispatchEvent(eventEvent);
       }
 
       completedEvents.push(eventData);
@@ -1163,6 +1185,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
     _shouldResetCameraPosition = true;
+
+    currentStage.onEventReset();
   }
 
   function resetScrollPosition()
@@ -1867,6 +1891,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     if (currentSongChartData == null) return;
 
+    currentStage.onEventReset();
+
     cameraRect.cancelAllTweens();
     cameraRect.zoom = defaultStageZoom;
     cameraRect.setFocusPoint(cameraRect.defaultPosition.x, cameraRect.defaultPosition.y, true);
@@ -1943,8 +1969,11 @@ class CameraEditorState extends UIState implements ConsoleClass
                 // Non-singing targets (props/GF/etc.) do not affect note replay suppression.
             }
           default:
-            var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
-            currentStage.onSongEvent(ev);
+            if (doSongEvents)
+            {
+              var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+              currentStage.onSongEvent(ev);
+            }
         }
 
         completedEvents.push(eventData);
