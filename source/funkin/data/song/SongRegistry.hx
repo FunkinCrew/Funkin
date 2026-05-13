@@ -483,16 +483,16 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
     var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath))
+    if (!funkin.assets.Assets.exists(entryFilePath))
     {
       // COMPAT: Support older data file paths.
       for (path in compatDataFilePaths)
       {
         entryFilePath = Paths.json('$path/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-        if (openfl.Assets.exists(entryFilePath)) break;
+        if (funkin.assets.Assets.exists(entryFilePath)) break;
       }
 
-      if (!openfl.Assets.exists(entryFilePath))
+      if (!funkin.assets.Assets.exists(entryFilePath))
       {
         trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
         return null;

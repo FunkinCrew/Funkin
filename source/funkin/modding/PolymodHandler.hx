@@ -286,6 +286,7 @@ class PolymodHandler
    */
   static function buildCompatAliases():Void
   {
+    // Older paths for certain classes.
     Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
@@ -301,6 +302,9 @@ class PolymodHandler
     // TODO: Does this work?
     Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.FunkinSprite);
+
+    // Sandboxing for compatibility.
+    Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
   }
 
   /**

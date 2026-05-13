@@ -182,6 +182,7 @@ class Paths
     // Don't use library:path since new Funkin' doesn't use asset libraries.
     var filePath:String = (library == 'default') ? 'assets/$id' : 'assets/$library/$id';
 
+    // If the path just exists, return it. This is the most common case.
     if (funkin.assets.Assets.exists(filePath, type))
     {
       return filePath;
@@ -223,9 +224,16 @@ class Paths
     {
       case 'png': // Images
         var typeFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        // Paths for health icons.
+        var fileName = haxe.io.Path.withoutDirectory(id);
+        var iconFilePath = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         if (funkin.assets.Assets.exists(typeFilePath, type))
         {
           result = typeFilePath;
+        }
+        else if (funkin.assets.Assets.exists(iconFilePath, type))
+        {
+          result = iconFilePath;
         }
       case 'frag' | 'vert': // Shader text
         var typeFilePath = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';
@@ -239,7 +247,7 @@ class Paths
         {
           result = typeFilePath;
         }
-      case 'xml' | 'json': // Data or image text
+      case 'xml': // Data or image text
         var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
 
@@ -250,6 +258,28 @@ class Paths
         else if (funkin.assets.Assets.exists(imageFilePath, type))
         {
           result = imageFilePath;
+        }
+      case 'json': // Data or image text
+        var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        var songFilePath:String = (library == 'default') ? 'assets/${id.replace('gameplay/songs/', 'songs/')}' : 'assets/$library/${id.replace('gameplay/songs/', 'songs/')}';
+        var songDataFilePath:String = (library == 'default') ? 'assets/data/${id.replace('gameplay/songs/', 'songs/')}' : 'assets/$library/data/${id.replace('gameplay/songs/', 'songs/')}';
+
+        if (funkin.assets.Assets.exists(dataFilePath, type))
+        {
+          result = dataFilePath;
+        }
+        else if (funkin.assets.Assets.exists(imageFilePath, type))
+        {
+          result = imageFilePath;
+        }
+        else if (funkin.assets.Assets.exists(songFilePath, type))
+        {
+          result = songFilePath;
+        }
+        else if (funkin.assets.Assets.exists(songDataFilePath, type))
+        {
+          result = songDataFilePath;
         }
       case 'ogg': // Music or sound
         var musicFilePath:String = (library == 'default') ? 'assets/music/$id' : 'assets/$library/music/$id';
@@ -266,7 +296,14 @@ class Paths
         }
         else if (funkin.assets.Assets.exists(songFilePath, type))
         {
-          result = musicFilePath;
+          result = songFilePath;
+        }
+      case 'mp4' | 'mkv': // videos, without or with subtitles
+        var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';
+
+        if (funkin.assets.Assets.exists(videoFilePath, type))
+        {
+          result = videoFilePath;
         }
 
       default:
@@ -283,7 +320,7 @@ class Paths
     // Try some other asset libraries?
     if (library == 'default')
     {
-      for (libraryToTry in ['shared', 'songs'])
+      for (libraryToTry in ['shared', 'songs', 'videos'])
       {
         result = tryGuessPath(id, filePath, type, libraryToTry);
         if (result != null) return result;

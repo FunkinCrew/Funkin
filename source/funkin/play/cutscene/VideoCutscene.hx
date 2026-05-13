@@ -87,6 +87,10 @@ class VideoCutscene
 
       return;
     }
+    else
+    {
+      trace('Video file available for playback: ${assetPath.toString()}');
+    }
     #end
 
     // Trigger the cutscene. Don't play the song in the background.

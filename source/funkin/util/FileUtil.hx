@@ -759,14 +759,14 @@ class FileUtil
    */
   public static function createDirIfNotExists(dir:String):Void
   {
+    #if sys
     if (!directoryExists(dir))
     {
-      #if sys
       sys.FileSystem.createDirectory(dir);
-      #else
-      throw 'Directory creation is not supported on this platform.';
-      #end
     }
+    #else
+    throw 'Directory creation is not supported on this platform.';
+    #end
   }
 
   /**
@@ -779,7 +779,14 @@ class FileUtil
   public static function readDir(path:String):Array<String>
   {
     #if sys
-    return sys.FileSystem.readDirectory(path);
+    if (directoryExists(path))
+    {
+      return sys.FileSystem.readDirectory(path);
+    }
+    else
+    {
+      throw 'Target directory does not exist: "$path"';
+    }
     #else
     throw 'Directory reading is not supported on this platform.';
     #end

@@ -862,8 +862,10 @@ class SongDifficulty
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
   {
     var suffix:String = (instId != '') ? '-$instId' : '';
+    var path:String = Paths.inst(this.song.id, suffix);
+    trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
-    FlxG.sound.music = FunkinSound.load(Paths.inst(this.song.id, suffix), volume, looped, false, true, false, null, null, true);
+    FlxG.sound.music = FunkinSound.load(path, volume, looped, false, true, false, null, null, true);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);

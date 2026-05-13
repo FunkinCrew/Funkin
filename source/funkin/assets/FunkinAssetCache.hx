@@ -1032,15 +1032,29 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     var results:Array<AssetPath> = [];
 
-    if (!force && type == null && assetListBaseCache != null)
+    if (!force && type == null)
     {
-      return assetListBaseCache;
+      // Invalidate empty cache.
+      if (assetListBaseCache != null && assetListBaseCache.length == 0)
+      {
+        assetListBaseCache = null;
+      }
+
+      // Accept valid cache.
+      if (assetListBaseCache != null && assetListBaseCache.length > 0) return assetListBaseCache;
+
+      // Else, continue.
     }
 
     if (!force && type != null && assetListCaches.exists(type))
     {
       var result:Null<Array<AssetPath>> = assetListCaches.get(type);
-      if (result != null) return result;
+      // Invalidate empty cache.
+      if (result != null && result.length == 0) assetListCaches.remove(type);
+
+      // Accept valid cache.
+      if (result != null && result.length > 0) return result;
+
       // Else, continue.
     }
 
@@ -1478,6 +1492,12 @@ class FunkinLimeAssetCache extends LimeAssetCache
     });
   }
 
+  /**
+   * Returns `true` if the asset with the given ID exists in the cache.
+   * @param id The asset ID.
+   * @param assetType The asset type.
+   * @return Whether the asset exists in the cache.
+   */
   override public function exists(id:String, ?assetType:LimeAssetType):Bool
   {
     if (assetType == LimeAssetType.IMAGE || assetType == null)
