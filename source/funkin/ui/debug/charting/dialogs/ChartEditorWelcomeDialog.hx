@@ -1,17 +1,13 @@
 package funkin.ui.debug.charting.dialogs;
 
 #if FEATURE_CHART_EDITOR
-import funkin.data.song.SongRegistry;
-import funkin.play.song.Song;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import funkin.util.FileUtil;
-import funkin.util.SortUtil;
 import haxe.ui.components.Label;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
-import haxe.ui.events.MouseEvent;
 
 /**
  * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
@@ -48,7 +44,18 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     #end
 
     // Add items to the Load From Template list
-    this.buildTemplateSongList(chartEditorState);
+    this.splashTemplateList.populate((songId) ->
+    {
+      try
+      {
+        chartEditorState.loadSongFromTemplate(songId);
+        this.hideDialog(DialogButton.CANCEL);
+      }
+      catch (e)
+      {
+        chartEditorState.error('Failed to Load Chart', 'Failed to load chart (${songId}):\n$e');
+      }
+    });
   }
 
   /**
@@ -129,56 +136,6 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     webLoadLabel.text = 'Click the button below to load a chart file (.fnfc) from your computer.';
 
     splashRecentContainer.addComponent(webLoadLabel);
-  }
-
-  /**
-   * Add all the links to the "Create From Template" scroll box on the right.
-   */
-  public function buildTemplateSongList(state:ChartEditorState):Void
-  {
-    var songList:Array<String> = SongRegistry.instance.listEntryIds();
-    songList.sort(SortUtil.alphabetically);
-
-    for (targetSongId in songList)
-    {
-      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
-      if (songData == null) continue;
-
-      var songName:Null<String> = songData.getDifficulty('normal')?.songName;
-      if (songName == null) songName = songData.getDifficulty()?.songName;
-      if (songName == null) // Still null?
-      {
-        trace(' WARNING '.warning() + ' Could not fetch song name for ${targetSongId}');
-        continue;
-      }
-
-      this.addTemplateSong(songName, targetSongId, (_) ->
-      {
-        // Load song from template
-        try
-        {
-          state.loadSongFromTemplate(targetSongId);
-          // Song load successful, hide the Welcome dialog and let the user edit the newly loaded song.
-          this.hideDialog(DialogButton.CANCEL);
-        }
-        catch (e)
-        {
-          state.error('Failed to Load Chart', 'Failed to load chart (${targetSongId}):\n$e');
-        }
-      });
-    }
-  }
-
-  /**
-   * @param loadTemplateCb The callback to call when the user clicks the link. The callback should load the song ID from the template.
-   */
-  public function addTemplateSong(songName:String, songId:String, onClickCb:(MouseEvent) -> Void):Void
-  {
-    var linkTemplateSong:Link = new Link();
-    linkTemplateSong.text = songName;
-    linkTemplateSong.onClick = onClickCb;
-
-    this.splashTemplateContainer.addComponent(linkTemplateSong);
   }
 
   /**
