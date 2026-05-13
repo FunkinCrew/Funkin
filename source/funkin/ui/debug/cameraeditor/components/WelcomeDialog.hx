@@ -1,13 +1,16 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
+import funkin.data.song.SongRegistry;
 import funkin.input.Cursor;
+import funkin.play.song.Song;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorImportExportHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorFileDropHandler;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogDropTarget;
 import funkin.util.FileUtil;
+import funkin.util.SortUtil;
 import haxe.io.Path;
 import haxe.ui.components.Link;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
@@ -48,6 +51,9 @@ class WelcomeDialog extends Dialog
     #else
     this.addHTML5RecentFileMessage();
     #end
+
+    // Add items to the Load From Template list
+    this.buildTemplateSongList(cameraEditorState);
 
     this.chartBox.onMouseOver = (_) ->
     {
@@ -210,6 +216,54 @@ class WelcomeDialog extends Dialog
     }
 
     splashRecentContainer.addComponent(linkRecentChart);
+  }
+
+  /**
+   * Add all the links to the "Create From Song" scroll box on the right.
+   */
+  public function buildTemplateSongList(state:CameraEditorState):Void
+  {
+    var songList:Array<String> = SongRegistry.instance.listEntryIds();
+    songList.sort(SortUtil.alphabetically);
+
+    for (targetSongId in songList)
+    {
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
+      if (songData == null) continue;
+
+      var songName:Null<String> = songData.getDifficulty('normal')?.songName;
+      if (songName == null) songName = songData.getDifficulty()?.songName;
+      if (songName == null)
+      {
+        trace(' WARNING '.warning() + ' Could not fetch song name for ${targetSongId}');
+        continue;
+      }
+
+      this.addTemplateSong(songName, targetSongId, (_) ->
+      {
+        try
+        {
+          CameraEditorImportExportHandler.loadSongFromTemplate(state, targetSongId);
+          this.hideDialog(DialogButton.APPLY);
+        }
+        catch (e)
+        {
+          CameraEditorNotificationHandler.error(state, 'Failure', 'Failed to load song template (${targetSongId}):\n$e');
+        }
+      });
+    }
+  }
+
+  /**
+   * @param onClickCb The callback to call when the user clicks the link. The callback should load the song ID from the template.
+   */
+  public function addTemplateSong(songName:String, songId:String, onClickCb:(MouseEvent) -> Void):Void
+  {
+    var linkTemplateSong:Link = new Link();
+    linkTemplateSong.text = songName;
+    linkTemplateSong.onClick = onClickCb;
+
+    this.splashTemplateContainer.addComponent(linkTemplateSong);
   }
 }
 #end
