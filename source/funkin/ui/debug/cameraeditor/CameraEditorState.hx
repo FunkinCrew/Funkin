@@ -53,6 +53,8 @@ import funkin.ui.debug.cameraeditor.commands.RenameLayerCommand;
 import funkin.ui.debug.cameraeditor.components.AboutDialog;
 import funkin.ui.debug.cameraeditor.components.AutoGenDialog;
 import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog;
+import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoSortPreview;
+import funkin.ui.debug.cameraeditor.components.AutoSortLayersConfirmDialog.AutoSortPreviewRow;
 import funkin.ui.debug.cameraeditor.components.BackupAvailableDialog;
 import funkin.ui.debug.cameraeditor.components.DeleteLayerConfirmDialog;
 import funkin.ui.debug.cameraeditor.components.UploadChartDialog;
@@ -67,6 +69,7 @@ import funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.haxeui.components.editors.camera.CameraViewportEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
+import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.FileUtil;
@@ -1473,10 +1476,23 @@ class CameraEditorState extends UIState implements ConsoleClass
     var cameraEvents:Array<SongEventData> = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera' || e.eventKind == 'ZoomCamera');
     if (!hasOverlappingCameraEvents(cameraEvents)) return;
 
-    var plan:AutoSortPlan = AutoSortLayersCommand.planSort(currentSongChartData.events, conductorInUse.stepLengthMs);
-    var currentLayerName:String = timeline.viewport.layers[0].name;
+    var stepMs:Float = conductorInUse.stepLengthMs;
+    var plan:AutoSortPlan = AutoSortLayersCommand.planSort(currentSongChartData.events, stepMs);
+    var currentLayer:TimelineLayerData = timeline.viewport.layers[0];
+    var defaultLayer:TimelineLayerData = AutoSortLayersCommand.findDefaultLayer(timeline.viewport.layers);
 
-    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(currentLayerName, cameraEvents.length, plan, () -> performAutoSortLayersByType());
+    var afterRows:Array<AutoSortPreviewRow> = [{name: defaultLayer.name, color: defaultLayer.color, events: []}];
+    for (i => planLayer in plan.layers)
+    {
+      afterRows.push({name: planLayer.name, color: AutoSortLayersCommand.colorForPlanLayer(i), events: planLayer.events});
+    }
+
+    var preview:AutoSortPreview = {
+      beforeRows: [{name: currentLayer.name, color: currentLayer.color, events: cameraEvents}],
+      afterRows: afterRows
+    };
+
+    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(preview, timeline.viewport.songLengthMs, stepMs, () -> performAutoSortLayersByType());
     dialog.showDialog(true);
     autoSortLayersDialog = dialog;
     dialog.onDialogClosed = (_) -> autoSortLayersDialog = null;
