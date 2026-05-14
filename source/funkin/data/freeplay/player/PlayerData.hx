@@ -252,7 +252,9 @@ class PlayerCharSelectData
   /**
    * The asset path to use for this character (the one on the right).
    * This should point to an Animate atlas folder. TODO: Allow sparrow atlases one day.
+   * @default `ui/character-select/characters/$charId`,
    */
+  @:optional @:default('')
   public var assetPath:String;
 
   /**
@@ -269,6 +271,29 @@ class PlayerCharSelectData
    */
   @:optional
   public var gf:PlayerCharSelectGFData;
+
+  /**
+   * The render type of this player's character.
+   * @return `animateatlas` for Animate Atlas, `sparrow` for Sparrow Atlas
+   */
+  public function getAssetType():String
+  {
+    return 'animateatlas';
+  }
+
+  /**
+   * @param charId The player ID of this character.
+   * @return The path to the Animate Atlas folder for this character.
+   */
+  public function getAnimateAtlasAssetPath(charId:String):String
+  {
+    if (assetPath.isBlank())
+    {
+      return 'ui/character-select/characters/${charId}';
+    }
+
+    return assetPath;
+  }
 }
 
 typedef PlayerCharSelectGFData =

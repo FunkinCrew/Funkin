@@ -174,10 +174,11 @@ class Paths
   /**
    * @param id The base path of the asset, including the extension.
    * @param type The type of asset.
-   * @param library The library
+   * @param library The asset library to use
+   * @param verbose Whether to print warnings/errors if the path doesn't exist.
    * @return String
    */
-  public static function getPath(id:String, type:OpenFLAssetType, library:String = 'default'):String
+  public static function getPath(id:String, type:OpenFLAssetType, library:String = 'default', verbose:Bool = true):String
   {
     // Don't use library:path since new Funkin' doesn't use asset libraries.
     var filePath:String = (library == 'default') ? 'assets/$id' : 'assets/$library/$id';
@@ -193,7 +194,7 @@ class Paths
     // Check the list of known paths.
     if (PATHS.exists(filePath))
     {
-      trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}');
+      // trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}')
       return PATHS[filePath];
     }
 
@@ -202,7 +203,7 @@ class Paths
     if (result != null) return result;
 
     // I guess just use the filePath and suffer whatever errors result.
-    trace(' ERROR '.error() + ' Could not convert legacy asset path "$filePath" ($type), expect lots of errors!');
+    if (verbose) trace(' ERROR '.error() + ' Could not convert legacy asset path "$filePath" ($type), expect lots of errors!');
     return filePath;
   }
 
@@ -217,94 +218,88 @@ class Paths
   {
     var result:Null<String> = null;
 
+    var usePathIfExists = (path:String) ->
+    {
+      // Skip asset check if we already found a valid path.
+      if (result != null) return;
+      // Check if the path is valid, and if so, save it.
+      if (funkin.assets.Assets.exists(path, type)) result = path;
+    }
+
     // Try to guess where the path would be, pre-Great Sorting.
     // If we figure it out, add it to the list of known paths.
-    var extension = haxe.io.Path.extension(id);
+    var extension:String = haxe.io.Path.extension(filePath);
+    var fileName:String = haxe.io.Path.withoutDirectory(filePath);
+    var dirName:String = haxe.io.Path.directory(filePath);
     switch (extension)
     {
       case 'png': // Images
         var typeFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
-        // Paths for health icons.
-        var fileName = haxe.io.Path.withoutDirectory(id);
+        // Specific redirect for health icons
         var iconFilePath = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
-        if (funkin.assets.Assets.exists(typeFilePath, type))
-        {
-          result = typeFilePath;
-        }
-        else if (funkin.assets.Assets.exists(iconFilePath, type))
-        {
-          result = iconFilePath;
-        }
+        // Specific redirect for freeplay icon paths
+        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', 'images/freeplay/icons/').replace('.png', 'pixel.png');
+        // Specific redirect for char select nametags
+        var nametagFilePath = filePath.replace('ui/character-select/characters/nametag-', 'images/charSelect/').replace('.png', 'Nametag.png');
+        // Specific redirect for char select animate atlases
+        var charSelectFilePath = dirName.replace('ui/character-select/characters/', 'images/charSelect/') + 'Chill/$fileName';
+
+        usePathIfExists(typeFilePath);
+        usePathIfExists(iconFilePath);
+        usePathIfExists(freeplayIconFilePath);
+        usePathIfExists(nametagFilePath);
+        usePathIfExists(charSelectFilePath);
+
       case 'frag' | 'vert': // Shader text
         var typeFilePath = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';
-        if (funkin.assets.Assets.exists(typeFilePath, type))
-        {
-          result = typeFilePath;
-        }
+
+        usePathIfExists(typeFilePath);
       case 'txt': // Data text
         var typeFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
-        if (funkin.assets.Assets.exists(typeFilePath, type))
-        {
-          result = typeFilePath;
-        }
+
+        usePathIfExists(typeFilePath);
       case 'xml': // Data or image text
         var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        // Specific redirect for freeplay icon paths
+        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', 'images/freeplay/icons/').replace('.xml', 'pixel.xml');
 
-        if (funkin.assets.Assets.exists(dataFilePath, type))
-        {
-          result = dataFilePath;
-        }
-        else if (funkin.assets.Assets.exists(imageFilePath, type))
-        {
-          result = imageFilePath;
-        }
+        usePathIfExists(dataFilePath);
+        usePathIfExists(imageFilePath);
+        usePathIfExists(freeplayIconFilePath);
+
       case 'json': // Data or image text
         var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        // Redirect for Animate atlas data
         var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
-        var songFilePath:String = (library == 'default') ? 'assets/${id.replace('gameplay/songs/', 'songs/')}' : 'assets/$library/${id.replace('gameplay/songs/', 'songs/')}';
-        var songDataFilePath:String = (library == 'default') ? 'assets/data/${id.replace('gameplay/songs/', 'songs/')}' : 'assets/$library/data/${id.replace('gameplay/songs/', 'songs/')}';
+        // Specific redirect for song data
+        var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
+        var songDataFilePath:String = dataFilePath.replace('gameplay/songs/', 'songs/');
+        // Specific redirect for char select animate atlases
+        var charSelectFilePath = dirName.replace('ui/character-select/characters/', 'images/charSelect/') + 'Chill/$fileName';
 
-        if (funkin.assets.Assets.exists(dataFilePath, type))
-        {
-          result = dataFilePath;
-        }
-        else if (funkin.assets.Assets.exists(imageFilePath, type))
-        {
-          result = imageFilePath;
-        }
-        else if (funkin.assets.Assets.exists(songFilePath, type))
-        {
-          result = songFilePath;
-        }
-        else if (funkin.assets.Assets.exists(songDataFilePath, type))
-        {
-          result = songDataFilePath;
-        }
+        usePathIfExists(dataFilePath);
+        usePathIfExists(imageFilePath);
+        usePathIfExists(songDataFilePath);
+        usePathIfExists(songFilePath);
+        usePathIfExists(charSelectFilePath);
+
       case 'ogg': // Music or sound
+        // Redirect for music files
         var musicFilePath:String = (library == 'default') ? 'assets/music/$id' : 'assets/$library/music/$id';
+        // Redirect for sound effect files
         var soundFilePath:String = (library == 'default') ? 'assets/sound/$id' : 'assets/$library/sound/$id';
-        var songFilePath:String = (library == 'default') ? 'assets/${id.replace('gameplay/songs/', 'songs/')}' : 'assets/$library/${id.replace('gameplay/songs/', 'songs/')}';
+        // Specific redirect for song audio
+        var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
 
-        if (funkin.assets.Assets.exists(musicFilePath, type))
-        {
-          result = musicFilePath;
-        }
-        else if (funkin.assets.Assets.exists(soundFilePath, type))
-        {
-          result = soundFilePath;
-        }
-        else if (funkin.assets.Assets.exists(songFilePath, type))
-        {
-          result = songFilePath;
-        }
+        usePathIfExists(musicFilePath);
+        usePathIfExists(soundFilePath);
+        usePathIfExists(songFilePath);
+
       case 'mp4' | 'mkv': // videos, without or with subtitles
         var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';
 
-        if (funkin.assets.Assets.exists(videoFilePath, type))
-        {
-          result = videoFilePath;
-        }
+        usePathIfExists(videoFilePath);
 
       default:
         // No idea, sorry.
@@ -312,7 +307,9 @@ class Paths
 
     if (result != null)
     {
-      trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to $result');
+      // trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to $result')
+
+      // Successfully found a redirect that exists
       PATHS[filePath] = result;
       return result;
     }

@@ -260,6 +260,13 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     }
 
     animation.play(id, restart, reverse, frame);
+
+    if (animation.curAnim == null)
+    {
+      FlxG.log.error('Freeplay DJ ${characterId} failed to play animation ${id}!');
+      return;
+    }
+
     animation.curAnim.looped = loop;
 
     applyAnimationOffset();

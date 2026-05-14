@@ -549,7 +549,7 @@ class Save implements ConsoleClass
     var song:SaveScoreDifficultiesData = data.scores.songs.get(songId) ?? [];
     if (song.size() == 0)
     {
-      trace(' SAVE '.bold().bg_note_down() + ' WARNING '.warning() + 'Could not find song data for $songId $difficultyId $variation');
+      // trace(' SAVE '.bold().bg_note_down() + ' WARNING '.warning() + 'No save data for $songId $difficultyId $variation')
       data.scores.songs.set(songId, song);
     }
 

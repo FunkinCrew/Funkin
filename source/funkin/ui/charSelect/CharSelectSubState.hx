@@ -136,7 +136,13 @@ class CharSelectSubState extends MusicBeatSubState
       trace('Placing player ${playerId} at position ${targetPosition}');
       availableChars.set(targetPosition, playerId);
 
-      CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/${playerId}');
+      switch (playerData.getAssetType())
+      {
+        case 'animateatlas':
+          CharSelectAtlasHandler.loadAtlas(playerData.getAnimateAtlasAssetPath(playerId));
+        default:
+          throw 'Unsupported asset type ${playerData.getAssetType()} for player ${playerId}';
+      }
 
       var gfPath:Null<String> = playerData.gf?.assetPath;
       if (gfPath != null)

@@ -260,7 +260,12 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   public function fetchEntry(id:String, ?params:Null<P>):Null<T>
   {
-    return entries.get(id);
+    var result:Null<T> = entries.get(id);
+    if (result == null)
+    {
+      log(' ERROR '.warning() + 'Failed to fetch registry entry $id(${params})');
+    }
+    return result;
   }
 
   /**
@@ -316,7 +321,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     {
       // Fallthrough if none of the paths exists.
       entryFilePath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
-      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
+      log('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
       throw 'Could not find file $entryFilePath';
     }
 
@@ -426,7 +431,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
   {
-    trace(' $registryId '.bold().bg_note_down() + ' ERROR '.error() + 'Failed to parse entry data: ${id}');
+    log(' ERROR '.error() + 'Failed to parse entry data: ${id}');
 
     for (error in errors)
     {

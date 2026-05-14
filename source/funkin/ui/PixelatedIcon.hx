@@ -26,11 +26,11 @@ class PixelatedIcon extends FunkinSprite
   {
     if (this.char == char) return;
 
-    var charPath:String = "ui/freeplay/characters/";
+    var charPath:String = 'ui/freeplay/characters/';
 
-    final charIDParts:Array<String> = char.split("-");
-    var iconName:String = "";
-    var lastValidIconName:String = "";
+    var charIDParts:Array<String> = char.split('-');
+    var iconName:String = '';
+    var lastValidIconName:String = '';
     for (i in 0...charIDParts.length)
     {
       iconName += charIDParts[i];
@@ -45,7 +45,7 @@ class PixelatedIcon extends FunkinSprite
 
     charPath += '${lastValidIconName}';
 
-    if (!Assets.exists(Paths.image(charPath)))
+    if (lastValidIconName == '' || !Assets.exists(Paths.image(charPath)))
     {
       trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       this.visible = false;
