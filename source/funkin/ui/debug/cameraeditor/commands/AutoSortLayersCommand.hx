@@ -134,10 +134,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
     newLayers = [defaultLayer];
     for (i => planLayer in plan.layers)
     {
-      var color:Int = TimelineLayerData.DEFAULT_LAYER_COLORS[
-        (i + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length
-      ];
-      newLayers.push(new TimelineLayerData(planLayer.name, color));
+      newLayers.push(new TimelineLayerData(planLayer.name, colorForPlanLayer(i)));
     }
 
     for (planLayer in plan.layers)
@@ -159,10 +156,15 @@ class AutoSortLayersCommand implements CameraEditorCommand
     state.saved = false;
   }
 
-  static function findDefaultLayer(layers:Array<TimelineLayerData>):TimelineLayerData
+  public static function findDefaultLayer(layers:Array<TimelineLayerData>):TimelineLayerData
   {
     for (layer in layers) if (layer.name == 'Default') return layer;
     return new TimelineLayerData('Default', TimelineLayerData.DEFAULT_LAYER_COLORS[0]);
+  }
+
+  public static function colorForPlanLayer(index:Int):Int
+  {
+    return TimelineLayerData.DEFAULT_LAYER_COLORS[(index + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length];
   }
 
   /**
