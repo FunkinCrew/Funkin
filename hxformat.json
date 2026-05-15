@@ -314,7 +314,7 @@
   },
 
   "wrapping": {
-    "maxLineLength": 160,
+    "maxLineLength": 640,
 
     "arrayWrap": {
       "defaultWrap": "noWrap",
