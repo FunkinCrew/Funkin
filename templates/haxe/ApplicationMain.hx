@@ -40,11 +40,7 @@ class ApplicationMain
 
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
-    #if (js && html5)
-    #if (munit || (utest && openfl_enable_utest_legacy_mode))
-    lime.system.System.embed("::APP_FILE::", null, ::WIN_WIDTH::, ::WIN_HEIGHT::);
-    #end
-    #else
+    #if !html5
     create(null);
     #end
   }
@@ -331,42 +327,6 @@ class ApplicationMain
   @:noCompletion @:dox(hide) public static function __init__()
   {
     var init = lime.app.Application;
-
-    #if neko
-    // Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
-    // since Sys.programPath () isn't available in __init__
-    var sys_program_path = {
-      var m = neko.vm.Module.local().name;
-      try
-      {
-        sys.FileSystem.fullPath(m);
-      }
-      catch (e:Dynamic)
-      {
-        // maybe the neko module name was supplied without .n extension...
-        if (!StringTools.endsWith(m, ".n"))
-        {
-          try
-          {
-            sys.FileSystem.fullPath(m + ".n");
-          }
-          catch (e:Dynamic)
-          {
-            m;
-          }
-        }
-        else
-        {
-          m;
-        }
-      }
-    };
-
-    var loader = new neko.vm.Loader(untyped $loader);
-    loader.addPath(haxe.io.Path.directory(#if (haxe_ver >= 3.3) sys_program_path #else Sys.executablePath() #end));
-    loader.addPath("./");
-    loader.addPath("@executable_path/");
-    #end
   }
   #end
 }
