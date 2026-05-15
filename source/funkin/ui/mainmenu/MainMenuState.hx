@@ -245,8 +245,7 @@ class MainMenuState extends MusicBeatState
       var targetItem = menuItems.members[2];
       for (_ in 0...8)
       {
-        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width,
-          targetItem.height, FlxG.random.bool(80));
+        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width, targetItem.height, FlxG.random.bool(80));
         upgradeSparkles.add(sparkle);
 
         sparkle.scrollFactor.x = 0.0;
@@ -395,8 +394,8 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
-    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) camFollow.setPosition(selected.getGraphicMidpoint().x,
-      selected.getGraphicMidpoint().y);
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) camFollow.setPosition(selected.getGraphicMidpoint()
+      .x, selected.getGraphicMidpoint().y);
   }
 
   #if FEATURE_OPEN_URL
@@ -528,6 +527,13 @@ class MainMenuState extends MusicBeatState
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, P]))
     {
       FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
+    }
+
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, G]))
+    {
+      var baseDataStr = Assets.getText(Paths.json('gameplay/songs/dadbattle/dadbattle-metadata'));
+      var data = funkin.modding.compat.DataMerge.getMergedDataStr('assets/data/songs/dadbattle/dadbattle-metadata.json', baseDataStr);
+      trace(data);
     }
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))

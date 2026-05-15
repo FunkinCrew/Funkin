@@ -796,6 +796,64 @@ class Paths
     'assets/images/freeplay/sortedLetters/Animation.json' => 'assets/ui/freeplay/interface/sorted-letters/Animation.json',
     'assets/images/freeplay/sortedLetters/spritemap1.json' => 'assets/ui/freeplay/interface/sorted-letters/spritemap1.json',
     'assets/images/freeplay/sortedLetters/spritemap1.png' => 'assets/ui/freeplay/interface/sorted-letters/spritemap1.png',
+    'assets/images/freeplay/backingCards/newCharacter/darkback.png' => 'assets/ui/freeplay/styles/unlock/backing-card/dark-back.png',
+    'assets/images/freeplay/backingCards/newCharacter/multiplyBar.png' => 'assets/ui/freeplay/styles/unlock/backing-card/multiply-bar.png',
+    'assets/images/freeplay/backingCards/newCharacter/orange gradient.png' => 'assets/ui/freeplay/styles/unlock/backing-card/orange-gradient.png',
+    'assets/images/freeplay/backingCards/newCharacter/red gradient.png' => 'assets/ui/freeplay/styles/unlock/backing-card/red-gradient.png',
+    'assets/images/freeplay/backingCards/newCharacter/red.png' => 'assets/ui/freeplay/styles/unlock/backing-card/red.png',
+    'assets/images/freeplay/backingCards/newCharacter/yellow bg piece.png' => 'assets/ui/freeplay/styles/unlock/backing-card/yellow-bg.png',
+    'assets/images/freeplay/backingCards/pico/blueBar.png' => 'assets/ui/freeplay/styles/pico/backing-card/blue-bar.png',
+    'assets/images/freeplay/backingCards/pico/glow.png' => 'assets/ui/freeplay/styles/pico/backing-card/glow.png',
+    'assets/images/freeplay/backingCards/pico/lowerLoop.png' => 'assets/ui/freeplay/styles/pico/backing-card/lower-loop.png',
+    'assets/images/freeplay/backingCards/pico/middleLoop.png' => 'assets/ui/freeplay/styles/pico/backing-card/middle-loop.png',
+    'assets/images/freeplay/backingCards/pico/topLoop.png' => 'assets/ui/freeplay/styles/pico/backing-card/top-loop.png',
+    'assets/images/freeplay/backingCards/pico/topLoop.xml' => 'assets/ui/freeplay/styles/pico/backing-card/top-loop.xml',
+    'assets/images/freeplay/beatdark.png' => 'assets/ui/freeplay/interface/beat-dark.png',
+    'assets/images/freeplay/beatglow.png' => 'assets/ui/freeplay/interface/beat-glow.png',
+    'assets/images/freeplay/cardGlow.png' => 'assets/ui/freeplay/interface/card-glow.png',
+    'assets/images/freeplay/clearBox.png' => 'assets/ui/freeplay/interface/clear-box.png',
+    'assets/images/freeplay/confirmGlow.png' => 'assets/ui/freeplay/interface/confirm-glow-1.png',
+    'assets/images/freeplay/confirmGlow2.png' => 'assets/ui/freeplay/interface/confirm-glow-2.png',
+    'assets/images/freeplay/dotPulse.png' => 'assets/ui/freeplay/interface/dot-pulse.xml',
+    'assets/images/freeplay/dotPulse.xml' => 'assets/ui/freeplay/interface/dot-pulse.xml',
+    'assets/images/freeplay/favHeart.png' => 'assets/ui/freeplay/interface/favorite.png',
+    'assets/images/freeplay/favHeart.xml' => 'assets/ui/freeplay/interface/favorite.xml',
+    'assets/images/freeplay/freeplayBGweek1-bf.png' => 'assets/ui/freeplay/backgrounds/bf/week1.png',
+    'assets/images/freeplay/freeplayBGweek1-pico.png' => 'assets/ui/freeplay/backgrounds/pico/week1.png',
+    'assets/images/freeplay/freeplayCapsule/bpmtext.png' => 'assets/ui/freeplay/interface/freeplay-capsule/bpm.png',
+    'assets/images/freeplay/freeplayCapsule/capsule/freeplayCapsule.png' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf.png',
+    'assets/images/freeplay/freeplayCapsule/capsule/freeplayCapsule.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf.xml',
+    'assets/images/freeplay/freeplayCapsule/capsule/freeplayCapsule_pico.png' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-pico.png',
+    'assets/images/freeplay/freeplayCapsule/capsule/freeplayCapsule_pico.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-pico.xml',
+    'assets/images/freeplay/freeplayCapsule/new.png' => 'assets/ui/freeplay/interface/freeplay-capsule/new.png',
+    'assets/images/freeplay/freeplayCapsule/new.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/new.xml',
+    'assets/images/freeplay/freeplayCapsule/bignumbers.png' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-big.png',
+    'assets/images/freeplay/freeplayCapsule/bignumbers.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-big.xml',
+    'assets/images/freeplay/freeplayCapsule/smallnumbers.png' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-small.png',
+    'assets/images/freeplay/freeplayCapsule/smallnumbers.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-small.xml',
+    'assets/images/freeplay/freeplayFlame.png' => 'assets/ui/freeplay/difficulty/freeplay-flame.png',
+    'assets/images/freeplay/freeplayFlame.xml' => 'assets/ui/freeplay/difficulty/freeplay-flame.xml',
+    'assets/images/freeplay/freeplaySelector/freeplaySelector.png' => 'assets/ui/freeplay/interface/difficulty-selector.png',
+    'assets/images/freeplay/freeplaySelector/freeplaySelector.xml' => 'assets/ui/freeplay/interface/difficulty-selector.png',
+    'assets/images/freeplay/freeplaySelector/freeplaySelector_pico.png' => 'assets/ui/freeplay/styles/pico/difficulty-selector.png',
+    'assets/images/freeplay/freeplaySelector/freeplaySelector_pico.xml' => 'assets/ui/freeplay/styles/pico/difficulty-selector.png',
+    'assets/images/freeplay/glowingText.png' => 'assets/ui/freeplay/interface/glowing-text.png',
+    'assets/images/freeplay/highscore.png' => 'assets/ui/freeplay/interface/highscore.png',
+    'assets/images/freeplay/highscore.xml' => 'assets/ui/freeplay/interface/highscore.xml',
+    'assets/images/freeplay/instBox/instBox.png' => 'assets/ui/freeplay/interface/freeplay-capsule/box-inst.png',
+    'assets/images/freeplay/instBox/instBox.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/box-inst.xml',
+    'assets/images/freeplay/miniArrow.png' => 'assets/ui/freeplay/interface/mini-arrow.png',
+    'assets/images/freeplay/rankVignette.png' => 'assets/ui/freeplay/interface/rank-vignette.png',
+    'assets/images/freeplay/rankbadges.png' => 'assets/ui/freeplay/interface/freeplay-capsule/rank-badge.png',
+    'assets/images/freeplay/rankbadges.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/rank-badge.xml',
+    'assets/images/freeplay/seperator.png' => 'assets/ui/freeplay/interface/separator.png',
+    'assets/images/freeplay/sparkle.png' => 'assets/ui/freeplay/interface/sparkle.png',
+    'assets/images/freeplay/sparkle.xml' => 'assets/ui/freeplay/interface/sparkle.xml',
+    'assets/images/freeplay/sparks.png' => 'assets/ui/freeplay/interface/sparks.png',
+    'assets/images/freeplay/sparks.xml' => 'assets/ui/freeplay/interface/sparks.xml',
+    'assets/images/freeplay/sparksadd.png' => 'assets/ui/freeplay/interface/sparks-add.png',
+    'assets/images/freeplay/sparksadd.xml' => 'assets/ui/freeplay/interface/sparks-add.xml',
+    'assets/images/freeplay/transitionGradient.png' => 'assets/ui/freeplay/interface/transition-gradient.png',
     'assets/images/funkay.png' => 'assets/ui/loading/funkay.png',
     'assets/images/gfDanceTitle.png' => 'assets/ui/title/gf-dance-title.png',
     'assets/images/gfDanceTitle.xml' => 'assets/ui/title/gf-dance-title.xml',
@@ -2636,6 +2694,52 @@ class Paths
     'assets/freeplay/sortedLetters/Animation.json' => 'assets/ui/freeplay/interface/sorted-letters/Animation.json',
     'assets/freeplay/sortedLetters/spritemap1.json' => 'assets/ui/freeplay/interface/sorted-letters/spritemap1.json',
     'assets/freeplay/sortedLetters/spritemap1.png' => 'assets/ui/freeplay/interface/sorted-letters/spritemap1.png',
+    'assets/freeplay/beatdark.png' => 'assets/ui/freeplay/interface/beat-dark.png',
+    'assets/freeplay/beatglow.png' => 'assets/ui/freeplay/interface/beat-glow.png',
+    'assets/freeplay/cardGlow.png' => 'assets/ui/freeplay/interface/card-glow.png',
+    'assets/freeplay/clearBox.png' => 'assets/ui/freeplay/interface/clear-box.png',
+    'assets/freeplay/confirmGlow.png' => 'assets/ui/freeplay/interface/confirm-glow-1.png',
+    'assets/freeplay/confirmGlow2.png' => 'assets/ui/freeplay/interface/confirm-glow-2.png',
+    'assets/freeplay/dotPulse.png' => 'assets/ui/freeplay/interface/dot-pulse.xml',
+    'assets/freeplay/dotPulse.xml' => 'assets/ui/freeplay/interface/dot-pulse.xml',
+    'assets/freeplay/favHeart.png' => 'assets/ui/freeplay/interface/favorite.png',
+    'assets/freeplay/favHeart.xml' => 'assets/ui/freeplay/interface/favorite.xml',
+    'assets/freeplay/freeplayBGweek1-bf.png' => 'assets/ui/freeplay/backgrounds/bf/week1.png',
+    'assets/freeplay/freeplayBGweek1-pico.png' => 'assets/ui/freeplay/backgrounds/pico/week1.png',
+    'assets/freeplay/freeplayCapsule/bpmtext.png' => 'assets/ui/freeplay/interface/freeplay-capsule/bpm.png',
+    'assets/freeplay/freeplayCapsule/capsule/freeplayCapsule.png' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf.png',
+    'assets/freeplay/freeplayCapsule/capsule/freeplayCapsule.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf.xml',
+    'assets/freeplay/freeplayCapsule/capsule/freeplayCapsule_pico.png' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-pico.png',
+    'assets/freeplay/freeplayCapsule/capsule/freeplayCapsule_pico.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/capsule/capsule-pico.xml',
+    'assets/freeplay/freeplayCapsule/new.png' => 'assets/ui/freeplay/interface/freeplay-capsule/new.png',
+    'assets/freeplay/freeplayCapsule/new.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/new.xml',
+    'assets/freeplay/freeplayCapsule/bignumbers.png' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-big.png',
+    'assets/freeplay/freeplayCapsule/bignumbers.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-big.xml',
+    'assets/freeplay/freeplayCapsule/smallnumbers.png' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-small.png',
+    'assets/freeplay/freeplayCapsule/smallnumbers.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/numbers-small.xml',
+    'assets/freeplay/freeplayFlame.png' => 'assets/ui/freeplay/difficulty/freeplay-flame.png',
+    'assets/freeplay/freeplayFlame.xml' => 'assets/ui/freeplay/difficulty/freeplay-flame.xml',
+    'assets/freeplay/freeplaySelector/freeplaySelector.png' => 'assets/ui/freeplay/interface/difficulty-selector.png',
+    'assets/freeplay/freeplaySelector/freeplaySelector.xml' => 'assets/ui/freeplay/interface/difficulty-selector.png',
+    'assets/freeplay/freeplaySelector/freeplaySelector_pico.png' => 'assets/ui/freeplay/styles/pico/difficulty-selector.png',
+    'assets/freeplay/freeplaySelector/freeplaySelector_pico.xml' => 'assets/ui/freeplay/styles/pico/difficulty-selector.png',
+    'assets/freeplay/glowingText.png' => 'assets/ui/freeplay/interface/glowing-text.png',
+    'assets/freeplay/highscore.png' => 'assets/ui/freeplay/interface/highscore.png',
+    'assets/freeplay/highscore.xml' => 'assets/ui/freeplay/interface/highscore.xml',
+    'assets/freeplay/instBox/instBox.png' => 'assets/ui/freeplay/interface/freeplay-capsule/box-inst.png',
+    'assets/freeplay/instBox/instBox.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/box-inst.xml',
+    'assets/freeplay/miniArrow.png' => 'assets/ui/freeplay/interface/mini-arrow.png',
+    'assets/freeplay/rankVignette.png' => 'assets/ui/freeplay/interface/rank-vignette.png',
+    'assets/freeplay/rankbadges.png' => 'assets/ui/freeplay/interface/freeplay-capsule/rank-badge.png',
+    'assets/freeplay/rankbadges.xml' => 'assets/ui/freeplay/interface/freeplay-capsule/rank-badge.xml',
+    'assets/freeplay/seperator.png' => 'assets/ui/freeplay/interface/separator.png',
+    'assets/freeplay/sparkle.png' => 'assets/ui/freeplay/interface/sparkle.png',
+    'assets/freeplay/sparkle.xml' => 'assets/ui/freeplay/interface/sparkle.xml',
+    'assets/freeplay/sparks.png' => 'assets/ui/freeplay/interface/sparks.png',
+    'assets/freeplay/sparks.xml' => 'assets/ui/freeplay/interface/sparks.xml',
+    'assets/freeplay/sparksadd.png' => 'assets/ui/freeplay/interface/sparks-add.png',
+    'assets/freeplay/sparksadd.xml' => 'assets/ui/freeplay/interface/sparks-add.xml',
+    'assets/freeplay/transitionGradient.png' => 'assets/ui/freeplay/interface/transition-gradient.png',
     'assets/funkay.png' => 'assets/ui/loading/funkay.png',
     'assets/gfDanceTitle.png' => 'assets/ui/title/gf-dance-title.png',
     'assets/gfDanceTitle.xml' => 'assets/ui/title/gf-dance-title.xml',
@@ -2801,6 +2905,9 @@ class Paths
   }
 
   /**
+   * Based on the input file path that failed to resolve,
+   * make a whole bunch of educated guesses on what the correct file path is and see if we can find it.
+   *
    * @param id The base ID of the asset, including the extension.
    * @param filePath The original guess at the file path, used for caching the result later if we find the true path.
    * @param type The type of asset.
@@ -2819,10 +2926,23 @@ class Paths
       if (funkin.assets.Assets.exists(path, type)) result = path;
     }
 
+    // Fix for IDs contained a library.
+    if (id.contains(':'))
+    {
+      var split = id.split(':');
+      var splitLib = split[0];
+      var splitFilePath = filePath.replace('$splitLib:', '');
+      var splitId = split[1];
+
+      var result:Null<String> = tryGuessPath(splitId, splitFilePath, type, splitLib);
+      if (result != null) return result;
+    }
+
     // Try to guess where the path would be, pre-Great Sorting.
     // If we figure it out, add it to the list of known paths.
     var extension:String = haxe.io.Path.extension(filePath);
     var fileName:String = haxe.io.Path.withoutDirectory(filePath);
+    var fileId:String = haxe.io.Path.withoutExtension(fileName);
     var dirName:String = haxe.io.Path.directory(filePath);
     switch (extension)
     {
@@ -2831,11 +2951,14 @@ class Paths
         // Specific redirect for health icons
         var iconFilePath = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', 'images/freeplay/icons/').replace('.png', 'pixel.png');
+        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+          .replace('.png', 'pixel.png');
         // Specific redirect for char select nametags
-        var nametagFilePath = filePath.replace('ui/character-select/characters/nametag-', 'images/charSelect/').replace('.png', 'Nametag.png');
+        var nametagFilePath = filePath.replace('ui/character-select/characters/nametag-', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+          .replace('.png', 'Nametag.png');
         // Specific redirect for char select animate atlases
-        var charSelectFilePath = dirName.replace('ui/character-select/characters/', 'images/charSelect/') + 'Chill/$fileName';
+        var charSelectFilePath = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+          + 'Chill/$fileName';
 
         usePathIfExists(typeFilePath);
         usePathIfExists(iconFilePath);
@@ -2855,7 +2978,8 @@ class Paths
         var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', 'images/freeplay/icons/').replace('.xml', 'pixel.xml');
+        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+          .replace('.xml', 'pixel.xml');
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
@@ -2869,7 +2993,8 @@ class Paths
         var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
         var songDataFilePath:String = dataFilePath.replace('gameplay/songs/', 'songs/');
         // Specific redirect for char select animate atlases
-        var charSelectFilePath = dirName.replace('ui/character-select/characters/', 'images/charSelect/') + 'Chill/$fileName';
+        var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+          + 'Chill/$fileName';
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
@@ -2880,14 +3005,21 @@ class Paths
       case 'ogg': // Music or sound
         // Redirect for music files
         var musicFilePath:String = (library == 'default') ? 'assets/music/$id' : 'assets/$library/music/$id';
+        var nestedMusicFilePath:String = (library == 'default') ? 'assets/music/$fileId/$fileId.ogg' : 'assets/$library/music/$fileId/$fileId.ogg';
         // Redirect for sound effect files
         var soundFilePath:String = (library == 'default') ? 'assets/sound/$id' : 'assets/$library/sound/$id';
+        var soundsFilePath:String = (library == 'default') ? 'assets/sounds/$id' : 'assets/$library/sounds/$id';
         // Specific redirect for song audio
-        var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
+        var songFilePath:String = filePath.replace('gameplay/songs/', (library == 'default') ? 'songs/' : '$library/songs/');
+        // Redirect for pause music
+        var pauseMusicFilePath:String = filePath.replace('ui/pause/music/', (library == 'default') ? 'music/' : '$library/music/');
 
         usePathIfExists(musicFilePath);
+        usePathIfExists(nestedMusicFilePath);
         usePathIfExists(soundFilePath);
+        usePathIfExists(soundsFilePath);
         usePathIfExists(songFilePath);
+        usePathIfExists(pauseMusicFilePath);
 
       case 'mp4' | 'mkv': // videos, without or with subtitles
         var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';

@@ -151,7 +151,7 @@ class Paths implements ConsoleClass
 
   public static function font(key:String, ext:String = 'ttf', validate:Bool = true):String
   {
-    return funkin.assets.Paths.font(key, ext, validate);
+    return getPath('$key.$ext', FONT);
   }
 
   public static function ui(key:String, ?library:String):String
@@ -201,13 +201,12 @@ class Paths implements ConsoleClass
       throw 'No Animation.json file exists at the specified path (${graphicKey})';
     }
 
-    return FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
-      validatedSettings.uniqueInCache, {
-        swfMode: validatedSettings.swfMode,
-        cacheOnLoad: validatedSettings.cacheOnLoad,
-        filterQuality: validatedSettings.filterQuality,
-        onSymbolCreate: validatedSettings.onSymbolCreate
-      });
+    return FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
+      swfMode: validatedSettings.swfMode,
+      cacheOnLoad: validatedSettings.cacheOnLoad,
+      filterQuality: validatedSettings.filterQuality,
+      onSymbolCreate: validatedSettings.onSymbolCreate
+    });
   }
 
   // deprecated("Use funkin.assets.Assets.getPackerAtlas() instead")
