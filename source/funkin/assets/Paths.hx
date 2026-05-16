@@ -281,13 +281,47 @@ class Paths implements ConsoleClass
   }
 }
 
+/**
+ * Represents a path to an asset, with a library, asset ID, and extension.
+ * Easily converts to a string, while ensuring functions that expect an asset path don't receive a string by mistake.
+ *
+ * Any function that takes an AssetPath won't accept a string,
+ * guaranteeing you correctly call one of the functions in `Paths`,
+ * and pass a series of checks to ensure the file exists and is properly cached,
+ * rather than passing a raw string by accident.
+ */
 @:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
-private class AssetPathImpl
+class AssetPath
 {
+  /**
+   * The library this asset belongs to.
+   * @default `default`
+   */
   public var library(default, null):String;
+
+  /**
+   * The unique identifier for this asset within its library.
+   * This is the path to the asset without its extension.
+   */
   public var id(default, null):String;
+
+  /**
+   * The file extension for this asset.
+   * @default Empty string, for files without an extension.
+   */
   public var ext(default, null):String;
+
+  /**
+   * Whether we need the pixel data for this asset.
+   * Necessary for things like masks but hurts memory usage.
+   *
+   * Call `AssetPath.withPixelData()` to enable this.
+   */
   public var needsPixelData(default, null):Bool = false;
+
+  /**
+   * The asset path, with extension, without the library.
+   */
   public var path(get, never):String;
 
   function get_path():String
@@ -296,6 +330,9 @@ private class AssetPathImpl
     return '${this.id}.${this.ext}';
   }
 
+  /**
+   * The asset's file name, with the extension and without the path.
+   */
   public var fileName(get, never):String;
 
   function get_fileName():String
@@ -303,12 +340,17 @@ private class AssetPathImpl
     return Path.withoutDirectory(this.path);
   }
 
+  /**
+   * The asset's file name, without the extension or the path.
+   */
   public var fileBareName(get, never):String;
 
   function get_fileBareName():String
   {
     return Path.withoutExtension(Path.withoutDirectory(this.path));
   }
+
+  // Only construct from Paths.hx
 
   function new(id:String, ext:String, library:String = 'default')
   {
@@ -317,51 +359,96 @@ private class AssetPathImpl
     this.library = library;
   }
 
+  /**
+   * Determine the AssetType for this AssetPath.
+   * @return The AssetType corresponding to the file extension of this AssetPath.
+   */
   public function getAssetType():AssetType
   {
     return AssetsUtil.guessTypeByExtension(this.path);
   }
 
+  /**
+   * Explicitly convert this AssetPath to an `FlxGraphicAsset`.
+   * @return The resulting `FlxGraphicAsset`
+   */
   public function toFlxGraphicAsset():flixel.system.FlxAssets.FlxGraphicAsset
   {
     return toString();
   }
 
+  /**
+   * Explicitly convert this AssetPath to an `FlxSoundAsset`.
+   * @return The resulting `FlxSoundAsset`
+   */
   public function toFlxSoundAsset():flixel.system.FlxAssets.FlxSoundAsset
   {
     return toString();
   }
 
+  /**
+   * Explicitly convert this AssetPath to an `FlxTilemapGraphicAsset`.
+   * @return The resulting `FlxTilemapGraphicAsset`
+   */
   public function toFlxTilemapGraphicAsset():flixel.system.FlxAssets.FlxTilemapGraphicAsset
   {
     return toString();
   }
 
+  /**
+   * Explicitly convert this AssetPath to an `FlxBitmapFontGraphicAsset`.
+   * @return The resulting `FlxBitmapFontGraphicAsset`
+   */
   public function toFlxBitmapFontGraphicAsset():flixel.system.FlxAssets.FlxBitmapFontGraphicAsset
   {
     return toString();
   }
 
+  /**
+   * Explicitly convert this AssetPath to an `FlxXmlAsset`.
+   * @return The resulting `FlxXmlAsset`
+   */
   public function toFlxXmlAsset():flixel.system.FlxAssets.FlxXmlAsset
   {
     return toString();
   }
 
+  /**
+   * @return Whether this asset exists on the file system.
+   */
   public function exists():Bool
   {
     return Assets.assetExists(this);
   }
 
+  /**
+   * Determine if this AssetPath is of the given AssetType.
+   *
+   * @param type The AssetType to compare with.
+   * @return Whether this AssetPath is of the given AssetType.
+   */
   public function isAssetType(type:AssetType):Bool
   {
     return type == this.getAssetType();
   }
 
+  /**
+   * Constructs a new AssetPath with the given extension.
+   *
+   * @param ext The file extension to use, without the `.`
+   * @return The resulting AssetPath
+   */
   public function withExt(ext:String):AssetPath
   {
     return new AssetPath(this.id, ext, this.library);
   }
 
+  /**
+   * Constructs a new AssetPath with the given AssetType.
+   *
+   * @param type The AssetType to use
+   * @return The resulting AssetPath
+   */
   public function withAssetType(type:AssetType):AssetPath
   {
     switch (type)
@@ -396,6 +483,11 @@ private class AssetPathImpl
     }
   }
 
+  /**
+   * By default, we get rid of the pixel data after we've uploaded it to the GPU to save memory.
+   * Call this function to specify that this asset is a graphic which needs pixel data in RAM.
+   * @return The AssetPath, for chaining calls together.
+   */
   public function withPixelData():AssetPath
   {
     this.needsPixelData = true;
@@ -408,171 +500,6 @@ private class AssetPathImpl
     if (this.library == null || this.library == '' || this.library == 'default') return '${this.path}';
     return '${this.library}:${this.path}';
   }
-}
-
-/**
- * Represents a path to an asset, with a library, asset ID, and extension.
- * Easily converts to a string, while ensuring functions that expect an asset path don't receive a string by mistake.
- */
-@:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
-abstract AssetPath(AssetPathImpl) from AssetPathImpl to AssetPathImpl
-{
-  /**
-   * The library this asset belongs to.
-   * @default `default`
-   */
-  public var library(get, never):String;
-
-  inline function get_library() return this.library;
-
-  /**
-   * The unique identifier for this asset within its library.
-   * This is the path to the asset without its extension.
-   */
-  public var id(get, never):String;
-
-  inline function get_id() return this.id;
-
-  /**
-   * The file extension for this asset.
-   * @default Empty string, for files without an extension.
-   */
-  public var ext(get, never):String;
-
-  inline function get_ext() return this.ext;
-
-  /**
-   * Whether we need the pixel data for this asset.
-   * Necessary for things like masks but hurts memory usage.
-   *
-   * Call `AssetPath.withPixelData()` to enable this.
-   */
-  public var needsPixelData(get, never):Bool;
-
-  inline function get_needsPixelData() return this.needsPixelData;
-
-  /**
-   * The asset path, with extension, without the library.
-   */
-  public var path(get, never):String;
-
-  inline function get_path() return this.path;
-
-  /**
-   * The asset's file name, with the extension and without the path.
-   */
-  public var fileName(get, never):String;
-
-  inline function get_fileName() return this.fileName;
-
-  /**
-   * The asset's file name, without the extension or the path.
-   */
-  public var fileBareName(get, never):String;
-
-  inline function get_fileBareName() return this.fileBareName;
-
-  // Only construct from Paths.hx
-
-  function new(id:String, ext:String, library:String = 'default')
-  {
-    this = new AssetPathImpl(id, ext, library);
-  }
-
-  public function getAssetType():AssetType return this.getAssetType();
-
-  @:to
-  public inline function toString():String return this.toString();
-
-  /**
-   * Explicitly convert this AssetPath to an `FlxGraphicAsset`.
-   * @return The resulting `FlxGraphicAsset`
-   */
-  @:to
-  public inline function toFlxGraphicAsset():flixel.system.FlxAssets.FlxGraphicAsset return this.toString();
-
-  /**
-   * Explicitly convert this AssetPath to an `FlxSoundAsset`.
-   * @return The resulting `FlxSoundAsset`
-   */
-  @:to
-  public inline function toFlxSoundAsset():flixel.system.FlxAssets.FlxSoundAsset return this.toString();
-
-  /**
-   * Explicitly convert this AssetPath to an `FlxTilemapGraphicAsset`.
-   * @return The resulting `FlxTilemapGraphicAsset`
-   */
-  @:to
-  public inline function toFlxTilemapGraphicAsset():flixel.system.FlxAssets.FlxTilemapGraphicAsset return this.toString();
-
-  /**
-   * Explicitly convert this AssetPath to an `FlxBitmapFontGraphicAsset`.
-   * @return The resulting `FlxBitmapFontGraphicAsset`
-   */
-  @:to
-  public inline function toFlxBitmapFontGraphicAsset():flixel.system.FlxAssets.FlxBitmapFontGraphicAsset return this.toString();
-
-  /**
-   * Explicitly convert this AssetPath to an `FlxXmlAsset`.
-   * @return The resulting `FlxXmlAsset`
-   */
-  @:to
-  public inline function toFlxXmlAsset():flixel.system.FlxAssets.FlxXmlAsset return this.toString();
-
-  @:from
-  public static function fromString(s:String):AssetPath
-  {
-    var id:String = Path.withoutExtension(Paths.stripLibrary(s));
-    final ext:String = Path.extension(Paths.stripLibrary(s));
-    final library:String = Paths.getLibrary(s);
-
-    for (prefix in ['assets/', 'flixel/', 'haxeui-flixel/'])
-    {
-      if (id.startsWith(prefix))
-      {
-        id = id.substr(prefix.length, id.length);
-        break;
-      }
-    }
-
-    return Paths.file(id, ext, true, library);
-  }
-
-  /**
-   * @return Whether this asset exists on the file system.
-   */
-  public function exists():Bool return this.exists();
-
-  /**
-   * Determine if this AssetPath is of the given AssetType.
-   *
-   * @param type The AssetType to compare with.
-   * @return Whether this AssetPath is of the given AssetType.
-   */
-  public function isAssetType(type:AssetType):Bool return this.isAssetType(type);
-
-  /**
-   * Constructs a new AssetPath with the given extension.
-   *
-   * @param ext The file extension to use, without the `.`
-   * @return The resulting AssetPath
-   */
-  public function withExt(ext:String):AssetPath return this.withExt(ext);
-
-  /**
-   * Constructs a new AssetPath with the given AssetType.
-   *
-   * @param type The AssetType to use
-   * @return The resulting AssetPath
-   */
-  public function withAssetType(type:AssetType):AssetPath return this.withAssetType(type);
-
-  /**
-   * By default, we get rid of the pixel data after we've uploaded it to the GPU to save memory.
-   * Call this function to specify that this asset is a graphic which needs pixel data in RAM.
-   * @return The AssetPath, for chaining calls together.
-   */
-  public function withPixelData():AssetPath return this.withPixelData();
 
   /**
    * @param a An AssetPath to compare.
