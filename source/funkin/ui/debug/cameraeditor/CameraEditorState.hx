@@ -404,7 +404,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    * Whether the camera preview should display song events.
    */
   @:bind(menubarItemDoSongEvents.selected)
-  public var doSongEvents(default, set):Bool = false;
+  public var doSongEvents(default, set):Bool = true;
 
   function set_doSongEvents(val:Bool):Bool
   {
