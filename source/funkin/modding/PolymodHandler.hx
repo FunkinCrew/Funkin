@@ -376,6 +376,7 @@ class PolymodHandler
     // `lime.utils.Assets` literally just has a private `resolveClass` function for some reason? so we replace it with our own.
     Polymod.addImportAlias('lime.utils.Assets', funkin.Assets);
     Polymod.addImportAlias('openfl.utils.Assets', funkin.Assets);
+    Polymod.addImportAlias('openfl.Assets', funkin.Assets);
 
     // `funkin.util.FileUtil` has unrestricted access to the file system.
     Polymod.addImportAlias('funkin.util.FileUtil', funkin.util.FileUtilSandboxed);
@@ -471,6 +472,12 @@ class PolymodHandler
     Polymod.blacklistStaticFields(flixel.util.FlxSave, ['resolveFlixelClasses']);
     // Disallow direct manipulation of save data.
     Polymod.blacklistStaticFields(flixel.FlxG, ['save']);
+
+    /**
+     * Using the `AssetManifest` class can get you a `Future` that holds an `AssetLibrary`
+     * that you can then use to resolve to blacklisted classes using the `classTypes` field.
+    **/
+    Polymod.blacklistInstanceFields(lime.utils.AssetLibrary, ['classTypes']);
 
     // `haxe.Unserializer`
     // Just to be double-sure, lets blacklist some fields of the Unserializer to make it harder to use if you DO get one.
