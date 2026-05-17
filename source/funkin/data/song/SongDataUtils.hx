@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongTimeChange;
 import funkin.util.ClipboardUtil;
+import haxe.Json;
 
 using Lambda;
 
@@ -131,6 +132,33 @@ class SongDataUtils
         // The currently iterated event is in the subtrahend array.
         // SongEventData's == operation has been overridden so that this will work.
         if (x == event) return false;
+      }
+      return true;
+    });
+  }
+
+  /**
+   * Returns whether two events are equivalent, matching time, kind, and serialized value.
+   */
+  public static function eventsAreEquivalent(eventA:SongEventData, eventB:SongEventData):Bool
+  {
+    var valueA:String = Json.stringify(eventA.value);
+    var valueB:String = Json.stringify(eventB.value);
+    return eventA.time == eventB.time && eventA.eventKind == eventB.eventKind && valueA == valueB;
+  }
+
+  /**
+   * Return a new array without the events in the given subtrahend, matching by event contents.
+   */
+  public static function subtractMatchingEvents(events:Array<SongEventData>, subtrahend:Array<SongEventData>)
+  {
+    if (events.length == 0 || subtrahend.length == 0) return events;
+
+    return events.filter(function(event:SongEventData):Bool
+    {
+      for (x in subtrahend)
+      {
+        if (eventsAreEquivalent(event, x)) return false;
       }
       return true;
     });

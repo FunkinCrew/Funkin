@@ -57,8 +57,8 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ChartEditorCommand;
 import funkin.ui.debug.charting.commands.CopyItemsCommand;
 import funkin.ui.debug.charting.commands.CutItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectItemsCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 import funkin.ui.debug.charting.commands.FlipNotesCommand;
@@ -72,6 +72,7 @@ import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveItemsCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
+import funkin.ui.debug.charting.commands.ReplaceEventsCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
@@ -98,6 +99,7 @@ import funkin.util.logging.CrashHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import haxe.DynamicAccess;
+import haxe.Json;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.ui.backend.flixel.UIState;
@@ -5401,7 +5403,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else if (highlightedEvent != null && highlightedEvent.eventData != null)
             {
-              if (isEventSelected(highlightedEvent.eventData))
+              var existingEvent:SongEventData = highlightedEvent.eventData;
+              var existingEventValue:String = Json.stringify(existingEvent.value);
+              var selectedEventValue:String = Json.stringify(eventDataToPlace);
+              var shouldReplaceEvent:Bool = cursorGridPos == eventColumn
+                && (eventKindToPlace != existingEvent.eventKind || existingEventValue != selectedEventValue);
+
+              if (shouldReplaceEvent)
+              {
+                // replace the existing event at this position with the currently selected event kind/data.
+                var replacementEvent:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+                performCommand(new ReplaceEventsCommand([existingEvent], [replacementEvent]));
+              }
+              else if (isEventSelected(existingEvent))
               {
                 // Clicked a selected event, start dragging.
                 dragTargetEvent = highlightedEvent;
@@ -5409,7 +5423,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               else
               {
                 // If you click an unselected event, and aren't holding Control, deselect everything else.
-                performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+                performCommand(new SetItemSelectionCommand([], [existingEvent]));
               }
             }
             else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
@@ -5423,11 +5437,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
               if (cursorGridPos == eventColumn)
               {
-                // Create an event and place it in the chart.
-                // TODO: Figure out configuring event data.
-                var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+                // replace any existing event at this time, or add a new one.
+                var existingEvents:Array<SongEventData> = SongDataUtils.getEventsInTimeRange(currentSongChartEventData, cursorSnappedMs,
+                  cursorSnappedMs + Conductor.instance.getTypeLengthAtMs(cursorSnappedMs, 'step') * noteSnapRatio);
 
-                performCommand(new AddEventsCommand([newEventData], pressingControl()));
+                var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+                if (existingEvents.length > 0)
+                {
+                  performCommand(new ReplaceEventsCommand(existingEvents, [newEventData]));
+                }
+                else
+                {
+                  performCommand(new AddEventsCommand([newEventData], pressingControl()));
+                }
               }
               else
               {

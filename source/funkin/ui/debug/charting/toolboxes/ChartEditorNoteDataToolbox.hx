@@ -147,10 +147,11 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
     toolboxNotesNoteKind.pauseEvent(UIEvent.CHANGE, true);
     toolboxNotesCustomKind.pauseEvent(UIEvent.CHANGE, true);
-
+    // this prevents the null object reference crash when the note kind dropdown value is not available during toolbox refresh.
     toolboxNotesCustomKind.value = chartEditorState.noteKindToPlace;
-    toolboxNotesNoteKind.value = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
-    if (toolboxNotesNoteKind.value.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
+    var selectedNoteKind = ChartEditorDropdowns.lookupNoteKind(chartEditorState.noteKindToPlace);
+    toolboxNotesNoteKind.value = selectedNoteKind;
+    if (selectedNoteKind != null && selectedNoteKind.id == '~CUSTOM~' && chartEditorState.noteKindToPlace != null)
     {
       showCustom();
     }

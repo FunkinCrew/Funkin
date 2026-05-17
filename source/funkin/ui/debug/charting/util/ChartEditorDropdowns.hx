@@ -125,10 +125,10 @@ class ChartEditorDropdowns
    */
   public static function populateDropdownWithSongEvents(dropDown:DropDown, startingEventId:String):DropDownEntry
   {
-    dropDown.dataSource.clear();
+    // FIX: Break lazy layout reference binding completely by instantiating a clean array source
+    dropDown.dataSource = new haxe.ui.data.ArrayDataSource<Dynamic>();
 
     var returnValue:DropDownEntry = {id: "FocusCamera", text: "Focus Camera"};
-
     var songEvents:Array<SongEvent> = SongEventRegistry.listEvents();
 
     for (event in songEvents)
@@ -138,7 +138,41 @@ class ChartEditorDropdowns
       dropDown.dataSource.add(value);
     }
 
+    if (returnValue.id == "FocusCamera" && startingEventId != null && startingEventId != "")
+    {
+      var startingEvent:Null<SongEvent> = SongEventRegistry.getEvent(startingEventId);
+      if (startingEvent != null)
+      {
+        returnValue = {id: startingEvent.id, text: startingEvent.getTitle()};
+      }
+      else
+      {
+        returnValue = {id: startingEventId, text: startingEventId};
+      }
+
+      // Safety check using your utility method to ensure no duplicate IDs slip past
+      if (findDropdownElement(returnValue.id, dropDown) == null)
+      {
+        dropDown.dataSource.add(returnValue);
+      }
+    }
+    else if (songEvents.length == 0)
+    {
+      dropDown.dataSource.add(returnValue);
+    }
+
     dropDown.dataSource.sort('text', ASCENDING);
+
+    if (startingEventId != null && startingEventId != "")
+    {
+      var selectedEntry:Null<DropDownEntry> = findDropdownElement(startingEventId, dropDown);
+      if (selectedEntry != null) return selectedEntry;
+    }
+
+    // If the requested event kind wasn't specified or couldn't be found, return the actual
+    // sorted entry for the default event choice if it exists.
+    var fallbackEntry:Null<DropDownEntry> = findDropdownElement(returnValue.id, dropDown);
+    if (fallbackEntry != null) return fallbackEntry;
 
     return returnValue;
   }

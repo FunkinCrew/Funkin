@@ -27,6 +27,7 @@ import openfl.geom.Point;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.FlxG;
+import haxe.Timer;
 
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
@@ -48,6 +49,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   static var _loopPause:Float = 0.15;
 
   var _initializing:Bool = true;
+  var _refreshing:Bool = false;
 
   /**
    * If `true`, changing the value of the Event Kind dropdown will trigger the `onEventKindChanged` callback,
@@ -93,22 +95,34 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     toolboxEventsEventKind.onChange = onEventKindChanged;
     shouldTriggerOnEventKindChanged = false;
 
-    var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
-    trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Building Event toolbox with kind "${startingEventValue}"');
-    toolboxEventsEventKind.value = startingEventValue;
+    ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
+    setEventKindDropdownSelection(chartEditorState.eventKindToPlace);
 
     shouldTriggerOnEventKindChanged = true;
   }
 
   function onEventKindChanged(event:UIEvent):Void
   {
+    if (_refreshing)
+    {
+      trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox ignored onChange during refresh.');
+      return;
+    }
+
     if (event.data == null)
     {
       trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox received an invalid UI event.');
       return;
     }
 
-    var eventKind:String = event.data.id;
+    var eventKind:String = null;
+    if (Reflect.hasField(event.data, 'id')) eventKind = event.data.id;
+    if (eventKind == null || eventKind == '')
+    {
+      trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox received an invalid event kind.');
+      return;
+    }
+
     var sameEvent:Bool = (eventKind == chartEditorState.eventKindToPlace);
 
     trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox changed kind to "$eventKind"');
@@ -146,17 +160,49 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     super.refresh();
 
+    if (chartEditorState.eventKindToPlace == null || chartEditorState.eventKindToPlace == '')
+    {
+      chartEditorState.eventKindToPlace = 'FocusCamera';
+    }
+
+    _refreshing = true;
     shouldTriggerOnEventKindChanged = false;
 
-    var newDropdownElement = ChartEditorDropdowns.findDropdownElement(chartEditorState.eventKindToPlace, toolboxEventsEventKind);
+    var newDropdownElement = setEventKindDropdownSelection(chartEditorState.eventKindToPlace);
+    var currentDropdownId:String = null;
+
+    // SAFETY CHECK: Safely extract the active ID or text from the dropdown value
+    if (toolboxEventsEventKind.value != null)
+    {
+      if (Reflect.hasField(toolboxEventsEventKind.value, 'id'))
+      {
+        currentDropdownId = toolboxEventsEventKind.value.id;
+      }
+      else if (Reflect.hasField(toolboxEventsEventKind.value, 'text'))
+      {
+        currentDropdownId = toolboxEventsEventKind.value.text;
+      }
+    }
 
     if (newDropdownElement == null)
     {
-      throw 'CHART EDITOR - In Event Toolbox, event kind "${chartEditorState.eventKindToPlace}" not in dropdown!';
+      trace(' WARNING '.bg_yellow().bold()
+        + ' CHART EDITOR '.bold().bg_bright_yellow()
+        + 'Event kind "${chartEditorState.eventKindToPlace}" not in dropdown, rebuilding event list.');
+      newDropdownElement = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
     }
-    else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
+
+    if (newDropdownElement != null
+      && (currentDropdownId != chartEditorState.eventKindToPlace || lastEventKind != chartEditorState.eventKindToPlace))
     {
       toolboxEventsEventKind.value = newDropdownElement;
+
+      // THE FIX: Explicitly force HaxeUI to display the text string visually
+      // so it cannot render a blank bar when focus shifts!
+      if (Reflect.hasField(newDropdownElement, 'text'))
+      {
+        toolboxEventsEventKind.text = newDropdownElement.text;
+      }
 
       var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
       if (schema == null)
@@ -169,9 +215,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
       }
     }
-    else
+    else if (newDropdownElement != null)
     {
-      trace('ChartEditorEventDataToolbox - Event kind not changed: ${toolboxEventsEventKind.value} == ${newDropdownElement} == ${lastEventKind}');
+      // SAFETY CHECK: Keep the visual text alive even if the event kind didn't change!
+      if (Reflect.hasField(newDropdownElement, 'text'))
+      {
+        toolboxEventsEventKind.text = newDropdownElement.text;
+      }
+      trace('ChartEditorEventDataToolbox - Event kind not changed: ${currentDropdownId} == ${chartEditorState.eventKindToPlace} == ${lastEventKind}');
     }
 
     for (pair in chartEditorState.eventDataToPlace.keyValueIterator())
@@ -209,7 +260,12 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       field.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
-    shouldTriggerOnEventKindChanged = true;
+    Timer.delay(function()
+    {
+      shouldTriggerOnEventKindChanged = true;
+      _refreshing = false;
+    }, 0);
+
     updateEasePreview();
   }
 
@@ -221,7 +277,17 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     _initializing = true;
 
+    var previousEventKind:String = lastEventKind;
     lastEventKind = eventKind ?? 'unknown';
+
+    if (previousEventKind != lastEventKind)
+    {
+      var oldEventData:haxe.DynamicAccess<Dynamic> = chartEditorState.eventDataToPlace;
+      var newEventData:haxe.DynamicAccess<Dynamic> = {};
+
+      copyEventDataWithDefaults(oldEventData, newEventData, schema);
+      chartEditorState.eventDataToPlace = newEventData;
+    }
 
     // Clear the frame.
     target.removeAllComponents();
@@ -229,6 +295,58 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     recursiveChildAdd(target, schema);
 
     _initializing = false;
+  }
+
+  function copyEventDataWithDefaults(oldEventData:haxe.DynamicAccess<Dynamic>, newEventData:haxe.DynamicAccess<Dynamic>, schema:SongEventSchema):Void
+  {
+    for (field in schema)
+    {
+      if (field == null) continue;
+
+      var value:Null<Dynamic> = oldEventData.get(field.name);
+      if (value == null && field.defaultValue != null)
+      {
+        value = field.defaultValue;
+      }
+
+      if (value != null)
+      {
+        newEventData.set(field.name, value);
+      }
+
+      if (field.type == FRAME && field.children != null)
+      {
+        copyEventDataWithDefaults(oldEventData, newEventData, new SongEventSchema(field.children));
+      }
+    }
+  }
+
+  function setEventKindDropdownSelection(eventKind:String):Dynamic
+  {
+    var dropdownElement:Dynamic = ChartEditorDropdowns.findDropdownElement(eventKind, toolboxEventsEventKind);
+
+    if (dropdownElement == null)
+    {
+      dropdownElement = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, eventKind);
+    }
+    else
+    {
+      for (index in 0...toolboxEventsEventKind.dataSource.size)
+      {
+        if (toolboxEventsEventKind.dataSource.get(index) == dropdownElement)
+        {
+          toolboxEventsEventKind.selectedIndex = index;
+          break;
+        }
+      }
+    }
+
+    if (dropdownElement != null)
+    {
+      toolboxEventsEventKind.value = dropdownElement;
+    }
+
+    return dropdownElement;
   }
 
   function recursiveChildAdd(parent:Component, schema:SongEventSchema)
@@ -310,21 +428,24 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         case FRAME:
           hbox.removeComponent(label, true);
 
-          input = new Frame();
-          input.id = field.name;
-          input.text = field.title;
-          input.percentWidth = 100;
-          if (field.collapsible != null)
-          {
-            var targetFrame:Frame = cast(input, Frame);
-            if (targetFrame != null) targetFrame.collapsible = field.collapsible;
-          }
+          // Use a simple section wrapper for FRAME fields, because nested Frame rendering can be unreliable
+          // in the chart editor toolbox layout.
+          var section:VBox = new VBox();
+          section.id = field.name;
+          section.percentWidth = 100;
+
+          var header:Label = new Label();
+          header.text = field.title;
+          header.percentWidth = 100;
+          section.addComponent(header);
 
           var frameVBox:VBox = new VBox();
           frameVBox.percentWidth = 100;
-          input.addComponent(frameVBox);
+          section.addComponent(frameVBox);
 
           if (field.children != null) recursiveChildAdd(frameVBox, new SongEventSchema(field.children));
+
+          input = section;
 
         default:
           // Unknown type. Display a label that proclaims the type so we can debug it.
@@ -364,20 +485,24 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         }
       }
 
+      // Capture locals so closures don't accidentally reference the loop variable.
+      var _field = field;
+      var _input = input;
+
       // Update the value of the event data without modifying
-      input.pauseEvent(UIEvent.CHANGE, true);
-      input.onChange = function(event:UIEvent)
+      _input.pauseEvent(UIEvent.CHANGE, true);
+      _input.onChange = function(event:UIEvent)
       {
-        if (field.type == FRAME) return;
+        if (_field.type == FRAME) return;
 
         var value:Any = event.target.value;
-        if (field.type == ENUM)
+        if (_field.type == ENUM)
         {
           var drp:DropDown = cast event.target;
-          value = drp.selectedItem?.value ?? field.defaultValue;
+          value = drp.selectedItem?.value ?? _field.defaultValue;
           updateEasePreview();
         }
-        else if (field.type == BOOL)
+        else if (_field.type == BOOL)
         {
           var chk:CheckBox = cast event.target;
           value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
@@ -412,7 +537,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         updateEasePreview();
       }
 
-      input.resumeEvent(UIEvent.CHANGE, true, true);
+      _input.resumeEvent(UIEvent.CHANGE, true, true);
     }
 
     if (_needEasePreview)

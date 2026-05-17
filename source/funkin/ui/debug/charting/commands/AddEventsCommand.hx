@@ -21,6 +21,11 @@ class AddEventsCommand implements ChartEditorCommand
 
   public function execute(state:ChartEditorState):Void
   {
+    if (events.length > 0)
+    {
+      state.currentSongChartEventData = SongDataUtils.subtractMatchingEvents(state.currentSongChartEventData, events);
+    }
+
     for (event in events)
     {
       state.currentSongChartEventData.push(event);
@@ -64,7 +69,7 @@ class AddEventsCommand implements ChartEditorCommand
 
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
-    // This command is undoable. Add to the history if we actually performed an action.
+    // this command is undoable. Add to the history if we actually performed an action.
     return (events.length > 0);
   }
 
