@@ -229,7 +229,7 @@ class Strumline extends FlxSpriteGroup
     this.notesVwoosh.zIndex = 31;
     this.add(this.notesVwoosh);
 
-    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
+    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>();
     this.noteHoldCovers.zIndex = 40;
     this.add(this.noteHoldCovers);
 
@@ -1261,30 +1261,18 @@ class Strumline extends FlxSpriteGroup
    */
   function constructNoteHoldCover():NoteHoldCover
   {
-    var result:NoteHoldCover = null;
+    var result:NoteHoldCover = this.noteHoldCovers.getFirstAvailable();
 
-    // If we haven't filled the pool yet...
-    if (noteHoldCovers.length < noteHoldCovers.maxSize)
+    if (result != null)
     {
-      // Create a new note hold cover.
-      result = new NoteHoldCover(noteStyle);
-      this.noteHoldCovers.add(result);
+      result.revive();
     }
     else
     {
-      // Else, find a note splash which is inactive so we can revive it.
-      result = this.noteHoldCovers.getFirstAvailable();
-
-      if (result != null)
-      {
-        result.revive();
-      }
-      else
-      {
-        // The note hold cover pool is full and all note hold covers are active,
-        // so we just pick one at random to destroy and restart.
-        result = FlxG.random.getObject(this.noteHoldCovers.members);
-      }
+      // The note hold cover pool is full and all note hold covers are active,
+      // We have to create a new note hold cover.
+      result = new NoteHoldCover(noteStyle);
+      this.noteHoldCovers.add(result);
     }
 
     return result;
