@@ -123,6 +123,12 @@ class FunkinSprite extends FlxAnimate
   public var filters(default, set):Null<Array<BitmapFilter>> = null;
 
   /**
+   * Only used for mods that don't use the new asset system.
+   */
+  @:unreflective
+  var __backwardsCompatibility:Bool = false;
+
+  /**
    * @param x Starting X position
    * @param y Starting Y position
    * @param path The asset path for the graphic
@@ -354,6 +360,10 @@ class FunkinSprite extends FlxAnimate
 
     frames = Paths.getAnimateAtlas(key, settings);
 
+    var path:String = Paths.animateAtlas(key);
+    // If the path doesn't use the new asset structure, we can assume that it's a backwards compatible sprite.
+    __backwardsCompatibility = !path.contains('gameplay/') || !path.contains('ui/');
+
     return this;
   }
 
@@ -409,6 +419,38 @@ class FunkinSprite extends FlxAnimate
     var animationList:Array<String> = this.animation?.getNameList() ?? [];
     if (animationList.contains(id))
     {
+      return true;
+    }
+    else if (__backwardsCompatibility && this.anim.hasAnimateAtlas && !animationList.contains(id))
+    {
+      return addAnimationIfMissing(id);
+    }
+
+    return false;
+  }
+
+  /**
+   * Adds an animation if it doesn't exist.
+   * ONLY used for backwards compatibility.
+   *
+   * @param id The animation ID to check.
+   */
+  function addAnimationIfMissing(id:String):Bool
+  {
+    @:privateAccess
+    var symbols:Array<String> = this.library.dictionary.keys().array();
+    var frameLabels:Array<String> = listAnimations();
+
+    if (frameLabels.contains(id))
+    {
+      // Animation exists as a frame label but wasn't added, so we add it
+      anim.addByFrameLabel(id, id, this.library.frameRate, false);
+      return true;
+    }
+    else if (symbols.contains(id))
+    {
+      // Animation exists as a symbol but wasn't added, so we add it
+      anim.addBySymbol(id, id, this.library.frameRate, false);
       return true;
     }
 

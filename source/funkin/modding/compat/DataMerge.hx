@@ -7,7 +7,8 @@ class DataMerge
 {
   public static function fetchEntryIdsFromFiles(baseDataFilePath:String, compatDataFilePaths:Array<String>):Array<String>
   {
-    compatDataFilePaths ??= [];
+    // compatDataFilePaths ??= [];
+    return [];
   }
 
   public static function getMergedData(id:String, baseData:Dynamic):Dynamic

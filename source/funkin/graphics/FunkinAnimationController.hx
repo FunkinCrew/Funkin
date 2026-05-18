@@ -61,6 +61,14 @@ class FunkinAnimationController extends FlxAnimateController
 
   override public function play(animName:String, force = false, reversed = false, frame = 0):Void
   {
+    if (_parentSprite.__backwardsCompatibility)
+    {
+      if (_parentSprite.anim.hasAnimateAtlas && animName == '')
+      {
+        animName = _parentSprite.getDefaultSymbol();
+      }
+    }
+
     if (!_parentSprite.hasAnimation(animName))
     {
       // Skip if the animation doesn't exist
