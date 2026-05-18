@@ -2112,6 +2112,12 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   // ui function bindings
 
+  @:bind(menubarItemNewChart, MouseEvent.CLICK)
+  function onMenubarNewChart(_)
+  {
+    this.openWelcomeDialog(true);
+  }
+
   @:bind(menubarItemOpen, MouseEvent.CLICK)
   function onMenubarOpen(_)
   {
@@ -2281,6 +2287,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     switch ([ event.keyCode, event.ctrlKey, event.altKey, event.shiftKey, hasSelection])
     {
       // File menu
+      case [FlxKey.N, true, false, false, _]: // ctrl + n -> new chart
+        onMenubarNewChart(null);
       case [FlxKey.O, true, false, false, _]: // ctrl + o -> open
         onMenubarOpen(null);
       case [FlxKey.S, true, false, false, _]: // ctrl + s -> save
@@ -2611,12 +2619,11 @@ class CameraEditorState extends UIState implements ConsoleClass
    * @param closable Whether the dialog can be closed by the user.
    * @return The dialog that was opened.
    */
-  function openWelcomeDialog():WelcomeDialog
+  function openWelcomeDialog(closable:Bool = false):WelcomeDialog
   {
-    final CLOSABLE:Bool = false;
     final MODAL:Bool = true;
 
-    var dialog = new WelcomeDialog(this, CLOSABLE);
+    var dialog:WelcomeDialog = new WelcomeDialog(this, closable);
 
     dialog.zIndex = 1_000;
 
