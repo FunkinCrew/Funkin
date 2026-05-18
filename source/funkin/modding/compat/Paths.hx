@@ -2924,15 +2924,20 @@ class Paths
       if (result != null) return;
       // Check if the path is valid, and if so, save it.
       if (funkin.assets.Assets.exists(path, type)) result = path;
+
+      if (PATHS.exists(path))
+      {
+        if (funkin.assets.Assets.exists(PATHS[path], type)) result = PATHS[path];
+      }
     }
 
     // Fix for IDs contained a library.
     if (id.contains(':'))
     {
-      var split = id.split(':');
-      var splitLib = split[0];
-      var splitFilePath = filePath.replace('$splitLib:', '');
-      var splitId = split[1];
+      var split:Array<String> = id.split(':');
+      var splitLib:String = split[0];
+      var splitFilePath:String = filePath.replace('$splitLib:', '');
+      var splitId:String = split[1];
 
       var result:Null<String> = tryGuessPath(splitId, splitFilePath, type, splitLib);
       if (result != null) return result;
@@ -2944,20 +2949,21 @@ class Paths
     var fileName:String = haxe.io.Path.withoutDirectory(filePath);
     var fileId:String = haxe.io.Path.withoutExtension(fileName);
     var dirName:String = haxe.io.Path.directory(filePath);
+
     switch (extension)
     {
       case 'png': // Images
-        var typeFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        var typeFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
         // Specific redirect for health icons
-        var iconFilePath = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
+        var iconFilePath:String = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+        var freeplayIconFilePath:String = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
           .replace('.png', 'pixel.png');
         // Specific redirect for char select nametags
-        var nametagFilePath = filePath.replace('ui/character-select/characters/nametag-', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+        var nametagFilePath:String = filePath.replace('ui/character-select/characters/nametag-', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           .replace('.png', 'Nametag.png');
         // Specific redirect for char select animate atlases
-        var charSelectFilePath = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+        var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
 
         usePathIfExists(typeFilePath);
@@ -2967,18 +2973,18 @@ class Paths
         usePathIfExists(charSelectFilePath);
 
       case 'frag' | 'vert': // Shader text
-        var typeFilePath = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';
+        var typeFilePath:String = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';
 
         usePathIfExists(typeFilePath);
       case 'txt': // Data text
-        var typeFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        var typeFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
 
         usePathIfExists(typeFilePath);
       case 'xml': // Data or image text
-        var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
-        var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        var imageFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+        var freeplayIconFilePath:String = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
           .replace('.xml', 'pixel.xml');
 
         usePathIfExists(dataFilePath);
@@ -2986,9 +2992,9 @@ class Paths
         usePathIfExists(freeplayIconFilePath);
 
       case 'json': // Data or image text
-        var dataFilePath = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         // Redirect for Animate atlas data
-        var imageFilePath = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        var imageFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
         // Specific redirect for song data
         var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
         var songDataFilePath:String = dataFilePath.replace('gameplay/songs/', 'songs/');
@@ -3021,10 +3027,23 @@ class Paths
         usePathIfExists(songFilePath);
         usePathIfExists(pauseMusicFilePath);
 
-      case 'mp4' | 'mkv': // videos, without or with subtitles
+      case 'mp4' | 'mkv': // Videos, without or with subtitles
         var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';
 
         usePathIfExists(videoFilePath);
+
+      case 'ttf': // Fonts
+        // someFont.ttf.ttf -> someFont.ttf
+        var strippedId:String = id.substr(0, id.length - 4);
+
+        // assets/fonts/someFont.ttf
+        var fontFilePath:String = 'assets/fonts/$strippedId';
+
+        // assets/someFont.ttf
+        var strippedIdPath:String = 'assets/$strippedId';
+
+        usePathIfExists(fontFilePath);
+        usePathIfExists(strippedIdPath);
 
       default:
         // No idea, sorry.
