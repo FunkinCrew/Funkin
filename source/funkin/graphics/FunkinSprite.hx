@@ -361,8 +361,7 @@ class FunkinSprite extends FlxAnimate
     frames = Paths.getAnimateAtlas(key, settings);
 
     var path:String = Paths.animateAtlas(key);
-    // If the path doesn't use the new asset structure, we can assume that it's a backwards compatible sprite.
-    __backwardsCompatibility = !path.contains('gameplay/') || !path.contains('ui/');
+    __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(path);
 
     return this;
   }
