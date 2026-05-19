@@ -450,7 +450,7 @@ class InitState extends FlxState
     {
       #if FEATURE_CAMERA_EDITOR
       FlxG.switchState(() -> new CameraEditorState({
-        loadFromPath: params.chart.chartPath,
+        loadFromPath: params.camera.chartPath,
       }));
       #else
       FlxG.switchState(() -> new TitleState());
