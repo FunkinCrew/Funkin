@@ -2869,6 +2869,25 @@ class Paths
   ];
 
   /**
+   * A list of asset libraries that were used in older versions of Funkin'.
+   */
+  static final LEGACY_ASSET_LIBRARIES:Array<String> = [
+    'shared',
+    'tutorial',
+    'week1',
+    'week2',
+    'week3',
+    'week4',
+    'week5',
+    'week6',
+    'week7',
+    'weekend1',
+    'sserafim',
+    'songs',
+    'videos'
+  ];
+
+  /**
    * @param id The base path of the asset, including the extension.
    * @param library The asset library to use
    * @param verbose Whether to print warnings/errors if the path doesn't exist.
@@ -3063,7 +3082,7 @@ class Paths
     // Try some other asset libraries?
     if (library == 'default')
     {
-      for (libraryToTry in ['shared', 'songs', 'videos'])
+      for (libraryToTry in LEGACY_ASSET_LIBRARIES)
       {
         result = tryGuessPath(id, filePath, libraryToTry);
         if (result != null) return result;
