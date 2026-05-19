@@ -435,10 +435,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var sound:FunkinSound = pool.recycle(construct);
 
-    if (embeddedSound is String)
-    {
-      embeddedSound = Paths.stripLibrary(embeddedSound);
-    }
+    if (Std.isOfType(embeddedSound, String)) embeddedSound = funkin.modding.compat.Sound.cleanupSoundPath(embeddedSound);
 
     // Load the sound.
     // Sets `exists = true` as a side effect.
