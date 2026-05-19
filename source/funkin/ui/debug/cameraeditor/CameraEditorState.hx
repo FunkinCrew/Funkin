@@ -490,6 +490,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   var autoSortLayersDialog:Dialog;
 
   /**
+   * The Welcome dialog (new chart / open recent / load template).
+   * Tracked so we don't open it twice.
+   */
+  var welcomeDialog:WelcomeDialog;
+
+  /**
    * The properties panel on the right side.
    * Holds the properties container, which gets swapped when a different event type is selected.
    */
@@ -2621,6 +2627,10 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   function openWelcomeDialog(closable:Bool = false):WelcomeDialog
   {
+    if (this.welcomeDialog != null) return this.welcomeDialog;
+
+    pauseAudioPlayback();
+
     final MODAL:Bool = true;
 
     var dialog:WelcomeDialog = new WelcomeDialog(this, closable);
@@ -2628,6 +2638,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     dialog.zIndex = 1_000;
 
     dialog.showDialog(MODAL);
+
+    this.welcomeDialog = dialog;
+    dialog.onDialogClosed = (_) -> this.welcomeDialog = null;
 
     return dialog;
   }
