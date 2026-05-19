@@ -143,9 +143,8 @@ class RegistryData
    */
   public static function mergeJsonDataStr(id:String, baseDataStr:String = '{}'):String
   {
-    trace('$id: $baseDataStr');
-
-    // Fingering Polymod's deepest, sexiest parts while machine is running, don't try this at home kids!
+    // Fingering Polymod's deepest, sexiest parts while machine is running, don't try this at home kids! - Eric
+    // Okay buddy - Abnormal
     @:privateAccess
     var mergedStr:String = Polymod.assetLibrary.mergeAndAppendText(id, baseDataStr);
 
