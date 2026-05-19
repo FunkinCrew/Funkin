@@ -221,6 +221,7 @@ class Paths
     'assets/shared/images/noteStrumline.xml' => 'assets/gameplay/notestyles/funkin/note-strumline.xml',
     'assets/shared/images/notes.png' => 'assets/gameplay/notestyles/funkin/notes.png',
     'assets/shared/images/notes.xml' => 'assets/gameplay/notestyles/funkin/notes.xml',
+    'assets/shared/images/NOTE_hold_assets.png' => 'assets/gameplay/notestyles/funkin/note-holds.png',
     'assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/Animation.json' => 'assets/gameplay/playable-characters/bf/results/graphics/results-excellent/Animation.json',
     'assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.json' => 'assets/gameplay/playable-characters/bf/results/graphics/results-excellent/spritemap1.json',
     'assets/shared/images/resultScreen/results-bf/resultsEXCELLENT/spritemap1.png' => 'assets/gameplay/playable-characters/bf/results/graphics/results-excellent/spritemap1.png',
