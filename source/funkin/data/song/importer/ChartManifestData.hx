@@ -1,9 +1,11 @@
 package funkin.data.song.importer;
 
+import funkin.util.tools.ISerializable;
+
 /**
  * A helper JSON blob found in `.fnfc` files.
  */
-class ChartManifestData
+class ChartManifestData implements ISerializable
 {
   /**
    * The current semantic version of the chart manifest data.

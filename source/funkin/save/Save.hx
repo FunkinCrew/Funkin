@@ -1,5 +1,6 @@
 package funkin.save;
 
+import funkin.util.tools.ISerializable;
 import flixel.util.FlxSave;
 import funkin.input.Controls.Device;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -16,13 +17,14 @@ import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
+import funkin.util.tools.ISerializable;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety @:build(funkin.util.macro.SaveMacro.buildSaveProperties())
-class Save implements ConsoleClass
+class Save implements ConsoleClass implements ISerializable
 {
   /**
    * The current version of the save data schema.
@@ -874,7 +876,7 @@ class Save implements ConsoleClass
    * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
-  @:haxe.warning("-WDeprecated")
+  @:haxe.warning('-WDeprecated')
   static function loadFromSlot(slot:Int):Save
   {
     trace('[SAVE] Loading save from slot $slot...');
@@ -955,7 +957,7 @@ class Save implements ConsoleClass
    * @param slot The slot number to check.
    * @return Whether the slot is not empty.
    */
-  @:haxe.warning("-WDeprecated")
+  @:haxe.warning('-WDeprecated')
   static function querySlot(slot:Int):Bool
   {
     var targetSaveData:FlxSave = new FlxSave();
@@ -991,12 +993,12 @@ class Save implements ConsoleClass
   }
 
   /**
-   * Serialize this Save into a JSON string.
+   * Serialize this Save object into a JSON string.
    * @param pretty Whether the JSON should be big ol string (false),
    *        or pretty printed formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serializeJson(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true):String
   {
     var ignoreNullOptionals:Bool = true;
     var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
@@ -1017,7 +1019,7 @@ class Save implements ConsoleClass
    */
   public function debug_dumpSaveJsonSave():Void
   {
-    FileUtil.saveFile('Write save data as JSON...', haxe.io.Bytes.ofString(this.serializeJson()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json');
+    FileUtil.saveFile('Write save data as JSON...', haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json');
   }
 
   /**
@@ -1026,7 +1028,7 @@ class Save implements ConsoleClass
    */
   public function debug_dumpSaveJsonPrint():Void
   {
-    trace(this.serializeJson());
+    trace(this.serialize());
   }
 
   #if FEATURE_NEWGROUNDS

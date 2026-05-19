@@ -771,7 +771,8 @@ class Assets implements ConsoleClass
   public static function assetExists(assetPath:AssetPath):Bool
   {
     // If asset cache is not initialized, manifest probably won't be either, so we just assume the file is there.
-    if (!initialized) return true;
+    // TODO: Asset cache isn't getting initialized, fix it before uncommenting this!
+    // if (!initialized) return true;
 
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call a function from funkin.Paths?';
 

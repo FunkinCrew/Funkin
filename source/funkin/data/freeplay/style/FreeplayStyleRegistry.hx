@@ -7,8 +7,7 @@ import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams> implements ISingleton
-    implements DefaultRegistryImpl
+class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleData, FreeplayStyleEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the style data format.
@@ -23,11 +22,7 @@ class FreeplayStyleRegistry extends BaseRegistry<FreeplayStyle, FreeplayStyleDat
   {
     super({
       registryId: 'FREEPLAYSTYLE',
-      dataFilePath: 'ui/freeplay/styles',
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/ui/freeplay/styles'
-      ],
+      dataFilePath: 'ui/freeplay/styles/',
       nestedEntries: true,
       versionRule: FREEPLAYSTYLE_DATA_VERSION_RULE
     });

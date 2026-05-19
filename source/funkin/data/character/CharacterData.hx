@@ -40,12 +40,7 @@ class CharacterDataParser
   static final characterScriptedClass:Map<String, String> = [];
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
   static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
-  static final DATA_FILE_PATH:String = 'gameplay/characters';
-
-  /**
-   * Data files
-   */
-  static final COMPAT_DATA_FILE_PATHS:Array<String> = ['data/characters'];
+  static final DATA_FILE_PATH:String = 'gameplay/characters/';
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
@@ -61,11 +56,8 @@ class CharacterDataParser
     //
     // UNSCRIPTED CHARACTERS
     //
-    var charIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('$DATA_FILE_PATH/', ASSET_BLACKLIST, true);
-    for (dataFilePath in COMPAT_DATA_FILE_PATHS)
-    {
-      charIdList.append(funkin.assets.Assets.listDataFilesInPath('$dataFilePath/', ASSET_BLACKLIST, true));
-    }
+
+    var charIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds(DATA_FILE_PATH, true);
     var unscriptedCharIds:Array<String> = charIdList.filter((charId:String) ->
     {
       return !characterCache.exists(charId);
@@ -246,40 +238,46 @@ class CharacterDataParser
 
     if (charScriptClass != null)
     {
-      if (charData != null) switch (charData.renderType)
+      if (charData != null)
       {
-        case CharacterRenderType.AnimateAtlas:
-          char = ScriptedAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
-        case CharacterRenderType.MultiSparrow:
-          char = ScriptedMultiSparrowCharacter.scriptInit(charScriptClass, charId);
-        case CharacterRenderType.Sparrow:
-          char = ScriptedSparrowCharacter.scriptInit(charScriptClass, charId);
-        case CharacterRenderType.Packer:
-          char = ScriptedPackerCharacter.scriptInit(charScriptClass, charId);
-        case CharacterRenderType.MultiAnimateAtlas:
-          char = ScriptedMultiAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
-        default:
-          // We're going to assume that the script class does the rendering.
-          char = ScriptedBaseCharacter.scriptInit(charScriptClass, charId, CharacterRenderType.Custom);
+        switch (charData.renderType)
+        {
+          case CharacterRenderType.AnimateAtlas:
+            char = ScriptedAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
+          case CharacterRenderType.MultiSparrow:
+            char = ScriptedMultiSparrowCharacter.scriptInit(charScriptClass, charId);
+          case CharacterRenderType.Sparrow:
+            char = ScriptedSparrowCharacter.scriptInit(charScriptClass, charId);
+          case CharacterRenderType.Packer:
+            char = ScriptedPackerCharacter.scriptInit(charScriptClass, charId);
+          case CharacterRenderType.MultiAnimateAtlas:
+            char = ScriptedMultiAnimateAtlasCharacter.scriptInit(charScriptClass, charId);
+          default:
+            // We're going to assume that the script class does the rendering.
+            char = ScriptedBaseCharacter.scriptInit(charScriptClass, charId, CharacterRenderType.Custom);
+        }
       }
     }
     else
     {
-      if (charData != null) switch (charData.renderType)
+      if (charData != null)
       {
-        case CharacterRenderType.AnimateAtlas:
-          char = new AnimateAtlasCharacter(charId);
-        case CharacterRenderType.MultiSparrow:
-          char = new MultiSparrowCharacter(charId);
-        case CharacterRenderType.Sparrow:
-          char = new SparrowCharacter(charId);
-        case CharacterRenderType.Packer:
-          char = new PackerCharacter(charId);
-        case CharacterRenderType.MultiAnimateAtlas:
-          char = new MultiAnimateAtlasCharacter(charId);
-        default:
-          trace(' WARNING '.warning() + ' Creating character with undefined renderType ${charData.renderType}');
-          char = new BaseCharacter(charId, CharacterRenderType.Custom);
+        switch (charData.renderType)
+        {
+          case CharacterRenderType.AnimateAtlas:
+            char = new AnimateAtlasCharacter(charId);
+          case CharacterRenderType.MultiSparrow:
+            char = new MultiSparrowCharacter(charId);
+          case CharacterRenderType.Sparrow:
+            char = new SparrowCharacter(charId);
+          case CharacterRenderType.Packer:
+            char = new PackerCharacter(charId);
+          case CharacterRenderType.MultiAnimateAtlas:
+            char = new MultiAnimateAtlasCharacter(charId);
+          default:
+            trace(' WARNING '.warning() + ' Creating character with undefined renderType ${charData.renderType}');
+            char = new BaseCharacter(charId, CharacterRenderType.Custom);
+        }
       }
     }
 
@@ -322,19 +320,20 @@ class CharacterDataParser
 
   /**
    * Returns the idle frame of a character.
+   * TODO: Too similar to the other function in PixellatedIcon and really needs a damn rewrite.
    */
   public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
   {
     var charPath:String = 'ui/freeplay/characters/';
 
-    final charIDParts:Array<String> = char.split('-');
+    var charIDParts:Array<String> = char.split('-');
     var iconName:String = '';
     var lastValidIconName:String = '';
     for (i in 0...charIDParts.length)
     {
       iconName += charIDParts[i];
 
-      if (Assets.exists(Paths.image(charPath + '${iconName}')))
+      if (funkin.assets.Paths.image(charPath + '${iconName}').exists())
       {
         lastValidIconName = iconName;
       }
@@ -416,36 +415,9 @@ class CharacterDataParser
 
   static function loadCharacterFile(charPath:String):String
   {
-    // Nested.
-    var charFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json('$DATA_FILE_PATH/$charPath/$charPath');
+    var result:JsonFile = funkin.modding.compat.RegistryData.loadEntryData(charPath, '', DATA_FILE_PATH, true);
 
-    if (!funkin.assets.Assets.exists(charFilePath.toString()))
-    {
-      // Check each compatDataFilePath to support older versions.
-      for (path in COMPAT_DATA_FILE_PATHS)
-      {
-        // Not nested.
-        charFilePath = funkin.assets.Paths.json('${path}/${charPath}');
-        if (funkin.assets.Assets.exists(charFilePath.toString())) break;
-      }
-    }
-
-    if (!funkin.assets.Assets.exists(charFilePath.toString()))
-    {
-      // Fallthrough if none of the paths exists.
-      charFilePath = funkin.assets.Paths.json('gameplay/characters/$charPath/$charPath');
-      trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $charFilePath');
-      throw 'Could not find file $charFilePath';
-    }
-
-    var rawJson = funkin.assets.Assets.getText(charFilePath).trim();
-
-    while (!StringTools.endsWith(rawJson, '}'))
-    {
-      rawJson = rawJson.substr(0, rawJson.length - 1);
-    }
-
-    return rawJson;
+    return result.contents;
   }
 
   static function migrateCharacterData(rawJson:String, charId:String):Null<CharacterData>

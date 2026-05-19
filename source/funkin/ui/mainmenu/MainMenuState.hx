@@ -529,13 +529,6 @@ class MainMenuState extends MusicBeatState
       FlxG.switchState(() -> new funkin.ui.charSelect.CharacterUnlockState('pico'));
     }
 
-    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, G]))
-    {
-      var baseDataStr = Assets.getText(Paths.json('gameplay/songs/dadbattle/dadbattle-metadata'));
-      var data = funkin.modding.compat.DataMerge.getMergedDataStr('assets/data/songs/dadbattle/dadbattle-metadata.json', baseDataStr);
-      trace(data);
-    }
-
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));

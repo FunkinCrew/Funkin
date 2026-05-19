@@ -1,9 +1,14 @@
 package funkin.data.stage;
 
 import funkin.data.animation.AnimationData;
+import funkin.util.tools.ISerializable;
 
+/**
+ * The data for a Stage that songs take place on.
+ * Provides the information to place and arrange the props and characters.
+ */
 @:nullSafety
-class StageData
+class StageData implements ISerializable
 {
   /**
    * The sematic version number of the stage data JSON format.
@@ -12,11 +17,32 @@ class StageData
   @:default(funkin.data.stage.StageRegistry.STAGE_DATA_VERSION)
   public var version:String;
 
+  /**
+   * A readable name for the stage.
+   */
   public var name:String = 'Unknown';
+
+  /**
+   * A list of prop data for the stage.
+   */
   public var props:Array<StageDataProp> = [];
+
+  /**
+   * Information on how to place characters in the stage.
+   */
   public var characters:StageDataCharacters;
+
+  /**
+   * The default zoom level of the camera.
+   * @default `1.0`
+   */
   @:default(1.0) @:optional
   public var cameraZoom:Null<Float>;
+
+  /**
+   * @deprecated This value is no longer used but actually annotating it with @:deprecated
+   *  throws a warning in the Serializer I can't suppress
+   */
   @:deprecated('This is no longer used.') @:default('shared') @:optional
   public var directory:Null<String>;
 
@@ -52,7 +78,11 @@ class StageData
 
   /**
    * Convert this StageData into a JSON string.
+   *
+   * @param pretty Whether to output JSON with clean spacing/formatting.
+   * @return A JSON string containing this object's data.
    */
+  @:haxe.warning('-WDeprecated')
   public function serialize(pretty:Bool = true):String
   {
     // Update generatedBy and version before writing.
@@ -62,12 +92,18 @@ class StageData
     return writer.write(this, pretty ? ' ' : null);
   }
 
+  /**
+   * Set the JSON data version of the stage data to the current version.
+   */
   public function updateVersionToLatest():Void
   {
     this.version = StageRegistry.STAGE_DATA_VERSION;
   }
 }
 
+/**
+ * Data on how to place the characters in the stage.
+ */
 typedef StageDataCharacters =
 {
   var bf:StageDataCharacter;
@@ -75,6 +111,9 @@ typedef StageDataCharacters =
   var gf:StageDataCharacter;
 };
 
+/**
+ * Data on how to render a prop, and place it in the stage.
+ */
 typedef StageDataProp =
 {
   /**
@@ -100,7 +139,8 @@ typedef StageDataProp =
    * A number determining the stack order of the prop, relative to other props and the characters in the stage.
    * Props with lower numbers render below those with higher numbers.
    * This is just like CSS, it isn't hard.
-   * @default 0
+   *
+   * @default `0`
    */
   @:optional @:default(0)
   var zIndex:Int;
@@ -265,6 +305,9 @@ typedef TextureAtlasData =
   var useRenderTexture:Bool;
 };
 
+/**
+ * Data on how to place a specific character in the stage.
+ */
 typedef StageDataCharacter =
 {
   /**

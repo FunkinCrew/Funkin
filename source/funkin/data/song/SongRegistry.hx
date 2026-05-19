@@ -41,11 +41,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     super({
       registryId: 'SONG',
-      dataFilePath: 'gameplay/songs',
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/songs'
-      ],
+      dataFilePath: 'gameplay/songs/',
       // nestedEntries: true, // This registry uses custom parsing.
       versionRule: SONG_METADATA_VERSION_RULE
     });
@@ -238,8 +234,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     }
   }
 
-  public function parseEntryMetadataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version,
-      ?variation:String):Null<SongMetadata>
+  public function parseEntryMetadataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version, ?variation:String):Null<SongMetadata>
   {
     // If a version rule is not specified, do not check against it.
     if (SONG_METADATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_METADATA_VERSION_RULE))
@@ -451,8 +446,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     }
   }
 
-  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version,
-      ?variation:String):Null<SongChartData>
+  public function parseEntryChartDataRawWithMigration(contents:String, ?fileName:String = 'raw', version:thx.semver.Version, ?variation:String):Null<SongChartData>
   {
     // If a version rule is not specified, do not check against it.
     if (SONG_CHART_DATA_VERSION_RULE == null || VersionUtil.validateVersion(version, SONG_CHART_DATA_VERSION_RULE))
@@ -467,46 +461,28 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   override function fetchEntryIdsFromFiles():Array<String>
   {
-    var result = [];
-
-    result.append(funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', '-metadata.json', ASSET_BLACKLIST, true));
-
-    for (path in compatDataFilePaths)
-    {
-      result.append(funkin.assets.Assets.listDataFilesInPath('${path}/', '-metadata.json', ASSET_BLACKLIST, nestedEntries));
-    }
-
-    return result;
+    return funkin.modding.compat.RegistryData.listEntryIds(dataFilePath, '-metadata', true);
   }
 
   function loadEntryMetadataFile(id:String, ?variation:String):Null<JsonFile>
   {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!funkin.assets.Assets.exists(entryFilePath))
+    try
     {
-      // COMPAT: Support older data file paths.
-      for (path in compatDataFilePaths)
-      {
-        entryFilePath = Paths.json('$path/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-        if (funkin.assets.Assets.exists(entryFilePath)) break;
-      }
-
-      if (!funkin.assets.Assets.exists(entryFilePath))
-      {
-        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-        return null;
-      }
+      variation ??= Constants.DEFAULT_VARIATION;
+      var suffix = '-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+      return funkin.modding.compat.RegistryData.loadEntryData(id, suffix, dataFilePath, true);
     }
-    var rawJson:Null<String> = openfl.Assets.getText(entryFilePath);
-    if (rawJson == null) return null;
-    rawJson = rawJson.trim();
-    return {fileName: entryFilePath, contents: rawJson};
+    catch (e)
+    {
+      log(' WARNING '.bold().bg_yellow() + ' Could not locate song metadata $id-$variation');
+      log(' WARNING '.bold().bg_yellow() + '   $e');
+      throw e;
+    }
   }
 
   function loadMusicDataFile(id:String, ?variation:String):Null<JsonFile>
   {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
+    variation ??= Constants.DEFAULT_VARIATION;
     var entryFilePath:String = Paths.musicMetadata('$id', variation == Constants.DEFAULT_VARIATION ? '' : '-$variation');
     if (!openfl.Assets.exists(entryFilePath))
     {
@@ -521,27 +497,18 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   function loadEntryChartFile(id:String, ?variation:String):Null<JsonFile>
   {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.json('$dataFilePath/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-    if (!openfl.Assets.exists(entryFilePath))
+    try
     {
-      // COMPAT: Support older data file paths.
-      for (path in compatDataFilePaths)
-      {
-        entryFilePath = Paths.json('$path/$id/$id-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}');
-        if (openfl.Assets.exists(entryFilePath)) break;
-      }
-
-      if (!openfl.Assets.exists(entryFilePath))
-      {
-        trace('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-        return null;
-      }
+      variation ??= Constants.DEFAULT_VARIATION;
+      var suffix = '-chart${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}';
+      return funkin.modding.compat.RegistryData.loadEntryData(id, suffix, dataFilePath, true);
     }
-    var rawJson:String = openfl.Assets.getText(entryFilePath);
-    if (rawJson == null) return null;
-    rawJson = rawJson.trim();
-    return {fileName: entryFilePath, contents: rawJson};
+    catch (e)
+    {
+      log(' WARNING '.bold().bg_yellow() + ' Could not locate song chart data $id-$variation');
+      log(' WARNING '.bold().bg_yellow() + '   $e');
+      throw e;
+    }
   }
 
   public function fetchEntryMetadataVersion(id:String, ?variation:String):Null<thx.semver.Version>

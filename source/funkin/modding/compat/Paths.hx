@@ -2870,18 +2870,17 @@ class Paths
 
   /**
    * @param id The base path of the asset, including the extension.
-   * @param type The type of asset.
    * @param library The asset library to use
    * @param verbose Whether to print warnings/errors if the path doesn't exist.
    * @return String
    */
-  public static function getPath(id:String, type:OpenFLAssetType, library:String = 'default', verbose:Bool = true):String
+  public static function getPath(id:String, library:String = 'default', verbose:Bool = true):String
   {
     // Don't use library:path since new Funkin' doesn't use asset libraries.
     var filePath:String = (library == 'default') ? 'assets/$id' : 'assets/$library/$id';
 
     // If the path just exists, return it. This is the most common case.
-    if (funkin.assets.Assets.exists(filePath, type))
+    if (funkin.assets.Assets.exists(filePath))
     {
       return filePath;
     }
@@ -2896,11 +2895,15 @@ class Paths
     }
 
     // Try to guess some other paths.
-    var result:Null<String> = tryGuessPath(id, filePath, type);
+    var result:Null<String> = tryGuessPath(id, filePath);
     if (result != null) return result;
 
     // I guess just use the filePath and suffer whatever errors result.
-    if (verbose) trace(' ERROR '.error() + ' Could not convert legacy asset path "$filePath" ($type), expect lots of errors!');
+    if (verbose)
+    {
+      trace(' ERROR '.error() + ' Could not convert legacy asset path "$filePath", expect lots of errors!');
+      funkin.util.DebugUtil.printCallStack();
+    }
     return filePath;
   }
 
@@ -2910,11 +2913,10 @@ class Paths
    *
    * @param id The base ID of the asset, including the extension.
    * @param filePath The original guess at the file path, used for caching the result later if we find the true path.
-   * @param type The type of asset.
    * @param library The library. Start with the `default` library, then iterate through others if we can't find it.
    * @return `String`, or `null` if a valid path couldn't be found.
    */
-  static function tryGuessPath(id:String, filePath:String, type:OpenFLAssetType, library:String = 'default'):Null<String>
+  static function tryGuessPath(id:String, filePath:String, library:String = 'default'):Null<String>
   {
     var result:Null<String> = null;
 
@@ -2923,11 +2925,11 @@ class Paths
       // Skip asset check if we already found a valid path.
       if (result != null) return;
       // Check if the path is valid, and if so, save it.
-      if (funkin.assets.Assets.exists(path, type)) result = path;
+      if (funkin.assets.Assets.exists(path)) result = path;
 
       if (PATHS.exists(path))
       {
-        if (funkin.assets.Assets.exists(PATHS[path], type)) result = PATHS[path];
+        if (funkin.assets.Assets.exists(PATHS[path])) result = PATHS[path];
       }
     }
 
@@ -2939,7 +2941,7 @@ class Paths
       var splitFilePath:String = filePath.replace('$splitLib:', '');
       var splitId:String = split[1];
 
-      var result:Null<String> = tryGuessPath(splitId, splitFilePath, type, splitLib);
+      var result:Null<String> = tryGuessPath(splitId, splitFilePath, splitLib);
       if (result != null) return result;
     }
 
@@ -3063,7 +3065,7 @@ class Paths
     {
       for (libraryToTry in ['shared', 'songs', 'videos'])
       {
-        result = tryGuessPath(id, filePath, type, libraryToTry);
+        result = tryGuessPath(id, filePath, libraryToTry);
         if (result != null) return result;
       }
     }

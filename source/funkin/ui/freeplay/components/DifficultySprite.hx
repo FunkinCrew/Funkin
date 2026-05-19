@@ -1,6 +1,14 @@
 package funkin.ui.freeplay.components;
 
 import flixel.FlxSprite;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets as Assets;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * The sprite for the difficulty
@@ -17,7 +25,8 @@ class DifficultySprite extends FlxSprite
     this.difficultyId = diffId;
 
     var assetDiffId:String = diffId;
-    while (!Assets.exists(Paths.image('ui/freeplay/difficulty/$assetDiffId')))
+    var assetPath:AssetPath = funkin.assets.Paths.image('ui/freeplay/difficulty/$assetDiffId');
+    while (!assetPath.exists())
     {
       // Remove the last suffix of the difficulty id until we find an asset or there are no more suffixes.
       var assetDiffIdParts:Array<String> = assetDiffId.split('-');
@@ -28,19 +37,21 @@ class DifficultySprite extends FlxSprite
         return;
       };
       assetDiffId = assetDiffIdParts.join('-');
+      assetPath = funkin.assets.Paths.image('ui/freeplay/difficulty/$assetDiffId');
     }
 
     // Check for an XML to use an animation instead of an image.
-    if (Assets.exists(Paths.xml('ui/freeplay/difficulty/$assetDiffId')))
+    var xmlAssetPath:AssetPath = assetPath.withAssetType(XML);
+    if (xmlAssetPath.exists())
     {
-      this.frames = Paths.getSparrowAtlas('ui/freeplay/difficulty/$assetDiffId');
+      this.frames = funkin.assets.Assets.getSparrowAtlas(assetPath);
       this.animation.addByPrefix('idle', 'idle0', 24, true);
       if (Preferences.flashingLights) this.animation.play('idle');
     }
     else
     {
-      this.loadGraphic(Paths.image('ui/freeplay/difficulty/$assetDiffId'));
-      trace('Loaded difficulty asset: freeplay/freeplay$assetDiffId (from $diffId)');
+      this.loadGraphic(assetPath.toFlxGraphicAsset());
+      trace('Loaded difficulty asset: ${assetPath.toString()} (from $diffId)');
     }
   }
 }

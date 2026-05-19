@@ -1,5 +1,6 @@
 package funkin.data.song;
 
+import funkin.util.tools.ISerializable;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
@@ -16,7 +17,7 @@ import funkin.play.notes.notekind.NoteKindManager;
  * Data which is only necessary in-game should be stored in the SongChartData.
  */
 @:nullSafety
-class SongMetadata implements ICloneable<SongMetadata>
+class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
 {
   /**
    * A semantic versioning string for the song data format.
@@ -534,8 +535,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>,
-      ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
+  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>, ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -567,7 +567,7 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   }
 }
 
-class SongChartData implements ICloneable<SongChartData>
+class SongChartData implements ICloneable<SongChartData> implements ISerializable
 {
   @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
@@ -1089,8 +1089,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 /**
  * Wrap SongEventData in an abstract so we can overload operators.
  */
-@:forward(time, eventKind, value, activated, editorLayer, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat,
-  getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
+@:forward(time, eventKind, value, activated, editorLayer, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
   public function new(time:Float, eventKind:String, ?value:Dynamic, ?editorLayer:String)
@@ -1412,8 +1411,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function toString():String
   {
-    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
-      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}' + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 
   /**
@@ -1567,8 +1565,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
    */
   public function toString():String
   {
-    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}'
-      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}' + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 }
 

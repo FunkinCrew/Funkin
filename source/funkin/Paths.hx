@@ -41,7 +41,7 @@ class Paths implements ConsoleClass
 
   static function getPath(key:String, type:AssetType, ?library:String):String
   {
-    return funkin.modding.compat.Paths.getPath(key, type, library);
+    return funkin.modding.compat.Paths.getPath(key, library);
   }
 
   public static function getLibraryPath(key:String, library = 'default'):String

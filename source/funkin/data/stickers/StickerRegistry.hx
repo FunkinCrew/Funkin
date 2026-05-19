@@ -22,12 +22,8 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
   {
     super({
       registryId: 'STICKER',
-      dataFilePath: 'ui/loading/stickers/stickerpacks',
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/stickerpacks'
-      ],
-      // nestedEntries: true, // This registry uses custom parsing.
+      dataFilePath: 'ui/loading/stickers/stickerpacks/',
+      nestedEntries: false,
       versionRule: STICKER_DATA_VERSION_RULE
     });
   }
@@ -37,34 +33,6 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
     var stickerPack:Null<StickerPack> = fetchEntry(Constants.DEFAULT_STICKER_PACK);
     if (stickerPack == null) throw 'Default sticker pack was null! This should not happen!';
     return stickerPack;
-  }
-
-  /**
-   * Read, parse, and validate the JSON data and produce the corresponding data object.
-   * @param id The ID of the entry to load.
-   * @return The parsed data object.
-   */
-  public function parseEntryData(id:String):Null<StickerData>
-  {
-    // JsonParser does not take type parameters,
-    // otherwise this function would be in BaseRegistry.
-    var parser:json2object.JsonParser<StickerData> = new json2object.JsonParser<StickerData>();
-    parser.ignoreUnknownVariables = false;
-
-    switch (loadEntryFile(id))
-    {
-      case {fileName: fileName, contents: contents}:
-        parser.fromJson(contents, fileName);
-      default:
-        return null;
-    }
-
-    if (parser.errors.length > 0)
-    {
-      printErrors(parser.errors, id);
-      return null;
-    }
-    return parser.value;
   }
 
   /**

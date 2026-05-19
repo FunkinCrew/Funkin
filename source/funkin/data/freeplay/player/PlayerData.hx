@@ -1,9 +1,14 @@
 package funkin.data.freeplay.player;
 
 import funkin.data.animation.AnimationData;
+import funkin.util.tools.ISerializable;
 
+/**
+ * The data for a playable character.
+ * Includes the information needed to display it in the UI and load its songs.
+ */
 @:nullSafety
-class PlayerData
+class PlayerData implements ISerializable
 {
   /**
    * The sematic version number of the player data JSON format.
@@ -78,6 +83,9 @@ class PlayerData
 
   /**
    * Convert this StageData into a JSON string.
+   *
+   * @param pretty Whether to use pretty formatting on the output.
+   * @return This object, converted into a JSON string.
    */
   public function serialize(pretty:Bool = true):String
   {

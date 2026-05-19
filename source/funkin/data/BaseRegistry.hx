@@ -16,12 +16,6 @@ typedef RegistryParams =
   var dataFilePath:String;
 
   /**
-   * Paths where data files for this registry used to be found on older versions.
-   * We try to load these for compatibility, but these are deprecated and may be removed in the future.
-   */
-  var ?compatDataFilePaths:Array<String>;
-
-  /**
    * Whether data files are expected to be nested.
    * If `false`, files will be at `<dataFilePath>/<id>.json`
    * If `true`, files will be at `<dataFilePath>/<id>/<id>.json`
@@ -62,11 +56,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   final dataFilePath:String;
 
   /**
-   * File paths where data files for this registry for older versions can be found.
-   */
-  final compatDataFilePaths:Array<String>;
-
-  /**
    * Whether data files are expected to be nested.
    */
   final nestedEntries:Bool;
@@ -101,7 +90,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
     this.registryId = params.registryId;
     this.dataFilePath = params.dataFilePath;
-    this.compatDataFilePaths = params.compatDataFilePaths ?? [];
     this.nestedEntries = params.nestedEntries ?? false;
     this.versionRule = params.versionRule ?? DEFAULT_VERSION_RULE;
 
@@ -180,7 +168,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       {
         // Print the error.
         log(' WARNING '.warning() + ' Failed to load entry data: ${entryId}');
-        trace(e);
         continue;
       }
     }
@@ -202,16 +189,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   function fetchEntryIdsFromFiles():Array<String>
   {
-    var result:Array<String> = [];
-
-    result.append(funkin.assets.Assets.listDataFilesInPath('${dataFilePath}/', ASSET_BLACKLIST, nestedEntries));
-
-    for (path in compatDataFilePaths)
-    {
-      result.append(funkin.assets.Assets.listDataFilesInPath('${path}/', ASSET_BLACKLIST, false));
-    }
-
-    return result;
+    return funkin.modding.compat.RegistryData.listEntryIds(dataFilePath, nestedEntries);
   }
 
   /**
@@ -305,31 +283,16 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function loadEntryFile(id:String):JsonFile
   {
-    var entryFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
-
-    if (!funkin.assets.Assets.exists(entryFilePath.toString()))
+    try
     {
-      // Check each compatDataFilePath to support older versions.
-      for (path in compatDataFilePaths)
-      {
-        entryFilePath = funkin.assets.Paths.json('${path}/${id}');
-        if (funkin.assets.Assets.exists(entryFilePath.toString())) break;
-      }
+      return funkin.modding.compat.RegistryData.loadEntryData(id, '', dataFilePath, nestedEntries);
     }
-
-    if (!funkin.assets.Assets.exists(entryFilePath.toString()))
+    catch (e)
     {
-      // Fallthrough if none of the paths exists.
-      entryFilePath = funkin.assets.Paths.json('${dataFilePath}/${id}${nestedEntries ? '/$id' : ''}');
-      log('  WARNING '.bold().bg_yellow() + ' Could not locate file $entryFilePath');
-      throw 'Could not find file $entryFilePath';
+      log(' WARNING '.bold().bg_yellow() + ' Could not locate entry $id');
+      log(' WARNING '.bold().bg_yellow() + '   $e');
+      throw e;
     }
-
-    var rawJson:String = funkin.assets.Assets.getText(entryFilePath).trim();
-    return {
-      fileName: entryFilePath.toString(),
-      contents: rawJson
-    };
   }
 
   function clearEntries():Void

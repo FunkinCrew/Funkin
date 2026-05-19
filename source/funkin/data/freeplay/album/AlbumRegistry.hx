@@ -22,12 +22,8 @@ class AlbumRegistry extends BaseRegistry<Album, AlbumData, AlbumEntryParams> imp
   {
     super({
       registryId: 'ALBUM',
-      dataFilePath: 'ui/freeplay/albums',
+      dataFilePath: 'ui/freeplay/albums/',
       nestedEntries: false,
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/ui/freeplay/albums'
-      ],
       versionRule: ALBUM_DATA_VERSION_RULE
     });
   }

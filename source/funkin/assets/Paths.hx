@@ -49,21 +49,12 @@ class Paths implements ConsoleClass
    */
   static function build(file:String, ext:String, validate:Bool = true, ?library:String):AssetPath
   {
-    var prefix:String = 'assets/';
+    var assetPathStr = funkin.modding.compat.Paths.getPath('$file.$ext', library, validate);
+    var assetPathId:String = haxe.io.Path.withoutExtension(assetPathStr);
+    var assetPathExt:String = haxe.io.Path.extension(assetPathStr);
 
-    switch (library)
-    {
-      case 'haxeui-flixel':
-        prefix = 'haxeui-flixel/';
-        library = 'default';
-      case 'flixel':
-        prefix = 'flixel/';
-        library = 'default';
-      default:
-        prefix = 'assets/';
-    }
-
-    var assetPath:AssetPath = new AssetPath('$prefix$file', ext);
+    // Build the asset path.
+    var assetPath:AssetPath = new AssetPath(assetPathId, assetPathExt);
 
     if (!validate || assetPath.exists())
     {

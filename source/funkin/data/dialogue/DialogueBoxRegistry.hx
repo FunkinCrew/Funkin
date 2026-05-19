@@ -22,11 +22,7 @@ class DialogueBoxRegistry extends BaseRegistry<DialogueBox, DialogueBoxData, Dia
   {
     super({
       registryId: 'DIALOGUEBOX',
-      dataFilePath: 'gameplay/dialogue/boxes',
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/dialogue/boxes'
-      ],
+      dataFilePath: 'gameplay/dialogue/boxes/',
       nestedEntries: true,
       versionRule: DIALOGUEBOX_DATA_VERSION_RULE
     });

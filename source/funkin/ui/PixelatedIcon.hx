@@ -35,7 +35,7 @@ class PixelatedIcon extends FunkinSprite
     {
       iconName += charIDParts[i];
 
-      if (Assets.exists(Paths.image(charPath + '${iconName}')))
+      if (funkin.assets.Paths.image(charPath + '${iconName}', false).exists())
       {
         lastValidIconName = iconName;
       }

@@ -22,11 +22,7 @@ class NoteStyleRegistry extends BaseRegistry<NoteStyle, NoteStyleData, NoteStyle
   {
     super({
       registryId: 'NOTESTYLE',
-      dataFilePath: 'gameplay/notestyles',
-      compatDataFilePaths: [
-        // v0.3.0-v0.8.4
-        'data/notestyles'
-      ],
+      dataFilePath: 'gameplay/notestyles/',
       nestedEntries: true,
       versionRule: NOTE_STYLE_DATA_VERSION_RULE
     });

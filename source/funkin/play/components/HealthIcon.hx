@@ -303,10 +303,9 @@ class HealthIcon extends FunkinSprite
     {
       bopTween?.cancel();
       setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
-      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x,
-        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {
-          onComplete: _ -> bopTween = null
-        }, value ->
+      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x, Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {
+        onComplete: _ -> bopTween = null
+      }, value ->
       {
         setGraphicSize(Std.int(value), 0);
         // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
@@ -414,12 +413,12 @@ class HealthIcon extends FunkinSprite
 
   static function iconExists(charId:String):Bool
   {
-    return Assets.exists(Paths.image('gameplay/characters/$charId/icon-$charId'));
+    return funkin.assets.Paths.image('gameplay/characters/$charId/icon-$charId', false).exists();
   }
 
   static function isNewSpritesheet(charId:String):Bool
   {
-    return Assets.exists(Paths.xml('gameplay/characters/$charId/icon-$charId'));
+    return funkin.assets.Paths.xml('gameplay/characters/$charId/icon-$charId', false).exists();
   }
 
   function loadCharacter(charId:Null<String>):Void
@@ -443,8 +442,7 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      loadGraphic(Paths.image('gameplay/characters/$charId/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE,
-        isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      loadGraphic(Paths.image('gameplay/characters/$charId/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
 
       loadAnimationOld();
     }
