@@ -84,8 +84,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     //
     // UNSCRIPTED ENTRIES
     //
-    var entryIdList:Array<String> = funkin.assets.Assets.listDataFilesInPath('gameplay/songs/', '-metadata.json', true);
-    var unscriptedEntryIds:Array<String> = entryIdList.filter(function(entryId:String):Bool
+    var entryIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds('gameplay/songs/', '-metadata', true);
+    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) ->
     {
       return !entries.exists(entryId);
     });

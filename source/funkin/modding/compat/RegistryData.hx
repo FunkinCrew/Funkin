@@ -74,11 +74,11 @@ class RegistryData
 
     var compatDataFilePaths:Array<RegistryCompatPath> = REGISTRY_COMPAT_PATHS.get(dataFilePath) ?? [];
 
-    result.append(funkin.assets.Assets.listDataFilesInPath(dataFilePath, '${suffix == '' ? '' : '-$suffix'}.json', REGISTRY_ASSET_BLACKLIST, nestedEntries));
+    result.append(funkin.assets.Assets.listDataFilesInPath(dataFilePath, '$suffix.json', REGISTRY_ASSET_BLACKLIST, nestedEntries));
 
     for (compatDataFilePath in compatDataFilePaths)
     {
-      result.append(funkin.assets.Assets.listDataFilesInPath(compatDataFilePath.path, '${suffix == '' ? '' : '-$suffix'}.json', REGISTRY_ASSET_BLACKLIST, compatDataFilePath.nestedEntries));
+      result.append(funkin.assets.Assets.listDataFilesInPath(compatDataFilePath.path, '$suffix.json', REGISTRY_ASSET_BLACKLIST, compatDataFilePath.nestedEntries));
     }
 
     return result;
