@@ -91,4 +91,12 @@ class Album implements IRegistryEntry<AlbumData>
   {
     return _data?.albumOSTName;
   }
+
+  /**
+   * @return An external image link for the album, used for Discord Rich Presence. Will be `null` if not set.
+   */
+  public function getDiscordRPCImage():Null<String>
+  {
+    return _data?.discordRPCImage;
+  }
 }
