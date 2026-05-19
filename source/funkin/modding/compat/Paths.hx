@@ -2921,7 +2921,10 @@ class Paths
     if (verbose)
     {
       trace(' ERROR '.error() + ' Could not convert legacy asset path "$filePath", expect lots of errors!');
-      funkin.util.DebugUtil.printCallStack();
+
+      // If you can't figure out exactly what function is causing the error, uncomment this.
+      // Then recomment it when you're done because it creates a lot of log spam.
+      // funkin.util.DebugUtil.printCallStack()
     }
     return filePath;
   }

@@ -207,7 +207,9 @@ class PolymodHandler
       loadedModIds.push(mod.id);
     }
 
-    #if FEATURE_DEBUG_FUNCTIONS
+    #if false
+    // These log calls can get VERY spammy with a lot of mods, I had just 14 mods installed and it was roughly 8,000 lines of logs.
+
     var fileList:Array<String> = Polymod.listModFiles(PolymodAssetType.IMAGE);
     trace('Installed mods have replaced ${fileList.length} images.');
     for (item in fileList)
