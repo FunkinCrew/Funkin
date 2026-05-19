@@ -46,11 +46,17 @@ class CharSelectSubState extends MusicBeatSubState
   /**
    * The default index for the cursor.
    */
-  final DEFAULT_CURSOR_INDEX:Int = 4;
+  static final DEFAULT_CURSOR_INDEX:Int = 4;
 
+  /**
+   * The amount of slots per page.
+   */
+  static final SLOTS_PER_PAGE:Int = 9;
+
+  final SLOTS_PER_ROW:Int = Math.floor(Math.sqrt(SLOTS_PER_PAGE));
+  var totalSlots:Int = SLOTS_PER_PAGE;
   var cursors:CharSelectCursors;
-  var cursorX:Int = 0;
-  var cursorY:Int = 0;
+  var curSelected:Int = DEFAULT_CURSOR_INDEX;
   var cursorFactor:Float = 110;
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
@@ -136,6 +142,8 @@ class CharSelectSubState extends MusicBeatSubState
       trace('Placing player ${playerId} at position ${targetPosition}');
       availableChars.set(targetPosition, playerId);
 
+      totalSlots = Std.int(Math.max(targetPosition, totalSlots));
+
       CharSelectAtlasHandler.loadAtlas('charSelect/${playerId}Chill');
 
       var gfPath:Null<String> = playerData.gf?.assetPath;
@@ -154,6 +162,12 @@ class CharSelectSubState extends MusicBeatSubState
     super.create();
 
     loadAvailableCharacters();
+
+    // Add additional slots to fill up the last page.
+    if (totalSlots % SLOTS_PER_PAGE != 0)
+    {
+      totalSlots += (SLOTS_PER_PAGE - totalSlots % SLOTS_PER_PAGE);
+    }
 
     bopInfo = FramesJSFLParser.parse(Paths.file('images/charSelect/iconBopInfo/iconBopInfo.txt'));
     if (bopInfo == null)
@@ -270,6 +284,9 @@ class CharSelectSubState extends MusicBeatSubState
     dipshitBacking.y += 210;
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
 
+    add(cursors);
+    add(grpIcons);
+
     chooseDipshit.loadGraphic(Paths.image('charSelect/chooseDipshit'));
     add(chooseDipshit);
 
@@ -300,8 +317,6 @@ class CharSelectSubState extends MusicBeatSubState
       'blend'
     ]));
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSound, ['pitch', 'volume']));
-
-    add(cursors);
 
     charHitbox.active = false;
     charHitbox.scrollFactor.set();
@@ -484,11 +499,9 @@ class CharSelectSubState extends MusicBeatSubState
 
   function initLocks():Void
   {
-    add(grpIcons);
-
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSpriteGroup, ['x', 'y']));
 
-    for (i in 0...9)
+    for (i in 0...totalSlots)
     {
       if (availableChars.exists(i) && PlayerRegistry.instance.isCharacterSeen(availableChars.get(i) ?? Constants.DEFAULT_CHARACTER))
       {
@@ -507,7 +520,7 @@ class CharSelectSubState extends MusicBeatSubState
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
         if (availableChars.exists(i) && isPlayerUnlocked) nonLocks.push(i);
 
-        var temp:Lock = new Lock(0, 0, i, {
+        var temp:Lock = new Lock(0, 0, i % SLOTS_PER_PAGE, {
           swfMode: true,
           uniqueInCache: true
         });
@@ -516,6 +529,8 @@ class CharSelectSubState extends MusicBeatSubState
 
         grpIcons.add(temp);
       }
+
+      if (i >= SLOTS_PER_PAGE) continue;
 
       var hitTemp:FlxObject = new FlxObject(grpIcons.members[i].x, grpIcons.members[i].y, 86, 86);
       hitTemp.active = false;
@@ -530,23 +545,9 @@ class CharSelectSubState extends MusicBeatSubState
 
   function unLock():Void
   {
-    var index = nonLocks[0];
-
     pressedSelect = true;
 
-    var copy = 3;
-
-    var yThing = -1;
-
-    while ((index + 1) > copy)
-    {
-      yThing++;
-      copy += 3;
-    }
-
-    var xThing = (copy - index - 2) * -1;
-    cursorY = yThing;
-    cursorX = xThing;
+    curSelected = nonLocks[0];
 
     selectSound.play(true);
 
@@ -554,7 +555,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     selectTimer.start(0.5, function(_)
     {
-      var lock:Lock = cast grpIcons.group.members[index];
+      var lock:Lock = cast grpIcons.group.members[curSelected];
 
       lock.anim.play('unlock');
       lock.anim.onFrameChange.add(function(animName:String, frame:Int, index:Int)
@@ -570,7 +571,7 @@ class CharSelectSubState extends MusicBeatSubState
 
       lock.anim.onFinish.addOnce(function(_)
       {
-        var char:String = availableChars.get(index) ?? Constants.DEFAULT_CHARACTER;
+        var char:String = availableChars.get(curSelected) ?? Constants.DEFAULT_CHARACTER;
         camera.flash(0xFFFFFFFF, 0.1);
         playerChill.anim.play('unlock');
         playerChill.visible = true;
@@ -636,7 +637,7 @@ class CharSelectSubState extends MusicBeatSubState
       });
 
       playerChill.visible = false;
-      playerChill.switchChar(availableChars[index] ?? Constants.DEFAULT_CHARACTER);
+      playerChill.switchChar(availableChars[curSelected] ?? Constants.DEFAULT_CHARACTER);
 
       playerChillOut.visible = true;
     });
@@ -647,10 +648,14 @@ class CharSelectSubState extends MusicBeatSubState
     grpIcons.x = cutoutSize + 450;
     grpIcons.y = 120;
 
+    var finalRow:Int = Math.floor(totalSlots / SLOTS_PER_ROW);
+    var curRow:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+    grpIcons.y -= (Math.abs(FlxMath.bound(curRow, 1, finalRow - 2) - 1) * grpYSpread);
+
     for (index => member in grpIcons.members)
     {
-      var posX:Float = (index % 3);
-      var posY:Float = Math.floor(index / 3);
+      var posX:Float = (index % SLOTS_PER_ROW);
+      var posY:Float = Math.floor(index / SLOTS_PER_ROW);
 
       member.x = posX * grpXSpread;
       member.y = posY * grpYSpread;
@@ -661,8 +666,8 @@ class CharSelectSubState extends MusicBeatSubState
 
     for (index => member in grpHitboxes.members)
     {
-      var posX:Float = (index % 3);
-      var posY:Float = Math.floor(index / 3);
+      var posX:Float = (index % SLOTS_PER_ROW);
+      var posY:Float = Math.floor(index / SLOTS_PER_ROW);
 
       member.x = posX * grpXSpread;
       member.y = posY * grpYSpread;
@@ -745,13 +750,10 @@ class CharSelectSubState extends MusicBeatSubState
         {
           if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
 
-          final indexCX:Int = (i % 3) - 1;
-          final indexCY:Int = Math.floor(i / 3) - 1;
-
-          if (indexCY != cursorY || indexCX != cursorX)
+          final curPage:Int = Math.floor(curSelected / SLOTS_PER_PAGE);
+          if (i + curPage * SLOTS_PER_PAGE != curSelected)
           {
-            cursorX = indexCX;
-            cursorY = indexCY;
+            curSelected = i + curPage * SLOTS_PER_PAGE;
             cursors.resetDeny();
             selectSound.play(true);
           }
@@ -760,7 +762,7 @@ class CharSelectSubState extends MusicBeatSubState
             mobileAccept = true;
           }
 
-          trace('Index: ' + i + ', Row: ' + cursorY + ', Column: ' + cursorX);
+          trace('Index: ' + i);
           break;
         }
       }
@@ -769,35 +771,53 @@ class CharSelectSubState extends MusicBeatSubState
       {
         mobileAccept = true;
       }
+
+      // On mobile, use swiping to scroll the page.
+      var maxPages:Int = Math.floor(totalSlots / SLOTS_PER_PAGE);
+      var scrollAmount:Int = 0;
+
+      if (SwipeUtil.justSwipedUp) scrollAmount = -1;
+      if (SwipeUtil.justSwipedDown) scrollAmount = 1;
+      if (scrollAmount != 0)
+      {
+        curSelected += Std.int(scrollAmount * SLOTS_PER_PAGE);
+        cursorDenied.visible = false;
+        selectSound.play(true);
+      }
       #end
 
       if (controls.UI_UP_P)
       {
-        cursorY -= 1;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected - SLOTS_PER_ROW, column, totalSlots + column - 1);
+
         cursors.resetDeny();
-
         holdTmrUp = 0;
-
         selectSound.play(true);
       }
       if (controls.UI_DOWN_P)
       {
-        cursorY += 1;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected + SLOTS_PER_ROW, column, totalSlots + column - 1);
+
         cursors.resetDeny();
         holdTmrDown = 0;
         selectSound.play(true);
       }
       if (controls.UI_LEFT_P)
       {
-        cursorX -= 1;
-        cursors.resetDeny();
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected - 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
 
+        cursors.resetDeny();
         holdTmrLeft = 0;
         selectSound.play(true);
       }
       if (controls.UI_RIGHT_P)
       {
-        cursorX += 1;
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected + 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
+
         cursors.resetDeny();
         holdTmrRight = 0;
         selectSound.play(true);
@@ -839,13 +859,10 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.BACK_P) goBack();
     }
 
-    cursorX = FlxMath.wrap(cursorX, -1, 1);
-    cursorY = FlxMath.wrap(cursorY, -1, 1);
-
-    var currentCharacter:String = availableChars[getCurrentSelected()] ?? Constants.DEFAULT_CHARACTER;
-    if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
+    var currentCharacter:String = availableChars[curSelected] ?? Constants.DEFAULT_CHARACTER;
+    if (availableChars.exists(curSelected) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
     {
-      var charId:String = availableChars.get(getCurrentSelected()) ?? Constants.DEFAULT_CHARACTER;
+      var charId:String = availableChars.get(curSelected) ?? Constants.DEFAULT_CHARACTER;
       if (charId != null) curChar = charId;
 
       if (allowInput && pressedSelect && (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
@@ -938,15 +955,28 @@ class CharSelectSubState extends MusicBeatSubState
 
     updateLockAnims();
 
+    var curPage:Int = Math.floor(curSelected / SLOTS_PER_PAGE);
+    grpIcons.y = MathUtil.smoothLerpPrecision(grpIcons.y, 120 - curPage * grpYSpread * 3, elapsed, 0.1);
+
+    // Update icon visibility and mobile hitboxes based on the current page.
+    for (index => member in grpIcons.members)
+    {
+      var memberPage:Int = Math.floor(index / SLOTS_PER_PAGE);
+      member.alpha = MathUtil.smoothLerpPrecision(member.alpha, (memberPage == curPage ? 1 : 0), elapsed, 0.1);
+    }
+
+    var pageRow:Int = ((curSelected % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1;
+    var pageColumn:Int = Math.floor((curSelected % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1;
+
     if (autoFollow)
     {
       camFollow.screenCenter();
-      camFollow.x += cursorX * 10;
-      camFollow.y += cursorY * 10;
+      camFollow.x += pageRow * 10;
+      camFollow.y += pageColumn * 10;
     }
 
-    cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursors.main.width / 2;
-    cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursors.main.height / 2;
+    cursorLocIntended.x = (cursorFactor * pageRow) + (FlxG.width / 2) - cursors.main.width / 2;
+    cursorLocIntended.y = (cursorFactor * pageColumn) + (FlxG.height / 2) - cursors.main.height / 2;
 
     cursorLocIntended.x += cursorOffsetX;
     cursorLocIntended.y += cursorOffsetY;
@@ -1028,25 +1058,21 @@ class CharSelectSubState extends MusicBeatSubState
 
       cursors.resetDeny();
 
-      if (spamDirections.has(UP))
+      if (spamDirections.has(UP) || spamDirections.has(DOWN))
       {
-        cursorY -= 1;
-        holdTmrUp = 0;
+        var column:Int = curSelected % SLOTS_PER_ROW;
+        curSelected = FlxMath.wrap(curSelected + SLOTS_PER_ROW * (spamDirections.has(UP) ? -1 : 1), column, totalSlots + column - 1);
+
+        if (spamDirections.has(UP)) holdTmrUp = 0;
+        else if (spamDirections.has(DOWN)) holdTmrDown = 0;
       }
-      if (spamDirections.has(DOWN))
+      if (spamDirections.has(LEFT) || spamDirections.has(RIGHT))
       {
-        cursorY += 1;
-        holdTmrDown = 0;
-      }
-      if (spamDirections.has(LEFT))
-      {
-        cursorX -= 1;
-        holdTmrLeft = 0;
-      }
-      if (spamDirections.has(RIGHT))
-      {
-        cursorX += 1;
-        holdTmrRight = 0;
+        var row:Int = Math.floor(curSelected / SLOTS_PER_ROW);
+        curSelected = FlxMath.wrap(curSelected + (spamDirections.has(LEFT) ? -1 : 1), row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
+
+        if (spamDirections.has(LEFT)) holdTmrLeft = 0;
+        else if (spamDirections.has(RIGHT)) holdTmrRight = 0;
       }
     }
   }
@@ -1059,7 +1085,7 @@ class CharSelectSubState extends MusicBeatSubState
       {
         case 1:
           var lock:Lock = cast member;
-          if (index == getCurrentSelected())
+          if (index == curSelected)
           {
             switch (lock.getCurrentAnimation())
             {
@@ -1076,7 +1102,7 @@ class CharSelectSubState extends MusicBeatSubState
         case 0:
           var memb:PixelatedIcon = cast member;
 
-          if (index == getCurrentSelected())
+          if (index == curSelected)
           {
             if (bopPlay)
             {
@@ -1116,35 +1142,17 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  function getCurrentSelected():Int
-  {
-    var tempX:Int = cursorX + 1;
-    var tempY:Int = cursorY + 1;
-    var gridPosition:Int = tempX + tempY * 3;
-    return gridPosition;
-  }
-
   function setCursorPosition(index:Int, instant:Bool = false):Void
   {
-    var copy = 3;
-    var yThing = -1;
-
-    while ((index + 1) > copy)
-    {
-      yThing++;
-      copy += 3;
-    }
-
-    var xThing = (copy - index - 2) * -1;
-
-    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
-    cursorY = yThing;
-    cursorX = xThing;
+    curSelected = index;
 
     if (instant)
     {
-      cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursors.main.width / 2;
-      cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursors.main.height / 2;
+      var pageRow:Int = ((curSelected % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1;
+      var pageColumn:Int = Math.floor((curSelected % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1;
+
+      cursorLocIntended.x = (cursorFactor * pageRow) + (FlxG.width / 2) - cursors.main.width / 2;
+      cursorLocIntended.y = (cursorFactor * pageColumn) + (FlxG.height / 2) - cursors.main.height / 2;
 
       cursorLocIntended.x += cursorOffsetX;
       cursorLocIntended.y += cursorOffsetY;
