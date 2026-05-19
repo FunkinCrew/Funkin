@@ -2914,7 +2914,7 @@ class Paths
     }
 
     // Try to guess some other paths.
-    var result:Null<String> = tryGuessPath(id, filePath);
+    var result:Null<String> = tryGuessPath(id, filePath, library);
     if (result != null) return result;
 
     // I guess just use the filePath and suffer whatever errors result.
