@@ -998,10 +998,12 @@ class Save implements ConsoleClass implements ISerializable
    *        or pretty printed formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
-    var ignoreNullOptionals:Bool = true;
-    var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
+    var writer = new json2object.JsonWriter<RawSaveData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     return writer.write(data, pretty ? ' ' : null);
   }
 

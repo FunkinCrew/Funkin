@@ -152,7 +152,7 @@ class RegistryMacro
 
     var createScriptedEntry:String = '${scriptedEntryClsName}.scriptInit(clsName, "unknown")';
 
-    var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>()';
+    var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>({ignoreUnknownVariables: false})';
 
     var dataFilePath:String = getRegistryDataFilePath(cls, fields);
 
@@ -191,7 +191,6 @@ class RegistryMacro
         public function parseEntryData(id:String)
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
-          parser.ignoreUnknownVariables = false;
 
           @:privateAccess
           switch (this.loadEntryFile(id))
@@ -208,13 +207,13 @@ class RegistryMacro
             this.printErrors(parser.errors, id);
             return null;
           }
+
           return parser.value;
         }
 
         public function parseEntryDataRaw(contents:String, ?fileName:String)
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
-          parser.ignoreUnknownVariables = false;
           parser.fromJson(contents, fileName);
 
           if (parser.errors.length > 0)

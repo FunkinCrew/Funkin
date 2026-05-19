@@ -176,8 +176,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMetadata>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata>({ignoreUnknownVariables: true});
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -199,8 +198,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMetadata>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata>({ignoreUnknownVariables: true});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -259,8 +257,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>({ignoreUnknownVariables: true});
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -281,8 +278,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>({ignoreUnknownVariables: true});
 
     switch (loadEntryMetadataFile(id, variation))
     {
@@ -301,8 +297,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   function parseEntryMetadataRaw_v2_1_0(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
-    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata_v2_1_0>({ignoreUnknownVariables: true});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -315,8 +310,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   function parseEntryMetadataRaw_v2_0_0(contents:String, ?fileName:String = 'raw'):Null<SongMetadata>
   {
-    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongMetadata_v2_0_0>({ignoreUnknownVariables: true});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -331,8 +325,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongMusicData>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<SongMusicData>({ignoreUnknownVariables: true});
 
     switch (loadMusicDataFile(id, variation))
     {
@@ -352,8 +345,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   public function parseMusicDataRaw(contents:String, ?fileName:String = 'raw'):Null<SongMusicData>
   {
-    var parser = new json2object.JsonParser<SongMusicData>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<SongMusicData>({ignoreUnknownVariables: true});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)
@@ -396,8 +388,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongChartData>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongChartData>({ignoreUnknownVariables: true});
 
     switch (loadEntryChartFile(id, variation))
     {
@@ -419,8 +410,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   {
     variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
 
-    var parser = new json2object.JsonParser<SongChartData>();
-    parser.ignoreUnknownVariables = true;
+    var parser = new json2object.JsonParser<SongChartData>({ignoreUnknownVariables: true});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)

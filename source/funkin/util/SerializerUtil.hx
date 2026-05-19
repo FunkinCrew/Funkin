@@ -18,15 +18,16 @@ class SerializerUtil
    *
    * @param input The object to serialize to JSON.
    * @param pretty Whether to format the output with indentation.
+   * @param params If the input uses `json2object` for serialization, provide additional params.
    * @return The JSON string representation of the input object.
    */
-  public static function toJSON(input:Dynamic, pretty:Bool = true):String
+  public static function toJSON(input:Dynamic, pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Check for a custom serializer
     if (Std.isOfType(input, ISerializable))
     {
       var serializableInput:ISerializable = cast(input, ISerializable);
-      return serializableInput.serialize(pretty);
+      return serializableInput.serialize(pretty, params);
     }
 
     return Json.stringify(input, replacer, pretty ? INDENT_CHAR : null);

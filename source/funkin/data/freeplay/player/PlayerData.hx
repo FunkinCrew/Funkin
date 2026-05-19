@@ -87,12 +87,15 @@ class PlayerData implements ISerializable
    * @param pretty Whether to use pretty formatting on the output.
    * @return This object, converted into a JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
 
-    var writer = new json2object.JsonWriter<PlayerData>();
+    var writer = new json2object.JsonWriter<PlayerData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     return writer.write(this, pretty ? ' ' : null);
   }
 

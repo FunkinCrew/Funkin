@@ -138,29 +138,13 @@ class RegistryData
    * Use the given asset ID to apply _merge patches to the given base data.
    *
    * @param id The asset ID to use for patching (NOT the original ID!).
-   * @param baseData The data to apply patches to.
-   * @return The patched data.
-   */
-  public static function mergeJsonData(id:String, baseData:Dynamic):Dynamic
-  {
-    baseData ??= {};
-
-    var baseDataStr:String = SerializerUtil.toJSON(baseData, false);
-
-    var mergedDataStr:String = mergeJsonDataStr(id, baseDataStr);
-
-    return SerializerUtil.fromJSON(mergedDataStr);
-  }
-
-  /**
-   * Use the given asset ID to apply _merge patches to the given base data.
-   *
-   * @param id The asset ID to use for patching (NOT the original ID!).
    * @param baseDataStr The data to apply patches to, as a serialized string.
    * @return The patched data, as a serialized string.
    */
   public static function mergeJsonDataStr(id:String, baseDataStr:String = '{}'):String
   {
+    trace('$id: $baseDataStr');
+
     // Fingering Polymod's deepest, sexiest parts while machine is running, don't try this at home kids!
     @:privateAccess
     var mergedStr:String = Polymod.assetLibrary.mergeAndAppendText(id, baseDataStr);

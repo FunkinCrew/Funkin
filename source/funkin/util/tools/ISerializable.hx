@@ -12,7 +12,8 @@ interface ISerializable
    * Serialize this object into a JSON string.
    *
    * @param pretty Whether to use pretty formatting on the output.
+   * @param params Optionally use specific options when serializing.
    * @return This object, converted into a JSON string.
    */
-  public function serialize(pretty:Bool = true):String;
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String;
 }

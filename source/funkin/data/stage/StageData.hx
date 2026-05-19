@@ -43,7 +43,7 @@ class StageData implements ISerializable
    * @deprecated This value is no longer used but actually annotating it with @:deprecated
    *  throws a warning in the Serializer I can't suppress
    */
-  @:deprecated('This is no longer used.') @:default('shared') @:optional
+  @:default('shared') @:optional
   public var directory:Null<String>;
 
   public function new()
@@ -82,13 +82,15 @@ class StageData implements ISerializable
    * @param pretty Whether to output JSON with clean spacing/formatting.
    * @return A JSON string containing this object's data.
    */
-  @:haxe.warning('-WDeprecated')
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
 
-    var writer = new json2object.JsonWriter<StageData>();
+    var writer = new json2object.JsonWriter<StageData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     return writer.write(this, pretty ? ' ' : null);
   }
 

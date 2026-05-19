@@ -114,8 +114,7 @@ class WaveformDataParser
 
   public static function parseWaveformDataString(contents:String, ?fileName:String):Null<WaveformData>
   {
-    var parser = new json2object.JsonParser<WaveformData>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<WaveformData>({ignoreUnknownVariables: false});
     trace('[WAVEFORM] Parsing waveform data: ${contents}');
     parser.fromJson(contents, fileName);
 

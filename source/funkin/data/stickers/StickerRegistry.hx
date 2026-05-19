@@ -45,8 +45,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
    */
   public function parseEntryDataRaw(contents:String, ?fileName:String):Null<StickerData>
   {
-    var parser:json2object.JsonParser<StickerData> = new json2object.JsonParser<StickerData>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<StickerData>({ignoreUnknownVariables: false});
     parser.fromJson(contents, fileName);
 
     if (parser.errors.length > 0)

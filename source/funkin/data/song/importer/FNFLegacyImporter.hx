@@ -14,8 +14,9 @@ class FNFLegacyImporter
 {
   public static function parseLegacyDataRaw(input:String, fileName:String = 'raw'):Null<FNFLegacyData>
   {
-    var parser = new json2object.JsonParser<FNFLegacyData>();
-    parser.ignoreUnknownVariables = true; // Set to true to ignore extra variables that might be included in the JSON.
+    var parser = new json2object.JsonParser<FNFLegacyData>({
+      ignoreUnknownVariables: true // Set to true to ignore extra variables that might be included in the JSON.
+    });
     parser.fromJson(input, fileName);
 
     if (parser.errors.length > 0)

@@ -1,5 +1,6 @@
 package funkin.data.song;
 
+import json2object.JsonWriterParams;
 import funkin.util.tools.ISerializable;
 import funkin.ui.debug.charting.ChartEditorState;
 import funkin.data.event.SongEventRegistry;
@@ -108,7 +109,7 @@ class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
    * or formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -125,8 +126,10 @@ class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
     }
     #end
 
-    var ignoreNullOptionals = true;
-    var writer = new json2object.JsonWriter<SongMetadata>(ignoreNullOptionals);
+    var writer = new json2object.JsonWriter<SongMetadata>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     // I believe @:jignored should be ignored by the writer?
     // var output = this.clone();
     // output.variation = null; // Not sure how to make a field optional on the reader and ignored on the writer.
@@ -663,14 +666,16 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   /**
    * Convert this SongChartData into a JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
     removeEmptyDifficulties();
 
-    var ignoreNullOptionals = true;
-    var writer = new json2object.JsonWriter<SongChartData>(ignoreNullOptionals);
+    var writer = new json2object.JsonWriter<SongChartData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     return writer.write(this, pretty ? ' ' : null);
   }
 

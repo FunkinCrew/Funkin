@@ -162,8 +162,7 @@ class SongDataUtils
    * @param mirrorX Mirror along the X axis, aka the directions of the notes.
    * @param mirrorY Mirror along the Y axis, aka the time of the notes.
    */
-  public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true,
-      mirrorY:Bool = true):Array<SongNoteData>
+  public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true):Array<SongNoteData>
   {
     var minTime = notes[0].time;
     var maxTime = notes[0].time;
@@ -279,8 +278,10 @@ class SongDataUtils
    */
   public static function writeItemsToClipboard(data:SongClipboardItems):Void
   {
-    var ignoreNullOptionals = true;
-    var writer = new json2object.JsonWriter<SongClipboardItems>(ignoreNullOptionals);
+    var writer = new json2object.JsonWriter<SongClipboardItems>({
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     var dataString:String = writer.write(data, ' ');
 
     ClipboardUtil.setClipboard(dataString);
@@ -297,8 +298,7 @@ class SongDataUtils
 
     trace('Read ${notesString.length} characters from clipboard.');
 
-    var parser = new json2object.JsonParser<SongClipboardItems>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<SongClipboardItems>({ignoreUnknownVariables: false});
     parser.fromJson(notesString, 'clipboard');
     if (parser.errors.length > 0)
     {

@@ -108,12 +108,15 @@ class ChartManifestData implements ISerializable
    * @param pretty Whether to format the JSON with indentation and newlines.
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
 
-    var writer = new json2object.JsonWriter<ChartManifestData>();
+    var writer = new json2object.JsonWriter<ChartManifestData>(params ?? {
+      ignoreNullOptionals: true,
+      ignoreDefaults: true
+    });
     return writer.write(this, pretty ? ' ' : null);
   }
 
@@ -129,8 +132,7 @@ class ChartManifestData implements ISerializable
    */
   public static function deserialize(contents:String):Null<ChartManifestData>
   {
-    var parser = new json2object.JsonParser<ChartManifestData>();
-    parser.ignoreUnknownVariables = false;
+    var parser = new json2object.JsonParser<ChartManifestData>({ignoreUnknownVariables: false});
     parser.fromJson(contents, 'manifest.json');
 
     if (parser.errors.length > 0)
