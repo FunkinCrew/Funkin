@@ -135,6 +135,8 @@ class PlayerFreeplayDJData
 
   @:optional @:default([0, 0])
   var offsets:Array<Float>;
+  @:jignored
+  var _initializedAnimations:Bool = false;
 
   public function new()
   {
@@ -193,23 +195,30 @@ class PlayerFreeplayDJData
     }
   }
 
-  public function getAnimationOffsets(name:String):Array<Float>
+  @:deprecated('Use getAnimationOffsets() instead')
+  public function getAnimationOffsetsByPrefix(prefix:String):Array<Float>
   {
-    if (animationOffsets == null)
+    return getAnimationOffsets(prefix);
+  }
+
+  @:deprecated('You really should NOT use animation prefixes for Freeplay DJs anymore.')
+  public function getAnimationPrefix(name:String):Null<String>
+  {
+    if (!_initializedAnimations) _initializeMap();
+
+    for (animation in animations)
     {
-      animationOffsets = new Map<String, Array<Float>>();
-
-      animationOffsets.clear();
-
-      for (anim in animations)
-      {
-        animationOffsets.set(anim.name, anim.offsets);
-      }
+      if (animation.prefix == name) return animation.prefix;
     }
 
-    if (name == null) return [0, 0];
+    return null;
+  }
 
-    return animationOffsets.get(name);
+  public function getAnimationOffsets(name:String):Array<Float>
+  {
+    if (!_initializedAnimations) _initializeMap();
+
+    return animationOffsets.get(name) ?? [0, 0];
   }
 
   public function getFistPumpIntroStartFrame():Int
@@ -255,6 +264,23 @@ class PlayerFreeplayDJData
   public function getCharSelectTransitionDelay():Float
   {
     return charSelect?.transitionDelay ?? 0.25;
+  }
+
+  function _initializeMap():Void
+  {
+    if (animationOffsets == null)
+    {
+      animationOffsets = new Map<String, Array<Float>>();
+
+      animationOffsets.clear();
+
+      for (animation in animations)
+      {
+        animationOffsets.set(animation.name, animation.offsets);
+      }
+    }
+
+    _initializedAnimations = true;
   }
 }
 
