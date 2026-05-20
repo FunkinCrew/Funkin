@@ -180,7 +180,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if FEATURE_LAG_ADJUSTMENT
     createItem('LAG ADJUSTMENT', function()
     {
-      FlxG.sound.music.fadeOut(0.5, 0, function(tw)
+      var switchToOffsets = function()
       {
         FunkinSound.playMusic('offsetsLoop', {
           startingVolume: 0,
@@ -190,9 +190,20 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         });
         OptionsState.instance.drumsBG.play(true);
         FlxG.sound.music.fadeIn(1, 1);
-      });
+        codex.switchPage(Offsets);
+      };
 
-      codex.switchPage(Offsets);
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.fadeOut(0.5, 0, function(tw)
+        {
+          switchToOffsets();
+        });
+      }
+      else
+      {
+        switchToOffsets();
+      }
     });
     #end
     #if FEATURE_MOBILE_IAP

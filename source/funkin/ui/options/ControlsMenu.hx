@@ -330,7 +330,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 
             // keyUsedToEnterPrompt is my weird workaround.
 
-            var key = FlxG.keys.firstJustReleased();
+            var key = FlxG.keys?.firstJustReleased();
+            if (key == null) return;
             if (key != NONE && key != keyUsedToEnterPrompt)
             {
               if (key == ESCAPE)
@@ -351,7 +352,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
           }
         case Gamepad(id):
           {
-            var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
+            var button = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
+            if (button == null) return;
             if (button != NONE && button != buttonUsedToEnterPrompt)
             {
               if (button != BACK) onInputSelect(button);
@@ -383,12 +385,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       {
         case Keys:
           {
-            var key = FlxG.keys.firstJustReleased();
+            var key = FlxG.keys?.firstJustReleased();
             if (key == ESCAPE) closePopup();
           }
         case Gamepad(id):
           {
-            var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
+            var button = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
             if (button == BACK) closePopup();
 
             var key = FlxG.keys.firstJustReleased();
@@ -401,7 +403,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       case Keys:
         {
-          var keyJustReleased:Int = FlxG.keys.firstJustReleased();
+          var keyJustReleased:Null<Int> = FlxG.keys?.firstJustReleased();
+          if (keyJustReleased == null) return;
           if (keyJustReleased != NONE && keyJustReleased == keyUsedToEnterPrompt)
           {
             keyUsedToEnterPrompt = null;
@@ -410,7 +413,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
         }
       case Gamepad(id):
         {
-          var buttonJustReleased:Int = FlxG.gamepads.getByID(id).firstJustReleasedID();
+          var buttonJustReleased:Null<Int> = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
+          if (buttonJustReleased == null) return;
           if (buttonJustReleased != NONE && buttonJustReleased == buttonUsedToEnterPrompt)
           {
             buttonUsedToEnterPrompt = null;

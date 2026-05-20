@@ -726,6 +726,11 @@ class Constants
   public static inline final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
 
   /**
+   * The smoothness of the health icon angle rotation on bop.
+   */
+  public static final HEALTH_ICON_ANGLE_HALF_LIFE:Float = 0.512;
+
+  /**
    * The path where our save data will be stored.
    */
   public static inline final SAVE_PATH:String = 'FunkinCrew';

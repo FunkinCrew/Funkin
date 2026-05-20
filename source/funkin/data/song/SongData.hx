@@ -452,6 +452,13 @@ class SongPlayData implements ICloneable<SongPlayData>
   public var album:Null<String>;
 
   /**
+   * An external image link for the opponent's health icon.
+   * This is used for Discord Rich Presence.
+   */
+  @:optional
+  public var discordRPCImage:String;
+
+  /**
    * The sticker pack for the song to use during transitions.
    * If `null`, display the character's sticker pack.
    */
