@@ -50,6 +50,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
       if (block != null) state.timeline.viewport.syncEventBlockLayer(block, newLayerName);
     }
     state.timeline.viewport.refreshLayout();
+    state.cachedEventIndex = 0;
 
     state.saved = false;
   }
@@ -74,6 +75,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
     FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
     state.timeline.viewport.refreshLayout();
+    state.cachedEventIndex = 0;
 
     state.saved = false;
   }
