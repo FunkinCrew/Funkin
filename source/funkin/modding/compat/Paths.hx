@@ -3635,6 +3635,14 @@ class Paths
         var songFilePath:String = filePath.replace('gameplay/songs/', (library == 'default') ? 'songs/' : '$library/songs/');
         // Redirect for pause music
         var pauseMusicFilePath:String = filePath.replace('ui/pause/music/', (library == 'default') ? 'music/' : '$library/music/');
+        // Redirect for gameover music/SFX
+        var gameOverMusicFilePath:String = (library == 'default') ? 'assets/music/gameplay/gameover/${fileId.replace('game-over', 'gameOver')}.ogg' : 'assets/$library/music/gameplay/gameover/${fileId.replace('game-over', 'gameOver')}.ogg';
+        if (gameOverMusicFilePath.contains('-end.ogg'))
+        {
+          // this kinda ugly but we just need it to work
+          gameOverMusicFilePath = gameOverMusicFilePath.replace('-end.ogg', '.ogg').replace('gameOver', 'gameOverEnd');
+        }
+        var gameOverSFXFilePath:String = (library == 'default') ? 'assets/sounds/gameplay/gameover/${fileId.replace('loss-sfx', 'fnf_loss_sfx')}.ogg' : 'assets/$library/sounds/gameplay/gameover/${fileId.replace('loss-sfx', 'fnf_loss_sfx')}.ogg';
 
         usePathIfExists(musicFilePath);
         usePathIfExists(nestedMusicFilePath);
@@ -3642,6 +3650,9 @@ class Paths
         usePathIfExists(soundsFilePath);
         usePathIfExists(songFilePath);
         usePathIfExists(pauseMusicFilePath);
+
+        usePathIfExists(gameOverMusicFilePath);
+        usePathIfExists(gameOverSFXFilePath);
 
       case 'mp4' | 'mkv': // Videos, without or with subtitles
         var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';

@@ -253,8 +253,7 @@ class GameOverSubState extends MusicBeatSubState
         }
         else
         {
-          boyfriend.playAnimation('firstDeath' + animationSuffix, true,
-            false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
+          boyfriend.playAnimation('firstDeath' + animationSuffix, true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
           // Play the "blue balled" sound. May play a variant if one has been assigned.
           playBlueBalledSFX();
         }
@@ -470,11 +469,17 @@ class GameOverSubState extends MusicBeatSubState
    */
   function resolveMusicPath(suffix:String, starting:Bool = false, ending:Bool = false):Null<String>
   {
-    final soundName:String = 'game-over' + suffix;
+    var soundName:String = 'game-over' + suffix;
     var basePath:String = getDeathAudioPath(soundName + '/' + soundName);
 
-    if (ending) basePath += '-end';
-    else if (starting) basePath += '-start';
+    if (ending)
+    {
+      basePath += '-end';
+    }
+    else if (starting)
+    {
+      basePath += '-start';
+    }
 
     var musicPath:String = Paths.music(basePath);
     while (!Assets.exists(musicPath) && suffix.length > 0)
@@ -482,7 +487,14 @@ class GameOverSubState extends MusicBeatSubState
       suffix = suffix.split('-').slice(0, -1).join('-');
       musicPath = Paths.music(basePath + suffix);
     }
-    if (!Assets.exists(musicPath)) return null;
+    if (!Assets.exists(musicPath))
+    {
+      // who gaf
+      if (starting || ending) return null;
+
+      FlxG.log.error('[GAMEOVER] Could not find game over music (expected path "${Paths.music(basePath)}" based on suffix "$suffix")!');
+      return null;
+    }
     trace('Resolved music path: ' + musicPath);
     return musicPath;
   }
@@ -507,7 +519,7 @@ class GameOverSubState extends MusicBeatSubState
       }
       else
       {
-        onComplete = function()
+        onComplete = () ->
         {
           isStarting = false;
           // We need to force to ensure that the non-starting music plays.
@@ -518,7 +530,6 @@ class GameOverSubState extends MusicBeatSubState
 
     if (musicPath == null)
     {
-      FlxG.log.warn('[GAMEOVER] Could not find game over music at path ($musicPath)!');
       return;
     }
     else if (gameOverMusic == null || !gameOverMusic.playing || force)
@@ -570,8 +581,7 @@ class GameOverSubState extends MusicBeatSubState
     }
     else
     {
-      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
-        new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
 
       if (PlayStatePlaylist.isStoryMode)
       {
@@ -610,7 +620,7 @@ class GameOverSubState extends MusicBeatSubState
     }
     else
     {
-      trace('[GAMEOVER] Could not find blue balled SFX at path ($soundPath)!');
+      FlxG.log.error('[GAMEOVER] Could not find blue balled SFX at path ($soundPath)!');
     }
   }
 
