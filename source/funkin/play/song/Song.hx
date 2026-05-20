@@ -196,8 +196,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param validScore Whether the song is elegible for highscores.
    * @return The constructed song object.
    */
-  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variation:String, charts:Map<String, SongChartData>, includeScript:Bool = true,
-      validScore:Bool = false):Song
+  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variation:String, charts:Map<String, SongChartData>, includeScript:Bool = true, validScore:Bool = false):Song
   {
     @:privateAccess
     var result:Null<Song> = null;
