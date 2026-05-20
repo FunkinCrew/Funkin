@@ -239,11 +239,18 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
    * @param loop Whether to loop the animation.
    * @param frame The specific frame to play.
    */
-  public function playAnimation(id:String, restart:Bool = false, reverse:Bool = false, loop:Bool = false, frame:Int = 0):Void
+  public function playAnimation(id:String, restart:Bool = false, reverse:Bool = false, loop:Bool = false, frame:Int = 0, _runByCompat:Bool = false):Void
   {
     if (animation == null)
     {
       FlxG.log.warn('Freeplay DJ ${characterId} has no graphics loaded!');
+      return;
+    }
+
+    // Backwards compatibility: Run `playFlashAnimation()` instead since old scripts might override it.
+    if (__backwardsCompatibility && !_runByCompat)
+    {
+      playFlashAnimation(id, restart, reverse, loop, frame);
       return;
     }
 
@@ -264,6 +271,12 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     animation.curAnim.looped = loop;
 
     applyAnimationOffset();
+  }
+
+  @:deprecated('Use playAnimation() instead')
+  function playFlashAnimation(id:String, force:Bool = false, reverse:Bool = false, loop:Bool = false, frame:Int = 0):Void
+  {
+    playAnimation(id, force, reverse, loop, frame, true);
   }
 
   public function onPlayerAction():Void
