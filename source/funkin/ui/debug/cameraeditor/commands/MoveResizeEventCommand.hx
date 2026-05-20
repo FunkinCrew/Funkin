@@ -54,7 +54,6 @@ class MoveResizeEventCommand implements CameraEditorCommand
       if (block != null) state.timeline.viewport.syncEventBlockLayer(block, newLayerName);
     }
     state.timeline.viewport.refreshLayout();
-    state.cachedEventIndex = 0;
 
     state.saved = false;
   }
@@ -80,6 +79,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
 
     state.timeline.viewport.refreshLayout();
     state.cachedEventIndex = 0;
+    state.completedEvents = [];
 
     state.saved = false;
   }

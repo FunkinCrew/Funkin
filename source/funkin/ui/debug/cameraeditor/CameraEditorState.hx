@@ -733,6 +733,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var goToPoint:FlxPoint = new FlxPoint();
   var previousTime:Float = 0;
+  var completedEvents:Array<SongEventData> = [];
   // Maybe in the future we can handle the special tankman picospeaker/otisspeaker events?
 
   public function handlePlayAnimationEvent(data:SongEventData):Void
@@ -822,9 +823,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     for (i in cachedEventIndex...songEvents.length)
     {
       var eventData = songEvents[i];
+      if (completedEvents.contains(eventData)) continue;
       if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
-
-      trace('Processing event: ${eventData.eventKind} at time ${eventData.time}');
 
       var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
 
@@ -941,8 +941,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       performCleanup();
       return;
     }
-
-    if (FlxG.keys.justPressed.F7) trace(songEvents);
 
     if (autoSeek)
     {
@@ -1092,6 +1090,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     cachedEventIndex = 0;
     cachedNoteIndex = 0;
+    completedEvents = [];
     previousNotes = [
       null,
       null,
@@ -1593,6 +1592,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (a.time > b.time) return 1;
         return 0;
       });
+      cachedEventIndex = 0;
+      completedEvents = [];
     });
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
@@ -1608,6 +1609,8 @@ class CameraEditorState extends UIState implements ConsoleClass
         if (a.time > b.time) return 1;
         return 0;
       });
+      cachedEventIndex = 0;
+      completedEvents = [];
     });
 
     timeline.viewport.registerEvent(UIEvent.RESIZE, function(_:UIEvent):Void
@@ -1720,6 +1723,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       shouldResetScroll = true;
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
+      completedEvents = [];
 
       syncTogglePlaybackButton();
       previousNotes = [
