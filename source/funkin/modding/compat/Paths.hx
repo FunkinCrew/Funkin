@@ -3581,13 +3581,14 @@ class Paths
         // Specific redirect for char select animate atlases
         var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
-        var difficultyFilePath:String = filePath.replace('ui/freeplay/difficulty/', (library == 'default') ? 'images/freeplay/freeplay/' : '$library/images/freeplay/freeplay/');
+        var difficultyFilePath:String = filePath.replace('ui/freeplay/difficulty/', (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay');
 
         usePathIfExists(typeFilePath);
         usePathIfExists(iconFilePath);
         usePathIfExists(freeplayIconFilePath);
         usePathIfExists(nametagFilePath);
         usePathIfExists(charSelectFilePath);
+        usePathIfExists(difficultyFilePath);
 
       case 'frag' | 'vert': // Shader text
         var typeFilePath:String = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';

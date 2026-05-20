@@ -458,8 +458,7 @@ class BaseCharacter extends Bopper
 
         var currentAnimation:String = getCurrentAnimation();
         // Strip "-hold" from the end.
-        if (currentAnimation.endsWith(Constants.ANIMATION_HOLD_SUFFIX)) currentAnimation = currentAnimation.substring(0,
-          currentAnimation.length - Constants.ANIMATION_HOLD_SUFFIX.length);
+        if (currentAnimation.endsWith(Constants.ANIMATION_HOLD_SUFFIX)) currentAnimation = currentAnimation.substring(0, currentAnimation.length - Constants.ANIMATION_HOLD_SUFFIX.length);
 
         var endAnimation:String = currentAnimation + Constants.ANIMATION_END_SUFFIX;
         if (hasAnimation(endAnimation))
@@ -769,6 +768,11 @@ class BaseCharacter extends Bopper
   static function log(message:String):Void
   {
     trace(' CHARACTER '.bold().bg_blue() + ' $message');
+  }
+
+  public override function toString():String
+  {
+    return 'BaseCharacter($characterName ($characterId), pos=[$x, $y])';
   }
 }
 

@@ -221,7 +221,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     if (name.lastIndexOf('-') != -1)
     {
       var correctName = name.substring(0, name.lastIndexOf('-'));
-      FlxG.log.notice('Bopper tried to play animation "$name" that does not exist, stripping suffixes ($correctName)...');
+      FlxG.log.notice('${this.toString()} tried to play animation "$name" that does not exist, stripping suffixes ($correctName)...');
       return correctAnimationName(correctName);
     }
     else
@@ -230,18 +230,18 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       {
         if (fallback == name)
         {
-          FlxG.log.error('Bopper tried to play animation "$name" that does not exist! This is bad!');
+          FlxG.log.error('${this.toString()} tried to play animation "$name" that does not exist! This is bad!');
           return null;
         }
         else
         {
-          FlxG.log.warn('Bopper tried to play animation "$name" that does not exist, fallback to idle...');
+          FlxG.log.warn('${this.toString()} tried to play animation "$name" that does not exist, fallback to idle...');
           return correctAnimationName('idle');
         }
       }
       else
       {
-        FlxG.log.error('Bopper tried to play animation "$name" that does not exist! This is bad!');
+        FlxG.log.error('${this.toString()} tried to play animation "$name" that does not exist! This is bad!');
         return null;
       }
     }
@@ -402,5 +402,10 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   public function onSongRetry(event:SongRetryEvent)
   {
+  }
+
+  public override function toString():String
+  {
+    return 'Bopper($name, pos=[$x, $y])';
   }
 }

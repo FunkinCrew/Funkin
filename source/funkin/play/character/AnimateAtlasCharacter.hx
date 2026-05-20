@@ -91,4 +91,9 @@ class AnimateAtlasCharacter extends BaseCharacter
   {
     trace(' ATLASCHAR '.bold().bg_blue() + ' $message');
   }
+
+  public override function toString():String
+  {
+    return 'AnimateAtlasCharacter($characterName ($characterId), pos=[$x, $y])';
+  }
 }

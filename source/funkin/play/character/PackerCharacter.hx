@@ -79,4 +79,9 @@ class PackerCharacter extends BaseCharacter
     var animNames = this.animation.getNameList();
     trace('[PACKERCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
   }
+
+  public override function toString():String
+  {
+    return 'PackerCharacter($characterName ($characterId), pos=[$x, $y])';
+  }
 }

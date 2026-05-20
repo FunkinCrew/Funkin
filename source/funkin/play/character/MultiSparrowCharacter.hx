@@ -192,4 +192,9 @@ class MultiSparrowCharacter extends BaseCharacter
 
     super.destroy();
   }
+
+  public override function toString():String
+  {
+    return 'MultiSparrowCharacter($characterName ($characterId), pos=[$x, $y])';
+  }
 }

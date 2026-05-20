@@ -172,4 +172,9 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     super.destroy();
   }
+
+  public override function toString():String
+  {
+    return 'MultiAnimateAtlasCharacter($characterName ($characterId), pos=[$x, $y])';
+  }
 }
