@@ -3581,6 +3581,7 @@ class Paths
         // Specific redirect for char select animate atlases
         var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
+        var difficultyFilePath:String = filePath.replace('ui/freeplay/difficulty/', (library == 'default') ? 'images/freeplay/freeplay/' : '$library/images/freeplay/freeplay/');
 
         usePathIfExists(typeFilePath);
         usePathIfExists(iconFilePath);
@@ -3618,11 +3619,17 @@ class Paths
         var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
 
+        // Redirect for music metadata
+        var musicDataFilePath:String = (library == 'default') ? 'assets/music/$id' : 'assets/$library/music/$id';
+        var musicMetadataFilePath:String = (library == 'default') ? 'assets/music/${id.replace('.json', '-metadata.json')}' : 'assets/$library/music/${id.replace('.json', '-metadata.json')}';
+
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
         usePathIfExists(songDataFilePath);
         usePathIfExists(songFilePath);
         usePathIfExists(charSelectFilePath);
+        usePathIfExists(musicDataFilePath);
+        usePathIfExists(musicMetadataFilePath);
 
       case 'ogg': // Music or sound
         // Redirect for music files
@@ -3658,6 +3665,11 @@ class Paths
         var videoFilePath:String = (library == 'default') ? 'assets/videos/$id' : 'assets/$library/videos/$id';
 
         usePathIfExists(videoFilePath);
+
+      case 'srt': // Standalone subtitle files
+        var typeFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+
+        usePathIfExists(typeFilePath);
 
       case 'ttf': // Fonts
         // someFont.ttf.ttf -> someFont.ttf

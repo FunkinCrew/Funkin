@@ -124,8 +124,16 @@ class CharSelectSubState extends MusicBeatSubState
 
     for (playerId in playerIds)
     {
+      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
+      if (player == null) continue;
       var playerData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData();
       if (playerData == null) continue;
+
+      #if !UNLOCK_EVERYTHING
+      // Without this, locked characters still take up space on the grid,
+      // which sometimes pushes locked
+      if (!player.isUnlocked()) continue;
+      #end
 
       var targetPosition:Int = playerData.position ?? 0;
       while (availableChars.exists(targetPosition))

@@ -15,6 +15,12 @@ using StringTools;
 @:nullSafety
 class Paths implements ConsoleClass
 {
+  @:deprecated("You don't need to call this function anymore.")
+  public static function setCurrentLevel(level:String):Void
+  {
+    trace('Paths.setCurrentLevel($level) is deprecated, this does nothing!');
+  }
+
   /**
    * Remove a library from an asset path string.
    * @param path The asset path string to remove the library from.
