@@ -733,8 +733,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   var goToPoint:FlxPoint = new FlxPoint();
   var previousTime:Float = 0;
-  var completedEvents:Array<SongEventData> = [];
-
   // Maybe in the future we can handle the special tankman picospeaker/otisspeaker events?
 
   public function handlePlayAnimationEvent(data:SongEventData):Void
@@ -824,8 +822,9 @@ class CameraEditorState extends UIState implements ConsoleClass
     for (i in cachedEventIndex...songEvents.length)
     {
       var eventData = songEvents[i];
-      if (completedEvents.contains(eventData)) continue;
       if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
+
+      trace('Processing event: ${eventData.eventKind} at time ${eventData.time}');
 
       var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
 
@@ -857,7 +856,6 @@ class CameraEditorState extends UIState implements ConsoleClass
         dispatchEvent(eventEvent);
       }
 
-      completedEvents.push(eventData);
       cachedEventIndex = i + 1;
     }
 
@@ -943,6 +941,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       performCleanup();
       return;
     }
+
+    if (FlxG.keys.justPressed.F7) trace(songEvents);
 
     if (autoSeek)
     {
@@ -1102,7 +1102,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       null,
       null
     ];
-    completedEvents = [];
 
     remove(cameraRect);
     if (currentSongMetadata == null) return;
@@ -1585,7 +1584,15 @@ class CameraEditorState extends UIState implements ConsoleClass
         children.push(new MoveResizeEventCommand(d.event, d.oldTime, d.oldDuration, d.oldLayerName, d.newTime, d.newDuration, d.newLayerName));
         finalSelection.push(d.event);
       }
+
       CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
+
+      songEvents.sort(function(a:SongEventData, b:SongEventData):Int
+      {
+        if (a.time < b.time) return -1;
+        if (a.time > b.time) return 1;
+        return 0;
+      });
     });
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
@@ -1594,6 +1601,13 @@ class CameraEditorState extends UIState implements ConsoleClass
       var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
+
+      songEvents.sort(function(a:SongEventData, b:SongEventData):Int
+      {
+        if (a.time < b.time) return -1;
+        if (a.time > b.time) return 1;
+        return 0;
+      });
     });
 
     timeline.viewport.registerEvent(UIEvent.RESIZE, function(_:UIEvent):Void
@@ -1706,7 +1720,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       shouldResetScroll = true;
       cachedEventIndex = 0;
       cachedNoteIndex = 0;
-      completedEvents = [];
+
       syncTogglePlaybackButton();
       previousNotes = [
         null,
@@ -1910,7 +1924,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     conductorInUse.update(0);
     cameraRect.update(0);
 
-    completedEvents = [];
     previousNoteTime = 0;
 
     var bfLastPlayAnimationTime:Null<Float> = null;
@@ -1982,7 +1995,6 @@ class CameraEditorState extends UIState implements ConsoleClass
             }
         }
 
-        completedEvents.push(eventData);
         cameraRect.update(0);
       }
 
@@ -2409,7 +2421,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       null,
       null
     ];
-    completedEvents = [];
     setTimePosition(0);
     resetScrollPosition();
     if (playing) togglePlayback();
