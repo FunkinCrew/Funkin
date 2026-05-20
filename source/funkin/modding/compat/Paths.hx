@@ -167,6 +167,8 @@ class Paths
     'assets/characters/bf/Animation.json' => 'assets/gameplay/characters/bf/boyfriend/Animation.json',
     'assets/characters/bf/spritemap1.json' => 'assets/gameplay/characters/bf/boyfriend/spritemap1.json',
     'assets/characters/bf/spritemap1.png' => 'assets/gameplay/characters/bf/boyfriend/spritemap1.png',
+    'assets/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
+    'assets/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/characters/bfAndGF.png' => 'assets/gameplay/characters/bf-holding-gf/bf-holding-gf.png',
     'assets/characters/bfAndGF.xml' => 'assets/gameplay/characters/bf-holding-gf/bf-holding-gf.xml',
     'assets/characters/bfChristmas.png' => 'assets/gameplay/characters/bf-christmas/bf-christmas.png',
