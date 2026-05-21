@@ -97,7 +97,67 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
   /**
    * The current state of the Freeplay DJ.
    */
-  public var currentState:FreeplayDJState = Intro;
+  public var currentState(default, set):FreeplayDJState = Custom;
+
+  function set_currentState(value:FreeplayDJState):FreeplayDJState
+  {
+    currentState = value;
+
+    switch (value)
+    {
+      case Intro:
+        playAnimation(INTRO, true);
+
+        timeIdling = 0;
+      case Idle:
+        playAnimation(IDLE, true, false, true);
+      case NewUnlock:
+        if (!hasAnimation(NEWUNLOCK))
+        {
+          currentState = Idle;
+          return value;
+        }
+
+        playAnimation(NEWUNLOCK, true, false, true);
+      case Confirm:
+        playAnimation(CONFIRM, false);
+
+        timeIdling = 0;
+      case FistPumpIntro | FistPump:
+        if (getCurrentAnimation() == FISTPUMP)
+        {
+          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroEndFrame() ?? 0 : playableCharData?.getFistPumpLoopEndFrame() ?? 0;
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
+          {
+            playAnimation(FISTPUMP, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroStartFrame() : playableCharData?.getFistPumpLoopStartFrame());
+          }
+        }
+        else if (getCurrentAnimation() == FISTPUMPLOSS)
+        {
+          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadEndFrame() ?? 0 : playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
+          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
+          {
+            playAnimation(FISTPUMPLOSS, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadStartFrame() : playableCharData?.getFistPumpLoopBadStartFrame());
+          }
+        }
+        else
+        {
+          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
+        }
+
+      case IdleEasterEgg:
+        seenIdleEasterEgg = true;
+        onIdleEasterEgg.dispatch();
+
+        playAnimation(IDLEEASTEREGG, false);
+
+        timeIdling = 0;
+      default:
+        // Do nothing.
+    }
+
+    return value;
+  }
 
   /**
    * A callback activated when the intro animation finishes.
@@ -129,80 +189,13 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     }
   }
 
-  override public function update(elapsed:Float):Void
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    switch (currentState)
+    if (currentState == FreeplayDJState.Idle)
     {
-      case Intro:
-        // Play the intro animation then leave this state immediately.
-        if (getCurrentAnimation() != INTRO)
-        {
-          playAnimation(INTRO, true);
-        }
-
-        timeIdling = 0;
-      case Idle:
-        // We are in this state the majority of the time.
-        if (getCurrentAnimation() != IDLE)
-        {
-          playAnimation(IDLE, true, false, true);
-        }
-
-        timeIdling += elapsed;
-      case NewUnlock:
-        if (!hasAnimation(NEWUNLOCK))
-        {
-          currentState = Idle;
-          return;
-        }
-
-        if (getCurrentAnimation() != NEWUNLOCK)
-        {
-          playAnimation(NEWUNLOCK, true, false, true);
-        }
-      case Confirm:
-        if (getCurrentAnimation() != CONFIRM)
-        {
-          playAnimation(CONFIRM, false);
-        }
-
-        timeIdling = 0;
-      case FistPumpIntro | FistPump:
-        if (getCurrentAnimation() == FISTPUMP)
-        {
-          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroEndFrame() ?? 0 : playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
-          {
-            playAnimation(FISTPUMP, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroStartFrame() : playableCharData?.getFistPumpLoopStartFrame());
-          }
-        }
-        else if (getCurrentAnimation() == FISTPUMPLOSS)
-        {
-          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadEndFrame() ?? 0 : playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
-          {
-            playAnimation(FISTPUMPLOSS, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadStartFrame() : playableCharData?.getFistPumpLoopBadStartFrame());
-          }
-        }
-        else
-        {
-          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
-        }
-
-      case IdleEasterEgg:
-        if (getCurrentAnimation() != IDLEEASTEREGG)
-        {
-          seenIdleEasterEgg = true;
-          onIdleEasterEgg.dispatch();
-
-          playAnimation(IDLEEASTEREGG, false);
-        }
-
-        timeIdling = 0;
-      default:
-        // Do nothing.
+      timeIdling += elapsed;
     }
   }
 
@@ -221,7 +214,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
         }
         onIntroDone.dispatch();
       case IDLE:
-        if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg)
+        if (timeIdling >= IDLE_EGG_PERIOD && !seenIdleEasterEgg && hasAnimation(IDLEEASTEREGG))
         {
           currentState = IdleEasterEgg;
         }

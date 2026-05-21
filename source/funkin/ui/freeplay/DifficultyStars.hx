@@ -18,8 +18,31 @@ class DifficultyStars extends FlxSpriteGroup
    */
   public var difficulty(default, set):Int = 1;
 
+  /**
+   * The `FunkinSprite` that contains the stars animation.
+   */
   public var stars:FunkinSprite;
+
+  /**
+   * The flames that display along with the stars.
+   * Only used when the difficulty is 10 or higher.
+   */
   public var flames:FreeplayFlames;
+
+  var ANIMATION_NAME(get, never):String;
+
+  function get_ANIMATION_NAME():String
+  {
+    @:privateAccess
+    if (stars.__backwardsCompatibility)
+    {
+      return 'diff stars';
+    }
+    else
+    {
+      return 'STARS_ANIM';
+    }
+  }
 
   var hsvShader:HSVShader;
 
@@ -57,7 +80,7 @@ class DifficultyStars extends FlxSpriteGroup
     // 1500 : 0 stars
     if (curDifficulty < 15 && stars.animation.curAnim.curFrame >= (curDifficulty + 1) * 100)
     {
-      stars.animation.play('STARS_ANIM', true, false, curDifficulty * 100);
+      stars.animation.play(ANIMATION_NAME, true, false, curDifficulty * 100);
     }
   }
 
@@ -88,9 +111,14 @@ class DifficultyStars extends FlxSpriteGroup
 
   public function flameCheck():Void
   {
-    if (difficulty > 10) flames.flameCount = difficulty - 10;
+    if (difficulty > 10)
+    {
+      flames.flameCount = difficulty - 10;
+    }
     else
+    {
       flames.flameCount = 0;
+    }
   }
 
   function set_curDifficulty(value:Int):Int
@@ -99,12 +127,12 @@ class DifficultyStars extends FlxSpriteGroup
 
     if (curDifficulty == 15)
     {
-      stars.animation.play('STARS_ANIM', true, false, 1500);
+      stars.animation.play(ANIMATION_NAME, true, false, 1500);
       stars.animation.pause();
     }
     else
     {
-      stars.animation.play('STARS_ANIM', true, false, Std.int(curDifficulty * 100));
+      stars.animation.play(ANIMATION_NAME, true, false, Std.int(curDifficulty * 100));
     }
 
     return curDifficulty;

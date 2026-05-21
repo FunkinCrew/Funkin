@@ -37,6 +37,8 @@ class AnimateAtlasFreeplayDJ extends BaseFreeplayDJ
         resetPosition();
       }
     }
+
+    currentState = Intro;
   }
 
   function loadAnimations():Void

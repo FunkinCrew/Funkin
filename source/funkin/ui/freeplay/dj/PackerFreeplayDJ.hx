@@ -28,6 +28,8 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
 
     loadFrames();
     loadAnimations();
+
+    currentState = Intro;
   }
 
   public function loadFrames():Void
