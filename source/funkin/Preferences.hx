@@ -604,6 +604,25 @@ class Preferences
     return value;
   }
 
+  /**
+   * When disabled, disables shaders during some songs.
+   * @default `true`
+   */
+  public static var shaders(get, set):Bool;
+
+  static function get_shaders():Bool
+  {
+    return Save?.instance?.options?.shaders ?? true;
+  }
+
+  static function set_shaders(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.shaders = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.
