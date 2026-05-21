@@ -1153,6 +1153,12 @@ typedef SaveDataOptions =
   var subtitles:Bool;
 
   /**
+   * If disabled, shaders won't appear.
+   * @default `true`
+   */
+  var shaders:Bool;
+
+  /**
    * If enabled, haptic feedback will be enabled.
    * @default `All`
    */
