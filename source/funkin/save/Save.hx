@@ -105,6 +105,7 @@ class Save implements ConsoleClass
         debugDisplay: 'Off',
         debugDisplayBGOpacity: 50,
         subtitles: true,
+        shaders: true,
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
         autoPause: true,
