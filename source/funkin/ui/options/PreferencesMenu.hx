@@ -159,6 +159,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.subtitles = value;
     }, Preferences.subtitles);
+    createPrefItemCheckbox('Shaders', 'When disabled, disables shaders during some songs.', function(value:Bool):Void
+    {
+      Preferences.shaders = value;
+    }, Preferences.shaders);
     #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
     createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.', [
