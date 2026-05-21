@@ -232,6 +232,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
    * @param loop Whether to loop the animation.
    * @param frame The specific frame to play.
    */
+  @:haxe.warning('-WDeprecated')
   public function playAnimation(id:String, restart:Bool = false, reverse:Bool = false, loop:Bool = false, frame:Int = 0, _runByCompat:Bool = false):Void
   {
     if (animation == null)

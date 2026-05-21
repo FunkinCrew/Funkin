@@ -124,6 +124,8 @@ class Paths
     'assets/charSelect/lock/spritemap1.png' => 'assets/ui/character-select/interface/lock/spritemap1.png',
     'assets/charSelect/locks.png' => 'assets/ui/character-select/interface/locks.png',
     'assets/charSelect/locks.xml' => 'assets/ui/character-select/interface/locks.xml',
+    'assets/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
+    'assets/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/characters/NeneKnifeToss.png' => 'assets/gameplay/characters/nene/nene-knifetoss.png',
     'assets/characters/NeneKnifeToss.xml' => 'assets/gameplay/characters/nene/nene-knifetoss.xml',
     'assets/characters/Nene_comboHeart.png' => 'assets/gameplay/characters/nene-tankmen/nene-combo-heart.png',
@@ -167,8 +169,6 @@ class Paths
     'assets/characters/bf/Animation.json' => 'assets/gameplay/characters/bf/boyfriend/Animation.json',
     'assets/characters/bf/spritemap1.json' => 'assets/gameplay/characters/bf/boyfriend/spritemap1.json',
     'assets/characters/bf/spritemap1.png' => 'assets/gameplay/characters/bf/boyfriend/spritemap1.png',
-    'assets/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
-    'assets/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/characters/bfAndGF.png' => 'assets/gameplay/characters/bf-holding-gf/bf-holding-gf.png',
     'assets/characters/bfAndGF.xml' => 'assets/gameplay/characters/bf-holding-gf/bf-holding-gf.xml',
     'assets/characters/bfChristmas.png' => 'assets/gameplay/characters/bf-christmas/bf-christmas.png',
@@ -671,6 +671,8 @@ class Paths
     'assets/images/charSelect/lock/spritemap1.png' => 'assets/ui/character-select/interface/lock/spritemap1.png',
     'assets/images/charSelect/locks.png' => 'assets/ui/character-select/interface/locks.png',
     'assets/images/charSelect/locks.xml' => 'assets/ui/character-select/interface/locks.xml',
+    'assets/images/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
+    'assets/images/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/images/characters/NeneKnifeToss.png' => 'assets/gameplay/characters/nene/nene-knifetoss.png',
     'assets/images/characters/NeneKnifeToss.xml' => 'assets/gameplay/characters/nene/nene-knifetoss.xml',
     'assets/images/characters/Nene_comboHeart.png' => 'assets/gameplay/characters/nene-tankmen/nene-combo-heart.png',
@@ -1879,6 +1881,8 @@ class Paths
     'assets/shaders/puddle.frag' => 'assets/ui/shaders/puddle.frag',
     'assets/shaders/rain.frag' => 'assets/ui/shaders/rain.frag',
     'assets/shaders/wiggle.frag' => 'assets/ui/shaders/wiggle.frag',
+    'assets/shared/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
+    'assets/shared/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/shared/characters/NeneKnifeToss.png' => 'assets/gameplay/characters/nene/nene-knifetoss.png',
     'assets/shared/characters/NeneKnifeToss.xml' => 'assets/gameplay/characters/nene/nene-knifetoss.xml',
     'assets/shared/characters/Nene_comboHeart.png' => 'assets/gameplay/characters/nene-tankmen/nene-combo-heart.png',
@@ -2064,6 +2068,8 @@ class Paths
     'assets/shared/holdCoverRed.png' => 'assets/gameplay/notestyles/funkin/hold-cover-right.png',
     'assets/shared/holdCoverRed.xml' => 'assets/gameplay/notestyles/funkin/hold-cover-right.xml',
     'assets/shared/images/NOTE_hold_assets.png' => 'assets/gameplay/notestyles/funkin/note-holds.png',
+    'assets/shared/images/characters/BOYFRIEND.png' => 'assets/gameplay/characters/bf/bf.png',
+    'assets/shared/images/characters/BOYFRIEND.xml' => 'assets/gameplay/characters/bf/bf.xml',
     'assets/shared/images/characters/NeneKnifeToss.png' => 'assets/gameplay/characters/nene/nene-knifetoss.png',
     'assets/shared/images/characters/NeneKnifeToss.xml' => 'assets/gameplay/characters/nene/nene-knifetoss.xml',
     'assets/shared/images/characters/Nene_comboHeart.png' => 'assets/gameplay/characters/nene-tankmen/nene-combo-heart.png',
@@ -3490,6 +3496,10 @@ class Paths
    */
   public static function getPath(id:String, library:String = 'default', verbose:Bool = true):String
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Paths.getPath($id)');
+    #end
+
     // Don't use library:path since new Funkin' doesn't use asset libraries.
     var filePath:String = (library == 'default') ? 'assets/$id' : 'assets/$library/$id';
 
@@ -3535,6 +3545,10 @@ class Paths
    */
   static function tryGuessPath(id:String, filePath:String, library:String = 'default'):Null<String>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Paths.tryGuessPath($id)');
+    #end
+
     var result:Null<String> = null;
 
     var usePathIfExists = (path:String) ->

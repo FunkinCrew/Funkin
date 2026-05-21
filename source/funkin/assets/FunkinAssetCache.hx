@@ -374,7 +374,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Flixel graphic not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
+      // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
       var graphic:FlxGraphic = FlxGraphic.fromBitmapData(getBitmapData(id));
       setFlxGraphic(id, graphic);
       return graphic;
@@ -401,7 +401,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
+      // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
       var bitmapData:BitmapData = OpenFLAssets.getBitmapData(id);
       setBitmapData(id, bitmapData);
       return bitmapData;
@@ -428,7 +428,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Font not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Font not cached, may experience stuttering! ${id}');
+      // FlxG.log.warn('Font not cached, may experience stuttering! ${id}');
       var font:Font = OpenFLAssets.getFont(id);
       setFont(id, font);
       return font;
@@ -454,7 +454,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Sound not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Sound not cached, may experience stuttering! ${id}');
+      // FlxG.log.warn('Sound not cached, may experience stuttering! ${id}');
       var sound:Sound = OpenFLAssets.getSound(id);
       setSound(id, sound);
       return sound;
@@ -480,7 +480,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Text not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Text not cached, may experience stuttering! ${id}');
+      // Why is FlxG.log.warn so fucking expensive?
+      // FlxG.log.warn('Text not cached, may experience stuttering! ${id}');
 
       if (!OpenFLAssets.exists(id))
       {
@@ -514,7 +515,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bytes not cached, cannot load synchronously: $id';
       #else
-      FlxG.log.warn('Bytes not cached, may experience stuttering! ${id}');
+      // FlxG.log.warn('Bytes not cached, may experience stuttering! ${id}');
       var bytes:openfl.utils.ByteArray = OpenFLAssets.getBytes(id);
       setBytes(id, bytes);
       return bytes;

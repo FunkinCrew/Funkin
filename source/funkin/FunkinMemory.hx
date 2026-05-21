@@ -138,6 +138,10 @@ class FunkinMemory
   {
     if (permanentCachedTextures.exists(key)) return;
 
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinMemory.permanentCacheTexture($key)');
+    #end
+
     var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
     if (graphic == null)
     {
