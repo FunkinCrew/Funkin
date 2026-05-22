@@ -61,23 +61,32 @@ class PolymodErrorHandler
         // This is an important issue that requires user attention so it can be resolved by the mod developer.
         trace(' WARNING '.warning() + ' Failed to load mod - ${error.message}');
 
-        var regex:EReg = ~/Mod "([-_a-zA-Z0-9]+)" is not compatible with API version "(.*?)", got "(.*?)"/;
-        if (regex.match(error.message))
+        if (error.severity == ERROR)
         {
-          // Notify the user via formatted popup.
-          var modId:String = regex.matched(1);
-          // var apiVersion:String = regex.matched(2);
-          var modVersion:String = regex.matched(3);
+          // ERROR occurs when trying to load a mod that is incompatible with the game version.
 
-          var message:String = 'Installed mod "$modId" was built for modding version "v$modVersion". It is not compatible with game version ${Constants.GENERATED_BY}, and must be skipped.'
-            + '\n\nPlease inform the mod developer that "$modId" must be updated for compatibility.';
+          var regex:EReg = ~/Mod "([-_a-zA-Z0-9]+)" is not compatible with API version "(.*?)", got "(.*?)"/;
+          if (regex.match(error.message))
+          {
+            // Notify the user via formatted popup if we can extract the mod ID and version.
+            var modId:String = regex.matched(1);
+            // var apiVersion:String = regex.matched(2);
+            var modVersion:String = regex.matched(3);
 
-          funkin.util.WindowUtil.showError('Mod Outdated', message);
+            var message:String = 'Installed mod "$modId" was built for modding version "v$modVersion". It is not compatible with game version ${Constants.GENERATED_BY}, and must be skipped.'
+              + '\n\nPlease inform the mod developer that "$modId" must be updated for compatibility.';
+
+            funkin.util.WindowUtil.showError('Mod Outdated', message);
+          }
+          else
+          {
+            // Notify the user via standard popup.
+            funkin.util.WindowUtil.showError('Mod Outdated', error.message);
+          }
         }
         else
         {
-          // Notify the user via standard popup.
-          funkin.util.WindowUtil.showError('Mod Outdated', error.message);
+          // WARNING occurs when scanning for mods, and finding a mod incompatible with the game version.
         }
 
       case MOD_LOAD_FAILED:
