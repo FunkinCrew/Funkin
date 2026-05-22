@@ -5,6 +5,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.ui.debug.cameraeditor.components.EditorContainer;
 import funkin.ui.debug.cameraeditor.components.FocusCameraContainer;
+import funkin.ui.debug.cameraeditor.components.PlayAnimationContainer;
 import funkin.ui.debug.cameraeditor.components.ZoomCameraContainer;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
@@ -18,11 +19,18 @@ import haxe.ui.core.Component;
  *   1. Create a new container under `components/` extending `BaseEventContainer`
  *      (recommended — inherits `cameraEditorState`, `updateCameraPreview()`,
  *      `updateBlockVisuals()`, the ease-preview teardown hook, and the
- *      `bindFloatField` / `loadFloatField` helpers). The constructor must
- *      accept `(state:CameraEditorState)`; `loadCurrentEventData()` is
- *      abstract on the base. Override `getEasePreview()` to return your
- *      ease preview so the base can call `cleanup()` on destroy.
+ *      `bind/loadFloatField` / `bind/loadStringField` / `bind/loadBoolField`
+ *      helpers). The constructor must accept `(state:CameraEditorState)`;
+ *      `loadCurrentEventData()` is abstract on the base. Override
+ *      `getEasePreview()` to return your ease preview so the base can call
+ *      `cleanup()` on destroy (omit the override entirely if your event has
+ *      no ease/duration — the base's `null` default short-circuits the
+ *      cleanup, as in `PlayAnimationContainer`).
  *   2. Add one line to `initialize()`: `registerContainer('YourKind', YourContainer);`
+ *
+ * Reference implementations:
+ *   - `FocusCameraContainer` / `ZoomCameraContainer` — Float fields + ease preview.
+ *   - `PlayAnimationContainer` — String / Bool fields, no ease, no duration.
  *
  * Containers with no shared concerns can also implement `EditorContainer`
  * directly, but most camera-event kinds want the `BaseEventContainer` plumbing.
@@ -49,6 +57,7 @@ class CameraEditorPropertiesPanelHandler
   {
     registerContainer('FocusCamera', FocusCameraContainer);
     registerContainer('ZoomCamera', ZoomCameraContainer);
+    registerContainer('PlayAnimation', PlayAnimationContainer);
   }
 
   /**
