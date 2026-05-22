@@ -19,9 +19,9 @@ class PlayAnimationSongEvent extends SongEvent
     super('PlayAnimation');
   }
 
-  static final DEFAULT_TARGET:String = 'boyfriend';
-  static final DEFAULT_ANIM:String = 'idle';
-  static final DEFAULT_FORCE:Bool = false;
+  public static final DEFAULT_TARGET:String = 'boyfriend';
+  public static final DEFAULT_ANIM:String = 'idle';
+  public static final DEFAULT_FORCE:Bool = false;
 
   override public function handleEvent(data:SongEventData):Void
   {
