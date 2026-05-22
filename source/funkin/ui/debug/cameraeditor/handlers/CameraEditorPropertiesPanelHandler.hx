@@ -15,10 +15,17 @@ import haxe.ui.core.Component;
  * Uses a `Map<String, Class<EditorContainer>>` registry to dispatch from
  * `SongEventData.eventKind` to the matching properties container. To add a
  * new event-kind editor:
- *   1. Create a new `EditorContainer` implementation under `components/` with
- *      a `new(state:CameraEditorState)` constructor and a `loadCurrentEventData()`
- *      method.
+ *   1. Create a new container under `components/` extending `BaseEventContainer`
+ *      (recommended — inherits `cameraEditorState`, `updateCameraPreview()`,
+ *      `updateBlockVisuals()`, the ease-preview teardown hook, and the
+ *      `bindFloatField` / `loadFloatField` helpers). The constructor must
+ *      accept `(state:CameraEditorState)`; `loadCurrentEventData()` is
+ *      abstract on the base. Override `getEasePreview()` to return your
+ *      ease preview so the base can call `cleanup()` on destroy.
  *   2. Add one line to `initialize()`: `registerContainer('YourKind', YourContainer);`
+ *
+ * Containers with no shared concerns can also implement `EditorContainer`
+ * directly, but most camera-event kinds want the `BaseEventContainer` plumbing.
  *
  * The `using` statement in `import.hx` allows you to call these functions on the CameraEditorState instance directly.
  */

@@ -2,42 +2,31 @@ package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.play.event.ZoomCameraSongEvent;
-import haxe.ui.containers.VBox;
+import funkin.ui.haxeui.components.editors.camera.EaseGraphPreview;
 import haxe.ui.events.UIEvent;
 
 /**
  * The contents of the Properties panel, while a Zoom Camera event is selected.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/camera-editor/components/properties/zoom-camera.xml"))
-class ZoomCameraContainer extends VBox implements EditorContainer
+@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/components/properties/zoom-camera.xml'))
+class ZoomCameraContainer extends BaseEventContainer
 {
-  /**
-   * The Camera Editor state associated with this container.
-   */
-  public var cameraEditorState:CameraEditorState;
-
   public function new(state:CameraEditorState)
   {
-    super();
-    cameraEditorState = state;
-    zoomCameraEasePreview.event = cameraEditorState.selectedSongEvent;
+    super(state);
+    zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
+
+    bindFloatField(zoomCameraDuration, 'duration');
+
+    zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+      updateCameraPreview();
+      updateBlockVisuals();
+    });
   }
 
-  @:bind(zoomCameraEasePreview, UIEvent.CHANGE)
-  function onChange_zoomCameraEasePreview(_):Void
+  override function getEasePreview():Null<EaseGraphPreview>
   {
-    updateCameraPreview();
-    updateBlockVisuals();
-  }
-
-  function updateCameraPreview():Void
-  {
-    cameraEditorState.replayCameraTimeline(cameraEditorState.conductorInUse.songPosition);
-  }
-
-  function updateBlockVisuals():Void
-  {
-    cameraEditorState.timeline.viewport.refreshBlockVisuals(true);
+    return zoomCameraEaseFrame.easeGraphPreview;
   }
 
   /**
@@ -57,9 +46,9 @@ class ZoomCameraContainer extends VBox implements EditorContainer
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
     zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
-    zoomCameraDuration.value = cameraEditorState.selectedSongEvent.getFloat('duration') ?? ZoomCameraSongEvent.DEFAULT_DURATION;
+    loadFloatField(zoomCameraDuration, 'duration', ZoomCameraSongEvent.DEFAULT_DURATION);
 
-    zoomCameraEasePreview.event = cameraEditorState.selectedSongEvent;
+    zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
     updateCameraPreview();
     updateBlockVisuals();
   }
@@ -124,23 +113,5 @@ class ZoomCameraContainer extends VBox implements EditorContainer
     updateCameraPreview();
   }
 
-  /**
-   * Called when the Zoom Camera Duration field is changed.
-   */
-  @:bind(zoomCameraDuration, UIEvent.CHANGE)
-  function onChange_zoomCameraDuration(_):Void
-  {
-    var value:Float = zoomCameraDuration.value;
-
-    cameraEditorState.selectedSongEvent.set('duration', value);
-    updateCameraPreview();
-    updateBlockVisuals();
-  }
-
-  override public function destroy():Void
-  {
-    super.destroy();
-    zoomCameraEasePreview.cleanup();
-  }
 }
 #end
