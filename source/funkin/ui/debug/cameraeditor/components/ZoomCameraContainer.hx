@@ -34,6 +34,8 @@ class ZoomCameraContainer extends BaseEventContainer
    */
   public function loadCurrentEventData():Void
   {
+    if (cameraEditorState.selectedSongEvent == null) return;
+
     var modeType:String = cameraEditorState.selectedSongEvent.getString('mode') ?? ZoomCameraSongEvent.DEFAULT_MODE;
     if (modeType == 'stage')
     {
@@ -61,8 +63,6 @@ class ZoomCameraContainer extends BaseEventContainer
   {
     var value:Float = zoomCameraZoomLevel.value;
 
-    trace('Zoom Camera: Zoom Level changed to ' + value);
-
     if (zoomCameraZoomLevelSlider != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
     {
       zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
@@ -79,8 +79,6 @@ class ZoomCameraContainer extends BaseEventContainer
   function onChange_zoomCameraZoomLevelSlider(_):Void
   {
     var value:Float = zoomCameraZoomLevelSlider.value;
-
-    trace('Zoom Camera: Zoom Level changed to ' + value);
 
     if (zoomCameraZoomLevel != null && zoomCameraZoomLevel.value != zoomCameraZoomLevelSlider.value)
     {
@@ -106,8 +104,6 @@ class ZoomCameraContainer extends BaseEventContainer
     var index:Int = zoomCameraMode.selectedIndex;
     var value:String = 'stage';
     if (index == 1) value = 'direct';
-
-    trace('Zoom Camera: Mode changed to ' + value);
 
     cameraEditorState.selectedSongEvent.set('mode', value);
     updateCameraPreview();
