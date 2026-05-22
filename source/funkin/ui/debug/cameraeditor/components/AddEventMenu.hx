@@ -23,9 +23,25 @@ class AddEventMenu
   static final ICON_SIZE:Float = 16;
   static final ICON_PATH:String = 'shared:assets/shared/images/ui/camera-editor/event-icons/';
   static final EVENT_ITEMS:Array<
-    {kind:String, label:String, icon:String}> = [
-    {kind: 'FocusCamera', label: 'Focus Camera', icon: 'focus_event.png'},
-    {kind: 'ZoomCamera', label: 'Zoom Camera', icon: 'zoom_event.png'},
+    {kind:String, label:String, icon:String, submenu:String}> = [
+    {
+      kind: 'FocusCamera',
+      label: 'Focus Camera',
+      icon: 'focus_event.png',
+      submenu: 'Camera'
+    },
+    {
+      kind: 'ZoomCamera',
+      label: 'Zoom Camera',
+      icon: 'zoom_event.png',
+      submenu: 'Camera'
+    },
+    {
+      kind: 'PlayAnimation',
+      label: 'Play Animation',
+      icon: 'playanim_event.png',
+      submenu: 'Character'
+    },
   ];
 
   var menu:Null<Menu> = null;
@@ -51,12 +67,21 @@ class AddEventMenu
     header.shortcutText = 'Shift+A';
     header.disabled = true;
 
-    var cameraSubmenu = new Menu();
-    cameraSubmenu.text = 'Camera';
-    cameraSubmenu.width = MENU_WIDTH;
+    var submenus:Map<String, Menu> = new Map();
+    var submenuOrder:Array<String> = [];
 
     for (info in EVENT_ITEMS)
     {
+      var submenu:Null<Menu> = submenus.get(info.submenu);
+      if (submenu == null)
+      {
+        submenu = new Menu();
+        submenu.text = info.submenu;
+        submenu.width = MENU_WIDTH;
+        submenus.set(info.submenu, submenu);
+        submenuOrder.push(info.submenu);
+      }
+
       var item = new MenuItem();
       item.text = info.label;
       item.id = info.kind;
@@ -69,14 +94,17 @@ class AddEventMenu
       icon.height = ICON_SIZE;
       item.addComponentAt(icon, 0);
 
-      cameraSubmenu.addComponent(item);
+      submenu.addComponent(item);
     }
 
     menu = new Menu();
     menu.width = MENU_WIDTH;
     menu.addComponent(header);
     menu.addComponent(new MenuSeparator());
-    menu.addComponent(cameraSubmenu);
+    for (submenuName in submenuOrder)
+    {
+      menu.addComponent(submenus.get(submenuName));
+    }
 
     menu.registerEvent(MenuEvent.MENU_SELECTED, onMenuSelected);
     menu.registerEvent(UIEvent.CLOSE, function(_) { menu = null; });
