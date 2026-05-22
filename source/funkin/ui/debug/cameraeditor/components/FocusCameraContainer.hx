@@ -38,11 +38,12 @@ class FocusCameraContainer extends BaseEventContainer
    */
   public function loadCurrentEventData():Void
   {
+    if (cameraEditorState.selectedSongEvent == null) return;
+
     var eventTarget:Int = cameraEditorState.selectedSongEvent.getInt('char') ?? FocusCameraSongEvent.DEFAULT_TARGET;
     focusCameraTarget.selectItemBy(function(data):Bool
     {
       var dataId:Int = Std.parseInt(data.id);
-      trace('${dataId} == ${eventTarget}');
       return dataId == eventTarget;
     });
 
