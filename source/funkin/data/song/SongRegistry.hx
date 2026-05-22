@@ -32,6 +32,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
   public var scriptedSongVariations:Map<String, Song> = new Map<String, Song>();
 
+  public var unscriptedSongVariations:Map<String, Song> = new Map<String, Song>();
+
   static function get_DEFAULT_GENERATEDBY():String
   {
     return '${Constants.TITLE} - ${Constants.VERSION}';
@@ -85,10 +87,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     // UNSCRIPTED ENTRIES
     //
     var entryIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds('gameplay/songs/', '-metadata', true);
-    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) ->
-    {
-      return !entries.exists(entryId);
-    });
+    var unscriptedEntryIds:Array<String> = entryIdList;
     log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
     for (entryId in unscriptedEntryIds)
     {
@@ -97,9 +96,20 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
         var entry:Null<Song> = createEntry(entryId);
         if (entry != null)
         {
-          log('Loaded entry data: ${entry}');
-          entries.set(entry.id, entry);
-        }
+          for(variation in entry.variations)
+          {
+            if(variation != Constants.DEFAULT_VARIATION && !scriptedSongVariations.exists('${entryId}:${variation}'))
+            {
+              log('Loaded entry data: ${entryId}, ${variation}');
+              unscriptedSongVariations.set('${entryId}:${variation}', entry);
+            } 
+            else if(!entries.exists(entryId))
+            {
+              log('Loaded entry data: ${entry}');
+              entries.set(entryId, entry);
+            }
+          }
+        } 
       }
       catch (e:Dynamic)
       {
@@ -165,6 +175,14 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
         if (variationSongScript != null)
         {
           return variationSongScript;
+        }
+      }
+      else if(unscriptedSongVariations.exists('${id}:${variation}'))
+      {
+        var variationSong:Null<Song> = unscriptedSongVariations.get('${id}:${variation}');
+        if (variationSong != null)
+        {
+          return variationSong;
         }
       }
     }
