@@ -27,6 +27,11 @@ class NoteKind implements INoteScriptedClass
    * Whether or not the sing animation should play.
    */
   public var noanim:Bool;
+  
+  /**
+   * Whether or not the miss animation should play.
+   */
+  public var nomissanim:Bool;
 
   /**
    * The animation suffix to use.
@@ -52,6 +57,7 @@ class NoteKind implements INoteScriptedClass
     this.noteStyleId = noteStyleId;
     this.params = params ?? [];
     this.noanim = noanim ?? false;
+    this.nomissanim = noanim ?? false;
     this.suffix = suffix ?? '';
   }
 
