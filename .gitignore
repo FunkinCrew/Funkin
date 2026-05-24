@@ -17,6 +17,14 @@ NewgroundsCredentials.hx
 .idea/
 *.iml
 
+# Dox output and types
+docs/dox/output
+docs/dox/Windows.xml
+docs/dox/Mac.xml
+docs/dox/iOS.xml
+docs/dox/Linux.xml
+docs/dox/Android.xml
+
 # Mobile signing stuff
 .apple/
 .env

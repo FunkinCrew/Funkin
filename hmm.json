@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "2f984e244f1544ca98c0e03b9b21ae570f07ac55",
+      "ref": "13a0949395250216b9b500ca0731b46841e46085",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -25,6 +25,11 @@
       "name": "extension-androidtools",
       "type": "haxelib",
       "version": "2.2.2"
+    },
+    {
+      "name": "dox",
+      "type": "haxelib",
+      "version": "1.6.0"
     },
     {
       "name": "extension-haptics",
@@ -179,7 +184,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "64baef6b8ed16da455530326f8e8d6d0ce6f7e3a",
+      "ref": "00c825f7bd066092f3c417a921b618f004e4b323",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -193,7 +198,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "b5565adc75511b3e4c8b384ee25ce7401b11ef32",
+      "ref": "912a486693c092eb1dc4ee1ef223d4470cab95ae",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {

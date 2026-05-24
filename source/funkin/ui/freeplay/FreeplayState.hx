@@ -1167,11 +1167,11 @@ class FreeplayState extends MusicBeatSubState
 
     new FlxTimer().start(0.1, _ ->
     {
+      capsuleToRank.fakeRanking.visible = false;
+      capsuleToRank.fakeBlurredRanking.visible = false;
+
       if (fromResults?.oldRank != null)
       {
-        capsuleToRank.fakeRanking.visible = false;
-        capsuleToRank.fakeBlurredRanking.visible = false;
-
         sparks.visible = true;
         sparksADD.visible = true;
         sparks.animation.play('sparks', true);
@@ -2296,7 +2296,7 @@ class FreeplayState extends MusicBeatSubState
           // Continue playing this music between states, until a different music track gets played.
           persist: true
         });
-        FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+        if (FlxG.sound.music != null) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
         dispatchEvent(new FreeplayScriptEvent(FREEPLAY_CLOSE));
         close();
       }

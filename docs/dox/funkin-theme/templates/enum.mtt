@@ -1,0 +1,26 @@
+::use 'main.mtt'::
+	<div class="page-header">
+		<span ::cond api.hasSourceLink(type):: class="viewsource">
+			<a href="::api.getSourceLink(type)::" class="btn btn-medium"><i class="fa fa-eye"></i> View source</a>
+		</span>
+		<h1><small>enum</small> ::api.getPathName(type.path)::$$printTypeParams(::type.params::)</h1>
+		$$printPackage(::type::)
+		$$printModule(::type.module::)
+		$$printMeta(::type::)
+		$$printDeprecation(::type::)
+		$$printPlatforms(::type.platforms::,::true::)
+	</div>
+	<div class="body">
+		<div class="doc doc-main" ::cond type.doc != null::>
+			::raw type.doc::
+		</div>
+		::if type.constructors.length > 0::
+			<h3 class="section">Values</h3>
+			<div class="fields">
+				::foreach ctor type.constructors::
+					::use "enum_field.mtt"::::end::
+				::end::
+			</div>
+		::end::
+	</div>
+::end::
