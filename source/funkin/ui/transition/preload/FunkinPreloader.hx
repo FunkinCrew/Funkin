@@ -264,6 +264,8 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   var lastElapsed:Float = 0.0;
+  var lastLoggedPercent:Int = -1;
+  var lastLoggedState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
 
   override function update(percent:Float):Void
   {
@@ -875,9 +877,12 @@ class FunkinPreloader extends FlxBasePreloader
     var percentage:Int = Math.floor(percent * 100);
     progressRightText.text = '$percentage%';
 
-    if (currentState.getProgressLeftText() != null)
+    // Only log when the state or percentage changes, so we don't spam the same line every frame (e.g. while pinned at 100% during fade-out).
+    if (currentState.getProgressLeftText() != null && (currentState != lastLoggedState || percentage != lastLoggedPercent))
     {
       trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, ${FlxMath.roundDecimal(elapsed, 2)} sec)');
+      lastLoggedState = currentState;
+      lastLoggedPercent = percentage;
     }
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
