@@ -6,6 +6,7 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.Lib;
+import flixel.math.FlxMath;
 import flixel.system.FlxBasePreloader;
 import funkin.util.MathUtil;
 import openfl.display.Sprite;
@@ -876,7 +877,7 @@ class FunkinPreloader extends FlxBasePreloader
 
     if (currentState.getProgressLeftText() != null)
     {
-      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
+      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, ${FlxMath.roundDecimal(elapsed, 2)} sec)');
     }
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
