@@ -296,17 +296,19 @@ class SongOffsets implements ICloneable<SongOffsets>
 
   public function getVocalOffset(charId:String, ?instrumental:String):Float
   {
-    if (instrumental == null)
+    if (instrumental == null || instrumental == '')
     {
       if (!this.vocals.exists(charId)) return 0.0;
       return this.vocals.get(charId);
     }
-    else
+
+    if (this.altVocals.exists(instrumental) && this.altVocals.get(instrumental).exists(charId))
     {
-      if (!this.altVocals.exists(instrumental)) return 0.0;
-      if (!this.altVocals.get(instrumental).exists(charId)) return 0.0;
       return this.altVocals.get(instrumental).get(charId);
     }
+
+    if (this.vocals.exists(charId)) return this.vocals.get(charId);
+    return 0.0;
   }
 
   public function setVocalOffset(charId:String, value:Float):Float
