@@ -277,7 +277,6 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   function set_pitch(val:Float):Float
   {
     #if FLX_PITCH
-    trace('Setting audio pitch to ' + val);
     forEachAlive(function(snd:FunkinSound)
     {
       snd.pitch = val;
