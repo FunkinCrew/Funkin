@@ -37,6 +37,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   var menuCamera:FlxCamera;
   var hudCamera:FlxCamera;
   var camFollow:FlxObject;
+  var colorblindStrengthItem:Null<NumberPreferenceItem>;
 
   public function new()
   {
@@ -151,6 +152,28 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       {
         Preferences.flashingLights = value;
       }, Preferences.flashingLights);
+    createPrefItemEnum('Color Assist Mode', 'Adjust game colors for a color vision deficiency.', [
+      "Off" => funkin.util.ColorblindFilter.ColorblindMode.OFF,
+      "Protan" => funkin.util.ColorblindFilter.ColorblindMode.PROTAN,
+      "Deutan" => funkin.util.ColorblindFilter.ColorblindMode.DEUTAN,
+      "Tritan" => funkin.util.ColorblindFilter.ColorblindMode.TRITAN,
+    ], function(key:String, value:funkin.util.ColorblindFilter.ColorblindMode):Void
+    {
+      Preferences.colorblindMode = value;
+      syncColorblindStrengthAvailability();
+    }, switch (Preferences.colorblindMode)
+      {
+        case funkin.util.ColorblindFilter.ColorblindMode.PROTAN: "Protan";
+        case funkin.util.ColorblindFilter.ColorblindMode.DEUTAN: "Deutan";
+        case funkin.util.ColorblindFilter.ColorblindMode.TRITAN: "Tritan";
+        default: "Off";
+      });
+    colorblindStrengthItem = createPrefItemNumber('Color Assist Strength', 'How strongly the color assist is applied on a scale of 1-10.',
+      function(value:Float):Void
+    {
+      Preferences.colorblindStrength = Std.int(value);
+    }, null, Preferences.colorblindStrength, funkin.util.ColorblindFilter.STRENGTH_MIN, funkin.util.ColorblindFilter.STRENGTH_MAX, 1, 0);
+    syncColorblindStrengthAvailability();
     createPrefItemCheckbox('Camera Zooms', 'When enabled, the camera bounces during songs.', function(value:Bool):Void
     {
       Preferences.zoomCamera = value;
@@ -315,13 +338,14 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
   function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float,
-      max:Float, step:Float = 0.1, precision:Int):Void
+      max:Float, step:Float = 0.1, precision:Int):NumberPreferenceItem
   {
     var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
       precision, onChange, valueFormatter);
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+    return item;
   }
 
   /**
@@ -360,6 +384,22 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     preferenceDesc.push(prefDesc);
+  }
+
+  function syncColorblindStrengthAvailability():Void
+  {
+    if (colorblindStrengthItem == null) return;
+
+    final available:Bool = Preferences.colorblindMode != funkin.util.ColorblindFilter.ColorblindMode.OFF;
+    colorblindStrengthItem.available = available;
+    colorblindStrengthItem.lefthandText.alpha = available ? 1.0 : 0.35;
+    colorblindStrengthItem.atlasText.alpha = available ? colorblindStrengthItem.alpha : 0.35;
+
+    if (!available && items.selectedItem == colorblindStrengthItem)
+    {
+      final nextIndex:Int = items.selectedIndex + 1 < items.length ? items.selectedIndex + 1 : items.selectedIndex - 1;
+      if (nextIndex >= 0) items.selectItem(nextIndex);
+    }
   }
 
   override function exit():Void

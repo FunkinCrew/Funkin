@@ -107,6 +107,8 @@ class Save implements ConsoleClass
         subtitles: true,
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
+        colorblindMode: 'Off',
+        colorblindStrength: 10,
         autoPause: true,
         vsyncMode: 'Off',
         strumlineBackgroundOpacity: 0,
@@ -1162,6 +1164,19 @@ typedef SaveDataOptions =
    * @default `1`
    */
   var hapticsIntensityMultiplier:Float;
+
+  /**
+   * Color assist filter applied over the game display.
+   * One of 'Off', 'Protan', 'Deutan', 'Tritan'.
+   * @default `Off`
+   */
+  var ?colorblindMode:String;
+
+  /**
+   * How strongly the color assist correction is applied, 1 (light) to 10 (full).
+   * @default `10`
+   */
+  var ?colorblindStrength:Int;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
