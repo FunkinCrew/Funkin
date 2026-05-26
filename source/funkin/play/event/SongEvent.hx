@@ -16,7 +16,15 @@ typedef SongEventParams =
    * If `true`, the song event will be handled and executed, even if it is old.
    * @default `false`
    */
-  ?processOldEvents:Bool
+  ?processOldEvents:Bool,
+  /**
+   * An offset to apply to each event's timestamp when activating, in milliseconds.
+   */
+  ?activationOffsetMs:Float,
+  /**
+   * An offset to apply to each event's timestamp when activating, in steps.
+   */
+  ?activationOffsetSteps:Float,
 }
 
 /**
@@ -24,6 +32,7 @@ typedef SongEventParams =
  * It is used by the ScriptedSongEvent class to handle user-defined events,
  * and also used by other classes in this package to provide default behavior for built-in events.
  */
+@:nullSafety
 class SongEvent implements IPlayStateScriptedClass
 {
   /**
@@ -52,11 +61,25 @@ class SongEvent implements IPlayStateScriptedClass
    */
   public var processOldEvents:Bool = false;
 
+  /**
+   * If not `0`, the offset to apply to each timestamp, in milliseconds.
+   * For example, `-1000` will activate `handleEvent()` 1 second earlier than it appears in the chart.
+   */
+  public var activationOffsetMs:Float = 0.0;
+
+  /**
+   * If not `0`, the offset to apply to each timestamp, in BPM-dependant steps.
+   * For example, `-16` will activate `handleEvent()` 1 measure earlier than it appears in the chart (at 4/4 signature).
+   */
+  public var activationOffsetSteps:Float = 0.0;
+
   public function new(id:String, ?params:SongEventParams)
   {
     this.id = id;
 
     this.processOldEvents = params?.processOldEvents ?? false;
+    this.activationOffsetMs = params?.activationOffsetMs ?? 0.0;
+    this.activationOffsetSteps = params?.activationOffsetSteps ?? 0.0;
   }
 
   /**
@@ -69,10 +92,32 @@ class SongEvent implements IPlayStateScriptedClass
   }
 
   /**
-   * Retrieves the chart editor schema for this song event type.
-   * @return The schema, or null if this event type does not have a schema.
+   * Determine the timestamp at which `handleEvent()` should be called for the given event data.
+   *
+   * @param data The event data to calculate the timestamp for.
+   * @param conductor The conductor to use for BPM calculations.
+   * @return The calculated timestamp, in milliseconds.
    */
-  public function getEventSchema():SongEventSchema
+  public function calculateActivationTime(data:SongEventData, conductor:Conductor):Float
+  {
+    // Add offset in steps
+    var tsSteps:Float = data.getStepTime(conductor);
+    var tsOffsetSteps:Float = tsSteps + this.activationOffsetSteps;
+
+    // Add offset in milliseconds
+    var tsOffsetMs:Float = conductor.getStepTimeInMs(tsOffsetSteps);
+    var result:Float = tsOffsetMs + this.activationOffsetMs;
+
+    return result;
+  }
+
+  /**
+   * Retrieves the Chart Editor schema for this song event type.
+   * Used to build the form on the event properties panel.
+   *
+   * @return The schema, or `null` if this event type does not have a schema.
+   */
+  public function getEventSchema():Null<SongEventSchema>
   {
     return null;
   }

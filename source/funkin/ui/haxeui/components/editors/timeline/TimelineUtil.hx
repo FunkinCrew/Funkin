@@ -37,6 +37,9 @@ class TimelineUtil
 
   public static function getEventDurationSteps(event:SongEventData):Float
   {
+    // TODO: This could probably be a function of `funkin.play.event.SongEvent` instead,
+    // where you can override the `getDuration()` function to provide custom logic.
+
     if (isFixedDuration(event))
     {
       return event.eventKind == "ZoomCamera" ? ZoomCameraSongEvent.DEFAULT_DURATION : FocusCameraSongEvent.DEFAULT_DURATION;

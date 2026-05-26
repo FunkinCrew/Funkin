@@ -4,6 +4,8 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
 /**
  * Represents a reversible action to automatically generate camera events based on the chart data.
@@ -50,12 +52,7 @@ class GenerateEventsCommand implements CameraEditorCommand
       state.currentSongChartData.events.push(event);
     }
 
-    state.currentSongChartData.events.sort(function(a:SongEventData, b:SongEventData):Int
-    {
-      if (a.time < b.time) return -1;
-      if (a.time > b.time) return 1;
-      return 0;
-    });
+    state.currentSongChartData.events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
 
     FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
 
