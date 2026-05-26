@@ -171,8 +171,9 @@ class WindowUtil
    */
   public static function showPolymodError(name:String, desc:String):Void
   {
-    var selected = lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name, ["Ignore", "Reload"]);
-    if (selected == 1) funkin.modding.PolymodHandler.forceReloadAssets();
+    if (funkin.modding.PolymodHandler.shouldReload) return;
+    var selected:Int = lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name, ["Ignore", "Reload"]);
+    if (selected == 1) funkin.modding.PolymodHandler.shouldReload = true;
   }
 
   /**
