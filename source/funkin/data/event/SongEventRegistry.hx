@@ -25,8 +25,11 @@ class SongEventRegistry
    * Map of internal handlers for song events.
    * These may be either `ScriptedSongEvents` or built-in classes extending `SongEvent`.
    */
-  static final eventCache:Map<String, SongEvent> = new Map<String, SongEvent>();
+  static final EVENT_CACHE:Map<String, SongEvent> = new Map<String, SongEvent>();
 
+  /**
+   * Instantiate the singleton instances of every song event handler class.
+   */
   public static function loadEventCache():Void
   {
     clearEventCache();
@@ -51,7 +54,7 @@ class SongEventRegistry
       if (event != null)
       {
         trace(' Loaded built-in song event: ${event.id}');
-        eventCache.set(event.id, event);
+        EVENT_CACHE.set(event.id, event);
       }
       else
       {
@@ -73,7 +76,7 @@ class SongEventRegistry
       if (event != null)
       {
         trace(' Loaded scripted song event: ${event.id}');
-        eventCache.set(event.id, event);
+        EVENT_CACHE.set(event.id, event);
       }
       else
       {
@@ -82,21 +85,40 @@ class SongEventRegistry
     }
   }
 
+  /**
+   * @return A list of IDs for every song event handler class.
+   */
   public static function listEventIds():Array<String>
   {
-    return eventCache.keys().array();
+    return EVENT_CACHE.keys().array();
   }
 
+  /**
+   * @return A list of every song event handler class singleton.
+   */
   public static function listEvents():Array<SongEvent>
   {
-    return eventCache.values();
+    return EVENT_CACHE.values();
   }
 
+  /**
+   * Retrieve the song event handler singleton instance, based on the given ID.
+   *
+   * @param id The ID of the event handler to retrieve.
+   * @return The song event handler instance, or `null` if none exists for that type.
+   */
   public static function getEvent(id:String):Null<SongEvent>
   {
-    return eventCache.get(id);
+    return EVENT_CACHE.get(id);
   }
 
+  /**
+   * Retrieve the song event schema, based on the ID.
+   * The schema provides data to build the form for the event panel in the chart editor.
+   *
+   * @param id The ID of the event to retrieve the schema for.
+   * @return The song event schema data.
+   */
   public static function getEventSchema(id:String):Null<SongEventSchema>
   {
     var event:Null<SongEvent> = getEvent(id);
@@ -105,11 +127,16 @@ class SongEventRegistry
     return event.getEventSchema();
   }
 
-  static function clearEventCache()
+  static function clearEventCache():Void
   {
-    eventCache.clear();
+    EVENT_CACHE.clear();
   }
 
+  /**
+   * Activate the song event handler for the provided event.
+   *
+   * @param data The song event to process.
+   */
   public static function handleEvent(data:SongEventData):Void
   {
     var eventHandler:Null<SongEvent> = getEvent(data.eventKind);
@@ -126,6 +153,11 @@ class SongEventRegistry
     data.activated = true;
   }
 
+  /**
+   * Activate the song event handler for all the provided events.
+   *
+   * @param events The list of song events to process.
+   */
   public static inline function handleEvents(events:Array<SongEventData>):Void
   {
     for (event in events)
@@ -155,17 +187,19 @@ class SongEventRegistry
 
     var result:Array<SongEventData> = [];
 
-    for (i in startIndex...events.length)
+    for (index => event in events)
     {
-      if (events[i].activated) continue;
+      if (event.activated) continue;
 
-      if (events[i].time > currentTime)
+      var activationTime:Float = event.getActivationTime();
+
+      if (activationTime > currentTime)
       {
-        nextEventIndex = i;
+        nextEventIndex = index;
         return result;
       }
 
-      result.push(events[i]);
+      result.push(event);
     }
 
     return result;
@@ -175,19 +209,24 @@ class SongEventRegistry
    * The currentTime has jumped far ahead or back.
    * If we moved back in time, we need to reset all the events in that space.
    * If we moved forward in time, we need to skip all the events in that space.
+   *
+   * @param events The list of song events to process.
+   * @param currentTime The new conductor timestamp, in milliseconds.
    */
   public static function handleSkippedEvents(events:Array<SongEventData>, currentTime:Float):Void
   {
     for (event in events)
     {
+      var activationTime:Float = event.getActivationTime();
+
       // Deactivate future events.
-      if (event.time > currentTime)
+      if (activationTime > currentTime)
       {
         event.activated = false;
       }
 
       // Skip past events.
-      if (event.time < currentTime)
+      if (activationTime < currentTime)
       {
         event.activated = true;
       }
@@ -196,10 +235,14 @@ class SongEventRegistry
 
   /**
    * Reset activation of all the provided events.
+   * This is useful when restarting a song.
+   *
+   * @param events The list of events to reset.
    */
   public static function resetEvents(events:Array<SongEventData>):Void
   {
-    events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+    // Ensure each
+    events.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
     nextEventIndex = 0;
     allEventHandlers.resize(0);
 
@@ -208,12 +251,18 @@ class SongEventRegistry
       event.activated = false;
 
       var handler:Null<SongEvent> = getEvent(event.eventKind);
-      if (handler != null && !allEventHandlers.contains(handler)) allEventHandlers.push(handler);
+      if (handler != null) allEventHandlers.pushUnique(handler);
     }
   }
 
   static var allEventHandlers:Array<SongEvent> = [];
 
+  /**
+   * Dispatch script events to every Song Event handler associated with events in the current song.
+   * This means that `onUpdate`, `onBeatHit`, `onStepHit`, and more will be called for every `SongEvent` handler class.
+   *
+   * @param scriptEvent The script event to dispatch.
+   */
   public static inline function callEvent(scriptEvent:ScriptEvent):Void
   {
     for (event in allEventHandlers)
