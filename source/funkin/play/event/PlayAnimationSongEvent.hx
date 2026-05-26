@@ -11,6 +11,7 @@ import funkin.data.event.SongEventSchema.SongEventFieldType;
 /**
  * This class handles song events which force a specific character or stage prop to play an animation.
  */
+@:nullSafety
 class PlayAnimationSongEvent extends SongEvent
 {
   public function new()
@@ -27,34 +28,9 @@ class PlayAnimationSongEvent extends SongEvent
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
 
-    var targetName:Null<String> = data.getString('target');
-    if (targetName == null) targetName = DEFAULT_TARGET;
-
-    var anim = data.getString('anim');
-    if (anim == null) anim = DEFAULT_ANIM;
-
-    var force = data.getBool('force');
-    if (force == null) force = DEFAULT_FORCE;
-
-    var target:FlxSprite = null;
-
-    switch (targetName)
-    {
-      case 'boyfriend' | 'bf' | 'player':
-        trace('Playing animation $anim on boyfriend.');
-        target = PlayState.instance.currentStage.getBoyfriend();
-      case 'dad' | 'opponent':
-        trace('Playing animation $anim on dad.');
-        target = PlayState.instance.currentStage.getDad();
-      case 'girlfriend' | 'gf':
-        trace('Playing animation $anim on girlfriend.');
-        target = PlayState.instance.currentStage.getGirlfriend();
-      default:
-        target = PlayState.instance.currentStage.getNamedProp(targetName);
-        if (target == null) trace('Unknown animation target: $targetName');
-        else
-          trace('Fetched animation target $targetName from stage.');
-    }
+    var anim:String = data.getString('anim') ?? DEFAULT_ANIM;
+    var force:Bool = data.getBool('force') ?? DEFAULT_FORCE;
+    var target:Null<FlxSprite> = getTarget(data);
 
     if (target != null)
     {
@@ -71,7 +47,34 @@ class PlayAnimationSongEvent extends SongEvent
     }
     else
     {
+      var targetName:String = data.getString('target') ?? DEFAULT_TARGET;
       trace('Unknown PlayAnimation target: $targetName');
+    }
+  }
+
+  /**
+   * Get the sprite which this PlayAnimation event will target.
+   *
+   * @param data The song data for the event.
+   * @return The sprite to target, or `null` if the target is invalid.
+   */
+  public function getTarget(data:SongEventData):Null<FlxSprite>
+  {
+    // Does nothing if there is no PlayState camera or stage.
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return null;
+
+    var targetName:String = data.getString('target') ?? DEFAULT_TARGET;
+
+    switch (targetName)
+    {
+      case 'boyfriend' | 'bf' | 'player':
+        return PlayState.instance.currentStage.getBoyfriend();
+      case 'dad' | 'opponent':
+        return PlayState.instance.currentStage.getDad();
+      case 'girlfriend' | 'gf':
+        return PlayState.instance.currentStage.getGirlfriend();
+      default:
+        return PlayState.instance.currentStage.getNamedProp(targetName);
     }
   }
 
