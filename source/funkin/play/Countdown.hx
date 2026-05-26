@@ -67,12 +67,6 @@ class Countdown
     // Handle onBeatHit events manually
     // @:privateAccess
     // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
-    var offsetTimer:FlxTimer = null;
-    if (Conductor.instance.globalOffset != 0)
-    {
-      offsetTimer = new FlxTimer();
-      countdownOffsetTimers.push(offsetTimer);
-    }
 
     // The timer function gets called based on the beat of the song.
     countdownTimer = new FlxTimer();
@@ -83,6 +77,13 @@ class Countdown
       {
         tmr.cancel();
         return;
+      }
+
+      var offsetTimer:FlxTimer = null;
+      if (Conductor.instance.globalOffset != 0)
+      {
+        offsetTimer = new FlxTimer();
+        countdownOffsetTimers.push(offsetTimer);
       }
 
       countdownStep = decrement(countdownStep);
