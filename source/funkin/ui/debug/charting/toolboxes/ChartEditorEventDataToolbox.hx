@@ -95,7 +95,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     shouldTriggerOnEventKindChanged = false;
 
     var startingEventValue = ChartEditorDropdowns.populateDropdownWithSongEvents(toolboxEventsEventKind, chartEditorState.eventKindToPlace);
-    trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Building Event toolbox with kind "${startingEventValue}"');
     toolboxEventsEventKind.value = startingEventValue;
 
     shouldTriggerOnEventKindChanged = true;
@@ -105,7 +104,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     if (event.data == null)
     {
-      trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox received an invalid UI event.');
       return;
     }
 
@@ -121,7 +119,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     if (schema == null)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Event toolbox attempted to use unknown event kind "$eventKind"');
+      chartEditorState.warning('Invalid Event Kind', 'Event toolbox tried to use unknown event kind "$eventKind", did you define a schema?');
       return;
     }
 
@@ -131,7 +129,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     if (!_initializing && chartEditorState.currentEventSelection.length > 0)
     {
       // Edit the event data of any selected events.
-      trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event toolbox MODIFYING events to kind "${chartEditorState.eventKindToPlace}"');
+      chartEditorState.success('Modified Events', 'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"');
       for (event in chartEditorState.currentEventSelection)
       {
         event.eventKind = chartEditorState.eventKindToPlace;
@@ -162,11 +160,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
       if (schema == null)
       {
-        trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event kind "${chartEditorState.eventKindToPlace}" has no schema for Event toolbox!');
+        chartEditorState.warning('Invalid Event Kind', 'Event toolbox tried to use unknown event kind "${chartEditorState.eventKindToPlace}", did you define a schema?');
       }
       else
       {
-        trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event Toolbox: Kind changed to "${chartEditorState.eventKindToPlace}", rebuilding form...');
         buildEventDataFormFromSchema(toolboxEventsDataBox, schema, chartEditorState.eventKindToPlace);
       }
     }
@@ -385,8 +382,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           value = cast(chk.selected, Null<Bool>); // Need to cast to nullable bool or the compiler will get mad.
         }
 
-        trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event Toolbox Form: ${event.target.id} = ${value}');
-
         // Edit the event data to place.
         if (value == null)
         {
@@ -400,7 +395,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
         // Edit the event data of any existing events.
         if (!_initializing && chartEditorState.currentEventSelection.length > 0)
         {
-          trace(' CHART EDITOR '.bold().bg_bright_yellow() + 'Event Toolbox MODIFYING all selected events...');
+          // chartEditorState.success('Modified Events', 'Edited ${chartEditorState.currentEventSelection.length} selected events')
           for (songEvent in chartEditorState.currentEventSelection)
           {
             songEvent.eventKind = chartEditorState.eventKindToPlace;
