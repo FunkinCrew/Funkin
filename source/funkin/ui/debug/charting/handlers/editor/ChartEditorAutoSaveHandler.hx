@@ -53,7 +53,7 @@ class ChartEditorAutoSaveHandler
     // TODO: Implement this.
     #else
     // Auto-save to temp file.
-    if (needsAutoSave)
+    if (needsAutoSave && state.autoSaveEnabled)
     {
       state.exportCurrentChartToFNFC(true, null);
       if (beforePlaytest)
