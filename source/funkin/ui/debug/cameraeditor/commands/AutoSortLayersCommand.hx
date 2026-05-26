@@ -6,6 +6,8 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
 typedef AutoSortPlanLayer =
 {
@@ -77,12 +79,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
   static function scheduleTracks(events:Array<SongEventData>, stepLengthMs:Float):Array<Array<SongEventData>>
   {
     var sorted:Array<SongEventData> = events.copy();
-    sorted.sort(function(a:SongEventData, b:SongEventData):Int
-    {
-      if (a.time < b.time) return -1;
-      if (a.time > b.time) return 1;
-      return 0;
-    });
+    sorted.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
 
     var tracks:Array<Array<SongEventData>> = [];
     var trackEnds:Array<Float> = [];
@@ -164,7 +161,9 @@ class AutoSortLayersCommand implements CameraEditorCommand
 
   public static function colorForPlanLayer(index:Int):Int
   {
-    return TimelineLayerData.DEFAULT_LAYER_COLORS[(index + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length];
+    return TimelineLayerData.DEFAULT_LAYER_COLORS[
+      (index + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length
+    ];
   }
 
   /**

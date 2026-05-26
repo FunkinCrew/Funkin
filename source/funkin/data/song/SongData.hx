@@ -853,11 +853,28 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * @param force Force the value to be recalculated.
    * @return The position of the event in the song, in steps.
    */
-  public function getStepTime(force:Bool = false):Float
+  public function getStepTime(?conductor:Conductor, force:Bool = false):Float
   {
     if (_stepTime != null && !force) return _stepTime;
 
-    return _stepTime = Conductor.instance.getTimeInSteps(this.time);
+    return _stepTime = (conductor ?? Conductor.instance).getTimeInSteps(this.time);
+  }
+
+  @:jignored
+  var _activationTime:Null<Float> = null;
+
+  /**
+   * Get the timestamp at which `handleEvent()` should be called for this event.
+   * This may be offset relative to `time`, which indicates where the event is placed in the chart.
+   *
+   * @param force Force the value to be recalculated.
+   * @return The position of the event in the song, in milliseconds.
+   */
+  public function getActivationTime(?conductor:Conductor, force:Bool = false):Float
+  {
+    if (_activationTime != null && !force) return _activationTime;
+
+    return _activationTime = this.getHandler()?.calculateActivationTime(this, conductor ?? Conductor.instance) ?? this.time;
   }
 
   /**
@@ -1099,8 +1116,7 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
 /**
  * Wrap SongEventData in an abstract so we can overload operators.
  */
-@:forward(time, eventKind, value, activated, editorLayer, getStepTime, editorLayer, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat,
-  getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
+@:forward(time, eventKind, value, activated, editorLayer, getStepTime, editorLayer, getActivationTime, clone, getHandler, getSchema, getDynamic, getBool, getInt, getFloat, getString, getArray, getBoolArray, set, buildTooltip, valueAsStruct)
 abstract SongEventData(SongEventDataRaw) from SongEventDataRaw to SongEventDataRaw
 {
   public function new(time:Float, eventKind:String, ?value:Dynamic, ?editorLayer:String)

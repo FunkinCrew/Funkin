@@ -4,6 +4,8 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.audio.FunkinSound;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
 /**
  * Represents a reversible action to remove a camera layer from the timeline.
@@ -80,12 +82,7 @@ class RemoveLayerCommand implements CameraEditorCommand
 
     for (entry in deletedEvents) state.currentSongChartData.events.push(entry.event);
 
-    state.currentSongChartData.events.sort(function(a:SongEventData, b:SongEventData):Int
-    {
-      if (a.time < b.time) return -1;
-      if (a.time > b.time) return 1;
-      return 0;
-    });
+    state.currentSongChartData.events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
 
     for (entry in deletedEvents) viewport.addEventBlock(entry.event);
 

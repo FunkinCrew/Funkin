@@ -4,6 +4,8 @@ package funkin.ui.debug.cameraeditor.commands;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 import funkin.data.song.SongDataUtils.SongClipboardItems;
 import funkin.ui.debug.cameraeditor.handlers.CameraEditorNotificationHandler;
 
@@ -53,7 +55,7 @@ class PasteEventsCommand implements CameraEditorCommand
       state.timeline.viewport.addEventBlock(event);
     }
 
-    state.currentSongChartData.events.sort(sortEvents);
+    state.currentSongChartData.events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
     state.timeline.viewport.refreshLayout();
     state.selectedSongEvents = addedEvents.copy();
     state.saved = false;
@@ -93,13 +95,6 @@ class PasteEventsCommand implements CameraEditorCommand
   public function toString():String
   {
     return 'Paste ${currentClipboard.events.length} Events';
-  }
-
-  static function sortEvents(a:SongEventData, b:SongEventData):Int
-  {
-    if (a.time < b.time) return -1;
-    if (a.time > b.time) return 1;
-    return 0;
   }
 }
 #end

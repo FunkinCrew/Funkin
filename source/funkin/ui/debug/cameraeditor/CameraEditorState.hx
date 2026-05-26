@@ -18,6 +18,7 @@ import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongEventData;
+import flixel.util.FlxSort;
 import funkin.data.song.SongData.SongEventDataRaw;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
@@ -32,6 +33,7 @@ import funkin.modding.events.ScriptEvent.SongEventScriptEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.PlayState;
+import funkin.util.SortUtil;
 import funkin.play.character.BaseCharacter;
 import funkin.play.event.SongEvent;
 import funkin.play.notes.NoteSprite;
@@ -157,6 +159,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var songDatas(get, set):Map<String, SongChartData>;
 
   inline function get_songDatas():Map<String, SongChartData> return chart.songDatas;
+
   inline function set_songDatas(value:Map<String, SongChartData>):Map<String, SongChartData> return chart.songDatas = value;
 
   /**
@@ -165,6 +168,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var songMetadatas(get, set):Map<String, SongMetadata>;
 
   inline function get_songMetadatas():Map<String, SongMetadata> return chart.songMetadatas;
+
   inline function set_songMetadatas(value:Map<String, SongMetadata>):Map<String, SongMetadata> return chart.songMetadatas = value;
 
   /**
@@ -197,6 +201,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentDifficulty(get, set):String;
 
   inline function get_currentDifficulty():String return chart.currentDifficulty;
+
   inline function set_currentDifficulty(value:String):String return chart.currentDifficulty = value;
 
   /**
@@ -227,6 +232,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var audioInstTrackData(get, set):Map<String, Bytes>;
 
   inline function get_audioInstTrackData():Map<String, Bytes> return chart.audioInstTrackData;
+
   inline function set_audioInstTrackData(value:Map<String, Bytes>):Map<String, Bytes> return chart.audioInstTrackData = value;
 
   /**
@@ -235,6 +241,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var audioVocalTrackData(get, set):Map<String, Bytes>;
 
   inline function get_audioVocalTrackData():Map<String, Bytes> return chart.audioVocalTrackData;
+
   inline function set_audioVocalTrackData(value:Map<String, Bytes>):Map<String, Bytes> return chart.audioVocalTrackData = value;
 
   /**
@@ -244,6 +251,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var songManifestData(get, set):ChartManifestData;
 
   inline function get_songManifestData():ChartManifestData return chart.songManifestData;
+
   inline function set_songManifestData(value:ChartManifestData):ChartManifestData return chart.songManifestData = value;
 
   /**
@@ -287,6 +295,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var previousWorkingFilePaths(get, set):Array<Null<String>>;
 
   inline function get_previousWorkingFilePaths():Array<Null<String>> return chart.previousWorkingFilePaths;
+
   inline function set_previousWorkingFilePaths(value:Array<Null<String>>):Array<Null<String>> return chart.previousWorkingFilePaths = value;
 
   /**
@@ -296,6 +305,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var currentWorkingFilePath(get, set):Null<String>;
 
   inline function get_currentWorkingFilePath():Null<String> return chart.currentWorkingFilePath;
+
   inline function set_currentWorkingFilePath(value:Null<String>):Null<String> return chart.currentWorkingFilePath = value;
 
   /**
@@ -304,6 +314,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var saved(get, set):Bool;
 
   inline function get_saved():Bool return chart.saved;
+
   inline function set_saved(value:Bool):Bool return chart.saved = value;
 
   function onChartSavedChanged():Void
@@ -734,6 +745,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   var goToPoint:FlxPoint = new FlxPoint();
   var previousTime:Float = 0;
   var completedEvents:Array<SongEventData> = [];
+
   // Maybe in the future we can handle the special tankman picospeaker/otisspeaker events?
 
   public function handlePlayAnimationEvent(data:SongEventData):Void
@@ -824,7 +836,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var eventData = songEvents[i];
       if (completedEvents.contains(eventData)) continue;
-      if (eventData == null || eventData.time > conductorInUse.songPosition || eventData.time < previousTime) continue;
+      var activationTime = eventData.getActivationTime(conductorInUse);
+      if (eventData == null || activationTime > conductorInUse.songPosition || activationTime < previousTime) continue;
 
       var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(eventData);
 
@@ -848,7 +861,10 @@ class CameraEditorState extends UIState implements ConsoleClass
             var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
             currentStage.onSongEvent(ev);
           }
-          else doDispatch = false;
+          else
+          {
+            doDispatch = false;
+          }
       }
 
       if (doDispatch)
@@ -1472,14 +1488,18 @@ class CameraEditorState extends UIState implements ConsoleClass
     var currentLayer:TimelineLayerData = timeline.viewport.layers[0];
     var defaultLayer:TimelineLayerData = AutoSortLayersCommand.findDefaultLayer(timeline.viewport.layers);
 
-    var afterRows:Array<AutoSortPreviewRow> = [{name: defaultLayer.name, color: defaultLayer.color, events: []}];
+    var afterRows:Array<AutoSortPreviewRow> = [
+      {name: defaultLayer.name, color: defaultLayer.color, events: []}
+    ];
     for (i => planLayer in plan.layers)
     {
       afterRows.push({name: planLayer.name, color: AutoSortLayersCommand.colorForPlanLayer(i), events: planLayer.events});
     }
 
     var preview:AutoSortPreview = {
-      beforeRows: [{name: currentLayer.name, color: currentLayer.color, events: cameraEvents}],
+      beforeRows: [
+        {name: currentLayer.name, color: currentLayer.color, events: cameraEvents}
+      ],
       afterRows: afterRows
     };
 
@@ -1508,12 +1528,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     var stepMs:Float = conductorInUse.stepLengthMs;
     var sorted:Array<SongEventData> = events.copy();
-    sorted.sort(function(a:SongEventData, b:SongEventData):Int
-    {
-      if (a.time < b.time) return -1;
-      if (a.time > b.time) return 1;
-      return 0;
-    });
+    sorted.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
 
     // Sorted by start time, so checking each event against its immediate successor is sufficient:
     // if sorted[i] overlaps any sorted[j] (j > i+1), it must also overlap sorted[i+1].
@@ -1586,12 +1601,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
 
-      songEvents.sort(function(a:SongEventData, b:SongEventData):Int
-      {
-        if (a.time < b.time) return -1;
-        if (a.time > b.time) return 1;
-        return 0;
-      });
+      songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
       completedEvents = [];
     });
@@ -1603,12 +1613,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
       CameraEditorCommandHandler.performCommand(this, cmd);
 
-      songEvents.sort(function(a:SongEventData, b:SongEventData):Int
-      {
-        if (a.time < b.time) return -1;
-        if (a.time > b.time) return 1;
-        return 0;
-      });
+      songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
       completedEvents = [];
     });
@@ -1617,7 +1622,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       applyCameraViewportScale();
     });
-
 
     timeline.toolbar.btnTogglePlayback.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
     {
@@ -1685,11 +1689,9 @@ class CameraEditorState extends UIState implements ConsoleClass
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
-    timeline.registerEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED,
-      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed'));
+    timeline.registerEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED, (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed'));
 
-    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID,
-      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
+    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID, (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
   }
 
   var shouldResetScroll:Bool = false;
@@ -1941,15 +1943,12 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       var replayEvents:Array<SongEventData> = songEvents.filter(function(eventData:SongEventData):Bool
       {
-        return eventData != null && eventData.time <= position;
+        if (eventData == null) return false;
+
+        return eventData.getActivationTime() <= position;
       });
 
-      replayEvents.sort(function(a:SongEventData, b:SongEventData):Int
-      {
-        if (a.time < b.time) return -1;
-        if (a.time > b.time) return 1;
-        return 0;
-      });
+      replayEvents.sort(SortUtil.eventDataByActivationTime.bind(FlxSort.ASCENDING));
 
       for (eventData in replayEvents)
       {
@@ -2198,8 +2197,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (exitConfirmDialog == null)
       {
-        exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor',
-          MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
+        exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor', MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
         {
           exitConfirmDialog = null;
           if (btn == DialogButton.YES)

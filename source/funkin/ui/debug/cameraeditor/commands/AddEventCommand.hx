@@ -3,6 +3,8 @@ package funkin.ui.debug.cameraeditor.commands;
 #if FEATURE_CAMERA_EDITOR
 import funkin.data.song.SongData.SongEventData;
 import funkin.audio.FunkinSound;
+import funkin.util.SortUtil;
+import flixel.util.FlxSort;
 
 /**
  * Represents a reversible action to add a new camera event to the timeline.
@@ -24,12 +26,7 @@ class AddEventCommand implements CameraEditorCommand
   public function execute(state:CameraEditorState):Void
   {
     state.currentSongChartData.events.push(event);
-    state.currentSongChartData.events.sort(function(a:SongEventData, b:SongEventData):Int
-    {
-      if (a.time < b.time) return -1;
-      if (a.time > b.time) return 1;
-      return 0;
-    });
+    state.currentSongChartData.events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
 
     FunkinSound.playOnce(Paths.sound('chartingSounds/noteLay'));
 

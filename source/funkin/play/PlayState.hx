@@ -1487,13 +1487,14 @@ class PlayState extends MusicBeatSubState
         for (event in songEventsToActivate)
         {
           // If an event is trying to play, but it's over 1 second old, skip it.
-          var eventAge:Float = Conductor.instance.songPosition - event.time;
+          var eventAge:Float = Conductor.instance.songPosition - event.getActivationTime();
           if (eventAge > 1000)
           {
             // Setting `event.processOldEvents = true` allows events to be handled even if they are old.
             var eventHandler:Null<SongEvent> = SongEventRegistry.getEvent(event.eventKind);
             if (eventHandler == null || !eventHandler.processOldEvents)
             {
+              // Skip the event and mark it as completed.
               event.activated = true;
               continue;
             }
