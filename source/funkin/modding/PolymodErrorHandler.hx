@@ -151,13 +151,13 @@ class PolymodErrorHandler
         // A runtime error when running a script.
         trace(' ERROR '.error() + ' ' + error.message);
         // Notify the user via popup.
-        funkin.util.WindowUtil.showError('Script Exception', error.message);
+        funkin.util.WindowUtil.showPolymodError('Script Exception', error.message);
 
       case SCRIPTED_CLASS_NOT_REGISTERED:
         // Polymod attempted to initialize a scripted class, but it wasn't registered.
         trace(' ERROR '.error() + ' ' + error.message);
         // Notify the user via popup.
-        funkin.util.WindowUtil.showError('Script Parsing Error', error.message);
+        funkin.util.WindowUtil.showPolymodError('Script Parsing Error', error.message);
 
       case SCRIPTED_CLASS_ALREADY_REGISTERED:
         // Polymod attempted to register a scripted class, but one with the same name and package already exists.
@@ -185,7 +185,7 @@ class PolymodErrorHandler
         // A scripted class tried to access a field that's blacklisted.
         trace(' ERROR '.error() + ' ' + error.message);
         // Notify the user via popup.
-        funkin.util.WindowUtil.showError('Script Blacklist Violation', error.message);
+        funkin.util.WindowUtil.showPolymodError('Script Blacklist Violation', error.message);
 
       //
       // Other Errors

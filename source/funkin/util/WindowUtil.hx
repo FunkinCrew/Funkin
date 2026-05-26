@@ -165,6 +165,17 @@ class WindowUtil
   }
 
   /**
+   * Ditto, but allows the user to force-reload from the error.
+   * @param name The title of the dialog window.
+   * @param desc The error message to display.
+   */
+  public static function showPolymodError(name:String, desc:String):Void
+  {
+    var selected = lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name, ["Ignore", "Reload"]);
+    if (selected == 1) funkin.modding.PolymodHandler.forceReloadAssets();
+  }
+
+  /**
    * Shows a warning dialog with a warning icon.
    * @param name The title of the dialog window.
    * @param desc The warning message to display.
