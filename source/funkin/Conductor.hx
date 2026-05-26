@@ -421,6 +421,8 @@ class Conductor
    */
   public function update(?songPos:Float, applyOffsets:Bool = true, forceDispatch:Bool = false):Void
   {
+    if (FlxG.elapsed > 1.0) this.songPositionDelta = 0;
+
     var currentTime:Float = (FlxG.sound.music != null) ? FlxG.sound.music.time : 0.0;
     var currentLength:Float = (FlxG.sound.music != null) ? FlxG.sound.music.length : 0.0;
 
