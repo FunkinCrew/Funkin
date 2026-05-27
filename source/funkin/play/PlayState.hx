@@ -704,6 +704,11 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * The map used for set character event.
+   */
+  public var characterMap:Map<String, BaseCharacter> = new Map<String, BaseCharacter>();
+
+  /**
    * The length of the current song, in milliseconds.
    */
   var currentSongLengthMs(get, never):Float;
@@ -889,6 +894,7 @@ class PlayState extends MusicBeatSubState
     {
       initStage();
       initCharacters();
+	   initCharacterMap();
     }
     else
     {
@@ -1131,6 +1137,11 @@ class PlayState extends MusicBeatSubState
       // Stops any existing countdown.
       Countdown.stopCountdown();
 
+	  // Reset the characters if changed.
+	  if (currentStage.getBoyfriend().characterId != currentChart.characters.player) changeCharacter('bf', currentChart.characters.player);
+	  if (currentStage.getGirlfriend().characterId != currentChart.characters.girlfriend) changeCharacter('gf', currentChart.characters.girlfriend);
+      if (currentStage.getDad().characterId != currentChart.characters.opponent) changeCharacter('dad', currentChart.characters.opponent);
+		
       // Reset the health icons.
       currentStage?.getBoyfriend()?.initHealthIcon(false);
       currentStage?.getDad()?.initHealthIcon(true);
@@ -2167,12 +2178,8 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
-        var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? (currentChart?.album ?? '');
-        var icon:Null<String> = currentChart?.discordRPCImage ?? 'icon-${currentCharacterData.opponent}';
-
-        discordRPCAlbum = album;
-        discordRPCIcon = icon;
+        discordRPCAlbum = 'album-${currentChart?.album}';
+        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
       }
       #end
     }
@@ -2236,6 +2243,29 @@ class PlayState extends MusicBeatSubState
     }
   }
 
+  /**
+     * Setting up the character map for set character event.
+     */
+  function initCharacterMap():Void
+  {
+	  if (currentChart == null) return;
+
+	  for (event in currentChart.getEvents())
+	  {
+		  if (event.eventKind != 'SetCharacter') continue;
+		
+		  if (characterMap.exists(event.getString('newchar'))) continue;
+
+		  if (event.getString('char') == 'bf') preloadCharacter(event.getString('newchar'), 'bf');
+		  if (event.getString('char') == 'gf') preloadCharacter(event.getString('newchar'), 'gf');
+		  if (event.getString('char') == 'dad') preloadCharacter(event.getString('newchar'), 'dad');
+
+		  // Preloading initial characters for better restarting.
+		  preloadCharacter(currentChart.characters.player, 'bf');
+		  preloadCharacter(currentChart.characters.opponent, 'dad');
+		  preloadCharacter(currentChart.characters.girlfriend, 'gf');
+	  }
+  }
   /**
      * Constructs the strumlines for each player.
      */
@@ -2609,6 +2639,38 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+    * Adding characters to the stage and hiding them.
+    */
+  public function preloadCharacter(charID:String, charType:String):Void
+  {
+    var char:BaseCharacter = CharacterDataParser.fetchCharacter(charID);
+	 var finalScale:Float = 1; // This is done to add global offsets.
+
+	 if (char == null) return;
+
+	 switch (charType)
+	 {
+			 case 'bf':
+			      finalScale = char.getBaseScale() * (currentStage._data.characters.bf.scale ?? 1);
+
+			 case 'gf':
+			      finalScale = char.getBaseScale() * (currentStage._data.characters.gf.scale ?? 1);
+
+			 case 'dad':
+			      finalScale = char.getBaseScale() * (currentStage._data.characters.dad.scale ?? 1);
+	 }
+
+	 char.visible = false;
+	 char.active = false;
+	 char.alpha = 0.001;
+	 char.setScale(finalScale);
+
+	 currentStage.add(char);
+
+	 characterMap.set(charID, char);
+  }
+
+  /**
      * Handler function called when a conversation ends.
      */
   function onConversationComplete():Void
@@ -2728,7 +2790,7 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length - 1,
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
       Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
 
@@ -3473,6 +3535,7 @@ class PlayState extends MusicBeatSubState
     if (event.eventCanceled) return;
 
     deathCounter = 0;
+    characterMap.clear();
 
     // TODO: This line of code makes me sad, but you can't really fix it without a breaking migration.
     // `easy`, `erect`, `normal-pico`, etc.
@@ -3721,6 +3784,7 @@ class PlayState extends MusicBeatSubState
   {
     criticalFailure = true; // Stop game updates.
     performCleanup();
+    characterMap.clear();
     super.close();
   }
 
@@ -3913,6 +3977,140 @@ class PlayState extends MusicBeatSubState
     });
     this.persistentDraw = false;
     openSubState(res);
+  }
+
+
+  /**
+    * The function used for changing characters.
+    */
+  public function changeCharacter(role:String, newChar:String, ?X:Float = 0, ?Y:Float = 0):Void
+  {
+    if (currentStage == null) return;
+  
+    var newCharacter:BaseCharacter = characterMap.get(newChar);
+	
+	if (newCharacter == null)
+	{
+		throw('The character is not preloaded!');
+	}
+
+	if (newCharacter == currentStage.getBoyfriend() || newCharacter == currentStage.getDad() || newCharacter == currentStage.getGirlfriend())
+	{
+		newCharacter = CharacterDataParser.fetchCharacter(newChar);
+
+		if (newCharacter == null)
+			return;
+
+		newCharacter.visible = false;
+		newCharacter.active = false;
+		newCharacter.alpha = 0.001;
+
+		currentStage.add(newCharacter);
+
+		characterMap.set(newChar, newCharacter);
+	}
+
+	switch (role)
+	{
+		case "bf":
+		{
+			var oldBF = currentStage.getBoyfriend();
+			var oldIconData = currentStage.getBoyfriend()._data.healthIcon.id ?? 'bf';
+
+			var newIcon = newCharacter._data?.healthIcon?.id ?? "bf";
+			var oldIcon = oldIconData ?? "bf";
+
+			if (oldBF != newCharacter)
+			{
+				oldBF.alpha = 0.001;
+				oldBF.visible = false;
+				oldBF.active = false;
+			}
+
+			newCharacter.x = currentStage.getBoyfriendPosition().x - newCharacter.characterOrigin.x + X;
+			newCharacter.y = currentStage.getBoyfriendPosition().y - newCharacter.characterOrigin.y + Y;
+
+			newCharacter.flipX = !newCharacter.getDataFlipX();
+			newCharacter.zIndex = oldBF.zIndex;
+
+			newCharacter.visible = true;
+			newCharacter.alpha = 1;
+			newCharacter.active = true;
+			newCharacter.exists = true;
+			newCharacter.alive = true;
+
+			newCharacter.characterType = CharacterType.BF;
+			newCharacter.dance(true); // To prevent character from being frozen.
+
+			currentStage.characters.set("bf", newCharacter);
+			if(newIcon != oldIcon) newCharacter.initHealthIcon(false);
+		}
+
+		case "dad":
+		{
+			var oldDad = currentStage.getDad();
+			var oldIconData = currentStage.getDad()._data.healthIcon.id ?? 'dad';
+
+			var newIcon = newCharacter._data?.healthIcon?.id ?? "dad";
+			var oldIcon = oldIconData ?? "dad";
+
+			if (oldDad != newCharacter)
+			{
+				oldDad.alpha = 0.001;
+				oldDad.visible = false;
+				oldDad.active = false;
+			}
+
+			newCharacter.x = currentStage.getDadPosition().x - newCharacter.characterOrigin.x + X;
+			newCharacter.y = currentStage.getDadPosition().y - newCharacter.characterOrigin.y + Y;
+
+		    newCharacter.flipX = newCharacter.getDataFlipX();
+			newCharacter.zIndex = oldDad.zIndex;
+
+			newCharacter.visible = true;
+			newCharacter.alpha = 1;
+			newCharacter.active = true;
+			newCharacter.exists = true;
+			newCharacter.alive = true;
+
+			newCharacter.characterType = CharacterType.DAD;
+			newCharacter.dance(true);
+
+			currentStage.characters.set("dad", newCharacter);
+			if (newIcon != oldIcon) newCharacter.initHealthIcon(true);
+		}
+
+		case "gf":
+		{
+			var oldGF = PlayState.instance.currentStage.getGirlfriend();
+
+			if (oldGF != newCharacter)
+			{
+				oldGF.alpha = 0.001;
+				oldGF.visible = false;
+				oldGF.active = false;
+			}
+
+			newCharacter.x = currentStage.getGirlfriendPosition().x - newCharacter.characterOrigin.x + X;
+			newCharacter.y = currentStage.getGirlfriendPosition().y - newCharacter.characterOrigin.y + Y;
+
+			newCharacter.flipX = newCharacter.getDataFlipX();
+			newCharacter.zIndex = oldGF.zIndex;
+
+			newCharacter.visible = true;
+			newCharacter.alpha = 1;
+			newCharacter.active = true;
+			newCharacter.exists = true;
+			newCharacter.alive = true;
+
+			newCharacter.characterType = CharacterType.GF;
+			newCharacter.dance(true);
+
+			currentStage.characters.set("gf", newCharacter);
+		}
+	}
+
+	PlayState.instance.currentStage.refresh();;
   }
 
   /**
