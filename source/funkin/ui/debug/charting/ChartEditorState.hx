@@ -398,13 +398,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
 
+        // Handle waveform scrolling, making sure it only renders the relevant portion.
         for (member in audioWaveforms.members)
         {
           member.time = scrollPositionInMs / Constants.MS_PER_SEC;
           member.duration = (Conductor.instance.stepLengthMs * 16) / Constants.MS_PER_SEC;
-
-          // Doing this desyncs the waveforms from the grid.
-          // member.y = Math.max(this.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
         }
       }
     }
@@ -595,6 +593,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * The currently selected live input style.
    */
   var currentLiveInputStyle:ChartEditorLiveInputStyle = None;
+
+  /**
+   * The currently selected waveform position.
+   */
+  var currentWaveformPos:ChartEditorWaveformPos = Adjacent;
 
   /**
    * If true, playtesting a chart will skip to the current playhead position.
@@ -2656,6 +2659,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentSongFreeplayPreviewEnd = (currentSongMetadata?.playData?.previewEnd ?? Constants.DEFAULT_PREVIEW_END_TIME);
   }
 
+  /**
+   * Load the Chart Editor preferences from the save file.
+   */
   public function loadPreferences():Void
   {
     var save:Save = Save.instance;
@@ -2671,6 +2677,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     noteSnapQuantIndex = save.chartEditorNoteQuant.value;
     currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
+    currentWaveformPos = save.chartEditorWaveformPos.value;
     isViewDownscroll = save.chartEditorDownscroll.value;
     showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
     showSubtitles = save.chartEditorShowSubtitles.value;
@@ -2689,6 +2696,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemPlaybackSpeed.value = Math.round(save.chartEditorPlaybackSpeed.value * 100.0);
   }
 
+  /**
+   * Write the Chart Editor preferences to the save file.
+   *
+   * @param hasBackup Whether there is a
+   */
   public function writePreferences(hasBackup:Bool):Void
   {
     var save:Save = Save.instance;
@@ -2703,6 +2715,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     save.chartEditorNoteQuant.value = noteSnapQuantIndex;
     save.chartEditorLiveInputStyle.value = currentLiveInputStyle;
+    save.chartEditorWaveformPos.value = currentWaveformPos;
     save.chartEditorDownscroll.value = isViewDownscroll;
     save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
     save.chartEditorPlaytestStartTime.value = playtestStartTime;
@@ -2900,6 +2913,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     add(healthIconBF);
     healthIconBF.zIndex = 30;
 
+    // 15 is above the grid, but below most stuff that's on the grid.
+    audioWaveforms.zIndex = 15;
     add(audioWaveforms);
   }
 
@@ -3483,6 +3498,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemAbout.onClick = _ -> this.openAboutDialog();
     menubarItemWelcomeDialog.onClick = _ -> this.openWelcomeDialog(true);
+
+    menubarItemWaveformPosAdjacent.onClick = function(event:UIEvent)
+    {
+      currentWaveformPos = Adjacent;
+      waveformsDirty = true;
+    };
+    menubarItemWaveformPosAdjacent.selected = currentWaveformPos == Adjacent;
+    menubarItemWaveformPosOverlay.onClick = function(event:UIEvent)
+    {
+      currentWaveformPos = Overlay;
+      waveformsDirty = true;
+    };
+    menubarItemWaveformPosOverlay.selected = currentWaveformPos == Overlay;
 
     #if sys
     menubarItemGoToBackupsFolder.onClick = _ -> this.openBackupsFolder();
@@ -6131,14 +6159,39 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     for (waveform in audioWaveforms.members)
     {
-      waveform.x = switch (waveform.iconId)
+      // Set the appropriate waveform color.
+      waveform.color = currentWaveformPos == Overlay ? FlxColor.GRAY : FlxColor.WHITE;
+
+      switch (waveform.iconId)
       {
         case BF:
-          healthIconBF != null ? healthIconBF.x : 840 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+          if (currentWaveformPos == Overlay)
+          {
+            waveform.x = gridTiledSprite.x + (GRID_SIZE * 5);
+          }
+          else if (healthIconBF != null)
+          {
+            waveform.x = healthIconBF.x;
+          }
+          else
+          {
+            waveform.x = 840 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+          }
         case DAD:
-          healthIconDad != null ? healthIconDad.x : 360 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+          if (currentWaveformPos == Overlay)
+          {
+            waveform.x = gridTiledSprite.x + (GRID_SIZE * 1);
+          }
+          else if (healthIconBF != null)
+          {
+            waveform.x = healthIconDad.x;
+          }
+          else
+          {
+            waveform.x = 360 + FullScreenScaleMode.gameCutoutSize.x * 0.5;
+          }
         default:
-          0;
+          waveform.x = 0;
       }
     }
 
@@ -7722,6 +7775,22 @@ enum abstract ChartEditorLiveInputStyle(String)
    * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
    */
   public var WASDKeys;
+}
+
+/**
+ * Available waveform positions for the chart editor state.
+ */
+enum abstract ChartEditorWaveformPos(String)
+{
+  /**
+   * Waveforms are shown adjacent to the charting grid.
+   */
+  public var Adjacent;
+
+  /**
+   * Waveforms are shown overlapping the charting grid.
+   */
+  public var Overlay;
 }
 
 /**
