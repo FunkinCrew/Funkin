@@ -697,6 +697,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     currentTheme = value;
     this.updateTheme();
+    waveformsDirty = true;
     return value;
   }
 
@@ -6153,14 +6154,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     for (waveform in audioWaveforms.members)
     {
       // Set the appropriate waveform color.
-      waveform.color = currentWaveformPos == Overlay ? FlxColor.GRAY : FlxColor.WHITE;
+      waveform.width = (currentWaveformPos == Overlay) ? (ChartEditorState.GRID_SIZE * 4) : (ChartEditorState.GRID_SIZE * 2);
+
+      switch (currentTheme)
+      {
+        // TODO: I wanted tried to make it slightly transparent but that made it not show up at all...
+        case Light:
+          waveform.color = (currentWaveformPos == Overlay) ? (0xFF666666) : FlxColor.WHITE;
+        case Dark:
+          waveform.color = (currentWaveformPos == Overlay) ? (0xFFDDDDDD) : FlxColor.WHITE;
+      }
 
       switch (waveform.iconId)
       {
         case BF:
           if (currentWaveformPos == Overlay)
           {
-            waveform.x = gridTiledSprite.x + (GRID_SIZE * 5);
+            waveform.x = gridTiledSprite.x + (GRID_SIZE * 4);
           }
           else if (healthIconBF != null)
           {
@@ -6173,7 +6183,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         case DAD:
           if (currentWaveformPos == Overlay)
           {
-            waveform.x = gridTiledSprite.x + (GRID_SIZE * 1);
+            waveform.x = gridTiledSprite.x + (GRID_SIZE * 0);
           }
           else if (healthIconBF != null)
           {
