@@ -6169,7 +6169,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         case Light:
           waveform.color = (currentWaveformPos == Overlay) ? (0xFF666666) : FlxColor.WHITE;
         case Dark:
-          waveform.color = (currentWaveformPos == Overlay) ? (0xFFDDDDDD) : FlxColor.WHITE;
+          waveform.color = (currentWaveformPos == Overlay) ? (0xFFAAAAAA) : FlxColor.WHITE;
       }
 
       switch (waveform.iconId)
