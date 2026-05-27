@@ -2178,8 +2178,12 @@ class PlayState extends MusicBeatSubState
       }
       else
       {
-        discordRPCAlbum = 'album-${currentChart?.album}';
-        discordRPCIcon = 'icon-${currentCharacterData.opponent}';
+        var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
+        var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? (currentChart?.album ?? '');
+        var icon:Null<String> = currentChart?.discordRPCImage ?? 'icon-${currentCharacterData.opponent}';
+
+        discordRPCAlbum = album;
+        discordRPCIcon = icon;
       }
       #end
     }
@@ -2790,7 +2794,7 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length,
+    var timeToPlayAt:Float = Math.min(FlxG.sound.music.length - 1,
       Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset);
     trace('Resyncing vocals to ${timeToPlayAt}');
 
