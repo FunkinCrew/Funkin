@@ -894,7 +894,7 @@ class PlayState extends MusicBeatSubState
     {
       initStage();
       initCharacters();
-	   initCharacterMap();
+	  initCharacterMap();
     }
     else
     {
