@@ -2022,6 +2022,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemMirrorFlipWithinStrumline:MenuCheckBox;
 
   /**
+   * The `Edit -> Auto-Place Camera Events` menu item.
+   */
+  var menubarItemAutoPlaceCameraEvents:MenuItem;
+
+  /**
    * The `Edit -> Select All` menu item.
    */
   var menubarItemSelectAll:MenuItem;
@@ -3376,6 +3381,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemMirrorXY.onClick = _ -> performCommand(new MirrorNotesCommand(currentNoteSelection, menubarItemMirrorFlipWithinStrumline.selected,
       !menubarItemMirrorFlipWithinStrumline.selected, true, true));
+
+    menubarItemAutoPlaceCameraEvents.onClick = _ ->
+    {
+      var events:Array<SongEventData> = buildAutoCameraEvents();
+      if (events.length > 0) performCommand(new AddEventsCommand(events));
+    };
 
     menubarItemSelectAllNotes.onClick = _ -> performCommand(new SelectAllItemsCommand(true, false));
 
@@ -6653,6 +6664,65 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       commandHistoryDirty = true;
     }
     if (purgeRedoStack) redoHistory = [];
+  }
+
+  static final AUTO_CAMERA_SWITCH_GAP_MS:Float = 1000.0;
+  static final AUTO_CAMERA_MERGE_WINDOW_MS:Float = 50.0;
+
+  /**
+   * Build FocusCamera events at each singing-character switch in the current chart.
+   */
+  function buildAutoCameraEvents():Array<SongEventData>
+  {
+    var notes:Array<SongNoteData> = currentSongChartNoteData;
+    if (notes == null || notes.length == 0) return [];
+
+    var sorted:Array<SongNoteData> = notes.copy();
+    sorted.sort((a, b) -> Std.int(a.time - b.time));
+
+    var existing:Array<SongEventData> = currentSongChartEventData ?? [];
+
+    var result:Array<SongEventData> = [];
+    var currentFocus:Int = -1;
+    var lastSeenTimeByChar:Map<Int, Float> = new Map();
+
+    for (note in sorted)
+    {
+      var noteChar:Int = note.getMustHitNote() ? 0 : 1;
+      var lastOtherTime:Float = lastSeenTimeByChar.get(noteChar) ?? -1.0;
+      lastSeenTimeByChar.set(noteChar, note.time);
+
+      if (noteChar == currentFocus) continue;
+
+      var gapSatisfied:Bool = currentFocus == -1 || (note.time - lastOtherTime) >= AUTO_CAMERA_SWITCH_GAP_MS;
+      if (!gapSatisfied) continue;
+
+      if (focusEventExistsNear(existing, note.time, noteChar))
+      {
+        currentFocus = noteChar;
+        continue;
+      }
+
+      var event:SongEventData = new SongEventData(note.time, 'FocusCamera', {char: noteChar});
+      result.push(event);
+      existing.push(event);
+      currentFocus = noteChar;
+    }
+
+    return result;
+  }
+
+  function focusEventExistsNear(events:Array<SongEventData>, time:Float, char:Int):Bool
+  {
+    for (event in events)
+    {
+      if (event.eventKind != 'FocusCamera') continue;
+      if (Math.abs(event.time - time) > AUTO_CAMERA_MERGE_WINDOW_MS) continue;
+      var eventChar:Null<Int> = event.getInt('char');
+      if (eventChar == null) eventChar = 0;
+      if (eventChar == char) return true;
+    }
+    return false;
   }
 
   /**
