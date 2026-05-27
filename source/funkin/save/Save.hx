@@ -9,6 +9,7 @@ import funkin.play.scoring.Scoring.ScoringRank;
 import funkin.save.migrator.RawSaveData_v1_0_0;
 import funkin.save.migrator.SaveDataMigrator;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorLiveInputStyle;
+import funkin.ui.debug.charting.ChartEditorState.ChartEditorWaveformPos;
 import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
@@ -23,18 +24,19 @@ import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.Leaderboards;
 #end
 
-@:nullSafety @:build(funkin.util.macro.SaveMacro.buildSaveProperties())
+@:nullSafety
+@:build(funkin.util.macro.SaveMacro.buildSaveProperties())
 class Save implements ConsoleClass implements ISerializable
 {
   /**
    * The current version of the save data schema.
    */
-  public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
+  public static final SAVE_DATA_VERSION:thx.semver.Version = '2.1.1';
 
   /**
    * The versions of the save data schema that are compatible with this version of the game without migration.
    */
-  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
+  public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = '>=2.1.0 <2.2.0';
 
   /**
    * The underlying save data system.
@@ -182,6 +184,7 @@ class Save implements ConsoleClass implements ISerializable
         previousFiles: [],
         noteQuant: 3,
         chartEditorLiveInputStyle: ChartEditorLiveInputStyle.None,
+        chartEditorWaveformPos: ChartEditorWaveformPos.Adjacent,
         theme: ChartEditorTheme.Light,
         playtestStartTime: false,
         playtestAudioSettings: false,
@@ -283,6 +286,8 @@ class Save implements ConsoleClass implements ISerializable
   public var chartEditorNoteQuant:SaveProperty<Int>;
   @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.None)
   public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
+  @:saveProperty(data.optionsChartEditor.chartEditorWaveformPos, ChartEditorWaveformPos.Adjacent)
+  public var chartEditorWaveformPos:SaveProperty<ChartEditorWaveformPos>;
   @:saveProperty(data.optionsChartEditor.downscroll, false)
   public var chartEditorDownscroll:SaveProperty<Bool>;
   @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
@@ -343,8 +348,10 @@ class Save implements ConsoleClass implements ISerializable
 
   function get_stageBoyfriendChar():String
   {
-    if (data.optionsStageEditor.bfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null) data.optionsStageEditor.bfChar = "bf";
+    if (
+      data.optionsStageEditor.bfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null
+    ) data.optionsStageEditor.bfChar = "bf";
     return data.optionsStageEditor.bfChar;
   }
 
@@ -360,8 +367,10 @@ class Save implements ConsoleClass implements ISerializable
 
   function get_stageGirlfriendChar():String
   {
-    if (data.optionsStageEditor.gfChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null) data.optionsStageEditor.gfChar = "gf";
+    if (
+      data.optionsStageEditor.gfChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null
+    ) data.optionsStageEditor.gfChar = "gf";
     return data.optionsStageEditor.gfChar;
   }
 
@@ -377,8 +386,10 @@ class Save implements ConsoleClass implements ISerializable
 
   function get_stageDadChar():String
   {
-    if (data.optionsStageEditor.dadChar == null
-      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null) data.optionsStageEditor.dadChar = "dad";
+    if (
+      data.optionsStageEditor.dadChar == null
+      || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null
+    ) data.optionsStageEditor.dadChar = "dad";
     return data.optionsStageEditor.dadChar;
   }
 
@@ -630,8 +641,7 @@ class Save implements ConsoleClass implements ISerializable
 
     // Compare the high score and the high rank separately.
     // This prevents an issue where a lower rank could apply when getting a higher score.
-    var useOldTallies:Bool = previousRank > newRank
-      || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies);
+    var useOldTallies:Bool = previousRank > newRank || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies);
     var newHighScore:Int = (previousScoreData.score > newScoreData.score) ? previousScoreData.score : newScoreData.score;
     var newHighTallies:SaveScoreTallyData = useOldTallies ? previousScoreData.tallies : newScoreData.tallies;
 
@@ -1555,6 +1565,12 @@ typedef SaveDataChartEditorOptions =
    * @default `ChartEditorLiveInputStyle.None`
    */
   var ?chartEditorLiveInputStyle:ChartEditorLiveInputStyle;
+
+  /**
+   * Where the waveform is placed in the Chart Editor.
+   * @default `ChartEditorWaveformPos.Adjacent`
+   */
+  var ?chartEditorWaveformPos:ChartEditorWaveformPos;
 
   /**
    * Theme in the Chart Editor.
