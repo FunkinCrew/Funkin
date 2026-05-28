@@ -362,6 +362,9 @@ class BaseCharacter extends Bopper
 
   public function initHealthIcon(isOpponent:Bool):Void
   {
+    // Modders may want to use characters outside of PlayState and this still gets called, so we ignore it.
+    if (PlayState.instance == null) return;
+
     if (!isOpponent)
     {
       if (PlayState.instance.iconP1 == null)
@@ -719,7 +722,7 @@ class BaseCharacter extends Bopper
 
   override public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
-    if (tempVocals)
+    if (tempVocals && PlayState.instance != null)
     {
       // restart the character's vocals for the duration of the animation
       if (characterType == BF && PlayState.instance.vocals.playerVolume == 0)
