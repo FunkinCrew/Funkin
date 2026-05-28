@@ -184,45 +184,33 @@ class Level implements IRegistryEntry<LevelData>
   {
     var difficulties:Array<String> = [];
 
-    var songList:Array<String> = getSongs();
+    var songs:Array<Null<Song>> = [
+      for (songId in getSongs()) SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION})
+    ];
 
-    var firstSongId:String = songList[0];
-    var firstSong:Null<Song> = SongRegistry.instance.fetchEntry(firstSongId, {
-      variation: Constants.DEFAULT_VARIATION
-    });
-
-    if (firstSong != null)
+    // Pass 1: Populate the `difficulties` Array with every difficulty available.
+    for (song in songs)
     {
-      // Don't display alternate characters in Story Mode. Only show `default` variation.
-      for (difficulty in firstSong.listDifficulties(Constants.DEFAULT_VARIATION, false, false))
+      for (difficultyId in song?.listDifficulties(Constants.DEFAULT_VARIATION) ?? [])
       {
-        difficulties.push(difficulty);
+        if (!difficulties.contains(difficultyId)) difficulties.push(difficultyId);
       }
     }
 
-    // Sort in a specific order! Fall back to alphabetical.
-    difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST));
-
-    // Filter to only include difficulties that are present in all songs
-    for (songIndex in 1...songList.length)
+    // Pass 2: Remove all difficulties not available in every song.
+    for (song in songs)
     {
-      var songId:String = songList[songIndex];
-      var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {
-        variation: Constants.DEFAULT_VARIATION
-      });
+      var songDifficulties:Array<String> = song?.listDifficulties(Constants.DEFAULT_VARIATION) ?? difficulties;
 
-      if (song == null) continue;
-
-      for (difficulty in difficulties.copy())
-      {
-        if (!song.hasDifficulty(difficulty, Constants.DEFAULT_VARIATION))
-        {
-          difficulties.remove(difficulty);
-        }
-      }
+      var unknownDifficulties:Array<String> = difficulties.filter(id -> !songDifficulties.contains(id));
+      for (difficultyId in unknownDifficulties) difficulties.remove(difficultyId);
     }
 
-    if (difficulties.length == 0) difficulties = ['normal'];
+    // If theres no difficulties, add the default difficulty as a fallback.
+    if (difficulties.length < 1) difficulties.push(Constants.DEFAULT_DIFFICULTY);
+
+    // Sort it to make sure that it is in order.
+    difficulties.sort(SortUtil.defaultsThenAlphabetically.bind(Constants.DEFAULT_DIFFICULTY_LIST_FULL));
 
     return difficulties;
   }

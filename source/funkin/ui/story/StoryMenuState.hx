@@ -542,7 +542,6 @@ class StoryMenuState extends MusicBeatState
   function changeDifficulty(change:Int = 0):Void
   {
     var difficultyList:Array<String> = currentLevel.getDifficulties();
-
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
     currentIndex += change;
