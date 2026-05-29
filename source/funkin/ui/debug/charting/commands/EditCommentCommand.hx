@@ -6,17 +6,24 @@ import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongData.CommentData;
 
 /**
- * Represents a reversible action to add a comment.
+ * Represents a reversible action to modify a comment.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
-class AddCommentCommand implements ChartEditorCommand
+class EditCommentCommand implements ChartEditorCommand
 {
   var comment:CommentData;
+  var time:Null<Float>;
+  var text:Null<String>;
+  var color:Null<String>;
 
-  public function new(comment:CommentData)
+  public function new(targetComment:CommentData, newTime:Null<Float>, newText:Null<String>, newColor:Null<String>)
   {
-    this.comment = comment;
+    this.comment = targetComment;
+
+    this.time = newTime;
+    this.text = newText;
+    this.color = newColor;
   }
 
   /**
@@ -26,6 +33,7 @@ class AddCommentCommand implements ChartEditorCommand
    */
   public function execute(state:ChartEditorState):Void
   {
+    trace('Modifying comment');
     state.currentSongChartCommentData.push(comment);
 
     state.commentDisplayDirty = true;
