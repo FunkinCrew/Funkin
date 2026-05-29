@@ -1,17 +1,23 @@
 package funkin.ui.charSelect.characters;
 
-import funkin.data.animation.AnimationData;
-import funkin.data.freeplay.player.PlayerData;
+import funkin.audio.FunkinSound;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectCharacterData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectGFData;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.group.FunkinGroup;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.ui.charSelect.CharacterSelectState;
-import funkin.ui.charSelect.characters.CharSelectCharacter;
-import funkin.util.assets.FlxAnimationUtil;
+import funkin.ui.charSelect.characters.CharSelectCharacter.CharacterAnimation;
+import funkin.ui.charSelect.characters.CharSelectCharacter.CharacterSelectType;
 
 /**
  * A `FunkinGroup` that holds all of the characters for the Character Select screen.
+ * You can retrieve a character by its ID with `getCharacter()`.
  */
-@:nullSafety @:access(funkin.ui.charSelect.characters.CharSelectCharacter)
+@:nullSafety
+@:access(funkin.ui.charSelect.characters.CharSelectCharacter)
 class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 {
   /**
@@ -21,15 +27,20 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
   function get_player():CharSelectCharacter
   {
-    var playerCharacter:Null<CharSelectCharacter> = this.getFirst((character) -> character.alive
-      && character.characterType != CharacterSelectType.GF);
+    var playerCharacter:Null<CharSelectCharacter> = this.getFirst(
+      (character) -> (character.alive && character.visible) && character.characterType != CharacterSelectType.GF);
+
+    if (playerCharacter == null)
+    {
+      playerCharacter = this.getFirst((character) -> character.alive && character.characterType == CharacterSelectType.GF);
+    }
 
     if (playerCharacter == null)
     {
       throw 'Failed to find player character in character group!';
 
       // So null-safety is happy.
-      return new CharSelectCharacter('unknown', CharacterSelectState.CUTOUT_SIZE, 0, false, null);
+      return new CharSelectCharacter('unknown', CharacterSelectState.CUTOUT_SIZE, 0, PLAYER, null);
     }
 
     return playerCharacter;
@@ -42,23 +53,61 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 
   function get_gf():CharSelectCharacter
   {
-    var gfCharacter:Null<CharSelectCharacter> = this.getFirst((character) -> character.alive
-      && character.characterType == CharacterSelectType.GF);
+    var gfCharacter:Null<CharSelectCharacter> = this.getFirst(
+      (character) -> (character.alive && character.visible) && character.characterType == CharacterSelectType.GF);
+
+    if (gfCharacter == null)
+    {
+      gfCharacter = this.getFirst((character) -> character.alive && character.characterType == CharacterSelectType.GF);
+    }
 
     if (gfCharacter == null)
     {
       throw 'Failed to find GF character in character group!';
 
       // So null-safety is happy.
-      return new CharSelectCharacter('unknown', CharacterSelectState.CUTOUT_SIZE, 0, false, null);
+      return new CharSelectCharacter('unknown', CharacterSelectState.CUTOUT_SIZE, 0, PLAYER, null);
     }
 
     return gfCharacter;
   }
 
+  /**
+   * A static ambience that plays when the Locked character is selected.
+   */
+  var staticSound:FunkinSound;
+
   public function new(x:Float = 0, y:Float = 0)
   {
     super(x, y);
+
+    staticSound = new FunkinSound();
+
+    staticSound.loadEmbedded(Paths.sound('ui/character-select/sounds/static'));
+    staticSound.looped = true;
+    staticSound.volume = 0.6;
+
+    FlxG.sound.list.add(staticSound);
+  }
+
+  /**
+   * Retrieves a character by its ID.
+   * @param id The ID of the character to retrieve.
+   * @param isGF Whether to retrieve the GF character.
+   * @return The character, or null if it doesn't exist.
+   */
+  public function getCharacter(id:String, isGF:Bool = false):Null<CharSelectCharacter>
+  {
+    return this.getFirst((char) -> char.playerId == id && (isGF ? char.characterType == CharacterSelectType.GF : true));
+  }
+
+  /**
+   * Dispatches an event to all characters.
+   * @param event The event to dispatch.
+   */
+  public function dispatchEvent(event:ScriptEvent):Void
+  {
+    this.forEach((character) -> ScriptEventDispatcher.callEvent(character, event));
   }
 
   /**
@@ -68,12 +117,10 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
    */
   public function setCharacters(oldId:String, newId:String):Void
   {
-    var oldPlayer:Null<CharSelectCharacter> = this.getFirst((char) -> char.playerId == oldId
-      && char.characterType != CharacterSelectType.GF);
-    var oldGF:Null<CharSelectCharacter> = this.getFirst((char) -> char.playerId == oldId && char.characterType == CharacterSelectType.GF);
-    var newPlayer:Null<CharSelectCharacter> = this.getFirst((char) -> char.playerId == newId
-      && char.characterType != CharacterSelectType.GF);
-    var newGF:Null<CharSelectCharacter> = this.getFirst((char) -> char.playerId == newId && char.characterType == CharacterSelectType.GF);
+    var oldPlayer:Null<CharSelectCharacter> = getCharacter(oldId);
+    var oldGF:Null<CharSelectCharacter> = getCharacter(oldId, true);
+    var newPlayer:Null<CharSelectCharacter> = getCharacter(newId);
+    var newGF:Null<CharSelectCharacter> = getCharacter(newId, true);
 
     if (oldGF != null)
     {
@@ -93,13 +140,22 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
     }
 
     newPlayer?.revive();
-    newPlayer?.playAnimation(SLIDEIN);
+    newPlayer?.playAnimation(SLIDEIN, true);
 
     if (newGF != null)
     {
       newGF.localVisible = newId != 'locked';
       newGF.revive();
       newGF.playAnimation(IDLE);
+    }
+
+    if (newId == 'locked')
+    {
+      staticSound.play();
+    }
+    else
+    {
+      staticSound.stop();
     }
   }
 
@@ -110,15 +166,23 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
    */
   public function createCharacters(startingCharacter:String, characterList:Map<Int, String>):Void
   {
-    var lockedCharacter:CharSelectCharacter = createCharacter('locked', false, {
+    if (!this.isEmpty())
+    {
+      this.clear();
+    }
+
+    var lockedCharacter:CharSelectCharacter = createCharacter('locked', LOCKED_PLAYER, {
       assetPath: 'ui/character-select/characters/locked',
       animations: PlayerCharSelectData.getDefaultAnimations(LOCKED_PLAYER),
       atlasSettings: {
-        cacheOnLoad: true
+        cacheOnLoad: true,
+        filterQuality: 2, // LOW
       }
     });
-    @:privateAccess
-    lockedCharacter.__backwardsCompatibility = true;
+
+    // Layer the locked character on top of every other character.
+    lockedCharacter.zIndex = 100;
+
     lockedCharacter.kill();
     add(lockedCharacter);
 
@@ -135,6 +199,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
         animations: playerCSData.characterData?.animations,
         atlasSettings: playerCSData.characterData?.atlasSettings,
         danceEvery: playerCSData.characterData?.danceEvery,
+        offsets: playerCSData.characterData?.offsets ?? [0, 0]
       };
 
       // Additional check for if the asset path is blank... somehow.
@@ -143,7 +208,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
         playerParams.assetPath = 'ui/character-select/characters/${newId}';
       }
 
-      var playerCharacter:CharSelectCharacter = createCharacter(newId, false, playerParams);
+      var playerCharacter:CharSelectCharacter = createCharacter(newId, PLAYER, playerParams);
 
       if (newId != startingCharacter) playerCharacter.kill();
       this.add(playerCharacter);
@@ -157,24 +222,40 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
           scriptClass: girlfriendCSData.characterData?.scriptClass,
           animations: girlfriendCSData.characterData?.animations,
           atlasSettings: girlfriendCSData.characterData?.atlasSettings,
-          danceEvery: girlfriendCSData.characterData?.danceEvery
+          danceEvery: girlfriendCSData.characterData?.danceEvery,
+          offsets: girlfriendCSData.characterData?.offsets ?? [0, 0]
         };
 
-        var gfCharacter:CharSelectCharacter = createCharacter(newId, true, gfParams, girlfriendCSData?.visualizer ?? false);
+        var gfCharacter:CharSelectCharacter = createCharacter(newId, GF, gfParams, girlfriendCSData?.visualizer ?? false);
 
         if (newId != startingCharacter) gfCharacter.kill();
         this.add(gfCharacter);
       }
     }
+
+    this.refresh();
   }
 
-  function createCharacter(playerId:String, isGf:Bool = false, data:Null<PlayerCharSelectCharacterData>, enableVisualizer:Bool = false):CharSelectCharacter
+  function createCharacter(playerId:String,
+    characterType:CharacterSelectType,
+    data:Null<PlayerCharSelectCharacterData>,
+    enableVisualizer:Bool = false):CharSelectCharacter
   {
     if (data != null && data.scriptClass != null)
     {
-      return ScriptedCharSelectCharacter.scriptInit(data.scriptClass, playerId, CharacterSelectState.CUTOUT_SIZE, 0, isGf, data, enableVisualizer);
+      var scriptedCharacter:Null<CharSelectCharacter> = CharSelectCharacter.scriptInit(
+        data.scriptClass,
+        playerId,
+        0,
+        0,
+        characterType,
+        data,
+        enableVisualizer
+      );
+      if (scriptedCharacter == null) throw 'Failed to initialize scripted character: ${data.scriptClass}';
+      return scriptedCharacter;
     }
 
-    return new CharSelectCharacter(playerId, CharacterSelectState.CUTOUT_SIZE, 0, isGf, data, enableVisualizer);
+    return new CharSelectCharacter(playerId, 0, 0, characterType, data, enableVisualizer);
   }
 }

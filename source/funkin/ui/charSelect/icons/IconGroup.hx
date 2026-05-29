@@ -1,20 +1,24 @@
 package funkin.ui.charSelect.icons;
 
-import flixel.FlxObject;
+import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.VerticalCutShader;
 import funkin.group.FunkinGroup;
 import funkin.input.Controls;
 import funkin.ui.charSelect.CharacterSelectState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.FramesJSFLParser;
 import funkin.util.MathUtil;
-import openfl.display.BlendMode;
 import openfl.filters.BitmapFilter;
 import openfl.filters.DropShadowFilter;
+#if FEATURE_TOUCH_CONTROLS
+import flixel.FlxObject;
+import flixel.group.FlxGroup.FlxTypedGroup;
+#end
 
 /**
  * A `FunkinGroup` that holds all of the icons for the Character Select screen.
@@ -36,17 +40,19 @@ class IconGroup extends FunkinGroup<FunkinSprite>
   public static final ICON_ANIMATION_INFO_PATH:String = 'ui/character-select/interface/icon-bop/info.txt';
 
   /**
-   * The distance between icons in the X axis.
-   * @default 107
+   * The speed to lerp the icons at when scrolling pages.
    */
-  public var iconSpreadX:Float = 107;
+  public static final SLOT_LERP_VALUE:Float = 0.1;
 
   /**
-   * The distance between icons in the Y axis.
-   * @default 127
+   * The distance between icons for both axes.
+   * @default 100, 100
    */
-  public var iconSpreadY:Float = 127;
+  public var iconSpread:FlxPoint = FlxPoint.get(107, 105);
 
+  /**
+   * The controls for the Character Select screen.
+   */
   var controls(get, never):Controls;
 
   function get_controls():Controls
@@ -55,9 +61,44 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     return CharacterSelectState.instance.controls;
   }
 
+  /**
+   * An intro tween for the icons that plays when entering Character Select.
+   */
   var introTween:Null<FlxTween> = null;
+
+  /**
+   * An exit tween for the icons that plays when exiting Character Select.
+   */
   var exitTween:Null<FlxTween> = null;
+
+  /**
+   * The shader to apply to the last 3 icons from the previous page.
+   * Only used for locks.
+   */
+  var topCutShader:VerticalCutShader = new VerticalCutShader(TOP);
+
+  /**
+   * The shader to apply to the first 3 icons from the next page.
+   * Only used for locks.
+   */
+  var bottomCutShader:VerticalCutShader = new VerticalCutShader(BOTTOM);
+
+  #if FEATURE_TOUCH_CONTROLS
+  /**
+   * A group of hitboxes for the icons.
+   * Only used on mobile.
+   *
+   * It's a `FlxTypedGroup` because `FunkinGroup` doesn't support `FlxObject`s...
+   */
+  var hitboxes:FlxTypedGroup<FlxObject> = new FlxTypedGroup<FlxObject>();
+  #end
+
+  final ANIMATION_DELAY:Float = 1 / 24;
+  var _shouldAnimate:Bool = false;
+  var _currentAnimationFrame:Int = 0;
   var _iconAnimationInfo:Null<Null<FramesJSFLInfo>>;
+  var _iconToAnimate:Null<FunkinSprite>;
+  var _animationTimer:Float = 0;
 
   public function new(x:Float = 0, y:Float = 0)
   {
@@ -72,61 +113,127 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     this.scrollFactor.set();
   }
 
-  @:privateAccess
-  public function loadCharacters():Void
+  /**
+   * Retrieves an icon by its ID.
+   * @param id The ID of the icon to retrieve.
+   * @return The icon, or null if it doesn't exist.
+   */
+  public function getIcon(id:String):Null<FunkinSprite>
   {
-    if (CharacterSelectState.instance == null) return;
+    return this.getFirst((icon) -> icon.ID == 0 && cast(icon, PixelatedIcon).char == id);
+  }
 
-    for (i in 0...CharacterSelectState.instance.totalSlots)
+  /**
+   * Retrieves an icon by its index.
+   * @param index The index of the icon to retrieve.
+   * @return The icon, or null if it doesn't exist.
+   */
+  public function getIconByIndex(index:Int):Null<FunkinSprite>
+  {
+    for (iconIndex => member in this.children)
     {
-      if (CharacterSelectState.instance.availableChars.exists(i)
-        && PlayerRegistry.instance.isCharacterSeen(CharacterSelectState.instance.availableChars.get(i) ?? Constants.DEFAULT_CHARACTER))
+      if (iconIndex == index)
       {
-        var path:Null<String> = CharacterSelectState.instance.availableChars.get(i) ?? Constants.DEFAULT_CHARACTER;
-        var temp:PixelatedIcon = new PixelatedIcon(0, 0);
-        temp.setCharacter(path);
-        temp.setGraphicSize(128, 128);
-        temp.updateHitbox();
-        temp.ID = 0;
+        return member;
+      }
+    }
 
-        this.add(temp);
+    return null;
+  }
+
+  /**
+   * Replaces a lock with a new icon.
+   * @param characterId The character ID of the new icon.
+   * @param lockIndex The index of the lock to replace.
+   */
+  public function replaceLock(characterId:String, lockIndex:Int):Void
+  {
+    var newIcon:PixelatedIcon = new PixelatedIcon(0, 0);
+    newIcon.setCharacter(characterId);
+    newIcon.setGraphicSize(128, 128);
+    newIcon.updateHitbox();
+    newIcon.ID = 0;
+
+    var oldLock:Null<FunkinSprite> = getIconByIndex(lockIndex);
+    if (oldLock == null) return;
+
+    this.remove(oldLock);
+    this.insert(newIcon, lockIndex);
+  }
+
+  /**
+   * Loads the icons for the Character Select screen.
+   * @param slotCount The total number of slots in the Character Select screen.
+   * @param characterList The list of available characters.
+   * @param locksToUnlock The list of locks to unlock.
+   */
+  public function loadCharacters(slotCount:Int, characterList:Map<Int, String>, locksToUnlock:Array<Int>):Void
+  {
+    for (i in 0...slotCount)
+    {
+      var newIcon:Null<FunkinSprite> = null;
+      var playableCharacterId:Null<String> = characterList.get(i) ?? Constants.DEFAULT_CHARACTER;
+
+      if (characterList.exists(i) && PlayerRegistry.instance.isCharacterSeen(playableCharacterId))
+      {
+        newIcon = new PixelatedIcon(0, 0);
+        cast(newIcon, PixelatedIcon).setCharacter(playableCharacterId);
+        newIcon.setGraphicSize(128, 128);
+        newIcon.updateHitbox();
+        newIcon.scale.set(2, 2);
+        newIcon.ID = 0;
+
+        this.add(newIcon);
       }
       else
       {
-        var playableCharacterId:Null<String> = CharacterSelectState.instance.availableChars.get(i) ?? Constants.DEFAULT_CHARACTER;
         var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playableCharacterId);
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
-        if (CharacterSelectState.instance.availableChars.exists(i) && isPlayerUnlocked) CharacterSelectState.instance.nonLocks.push(i);
+        if (characterList.exists(i) && isPlayerUnlocked)
+        {
+          locksToUnlock.push(i);
+        }
 
-        var temp:Lock = new Lock(0, 0, i);
+        newIcon = new Lock(0, 0, i);
+        newIcon.ID = 1;
 
-        temp.ID = 1;
-
-        this.add(temp);
+        this.add(newIcon);
       }
 
-      if (i >= CharacterSelectState.SLOTS_PER_PAGE) continue;
+      if (newIcon == null) continue;
 
-      var hitTemp:FlxObject = new FlxObject(this.children[i].x, this.children[i].y, 86, 86);
-      hitTemp.active = false;
-      hitTemp.scrollFactor.set();
-
-      @:privateAccess
-      CharacterSelectState.instance.grpHitboxes.add(hitTemp);
+      #if FEATURE_TOUCH_CONTROLS
+      var iconHitbox:FlxObject = new FlxObject(0, 0, 86, 86);
+      iconHitbox.active = false;
+      iconHitbox.scrollFactor.set();
+      hitboxes.add(iconHitbox);
+      #end
     }
 
     updateIconPositions();
   }
 
+  /**
+   * Starts the intro tween for the Character Select screen.
+   */
   public function doIntroTween():Void
   {
+    if (CharacterSelectState.instance == null) return;
+
     if (introTween != null) introTween.cancel();
 
-    this.y += 300;
-    introTween = FlxTween.tween(this, {y: this.y - 300}, 1, {ease: FlxEase.expoOut});
+    var currentPage:Int = Math.floor(CharacterSelectState.instance.currentSelection / CharacterSelectState.SLOTS_PER_PAGE);
+    var targetY:Float = (120 - currentPage * iconSpread.y * 3) - 120;
+
+    this.y = targetY + 300;
+
+    introTween = FlxTween.tween(this, {y: targetY}, 1, {ease: FlxEase.expoOut});
     introTween.start();
   }
 
+  /**
+   * Starts the exit tween for the Character Select screen.
+   */
   public function doExitTween():Void
   {
     if (exitTween != null) exitTween.cancel();
@@ -135,138 +242,192 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     exitTween.start();
   }
 
+  /**
+   * Updates the positions of the icons in the Character Select screen.
+   */
   public function updateIconPositions():Void
   {
     for (index => member in this.children)
     {
-      var posX:Float = (index % CharacterSelectState.SLOTS_PER_ROW);
-      var posY:Float = Math.floor(index / CharacterSelectState.SLOTS_PER_ROW);
+      var iconX:Float = (index % CharacterSelectState.SLOTS_PER_ROW);
+      var iconY:Float = Math.floor(index / CharacterSelectState.SLOTS_PER_ROW);
 
-      member.localX = posX * iconSpreadX;
-      member.localY = posY * iconSpreadY;
-
-      member.localX += CharacterSelectState.CUTOUT_SIZE + 450;
-      member.localY += 120;
+      member.localX = (iconX * iconSpread.x) + (CharacterSelectState.CUTOUT_SIZE + 450);
+      member.localY = (iconY * iconSpread.y) + 135;
     }
+
+    #if FEATURE_TOUCH_CONTROLS
+    for (index => member in hitboxes.members)
+    {
+      var iconX:Float = (index % CharacterSelectState.SLOTS_PER_ROW);
+      var iconY:Float = Math.floor(index / CharacterSelectState.SLOTS_PER_ROW);
+
+      member.x = ((iconX * iconSpread.x) + (CharacterSelectState.CUTOUT_SIZE + 450)) + 20;
+      member.y = (iconY * iconSpread.y) + 155;
+    }
+    #end
   }
 
-  var bopTimer:Float = 0;
-  var delay:Float = 1 / 24;
-  var bopFr:Int = 0;
-  var bopPlay:Bool = false;
-  var bopRefX:Float = 0;
-  var bopRefY:Float = 0;
-
-  function doBop(icon:PixelatedIcon, elapsed:Float):Void
+  /**
+   * Plays an animation on an icon.
+   * Not to be confused with `playIconBop`!! That's just a function for the unlock animation.
+   *
+   * @param index The index of the icon to play the animation on.
+   * @param animation The animation to play.
+   * @param force Whether to force the animation to play.
+   * @param reversed Whether to play the animation in reverse.
+   */
+  public function playIconAnimation(index:Int, animation:String, force:Bool = false, reversed:Bool = false):Void
   {
-    if (_iconAnimationInfo == null) return;
-    if (bopFr >= _iconAnimationInfo.frames.length)
+    var icon:Null<FunkinSprite> = getIconByIndex(index);
+    if (icon == null)
     {
-      bopRefX = 0;
-      bopRefY = 0;
-      bopPlay = false;
-      bopFr = 0;
+      throw 'Could not find icon in index $index';
       return;
     }
-    bopTimer += elapsed;
 
-    if (bopTimer >= delay)
+    icon.animation.play(animation, force, reversed);
+
+    if (animation == 'confirm' && reversed)
     {
-      bopTimer -= bopTimer;
-
-      var refFrame = _iconAnimationInfo.frames[
-        _iconAnimationInfo.frames.length - 1
-      ];
-      var curFrame = _iconAnimationInfo.frames[bopFr];
-      if (bopFr >= 13) icon.filters = SELECTED_FILTERS;
-
-      var scaleXDiff:Float = curFrame.scaleX - refFrame.scaleX;
-      var scaleYDiff:Float = curFrame.scaleY - refFrame.scaleY;
-
-      icon.scale.set(2.6, 2.6);
-      icon.scale.add(scaleXDiff, scaleYDiff);
-
-      bopFr++;
+      icon.animation.onFinish.addOnce((_) -> icon.animation.play('idle'));
     }
   }
 
-  function updateIconAnimations():Void
+  /**
+   * Selects an icon.
+   * @param index The index of the icon to select.
+   */
+  public function selectIcon(index:Int):Void
   {
-    if (CharacterSelectState.instance == null) return;
+    var icon:Null<FunkinSprite> = getIconByIndex(index);
 
-    for (index => member in this.children)
+    if (icon == null) return;
+    if (icon == _iconToAnimate) return;
+
+    if (isPixelIcon(icon))
     {
-      switch (member.ID)
+      icon.filters = SELECTED_FILTERS;
+      icon.scale.set(2.6, 2.6);
+    }
+    else
+    {
+      // If the icon is a lock, we need to play its selected animation!
+      icon.animation.play('selected');
+    }
+  }
+
+  /**
+   * Deselects an icon.
+   * @param index The index of the icon to deselect.
+   */
+  public function deselectIcon(index:Int):Void
+  {
+    var icon:Null<FunkinSprite> = getIconByIndex(index);
+    if (icon == null) return;
+
+    if (icon == _iconToAnimate)
+    {
+      _iconToAnimate = null;
+      _shouldAnimate = false;
+      _currentAnimationFrame = 0;
+    }
+
+    if (isPixelIcon(icon))
+    {
+      icon.filters = null;
+      icon.scale.set(2, 2);
+    }
+    else
+    {
+      icon.animation.play('idle');
+    }
+  }
+
+  /**
+   * Plays the icon bop animation.
+   * @param characterId The character ID of the icon to animate.
+   */
+  public function playIconBop(characterId:String):Void
+  {
+    if (_iconAnimationInfo == null) return;
+
+    _iconToAnimate = getIcon(characterId);
+    _shouldAnimate = true;
+  }
+
+  /**
+   * Whether or not the specified icon is a pixel icon.
+   * @param icon The icon to check.
+   * @return `True`... or `False`...
+   */
+  public function isPixelIcon(icon:FunkinSprite):Bool
+  {
+    return icon.ID == 0;
+  }
+
+  function runAnimation(elapsed:Float):Void
+  {
+    if (_iconAnimationInfo == null) return;
+    if (_iconToAnimate == null) return;
+
+    if (_currentAnimationFrame >= _iconAnimationInfo.frames.length)
+    {
+      _shouldAnimate = false;
+      _currentAnimationFrame = 0;
+      return;
+    }
+
+    _animationTimer += elapsed;
+
+    if (_animationTimer >= ANIMATION_DELAY)
+    {
+      _animationTimer -= _animationTimer;
+
+      var finalFrame:FramesJSFLFrame = _iconAnimationInfo.frames.getFinal();
+      var currentFrame:FramesJSFLFrame = _iconAnimationInfo.frames[_currentAnimationFrame];
+
+      if (_currentAnimationFrame >= 13) _iconToAnimate.filters = SELECTED_FILTERS;
+
+      var scaleXDiff:Float = currentFrame.scaleX - finalFrame.scaleX;
+      var scaleYDiff:Float = currentFrame.scaleY - finalFrame.scaleY;
+
+      _iconToAnimate.scale.set(2.6, 2.6);
+      _iconToAnimate.scale.add(scaleXDiff, scaleYDiff);
+
+      _currentAnimationFrame++;
+    }
+  }
+
+  override public function updateChildren():Void
+  {
+    for (child in children)
+    {
+      // In this case, we want to do a lot stuff like scaling ourselves,
+      // but we want FunkinGroup to handle positioning!
+      if (child != null && child.exists && child.active)
       {
-        case 1:
-          var lock:Lock = cast member;
-          if (index == CharacterSelectState.instance.currentSelection)
-          {
-            switch (lock.getCurrentAnimation())
-            {
-              case 'idle':
-                lock.animation.play('selected');
-              case 'selected' | 'clicked':
-                @:privateAccess
-                if (controls.ACCEPT_P || CharacterSelectState.instance.mobileAccept) lock.animation.play('clicked', true);
-            }
-          }
-          else
-          {
-            lock.animation.play('idle');
-          }
-        case 0:
-          var memb:PixelatedIcon = cast member;
+        var displace:FlxPoint = FlxPoint.get(child.localX, child.localY);
 
-          if (index == CharacterSelectState.instance.currentSelection)
-          {
-            if (bopPlay)
-            {
-              if (bopRefX == 0)
-              {
-                bopRefX = memb.x;
-                bopRefY = memb.y;
-              }
-              doBop(memb, FlxG.elapsed);
-            }
-            else
-            {
-              memb.filters = SELECTED_FILTERS;
-              memb.scale.set(2.6, 2.6);
-            }
-            if (CharacterSelectState.instance.pressedSelect && memb.animation.curAnim?.name == 'idle') memb.animation.play('confirm');
-            if (CharacterSelectState.instance.autoFollow
-              && !CharacterSelectState.instance.pressedSelect
-              && memb.animation.curAnim?.name != 'idle')
-            {
-              memb.animation.play('confirm', false, true);
+        child.x = x + displace.x;
+        child.y = y + displace.y;
 
-              var onFinish:String->Void;
-              onFinish = (_) ->
-              {
-                member.animation.play('idle');
-                member.animation.onFinish.remove(onFinish);
-              };
-
-              member.animation.onFinish.add(onFinish);
-            }
-          }
-          else
-          {
-            memb.filters = null;
-            memb.scale.set(2, 2);
-          }
+        // force child cameras to the group's cameras.
+        if (child.cameras != cameras) child.cameras = cameras;
       }
     }
   }
 
-  var previousPage:Int = 0;
+  var previousPage:Int = -1;
 
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    updateIconAnimations();
+    if (_shouldAnimate)
+    {
+      runAnimation(elapsed);
+    }
 
     if (CharacterSelectState.instance == null) return;
 
@@ -274,7 +435,7 @@ class IconGroup extends FunkinGroup<FunkinSprite>
 
     if (introTween != null && introTween.active)
     {
-      if (previousPage != currentPage)
+      if (previousPage != currentPage && previousPage != -1)
       {
         @:privateAccess
         introTween.finish();
@@ -282,35 +443,61 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
     else
     {
-      this.y = MathUtil.smoothLerpPrecision(this.y, (120 - currentPage * iconSpreadY * 3) - 120, elapsed, CharacterSelectState.SLOT_LERP_VALUE);
+      this.y = MathUtil.smoothLerpPrecision(this.y, (120 - currentPage * iconSpread.y * 3) - 120, elapsed, SLOT_LERP_VALUE);
     }
 
-    // Update icon visibility based on the current page.
+    // The last 3 icons from the previous page are clipped from the top half
+    // The first 3 icons from the next page are clipped from the bottom half
+    // Any other icons not in the current page are hidden
     for (index => member in this.children)
     {
       var memberPage:Int = Math.floor(index / CharacterSelectState.SLOTS_PER_PAGE);
-      var isFirst3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) < 3;
-      var targetAlpha:Float = (memberPage == currentPage) ? 1 : (isFirst3 ? 0.5 : 0);
+      var isNext3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) < 3 && memberPage == currentPage + 1;
+      var isLast3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) >= (CharacterSelectState.SLOTS_PER_PAGE - 3)
+        && memberPage == currentPage - 1;
 
-      member.localAlpha = MathUtil.smoothLerpPrecision(member.localAlpha, targetAlpha, elapsed, CharacterSelectState.SLOT_LERP_VALUE);
+      var shouldClip:Bool = isNext3 || isLast3;
 
-      if (isFirst3 && memberPage != currentPage)
+      var targetAlpha:Float = (memberPage == currentPage) ? 1 : (shouldClip ? 0.5 : 0);
+      member.alpha = targetAlpha;
+
+      if (isPixelIcon(member))
       {
-        member.blend = BlendMode.MULTIPLY;
-
-        if (member.clipRect == null)
-        {
-          member.clipRect = FlxRect.get(0, 0, member.frameWidth, member.frameHeight / 2);
-        }
+        @:nullSafety(Off)
+        member.clipRect = null;
       }
       else
       {
-        member.blend = BlendMode.NORMAL;
+        @:nullSafety(Off)
+        member.shader = null;
+      }
 
-        if (member.clipRect != null)
+      if (shouldClip)
+      {
+        // FIXME: clipRect is buggy on locks specifically when trying to clip out the bottom half
+        // A shader is used instead for now
+        // - Abnormal
+        if (isLast3)
         {
-          @:nullSafety(Off)
-          member.clipRect = null;
+          if (isPixelIcon(member))
+          {
+            member.clipRect = FlxRect.get(0, member.frameHeight / 2, member.frameWidth, member.frameHeight);
+          }
+          else
+          {
+            member.shader = topCutShader;
+          }
+        }
+        else if (isNext3)
+        {
+          if (isPixelIcon(member))
+          {
+            member.clipRect = FlxRect.get(0, 0, member.frameWidth, member.frameHeight / 2);
+          }
+          else
+          {
+            member.shader = bottomCutShader;
+          }
         }
       }
     }

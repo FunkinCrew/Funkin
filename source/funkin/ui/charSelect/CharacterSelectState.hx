@@ -1,16 +1,8 @@
 package funkin.ui.charSelect;
 
 import flixel.FlxObject;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
-import flixel.sound.FlxSound;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.util.FlxDirectionFlags;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
@@ -18,25 +10,24 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.BlueFade;
 import funkin.modding.events.ScriptEvent;
-import funkin.modding.events.ScriptEventDispatcher;
 import funkin.save.Save;
-import funkin.ui.PixelatedIcon;
+import funkin.ui.UIStateMachine;
 import funkin.ui.charSelect.characters.CharSelectCharacter;
 import funkin.ui.charSelect.characters.CharSelectCharacterGroup;
 import funkin.ui.charSelect.characters.Nametag;
 import funkin.ui.charSelect.icons.IconGroup;
-import funkin.ui.charSelect.icons.Lock;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.util.HapticUtil;
-import funkin.util.MathUtil;
-import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
 import openfl.filters.ShaderFilter;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
 #if FEATURE_TOUCH_CONTROLS
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
+import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
 #end
 
@@ -46,17 +37,16 @@ import funkin.util.TouchUtil;
 typedef CharacterSelectStateParams =
 {
   ?character:String
-};
+}
 
 /**
- * The state of the Character Select screen. Allows the player to select a playable character.$
+ * The state of the Character Select screen. Allows the player to select a playable character.
  */
 @:nullSafety
 class CharacterSelectState extends MusicBeatSubState
 {
   /**
    * A singleton instance of the Character Select screen.
-   * There should only ever be one instance of this at a time.
    */
   public static var instance:Null<CharacterSelectState> = null;
 
@@ -91,31 +81,65 @@ class CharacterSelectState extends MusicBeatSubState
   }
 
   /**
-   * The speed to lerp the icons at when scrolling pages.
+   * The UI state machine for the Character Select screen.
    */
-  public static final SLOT_LERP_VALUE:Float = 0.1;
+  public var uiStateMachine(default, null):UIStateMachine = new UIStateMachine();
 
   /**
    * A `FunkinGroup` that holds all of the icons.
    */
-  public var iconGroup:IconGroup = new IconGroup();
+  public var icons:IconGroup = new IconGroup();
 
   /**
-   * Alias for `this.iconGroup`.
+   * Alias for `this.icons`.
    * Only here for backwards compatibility with mods.
    */
-  @:deprecated("Use `this.iconGroup` instead.")
+  @:deprecated('Use `this.icons` instead.')
   public var grpIcons(get, never):IconGroup;
 
   function get_grpIcons():IconGroup
   {
-    return iconGroup;
+    return icons;
   }
 
   /**
    * The currently selected icon.
    */
-  public var currentSelection:Int;
+  public var currentSelection(default, set):Int;
+
+  function set_currentSelection(value:Int):Int
+  {
+    if (value == currentSelection) return value;
+
+    var oldSelection:Int = currentSelection;
+
+    currentSelection = value;
+
+    cursors.resetDeny();
+    selectSound.play(true);
+
+    var currentCharacter:String = availableChars.get(currentSelection) ?? Constants.DEFAULT_CHARACTER;
+    if (availableChars.exists(currentSelection) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
+    {
+      if (currentCharacter != null)
+      {
+        currentCharacterId = currentCharacter;
+      }
+    }
+    else
+    {
+      currentCharacterId = 'locked';
+    }
+
+    icons.selectIcon(currentSelection);
+
+    if (oldSelection != currentSelection)
+    {
+      icons.deselectIcon(oldSelection);
+    }
+
+    return value;
+  }
 
   /**
    * A `FunkinGroup` that holds of all of the character sprites.
@@ -158,68 +182,176 @@ class CharacterSelectState extends MusicBeatSubState
     return characters.gf;
   }
 
-  var grpHitboxes:FlxTypedGroup<FlxObject>;
+  /**
+   * The nametag that appears at the top right, changes between characters.
+   */
+  public var nametag:Nametag;
 
-  public var nonLocks:Array<Int> = [];
-  public var totalSlots:Int;
+  /**
+   * The current character ID.
+   * Not to be confused with `currentSelection`, which is the currently selected ICON.
+   */
+  public var currentCharacterId(default, set):String = Constants.DEFAULT_CHARACTER;
 
+  function set_currentCharacterId(value:String):String
+  {
+    if (currentCharacterId == value) return value;
+
+    var oldId:String = currentCharacterId;
+
+    currentCharacterId = value;
+
+    nametag.loadCharacter(value);
+
+    characters.setCharacters(oldId, value);
+    characters.dispatchEvent(new ScriptEvent(CREATE));
+
+    return value;
+  }
+
+  /**
+   * The last character that was selected.
+   */
+  public var rememberedCharacterId:String;
+
+  /**
+   * Alias for `currentCharacterId`.
+   * Only here for backwards compatibility with mods.
+   */
+  @:deprecated('Use `currentCharacterId` instead.')
+  public var curChar(get, never):String;
+
+  function get_curChar():String
+  {
+    return currentCharacterId;
+  }
+
+  /**
+   * Toggling this on will make the camera follow whatever slot is selected.
+   * For example, going to the leftmost slot will make the camera pan slightly to the left.
+   */
+  public var autoFollow:Bool = false;
+
+  /**
+   * A timer that runs when a character is selected.
+   */
+  var selectTimer:FlxTimer = new FlxTimer();
+
+  /**
+   * A list of locks that need to be unlocked for the unlock animation.
+   */
+  var locksToUnlock:Array<Int> = [];
+
+  /**
+   * The total number of slots in the Character Select screen.
+   */
+  var totalSlots:Int;
+
+  /**
+   * A list of available characters.
+   * The key is the slot number, and the value is the character ID.
+   */
+  var availableChars:Map<Int, String> = new Map<Int, String>();
+
+  /**
+   * A `FunkinGroup` that controls the cursor in the Character Select screen.
+   */
   var cursors:CharSelectCursors;
-  var cursorFactor:Float = 110;
-  var cursorOffsetX:Float = -16;
-  var cursorOffsetY:Float = -48;
-  var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
-  var barthing:FunkinSprite;
-  var dipshitBacking:FunkinSprite;
+
+  /**
+   * The bar at the top of the screen.
+   */
+  var topBar:FunkinSprite;
+
+  /**
+   * The "CHOOSE YOUR DIPSHIT" text.
+   */
   var chooseDipshit:FunkinSprite;
-  var dipshitBlur:FunkinSprite;
+
+  /**
+   * A gradient sprite that appears when you enter Character Select.
+   */
   var transitionGradient:FunkinSprite;
 
-  public var curChar(default, set):String = Constants.DEFAULT_CHARACTER;
+  /**
+   * An empty `FlxObject` that the camera follows.
+   */
+  var cameraFollowPoint:FlxObject;
 
-  var rememberedChar:String;
-  var nametag:Nametag;
-  var camFollow:FlxObject = new FlxObject(0, 0, 1, 1);
+  /**
+   * The select sound, plays when you go to a character.
+   */
+  var selectSound:FunkinSound;
 
-  public var autoFollow:Bool = false;
-  public var availableChars:Map<Int, String> = new Map<Int, String>();
-  public var pressedSelect:Bool = false;
+  /**
+   * The unlock sound, plays during the unlock animation.
+   */
+  var unlockSound:FunkinSound;
 
-  var selectTimer:FlxTimer = new FlxTimer();
-  var allowInput:Bool = false;
-  var selectSound:FunkinSound = new FunkinSound();
-  var unlockSound:FunkinSound = new FunkinSound();
-  var lockedSound:FunkinSound = new FunkinSound();
-  var introSound:FunkinSound = new FunkinSound();
-  var staticSound:FunkinSound = new FunkinSound();
-  var charHitbox:FlxObject = new FlxObject();
-  var fadeShader:BlueFade = new BlueFade();
+  /**
+   * The locked sound, plays when you try to select a locked character.
+   */
+  var lockedSound:FunkinSound;
+
+  /**
+   * The intro sound, plays when you enter Character Select for the first time after unlocking a character.
+   */
+  var introSound:FunkinSound;
+
+  /**
+   * A shader that fades the screen to a blue tint, used when entering and exiting Character Select.
+   */
+  var fadeShader:BlueFade;
+
+  /**
+   * A separate class that handles directional inputs.
+   */
+  var inputHandler:CharSelectInputHandler = new CharSelectInputHandler();
+
+  #if FEATURE_TOUCH_CONTROLS
+  /**
+   * The hitbox for the character that the user is selecting.
+   */
+  var characterHitbox:FlxObject;
+  #end
+
+  /**
+   * Whether or not the player went back to Freeplay instead of selecting a character.
+   */
+  var wentBackToFreeplay:Bool = false;
 
   public function new(?params:CharacterSelectStateParams)
   {
     super();
 
-    rememberedChar = params?.character ?? '';
+    rememberedCharacterId = params?.character ?? '';
+
+    @:bypassAccessor
+    currentCharacterId = rememberedCharacterId;
 
     cursors = new CharSelectCursors();
-    grpHitboxes = new FlxTypedGroup<FlxObject>();
 
-    dipshitBlur = new FunkinSprite(CUTOUT_SIZE + 419, -65);
-    dipshitBacking = new FunkinSprite(CUTOUT_SIZE + 423, -17);
-    chooseDipshit = new FunkinSprite(CUTOUT_SIZE + 426, -13);
-
-    nametag = new Nametag(rememberedChar);
-
-    charHitbox = new FlxObject(FlxG.width * 0.65, FlxG.height * 0.2, 300, 500);
-
+    chooseDipshit = new FunkinSprite(CUTOUT_SIZE, 0);
     transitionGradient = new FunkinSprite(0, 0);
-    barthing = new FunkinSprite(0, 0);
+    topBar = new FunkinSprite(0, 0);
+
+    nametag = new Nametag(rememberedCharacterId);
 
     selectSound = new FunkinSound();
     unlockSound = new FunkinSound();
     lockedSound = new FunkinSound();
-    staticSound = new FunkinSound();
+    introSound = new FunkinSound();
+
+    fadeShader = new BlueFade();
+
+    #if FEATURE_TOUCH_CONTROLS
+    characterHitbox = new FlxObject(FlxG.width * 0.65, FlxG.height * 0.2, 300, 500);
+    #end
+    cameraFollowPoint = new FlxObject(0, 0, 1, 1);
 
     totalSlots = SLOTS_PER_PAGE;
+
+    @:bypassAccessor
     currentSelection = DEFAULT_CURSOR_INDEX;
 
     instance = this;
@@ -233,7 +365,7 @@ class CharacterSelectState extends MusicBeatSubState
     {
       var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerId);
       if (player == null) continue;
-      var playerData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(playerId)?.getCharSelectData();
+      var playerData:Null<PlayerCharSelectData> = player.getCharSelectData();
       if (playerData == null) continue;
 
       #if !UNLOCK_EVERYTHING
@@ -253,19 +385,41 @@ class CharacterSelectState extends MusicBeatSubState
 
       totalSlots = Std.int(Math.max(targetPosition + 1, totalSlots));
     }
-  }
-
-  override public function create():Void
-  {
-    super.create();
-
-    loadAvailableCharacters();
 
     // Add additional slots to fill up the last page.
     if (totalSlots % SLOTS_PER_PAGE != 0)
     {
       totalSlots += (SLOTS_PER_PAGE - totalSlots % SLOTS_PER_PAGE);
     }
+
+    characters.createCharacters(currentCharacterId, availableChars);
+    icons.loadCharacters(totalSlots, availableChars, locksToUnlock);
+
+    if (rememberedCharacterId != Constants.DEFAULT_CHARACTER)
+    {
+      for (position => characterId in availableChars)
+      {
+        if (characterId == rememberedCharacterId)
+        {
+          @:bypassAccessor
+          currentSelection = position;
+          break;
+        }
+      }
+    }
+
+    icons.selectIcon(currentSelection);
+    cursors.snapToIndex(currentSelection);
+  }
+
+  override public function create():Void
+  {
+    super.create();
+
+    // Disable UI navigation while everything is still being initialized!
+    uiStateMachine.transition(Disabled);
+
+    loadAvailableCharacters();
 
     var bg:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + -153, -140);
     bg.loadGraphic(Paths.image('ui/character-select/interface/char-select-bg'));
@@ -280,31 +434,31 @@ class CharacterSelectState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FunkinSprite = new FunkinSprite(CUTOUT_SIZE - 2, 1).loadTextureAtlas('ui/character-select/interface/char-select-stage', {
+    var stage:FunkinSprite = new FunkinSprite(CUTOUT_SIZE - 2, 1).loadTextureAtlas('ui/character-select/interface/char-select-stage', {
       applyStageMatrix: true
     });
-    stageSpr.anim.addBySymbol('wholeTimeline', stageSpr.getDefaultSymbol(), stageSpr.library.frameRate);
-    stageSpr.animation.play('wholeTimeline');
-    add(stageSpr);
+    stage.anim.addBySymbol('wholeTimeline', stage.getDefaultSymbol(), stage.library.frameRate);
+    stage.animation.play('wholeTimeline');
+    add(stage);
 
     var curtains:FunkinSprite = new FunkinSprite(CUTOUT_SIZE + -212, -99);
     curtains.loadGraphic(Paths.image('ui/character-select/interface/curtains'));
     curtains.scrollFactor.set(1.4, 1.4);
     add(curtains);
 
-    barthing.loadTextureAtlas('ui/character-select/interface/bar-thing', {
+    topBar.loadTextureAtlas('ui/character-select/interface/bar-thing', {
       applyStageMatrix: true
     });
-    barthing.anim.addBySymbol('wholeTimeline', barthing.getDefaultSymbol(), barthing.library.frameRate);
-    barthing.animation.play('wholeTimeline');
-    barthing.blend = BlendMode.MULTIPLY;
-    barthing.scale.x = 2.5;
-    barthing.scrollFactor.set(0, 0);
-    add(barthing);
+    topBar.anim.addBySymbol('wholeTimeline', topBar.getDefaultSymbol(), topBar.library.frameRate);
+    topBar.animation.play('wholeTimeline');
+    topBar.blend = BlendMode.MULTIPLY;
+    topBar.scale.x = 2.5;
+    topBar.scrollFactor.set(0, 0);
+    add(topBar);
 
-    barthing.y += 80;
-    FlxTween.tween(barthing, {
-      y: barthing.y - 80
+    topBar.y += 80;
+    FlxTween.tween(topBar, {
+      y: topBar.y - 80
     }, 1.3, {
       ease: FlxEase.expoOut
     });
@@ -317,28 +471,8 @@ class CharacterSelectState extends MusicBeatSubState
     charLightGF.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
     add(charLightGF);
 
-    @:bypassAccessor curChar = rememberedChar ?? Constants.DEFAULT_CHARACTER;
-
-    characters.createCharacters(curChar, availableChars);
+    // Adding the character group here for layering.
     add(characters);
-
-    // I think I can do the character preselect thing here? This better work
-    // Edit: [UH-OH!] yes! It does!
-    if (rememberedChar != null && rememberedChar != Constants.DEFAULT_CHARACTER)
-    {
-      for (pos => charId in availableChars)
-      {
-        if (charId == rememberedChar)
-        {
-          setCursorPosition(pos, true);
-          break;
-        }
-      }
-    }
-    else
-    {
-      setCursorPosition(DEFAULT_CURSOR_INDEX, true);
-    }
 
     var speakers:FunkinSprite = new FunkinSprite(CUTOUT_SIZE - 10, 0).loadTextureAtlas('ui/character-select/interface/speakers', {
       applyStageMatrix: true
@@ -354,26 +488,12 @@ class CharacterSelectState extends MusicBeatSubState
     fgBlur.blend = BlendMode.MULTIPLY;
     add(fgBlur);
 
-    dipshitBlur.frames = Paths.getSparrowAtlas('ui/character-select/interface/dipshit-blur');
-    dipshitBlur.animation.addByPrefix('idle', 'CHOOSE vertical offset instance 1', 24, true);
-    dipshitBlur.blend = BlendMode.ADD;
-    dipshitBlur.animation.play('idle');
-    add(dipshitBlur);
-
-    dipshitBacking.frames = Paths.getSparrowAtlas('ui/character-select/interface/dipshit-backing');
-    dipshitBacking.animation.addByPrefix('idle', 'CHOOSE horizontal offset instance 1', 24, true);
-    dipshitBacking.blend = BlendMode.ADD;
-    dipshitBacking.animation.play('idle');
-    add(dipshitBacking);
-
-    dipshitBacking.y += 210;
-    FlxTween.tween(dipshitBacking, {
-      y: dipshitBacking.y - 210
-    }, 1.1, {
-      ease: FlxEase.expoOut
+    chooseDipshit.loadTextureAtlas('ui/character-select/interface/dipshit-text', {
+      applyStageMatrix: true
     });
-
-    chooseDipshit.loadGraphic(Paths.image('ui/character-select/interface/choose-your-dipshit'));
+    chooseDipshit.anim.addBySymbol('wholeTimeline', chooseDipshit.getDefaultSymbol(), chooseDipshit.library.frameRate);
+    chooseDipshit.animation.play('wholeTimeline');
+    chooseDipshit.scrollFactor.set();
     add(chooseDipshit);
 
     chooseDipshit.y += 200;
@@ -383,92 +503,49 @@ class CharacterSelectState extends MusicBeatSubState
       ease: FlxEase.expoOut
     });
 
-    dipshitBlur.y += 220;
-    FlxTween.tween(dipshitBlur, {
-      y: dipshitBlur.y - 220
-    }, 1.2, {
-      ease: FlxEase.expoOut
-    });
-
-    chooseDipshit.scrollFactor.set();
-    dipshitBacking.scrollFactor.set();
-    dipshitBlur.scrollFactor.set();
-
-    nametag.midpoint.x += CUTOUT_SIZE;
+    nametag.targetPosition.x += CUTOUT_SIZE;
+    nametag.targetPosition.y += 200;
     add(nametag);
 
-    final initialMidpointY:Float = nametag.midpoint.y;
-    nametag.midpoint.y += 200;
-    FlxTween.tween(nametag.midpoint, {
-      y: initialMidpointY
+    FlxTween.tween(nametag.targetPosition, {
+      y: nametag.targetPosition.y - 200
     }, 1, {
       ease: FlxEase.expoOut
     });
 
-    nametag.scrollFactor.set();
-
     add(cursors);
-    add(iconGroup);
+    add(icons);
 
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(FunkinSprite, [
-      'x',
-      'y',
-      'alpha',
-      'scale',
-      'blend'
-    ]));
-    FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSound, ['pitch', 'volume']));
-
-    charHitbox.active = false;
-    charHitbox.scrollFactor.set();
+    #if FEATURE_TOUCH_CONTROLS
+    characterHitbox.active = false;
+    characterHitbox.scrollFactor.set();
+    add(characterHitbox);
+    #end
 
     selectSound.loadEmbedded(Paths.sound('ui/character-select/sounds/select'));
     selectSound.volume = 0.7;
-
-    FlxG.sound.defaultSoundGroup.add(selectSound);
     FlxG.sound.list.add(selectSound);
 
     unlockSound.loadEmbedded(Paths.sound('ui/character-select/sounds/unlock'));
-    unlockSound.volume = 0;
-    unlockSound.play(true);
-
-    FlxG.sound.defaultSoundGroup.add(unlockSound);
+    unlockSound.volume = 0.7;
     FlxG.sound.list.add(unlockSound);
 
     lockedSound.loadEmbedded(Paths.sound('ui/character-select/sounds/locked'));
-    lockedSound.volume = 1.;
-
-    FlxG.sound.defaultSoundGroup.add(lockedSound);
+    lockedSound.volume = 0.7;
     FlxG.sound.list.add(lockedSound);
 
-    staticSound.loadEmbedded(Paths.sound('ui/character-select/sounds/static'));
-    staticSound.looped = true;
-    staticSound.volume = 0.6;
+    // Pre-caching the menu music for later.
+    FlxG.sound.cache(Paths.sound('ui/character-select/stay-funky/stay-funky'));
 
-    FlxG.sound.defaultSoundGroup.add(staticSound);
-    FlxG.sound.list.add(staticSound);
+    icons.doIntroTween();
 
-    // playing it here to preload it. not doing this makes a super awkward pause at the end of the intro
-    // TODO: probably make an intro thing for funkinSound itself that preloads the next audio?
-    FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
-      startingVolume: 0,
-      overrideExisting: true,
-      restartTrack: true,
-    });
+    cameraFollowPoint.screenCenter();
+    add(cameraFollowPoint);
 
-    iconGroup.loadCharacters();
-
-    iconGroup.doIntroTween();
-
-    add(camFollow);
-    camFollow.screenCenter();
-
-    FlxG.camera.follow(camFollow, LOCKON);
+    FlxG.camera.follow(cameraFollowPoint, LOCKON);
 
     var fadeShaderFilter:ShaderFilter = new ShaderFilter(fadeShader);
     FlxG.camera.filters = [fadeShaderFilter];
-
-    Conductor.stepHit.add(spamOnStep);
 
     #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
@@ -491,18 +568,18 @@ class CharacterSelectState extends MusicBeatSubState
     #end
 
     transitionGradient.loadGraphic(Paths.image('ui/freeplay/interface/transition-gradient'));
-    transitionGradient.scale.set(1280, 1);
+    transitionGradient.scale.set(FlxG.width, 1);
     transitionGradient.flipY = true;
     transitionGradient.updateHitbox();
+    add(transitionGradient);
     FlxTween.tween(transitionGradient, {
-      y: -720
+      y: -FlxG.height
     }, 1, {
       ease: FlxEase.expoOut
     });
-    add(transitionGradient);
 
-    camFollow.screenCenter();
-    camFollow.y -= 150;
+    cameraFollowPoint.screenCenter();
+    cameraFollowPoint.y -= 150;
     FlxG.camera.filtersEnabled = true;
     fadeShader.fade(0.0, 1.0, 0.8, {
       ease: FlxEase.quadOut,
@@ -511,27 +588,25 @@ class CharacterSelectState extends MusicBeatSubState
         FlxG.camera.filtersEnabled = false;
       }
     });
-    FlxTween.tween(camFollow, {
-      y: camFollow.y + 150
+    FlxTween.tween(cameraFollowPoint, {
+      y: cameraFollowPoint.y + 150
     }, 1.5, {
       ease: FlxEase.expoOut,
-      onComplete: function(_)
+      onComplete: (_) ->
       {
         autoFollow = true;
-        FlxG.camera.follow(camFollow, LOCKON, 0.01);
+        FlxG.camera.follow(cameraFollowPoint, LOCKON, 0.01);
       }
     });
 
-    var blackScreen = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
+    var blackScreen:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
     blackScreen.x = -(FlxG.width * 0.5);
     blackScreen.y = -(FlxG.height * 0.5);
     add(blackScreen);
 
-    introSound = new FunkinSound();
     introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights'));
     introSound.volume = 0;
 
-    FlxG.sound.defaultSoundGroup.add(introSound);
     FlxG.sound.list.add(introSound);
 
     openSubState(new IntroSubState());
@@ -539,47 +614,41 @@ class CharacterSelectState extends MusicBeatSubState
     subStateClosed.addOnce((_) ->
     {
       remove(blackScreen);
+
+      // If this is the player's first time entering Character Select, play the intro sound
       if (!Save.instance.oldChar.value)
       {
+        Save.instance.oldChar.value = true;
+
         camera.flash();
 
         introSound.volume = 1;
         introSound.play(true);
       }
-      checkNewChar();
 
-      Save.instance.oldChar.value = true;
+      checkForUnlocks();
     });
   }
 
-  function playMenuMusic():Void
+  function checkForUnlocks():Void
   {
-    FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
-      startingVolume: 1,
-      overrideExisting: true,
-      restartTrack: true,
-      onLoad: () ->
-      {
-        allowInput = true;
-
-        dispatchEvent(new ScriptEvent(CREATE));
-      }
-    });
-  }
-
-  override public function destroy():Void
-  {
-    instance = null;
-
-    super.destroy();
-  }
-
-  function checkNewChar():Void
-  {
-    if (nonLocks.length > 0) selectTimer.start(2, (_) ->
+    if (locksToUnlock.length > 0)
     {
-      unLock();
-    });
+      uiStateMachine.transition(UnlockAnimation);
+
+      // We loop the idle animation since there's no music playing during the unlock sequence
+      // Without looping, the characters would bop once and awkwardly remain static for 2 seconds
+      characters.player.animation.curAnim.looped = true;
+      characters.gf.animation.curAnim.looped = true;
+
+      FlxTimer.wait(2, () ->
+      {
+        characters.player.animation.curAnim.looped = false;
+        characters.gf.animation.curAnim.looped = false;
+
+        playUnlockAnimation();
+      });
+    }
     else
     {
       #if FEATURE_NEWGROUNDS
@@ -591,31 +660,29 @@ class CharacterSelectState extends MusicBeatSubState
     }
   }
 
-  function unLock():Void
+  function playUnlockAnimation():Void
   {
-    pressedSelect = true;
+    currentSelection = locksToUnlock[0];
+    locksToUnlock.shift();
 
-    currentSelection = nonLocks[0];
+    var characterId:String = availableChars.get(currentSelection) ?? Constants.DEFAULT_CHARACTER;
 
-    selectSound.play(true);
+    var newPlayer:Null<CharSelectCharacter> = characters.getCharacter(characterId, false);
+    var newGf:Null<CharSelectCharacter> = characters.getCharacter(characterId, true);
 
-    nonLocks.shift();
-
-    var charId:String = availableChars.get(currentSelection) ?? Constants.DEFAULT_CHARACTER;
-
-    var newPlayer:Null<CharSelectCharacter> = characters.getFirst((char) -> char.playerId == charId && char.characterType != CharacterSelectType.GF);
-    var newGf:Null<CharSelectCharacter> = characters.getFirst((char) -> char.playerId == charId && char.characterType == CharacterSelectType.GF);
-
-    selectTimer.start(0.5, (_) ->
+    FlxTimer.wait(0.5, () ->
     {
-      var lock:Lock = cast iconGroup.children[currentSelection];
+      var lock:Null<FunkinSprite> = icons.getIconByIndex(currentSelection);
+      if (lock == null)
+      {
+        throw 'I don\'t know how you triggered this, but the lock is null.';
+      }
 
       lock.animation.play('unlock');
       lock.animation.onFrameChange.add((animName:String, frame:Int, index:Int) ->
       {
         if (frame == 40)
         {
-          characters.gf.localVisible = false;
           characters.player.playAnimation(UNLOCK);
         }
       });
@@ -627,39 +694,35 @@ class CharacterSelectState extends MusicBeatSubState
       {
         camera.flash(0xFFFFFFFF, 0.1);
 
+        // The locked character (characters.player) calls `kill()` on its own when the unlock animation finishes
+        // so we don't need to kill it here.
         characters.gf.kill();
-        characters.player.kill();
 
         newGf?.revive();
         newPlayer?.revive();
         newPlayer?.playAnimation(UNLOCK);
 
-        var id = iconGroup.children.indexOf(lock);
+        nametag.loadCharacter(characterId);
 
-        nametag.switchChar(charId);
+        icons.replaceLock(characterId, currentSelection);
+        icons.updateIconPositions();
 
-        var icon = new PixelatedIcon(0, 0);
-        icon.setCharacter(charId);
-        icon.setGraphicSize(128, 128);
-        icon.updateHitbox();
-        iconGroup.insert(icon, id);
-        iconGroup.remove(lock);
-        icon.ID = 0;
-
-        iconGroup.updateIconPositions();
+        icons.playIconBop(characterId);
 
         #if FEATURE_NEWGROUNDS
         // Grant the medal when the player unlocks a character.
         Medals.award(CharSelect);
         #end
 
-        Save.instance.addCharacterSeen(charId);
-        if (nonLocks.length == 0)
-        {
-          pressedSelect = false;
-          @:bypassAccessor curChar = charId;
+        Save.instance.addCharacterSeen(characterId);
 
-          staticSound.stop();
+        @:bypassAccessor
+        currentCharacterId = characterId;
+
+        if (locksToUnlock.isEmpty())
+        {
+          @:privateAccess
+          characters.staticSound.stop();
 
           playMenuMusic();
         }
@@ -667,20 +730,273 @@ class CharacterSelectState extends MusicBeatSubState
         {
           if (newPlayer == null)
           {
-            unLock();
+            playUnlockAnimation();
           }
           else
           {
-            newPlayer.animation.onFinish.addOnce((_) -> unLock());
+            if (newPlayer.animation.curAnim.looped)
+            {
+              newPlayer.animation.onLoop.addOnce((_) -> playUnlockAnimation());
+            }
+            else
+            {
+              newPlayer.animation.onFinish.addOnce((_) -> playUnlockAnimation());
+            }
           }
         }
       });
     });
   }
 
+  function playMenuMusic():Void
+  {
+    FunkinSound.playMusic('ui/character-select/stay-funky/stay-funky', {
+      startingVolume: 1,
+      overrideExisting: true,
+      restartTrack: true,
+      onLoad: () ->
+      {
+        uiStateMachine.transition(Idle);
+
+        characters.dispatchEvent(new ScriptEvent(CREATE));
+      }
+    });
+  }
+
+  override public function destroy():Void
+  {
+    instance = null;
+
+    super.destroy();
+  }
+
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
+  {
+    // super.dispatchEvent(event) dispatches event to module scripts.
+    super.dispatchEvent(event, finish);
+
+    // Dispatch events to characters
+    characters.dispatchEvent(event);
+    if (finish) event.finish();
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    Conductor.instance.update();
+
+    #if FEATURE_TOUCH_CONTROLS
+    var mobileAccept:Bool = false;
+    #end
+
+    if (uiStateMachine.canInteract())
+    {
+      if (!uiStateMachine.is(CharacterSelected))
+      {
+        #if FEATURE_TOUCH_CONTROLS
+        if (TouchUtil.pressed || TouchUtil.justReleased)
+        {
+          @:privateAccess
+          for (i => hitbox in icons.hitboxes.members)
+          {
+            if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
+
+            var currentPage:Int = Math.floor(currentSelection / SLOTS_PER_PAGE);
+            var targetIndex:Int = i + currentPage * SLOTS_PER_PAGE;
+            var iconPage:Int = Math.floor(targetIndex / SLOTS_PER_PAGE);
+
+            if (iconPage != currentPage) continue;
+
+            if (targetIndex != currentSelection)
+            {
+              currentSelection = targetIndex;
+            }
+            else if (TouchUtil.justPressed && !mobileAccept)
+            {
+              mobileAccept = true;
+            }
+
+            break;
+          }
+        }
+
+        if (TouchUtil.overlaps(characterHitbox) && TouchUtil.justPressed && !mobileAccept)
+        {
+          mobileAccept = true;
+        }
+
+        // I don't fucking know what null-safety is complaining about here, I'm not gonna bother with it
+        // - Abnormal
+        @:nullSafety(Off)
+        {
+          // On mobile, use swiping to scroll the page.
+          var scrollAmount:Int = 0;
+
+          if (SwipeUtil.justSwipedUp) scrollAmount = -1;
+          if (SwipeUtil.justSwipedDown) scrollAmount = 1;
+          if (scrollAmount != 0)
+          {
+            var targetIndex:Int = currentSelection + Std.int(scrollAmount * SLOTS_PER_PAGE);
+            currentSelection = Std.int(FlxMath.bound(targetIndex, 0, totalSlots - 1));
+          }
+        }
+        #end
+
+        inputHandler.handleDirectionInput(elapsed);
+
+        if (controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || mobileAccept #end)
+        {
+          selectCharacter();
+        }
+
+        if (controls.BACK_P)
+        {
+          goBack();
+        }
+      }
+      else
+      {
+        if (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
+        {
+          deselectCharacter();
+        }
+      }
+    }
+
+    if (autoFollow)
+    {
+      cameraFollowPoint.screenCenter();
+      cameraFollowPoint.x += (((currentSelection % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1) * 10;
+      cameraFollowPoint.y += (Math.floor((currentSelection % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1) * 10;
+    }
+  }
+
+  function selectCharacter():Void
+  {
+    if (currentCharacterId == 'locked')
+    {
+      characters.player.playAnimation(LOCKED, true);
+      icons.playIconAnimation(currentSelection, 'clicked', true);
+
+      lockedSound.play(true);
+      HapticUtil.vibrate(0, 0.2);
+
+      cursors.deny();
+      return;
+    }
+
+    uiStateMachine.transition(CharacterSelected);
+
+    inputHandler.reset();
+
+    cursors.confirm();
+
+    FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
+
+    var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, currentCharacterId);
+    dispatchEvent(event);
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      backButton.enabled = false;
+    }
+    #end
+
+    FlxTween.tween(FlxG.sound.music, {
+      pitch: 0.1
+    }, 1, {
+      ease: FlxEase.quadInOut
+    });
+    FlxTween.tween(FlxG.sound.music, {
+      volume: 0.0
+    }, 1.5, {
+      ease: FlxEase.quadInOut
+    });
+
+    characters.player.playAnimation(SELECT);
+    characters.gf.playAnimation(SELECT);
+
+    icons.playIconAnimation(currentSelection, 'confirm');
+
+    selectTimer.start(1.5, (_) ->
+    {
+      goToFreeplay();
+    });
+  }
+
+  function deselectCharacter():Void
+  {
+    selectTimer.cancel();
+
+    cursors.unconfirm();
+
+    dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, currentCharacterId));
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      backButton.enabled = true;
+    }
+    #end
+
+    FlxTween.cancelTweensOf(FlxG.sound.music);
+    FlxTween.tween(FlxG.sound.music, {
+      pitch: 1.0,
+      volume: 1.0
+    }, 1, {
+      ease: FlxEase.quartInOut
+    });
+
+    characters.player.playAnimation(DESELECT);
+    characters.gf.playAnimation(DESELECT);
+    icons.playIconAnimation(currentSelection, 'confirm', false, true);
+
+    uiStateMachine.transition(Idle);
+
+    FlxTween.tween(FlxG.sound.music, {
+      pitch: 1.0
+    }, 1, {
+      ease: FlxEase.quartInOut,
+      onComplete: (_) ->
+      {
+        if (characters.player.getCurrentAnimation().startsWith(DESELECT))
+        {
+          characters.player.playAnimation(IDLE, true);
+          characters.gf.playAnimation(IDLE, true);
+        }
+      }
+    });
+  }
+
+  function goBack():Void
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (backButton != null)
+    {
+      backButton.enabled = false;
+      backButton.alpha = 1;
+      backButton.animation.play('confirm');
+    }
+    #end
+
+    wentBackToFreeplay = true;
+
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+
+    FlxTween.tween(FlxG.sound.music, {
+      volume: 0.0
+    }, 0.7, {
+      ease: FlxEase.quadInOut
+    });
+    goToFreeplay();
+  }
+
   function goToFreeplay():Void
   {
-    allowInput = false;
+    uiStateMachine.transition(Exiting);
+
     autoFollow = false;
 
     #if FEATURE_TOUCH_CONTROLS
@@ -698,18 +1014,13 @@ class CharacterSelectState extends MusicBeatSubState
       ease: FlxEase.expoOut
     });
 
-    FlxTween.tween(barthing, {
-      y: barthing.y + 80
+    FlxTween.tween(topBar, {
+      y: topBar.y + 80
     }, 0.8, {
       ease: FlxEase.backIn
     });
-    FlxTween.tween(nametag.midpoint, {
-      y: nametag.midpoint.y + 80
-    }, 0.8, {
-      ease: FlxEase.backIn
-    });
-    FlxTween.tween(dipshitBacking, {
-      y: dipshitBacking.y + 210
+    FlxTween.tween(nametag.targetPosition, {
+      y: nametag.targetPosition.y + 80
     }, 0.8, {
       ease: FlxEase.backIn
     });
@@ -718,19 +1029,14 @@ class CharacterSelectState extends MusicBeatSubState
     }, 0.8, {
       ease: FlxEase.backIn
     });
-    FlxTween.tween(dipshitBlur, {
-      y: dipshitBlur.y + 220
-    }, 0.8, {
-      ease: FlxEase.backIn
-    });
 
-    iconGroup.doExitTween();
+    icons.doExitTween();
 
-    FlxG.camera.follow(camFollow, LOCKON);
+    FlxG.camera.follow(cameraFollowPoint, LOCKON);
     // going to freeplay so fast makes the fade effects and the camera to bug, that's why we cancel the tweens
     FlxTween.cancelTweensOf(transitionGradient);
     FlxTween.cancelTweensOf(fadeShader);
-    FlxTween.cancelTweensOf(camFollow);
+    FlxTween.cancelTweensOf(cameraFollowPoint);
 
     FlxTween.tween(transitionGradient, {
       y: -150
@@ -741,386 +1047,19 @@ class CharacterSelectState extends MusicBeatSubState
     fadeShader.fade(1.0, 0, 0.8, {
       ease: FlxEase.quadIn
     });
-    FlxTween.tween(camFollow, {
-      y: camFollow.y - 150
+    FlxTween.tween(cameraFollowPoint, {
+      y: cameraFollowPoint.y - 150
     }, 0.8, {
       ease: FlxEase.backIn,
       onComplete: (_) ->
       {
         FlxG.switchState(() -> FreeplayState.build({
           {
-            character: wentBackToFreeplay ? rememberedChar : curChar,
+            character: wentBackToFreeplay ? rememberedCharacterId : currentCharacterId,
             fromCharSelect: true
           }
         }));
       }
     });
-  }
-
-  var holdTmrUp:Float = 0;
-  var holdTmrDown:Float = 0;
-  var holdTmrLeft:Float = 0;
-  var holdTmrRight:Float = 0;
-  var spamDirections:FlxDirectionFlags = NONE;
-  var initSpam:Float = 0.5;
-  var mobileDeny:Bool = false;
-  var mobileAccept:Bool = false;
-  var wentBackToFreeplay:Bool = false;
-
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-
-    Conductor.instance.update();
-
-    mobileAccept = false;
-
-    if (allowInput && !pressedSelect)
-    {
-      #if FEATURE_TOUCH_CONTROLS
-      if (TouchUtil.pressed || TouchUtil.justReleased)
-      {
-        for (i => hitbox in grpHitboxes.members)
-        {
-          if (hitbox == null || !TouchUtil.overlaps(hitbox)) continue;
-
-          final currentPage:Int = Math.floor(currentSelection / SLOTS_PER_PAGE);
-          if (i + currentPage * SLOTS_PER_PAGE != currentSelection)
-          {
-            currentSelection = i + currentPage * SLOTS_PER_PAGE;
-            cursors.resetDeny();
-            selectSound.play(true);
-          }
-          else if (TouchUtil.justPressed)
-          {
-            mobileAccept = true;
-          }
-
-          trace('Index: ' + i);
-          break;
-        }
-      }
-
-      if (TouchUtil.pressAction(charHitbox, null, false))
-      {
-        mobileAccept = true;
-      }
-
-      // On mobile, use swiping to scroll the page.
-      var scrollAmount:Int = 0;
-
-      if (SwipeUtil.justSwipedUp) scrollAmount = -1;
-      if (SwipeUtil.justSwipedDown) scrollAmount = 1;
-      if (scrollAmount != 0)
-      {
-        currentSelection += Std.int(scrollAmount * SLOTS_PER_PAGE);
-        cursorDenied.visible = false;
-        selectSound.play(true);
-      }
-      #end
-
-      if (controls.UI_UP_P)
-      {
-        var column:Int = currentSelection % SLOTS_PER_ROW;
-        currentSelection = FlxMath.wrap(currentSelection - SLOTS_PER_ROW, column, totalSlots + column - 1);
-
-        cursors.resetDeny();
-        holdTmrUp = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_DOWN_P)
-      {
-        var column:Int = currentSelection % SLOTS_PER_ROW;
-        currentSelection = FlxMath.wrap(currentSelection + SLOTS_PER_ROW, column, totalSlots + column - 1);
-
-        cursors.resetDeny();
-        holdTmrDown = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_LEFT_P)
-      {
-        var row:Int = Math.floor(currentSelection / SLOTS_PER_ROW);
-        currentSelection = FlxMath.wrap(currentSelection - 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
-
-        cursors.resetDeny();
-        holdTmrLeft = 0;
-        selectSound.play(true);
-      }
-      if (controls.UI_RIGHT_P)
-      {
-        var row:Int = Math.floor(currentSelection / SLOTS_PER_ROW);
-        currentSelection = FlxMath.wrap(currentSelection + 1, row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
-
-        cursors.resetDeny();
-        holdTmrRight = 0;
-        selectSound.play(true);
-      }
-
-      if (controls.UI_UP) holdTmrUp += elapsed;
-      if (controls.UI_UP_R || !controls.UI_UP)
-      {
-        holdTmrUp = 0;
-        spamDirections = spamDirections.without(UP);
-      }
-
-      if (controls.UI_DOWN) holdTmrDown += elapsed;
-      if (controls.UI_DOWN_R || !controls.UI_DOWN)
-      {
-        holdTmrDown = 0;
-        spamDirections = spamDirections.without(DOWN);
-      }
-
-      if (controls.UI_LEFT) holdTmrLeft += elapsed;
-      if (controls.UI_LEFT_R || !controls.UI_LEFT)
-      {
-        holdTmrLeft = 0;
-        spamDirections = spamDirections.without(LEFT);
-      }
-
-      if (controls.UI_RIGHT) holdTmrRight += elapsed;
-      if (controls.UI_RIGHT_R || !controls.UI_RIGHT)
-      {
-        holdTmrRight = 0;
-        spamDirections = spamDirections.without(RIGHT);
-      }
-
-      if (holdTmrUp >= initSpam) spamDirections = spamDirections.with(UP);
-      if (holdTmrDown >= initSpam) spamDirections = spamDirections.with(DOWN);
-      if (holdTmrLeft >= initSpam) spamDirections = spamDirections.with(LEFT);
-      if (holdTmrRight >= initSpam) spamDirections = spamDirections.with(RIGHT);
-
-      if (controls.BACK_P) goBack();
-    }
-
-    var currentCharacter:String = availableChars[currentSelection] ?? Constants.DEFAULT_CHARACTER;
-    if (availableChars.exists(currentSelection) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
-    {
-      var charId:String = availableChars.get(currentSelection) ?? Constants.DEFAULT_CHARACTER;
-      if (charId != null) curChar = charId;
-
-      if (allowInput && pressedSelect && (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
-      {
-        mobileDeny = false;
-        cursors.unconfirm();
-
-        var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_DESELECTED, curChar);
-        dispatchEvent(event);
-
-        #if FEATURE_TOUCH_CONTROLS
-        if (backButton != null)
-        {
-          backButton.enabled = true;
-        }
-        #end
-
-        FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
-        FlxTween.tween(FlxG.sound.music, {
-          pitch: 1.0,
-          volume: 1.0
-        }, 1, {
-          ease: FlxEase.quartInOut
-        });
-
-        characters.player.playAnimation(DESELECT);
-        characters.gf.playAnimation(DESELECT);
-
-        pressedSelect = false;
-        FlxTween.tween(FlxG.sound.music, {
-          pitch: 1.0
-        }, 1, {
-          ease: FlxEase.quartInOut,
-          onComplete: (_) ->
-          {
-            if (characters.player.getCurrentAnimation() == DESELECT_HOLD || characters.player.getCurrentAnimation() == DESELECT)
-            {
-              characters.player.playAnimation(IDLE, true);
-              characters.gf.playAnimation(IDLE, true);
-            }
-          }
-        });
-
-        selectTimer.cancel();
-      }
-
-      if (allowInput && !pressedSelect && (controls.ACCEPT_P || mobileAccept))
-      {
-        mobileDeny = false;
-        spamDirections = NONE;
-
-        cursors.confirm();
-
-        FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
-
-        var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, curChar);
-        dispatchEvent(event);
-
-        #if FEATURE_TOUCH_CONTROLS
-        if (backButton != null)
-        {
-          backButton.enabled = false;
-        }
-        #end
-
-        FlxTween.tween(FlxG.sound.music, {
-          pitch: 0.1
-        }, 1, {
-          ease: FlxEase.quadInOut
-        });
-        FlxTween.tween(FlxG.sound.music, {
-          volume: 0.0
-        }, 1.5, {
-          ease: FlxEase.quadInOut
-        });
-
-        characters.player.playAnimation(SELECT);
-        characters.gf.playAnimation(SELECT, true, false, 0, true);
-
-        pressedSelect = true;
-        selectTimer.start(1.5, (_) ->
-        {
-          goToFreeplay();
-        });
-      }
-      #if FEATURE_TOUCH_CONTROLS
-      else if (pressedSelect && TouchUtil.justReleased) mobileDeny = true;
-      #end
-
-      mobileAccept = false;
-    }
-    else
-    {
-      curChar = 'locked';
-
-      if (allowInput && (controls.ACCEPT_P || mobileAccept))
-      {
-        characters.player.playAnimation(LOCKED, true);
-
-        lockedSound.play(true);
-        HapticUtil.vibrate(0, 0.2);
-
-        cursors.deny();
-      }
-    }
-
-    var pageRow:Int = ((currentSelection % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1;
-    var pageColumn:Int = Math.floor((currentSelection % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1;
-
-    if (autoFollow)
-    {
-      camFollow.screenCenter();
-      camFollow.x += pageRow * 10;
-      camFollow.y += pageColumn * 10;
-    }
-
-    cursorLocIntended.x = (cursorFactor * pageRow) + (FlxG.width / 2) - cursors.main.width / 2;
-    cursorLocIntended.y = (cursorFactor * pageColumn) + (FlxG.height / 2) - cursors.main.height / 2;
-
-    cursorLocIntended.x += cursorOffsetX;
-    cursorLocIntended.y += cursorOffsetY;
-
-    cursors.lerpToLocation(cursorLocIntended);
-  }
-
-  function goBack():Void
-  {
-    #if FEATURE_TOUCH_CONTROLS
-    if (backButton != null)
-    {
-      backButton.enabled = false;
-      backButton.alpha = 1;
-      backButton.animation.play('confirm');
-    }
-    #end
-
-    wentBackToFreeplay = true;
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
-    FlxTween.tween(FlxG.sound.music, {
-      volume: 0.0
-    }, 0.7, {
-      ease: FlxEase.quadInOut
-    });
-    goToFreeplay();
-  }
-
-  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
-  {
-    // super.dispatchEvent(event) dispatches event to module scripts.
-    super.dispatchEvent(event, false);
-
-    // Dispatch events to characters
-    characters.forEach((character) -> ScriptEventDispatcher.callEvent(character, event));
-    if (finish) event.finish();
-  }
-
-  function spamOnStep():Void
-  {
-    if (spamDirections.hasAny(ANY))
-    {
-      if (selectSound.pitch > 5) selectSound.pitch = 5;
-      selectSound.play(true);
-
-      cursors.resetDeny();
-
-      if (spamDirections.has(UP) || spamDirections.has(DOWN))
-      {
-        var column:Int = currentSelection % SLOTS_PER_ROW;
-        currentSelection = FlxMath.wrap(currentSelection + SLOTS_PER_ROW * (spamDirections.has(UP) ? -1 : 1), column, totalSlots + column - 1);
-
-        if (spamDirections.has(UP)) holdTmrUp = 0;
-        else if (spamDirections.has(DOWN)) holdTmrDown = 0;
-      }
-      if (spamDirections.has(LEFT) || spamDirections.has(RIGHT))
-      {
-        var row:Int = Math.floor(currentSelection / SLOTS_PER_ROW);
-        currentSelection = FlxMath.wrap(currentSelection + (spamDirections.has(LEFT) ? -1 : 1), row * SLOTS_PER_ROW, (row + 1) * SLOTS_PER_ROW - 1);
-
-        if (spamDirections.has(LEFT)) holdTmrLeft = 0;
-        else if (spamDirections.has(RIGHT)) holdTmrRight = 0;
-      }
-    }
-  }
-
-  function setCursorPosition(index:Int, instant:Bool = false):Void
-  {
-    currentSelection = index;
-
-    if (instant)
-    {
-      var pageRow:Int = ((currentSelection % SLOTS_PER_PAGE) % SLOTS_PER_ROW) - 1;
-      var pageColumn:Int = Math.floor((currentSelection % SLOTS_PER_PAGE) / SLOTS_PER_ROW) - 1;
-
-      cursorLocIntended.x = (cursorFactor * pageRow) + (FlxG.width / 2) - cursors.main.width / 2;
-      cursorLocIntended.y = (cursorFactor * pageColumn) + (FlxG.height / 2) - cursors.main.height / 2;
-
-      cursorLocIntended.x += cursorOffsetX;
-      cursorLocIntended.y += cursorOffsetY;
-
-      cursors.snapToLocation(cursorLocIntended);
-    }
-  }
-
-  function set_curChar(value:String):String
-  {
-    if (curChar == value) return value;
-
-    var oldId:String = curChar;
-
-    curChar = value;
-
-    if (value == 'locked')
-    {
-      staticSound.play();
-    }
-    else
-    {
-      staticSound.stop();
-    }
-
-    nametag.switchChar(value);
-
-    characters.setCharacters(oldId, value);
-    dispatchEvent(new ScriptEvent(CREATE));
-
-    return value;
   }
 }

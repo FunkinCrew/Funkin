@@ -95,7 +95,10 @@ class MainMenuState extends MusicBeatState
   override function create():Void
   {
     #if FEATURE_DISCORD_RPC
-    DiscordClient.instance.setPresence({state: "In the Menus", details: null});
+    DiscordClient.instance.setPresence({
+      state: "In the Menus",
+      details: null
+    });
     #end
 
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
@@ -458,14 +461,26 @@ class MainMenuState extends MusicBeatState
     var fadeOutDuration:Float = 0.4;
     menuItems.forEach(item ->
     {
-      if (rememberedSelectedIndex != item.ID) FlxTween.tween(item, {alpha: 0}, fadeOutDuration, {ease: FlxEase.quadOut});
+      if (rememberedSelectedIndex != item.ID) FlxTween.tween(item, {
+        alpha: 0
+      }, fadeOutDuration, {
+        ease: FlxEase.quadOut
+      });
       else
         item.visible = false;
     });
 
     #if mobile
-    if (optionsButton != null) FlxTween.tween(optionsButton, {alpha: 0}, fadeOutDuration, {ease: FlxEase.quadOut});
-    if (backButton != null) FlxTween.tween(backButton, {alpha: 0}, fadeOutDuration, {ease: FlxEase.quadOut});
+    if (optionsButton != null) FlxTween.tween(optionsButton, {
+      alpha: 0
+    }, fadeOutDuration, {
+      ease: FlxEase.quadOut
+    });
+    if (backButton != null) FlxTween.tween(backButton, {
+      alpha: 0
+    }, fadeOutDuration, {
+      ease: FlxEase.quadOut
+    });
     #end
 
     FlxTimer.wait(fadeOutDuration, () ->
@@ -616,12 +631,6 @@ class MainMenuState extends MusicBeatState
       });
     }
 
-    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, E]))
-    {
-      funkin.save.Save.instance.debug_dumpSaveJsonSave();
-    }
-    #end
-
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, N]))
     {
       @:privateAccess
@@ -630,6 +639,12 @@ class MainMenuState extends MusicBeatState
         funkin.save.Save.instance.oldChar.value = false;
       }
     }
+
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, E]))
+    {
+      funkin.save.Save.instance.debug_dumpSaveJsonSave();
+    }
+    #end
 
     if (controls.BACK_P) goBack();
   }

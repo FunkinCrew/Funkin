@@ -534,12 +534,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   override public function destroy():Void
   {
-    for (child in children)
-    {
-      child.destroy();
-    }
-
-    children = [];
+    clear();
 
     _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
     _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);
@@ -657,6 +652,14 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     }
 
     return null;
+  }
+
+  /**
+   * @return Whether or not this FunkinGroup is empty.
+   */
+  public inline function isEmpty():Bool
+  {
+    return size == 0;
   }
 
   /**

@@ -289,8 +289,8 @@ class PlayerFreeplayDJData
 class PlayerCharSelectData
 {
   /**
-   * The asset path to use for this character (the one on the right).
-   * This should point to an Animate atlas folder.
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
    * @default `ui/character-select/characters/$charId`,
    */
   @:optional @:default('')
@@ -324,8 +324,7 @@ class PlayerCharSelectData
   static var DEFAULT_ANIMATIONS_GF:Array<AnimationData> = [
     {
       name: 'idle',
-      prefix: 'idle',
-      looped: true
+      prefix: 'idle'
     },
     {
       name: 'select',
@@ -345,8 +344,7 @@ class PlayerCharSelectData
   static var DEFAULT_ANIMATIONS_PLAYER:Array<AnimationData> = [
     {
       name: 'idle',
-      prefix: 'idle',
-      looped: true
+      prefix: 'idle'
     },
     {
       name: 'unlock',
@@ -430,8 +428,8 @@ class PlayerCharSelectData
 typedef PlayerCharSelectGFData =
 {
   /**
-   * The asset path to use for this character (the one on the right).
-   * This should point to an Animate atlas folder.
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
    * @default `ui/character-select/characters/$charId`,
    */
   @:optional @:default('')
@@ -452,8 +450,8 @@ typedef PlayerCharSelectGFData =
 typedef PlayerCharSelectCharacterData =
 {
   /**
-   * The asset path to use for this character (the one on the right).
-   * This should point to an Animate atlas folder.
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
    * @default `ui/character-select/characters/$charId`,
    */
   @:optional @:default('')
@@ -488,6 +486,12 @@ typedef PlayerCharSelectCharacterData =
    */
   @:optional @:default(1.0)
   public var danceEvery:Float;
+
+  /**
+   * The global offsets for the character's position.
+   */
+  @:optional @:default([0, 0])
+  public var offsets:Array<Float>;
 }
 
 typedef PlayerResultsData =

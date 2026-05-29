@@ -1,15 +1,18 @@
 package funkin.ui.charSelect.characters;
 
+import flixel.FlxCamera;
 import flixel.graphics.frames.FlxFramesCollection;
+import flixel.math.FlxPoint;
+import funkin.data.animation.AnimationData;
 import funkin.data.freeplay.player.PlayerData;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import funkin.modding.IScriptedClass.ICharacterSelectScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.charSelect.CharacterSelectState;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.vis.dsp.SpectralAnalyzer;
-import funkin.data.animation.AnimationData;
 
 enum abstract CharacterAnimation(String) to String
 {
@@ -52,10 +55,21 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   var playerData:Null<PlayerCharSelectCharacterData>;
 
   /**
-   * The animation offsets for this character.
+   * A map of animation offsets for this character.
    * TODO: Move animation offsets to `FunkinSprite`
    */
-  var animationOffsets:Map<String, Array<Float>> = [];
+  var animationOffsetsList:Map<String, Array<Float>> = [];
+
+  /**
+   * The global offsets for the character.
+   */
+  var globalOffsets:Array<Float> = [0, 0];
+
+  /**
+   * The current animation offset for the character.
+   * TODO: Move animation offsets to `FunkinSprite`
+   */
+  var currentAnimationOffset:Array<Float> = [0, 0];
 
   /**
    * Alias for `currentPath`.
@@ -69,16 +83,17 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
     return currentPath;
   }
 
-  public function new(playerId:String, x:Float, y:Float, isGF:Bool = false, data:Null<PlayerCharSelectCharacterData>, visualizer:Bool = false)
+  public function new(playerId:String, x:Float, y:Float, characterType:CharacterSelectType, data:Null<PlayerCharSelectCharacterData>, visualizer:Bool = false)
   {
     super(x, y);
 
     this.playerId = playerId;
-    this.characterType = isGF ? CharacterSelectType.GF : CharacterSelectType.PLAYER;
+    this.characterType = characterType;
 
     this.playerData = data;
 
     this.enableVisualizer = visualizer;
+    this.globalOffsets = data?.offsets ?? [0, 0];
 
     loadGraphics();
     loadAnimations();
@@ -94,22 +109,20 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
    * @param force Whether to force the animation to play if it's already playing.
    * @param reversed Whether to play the animation in reverse.
    * @param frame The frame to start the animation on.
-   * @param loop Whether to loop the animation.
    */
-  public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0, loop:Bool = false):Void
+  public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
     this.animation.play(name, force, reversed, frame);
-    this.animation.curAnim.looped = loop;
 
     // Apply the offsets if possible.
-    if (animationOffsets.get(name) != null && animationOffsets.get(name)?.length == 2)
+    if (animationOffsetsList.get(name) != null && animationOffsetsList.get(name)?.length == 2)
     {
-      var offsets:Array<Float> = animationOffsets.get(name) ?? [0, 0];
-      this.offset.set(offsets[0], offsets[1]);
+      var offsets:Array<Float> = animationOffsetsList.get(name) ?? [0, 0];
+      currentAnimationOffset = offsets;
     }
     else
     {
-      this.offset.set();
+      currentAnimationOffset = [0, 0];
     }
   }
 
@@ -173,6 +186,8 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
           var assetFrames:FlxFramesCollection = Paths.getSparrowAtlas(assetPath);
           for (frame in assetFrames.frames) framesCollection.pushFrame(frame.copyTo());
         }
+
+        this.frames = framesCollection;
     }
 
     this.currentPath = allAssetPaths[0];
@@ -195,8 +210,20 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     for (animation in animationData)
     {
-      animationOffsets.set(animation.name, animation.offsets ?? [0, 0]);
+      animationOffsetsList.set(animation.name, animation.offsets ?? [0, 0]);
     }
+  }
+
+  override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
+  {
+    var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= (currentAnimationOffset[0] - globalOffsets[0]);
+    output.y -= (currentAnimationOffset[1] - globalOffsets[1]);
+
+    // Small offset for mobile!
+    output.x += CharacterSelectState.CUTOUT_SIZE;
+
+    return output;
   }
 
   override function checkRenderTexture():Bool
@@ -218,7 +245,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   {
     if (hasAnimation(animationName + Constants.ANIMATION_HOLD_SUFFIX))
     {
-      playAnimation(animationName + Constants.ANIMATION_HOLD_SUFFIX, true, false, 0, true);
+      playAnimation(animationName + Constants.ANIMATION_HOLD_SUFFIX, true);
     }
 
     switch (animationName)
