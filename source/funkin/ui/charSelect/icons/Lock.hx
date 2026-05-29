@@ -1,4 +1,4 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.icons;
 
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
@@ -14,15 +14,24 @@ class Lock extends FunkinSprite
     0xFF209BDD, 0xFF2362C9, 0xFF243FB9
   ];
 
-  public function new(x:Float = 0, y:Float = 0, index:Int, settings:AtlasSpriteSettings)
+  public function new(x:Float = 0, y:Float = 0, index:Int)
   {
-    var tint:FlxColor = colors[index];
+    var cycle:Int = colors.length * 2;
+    var wrapped:Int = index % cycle;
+    var colorIndex:Int = wrapped;
+
+    if (wrapped >= colors.length)
+    {
+      colorIndex = cycle - wrapped - 1;
+    }
+
+    var tint:FlxColor = colors[colorIndex];
 
     super(x, y);
 
     loadTextureAtlas('ui/character-select/interface/lock', {
-      swfMode: settings.swfMode,
-      uniqueInCache: settings.uniqueInCache,
+      swfMode: true,
+      cacheKey: 'char-select-lock-${tint.toHexString()}',
       onSymbolCreate: (symbol) ->
       {
         if (symbol.timeline.getLayer('color') != null)

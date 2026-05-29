@@ -1,4 +1,4 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.characters;
 
 import flixel.FlxCamera;
 import flixel.FlxSprite;

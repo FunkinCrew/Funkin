@@ -603,24 +603,14 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    exitMovers.set([
-      overhangStuff,
-      topLeftCornerText,
-      ostName,
-      charSelectHint
-    ], {
+    exitMovers.set([overhangStuff, topLeftCornerText, ostName, charSelectHint], {
       y: -overhangStuff.height,
       x: 0,
       speed: 0.2,
       wait: 0
     });
 
-    exitMoversCharSel.set([
-      overhangStuff,
-      topLeftCornerText,
-      ostName,
-      charSelectHint
-    ], {
+    exitMoversCharSel.set([overhangStuff, topLeftCornerText, ostName, charSelectHint], {
       y: -300,
       speed: 0.8,
       wait: 0.1
@@ -946,21 +936,11 @@ class FreeplayState extends MusicBeatSubState
     switch (renderType)
     {
       case 'animateatlas':
-        dj = (scriptClass != '') ? (AnimateAtlasFreeplayDJ.scriptInit(
-          scriptClass,
-          x,
-          y,
-          characterId
-        )) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (AnimateAtlasFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
       case 'sparrow':
         dj = (scriptClass != '') ? (SparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
       case 'multisparrow':
-        dj = (scriptClass != '') ? (MultiSparrowFreeplayDJ.scriptInit(
-          scriptClass,
-          x,
-          y,
-          characterId
-        )) : (new MultiSparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (MultiSparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
       case 'packer':
         dj = (scriptClass != '') ? (PackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
@@ -1226,7 +1206,8 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  function rankDisplayNew(fromResults:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
+  function rankDisplayNew(fromResults:Null<FromResultsParams>,
+    capsuleToRank:SongMenuItem):Void
   {
     dispatchEvent(new CapsuleScriptEvent(FREEPLAY_RANK_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResults?.newRank));
 
@@ -1709,7 +1690,7 @@ class FreeplayState extends MusicBeatSubState
       {
         funkin.assets.FunkinAssetCache.instance.purgeCache();
       });
-      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState({
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterSelectState({
         character: currentCharacterId
       }));
     });

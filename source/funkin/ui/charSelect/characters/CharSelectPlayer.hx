@@ -1,4 +1,4 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.characters;
 
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;

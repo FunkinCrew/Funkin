@@ -1,4 +1,4 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.characters;
 
 import animate.FlxAnimateFrames;
 import flixel.FlxG;

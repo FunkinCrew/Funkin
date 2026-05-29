@@ -32,6 +32,17 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   public var children:Array<T>;
 
   /**
+   * Alias for `this.children`.
+   */
+  @:deprecated("Use `this.children` instead.")
+  public var members(get, never):Array<T>;
+
+  function get_members():Array<T>
+  {
+    return children;
+  }
+
+  /**
    * The size of this FunkinGroup. Read only.
    */
   public var size(get, never):Int;
