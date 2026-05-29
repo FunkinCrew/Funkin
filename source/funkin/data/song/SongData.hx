@@ -730,9 +730,12 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
    */
   public var eventLayers:Array<EventLayerData>;
 
+  public var comments:Array<CommentData>;
+
   public function new()
   {
     this.eventLayers = [];
+    this.comments = [];
   }
 
   /**
@@ -744,6 +747,7 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
     var result:SongChartEditorData = new SongChartEditorData();
 
     result.eventLayers = this.eventLayers.clone();
+    result.comments = this.comments.clone();
 
     return result;
   }
@@ -763,7 +767,7 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
 
   public function toString():String
   {
-    return 'SongChartEditorData(${this.eventLayers.length} layers)';
+    return 'SongChartEditorData(${eventLayers.length} layers, ${comments.length} comments})';
   }
 }
 
@@ -779,6 +783,24 @@ typedef EventLayerData =
 
   /**
    * The color associated with the layer.
+   */
+  var color:String;
+}
+
+typedef CommentData =
+{
+  /**
+   * The timestamp of the comment. The timestamp is in the format of the song's time format.
+   */
+  var time:Float;
+
+  /**
+   * The text of the comment.
+   */
+  var text:String;
+
+  /**
+   * The color associated with the comment.
    */
   var color:String;
 }

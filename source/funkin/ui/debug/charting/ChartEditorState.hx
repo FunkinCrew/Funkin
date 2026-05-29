@@ -29,10 +29,12 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongData.SongChartData;
+import funkin.data.song.SongData.SongChartEditorData;
 import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongOffsets;
+import funkin.data.song.SongData.CommentData;
 import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
 import funkin.data.song.importer.ChartManifestData;
@@ -55,6 +57,7 @@ import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.cameraeditor.CameraEditorState;
+import funkin.ui.debug.charting.commands.AddCommentCommand;
 import funkin.ui.debug.charting.commands.AddEventsCommand;
 import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.AddNotesCommand;
@@ -81,6 +84,7 @@ import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
 import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
+import funkin.ui.debug.charting.components.ChartEditorCommentPinSprite;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
@@ -655,6 +659,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Make sure view is updated when we change view modes.
     noteDisplayDirty = true;
     notePreviewDirty = true;
+    commentDisplayDirty = true;
     notePreviewViewportBoundsDirty = true;
     this.scrollPositionInPixels = this.scrollPositionInPixels;
     // Characters have probably changed too.
@@ -1015,6 +1020,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * This happens when we scroll or add/remove notes, and need to update what notes are displayed and where.
    */
   var noteDisplayDirty:Bool = true;
+
+  /**
+   * Whether the comment data has been modified and the comment pins need to be updated.
+   */
+  var commentDisplayDirty:Bool = true;
 
   var noteTooltipsDirty:Bool = true;
 
@@ -1593,6 +1603,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Convenience property to get the comment data for the current difficulty.
+   */
+  var currentSongChartCommentData(get, set):Array<CommentData>;
+
+  function get_currentSongChartCommentData():Array<CommentData>
+  {
+    // Initialize to the default value if not set.
+    if (currentSongChartData.editorData == null) currentSongChartData.editorData = new SongChartEditorData();
+    // Initialize to the default value if not set.
+    if (currentSongChartData.editorData.comments == null) currentSongChartData.editorData.comments = [];
+
+    return currentSongChartData.editorData.comments;
+  }
+
+  function set_currentSongChartCommentData(value:Array<CommentData>):Array<CommentData>
+  {
+    if (currentSongChartData.editorData == null) currentSongChartData.editorData = new SongChartEditorData();
+
+    return currentSongChartData.editorData.comments = value;
+  }
+
+  /**
    * Convenience property to get the rating for this difficulty in the Freeplay menu.
    */
   var currentSongChartDifficultyRating(get, set):Int;
@@ -1882,6 +1914,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
+    commentDisplayDirty = true;
 
     // Switching difficulties should automatically clear the selection.
     currentNoteSelection = [];
@@ -1921,6 +1954,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
+    commentDisplayDirty = true;
 
     if (hasInstrumentalData && (songChartData.size() == 0 || currentSongChartNoteData == null || currentSongChartNoteData.length == 0))
     {
@@ -2456,6 +2490,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var renderedEvents:FlxTypedSpriteGroup<ChartEditorEventSprite> = new FlxTypedSpriteGroup<ChartEditorEventSprite>();
 
   var renderedSelectionSquares:FlxTypedSpriteGroup<ChartEditorSelectionSquareSprite> = new FlxTypedSpriteGroup<ChartEditorSelectionSquareSprite>();
+
+  /**
+   * The sprite group containing the comment pins.
+   */
+  var renderedPins:FlxTypedSpriteGroup<ChartEditorCommentPinSprite> = new FlxTypedSpriteGroup<ChartEditorCommentPinSprite>();
+
   /**
    * LIFE CYCLE FUNCTIONS
    */
@@ -2888,6 +2928,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     gridGhostEvent.zIndex = 22;
 
     buildNoteGroup();
+
+    add(renderedPins);
+    renderedPins.zIndex = 50;
 
     // The playhead that show the current position in the song.
     add(gridPlayhead);
@@ -3877,6 +3920,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback(elapsed);
     handleNoteDisplay();
+    handleCommentDisplay();
 
     if (isHaxeUIFocused
       && !isCursorOverHaxeUI
@@ -4502,6 +4546,50 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Handle using `renderedPins` to display comment pins from `currentSongChartCommentData`.
+   */
+  function handleCommentDisplay():Void
+  {
+    if (commentDisplayDirty)
+    {
+      commentDisplayDirty = false;
+
+      // Remove comments that are no longer visible and list the ones that are.
+      var displayedCommentData:Array<CommentData> = [];
+      for (pinSprite in renderedPins.members)
+      {
+        if (pinSprite == null || pinSprite.commentData == null || !pinSprite.exists || !pinSprite.visible) continue;
+
+        if (!currentSongChartCommentData.contains(pinSprite.commentData))
+        {
+          // Comment has been removed!
+          trace('Discarding comment pin ${pinSprite.commentData}');
+          // Clearing the comment data on the pin will automatically kill it.
+          pinSprite.commentData = null;
+        }
+        else
+        {
+          // Mark that we are already rendering this comment.
+          displayedCommentData.push(pinSprite.commentData);
+        }
+      }
+
+      // Add comments that are newly visible.
+      for (commentData in currentSongChartCommentData)
+      {
+        // Check if we're already rendering this pin.
+        if (displayedCommentData.contains(commentData)) continue;
+
+        trace('Rendering comment pin ${commentData}');
+        var pinSprite:ChartEditorCommentPinSprite = renderedPins.recycle(() -> new ChartEditorCommentPinSprite(this));
+
+        // Updating the comment data automatically triggers a position/color/text update.
+        pinSprite.commentData = commentData;
+      }
+    }
+  }
+
+  /**
    * Migrates old event data with ease and without easeDir fields, so we split them into ease and easeDir here.
    */
   function migrateEventEaseDirectionFields(eventValues:Dynamic):Dynamic
@@ -4816,6 +4904,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var overlapsRenderedEvents:Bool = true;
     var overlapsRenderedHoldNotes:Bool = true;
 
+    var overlapsRenderedPins:Bool = FlxG.mouse.overlaps(renderedPins);
+
     var highlightedNote:Null<ChartEditorNoteSprite> = null;
     var highlightedEvent:Null<ChartEditorEventSprite> = null;
     var highlightedHoldNote:Null<ChartEditorHoldNoteSprite> = null;
@@ -4912,10 +5002,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (gridPlayhead != null && FlxG.mouse.overlaps(gridPlayhead) && !isCursorOverHaxeUI)
       {
-        var currentTimeChangeIndex = currentSongMetadata.timeChanges.indexOf(Conductor.instance.currentTimeChange);
-        // Add a new time change at the grid playhead's position.
-        performCommand(new AddNewTimeChangeCommand(currentTimeChangeIndex, scrollPositionInMs + playheadPositionInMs));
-        this.success('New Time Change', '${undoHistory[undoHistory.length - 1].toString()} ms');
+        var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
+
+        // Add a new comment at the grid playhead's position.
+        performCommand(new AddCommentCommand({
+          time: playheadPosMs,
+          text: 'New Comment',
+          color: '#FF0000',
+        }));
+        this.success('New Comment', 'Added a comment at the playhead position.');
       }
     }
 
@@ -5426,6 +5521,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Cursor should be a grabby hand.
         if (targetCursorMode == null) targetCursorMode = Grabbing;
       }
+    }
+    else if (overlapsRenderedPins)
+    {
+      // Cursor should be a pointer.
+      targetCursorMode = Pointer;
     }
     else
     {
@@ -6527,6 +6627,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // trace('Ignoring keybinds for View menu items because we are in live input mode (${currentLiveInputStyle}).');
     }
+
+    // B = New Comment
+    if (!pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !isHaxeUIDialogOpen)
+    {
+      // Add a new comment at the grid playhead's position.
+      var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
+      performCommand(new AddCommentCommand({
+        time: playheadPosMs,
+        text: 'New Comment',
+        color: '#0000FF',
+      }));
+      this.success('New Comment', 'Added a comment at the playhead position.');
+    }
   }
 
   /**
@@ -6972,6 +7085,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     notePreviewViewportBoundsDirty = true;
     noteDisplayDirty = true;
+    commentDisplayDirty = true;
     moveSongToScrollPosition();
   }
 
@@ -7229,7 +7343,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * Smoothly ease the song to a new scroll position over a duration.
-   * @param targetScrollPosition The desired value for the `scrollPositionInPixels`.
+   * @param targetScrollPosition The target position in the song, in pixels.
    */
   function easeSongToScrollPosition(targetScrollPosition:Float):Void
   {
@@ -7237,6 +7351,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     currentScrollEase = Math.min(currentScrollEase, songLengthInPixels);
     scrollPositionInPixels = MathUtil.snap(MathUtil.smoothLerpPrecision(scrollPositionInPixels, currentScrollEase, FlxG.elapsed, SCROLL_EASE_DURATION, 1 / 1000), currentScrollEase, 1 / 1000);
     moveSongToScrollPosition();
+  }
+
+  /**
+   * Smoothly ease the song to a new song time in milliseconds.
+   * @param songTimeMs The target song time in milliseconds.
+   */
+  public function easeToSongTimeMs(songTimeMs:Float):Void
+  {
+    var targetTimeSteps:Float = Conductor.instance.getTimeInSteps(songTimeMs);
+    var targetTimePixels:Float = targetTimeSteps * ChartEditorState.GRID_SIZE;
+
+    easeSongToScrollPosition(targetTimePixels);
   }
 
   /**
