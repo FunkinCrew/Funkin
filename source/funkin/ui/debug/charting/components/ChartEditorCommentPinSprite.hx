@@ -38,7 +38,10 @@ class ChartEditorCommentPinSprite extends FunkinSprite
 
     buildSprite();
 
-    FlxMouseEvent.add(this, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
+    final MOUSE_CHILDREN = false;
+    final MOUSE_ENABLED = true;
+    final PIXEL_PERFECT = false; // DISABLE pixel perfect so scaling doesn't break hover
+    FlxMouseEvent.add(this, (_) -> onMouseDown(), (_) -> onMouseUp(), (_) -> onMouseOver(), (_) -> onMouseOut(), MOUSE_CHILDREN, MOUSE_ENABLED, PIXEL_PERFECT);
   }
 
   /**
@@ -46,7 +49,9 @@ class ChartEditorCommentPinSprite extends FunkinSprite
    */
   function buildSprite():Void
   {
-    loadTexture('ui/editors/chart-editor/pin-red-small');
+    loadTexture('ui/editors/chart-editor/comment-pin');
+    this.updateHitbox();
+    this.angle = 270;
   }
 
   /**
@@ -67,6 +72,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
 
     updatePosition();
     updateTooltipText();
+    updateTooltipPosition();
     updateColor();
 
     return this.commentData;
@@ -81,73 +87,82 @@ class ChartEditorCommentPinSprite extends FunkinSprite
       0, chartEditorState.songLengthInMs, // ...to note preview position.
       ChartEditorState.NOTE_PREVIEW_Y_POS, ChartEditorState.NOTE_PREVIEW_Y_POS + (chartEditorState.notePreview?.height ?? 0.0));
 
-    this.x = ChartEditorState.NOTE_PREVIEW_X_POS;
-    this.y = position;
+    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6;
+    this.y = position - (this.height / 2);
   }
 
   function updateColor():Void
   {
-    if (this.commentData == null) return;
+    if (commentData == null) return;
 
-    this.color = FlxColor.fromString(this.commentData.color) ?? FlxColor.RED;
+    this.color = FlxColor.fromString(commentData.color) ?? FlxColor.RED;
   }
 
   function updateTooltipPosition():Void
   {
-    if (this.commentData == null || (this.tooltip.tipData?.text ?? '').length == 0)
+    if (commentData == null || (tooltip.tipData?.text ?? '').length == 0)
     {
       // Disable the tooltip.
-      ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+      ToolTipManager.instance.unregisterTooltipRegion(tooltip);
     }
     else
     {
       // Update the position.
-      this.tooltip.left = this.x;
-      this.tooltip.top = this.y;
-      this.tooltip.width = this.width;
-      this.tooltip.height = this.height;
+      tooltip.left = this.x;
+      tooltip.top = this.y;
+      tooltip.width = this.width;
+      tooltip.height = this.height;
 
       // Enable the tooltip.
-      ToolTipManager.instance.registerTooltipRegion(this.tooltip);
+      ToolTipManager.instance.registerTooltipRegion(tooltip);
     }
   }
 
   function updateTooltipText():Void
   {
-    if (this.commentData == null) return;
-    this.tooltip.tipData = {
-      text: this.commentData.text,
+    if (commentData == null) return;
+    tooltip.tipData = {
+      text: commentData.text,
     };
   }
 
   /**
    * Called when the mouse is pressed on this sprite.
    */
-  function onMouseDown(_:FlxSprite):Void
+  function onMouseDown():Void
   {
   }
 
   /**
    * Called when the mouse is released on this sprite.
    */
-  function onMouseUp(_:FlxSprite):Void
+  function onMouseUp():Void
   {
+    // Released mouse while hovering over comment,
+    // click to navigate.
+    if (commentData != null) chartEditorState.easeToSongTimeMs(commentData.time);
   }
 
   /**
    * Called when the mouse is hovered over on this sprite.
    */
-  function onMouseOver(_:FlxSprite):Void
+  function onMouseOver():Void
   {
-    trace('Mouse over comment: ${this.commentData?.text}');
+    trace('Mouse over comment: ${commentData?.text}');
+    this.scale.set(1.2, 1.2);
+    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6 - (this.height * 0.2);
+    updateTooltipPosition();
   }
 
   /**
    * Called when the mouse is hovered off on this sprite.
    */
-  function onMouseOut(_:FlxSprite):Void
+  function onMouseOut():Void
   {
-    trace('Mouse out comment: ${this.commentData?.text}');
+    trace('Mouse out comment: ${commentData?.text}');
+    this.scale.set(1.0, 1.0);
+    this.x = ChartEditorState.NOTE_PREVIEW_X_POS - this.height + 6;
+    updateTooltipPosition();
   }
 
   override public function kill()
@@ -155,7 +170,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
     super.kill();
 
     // Remove the tooltip to prevent recently deleted pins from showing a tooltip.
-    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    ToolTipManager.instance.unregisterTooltipRegion(tooltip);
   }
 }
 #end
