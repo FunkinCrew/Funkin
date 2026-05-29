@@ -2986,7 +2986,6 @@ class PlayState extends MusicBeatSubState
 
       pendingPoints += holdNote.appliedScore;
       SongScore.instance.setPendingScore(pendingPoints);
-      trace('Pending points: ${pendingPoints}');
     }
   }
 
@@ -3091,7 +3090,7 @@ class PlayState extends MusicBeatSubState
 
     while (inputReleaseQueue.length > 0)
     {
-      var input:Null<PreciseInputEvent> = inputReleaseQueue.shift();
+      var input:Null<PreciseInputEvent> = inputReleaseQueue.pop();
       if (input == null) continue;
 
       // Play the strumline animation.
@@ -3181,7 +3180,7 @@ class PlayState extends MusicBeatSubState
     if (holdNote.scoreable)
     {
       health += healthChange;
-      holdNote.appliedScore = scoreChange;
+      holdNote.appliedScore += scoreChange;
     }
   }
 
@@ -3197,9 +3196,22 @@ class PlayState extends MusicBeatSubState
       return;
     }
 
-    if (input == null)
+    if (!holdNote.hitNote)
     {
-      event.score = Constants.SCORE_HOLD_BONUS_PER_SECOND * (holdNote.fullSustainLength / Constants.MS_PER_SEC);
+      // If the initial note was missed.
+      var lengthSeconds = holdNote.fullSustainLength / Constants.MS_PER_SEC;
+      if (lengthSeconds > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) event.score = Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * lengthSeconds;
+
+      dispatchEvent(event);
+
+      if (event.eventCanceled) return;
+      applyScore(event.score, '', event.healthChange, event.isComboBreak);
+    }
+    else if (input == null)
+    {
+      // If the note was fully completed.
+      var lengthSeconds = holdNote.fullSustainLength / Constants.MS_PER_SEC;
+      event.score = Constants.SCORE_HOLD_BONUS_PER_SECOND * lengthSeconds;
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
@@ -3207,6 +3219,7 @@ class PlayState extends MusicBeatSubState
     }
     else
     {
+      // If the note was released before completion.
       var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
       var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
@@ -3238,7 +3251,7 @@ class PlayState extends MusicBeatSubState
         // Calling event.cancel() skips all the other logic! Neat!
         if (event.eventCanceled) return;
 
-        trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak})!');
+        trace('Penalizing score by ${event.score} and health by ${event.healthChange} for dropping hold note (is combo break: ${event.isComboBreak}, was hit: ${holdNote.hitNote})!');
         applyScore(event.score, '', event.healthChange, event.isComboBreak);
 
         // Play the miss sound.
