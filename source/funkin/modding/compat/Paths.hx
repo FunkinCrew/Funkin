@@ -3518,6 +3518,12 @@ class Paths
       return PATHS[filePath];
     }
 
+    // Somehow if the file path starts with `assets/assets/`...
+    if (filePath.startsWith('assets/assets/'))
+    {
+      filePath = filePath.substr(7);
+    }
+
     // Try to guess some other paths.
     var result:Null<String> = tryGuessPath(id, filePath, library);
     if (result != null) return result;
@@ -3684,7 +3690,7 @@ class Paths
         usePathIfExists(videoFilePath);
 
       case 'srt': // Standalone subtitle files
-        var typeFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
+        var typeFilePath:String = filePath.replace('gameplay/songs/', 'data/songs/');
 
         usePathIfExists(typeFilePath);
 

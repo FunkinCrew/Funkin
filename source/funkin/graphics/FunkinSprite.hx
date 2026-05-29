@@ -360,8 +360,7 @@ class FunkinSprite extends FlxAnimate
 
     frames = Paths.getAnimateAtlas(key, settings);
 
-    var path:String = Paths.animateAtlas(key);
-    __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(path);
+    __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
 
     return this;
   }
