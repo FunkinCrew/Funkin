@@ -616,6 +616,12 @@ class MainMenuState extends MusicBeatState
       });
     }
 
+    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, E]))
+    {
+      funkin.save.Save.instance.debug_dumpSaveJsonSave();
+    }
+    #end
+
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, N]))
     {
       @:privateAccess
@@ -624,12 +630,6 @@ class MainMenuState extends MusicBeatState
         funkin.save.Save.instance.oldChar.value = false;
       }
     }
-
-    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, E]))
-    {
-      funkin.save.Save.instance.debug_dumpSaveJsonSave();
-    }
-    #end
 
     if (controls.BACK_P) goBack();
   }

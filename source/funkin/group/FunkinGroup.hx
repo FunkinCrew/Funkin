@@ -628,6 +628,22 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   }
 
   /**
+   * Gets the first child under this FunkinGroup that matches a specific filter.
+   * @param filter The filter to use.
+   *
+   * @return The child that matches the filter or null.
+   */
+  public function getFirst(filter:T->Bool):Null<T>
+  {
+    for (child in children)
+    {
+      if (filter(child)) return child;
+    }
+
+    return null;
+  }
+
+  /**
    * Get's the first alive child under this FunkinGroup. Returns null if it can't
    * find squat.
    *
