@@ -814,6 +814,9 @@ class PlayState extends MusicBeatSubState
     pauseCircle = FunkinSprite.create(0, 0, 'pauseCircle');
     #end
 
+    // Score
+    SongScore.instance.reset();
+
     // Don't do anything else here! Wait until create() when we attach to the camera.
   }
 
