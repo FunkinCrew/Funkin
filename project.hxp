@@ -1011,6 +1011,9 @@ class Project extends HXProject
    */
   function configureCompileDefines()
   {
+    // Add Funkin's version as a compilation flag so Polymod scripts can use it.
+    setHaxedef("funkin", VERSION);
+
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
 
