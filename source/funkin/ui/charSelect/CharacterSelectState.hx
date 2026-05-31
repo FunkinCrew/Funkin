@@ -416,7 +416,6 @@ class CharacterSelectState extends MusicBeatSubState
   {
     super.create();
 
-    // Disable UI navigation while everything is still being initialized!
     uiStateMachine.transition(Disabled);
 
     loadAvailableCharacters();
@@ -506,7 +505,6 @@ class CharacterSelectState extends MusicBeatSubState
     nametag.targetPosition.x += CUTOUT_SIZE;
     nametag.targetPosition.y += 200;
     add(nametag);
-
     FlxTween.tween(nametag.targetPosition, {
       y: nametag.targetPosition.y - 200
     }, 1, {
@@ -599,9 +597,7 @@ class CharacterSelectState extends MusicBeatSubState
       }
     });
 
-    var blackScreen:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
-    blackScreen.x = -(FlxG.width * 0.5);
-    blackScreen.y = -(FlxG.height * 0.5);
+    var blackScreen:FunkinSprite = new FunkinSprite(-(FlxG.width * 0.5), -(FlxG.height * 0.5)).makeSolidColor(FlxG.width * 2, FlxG.height * 2, 0xFF000000);
     add(blackScreen);
 
     introSound.loadEmbedded(Paths.sound('ui/character-select/sounds/lights'));
@@ -638,13 +634,27 @@ class CharacterSelectState extends MusicBeatSubState
 
       // We loop the idle animation since there's no music playing during the unlock sequence
       // Without looping, the characters would bop once and awkwardly remain static for 2 seconds
-      characters.player.animation.curAnim.looped = true;
-      characters.gf.animation.curAnim.looped = true;
+      if (characters.player.animation.curAnim != null)
+      {
+        characters.player.animation.curAnim.looped = true;
+      }
+
+      if (characters.gf.animation.curAnim != null)
+      {
+        characters.gf.animation.curAnim.looped = true;
+      }
 
       FlxTimer.wait(2, () ->
       {
-        characters.player.animation.curAnim.looped = false;
-        characters.gf.animation.curAnim.looped = false;
+        if (characters.player.animation.curAnim != null)
+        {
+          characters.player.animation.curAnim.looped = false;
+        }
+
+        if (characters.gf.animation.curAnim != null)
+        {
+          characters.gf.animation.curAnim.looped = false;
+        }
 
         playUnlockAnimation();
       });
@@ -706,7 +716,6 @@ class CharacterSelectState extends MusicBeatSubState
 
         icons.replaceLock(characterId, currentSelection);
         icons.updateIconPositions();
-
         icons.playIconBop(characterId);
 
         #if FEATURE_NEWGROUNDS
@@ -805,7 +814,6 @@ class CharacterSelectState extends MusicBeatSubState
             var currentPage:Int = Math.floor(currentSelection / SLOTS_PER_PAGE);
             var targetIndex:Int = i + currentPage * SLOTS_PER_PAGE;
             var iconPage:Int = Math.floor(targetIndex / SLOTS_PER_PAGE);
-
             if (iconPage != currentPage) continue;
 
             if (targetIndex != currentSelection)
@@ -832,7 +840,6 @@ class CharacterSelectState extends MusicBeatSubState
         {
           // On mobile, use swiping to scroll the page.
           var scrollAmount:Int = 0;
-
           if (SwipeUtil.justSwipedUp) scrollAmount = -1;
           if (SwipeUtil.justSwipedDown) scrollAmount = 1;
           if (scrollAmount != 0)
@@ -878,18 +885,17 @@ class CharacterSelectState extends MusicBeatSubState
     {
       characters.player.playAnimation(LOCKED, true);
       icons.playIconAnimation(currentSelection, 'clicked', true);
+      cursors.deny();
 
       lockedSound.play(true);
-      HapticUtil.vibrate(0, 0.2);
 
-      cursors.deny();
+      HapticUtil.vibrate(0, 0.2);
       return;
     }
 
     uiStateMachine.transition(CharacterSelected);
 
     inputHandler.reset();
-
     cursors.confirm();
 
     FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
@@ -917,7 +923,6 @@ class CharacterSelectState extends MusicBeatSubState
 
     characters.player.playAnimation(SELECT);
     characters.gf.playAnimation(SELECT);
-
     icons.playIconAnimation(currentSelection, 'confirm');
 
     selectTimer.start(1.5, (_) ->
@@ -928,8 +933,9 @@ class CharacterSelectState extends MusicBeatSubState
 
   function deselectCharacter():Void
   {
-    selectTimer.cancel();
+    uiStateMachine.transition(Idle);
 
+    selectTimer.cancel();
     cursors.unconfirm();
 
     dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, currentCharacterId));
@@ -952,8 +958,6 @@ class CharacterSelectState extends MusicBeatSubState
     characters.player.playAnimation(DESELECT);
     characters.gf.playAnimation(DESELECT);
     icons.playIconAnimation(currentSelection, 'confirm', false, true);
-
-    uiStateMachine.transition(Idle);
 
     FlxTween.tween(FlxG.sound.music, {
       pitch: 1.0
@@ -984,12 +988,12 @@ class CharacterSelectState extends MusicBeatSubState
     wentBackToFreeplay = true;
 
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
-
     FlxTween.tween(FlxG.sound.music, {
       volume: 0.0
     }, 0.7, {
       ease: FlxEase.quadInOut
     });
+
     goToFreeplay();
   }
 
@@ -1013,7 +1017,6 @@ class CharacterSelectState extends MusicBeatSubState
     }, 0.8, {
       ease: FlxEase.expoOut
     });
-
     FlxTween.tween(topBar, {
       y: topBar.y + 80
     }, 0.8, {
@@ -1033,7 +1036,6 @@ class CharacterSelectState extends MusicBeatSubState
     icons.doExitTween();
 
     FlxG.camera.follow(cameraFollowPoint, LOCKON);
-    // going to freeplay so fast makes the fade effects and the camera to bug, that's why we cancel the tweens
     FlxTween.cancelTweensOf(transitionGradient);
     FlxTween.cancelTweensOf(fadeShader);
     FlxTween.cancelTweensOf(cameraFollowPoint);

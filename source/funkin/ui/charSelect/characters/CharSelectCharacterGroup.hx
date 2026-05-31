@@ -231,6 +231,14 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
         if (newId != startingCharacter) gfCharacter.kill();
         this.add(gfCharacter);
       }
+      else
+      {
+        // Create a dummy GF character in the off-chance that the player data doesn't have one.
+        var gfCharacter:CharSelectCharacter = createCharacter(newId, GF, null, false);
+        gfCharacter.kill();
+
+        this.add(gfCharacter);
+      }
     }
 
     this.refresh();

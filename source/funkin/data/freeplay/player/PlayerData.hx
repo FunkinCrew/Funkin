@@ -312,10 +312,16 @@ class PlayerCharSelectData
   public var position:Null<Int>;
 
   /**
-   * The GF name to assign for this character.
+   * Optional data about the accompanying GF character.
    */
   @:optional
   public var gf:PlayerCharSelectGFData;
+
+  /**
+   * Optional offsets for the pixel icon.
+   */
+  @:optional @:default([0, 0])
+  public var pixelIconOffsets:Array<Float>;
 
   /**
    * The default animations for the GF character.

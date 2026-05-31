@@ -112,6 +112,8 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
    */
   public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
+    if (currentPath.isBlank()) return;
+
     this.animation.play(name, force, reversed, frame);
 
     // Apply the offsets if possible.
@@ -148,7 +150,7 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
     if (firstAssetPath == null)
     {
-      throw 'Could not load character "${playerId}" because no asset path was provided.';
+      FlxG.log.warn('Could not load character "${playerId}" because no asset path was provided.');
       return;
     }
 
@@ -343,6 +345,10 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
 
   override public function draw():Void
   {
+    // Skip drawing if the asset path is blank
+    // Prevents the HaxeFlixel logo from showing up at the top left
+    if (currentPath.isBlank()) return;
+
     if (analyzer != null) drawFFT();
 
     super.draw();

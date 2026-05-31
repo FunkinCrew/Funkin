@@ -5,6 +5,7 @@ import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.VerticalCutShader;
 import funkin.group.FunkinGroup;
@@ -148,13 +149,9 @@ class IconGroup extends FunkinGroup<FunkinSprite>
    */
   public function replaceLock(characterId:String, lockIndex:Int):Void
   {
-    var newIcon:PixelatedIcon = new PixelatedIcon(0, 0);
-    newIcon.setCharacter(characterId);
-    newIcon.setGraphicSize(128, 128);
-    newIcon.updateHitbox();
-    newIcon.ID = 0;
-
+    var newIcon:PixelatedIcon = createPixelIcon(characterId);
     var oldLock:Null<FunkinSprite> = getIconByIndex(lockIndex);
+
     if (oldLock == null) return;
 
     this.remove(oldLock);
@@ -173,21 +170,17 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     {
       var newIcon:Null<FunkinSprite> = null;
       var playableCharacterId:Null<String> = characterList.get(i) ?? Constants.DEFAULT_CHARACTER;
+      var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playableCharacterId);
 
       if (characterList.exists(i) && PlayerRegistry.instance.isCharacterSeen(playableCharacterId))
       {
-        newIcon = new PixelatedIcon(0, 0);
-        cast(newIcon, PixelatedIcon).setCharacter(playableCharacterId);
-        newIcon.setGraphicSize(128, 128);
-        newIcon.updateHitbox();
+        newIcon = createPixelIcon(playableCharacterId);
         newIcon.scale.set(2, 2);
-        newIcon.ID = 0;
 
         this.add(newIcon);
       }
       else
       {
-        var player:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playableCharacterId);
         var isPlayerUnlocked:Bool = player?.isUnlocked() ?? false;
         if (characterList.exists(i) && isPlayerUnlocked)
         {
@@ -211,6 +204,27 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
 
     updateIconPositions();
+  }
+
+  /**
+   * Creates a pixel icon for the character select screen.
+   * @param characterId The character ID of the icon to create.
+   * @return The newly created icon.
+   */
+  public function createPixelIcon(characterId:String):PixelatedIcon
+  {
+    var newIcon:PixelatedIcon = new PixelatedIcon(0, 0);
+    newIcon.setCharacter(characterId);
+    newIcon.setGraphicSize(128, 128);
+    newIcon.updateHitbox();
+    newIcon.ID = 0;
+
+    var playerData:Null<PlayerCharSelectData> = PlayerRegistry.instance.fetchEntry(characterId)?.getCharSelectData();
+    var iconOffsets:Array<Float> = playerData?.pixelIconOffsets ?? [0, 0];
+    newIcon.offset.x -= iconOffsets[0];
+    newIcon.offset.y -= iconOffsets[1];
+
+    return newIcon;
   }
 
   /**
