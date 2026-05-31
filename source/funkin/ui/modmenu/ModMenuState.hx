@@ -19,6 +19,10 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import funkin.util.plugins.SidePanelPlugin;
 
+import flixel.tweens.FlxEase;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+
 /**
  * The user interface for the mod menu.
  */
@@ -43,6 +47,11 @@ class ModMenuState extends MusicBeatState
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
   var selection:ModMenuSelection = DisabledModList;
 
+  var bgWires:FunkinSprite;
+
+  var darkness:FunkinSprite;
+  var fileDrop:FunkinSprite;
+
   public function new()
   {
     super();
@@ -56,67 +65,111 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
-    // Show a simple background.
-    var menuBG = FunkinSprite.create('ui/main-menu/menu-desat');
-    menuBG.color = 0xFF999999;
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    var menuBG = FunkinSprite.create('ui/mods/mod-menu-bg');
+    menuBG.scale.set(0.66, 0.67);
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
     menuBG.zIndex = -1000;
     add(menuBG);
 
-    var background:FunkinSprite = new FunkinSprite(24, 24);
-    background.makeSolidColor(FlxG.width - 48, FlxG.height - 48, FlxColor.BLACK);
-    background.alpha = 0.7;
-    add(background);
-
-    var topText:FlxText = new FlxText(112, 48, FlxG.width, 'FUCKING COOL ASS MOD MENU');
-    topText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE);
+    var topText:FunkinSprite = FunkinSprite.create('ui/mods/mod-menu-top-text');
+    topText.scale.set(0.66, 0.67);
     add(topText);
+    topText.updateHitbox();
 
-    leftRectangle.x = 52;
-    leftRectangle.y = 112;
-    var width:Float = (background.width - 12) / 3.0;
-    leftRectangle.makeSolidColor(cast width, cast(background.height - 132, Int), FlxColor.BLACK);
-    leftRectangle.alpha = 0.5;
+    topText.x = FlxG.width / 2 - (topText.width / 2);
+    topText.y = 25;
+
+    var dragText:FlxText = new FlxText(112, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
+    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE);
+    add(dragText);
+
+    leftRectangle.x = 60;
+    leftRectangle.y = 138;
+    leftRectangle.scale.set(0.64, 0.67);
+    leftRectangle.loadTexture('ui/mods/mod-menu-box');
     add(leftRectangle);
+    leftRectangle.updateHitbox();
 
-    rightRectangle.x = leftRectangle.x + leftRectangle.width + 48;
-    rightRectangle.y = 112;
-    rightRectangle.makeSolidColor(cast width, cast(background.height - 132, Int), FlxColor.BLACK);
-    rightRectangle.alpha = 0.5;
+    rightRectangle.x = leftRectangle.x + leftRectangle.width + 35;
+    rightRectangle.y = leftRectangle.y;
+    rightRectangle.scale.set(0.64, 0.67);
+    rightRectangle.loadTexture('ui/mods/mod-menu-box');
     add(rightRectangle);
+    rightRectangle.updateHitbox();
+
+    bgWires = new FunkinSprite();
+    bgWires.x = 1040;
+    bgWires.y = 240;
+    bgWires.scale.set(0.7, 0.7);
+    bgWires.loadTexture('ui/mods/mod-menu-bgwires');
+    add(bgWires);
+    bgWires.updateHitbox();
 
     var bfAndGF:FunkinSprite = new FunkinSprite();
-    bfAndGF.x = 960;
-    bfAndGF.y = 256;
-    bfAndGF.loadTexture('ui/mods/one-million-followers-on-tiktok-or-gf-fucking-dies');
-    add(bfAndGF);
+    bfAndGF.x = 705;
+    bfAndGF.y = 40;
+    bfAndGF.scale.set(0.7, 0.7);
+    bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
+    bfAndGF.updateHitbox();
 
     buildDisabledModList();
     buildEnabledModList();
 
     add(enabledModItems);
     add(disabledModItems);
+    add(enabledModItems.titleText);
+    add(disabledModItems.titleText);
 
-    enabledModItems.clipRect = new FlxRect(0, 0, rightRectangle.width, rightRectangle.height);
-    disabledModItems.clipRect = new FlxRect(0, 0, leftRectangle.width, leftRectangle.height);
+    add(enabledModItems.scrollbarTrack);
+    add(enabledModItems.scrollbarThumb);
+
+    add(disabledModItems.scrollbarTrack);
+    add(disabledModItems.scrollbarThumb);
+
+    enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
+    enabledModItems.titleText.y = rightRectangle.y + 14;
+    disabledModItems.titleText.x = leftRectangle.x + (leftRectangle.width / 2) - (disabledModItems.titleText.width / 2);
+    disabledModItems.titleText.y = leftRectangle.y + 14;
+
+    enabledModItems.clipRect = FlxRect.get(rightRectangle.x, rightRectangle.y + 60, rightRectangle.width, rightRectangle.height - 60);
+    disabledModItems.clipRect = FlxRect.get(leftRectangle.x, leftRectangle.y + 60, leftRectangle.width, leftRectangle.height - 60);
 
     buttonBackToMenu.x = 8;
     buttonBackToMenu.y = 32;
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
-    add(buttonBackToMenu);
+    //add(buttonBackToMenu);
 
-    buttonDone.x = 960;
-    buttonDone.y = 640;
+    add(bfAndGF);
+
+    buttonDone.x = 865;
+    buttonDone.y = 642;
+    buttonDone.scale.set(0.65, 0.65);
     buttonDone.loadTexture('ui/mods/mod-menu-done');
+    buttonDone.updateHitbox();
     add(buttonDone);
 
-    buttonOpenFolder.x = 16;
+    buttonOpenFolder.x = 240;
     buttonOpenFolder.y = 640;
+    buttonOpenFolder.scale.set(0.66, 0.67);
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
+    buttonOpenFolder.updateHitbox();
     add(buttonOpenFolder);
+
+    darkness = new FunkinSprite();
+    darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    darkness.scrollFactor.set(0, 0);
+    darkness.alpha = 0;
+    darkness.visible = false;
+    add(darkness);
+
+    fileDrop = FunkinSprite.create(0,0,'ui/mods/mod-menu-drop-hover');
+    fileDrop.setGraphicSize(FlxG.width, FlxG.height);
+    fileDrop.scrollFactor.set(0, 0);
+    fileDrop.updateHitbox();
+    fileDrop.visible = false;
+    add(fileDrop);
 
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
@@ -131,19 +184,52 @@ class ModMenuState extends MusicBeatState
       enabledModItems.selectFirstItem();
       selection = EnabledModList;
     }
-
     FlxG.stage.window.onDropFile.add(onDropFile);
+    FlxG.stage.window.onDropBegin.add(startFileDropHover);
+    FlxG.stage.window.onDropComplete.add(hideFileDropHover);
 
     applyInitialSelection();
 
-    Cursor.show();
+    buttonOpenFolder.alpha = 0.5;
+    buttonDone.alpha = 0.5;
+
+    FlxG.autoPause = false;
+  }
+
+  var fileDropTimer:Float = 0;
+  var fileElapsed:Float = 0;
+  var isHoveringFile:Bool = false;
+  var animDone:Bool = false;
+
+  function startFileDropHover():Void
+  {
+    isHoveringFile = true;
+    trace('File drop hover start');
+    fileDropTimer = 0.5;
+    fileElapsed = 0;
+    fileDrop.visible = true;
+    darkness.visible = true;
+    animDone = false;
+    darkness.alpha = 0;
+    fileDrop.alpha = 0;
+  }
+
+  function hideFileDropHover(x:Float, y:Float):Void
+  {
+    fileElapsed = 0;
+    isHoveringFile = false;
+    animDone = false;
+    trace('File drop hover end');
+    fileDropTimer = -0.08;
   }
 
   public override function destroy():Void
   {
     super.destroy();
-
+    FlxG.autoPause = true;
     FlxG.stage.window.onDropFile.remove(onDropFile);
+    FlxG.stage.window.onDropBegin.remove(startFileDropHover);
+    FlxG.stage.window.onDropComplete.remove(hideFileDropHover);
   }
 
   public function onDropFile(path:String, state:String, x:Float, y:Float):Void
@@ -163,11 +249,40 @@ class ModMenuState extends MusicBeatState
     }
   }
 
+  function distanceToPoint(point1:FlxPoint, point2:FlxPoint):Float
+  {
+    var dx = point1.x - point2.x;
+    var dy = point1.y - point2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
-    handleMouse();
+    if (!animDone)
+    {
+      fileElapsed += elapsed;
+      var t = fileElapsed / fileDropTimer;
+
+      var adjustT = t;
+      if (adjustT < 0) adjustT += 1;
+
+      if (t > 1)
+      {
+        t = 1;
+        animDone = true;
+      }
+      else if (t < -1)
+      {
+        t = -1;
+        animDone = true;
+      }
+      fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
+      darkness.alpha = FlxMath.lerp(0, 0.5, FlxEase.backOut(adjustT));
+    }
+
+    // handleMouse();
     handleKeyboard();
   }
 
@@ -201,6 +316,13 @@ class ModMenuState extends MusicBeatState
   function handleKeyboard():Void
   {
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
+    if (controls.BACK_P)
+    {
+      backToMainMenu();
+    }
+
+    var oldSelection = selection;
+
     if (controls.UI_UP_P)
     {
       switch (selection)
@@ -210,12 +332,12 @@ class ModMenuState extends MusicBeatState
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
           else enabledModItems.moveUp();
-        case BackToMenu:
-          // Don't do anything
         case OpenModsFolder:
-          selection = DisabledModList;
+          // Do nothing
         case Done:
-          selection = DisabledModList;
+          // Do nothing
+        case BackToMenu:
+          // Do nothing
       }
     }
 
@@ -228,12 +350,12 @@ class ModMenuState extends MusicBeatState
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
           else enabledModItems.moveDown();
-        case BackToMenu:
-          selection = DisabledModList;
         case OpenModsFolder:
-          // Don't do anything
+          // Do nothing
         case Done:
-          // Don't do anything
+          // Do nothing
+        case BackToMenu:
+          // Do nothing
       }
     }
 
@@ -242,20 +364,15 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          // Don't do anything
+          selection = Done;
         case EnabledModList:
-          if (disabledModItems.modItems.length > 0)
-          {
-            enabledModItems.deselect();
-            disabledModItems.selectFirstItem();
-            selection = DisabledModList;
-          }
-        case BackToMenu:
-          // Don't do anything
+          if (disabledModItems.modItems.length > 0) selection = DisabledModList;
         case OpenModsFolder:
-          // Don't do anything
+          selection = EnabledModList;
         case Done:
           selection = OpenModsFolder;
+        case BackToMenu:
+          // Do nothing
       }
     }
 
@@ -264,20 +381,15 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          if (enabledModItems.modItems.length > 0)
-          {
-            disabledModItems.deselect();
-            enabledModItems.selectFirstItem();
-            selection = EnabledModList;
-          }
+          if (enabledModItems.modItems.length > 0) selection = EnabledModList;
         case EnabledModList:
-          // Don't do anything
-        case BackToMenu:
-          // Don't do anything
+          selection = OpenModsFolder;
         case OpenModsFolder:
           selection = Done;
         case Done:
-          // Don't do anything
+          selection = DisabledModList;
+        case BackToMenu:
+          // Do nothing
       }
     }
 
@@ -303,6 +415,30 @@ class ModMenuState extends MusicBeatState
           applyModlist();
       }
     }
+
+    if (oldSelection != selection) handleSelection();
+  }
+
+  function handleSelection():Void
+  {
+    disabledModItems.deselect();
+    enabledModItems.deselect();
+    buttonOpenFolder.alpha = 0.5;
+    buttonDone.alpha = 0.5;
+
+    switch (selection)
+    {
+      case DisabledModList:
+        disabledModItems.selectFirstItem();
+      case EnabledModList:
+        enabledModItems.selectFirstItem();
+      case OpenModsFolder:
+        buttonOpenFolder.alpha = 1;
+      case Done:
+        buttonDone.alpha = 1;
+      case BackToMenu:
+        // Do nothing
+    }
   }
 
   function buildDisabledModList():Void
@@ -310,7 +446,7 @@ class ModMenuState extends MusicBeatState
     var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
 
     disabledModItems.removeAll();
-
+    disabledModItems.title = 'DISABLED';
     disabledModItems.x = leftRectangle.x;
     disabledModItems.y = leftRectangle.y;
 
@@ -326,7 +462,7 @@ class ModMenuState extends MusicBeatState
     var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
 
     enabledModItems.removeAll();
-
+    enabledModItems.title = 'ENABLED';
     enabledModItems.x = rightRectangle.x;
     enabledModItems.y = rightRectangle.y;
 

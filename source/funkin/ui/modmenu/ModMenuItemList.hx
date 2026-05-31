@@ -4,14 +4,44 @@ import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.graphics.FunkinSprite;
 import polymod.Polymod.ModMetadata;
 import flixel.math.FlxRect;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 
 class ModMenuItemList extends FunkinSpriteGroup
 {
+  public static var ITEM_X_OFFSET:Float = 40;
+  public static var ITEM_Y_OFFSET:Float = 60;
+
+  public static var SCROLLBAR_WIDTH:Float = 10;
+  public static var SCROLLBAR_TOP_MARGIN:Float = -42;
+  public static var SCROLLBAR_BOTTOM_MARGIN:Float = -48;
+  public static var SCROLLBAR_MIN_THUMB:Float = 24;
+
+  public static var SCROLLBAR_TRACK_COLOR:FlxColor = 0xFF3A393E;
+  public static var SCROLLBAR_TRACK_ALPHA:Float = 0.6;
+  public static var SCROLLBAR_THUMB_COLOR:FlxColor = 0xFF57565A;
+  public static var SCROLLBAR_THUMB_ALPHA:Float = 0.95;
+
   public var selectedModItem:Null<ModMenuItem> = null;
   public var selectedItemIndex(get, never):Int;
   public var pinnedTopModId:Null<String> = null;
   // Separate array specifically typed to ModMenuItem
   public var modItems:Array<ModMenuItem>;
+
+  public var title(default, set):String = "Disabled";
+  public var titleText:FlxText;
+
+  public var scrollbarTrack:FunkinSprite;
+  public var scrollbarThumb:FunkinSprite;
+  // Cache last built bitmap heights so we only regenerate graphics when they actually change.
+  var lastTrackHeight:Int = -1;
+  var lastThumbHeight:Int = -1;
+
+  function set_title(value:String):String
+  {
+    titleText.text = value;
+    return title;
+  }
 
   public var viewportHeight:Float = 320;
   public var scrollOffset:Float = 0;
@@ -28,8 +58,20 @@ class ModMenuItemList extends FunkinSpriteGroup
 
     modItems = [];
 
-    // default clip rect for the list viewport
-    clipRect = FlxRect.get(0, 0, ModMenuItem.ITEM_WIDTH, viewportHeight);
+    titleText = new FlxText(0, 0);
+    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+
+    scrollbarTrack = new FunkinSprite(0, 0);
+    scrollbarTrack.makeGraphic(Std.int(SCROLLBAR_WIDTH), 1, SCROLLBAR_TRACK_COLOR);
+    scrollbarTrack.alpha = SCROLLBAR_TRACK_ALPHA;
+    scrollbarTrack.visible = false;
+
+    scrollbarThumb = new FunkinSprite(0, 0);
+    scrollbarThumb.makeGraphic(Std.int(SCROLLBAR_WIDTH), 1, SCROLLBAR_THUMB_COLOR);
+    scrollbarThumb.alpha = SCROLLBAR_THUMB_ALPHA;
+    scrollbarThumb.visible = false;
+
+    updateScrollbar();
   }
 
   public function removeAll():Void
@@ -46,8 +88,8 @@ class ModMenuItemList extends FunkinSpriteGroup
     if (pinnedItem != null)
     {
       modItems = [pinnedItem];
-      children = children.filter((c) -> Std.isOfType(c, ModMenuItem) && c == pinnedItem);
-      pinnedItem.localX = 0;
+      children = children.filter((c) -> (Std.isOfType(c, ModMenuItem) && c == pinnedItem));
+      pinnedItem.localX = ITEM_X_OFFSET;
       pinnedItem.localY = getModItemYPos(0) + scrollOffset;
       selectedModItem = pinnedItem;
       pinnedItem.selected = true;
@@ -58,6 +100,8 @@ class ModMenuItemList extends FunkinSpriteGroup
       modItems = [];
       selectedModItem = null;
     }
+
+    updateScrollbar();
   }
 
   public function deselectAll():Void
@@ -89,8 +133,10 @@ class ModMenuItemList extends FunkinSpriteGroup
     }
 
     var index = modItems.indexOf(item);
-    item.localX = 0;
+    item.localX = ITEM_X_OFFSET;
     item.localY = getModItemYPos(index) + scrollOffset;
+
+    updateScrollbar();
   }
 
   public function addMod(mod:ModMetadata):Void
@@ -133,23 +179,29 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public function moveUp():Void
   {
+    if (modItems.length == 0) return;
+
     var index = selectedItemIndex + 1;
 
     if (index >= modItems.length) index = 0;
 
-    selectModItem(modItems[index]);
+    selectModItem(modItems[index], false);
+    scrollBy(getScrollDeltaToReveal(selectedModItem));
   }
 
   public function moveDown():Void
   {
+    if (modItems.length == 0) return;
+
     var index = selectedItemIndex - 1;
 
     if (index < 0) index = modItems.length - 1;
 
-    selectModItem(modItems[index]);
+    selectModItem(modItems[index], false);
+    scrollBy(getScrollDeltaToReveal(selectedModItem));
   }
 
-  public function selectModItem(item:Null<ModMenuItem>):Void
+  public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true):Void
   {
     if (selectedModItem != null) selectedModItem.selected = false;
 
@@ -162,7 +214,7 @@ class ModMenuItemList extends FunkinSpriteGroup
 
     selectedModItem.selected = true;
 
-    ensureItemVisible(selectedModItem);
+    if (autoScroll) ensureItemVisible(selectedModItem);
   }
 
   public function repositionItems():Void
@@ -170,7 +222,10 @@ class ModMenuItemList extends FunkinSpriteGroup
     for (index => modMenuItem in modItems)
     {
       modMenuItem.localY = getModItemYPos(index) + scrollOffset;
+      modMenuItem.localX = ITEM_X_OFFSET;
     }
+
+    updateScrollbar();
   }
 
   public function getModItemYPos(index:Int):Float
@@ -178,32 +233,51 @@ class ModMenuItemList extends FunkinSpriteGroup
     final ICON_HEIGHT:Float = 96;
     final ITEM_PADDING:Float = ICON_HEIGHT + 16;
 
-    return (ITEM_PADDING * (modItems.length - 1 - index));
+    return ITEM_Y_OFFSET + (ITEM_PADDING * (modItems.length - 1 - index));
+  }
+
+  /**
+   * Top of the usable viewport, in the SAME local space the items use.
+   */
+  function getViewportTop():Float
+  {
+    return ITEM_Y_OFFSET;
+  }
+
+  /**
+   * Bottom of the usable viewport in local space.
+   */
+  function getViewportBottom():Float
+  {
+    return clipRect != null ? clipRect.height : viewportHeight;
   }
 
   public function ensureItemVisible(item:ModMenuItem):Void
   {
     if (item == null) return;
 
+    scrollBy(getScrollDeltaToReveal(item));
+  }
+
+  /**
+   * Returns how much `scrollOffset` needs to change for `item` to sit fully
+   * inside the viewport. Returns 0 when the item is already visible.
+   */
+  function getScrollDeltaToReveal(item:Null<ModMenuItem>):Float
+  {
+    if (item == null) return 0;
+
     var index = modItems.indexOf(item);
-    if (index < 0) return;
+    if (index < 0) return 0;
 
     var itemHeight = 96;
     var itemTop = getModItemYPos(index) + scrollOffset;
-    var top = clipRect != null ? clipRect.y : 0;
-    var bottom = clipRect != null ? clipRect.y + clipRect.height : viewportHeight;
+    var top = getViewportTop();
+    var bottom = getViewportBottom();
 
-    if (itemTop < top)
-    {
-      scrollOffset += (top - itemTop);
-    }
-    else if (itemTop + itemHeight > bottom)
-    {
-      scrollOffset -= (itemTop + itemHeight - bottom);
-    }
-
-    clampScroll();
-    repositionItems();
+    if (itemTop < top) return (top - itemTop);
+    if (itemTop + itemHeight > bottom) return -(itemTop + itemHeight - bottom);
+    return 0;
   }
 
   function clampScroll():Void
@@ -212,7 +286,10 @@ class ModMenuItemList extends FunkinSpriteGroup
     var ITEM_PADDING:Float = ICON_HEIGHT + 16;
     var contentHeight = ITEM_PADDING * (modItems.length - 1) + ICON_HEIGHT;
 
-    var minScroll:Float = Math.min(0, viewportHeight - contentHeight);
+    // Use the same viewport span as the scrollbar so the two never disagree.
+    var viewSpan = getViewportBottom() - getViewportTop();
+
+    var minScroll:Float = Math.min(0, viewSpan - contentHeight);
     var maxScroll:Float = 0;
 
     if (scrollOffset < minScroll) scrollOffset = minScroll;
@@ -224,5 +301,72 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollOffset += delta;
     clampScroll();
     repositionItems();
+  }
+
+  /**
+   * Sizes and positions the scrollbar based on the current content and viewport.
+   * Hides it entirely when everything fits.
+   */
+  function updateScrollbar():Void
+  {
+    if (scrollbarTrack == null || scrollbarThumb == null) return;
+
+    var ICON_HEIGHT:Float = 96;
+    var ITEM_PADDING:Float = ICON_HEIGHT + 16;
+    var contentHeight = ITEM_PADDING * (modItems.length - 1) + ICON_HEIGHT;
+
+    var viewTop:Float = getViewportTop();
+    var viewBottom:Float = getViewportBottom();
+    var viewSpan:Float = viewBottom - viewTop;
+
+    var needsScroll = contentHeight > viewSpan;
+    scrollbarTrack.visible = needsScroll;
+    scrollbarThumb.visible = needsScroll;
+    if (!needsScroll) return;
+
+    var trackTop:Float = viewTop + SCROLLBAR_TOP_MARGIN;
+    var trackBottom:Float = viewBottom - SCROLLBAR_BOTTOM_MARGIN;
+    var trackHeight:Float = trackBottom - trackTop;
+    if (trackHeight < 1) trackHeight = 1;
+
+    var trackX:Float = (ITEM_X_OFFSET / 2) - (SCROLLBAR_WIDTH / 2);
+
+    var thumbHeight:Float = trackHeight * (viewSpan / contentHeight);
+    if (thumbHeight < SCROLLBAR_MIN_THUMB) thumbHeight = SCROLLBAR_MIN_THUMB;
+    if (thumbHeight > trackHeight) thumbHeight = trackHeight;
+
+    var minScroll:Float = Math.min(0, viewSpan - contentHeight);
+    var frac:Float = (minScroll != 0) ? (scrollOffset / minScroll) : 0;
+    if (frac < 0) frac = 0;
+    if (frac > 1) frac = 1;
+
+    var thumbY:Float = trackTop + frac * (trackHeight - thumbHeight);
+
+    var trackH:Int = Std.int(trackHeight);
+    if (trackH != lastTrackHeight)
+    {
+      scrollbarTrack.makeGraphic(Std.int(SCROLLBAR_WIDTH), trackH, SCROLLBAR_TRACK_COLOR);
+      scrollbarTrack.alpha = SCROLLBAR_TRACK_ALPHA;
+      lastTrackHeight = trackH;
+    }
+
+    var thumbH:Int = Std.int(thumbHeight);
+    if (thumbH != lastThumbHeight)
+    {
+      scrollbarThumb.makeGraphic(Std.int(SCROLLBAR_WIDTH), thumbH, SCROLLBAR_THUMB_COLOR);
+      scrollbarThumb.alpha = SCROLLBAR_THUMB_ALPHA;
+      lastThumbHeight = thumbH;
+    }
+
+    scrollbarTrack.localX = trackX;
+    scrollbarTrack.localY = trackTop;
+
+    scrollbarThumb.localX = trackX;
+    scrollbarThumb.localY = thumbY;
+
+    scrollbarTrack.x = x + scrollbarTrack.localX;
+    scrollbarTrack.y = y + scrollbarTrack.localY;
+    scrollbarThumb.x = x + scrollbarThumb.localX;
+    scrollbarThumb.y = y + scrollbarThumb.localY;
   }
 }

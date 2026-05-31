@@ -16,7 +16,7 @@ class ModMenuItem extends FunkinSpriteGroup
 {
   public static final ITEM_WIDTH:Int = 420;
   public static final ICON_HEIGHT:Int = 96;
-  public static final DESC_WIDTH:Int = 280;
+  public static final DESC_WIDTH:Int = 240;
 
   /**
    * Whether this mod item is immutable in list operations.
@@ -72,7 +72,6 @@ class ModMenuItem extends FunkinSpriteGroup
   function set_enabled(value:Bool):Bool
   {
     this.enabled = value;
-    updateBackgroundColor();
     return enabled;
   }
 
@@ -94,7 +93,7 @@ class ModMenuItem extends FunkinSpriteGroup
     background.makeGraphic(ITEM_WIDTH, ICON_HEIGHT, FlxColor.WHITE);
     background.localX = 0;
     background.localY = 0;
-    background.color = 0xFF333333;
+    background.localAlpha = 0;
     add(background);
 
     modIcon = new FunkinSprite(0, 0);
@@ -112,11 +111,26 @@ class ModMenuItem extends FunkinSpriteGroup
     }
     else if (mod != null)
     {
-      loadModIcon(mod.icon);
+      trace(mod.icon);
+      if (mod.icon != null) loadModIcon(mod.icon);
+      else
+      {
+        trace('No icon found for mod ${mod.id}, using fallback');
+        // Fallback icon
+        modIcon.loadGraphic(Paths.image("ui/mods/mod-menu-fallback-icon"));
+        add(modIcon);
+
+        modIcon.scrollFactor.set();
+        modIcon.antialiasing = true;
+        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+        modIcon.localScale.x = modIcon.scale.x;
+        modIcon.localScale.y = modIcon.scale.y;
+        modIcon.updateHitbox();
+      }
     }
 
     titleText = new FlxText(0, 0, DESC_WIDTH);
-    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 24, FlxColor.WHITE);
+    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = ICON_HEIGHT + 8;
     titleText.text = getModTitle();
     add(titleText);
@@ -124,7 +138,7 @@ class ModMenuItem extends FunkinSpriteGroup
     titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
 
     descriptionText = new FlxText(0, 0, DESC_WIDTH);
-    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 14, FlxColor.WHITE);
+    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);
     descriptionText.localX = ICON_HEIGHT + 8;
     descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
     descriptionText.text = getModDescription();
@@ -135,14 +149,8 @@ class ModMenuItem extends FunkinSpriteGroup
 
   function updateBackgroundColor():Void
   {
-    if (this.enabled)
-    {
-      background.color = this.selected ? 0xFF999999 : 0xFF666666;
-    }
-    else
-    {
-      background.color = this.selected ? 0xFF666666 : 0xFF333333;
-    }
+    if (this.selected) background.localAlpha = 0.25;
+    else background.localAlpha = 0;
   }
 
   function loadModIcon(bytes:haxe.io.Bytes):Void
