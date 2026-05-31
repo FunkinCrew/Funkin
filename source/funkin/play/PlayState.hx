@@ -344,6 +344,13 @@ class PlayState extends MusicBeatSubState
   public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
 
   /**
+   * Camera bop decay eate.
+   * Applied for cameraBopMultiplier lerp ratio.
+   * @default `95%`
+   */
+  public var decayRate:Float = Constants.DEFAULT_DECAY_RATE;
+
+  /**
    * Intensity of the HUD camera zoom.
    * Need to make this a multiplier later. Just shoving in 0.015 for now so it doesn't break.
    * @default `3.0%`
@@ -1107,6 +1114,7 @@ class PlayState extends MusicBeatSubState
 
       // Reset camera zooming
       cameraBopIntensity = Constants.DEFAULT_BOP_INTENSITY;
+      decayRate = Constants.DEFAULT_DECAY_RATE;
       hudCameraZoomIntensity = (cameraBopIntensity - 1.0) * 2.0;
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
@@ -1213,8 +1221,7 @@ class PlayState extends MusicBeatSubState
     // Cap health.
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
-
-    var decayRate:Float = 0.95;
+    
     var dt:Float = elapsed * 60; //
 
     if (subState == null && cameraZoomRate > 0.0)
