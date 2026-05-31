@@ -241,6 +241,11 @@ class Constants
   public static final DEFAULT_BOP_INTENSITY:Float = 1.015;
 
   /**
+   * The default decay rate for camera bops.
+   */
+  public static final DEFAULT_DECAY_RATE:Float = 0.95;
+
+  /**
    * The default rate for camera zooms (in beats per zoom).
    */
   public static final DEFAULT_ZOOM_RATE:Int = 4;
