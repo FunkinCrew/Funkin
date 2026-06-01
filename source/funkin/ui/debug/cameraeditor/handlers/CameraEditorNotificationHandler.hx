@@ -165,9 +165,10 @@ class CameraEditorNotificationHandler
     NotificationManager.instance.removeNotification(notif);
   }
 
-  static function sendNotification(state:CameraEditorState, title:String, body:String, ?type:NotificationType,
-      ?actions:Array<NotificationActionData>):Notification
+  static function sendNotification(state:CameraEditorState, title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationActionData>):Notification
   {
+    logNotification(title, body, type);
+
     var notif = NotificationManager.instance.addNotification({
       title: title,
       body: body,
@@ -204,6 +205,23 @@ class CameraEditorNotificationHandler
     return null;
     trace('WARNING: Notifications are not supported on Mac OS.');
     #end
+  }
+
+  static inline function logNotification(title:String, body:String, ?type:NotificationType):Void
+  {
+    switch (type)
+    {
+      case NotificationType.Error:
+        FlxG.log.error('ERROR: ${title} - ${body}');
+      case NotificationType.Warning:
+        FlxG.log.warn('WARNING: ${title} - ${body}');
+      case NotificationType.Success:
+        FlxG.log.notice('SUCCESS: ${title} - ${body}');
+      case NotificationType.Info:
+        FlxG.log.notice('INFO: ${title} - ${body}');
+      default:
+        FlxG.log.notice('${type}: ${title} - ${body}');
+    }
   }
 }
 
