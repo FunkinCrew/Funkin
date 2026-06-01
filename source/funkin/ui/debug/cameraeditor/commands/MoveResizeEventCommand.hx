@@ -37,6 +37,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
 
   /**
    * Perform the action, moving and/or resizing the camera event.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -60,6 +61,7 @@ class MoveResizeEventCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, restoring the camera event to its original position and duration.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

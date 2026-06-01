@@ -4,11 +4,11 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Command that mirrors a given array of notes on either or strumline individually,
- * along either the X (note direction) axis or Y (note time) axis.
- * Flip middle will only work when the given notes are in both strumlines - it's incompatible with individually mirroring the selection.
+ * Represents a reversible action to mirror a list of notes in the chart.
+ * Notes can be mirrored horizontally or vertically, or both.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class MirrorNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];
@@ -47,9 +47,16 @@ class MirrorNotesCommand implements ChartEditorCommand
       }
     }
     else
+    {
       this.mirroredNotes = SongDataUtils.mirrorNotes(notes, ChartEditorState.STRUMLINE_SIZE, flipMiddle, mirrorX, mirrorY);
+    }
   }
 
+  /**
+   * Perform the action, mirroring the list of notes.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     // Delete the notes.
@@ -67,6 +74,11 @@ class MirrorNotesCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, restoring the original notes.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, mirroredNotes);
@@ -86,7 +98,7 @@ class MirrorNotesCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -95,6 +107,10 @@ class MirrorNotesCommand implements ChartEditorCommand
     return (notes.length > 0 && mirrorX || !mirrorX && mirrorY && notes.length > 1);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = notes.length;

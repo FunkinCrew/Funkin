@@ -21,6 +21,7 @@ class AddEventCommand implements CameraEditorCommand
 
   /**
    * Perform the action, adding a new camera event to the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -38,6 +39,7 @@ class AddEventCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, removing the camera event from the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

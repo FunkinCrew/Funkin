@@ -27,6 +27,7 @@ class RemoveLayerCommand implements CameraEditorCommand
 
   /**
    * Perform the action, removing a camera layer and all its events from the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -41,7 +42,10 @@ class RemoveLayerCommand implements CameraEditorCommand
       var eventLayer:String = event.editorLayer ?? 'Default';
       if (layer.name == eventLayer)
       {
-        deletedEvents.push({event: event, originalLayer: eventLayer});
+        deletedEvents.push({
+          event: event,
+          originalLayer: eventLayer
+        });
         eventsToRemove.push(event);
       }
     }
@@ -69,6 +73,7 @@ class RemoveLayerCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, restoring the layer and all its events to the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

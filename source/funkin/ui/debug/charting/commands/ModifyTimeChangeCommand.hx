@@ -5,11 +5,10 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
 /**
- * A command which modifies the give time change in the current song's time changes.
- * Annoyingly, due to the way haxe works, every value of the time change has to be passed into this.
- * Will clamp the target timestamp to a valid value.
+ * Represents a reversible action to modify a time change in a song.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ModifyTimeChangeCommand implements ChartEditorCommand
 {
   var timeChangeIndex:Int;
@@ -31,6 +30,11 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     this.targetDenominator = targetDenominator;
   }
 
+  /**
+   * Perform the action, modifying the time change.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
@@ -38,9 +42,7 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     {
       previousBPM = 100;
       previousTimeStamp = 0;
-      timeChanges = [
-        new SongTimeChange(previousTimeStamp, targetBPM)
-      ];
+      timeChanges = [new SongTimeChange(previousTimeStamp, targetBPM)];
     }
     else
     {
@@ -74,14 +76,17 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
     state.updateTimeSignature();
   }
 
+  /**
+   * Reverse the action, restoring the original time change.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
     if (timeChanges == null || timeChanges.length == 0)
     {
-      timeChanges = [
-        new SongTimeChange(previousTimeStamp, targetBPM)
-      ];
+      timeChanges = [new SongTimeChange(previousTimeStamp, targetBPM)];
     }
     else
     {
@@ -113,18 +118,24 @@ class ModifyTimeChangeCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
     // This command is undoable. Add to the history if we actually performed an action.
-    return (targetBPM != previousBPM
+    return (
+      targetBPM != previousBPM
       || targetTimeStamp != previousTimeStamp
       || previousNumerator != targetNumerator
-      || previousDenominator != targetDenominator);
+      || previousDenominator != targetDenominator
+    );
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     return 'TimeChange ${timeChangeIndex}: ${targetTimeStamp} ms : BPM: ${targetBPM} in ${targetNumerator}/${targetDenominator}';

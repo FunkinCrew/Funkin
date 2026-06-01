@@ -5,9 +5,10 @@ import funkin.data.song.SongData.SongTimeChange;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 
 /**
- * A command which removes the given timechange from the current song's timechanges.
+ * Represents a reversible action to remove a time change from the current chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveTimeChangeCommand implements ChartEditorCommand
 {
   var timeChangeIndex:Int;
@@ -19,6 +20,11 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     this.timeChangeIndex = timeChangeIndex;
   }
 
+  /**
+   * Perform the action, removing the time change from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     var timeChanges:Array<SongTimeChange> = state.currentSongMetadata.timeChanges;
@@ -49,6 +55,11 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     state.updateTimeSignature();
   }
 
+  /**
+   * Reverse the action, restoring the time change to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     if (previousTimeChanges == null)
@@ -75,9 +86,8 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
 
   /**
    * Whether the command should display in the undo/redo menu.
-   * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -85,12 +95,24 @@ class RemoveTimeChangeCommand implements ChartEditorCommand
     return true;
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
-    if (removedTimeChange != null && removedTimeChange.length > 0) return
-      'TimeChange ${timeChangeIndex} : ${removedTimeChange[0].timeStamp} ms : BPM: ${removedTimeChange[0].bpm} in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed'
+    if (removedTimeChange != null && removedTimeChange.length > 0)
+    {
+      return
+        'TimeChange ${timeChangeIndex} :'
+        + ' ${removedTimeChange[0].timeStamp} ms :'
+        + 'BPM: ${removedTimeChange[0].bpm} '
+        + 'in ${removedTimeChange[0].timeSignatureNum}/${removedTimeChange[0].timeSignatureDen} removed';
+    }
     else
+    {
       return 'huh?';
+    }
   }
 }
 #end

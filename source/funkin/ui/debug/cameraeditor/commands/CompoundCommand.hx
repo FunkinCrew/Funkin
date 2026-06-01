@@ -23,6 +23,7 @@ class CompoundCommand implements CameraEditorCommand
 
   /**
    * Perform the action, executing all the commands in sequence.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -34,6 +35,7 @@ class CompoundCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, undoing all the commands in reverse order.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

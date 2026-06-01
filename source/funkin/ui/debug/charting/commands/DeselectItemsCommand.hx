@@ -6,9 +6,10 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Command to deselect a specific set of notes and events in the chart editor.
+ * Represents a reversible action to remove a specific set of notes and events from the current selection.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class DeselectItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -20,6 +21,11 @@ class DeselectItemsCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, deselecting the given notes and events.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
@@ -30,6 +36,11 @@ class DeselectItemsCommand implements ChartEditorCommand
     state.editButtonsDirty = true;
   }
 
+  /**
+   * Reverse the action, reselecting the notes and events that were deselected.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     for (note in this.notes)
@@ -51,7 +62,7 @@ class DeselectItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -60,6 +71,10 @@ class DeselectItemsCommand implements ChartEditorCommand
     return (notes.length > 0 || events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var isPlural = (notes.length + events.length) > 1;

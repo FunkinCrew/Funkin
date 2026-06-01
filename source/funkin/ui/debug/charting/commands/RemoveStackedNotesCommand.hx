@@ -6,10 +6,11 @@ import funkin.data.song.SongDataUtils;
 import funkin.data.song.SongNoteDataUtils;
 
 /**
- * Deletes the given notes from the current chart in the chart editor if any overlap another.
- * Use when ONLY notes are being deleted.
+ * Represents a reversible action to detect and remove stacked notes
+ * (i.e. notes placed on top of each other) from the current chart chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveStackedNotesCommand implements ChartEditorCommand
 {
   var notes:Null<Array<SongNoteData>>;
@@ -23,15 +24,21 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     this.removedNotes = [];
   }
 
+  /**
+   * Perform the action, detecting and removing stacked notes.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
+    // Whether we are checking just within a selection, or in the entire chart.
     var isSelection:Bool = notes != null;
-    var notes:Array<SongNoteData> = notes ?? state.currentSongChartNoteData;
+    var notesToCheck:Array<SongNoteData> = notes ?? state.currentSongChartNoteData;
 
-    if (notes.length == 0) return;
+    if (notesToCheck.length == 0) return;
 
     overlappedNotes.clear();
-    removedNotes = SongNoteDataUtils.listStackedNotes(notes, ChartEditorState.stackedNoteThreshold, false, overlappedNotes);
+    removedNotes = SongNoteDataUtils.listStackedNotes(notesToCheck, ChartEditorState.stackedNoteThreshold, false, overlappedNotes);
     if (removedNotes.length == 0) return;
 
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, removedNotes);
@@ -47,6 +54,11 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, restoring the removed notes.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     if (removedNotes.length == 0) return;
@@ -67,7 +79,7 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -76,6 +88,10 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     return removedNotes.length > 0;
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     if (removedNotes.length == 1 && removedNotes[0] != null)

@@ -5,9 +5,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 
 /**
- * Command to set the selection to all notes and events in the chart editor.
+ * Represents a reversible action to select all notes and events in the current chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SelectAllItemsCommand implements ChartEditorCommand
 {
   var shouldSelectNotes:Bool;
@@ -21,6 +22,11 @@ class SelectAllItemsCommand implements ChartEditorCommand
     this.shouldSelectEvents = shouldSelectEvents;
   }
 
+  /**
+   * Perform the action, selecting the all notes and events in the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     this.previousNoteSelection = state.currentNoteSelection;
@@ -33,6 +39,11 @@ class SelectAllItemsCommand implements ChartEditorCommand
     state.editButtonsDirty = true;
   }
 
+  /**
+   * Reverse the action, deselecting the notes and events that were selected.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentNoteSelection = previousNoteSelection;
@@ -46,7 +57,7 @@ class SelectAllItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -55,6 +66,10 @@ class SelectAllItemsCommand implements ChartEditorCommand
     return (state.currentNoteSelection.length > 0 || state.currentEventSelection.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     if (shouldSelectNotes && !shouldSelectEvents)

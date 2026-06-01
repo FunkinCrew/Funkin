@@ -8,10 +8,10 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
 /**
- * Command that copies a given set of notes and song events to the clipboard,
- * without deleting them from the chart editor.
+ * Represents a reversible action to copy the currently selected notes and events to the clipboard.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class CopyItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -23,6 +23,11 @@ class CopyItemsCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, copying the currently selected notes and events to the clipboard.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     // Calculate a single time offset for all the notes and events.
@@ -69,9 +74,16 @@ class CopyItemsCommand implements ChartEditorCommand
           note.scale.y *= 1.2;
 
           note.angle = FlxG.random.bool() ? -10 : 10;
-          FlxTween.tween(note, {"angle": 0}, 0.8, {ease: FlxEase.elasticOut});
+          FlxTween.tween(note, {
+            'angle': 0
+          }, 0.8, {
+            ease: FlxEase.elasticOut
+          });
 
-          FlxTween.tween(note.scale, {"y": prevX, "x": prevY}, 0.7, {
+          FlxTween.tween(note.scale, {
+            'x': prevX,
+            'y': prevY
+          }, 0.7, {
             ease: FlxEase.elasticOut,
             onComplete: function(_)
             {
@@ -101,9 +113,16 @@ class CopyItemsCommand implements ChartEditorCommand
           event.scale.y *= 1.2;
 
           event.angle = FlxG.random.bool() ? -10 : 10;
-          FlxTween.tween(event, {"angle": 0}, 0.8, {ease: FlxEase.elasticOut});
+          FlxTween.tween(event, {
+            'angle': 0
+          }, 0.8, {
+            ease: FlxEase.elasticOut
+          });
 
-          FlxTween.tween(event.scale, {"y": prevX, "x": prevY}, 0.7, {
+          FlxTween.tween(event.scale, {
+            'x': prevX,
+            'y': prevY
+          }, 0.7, {
             ease: FlxEase.elasticOut,
             onComplete: function(_)
             {
@@ -139,7 +158,9 @@ class CopyItemsCommand implements ChartEditorCommand
       state.txtCopyNotif.text = 'Copied ${copiedString} to clipboard';
       state.txtCopyNotif.x = FlxG.mouse.x - (state.txtCopyNotif.width / 2);
       state.txtCopyNotif.y = FlxG.mouse.y - 16;
-      FlxTween.tween(state.txtCopyNotif, {y: state.txtCopyNotif.y - 32}, 0.5, {
+      FlxTween.tween(state.txtCopyNotif, {
+        y: state.txtCopyNotif.y - 32
+      }, 0.5, {
         type: FlxTweenType.ONESHOT,
         ease: FlxEase.quadOut,
         onComplete: function(_)
@@ -150,16 +171,21 @@ class CopyItemsCommand implements ChartEditorCommand
     }
   }
 
+  /**
+   * Reverse the action.
+   * This function does nothing, since the command is not added to the history.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     // This command is not undoable. Do nothing.
   }
 
   /**
-   * Whether the command should display in the undo/redo menu.
-   * This should be `false` if no real actions were actually performed.
+   * Since this command is not undoable, it should not be added to the history.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -168,14 +194,26 @@ class CopyItemsCommand implements ChartEditorCommand
     return false;
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = notes.length + events.length;
 
-    if (notes.length == 0) return 'Copy $len Events to Clipboard';
-    else if (events.length == 0) return 'Copy $len Notes to Clipboard';
+    if (notes.length == 0)
+    {
+      return 'Copy $len Events to Clipboard';
+    }
+    else if (events.length == 0)
+    {
+      return 'Copy $len Notes to Clipboard';
+    }
     else
+    {
       return 'Copy $len Items to Clipboard';
+    }
   }
 }
 #end

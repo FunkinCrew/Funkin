@@ -27,6 +27,7 @@ class FlattenLayerCommand implements CameraEditorCommand
 
   /**
    * Perform the action, merging the layer into the one above it.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -39,7 +40,10 @@ class FlattenLayerCommand implements CameraEditorCommand
       var eventLayer = event.editorLayer ?? 'Default';
       if (layer.name == eventLayer)
       {
-        flattenedEvents.push({event: event, originalLayer: eventLayer});
+        flattenedEvents.push({
+          event: event,
+          originalLayer: eventLayer
+        });
 
         // note: this sets the layer to be "Default" layer which is sorta special right now!
         // todo: we will implement merge above/below logic laterz
@@ -71,6 +75,7 @@ class FlattenLayerCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, restoring the merged layer and moving the events back to it.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

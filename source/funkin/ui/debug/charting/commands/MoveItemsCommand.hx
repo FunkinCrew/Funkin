@@ -6,9 +6,11 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Move the given notes by the given offset and shift them by the given number of columns in the chart editor.
+ * Represents a reversible action to move a set of notes and events by a given time offset,
+ * and shift them by a given number of columns.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class MoveItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -18,20 +20,29 @@ class MoveItemsCommand implements ChartEditorCommand
   var offset:Float;
   var columns:Int;
 
-  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, offset:Float, columns:Int, offsetInSteps:Bool = false,
-      roundStepTimeToNearestStep:Bool = false)
+  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, offset:Float, columns:Int, offsetInSteps:Bool = false, roundStepTimeToNearestStep:Bool = false)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = notes.clone();
     this.events = events.clone();
-    if (offsetInSteps) this.offset = Conductor.instance.getStepTimeInMs(offset);
+    if (offsetInSteps)
+    {
+      this.offset = Conductor.instance.getStepTimeInMs(offset);
+    }
     else
+    {
       this.offset = offset;
+    }
     this.columns = columns;
     this.movedNotes = [];
     this.movedEvents = [];
   }
 
+  /**
+   * Perform the action, moving the notes and events.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
@@ -45,8 +56,9 @@ class MoveItemsCommand implements ChartEditorCommand
       // Clone the notes to prevent editing from affecting the history.
       var resultNote = note.clone();
       resultNote.time = (resultNote.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
-      resultNote.data = ChartEditorState.gridColumnToNoteData((ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0,
-        ChartEditorState.STRUMLINE_SIZE * 2 - 1));
+      resultNote.data = ChartEditorState.gridColumnToNoteData(
+        (ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0, ChartEditorState.STRUMLINE_SIZE * 2 - 1)
+      );
 
       movedNotes.push(resultNote);
     }
@@ -74,6 +86,11 @@ class MoveItemsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, moving the notes and events back to their original positions.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, movedNotes);
@@ -95,7 +112,7 @@ class MoveItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -104,6 +121,10 @@ class MoveItemsCommand implements ChartEditorCommand
     return (notes.length > 0 || events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = notes.length + events.length;
