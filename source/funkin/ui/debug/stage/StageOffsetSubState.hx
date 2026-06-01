@@ -70,7 +70,7 @@ class StageOffsetSubState extends HaxeUISubState
 
     outlineShader = new StrokeShader(0xFFFFFFFF, 4, 4);
 
-    var layerList:ListView = findComponent("prop-layers");
+    var layerList:ListView = findComponent('prop-layers');
 
     for (thing in playState.currentStage)
     {
