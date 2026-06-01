@@ -1,13 +1,11 @@
 package funkin.ui.debug.charting.commands;
 
 #if FEATURE_CHART_EDITOR
-import funkin.data.song.SongData.SongNoteData;
-import funkin.data.song.SongDataUtils;
-
 /**
- * Command that sets the start time or end time of the Freeplay preview.
+ * Represents a reversible action to set the Freeplay preview start and end times.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SetFreeplayPreviewCommand implements ChartEditorCommand
 {
   var previousStartTime:Float = 0;
@@ -21,6 +19,11 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
     this.newEndTime = newEndTime;
   }
 
+  /**
+   * Perform the action, modifying the Freeplay preview start and end times.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     this.previousStartTime = state.currentSongFreeplayPreviewStart;
@@ -30,6 +33,11 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
     if (newEndTime != null) state.currentSongFreeplayPreviewEnd = newEndTime;
   }
 
+  /**
+   * Reverse the action, reverting the Freeplay preview start and end times to the previous value.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongFreeplayPreviewStart = previousStartTime;
@@ -40,7 +48,7 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -48,6 +56,10 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
     return (newStartTime != null && newStartTime != previousStartTime) || (newEndTime != null && newEndTime != previousEndTime);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var setStart = newStartTime != null && newStartTime != previousStartTime;
@@ -55,15 +67,15 @@ class SetFreeplayPreviewCommand implements ChartEditorCommand
 
     if (setStart && !setEnd)
     {
-      return "Set Freeplay Preview Start Time";
+      return 'Set Freeplay Preview Start Time';
     }
     else if (setEnd && !setStart)
     {
-      return "Set Freeplay Preview End Time";
+      return 'Set Freeplay Preview End Time';
     }
     else
     {
-      return "Set Freeplay Preview Start and End Times";
+      return 'Set Freeplay Preview Start and End Times';
     }
   }
 }

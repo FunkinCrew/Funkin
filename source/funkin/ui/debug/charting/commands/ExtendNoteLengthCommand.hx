@@ -4,10 +4,11 @@ package funkin.ui.debug.charting.commands;
 import funkin.data.song.SongData.SongNoteData;
 
 /**
- * Command that modifies the length of a hold note in the chart editor.
+ * Represents a reversible action to modifies the length of a hold note.
  * If it is not a hold note, it will become one, and if it is already a hold note, its length will change.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ExtendNoteLengthCommand implements ChartEditorCommand
 {
   var note:SongNoteData;
@@ -23,6 +24,11 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
     this.unit = unit;
   }
 
+  /**
+   * Perform the action, changing the length of the note.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     switch (unit)
@@ -40,6 +46,11 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, reverting the length of the note.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
@@ -58,7 +69,7 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -67,6 +78,10 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
     return (oldLength != newLength);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     if (oldLength == 0)
@@ -84,9 +99,19 @@ class ExtendNoteLengthCommand implements ChartEditorCommand
   }
 }
 
+/**
+ * The unit of measurement for the change in length.
+ */
 enum Unit
 {
+  /**
+   * 1000ths of a second.
+   */
   MILLISECONDS;
+
+  /**
+   * 1/4th of a beat.
+   */
   STEPS;
 }
 #end

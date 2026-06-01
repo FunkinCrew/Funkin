@@ -5,9 +5,10 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Adds the given events to the current chart in the chart editor.
+ * Represents a reversible action to add one or more song events.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class AddEventsCommand implements ChartEditorCommand
 {
   var events:Array<SongEventData>;
@@ -19,6 +20,11 @@ class AddEventsCommand implements ChartEditorCommand
     this.appendToSelection = appendToSelection;
   }
 
+  /**
+   * Perform the action, adding the new song events to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     for (event in events)
@@ -46,6 +52,11 @@ class AddEventsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, removing the new song events from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);
@@ -66,7 +77,7 @@ class AddEventsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -75,6 +86,10 @@ class AddEventsCommand implements ChartEditorCommand
     return (events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = events.length;

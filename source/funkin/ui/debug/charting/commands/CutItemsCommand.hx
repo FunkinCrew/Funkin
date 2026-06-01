@@ -6,10 +6,11 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Command that copies a given set of notes and song events to the clipboard,
- * and then deletes them from the chart editor.
+ * Represents a reversible action to cut the currently selected notes and song events,
+ * adding them to the clipboard before deleting them from the chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class CutItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -21,6 +22,11 @@ class CutItemsCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, cutting the currently selected notes and song events.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     // Copy the notes.
@@ -44,6 +50,11 @@ class CutItemsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, re-adding the cut notes and song events to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(notes);
@@ -63,7 +74,7 @@ class CutItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -72,14 +83,26 @@ class CutItemsCommand implements ChartEditorCommand
     return (notes.length > 0 || events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = notes.length + events.length;
 
-    if (notes.length == 0) return 'Cut $len Events to Clipboard';
-    else if (events.length == 0) return 'Cut $len Notes to Clipboard';
+    if (notes.length == 0)
+    {
+      return 'Cut $len Events to Clipboard';
+    }
+    else if (events.length == 0)
+    {
+      return 'Cut $len Notes to Clipboard';
+    }
     else
+    {
       return 'Cut $len Items to Clipboard';
+    }
   }
 }
 #end

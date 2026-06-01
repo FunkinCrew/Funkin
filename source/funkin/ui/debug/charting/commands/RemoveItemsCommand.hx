@@ -6,10 +6,10 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Deletes the given notes and events from the current chart in the chart editor.
- * Use only when BOTH notes and events are being deleted.
+ * Represents a reversible action to remove a list of notes and song events from a chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -21,6 +21,11 @@ class RemoveItemsCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, removing the notes and events from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     if ((notes.length + events.length) == 0) return;
@@ -41,6 +46,11 @@ class RemoveItemsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, restoring the notes and events to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     if ((notes.length + events.length) == 0) return;
@@ -72,7 +82,7 @@ class RemoveItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -81,6 +91,10 @@ class RemoveItemsCommand implements ChartEditorCommand
     return (notes.length > 0 || events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     return 'Remove ${notes.length + events.length} Items';

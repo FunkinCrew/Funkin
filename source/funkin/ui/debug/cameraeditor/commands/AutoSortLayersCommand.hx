@@ -60,17 +60,25 @@ class AutoSortLayersCommand implements CameraEditorCommand
       byKind.get(event.eventKind).push(event);
     }
 
-    var plan:AutoSortPlan = {layers: []};
+    var plan:AutoSortPlan = {
+      layers: []
+    };
     for (kind in orderedKinds)
     {
       var tracks:Array<Array<SongEventData>> = scheduleTracks(byKind.get(kind), stepLengthMs);
       if (tracks.length == 1)
       {
-        plan.layers.push({name: kind, events: tracks[0]});
+        plan.layers.push({
+          name: kind,
+          events: tracks[0]
+        });
       }
       else
       {
-        for (i => track in tracks) plan.layers.push({name: '$kind ${i + 1}', events: track});
+        for (i => track in tracks) plan.layers.push({
+          name: '$kind ${i + 1}',
+          events: track
+        });
       }
     }
     return plan;
@@ -121,7 +129,10 @@ class AutoSortLayersCommand implements CameraEditorCommand
     for (event in allEvents)
     {
       var raw:SongEventDataRaw = event;
-      previousEventLayers.push({event: event, layer: raw.editorLayer});
+      previousEventLayers.push({
+        event: event,
+        layer: raw.editorLayer
+      });
     }
 
     var defaultLayer:TimelineLayerData = findDefaultLayer(previousLayers);

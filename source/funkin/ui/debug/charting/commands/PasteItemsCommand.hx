@@ -9,9 +9,10 @@ import funkin.data.song.SongNoteDataUtils;
 import funkin.ui.debug.charting.ChartEditorState;
 
 /**
- * A command which inserts the contents of the clipboard into the chart editor.
+ * Represents a reversible action to insert the contents of the user's clipboard into the song at the provided timestamp.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class PasteItemsCommand implements ChartEditorCommand
 {
   var targetTimestamp:Float;
@@ -33,6 +34,11 @@ class PasteItemsCommand implements ChartEditorCommand
     this.currentClipboard = SongDataUtils.readItemsFromClipboard();
   }
 
+  /**
+   * Perform the action, pasting the clipboard contents into the song.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     if (currentClipboard.valid != true)
@@ -95,6 +101,11 @@ class PasteItemsCommand implements ChartEditorCommand
     isRedo = false;
   }
 
+  /**
+   * Reverse the action, removing the pasted notes and events.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.playSound(Paths.sound('chartingSounds/undo'));
@@ -118,7 +129,7 @@ class PasteItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -127,14 +138,26 @@ class PasteItemsCommand implements ChartEditorCommand
     return (addedNotes.length > 0 || addedEvents.length > 0 || removedNotes.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = currentClipboard.notes.length + currentClipboard.events.length;
 
-    if (currentClipboard.notes.length == 0) return 'Paste $len Events';
-    else if (currentClipboard.events.length == 0) return 'Paste $len Notes';
+    if (currentClipboard.notes.length == 0)
+    {
+      return 'Paste $len Events';
+    }
+    else if (currentClipboard.events.length == 0)
+    {
+      return 'Paste $len Notes';
+    }
     else
+    {
       return 'Paste $len Items';
+    }
   }
 }
 #end
