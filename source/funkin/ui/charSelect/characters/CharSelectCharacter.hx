@@ -114,6 +114,9 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   {
     if (currentPath.isBlank()) return;
 
+    // We don't want anything to interrupt the slideOut animation outside of force
+    if (getCurrentAnimation() == SLIDEOUT && !force) return;
+
     this.animation.play(name, force, reversed, frame);
 
     // Apply the offsets if possible.
