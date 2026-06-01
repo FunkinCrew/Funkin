@@ -96,13 +96,15 @@ class ChartEditorImportExportHandler
     // Detect stacked notes
     detectStackedNotes(state);
 
+    var songDisplay:String = (path != null) ? path : data.manifest.songId;
+
     if (data.issues == null || data.issues.length == 0)
     {
-      state.success('Loaded Chart', 'Loaded chart (${path})');
+      state.success('Loaded Chart', 'Loaded chart "${songDisplay}"');
     }
     else
     {
-      state.warning('Loaded Chart', 'Loaded chart with issues (${path})\n${data.issues.join("\n")}');
+      state.warning('Loaded Chart', 'Loaded chart "$songDisplay" with issues:\n${data.issues.join("\n")}');
     }
   }
 
@@ -137,6 +139,9 @@ class ChartEditorImportExportHandler
   {
     var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
     loadSongFromFNFCData(state, entries, path);
+
+    state.currentWorkingFilePath = path;
+    state.saveDataDirty = false; // Just loaded file!
   }
 
   static function detectStackedNotes(state:ChartEditorState):Void
@@ -174,9 +179,8 @@ class ChartEditorImportExportHandler
         // Increase the delay between notifications if there are multiple variations with stacked notes, to prevent overlap.
         flixel.util.FlxTimer.wait(delay, () ->
         {
-          state.warning('Stacked Notes Detected',
-            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' +
-            'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+          state.warning('Stacked Notes Detected', 'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, '
+            + 'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
         });
         delay *= 1.5;
       }
@@ -198,6 +202,9 @@ class ChartEditorImportExportHandler
     {
       var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
       loadSongFromFNFCData(state, entries, null);
+
+      state.currentWorkingFilePath = null;
+      state.saveDataDirty = false; // Just loaded template!
 
       // Set the variation of the song if one was passed in the params, and it isn't the default
       if (variation != null) state.selectedVariation = variation;
@@ -298,8 +305,7 @@ class ChartEditorImportExportHandler
    * @param onSaveCb Callback for when the file is saved.
    * @param onCancelCb Callback for when saving is cancelled.
    */
-  public static function exportCurrentChartToFNFC(state:ChartEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void,
-      ?onCancelCb:Void->Void):Void
+  public static function exportCurrentChartToFNFC(state:ChartEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
   {
     var fnfcData:FNFCData = ChartEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
     var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
