@@ -28,9 +28,6 @@ class CameraEditorImportExportHandler
    */
   public static function loadSongFromFNFCData(state:CameraEditorState, data:FNFCData, ?path:String):Void
   {
-    state.currentWorkingFilePath = path;
-    state.saved = true; // Just loaded file!
-
     state.songMetadatas = data.songMetadatas;
     state.songDatas = data.songChartDatas;
     state.songManifestData = data.manifest;
@@ -40,13 +37,14 @@ class CameraEditorImportExportHandler
     state.currentDifficulty = resolveLoadedDifficulty(state);
     state.onChartLoaded();
 
+    var songDisplay:String = (path != null) ? path : data.manifest.songId;
     if (data.issues == null || data.issues.length == 0)
     {
-      CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart (${path})');
+      CameraEditorNotificationHandler.success(state, 'Loaded Chart', 'Loaded chart "$songDisplay"');
     }
     else
     {
-      CameraEditorNotificationHandler.warning(state, 'Loaded Chart', 'Loaded chart with issues (${path})\n${data.issues.join("\n")}');
+      CameraEditorNotificationHandler.warning(state, 'Loaded Chart', 'Loaded chart "$songDisplay" with issues:\n${data.issues.join("\n")}');
     }
   }
 
@@ -62,6 +60,9 @@ class CameraEditorImportExportHandler
   {
     var entries:FNFCData = FNFCUtil.loadDataFromFNFCBytes(bytes, true);
     loadSongFromFNFCData(state, entries, path);
+
+    state.currentWorkingFilePath = path;
+    state.saved = true; // Just loaded file!
   }
 
   /**
@@ -75,14 +76,21 @@ class CameraEditorImportExportHandler
   {
     var entries:FNFCData = FNFCUtil.loadDataFromFNFCPath(path, true);
     loadSongFromFNFCData(state, entries, path);
+
+    state.currentWorkingFilePath = path;
+    state.saved = true; // Just loaded file!
   }
 
   static function resolveLoadedVariation(state:CameraEditorState):String
   {
-    if (state.songMetadatas.exists(state.currentVariation)
-      && state.songDatas.exists(state.currentVariation)) return state.currentVariation;
-    if (state.songMetadatas.exists(Constants.DEFAULT_VARIATION)
-      && state.songDatas.exists(Constants.DEFAULT_VARIATION)) return Constants.DEFAULT_VARIATION;
+    if (state.songMetadatas.exists(state.currentVariation) && state.songDatas.exists(state.currentVariation))
+    {
+      return state.currentVariation;
+    }
+    if (state.songMetadatas.exists(Constants.DEFAULT_VARIATION) && state.songDatas.exists(Constants.DEFAULT_VARIATION))
+    {
+      return Constants.DEFAULT_VARIATION;
+    }
 
     for (variation in state.songMetadatas.keys())
     {
@@ -116,6 +124,9 @@ class CameraEditorImportExportHandler
   {
     var entries:FNFCData = FNFCUtil.buildFNFCDataFromTemplate(songId, true);
     loadSongFromFNFCData(state, entries, 'template:$songId');
+
+    state.currentWorkingFilePath = null;
+    state.saved = false; // Just loaded template!
 
     if (variation != null) state.switchVariation(variation);
     if (difficulty != null) state.currentDifficulty = difficulty;
@@ -161,8 +172,7 @@ class CameraEditorImportExportHandler
    * @param onSaveCb Callback for when the file is saved.
    * @param onCancelCb Callback for when saving is cancelled.
    */
-  public static function exportCurrentChartToFNFC(state:CameraEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void,
-      ?onCancelCb:Void->Void):Void
+  public static function exportCurrentChartToFNFC(state:CameraEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
   {
     var fnfcData:FNFCData = CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
     var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
