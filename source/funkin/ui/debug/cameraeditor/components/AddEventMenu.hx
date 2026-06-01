@@ -24,8 +24,16 @@ class AddEventMenu
   static final ICON_PATH:String = 'assets/ui/editors/camera-editor/event-icons/';
   static final EVENT_ITEMS:Array<
     {kind:String, label:String, icon:String}> = [
-    {kind: 'FocusCamera', label: 'Focus Camera', icon: 'focus_event.png'},
-    {kind: 'ZoomCamera', label: 'Zoom Camera', icon: 'zoom_event.png'},
+    {
+      kind: 'FocusCamera',
+      label: 'Focus Camera',
+      icon: 'focus_event.png'
+    },
+    {
+      kind: 'ZoomCamera',
+      label: 'Zoom Camera',
+      icon: 'zoom_event.png'
+    },
   ];
 
   var menu:Null<Menu> = null;
@@ -170,7 +178,8 @@ class AddEventMenu
 
     if (schema == null)
     {
-      return new SongEventDataRaw(time, eventKind, {});
+      return new SongEventDataRaw(time, eventKind, {
+      });
     }
 
     var value:haxe.DynamicAccess<Dynamic> = {};

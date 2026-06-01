@@ -21,7 +21,8 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/freeplay.xml'))
 class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -558,8 +559,12 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     isPerformingPreview = true;
     isFadingOutPreview = false;
     audioPreviewTracks.play(true, chartEditorState.currentSongFreeplayPreviewStart);
-    audioPreviewTracks.fadeIn(FreeplayState.FADE_IN_DURATION, FreeplayState.FADE_IN_START_VOLUME * freeplayPreviewVolume,
-      FreeplayState.FADE_IN_END_VOLUME * freeplayPreviewVolume, null);
+    audioPreviewTracks.fadeIn(
+      FreeplayState.FADE_IN_DURATION,
+      FreeplayState.FADE_IN_START_VOLUME * freeplayPreviewVolume,
+      FreeplayState.FADE_IN_END_VOLUME * freeplayPreviewVolume,
+      null
+    );
   }
 
   public function stopPerformingPreview():Void
@@ -596,7 +601,9 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     if (audioPreviewTracks.playing)
     {
-      var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(
+        audioPreviewTracks.time / Constants.MS_PER_SEC
+      ) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
       playheadAbsolutePos = targetScrollPos;
 
@@ -632,8 +639,12 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     }
     else
     {
-      previewBoxStartPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(chartEditorState.currentSongFreeplayPreviewStart / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
-      previewBoxEndPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(chartEditorState.currentSongFreeplayPreviewEnd / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      previewBoxStartPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(
+        chartEditorState.currentSongFreeplayPreviewStart / Constants.MS_PER_SEC
+      ) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      previewBoxEndPosAbsolute = waveformMusic.waveform.waveformData.secondsToIndex(
+        chartEditorState.currentSongFreeplayPreviewEnd / Constants.MS_PER_SEC
+      ) / (waveformScale / BASE_SCALE * waveformMagicFactor);
 
       freeplayPreviewStart.value = chartEditorState.currentSongFreeplayPreviewStart;
       freeplayPreviewEnd.value = chartEditorState.currentSongFreeplayPreviewEnd;

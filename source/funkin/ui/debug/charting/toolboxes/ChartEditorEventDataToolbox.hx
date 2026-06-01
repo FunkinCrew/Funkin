@@ -32,7 +32,8 @@ import openfl.geom.Rectangle;
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/event-data.xml'))
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
@@ -129,7 +130,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     if (!_initializing && chartEditorState.currentEventSelection.length > 0)
     {
       // Edit the event data of any selected events.
-      chartEditorState.success('Modified Events', 'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"');
+      chartEditorState.success(
+        'Modified Events',
+        'Switching ${chartEditorState.currentEventSelection.length} events to "${chartEditorState.eventKindToPlace}"'
+      );
       for (event in chartEditorState.currentEventSelection)
       {
         event.eventKind = chartEditorState.eventKindToPlace;
@@ -160,7 +164,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var schema:SongEventSchema = SongEventRegistry.getEventSchema(chartEditorState.eventKindToPlace);
       if (schema == null)
       {
-        chartEditorState.warning('Invalid Event Kind', 'Event toolbox tried to use unknown event kind "${chartEditorState.eventKindToPlace}", did you define a schema?');
+        chartEditorState.warning(
+          'Invalid Event Kind',
+          'Event toolbox tried to use unknown event kind "${chartEditorState.eventKindToPlace}", did you define a schema?'
+        );
       }
       else
       {
@@ -293,7 +300,10 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           for (optionName in field.keys.keys())
           {
             var optionValue:Null<Dynamic> = field.keys.get(optionName);
-            dropDown.dataSource.add({value: optionValue, text: optionName});
+            dropDown.dataSource.add({
+              value: optionValue,
+              text: optionName
+            });
           }
 
           dropDown.value = field.defaultValue;
@@ -540,9 +550,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
           }
         }, 1);
       }
-      else if (easeDotImage != null
-        && !_initializing
-        && _easeDotSprites[_dotIndex].frame != null) easeDotImage.resource = _easeDotSprites[_dotIndex].frame;
+      else if (easeDotImage != null && !_initializing && _easeDotSprites[_dotIndex].frame != null) easeDotImage.resource = _easeDotSprites[_dotIndex].frame;
     };
 
     _dotTimer ??= new FlxTimer();

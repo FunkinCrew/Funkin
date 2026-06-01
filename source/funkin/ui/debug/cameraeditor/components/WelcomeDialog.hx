@@ -19,7 +19,8 @@ import haxe.ui.events.MouseEvent;
  * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
  * Opens when the chart editor first opens.
  */
-@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/camera-editor/dialogs/welcome.xml')) @:access(funkin.ui.debug.charting.CameraEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/camera-editor/dialogs/welcome.xml'))
+@:access(funkin.ui.debug.charting.CameraEditorState)
 class WelcomeDialog extends Dialog
 {
   var locked:Bool = false;
@@ -79,9 +80,10 @@ class WelcomeDialog extends Dialog
       Cursor.cursorMode = Default;
     }
 
-    dropHandlers = [
-      {component: this.chartBox, handler: this.onDropFileChartBox}
-    ];
+    dropHandlers = [{
+      component: this.chartBox,
+      handler: this.onDropFileChartBox
+    }];
 
     for (dropTarget in dropHandlers) CameraEditorFileDropHandler.addDropHandler(dropTarget);
   }

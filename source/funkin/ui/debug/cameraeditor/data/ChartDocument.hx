@@ -26,17 +26,11 @@ using StringTools;
 class ChartDocument
 {
   public var currentVariation:String = Constants.DEFAULT_VARIATION;
-
   public var currentDifficulty:String = 'hard';
-
   public var songDatas:Map<String, SongChartData> = new Map<String, SongChartData>();
-
   public var songMetadatas:Map<String, SongMetadata> = new Map<String, SongMetadata>();
-
   public var audioInstTrackData:Map<String, Bytes> = new Map();
-
   public var audioVocalTrackData:Map<String, Bytes> = new Map();
-
   public var songManifestData(get, set):ChartManifestData;
 
   var _songManifestData:Null<ChartManifestData> = null;
@@ -109,13 +103,11 @@ class ChartDocument
 
   public var currentSongMetadata(get, never):Null<SongMetadata>;
 
-  inline function get_currentSongMetadata():Null<SongMetadata>
-    return songMetadatas.get(currentVariation);
+  inline function get_currentSongMetadata():Null<SongMetadata> return songMetadatas.get(currentVariation);
 
   public var currentSongChartData(get, never):Null<SongChartData>;
 
-  inline function get_currentSongChartData():Null<SongChartData>
-    return songDatas.get(currentVariation);
+  inline function get_currentSongChartData():Null<SongChartData> return songDatas.get(currentVariation);
 
   public var currentNotes(get, never):Array<SongNoteData>;
 
@@ -129,11 +121,11 @@ class ChartDocument
   }
 
   public final savedChanged:FlxSignal = new FlxSignal();
-
   public final workingFileChanged:FlxSignal = new FlxSignal();
-
   public final recentsChanged:FlxSignal = new FlxSignal();
 
-  public function new() {}
+  public function new()
+  {
+  }
 }
 #end

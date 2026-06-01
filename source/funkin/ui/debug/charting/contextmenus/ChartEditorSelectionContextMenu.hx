@@ -18,7 +18,8 @@ import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/selection.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/selection.xml"))
 class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuEdit:MenuItem;
@@ -107,20 +108,23 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
         case "MILLISECONDS":
           if (contextmenuOffset.value != 0)
           {
-            chartEditorState.performCommand(new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection,
-              contextmenuOffset.value, 0));
+            chartEditorState.performCommand(
+              new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection, contextmenuOffset.value, 0)
+            );
           }
         case "STEPS":
           if (contextmenuOffset.value != 0)
           {
-            chartEditorState.performCommand(new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection,
-              contextmenuOffset.value, 0, true));
+            chartEditorState.performCommand(
+              new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection, contextmenuOffset.value, 0, true)
+            );
           }
         default:
           if (contextmenuOffset.value != 0)
           {
-            chartEditorState.performCommand(new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection,
-              contextmenuOffset.value, 0));
+            chartEditorState.performCommand(
+              new MoveItemsCommand(chartEditorState.currentNoteSelection, chartEditorState.currentEventSelection, contextmenuOffset.value, 0)
+            );
           }
       }
     }
@@ -160,20 +164,41 @@ class ChartEditorSelectionContextMenu extends ChartEditorBaseContextMenu
 
     contextmenuMirrorX.onClick = function(_)
     {
-      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
-        !contextmenuMirrorFlipWithinStrumline.selected, true, false));
+      chartEditorState.performCommand(
+        new MirrorNotesCommand(
+          chartEditorState.currentNoteSelection,
+          contextmenuMirrorFlipWithinStrumline.selected,
+          !contextmenuMirrorFlipWithinStrumline.selected,
+          true,
+          false
+        )
+      );
     }
 
     contextmenuMirrorY.onClick = function(_)
     {
-      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
-        !contextmenuMirrorFlipWithinStrumline.selected, false, true));
+      chartEditorState.performCommand(
+        new MirrorNotesCommand(
+          chartEditorState.currentNoteSelection,
+          contextmenuMirrorFlipWithinStrumline.selected,
+          !contextmenuMirrorFlipWithinStrumline.selected,
+          false,
+          true
+        )
+      );
     }
 
     contextmenuMirrorXY.onClick = function(_)
     {
-      chartEditorState.performCommand(new MirrorNotesCommand(chartEditorState.currentNoteSelection, contextmenuMirrorFlipWithinStrumline.selected,
-        !contextmenuMirrorFlipWithinStrumline.selected, true, true));
+      chartEditorState.performCommand(
+        new MirrorNotesCommand(
+          chartEditorState.currentNoteSelection,
+          contextmenuMirrorFlipWithinStrumline.selected,
+          !contextmenuMirrorFlipWithinStrumline.selected,
+          true,
+          true
+        )
+      );
     }
 
     contextmenuSelectAll.onClick = function(_)

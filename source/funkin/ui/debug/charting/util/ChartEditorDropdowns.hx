@@ -23,7 +23,8 @@ import funkin.ui.transition.stickers.StickerPack;
  * Functions for populating dropdowns based on game data.
  * These get used by both dialogs and toolboxes so they're in their own class to prevent "reaching over."
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDropdowns
 {
   /**
@@ -39,13 +40,25 @@ class ChartEditorDropdowns
     var returnValue:DropDownEntry = switch (charType)
     {
       case BF:
-        {id: "bf", text: "Boyfriend"};
+        {
+          id: "bf",
+          text: "Boyfriend"
+        };
       case DAD:
-        {id: "dad", text: "Daddy Dearest"};
+        {
+          id: "dad",
+          text: "Daddy Dearest"
+        };
       default:
         {
-          dropDown.dataSource.add({id: "none", text: ""});
-          {id: "none", text: "None"};
+          dropDown.dataSource.add({
+            id: "none",
+            text: ""
+          });
+          {
+            id: "none",
+            text: "None"
+          };
         }
     }
 
@@ -54,7 +67,10 @@ class ChartEditorDropdowns
       var character:Null<CharacterData> = CharacterDataParser.fetchCharacterData(charId);
       if (character == null) continue;
 
-      var value = {id: charId, text: character.name};
+      var value = {
+        id: charId,
+        text: character.name
+      };
       if (startingCharId == charId) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -74,14 +90,20 @@ class ChartEditorDropdowns
 
     var stageIds:Array<String> = StageRegistry.instance.listEntryIds();
 
-    var returnValue:DropDownEntry = {id: "mainStage", text: "Main Stage"};
+    var returnValue:DropDownEntry = {
+      id: "mainStage",
+      text: "Main Stage"
+    };
 
     for (stageId in stageIds)
     {
       var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
       if (stage == null) continue;
 
-      var value = {id: stage.id, text: stage.stageName};
+      var value = {
+        id: stage.id,
+        text: stage.stageName
+      };
       if (startingStageId == stageId) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -127,13 +149,19 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = {id: "FocusCamera", text: "Focus Camera"};
+    var returnValue:DropDownEntry = {
+      id: "FocusCamera",
+      text: "Focus Camera"
+    };
 
     var songEvents:Array<SongEvent> = SongEventRegistry.listEvents();
 
     for (event in songEvents)
     {
-      var value = {id: event.id, text: event.getTitle()};
+      var value = {
+        id: event.id,
+        text: event.getTitle()
+      };
       if (startingEventId == event.id) returnValue = value;
       dropDown.dataSource.add(value);
     }
@@ -168,7 +196,10 @@ class ChartEditorDropdowns
 
     var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
 
-    var returnValue:DropDownEntry = {id: "funkin", text: "Funkin'"};
+    var returnValue:DropDownEntry = {
+      id: "funkin",
+      text: "Funkin'"
+    };
 
     for (noteStyleId in noteStyleIds)
     {
@@ -176,14 +207,15 @@ class ChartEditorDropdowns
       if (noteStyle == null) continue;
 
       // check if the note style has all necessary assets (strums, notes, holdNotes)
-      if (noteStyle._data?.assets?.noteStrumline == null
-        || noteStyle._data?.assets?.note == null
-        || noteStyle._data?.assets?.holdNote == null)
+      if (noteStyle._data?.assets?.noteStrumline == null || noteStyle._data?.assets?.note == null || noteStyle._data?.assets?.holdNote == null)
       {
         continue;
       }
 
-      var value = {id: noteStyleId, text: noteStyle.getName()};
+      var value = {
+        id: noteStyleId,
+        text: noteStyle.getName()
+      };
       if (startingStyleId == noteStyleId) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -204,7 +236,10 @@ class ChartEditorDropdowns
 
     var albumIds:Array<String> = AlbumRegistry.instance.listEntryIds();
 
-    var returnValue:DropDownEntry = {id: "volume1", text: "Volume 1"};
+    var returnValue:DropDownEntry = {
+      id: "volume1",
+      text: "Volume 1"
+    };
 
     for (albumId in albumIds)
     {
@@ -214,7 +249,10 @@ class ChartEditorDropdowns
       // Check if the album has all necessary assets (art and title)
       if (album._data?.albumArtAsset == null || album._data?.albumTitleAsset == null) continue;
 
-      var value = {id: albumId, text: album.getAlbumName()};
+      var value = {
+        id: albumId,
+        text: album.getAlbumName()
+      };
       if (startingAlbumId == albumId) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -235,7 +273,10 @@ class ChartEditorDropdowns
 
     var stickerPackIds:Array<String> = StickerRegistry.instance.listEntryIds();
 
-    var returnValue:DropDownEntry = {id: "default", text: "Default"};
+    var returnValue:DropDownEntry = {
+      id: "default",
+      text: "Default"
+    };
 
     for (stickerPackId in stickerPackIds)
     {
@@ -245,7 +286,10 @@ class ChartEditorDropdowns
       // Check if the sticker has all necessary assets (stickers)
       if (stickerPack._data?.stickers == null) continue;
 
-      var value = {id: stickerPackId, text: stickerPack.getStickerPackName()};
+      var value = {
+        id: stickerPackId,
+        text: stickerPack.getStickerPackName()
+      };
       if (startingStickerPackId == stickerPackId) returnValue = value;
 
       dropDown.dataSource.add(value);
@@ -266,8 +310,14 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    dropDown.dataSource.add({id: '', text: 'Default'});
-    dropDown.dataSource.add({id: '~CUSTOM~', text: 'Custom'});
+    dropDown.dataSource.add({
+      id: '',
+      text: 'Default'
+    });
+    dropDown.dataSource.add({
+      id: '~CUSTOM~',
+      text: 'Custom'
+    });
 
     var customNoteKinds:Array<String> = NoteKindManager.listNoteKinds();
 
@@ -289,13 +339,22 @@ class ChartEditorDropdowns
   public static function lookupNoteKind(noteKindId:Null<String>):DropDownEntry
   {
     if (noteKindId == null) return lookupNoteKind('');
-    if (noteKindId == '') return {id: '', text: 'Default'};
+    if (noteKindId == '') return {
+      id: '',
+      text: 'Default'
+    };
 
     var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(noteKindId);
     var noteKindDesc:Null<String> = noteKind?.description ?? noteKindId;
-    if (noteKind != null) return {id: noteKindId ?? 'unknown', text: noteKindDesc ?? 'unknown'};
+    if (noteKind != null) return {
+      id: noteKindId ?? 'unknown',
+      text: noteKindDesc ?? 'unknown'
+    };
 
-    return {id: '~CUSTOM~', text: 'Custom'};
+    return {
+      id: '~CUSTOM~',
+      text: 'Custom'
+    };
   }
 
   /**
@@ -309,14 +368,26 @@ class ChartEditorDropdowns
 
     if (includeNone)
     {
-      dropDown.dataSource.add({id: "none", text: ""});
+      dropDown.dataSource.add({
+        id: "none",
+        text: ""
+      });
     }
 
-    var returnValue:DropDownEntry = includeNone ? ({id: "none", text: ""}) : ({id: "default", text: "Default"});
+    var returnValue:DropDownEntry = includeNone ? ({
+      id: "none",
+      text: ""
+    }) : ({
+      id: "default",
+      text: "Default"
+    });
 
     for (variationId in variationIds)
     {
-      dropDown.dataSource.add({id: variationId, text: variationId.toTitleCase()});
+      dropDown.dataSource.add({
+        id: variationId,
+        text: variationId.toTitleCase()
+      });
     }
 
     dropDown.dataSource.sort('text', ASCENDING);

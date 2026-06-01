@@ -50,7 +50,8 @@ using Lambda;
 /**
  * Handles dialogs for the new Chart Editor.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
@@ -517,7 +518,10 @@ class ChartEditorDialogHandler
 
     var instId:String = state.currentInstrumentalId;
 
-    var dropHandler:DialogDropTarget = {component: instrumentalBox, handler: null};
+    var dropHandler:DialogDropTarget = {
+      component: instrumentalBox,
+      handler: null
+    };
 
     instrumentalBox.onClick = function(_)
     {
@@ -715,8 +719,11 @@ class ChartEditorDialogHandler
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.player = event.data.id;
     };
-    var startingValuePlayer = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterPlayer, CharacterType.BF,
-      newSongMetadata.playData.characters.player);
+    var startingValuePlayer = ChartEditorDropdowns.populateDropdownWithCharacters(
+      inputCharacterPlayer,
+      CharacterType.BF,
+      newSongMetadata.playData.characters.player
+    );
     inputCharacterPlayer.value = startingValuePlayer;
 
     var inputCharacterOpponent:Null<DropDown> = dialog.findComponent('inputCharacterOpponent', DropDown);
@@ -726,8 +733,11 @@ class ChartEditorDialogHandler
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.opponent = event.data.id;
     };
-    var startingValueOpponent = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterOpponent, CharacterType.DAD,
-      newSongMetadata.playData.characters.opponent);
+    var startingValueOpponent = ChartEditorDropdowns.populateDropdownWithCharacters(
+      inputCharacterOpponent,
+      CharacterType.DAD,
+      newSongMetadata.playData.characters.opponent
+    );
     inputCharacterOpponent.value = startingValueOpponent;
 
     var inputCharacterGirlfriend:Null<DropDown> = dialog.findComponent('inputCharacterGirlfriend', DropDown);
@@ -737,8 +747,11 @@ class ChartEditorDialogHandler
       if (event.data?.id == null) return;
       newSongMetadata.playData.characters.girlfriend = event.data.id == "none" ? "" : event.data.id;
     };
-    var startingValueGirlfriend = ChartEditorDropdowns.populateDropdownWithCharacters(inputCharacterGirlfriend, CharacterType.GF,
-      newSongMetadata.playData.characters.girlfriend);
+    var startingValueGirlfriend = ChartEditorDropdowns.populateDropdownWithCharacters(
+      inputCharacterGirlfriend,
+      CharacterType.GF,
+      newSongMetadata.playData.characters.girlfriend
+    );
     inputCharacterGirlfriend.value = startingValueGirlfriend;
 
     var dialogBPM:Null<NumberStepper> = dialog.findComponent('dialogBPM', NumberStepper);
@@ -750,9 +763,7 @@ class ChartEditorDialogHandler
       var timeChanges:Array<SongTimeChange> = newSongMetadata.timeChanges;
       if (timeChanges == null || timeChanges.length == 0)
       {
-        timeChanges = [
-          new SongTimeChange(0, event.value)
-        ];
+        timeChanges = [new SongTimeChange(0, event.value)];
       }
       else
       {
@@ -941,8 +952,11 @@ class ChartEditorDialogHandler
         return;
       }
 
-      var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(songMetadataTxt, path.toString(),
-        songMetadataVersion);
+      var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(
+        songMetadataTxt,
+        path.toString(),
+        songMetadataVersion
+      );
 
       if (songMetadataVariation == null)
       {
@@ -983,8 +997,11 @@ class ChartEditorDialogHandler
             return;
           }
 
-          var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(songMetadataTxt, selectedFile.name,
-            songMetadataVersion);
+          var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(
+            songMetadataTxt,
+            selectedFile.name,
+            songMetadataVersion
+          );
 
           if (songMetadataVariation != null)
           {
@@ -1025,8 +1042,11 @@ class ChartEditorDialogHandler
         return;
       }
 
-      var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(songChartDataTxt, path.toString(),
-        songChartDataVersion);
+      var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(
+        songChartDataTxt,
+        path.toString(),
+        songChartDataVersion
+      );
 
       if (songChartDataVariation != null)
       {
@@ -1069,8 +1089,11 @@ class ChartEditorDialogHandler
             return;
           }
 
-          var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(songChartDataTxt, selectedFile.name,
-            songChartDataVersion);
+          var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(
+            songChartDataTxt,
+            selectedFile.name,
+            songChartDataVersion
+          );
 
           if (songChartDataVariation != null)
           {
@@ -1103,7 +1126,10 @@ class ChartEditorDialogHandler
     #end
 
     metadataEntry.onClick = onClickMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel);
-    state.addDropHandler({component: metadataEntry, handler: onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel)});
+    state.addDropHandler({
+      component: metadataEntry,
+      handler: onDropFileMetadataVariation.bind(Constants.DEFAULT_VARIATION).bind(metadataEntryLabel)
+    });
     metadataEntry.onMouseOver = function(_event)
     {
       metadataEntry.swapClass('upload-bg', 'upload-bg-hover');
@@ -1260,8 +1286,10 @@ class ChartEditorDialogHandler
           else if (osuManiaData.General.Mode != 3)
           {
             var modes = ["osu!", "osu!taiko", "osu!catch"];
-            state.error('Failure',
-              'Not a osu!mania beatmap!\nGiven beatmap seems to be a ${modes[osuManiaData.General.Mode]} beatmap (${path.file}.${path.ext})');
+            state.error(
+              'Failure',
+              'Not a osu!mania beatmap!\nGiven beatmap seems to be a ${modes[osuManiaData.General.Mode]} beatmap (${path.file}.${path.ext})'
+            );
             return;
           }
 
@@ -1313,7 +1341,10 @@ class ChartEditorDialogHandler
       onFileSelected(pathStr, selectedFileText);
     };
 
-    state.addDropHandler({component: importBox, handler: onDropFile});
+    state.addDropHandler({
+      component: importBox,
+      handler: onDropFile
+    });
 
     return dialog;
   }
@@ -1392,18 +1423,27 @@ class ChartEditorDialogHandler
 
     var dialogCharacterPlayer:Null<DropDown> = dialog.findComponent('dialogCharacterPlayer', DropDown);
     if (dialogCharacterPlayer == null) throw 'Could not locate dialogCharacterPlayer DropDown in Add Variation dialog';
-    dialogCharacterPlayer.value = ChartEditorDropdowns.populateDropdownWithCharacters(dialogCharacterPlayer, CharacterType.BF,
-      state.currentSongMetadata.playData.characters.player);
+    dialogCharacterPlayer.value = ChartEditorDropdowns.populateDropdownWithCharacters(
+      dialogCharacterPlayer,
+      CharacterType.BF,
+      state.currentSongMetadata.playData.characters.player
+    );
 
     var dialogCharacterOpponent:Null<DropDown> = dialog.findComponent('dialogCharacterOpponent', DropDown);
     if (dialogCharacterOpponent == null) throw 'Could not locate dialogCharacterOpponent DropDown in Add Variation dialog';
-    dialogCharacterOpponent.value = ChartEditorDropdowns.populateDropdownWithCharacters(dialogCharacterOpponent, CharacterType.DAD,
-      state.currentSongMetadata.playData.characters.opponent);
+    dialogCharacterOpponent.value = ChartEditorDropdowns.populateDropdownWithCharacters(
+      dialogCharacterOpponent,
+      CharacterType.DAD,
+      state.currentSongMetadata.playData.characters.opponent
+    );
 
     var dialogCharacterGirlfriend:Null<DropDown> = dialog.findComponent('dialogCharacterGirlfriend', DropDown);
     if (dialogCharacterGirlfriend == null) throw 'Could not locate dialogCharacterGirlfriend DropDown in Add Variation dialog';
-    dialogCharacterGirlfriend.value = ChartEditorDropdowns.populateDropdownWithCharacters(dialogCharacterGirlfriend, CharacterType.GF,
-      state.currentSongMetadata.playData.characters.girlfriend);
+    dialogCharacterGirlfriend.value = ChartEditorDropdowns.populateDropdownWithCharacters(
+      dialogCharacterGirlfriend,
+      CharacterType.GF,
+      state.currentSongMetadata.playData.characters.girlfriend
+    );
 
     var dialogBPM:Null<NumberStepper> = dialog.findComponent('dialogBPM', NumberStepper);
     if (dialogBPM == null) throw 'Could not locate dialogBPM NumberStepper in Add Variation dialog';
@@ -1421,8 +1461,12 @@ class ChartEditorDialogHandler
       var dialogVariationName:Null<TextField> = dialog.findComponent('dialogVariationName', TextField);
       if (dialogVariationName == null) throw 'Could not locate dialogVariationName TextField in Add Variation dialog';
 
-      var pendingVariation:SongMetadata = new SongMetadata(dialogSongName.text, dialogSongArtist.text, dialogSongCharter.text,
-        dialogVariationName.text.toLowerCase());
+      var pendingVariation:SongMetadata = new SongMetadata(
+        dialogSongName.text,
+        dialogSongArtist.text,
+        dialogSongCharter.text,
+        dialogVariationName.text.toLowerCase()
+      );
 
       pendingVariation.playData.stage = dialogStage.value.id;
       pendingVariation.playData.noteStyle = dialogNoteStyle.value.id;
@@ -1597,15 +1641,20 @@ class ChartEditorDialogHandler
    */
   public static function openLeaveConfirmationDialog(state:ChartEditorState):Dialog
   {
-    var dialog:Null<Dialog> = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor",
-      MessageBoxType.TYPE_YESNO, true, function(button:DialogButton)
-    {
-      state.isHaxeUIDialogOpen = false;
-      if (button == DialogButton.YES)
+    var dialog:Null<Dialog> = Dialogs.messageBox(
+      "You are about to leave the editor without saving.\n\nAre you sure?",
+      "Leave Editor",
+      MessageBoxType.TYPE_YESNO,
+      true,
+      function(button:DialogButton)
       {
-        state.quitChartEditor();
+        state.isHaxeUIDialogOpen = false;
+        if (button == DialogButton.YES)
+        {
+          state.quitChartEditor();
+        }
       }
-    });
+    );
 
     dialog.destroyOnClose = true;
     state.isHaxeUIDialogOpen = true;

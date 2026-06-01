@@ -50,9 +50,10 @@ class UploadChartDialog extends Dialog
       Cursor.cursorMode = Default;
     }
 
-    dropHandlers = [
-      {component: this.chartBox, handler: this.onDropFileChartBox}
-    ];
+    dropHandlers = [{
+      component: this.chartBox,
+      handler: this.onDropFileChartBox
+    }];
 
     for (dropTarget in dropHandlers) CameraEditorFileDropHandler.addDropHandler(dropTarget);
   }

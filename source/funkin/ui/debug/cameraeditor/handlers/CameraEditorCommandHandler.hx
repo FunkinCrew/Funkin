@@ -9,7 +9,8 @@ import funkin.ui.debug.cameraeditor.commands.CameraEditorCommand;
  *
  * The `using` statement in `import.hx` allows you to call these functions on the CameraEditorState instance directly.
  */
-@:nullSafety @:access(funkin.ui.debug.cameraeditor.CameraEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.cameraeditor.CameraEditorState)
 class CameraEditorCommandHandler
 {
   /**

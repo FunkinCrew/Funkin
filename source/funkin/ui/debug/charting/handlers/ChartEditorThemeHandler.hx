@@ -14,7 +14,8 @@ import openfl.geom.Rectangle;
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorThemeHandler
 {
   // TODO: There's probably a better system of organization for these colors.
@@ -157,42 +158,68 @@ class ChartEditorThemeHandler
     };
 
     // Selection border at top.
-    state.gridBitmap.fillRect(new Rectangle(0, -(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width,
-      ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
-      selectionBorderColor);
+    state.gridBitmap.fillRect(
+      new Rectangle(0, -(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width, ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
+      selectionBorderColor
+    );
 
     // Selection borders horizontally along the middle.
     for (i in 1...(Conductor.instance.stepsPerMeasure))
     {
-      state.gridBitmap.fillRect(new Rectangle(0, (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
-        state.gridBitmap.width, ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
-        selectionBorderColor);
+      state.gridBitmap.fillRect(
+        new Rectangle(
+          0,
+          (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
+          state.gridBitmap.width,
+          ChartEditorState.GRID_SELECTION_BORDER_WIDTH
+        ),
+        selectionBorderColor
+      );
     }
 
     // Selection border at bottom.
-    state.gridBitmap.fillRect(new Rectangle(0, state.gridBitmap.height - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), state.gridBitmap.width,
-      ChartEditorState.GRID_SELECTION_BORDER_WIDTH),
-      selectionBorderColor);
+    state.gridBitmap.fillRect(
+      new Rectangle(
+        0,
+        state.gridBitmap.height - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
+        state.gridBitmap.width,
+        ChartEditorState.GRID_SELECTION_BORDER_WIDTH
+      ),
+      selectionBorderColor
+    );
 
     // Selection border at far left.
-    state.gridBitmap.fillRect(new Rectangle(-(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0, ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
-      state.gridBitmap.height),
-      selectionBorderColor);
+    state.gridBitmap.fillRect(
+      new Rectangle(-(ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0, ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
+      selectionBorderColor
+    );
 
     // Selection borders vertically along the middle.
     for (i in 1...TOTAL_COLUMN_COUNT)
     {
       var isStrumlineColumn:Bool = (i % ChartEditorState.STRUMLINE_SIZE == 0) && (i > 0);
 
-      state.gridBitmap.fillRect(new Rectangle((ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
-        ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
-        isStrumlineColumn ? dividerColor : selectionBorderColor);
+      state.gridBitmap.fillRect(
+        new Rectangle(
+          (ChartEditorState.GRID_SIZE * i) - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
+          0,
+          ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
+          state.gridBitmap.height
+        ),
+        isStrumlineColumn ? dividerColor : selectionBorderColor
+      );
     }
 
     // Selection border at far right.
-    state.gridBitmap.fillRect(new Rectangle(state.gridBitmap.width - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2), 0,
-      ChartEditorState.GRID_SELECTION_BORDER_WIDTH, state.gridBitmap.height),
-      selectionBorderColor);
+    state.gridBitmap.fillRect(
+      new Rectangle(
+        state.gridBitmap.width - (ChartEditorState.GRID_SELECTION_BORDER_WIDTH / 2),
+        0,
+        ChartEditorState.GRID_SELECTION_BORDER_WIDTH,
+        state.gridBitmap.height
+      ),
+      selectionBorderColor
+    );
 
     if (state.gridTiledSprite != null)
     {
@@ -272,18 +299,27 @@ class ChartEditorThemeHandler
     state.selectionSquareBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 
     state.selectionSquareBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE), selectionSquareBorderColor);
-    state.selectionSquareBitmap.fillRect(new Rectangle(SELECTION_SQUARE_BORDER_WIDTH, SELECTION_SQUARE_BORDER_WIDTH,
-      ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2), ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)),
-      selectionSquareFillColor);
+    state.selectionSquareBitmap.fillRect(
+      new Rectangle(
+        SELECTION_SQUARE_BORDER_WIDTH,
+        SELECTION_SQUARE_BORDER_WIDTH,
+        ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2),
+        ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)
+      ),
+      selectionSquareFillColor
+    );
 
-    state.selectionBoxSprite = new FlxSliceSprite(state.selectionSquareBitmap,
-      new FlxRect(SELECTION_SQUARE_BORDER_WIDTH
-        + 4, SELECTION_SQUARE_BORDER_WIDTH
-        + 4, ChartEditorState.GRID_SIZE
-        - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8),
-        ChartEditorState.GRID_SIZE
-        - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8)),
-      32, 32);
+    state.selectionBoxSprite = new FlxSliceSprite(
+      state.selectionSquareBitmap,
+      new FlxRect(
+        SELECTION_SQUARE_BORDER_WIDTH + 4,
+        SELECTION_SQUARE_BORDER_WIDTH + 4,
+        ChartEditorState.GRID_SIZE - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8),
+        ChartEditorState.GRID_SIZE - (2 * SELECTION_SQUARE_BORDER_WIDTH + 8)
+      ),
+      32,
+      32
+    );
 
     state.selectionBoxSprite.scrollFactor.set(0, 0);
     state.selectionBoxSprite.zIndex = 30;
@@ -317,9 +353,15 @@ class ChartEditorThemeHandler
     state.notePreviewViewportBitmap = new BitmapData(ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE, true);
 
     state.notePreviewViewportBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorState.GRID_SIZE), viewportBorderColor);
-    state.notePreviewViewportBitmap.fillRect(new Rectangle(SELECTION_SQUARE_BORDER_WIDTH, SELECTION_SQUARE_BORDER_WIDTH,
-      ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2), ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)),
-      viewportFillColor);
+    state.notePreviewViewportBitmap.fillRect(
+      new Rectangle(
+        SELECTION_SQUARE_BORDER_WIDTH,
+        SELECTION_SQUARE_BORDER_WIDTH,
+        ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2),
+        ChartEditorState.GRID_SIZE - (SELECTION_SQUARE_BORDER_WIDTH * 2)
+      ),
+      viewportFillColor
+    );
 
     if (state.notePreviewViewport != null)
     {
@@ -327,14 +369,17 @@ class ChartEditorThemeHandler
     }
     else
     {
-      state.notePreviewViewport = new FlxSliceSprite(state.notePreviewViewportBitmap,
-        new FlxRect(SELECTION_SQUARE_BORDER_WIDTH
-          + 1, SELECTION_SQUARE_BORDER_WIDTH
-          + 1,
-          ChartEditorState.GRID_SIZE
-          - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2), ChartEditorState.GRID_SIZE
-          - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2)),
-        32, 32);
+      state.notePreviewViewport = new FlxSliceSprite(
+        state.notePreviewViewportBitmap,
+        new FlxRect(
+          SELECTION_SQUARE_BORDER_WIDTH + 1,
+          SELECTION_SQUARE_BORDER_WIDTH + 1,
+          ChartEditorState.GRID_SIZE - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2),
+          ChartEditorState.GRID_SIZE - (2 * SELECTION_SQUARE_BORDER_WIDTH + 2)
+        ),
+        32,
+        32
+      );
     }
   }
 
@@ -349,12 +394,19 @@ class ChartEditorThemeHandler
 
     var playheadBlockBitmap:BitmapData = new BitmapData(ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH, ChartEditorState.PLAYHEAD_HEIGHT * 2, true);
 
-    playheadBlockBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH, ChartEditorState.PLAYHEAD_HEIGHT * 2),
-      PLAYHEAD_BLOCK_BORDER_COLOR);
-    playheadBlockBitmap.fillRect(new Rectangle(PLAYHEAD_BLOCK_BORDER_WIDTH, PLAYHEAD_BLOCK_BORDER_WIDTH,
-      ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH - (2 * PLAYHEAD_BLOCK_BORDER_WIDTH),
-      ChartEditorState.PLAYHEAD_HEIGHT * 2 - (2 * PLAYHEAD_BLOCK_BORDER_WIDTH)),
-      PLAYHEAD_BLOCK_FILL_COLOR);
+    playheadBlockBitmap.fillRect(
+      new Rectangle(0, 0, ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH, ChartEditorState.PLAYHEAD_HEIGHT * 2),
+      PLAYHEAD_BLOCK_BORDER_COLOR
+    );
+    playheadBlockBitmap.fillRect(
+      new Rectangle(
+        PLAYHEAD_BLOCK_BORDER_WIDTH,
+        PLAYHEAD_BLOCK_BORDER_WIDTH,
+        ChartEditorState.PLAYHEAD_SCROLL_AREA_WIDTH - (2 * PLAYHEAD_BLOCK_BORDER_WIDTH),
+        ChartEditorState.PLAYHEAD_HEIGHT * 2 - (2 * PLAYHEAD_BLOCK_BORDER_WIDTH)
+      ),
+      PLAYHEAD_BLOCK_FILL_COLOR
+    );
 
     return playheadBlock.loadGraphic(playheadBlockBitmap);
   }

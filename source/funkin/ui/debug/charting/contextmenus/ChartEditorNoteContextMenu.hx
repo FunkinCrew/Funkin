@@ -14,7 +14,8 @@ import funkin.ui.debug.charting.commands.MirrorNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/note.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/note.xml"))
 class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuNoteKind:Label;
@@ -147,8 +148,7 @@ class ChartEditorNoteContextMenu extends ChartEditorBaseContextMenu
       contextmenuPosition.value = data.time;
       contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
     }
-    else if (id == "STEPS"
-      && contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
+    else if (id == "STEPS" && contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
     {
       contextmenuPosition.pauseEvent(UIEvent.CHANGE, true);
       contextmenuPosition.value = Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;

@@ -13,7 +13,8 @@ import openfl.geom.Rectangle;
 /**
  * Handles the display of the measure ticks and numbers on the left side.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 {
   /**
@@ -115,8 +116,10 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
     // Draw the measure ticks at the top and bottom.
     measureTickBitmap.fillRect(new Rectangle(0, 0, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2), dividerColor);
     var bottomTickY:Float = measureTickBitmap.height - (ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2);
-    measureTickBitmap.fillRect(new Rectangle(0, bottomTickY, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2),
-      dividerColor);
+    measureTickBitmap.fillRect(
+      new Rectangle(0, bottomTickY, ChartEditorState.GRID_SIZE, ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH / 2),
+      dividerColor
+    );
 
     // Draw the beat ticks and dividers, and step ticks. No need for two seperate loops thankfully.
     for (i in 1...stepsPerMeasure)
@@ -256,8 +259,12 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
         ChartEditorThemeHandler.GRID_MEASURE_DIVIDER_COLOR_LIGHT;
     };
 
-    var measureDivider = new FunkinSprite().makeSolidColor(ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT,
-      ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH, dividerColor);
+    var measureDivider = new FunkinSprite()
+      .makeSolidColor(
+        ChartEditorState.GRID_SIZE * ChartEditorThemeHandler.TOTAL_COLUMN_COUNT,
+        ChartEditorThemeHandler.MEASURE_TICKS_MEASURE_WIDTH,
+        dividerColor
+      );
     return measureDivider;
   }
 }

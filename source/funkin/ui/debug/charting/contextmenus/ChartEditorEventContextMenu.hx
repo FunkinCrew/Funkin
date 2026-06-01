@@ -11,7 +11,8 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/event.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/context-menus/event.xml"))
 class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuEventKind:Label;
@@ -127,8 +128,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
       contextmenuPosition.value = data.time;
       contextmenuPosition.resumeEvent(UIEvent.CHANGE, true, true);
     }
-    else if (id == "STEPS"
-      && contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
+    else if (id == "STEPS" && contextmenuPosition.value != (Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio))
     {
       contextmenuPosition.pauseEvent(UIEvent.CHANGE, true);
       contextmenuPosition.value = Math.round(data.getStepTime() / chartEditorState.noteSnapRatio) * chartEditorState.noteSnapRatio;

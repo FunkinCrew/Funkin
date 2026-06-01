@@ -21,7 +21,8 @@ import funkin.util.file.FNFCUtil.FNFCData;
 /**
  * Contains functions for importing, loading, saving, and exporting charts.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorImportExportHandler
 {
   /**
@@ -179,8 +180,10 @@ class ChartEditorImportExportHandler
         // Increase the delay between notifications if there are multiple variations with stacked notes, to prevent overlap.
         flixel.util.FlxTimer.wait(delay, () ->
         {
-          state.warning('Stacked Notes Detected', 'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, '
-            + 'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.');
+          state.warning(
+            'Stacked Notes Detected',
+            'Found $stackedNotesCount stacked note(s) in \'${variation.toTitleCase()}\' variation, ' + 'on ${affectedDiffs.joinPlural()} difficult${affectedDiffs.length > 1 ? 'ies' : 'y'}.'
+          );
         });
         delay *= 1.5;
       }

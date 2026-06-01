@@ -17,7 +17,8 @@ import funkin.data.song.SongData.NoteParamData;
 /**
  * The toolbox which allows modifying information like Note Kind.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/note-data.xml'))
 class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 {
   // 100 is the height used in note-data.xml
@@ -277,7 +278,10 @@ class ChartEditorNoteDataToolbox extends ChartEditorBaseToolbox
 
   function addNoteKindParam(label:Label, component:Component):Void
   {
-    toolboxNotesParams.push({label: label, component: component});
+    toolboxNotesParams.push({
+      label: label,
+      component: component
+    });
     toolboxNotesGrid.addComponent(label);
     toolboxNotesGrid.addComponent(component);
 

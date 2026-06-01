@@ -172,9 +172,7 @@ class AutoSortLayersCommand implements CameraEditorCommand
 
   public static function colorForPlanLayer(index:Int):Int
   {
-    return TimelineLayerData.DEFAULT_LAYER_COLORS[
-      (index + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length
-    ];
+    return TimelineLayerData.DEFAULT_LAYER_COLORS[(index + 1) % TimelineLayerData.DEFAULT_LAYER_COLORS.length];
   }
 
   /**

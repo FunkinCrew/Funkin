@@ -21,7 +21,8 @@ import haxe.ui.events.UIEvent;
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/offsets.xml'))
 class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -724,7 +725,9 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     {
       trace('Playback time: ${audioPreviewTracks.time}');
 
-      var targetScrollPos:Float = waveformInstrumental.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
+      var targetScrollPos:Float = waveformInstrumental.waveform.waveformData.secondsToIndex(
+        audioPreviewTracks.time / Constants.MS_PER_SEC
+      ) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
       var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;

@@ -1,7 +1,6 @@
 package funkin.ui.debug.cameraeditor.components;
 
 #if FEATURE_CAMERA_EDITOR
-
 /**
  * Common interface for camera-editor properties-panel containers.
  *

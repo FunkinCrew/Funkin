@@ -189,8 +189,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       obj.color = val ? 0xFFFFFFFF : 0xFF000000;
     }
 
-    leftExt.loadGraphic(val ? Paths.image('ui/editors/camera-editor/vcam/vcam_slice_cutout_left') : Paths.image('ui/editors/camera-editor/vcam/vcam_slice_left'));
-    rightExt.loadGraphic(val ? Paths.image('ui/editors/camera-editor/vcam/vcam_slice_cutout_right') : Paths.image('ui/editors/camera-editor/vcam/vcam_slice_right'));
+    leftExt.loadGraphic(
+      val ? Paths.image('ui/editors/camera-editor/vcam/vcam_slice_cutout_left') : Paths.image('ui/editors/camera-editor/vcam/vcam_slice_left')
+    );
+    rightExt.loadGraphic(
+      val ? Paths.image('ui/editors/camera-editor/vcam/vcam_slice_cutout_right') : Paths.image('ui/editors/camera-editor/vcam/vcam_slice_right')
+    );
     camSlice.loadGraphic(val ? Paths.image('ui/editors/camera-editor/vcam/vcam_slice_cutout') : Paths.image('ui/editors/camera-editor/vcam/vcam_slice'));
 
     // make extended bounds visible again if needed

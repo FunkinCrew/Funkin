@@ -181,7 +181,9 @@ class ChartEditorEventSprite extends FlxSprite
   {
     if (this.eventData == null) return;
     if (this.isGhost) return;
-    this.tooltip.tipData = {text: this.eventData.buildTooltip()};
+    this.tooltip.tipData = {
+      text: this.eventData.buildTooltip()
+    };
   }
 
   public function updateTooltipPosition():Void

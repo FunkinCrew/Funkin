@@ -651,9 +651,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     addEventMenu = new AddEventMenu(function(eventData)
     {
-      var selectedLayer = timeline.viewport.layers[
-        timeline.viewport.selectedLayerIndex
-      ];
+      var selectedLayer = timeline.viewport.layers[timeline.viewport.selectedLayerIndex];
       var raw:SongEventDataRaw = eventData;
       raw.editorLayer = selectedLayer.name == "Default" ? null : selectedLayer.name;
 
@@ -1484,22 +1482,35 @@ class CameraEditorState extends UIState implements ConsoleClass
     var currentLayer:TimelineLayerData = timeline.viewport.layers[0];
     var defaultLayer:TimelineLayerData = AutoSortLayersCommand.findDefaultLayer(timeline.viewport.layers);
 
-    var afterRows:Array<AutoSortPreviewRow> = [
-      {name: defaultLayer.name, color: defaultLayer.color, events: []}
-    ];
+    var afterRows:Array<AutoSortPreviewRow> = [{
+      name: defaultLayer.name,
+      color: defaultLayer.color,
+      events: []
+    }];
     for (i => planLayer in plan.layers)
     {
-      afterRows.push({name: planLayer.name, color: AutoSortLayersCommand.colorForPlanLayer(i), events: planLayer.events});
+      afterRows.push({
+        name: planLayer.name,
+        color: AutoSortLayersCommand.colorForPlanLayer(i),
+        events: planLayer.events
+      });
     }
 
     var preview:AutoSortPreview = {
-      beforeRows: [
-        {name: currentLayer.name, color: currentLayer.color, events: cameraEvents}
-      ],
+      beforeRows: [{
+        name: currentLayer.name,
+        color: currentLayer.color,
+        events: cameraEvents
+      }],
       afterRows: afterRows
     };
 
-    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(preview, timeline.viewport.songLengthMs, stepMs, () -> performAutoSortLayersByType());
+    var dialog:AutoSortLayersConfirmDialog = new AutoSortLayersConfirmDialog(
+      preview,
+      timeline.viewport.songLengthMs,
+      stepMs,
+      () -> performAutoSortLayersByType()
+    );
     dialog.showDialog(true);
     autoSortLayersDialog = dialog;
     dialog.onDialogClosed = (_) -> autoSortLayersDialog = null;
@@ -1685,9 +1696,15 @@ class CameraEditorState extends UIState implements ConsoleClass
       CameraEditorCommandHandler.performCommand(this, cmd);
     });
 
-    timeline.registerEvent(TimelineEvent.DEFAULT_LAYER_PROTECTED, (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed'));
+    timeline.registerEvent(
+      TimelineEvent.DEFAULT_LAYER_PROTECTED,
+      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed')
+    );
 
-    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID, (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
+    timeline.registerEvent(
+      TimelineEvent.LAYER_NAME_INVALID,
+      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.')
+    );
   }
 
   var shouldResetScroll:Bool = false;
@@ -1740,8 +1757,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       for (voiceId in voiceIds)
       {
-        var trackKeySuffix:String = (currentVariation.isBlank()
-          || currentVariation == Constants.DEFAULT_VARIATION) ? '' : '-${currentVariation}';
+        var trackKeySuffix:String = (currentVariation.isBlank() || currentVariation == Constants.DEFAULT_VARIATION) ? '' : '-${currentVariation}';
         var trackKey:String = '$voiceId$trackKeySuffix';
         // For example, for voice ID "bf" on variation "pico", the file name would be "Voices-bf-pico.ogg"
 
@@ -1840,8 +1856,7 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   function syncSnapShiftState():Void
   {
-    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.SHIFT
-      && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
+    timeline.toolbar.chkSnap.shiftActive = FlxG.keys.pressed.SHIFT && timeline.viewport.hitTest(Screen.instance.currentMouseX, Screen.instance.currentMouseY);
   }
 
   function syncTogglePlaybackButton():Void
@@ -2097,12 +2112,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
-    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null
-      && position <= dadPlayAnimationWindowEnd
-      && !dadHasNoteAfterPlayAnimation;
-    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null
-      && position <= bfPlayAnimationWindowEnd
-      && !bfHasNoteAfterPlayAnimation;
+    var dadInPlayAnimationWindow:Bool = dadLastPlayAnimationTime != null && position <= dadPlayAnimationWindowEnd && !dadHasNoteAfterPlayAnimation;
+    var bfInPlayAnimationWindow:Bool = bfLastPlayAnimationTime != null && position <= bfPlayAnimationWindowEnd && !bfHasNoteAfterPlayAnimation;
 
     if (!dadShouldKeepSinging && dad != null && !dadInPlayAnimationWindow)
     {
@@ -2193,18 +2204,24 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (exitConfirmDialog == null)
       {
-        exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor', MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
-        {
-          exitConfirmDialog = null;
-          if (btn == DialogButton.YES)
+        exitConfirmDialog = Dialogs.messageBox(
+          'You are about to leave the editor without saving.\n\nAre you sure? ',
+          'Leave Editor',
+          MessageBoxType.TYPE_YESNO,
+          true,
+          function(btn:DialogButton)
           {
-            // Write a backup, and remember we have one for next time.
-            saveBackup();
+            exitConfirmDialog = null;
+            if (btn == DialogButton.YES)
+            {
+              // Write a backup, and remember we have one for next time.
+              saveBackup();
 
-            performCleanup();
-            FlxG.switchState(() -> new MainMenuState());
+              performCleanup();
+              FlxG.switchState(() -> new MainMenuState());
+            }
           }
-        });
+        );
       }
 
       return;

@@ -30,7 +30,8 @@ import haxe.ui.events.UIEvent;
  * and adding/removing variations and difficulties.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/toolboxes/difficulty.xml'))
 class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
 {
   var difficultyToolboxTree:TreeView;
@@ -109,7 +110,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxSaveMetadata.onClick = function(_:UIEvent)
     {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}-metadata$vari.json', chartEditorState.currentSongMetadata.serialize(),
+      FileUtil.writeFileReference(
+        '${chartEditorState.currentSongId}-metadata$vari.json',
+        chartEditorState.currentSongMetadata.serialize(),
         function(notification:String)
         {
           switch (notification)
@@ -121,13 +124,16 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
             case 'error':
               chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}-metadata$vari.json).');
           }
-        });
+        }
+      );
     };
 
     difficultyToolboxSaveChart.onClick = function(_:UIEvent)
     {
       var vari:String = chartEditorState.selectedVariation != Constants.DEFAULT_VARIATION ? '-${chartEditorState.selectedVariation}' : '';
-      FileUtil.writeFileReference('${chartEditorState.currentSongId}-chart$vari.json', chartEditorState.currentSongChartData.serialize(),
+      FileUtil.writeFileReference(
+        '${chartEditorState.currentSongId}-chart$vari.json',
+        chartEditorState.currentSongChartData.serialize(),
         function(notification:String)
         {
           switch (notification)
@@ -139,7 +145,8 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
             case 'error':
               chartEditorState.error('Failure', 'Failed to write file (${chartEditorState.currentSongId}-chart$vari.json).');
           }
-        });
+        }
+      );
     };
 
     difficultyToolboxLoadMetadata.onClick = function(_:UIEvent)
@@ -154,9 +161,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         var songMetadataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(data);
 
         var songMetadata:Null<SongMetadata> = null;
-        if (VersionUtil.validateVersion(songMetadataVersion,
-          SongRegistry.SONG_METADATA_VERSION_RULE)) songMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(data, fileReference.name,
-            songMetadataVersion);
+        if (VersionUtil.validateVersion(
+          songMetadataVersion,
+          SongRegistry.SONG_METADATA_VERSION_RULE
+        )) songMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(data, fileReference.name, songMetadataVersion);
 
         if (songMetadata != null)
         {
@@ -187,9 +195,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         var songChartDataVersion:Null<thx.semver.Version> = VersionUtil.getVersionFromJSON(data);
 
         var songChartData:Null<SongChartData> = null;
-        if (VersionUtil.validateVersion(songChartDataVersion,
-          SongRegistry.SONG_CHART_DATA_VERSION_RULE)) songChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(data, fileReference.name,
-            songChartDataVersion);
+        if (VersionUtil.validateVersion(
+          songChartDataVersion,
+          SongRegistry.SONG_CHART_DATA_VERSION_RULE
+        )) songChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(data, fileReference.name, songChartDataVersion);
 
         if (songChartData != null)
         {
@@ -224,7 +233,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
     difficultyToolboxTree.clearNodes();
 
     // , icon: 'haxeui-core/styles/default/haxeui_tiny.png'
-    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({id: 'stv_song', text: 'S: ${chartEditorState.songMetadata.get('default').songName}'});
+    var treeSong:TreeViewNode = difficultyToolboxTree.addNode({
+      id: 'stv_song',
+      text: 'S: ${chartEditorState.songMetadata.get('default').songName}'
+    });
     treeSong.expanded = true;
 
     for (curVariation in chartEditorState.availableVariations)
@@ -269,9 +281,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
    */
   function getCurrentTreeNode():TreeViewNode
   {
-    return
-      difficultyToolboxTree.findNodeByPath('stv_song/stv_variation_$chartEditorState.selectedVariation/stv_difficulty_${chartEditorState.selectedVariation}_$chartEditorState.selectedDifficulty',
-      'id');
+    return difficultyToolboxTree.findNodeByPath(
+      'stv_song/stv_variation_$chartEditorState.selectedVariation/stv_difficulty_${chartEditorState.selectedVariation}_$chartEditorState.selectedDifficulty',
+      'id'
+    );
   }
 
   /**
@@ -300,8 +313,9 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         {
           trace('Changing difficulty to "$variation:$difficulty"');
 
-          chartEditorState.performCommand(new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation,
-            variation));
+          chartEditorState.performCommand(
+            new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation, variation)
+          );
 
           refreshTreeSelection();
         }

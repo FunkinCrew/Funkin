@@ -21,7 +21,8 @@ import haxe.ui.tooltips.ToolTipManager;
  * A sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorNoteSprite extends FlxSprite
 {
   /**
@@ -218,7 +219,9 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     if (this.noteData == null) return;
     if (this.isGhost) return;
-    this.tooltip.tipData = {text: this.noteData.buildTooltip()};
+    this.tooltip.tipData = {
+      text: this.noteData.buildTooltip()
+    };
   }
 
   public function updateTooltipPosition():Void

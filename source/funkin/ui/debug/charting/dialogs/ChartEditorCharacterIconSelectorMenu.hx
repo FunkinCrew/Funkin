@@ -16,7 +16,8 @@ import flixel.tweens.FlxEase;
 import haxe.ui.components.Button;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/character-icon-selector.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/ui/editors/chart-editor/dialogs/character-icon-selector.xml"))
 class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;
@@ -32,7 +33,10 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
     initialize(charType, lockPosition);
     this.alpha = 0;
     this.y -= 10;
-    FlxTween.tween(this, {alpha: 1, y: this.y + 10}, 0.2, {
+    FlxTween.tween(this, {
+      alpha: 1,
+      y: this.y + 10
+    }, 0.2, {
       ease: FlxEase.quartOut,
       onComplete: function(_)
       {

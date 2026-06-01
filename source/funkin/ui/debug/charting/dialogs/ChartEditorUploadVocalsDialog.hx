@@ -17,7 +17,8 @@ import haxe.ui.core.Component;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/upload-vocals.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
@@ -73,7 +74,10 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       var vocalsEntry = new ChartEditorUploadVocalsEntry(charName);
 
-      var dropHandler:DialogDropTarget = {component: vocalsEntry, handler: null};
+      var dropHandler:DialogDropTarget = {
+        component: vocalsEntry,
+        handler: null
+      };
 
       var onDropFile:String->Void = function(pathStr:String)
       {
@@ -107,8 +111,10 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
         {
           trace('Failed to load vocal track (${path.file}.${path.ext})');
 
-          chartEditorState.error('Failed to Load Vocals',
-            'Failed to load vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})');
+          chartEditorState.error(
+            'Failed to Load Vocals',
+            'Failed to load vocal track (${path.file}.${path.ext}) for variation (${chartEditorState.selectedVariation})'
+          );
 
           #if FEATURE_FILE_DROP
           vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
@@ -153,8 +159,10 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
             {
               trace('Failed to load vocal track (${selectedFile.fullPath})');
 
-              chartEditorState.error('Failed to Load Vocals',
-                'Failed to load vocal track (${selectedFile.name}) for variation (${chartEditorState.selectedVariation})');
+              chartEditorState.error(
+                'Failed to Load Vocals',
+                'Failed to load vocal track (${selectedFile.name}) for variation (${chartEditorState.selectedVariation})'
+              );
 
               #if FEATURE_FILE_DROP
               vocalsEntry.vocalsEntryLabel.text = 'Drag and drop vocals for $charName here, or click to browse.';
