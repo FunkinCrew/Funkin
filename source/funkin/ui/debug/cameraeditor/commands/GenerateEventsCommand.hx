@@ -27,6 +27,7 @@ class GenerateEventsCommand implements CameraEditorCommand
 
   /**
    * Perform the action, creating a new layer containing the generated events.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -64,6 +65,7 @@ class GenerateEventsCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, removing the generated events and the layer if it was created by this command.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

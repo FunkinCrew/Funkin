@@ -2,18 +2,20 @@ package funkin.ui.debug.charting.commands;
 
 #if FEATURE_CHART_EDITOR
 /**
- * Actions in the chart editor are backed by the Command pattern
- * (see Bob Nystrom's book "Game Programming Patterns" for more info)
+ * Represents a reversible action that can be performed on the Chart Editor.
+ *
+ * Backed by the Command pattern (see Bob Nystrom's book "Game Programming Patterns" for more info)
  *
  * To make a functionality compatible with the undo/redo history, create a new class
  * that implements ChartEditorCommand, then call `ChartEditorState.performCommand(new Command())`
  *
- * NOTE: Make the constructor very simple, as it may be called without executing by the command palette.
+ * NOTE: Keep the constructor very simple, as it may be called without executing by the command palette.
  */
 interface ChartEditorCommand
 {
   /**
    * Calling this function should perform the action that this command represents.
+   *
    * @param state The ChartEditorState to perform the action on.
    */
   public function execute(state:ChartEditorState):Void;
@@ -21,6 +23,7 @@ interface ChartEditorCommand
   /**
    * Calling this function should perform the inverse of the action that this command represents,
    * effectively undoing the action. Assume that the original action was the last action performed.
+   *
    * @param state The ChartEditorState to undo the action on.
    */
   public function undo(state:ChartEditorState):Void;
@@ -28,9 +31,10 @@ interface ChartEditorCommand
   /**
    * Return whether or not this command should be appended to the in the undo/redo history.
    * Generally this should be true, it should only be false if the command is minor and non-destructive,
-   * like copying to the clipboard.
+   * like copying to the clipboard, or if it ends up not doing anything (like pasting an empty clipboard).
    *
-   * Called after `execute()` is performed.
+   * @param state The ChartEditorState to check.
+   * @return Whether or not this command should be appended to the undo/redo history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool;
 

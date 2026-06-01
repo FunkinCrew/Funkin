@@ -2,10 +2,10 @@ package funkin.ui.debug.charting.commands;
 
 #if FEATURE_CHART_EDITOR
 /**
- * Command that copies a given set of notes and song events to the clipboard,
- * without deleting them from the chart editor.
+ * Represents a reversible action to set the audio offset for an audio track in the chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SetAudioOffsetCommand implements ChartEditorCommand
 {
   var type:AudioOffsetType;
@@ -20,6 +20,11 @@ class SetAudioOffsetCommand implements ChartEditorCommand
     this.refreshOffsetsToolbox = refreshOffsetsToolbox;
   }
 
+  /**
+   * Perform the action, modifying the audio offset for the specified audio track.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     switch (type)
@@ -53,6 +58,11 @@ class SetAudioOffsetCommand implements ChartEditorCommand
     }
   }
 
+  /**
+   * Reverse the action, reverting the audio offsets to the previous value.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     switch (type)
@@ -83,7 +93,7 @@ class SetAudioOffsetCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -92,6 +102,10 @@ class SetAudioOffsetCommand implements ChartEditorCommand
     return (newOffset != oldOffset);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     switch (type)

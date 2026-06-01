@@ -5,10 +5,10 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Deletes the given events from the current chart in the chart editor.
- * Use only when ONLY events are being deleted.
+ * Represents a reversible action to remove a list of song events from a chart.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveEventsCommand implements ChartEditorCommand
 {
   var events:Array<SongEventData>;
@@ -18,6 +18,11 @@ class RemoveEventsCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, removing the events from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     if (events.length == 0) return;
@@ -35,6 +40,11 @@ class RemoveEventsCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, restoring the events to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     if (events.length == 0) return;
@@ -58,7 +68,7 @@ class RemoveEventsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -67,6 +77,10 @@ class RemoveEventsCommand implements ChartEditorCommand
     return (events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     if (events.length == 1 && events[0] != null)

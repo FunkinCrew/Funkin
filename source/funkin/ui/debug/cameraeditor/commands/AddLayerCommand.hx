@@ -21,6 +21,7 @@ class AddLayerCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, adding the new layer to the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -44,6 +45,7 @@ class AddLayerCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, removing the layer from the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void

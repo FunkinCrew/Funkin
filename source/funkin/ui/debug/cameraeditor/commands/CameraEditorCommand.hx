@@ -14,6 +14,7 @@ interface CameraEditorCommand
 {
   /**
    * Calling this function should perform the action that this command represents.
+   *
    * @param state The CameraEditorState to perform the action on.
    */
   public function execute(state:CameraEditorState):Void;
@@ -21,6 +22,7 @@ interface CameraEditorCommand
   /**
    * Calling this function should perform the inverse of the action that this command represents,
    * effectively undoing the action. Assume that the original action was the last action performed.
+   *
    * @param state The CameraEditorState to undo the action on.
    */
   public function undo(state:CameraEditorState):Void;

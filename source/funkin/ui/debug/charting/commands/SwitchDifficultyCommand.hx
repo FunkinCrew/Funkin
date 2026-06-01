@@ -2,9 +2,10 @@ package funkin.ui.debug.charting.commands;
 
 #if FEATURE_CHART_EDITOR
 /**
- * Switch the current difficulty (and possibly variation) of the chart in the chart editor.
+ * Represents a reversible action to switch the currently displayed difficulty (and variation).
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SwitchDifficultyCommand implements ChartEditorCommand
 {
   var prevDifficulty:String;
@@ -21,8 +22,9 @@ class SwitchDifficultyCommand implements ChartEditorCommand
   }
 
   /**
-   * Perform the difficulty switch.
-   * @param state The ChartEditorState to perform the action on.
+   * Perform the action, switching the difficulty and loading the appropriate chart data.
+   *
+   * @param state The ChartEditorState to perform the command on.
    */
   public function execute(state:ChartEditorState):Void
   {
@@ -35,8 +37,9 @@ class SwitchDifficultyCommand implements ChartEditorCommand
   }
 
   /**
-   * Reverse the difficulty switch.
-   * @param state The ChartEditorState to perform the action on.
+   * Reverse the action, reverting to the previous difficulty and variation.
+   *
+   * @param state The ChartEditorState to perform the command on.
    */
   public function undo(state:ChartEditorState):Void
   {
@@ -54,9 +57,11 @@ class SwitchDifficultyCommand implements ChartEditorCommand
   }
 
   /**
-   * @param state The ChartEditorState to perform the action on.
-   * @return Whether or not this instance of the command should be added to the history.
-   *   If the command didn't actually change anything, return `false` to prevent polluting the history.
+   * Whether the command should display in the undo/redo menu.
+   * This should be `false` if no real actions were actually performed.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
   {
@@ -64,6 +69,10 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     return (prevVariation != newVariation || prevDifficulty != newDifficulty);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     return 'Switch Difficulty to $newDifficulty ($newVariation)';
