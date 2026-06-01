@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting;
 
 #if FEATURE_CHART_EDITOR
+import funkin.ui.debug.charting.components.ChartEditorCommandPalette;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -747,6 +748,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Set by ChartEditorDialogHandler, used to prevent background interaction while a dialog is open.
    */
   var isHaxeUIDialogOpen:Bool = false;
+
+  /**
+   * The value of `isHaxeUIDialogOpen` from the previous frame.
+   */
+  var wasHaxeUIDialogOpen:Bool = false;
 
   /**
    * The Dialog components representing the currently available tool windows.
@@ -3534,6 +3540,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemViewWaveforms.onClick = event -> audioWaveforms.visible = menubarItemViewWaveforms.selected;
     menubarItemViewWaveforms.selected = audioWaveforms.visible;
 
+    menubarItemCommandPalette.onClick = _ -> ChartEditorCommandPalette.openPalette(this, '?');
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
 
@@ -3895,6 +3902,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleNotePreview();
     handleHealthIcons();
     handleWaveforms();
+
+    handleCommandPalette();
 
     handleFileKeybinds();
     handleViewKeybinds();
@@ -6209,6 +6218,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Handle update code for the Command Palette.
+   */
+  function handleCommandPalette():Void
+  {
+    var canOpenCommandPalette:Bool = (ChartEditorCommandPalette.instance != null || !isHaxeUIDialogOpen);
+
+    // CTRL + P = Open Command Palette
+    if (pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.P && canOpenCommandPalette)
+    {
+      ChartEditorCommandPalette.openPalette(this, '');
+    }
+    // CTRL + SHIFT + P = Show and Run Commands
+    if (pressingControl() && FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.P && canOpenCommandPalette)
+    {
+      ChartEditorCommandPalette.openPalette(this, '>');
+    }
+    // CTRL + G = Go to Measure
+    if (pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.G && canOpenCommandPalette)
+    {
+      ChartEditorCommandPalette.openPalette(this, ':');
+    }
+  }
+
+  /**
    * Handle keybinds for File menu items.
    */
   function handleFileKeybinds():Void
@@ -6448,18 +6481,28 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.HOME)
     {
       // CTRL +  SHIFT + Home = Inverse - deselect all above playhead
-      if (FlxG.keys.pressed.CONTROL) performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+      }
       else
+      {
         performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, true, true, true));
+      }
     }
 
     // SHIFT + End = Select all below playhead
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.END)
     {
       // CTRL +  SHIFT + Home = Inverse - deselect all below playhead
-      if (FlxG.keys.pressed.CONTROL) performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+      if (FlxG.keys.pressed.CONTROL)
+      {
+        performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+      }
       else
+      {
         performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+      }
     }
   }
 
@@ -6505,7 +6548,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleTestKeybinds():Void
   {
-    if (!isHaxeUIDialogOpen && !isHaxeUIFocused && FlxG.keys.justPressed.ENTER)
+    // Use wasOpen, otherwise the command palette triggers playtests.
+    if (!wasHaxeUIDialogOpen && !isHaxeUIFocused && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
       this.hideAllToolboxes();
@@ -6627,6 +6671,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handlePostUpdate():Void
   {
     wasCursorOverHaxeUI = isCursorOverHaxeUI;
+    wasHaxeUIDialogOpen = isHaxeUIDialogOpen;
   }
 
   function moveToCameraEditor(hasSaved:Bool = false):Void
