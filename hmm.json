@@ -119,8 +119,8 @@
       "name": "haxeui-flixel",
       "type": "git",
       "dir": null,
-      "ref": "100f2c96beab619cfe72c567a058c41c71e3e998",
-      "url": "https://github.com/haxeui/haxeui-flixel"
+      "ref": "6a629b63256a1b33ada94bf9f37bb48e0924ae0a",
+      "url": "https://github.com/FunkinCrew/haxeui-flixel"
     },
     {
       "name": "hxcpp",
