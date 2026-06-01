@@ -6,10 +6,11 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Appends one or more items to the selection in the chart editor.
- * This does not deselect any items that are already selected, if any.
+ * Represents a reversible action to append a list of notes and events to the current selection.
+ * Use `SetItemSelectionCommand` to replace the current selection rather than appending to it.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SelectItemsCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -21,6 +22,11 @@ class SelectItemsCommand implements ChartEditorCommand
     this.events = events ?? [];
   }
 
+  /**
+   * Perform the action, adding the notes and events to the current selection.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     for (note in this.notes)
@@ -63,6 +69,11 @@ class SelectItemsCommand implements ChartEditorCommand
     state.editButtonsDirty = true;
   }
 
+  /**
+   * Reverse the action, deselecting the notes and events that were selected.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentNoteSelection = SongDataUtils.subtractNotes(state.currentNoteSelection, this.notes);
@@ -77,7 +88,7 @@ class SelectItemsCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -86,6 +97,10 @@ class SelectItemsCommand implements ChartEditorCommand
     return (notes.length > 0 || events.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     var len:Int = notes.length + events.length;

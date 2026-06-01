@@ -5,9 +5,10 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongDataUtils;
 
 /**
- * Adds the given notes to the current chart in the chart editor.
+ * Represents a reversible action to add one or more notes.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class AddNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -19,6 +20,11 @@ class AddNotesCommand implements ChartEditorCommand
     this.appendToSelection = appendToSelection;
   }
 
+  /**
+   * Perform the action, adding the new song notes to the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     for (note in notes)
@@ -46,6 +52,11 @@ class AddNotesCommand implements ChartEditorCommand
     state.sortChartData();
   }
 
+  /**
+   * Reverse the action, removing the added notes from the chart.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentSongChartNoteData = SongDataUtils.subtractNotes(state.currentSongChartNoteData, notes);
@@ -65,7 +76,7 @@ class AddNotesCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -74,6 +85,10 @@ class AddNotesCommand implements ChartEditorCommand
     return (notes.length > 0);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     if (notes.length == 1)

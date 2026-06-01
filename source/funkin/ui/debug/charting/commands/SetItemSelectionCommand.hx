@@ -5,10 +5,11 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.SongEventData;
 
 /**
- * Command to set the current selection in the chart editor (rather than appending it).
- * Deselects any notes that are not in the new selection.
+ * Represents a reversible action to set the current selection of notes and events,
+ * replacing the previous selection.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class SetItemSelectionCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData>;
@@ -22,6 +23,11 @@ class SetItemSelectionCommand implements ChartEditorCommand
     this.events = events;
   }
 
+  /**
+   * Perform the action, replacing the current selection of notes and events.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function execute(state:ChartEditorState):Void
   {
     this.previousNoteSelection = state.currentNoteSelection;
@@ -71,6 +77,11 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.editButtonsDirty = true;
   }
 
+  /**
+   * Reverse the action, reverting to the previous selection.
+   *
+   * @param state The ChartEditorState to perform the command on.
+   */
   public function undo(state:ChartEditorState):Void
   {
     state.currentNoteSelection = previousNoteSelection;
@@ -84,7 +95,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
    * Whether the command should display in the undo/redo menu.
    * This should be `false` if no real actions were actually performed.
    *
-   * @param state The CameraEditorState to perform the command on.
+   * @param state The ChartEditorState to perform the command on.
    * @return Whether the command should be added to the history.
    */
   public function shouldAddToHistory(state:ChartEditorState):Bool
@@ -93,6 +104,10 @@ class SetItemSelectionCommand implements ChartEditorCommand
     return (state.currentNoteSelection != previousNoteSelection && state.currentEventSelection != previousEventSelection);
   }
 
+  /**
+   * Convert the action to a string. Used to display the action in the undo/redo history.
+   * @return This command, as a readable string.
+   */
   public function toString():String
   {
     return 'Select ${notes.length + events.length} Items';

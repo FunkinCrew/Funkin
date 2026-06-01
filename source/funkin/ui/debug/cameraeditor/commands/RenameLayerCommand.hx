@@ -23,6 +23,7 @@ class RenameLayerCommand implements CameraEditorCommand
 
   /**
    * Perform the action, renaming a camera layer in the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function execute(state:CameraEditorState):Void
@@ -32,6 +33,7 @@ class RenameLayerCommand implements CameraEditorCommand
 
   /**
    * Reverse the action, restoring the original name of the layer on the timeline.
+   *
    * @param state The CameraEditorState to perform the command on.
    */
   public function undo(state:CameraEditorState):Void
