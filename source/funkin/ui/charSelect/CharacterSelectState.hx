@@ -691,67 +691,76 @@ class CharacterSelectState extends MusicBeatSubState
       lock.animation.play('unlock');
       lock.animation.onFrameChange.add((animName:String, frame:Int, index:Int) ->
       {
-        if (frame == 40)
+        if (frame == 2)
+        {
+          unlockSound.volume = 0.7;
+          unlockSound.play(true);
+        }
+
+        if (frame == 38)
         {
           characters.player.playAnimation(UNLOCK);
-        }
-      });
 
-      unlockSound.volume = 0.7;
-      unlockSound.play(true);
-
-      lock.animation.onFinish.addOnce((_) ->
-      {
-        camera.flash(0xFFFFFFFF, 0.1);
-
-        // The locked character (characters.player) calls `kill()` on its own when the unlock animation finishes
-        // so we don't need to kill it here.
-        characters.gf.kill();
-
-        newGf?.revive();
-        newPlayer?.revive();
-        newPlayer?.playAnimation(UNLOCK);
-
-        nametag.loadCharacter(characterId);
-
-        icons.replaceLock(characterId, currentSelection);
-        icons.updateIconPositions();
-        icons.playIconBop(characterId);
-
-        #if FEATURE_NEWGROUNDS
-        // Grant the medal when the player unlocks a character.
-        Medals.award(CharSelect);
-        #end
-
-        Save.instance.addCharacterSeen(characterId);
-
-        @:bypassAccessor
-        currentCharacterId = characterId;
-
-        if (locksToUnlock.isEmpty())
-        {
-          @:privateAccess
-          characters.staticSound.stop();
-
-          playMenuMusic();
-        }
-        else
-        {
-          if (newPlayer == null)
+          var finishSequence:String->Int->Int->Void = (animName:String, frame:Int, index:Int) ->
           {
-            playUnlockAnimation();
-          }
-          else
-          {
-            if (newPlayer.animation.curAnim.looped)
+            if (frame == 34)
             {
-              newPlayer.animation.onLoop.addOnce((_) -> playUnlockAnimation());
+              camera.flash(0xFFFFFFFF, 0.1);
+
+              // The locked character (characters.player) calls `kill()` on its own when the unlock animation finishes
+              // so we don't need to kill it here.
+              characters.gf.kill();
+
+              newGf?.revive();
+              newPlayer?.revive();
+              newPlayer?.playAnimation(UNLOCK);
+
+              nametag.loadCharacter(characterId);
+
+              icons.replaceLock(characterId, currentSelection);
+              icons.updateIconPositions();
+              icons.playIconBop(characterId);
+
+              #if FEATURE_NEWGROUNDS
+              // Grant the medal when the player unlocks a character.
+              Medals.award(CharSelect);
+              #end
+
+              Save.instance.addCharacterSeen(characterId);
+
+              @:bypassAccessor
+              currentCharacterId = characterId;
+
+              if (locksToUnlock.isEmpty())
+              {
+                @:privateAccess
+                characters.staticSound.stop();
+
+                playMenuMusic();
+              }
+              else
+              {
+                if (newPlayer == null)
+                {
+                  playUnlockAnimation();
+                }
+                else
+                {
+                  if (newPlayer.animation.curAnim.looped)
+                  {
+                    newPlayer.animation.onLoop.addOnce((_) -> playUnlockAnimation());
+                  }
+                  else
+                  {
+                    newPlayer.animation.onFinish.addOnce((_) -> playUnlockAnimation());
+                  }
+                }
+              }
             }
-            else
-            {
-              newPlayer.animation.onFinish.addOnce((_) -> playUnlockAnimation());
-            }
-          }
+          };
+
+          characters.player.animation.onFrameChange.add(finishSequence);
+          characters.player.animation.onFinish.addOnce((_) -> characters.player.animation.onFrameChange.remove(finishSequence));
         }
       });
     });
