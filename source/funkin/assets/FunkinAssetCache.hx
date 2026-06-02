@@ -388,7 +388,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      trace('[ASSETS] Bitmap data not found in cache: ' + id);
+      // trace('[ASSETS] Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
@@ -718,7 +718,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // Make sure we don't accidentally destroy the graphic while we're using it.
     flxGraphic.persist = true;
     flxGraphic.destroyOnNoUse = false;
-    FunkinBitmapFrontend.instance.addGraphicByKey(id, flxGraphic);
+    FunkinBitmapFrontend.instance.add(flxGraphic, id);
   }
 
   /**

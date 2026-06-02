@@ -71,29 +71,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     super();
   }
 
-  /**
-   * Add an asset to the cache.
-   * @param graphic The asset to add.
-   * @param unique Whether or not the asset is unique.
-   * @param key The key of the asset.
-   * @return The FlxGraphic, if added.
-   */
-  override public function add(graphic:flixel.system.FlxAssets.FlxGraphicAsset, unique:Bool = false, ?key:String):FlxGraphic
-  {
-    if ((graphic is FlxGraphic))
-    {
-      return FlxGraphic.fromGraphic(cast graphic, unique, key);
-    }
-    else if ((graphic is BitmapData))
-    {
-      return FlxGraphic.fromBitmapData(cast graphic, unique, key);
-    }
-
-    // String case
-    // Try to retreive a cached FlxGraphic for the asset path if one already exists.
-    return FunkinAssetCache.instance.getFlxGraphic(graphic);
-  }
-
   override public function addGraphic(graphic:FlxGraphic):FlxGraphic
   {
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
@@ -104,21 +81,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     {
       removeByKey(graphic.key);
       stagedFlxGraphic.current.set(graphic.key, graphic);
-    }
-
-    return graphic;
-  }
-
-  public function addGraphicByKey(key:String, graphic:FlxGraphic):FlxGraphic
-  {
-    if (!stagedFlxGraphic.exists(key) || stagedFlxGraphic.get(key) == null)
-    {
-      stagedFlxGraphic.current.set(key, graphic);
-    }
-    else if (stagedFlxGraphic.get(key) != graphic)
-    {
-      removeByKey(key);
-      stagedFlxGraphic.current.set(key, graphic);
     }
 
     return graphic;
@@ -308,15 +270,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
         }
       }
     }
-  }
-
-  function _isExcluded(key:String, exclude:Array<String>):Bool
-  {
-    for (ex in exclude)
-    {
-      if (key.contains(ex)) return true;
-    }
-    return false;
   }
 
   override public function onAssetsReload(_):Void
