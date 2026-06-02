@@ -91,6 +91,7 @@ import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
 import funkin.ui.debug.charting.components.ChartEditorNotePreview;
 import funkin.ui.debug.charting.components.ChartEditorNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorPlaybarHead;
+import funkin.ui.debug.charting.components.ChartEditorCommentPanel;
 import funkin.ui.debug.charting.components.ChartEditorSelectionSquareSprite;
 import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
@@ -2004,6 +2005,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubar:MenuBar;
 
   /**
+   * The comment panel on the right side.
+   * Constructed manually and added to the layout so we can control its position.
+   */
+  var commentPanel:Null<ChartEditorCommentPanel> = null;
+
+  /**
    * The `File -> New Chart` menu item.
    */
   var menubarItemNewChart:MenuItem;
@@ -3194,6 +3201,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     add(playbarHeadLayout);
 
+    commentPanel = new ChartEditorCommentPanel(this);
+    commentPanel.zIndex = 10;
+    commentPanel.hidden = true;
+    add(commentPanel);
+
     // Little text that shows up when you copy something.
     txtCopyNotif = new FlxText(0, 0, 0, '', 24);
     txtCopyNotif.setBorderStyle(OUTLINE, 0xFF074809, 1);
@@ -3919,8 +3931,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback(elapsed);
-    handleNoteDisplay();
     handleCommentDisplay();
+    handleNoteDisplay();
 
     if (isHaxeUIFocused
       && !isCursorOverHaxeUI
@@ -4550,6 +4562,37 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function handleCommentDisplay():Void
   {
+    // We need to update when comments change OR we scroll.
+    if (noteDisplayDirty || commentDisplayDirty)
+    {
+      // Current algorithm displays the closest comment within one second before or after the playhead.
+
+      var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
+
+      var startPos = playheadPosMs - 1000;
+      var endPos = playheadPosMs + 1000;
+
+      var nearbyCommentData:Array<CommentData> = currentSongChartCommentData.filter((comment) ->
+      {
+        return (comment.time >= startPos && comment.time <= endPos);
+      });
+
+      nearbyCommentData.sort((commentA, commentB) ->
+      {
+        if (commentA.time == commentB.time) return 0;
+
+        // Sort by which is closer to the playheadPosMs.
+        var commentADistance = Math.abs(commentA.time - playheadPosMs);
+        var commentBDistance = Math.abs(commentB.time - playheadPosMs);
+        return (commentADistance - commentBDistance) > 0 ? 1 : -1;
+      });
+
+      var commentToDisplay:Null<CommentData> = nearbyCommentData[0];
+
+      commentPanel.commentData = commentToDisplay;
+      commentPanel.updatePosition();
+    }
+
     if (commentDisplayDirty)
     {
       commentDisplayDirty = false;
@@ -4883,6 +4926,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // early return if we shouldn't handle the cursor at all
     if (!shouldHandleCursor)
     {
+      trace('Cannot handle cursor: $isHaxeUIFocused: ${FocusManager.instance.focus}');
+
       if (gridGhostNote != null) gridGhostNote.visible = false;
       if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
       if (gridGhostEvent != null) gridGhostEvent.visible = false;
