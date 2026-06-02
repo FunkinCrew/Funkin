@@ -46,6 +46,8 @@ import funkin.api.newgrounds.NewgroundsClient;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
+import funkin.assets.Paths as Paths;
+import funkin.assets.Assets as Assets;
 
 @:nullSafety
 class MainMenuState extends MusicBeatState
@@ -81,7 +83,7 @@ class MainMenuState extends MusicBeatState
     uiStateMachine.transition(EnteringMainMenu);
 
     upgradeSparkles = new FlxTypedSpriteGroup<UpgradeSparkle>();
-    magenta = new FlxSprite(Paths.image('ui/main-menu/menu-bg-magenta'));
+    magenta = new FlxSprite(Paths.image('ui/main-menu/menu-bg-magenta').toFlxGraphicAsset());
     camFollow = new FlxObject(0, 0, 1, 1);
 
     // TODO: enabling and disabling keys is a lil quirky,
@@ -116,7 +118,7 @@ class MainMenuState extends MusicBeatState
     persistentUpdate = true;
     persistentDraw = true;
 
-    bg = new FlxSprite(Paths.image('ui/main-menu/menu-bg'));
+    bg = new FlxSprite(Paths.image('ui/main-menu/menu-bg').toFlxGraphicAsset());
     bg.scrollFactor.x = #if !mobile 0 #else 0.17 #end; // we want a lil x scroll on mobile
     bg.scrollFactor.y = 0.17;
     bg.setGraphicSize(Std.int(FlxG.width * 1.2));
@@ -347,7 +349,7 @@ class MainMenuState extends MusicBeatState
   {
     if (menuItems == null) return;
 
-    var item:AtlasMenuItem = new AtlasMenuItem(name, Paths.getSparrowAtlas(atlas), callback);
+    var item:AtlasMenuItem = new AtlasMenuItem(name, Assets.getSparrowAtlas(Paths.image(atlas)), callback);
     item.fireInstantly = fireInstantly;
     item.ID = menuItems.length;
     item.scrollFactor.set();
@@ -457,6 +459,8 @@ class MainMenuState extends MusicBeatState
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (FlxG.keys.justPressed.T) funkin.assets.FunkinAssetCache.instance.debug_listCachedAssets();
 
     Conductor.instance.update();
 
@@ -623,7 +627,7 @@ class MainMenuState extends MusicBeatState
   {
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
 
     FlxG.switchState(() -> new TitleState());
   }

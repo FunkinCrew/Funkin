@@ -60,24 +60,25 @@ class SoundCache
       if (sound != null)
       {
         FunkinMemory.log('Cleaning SOUND asset $key');
-        FunkinAssetCache.instance.removeSound(key);
+        FunkinAssetCache.instance.removeSound(key.toString());
         cacheTriplet.previous.remove(key);
       }
     }
 
     // Clears out files within the songs folder and the music folder
     FunkinMemory.log("Purging unused sounds from memory...");
-    var allSounds = Assets.cache.sound.keys();
-    for (file in allSounds)
-    {
-      if (!file.endsWith(".ogg") || file.contains("freakyMusic")) continue;
+    // var allSounds = Assets.cache.sound.keys();
+    // for (file in allSounds)
+    // {
+    //   if (!file.endsWith(".ogg") || file.contains("freakyMusic")) continue;
 
-      file = file.replace(" ", "");
+    //   file = file.replace(" ", "");
 
-      if (cacheTriplet.permanent.exists(file) || !FunkinAssetCache.instance.hasSound(file)) continue;
-      FunkinMemory.log('Cleaning SOUND asset $file');
-      FunkinAssetCache.instance.removeSound(file);
-    }
+    //   if (cacheTriplet.permanent.exists(file) || !FunkinAssetCache.instance.hasSound(file)) continue;
+    //   FunkinMemory.log('Cleaning SOUND asset $file');
+    //   FunkinAssetCache.instance.removeSound(file);
+    // }
+    // TODO: Make this work
 
     FlxPartialSound.clearCache();
   }

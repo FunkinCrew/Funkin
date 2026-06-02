@@ -31,6 +31,9 @@ import funkin.ui.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
+// import funkin.assets.Assets as Paths;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * Handles the user interface for the Story Mode menu.
@@ -295,15 +298,15 @@ class StoryMenuState extends MusicBeatState
       difficultySprite.x = leftDifficultyArrow.x + leftDifficultyArrow.width + 10;
       difficultySprite.y = leftDifficultyArrow.y;
 
-      if (Assets.exists(Paths.file('ui/story-mode/difficulties/${diff}.xml')))
+      if (Assets.exists(Paths.file('ui/story-mode/difficulties/${diff}', 'xml').toString()))
       {
-        difficultySprite.frames = Paths.getSparrowAtlas('ui/story-mode/difficulties/${diff}');
+        difficultySprite.frames = Assets.getSparrowAtlas(Paths.image('ui/story-mode/difficulties/${diff}'));
         difficultySprite.animation.addByPrefix('idle', 'idle0', 24, true);
         if (Preferences.flashingLights) difficultySprite.animation.play('idle');
       }
       else
       {
-        difficultySprite.loadGraphic(Paths.image('ui/story-mode/difficulties/${diff}'));
+        difficultySprite.loadGraphic(Paths.image('ui/story-mode/difficulties/${diff}').toFlxGraphicAsset());
       }
 
       difficultySprites.set(diff, difficultySprite);
@@ -363,6 +366,7 @@ class StoryMenuState extends MusicBeatState
     {
       FlxG.sound.music.volume += 0.5 * elapsed;
     }
+    if (FlxG.keys.justPressed.T) funkin.assets.FunkinAssetCache.instance.debug_listCachedAssets();
 
     super.update(elapsed);
   }
@@ -520,7 +524,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
 
     repositionTitles();
     updateText();
@@ -566,7 +570,7 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
@@ -594,7 +598,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!currentLevel.isUnlocked())
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
       return;
     }
 
@@ -602,7 +606,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
 
     currentLevelTitle.isFlashing = true;
 
@@ -767,7 +771,7 @@ class StoryMenuState extends MusicBeatState
     exitingMenu = true;
     FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toFlxSoundAsset());
   }
 
   /**

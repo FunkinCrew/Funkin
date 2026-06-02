@@ -81,8 +81,8 @@ class LoadingState extends MusicBeatSubState
       {
         throw 'Couldn\'t retrieve chart data for song "${playParams.targetSong.songName}" on difficulty "$difficulty" and variation "$variation"';
       }
-      var instPath:String = targetChart.getInstPath(playParams.targetInstrumental);
-      var voicesPaths:Array<String> = targetChart.buildVoiceList();
+      var instPath:String = targetChart.getInstPath(playParams.targetInstrumental).toString();
+      var voicesPaths:Array<String> = targetChart.buildVoiceList().map(function(voice) return voice.toString());
 
       checkLoadSong(instPath);
       for (voicePath in voicesPaths)
@@ -311,14 +311,15 @@ class LoadingState extends MusicBeatSubState
         {
           trace('Queueing $sprite to preload.');
           // new Future<String>(function() {
-          var path = Paths.image(sprite);
+          var path = funkin.assets.Paths.image(sprite);
           funkin.memory.FunkinMemory.cacheTexture(path);
           // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
           // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-          if (path.endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || path.endsWith('spritemap1.astc') #end)
+          if (path.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES
+            || path.toString().endsWith('spritemap1.astc') #end)
           {
             trace('Preloading FlxAnimate asset: ${path}');
-            openfl.Assets.getBitmapData(path, true);
+            openfl.Assets.getBitmapData(path.toString(), true);
           }
           // return '${path} successfuly loaded.';
           // }, true);
@@ -329,7 +330,7 @@ class LoadingState extends MusicBeatSubState
           trace('Queueing $sound to preload.');
           new Future<String>(function()
           {
-            var path = Paths.sound(sound);
+            var path = funkin.assets.Paths.sound(sound);
             funkin.memory.FunkinMemory.cacheSound(path);
             return '${path} successfuly loaded.';
           }, true);
@@ -344,9 +345,10 @@ class LoadingState extends MusicBeatSubState
     else
     {
       // funkin.memory.FunkinMemory.clearFreeplay();
-      FlxG.signals.preStateSwitch.addOnce(function()
+      FlxG.signals.postStateSwitch.addOnce(function()
       {
         funkin.memory.FunkinMemory.clearFreeplay();
+        // TODO: FUCKING FIX THIS BULLSHIT I HATE YOU KILL EVERYONE IUNCLIDUGN YORUSLEF
       });
       FlxG.switchState(playStateCtor);
     }

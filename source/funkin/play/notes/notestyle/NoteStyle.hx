@@ -118,7 +118,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinMemory.isTextureCached(Paths.image(noteAssetPath)))
+    if (!FunkinMemory.isTextureCached(funkin.assets.Paths.image(noteAssetPath)))
     {
       FlxG.log.warn('Note texture is not cached: ${noteAssetPath}');
     }
@@ -936,7 +936,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinMemory.isTextureCached(Paths.image(splashAssetPath)))
+    if (!FunkinMemory.isTextureCached(funkin.assets.Paths.image(splashAssetPath)))
     {
       FlxG.log.warn('Note Splash texture not cached: ${splashAssetPath}');
     }
@@ -1094,7 +1094,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       return null;
     }
 
-    if (!FunkinMemory.isTextureCached(Paths.image(holdCoverAssetPath)))
+    if (!FunkinMemory.isTextureCached(funkin.assets.Paths.image(holdCoverAssetPath)))
     {
       FlxG.log.warn('Hold Note Cover texture not cached: ${holdCoverAssetPath}');
     }

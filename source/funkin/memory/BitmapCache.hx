@@ -41,7 +41,7 @@ class BitmapCache
   {
     if (cacheTriplet.current.exists(key)) return;
 
-    var graphic:Null<FlxGraphic> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = CacheLifeCycle.reuseIfPossible(cacheTriplet, key) ?? FlxGraphic.fromAssetKey(key.toString(), false, null, true);
 
     if (graphic == null) return;
 
@@ -63,7 +63,7 @@ class BitmapCache
   {
     if (cacheTriplet.permanent.exists(key)) return;
 
-    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key, false, null, true);
+    var graphic:Null<FlxGraphic> = FlxGraphic.fromAssetKey(key.toString(), false, null, true);
 
     if (graphic == null) return;
 
@@ -124,41 +124,40 @@ class BitmapCache
    */
   static function purge():Void
   {
-    for (key in cacheTriplet.previous.keys())
-    {
-      if (cacheTriplet.permanent.exists(key))
-      {
-        cacheTriplet.previous.remove(key);
-        continue;
-      }
+    // for (key in cacheTriplet.previous.keys())
+    // {
+    //   if (cacheTriplet.permanent.exists(key))
+    //   {
+    //     cacheTriplet.previous.remove(key);
+    //     continue;
+    //   }
 
-      if (key.toString().contains("fonts")) continue;
+    //   if (key.toString().contains("fonts")) continue;
 
-      var graphic:Null<FlxGraphic> = cacheTriplet.previous.get(key);
-      if (graphic != null)
-      {
-        cacheTriplet.previous.remove(key);
-        FunkinAssetCache.instance.removeFlxGraphic(key);
-        FunkinAssetCache.instance.removeBitmapData(key);
-      }
-    }
+    //   var graphic:Null<FlxGraphic> = cacheTriplet.previous.get(key);
+    //   if (graphic != null)
+    //   {
+    //     FunkinAssetCache.instance.removeFlxGraphic(key);
+    //     FunkinAssetCache.instance.removeBitmapData(key);
+    //   }
+    // }
 
-    for (key in flixelCache.keys())
-    {
-      var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
+    // for (key in flixelCache.keys())
+    // {
+    //   var obj:Null<FlxGraphic> = FlxG.bitmap.get(key);
 
-      if (obj == null) continue;
-      if (key.contains("fonts")) continue;
-      if (obj.useCount <= 0) continue;
-      if (obj.persist && cacheTriplet.permanent.exists(key)) continue;
+    //   if (obj == null) continue;
+    //   if (key.contains("fonts")) continue;
+    //   if (obj.useCount <= 0) continue;
+    //   if (obj.persist && cacheTriplet.permanent.exists(key)) continue;
 
-      for (purgeEntry in purgeFilter)
-      {
-        if (!key.contains(purgeEntry)) continue;
+    //   for (purgeEntry in purgeFilter)
+    //   {
+    //     if (!key.contains(purgeEntry)) continue;
 
-        FunkinAssetCache.instance.removeFlxGraphic(key);
-        FunkinAssetCache.instance.removeBitmapData(key);
-      }
-    }
+    //     FunkinAssetCache.instance.removeFlxGraphic(key);
+    //     FunkinAssetCache.instance.removeBitmapData(key);
+    //   }
+    // }
   }
 }

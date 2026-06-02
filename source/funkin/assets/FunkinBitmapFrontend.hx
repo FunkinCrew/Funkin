@@ -139,8 +139,9 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     throw 'Flixel graphic not cached, cannot load synchronously: $id';
     #else
     FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
-    var graphic:FlxGraphic = FlxGraphic.fromBitmapData(Assets.getBitmapData(id));
-    return graphic;
+    var graphic:FlxGraphic = FlxGraphic.fromBitmapData(FunkinAssetCache.instance.getBitmapData(id), false, id);
+    // TODO: make the graphic keys (graphic.key) be set too EVERYWHERE
+    return addGraphic(graphic);
     #end
   }
 
@@ -187,12 +188,89 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
       for (key in stagedFlxGraphic.previous.keys())
       {
         var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-        if (graphic != null)
+        if (graphic != null && graphic.useCount <= 0)
         {
           remove(graphic);
         }
       }
       stagedFlxGraphic.previous.clear();
+    }
+  }
+
+  /**
+   * Forcefully clears the 'previous' staged cache while preserving
+   * critical assets to prevent crashes.
+   *
+   * @param preserve Array of keywords (e.g. ["font", "ui"]) to keep in memory.
+   */
+  public function clearExcept(preserve:Array<String>):Void
+  {
+    if (stagedFlxGraphic == null) return;
+
+    // Iterate through the 'previous' bucket in the cache buffer
+    for (key in stagedFlxGraphic.previous.keys())
+    {
+      var shouldKeep:Bool = false;
+
+      // Manual check since we aren't using Lambda
+      for (keyword in preserve)
+      {
+        if (key.contains(keyword))
+        {
+          shouldKeep = true;
+          break;
+        }
+      }
+
+      // If it's not a preserved asset, reclaim the memory
+      if (!shouldKeep)
+      {
+        var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
+
+        if (graphic != null && graphic.useCount <= 0)
+        {
+          remove(graphic);
+          stagedFlxGraphic.previous.remove(key);
+          FunkinAssetCache.instance.removeBitmapData(key);
+        }
+      }
+    }
+
+    // NOTE: Do NOT call stagedFlxGraphic.previous.clear() at the end,
+    // as that would delete the items we just worked to preserve!
+    // yes *I* need a note for this. Remove when the whole thing is done - Moon.
+  }
+
+  /////////////////////
+  // public function clearCacheFUCK(exclude:Array<String>):Void
+  // {
+  //   if (stagedFlxGraphic != null)
+  //   {
+  //     for (key in stagedFlxGraphic.previous.keys())
+  //     {
+  //       if (_isExcluded(key, exclude)) continue;
+  //       var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
+  //       if (graphic != null && graphic.useCount <= 0)
+  //       {
+  //         remove(graphic);
+  //         stagedFlxGraphic.previous.remove(key);
+  //       }
+  //     }
+  //   }
+  // }
+  // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
+  // or B. Check for unused graphics in the previous buffer.
+  // For now this is just gonna be A as default because thats what the original BitmapFrontEnd does, but we can always change it later if we want to.
+
+  override public function clearUnused():Void
+  {
+    for (key in stagedFlxGraphic.allKeys())
+    {
+      var obj = stagedFlxGraphic.get(key);
+      if (obj != null && obj.useCount <= 0 && !obj.persist && obj.destroyOnNoUse)
+      {
+        removeByKey(key);
+      }
     }
   }
 
@@ -232,20 +310,13 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     }
   }
 
-  // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
-  // or B. Check for unused graphics in the previous buffer.
-  // For now this is just gonna be A as default because thats what the original BitmapFrontEnd does, but we can always change it later if we want to.
-
-  override public function clearUnused():Void
+  function _isExcluded(key:String, exclude:Array<String>):Bool
   {
-    for (key in stagedFlxGraphic.allKeys())
+    for (ex in exclude)
     {
-      var obj = stagedFlxGraphic.get(key);
-      if (obj != null && obj.useCount <= 0 && !obj.persist && obj.destroyOnNoUse)
-      {
-        removeByKey(key);
-      }
+      if (key.contains(ex)) return true;
     }
+    return false;
   }
 
   override public function onAssetsReload(_):Void

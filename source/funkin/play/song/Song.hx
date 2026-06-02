@@ -17,6 +17,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.util.SortUtil;
+import funkin.assets.Paths.AssetPath;
 
 /**
  * This is a data structure managing information about the current song.
@@ -854,7 +855,7 @@ class SongDifficulty
    * @param instId = ''
    * @return String
    */
-  public function getInstPath(instId = ''):String
+  public function getInstPath(instId = ''):AssetPath
   {
     var suffix = if (instId != '')
     {
@@ -869,7 +870,7 @@ class SongDifficulty
       '';
     };
 
-    return Paths.inst(this.song.id, suffix);
+    return funkin.assets.Paths.inst(this.song.id, suffix);
   }
 
   /**
@@ -912,21 +913,22 @@ class SongDifficulty
    *
    * @param id The character we are about to play.
    */
-  public function buildVoiceList():Array<String>
+  public function buildVoiceList():Array<AssetPath>
   {
-    var result:Array<String> = [];
+    var result:Array<AssetPath> = [];
     result = result.concat(buildPlayerVoiceList());
     result = result.concat(buildOpponentVoiceList());
     if (result.length == 0)
     {
       var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
       // Try to use `Voices.ogg` if no other voices are found.
-      if (Assets.exists(Paths.voices(this.song.id, ''))) result.push(Paths.voices(this.song.id, '$suffix'));
+      if (funkin.assets.Assets.exists(funkin.assets.Paths.voices(this.song.id, '')
+        .toString())) result.push(funkin.assets.Paths.voices(this.song.id, '$suffix'));
     }
     return result;
   }
 
-  public function buildPlayerVoiceList():Array<String>
+  public function buildPlayerVoiceList():Array<AssetPath>
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
@@ -934,14 +936,14 @@ class SongDifficulty
     {
       // The metadata explicitly defines the list of voices.
       var playerIds:Array<String> = characters?.playerVocals ?? [characters.player];
-      var playerVoices:Array<String> = playerIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+      var playerVoices:Array<AssetPath> = playerIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix'));
       var validVoices:Bool = true;
 
       // Check if all voice paths exist before returning
       // If not, fallback to the default method for resolving voices
       for (voice in playerVoices)
       {
-        if (voice == null || !Assets.exists(voice)) validVoices = false;
+        if (voice == null || !funkin.assets.Assets.exists(voice.toString())) validVoices = false;
       }
       if (validVoices) return playerVoices;
     }
@@ -950,34 +952,34 @@ class SongDifficulty
     // For example, if `Voices-bf-car-erect.ogg` does not exist, check for `Voices-bf-erect.ogg`.
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
     var playerId:String = characters.player;
-    var playerVoice:String = Paths.voices(this.song.id, '-${playerId}$suffix');
+    var playerVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
 
-    while (playerVoice != null && !Assets.exists(playerVoice))
+    while (playerVoice != null && !funkin.assets.Assets.exists(playerVoice.toString()))
     {
       // Remove the last suffix.
       // For example, bf-car becomes bf.
       playerId = playerId.split('-').slice(0, -1).join('-');
       // Try again.
-      playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+      playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
     }
     if (playerVoice == null)
     {
       // Try again without $suffix.
       playerId = characters.player;
-      playerVoice = Paths.voices(this.song.id, '-${playerId}');
-      while (playerVoice != null && !Assets.exists(playerVoice))
+      playerVoice = funkin.assets.Paths.voices(this.song.id, '-${playerId}');
+      while (playerVoice != null && !funkin.assets.Assets.exists(playerVoice.toString()))
       {
         // Remove the last suffix.
         playerId = playerId.split('-').slice(0, -1).join('-');
         // Try again.
-        playerVoice = playerId == '' ? null : Paths.voices(this.song.id, '-${playerId}$suffix');
+        playerVoice = playerId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${playerId}$suffix');
       }
     }
 
     return playerVoice != null ? [playerVoice] : [];
   }
 
-  public function buildOpponentVoiceList():Array<String>
+  public function buildOpponentVoiceList():Array<AssetPath>
   {
     var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
 
@@ -985,14 +987,14 @@ class SongDifficulty
     {
       // The metadata explicitly defines the list of voices.
       var opponentIds:Array<String> = characters?.opponentVocals ?? [characters.opponent];
-      var opponentVoices:Array<String> = opponentIds.map((id) -> Paths.voices(this.song.id, '-$id$suffix'));
+      var opponentVoices:Array<AssetPath> = opponentIds.map((id) -> funkin.assets.Paths.voices(this.song.id, '-$id$suffix'));
       var validVoices:Bool = true;
 
       // Check if all voice paths exist before returning
       // If not, fallback to the default method for resolving voices
       for (voice in opponentVoices)
       {
-        if (voice == null || !Assets.exists(voice)) validVoices = false;
+        if (voice == null || !funkin.assets.Assets.exists(voice.toString())) validVoices = false;
       }
       if (validVoices) return opponentVoices;
     }
@@ -1002,25 +1004,25 @@ class SongDifficulty
     // Then, check for  `Voices-bf-car.ogg`, then `Voices-bf.ogg`.
 
     var opponentId:String = characters.opponent;
-    var opponentVoice:String = Paths.voices(this.song.id, '-${opponentId}$suffix');
-    while (opponentVoice != null && !Assets.exists(opponentVoice))
+    var opponentVoice:AssetPath = funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
+    while (opponentVoice != null && !funkin.assets.Assets.exists(opponentVoice.toString()))
     {
       // Remove the last suffix.
       opponentId = opponentId.split('-').slice(0, -1).join('-');
       // Try again.
-      opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+      opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
     }
     if (opponentVoice == null)
     {
       // Try again without $suffix.
       opponentId = characters.opponent;
-      opponentVoice = Paths.voices(this.song.id, '-${opponentId}');
-      while (opponentVoice != null && !Assets.exists(opponentVoice))
+      opponentVoice = funkin.assets.Paths.voices(this.song.id, '-${opponentId}');
+      while (opponentVoice != null && !funkin.assets.Assets.exists(opponentVoice.toString()))
       {
         // Remove the last suffix.
         opponentId = opponentId.split('-').slice(0, -1).join('-');
         // Try again.
-        opponentVoice = opponentId == '' ? null : Paths.voices(this.song.id, '-${opponentId}$suffix');
+        opponentVoice = opponentId == '' ? null : funkin.assets.Paths.voices(this.song.id, '-${opponentId}$suffix');
       }
     }
 
@@ -1036,31 +1038,31 @@ class SongDifficulty
   {
     var result:VoicesGroup = new VoicesGroup();
 
-    var playerVoiceList:Array<String> = this.buildPlayerVoiceList();
-    var opponentVoiceList:Array<String> = this.buildOpponentVoiceList();
+    var playerVoiceList:Array<AssetPath> = this.buildPlayerVoiceList();
+    var opponentVoiceList:Array<AssetPath> = this.buildOpponentVoiceList();
 
     // Add player vocals.
     for (playerVoice in playerVoiceList)
     {
-      if (!Assets.exists(playerVoice)) continue;
-      result.addPlayerVoice(FunkinSound.load(playerVoice, 1.0, false, false, false, false, null, null, true));
+      if (!funkin.assets.Assets.exists(playerVoice.toString())) continue;
+      result.addPlayerVoice(FunkinSound.load(playerVoice.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
-      if (!Assets.exists(opponentVoice)) continue;
-      result.addOpponentVoice(FunkinSound.load(opponentVoice, 1.0, false, false, false, false, null, null, true));
+      if (!funkin.assets.Assets.exists(opponentVoice.toString())) continue;
+      result.addOpponentVoice(FunkinSound.load(opponentVoice.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
     }
 
     if (result.members.length == 0)
     {
       var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
       // Try to use `Voices.ogg` if no other voices are found.
-      var legacyPath = Paths.voices(this.song.id, '$suffix');
-      if (Assets.exists(legacyPath))
+      var legacyPath = funkin.assets.Paths.voices(this.song.id, '$suffix');
+      if (funkin.assets.Assets.exists(legacyPath.toString()))
       {
-        result.addPlayerVoice(FunkinSound.load(legacyPath, 1.0, false, false, false, false, null, null, true));
+        result.addPlayerVoice(FunkinSound.load(legacyPath.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
       }
     }
 

@@ -14,7 +14,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
-import openfl.Assets;
+// import openfl.Assets;
 import funkin.ui.mainmenu.MainMenuState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;

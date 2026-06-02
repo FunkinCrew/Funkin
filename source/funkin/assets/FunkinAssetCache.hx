@@ -268,8 +268,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // Handle Images (Special case with two calls)
     for (asset in Assets.queryPersistentAssets(IMAGE))
     {
-      recacheBitmapData(asset);
-      recacheFlxGraphic(asset);
+      if (recacheBitmapData(asset) == null)
+      {
+        cacheBitmapData(asset);
+      }
+      if (recacheFlxGraphic(asset) == null)
+      {
+        cacheFlxGraphic(asset);
+      }
+
+      // TODO: THis is tempcode, remove this once funkinpreloader is ready
     }
 
     // Handle Text-based assets (JSON, XML, Scripts, etc.)
@@ -301,8 +309,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function purgeCache():Void
   {
     // stagedFlxGraphic.purge();
-    stagedBitmapData.purge();
-    FunkinBitmapFrontend.instance.clearCache();
+    // stagedBitmapData.purge();
+    FunkinBitmapFrontend.instance.clearExcept(["freeplay/", "stickers/"]);
+    // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
+    // also does it for bitmapdatas, so we don't have to worry about that here.
 
     // for (key in previous_font.keys())
     // {
@@ -1346,13 +1356,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace('[ASSETS] - $key');
     }
 
-    // trace('[ASSETS] FLX GRAPHIC:');
-    // var keys:Array<String> = stagedFlxGraphic.current.keys().array();
-    // keys.sort(SortUtil.alphabetically);
-    // for (key in keys)
-    // {
-    //   trace('[ASSETS] - $key');
-    // }
+    trace('[ASSETS] FLX GRAPHIC:');
+    var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.current.keys().array();
+    keys.sort(SortUtil.alphabetically);
+    for (key in keys)
+    {
+      trace('[ASSETS] - $key');
+    }
 
     trace('[ASSETS] FONT:');
     var keys:Array<String> = current_font.keys().array();

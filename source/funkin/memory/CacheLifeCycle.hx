@@ -8,6 +8,7 @@ import funkin.assets.Assets;
 import openfl.media.Sound;
 import funkin.util.flixel.sound.FlxPartialSound;
 import funkin.memory.FunkinMemory.CacheTriplet;
+import funkin.assets.Paths.AssetPath;
 
 // dude i lowk dunno if this is even worth it but whatever
 @:nullSafety @:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
@@ -32,7 +33,7 @@ class CacheLifeCycle
     }
   }
 
-  static function reuseIfPossible<T>(cache:CacheTriplet<T>, key:String):Null<T>
+  static function reuseIfPossible<T>(cache:CacheTriplet<T>, key:AssetPath):Null<T>
   {
     var asset:Null<T> = cache.previous.get(key);
 
