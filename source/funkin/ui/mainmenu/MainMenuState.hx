@@ -460,8 +460,6 @@ class MainMenuState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (FlxG.keys.justPressed.T) funkin.assets.FunkinAssetCache.instance.debug_listCachedAssets();
-
     Conductor.instance.update();
 
     #if mobile

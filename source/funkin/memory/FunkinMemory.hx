@@ -207,30 +207,7 @@ class FunkinMemory
    */
   public static inline function clearFreeplay():Void
   {
-    // var keysToRemove:Array<String> = [];
-
-    // var _temp:Array<String> = [];
-    // for (c in BitmapCache.cacheTriplet.current.keys()) _temp.push(c.toString());
-
-    // @:privateAccess
-    // for (key in FlxG.bitmap._cache.keys())
-    // {
-    //   if (!key.contains('freeplay')) continue;
-    //   if (_temp.contains(key) || key.contains('fonts')) continue;
-
-    //   keysToRemove.push(key);
-    // }
-
-    // for (key in keysToRemove)
-    // {
-    //   log('Cleaning asset $key');
-    //   // if (_temp.contains(key)) BitmapCache.cacheTriplet.current.remove(key);
-    //   FunkinAssetCache.instance.removeFlxGraphic(key);
-    //   FunkinAssetCache.instance.removeBitmapData(key);
-    // }
-
-    // preparePurgeSoundCache();
-    // purgeSoundCache();
+    funkin.assets.FunkinBitmapFrontend.instance.clearOnly(['freeplay/']);
   }
 
   /**
@@ -238,29 +215,7 @@ class FunkinMemory
    */
   public static inline function clearStickers():Void
   {
-    // var keysToRemove:Array<String> = [];
-    // var _temp:Array<String> = [];
-    // for (c in BitmapCache.cacheTriplet.permanent.keys()) _temp.push(c.toString());
-
-    // @:privateAccess
-    // for (key in FlxG.bitmap._cache.keys())
-    // {
-    //   if (!key.contains('stickers')) continue;
-    //   if (_temp.contains(key) || key.contains('fonts')) continue;
-
-    //   keysToRemove.push(key);
-    // }
-
-    // // TODO: MAKE A WAY FOR US TO FILTER OUT LIKE.. ASSETS AND STUFF LIKE STICKERS WITH ONE FUNCTION MAYBE?
-
-    // for (key in keysToRemove)
-    // {
-    //   log('Cleaning asset $key');
-    //   // if (BitmapCache.cacheTriplet.current.exists(key)) BitmapCache.cacheTriplet.current.remove(key);
-    //   // if (FunkinBitmapFrontend.instance.get(key) != null && FunkinBitmapFrontend.instance.get(key).useCount <= 0) continue;
-    //   FunkinAssetCache.instance.removeFlxGraphic(key);
-    //   FunkinAssetCache.instance.removeBitmapData(key);
-    // }
+    funkin.assets.FunkinBitmapFrontend.instance.clearOnly(['stickers/']);
   }
 
   /**
