@@ -20,6 +20,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.assets.Assets;
 import funkin.assets.Paths;
+import funkin.graphics.effects.FunkinEffect;
 import funkin.graphics.framebuffer.FunkinFilterRenderer;
 import haxe.io.Path;
 import lime.app.Future;
@@ -135,10 +136,15 @@ class FunkinSprite extends FlxAnimate
   // Prevents stale web asset loads from replacing newer ones. Kinda
   var asyncLoadToken:Int = 0;
 
+  /**
+   * The virtual camera positioning point,
+   * used by the Camera Editor.
+   */
   public var vcamPoint:Null<FlxPoint> = null;
 
   /**
-   * The filters array to be applied to the sprite.
+   * A list of bitmap filters to apply to the sprite.
+   * NOTE: Enabling filters will force render texture to be enabled!
    */
   public var filters(default, set):Null<Array<BitmapFilter>> = null;
 
@@ -147,6 +153,36 @@ class FunkinSprite extends FlxAnimate
    */
   @:unreflective
   var __backwardsCompatibility:Bool = false;
+
+  /**
+   * A list of effects to apply to the sprite.
+   * These can modify various properties of the sprite, such as position, scale, alpha, etc.
+   * NOTE: Render texture will be enabled if any applied effects need it.
+   */
+  public var effects(default, set):Null<Array<FunkinEffect>> = null;
+
+  function set_effects(value:Null<Array<FunkinEffect>>):Null<Array<FunkinEffect>>
+  {
+    if (effects != value && value != null)
+    {
+      effects = value;
+
+      for (effect in effects)
+      {
+        if (effect != null && effect.parentSprite == null)
+        {
+          effect.parentSprite = this;
+        }
+      }
+    }
+
+    return value;
+  }
+
+  /**
+   * Whether to force the sprite to use a render texture.
+   */
+  public var forceRenderTexture:Bool = false;
 
   /**
    * @param x Starting X position
@@ -344,6 +380,7 @@ class FunkinSprite extends FlxAnimate
   /**
    * Apply an OpenFL `BitmapData` to this sprite.
    * @param input The OpenFL `BitmapData` to apply
+   * @param cache Whether to cache the bitmap data.
    * @return This sprite, for chaining
    */
   public function loadBitmapData(input:BitmapData, cache:Bool = true):FunkinSprite
@@ -895,6 +932,7 @@ class FunkinSprite extends FlxAnimate
   /**
    * Whether or not this sprite has an animation with the given ID.
    * @param id The ID of the animation to check.
+   * @return `true` if the animation exists, `false` otherwise.
    */
   public function hasAnimation(id:String):Bool
   {
@@ -982,7 +1020,7 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
-   * Gets the current animation ID.
+   * @return Gets the current animation ID.
    */
   public function getCurrentAnimation():String
   {
@@ -990,7 +1028,7 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
-   * Whether or not the current animation is finished.
+   * @return Whether or not the current animation is finished.
    */
   public function isAnimationFinished():Bool
   {
@@ -1041,12 +1079,61 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
+   * Gets the first effect with the given ID.
+   * @param id The ID of the effect to get.
+   * @return The first effect with the given ID. If none exist, null.
+   */
+  public function getFirstEffect(id:String):Null<FunkinEffect>
+  {
+    if (effects == null) return null;
+
+    for (effect in effects)
+    {
+      if (effect.id == id) return effect;
+    }
+
+    return null;
+  }
+
+  /**
+   * Stops all currently running effects.
+   */
+  public function stopAllEffects():Void
+  {
+    if (effects == null) return;
+
+    for (effect in effects)
+    {
+      if (effect.active)
+      {
+        effect.stop();
+      }
+    }
+  }
+
+  /**
+   * Runs all effects the sprite has.
+   */
+  public function runAllEffects():Void
+  {
+    if (effects == null) return;
+
+    for (effect in effects)
+    {
+      if (!effect.active)
+      {
+        effect.run();
+      }
+    }
+  }
+
+  /**
    * TEXTURE ATLAS-EXCLUSIVE FUNCTIONS
    * These functions only work if the sprite's texture is an Adobe Animate texture atlas.
    * Calling these functions on non-texture atlases will do nothing.
    */
   /**
-   * Gets a list of frame labels from the default timeline.
+   * @return Gets a list of frame labels from the default timeline.
    */
   public function getFrameLabelList():Array<String>
   {
@@ -1104,7 +1191,7 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
-   * Returns the default symbol in the atlas.
+   * @return Returns the default symbol in the atlas.
    */
   public function getDefaultSymbol():String
   {
@@ -1165,6 +1252,7 @@ class FunkinSprite extends FlxAnimate
   /**
    * Returns the elements of a symbol in the atlas.
    * @param symbol The symbol to get elements from.
+   * @return The elements of the symbol.
    */
   public function getSymbolElements(symbol:String):Array<Element>
   {
@@ -1198,6 +1286,7 @@ class FunkinSprite extends FlxAnimate
    * @param scale The scale multiplier.
    * @param positionOffset The offset to apply to `tx` and `ty` after scaling.
    * (Or in other words, the position of the element.)
+   * @param scaleEverything If `true`, the element will be scaled directly using multiplication.
    */
   public function scaleElement(element:Element, scale:Float, positionOffset:Float = 0, scaleEverything:Bool = false):Void
   {
@@ -1306,7 +1395,7 @@ class FunkinSprite extends FlxAnimate
     return _rect;
   }
 
-  override function preparePixelPerfectMatrix(matrix:FlxMatrix)
+  override function preparePixelPerfectMatrix(matrix:FlxMatrix):Void
   {
     matrix.tx = Math.round(matrix.tx / this.scale.x) * this.scale.x;
     matrix.ty = Math.round(matrix.ty / this.scale.y) * this.scale.y;
@@ -1320,6 +1409,13 @@ class FunkinSprite extends FlxAnimate
   {
     // Forcefully enable render texture when we have filters.
     if (filters != null && filters.length > 0) return true;
+
+    if (forceRenderTexture) return true;
+
+    for (effect in effects ?? [])
+    {
+      if (effect.active && effect.needsRenderTexture) return true;
+    }
 
     return super.checkRenderTexture();
   }
@@ -1438,6 +1534,19 @@ class FunkinSprite extends FlxAnimate
     super.drawRenderTexture(camera, matrix);
   }
 
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (effects != null && effects.length > 0)
+    {
+      for (effect in effects)
+      {
+        effect.update(elapsed);
+      }
+    }
+  }
+
   override public function destroy():Void
   {
     asyncLoadToken++;
@@ -1454,6 +1563,16 @@ class FunkinSprite extends FlxAnimate
     // Cancel all tweens so they don't continue to run on a destroyed sprite.
     // This prevents crashes.
     FlxTween.cancelTweensOf(this);
+
+    // Destroy all effects the sprite has
+    if (effects != null && effects.length > 0)
+    {
+      for (effect in effects)
+      {
+        effect.destroy();
+      }
+    }
+
     super.destroy();
   }
 }
