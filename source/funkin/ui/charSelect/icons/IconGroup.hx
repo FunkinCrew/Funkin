@@ -1,11 +1,12 @@
 package funkin.ui.charSelect.icons;
 
+import flixel.animation.FlxAnimation;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
+import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.VerticalCutShader;
 import funkin.group.FunkinGroup;
@@ -224,6 +225,21 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     newIcon.offset.x -= iconOffsets[0];
     newIcon.offset.y -= iconOffsets[1];
 
+    // Add a reversed confirm animation for the pixel icon
+    // I would just play the animation in reverse directly but I'd rather not mess with Flixel's janky animation controller lol
+    // - Abnormal
+    if (newIcon.hasAnimation('confirm') && newIcon.animation != null)
+    {
+      var confirmAnimation:Null<FlxAnimation> = newIcon.animation.getByName('confirm');
+      if (confirmAnimation == null) return newIcon;
+
+      var frameCount:Int = confirmAnimation.numFrames;
+      var confirmFrames:Array<Int> = [for (i in 0...frameCount) i];
+      confirmFrames.reverse();
+
+      newIcon.animation.addByIndices('confirm-reversed', 'confirm0', confirmFrames, '', 10, false);
+    }
+
     return newIcon;
   }
 
@@ -301,11 +317,6 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     }
 
     icon.animation.play(animation, force, reversed);
-
-    if (animation == 'confirm' && reversed)
-    {
-      icon.animation.onFinish.addOnce((_) -> icon.animation.play('idle'));
-    }
   }
 
   /**

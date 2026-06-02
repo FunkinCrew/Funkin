@@ -932,7 +932,7 @@ class CharacterSelectState extends MusicBeatSubState
 
     characters.player.playAnimation(SELECT);
     characters.gf.playAnimation(SELECT);
-    icons.playIconAnimation(currentSelection, 'confirm');
+    icons.playIconAnimation(currentSelection, 'confirm', true);
 
     selectTimer.start(1.5, (_) ->
     {
@@ -966,7 +966,7 @@ class CharacterSelectState extends MusicBeatSubState
 
     characters.player.playAnimation(DESELECT);
     characters.gf.playAnimation(DESELECT);
-    icons.playIconAnimation(currentSelection, 'confirm', false, true);
+    icons.playIconAnimation(currentSelection, 'confirm-reversed', true);
 
     FlxTween.tween(FlxG.sound.music, {
       pitch: 1.0
