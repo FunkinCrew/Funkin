@@ -21,6 +21,11 @@ import funkin.ui.charSelect.characters.CharSelectCharacter.CharacterSelectType;
 class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
 {
   /**
+   * The ID for the currently selected character(s).
+   */
+  public var currentCharacterId:String = '';
+
+  /**
    * The current player character.
    */
   public var player(get, never):CharSelectCharacter;
@@ -28,7 +33,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
   function get_player():CharSelectCharacter
   {
     var playerCharacter:Null<CharSelectCharacter> = this.getFirst(
-      (character) -> (character.alive && character.visible) && character.characterType != CharacterSelectType.GF);
+      (character) -> (character.alive && character.playerId == currentCharacterId) && character.characterType != CharacterSelectType.GF);
 
     if (playerCharacter == null)
     {
@@ -54,7 +59,7 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
   function get_gf():CharSelectCharacter
   {
     var gfCharacter:Null<CharSelectCharacter> = this.getFirst(
-      (character) -> (character.alive && character.visible) && character.characterType == CharacterSelectType.GF);
+      (character) -> (character.alive && character.playerId == currentCharacterId) && character.characterType == CharacterSelectType.GF);
 
     if (gfCharacter == null)
     {
@@ -122,6 +127,8 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
     var newPlayer:Null<CharSelectCharacter> = getCharacter(newId);
     var newGF:Null<CharSelectCharacter> = getCharacter(newId, true);
 
+    currentCharacterId = newId;
+
     if (oldGF != null)
     {
       if (newId == 'locked')
@@ -170,6 +177,8 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
     {
       this.clear();
     }
+
+    currentCharacterId = startingCharacter;
 
     var lockedCharacter:CharSelectCharacter = createCharacter('locked', LOCKED_PLAYER, {
       assetPath: 'ui/character-select/characters/locked',
