@@ -30,6 +30,7 @@ import funkin.assets.Assets as Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
 using StringTools;
+using Lambda;
 
 /**
  * An override for the HaxeFlixel BitmapFrontend class to provide additional logging.
@@ -161,65 +162,57 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   /**
    * Forcefully clears the 'previous' staged cache while preserving
-   * critical assets to prevent crashes.
+   * specified assets. Used to control cached graphics and prevent crashes.
    *
-   * @param preserve Array of keywords (e.g. ["font", "ui"]) to keep in memory.
+   * @param filter Array of keywords (e.g. ["font", "ui"]) to keep in memory.
    */
-  public function clearExcept(preserve:Array<String>):Void
+  public function clearExcept(filter:Array<String>):Void
   {
     if (stagedFlxGraphic == null) return;
 
-    // Iterate through the 'previous' bucket in the cache buffer
     for (key in stagedFlxGraphic.previous.keys())
     {
-      var shouldKeep:Bool = false;
-
-      // Manual check since we aren't using Lambda
-      for (keyword in preserve)
-      {
-        if (key.contains(keyword))
-        {
-          shouldKeep = true;
-          break;
-        }
-      }
-
-      // If it's not a preserved asset, reclaim the memory
-      if (!shouldKeep)
+      if (!filter.exists(keyword -> key.contains(keyword)))
       {
         var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-
         if (graphic != null && graphic.useCount <= 0)
         {
+          trace('[FUCCCKKK] Clearing cached graphic: ' + key);
           remove(graphic);
           stagedFlxGraphic.previous.remove(key);
           FunkinAssetCache.instance.removeBitmapData(key);
         }
       }
     }
-
-    // NOTE: Do NOT call stagedFlxGraphic.previous.clear() at the end,
-    // as that would delete the items we just worked to preserve!
-    // yes *I* need a note for this. Remove when the whole thing is done - Moon.
   }
 
-  /////////////////////
-  // public function clearCacheFUCK(exclude:Array<String>):Void
-  // {
-  //   if (stagedFlxGraphic != null)
-  //   {
-  //     for (key in stagedFlxGraphic.previous.keys())
-  //     {
-  //       if (_isExcluded(key, exclude)) continue;
-  //       var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-  //       if (graphic != null && graphic.useCount <= 0)
-  //       {
-  //         remove(graphic);
-  //         stagedFlxGraphic.previous.remove(key);
-  //       }
-  //     }
-  //   }
-  // }
+  /**
+   * Forcefully clears any cache within the 'previous' staged cache that includes any
+   * of the specified keywords while preserving assets that don't include those keywords.
+   * Used to control cached graphics and prevent crashes.
+   *
+   * @param filter Array of keywords (e.g. ["font", "ui"]) to keep in memory.
+   */
+  public function clearOnly(filter:Array<String>):Void
+  {
+    if (stagedFlxGraphic == null) return;
+
+    for (key in stagedFlxGraphic.previous.keys())
+    {
+      if (filter.exists(keyword -> key.contains(keyword)))
+      {
+        var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
+        if (graphic != null && graphic.useCount <= 0)
+        {
+          trace('[FUCCCKKK] Clearing cached graphic: ' + key);
+          remove(graphic);
+          stagedFlxGraphic.previous.remove(key);
+          FunkinAssetCache.instance.removeBitmapData(key);
+        }
+      }
+    }
+  }
+
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
   // or B. Check for unused graphics in the previous buffer.
   // For now this is just gonna be A as default because thats what the original BitmapFrontEnd does, but we can always change it later if we want to.
