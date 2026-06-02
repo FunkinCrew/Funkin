@@ -1095,7 +1095,6 @@ class Project extends HXProject
 
     // HaxeUI configuration.
     setHaxedef("haxeui_no_mouse_reset");
-    setHaxedef("haxeui_focus_out_on_click"); // Unfocus a dialog when clicking out of it
     setHaxedef("haxeui_dont_impose_base_class"); // Suppress a macro error
 
     if (isRelease())
