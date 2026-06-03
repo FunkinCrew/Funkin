@@ -31,6 +31,8 @@ class PropertyAnimator implements IFlxDestroyable
 
   public var object:Dynamic;
 
+  public var onFinish:Null<() -> Void> = null;
+
   public var curAnim(default, set):String;
 
   function set_curAnim(val:String):String
@@ -152,10 +154,12 @@ class PropertyAnimator implements IFlxDestroyable
 
     curAnim = name;
     curFrame = 0;
+    onFinish = null;
 
     // just separating out this lil function to make things less clutter perhaps?
     var setCurFrameOnTimer:FlxTimer->Void = (timer:FlxTimer) -> {
       curFrame = curAnimInfo.loop ? FlxMath.wrap(curFrame + 1, 0, curAnimInfo.length - 1) : timer.elapsedLoops;
+      if (!curAnimInfo.loop && timer.finished && onFinish != null) onFinish();
     };
 
     _animTimer.start(1 / curAnimInfo.framerate, setCurFrameOnTimer, curAnimInfo.loop ? 0 : curAnimInfo.length - 1);
