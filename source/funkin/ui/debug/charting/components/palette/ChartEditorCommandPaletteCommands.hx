@@ -1,7 +1,6 @@
 package funkin.ui.debug.charting.components.palette;
 
 #if FEATURE_CHART_EDITOR
-import funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemBuilder.PaletteItem;
 import funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemBuilder.PaletteCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
@@ -51,6 +50,7 @@ class ChartEditorCommandPaletteCommands
       execute: (palette) ->
       {
         palette.chartEditorState.performCommand(new SelectAllItemsCommand(true, false));
+        return true;
       }
     },
     {
@@ -60,6 +60,7 @@ class ChartEditorCommandPaletteCommands
       execute: (palette) ->
       {
         palette.chartEditorState.performCommand(new SelectItemsCommand(palette.chartEditorState.currentSongChartNoteData, []));
+        return true;
       }
     },
     {
@@ -69,6 +70,7 @@ class ChartEditorCommandPaletteCommands
       execute: (palette) ->
       {
         palette.chartEditorState.performCommand(new SelectAllItemsCommand(false, true));
+        return true;
       }
     },
     {
@@ -78,6 +80,7 @@ class ChartEditorCommandPaletteCommands
       execute: (palette) ->
       {
         palette.chartEditorState.performCommand(new SelectItemsCommand([], palette.chartEditorState.currentSongChartEventData));
+        return true;
       }
     },
     {
@@ -87,6 +90,7 @@ class ChartEditorCommandPaletteCommands
       execute: (palette) ->
       {
         palette.chartEditorState.performCommand(new DeselectAllItemsCommand());
+        return true;
       }
     },
   ];
@@ -104,6 +108,46 @@ class ChartEditorCommandPaletteCommands
     // Filter the command list.
     // If you think you can do a better job then `startsWith`, let's see you take a crack at it!
     return COMMANDS.filter((command) -> command.title.startsWith(filter));
+  }
+
+  /**
+   * Go to a specific measure in the chart.
+   *
+   * @param palette The active Command Palette.
+   * @return Whether the command was successful.
+   */
+  public static function tryGoToMeasure(palette:ChartEditorCommandPalette):Bool
+  {
+    var input:String = palette.commandPaletteInput.text;
+    // Don't do anything if blank.
+    if (input == ':')
+    {
+      trace('Command Palette: Invalid input for GoToMeasure "$input"');
+      return false;
+    }
+    var measureNumber:Null<Int> = ChartEditorCommandPaletteItemBuilder.parseMeasureNumber(input);
+    // Don't do anything if unparsed.
+    if (measureNumber == null)
+    {
+      trace('Command Palette: Invalid input for GoToMeasure "$input"');
+      return false;
+    }
+
+    measureNumber -= 1;
+
+    var endMeasure:Int = Std.int(Math.ceil(Conductor.instance.getTimeInMeasures(palette.chartEditorState.songLengthInMs)));
+    if (measureNumber > endMeasure) measureNumber = endMeasure;
+    if (measureNumber < 0) measureNumber = 0;
+
+    var targetTimeMs:Float = Conductor.instance.getMeasureTimeInMs(measureNumber);
+    var targetTimeSteps:Float = Conductor.instance.getTimeInSteps(targetTimeMs);
+    var targetTimePixels:Float = targetTimeSteps * ChartEditorState.GRID_SIZE;
+
+    trace('Command Palette: Jumping to measure $measureNumber at $targetTimeMs ms!');
+    palette.chartEditorState.currentScrollEase = targetTimePixels;
+
+    // Command was successful.
+    return true;
   }
 }
 #end

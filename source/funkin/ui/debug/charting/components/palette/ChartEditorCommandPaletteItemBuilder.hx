@@ -18,7 +18,7 @@ class ChartEditorCommandPaletteItemBuilder
   {
     clearPalette(palette);
 
-    var items:Array<PaletteItem> = buildItems(palette);
+    var items:Array<PaletteCommand> = buildItems(palette);
 
     for (item in items)
     {
@@ -36,12 +36,15 @@ class ChartEditorCommandPaletteItemBuilder
   static function handleSelection(palette:ChartEditorCommandPalette):Void
   {
     // Clamp the selection index.
-    if (palette.selectionIndex < 0) palette.selectionIndex = 0;
-    if (palette.selectionIndex >= palette.commandPaletteList.itemCount) palette.selectionIndex = palette.commandPaletteList.itemCount - 1;
+    var itemCount:Int = palette.commandPaletteList.dataSource.size;
 
-    if (palette.commandPaletteList.itemCount > 1)
+    // Make it loop around
+    if (palette.selectionIndex < 0) palette.selectionIndex = itemCount - 1;
+    if (palette.selectionIndex >= itemCount) palette.selectionIndex = 0;
+
+    if (itemCount > 1)
     {
-      // Select the first element.
+      // Select the correct element.
       palette.commandPaletteList.selectedIndex = palette.selectionIndex;
     }
     else
@@ -51,7 +54,7 @@ class ChartEditorCommandPaletteItemBuilder
     }
   }
 
-  static function buildItems(palette:ChartEditorCommandPalette):Array<PaletteItem>
+  static function buildItems(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
 
@@ -73,7 +76,7 @@ class ChartEditorCommandPaletteItemBuilder
     }
   }
 
-  static function buildItemsGoToMeasure(palette:ChartEditorCommandPalette):Array<PaletteItem>
+  static function buildItemsGoToMeasure(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
     var endMeasure:Int = Std.int(Math.ceil(Conductor.instance.getTimeInMeasures(palette.chartEditorState.songLengthInMs)));
@@ -84,6 +87,7 @@ class ChartEditorCommandPaletteItemBuilder
         title: ':',
         subtitle: 'Type a measure number to go to (from 1 to $endMeasure).',
         shortcut: 'Ctrl+G',
+        execute: (_) -> false,
       }];
     }
     else
@@ -96,6 +100,7 @@ class ChartEditorCommandPaletteItemBuilder
           title: ':',
           subtitle: 'Type a measure number to go to (from 1 to $endMeasure).',
           shortcut: 'Ctrl+G',
+          execute: (_) -> false,
         }];
       }
 
@@ -104,6 +109,7 @@ class ChartEditorCommandPaletteItemBuilder
         title: ':',
         subtitle: 'Press ENTER to go to measure $measureNumber',
         shortcut: '',
+        execute: ChartEditorCommandPaletteCommands.tryGoToMeasure,
       }];
     }
   }
@@ -129,7 +135,7 @@ class ChartEditorCommandPaletteItemBuilder
     return measureNumber;
   }
 
-  static function buildItemsGoToComment(palette:ChartEditorCommandPalette):Array<PaletteItem>
+  static function buildItemsGoToComment(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
 
@@ -139,6 +145,7 @@ class ChartEditorCommandPaletteItemBuilder
         title: '#',
         subtitle: 'Enter a term to search for across comments.',
         shortcut: '',
+        execute: (_) -> false,
       }];
     }
     else
@@ -150,11 +157,12 @@ class ChartEditorCommandPaletteItemBuilder
         title: '#',
         subtitle: 'Enter a term to search for across comments.',
         shortcut: '',
+        execute: (_) -> false,
       }];
     }
   }
 
-  static function buildItemsRunCommand(palette:ChartEditorCommandPalette):Array<PaletteItem>
+  static function buildItemsRunCommand(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
 
@@ -166,7 +174,7 @@ class ChartEditorCommandPaletteItemBuilder
     {
       var subInput:String = input.substr(1);
 
-      var result:Array<PaletteItem> = ChartEditorCommandPaletteCommands.buildCommandList(subInput);
+      var result:Array<PaletteCommand> = ChartEditorCommandPaletteCommands.buildCommandList(subInput);
 
       if (result.length == 0)
       {
@@ -174,6 +182,7 @@ class ChartEditorCommandPaletteItemBuilder
           title: '>',
           subtitle: 'Unknown command "$subInput", please refine your search.',
           shortcut: '',
+          execute: (_) -> false,
         }];
       }
 
@@ -184,13 +193,18 @@ class ChartEditorCommandPaletteItemBuilder
   /**
    * Show the list of options
    */
-  static function buildItemsHelp(palette:ChartEditorCommandPalette):Array<PaletteItem>
+  static function buildItemsHelp(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     return [
       {
         title: ':',
         subtitle: 'Go to Measure',
         shortcut: 'Ctrl+G',
+        execute: (_) ->
+        {
+          ChartEditorCommandPalette.openPalette(palette.chartEditorState, ':');
+          return false;
+        },
       },
       // {
       //   title '#',
@@ -201,24 +215,30 @@ class ChartEditorCommandPaletteItemBuilder
         title: '>',
         subtitle: 'Show and Run Commands',
         shortcut: 'Ctrl+Shift+P',
+        execute: (_) ->
+        {
+          ChartEditorCommandPalette.openPalette(palette.chartEditorState, '>');
+          return false;
+        },
       }
     ];
   }
 }
 
 /**
- * The data for displaying a single item in the command palette.
+ * The data for displaying a single command in the command palette.
  */
-typedef PaletteItem =
+typedef PaletteCommand =
 {
   var title:String;
   var subtitle:String;
   var shortcut:String;
-};
 
-typedef PaletteCommand =
-{
-  > PaletteItem,
-  var execute:(ChartEditorCommandPalette) -> Void;
+  /**
+   * The command to execute.
+   * @param palette The palette that is executing the command.
+   * @return Whether the palette should close after executing the command.
+   */
+  var execute:(ChartEditorCommandPalette) -> Bool;
 }
 #end
