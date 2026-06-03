@@ -22,14 +22,6 @@ import lime.app.Future;
 class FunkinMemory
 {
   /**
-   * Initialize the caches.
-   */
-  public static function initialCache():Void
-  {
-    // BitmapCache.init();
-  }
-
-  /**
    * Purges all the game's asset caches.
    *
    * @param callGarbageCollector Whether to forcibly invoke the system's garbage collector after purging.
@@ -37,11 +29,9 @@ class FunkinMemory
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
     FunkinAssetCache.instance.preparePurgeCache();
+    // TODO: In loading screens, you should be caching BETWEEN these.
     FunkinAssetCache.instance.purgeCache();
-    // preparePurgeTextureCache();
-    preparePurgeSoundCache();
-    // purgeTextureCache();
-    purgeSoundCache();
+
     #if (cpp || neko || hl)
     if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
     #end
@@ -55,36 +45,29 @@ class FunkinMemory
    * Ensures a texture with the given key is cached.
    * @param key The key of the texture to cache.
    */
-  public static function cacheTexture(key:AssetPath):Void
+  public static function cacheTexture(assetPath:AssetPath):Void
   {
-    // BitmapCache.cache(key);
-    FunkinAssetCache.instance.cacheFlxGraphic(key);
+    FunkinAssetCache.instance.cacheFlxGraphic(assetPath);
   }
 
   /**
    * Permanently caches a texture with the given key.
    * @param key The key of the texture to cache.
    */
-  static function permanentCacheTexture(key:AssetPath):Void
+  static function permanentCacheTexture(assetPath:AssetPath):Void
   {
-    // BitmapCache.permanentCache(key);
-    FunkinAssetCache.instance.cacheFlxGraphic(key);
+    FunkinAssetCache.instance.cacheFlxGraphic(assetPath);
   }
 
   /**
-   * Forces the GPU to load and upload a FlxGraphic.
+   * Retrieve the FlxGraphic for the given asset path, asynchronously.
+   *
+   * @param assetPath The path of the asset to retrieve.
+   * @return A future for the FlxGraphic for the asset.
    */
-  private static function warmGraphic(graphic:FlxGraphic):Void
+  public static function getCachedGraphic(assetPath:AssetPath):Future<FlxGraphic>
   {
-    // BitmapCache.warmGraphic(graphic);
-  }
-
-  /**
-   * Checks, if graphic with given path cached in memory.
-   */
-  public static function getCachedGraphic(path:AssetPath):Future<FlxGraphic>
-  {
-    return FunkinAssetCache.instance.fetchFlxGraphic(path, true);
+    return funkin.assets.Assets.loadFlxGraphic(path);
   }
 
   /**
@@ -92,8 +75,7 @@ class FunkinMemory
    */
   public static inline function preparePurgeTextureCache():Void
   {
-    // BitmapCache.preparePurge();
-    trace('UNUSED');
+    trace(' WARNING '.warning() + 'FunkinMemory.preparePurgeTextureCache() is deprecated and should not be used.');
   }
 
   /**
@@ -101,8 +83,7 @@ class FunkinMemory
    */
   public static function purgeTextureCache():Void
   {
-    // BitmapCache.purge();
-    trace('UNUSED');
+    trace(' WARNING '.warning() + 'FunkinMemory.purgeTextureCache() is deprecated and should not be used.');
   }
 
   /**
@@ -112,7 +93,6 @@ class FunkinMemory
    */
   public static function isTextureCached(key:AssetPath):Bool
   {
-    // return BitmapCache.isCached(key);
     return FunkinAssetCache.instance.hasFlxGraphic(key);
   }
 
@@ -126,47 +106,7 @@ class FunkinMemory
    */
   public static function cacheNoteStyle(style:NoteStyle):Void
   {
-    // TODO: Texture paths should fall back to the default values. AND MAKE THIS WORK ?
-    // cacheTexture(Paths.image(style.getNoteAssetPath() ?? 'gameplay/notestyles/funkin/notes'));
-    // cacheTexture(style.getHoldNoteAssetPath() ?? 'gameplay/notestyles/funkin/note-holds');
-    // cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? 'gameplay/notestyles/funkin/note-strumline'));
-    // cacheTexture(Paths.image(style.getSplashAssetPath() ?? 'gameplay/notestyles/funkin/note-splashes'));
-
-    // cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(LEFT) ?? 'gameplay/notestyles/funkin/hold-cover-left'));
-    // cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(RIGHT) ?? 'gameplay/notestyles/funkin/hold-cover-right'));
-    // cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(UP) ?? 'gameplay/notestyles/funkin/hold-cover-up'));
-    // cacheTexture(Paths.image(style.getHoldCoverDirectionAssetPath(DOWN) ?? 'gameplay/notestyles/funkin/hold-cover-down'));
-
-    // cacheTexture(Paths.image(style.buildCountdownSpritePath(TWO) ?? 'gameplay/notestyles/funkin/countdown/graphics/ready'));
-    // cacheTexture(Paths.image(style.buildCountdownSpritePath(ONE) ?? 'gameplay/notestyles/funkin/countdown/graphics/set'));
-    // cacheTexture(Paths.image(style.buildCountdownSpritePath(GO) ?? 'gameplay/notestyles/funkin/countdown/graphics/go'));
-
-    // cacheSound(style.getCountdownSoundPath(THREE) ?? 'gameplay/notestyles/funkin/countdown/sound/intro-three');
-    // cacheSound(style.getCountdownSoundPath(TWO) ?? 'gameplay/notestyles/funkin/countdown/sound/intro-two');
-    // cacheSound(style.getCountdownSoundPath(ONE) ?? 'gameplay/notestyles/funkin/countdown/sound/intro-one');
-    // cacheSound(style.getCountdownSoundPath(GO) ?? 'gameplay/notestyles/funkin/countdown/sound/intro-go');
-
-    // cacheTexture(Paths.image(style.buildJudgementSpritePath('sick') ?? 'gameplay/notestyles/funkin/popup/sick'));
-    // cacheTexture(Paths.image(style.buildJudgementSpritePath('good') ?? 'gameplay/notestyles/funkin/popup/good'));
-    // cacheTexture(Paths.image(style.buildJudgementSpritePath('bad') ?? 'gameplay/notestyles/funkin/popup/bad'));
-    // cacheTexture(Paths.image(style.buildJudgementSpritePath('shit') ?? 'gameplay/notestyles/funkin/popup/shit'));
-
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(0) ?? 'gameplay/notestyles/funkin/popup/digit-0'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(1) ?? 'gameplay/notestyles/funkin/popup/digit-1'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(2) ?? 'gameplay/notestyles/funkin/popup/digit-2'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(3) ?? 'gameplay/notestyles/funkin/popup/digit-3'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(4) ?? 'gameplay/notestyles/funkin/popup/digit-4'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(5) ?? 'gameplay/notestyles/funkin/popup/digit-5'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(6) ?? 'gameplay/notestyles/funkin/popup/digit-6'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(7) ?? 'gameplay/notestyles/funkin/popup/digit-7'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(8) ?? 'gameplay/notestyles/funkin/popup/digit-8'));
-    // cacheTexture(Paths.image(style.buildComboNumSpritePath(9) ?? 'gameplay/notestyles/funkin/popup/digit-9'));
-
-    // @:privateAccess
-    // {
-    //   style.buildHoldCoverFrames();
-    //   style.buildSplashFrames();
-    // }
+    trace(' WARNING '.warning() + 'FunkinMemory.cacheNoteStyle() is deprecated and should not be used.');
   }
 
   // =========
