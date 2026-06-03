@@ -24,9 +24,9 @@ class StagedCache<T>
   final previous:Map<String, T>;
 
   /**
-   * An FlxSignal which is dispatched when an asset is purged.
+   * An FlxSignal which is dispatched when an asset is removed. Typically used for cleanup of assets that need to be manually destroyed (e.g. FlxGraphics).
    */
-  public var onPurge(default, never):FlxTypedSignal<(String, T) -> Void> = new FlxTypedSignal<(String, T) -> Void>();
+  public var onRemove(default, never):FlxTypedSignal<(String, T) -> Void> = new FlxTypedSignal<(String, T) -> Void>();
 
   /**
    * An FlxSignal which is dispatched when an asset is reused (i.e. moved from `previous` to `current`).
@@ -101,9 +101,12 @@ class StagedCache<T>
     cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cache($key)');
     #end
     if (asset == null) return;
+    if (previous.exists(key))
+    {
+      if (previous.get(key) != asset) onRemove.dispatch(key, asset); // We only call onRemove if the asset is different.
+      previous.remove(key);
+    }
     current.set(key, asset);
-
-    if (previous.exists(key)) previous.remove(key);
   }
 
   /**
@@ -119,10 +122,18 @@ class StagedCache<T>
     cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cachePermanent($key)');
     #end
     if (asset == null) return;
-    permanent.set(key, asset);
+    if (previous.exists(key))
+    {
+      if (previous.get(key) != asset) onRemove.dispatch(key, asset); // We only call onRemove if the asset is different.
+      previous.remove(key);
+    }
+    if (current.exists(key))
+    {
+      if (current.get(key) != asset) onRemove.dispatch(key, asset); // We only call onRemove if the asset is different.
+      current.remove(key);
+    }
 
-    if (current.exists(key)) current.remove(key);
-    if (previous.exists(key)) previous.remove(key);
+    permanent.set(key, asset);
   }
 
   /**
@@ -286,7 +297,7 @@ class StagedCache<T>
       // Null safety a little dumb...
       if (asset != null)
       {
-        if (onPurge != null) onPurge.dispatch(key, asset);
+        if (onRemove != null) onRemove.dispatch(key, asset);
         previous.remove(key);
 
         result = true;
@@ -300,7 +311,7 @@ class StagedCache<T>
       // Null safety a little dumb...
       if (asset != null)
       {
-        if (onPurge != null) onPurge.dispatch(key, asset);
+        if (onRemove != null) onRemove.dispatch(key, asset);
         current.remove(key);
 
         result = true;
@@ -312,7 +323,7 @@ class StagedCache<T>
       var asset:Null<T> = permanent.get(key);
       if (asset != null)
       {
-        if (onPurge != null) onPurge.dispatch(key, asset);
+        if (onRemove != null) onRemove.dispatch(key, asset);
         permanent.remove(key);
 
         result = true;

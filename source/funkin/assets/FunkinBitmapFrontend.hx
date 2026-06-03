@@ -72,7 +72,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic = new StagedCache<FlxGraphic>();
 
     // Called whenever a graphic is purged from the cache.
-    stagedFlxGraphic.onPurge.add(onPurgeFlxGraphic);
+    stagedFlxGraphic.onRemove.add(onRemoveFlxGraphic);
 
     super();
   }
@@ -111,11 +111,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // TODO: make the graphic keys (graphic.key) be set too EVERYWHERE
     return addGraphic(graphic);
     #end
-  }
-
-  function onPurgeFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
-  {
-    // Called when an FlxGraphic is purged from the StagedCache.
   }
 
   // This is wildly different from the original approach of FunkinAssetCache where we recache the asset if it exists. But we need this internally for the other bitmapfrontend
@@ -248,5 +243,12 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
         obj.onAssetsReload();
       }
     }
+  }
+
+  function onRemoveFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
+  {
+    // Called when an FlxGraphic is purged from the StagedCache.
+    FunkinAssetCache.instance.removeBitmapData(assetPath);
+    if (graphic != null) graphic.destroy();
   }
 }

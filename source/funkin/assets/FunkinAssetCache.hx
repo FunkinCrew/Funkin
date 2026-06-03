@@ -122,13 +122,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // });
 
     stagedBitmapData = new StagedCache<BitmapData>();
-    stagedBitmapData.onPurge.add((_:String, asset:BitmapData) ->
+    stagedBitmapData.onRemove.add((_:String, asset:BitmapData) ->
     {
       FlxDestroyUtil.dispose(asset);
     });
 
     stagedFont = new StagedCache<Font>();
-    stagedFont.onPurge.add((_:String, asset:Font) -> {
+    stagedFont.onRemove.add((_:String, asset:Font) -> {
       // Is there a proper method to destroy fonts?
     });
 
@@ -569,25 +569,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   function setFlxGraphic(id:String, flxGraphic:FlxGraphic):Void
   {
-    // #if FEATURE_DEBUG_TRACY
-    // cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
-    // #end
-    // // Make sure we don't accidentally dispose the bitmap associated with this FlxGraphic.
-    // var bitmap:Null<BitmapData> = stagedBitmapData.get(id);
-    // if (bitmap != null)
-    // {
-    //   setBitmapData(id, bitmap);
-    // }
-    // else
-    // {
-    //   throw 'Could not locate bitmap data for cached graphic ($id)';
-    // }
-    // // Make sure we don't accidentally destroy the graphic while we're using it.
-    // flxGraphic.persist = true;
-    // flxGraphic.destroyOnNoUse = false;
-    // stagedFlxGraphic.current.set(id, flxGraphic);
-    // stagedFlxGraphic.previous.remove(id);
-
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
     #end
@@ -1249,7 +1230,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] FONT:');
-    var keys:Array<String> = stagedBitmapData.keys();
+    var keys:Array<String> = stagedFont.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
