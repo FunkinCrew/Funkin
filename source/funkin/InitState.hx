@@ -336,11 +336,6 @@ class InitState extends FlxState
     ModuleHandler.callOnCreate();
 
     funkin.input.Cursor.hide();
-
-    #if !html5
-    // This fucking breaks on HTML5 builds because the "shared" library isn't loaded yet.
-    FunkinMemory.initialCache();
-    #end
   }
 
   #if FEATURE_LOST_FOCUS_VOLUME

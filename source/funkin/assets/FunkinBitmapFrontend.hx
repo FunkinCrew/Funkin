@@ -63,7 +63,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   /**
    * A staged cache for FlxGraphics.
-   * Helps with tracking and purging unused FlxGraphics.
+   * Helps with tracking and purging unused assets.
    */
   public var stagedFlxGraphic:StagedCache<FlxGraphic>;
 

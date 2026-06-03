@@ -30,22 +30,25 @@ import funkin.assets.FunkinBitmapFrontend;
 import funkin.assets.Assets as Assets;
 import funkin.assets.ValidatedPaths as Paths;
 
+// @:nullSafety
+
 /**
  * An override for the OpenFL AssetCache class to override the internal cache with our own.
  * This allows us to be more specific about when assets are cached, and when they are purged.
  */
-// @:nullSafety
-
 class FunkinAssetCache implements OpenFLIAssetCache
 {
-  // var stagedFlxGraphic:StagedCache<FlxGraphic>;
-  // var stagedBitmapData:BitmapDataSC<BitmapData>;
+  /**
+   * A staged cache for BitmapData.
+   * Helps with tracking and purging unused assets.
+   */
   var stagedBitmapData:StagedCache<BitmapData>;
 
   /**
-   * Cache containing Fonts
+   * A staged cache for Fonts.
+   * Helps with tracking and purging unused assets.
    */
-  var current_font:Map<String, Font>;
+  var stagedFont:Map<String, Font>;
 
   /**
    * Cache containing Sounds
@@ -124,7 +127,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
       FlxDestroyUtil.dispose(asset);
     });
 
-    current_font = [];
+    stagedFont = new StagedCache<Font>();
+    stagedFont.onPurge.add((_:String, asset:Font) -> {
+      // Is there a proper method to destroy fonts?
+    });
+
     current_sound = [];
     current_text = [];
     current_bytes = [];
@@ -143,22 +150,15 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function clear(?prefix:String):Void
   {
+    stagedBitmapData.clearCacheByPrefix(prefix);
+    stagedFont.clearCacheByPrefix(prefix);
+
     if (prefix == null)
     {
       trace('[ASSETS] Force clearing asset cache...');
 
-      // for (key in stagedFlxGraphic.allKeys())
-      // {
-      //   removeFlxGraphic(key);
-      // }
       FunkinBitmapFrontend.instance.reset();
 
-      for (assetPath in stagedBitmapData.keys())
-      {
-        removeBitmapData(assetPath);
-      }
-
-      current_font = [];
       current_sound = [];
       current_text = [];
       current_bytes = [];
@@ -175,27 +175,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace('[ASSETS] Force clearing cached assets with prefix: $prefix');
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
 
-      // for (key in stagedFlxGraphic.allKeys())
-      // {
-      //   if (key.startsWith(prefix))
-      //   {
-      //     removeFlxGraphic(key);
-      //   }
-      // }
-      for (assetPath in stagedBitmapData.keys())
-      {
-        if (assetPath.toString().startsWith(prefix))
-        {
-          removeBitmapData(assetPath);
-        }
-      }
-      for (key in current_font.keys())
-      {
-        if (key.startsWith(prefix))
-        {
-          removeFont(key);
-        }
-      }
       for (key in current_sound.keys())
       {
         if (key.startsWith(prefix))
@@ -234,10 +213,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function preparePurgeCache(recachePersistent:Bool = true):Void
   {
     stagedBitmapData.preparePurgeCache();
+    stagedFont.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
 
-    // previous_font = current_font;
-    // current_font = [];
     // previous_sound = current_sound;
     // current_sound = [];
     // previous_text = current_text;
@@ -254,6 +232,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   function recachePersistentAssets():Void
   {
+    // TODO: This isn't necessary with the new StagedCache system.
+    // The persistent assets will be cached with `cachePermanent()`.
+
     // Handle Images (Special case with two calls)
     for (asset in Assets.queryPersistentAssets(IMAGE))
     {
@@ -397,7 +378,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFont(id:String):Font
   {
-    var result:Null<Font> = current_font.get(id);
+    var result:Null<Font> = stagedFont.get(id);
     if (result != null)
     {
       trace('[ASSETS] Font data found in cache: ' + id);
@@ -565,7 +546,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasFont(id:String):Bool
   {
-    return current_font.exists(id);
+    return stagedFont.exists(id);
   }
 
   /**
@@ -632,7 +613,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeFont(id:String):Bool
   {
-    return current_font.remove(id) || previous_font.remove(id);
+    return stagedFont.remove(id);
   }
 
   /**
@@ -733,8 +714,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFont($id)');
     #end
-    current_font.set(id, font);
-    previous_font.remove(id);
+    stagedFont.set(id, font);
   }
 
   /**
