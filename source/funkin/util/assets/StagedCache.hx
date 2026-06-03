@@ -261,6 +261,12 @@ class StagedCache<T>
    */
   public function clearCache(clearPermanent:Bool = false):Void
   {
+    for (key in keys())
+    {
+      var asset:Null<T> = get(key);
+      if (asset == null) continue;
+      remove(key, clearPermanent);
+    }
     if (clearPermanent) permanent.clear();
     current.clear();
     previous.clear();

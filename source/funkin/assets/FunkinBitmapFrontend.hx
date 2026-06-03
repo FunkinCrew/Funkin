@@ -150,7 +150,16 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function clearCache():Void
   {
     // Clear everything in the cache, except permanent assets.
-    stagedFlxGraphic.clearCache();
+    // trace("CLEARED CACHED");
+    // stagedFlxGraphic.clearCache();
+    stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
+    {
+      if (graphic == null) return true;
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+
+      return true;
+    });
   }
 
   /**
