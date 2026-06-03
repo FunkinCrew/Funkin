@@ -17,7 +17,7 @@ class DropShadowLayer extends FunkinBufferSprite
 {
   public function new(camera:FunkinCamera, _color:FlxColor = 0xFFFFFFFF, sampleSteps:Int = 3, blurAmt:Float = 4, distX:Float = 5, distY:Float = 5)
   {
-    super(0, 0, camera, 1, 0);
+    super(0, 0, camera, 1, 0.02);
 
     filters = [];
 
@@ -27,6 +27,7 @@ class DropShadowLayer extends FunkinBufferSprite
       var downFilter:ShaderFilter = new ShaderFilter(new BlurShaderDown(1 / (i + 1), blurAmt));
       filters.push(downFilter);
     }
+
     // up samples
     for (i in 0...sampleSteps)
     {

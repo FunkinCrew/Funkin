@@ -26,13 +26,13 @@ class FunkinBufferSprite extends FunkinSprite
 
   function get_baseZoom():Float
   {
-    return _usedCamera.bufferBaseZoom;
+    return _usedCamera.bufferRenderer.zoom;
   }
 
   function set_baseZoom(value:Null<Float>):Float
   {
-    if (value == null) return _usedCamera.bufferBaseZoom;
-    return _usedCamera.bufferBaseZoom = value;
+    if (value == null) return _usedCamera.bufferRenderer.zoom;
+    return _usedCamera.bufferRenderer.zoom = value;
   }
 
   /**
@@ -45,13 +45,23 @@ class FunkinBufferSprite extends FunkinSprite
 
   function get_bufferDelay():Float
   {
-    return _usedCamera.bufferDelay;
+    return _usedCamera.bufferRenderer.delay;
   }
 
   function set_bufferDelay(value:Null<Float>):Float
   {
-    if (value == null) return _usedCamera.bufferDelay;
-    return _usedCamera.bufferDelay = value;
+    if (value == null) return _usedCamera.bufferRenderer.delay;
+    return _usedCamera.bufferRenderer.delay = value;
+  }
+
+  /**
+   * The renderer used by this sprite.
+   */
+  public var renderer(get, never):FunkinBufferRenderer;
+
+  function get_renderer():FunkinBufferRenderer
+  {
+    return _usedCamera.bufferRenderer;
   }
 
   var _cameraBufferFrame:FlxFrame;
@@ -59,12 +69,12 @@ class FunkinBufferSprite extends FunkinSprite
 
   override function get_width():Float
   {
-    return _usedCamera._previousFrameTexture.width;
+    return _usedCamera.texture.width;
   }
 
   override function get_height():Float
   {
-    return _usedCamera._previousFrameTexture.height;
+    return _usedCamera.texture.height;
   }
 
   public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0)
@@ -77,7 +87,7 @@ class FunkinBufferSprite extends FunkinSprite
     _usedCamera.renderBuffer = true;
 
     @:privateAccess
-    _cameraBufferFrame = new FlxFrame(new FlxGraphic('CAMERA_BUFFER', _usedCamera._previousFrameTexture));
+    _cameraBufferFrame = new FlxFrame(new FlxGraphic('CAMERA_BUFFER', _usedCamera.texture));
     _cameraBufferFrame.frame = FlxRect.get(0, 0, _usedCamera.width, _usedCamera.height);
 
     this.baseZoom = baseZoom;
@@ -86,7 +96,7 @@ class FunkinBufferSprite extends FunkinSprite
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
   {
-    _cameraBufferFrame.frame.set(0, 0, _usedCamera._previousFrameTexture.width, _usedCamera._previousFrameTexture.height);
+    _cameraBufferFrame.frame.set(0, 0, _usedCamera.texture.width, _usedCamera.texture.height);
 
     final willUseRenderTexture = checkRenderTexture();
     final matrix = this._matrix;

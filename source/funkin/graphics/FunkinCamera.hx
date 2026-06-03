@@ -5,17 +5,18 @@ import flash.geom.ColorTransform;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.tile.FlxDrawQuadsItem;
+import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxShader;
 import funkin.graphics.framebuffer.FixedBitmapData;
+import funkin.graphics.framebuffer.FunkinBufferRenderer;
 import funkin.graphics.shaders.RuntimeCustomBlendShader;
-import openfl.display.OpenGLRenderer;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import flixel.graphics.tile.FlxDrawQuadsItem;
-import flixel.graphics.tile.FlxDrawTrianglesItem;
+import openfl.display.OpenGLRenderer;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
@@ -47,6 +48,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(flixel.graphics.frames.FlxFrame)
 @:access(openfl.display.OpenGLRenderer)
 @:access(openfl.geom.ColorTransform)
+@:access(funkin.graphics.framebuffer.FunkinBufferRenderer)
 class FunkinCamera extends FlxCamera
 {
   /**
@@ -109,24 +111,33 @@ class FunkinCamera extends FlxCamera
 
   /**
    * If `true` the camera will render the previous frame to a buffer before rendering the current frame.
-   * This buffer can then be accessed via `_previousFrameTexture`.
+   * This buffer can then be accessed via `camera.texture`.
    *
    * Disabled by default since this can impact performance.
    */
   public var renderBuffer:Bool = false;
 
-  var _skipRenderBuffer:Bool = false;
-  var _renderingBuffer:Bool = false;
-  var bufferBaseZoom:Float = -1;
-  var bufferDelay:Float = 0;
-  var _bufferTimer:Float = 0;
+  /**
+   * The renderer used to render the buffer.
+   */
+  public var bufferRenderer:FunkinBufferRenderer;
+
+  /**
+   * The rendered buffer texture.
+   */
+  public var texture(get, never):FixedBitmapData;
+
+  function get_texture():FixedBitmapData
+  {
+    return bufferRenderer.texture;
+  }
+
   var _blendShader:RuntimeCustomBlendShader;
   var _blendBackgroundFrame:FlxFrame;
   var _foregroundRenderTexture:RenderTexture;
   var _blendedRenderTexture:RenderTexture;
   var _cameraTexture:FixedBitmapData;
   var _cameraMatrix:FlxMatrix;
-  var _previousFrameTexture:FixedBitmapData;
 
   @:nullSafety(Off)
   public function new(id:String = 'unknown', x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
@@ -146,9 +157,10 @@ class FunkinCamera extends FlxCamera
     _cameraMatrix = new FlxMatrix();
 
     _cameraTexture = FixedBitmapData.create(this.width, this.height);
-    _previousFrameTexture = FixedBitmapData.create(this.width, this.height);
 
     crossCameraBlending = false;
+
+    bufferRenderer = new FunkinBufferRenderer(this);
   }
 
   override function drawPixels(?frame:FlxFrame,
@@ -165,7 +177,7 @@ class FunkinCamera extends FlxCamera
     // the specified blend mode requires the shader.
     if (shouldUseShader)
     {
-      _skipRenderBuffer = true;
+      bufferRenderer.active = false;
 
       if (crossCameraBlending)
       {
@@ -240,7 +252,7 @@ class FunkinCamera extends FlxCamera
 
       super.drawPixels(_blendedRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
 
-      _skipRenderBuffer = false;
+      bufferRenderer.active = true;
     }
     else
     {
@@ -316,27 +328,18 @@ class FunkinCamera extends FlxCamera
     }
 
     var currItem:flixel.graphics.tile.FlxDrawBaseItem<Dynamic> = _headOfDrawStack;
-    var shouldRender:Bool = true;
-
     while (currItem != null)
     {
-      // Prevent the buffer from causing a feedback loop (i.e being drawn in the buffer itself!)
-      if (currItem.graphics.key == 'CAMERA_BUFFER')
+      if (renderBuffer && bufferRenderer.dirty)
       {
-        shouldRender = !_renderingBuffer;
+        if (!bufferRenderer.shouldRender(currItem.graphics))
+        {
+          currItem = currItem.next;
+          continue;
+        }
       }
 
-      // Skip drawing any sprites that were destroyed if a buffer is being rendered
-      if (_renderingBuffer && currItem.graphics.key != 'CAMERA_BUFFER')
-      {
-        shouldRender = !currItem.graphics.isDestroyed;
-      }
-
-      if (shouldRender)
-      {
-        currItem.render(this);
-      }
-
+      currItem.render(this);
       currItem = currItem.next;
     }
   }
@@ -360,43 +363,12 @@ class FunkinCamera extends FlxCamera
 
   override function clearDrawStack():Void
   {
-    if (renderBuffer && !_skipRenderBuffer)
+    if (renderBuffer && bufferRenderer.active)
     {
-      if (bufferDelay > 0)
-      {
-        _bufferTimer += FlxG.elapsed;
-
-        if (_bufferTimer > bufferDelay)
-        {
-          _bufferTimer = 0;
-          _drawPreviousFrame();
-        }
-      }
-      else
-      {
-        _drawPreviousFrame();
-      }
+      bufferRenderer.render();
     }
 
     super.clearDrawStack();
-  }
-
-  function _drawPreviousFrame():Void
-  {
-    _renderingBuffer = true;
-
-    if (bufferBaseZoom > 0)
-    {
-      this.setScale(bufferBaseZoom, bufferBaseZoom);
-      _previousFrameTexture.drawCameraScreen(this);
-      this.setScale(this.zoom, this.zoom);
-    }
-    else
-    {
-      _previousFrameTexture.drawCameraScreen(this);
-    }
-
-    _renderingBuffer = false;
   }
 
   override function destroy():Void
@@ -409,6 +381,7 @@ class FunkinCamera extends FlxCamera
     _blendedRenderTexture.destroy();
 
     _cameraTexture.dispose();
-    _previousFrameTexture.dispose();
+
+    bufferRenderer.destroy();
   }
 }
