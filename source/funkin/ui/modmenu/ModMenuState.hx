@@ -7,6 +7,7 @@ import funkin.InitState;
 import funkin.ui.title.TitleState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
+import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.modding.PolymodHandler;
 import polymod.Polymod;
 import polymod.Polymod.ModMetadata;
@@ -19,6 +20,7 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import funkin.util.plugins.SidePanelPlugin;
 
+import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -46,6 +48,13 @@ class ModMenuState extends MusicBeatState
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
   var selection:ModMenuSelection = DisabledModList;
+  var transitionLayer:FunkinSpriteGroup;
+
+  /**
+   * Items that are currently flying between the two lists.
+   * Each one owns the tween that carries it, plus the list/index it should land in.
+   */
+  var pendingTransitions:Array<TransitionRecord> = [];
 
   var bgWires:FunkinSprite;
 
@@ -83,6 +92,7 @@ class ModMenuState extends MusicBeatState
 
     var dragText:FlxText = new FlxText(112, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE);
+    dragText.scale.set(1, 0.8);
     add(dragText);
 
     leftRectangle.x = 60;
@@ -128,13 +138,16 @@ class ModMenuState extends MusicBeatState
     add(disabledModItems.scrollbarTrack);
     add(disabledModItems.scrollbarThumb);
 
+    transitionLayer = new FunkinSpriteGroup();
+    add(transitionLayer);
+
     enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
     enabledModItems.titleText.y = rightRectangle.y + 14;
     disabledModItems.titleText.x = leftRectangle.x + (leftRectangle.width / 2) - (disabledModItems.titleText.width / 2);
     disabledModItems.titleText.y = leftRectangle.y + 14;
 
-    enabledModItems.clipRect = FlxRect.get(rightRectangle.x, rightRectangle.y + 60, rightRectangle.width, rightRectangle.height - 60);
-    disabledModItems.clipRect = FlxRect.get(leftRectangle.x, leftRectangle.y + 60, leftRectangle.width, leftRectangle.height - 60);
+    enabledModItems.clipRect = FlxRect.get(rightRectangle.x, rightRectangle.y + 60, rightRectangle.width, rightRectangle.height - 75);
+    disabledModItems.clipRect = FlxRect.get(leftRectangle.x, leftRectangle.y + 60, leftRectangle.width, leftRectangle.height - 75);
 
     buttonBackToMenu.x = 8;
     buttonBackToMenu.y = 32;
@@ -223,6 +236,119 @@ class ModMenuState extends MusicBeatState
     fileDropTimer = -0.08;
   }
 
+  // TRANSITION CODE //
+
+  /**
+   * Moves an item into the unclipped transition layer at the given world coordinates, so it can be tweened independently of the lists.
+   * @param item
+   * @param worldX
+   * @param worldY
+   */
+  function putItemInTransitionLayer(item:ModMenuItem, worldX:Float, worldY:Float):Void
+  {
+    if (item == null || transitionLayer == null) return;
+
+    item.clipRect = null;
+    transitionLayer.add(item);
+    item.localX = worldX - transitionLayer.x;
+    item.localY = worldY - transitionLayer.y;
+  }
+
+  /**
+   * Immediately finishes placing an item into its destination list, bypassing any in-flight tween.
+   * @param item
+   * @param destinationList
+   * @param index
+   */
+  function finishItemTransitionToList(item:ModMenuItem, destinationList:ModMenuItemList, index:Int):Void
+  {
+    if (item == null || destinationList == null || transitionLayer == null) return;
+
+    transitionLayer.remove(item);
+
+    var clamped:Int = index;
+    if (clamped > destinationList.modItems.length) clamped = destinationList.modItems.length;
+    if (clamped < 0) clamped = 0;
+    destinationList.addModRawWithoutLayout(item, clamped);
+
+    item.localX = ModMenuItemList.ITEM_X_OFFSET;
+
+    if (incomingCount(destinationList) == 0)
+    {
+      destinationList.repositionItems();
+      if (destinationList.selectedModItem != null)
+        destinationList.ensureItemVisible(destinationList.selectedModItem);
+    }
+    else
+    {
+      destinationList.updateScrollbar();
+    }
+  }
+
+  /**
+   * Tween an item from the transition layer into its destination list, tracking it
+   * so it can be force-settled later if another swap interrupts it.
+   */
+  function startItemTransition(item:ModMenuItem, targetX:Float, targetY:Float, destinationList:ModMenuItemList, index:Int):Void
+  {
+    if (item == null) return;
+
+    var record:TransitionRecord = {item: item, dest: destinationList, index: index, tween: null};
+    pendingTransitions.push(record);
+
+    record.tween = FlxTween.tween(item, {localX: targetX, localY: targetY}, 0.2, {
+      ease: FlxEase.quadOut,
+      onComplete: _ -> completeTransition(record)
+    });
+  }
+
+  /**
+   * Land a single in-flight item in its destination list. Safe to call more than
+   * once for the same record (subsequent calls are no-ops).
+   */
+  function completeTransition(record:TransitionRecord):Void
+  {
+    if (record == null) return;
+    if (!pendingTransitions.contains(record)) return;
+    pendingTransitions.remove(record);
+
+    if (record.tween != null)
+    {
+      record.tween.cancel();
+      record.tween = null;
+    }
+
+    finishItemTransitionToList(record.item, record.dest, record.index);
+  }
+
+  /**
+   * Immediately settle every in-flight item into its destination list.
+   */
+  function completeAllTransitions():Void
+  {
+    if (pendingTransitions.length == 0) return;
+    for (record in pendingTransitions.copy())
+    {
+      completeTransition(record);
+    }
+  }
+
+  /**
+   * How many items are currently flying into `dest` (pending transitions whose destination
+   * is that list).
+   */
+  function incomingCount(dest:ModMenuItemList):Int
+  {
+    var count:Int = 0;
+    for (record in pendingTransitions)
+    {
+      if (record.dest == dest) count++;
+    }
+    return count;
+  }
+
+  // OVERRIDES //
+
   public override function destroy():Void
   {
     super.destroy();
@@ -247,13 +373,6 @@ class ModMenuState extends MusicBeatState
       buildDisabledModList();
       disabledModItems.repositionItems();
     }
-  }
-
-  function distanceToPoint(point1:FlxPoint, point2:FlxPoint):Float
-  {
-    var dx = point1.x - point2.x;
-    var dy = point1.y - point2.y;
-    return Math.sqrt(dx * dx + dy * dy);
   }
 
   override public function update(elapsed:Float):Void
@@ -282,8 +401,12 @@ class ModMenuState extends MusicBeatState
       darkness.alpha = FlxMath.lerp(0, 0.5, FlxEase.backOut(adjustT));
     }
 
-    // handleMouse();
     handleKeyboard();
+  }
+
+  function isTransitioning():Bool
+  {
+    return pendingTransitions.length > 0;
   }
 
   function applyInitialSelection():Void
@@ -291,8 +414,12 @@ class ModMenuState extends MusicBeatState
     disabledModItems.selectFirstItem();
   }
 
+  // INPUT //
+
   function handleMouse():Void
   {
+    if (isTransitioning()) return;
+
     if (FlxG.mouse.justPressed)
     {
       // TODO: Make this less bad
@@ -315,6 +442,8 @@ class ModMenuState extends MusicBeatState
 
   function handleKeyboard():Void
   {
+    if (isTransitioning()) return;
+
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
     {
@@ -395,16 +524,12 @@ class ModMenuState extends MusicBeatState
 
     if (controls.ACCEPT_P)
     {
+      completeAllTransitions();
+
       switch (selection)
       {
         case DisabledModList:
           enableMod(disabledModItems.selectedModItem);
-          if (disabledModItems.modItems.length == 0)
-          {
-            enabledModItems.selectFirstItem();
-            selection = EnabledModList;
-          }
-          else disabledModItems.selectFirstItem();
         case EnabledModList:
           disableMod(enabledModItems.selectedModItem);
         case BackToMenu:
@@ -414,6 +539,8 @@ class ModMenuState extends MusicBeatState
         case Done:
           applyModlist();
       }
+
+      oldSelection = selection;
     }
 
     if (oldSelection != selection) handleSelection();
@@ -440,6 +567,8 @@ class ModMenuState extends MusicBeatState
         // Do nothing
     }
   }
+
+  // MOD LIST BUILDING //
 
   function buildDisabledModList():Void
   {
@@ -513,12 +642,10 @@ class ModMenuState extends MusicBeatState
     }
   }
 
-  function enableMod(item:Null<ModMenuItem>):Void
+  function enableMod(item:Null<ModMenuItem>, ?forcedInsertIndex:Int = -1, ?batchFutureCount:Int = -1):Void
   {
     if (item == null) return;
-
     if (!disabledModItems.modItems.contains(item)) return;
-
     if (item.getModId() == BASE_GAME_MOD_ID) return;
 
     item.selected = false;
@@ -526,12 +653,46 @@ class ModMenuState extends MusicBeatState
     var dependenciesToEnable:Array<String> = checkDependencies(item.mod);
     trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
 
+    // Top-level call locks the denominator for the whole batch (this mod + all the
+    // deps that fly with it), so every flying item animates to the SAME final layout.
+    if (batchFutureCount == -1)
+    {
+      batchFutureCount = enabledModItems.modItems.length + countEnableBatch(item, []);
+    }
+
+    var originalInsertIndex:Int = forcedInsertIndex;
+
+    if (originalInsertIndex == -1) {
+      originalInsertIndex = enabledModItems.modItems.length;
+      for (enabledMod in enabledModItems.modItems)
+      {
+        if (enabledMod.mod == null) continue;
+        var optionalDependencies:ModDependencies = enabledMod.getOptionalDependencies();
+        if (optionalDependencies != null)
+        {
+          var b:Bool = false;
+          for (optionalDependencyId => version in optionalDependencies)
+          {
+            if (optionalDependencyId == item.getModId() && version.isSatisfiedBy(item.getModVersion()))
+            {
+              originalInsertIndex = enabledModItems.modItems.indexOf(enabledMod);
+              b = true;
+              break;
+            }
+          }
+          if (b) break;
+        }
+      }
+    }
+
+    var nextInsertIndex = originalInsertIndex;
     for (dependencyId in dependenciesToEnable)
     {
-      var dependencyItem = disabledModItems.modItems.find((item) -> item.getModId() == dependencyId);
+      var dependencyItem = disabledModItems.modItems.find((it) -> it.getModId() == dependencyId);
       if (dependencyItem != null)
       {
-        enableMod(dependencyItem);
+        enableMod(dependencyItem, nextInsertIndex, batchFutureCount); // share denominator
+        nextInsertIndex++;
       }
       else
       {
@@ -541,67 +702,46 @@ class ModMenuState extends MusicBeatState
     }
 
     var oldIndex:Int = disabledModItems.modItems.indexOf(item);
-    disabledModItems.removeMod(item);
+    var worldX:Float = disabledModItems.x + item.localX;
+    var worldY:Float = disabledModItems.y + item.localY;
+    disabledModItems.removeModWithoutLayout(item);
 
-    // check for optional dependencies that depend on this mod, if they exist then add this mod *before* them.
-    var insertedAtPosition = false;
-    for (enabledMod in enabledModItems.modItems)
+    var insertIndex:Int = originalInsertIndex;
+
+    putItemInTransitionLayer(item, worldX, worldY);
+
+    var finalIndex:Int = insertIndex;
+    for (record in pendingTransitions)
     {
-      if (enabledMod.mod == null) continue;
-
-      var optionalDependencies:ModDependencies = enabledMod.getOptionalDependencies();
-      if (optionalDependencies != null)
-      {
-        var b:Bool = false;
-        for (optionalDependencyId => version in optionalDependencies)
-        {
-          if (optionalDependencyId == item.getModId() && version.isSatisfiedBy(item.getModVersion()))
-          {
-            trace('Mod ${enabledMod.getModTitle()} has an optional dependency on ${item.getModTitle()}, so enabling ${item.getModTitle()} before ${enabledMod.getModTitle()}');
-            // Insert the mod before the mod with the optional dependency, so that the optional dependency is still satisfied.
-            var modList:Array<ModMenuItem> = enabledModItems.modItems;
-            var index = modList.indexOf(enabledMod);
-            modList.insert(index, item);
-            enabledModItems.insert(item, index);
-            insertedAtPosition = true;
-            b = true;
-            break;
-          }
-        }
-
-        if (b) break;
-      }
+      if (record.dest == enabledModItems && record.index <= finalIndex) finalIndex++;
     }
 
-    if (!insertedAtPosition)
-    {
-      enabledModItems.addModRaw(item);
-    }
-    else
-    {
-      var index = enabledModItems.modItems.indexOf(item);
-      item.localX = 0;
-      item.localY = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
-    }
+    var inFlight:Int = incomingCount(enabledModItems);
 
-    // Update selections: try to keep selection on the source list at the next logical item.
+    enabledModItems.revealSlot(finalIndex, batchFutureCount);
+
+    var targetX:Float = enabledModItems.x + ModMenuItemList.ITEM_X_OFFSET;
+    var targetY:Float = enabledModItems.y + enabledModItems.getModItemYPosForCount(finalIndex, batchFutureCount) + enabledModItems.scrollOffset;
+
+    enabledModItems.animateItemsToLayoutForInsertCount(finalIndex, inFlight + 1, 0.28, FlxEase.quartOut);
+    disabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
+    startItemTransition(item, targetX, targetY, enabledModItems, finalIndex);
+
+    enabledModItems.selectModItem(item, false);
+
     if (disabledModItems.modItems.length > 0)
     {
       var newIndex:Int = Std.int(Math.min(oldIndex, disabledModItems.modItems.length - 1));
-      disabledModItems.selectModItem(disabledModItems.modItems[newIndex]);
+      disabledModItems.selectModItem(disabledModItems.modItems[newIndex], false);
       selection = DisabledModList;
     }
     else
     {
-      enabledModItems.selectModItem(item);
       selection = EnabledModList;
     }
-
-    disabledModItems.repositionItems();
-    enabledModItems.repositionItems();
   }
 
-  function disableMod(item:Null<ModMenuItem>):Void
+  function disableMod(item:Null<ModMenuItem>, ?batchFutureCount:Int = -1):Void
   {
     if (item == null) return;
 
@@ -610,43 +750,85 @@ class ModMenuState extends MusicBeatState
 
     item.selected = false;
 
+    if (batchFutureCount == -1)
+    {
+      batchFutureCount = disabledModItems.modItems.length + countDisableBatch(item, []);
+    }
+
     // Disable any mods that depend on this mod as well.
     var brokenDependencies = validateDependencies(item.mod);
     trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
     for (dependencyTitle in brokenDependencies)
     {
-      var dependencyItem = enabledModItems.modItems.find((item) -> item.getModTitle() == dependencyTitle);
+      var dependencyItem = enabledModItems.modItems.find((it) -> it.getModTitle() == dependencyTitle);
       if (dependencyItem != null)
       {
         trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
-        disableMod(dependencyItem);
+        disableMod(dependencyItem, batchFutureCount); // share denominator
       }
     }
 
     var oldIndex:Int = enabledModItems.modItems.indexOf(item);
-    enabledModItems.removeMod(item);
-    disabledModItems.addModRaw(item);
+    var worldX:Float = enabledModItems.x + item.localX;
+    var worldY:Float = enabledModItems.y + item.localY;
+    enabledModItems.removeModWithoutLayout(item);
+    putItemInTransitionLayer(item, worldX, worldY);
+
+    // Always insert at the top of the disabled list; order there doesn't matter.
+    var destIndex:Int = disabledModItems.modItems.length;
+
+    var finalIndex:Int = destIndex;
+    for (record in pendingTransitions)
+    {
+      if (record.dest == disabledModItems && record.index <= finalIndex) finalIndex++;
+    }
+
+    var inFlight:Int = incomingCount(disabledModItems);
+
+    disabledModItems.revealSlot(finalIndex, batchFutureCount);
+
+    var targetX:Float = disabledModItems.x + ModMenuItemList.ITEM_X_OFFSET;
+    var targetY:Float = disabledModItems.y + disabledModItems.getModItemYPosForCount(finalIndex, batchFutureCount) + disabledModItems.scrollOffset;
+
+    disabledModItems.animateItemsToLayoutForInsertCount(finalIndex, inFlight + 1, 0.28, FlxEase.quartOut);
+    enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
+    startItemTransition(item, targetX, targetY, disabledModItems, finalIndex);
+
+    disabledModItems.selectModItem(item, false);
 
     if (enabledModItems.modItems.length > 0)
     {
       var newIndex:Int = Std.int(Math.min(oldIndex, enabledModItems.modItems.length - 1));
-      enabledModItems.selectModItem(enabledModItems.modItems[newIndex]);
+      enabledModItems.selectModItem(enabledModItems.modItems[newIndex], false);
       selection = EnabledModList;
     }
     else
     {
-      disabledModItems.selectModItem(item);
       selection = DisabledModList;
     }
+  }
 
-    enabledModItems.repositionItems();
-    disabledModItems.repositionItems();
+  function nudgeBlocked(item:ModMenuItem, moveUp:Bool):Void
+  {
+    var index:Int = enabledModItems.modItems.indexOf(item);
+    if (index < 0) return;
+
+    var restY:Float = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
+
+    FlxTween.cancelTweensOf(item);
+    item.localX = ModMenuItemList.ITEM_X_OFFSET;
+    item.localY = restY;
+
+    var dir:Float = moveUp ? -1 : 1;
+    FlxTween.tween(item, {localY: restY + dir * 14}, 0.07, {
+      ease: FlxEase.quadOut,
+      onComplete: _ -> FlxTween.tween(item, {localY: restY}, 0.12, {ease: FlxEase.quadOut})
+    });
   }
 
   function orderMod(modItem:Null<ModMenuItem>, moveUp:Bool):Void
   {
     if (modItem == null) return;
-
     if (enabledModItems.isPinnedItem(modItem)) return;
 
     var modList:Array<ModMenuItem> = enabledModItems.modItems;
@@ -657,85 +839,65 @@ class ModMenuState extends MusicBeatState
     var pinnedIndex = pinnedItem != null ? modList.indexOf(pinnedItem) : -1;
     var minMovableIndex = pinnedIndex != -1 ? pinnedIndex + 1 : 0;
 
-    // Can't move items if they're somehow before the pinned item or there's no space to move
     if (index < minMovableIndex) return;
     if (minMovableIndex >= modList.length) return;
 
     var newIndex = moveUp ? index + 1 : index - 1;
 
-    // Prevent wrapping across pinned item boundary; just clamp or return
     if (newIndex < minMovableIndex || newIndex >= modList.length)
     {
-      return; // Don't allow moves that would wrap around or go out of bounds
+      nudgeBlocked(modItem, moveUp);
+      return;
+    }
+
+    var otherModItem = modList[newIndex];
+
+    var blocked:Bool = false;
+
+    if (moveUp)
+    {
+      for (depId => version in modItem.getDependencies())
+        if (otherModItem.getModId() == depId) { blocked = true; break; }
+
+      if (!blocked)
+      {
+        var otherOpt = otherModItem.getOptionalDependencies();
+        if (otherOpt != null)
+          for (depId => version in otherOpt)
+            if (modItem.getModId() == depId
+                && version.isSatisfiedBy(modItem.getModVersion())) { blocked = true; break; }
+      }
+    }
+    else
+    {
+      for (depId => version in otherModItem.getDependencies())
+        if (modItem.getModId() == depId) { blocked = true; break; }
+
+      if (!blocked)
+      {
+        var myOpt = modItem.getOptionalDependencies();
+        if (myOpt != null)
+          for (depId => version in myOpt)
+            if (otherModItem.getModId() == depId
+                && version.isSatisfiedBy(otherModItem.getModVersion())) { blocked = true; break; }
+      }
+    }
+
+    if (blocked)
+    {
+      trace('Blocked reorder of ${modItem.getModTitle()} (dependency ordering)');
+      nudgeBlocked(modItem, moveUp);
+      return;
     }
 
     trace('Moving mod ${modItem.getModTitle()} from index $index to $newIndex');
 
-    var otherModItem = modList[newIndex];
-
-    var shouldRebuildDepends:Bool = false;
-
-    for (mod => version in modItem.getDependencies())
-    {
-      if (otherModItem.getModId() == mod)
-      {
-        shouldRebuildDepends = true;
-        break;
-      }
-    }
-
-    for (mod => version in otherModItem.getDependencies())
-    {
-      if (modItem.getModId() == mod)
-      {
-        shouldRebuildDepends = true;
-        break;
-      }
-    }
-
-    // Optional dependency check: if the other mod is an optional dependency (of our mod), if so then rebuild.
-    if (!moveUp)
-    {
-      var optionalDependencies:ModDependencies = modItem.getOptionalDependencies();
-      for (mod => version in optionalDependencies)
-      {
-        if (otherModItem.getModId() == mod)
-        {
-          shouldRebuildDepends = true;
-          break;
-        }
-      }
-    }
-
     modList.splice(index, 1);
     modList.insert(newIndex, modItem);
 
-    if (shouldRebuildDepends)
-    {
-      trace('Mod ${modItem.getModTitle()} depends on ${otherModItem.getModTitle()}, so rebuilding enabled mod list to update dependencies');
-
-      var modMetadataList:Array<ModMetadata> = [];
-      for (modItem in modList)
-      {
-        if (enabledModItems.isPinnedItem(modItem)) continue;
-        modMetadataList.push(modItem.mod);
-      }
-      var selectedId:Null<String> = null;
-      if (enabledModItems.selectedModItem != null) selectedId = enabledModItems.selectedModItem.getModId();
-      modMetadataList = Polymod.sortModsByDependencies(modMetadataList);
-      enabledModItems.removeAll();
-      var i = 0;
-      for (modMetadata in modMetadataList)
-      {
-        enabledModItems.addMod(modMetadata);
-        if (modMetadata.id == selectedId) modItem = enabledModItems.modItems[i];
-        i++;
-      }
-    }
-
     enabledModItems.deselectAll();
     enabledModItems.selectModItem(modItem);
-    enabledModItems.repositionItems();
+    enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
   }
 
   // return an array of mod IDs that depend on the given mod that are currently enabled, which would be broken by disabling this mod
@@ -776,6 +938,58 @@ class ModMenuState extends MusicBeatState
     return toEnable;
   }
 
+  // HELPERS //
+
+  /**
+   * Recursively counts how many mods would be enabled if we enable this mod, including itself and all dependencies.
+   * @param item
+   * @param seen
+   * @return Int
+   */
+  function countEnableBatch(item:ModMenuItem, seen:Array<String>):Int
+  {
+    if (item == null) return 0;
+    var id = item.getModId();
+    if (seen.contains(id)) return 0;
+    seen.push(id);
+
+    var total:Int = 1;
+    for (depId in checkDependencies(item.mod))
+    {
+      var depItem = disabledModItems.modItems.find((it) -> it.getModId() == depId);
+      if (depItem != null) total += countEnableBatch(depItem, seen);
+    }
+    return total;
+  }
+
+  /**
+   * Recursively counts how many mods would be disabled if we disable this mod, including itself and all dependents.
+   * @param item
+   * @param seen
+   * @return Int
+   */
+  function countDisableBatch(item:ModMenuItem, seen:Array<String>):Int
+  {
+    if (item == null || item.mod == null) return 0;
+    var id = item.getModId();
+    if (seen.contains(id)) return 0;
+    seen.push(id);
+
+    var total:Int = 1; // this item
+    for (depTitle in validateDependencies(item.mod))
+    {
+      var depItem = enabledModItems.modItems.find((it) -> it.getModTitle() == depTitle);
+      if (depItem != null) total += countDisableBatch(depItem, seen);
+    }
+    return total;
+  }
+
+  function distanceToPoint(point1:FlxPoint, point2:FlxPoint):Float
+  {
+    var dx = point1.x - point2.x;
+    var dy = point1.y - point2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
 
   /**
    * Open the folder where the user's mods are stored.
@@ -805,4 +1019,15 @@ enum ModMenuSelection
   BackToMenu;
   OpenModsFolder;
   Done;
+}
+
+/**
+ * Typedef for tracking an item that's currently in-flight in the transition layer.
+ */
+typedef TransitionRecord =
+{
+  var item:ModMenuItem;
+  var dest:ModMenuItemList;
+  var index:Int;
+  var tween:Null<flixel.tweens.FlxTween>;
 }

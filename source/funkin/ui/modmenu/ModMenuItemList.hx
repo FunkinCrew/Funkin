@@ -6,6 +6,8 @@ import polymod.Polymod.ModMetadata;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 class ModMenuItemList extends FunkinSpriteGroup
 {
@@ -14,7 +16,7 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public static var SCROLLBAR_WIDTH:Float = 10;
   public static var SCROLLBAR_TOP_MARGIN:Float = -42;
-  public static var SCROLLBAR_BOTTOM_MARGIN:Float = -48;
+  public static var SCROLLBAR_BOTTOM_MARGIN:Float = -60;
   public static var SCROLLBAR_MIN_THUMB:Float = 24;
 
   public static var SCROLLBAR_TRACK_COLOR:FlxColor = 0xFF3A393E;
@@ -124,6 +126,18 @@ class ModMenuItemList extends FunkinSpriteGroup
     repositionItems();
   }
 
+  public function removeModWithoutLayout(item:ModMenuItem):Int
+  {
+    if (!modItems.contains(item)) return -1;
+    if (isPinnedItem(item)) return -1;
+
+    var index = modItems.indexOf(item);
+    modItems.remove(item);
+    this.remove(item);
+    updateScrollbar();
+    return index;
+  }
+
   public function addModRaw(item:ModMenuItem):Void
   {
     if (!modItems.contains(item))
@@ -137,6 +151,24 @@ class ModMenuItemList extends FunkinSpriteGroup
     item.localY = getModItemYPos(index) + scrollOffset;
 
     updateScrollbar();
+  }
+
+  public function addModRawWithoutLayout(item:ModMenuItem, index:Int = -1):Int
+  {
+    if (index < 0 || index > modItems.length) index = modItems.length;
+
+    var existingIndex = modItems.indexOf(item);
+    if (existingIndex != -1)
+    {
+      modItems.splice(existingIndex, 1);
+      this.remove(item);
+      if (existingIndex < index) index--;
+    }
+
+    modItems.insert(index, item);
+    insert(item, index);
+    updateScrollbar();
+    return index;
   }
 
   public function addMod(mod:ModMetadata):Void
@@ -228,12 +260,101 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
-  public function getModItemYPos(index:Int):Float
+  public function animateItemsToLayout(duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  {
+    if (ease == null) ease = FlxEase.quadOut;
+    for (index => modMenuItem in modItems)
+    {
+      if (modMenuItem == null || !modMenuItem.exists) continue;
+
+      FlxTween.cancelTweensOf(modMenuItem);
+      FlxTween.tween(modMenuItem, {
+        localX: ITEM_X_OFFSET,
+        localY: getModItemYPos(index) + scrollOffset
+      }, duration, {ease: ease, startDelay: startDelay});
+    }
+
+    updateScrollbar();
+  }
+
+  public function animateItemsToLayoutForInsert(insertIndex:Int, duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  {
+    animateItemsToLayoutForInsertCount(insertIndex, 1, duration, ease, startDelay);
+  }
+
+  /**
+   * Like animateItemsToLayoutForInsert, but makes room for `insertCount` items being
+   * inserted starting at `insertIndex`.
+   */
+  public function animateItemsToLayoutForInsertCount(insertIndex:Int, insertCount:Int, duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  {
+    if (ease == null) ease = FlxEase.quadOut;
+    if (insertCount < 1) insertCount = 1;
+
+    var futureCount = modItems.length + insertCount;
+
+    for (index => modMenuItem in modItems)
+    {
+      if (modMenuItem == null || !modMenuItem.exists) continue;
+
+      var targetIndex = index;
+      if (index >= insertIndex) targetIndex = index + insertCount;
+
+      FlxTween.cancelTweensOf(modMenuItem);
+      FlxTween.tween(modMenuItem, {
+        localX: ITEM_X_OFFSET,
+        localY: getModItemYPosForCount(targetIndex, futureCount) + scrollOffset
+      }, duration, {ease: ease, startDelay: startDelay});
+    }
+
+    updateScrollbar();
+  }
+
+  public function applySwapScrollCorrection(changeIndex:Int, isInsertion:Bool):Void
+  {
+    var anchorIndex = getTopVisibleItemIndex();
+    if (anchorIndex < 0) return;
+
+    if (changeIndex > anchorIndex) return;
+
+    final ITEM_PADDING:Float = 96 + 16;
+    scrollOffset += isInsertion ? -ITEM_PADDING : ITEM_PADDING;
+    clampScroll();
+  }
+
+  function getTopVisibleItemIndex():Int
+  {
+    var top:Float = getViewportTop();
+
+    var index:Int = modItems.length - 1;
+    while (index >= 0)
+    {
+      var item = modItems[index];
+      if (item == null)
+      {
+        index--;
+        continue;
+      }
+
+      if (item.localY + 96 > top) return index;
+
+      index--;
+    }
+
+    return -1;
+  }
+
+  public function getModItemYPosForCount(index:Int, itemCount:Int):Float
   {
     final ICON_HEIGHT:Float = 96;
     final ITEM_PADDING:Float = ICON_HEIGHT + 16;
 
-    return ITEM_Y_OFFSET + (ITEM_PADDING * (modItems.length - 1 - index));
+    return ITEM_Y_OFFSET + (ITEM_PADDING * (itemCount - 1 - index));
+  }
+
+  public function getModItemYPos(index:Int):Float
+  {
+    return getModItemYPosForCount(index, modItems.length);
   }
 
   /**
@@ -280,11 +401,13 @@ class ModMenuItemList extends FunkinSpriteGroup
     return 0;
   }
 
-  function clampScroll():Void
+  function clampScroll(?itemCount:Int):Void
   {
+    var count:Int = (itemCount != null) ? itemCount : modItems.length;
+
     var ICON_HEIGHT:Float = 96;
     var ITEM_PADDING:Float = ICON_HEIGHT + 16;
-    var contentHeight = ITEM_PADDING * (modItems.length - 1) + ICON_HEIGHT;
+    var contentHeight = ITEM_PADDING * (count - 1) + ICON_HEIGHT;
 
     // Use the same viewport span as the scrollbar so the two never disagree.
     var viewSpan = getViewportBottom() - getViewportTop();
@@ -296,10 +419,41 @@ class ModMenuItemList extends FunkinSpriteGroup
     if (scrollOffset > maxScroll) scrollOffset = maxScroll;
   }
 
+  /**
+   * Adjusts scrollOffset so the item at `index` would be visible, assuming there are `itemCount` items in the list.
+   * @param index
+   * @param itemCount
+   */
+  public function revealSlot(index:Int, itemCount:Int):Void
+  {
+    var itemHeight = 96;
+    var itemTop = getModItemYPosForCount(index, itemCount) + scrollOffset;
+    var top = getViewportTop();
+    var bottom = getViewportBottom();
+
+    if (itemTop < top) scrollOffset += (top - itemTop);
+    else if (itemTop + itemHeight > bottom) scrollOffset -= (itemTop + itemHeight - bottom);
+
+    // Clamp against the FUTURE content size, since the incoming item isn't in modItems yet.
+    clampScroll(itemCount);
+    updateScrollbar();
+  }
+
   public function scrollBy(delta:Float):Void
   {
+    // Clamp first so the offset always respects the current content bounds.
+    var oldOffset:Float = scrollOffset;
     scrollOffset += delta;
     clampScroll();
+
+    // IMPORTANT: only re-layout when the scroll offset actually changed.
+    // repositionItems() hard-sets every item's localX/localY, which instantly
+    // kills any in-progress layout tween (e.g. the "slide up to fill the gap"
+    // animation kicked off by animateItemsToLayout). Selecting an item that's
+    // already on-screen produces a delta of 0; in that case there is nothing to
+    // scroll, so we must NOT snap the items and stomp the running animation.
+    if (scrollOffset == oldOffset) return;
+
     repositionItems();
   }
 
@@ -307,7 +461,7 @@ class ModMenuItemList extends FunkinSpriteGroup
    * Sizes and positions the scrollbar based on the current content and viewport.
    * Hides it entirely when everything fits.
    */
-  function updateScrollbar():Void
+  public function updateScrollbar():Void
   {
     if (scrollbarTrack == null || scrollbarThumb == null) return;
 

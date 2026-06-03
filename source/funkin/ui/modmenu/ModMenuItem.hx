@@ -14,9 +14,10 @@ import funkin.Paths;
  */
 class ModMenuItem extends FunkinSpriteGroup
 {
-  public static final ITEM_WIDTH:Int = 420;
+  public static final ITEM_WIDTH:Int = 350;
   public static final ICON_HEIGHT:Int = 96;
-  public static final DESC_WIDTH:Int = 240;
+  public static final DESC_WIDTH:Int = 216;
+  public static final ITEM_WIDTH_PADDING:Int = 24;
 
   /**
    * Whether this mod item is immutable in list operations.
@@ -90,7 +91,7 @@ class ModMenuItem extends FunkinSpriteGroup
     this.fallbackDescription = fallbackDescription;
 
     background = new FunkinSprite(0, 0);
-    background.makeGraphic(ITEM_WIDTH, ICON_HEIGHT, FlxColor.WHITE);
+    background.makeGraphic(ITEM_WIDTH - ITEM_WIDTH_PADDING, ICON_HEIGHT, FlxColor.WHITE);
     background.localX = 0;
     background.localY = 0;
     background.localAlpha = 0;
@@ -132,7 +133,9 @@ class ModMenuItem extends FunkinSpriteGroup
     titleText = new FlxText(0, 0, DESC_WIDTH);
     titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = ICON_HEIGHT + 8;
+    titleText.fieldHeight = 42;
     titleText.text = getModTitle();
+    titleText.scale.set(1,0.8);
     add(titleText);
 
     titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
@@ -140,8 +143,10 @@ class ModMenuItem extends FunkinSpriteGroup
     descriptionText = new FlxText(0, 0, DESC_WIDTH);
     descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);
     descriptionText.localX = ICON_HEIGHT + 8;
+    descriptionText.fieldHeight = 64;
     descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
     descriptionText.text = getModDescription();
+    descriptionText.scale.set(1,0.8);
     add(descriptionText);
 
     descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - titleText.height - 4);
