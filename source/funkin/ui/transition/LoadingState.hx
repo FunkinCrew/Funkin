@@ -345,12 +345,12 @@ class LoadingState extends MusicBeatSubState
     }
     else
     {
-      // funkin.memory.FunkinMemory.clearFreeplay();
-      FlxG.signals.postStateSwitch.addOnce(() ->
+      FlxG.signals.preStateSwitch.addOnce(() ->
       {
         funkin.memory.FunkinMemory.clearFreeplay();
-        // TODO: FUCKING FIX THIS BULLSHIT I HATE YOU KILL EVERYONE IUNCLIDUGN YORUSLEF
       });
+      // TODO: FUCKING FIX THIS BULLSHIT I HATE YOU KILL EVERYONE IUNCLIDUGN YORUSLEF - TO MOON
+      // TODO: pretty please fix this gem i love you heal everyone inclidugn yoruslef <3 - to moon
       FlxG.switchState(playStateCtor);
     }
     #end
