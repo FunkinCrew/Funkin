@@ -33,6 +33,16 @@ class StagedCache<T>
    */
   public var onReuse(default, never):FlxTypedSignal<(String, T) -> Void> = new FlxTypedSignal<(String, T) -> Void>();
 
+  /**
+   * Dispatched for each asset right before a purge begins.
+   */
+  public var onPrePurge(default, never):FlxTypedSignal<(String, T) -> Void> = new FlxTypedSignal<(String, T) -> Void>();
+
+  /**
+   * Dispatched for each asset right after a its removal on purge.
+   */
+  public var onPostPurge(default, never):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
   public function new()
   {
     // The cache maps are final to prevent them from being overridden,
@@ -188,6 +198,7 @@ class StagedCache<T>
     {
       if (existsPermanent(key)) continue;
 
+      onPrePurge.dispatch(key, asset);
       previous.set(key, asset);
     }
 
@@ -208,6 +219,7 @@ class StagedCache<T>
       if (existsCurrent(key)) continue;
 
       remove(key);
+      onPostPurge.dispatch(key);
     }
   }
 
@@ -225,8 +237,10 @@ class StagedCache<T>
       if (key == null || asset == null) continue;
       if (existsPermanent(key)) continue;
       if (existsCurrent(key)) continue;
+      if (!predicate(key, asset)) continue;
 
-      if (predicate(key, asset)) remove(key);
+      remove(key);
+      onPostPurge.dispatch(key);
     }
   }
 

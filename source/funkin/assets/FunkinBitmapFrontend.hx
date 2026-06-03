@@ -73,6 +73,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
     // Called whenever a graphic is purged from the cache.
     stagedFlxGraphic.onRemove.add(onRemoveFlxGraphic);
+    stagedFlxGraphic.onPrePurge.add(onPrePurgeFlxGraphic);
 
     super();
   }
@@ -250,5 +251,14 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // Called when an FlxGraphic is purged from the StagedCache.
     FunkinAssetCache.instance.removeBitmapData(assetPath);
     if (graphic != null) graphic.destroy();
+  }
+
+  function onPrePurgeFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
+  {
+    // Called before a mass purge is performed on the StagedCache.
+    if (graphic != null)
+    {
+      graphic.persist = false;
+    }
   }
 }
