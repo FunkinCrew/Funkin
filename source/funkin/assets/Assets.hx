@@ -48,7 +48,7 @@ class Assets implements ConsoleClass
   ];
 
   /**
-   * Perform functions to initialize internal asset management.
+   * Perform initialization for internal asset management.
    */
   public static function initialize():Void
   {
@@ -72,11 +72,12 @@ class Assets implements ConsoleClass
 
   /**
    * List data files that match the given prefix and suffix.
+   *
    * @param path A path prefix for the data file name.
    * @param suffix A path suffix for the data file name.
    * @param blacklist An array of paths to exclude from the list.
    * @param nested Whether to parse nested data files as only the last part of the path.
-   *     Use `true`, if you expect files will be at `<path>/<id>/<id><suffix>`
+   *     Use `true`, if you expect files will be at `<path>/<id>/<id><suffix>`.
    * @return A list of results, with path and extension removed.
    */
   public static function listDataFilesInPath(path:String, suffix:String = '.json', ?blacklist:Array<String>, nested:Bool = false):Array<String>
@@ -115,11 +116,11 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieve the BitmapData for the given asset path, synchronously.
-   * Fails if the asset isn't cached already.
+   * Retrieve the BitmapData from the given asset path.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
    * @param assetPath The path of the asset to retrieve.
-   * @param useCache Dummy argument to match o
-   * @throws error If the asset isn't cached.
+   * @param useCache Dummy argument to match `openfl.utils.Assets.getBitmapData()`.
    * @return The BitmapData for the asset.
    */
   public static function getBitmapData(assetPath:AssetPath, useCache:Bool = true):BitmapData
@@ -130,8 +131,9 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieve the FlxGraphic for the given asset path, synchronously.
-   * Fails if the asset isn't cached already.
+   * Retrieve the FlxGraphic from the given asset path.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
    * @param assetPath The path of the asset to retrieve.
    * @throws error If the asset isn't cached.
    * @return The FlxGraphic for the asset.
@@ -144,8 +146,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object.
-   * Throws an ERROR if the asset isn't cached already.
+   * Retrieve a spritesheet's image and data files, and create a FlxAtlasFrames object.
+   * May cause stutters or throw an error if the assets are not cached.
    *
    * @param assetPath The path to the image, created with `Paths.image`.
    *   We automatically assume the XML is next to it.
@@ -171,8 +173,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object.
-   * Throws an ERROR if the asset isn't cached already.
+   * Retrieve a spritesheet's image and data files, and create a FlxAtlasFrames object.
+   * May cause stutters or throw an error if the assets are not cached.
    *
    * @param assetPath The path to the image, created with `Paths.image`.
    *   We automatically assume the TXT is next to it.
@@ -197,10 +199,12 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Fetch an Adobe Animate texture atlas's sprite frames, and parse and load them.
+   * Retrieve an Adobe Animate texture atlas's sprite frames, and parse and load them.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
    * @param assetPath The asset path to the texture atlas. Use `Paths.animateAtlas` to build this.
    * @param settings Additional settings to use when loading the atlas sprite.
-   * @return The generated FlxAnimateFrames
+   * @return The generated FlxAnimateFrames.
    */
   public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPathBuilder, settings:AtlasSpriteSettings):FlxAnimateFrames
   {
@@ -230,21 +234,29 @@ class Assets implements ConsoleClass
       throw 'No texture exists at the specified path (${assetPath})';
     }
 
-    return FlxAnimateFrames.fromAnimate(assetPath.toString(), validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
-      swfMode: validatedSettings.swfMode,
-      cacheOnLoad: validatedSettings.cacheOnLoad,
-      filterQuality: validatedSettings.filterQuality,
-      onSymbolCreate: validatedSettings.onSymbolCreate
-    });
+    return FlxAnimateFrames.fromAnimate(
+      assetPath.toString(),
+      validatedSettings.spritemaps,
+      validatedSettings.metadataJson,
+      validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache,
+      {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
+      }
+    );
   }
 
   /**
-   * Builds a monospace Bitmap font from the given asset path.
+   * Retrieves a Bitmap from the given asset path, and builds a monospace Bitmap font from it.
+   * May cause stutters or throw an error if the asset is not cached.
    *
-   * @param assetPath The asset path to load the texture from
-   * @param fontLetters The letters to use in the font, in order
-   * @param letterSize The width and height of each letter, in pixels
-   * @return The generated FlxBitmapFont
+   * @param assetPath The asset path to load the texture from.
+   * @param fontLetters The letters to use in the font, in order.
+   * @param letterSize The width and height of each letter, in pixels.
+   * @return The generated FlxBitmapFont.
    */
   public static function getMonospaceBitmapFont(assetPath:AssetPath, fontLetters:String, letterSize:FlxPoint):FlxBitmapFont
   {
@@ -265,11 +277,12 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Builds a Bitmap font from the given asset path.
+   * Retrieves a Bitmap and `.fnt` data from the given asset path, and builds a Bitmap font from it.
+   * May cause stutters or throw an error if the asset is not cached.
    *
    * @param assetPath The asset path to load the texture from.
    *   Assume there is a corresponding `.fnt` file to locate each letter.
-   * @return The generated FlxBitmapFont
+   * @return The generated FlxBitmapFont.
    */
   public static function getAngelBitmapFont(assetPath:AssetPath):FlxBitmapFont
   {
@@ -290,10 +303,11 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load bytes from an asset
-   * May cause stutters or throw an error if the asset is not cached
-   * @param assetPath The asset path to load from
-   * @return The byte contents of the file
+   * Retrieves byte data from the given asset path.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
+   * @param assetPath The asset path to load from.
+   * @return The byte contents of the file.
    */
   public static function getBytes(assetPath:AssetPath):haxe.io.Bytes
   {
@@ -303,10 +317,11 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load text from an asset.
-   * May cause stutters or throw an error if the asset is not cached
-   * @param assetPath The asset path to load from
-   * @return The text contents of the file
+   * Retrieves text from the given asset path.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
+   * @param assetPath The asset path to load from.
+   * @return The text contents of the file.
    */
   public static function getText(assetPath:AssetPath):String
   {
@@ -316,10 +331,11 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load a Sound file from an asset
-   * May cause stutters or throw an error if the asset is not cached
-   * @param assetPath The asset path to load from
-   * @return The loaded sound
+   * Retrieves a Sound from the given asset path.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
+   * @param assetPath The asset path to load from.
+   * @return The loaded sound.
    */
   public static function getSound(assetPath:AssetPath):openfl.media.Sound
   {
@@ -329,10 +345,11 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load a Sound file from an asset, with optimizations specific to long-duration music
-   * May cause stutters or throw an error if the asset is not cached
-   * @param assetPath The asset path to load from
-   * @return The loaded sound
+   * Retrieves a Sound file from the given asset path, with optimizations specific to long-duration music.
+   * May cause stutters or throw an error if the asset is not cached.
+   *
+   * @param assetPath The asset path to load from.
+   * @return The loaded sound.
    */
   public static function getMusic(assetPath:MusicAssetPathBuilder):openfl.media.Sound
   {
@@ -342,7 +359,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieve the BitmapData for the given asset path, asynchronously.
+   * Retrieves the BitmapData from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to retrieve.
    * @return A future for the BitmapData for the asset.
    */
@@ -354,7 +372,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieve the FlxGraphic for the given asset path, asynchronously.
+   * Retrieves the FlxGraphic from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to retrieve.
    * @return A future for the FlxGraphic for the asset.
    */
@@ -366,9 +385,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load bytes from an asset asynchronously
-   * @param assetPath The asset path to load from
-   * @return A future which promises to return the byte contents of the file
+   * Retrieves byte data from the given asset path, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the byte contents of the file.
    */
   public static function loadBytes(assetPath:AssetPath):Future<openfl.utils.ByteArray>
   {
@@ -378,9 +398,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load text from an asset asynchronously
-   * @param assetPath The asset path to load from
-   * @return A future which promises to return the text contents of the file
+   * Load text from the given asset path, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the text contents of the file.
    */
   public static function loadText(assetPath:AssetPath):Future<String>
   {
@@ -390,9 +411,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load a Sound file from an asset asynchronously
-   * @param assetPath The asset path to load from
-   * @return A future which promises to return the loaded sound
+   * Load a Sound file from the given asset path, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the loaded sound.
    */
   public static function loadSound(assetPath:AssetPath):Future<openfl.media.Sound>
   {
@@ -402,9 +424,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Load a Sound file from an asset asynchronously, with optimizations specific to long-duration music
-   * @param assetPath The asset path to load from
-   * @return A future which promises to return the loaded sound
+   * Load a Sound file from the given asset path, with optimizations specific to long-duration music, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the loaded sound.
    */
   public static function loadMusic(assetPath:MusicAssetPathBuilder):Future<openfl.media.Sound>
   {
@@ -414,7 +437,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object asynchronously.
+   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object, asynchronously.
+   *
    * @param assetPath The path to the image, created with `Paths.image`.
    *   We automatically assume the XML is next to it.
    * @return A future representing the promise of generated FlxAtlasFrames.
@@ -427,8 +451,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object asynchronously.
-   * May take time to load the assets.
+   * Fetch a spritesheet's image and data files, and create a FlxAtlasFrames object, asynchronously.
+   *
    * @param assetPath The path to the image, created with `Paths.image`.
    *   We automatically assume the TXT is next to it.
    * @return A future representing the promise of generated FlxAtlasFrames.
@@ -441,7 +465,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Cache the BitmapData for the given asset path, asynchronously.
+   * Cache the BitmapData from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the BitmapData for the asset.
@@ -454,7 +479,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Cache the FlxGraphic for the given asset path, asynchronously.
+   * Cache the FlxGraphic from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the FlxGraphic for the asset.
@@ -467,7 +493,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Cache the Sound for the given asset path, asynchronously.
+   * Cache the Sound from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to cache.
    * @return A future for the Sound for the asset.
    */
@@ -479,7 +506,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Cache the Text for the given asset path, asynchronously.
+   * Cache the text from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to cache.
    * @return A future for the Text for the asset.
    */
@@ -491,7 +519,8 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Cache the bytes for the given asset path, asynchronously.
+   * Cache the byte data from the given asset path, asynchronously.
+   *
    * @param assetPath The path of the asset to cache.
    * @return A future for the bytes for the asset.
    */
@@ -504,6 +533,7 @@ class Assets implements ConsoleClass
 
   /**
    * Cache the BitmapDatas for all the given asset paths, asynchronously.
+   *
    * @param assetPaths The paths of the assets to cache.
    * @param uploadToGPU Whether to upload the bitmap datas to the GPU, saving memory.
    * @return A future for an array of results.
@@ -527,6 +557,7 @@ class Assets implements ConsoleClass
 
   /**
    * Cache the FlxGraphics for all the given asset paths, asynchronously.
+   *
    * @param assetPaths The paths of the assets to cache.
    * @param uploadToGPU Whether to use GPU caching for this graphic.
    * @return A future for an array of results.
@@ -550,6 +581,7 @@ class Assets implements ConsoleClass
 
   /**
    * Cache the Sound for all the given asset paths, asynchronously.
+   *
    * @param assetPaths The paths of the assets to cache.
    * @return A future for an array of results.
    */
@@ -572,6 +604,7 @@ class Assets implements ConsoleClass
 
   /**
    * Cache the Text for all the given asset paths, asynchronously.
+   *
    * @param assetPaths The paths of the assets to cache.
    * @return A future for an array of results.
    */
@@ -594,6 +627,7 @@ class Assets implements ConsoleClass
 
   /**
    * Cache the Bytes for all the given asset paths, asynchronously.
+   *
    * @param assetPaths The paths of the assets to cache.
    * @return A future for an array of results.
    */
@@ -616,6 +650,7 @@ class Assets implements ConsoleClass
 
   /**
    * Return true if the graphic at the given asset path exists, and has been cached by a loading screen.
+   *
    * @param assetPath The asset path to check.
    * @return Whether it is currently cached.
    */
@@ -628,6 +663,7 @@ class Assets implements ConsoleClass
 
   /**
    * Return a list of all the asset paths which should be available in all states.
+   *
    * @param type The type of asset to list.
    * @return The list of asset paths that are needed by every state.
    */
@@ -701,6 +737,7 @@ class Assets implements ConsoleClass
 
   /**
    * Returns a list of all the asset paths which should be cached before starting the game.
+   *
    * @param type The type of asset to list.
    * @return The list of asset paths which are needed by the preloader.
    */
@@ -750,9 +787,10 @@ class Assets implements ConsoleClass
 
   /**
    * Determines whether the given asset of the given type exists.
-   * @param path The path to check
-   * @param type The asset type to check
-   * @return Whether the asset exists
+   *
+   * @param path The path to check.
+   * @param type The asset type to check.
+   * @return Whether the asset exists.
    */
   public static function exists(path:String, ?type:openfl.utils.AssetType):Bool
   {
@@ -761,8 +799,9 @@ class Assets implements ConsoleClass
 
   /**
    * Check whether the given asset at the given path exists.
-   * @param assetPath The path to check
-   * @return Whether the asset exists
+   *
+   * @param assetPath The path to check.
+   * @return Whether the asset exists.
    */
   public static function assetExists(assetPath:AssetPath):Bool
   {
@@ -775,9 +814,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Get the file system path for an asset
-   * @param assetPath The asset path to load from, relative to the assets folder
-   * @return The path to the asset on the file system
+   * Get the file system path for an asset.
+   *
+   * @param assetPath The asset path to load from, relative to the assets folder.
+   * @return The path to the asset on the file system.
    */
   public static function getPath(assetPath:AssetPath):String
   {
@@ -787,9 +827,10 @@ class Assets implements ConsoleClass
   }
 
   /**
-   * Retrieve a list of all assets paths matching the given type
-   * @param type The asset type to check
-   * @return A list of asset paths
+   * Retrieve a list of all assets paths matching the given type.
+   *
+   * @param type The asset type to check.
+   * @return A list of asset paths.
    */
   public static function list(?type:AssetType):Array<AssetPath>
   {
@@ -798,10 +839,11 @@ class Assets implements ConsoleClass
 
   /**
    * Retrieve a list of all assets paths matching the given type within the given folder.
-   * @param path The path to filter by
-   * @param type (optional) The asset type to check
-   * @param defaultPrefix Whether to
-   * @return A list of asset paths within the given folder
+   *
+   * @param path The path to filter by.
+   * @param type (Optional) The asset type to check.
+   * @param defaultPrefix Whether to use the default asset prefix.
+   * @return A list of asset paths within the given folder.
    */
   public static function listInPath(path:String, ?type:AssetType, defaultPrefix:Bool = true):Array<AssetPath>
   {
@@ -817,8 +859,9 @@ class Assets implements ConsoleClass
 
   /**
    * Return true if an asset library of the given name exists.
-   * @param name The name of the library to check for
-   * @return Whether it exists.
+   *
+   * @param name The name of the library to check for.
+   * @return Whether the asset library exists.
    */
   public static function hasLibrary(name:String):Bool
   {
@@ -827,6 +870,7 @@ class Assets implements ConsoleClass
 
   /**
    * Retrieve the asset library of the given name, synchronously.
+   *
    * @param name The name of the asset library to retrieve.
    * @return The asset library to load.
    */
@@ -837,6 +881,7 @@ class Assets implements ConsoleClass
 
   /**
    * Retrieve the asset library of the given name, asynchronously.
+   *
    * @param name The name of the asset library to retrieve.
    * @return The asset library to load.
    */
@@ -853,67 +898,67 @@ class Assets implements ConsoleClass
 enum abstract AssetType(String) from String to String from LimeAssetType
 {
   /**
-   * Files in (*.png, *.jpg, *.webp, *.astc) format
+   * Files in (*.png, *.jpg, *.webp, *.astc) format.
    */
   public var IMAGE = 'IMAGE';
 
   /**
-   * Files in (*.ogg and *.mp3) format
+   * Files in (*.ogg and *.mp3) format.
    */
   public var SOUND = 'SOUND';
 
   /**
-   * Files in (*.mp4 and *.webm) format
+   * Files in (*.mp4 and *.webm) format.
    */
   public var VIDEO = 'VIDEO';
 
   /**
-   * Files in (mainly *.txt and *.md, excludes JSON, XML, SHADER, SCRIPT) format
+   * Files in (mainly *.txt and *.md, excludes JSON, XML, SHADER, SCRIPT) format.
    */
   public var TEXT = 'TEXT';
 
   /**
-   * Files in (*.json) format
+   * Files in (*.json) format.
    */
   public var JSON = 'JSON';
 
   /**
-   * Files in (*.frag and *.vert) format
+   * Files in (*.frag and *.vert) format.
    */
   public var SHADER = 'SHADER';
 
   /**
-   * Files in (*.hx) format
+   * Files in (*.hx) format.
    */
   public var SCRIPT = 'SCRIPT';
 
   /**
-   * Files in (*.hxc) format
+   * Files in (*.hxc) format.
    */
   public var SCRIPTED_CLASS = 'SCRIPTED_CLASS';
 
   /**
-   * Files in (*.fnfc) format
+   * Files in (*.fnfc) format.
    */
   public var CHART = 'CHART';
 
   /**
-   * Files in (*.fnfs) format
+   * Files in (*.fnfs) format.
    */
   public var STAGE = 'STAGE';
 
   /**
-   * Files in (*.xml) format
+   * Files in (*.xml) format.
    */
   public var XML = 'XML';
 
   /**
-   * Files in (*.otf and *.ttf) format
+   * Files in (*.otf and *.ttf) format.
    */
   public var FONT = 'FONT';
 
   /**
-   * Files in an
+   * Files in an undetermined file format.
    */
   public var UNKNOWN = 'UNKNOWN';
 }
