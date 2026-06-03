@@ -69,6 +69,9 @@ class StagedCache<T>
    */
   function reusePrevious(key:String):T
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.reusePrevious($key)');
+    #end
     // Transfer to the current asset cache.
     var asset:Null<T> = previous.get(key);
     previous.remove(key);
@@ -94,6 +97,9 @@ class StagedCache<T>
    */
   public function cache(key:String, asset:T):Void
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cache($key)');
+    #end
     if (asset == null) return;
     current.set(key, asset);
 
@@ -109,6 +115,9 @@ class StagedCache<T>
    */
   public function cachePermanent(key:String, asset:T):Void
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cachePermanent($key)');
+    #end
     if (asset == null) return;
     permanent.set(key, asset);
 
