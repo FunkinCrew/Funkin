@@ -1,5 +1,6 @@
 package funkin.ui.transition.stickers;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.FlxState;
@@ -205,11 +206,22 @@ class StickerSubState extends MusicBeatSubState
             FlxG.signals.preStateSwitch.addOnce(() -> {
               #if ios
               trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
+              if (DeviceUtil.iPhoneNumber > 12)
+              {
+                FunkinAssetCache.instance.preparePurgeCache();
+                // TODO: In loading screens, you should be caching BETWEEN these.
+                FunkinAssetCache.instance.purgeCache(true);
+              }
               else
-                funkin.memory.FunkinMemory.purgeCache();
+              {
+                FunkinAssetCache.instance.preparePurgeCache();
+                // TODO: In loading screens, you should be caching BETWEEN these.
+                FunkinAssetCache.instance.purgeCache();
+              }
               #else
-              funkin.memory.FunkinMemory.purgeCache(true);
+              FunkinAssetCache.instance.preparePurgeCache();
+              // TODO: In loading screens, you should be caching BETWEEN these.
+              FunkinAssetCache.instance.purgeCache(true);
               #end
             });
             FlxG.switchState(() ->

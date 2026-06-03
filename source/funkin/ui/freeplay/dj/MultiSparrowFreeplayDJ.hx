@@ -64,7 +64,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
       {
         log('Concatenating multi-sparrow atlas: ${asset}');
         subTexture.parent.destroyOnNoUse = false;
-        FunkinMemory.cacheTexture(funkin.assets.Paths.image(asset));
+        funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(asset));
       }
       texture.addAtlas(subTexture);
     }

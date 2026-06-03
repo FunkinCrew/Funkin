@@ -205,120 +205,36 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Prepare to purge the asset cache.
-   * Attempting to cache any assets that were previously cached will just move them to the new cache.
+   * Attempting to recache any assets that were previously cached will just move them to the new cache.
    * Later, any old assets that the game didn't try to use again will be destroyed, saving memory.
-   *
-   * @param recachePersistent Whether to automatically move the persistent assets back.
    */
-  public function preparePurgeCache(recachePersistent:Bool = true):Void
+  public function preparePurgeCache():Void
   {
     stagedBitmapData.preparePurgeCache();
     stagedFont.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
-
-    // previous_sound = current_sound;
-    // current_sound = [];
-    // previous_text = current_text;
-    // current_text = [];
-    // previous_bytes = current_bytes;
-    // current_bytes = [];
-
-    if (recachePersistent) recachePersistentAssets();
-  }
-
-  /**
-   * Query the list of persistent assets, and recache them (i.e. move them from previous_cache to current_cache).
-   * This guarantees they stay available between states.
-   */
-  function recachePersistentAssets():Void
-  {
-    // TODO: This isn't necessary with the new StagedCache system.
-    // The persistent assets will be cached with `cachePermanent()`.
-
-    // Handle Images (Special case with two calls)
-    for (asset in Assets.queryPersistentAssets(IMAGE))
-    {
-      if (recacheBitmapData(asset) == null)
-      {
-        cacheBitmapData(asset);
-      }
-      if (recacheFlxGraphic(asset) == null)
-      {
-        cacheFlxGraphic(asset);
-      }
-
-      // TODO: THis is tempcode, remove this once funkinpreloader is ready
-    }
-
-    // Handle Text-based assets (JSON, XML, Scripts, etc.)
-    var textTypes = [
-      TEXT,
-      JSON,
-      SHADER,
-      SCRIPT,
-      SCRIPTED_CLASS,
-      XML
-    ];
-
-    for (type in textTypes)
-    {
-      for (asset in Assets.queryPersistentAssets(type))
-      {
-        recacheText(asset);
-      }
-    }
-
-    // Handle specific single-call types
-    for (asset in Assets.queryPersistentAssets(SOUND)) recacheSound(asset);
-    for (asset in Assets.queryPersistentAssets(UNKNOWN)) recacheBytes(asset);
   }
 
   /**
    * Purge any assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
+   *
+   * @param garbageCollect Whether to forcibly invoke the system's garbage collector after purging assets.
    */
-  public function purgeCache():Void
+  public function purgeCache(garbageCollect:Bool = false):Void
   {
-    // stagedFlxGraphic.purge();
-    // stagedBitmapData.purge();
-    FunkinBitmapFrontend.instance.clearExcept(["freeplay/", "stickers/"]);
+    stagedBitmapData.purgeCache();
+    stagedFont.purgeCache();
+
+    // TODO: Cleanup purging to work with Freeplay?
+    FunkinBitmapFrontend.instance.clearExcept(['freeplay/', 'stickers/']);
+
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
     // also does it for bitmapdatas, so we don't have to worry about that here.
 
-    // for (key in previous_font.keys())
-    // {
-    //   var font:Null<Font> = previous_font.get(key);
-    //   if (font == null) continue;
-    //   previous_font.remove(key);
-    //   // Actually destroy the font.
-    //   FunkinLimeAssetCache.instance.removeFont(key);
-    // }
-    // for (key in previous_sound.keys())
-    // {
-    //   var sound:Null<Sound> = previous_sound.get(key);
-    //   if (sound == null) continue;
-    //   previous_sound.remove(key);
-    //   // Actually destroy the sound.
-    //   sound.close();
-    //   FunkinLimeAssetCache.instance.removeAudio(key);
-    // }
-    // for (key in previous_text.keys())
-    // {
-    //   var text:Null<String> = previous_text.get(key);
-    //   if (text == null) continue;
-    //   previous_text.remove(key);
-    //   // Actually destroy the text.
-    //   // FunkinLimeAssetCache.instance.removeText(key);
-    // }
-    // for (key in previous_bytes.keys())
-    // {
-    //   var bytes:Null<openfl.utils.ByteArray> = previous_bytes.get(key);
-    //   if (bytes == null) continue;
-    //   previous_bytes.remove(key);
-    //   // Actually destroy the binary.
-    //   // FunkinLimeAssetCache.instance.removeBinary(key);
-    // }
-    // // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
-    // MemoryUtil.collect(true);
+    // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
+    #if (cpp || neko || hl)
+    if (garbageCollect) funkin.util.MemoryUtil.collect(true);
+    #end
   }
 
   /**

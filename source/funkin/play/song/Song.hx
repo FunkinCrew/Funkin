@@ -879,7 +879,7 @@ class SongDifficulty
    */
   public function cacheInst(instrumental = ''):Void
   {
-    funkin.memory.FunkinMemory.cacheSound(getInstPath(instrumental));
+    funkin.assets.Assets.cacheSound(getInstPath(instrumental));
   }
 
   public function playInst(volume:Float = 1.0, instId:String = '', looped:Bool = false):Void
@@ -903,7 +903,7 @@ class SongDifficulty
     for (voice in buildVoiceList())
     {
       trace(' SONG '.bold().bg_note_down() + ' Caching vocal track "$voice" for song "${song.id}"');
-      funkin.memory.FunkinMemory.cacheSound(voice);
+      funkin.assets.Assets.cacheSound(voice);
     }
   }
 
@@ -922,8 +922,9 @@ class SongDifficulty
     {
       var suffix:String = (variation != null && variation != '' && variation != 'default') ? '-$variation' : '';
       // Try to use `Voices.ogg` if no other voices are found.
-      if (funkin.assets.Assets.exists(funkin.assets.Paths.voices(this.song.id, '')
-        .toString())) result.push(funkin.assets.Paths.voices(this.song.id, '$suffix'));
+      if (funkin.assets.Assets.exists(
+        funkin.assets.Paths.voices(this.song.id, '').toString()
+      )) result.push(funkin.assets.Paths.voices(this.song.id, '$suffix'));
     }
     return result;
   }

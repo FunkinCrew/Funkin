@@ -1,5 +1,6 @@
 package funkin.play;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.math.FlxAngle;
 import flixel.FlxState;
 import funkin.ui.transition.stickers.StickerSubState;
@@ -1094,7 +1095,7 @@ class ResultState extends MusicBeatSubState
         alpha: 1
       }, 0.5, {
         ease: FlxEase.expoOut,
-        onComplete: function(_)
+        onComplete: (_) ->
         {
           requestReview();
 
@@ -1109,15 +1110,25 @@ class ResultState extends MusicBeatSubState
           }
           else
           {
-            FlxG.signals.preStateSwitch.addOnce(function()
-            {
+            FlxG.signals.preStateSwitch.addOnce(() -> {
               #if ios
               trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
+              if (DeviceUtil.iPhoneNumber > 12)
+              {
+                FunkinAssetCache.instance.preparePurgeCache();
+                // TODO: In loading screens, you should be caching BETWEEN these.
+                FunkinAssetCache.instance.purgeCache(true);
+              }
               else
-                funkin.memory.FunkinMemory.purgeCache();
+              {
+                FunkinAssetCache.instance.preparePurgeCache();
+                // TODO: In loading screens, you should be caching BETWEEN these.
+                FunkinAssetCache.instance.purgeCache();
+              }
               #else
-              funkin.memory.FunkinMemory.purgeCache(true);
+              FunkinAssetCache.instance.preparePurgeCache();
+              // TODO: In loading screens, you should be caching BETWEEN these.
+              FunkinAssetCache.instance.purgeCache(true);
               #end
             });
             FlxG.switchState(() -> targetState);
@@ -1140,15 +1151,25 @@ class ResultState extends MusicBeatSubState
       }
       else
       {
-        FlxG.signals.preStateSwitch.addOnce(function()
-        {
+        FlxG.signals.preStateSwitch.addOnce(() -> {
           #if ios
           trace(DeviceUtil.iPhoneNumber);
-          if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
+          if (DeviceUtil.iPhoneNumber > 12)
+          {
+            FunkinAssetCache.instance.preparePurgeCache();
+            // TODO: In loading screens, you should be caching BETWEEN these.
+            FunkinAssetCache.instance.purgeCache(true);
+          }
           else
-            funkin.memory.FunkinMemory.purgeCache();
+          {
+            FunkinAssetCache.instance.preparePurgeCache();
+            // TODO: In loading screens, you should be caching BETWEEN these.
+            FunkinAssetCache.instance.purgeCache();
+          }
           #else
-          funkin.memory.FunkinMemory.purgeCache(true);
+          FunkinAssetCache.instance.preparePurgeCache();
+          // TODO: In loading screens, you should be caching BETWEEN these.
+          FunkinAssetCache.instance.purgeCache(true);
           #end
         });
         FlxG.switchState(() -> targetState);

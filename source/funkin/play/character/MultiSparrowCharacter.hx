@@ -125,7 +125,7 @@ class MultiSparrowCharacter extends BaseCharacter
             // - Abnormal
             if (!hasTextureAtlas)
             {
-              FunkinMemory.cacheTexture(funkin.assets.Paths.image(animation.assetPath));
+              funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(animation.assetPath));
             }
           }
 

@@ -1,5 +1,6 @@
 package funkin.ui.mainmenu;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.addons.transition.FlxTransitionableState;
 #if FEATURE_DEBUG_MENU
 import funkin.ui.debug.DebugMenuSubState;
@@ -148,16 +149,18 @@ class MainMenuState extends MusicBeatState
     });
 
     menuItems.enabled = true; // can move on intro
-    createMenuItem('storymode', 'ui/main-menu/items/story-mode', function()
+    createMenuItem('storymode', 'ui/main-menu/items/story-mode', () ->
     {
-      FlxG.signals.preStateSwitch.addOnce(function()
+      FlxG.signals.preStateSwitch.addOnce(() ->
       {
         funkin.memory.FunkinMemory.clearFreeplay();
-        funkin.memory.FunkinMemory.purgeCache();
+        FunkinAssetCache.instance.preparePurgeCache();
+        // TODO: In loading screens, you should be caching BETWEEN these.
+        FunkinAssetCache.instance.purgeCache(true);
       });
       startExitState(() -> new StoryMenuState());
     });
-    createMenuItem('freeplay', 'ui/main-menu/items/freeplay', function()
+    createMenuItem('freeplay', 'ui/main-menu/items/freeplay', () ->
     {
       persistentDraw = true;
       persistentUpdate = false;
@@ -248,7 +251,13 @@ class MainMenuState extends MusicBeatState
       var targetItem = menuItems.members[2];
       for (_ in 0...8)
       {
-        var sparkle:UpgradeSparkle = new UpgradeSparkle(targetItem.x - (targetItem.width / 2), targetItem.y - (targetItem.height / 2), targetItem.width, targetItem.height, FlxG.random.bool(80));
+        var sparkle:UpgradeSparkle = new UpgradeSparkle(
+          targetItem.x - (targetItem.width / 2),
+          targetItem.y - (targetItem.height / 2),
+          targetItem.width,
+          targetItem.height,
+          FlxG.random.bool(80)
+        );
         upgradeSparkles.add(sparkle);
 
         sparkle.scrollFactor.x = 0.0;
@@ -397,8 +406,10 @@ class MainMenuState extends MusicBeatState
 
   function onMenuItemChange(selected:MenuListItem)
   {
-    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) camFollow.setPosition(selected.getGraphicMidpoint()
-      .x, selected.getGraphicMidpoint().y);
+    if (#if mobile ControlsHandler.usingExternalInputDevice #else true #end) camFollow.setPosition(
+      selected.getGraphicMidpoint().x,
+      selected.getGraphicMidpoint().y
+    );
   }
 
   #if FEATURE_OPEN_URL

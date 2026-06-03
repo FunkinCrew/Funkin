@@ -27,13 +27,7 @@ class FunkinMemory
    */
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
-    FunkinAssetCache.instance.preparePurgeCache();
-    // TODO: In loading screens, you should be caching BETWEEN these.
-    FunkinAssetCache.instance.purgeCache();
-
-    #if (cpp || neko || hl)
-    if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
-    #end
+    trace(' WARNING '.warning() + 'FunkinMemory.purgeCache() is deprecated and should not be used.');
   }
 
   // =========
@@ -121,7 +115,7 @@ class FunkinMemory
    */
   public static function cacheSound(assetPath:AssetPath):Void
   {
-    FunkinAssetCache.instance.cacheSound(assetPath);
+    funkin.assets.Assets.cacheSound(assetPath);
   }
 
   /**
@@ -131,7 +125,7 @@ class FunkinMemory
    */
   public static function permanentCacheSound(assetPath:AssetPath):Void
   {
-    FunkinAssetCache.instance.cacheSound(assetPath);
+    funkin.assets.Assets.cacheSound(assetPath);
   }
 
   /**
@@ -180,25 +174,4 @@ class FunkinMemory
   {
     trace(' MEMORY '.bg_bright_lilac().bold() + ' ${message}');
   }
-}
-
-/**
- * A structure containing a three-stage asset cache.
- */
-typedef CacheTriplet<T> =
-{
-  /**
-   * The permanent cache, containing assets which always stay in memory and are never purged.
-   */
-  permanent:Map<AssetPath, T>,
-
-  /**
-   * The currently cached assets. Won't be purged until the next purge cycle.
-   */
-  current:Map<AssetPath, T>,
-
-  /**
-   * The assets that were previously cached. May be re-cached, but if not, they will be purged.
-   */
-  previous:Map<AssetPath, T>
 }

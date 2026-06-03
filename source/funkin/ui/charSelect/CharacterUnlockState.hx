@@ -1,5 +1,6 @@
 package funkin.ui.charSelect;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
@@ -128,11 +129,22 @@ class CharacterUnlockState extends MusicBeatState
     FlxG.camera.fade(FlxColor.BLACK, 0.75, false, () ->
     {
       #if ios
-      if (DeviceUtil.iPhoneNumber > 12) funkin.memory.FunkinMemory.purgeCache(true);
+      if (DeviceUtil.iPhoneNumber > 12)
+      {
+        FunkinAssetCache.instance.preparePurgeCache();
+        // TODO: In loading screens, you should be caching BETWEEN these.
+        FunkinAssetCache.instance.purgeCache(true);
+      }
       else
-        funkin.memory.FunkinMemory.purgeCache();
+      {
+        FunkinAssetCache.instance.preparePurgeCache();
+        // TODO: In loading screens, you should be caching BETWEEN these.
+        FunkinAssetCache.instance.purgeCache();
+      }
       #else
-      funkin.memory.FunkinMemory.purgeCache(true);
+      FunkinAssetCache.instance.preparePurgeCache();
+      // TODO: In loading screens, you should be caching BETWEEN these.
+      FunkinAssetCache.instance.purgeCache(true);
       #end
       FlxG.switchState(() -> nextState);
     });

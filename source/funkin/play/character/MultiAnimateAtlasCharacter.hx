@@ -82,7 +82,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
             // This breaks mix-and-match for some reason.
             // TODO: Re-enable this line once a proper fix is found.
             // - Abnormal
-            // FunkinMemory.cacheTexture(Paths.image(animation.assetPath));
+            // funkin.assets.Assets.cacheFlxGraphic(Paths.image(animation.assetPath));
           }
 
           textureList.push(subTexture);
