@@ -19,6 +19,8 @@ import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import funkin.util.plugins.SidePanelPlugin;
+import funkin.ui.modmenu.ModMenuButton;
+import funkin.util.PropertyAnimator;
 
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -35,9 +37,9 @@ class ModMenuState extends MusicBeatState
 
   var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
-  var buttonBackToMenu:FunkinSprite = new FunkinSprite();
-  var buttonOpenFolder:FunkinSprite = new FunkinSprite();
-  var buttonDone:FunkinSprite = new FunkinSprite();
+  var buttonBackToMenu:ModMenuButton = new ModMenuButton();
+  var buttonOpenFolder:ModMenuButton = new ModMenuButton();
+  var buttonDone:ModMenuButton = new ModMenuButton();
 
   /**
    * This flag is enabled when returning to the main menu.
@@ -60,6 +62,9 @@ class ModMenuState extends MusicBeatState
 
   var darkness:FunkinSprite;
   var fileDrop:FunkinSprite;
+
+  var openFolderAnimator:PropertyAnimator;
+  var doneButtonAnimator:PropertyAnimator;
 
   public function new()
   {
@@ -91,7 +96,7 @@ class ModMenuState extends MusicBeatState
     topText.y = 25;
 
     var dragText:FlxText = new FlxText(112, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
-    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE);
+    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, false);
     dragText.scale.set(1, 0.8);
     add(dragText);
 
@@ -165,10 +170,53 @@ class ModMenuState extends MusicBeatState
 
     buttonOpenFolder.x = 240;
     buttonOpenFolder.y = 640;
-    buttonOpenFolder.scale.set(0.66, 0.67);
+    buttonOpenFolder.scale.set(0.65, 0.65);
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
     buttonOpenFolder.updateHitbox();
     add(buttonOpenFolder);
+
+    buttonDone.graphicName = 'mod-menu-done';
+    buttonOpenFolder.graphicName = 'mod-menu-open-folder';
+
+    openFolderAnimator = new PropertyAnimator(buttonOpenFolder);
+    doneButtonAnimator = new PropertyAnimator(buttonDone);
+
+    openFolderAnimator.addAnimationByName('select', 24);
+
+    openFolderAnimator.addProperty('select', 'scale.x', [0.72]);
+    openFolderAnimator.addProperty('select', 'scale.y', [0.72]);
+    openFolderAnimator.addProperty('select', 'selected', [true]);
+    openFolderAnimator.addProperty('select', 'invert', [false]);
+
+    openFolderAnimator.addAnimationByName('deselect', 24);
+    openFolderAnimator.addProperty('deselect', 'scale.x', [0.65]);
+    openFolderAnimator.addProperty('deselect', 'scale.y', [0.65]);
+    openFolderAnimator.addProperty('deselect', 'selected', [false]);
+    openFolderAnimator.addProperty('deselect', 'invert', [false]);
+
+    openFolderAnimator.addAnimationByName('accept', 24);
+    openFolderAnimator.addProperty('accept', 'scale.x', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
+    openFolderAnimator.addProperty('accept', 'scale.y', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
+    openFolderAnimator.addProperty('accept', 'invert',  [true, true, false, false, false, false, false, false, false]);
+    openFolderAnimator.addProperty('accept', 'selected', [false, false, true, true, true, false, false, false, false]);
+
+    doneButtonAnimator.addAnimationByName('select', 24);
+    doneButtonAnimator.addProperty('select', 'scale.x', [0.72]);
+    doneButtonAnimator.addProperty('select', 'scale.y', [0.72]);
+    doneButtonAnimator.addProperty('select', 'selected', [true]);
+    doneButtonAnimator.addProperty('select', 'invert', [false]);
+
+    doneButtonAnimator.addAnimationByName('deselect', 24);
+    doneButtonAnimator.addProperty('deselect', 'scale.x', [0.65]);
+    doneButtonAnimator.addProperty('deselect', 'scale.y', [0.65]);
+    doneButtonAnimator.addProperty('deselect', 'selected', [false]);
+    doneButtonAnimator.addProperty('deselect', 'invert', [false]);
+
+    doneButtonAnimator.addAnimationByName('accept', 24);
+    doneButtonAnimator.addProperty('accept', 'scale.x', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
+    doneButtonAnimator.addProperty('accept', 'scale.y', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
+    doneButtonAnimator.addProperty('accept', 'invert', [true, true, false, false, false, false, false, false, false]);
+    doneButtonAnimator.addProperty('accept', 'selected', [false, false, true, true, true, false, false, false, false]);
 
     darkness = new FunkinSprite();
     darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -202,9 +250,6 @@ class ModMenuState extends MusicBeatState
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
 
     applyInitialSelection();
-
-    buttonOpenFolder.alpha = 0.5;
-    buttonDone.alpha = 0.5;
 
     FlxG.autoPause = false;
   }
@@ -535,9 +580,11 @@ class ModMenuState extends MusicBeatState
         case BackToMenu:
           backToMainMenu();
         case OpenModsFolder:
-          openModsFolder();
+          openFolderAnimator.playAnimation('accept');
+          openFolderAnimator.onFinish = openModsFolder;
         case Done:
-          applyModlist();
+          doneButtonAnimator.playAnimation('accept');
+          doneButtonAnimator.onFinish = applyModlist;
       }
 
       oldSelection = selection;
@@ -550,8 +597,8 @@ class ModMenuState extends MusicBeatState
   {
     disabledModItems.deselect();
     enabledModItems.deselect();
-    buttonOpenFolder.alpha = 0.5;
-    buttonDone.alpha = 0.5;
+    if (openFolderAnimator.curAnim == 'select' && selection != OpenModsFolder) openFolderAnimator.playAnimation('deselect');
+    if (doneButtonAnimator.curAnim == 'select' && selection != Done) doneButtonAnimator.playAnimation('deselect');
 
     switch (selection)
     {
@@ -560,9 +607,9 @@ class ModMenuState extends MusicBeatState
       case EnabledModList:
         enabledModItems.selectFirstItem();
       case OpenModsFolder:
-        buttonOpenFolder.alpha = 1;
+        openFolderAnimator.playAnimation('select');
       case Done:
-        buttonDone.alpha = 1;
+        doneButtonAnimator.playAnimation('select');
       case BackToMenu:
         // Do nothing
     }
