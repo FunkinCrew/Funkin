@@ -1,7 +1,6 @@
 package funkin.assets;
 
-import funkin.memory.StagedCache;
-// import funkin.assets.ugh.BitmapDataSC;
+import funkin.util.assets.StagedCache;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxDestroyUtil;
@@ -39,21 +38,6 @@ import funkin.assets.ValidatedPaths as Paths;
 
 class FunkinAssetCache implements OpenFLIAssetCache
 {
-  /**
-    Openfl BitmapData cache map
-  **/
-  public var bitmapData:Map<String, BitmapData> = [];
-
-  /**
-    Openfl Font cache map
-  **/
-  public var font:Map<String, Font> = [];
-
-  /**
-    Openfl Sound cache map
-  **/
-  public var sound:Map<String, Sound> = [];
-
   // var stagedFlxGraphic:StagedCache<FlxGraphic>;
   // var stagedBitmapData:BitmapDataSC<BitmapData>;
   var stagedBitmapData:StagedCache<BitmapData>;
@@ -134,9 +118,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
     //   graphic.destroyOnNoUse = false;
     // });
 
-    stagedBitmapData = new StagedCache<BitmapData>(FlxDestroyUtil.dispose, function(_:BitmapData)
+    stagedBitmapData = new StagedCache<BitmapData>();
+    stagedBitmapData.onPurge.add((_:String, asset:BitmapData) ->
     {
+      FlxDestroyUtil.dispose(asset);
     });
+
     current_font = [];
     current_sound = [];
     current_text = [];
@@ -151,7 +138,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
-   * Hard clear all assets from the asset cache.
+   * Clear assets from the asset cache.
+   * @param prefix (Optional) Only asset paths starting with this prefix will be cleared.
    */
   public function clear(?prefix:String):Void
   {
@@ -165,9 +153,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
       // }
       FunkinBitmapFrontend.instance.reset();
 
-      for (key in stagedBitmapData.allKeys())
+      for (assetPath in stagedBitmapData.keys())
       {
-        removeBitmapData(key);
+        removeBitmapData(assetPath);
       }
 
       current_font = [];
@@ -194,11 +182,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
       //     removeFlxGraphic(key);
       //   }
       // }
-      for (key in stagedBitmapData.allKeys())
+      for (assetPath in stagedBitmapData.keys())
       {
-        if (key.startsWith(prefix))
+        if (assetPath.toString().startsWith(prefix))
         {
-          removeBitmapData(key);
+          removeBitmapData(assetPath);
         }
       }
       for (key in current_font.keys())
@@ -245,8 +233,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache(recachePersistent:Bool = true):Void
   {
-    stagedBitmapData.preparePurge();
-    FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurge();
+    stagedBitmapData.preparePurgeCache();
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
+
     // previous_font = current_font;
     // current_font = [];
     // previous_sound = current_sound;
@@ -731,8 +720,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setBitmapData($id)');
     #end
-    stagedBitmapData.current.set(id, bitmapData);
-    stagedBitmapData.previous.remove(id);
+    stagedBitmapData.cache(id, bitmapData);
   }
 
   /**
@@ -1349,7 +1337,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     trace('[ASSETS] Cached assets:');
     trace('[ASSETS] BITMAP DATA:');
-    var keys:Array<String> = stagedBitmapData.current.keys().array();
+    var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
@@ -1357,7 +1345,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] FLX GRAPHIC:');
-    var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.current.keys().array();
+    var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
@@ -1416,6 +1404,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
       throw '$info: Tried to queue asset caching from the main thread.';
     }
   }
+
+  /**
+   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
+   */
+  public var bitmapData:Map<String, BitmapData> = [];
+
+  /**
+   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
+   */
+  public var font:Map<String, Font> = [];
+
+  /**
+   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
+   */
+  public var sound:Map<String, Sound> = [];
 }
 
 /**

@@ -22,7 +22,7 @@ import lime.app.Future;
 class FunkinMemory
 {
   /**
-   * Caches textures that are always required.
+   * Initialize the caches.
    */
   public static function initialCache():Void
   {
@@ -30,8 +30,9 @@ class FunkinMemory
   }
 
   /**
-   * Clears the current texture and sound caches.
-   * @param callGarbageCollector Whether to call the system's garbage collector after purging.
+   * Purges all the game's asset caches.
+   *
+   * @param callGarbageCollector Whether to forcibly invoke the system's garbage collector after purging.
    */
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
@@ -46,7 +47,9 @@ class FunkinMemory
     #end
   }
 
-  ///// TEXTURES /////
+  // =========
+  // TEXTURES
+  // =========
 
   /**
    * Ensures a texture with the given key is cached.
@@ -113,7 +116,9 @@ class FunkinMemory
     return FunkinAssetCache.instance.hasFlxGraphic(key);
   }
 
-  ///// NOTE STYLE //////
+  // =========
+  // NOTE STYLE
+  // =========
 
   /**
    *  Caches all assets for the given note style.
@@ -164,7 +169,9 @@ class FunkinMemory
     // }
   }
 
-  ///// SOUND //////
+  // =========
+  // SOUND
+  // =========
 
   /**
    * Caches a sound with the given key.
@@ -186,6 +193,7 @@ class FunkinMemory
 
   /**
    * Prepares the cache for purging unused sounds.
+   * Make sure to call this before `purgeSoundCache()`.
    */
   public static function preparePurgeSoundCache():Void
   {
@@ -194,13 +202,16 @@ class FunkinMemory
 
   /**
    * Purges unused sounds from the cache.
+   * Make sure to call `preparePurgeSoundCache()`, then cache any sounds you want to keep before purging.
    */
   public static inline function purgeSoundCache():Void
   {
     SoundCache.purge();
   }
 
-  ///// MISC /////
+  // =========
+  // MISC
+  // =========
 
   /**
    * Clears all Freeplay assets from memory.
@@ -228,11 +239,23 @@ class FunkinMemory
   }
 }
 
-// Just a struct for holding the 3 map caches.
-
+/**
+ * A structure containing a three-stage asset cache.
+ */
 typedef CacheTriplet<T> =
 {
+  /**
+   * The permanent cache, containing assets which always stay in memory and are never purged.
+   */
   permanent:Map<AssetPath, T>,
+
+  /**
+   * The currently cached assets. Won't be purged until the next purge cycle.
+   */
   current:Map<AssetPath, T>,
+
+  /**
+   * The assets that were previously cached. May be re-cached, but if not, they will be purged.
+   */
   previous:Map<AssetPath, T>
 }

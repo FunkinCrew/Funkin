@@ -1,6 +1,6 @@
 package funkin.assets;
 
-import funkin.memory.StagedCache;
+import funkin.util.assets.StagedCache;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxDestroyUtil;
@@ -32,9 +32,6 @@ import funkin.assets.ValidatedPaths as Paths;
 using StringTools;
 using Lambda;
 
-/**
- * An override for the HaxeFlixel BitmapFrontend class to provide additional logging.
- */
 // MOON NOTES
 // * A potential issue I can see with the current implementation is that checking if a cached graphic even exists
 // * puts that same said cached graphic into the current cache, which may cause issues if the same asset is being loaded multiple times in a row,
@@ -42,6 +39,12 @@ using Lambda;
 // * function to check if an asset exists without moving it to the current cache, and then only move it when it's actually added to the stage or something like that.
 //
 // * Also staged caching is misleading lol, probably should call it double buffered caching or whatevs. Frick!
+
+/**
+ * An override for the HaxeFlixel BitmapFrontend class,
+ * to provide additional logging and stricter asset caching.
+ */
+@:nullSafety
 class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 {
   /**
@@ -51,8 +54,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   static var _instance:Null<FunkinBitmapFrontend> = null;
 
-  public var stagedFlxGraphic:StagedCache<FlxGraphic>;
-
   static function get_instance():FunkinBitmapFrontend
   {
     if (FunkinBitmapFrontend._instance == null) _instance = new FunkinBitmapFrontend();
@@ -60,14 +61,18 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     return FunkinBitmapFrontend._instance;
   }
 
+  /**
+   * A staged cache for FlxGraphics.
+   * Helps with tracking and purging unused FlxGraphics.
+   */
+  public var stagedFlxGraphic:StagedCache<FlxGraphic>;
+
   public function new()
   {
-    stagedFlxGraphic = new StagedCache<FlxGraphic>(function(graphic:FlxGraphic)
-    {
-      // Custom removal logic if needed
-    }, function(graphic:FlxGraphic)
-    {
-    });
+    stagedFlxGraphic = new StagedCache<FlxGraphic>();
+
+    // Called whenever a graphic is purged from the cache.
+    stagedFlxGraphic.onPurge.add(onPurgeFlxGraphic);
 
     super();
   }
@@ -76,12 +81,12 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   {
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
     {
-      stagedFlxGraphic.current.set(graphic.key, graphic);
+      stagedFlxGraphic.cache(graphic.key, graphic);
     }
     else if (stagedFlxGraphic.get(graphic.key) != graphic)
     {
       removeByKey(graphic.key);
-      stagedFlxGraphic.current.set(graphic.key, graphic);
+      stagedFlxGraphic.cache(graphic.key, graphic);
     }
 
     return graphic;
@@ -108,20 +113,25 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     #end
   }
 
+  function onPurgeFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
+  {
+    // Called when an FlxGraphic is purged from the StagedCache.
+  }
+
   // This is wildly different from the original approach of FunkinAssetCache where we recache the asset if it exists. But we need this internally for the other bitmapfrontend
   // functions to work properly, otherwise we'd need to override every single function that gets a graphic from the cache without needing it to be specifically loaded in memory.
 
-  override public function get(key:String):FlxGraphic
+  override public function get(assetPath:String):Null<FlxGraphic>
   {
-    return stagedFlxGraphic.get(key);
+    return stagedFlxGraphic.get(assetPath);
   }
 
-  override public function findKeyForBitmap(bmd:BitmapData):String
+  override public function findKeyForBitmap(bmd:BitmapData):Null<String>
   {
-    for (key in stagedFlxGraphic.allKeys())
+    for (assetPath in stagedFlxGraphic.keys())
     {
-      var obj = stagedFlxGraphic.get(key);
-      if (obj != null && obj.bitmap == bmd) return key;
+      var obj = stagedFlxGraphic.get(assetPath);
+      if (obj != null && obj.bitmap == bmd) return assetPath;
     }
 
     return null;
@@ -138,26 +148,13 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function removeByKey(key:String):Void
   {
-    if (key != null)
-    {
-      remove(stagedFlxGraphic.get(key));
-    }
+    stagedFlxGraphic.remove(key);
   }
 
   override public function clearCache():Void
   {
-    if (stagedFlxGraphic != null)
-    {
-      for (key in stagedFlxGraphic.previous.keys())
-      {
-        var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-        if (graphic != null && graphic.useCount <= 0)
-        {
-          remove(graphic);
-        }
-      }
-      stagedFlxGraphic.previous.clear();
-    }
+    // Clear everything in the cache, except permanent assets.
+    stagedFlxGraphic.clearCache();
   }
 
   /**
@@ -168,22 +165,14 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearExcept(filter:Array<String>):Void
   {
-    if (stagedFlxGraphic == null) return;
-
-    for (key in stagedFlxGraphic.previous.keys())
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
     {
-      if (!filter.exists(keyword -> key.contains(keyword)))
-      {
-        var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-        if (graphic != null && graphic.useCount <= 0)
-        {
-          trace('[FUCCCKKK] Clearing cached graphic: ' + key);
-          remove(graphic);
-          stagedFlxGraphic.previous.remove(key);
-          FunkinAssetCache.instance.removeBitmapData(key);
-        }
-      }
-    }
+      if (graphic == null) return true;
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+
+      return !filter.exists(keyword -> key.contains(keyword));
+    });
   }
 
   /**
@@ -195,22 +184,14 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearOnly(filter:Array<String>):Void
   {
-    if (stagedFlxGraphic == null) return;
-
-    for (key in stagedFlxGraphic.previous.keys())
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
     {
-      if (filter.exists(keyword -> key.contains(keyword)))
-      {
-        var graphic:FlxGraphic = stagedFlxGraphic.previous.get(key);
-        if (graphic != null && graphic.useCount <= 0)
-        {
-          trace('[FUCCCKKK] Clearing cached graphic: ' + key);
-          remove(graphic);
-          stagedFlxGraphic.previous.remove(key);
-          FunkinAssetCache.instance.removeBitmapData(key);
-        }
-      }
-    }
+      if (graphic == null) return true;
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+
+      return filter.exists(keyword -> key.contains(keyword));
+    });
   }
 
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
@@ -219,48 +200,39 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function clearUnused():Void
   {
-    for (key in stagedFlxGraphic.allKeys())
+    stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
-      var obj = stagedFlxGraphic.get(key);
-      if (obj != null && obj.useCount <= 0 && !obj.persist && obj.destroyOnNoUse)
-      {
-        removeByKey(key);
-      }
-    }
+      if (graphic == null) return true;
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+      if (!graphic.destroyOnNoUse) return false;
+
+      return true;
+    });
   }
 
   override function removeKey(key:String):Void
   {
-    if (key != null)
-    {
-      FunkinAssetCache.instance.removeBitmapData(key);
-      stagedFlxGraphic.remove(key);
-    }
+    FunkinAssetCache.instance.removeBitmapData(key);
+    stagedFlxGraphic.remove(key);
   }
 
   override public function reset():Void
   {
-    if (stagedFlxGraphic != null)
-    {
-      for (key in stagedFlxGraphic.allKeys())
-      {
-        removeByKey(key);
-      }
-      stagedFlxGraphic.previous.clear();
-      stagedFlxGraphic.current.clear();
-    }
+    stagedFlxGraphic.clearCache();
   }
 
+  /**
+   * Clears all cached FlxGraphics that start with the specified prefix.
+   * @param prefix The prefix to match against cached FlxGraphics.
+   */
   public function resetByPrefix(prefix:String):Void
   {
-    if (stagedFlxGraphic != null)
+    for (key in stagedFlxGraphic.keys())
     {
-      for (key in stagedFlxGraphic.allKeys())
+      if (key.startsWith(prefix))
       {
-        if (key.startsWith(prefix))
-        {
-          removeByKey(key);
-        }
+        removeByKey(key);
       }
     }
   }
@@ -268,7 +240,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function onAssetsReload(_):Void
   {
     // TODO: Implement asset reload logic if needed, for now just copy pasted from original BitmapFrontEnd.
-    for (key in stagedFlxGraphic.allKeys())
+    for (key in stagedFlxGraphic.keys())
     {
       var obj = stagedFlxGraphic.get(key);
       if (obj != null && obj.canBeRefreshed)

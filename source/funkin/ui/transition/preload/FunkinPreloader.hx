@@ -307,17 +307,6 @@ class FunkinPreloader extends FlxBasePreloader
           // This is quick enough to do synchronously.
           funkin.assets.Assets.initialize();
 
-          // Make a future to retrieve the manifest
-          // var future:openfl.utils.Future<openfl.utils.AssetLibrary> = Assets.loadLibrary('core');
-          //
-          // future.onProgress((loaded:Int, total:Int) -> {
-          //  preloadingPlayAssetsPercent = loaded / total;
-          // });
-          // future.onComplete((library:lime.utils.AssetLibrary) -> {
-          //  preloadingPlayAssetsComplete = true;
-          // });
-
-          // TODO: Reimplement this.
           preloadingPlayAssetsPercent = 1.0;
           preloadingPlayAssetsComplete = true;
           return 0.0;

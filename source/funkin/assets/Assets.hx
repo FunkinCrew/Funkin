@@ -17,7 +17,6 @@ import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.utils.Assets as OpenFLAssets;
-import funkin.assets.FunkinBitmapFrontend;
 //
 // ~PATHS~
 //
@@ -119,7 +118,7 @@ class Assets implements ConsoleClass
    * Retrieve the BitmapData for the given asset path, synchronously.
    * Fails if the asset isn't cached already.
    * @param assetPath The path of the asset to retrieve.
-   * @param useCache TODO: THIS DOES NOTHING
+   * @param useCache Dummy argument to match o
    * @throws error If the asset isn't cached.
    * @return The BitmapData for the asset.
    */
@@ -768,8 +767,7 @@ class Assets implements ConsoleClass
   public static function assetExists(assetPath:AssetPath):Bool
   {
     // If asset cache is not initialized, manifest probably won't be either, so we just assume the file is there.
-    // TODO: Asset cache isn't getting initialized, fix it before uncommenting this!
-    // if (!initialized) return true;
+    if (!initialized) return true;
 
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call a function from funkin.Paths?';
 
