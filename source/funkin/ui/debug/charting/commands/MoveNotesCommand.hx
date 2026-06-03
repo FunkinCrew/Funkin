@@ -63,7 +63,7 @@ class MoveNotesCommand implements ChartEditorCommand
         (ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0, ChartEditorState.STRUMLINE_SIZE * 2 - 1)
       );
 
-      movedNotes.push(resultNote);
+      movedNotes.pushUnique(resultNote);
     }
 
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);

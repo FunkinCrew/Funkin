@@ -30,11 +30,11 @@ class MirrorNotesCommand implements ChartEditorCommand
       {
         if (note.data < ChartEditorState.STRUMLINE_SIZE)
         {
-          playerNotes.push(note);
+          playerNotes.pushUnique(note);
         }
         else if (note.data >= ChartEditorState.STRUMLINE_SIZE)
         {
-          opponentNotes.push(note);
+          opponentNotes.pushUnique(note);
         }
       }
       if (playerNotes.length > 0)

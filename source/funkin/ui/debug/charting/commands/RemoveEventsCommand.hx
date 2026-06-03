@@ -51,7 +51,7 @@ class RemoveEventsCommand implements ChartEditorCommand
 
     for (event in events)
     {
-      state.currentSongChartEventData.push(event);
+      state.currentSongChartEventData.pushUnique(event);
     }
     state.currentEventSelection = events;
     state.playSound(Paths.sound('chartingSounds/undo'));

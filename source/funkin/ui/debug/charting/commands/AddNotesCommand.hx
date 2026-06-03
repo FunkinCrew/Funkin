@@ -29,12 +29,15 @@ class AddNotesCommand implements ChartEditorCommand
   {
     for (note in notes)
     {
-      state.currentSongChartNoteData.push(note);
+      state.currentSongChartNoteData.pushUnique(note);
     }
 
     if (appendToSelection)
     {
-      state.currentNoteSelection = state.currentNoteSelection.concat(notes);
+      for (note in notes)
+      {
+        state.currentNoteSelection.pushUnique(note);
+      }
     }
     else
     {

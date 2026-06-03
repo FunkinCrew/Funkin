@@ -57,7 +57,7 @@ class MoveEventsCommand implements ChartEditorCommand
         resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
       }
 
-      movedEvents.push(resultEvent);
+      movedEvents.pushUnique(resultEvent);
     }
 
     state.currentSongChartEventData = SongDataUtils.subtractEvents(state.currentSongChartEventData, events);

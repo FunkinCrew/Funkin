@@ -45,12 +45,12 @@ class DeselectItemsCommand implements ChartEditorCommand
   {
     for (note in this.notes)
     {
-      state.currentNoteSelection.push(note);
+      state.currentNoteSelection.pushUnique(note);
     }
 
     for (event in this.events)
     {
-      state.currentEventSelection.push(event);
+      state.currentEventSelection.pushUnique(event);
     }
 
     state.noteDisplayDirty = true;
