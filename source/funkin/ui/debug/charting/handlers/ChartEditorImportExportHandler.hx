@@ -165,7 +165,7 @@ class ChartEditorImportExportHandler
         var count:Int = SongNoteDataUtils.listStackedNotes(notes, 0, false).length;
         if (count > 0)
         {
-          affectedDiffs.push(diff);
+          affectedDiffs.pushUnique(diff);
           stackedNotesCount += count;
         }
       }
