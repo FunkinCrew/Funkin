@@ -46,7 +46,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
         {
           if (state.currentSongChartNoteData[i].time < time)
           {
-            notes.push(state.currentSongChartNoteData[i]);
+            notes.pushUnique(state.currentSongChartNoteData[i]);
           }
           else
           {
@@ -62,7 +62,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
         {
           if (state.currentSongChartEventData[i].time < time)
           {
-            events.push(state.currentSongChartEventData[i]);
+            events.pushUnique(state.currentSongChartEventData[i]);
           }
           else
           {
@@ -80,7 +80,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
           // Backwards for loop (kinda). Neat!
           if (state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1].time > time)
           {
-            notes.push(state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1]);
+            notes.pushUnique(state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1]);
           }
           else
           {
@@ -96,7 +96,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
         {
           if (state.currentSongChartEventData[state.currentSongChartEventData.length - i - 1].time > time)
           {
-            events.push(state.currentSongChartEventData[state.currentSongChartEventData.length - i - 1]);
+            events.pushUnique(state.currentSongChartEventData[state.currentSongChartEventData.length - i - 1]);
           }
           else
           {
@@ -122,12 +122,12 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
   {
     for (note in this.notes)
     {
-      state.currentNoteSelection.push(note);
+      state.currentNoteSelection.pushUnique(note);
     }
 
     for (event in this.events)
     {
-      state.currentEventSelection.push(event);
+      state.currentEventSelection.pushUnique(event);
     }
 
     state.noteDisplayDirty = true;

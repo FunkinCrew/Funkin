@@ -1376,7 +1376,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     for (variation in availableVariations)
     {
       if (variation == Constants.DEFAULT_VARIATION) continue;
-      songVariations.push(variation);
+      songVariations.pushUnique(variation);
     }
   }
 
@@ -2714,7 +2714,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Can't use filter() because of null safety checking!
     var filteredWorkingFilePaths:Array<String> = [];
-    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
+    for (chartPath in previousWorkingFilePaths) if (chartPath != null) filteredWorkingFilePaths.pushUnique(chartPath);
     save.chartEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
@@ -4107,7 +4107,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           || isSelectedAndDragged)
         {
           // Note is already displayed and should remain displayed.
-          displayedNoteData.push(noteSprite.noteData);
+          displayedNoteData.pushUnique(noteSprite.noteData);
 
           // Update the note sprite's position.
           noteSprite.updateNotePosition(renderedNotes);
@@ -4143,7 +4143,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
         else
         {
-          displayedHoldNoteData.push(holdNoteSprite.noteData);
+          displayedHoldNoteData.pushUnique(holdNoteSprite.noteData);
           // Update the hold note sprite's height and position.
           var holdNoteHeight = holdNoteSprite.noteData.getStepLength() * GRID_SIZE;
           holdNoteSprite.setHeightDirectly(holdNoteHeight);
@@ -4168,7 +4168,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           || isSelectedAndDragged)
         {
           // Event is already displayed and should remain displayed.
-          displayedEventData.push(eventSprite.eventData);
+          displayedEventData.pushUnique(eventSprite.eventData);
 
           // Update the event sprite's position.
           eventSprite.updateEventPosition(renderedEvents);
@@ -7005,7 +7005,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);
     if (variationMetadata == null) return;
 
-    variationMetadata.playData.difficulties.push(difficulty);
+    variationMetadata.playData.difficulties.pushUnique(difficulty);
 
     var resultChartData = songChartData.get(variation);
     if (resultChartData == null)
@@ -7045,7 +7045,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Actually add the new difficulty.
 
-    newVariationMetadata.playData.difficulties.push(newDifficulty);
+    newVariationMetadata.playData.difficulties.pushUnique(newDifficulty);
 
     var newChartData = songChartData.get(newVariation);
     if (newChartData == null)
