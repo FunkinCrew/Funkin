@@ -60,7 +60,7 @@ class MoveItemsCommand implements ChartEditorCommand
         (ChartEditorState.noteDataToGridColumn(resultNote.data) + columns).clamp(0, ChartEditorState.STRUMLINE_SIZE * 2 - 1)
       );
 
-      movedNotes.push(resultNote);
+      movedNotes.pushUnique(resultNote);
     }
 
     for (event in events)
@@ -69,7 +69,7 @@ class MoveItemsCommand implements ChartEditorCommand
       var resultEvent = event.clone();
       resultEvent.time = (resultEvent.time + offset).clamp(0, Conductor.instance.getStepTimeInMs(state.songLengthInSteps - (1 * state.noteSnapRatio)));
 
-      movedEvents.push(resultEvent);
+      movedEvents.pushUnique(resultEvent);
     }
 
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(movedNotes);

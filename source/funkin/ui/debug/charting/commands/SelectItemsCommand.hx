@@ -31,12 +31,12 @@ class SelectItemsCommand implements ChartEditorCommand
   {
     for (note in this.notes)
     {
-      state.currentNoteSelection.push(note);
+      state.currentNoteSelection.pushUnique(note);
     }
 
     for (event in this.events)
     {
-      state.currentEventSelection.push(event);
+      state.currentEventSelection.pushUnique(event);
     }
 
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.

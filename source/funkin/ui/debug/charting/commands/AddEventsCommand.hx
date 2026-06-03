@@ -29,12 +29,15 @@ class AddEventsCommand implements ChartEditorCommand
   {
     for (event in events)
     {
-      state.currentSongChartEventData.push(event);
+      state.currentSongChartEventData.pushUnique(event);
     }
 
     if (appendToSelection)
     {
-      state.currentEventSelection = state.currentEventSelection.concat(events);
+      for (event in events)
+      {
+        state.currentEventSelection.pushUnique(event);
+      }
     }
     else
     {

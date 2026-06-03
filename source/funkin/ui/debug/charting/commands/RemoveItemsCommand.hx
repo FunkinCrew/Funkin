@@ -57,12 +57,12 @@ class RemoveItemsCommand implements ChartEditorCommand
 
     for (note in notes)
     {
-      state.currentSongChartNoteData.push(note);
+      state.currentSongChartNoteData.pushUnique(note);
     }
 
     for (event in events)
     {
-      state.currentSongChartEventData.push(event);
+      state.currentSongChartEventData.pushUnique(event);
     }
 
     state.currentNoteSelection = notes;
