@@ -10,6 +10,45 @@ import funkin.graphics.FunkinSprite;
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
 /**
+ * Settings for a `FunkinBufferSprite`
+ */
+typedef FunkinBufferSpriteSettings =
+{
+  /**
+   * The base zoom of the camera.
+   * The buffer will always be rendered at this zoom.
+   * If set to `-1`, the buffer will be rendered at whatever zoom the camera was on the previous frame.
+   */
+  @:optional
+  var baseZoom:Float;
+
+  /**
+   * The delay before the buffer is rendered.
+   * If set to `0`, the buffer will be rendered immediately.
+   *
+   * Could be useful for performance.
+   */
+  @:optional
+  var bufferDelay:Float;
+
+  /**
+   * If enabled, the buffer will behave in screen space.
+   * This is useful for reflections that need to be rendered in various zoom levels.
+   *
+   * By default, it's disabled. So it renders in world space.
+   */
+  @:optional
+  var useScreenspace:Bool;
+
+  /**
+   * The resolution scale of the buffer.
+   * Setting it lower than 1.0 will make the buffer render at a lower resolution.
+   */
+  @:optional
+  var resolutionScale:Float;
+}
+
+/**
  * A `FunkinSprite` with its sole purpose of rendering a `FlxCamera`.
  */
 @:access(funkin.graphics.FunkinCamera)
@@ -95,9 +134,20 @@ class FunkinBufferSprite extends FunkinSprite
     return value;
   }
 
+  /**
+   * If enabled, the buffer will behave in screen space.
+   * This is useful for reflections that need to be rendered in various zoom levels.
+   *
+   * By default, it's disabled. So it renders in world space.
+   */
+  public var useScreenspace:Bool = false;
+
   var _usedCamera:FunkinCamera;
 
-  public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0, resolutionScale:Float = 1.0)
+  public function new(x:Float = 0,
+    y:Float = 0,
+    camera:FunkinCamera,
+    params:FunkinBufferSpriteSettings)
   {
     super(x, y);
 
@@ -106,8 +156,9 @@ class FunkinBufferSprite extends FunkinSprite
     // We need the previous frame from the camera
     _usedCamera.renderBuffer = true;
 
-    this.baseZoom = baseZoom;
-    this.bufferDelay = bufferDelay;
+    this.baseZoom = params.baseZoom ?? -1;
+    this.bufferDelay = params.bufferDelay ?? 0;
+    this.useScreenspace = params.useScreenspace ?? false;
 
     @:privateAccess
     var bufferGraphic:FlxGraphic = new FlxGraphic(BUFFER_TEXTURE_KEY, _usedCamera.texture);
@@ -124,7 +175,7 @@ class FunkinBufferSprite extends FunkinSprite
     this.renderer.blacklistSprite(this);
 
     // Setting this last since everything else needs to initialize first
-    this.resolutionScale = resolutionScale;
+    this.resolutionScale = params.resolutionScale ?? 1.0;
   }
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
@@ -139,6 +190,21 @@ class FunkinBufferSprite extends FunkinSprite
     {
       var scale:Float = 1.0 / resolutionScale;
       matrix.scale(scale, scale);
+    }
+
+    if (useScreenspace)
+    {
+      var zoom:Float = _usedCamera.zoom;
+      if (zoom == 0) zoom = 0.0001;
+
+      var baseZoom:Float = this.baseZoom;
+      if (baseZoom <= 0) baseZoom = 1;
+
+      var scale:Float = baseZoom / zoom;
+
+      matrix.scale(scale, scale);
+      matrix.tx += ((1 - scale) * (frameWidth * 0.5)) + (this.x * (1 - scale));
+      matrix.ty += ((1 - scale) * (frameHeight * 0.5)) + (this.y * (1 - scale));
     }
 
     if (this.filters != null && this.filters.length > 0)

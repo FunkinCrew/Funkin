@@ -54,6 +54,7 @@ class FunkinBufferRenderer
   public var delay:Float = 0;
 
   var dirty:Bool = false;
+  var initialized:Bool = false;
   var _timer:Float = 0;
   var _camera:FunkinCamera;
   var _whiteList:Array<String> = [];
@@ -90,6 +91,14 @@ class FunkinBufferRenderer
 
     if (delay > 0)
     {
+      // Force the timer to start at the delay the first time it's rendered
+      // Prevents a blank frame from being shown when the parent camera is first created
+      if (!initialized)
+      {
+        initialized = true;
+        _timer = delay;
+      }
+
       _timer += FlxG.elapsed;
 
       if (_timer > delay)
