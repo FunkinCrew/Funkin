@@ -573,6 +573,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var eventDataToPlace:DynamicAccess<Dynamic> = {};
 
   /**
+   * The color of comment to place, as a hex string.
+   * Uses the last color of comment you selected.
+   */
+  var commentColorToPlace:String = '#0000BB';
+
+  /**
    * The internal index of what note snapping value is in use.
    * Increment to make placement more preceise and decrement to make placement less precise.
    */
@@ -4615,6 +4621,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       commentPanel.commentData = commentToDisplay;
       commentPanel.updatePosition();
+      commentPanel.updateColor();
     }
 
     if (commentDisplayDirty)
@@ -4638,15 +4645,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           // Mark that we are already rendering this comment.
           displayedCommentData.push(pinSprite.commentData);
+
+          // Make sure the pin display is up to date.
+          pinSprite.updateDisplay();
         }
       }
 
       // Add comments that are newly visible.
       for (commentData in currentSongChartCommentData)
       {
-        // Check if we're already rendering this pin.
-        if (displayedCommentData.contains(commentData)) continue;
-
         trace('Rendering comment pin ${commentData}');
         var pinSprite:ChartEditorCommentPinSprite = renderedPins.recycle(() -> new ChartEditorCommentPinSprite(this));
 
@@ -4945,8 +4952,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     var eventColumn:Int = (STRUMLINE_SIZE * 2 + 1) - 1;
 
-    // trace('shouldHandleCursor: $shouldHandleCursor');
-
     // TODO: TBH some of this should be using FlxMouseEventManager...
 
     // early return if we shouldn't handle the cursor at all
@@ -5083,7 +5088,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         performCommand(new AddCommentCommand({
           time: playheadPosMs,
           text: 'New Comment',
-          color: '#FF0000',
+          color: commentColorToPlace,
         }));
         this.success('New Comment', 'Added a comment at the playhead position.');
       }
@@ -6756,7 +6761,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       performCommand(new AddCommentCommand({
         time: playheadPosMs,
         text: 'New Comment',
-        color: '#0000FF',
+        color: commentColorToPlace,
       }));
       this.success('New Comment', 'Added a comment at the playhead position.');
     }

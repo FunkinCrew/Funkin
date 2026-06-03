@@ -1,19 +1,22 @@
 package funkin.ui.debug.charting.components;
 
 #if FEATURE_CHART_EDITOR
-import haxe.ui.util.Color;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
-import haxe.ui.containers.dialogs.Dialog.DialogButton;
-import funkin.ui.debug.charting.commands.RemoveCommentCommand;
-import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.events.MouseEvent;
+import funkin.ui.debug.charting.dialogs.ChartEditorColorPicker;
 import funkin.data.song.SongData.CommentData;
+import funkin.ui.debug.charting.commands.RemoveCommentCommand;
 import haxe.ui.containers.Panel;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
+import haxe.ui.util.Color;
+
+// nullSafety breaks on HaxeUI components *sob*
 
 /**
  * The panel that displays the contents of a comment.
  */
-// nullSafety breaks on HaxeUI components *sob*
 @:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/components/comment.xml'))
 class ChartEditorCommentPanel extends Panel
 {
@@ -40,7 +43,19 @@ class ChartEditorCommentPanel extends Panel
   {
     if (commentData == null) return;
 
-    trace('Changing color of comment: ${commentData}');
+    var dialog:ChartEditorColorPicker = ChartEditorColorPicker.build(chartEditorState, true, true);
+
+    dialog.onColorSelected = onChangeColor;
+    dialog.paletteColors = ChartEditorCommentHandler.buildCommentColorPalette(chartEditorState, commentData);
+  }
+
+  function onChangeColor(color:Color):Void
+  {
+    if (commentData == null) return;
+
+    commentData.color = color.toHex();
+    chartEditorState.commentColorToPlace = commentData.color;
+    chartEditorState.commentDisplayDirty = true;
   }
 
   /**
@@ -61,8 +76,22 @@ class ChartEditorCommentPanel extends Panel
         chartEditorState.performCommand(new RemoveCommentCommand(commentData));
 
         commentData = null;
+        chartEditorState.commentDisplayDirty = true;
       }
     });
+  }
+
+  @:bind(commentCardTextField, UIEvent.CHANGE)
+  function onEditCommentCardTextField(_:UIEvent):Void
+  {
+    if (commentData == null) return;
+
+    var newText:String = commentCardTextField.text;
+    if (newText == commentData.text) return;
+
+    // TODO: Make this undoable/redoable without being painful.
+    commentData.text = newText;
+    chartEditorState.commentDisplayDirty = true;
   }
 
   /**
@@ -89,6 +118,9 @@ class ChartEditorCommentPanel extends Panel
     return this.commentData;
   }
 
+  /**
+   * Update the horizontal and vertical position of the panel, relative to the grid.
+   */
   public function updatePosition():Void
   {
     if (commentData == null) return;
@@ -103,14 +135,20 @@ class ChartEditorCommentPanel extends Panel
     this.y = songTimePixels + relativeSongPixels;
   }
 
-  function updateText():Void
+  /**
+   * Update the text of the comment card.
+   */
+  public function updateText():Void
   {
     if (commentData == null) return;
 
     this.commentCardTextField.text = commentData.text;
   }
 
-  function updateColor():Void
+  /**
+   * Update the color of the comment card.
+   */
+  public function updateColor():Void
   {
     if (commentData == null) return;
 

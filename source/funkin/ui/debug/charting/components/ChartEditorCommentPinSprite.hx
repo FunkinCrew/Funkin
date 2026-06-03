@@ -15,8 +15,7 @@ import haxe.ui.tooltips.ToolTipRegionOptions;
  * A sprite that can be used to display a comment pin, to the left of the note preview.
  * Designed to be used and reused efficiently.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorCommentPinSprite extends FunkinSprite
 {
   /**
@@ -69,13 +68,20 @@ class ChartEditorCommentPinSprite extends FunkinSprite
     }
 
     this.visible = true;
+    updateDisplay();
 
+    return this.commentData;
+  }
+
+  /**
+   * Update how the pin is displayed based on the current comment data.
+   */
+  public function updateDisplay():Void
+  {
     updatePosition();
     updateTooltipText();
     updateTooltipPosition();
     updateColor();
-
-    return this.commentData;
   }
 
   function updatePosition():Void
