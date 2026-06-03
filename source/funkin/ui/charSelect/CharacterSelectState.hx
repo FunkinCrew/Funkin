@@ -715,6 +715,8 @@ class CharacterSelectState extends MusicBeatSubState
               newPlayer?.revive();
               newPlayer?.playAnimation(UNLOCK);
 
+              characters.currentCharacterId = characterId;
+
               nametag.loadCharacter(characterId);
 
               icons.replaceLock(characterId, currentSelection);
