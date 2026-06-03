@@ -8,10 +8,10 @@ import haxe.ui.core.Screen;
 import haxe.ui.data.ArrayDataSource;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.events.ItemEvent;
 import haxe.ui.events.KeyboardEvent;
 
 using funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemBuilder;
-using funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteRunner;
 
 /**
  * This component blatantly rips off the command palette from VSCode.
@@ -71,6 +71,29 @@ class ChartEditorCommandPalette extends Panel
     this.populatePaletteItems();
   }
 
+  function onItemInteract(event:ItemEvent):Void
+  {
+    if (event.sourceEvent.type == MouseEvent.CLICK)
+    {
+      // Clicked a list item.
+
+      var paletteCommand:PaletteCommand = event.data;
+      trace('Command Palette: Clicked item "${paletteCommand.title}"');
+
+      var success:Bool = paletteCommand.execute(this);
+
+      if (success)
+      {
+        // Clean up and close the palette.
+        close();
+      }
+      else
+      {
+        // Command was a no-op.
+      }
+    }
+  }
+
   /**
    * Setup mouse events tied to this command palette.
    */
@@ -81,6 +104,7 @@ class ChartEditorCommandPalette extends Panel
     Screen.instance.registerEvent(MouseEvent.MOUSE_DOWN, onScreenMouseDown);
     Screen.instance.registerEvent(MouseEvent.RIGHT_MOUSE_DOWN, onScreenMouseDown);
     commandPaletteInput.onChange = onInputChanged;
+    commandPaletteList.onComponentEvent = onItemInteract;
   }
 
   /**
@@ -92,6 +116,44 @@ class ChartEditorCommandPalette extends Panel
     Screen.instance.unregisterEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
     Screen.instance.unregisterEvent(MouseEvent.MOUSE_DOWN, onScreenMouseDown);
     Screen.instance.unregisterEvent(MouseEvent.RIGHT_MOUSE_DOWN, onScreenMouseDown);
+  }
+
+  function fetchCurrentCommand():Null<PaletteCommand>
+  {
+    if (commandPaletteList.dataSource.size == 0) return null;
+    if (commandPaletteList.dataSource.size == 1) return commandPaletteList.dataSource.get(0);
+
+    return commandPaletteList.dataSource.get(selectionIndex);
+  }
+
+  /**
+   * Try and execute the currently selected command.
+   *
+   * @param palette The CommandPalette to operate on.
+   */
+  function tryPerformCommand():Void
+  {
+    var paletteCommand = fetchCurrentCommand();
+
+    if (paletteCommand == null)
+    {
+      trace('Command Palette: No command selected.');
+      return;
+    }
+
+    trace('Command Palette: Performing command ${paletteCommand.title}');
+
+    var success:Bool = paletteCommand.execute(this);
+
+    if (success)
+    {
+      // Clean up and close the palette.
+      close();
+    }
+    else
+    {
+      // Command was a no-op.
+    }
   }
 
   /**
@@ -120,10 +182,10 @@ class ChartEditorCommandPalette extends Panel
     switch ([event.keyCode, event.ctrlKey, event.altKey, event.shiftKey])
     {
       case [FlxKey.UP, _, _, _]:
-        this.selectionIndex -= 1;
+        selectionIndex -= 1;
         this.populatePaletteItems();
       case [FlxKey.DOWN, _, _, _]:
-        this.selectionIndex += 1;
+        selectionIndex += 1;
         this.populatePaletteItems();
       case [FlxKey.ENTER, _, _, _]:
         this.tryPerformCommand();
@@ -135,13 +197,15 @@ class ChartEditorCommandPalette extends Panel
   }
 
   /**
-   * Put the user's cursor on the input field.
+   * Put the user's text cursor in the input field.
    */
   public function focusInput():Void
   {
     trace('Command Palette: Focusing input...');
+    // Move focus so that typing puts text in the field immediately.
     instance.commandPaletteInput.focus = true;
-    instance.commandPaletteInput.caretIndex = 1;
+    // Move the caret to the end.
+    instance.commandPaletteInput.caretIndex = instance.commandPaletteInput.text.length;
   }
 
   /**
