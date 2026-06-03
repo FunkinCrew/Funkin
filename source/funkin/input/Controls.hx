@@ -1189,6 +1189,8 @@ class FunkinAction extends FlxActionDigital
 
     this.namePressed = namePressed;
     this.nameReleased = nameReleased;
+
+    updateLastDeviceUsed();
   }
 
   /**

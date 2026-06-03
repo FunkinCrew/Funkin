@@ -137,7 +137,7 @@ class InitState extends FlxState
 
       #if mobile
       // Setup Mobile FNFC launcher.
-      funkin.mobile.util.FNFCUtil.init();
+      funkin.mobile.util.FNFCProvider.init();
       #end
 
       SongEventHelper.generateEaseGraphsBitmaps();
@@ -459,7 +459,7 @@ class InitState extends FlxState
     {
       // FlxG.sound.cache(Paths.music('freakyMenu/freakyMenu'));
       #if mobile
-      funkin.mobile.util.FNFCUtil.onFNFCOpen.add(function(fnfcFile:String)
+      funkin.mobile.util.FNFCProvider.onFNFCOpen.add(function(fnfcFile:String)
       {
         flixel.tweens.FlxTween.globalManager.clear();
         flixel.util.FlxTimer.globalManager.clear();
@@ -473,7 +473,7 @@ class InitState extends FlxState
         FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       });
 
-      final fnfcFile = funkin.mobile.util.FNFCUtil.queryFNFC();
+      final fnfcFile = funkin.mobile.util.FNFCProvider.queryFNFC();
       if (fnfcFile != null)
       {
         trace('launching FNFC from $fnfcFile');

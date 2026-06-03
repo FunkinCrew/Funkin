@@ -135,24 +135,38 @@ class SongEventRegistry
   }
 
   /**
+   * Caching the index for the next event to query greatly reduces lag.
+   * Kinda nasty that it's tied to a static class though.
+   */
+  static var nextEventIndex:Int = 0;
+
+  /**
+   * Retrieve the list of events to activate this frame.
+   *
    * @param events The list of available song events.
    * @param currentTime The current time in milliseconds.
+   * @param startIndex The index to start querying from.
+   *   Defaults to the index of the last event handled.
    * @return The list of events which haven't been handled yet.
    */
-  public static function queryEvents(events:Array<SongEventData>, currentTime:Float):Array<SongEventData>
+  public static function queryEvents(events:Array<SongEventData>, currentTime:Float, ?startIndex:Int):Array<SongEventData>
   {
-    var result:Array<SongEventData> = events.filter(function(event:SongEventData):Bool
+    startIndex ??= nextEventIndex;
+
+    var result:Array<SongEventData> = [];
+
+    for (i in startIndex...events.length)
     {
-      // If the event is already activated, don't activate it again.
-      if (event.activated) return false;
+      if (events[i].activated) continue;
 
-      // If the event is in the future, don't activate it.
-      if (event.time > currentTime) return false;
+      if (events[i].time > currentTime)
+      {
+        nextEventIndex = i;
+        return result;
+      }
 
-      return true;
-    });
-
-    result.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+      result.push(events[i]);
+    }
 
     return result;
   }
@@ -185,32 +199,26 @@ class SongEventRegistry
    */
   public static function resetEvents(events:Array<SongEventData>):Void
   {
+    events.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
+    nextEventIndex = 0;
+    allEventHandlers.resize(0);
+
     for (event in events)
     {
       event.activated = false;
-      // TODO: Add an onReset() method to SongEvent?
+
+      var handler:Null<SongEvent> = getEvent(event.eventKind);
+      if (handler != null && !allEventHandlers.contains(handler)) allEventHandlers.push(handler);
     }
   }
 
-  /**
-   * Dispatches a ScriptEvent to an event.
-   */
-  public static function callEventForEvent(data:SongEventData, scriptEvent:ScriptEvent):Void
-  {
-    var eventKind:String = data.eventKind;
-    var eventHandler:Null<SongEvent> = eventCache.get(eventKind);
+  static var allEventHandlers:Array<SongEvent> = [];
 
-    if (eventHandler != null)
-    {
-      ScriptEventDispatcher.callEvent(eventHandler, scriptEvent);
-    }
-  }
-
-  public static inline function callEvent(events:Array<SongEventData>, scriptEvent:ScriptEvent):Void
+  public static inline function callEvent(scriptEvent:ScriptEvent):Void
   {
-    for (event in events)
+    for (event in allEventHandlers)
     {
-      callEventForEvent(event, scriptEvent);
+      ScriptEventDispatcher.callEvent(event, scriptEvent);
     }
   }
 }

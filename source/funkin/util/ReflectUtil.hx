@@ -416,4 +416,13 @@ class ReflectUtil
     if (cls == null) return "Unknown";
     return Type.getClassName(cls);
   }
+
+  /**
+   * Transform a function taking an array of arguments into a function that can
+   * be called with any number of arguments.
+   */
+  public static function makeVarArgs(f:Array<Dynamic>->Dynamic):Dynamic
+  {
+    return Reflect.makeVarArgs(f);
+  }
 }

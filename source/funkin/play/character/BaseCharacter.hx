@@ -371,11 +371,7 @@ class BaseCharacter extends Bopper
     // Reset hold timer for each note pressed.
     if (justPressedNote() && this.characterType == BF)
     {
-      // If the note kind has `noanim` do not reset holdTimer.
-      if (curNoteKind != null && !curNoteKind.noanim)
-      {
-        holdTimer = 0;
-      }
+      holdTimer = 0;
     }
 
     if (isDead)
@@ -534,21 +530,39 @@ class BaseCharacter extends Bopper
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
-
     curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
-
-    // Let the character naturally transition back to their idle/dance animation.
-    if (curNoteKind != null && curNoteKind.noanim) return;
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
-      this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix ?? '');
-      holdTimer = 0;
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        holdTimer = 0;
+      }
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
-      this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix ?? '');
-      holdTimer = 0;
+      if (curNoteKind != null)
+      {
+        if (!curNoteKind.noanim)
+        {
+          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
+          holdTimer = 0;
+        }
+      }
+      else
+      {
+        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        holdTimer = 0;
+      }
     }
     else if (characterType == GF && event.note.noteData.getMustHitNote())
     {
@@ -577,7 +591,6 @@ class BaseCharacter extends Bopper
     {
       // If the note is from the same strumline, play the miss animation.
       this.playSingAnimation(event.note.noteData.getDirection(), true);
-      this.holdTimer = 0;
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {

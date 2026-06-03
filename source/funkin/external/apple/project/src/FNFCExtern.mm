@@ -1,9 +1,9 @@
-#include "FNFCUtil.hpp"
+#include "FNFCExtern.hpp"
 #import <Foundation/Foundation.h>
 
 static FNFCCallback fnfcCallback = nullptr;
 
-void Apple_FNFCUtil_CopyFNFCIntoCache(const char *url, FNFCCallback callback)
+void Apple_FNFCExtern_CopyFNFCIntoCache(const char *url, FNFCCallback callback)
 {
   #if TARGET_OS_IOS
   if (!fnfcCallback)

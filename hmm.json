@@ -18,7 +18,7 @@
       "name": "extension-admob",
       "type": "git",
       "dir": null,
-      "ref": "ab0c9523761072c6a61fd9fdff248a9bb7b8b4c5",
+      "ref": "5c908b3f7c74115a8b52eddf1e05525f4873f26e",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
@@ -169,7 +169,7 @@
       "name": "lime",
       "type": "git",
       "dir": null,
-      "ref": "c26fcbc13ea7587009fb8b78780baf5ec45b51f3",
+      "ref": "826d25199c17329b730ae09838f3df7a2903c471",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {

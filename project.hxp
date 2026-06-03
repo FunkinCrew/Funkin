@@ -32,13 +32,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.3";
+  static final VERSION:String = "0.8.5";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 77;
+  static final BUILD_NUMBER:Int = 87;
 
   /**
    * The game's name. Used as the default window title.
@@ -1118,6 +1118,13 @@ class Project extends HXProject
 
     // Ensure all flixel-animate classes are available at runtime.
     addHaxeMacro("include('animate')");
+
+    // Ensure all openfl classes are available at runtime.
+    addHaxeMacro("include('openfl')");
+
+    // Ensure all lime classes are available at runtime.
+    // Explicitly ignore tools and internal packages.
+    addHaxeMacro("include('lime', true, ['lime.tools.*', 'lime._internal.*'])");
 
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
