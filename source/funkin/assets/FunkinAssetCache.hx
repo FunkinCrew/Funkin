@@ -48,7 +48,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * A staged cache for Fonts.
    * Helps with tracking and purging unused assets.
    */
-  var stagedFont:Map<String, Font>;
+  var stagedFont:StagedCache<Font>;
 
   /**
    * Cache containing Sounds
@@ -714,7 +714,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFont($id)');
     #end
-    stagedFont.set(id, font);
+    stagedFont.cache(id, font);
   }
 
   /**
@@ -1333,7 +1333,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] FONT:');
-    var keys:Array<String> = current_font.keys().array();
+    var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {

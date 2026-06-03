@@ -18,7 +18,6 @@ import lime.app.Future;
  * I did this hello, this can be improved later on and I have ideas on how, but for now this functions well enough. -Zack
  */
 @:nullSafety
-@:allow(funkin.memory.BitmapCache, funkin.memory.SoundCache)
 class FunkinMemory
 {
   /**
@@ -47,7 +46,7 @@ class FunkinMemory
    */
   public static function cacheTexture(assetPath:AssetPath):Void
   {
-    FunkinAssetCache.instance.cacheFlxGraphic(assetPath);
+    funkin.assets.Assets.cacheFlxGraphic(assetPath);
   }
 
   /**
@@ -56,7 +55,7 @@ class FunkinMemory
    */
   static function permanentCacheTexture(assetPath:AssetPath):Void
   {
-    FunkinAssetCache.instance.cacheFlxGraphic(assetPath);
+    funkin.assets.Assets.cacheFlxGraphic(assetPath);
   }
 
   /**
@@ -67,7 +66,7 @@ class FunkinMemory
    */
   public static function getCachedGraphic(assetPath:AssetPath):Future<FlxGraphic>
   {
-    return funkin.assets.Assets.loadFlxGraphic(path);
+    return funkin.assets.Assets.loadFlxGraphic(assetPath);
   }
 
   /**
@@ -88,12 +87,13 @@ class FunkinMemory
 
   /**
    * Determine whether the texture with the given key is cached.
-   * @param key The key of the texture to check.
+   *
+   * @param assetPath The asset path of the texture to check.
    * @return Whether the texture is cached.
    */
-  public static function isTextureCached(key:AssetPath):Bool
+  public static function isTextureCached(assetPath:AssetPath):Bool
   {
-    return FunkinAssetCache.instance.hasFlxGraphic(key);
+    return funkin.assets.Assets.isFlxGraphicCached(assetPath);
   }
 
   // =========
@@ -102,6 +102,7 @@ class FunkinMemory
 
   /**
    *  Caches all assets for the given note style.
+   *
    * @param style The note style to cache.
    */
   public static function cacheNoteStyle(style:NoteStyle):Void
@@ -114,21 +115,23 @@ class FunkinMemory
   // =========
 
   /**
-   * Caches a sound with the given key.
-   * @param key The key of the sound to cache.
+   * Caches a sound with the given asset path.
+   *
+   * @param assetPath The asset path of the sound to cache.
    */
-  public static function cacheSound(key:AssetPath):Void
+  public static function cacheSound(assetPath:AssetPath):Void
   {
-    SoundCache.cache(key);
+    FunkinAssetCache.instance.cacheSound(assetPath);
   }
 
   /**
-   * Permanently caches a sound with the given key.
-   * @param key The key of the sound to cache.
+   * Permanently caches a sound with the given asset path.
+   *
+   * @param assetPath The asset path of the sound to cache.
    */
-  public static function permanentCacheSound(key:AssetPath):Void
+  public static function permanentCacheSound(assetPath:AssetPath):Void
   {
-    SoundCache.permanentCache(key);
+    FunkinAssetCache.instance.cacheSound(assetPath);
   }
 
   /**
@@ -137,7 +140,7 @@ class FunkinMemory
    */
   public static function preparePurgeSoundCache():Void
   {
-    SoundCache.preparePurge();
+    trace(' WARNING '.warning() + 'FunkinMemory.preparePurgeSoundCache() is deprecated and should not be used.');
   }
 
   /**
@@ -146,7 +149,7 @@ class FunkinMemory
    */
   public static inline function purgeSoundCache():Void
   {
-    SoundCache.purge();
+    trace(' WARNING '.warning() + 'FunkinMemory.purgeSoundCache() is deprecated and should not be used.');
   }
 
   // =========
