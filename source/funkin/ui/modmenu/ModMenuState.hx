@@ -248,6 +248,10 @@ class ModMenuState extends MusicBeatState
   {
     if (item == null || transitionLayer == null) return;
 
+    enabledModItems.remove(item);
+    disabledModItems.remove(item);
+    if (transitionLayer.children.contains(item)) transitionLayer.remove(item);
+
     item.clipRect = null;
     transitionLayer.add(item);
     item.localX = worldX - transitionLayer.x;
@@ -274,15 +278,9 @@ class ModMenuState extends MusicBeatState
     item.localX = ModMenuItemList.ITEM_X_OFFSET;
 
     if (incomingCount(destinationList) == 0)
-    {
       destinationList.repositionItems();
-      if (destinationList.selectedModItem != null)
-        destinationList.ensureItemVisible(destinationList.selectedModItem);
-    }
     else
-    {
       destinationList.updateScrollbar();
-    }
   }
 
   /**
@@ -522,9 +520,11 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.ACCEPT_P)
+    if (controls.ACCEPT_P && !isTransitioning())
     {
-      completeAllTransitions();
+
+      enabledModItems.repositionItems();
+      disabledModItems.repositionItems();
 
       switch (selection)
       {
@@ -702,8 +702,10 @@ class ModMenuState extends MusicBeatState
     }
 
     var oldIndex:Int = disabledModItems.modItems.indexOf(item);
-    var worldX:Float = disabledModItems.x + item.localX;
-    var worldY:Float = disabledModItems.y + item.localY;
+    var srcLocalX:Float = ModMenuItemList.ITEM_X_OFFSET;
+    var srcLocalY:Float = disabledModItems.getModItemYPos(oldIndex) + disabledModItems.scrollOffset;
+    var worldX:Float = disabledModItems.x + srcLocalX;
+    var worldY:Float = disabledModItems.y + srcLocalY;
     disabledModItems.removeModWithoutLayout(item);
 
     var insertIndex:Int = originalInsertIndex;
@@ -769,9 +771,12 @@ class ModMenuState extends MusicBeatState
     }
 
     var oldIndex:Int = enabledModItems.modItems.indexOf(item);
-    var worldX:Float = enabledModItems.x + item.localX;
-    var worldY:Float = enabledModItems.y + item.localY;
+    var srcLocalX:Float = ModMenuItemList.ITEM_X_OFFSET;
+    var srcLocalY:Float = enabledModItems.getModItemYPos(oldIndex) + enabledModItems.scrollOffset;
+    var worldX:Float = enabledModItems.x + srcLocalX;
+    var worldY:Float = enabledModItems.y + srcLocalY;
     enabledModItems.removeModWithoutLayout(item);
+
     putItemInTransitionLayer(item, worldX, worldY);
 
     // Always insert at the top of the disabled list; order there doesn't matter.
