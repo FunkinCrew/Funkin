@@ -5,6 +5,7 @@ import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinSprite;
 import funkin.util.EaseUtil;
 import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.PlayState;
 
 @:nullSafety
 class PopUpStuff extends FlxTypedGroup<FunkinSprite>
@@ -53,6 +54,11 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     rating.velocity.x -= FlxG.random.int(0, 10);
 
     rating.graphic.destroyOnNoUse = false;
+
+    if (PlayState.instance != null)
+    {
+      PlayState.instance.dropShadowLayer.renderer.blacklistSprite(rating);
+    }
 
     add(rating);
 
@@ -106,6 +112,11 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
       numScore.velocity.x = FlxG.random.float(-5, 5);
 
       numScore.graphic.destroyOnNoUse = false;
+
+      if (PlayState.instance != null)
+      {
+        PlayState.instance.dropShadowLayer.renderer.blacklistSprite(numScore);
+      }
 
       add(numScore);
 

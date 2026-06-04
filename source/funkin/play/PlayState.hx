@@ -889,6 +889,7 @@ class PlayState extends MusicBeatSubState
     // The song is now loaded. We can continue to initialize the play state.
     initCameras();
     initHealthBar();
+
     if (!isMinimalMode)
     {
       initStage();
@@ -898,6 +899,7 @@ class PlayState extends MusicBeatSubState
     {
       initMinimalMode();
     }
+
     initStrumlines();
     initPopups();
 
@@ -927,6 +929,8 @@ class PlayState extends MusicBeatSubState
       camControls.bgColor = 0x0;
     }
     #end
+
+    initDropShadow();
 
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
@@ -2000,6 +2004,26 @@ class PlayState extends MusicBeatSubState
       previousCameraFollowPoint = null;
     }
     add(cameraFollowPoint);
+  }
+
+  /**
+   * Initializes the drop shadow underneath the HUD.
+   */
+  function initDropShadow():Void
+  {
+    dropShadowLayer.camera = camHUD;
+    dropShadowLayer.zIndex = 0;
+
+    // Don't render a dropshadow for some UI elements
+    dropShadowLayer.renderer.blacklistSprite(healthBar);
+    dropShadowLayer.renderer.blacklistSprite(healthBarBG);
+    dropShadowLayer.renderer.blacklistSprite(scoreText);
+    dropShadowLayer.renderer.blacklistSprite(leftWatermarkText);
+    dropShadowLayer.renderer.blacklistSprite(rightWatermarkText);
+    dropShadowLayer.renderer.blacklistSprite(iconP1);
+    dropShadowLayer.renderer.blacklistSprite(iconP2);
+
+    add(dropShadowLayer);
   }
 
   /**

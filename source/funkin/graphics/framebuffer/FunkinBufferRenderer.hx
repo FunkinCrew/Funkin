@@ -113,8 +113,14 @@ class FunkinBufferRenderer
    * Adds the specified sprite to the whitelist.
    * @param sprite The sprite to add.
    */
-  public function whitelistSprite(sprite:FlxSprite):Void
+  public function whitelistSprite(sprite:Null<FlxSprite>):Void
   {
+    if (sprite == null || sprite.graphic == null)
+    {
+      trace('WARNING: Tried to whitelist an invalid sprite.');
+      return;
+    }
+
     if (_blackList.contains(sprite.graphic.key))
     {
       _blackList.remove(sprite.graphic.key);
@@ -130,8 +136,14 @@ class FunkinBufferRenderer
    * Adds the specified sprite to the blacklist.
    * @param sprite The sprite to add.
    */
-  public function blacklistSprite(sprite:FlxSprite):Void
+  public function blacklistSprite(sprite:Null<FlxSprite>):Void
   {
+    if (sprite == null || sprite.graphic == null)
+    {
+      trace('WARNING: Tried to blacklist an invalid sprite.');
+      return;
+    }
+
     if (_whiteList.contains(sprite.graphic.key))
     {
       _whiteList.remove(sprite.graphic.key);

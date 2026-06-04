@@ -4,6 +4,7 @@ import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import funkin.play.PlayState;
 
 class NoteSplash extends FlxSprite
 {
@@ -15,6 +16,11 @@ class NoteSplash extends FlxSprite
     super(0, 0);
 
     setupSplashGraphic(noteStyle);
+
+    if (PlayState.instance != null)
+    {
+      PlayState.instance.dropShadowLayer.renderer.blacklistSprite(this);
+    }
 
     this.animation.onFinish.add(this.onAnimationFinished);
   }
