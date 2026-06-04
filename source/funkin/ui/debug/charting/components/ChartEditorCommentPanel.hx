@@ -11,13 +11,15 @@ import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.util.Color;
+import funkin.util.ColorUtil;
 
 // nullSafety breaks on HaxeUI components *sob*
 
 /**
  * The panel that displays the contents of a comment.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/components/comment.xml'))
+@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/components/comment.xml'))
 class ChartEditorCommentPanel extends Panel
 {
   var chartEditorState:ChartEditorState;
@@ -153,9 +155,17 @@ class ChartEditorCommentPanel extends Panel
     if (commentData == null) return;
 
     var header = headerContainer.childComponents[0];
+    // header child 0 is an icon
+    var text = header.childComponents[1];
 
-    header.color = Color.fromString('white');
-    header.backgroundColor = Color.fromString(commentData.color);
+    trace(Type.getClassName(Type.getClass(text)));
+
+    header.customStyle.backgroundColor = Color.fromString(commentData.color);
+    header.customStyle.color = ColorUtil.getHaxeUITextColor(header.backgroundColor);
+    header.invalidateComponentStyle();
+
+    text.customStyle.color = ColorUtil.getHaxeUITextColor(header.backgroundColor);
+    text.invalidateComponentStyle();
   }
 }
 #end

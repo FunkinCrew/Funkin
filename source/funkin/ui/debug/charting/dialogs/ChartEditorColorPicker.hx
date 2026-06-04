@@ -4,8 +4,10 @@ package funkin.ui.debug.charting.dialogs;
 import funkin.ui.debug.charting.dialogs.ChartEditorBaseDialog.DialogParams;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.util.Color;
+import haxe.ui.events.UIEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import flixel.util.FlxTimer;
 
 /**
  * A dialog which allows the user to select a color with an intuitive wheel interface.
@@ -48,14 +50,33 @@ class ChartEditorColorPicker extends ChartEditorBaseDialog
 
   function updatePaletteColors():Void
   {
-    colorPalette1.backgroundColor = paletteColors[0] ?? Color.fromString('#FFFFFF');
-    colorPalette2.backgroundColor = paletteColors[1] ?? Color.fromString('#FFFFFF');
-    colorPalette3.backgroundColor = paletteColors[2] ?? Color.fromString('#FFFFFF');
-    colorPalette4.backgroundColor = paletteColors[3] ?? Color.fromString('#FFFFFF');
-    colorPalette5.backgroundColor = paletteColors[4] ?? Color.fromString('#FFFFFF');
-    colorPalette6.backgroundColor = paletteColors[5] ?? Color.fromString('#FFFFFF');
-    colorPalette7.backgroundColor = paletteColors[6] ?? Color.fromString('#FFFFFF');
-    colorPalette8.backgroundColor = paletteColors[7] ?? Color.fromString('#FFFFFF');
+    colorPalette1.backgroundColor = paletteColors[0] ?? 0xFFFFFF;
+    colorPalette2.backgroundColor = paletteColors[1] ?? 0xFFFFFF;
+    colorPalette3.backgroundColor = paletteColors[2] ?? 0xFFFFFF;
+    colorPalette4.backgroundColor = paletteColors[3] ?? 0xFFFFFF;
+    colorPalette5.backgroundColor = paletteColors[4] ?? 0xFFFFFF;
+    colorPalette6.backgroundColor = paletteColors[5] ?? 0xFFFFFF;
+    colorPalette7.backgroundColor = paletteColors[6] ?? 0xFFFFFF;
+    colorPalette8.backgroundColor = paletteColors[7] ?? 0xFFFFFF;
+
+    colorPicker.currentColor = paletteColors[0] ?? 0xFFFFFF;
+    trace('Set color via palette: ${colorPicker.currentColor.toHex()}');
+  }
+
+  var _initFix:Bool = false;
+
+  @:bind(colorPicker, UIEvent.CHANGE)
+  function onColorPickerChange(_:UIEvent):Void
+  {
+    trace('Current color: ${colorPicker.currentColor.toHex()}');
+    if (colorPicker.currentColor == 0x000000 && !_initFix)
+    {
+      _initFix = true;
+      new FlxTimer().start(0.05, function(_)
+      {
+        colorPicker.currentColor = colorPicker.currentColor = paletteColors[0] ?? 0xFFFFFF;
+      });
+    }
   }
 
   @:bind(buttonCancel, MouseEvent.CLICK)
