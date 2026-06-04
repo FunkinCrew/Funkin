@@ -71,6 +71,7 @@ class FunkinBufferRenderer
   public function render():Void
   {
     if (!active) return;
+    if (useWhitelist && _whiteList.isEmpty()) return;
 
     if (delay > 0)
     {
