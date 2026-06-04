@@ -22,6 +22,8 @@ import openfl.utils.Assets as OpenFLAssets;
 //
 import funkin.assets.ValidatedPaths as Paths;
 
+using StringTools;
+
 /**
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions,
  * while providing additional Funkin-specific functions and caching.
@@ -77,41 +79,34 @@ class Assets implements ConsoleClass
    * @param suffix A path suffix for the data file name.
    * @param blacklist An array of paths to exclude from the list.
    * @param nested Whether to parse nested data files as only the last part of the path.
-   *     Use `true`, if you expect files will be at `<path>/<id>/<id><suffix>`.
+   * Use `true`, if you expect files will be at `<path>/<id>/<id><suffix>`.
    * @return A list of results, with path and extension removed.
    */
   public static function listDataFilesInPath(path:String, suffix:String = '.json', ?blacklist:Array<String>, nested:Bool = false):Array<String>
   {
-    if (blacklist == null) blacklist = [];
-
+    var queryPath:String = 'assets/${path}';
     var textAssets:Array<String> = openfl.utils.Assets.list(TEXT);
 
-    var queryPath:String = 'assets/${path}';
-
-    var results:Array<String> = [];
+    var uniqueResults:Map<String, Bool> = new Map<String, Bool>();
     for (textPath in textAssets)
     {
-      if (textPath.startsWith(queryPath) && textPath.endsWith(suffix))
-      {
-        var pathNoSuffix:String = textPath.substring(0, textPath.length - suffix.length);
-        var pathNoPrefix:String = pathNoSuffix.substring(queryPath.length);
+      // Filter matching assets
+      if (!StringTools.startsWith(textPath, queryPath) || !StringTools.endsWith(textPath, suffix)) continue;
 
-        var id:String = pathNoPrefix;
-        if (nested)
-        {
-          var parts:Array<String> = pathNoPrefix.split('/');
-          id = parts[0];
-        }
+      // Isolate raw path
+      var pathNoPrefix:String = textPath.substring(queryPath.length, textPath.length - suffix.length);
+      var id:String = nested ? pathNoPrefix.split('/')[0] : pathNoPrefix;
 
-        if (blacklist.contains(id)) continue;
+      if (blacklist != null && blacklist.contains(id)) continue;
 
-        // No duplicates!
-        if (!results.contains(id)) results.push(id);
-      }
+      // Deduplicate by assigning a key map value
+      uniqueResults.set(id, true);
     }
 
-    trace('[ASSETS] Got ${results.length} data files in path: ${queryPath}*${suffix}');
+    // Convert the unique map keys back into a standard Array
+    var results:Array<String> = [for (key in uniqueResults.keys()) key];
 
+    trace('[ASSETS] Got ${results.length} data files in path: ${queryPath}*${suffix}');
     return results;
   }
 
