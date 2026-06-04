@@ -19,6 +19,9 @@ class ModMenuItem extends FunkinSpriteGroup
   public static final DESC_WIDTH:Int = 216;
   public static final ITEM_WIDTH_PADDING:Int = 24;
 
+  public static var BG_SLIDE_DISTANCE:Float = 14;
+  public static var BG_SLIDE_LERP:Float = 20;
+
   /**
    * Whether this mod item is immutable in list operations.
    */
@@ -32,6 +35,9 @@ class ModMenuItem extends FunkinSpriteGroup
   var fallbackModId:String;
   var fallbackTitle:String;
   var fallbackDescription:String;
+
+  var bgOffsetX:Float = 0;
+  var bgOffsetY:Float = 0;
 
   /**
    * The icon for the mod's thumbnail.
@@ -63,6 +69,24 @@ class ModMenuItem extends FunkinSpriteGroup
     this.selected = value;
     updateBackgroundColor();
     return selected;
+  }
+
+  /**
+   * Move the background in a direction so it visibly slides into place.
+   * dir: -1 up, 1 down, -2 left, 2 right.
+   */
+  public function slideBackgroundFrom(dir:Int):Void
+  {
+    switch (dir)
+    {
+      case -1: bgOffsetX = 0; bgOffsetY = -BG_SLIDE_DISTANCE; // came from up
+      case 1:  bgOffsetX = 0; bgOffsetY = BG_SLIDE_DISTANCE;
+      case -2: bgOffsetX = -BG_SLIDE_DISTANCE; bgOffsetY = 0;
+      case 2:  bgOffsetX = BG_SLIDE_DISTANCE; bgOffsetY = 0;
+      default: bgOffsetX = 0; bgOffsetY = 0;
+    }
+    background.localX = -bgOffsetX;
+    background.localY = -bgOffsetY;
   }
 
   /**
@@ -147,9 +171,28 @@ class ModMenuItem extends FunkinSpriteGroup
     descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
     descriptionText.text = getModDescription();
     descriptionText.scale.set(1,0.8);
+    descriptionText.localAlpha = 0.7;
     add(descriptionText);
 
     descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - titleText.height - 4);
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (bgOffsetX != 0 || bgOffsetY != 0)
+    {
+      var t = Math.min(1, BG_SLIDE_LERP * elapsed);
+      bgOffsetX += (0 - bgOffsetX) * t;
+      bgOffsetY += (0 - bgOffsetY) * t;
+
+      if (Math.abs(bgOffsetX) < 0.1) bgOffsetX = 0;
+      if (Math.abs(bgOffsetY) < 0.1) bgOffsetY = 0;
+
+      background.localX = -bgOffsetX;
+      background.localY = -bgOffsetY;
+    }
   }
 
   function updateBackgroundColor():Void

@@ -14,6 +14,8 @@ class ModMenuItemList extends FunkinSpriteGroup
   public static var ITEM_X_OFFSET:Float = 40;
   public static var ITEM_Y_OFFSET:Float = 60;
 
+  public static var SCROLL_LERP:Float = 16;
+
   public static var SCROLLBAR_WIDTH:Float = 10;
   public static var SCROLLBAR_TOP_MARGIN:Float = -42;
   public static var SCROLLBAR_BOTTOM_MARGIN:Float = -60;
@@ -47,6 +49,7 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public var viewportHeight:Float = 320;
   public var scrollOffset:Float = 0;
+  public var targetScrollOffset:Float = 0;
 
   function get_selectedItemIndex():Int
   {
@@ -74,6 +77,23 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollbarThumb.visible = false;
 
     updateScrollbar();
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (Math.abs(targetScrollOffset - scrollOffset) > 0.1)
+    {
+      var t = Math.min(1, SCROLL_LERP * elapsed);
+      scrollOffset += (targetScrollOffset - scrollOffset) * t;
+      repositionItems();
+    }
+    else if (scrollOffset != targetScrollOffset)
+    {
+      scrollOffset = targetScrollOffset;
+      repositionItems();
+    }
   }
 
   public function removeAll():Void
@@ -198,10 +218,16 @@ class ModMenuItemList extends FunkinSpriteGroup
     return item.getModId() == pinnedTopModId;
   }
 
-  public function selectFirstItem():Void
+  public function selectFirstItem(slideDir:Int = 0):Void
   {
     if (modItems.length == 0) return;
-    selectModItem(modItems[modItems.length - 1]);
+    selectModItem(modItems[modItems.length - 1], true, slideDir);
+  }
+
+  public function selectLastItem(slideDir:Int = 0):Void
+  {
+    if (modItems.length == 0) return;
+    selectModItem(modItems[0], true, slideDir);
   }
 
   public function deselect():Void
@@ -209,31 +235,41 @@ class ModMenuItemList extends FunkinSpriteGroup
     selectModItem(null);
   }
 
-  public function moveUp():Void
+  public function moveUp(allowWrap:Bool = true):Bool
   {
-    if (modItems.length == 0) return;
+    if (modItems.length == 0) return true;
 
     var index = selectedItemIndex + 1;
 
-    if (index >= modItems.length) index = 0;
+    if (index >= modItems.length)
+    {
+      if (!allowWrap) return false;
+      index = 0;
+    }
 
-    selectModItem(modItems[index], false);
+    selectModItem(modItems[index], false, -1);
     scrollBy(getScrollDeltaToReveal(selectedModItem));
+    return true;
   }
 
-  public function moveDown():Void
+  public function moveDown(allowWrap:Bool = true):Bool
   {
-    if (modItems.length == 0) return;
+    if (modItems.length == 0) return true;
 
     var index = selectedItemIndex - 1;
 
-    if (index < 0) index = modItems.length - 1;
+    if (index < 0)
+    {
+      if (!allowWrap) return false;
+      index = modItems.length - 1;
+    }
 
-    selectModItem(modItems[index], false);
+    selectModItem(modItems[index], false, 1);
     scrollBy(getScrollDeltaToReveal(selectedModItem));
+    return true;
   }
 
-  public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true):Void
+  public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true, slideDir:Int = 0):Void
   {
     if (selectedModItem != null) selectedModItem.selected = false;
 
@@ -243,8 +279,9 @@ class ModMenuItemList extends FunkinSpriteGroup
     }
 
     selectedModItem = item;
-
     selectedModItem.selected = true;
+
+    if (slideDir != 0) selectedModItem.slideBackgroundFrom(slideDir);
 
     if (autoScroll) ensureItemVisible(selectedModItem);
   }
@@ -409,14 +446,13 @@ class ModMenuItemList extends FunkinSpriteGroup
     var ITEM_PADDING:Float = ICON_HEIGHT + 16;
     var contentHeight = ITEM_PADDING * (count - 1) + ICON_HEIGHT;
 
-    // Use the same viewport span as the scrollbar so the two never disagree.
     var viewSpan = getViewportBottom() - getViewportTop();
 
     var minScroll:Float = Math.min(0, viewSpan - contentHeight);
     var maxScroll:Float = 0;
 
-    if (scrollOffset < minScroll) scrollOffset = minScroll;
-    if (scrollOffset > maxScroll) scrollOffset = maxScroll;
+    if (targetScrollOffset < minScroll) targetScrollOffset = minScroll;
+    if (targetScrollOffset > maxScroll) targetScrollOffset = maxScroll;
   }
 
   /**
@@ -441,20 +477,9 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public function scrollBy(delta:Float):Void
   {
-    // Clamp first so the offset always respects the current content bounds.
     var oldOffset:Float = scrollOffset;
-    scrollOffset += delta;
+    targetScrollOffset += delta;
     clampScroll();
-
-    // IMPORTANT: only re-layout when the scroll offset actually changed.
-    // repositionItems() hard-sets every item's localX/localY, which instantly
-    // kills any in-progress layout tween (e.g. the "slide up to fill the gap"
-    // animation kicked off by animateItemsToLayout). Selecting an item that's
-    // already on-screen produces a delta of 0; in that case there is nothing to
-    // scroll, so we must NOT snap the items and stomp the running animation.
-    if (scrollOffset == oldOffset) return;
-
-    repositionItems();
   }
 
   /**

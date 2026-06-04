@@ -66,6 +66,8 @@ class ModMenuState extends MusicBeatState
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
 
+  var lastSelectDir:Int = 0;
+
   public function new()
   {
     super();
@@ -483,6 +485,14 @@ class ModMenuState extends MusicBeatState
     }
   }
 
+  var holdDirection:Int = 0; // -1 for up, 1 for down, -2 for left, 2 for right
+  var holdTimer:Float = 0;
+  var doHoldAction:Bool = false;
+  var delay:Float = 0;
+  var acceptDelay:Float = 0;
+
+  var oldSelection:ModMenuSelection;
+
   function handleKeyboard():Void
   {
     if (isTransitioning()) return;
@@ -493,7 +503,124 @@ class ModMenuState extends MusicBeatState
       backToMainMenu();
     }
 
-    var oldSelection = selection;
+    oldSelection = selection;
+
+    if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
+    {
+      if (holdDirection == 0)
+      {
+        holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
+        holdTimer = 0.5; // initial delay before starting to scroll
+      }
+      else if ((controls.UI_UP && holdDirection == -1)
+        || (controls.UI_DOWN && holdDirection == 1)
+        || (controls.UI_LEFT && holdDirection == -2)
+        || (controls.UI_RIGHT && holdDirection == 2))
+      {
+        holdTimer -= FlxG.elapsed;
+        if (holdTimer <= 0)
+        {
+          doHoldAction = true;
+        }
+      }
+    }
+    else
+    {
+      holdDirection = 0;
+      doHoldAction = false;
+    }
+
+    if (doHoldAction && delay <= 0)
+    {
+      delay = 0.1;
+      switch(selection)
+      {
+        case DisabledModList:
+          switch(holdDirection)
+          {
+            case -1: disabledModItems.moveUp();
+            case 1: disabledModItems.moveDown();
+            case -2:
+              selection = Done;
+              lastSelectDir = -2;
+            case 2:
+              selection = EnabledModList;
+              lastSelectDir = 2;
+          }
+        case EnabledModList:
+          switch(holdDirection)
+          {
+            case -1: enabledModItems.moveUp();
+            case 1: enabledModItems.moveDown();
+            case -2:
+              if (disabledModItems.modItems.length > 0) selection = DisabledModList;
+              else selection = Done;
+              lastSelectDir = -2;
+            case 2:
+              selection = OpenModsFolder;
+              lastSelectDir = 2;
+          }
+        case OpenModsFolder:
+          switch(holdDirection)
+          {
+            case -1: selection = DisabledModList; lastSelectDir = -1;
+            case 1: selection = DisabledModList; lastSelectDir = 1;
+            case -2: selection = EnabledModList; lastSelectDir = -2;
+            case 2: selection = Done; lastSelectDir = 2;
+          }
+        case Done:
+          switch(holdDirection)
+          {
+            case -1: selection = EnabledModList; lastSelectDir = -1;
+            case 1: selection = EnabledModList; lastSelectDir = 1;
+            case -2: selection = OpenModsFolder; lastSelectDir = -2;
+            case 2: selection = DisabledModList; lastSelectDir = 2;
+          }
+        case BackToMenu:
+          // Do nothing
+      }
+    }
+    if (delay > 0) delay -= FlxG.elapsed;
+
+    if (controls.UI_LEFT_P)
+    {
+      switch (selection)
+      {
+        case DisabledModList:
+          selection = Done;
+          lastSelectDir = -2;
+        case EnabledModList:
+          if (disabledModItems.modItems.length > 0) { selection = DisabledModList; lastSelectDir = -2; }
+        case OpenModsFolder:
+          selection = EnabledModList;
+          lastSelectDir = -2;
+        case Done:
+          selection = OpenModsFolder;
+          lastSelectDir = -2;
+        case BackToMenu:
+          // Do nothing
+      }
+    }
+
+    if (controls.UI_RIGHT_P)
+    {
+      switch (selection)
+      {
+        case DisabledModList:
+          if (enabledModItems.modItems.length > 0) { selection = EnabledModList; lastSelectDir = 2; }
+        case EnabledModList:
+          selection = OpenModsFolder;
+          lastSelectDir = 2;
+        case OpenModsFolder:
+          selection = Done;
+          lastSelectDir = 2;
+        case Done:
+          selection = DisabledModList;
+          lastSelectDir = 2;
+        case BackToMenu:
+          // Do nothing
+      }
+    }
 
     if (controls.UI_UP_P)
     {
@@ -505,9 +632,11 @@ class ModMenuState extends MusicBeatState
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
           else enabledModItems.moveUp();
         case OpenModsFolder:
-          // Do nothing
+          selection = DisabledModList;
+          lastSelectDir = -1;
         case Done:
-          // Do nothing
+          selection = EnabledModList;
+          lastSelectDir = -1;
         case BackToMenu:
           // Do nothing
       }
@@ -518,54 +647,25 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          disabledModItems.moveDown();
+          if (!disabledModItems.moveDown(false)) { selection = OpenModsFolder; lastSelectDir = 1; }
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
-          else enabledModItems.moveDown();
+          else
+          {
+            if (!enabledModItems.moveDown(false)) { selection = Done; lastSelectDir = 1; }
+          }
         case OpenModsFolder:
-          // Do nothing
-        case Done:
-          // Do nothing
-        case BackToMenu:
-          // Do nothing
-      }
-    }
-
-    if (controls.UI_LEFT_P)
-    {
-      switch (selection)
-      {
-        case DisabledModList:
-          selection = Done;
-        case EnabledModList:
-          if (disabledModItems.modItems.length > 0) selection = DisabledModList;
-        case OpenModsFolder:
-          selection = EnabledModList;
-        case Done:
-          selection = OpenModsFolder;
-        case BackToMenu:
-          // Do nothing
-      }
-    }
-
-    if (controls.UI_RIGHT_P)
-    {
-      switch (selection)
-      {
-        case DisabledModList:
-          if (enabledModItems.modItems.length > 0) selection = EnabledModList;
-        case EnabledModList:
-          selection = OpenModsFolder;
-        case OpenModsFolder:
-          selection = Done;
-        case Done:
           selection = DisabledModList;
+          lastSelectDir = 1;
+        case Done:
+          selection = EnabledModList;
+          lastSelectDir = 1;
         case BackToMenu:
           // Do nothing
       }
     }
 
-    if (controls.ACCEPT_P && !isTransitioning())
+    if (controls.ACCEPT_P && !isTransitioning() && acceptDelay <= 0)
     {
 
       enabledModItems.repositionItems();
@@ -588,7 +688,10 @@ class ModMenuState extends MusicBeatState
       }
 
       oldSelection = selection;
+      acceptDelay = 0.1;
     }
+
+    if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
 
     if (oldSelection != selection) handleSelection();
   }
@@ -603,9 +706,11 @@ class ModMenuState extends MusicBeatState
     switch (selection)
     {
       case DisabledModList:
-        disabledModItems.selectFirstItem();
+        if (oldSelection == OpenModsFolder) disabledModItems.selectLastItem(lastSelectDir);
+        else disabledModItems.selectFirstItem(lastSelectDir);
       case EnabledModList:
-        enabledModItems.selectFirstItem();
+        if (oldSelection == OpenModsFolder) enabledModItems.selectLastItem(lastSelectDir);
+        else enabledModItems.selectFirstItem(lastSelectDir);
       case OpenModsFolder:
         openFolderAnimator.playAnimation('select');
       case Done:
@@ -613,6 +718,8 @@ class ModMenuState extends MusicBeatState
       case BackToMenu:
         // Do nothing
     }
+
+    lastSelectDir = 0;
   }
 
   // MOD LIST BUILDING //

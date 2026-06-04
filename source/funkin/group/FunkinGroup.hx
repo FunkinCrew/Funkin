@@ -226,8 +226,22 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     {
       if (child == null || !child.alive || !child.localVisible) continue;
 
-      var left:Float = child.localX * scale.x;
-      var right:Float = left + child.frameWidth * child.scale.x;
+      var left:Float;
+      var right:Float;
+
+      if (Std.isOfType(child, FunkinGroup))
+      {
+        var childGroup:FunkinGroup<Dynamic> = cast child;
+        var childW:Float = childGroup.width;
+        if (childW <= 0) continue;
+        left = child.localX * scale.x;
+        right = left + childW * scale.x;
+      }
+      else
+      {
+        left = child.localX * scale.x;
+        right = left + child.frameWidth * child.scale.x;
+      }
 
       if (left < minLeft) minLeft = left;
       if (right > maxRight) maxRight = right;
@@ -249,10 +263,24 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     for (child in children)
     {
       if (child == null || !child.alive || !child.localVisible) continue;
-      if (child.scale.y != scale.y * child.localScale.y) continue;
 
-      var top:Float = child.localY;
-      var bottom:Float = top + child.frameHeight * child.scale.y;
+      var top:Float;
+      var bottom:Float;
+
+      if (Std.isOfType(child, FunkinGroup))
+      {
+        var childGroup:FunkinGroup<Dynamic> = cast child;
+        var childH:Float = childGroup.height;
+        if (childH <= 0) continue;
+        top = child.localY;
+        bottom = top + childH * scale.y;
+      }
+      else
+      {
+        if (child.scale.y != scale.y * child.localScale.y) continue;
+        top = child.localY;
+        bottom = top + child.frameHeight * child.scale.y;
+      }
 
       if (top < minTop) minTop = top;
       if (bottom > maxBottom) maxBottom = bottom;
