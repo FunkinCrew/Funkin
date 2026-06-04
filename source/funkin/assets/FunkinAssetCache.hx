@@ -949,7 +949,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBitmapData(assetPath.toString()));
     }
 
-    var recachedBitmapData:Null<BitmapData> = recacheBitmapData(assetPath);
+    var recachedBitmapData:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
     if (recachedBitmapData != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -971,17 +971,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace('[ASSETS] Error while fetching BitmapData (${assetPath}): ${err}');
     });
     return future;
-  }
-
-  function recacheBitmapData(assetPath:AssetPath):Null<BitmapData>
-  {
-    if (!stagedBitmapData.exists(assetPath.toString())) return null;
-
-    // Move the graphic from the previous cache to the current cache.
-    var cacheValue:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:BitmapData = cacheValue;
-    return validCacheValue;
   }
 
   /**
@@ -1047,7 +1036,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getSound(assetPath.toString()));
     }
 
-    var recachedSound:Null<Sound> = recacheSound(assetPath);
+    var recachedSound:Null<Sound> = stagedSound.get(assetPath.toString());
     if (recachedSound != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1064,18 +1053,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     });
   }
 
-  function recacheSound(assetPath:AssetPath):Null<Sound>
-  {
-    if (!stagedSound.exists(assetPath.toString())) return null;
-
-    // Move the sound from the previous cache to the current cache.
-    var cacheValue:Null<Sound> = stagedSound.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:Sound = cacheValue;
-    setSound(assetPath.toString(), validCacheValue);
-    return validCacheValue;
-  }
-
   /**
    * Cache a text asynchronously.
    * @param assetPath The path of the asset to cache.
@@ -1090,7 +1067,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getText(assetPath.toString()));
     }
 
-    var recachedText:Null<String> = recacheText(assetPath);
+    var recachedText:Null<String> = stagedText.get(assetPath.toString());
     if (recachedText != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1107,18 +1084,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     });
   }
 
-  function recacheText(assetPath:AssetPath):Null<String>
-  {
-    if (!stagedText.exists(assetPath.toString())) return null;
-
-    // Move the text from the previous cache to the current cache.
-    var cacheValue:Null<String> = stagedText.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:String = cacheValue;
-    setText(assetPath.toString(), validCacheValue);
-    return validCacheValue;
-  }
-
   /**
    * Cache a file's bytes asynchronously.
    * @param assetPath The path of the asset to cache.
@@ -1133,7 +1098,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBytes(assetPath.toString()));
     }
 
-    var recachedBytes:Null<ByteArray> = recacheBytes(assetPath);
+    var recachedBytes:Null<ByteArray> = stagedBytes.get(assetPath.toString());
     if (recachedBytes != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1148,18 +1113,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       trace('[ASSETS] Error while fetching Bytes (${assetPath}): ${err}');
     });
-  }
-
-  function recacheBytes(assetPath:AssetPath):Null<ByteArray>
-  {
-    if (!stagedBytes.exists(assetPath.toString())) return null;
-
-    // Move the bytes from the previous cache to the current cache.
-    var cacheValue:Null<openfl.utils.ByteArray> = stagedBytes.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:ByteArray = cacheValue;
-    setBytes(assetPath.toString(), validCacheValue);
-    return validCacheValue;
   }
 
   /**
