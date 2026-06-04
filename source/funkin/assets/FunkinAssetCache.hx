@@ -1,14 +1,15 @@
 package funkin.assets;
 
-import funkin.util.assets.StagedCache;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxDestroyUtil;
 import funkin.assets.Assets.AssetType as FunkinAssetType;
 import funkin.assets.Paths.AssetPath;
-import funkin.util.assets.AssetsUtil;
-import funkin.util.MemoryUtil;
+import funkin.assets.ValidatedPaths as Paths;
 import funkin.util.SortUtil;
+import funkin.util.assets.AssetsUtil;
+import funkin.util.assets.StagedCache;
+import funkin.util.assets.StagedCache.IStagedCache;
 import funkin.util.collection.CallbackMap;
 import haxe.io.Bytes;
 import lime.app.Future;
@@ -23,12 +24,6 @@ import openfl.text.Font;
 import openfl.utils.Assets as OpenFLAssets;
 import openfl.utils.ByteArray;
 import openfl.utils.IAssetCache as OpenFLIAssetCache;
-import funkin.assets.FunkinBitmapFrontend;
-//
-// ~PATHS~
-//
-import funkin.assets.Assets as Assets;
-import funkin.assets.ValidatedPaths as Paths;
 
 // @:nullSafety
 
@@ -38,6 +33,11 @@ import funkin.assets.ValidatedPaths as Paths;
  */
 class FunkinAssetCache implements OpenFLIAssetCache
 {
+  /**
+   * An internal list of all the available StagedCaches.
+   */
+  var stagedCaches:Array<IStagedCache>;
+
   /**
    * A staged cache for BitmapData.
    * Helps with tracking and purging unused assets.
@@ -89,15 +89,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public var enabled(get, set):Bool;
 
-  // hmmm
-  var allCaches(get, null):Array<
-    {
-      clear:(?clearPermanent:Bool) -> Void,
-      clearByPrefix:(prefix:String, ?clearPermanent:Bool) -> Void,
-      preparePurgeCache:() -> Void,
-      purgeCache:() -> Void
-    }>;
-
   static function get_instance():FunkinAssetCache
   {
     if (FunkinAssetCache._instance == null) _instance = new FunkinAssetCache();
@@ -107,12 +98,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   public function new()
   {
-    // stagedFlxGraphic = new StagedCache<FlxGraphic>(FlxG.bitmap.remove, function(graphic:FlxGraphic)
-    // {
-    //   graphic.persist = true;
-    //   graphic.destroyOnNoUse = false;
-    // });
-
     stagedBitmapData = new StagedCache<BitmapData>();
     stagedBitmapData.onRemove.add((key:String, asset:BitmapData) ->
     {
@@ -150,6 +135,15 @@ class FunkinAssetCache implements OpenFLIAssetCache
       asset = null;
     });
 
+    stagedCaches = [
+      FunkinBitmapFrontend.instance.stagedFlxGraphic,
+      stagedBitmapData,
+      stagedFont,
+      stagedSound,
+      stagedText,
+      stagedBytes,
+    ];
+
     assetListCaches = [];
     assetListBaseCache = null;
     enabled = true;
@@ -164,7 +158,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     if (prefix == null)
     {
       trace('[ASSETS] Force clearing asset cache...');
-      for (cache in allCaches) cache.clear();
+      for (cache in stagedCaches) cache.clearCache();
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
       assetListBaseCache = null;
@@ -172,7 +166,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     else
     {
       trace('[ASSETS] Force clearing cached assets with prefix: $prefix');
-      for (cache in allCaches) cache.clearByPrefix(prefix);
+      for (cache in stagedCaches) cache.clearCacheByPrefix(prefix);
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
     }
   }
@@ -184,8 +178,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache():Void
   {
-    for (cache in allCaches) cache.preparePurgeCache();
-    FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
+    for (cache in stagedCaches) cache.preparePurgeCache();
   }
 
   /**
@@ -195,7 +188,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    for (cache in allCaches) cache.purgeCache();
+    for (cache in stagedCaches) cache.purgeCache();
     // TODO: Cleanup purging to work with Freeplay?
     FunkinBitmapFrontend.instance.clearExcept(['freeplay/', 'stickers/']);
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
@@ -399,7 +392,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasFlxGraphic(path:AssetPath):Bool
   {
-    // return stagedFlxGraphic.exists(path.toString());
     return FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(path.toString());
   }
 
@@ -460,7 +452,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeFlxGraphic(id:String):Bool
   {
-    // return stagedFlxGraphic.remove(id);
     if (FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(id))
     {
       FunkinBitmapFrontend.instance.removeByKey(id);
@@ -1188,42 +1179,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace(' ERROR '.error() + '$info: Tried to queue asset caching from the main thread.');
       throw '$info: Tried to queue asset caching from the main thread.';
     }
-  }
-
-  function get_allCaches()
-  {
-    return [
-      {
-        clear: stagedBitmapData.clearCache,
-        clearByPrefix: stagedBitmapData.clearCacheByPrefix,
-        preparePurgeCache: stagedBitmapData.preparePurgeCache,
-        purgeCache: stagedBitmapData.purgeCache
-      },
-      {
-        clear: stagedFont.clearCache,
-        clearByPrefix: stagedFont.clearCacheByPrefix,
-        preparePurgeCache: stagedFont.preparePurgeCache,
-        purgeCache: stagedFont.purgeCache
-      },
-      {
-        clear: stagedSound.clearCache,
-        clearByPrefix: stagedSound.clearCacheByPrefix,
-        preparePurgeCache: stagedSound.preparePurgeCache,
-        purgeCache: stagedSound.purgeCache
-      },
-      {
-        clear: stagedText.clearCache,
-        clearByPrefix: stagedText.clearCacheByPrefix,
-        preparePurgeCache: stagedText.preparePurgeCache,
-        purgeCache: stagedText.purgeCache
-      },
-      {
-        clear: stagedBytes.clearCache,
-        clearByPrefix: stagedBytes.clearCacheByPrefix,
-        preparePurgeCache: stagedBytes.preparePurgeCache,
-        purgeCache: stagedBytes.purgeCache
-      }
-    ];
   }
 
   function get_enabled():Bool

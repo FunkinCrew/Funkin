@@ -6,7 +6,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
  * Represents a three-stage asset cache, which is useful for managing and tracking assets that are in use by the game.
  */
 @:nullSafety
-class StagedCache<T>
+class StagedCache<T> implements IStagedCache
 {
   /**
    * The permanent cache, containing assets which always stay in memory and are never purged.
@@ -352,4 +352,26 @@ class StagedCache<T>
 
     return result;
   }
+}
+
+/**
+ * An interface containing all the methods common to StagedCaches.
+ * This allows you to create arrays and functions that take StagedCaches of any type.
+ */
+@SuppressWarnings('checkstyle:FieldDocComment')
+interface IStagedCache
+{
+  // get() has different typing for each cache
+  // cache() has different typing for each cache
+  // cachePermanent() has different typing for each cache
+  public function exists(key:String):Bool;
+  public function keys():Array<String>;
+  public function preparePurgeCache():Void;
+  public function purgeCache():Void;
+  // purgeCacheByPredicate() has different typing for each cache
+  public function purgeCacheByPrefix(prefix:String):Void;
+  public function clearCache(clearPermanent:Bool = false):Void;
+  // clearCacheByPredicate() has different typing for each cache
+  public function clearCacheByPrefix(prefix:String, clearPermanent:Bool = false):Void;
+  public function remove(key:String, purgePermanent:Bool = false):Bool;
 }
