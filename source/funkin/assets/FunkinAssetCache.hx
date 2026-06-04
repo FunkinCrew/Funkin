@@ -63,14 +63,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Cache containing Binary data (anything not covered by its own cache)
    */
-  var current_bytes:Map<String, openfl.utils.ByteArray>;
+  var stagedBytes:StagedCache<openfl.utils.ByteArray>;
 
   // Previous caches hold the assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
   // If `purgeCache()` is called, any assets in these caches will be destroyed, and their memory will be freed.
   var previous_font:Map<String, Font>;
   var previous_sound:Map<String, Sound>;
   var previous_text:Map<String, String>;
-  var previous_bytes:Map<String, openfl.utils.ByteArray>;
 
   /**
    * A cache for the result of `Assets.list(type)`.
@@ -132,13 +131,16 @@ class FunkinAssetCache implements OpenFLIAssetCache
       // Is there a proper method to destroy fonts?
     });
 
+    stagedBytes = new StagedCache<openfl.utils.ByteArray>();
+    stagedBytes.onRemove.add((_:String, asset:openfl.utils.ByteArray) -> {
+      // Is there a proper method to destroy byte data?
+    });
+
     current_sound = [];
     current_text = [];
-    current_bytes = [];
     previous_font = [];
     previous_sound = [];
     previous_text = [];
-    previous_bytes = [];
     assetListCaches = [];
     assetListBaseCache = null;
     enabled = true;
@@ -152,6 +154,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     stagedBitmapData.clearCacheByPrefix(prefix);
     stagedFont.clearCacheByPrefix(prefix);
+    stagedBytes.clearCacheByPrefix(prefix);
 
     if (prefix == null)
     {
@@ -161,11 +164,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       current_sound = [];
       current_text = [];
-      current_bytes = [];
       previous_font = [];
       previous_sound = [];
       previous_text = [];
-      previous_bytes = [];
 
       assetListCaches = [];
       assetListBaseCache = null;
@@ -189,17 +190,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
           removeText(key);
         }
       }
-      for (key in current_bytes.keys())
-      {
-        if (key.startsWith(prefix))
-        {
-          removeBytes(key);
-        }
-      }
       previous_font = [];
       previous_sound = [];
       previous_text = [];
-      previous_bytes = [];
     }
   }
 
@@ -382,7 +375,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getBytes(id:String):openfl.utils.ByteArray
   {
-    var result:Null<openfl.utils.ByteArray> = current_bytes.get(id);
+    var result:Null<openfl.utils.ByteArray> = stagedBytes.get(id);
     if (result != null)
     {
       return result;
@@ -492,7 +485,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasBytes(id:String):Bool
   {
-    return current_bytes.exists(id);
+    return stagedBytes.exists(id);
   }
 
   /**
@@ -559,7 +552,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeBytes(id:String):Bool
   {
-    return current_bytes.remove(id) || previous_bytes.remove(id);
+    return stagedBytes.remove(id);
   }
 
   /**
@@ -652,8 +645,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setBytes($id)');
     #end
-    current_bytes.set(id, bytes);
-    previous_bytes.remove(id);
+    stagedBytes.cache(id, bytes);
   }
 
   /**
@@ -994,7 +986,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBitmapData(assetPath.toString()));
     }
 
-    var recachedBitmapData:Null<BitmapData> = recacheBitmapData(assetPath);
+    var recachedBitmapData:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
     if (recachedBitmapData != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1016,17 +1008,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace('[ASSETS] Error while fetching BitmapData (${assetPath}): ${err}');
     });
     return future;
-  }
-
-  function recacheBitmapData(assetPath:AssetPath):Null<BitmapData>
-  {
-    if (!stagedBitmapData.exists(assetPath.toString())) return null;
-
-    // Move the graphic from the previous cache to the current cache.
-    var cacheValue:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:BitmapData = cacheValue;
-    return validCacheValue;
   }
 
   /**
@@ -1178,7 +1159,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBytes(assetPath.toString()));
     }
 
-    var recachedBytes:Null<ByteArray> = recacheBytes(assetPath);
+    var recachedBytes:Null<ByteArray> = stagedBytes.get(assetPath.toString());
     if (recachedBytes != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1193,18 +1174,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       trace('[ASSETS] Error while fetching Bytes (${assetPath}): ${err}');
     });
-  }
-
-  function recacheBytes(assetPath:AssetPath):Null<ByteArray>
-  {
-    if (!previous_bytes.exists(assetPath.toString())) return null;
-
-    // Move the bytes from the previous cache to the current cache.
-    var cacheValue:Null<openfl.utils.ByteArray> = previous_bytes.get(assetPath.toString());
-    if (cacheValue == null) throw 'Whuh?';
-    var validCacheValue:ByteArray = cacheValue;
-    setBytes(assetPath.toString(), validCacheValue);
-    return validCacheValue;
   }
 
   /**
@@ -1254,7 +1223,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] BYTES:');
-    var keys:Array<String> = current_bytes.keys().array();
+    var keys:Array<String> = stagedBytes.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
