@@ -132,8 +132,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
     });
 
     stagedBytes = new StagedCache<openfl.utils.ByteArray>();
-    stagedBytes.onRemove.add((_:String, asset:openfl.utils.ByteArray) -> {
-      // Is there a proper method to destroy byte data?
+    stagedBytes.onRemove.add((_:String, asset:openfl.utils.ByteArray) ->
+    {
+      // clear() explicitly frees up the memory used by the ByteArray.
+      asset.clear();
     });
 
     current_sound = [];
