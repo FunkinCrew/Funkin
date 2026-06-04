@@ -3,6 +3,7 @@ package funkin.graphics.framebuffer;
 import flixel.FlxSprite;
 import funkin.graphics.FunkinCamera;
 import flixel.graphics.FlxGraphic;
+import flixel.util.FlxSignal;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
@@ -16,6 +17,16 @@ class FunkinBufferRenderer
    * The rendered texture.
    */
   public var texture:FixedBitmapData;
+
+  /**
+   * A signal that fires before the buffer is about to be rendered.
+   */
+  public var onPreRender:FlxSignal = new FlxSignal();
+
+  /**
+   * A signal that fires after the buffer is rendered.
+   */
+  public var onPostRender:FlxSignal = new FlxSignal();
 
   /**
    * If `true`, the buffer will only render sprites that are part of a whitelist.
@@ -84,12 +95,6 @@ class FunkinBufferRenderer
    */
   public function shouldRender(graphic:FlxGraphic):Bool
   {
-    // Skip rendering the actual buffer itself... onto the buffer.
-    if (graphic.key == 'CAMERA_BUFFER')
-    {
-      return false;
-    }
-
     if (_blackList.contains(graphic.key))
     {
       return false;
@@ -141,6 +146,8 @@ class FunkinBufferRenderer
   {
     dirty = true;
 
+    onPreRender.dispatch();
+
     _camera.canvas.graphics.clear();
 
     if (zoom > 0)
@@ -155,6 +162,8 @@ class FunkinBufferRenderer
     }
 
     dirty = false;
+
+    onPostRender.dispatch();
   }
 
   /**

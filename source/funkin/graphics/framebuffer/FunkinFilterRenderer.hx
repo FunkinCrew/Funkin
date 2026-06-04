@@ -22,6 +22,11 @@ import animate.internal.FilterRenderer;
 class FunkinFilterRenderer implements IFlxDestroyable
 {
   /**
+   * An optional key to use for the graphic.
+   */
+  public var graphicKey:String = '';
+
+  /**
    * Graphic containing the current frame with filters.
    */
   public var graphic(default, null):Null<FlxGraphic>;
@@ -57,7 +62,15 @@ class FunkinFilterRenderer implements IFlxDestroyable
 
     if (graphic == null)
     {
-      graphic = FlxGraphic.fromBitmapData(bitmap, false, null, false);
+      if (!graphicKey.isBlank())
+      {
+        @:privateAccess
+        graphic = new FlxGraphic(graphicKey, bitmap);
+      }
+      else
+      {
+        graphic = FlxGraphic.fromBitmapData(bitmap, false, null, false);
+      }
     }
     else
     {

@@ -3,8 +3,7 @@ package funkin.graphics.framebuffer;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
-import flixel.math.FlxMatrix;
-import flixel.math.FlxRect;
+import flixel.math.FlxPoint;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 
@@ -17,6 +16,11 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:nullSafety
 class FunkinBufferSprite extends FunkinSprite
 {
+  /**
+   * The key of the graphic used for the buffer.
+   */
+  public static final BUFFER_TEXTURE_KEY:String = 'CAMERA_TEXTURE';
+
   /**
    * The base zoom of the camera.
    * The buffer will always be rendered at this zoom.
@@ -64,18 +68,7 @@ class FunkinBufferSprite extends FunkinSprite
     return _usedCamera.bufferRenderer;
   }
 
-  var _cameraBufferFrame:FlxFrame;
   var _usedCamera:FunkinCamera;
-
-  override function get_width():Float
-  {
-    return _usedCamera.texture.width;
-  }
-
-  override function get_height():Float
-  {
-    return _usedCamera.texture.height;
-  }
 
   public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0)
   {
@@ -86,29 +79,35 @@ class FunkinBufferSprite extends FunkinSprite
     // We need the previous frame from the camera
     _usedCamera.renderBuffer = true;
 
-    @:privateAccess
-    _cameraBufferFrame = new FlxFrame(new FlxGraphic('CAMERA_BUFFER', _usedCamera.texture));
-    _cameraBufferFrame.frame = FlxRect.get(0, 0, _usedCamera.width, _usedCamera.height);
-
     this.baseZoom = baseZoom;
     this.bufferDelay = bufferDelay;
+
+    @:privateAccess
+    var bufferGraphic:FlxGraphic = new FlxGraphic(BUFFER_TEXTURE_KEY, _usedCamera.texture);
+    this.frameWidth = bufferGraphic.width;
+    this.frameHeight = bufferGraphic.height;
+    this.frames = bufferGraphic.imageFrame;
+    this.updateHitbox();
+
+    // Force the filter renderer to use a specific key for its graphic
+    // Allows the buffer renderer to identify the graphic properly
+    this.filterRenderer.graphicKey = BUFFER_TEXTURE_KEY;
+
+    // Prevent the buffer from being rendered onto itself.
+    this.renderer.blacklistSprite(this);
   }
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
   {
-    _cameraBufferFrame.frame.set(0, 0, _usedCamera.texture.width, _usedCamera.texture.height);
-
     final willUseRenderTexture = checkRenderTexture();
     final matrix = this._matrix;
 
     frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
     prepareDrawMatrix(matrix, camera);
 
-    // The only time render texture would be used for this class is when filters are applied
-    // So just applying the filters directly without checking is fine I think
-    if (willUseRenderTexture && _cameraBufferFrame.parent.bitmap != null)
+    if (this.filters != null && this.filters.length > 0)
     {
-      filterRenderer.applyFilters(_cameraBufferFrame.parent.bitmap);
+      filterRenderer.applyFilters(this._usedCamera.texture);
 
       if (filtered)
       {
@@ -116,18 +115,12 @@ class FunkinBufferSprite extends FunkinSprite
       }
       else
       {
-        camera.drawPixels(_cameraBufferFrame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+        camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
       }
     }
     else
     {
-      camera.drawPixels(_cameraBufferFrame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+      camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
     }
-  }
-
-  override function isOnScreen(?camera:FlxCamera):Bool
-  {
-    // Who knew that rendering an entire camera buffer to a sprite would fuck with its bounding box?
-    return true;
   }
 }
