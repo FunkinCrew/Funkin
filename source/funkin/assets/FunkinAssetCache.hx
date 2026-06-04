@@ -51,25 +51,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
   var stagedFont:StagedCache<Font>;
 
   /**
-   * Cache containing Sounds
+   * A staged cache for Sounds.
+   * Helps with tracking and purging unused assets.
    */
-  var current_sound:Map<String, Sound>;
+  var stagedSound:StagedCache<Sound>;
 
   /**
    * Cache containing Text (such as JSON or TXT files)
    */
-  var current_text:Map<String, String>;
+  var stagedText:StagedCache<String>;
 
   /**
    * Cache containing Binary data (anything not covered by its own cache)
    */
   var stagedBytes:StagedCache<openfl.utils.ByteArray>;
-
-  // Previous caches hold the assets that were previously cached, but weren't requested again since `preparePurgeCache()` was called.
-  // If `purgeCache()` is called, any assets in these caches will be destroyed, and their memory will be freed.
-  var previous_font:Map<String, Font>;
-  var previous_sound:Map<String, Sound>;
-  var previous_text:Map<String, String>;
 
   /**
    * A cache for the result of `Assets.list(type)`.
@@ -94,16 +89,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public var enabled(get, set):Bool;
 
-  function get_enabled():Bool
-  {
-    return true;
-  }
-
-  function set_enabled(value:Bool):Bool
-  {
-    if (!enabled) throw 'FunkinAssetCache cannot be disabled!';
-    return enabled;
-  }
+  // hmmm
+  var allCaches(get, null):Array<
+    {
+      clear:(?clearPermanent:Bool) -> Void,
+      clearByPrefix:(prefix:String, ?clearPermanent:Bool) -> Void,
+      preparePurgeCache:() -> Void,
+      purgeCache:() -> Void
+    }>;
 
   static function get_instance():FunkinAssetCache
   {
@@ -121,14 +114,32 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // });
 
     stagedBitmapData = new StagedCache<BitmapData>();
-    stagedBitmapData.onRemove.add((_:String, asset:BitmapData) ->
+    stagedBitmapData.onRemove.add((key:String, asset:BitmapData) ->
     {
+      FunkinLimeAssetCache.instance.removeImage(key);
       FlxDestroyUtil.dispose(asset);
     });
 
     stagedFont = new StagedCache<Font>();
-    stagedFont.onRemove.add((_:String, asset:Font) -> {
+    stagedFont.onRemove.add((key:String, asset:Font) ->
+    {
       // Is there a proper method to destroy fonts?
+      FunkinLimeAssetCache.instance.removeFont(key);
+      asset = null;
+    });
+
+    stagedSound = new StagedCache<Sound>();
+    stagedSound.onRemove.add((key:String, asset:Sound) ->
+    {
+      // asset.close();
+      FunkinLimeAssetCache.instance.removeAudio(key);
+      asset = null;
+    });
+
+    stagedText = new StagedCache<String>();
+    stagedText.onRemove.add((_:String, asset:String) ->
+    {
+      asset = null;
     });
 
     stagedBytes = new StagedCache<openfl.utils.ByteArray>();
@@ -136,13 +147,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // clear() explicitly frees up the memory used by the ByteArray.
       asset.clear();
+      asset = null;
     });
 
-    current_sound = [];
-    current_text = [];
-    previous_font = [];
-    previous_sound = [];
-    previous_text = [];
     assetListCaches = [];
     assetListBaseCache = null;
     enabled = true;
@@ -154,47 +161,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function clear(?prefix:String):Void
   {
-    stagedBitmapData.clearCacheByPrefix(prefix);
-    stagedFont.clearCacheByPrefix(prefix);
-    stagedBytes.clearCacheByPrefix(prefix);
-
     if (prefix == null)
     {
       trace('[ASSETS] Force clearing asset cache...');
-
+      for (cache in allCaches) cache.clear();
       FunkinBitmapFrontend.instance.reset();
-
-      current_sound = [];
-      current_text = [];
-      previous_font = [];
-      previous_sound = [];
-      previous_text = [];
-
       assetListCaches = [];
       assetListBaseCache = null;
     }
     else
     {
       trace('[ASSETS] Force clearing cached assets with prefix: $prefix');
+      for (cache in allCaches) cache.clearByPrefix(prefix);
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
-
-      for (key in current_sound.keys())
-      {
-        if (key.startsWith(prefix))
-        {
-          removeSound(key);
-        }
-      }
-      for (key in current_text.keys())
-      {
-        if (key.startsWith(prefix))
-        {
-          removeText(key);
-        }
-      }
-      previous_font = [];
-      previous_sound = [];
-      previous_text = [];
     }
   }
 
@@ -205,8 +184,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function preparePurgeCache():Void
   {
-    stagedBitmapData.preparePurgeCache();
-    stagedFont.preparePurgeCache();
+    for (cache in allCaches) cache.preparePurgeCache();
     FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
   }
 
@@ -217,14 +195,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    stagedBitmapData.purgeCache();
-    stagedFont.purgeCache();
-
+    for (cache in allCaches) cache.purgeCache();
     // TODO: Cleanup purging to work with Freeplay?
     FunkinBitmapFrontend.instance.clearExcept(['freeplay/', 'stickers/']);
-
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
-    // also does it for bitmapdatas, so we don't have to worry about that here.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
     #if (cpp || neko || hl)
@@ -240,17 +214,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFlxGraphic(id:String):FlxGraphic
   {
-    // var result:Null<FlxGraphic> = stagedFlxGraphic.get(id);
-    // if (result != null) return result;
-
-    // #if FEATURE_STRICT_ASSET_CACHING
-    // throw 'Flixel graphic not cached, cannot load synchronously: $id';
-    // #else
-    // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
-    // var graphic:FlxGraphic = FlxGraphic.fromBitmapData(getBitmapData(id));
-    // setFlxGraphic(id, graphic);
-    // return graphic;
-    // #end
     return FunkinBitmapFrontend.instance.getSafe(id);
   }
 
@@ -316,7 +279,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getSound(id:String):Sound
   {
-    var result:Null<Sound> = current_sound.get(id);
+    var result:Null<Sound> = stagedSound.get(id);
     if (result != null)
     {
       return result;
@@ -342,7 +305,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getText(id:String):String
   {
-    var result:Null<String> = current_text.get(id);
+    var result:Null<String> = stagedText.get(id);
     if (result != null)
     {
       return result;
@@ -467,7 +430,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasSound(id:String):Bool
   {
-    return current_sound.exists(id);
+    return stagedSound.exists(id);
   }
 
   /**
@@ -477,7 +440,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasText(id:String):Bool
   {
-    return current_text.exists(id);
+    return stagedText.exists(id);
   }
 
   /**
@@ -534,7 +497,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeSound(id:String):Bool
   {
-    return current_sound.remove(id) || previous_sound.remove(id);
+    return stagedSound.remove(id);
   }
 
   /**
@@ -544,7 +507,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeText(id:String):Bool
   {
-    return current_text.remove(id) || previous_text.remove(id);
+    return stagedText.remove(id);
   }
 
   /**
@@ -619,8 +582,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setSound($id)');
     #end
-    current_sound.set(id, sound);
-    previous_sound.remove(id);
+    stagedSound.cache(id, sound);
   }
 
   /**
@@ -633,8 +595,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setText($id)');
     #end
-    current_text.set(id, text);
-    previous_text.remove(id);
+    stagedText.cache(id, text);
   }
 
   /**
@@ -988,7 +949,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBitmapData(assetPath.toString()));
     }
 
-    var recachedBitmapData:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
+    var recachedBitmapData:Null<BitmapData> = recacheBitmapData(assetPath);
     if (recachedBitmapData != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1010,6 +971,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace('[ASSETS] Error while fetching BitmapData (${assetPath}): ${err}');
     });
     return future;
+  }
+
+  function recacheBitmapData(assetPath:AssetPath):Null<BitmapData>
+  {
+    if (!stagedBitmapData.exists(assetPath.toString())) return null;
+
+    // Move the graphic from the previous cache to the current cache.
+    var cacheValue:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
+    if (cacheValue == null) throw 'Whuh?';
+    var validCacheValue:BitmapData = cacheValue;
+    return validCacheValue;
   }
 
   /**
@@ -1094,10 +1066,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   function recacheSound(assetPath:AssetPath):Null<Sound>
   {
-    if (!previous_text.exists(assetPath.toString())) return null;
+    if (!stagedSound.exists(assetPath.toString())) return null;
 
     // Move the sound from the previous cache to the current cache.
-    var cacheValue:Null<Sound> = previous_sound.get(assetPath.toString());
+    var cacheValue:Null<Sound> = stagedSound.get(assetPath.toString());
     if (cacheValue == null) throw 'Whuh?';
     var validCacheValue:Sound = cacheValue;
     setSound(assetPath.toString(), validCacheValue);
@@ -1137,10 +1109,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   function recacheText(assetPath:AssetPath):Null<String>
   {
-    if (!previous_text.exists(assetPath.toString())) return null;
+    if (!stagedText.exists(assetPath.toString())) return null;
 
     // Move the text from the previous cache to the current cache.
-    var cacheValue:Null<String> = previous_text.get(assetPath.toString());
+    var cacheValue:Null<String> = stagedText.get(assetPath.toString());
     if (cacheValue == null) throw 'Whuh?';
     var validCacheValue:String = cacheValue;
     setText(assetPath.toString(), validCacheValue);
@@ -1161,7 +1133,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(getBytes(assetPath.toString()));
     }
 
-    var recachedBytes:Null<ByteArray> = stagedBytes.get(assetPath.toString());
+    var recachedBytes:Null<ByteArray> = recacheBytes(assetPath);
     if (recachedBytes != null)
     {
       // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
@@ -1176,6 +1148,18 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       trace('[ASSETS] Error while fetching Bytes (${assetPath}): ${err}');
     });
+  }
+
+  function recacheBytes(assetPath:AssetPath):Null<ByteArray>
+  {
+    if (!stagedBytes.exists(assetPath.toString())) return null;
+
+    // Move the bytes from the previous cache to the current cache.
+    var cacheValue:Null<openfl.utils.ByteArray> = stagedBytes.get(assetPath.toString());
+    if (cacheValue == null) throw 'Whuh?';
+    var validCacheValue:ByteArray = cacheValue;
+    setBytes(assetPath.toString(), validCacheValue);
+    return validCacheValue;
   }
 
   /**
@@ -1209,7 +1193,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] SOUND:');
-    var keys:Array<String> = current_sound.keys().array();
+    var keys:Array<String> = stagedSound.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
@@ -1217,7 +1201,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
 
     trace('[ASSETS] TEXT:');
-    var keys:Array<String> = current_text.keys().array();
+    var keys:Array<String> = stagedText.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
@@ -1251,6 +1235,53 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace(' ERROR '.error() + '$info: Tried to queue asset caching from the main thread.');
       throw '$info: Tried to queue asset caching from the main thread.';
     }
+  }
+
+  function get_allCaches()
+  {
+    return [
+      {
+        clear: stagedBitmapData.clearCache,
+        clearByPrefix: stagedBitmapData.clearCacheByPrefix,
+        preparePurgeCache: stagedBitmapData.preparePurgeCache,
+        purgeCache: stagedBitmapData.purgeCache
+      },
+      {
+        clear: stagedFont.clearCache,
+        clearByPrefix: stagedFont.clearCacheByPrefix,
+        preparePurgeCache: stagedFont.preparePurgeCache,
+        purgeCache: stagedFont.purgeCache
+      },
+      {
+        clear: stagedSound.clearCache,
+        clearByPrefix: stagedSound.clearCacheByPrefix,
+        preparePurgeCache: stagedSound.preparePurgeCache,
+        purgeCache: stagedSound.purgeCache
+      },
+      {
+        clear: stagedText.clearCache,
+        clearByPrefix: stagedText.clearCacheByPrefix,
+        preparePurgeCache: stagedText.preparePurgeCache,
+        purgeCache: stagedText.purgeCache
+      },
+      {
+        clear: stagedBytes.clearCache,
+        clearByPrefix: stagedBytes.clearCacheByPrefix,
+        preparePurgeCache: stagedBytes.preparePurgeCache,
+        purgeCache: stagedBytes.purgeCache
+      }
+    ];
+  }
+
+  function get_enabled():Bool
+  {
+    return true;
+  }
+
+  function set_enabled(value:Bool):Bool
+  {
+    if (!enabled) throw 'FunkinAssetCache cannot be disabled!';
+    return enabled;
   }
 
   /**
