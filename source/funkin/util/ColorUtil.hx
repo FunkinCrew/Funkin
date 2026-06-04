@@ -1,0 +1,38 @@
+package funkin.util;
+
+import haxe.ui.util.Color as HaxeUIColor;
+import flixel.util.FlxColor;
+
+/**
+ * Utility functions for working with colors.
+ */
+class ColorUtil
+{
+  static final WHITE:HaxeUIColor = 0xFFFFFFFF;
+  static final OFFWHITE:HaxeUIColor = 0xFFF9F9F9;
+  static final OFFBLACK:HaxeUIColor = 0xFF1A1A1A;
+  static final BLACK:HaxeUIColor = 0xFF000000;
+
+  /**
+   * Based on the provided background color, calculate the text color that will be most readable.
+   *
+   * @param backgroundColor The background color to calculate the text color for.
+   * @return The text color to use.
+   */
+  public static function getHaxeUITextColor(backgroundColor:HaxeUIColor):HaxeUIColor
+  {
+    var brightness:Float = brightnessFromHaxeUIColor(backgroundColor);
+    // Black on bright backgrounds, white on dark backgrounds.
+    return (brightness > 0.65) ? OFFBLACK : OFFWHITE;
+  }
+
+  static function brightnessFromHaxeUIColor(color:HaxeUIColor):Float
+  {
+    return Math.max(color.r, Math.max(color.g, color.b)) / 255.0;
+  }
+
+  static function brightnessFromFlxColor(color:FlxColor):Float
+  {
+    return color.brightness;
+  }
+}
