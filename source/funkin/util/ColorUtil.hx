@@ -21,7 +21,7 @@ class ColorUtil
    */
   public static function getHaxeUITextColor(backgroundColor:HaxeUIColor):HaxeUIColor
   {
-    var brightness:Float = brightnessFromHaxeUIColor(backgroundColor);
+    var brightness:Float = luminanceFromHaxeUIColor(backgroundColor);
     // Black on bright backgrounds, white on dark backgrounds.
     return (brightness > 0.65) ? OFFBLACK : OFFWHITE;
   }
@@ -31,8 +31,8 @@ class ColorUtil
     return Math.max(color.r, Math.max(color.g, color.b)) / 255.0;
   }
 
-  static function brightnessFromFlxColor(color:FlxColor):Float
+  static function luminanceFromHaxeUIColor(color:HaxeUIColor):Float
   {
-    return color.brightness;
+    return ((color.r / 255 * 299) + (color.g / 255 * 587) + (color.b / 255 * 114)) / 1000;
   }
 }
