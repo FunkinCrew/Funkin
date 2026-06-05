@@ -36,20 +36,20 @@ class FunkinMemory
 
   /**
    * Ensures a texture with the given key is cached.
-   * @param key The key of the texture to cache.
+   * @param assetPath The key of the texture to cache.
    */
-  public static function cacheTexture(assetPath:AssetPath):Void
+  public static function cacheTexture(assetPath:String):Void
   {
-    funkin.assets.Assets.cacheFlxGraphic(assetPath);
+    log(' WARNING ' + 'FunkinMemory.cacheTexture($assetPath) is deprecated and should not be used.');
   }
 
   /**
    * Permanently caches a texture with the given key.
-   * @param key The key of the texture to cache.
+   * @param assetPath The key of the texture to cache.
    */
-  static function permanentCacheTexture(assetPath:AssetPath):Void
+  static function permanentCacheTexture(assetPath:String):Void
   {
-    funkin.assets.Assets.cacheFlxGraphic(assetPath);
+    log(' WARNING ' + 'FunkinMemory.permanentCacheTexture($assetPath) is deprecated and should not be used.');
   }
 
   /**
@@ -68,7 +68,7 @@ class FunkinMemory
    */
   public static inline function preparePurgeTextureCache():Void
   {
-    trace(' WARNING '.warning() + 'FunkinMemory.preparePurgeTextureCache() is deprecated and should not be used.');
+    log(' WARNING '.warning() + 'FunkinMemory.preparePurgeTextureCache() is deprecated and should not be used.');
   }
 
   /**
@@ -76,7 +76,7 @@ class FunkinMemory
    */
   public static function purgeTextureCache():Void
   {
-    trace(' WARNING '.warning() + 'FunkinMemory.purgeTextureCache() is deprecated and should not be used.');
+    log(' WARNING '.warning() + 'FunkinMemory.purgeTextureCache() is deprecated and should not be used.');
   }
 
   /**
@@ -101,7 +101,7 @@ class FunkinMemory
    */
   public static function cacheNoteStyle(style:NoteStyle):Void
   {
-    trace(' WARNING '.warning() + 'FunkinMemory.cacheNoteStyle() is deprecated and should not be used.');
+    log(' WARNING '.warning() + 'FunkinMemory.cacheNoteStyle() is deprecated and should not be used.');
   }
 
   // =========
@@ -115,7 +115,7 @@ class FunkinMemory
    */
   public static function cacheSound(assetPath:AssetPath):Void
   {
-    funkin.assets.Assets.cacheSound(assetPath);
+    log(' WARNING '.warning() + 'FunkinMemory.cacheSound($assetPath) is deprecated and should not be used.');
   }
 
   /**
@@ -125,7 +125,7 @@ class FunkinMemory
    */
   public static function permanentCacheSound(assetPath:AssetPath):Void
   {
-    funkin.assets.Assets.cacheSound(assetPath);
+    log(' WARNING '.warning() + 'FunkinMemory.permanentCacheSound($assetPath) is deprecated and should not be used.');
   }
 
   /**
@@ -134,7 +134,7 @@ class FunkinMemory
    */
   public static function preparePurgeSoundCache():Void
   {
-    trace(' WARNING '.warning() + 'FunkinMemory.preparePurgeSoundCache() is deprecated and should not be used.');
+    log(' WARNING '.warning() + 'FunkinMemory.preparePurgeSoundCache() is deprecated and should not be used.');
   }
 
   /**
@@ -143,7 +143,7 @@ class FunkinMemory
    */
   public static inline function purgeSoundCache():Void
   {
-    trace(' WARNING '.warning() + 'FunkinMemory.purgeSoundCache() is deprecated and should not be used.');
+    log(' WARNING '.warning() + 'FunkinMemory.purgeSoundCache() is deprecated and should not be used.');
   }
 
   // =========
