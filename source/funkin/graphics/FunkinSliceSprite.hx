@@ -8,7 +8,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
  * An FlxSliceSprite that inherits the vcam positioning from FunkinSprite.
- **/
+**/
 @:nullSafety
 class FunkinSliceSprite extends FlxSliceSprite
 {
@@ -29,7 +29,7 @@ class FunkinSliceSprite extends FlxSliceSprite
    * @param result An optional `FlxPoint` to store the result in. If null, a new `FlxPoint` will be created.
    * @param camera The camera to calculate the screen position relative to. If null, the default camera will be used.
    * @return The screen position of the sprite.
-   **/
+  **/
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     if (result == null) result = FlxPoint.get();

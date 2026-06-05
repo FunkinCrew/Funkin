@@ -78,8 +78,7 @@ class AnsiTrace
   /**
    * Returns our terminals support for color output
    */
-  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm')
-    || Sys.getEnv("ANSICON") != null) #else false #end;
+  public static var colorSupported:Bool = #if sys (Sys.getEnv("TERM")?.startsWith('xterm') || Sys.getEnv("ANSICON") != null) #else false #end;
 
   /**
    * Format the output to use ANSI colors.

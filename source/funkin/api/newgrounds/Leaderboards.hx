@@ -82,7 +82,13 @@ class Leaderboards
     var user:Null<User> = null;
     if ((params?.useCurrentUser ?? false) && NewgroundsClient.instance.isLoggedIn()) user = NewgroundsClient.instance.user;
 
-    leaderboardData.requestScores(params?.limit ?? 10, params?.skip ?? 0, params?.period ?? ALL, params?.social ?? false, params?.tag, user,
+    leaderboardData.requestScores(
+      params?.limit ?? 10,
+      params?.skip ?? 0,
+      params?.period ?? ALL,
+      params?.social ?? false,
+      params?.tag,
+      user,
       function(outcome:Outcome<CallError>):Void
       {
         switch (outcome)
@@ -96,7 +102,8 @@ class Leaderboards
             trace(' ERROR '.error() + error);
             if (params != null && params.onFail != null) params.onFail();
         }
-      });
+      }
+    );
   }
 
   /**

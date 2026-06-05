@@ -478,8 +478,7 @@ class StepManiaImporter
     return (time * 1000) - (offset * 1000); // convert to ms
   }
 
-  static function convertStepNotes(offset:Float, type:StepManiaChartType, stepNotes:Array<StepNote>, stepTimingPoints:Array<StepTimingPoint>,
-      stepStops:Array<StepStop>):Array<SongNoteData>
+  static function convertStepNotes(offset:Float, type:StepManiaChartType, stepNotes:Array<StepNote>, stepTimingPoints:Array<StepTimingPoint>, stepStops:Array<StepStop>):Array<SongNoteData>
   {
     var result:Array<SongNoteData> = [];
     var holdArray:Array<Float> = [];

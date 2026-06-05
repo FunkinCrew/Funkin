@@ -19,7 +19,9 @@ class FramesJSFLParser
       return null;
     }
 
-    var output:FramesJSFLInfo = {frames: []};
+    var output:FramesJSFLInfo = {
+      frames: []
+    };
 
     var frames:Array<String> = text.split('\n');
 

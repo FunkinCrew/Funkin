@@ -187,7 +187,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
             {
               FlxTween.cancelTweensOf(item);
               item.scale.set(1.1, 1.1);
-              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+              FlxTween.tween(item.scale, {
+                x: 1,
+                y: 1
+              }, 0.3, {
+                ease: FlxEase.backOut
+              });
 
               HapticUtil.vibrate(0, 0.05, 1);
               accept();
@@ -196,7 +201,12 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
             {
               FlxTween.cancelTweensOf(item);
               item.scale.set(0.94, 0.94);
-              FlxTween.tween(item.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+              FlxTween.tween(item.scale, {
+                x: 1,
+                y: 1
+              }, 0.3, {
+                ease: FlxEase.backOut
+              });
 
               HapticUtil.vibrate(0, 0.01, 0.5);
             }

@@ -18,7 +18,9 @@ class BlueFade extends FlxShader
   public function fade(startAmt:Float = 0, targetAmt:Float = 1, duration:Float, _options:TweenOptions):Void
   {
     fadeVal = startAmt;
-    FlxTween.tween(this, {fadeVal: targetAmt}, duration, _options);
+    FlxTween.tween(this, {
+      fadeVal: targetAmt
+    }, duration, _options);
   }
 
   @:glFragmentSource('

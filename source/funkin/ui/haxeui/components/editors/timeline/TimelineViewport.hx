@@ -59,12 +59,16 @@ class TimelineViewport extends Box
 
   public var layerScrollOffsetPx:Float = 0;
   public var onRefresh:Void->Void;
-
-  @:noCompletion public var _eventsInstance:TimelineViewportEvents;
-  @:noCompletion public var _autoScrollDragActive:Bool = false;
-  @:noCompletion public var _autoScrollScreenX:Float = 0;
-  @:noCompletion public var _autoScrollScreenY:Float = 0;
-  @:noCompletion public var _autoScrollShiftKey:Bool = false;
+  @:noCompletion
+  public var _eventsInstance:TimelineViewportEvents;
+  @:noCompletion
+  public var _autoScrollDragActive:Bool = false;
+  @:noCompletion
+  public var _autoScrollScreenX:Float = 0;
+  @:noCompletion
+  public var _autoScrollScreenY:Float = 0;
+  @:noCompletion
+  public var _autoScrollShiftKey:Bool = false;
   public var pixelsPerMs(get, never):Float;
 
   function get_pixelsPerMs():Float
@@ -155,6 +159,7 @@ class TimelineViewport extends Box
   }
 
   // Caller is responsible for `refreshLayout()` afterwards.
+
   public function scrollVertical(delta:Float):Void
   {
     var maxScroll:Float = maxLayerScrollPx;
@@ -198,9 +203,7 @@ class TimelineViewport extends Box
 
   public function addEventBlock(event:SongEventData):TimelineEventBlock
   {
-    if (event.eventKind != "FocusCamera"
-      && event.eventKind != "ZoomCamera"
-      && event.eventKind != "PlayAnimation") return null;
+    if (event.eventKind != "FocusCamera" && event.eventKind != "ZoomCamera" && event.eventKind != "PlayAnimation") return null;
 
     var block = new TimelineEventBlock();
     block.eventData = event;
@@ -331,7 +334,8 @@ class TimelineViewport extends Box
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineViewportBuilder extends CompositeBuilder
 {
   var _viewport:TimelineViewport;
@@ -391,7 +395,8 @@ private class TimelineViewportBuilder extends CompositeBuilder
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineViewportLayout extends DefaultLayout
 {
   override public function repositionChildren():Void
@@ -441,10 +446,11 @@ private class TimelineViewportLayout extends DefaultLayout
       var blockWidthVal = Math.max(TimelineViewport.MIN_BLOCK_WIDTH, durationMs * vp.pixelsPerMs * vp.zoomLevel);
       var blockTopPos = vp.getBlockTopPositionFromLayerIndex(block.layerIndex);
 
-      var isOffscreen = (blockLeftPos + blockWidthVal < 0)
-        || (blockLeftPos > w)
-        || (blockTopPos + TimelineEventBlock.BLOCK_HEIGHT < 0)
-        || (blockTopPos > caHeight);
+      var isOffscreen =
+        (blockLeftPos + blockWidthVal < 0)
+          || (blockLeftPos > w)
+          || (blockTopPos + TimelineEventBlock.BLOCK_HEIGHT < 0)
+          || (blockTopPos > caHeight);
 
       if (isOffscreen != block.hidden) block.hidden = isOffscreen;
 
@@ -500,7 +506,8 @@ private class TimelineViewportLayout extends DefaultLayout
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineViewportEvents extends haxe.ui.events.Events
 {
   static inline var PLAYHEAD_GRAB_TOLERANCE_PX:Float = 5.0;
@@ -595,10 +602,12 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
     {
       var block:TimelineEventBlock = _viewport.eventBlocks[i];
       if (block.hidden) continue;
-      if (localX >= block.blockLeft
+      if (
+        localX >= block.blockLeft
         && localX <= block.blockLeft + block.blockWidth
         && contentY >= block.blockTop
-        && contentY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT)
+        && contentY <= block.blockTop + TimelineEventBlock.BLOCK_HEIGHT
+      )
       {
         return block;
       }
@@ -851,9 +860,11 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
         // note: we do double click this way since haxeui's double click dispatches on mouse up,
         // while we want to get it on mouse down, so we can drag right after hitting the second click
         var now:Float = haxe.Timer.stamp();
-        var isDoubleClick:Bool = (now - _lastClickTime) <= DOUBLE_CLICK_MAX_DELAY
-          && Math.abs(localX - _lastClickX) <= DOUBLE_CLICK_MAX_DIST_PX
-          && Math.abs(localY - _lastClickY) <= DOUBLE_CLICK_MAX_DIST_PX;
+        var isDoubleClick:Bool = (
+          now
+          - _lastClickTime) <= DOUBLE_CLICK_MAX_DELAY && Math.abs(
+            localX - _lastClickX
+          ) <= DOUBLE_CLICK_MAX_DIST_PX && Math.abs(localY - _lastClickY) <= DOUBLE_CLICK_MAX_DIST_PX;
 
         if (isDoubleClick)
         {
@@ -1331,10 +1342,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   #if FEATURE_MACOS_GESTURES
   function _hitTest(x:Float, y:Float):Bool
   {
-    return x >= _viewport.screenLeft
-      && x <= _viewport.screenLeft + _viewport.width
-      && y >= _viewport.screenTop
-      && y <= _viewport.screenTop + _viewport.height;
+    return x >= _viewport.screenLeft && x <= _viewport.screenLeft + _viewport.width && y >= _viewport.screenTop && y <= _viewport.screenTop + _viewport.height;
   }
 
   function preGestureStart(g:Gesture):Bool

@@ -141,7 +141,9 @@ class FNFLegacyImporter
 
         var firstNote:LegacyNote = section.sectionNotes[0];
 
-        result.push(new SongEventData(firstNote.time, 'FocusCamera', {char: section.mustHitSection ? 0 : 1}));
+        result.push(new SongEventData(firstNote.time, 'FocusCamera', {
+          char: section.mustHitSection ? 0 : 1
+        }));
       }
     }
 

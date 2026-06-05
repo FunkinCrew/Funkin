@@ -16,7 +16,8 @@ import haxe.ui.events.Events;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 
-@:composite(EventTimelineEvents, TimelineBuilder) @:xml('
+@:composite(EventTimelineEvents, TimelineBuilder)
+@:xml('
 <vbox width="100%" height="100%" style="background-color: #2A2A2A;" />
 ')
 class EventTimeline extends VBox
@@ -49,7 +50,8 @@ class EventTimeline extends VBox
 
   public function loadTimelineStyles():Void
   {
-    haxe.ui.Toolkit.styleSheet.parse('
+    haxe.ui.Toolkit.styleSheet.parse(
+      '
       .timeline-viewport {
         background-color: #FFFFFF;
         clip: true;
@@ -102,7 +104,8 @@ class EventTimeline extends VBox
         background-opacity: 0.18;
         border: 1px solid #5BA3FF;
       }
-    ');
+    '
+    );
   }
 
   /**
@@ -147,7 +150,8 @@ class EventTimeline extends VBox
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineBuilder extends CompositeBuilder
 {
   var _timeline:EventTimeline;
@@ -237,7 +241,8 @@ private class TimelineBuilder extends CompositeBuilder
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class EventTimelineEvents extends Events
 {
   var _timeline:EventTimeline;
@@ -251,19 +256,26 @@ private class EventTimelineEvents extends Events
 
   override public function register():Void
   {
-    if (!_timeline.layerPanel.btnAddLayer.hasEvent(MouseEvent.CLICK,
-      _onAddLayer)) _timeline.layerPanel.btnAddLayer.registerEvent(MouseEvent.CLICK, _onAddLayer);
-    if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(MouseEvent.CLICK,
-      _onRemoveLayer)) _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
-    if (!_timeline.layerPanel.hasEvent(MouseEvent.MOUSE_WHEEL,
-      _onLayerPanelWheel)) _timeline.layerPanel.registerEvent(MouseEvent.MOUSE_WHEEL, _onLayerPanelWheel);
+    if (!_timeline.layerPanel.btnAddLayer.hasEvent(
+      MouseEvent.CLICK,
+      _onAddLayer
+    )) _timeline.layerPanel.btnAddLayer.registerEvent(MouseEvent.CLICK, _onAddLayer);
+    if (!_timeline.layerPanel.btnRemoveLayer.hasEvent(
+      MouseEvent.CLICK,
+      _onRemoveLayer
+    )) _timeline.layerPanel.btnRemoveLayer.registerEvent(MouseEvent.CLICK, _onRemoveLayer);
+    if (!_timeline.layerPanel.hasEvent(
+      MouseEvent.MOUSE_WHEEL,
+      _onLayerPanelWheel
+    )) _timeline.layerPanel.registerEvent(MouseEvent.MOUSE_WHEEL, _onLayerPanelWheel);
     if (!_timeline.scrollbar.hasEvent(UIEvent.CHANGE, _onScrollbarChange)) _timeline.scrollbar.registerEvent(UIEvent.CHANGE, _onScrollbarChange);
     if (!_timeline.vscrollbar.hasEvent(UIEvent.CHANGE, _onVScrollbarChange)) _timeline.vscrollbar.registerEvent(UIEvent.CHANGE, _onVScrollbarChange);
-    if (!_timeline.toolbar.ddAutoScroll.hasEvent(UIEvent.CHANGE,
-      _onAutoScrollChange)) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
+    if (!_timeline.toolbar.ddAutoScroll.hasEvent(
+      UIEvent.CHANGE,
+      _onAutoScrollChange
+    )) _timeline.toolbar.ddAutoScroll.registerEvent(UIEvent.CHANGE, _onAutoScrollChange);
     if (!_timeline.toolbar.chkSnap.hasEvent(UIEvent.CHANGE, _onSnapChange)) _timeline.toolbar.chkSnap.registerEvent(UIEvent.CHANGE, _onSnapChange);
-    if (!_timeline.viewport.hasEvent(UIEvent.RESIZE,
-      _onViewportResized)) _timeline.viewport.registerEvent(UIEvent.RESIZE, _onViewportResized);
+    if (!_timeline.viewport.hasEvent(UIEvent.RESIZE, _onViewportResized)) _timeline.viewport.registerEvent(UIEvent.RESIZE, _onViewportResized);
 
     _timeline.viewport.onRefresh = _updateScrollbar;
 
@@ -441,7 +453,8 @@ private class EventTimelineEvents extends Events
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class SongPositionBehaviour extends DataBehaviour
 {
   override public function validateData():Void
@@ -485,7 +498,8 @@ private class SongPositionBehaviour extends DataBehaviour
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class SongLengthBehaviour extends DataBehaviour
 {
   override public function validateData():Void

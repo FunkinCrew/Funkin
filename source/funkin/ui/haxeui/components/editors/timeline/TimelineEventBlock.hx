@@ -83,7 +83,8 @@ class TimelineEventBlock extends Box
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineBlockBuilder extends CompositeBuilder
 {
   override public function create():Void

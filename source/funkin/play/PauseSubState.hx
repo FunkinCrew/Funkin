@@ -56,7 +56,10 @@ class PauseSubState extends MusicBeatSubState
    * Pause menu entries for when the game is paused during a song.
    */
   static final PAUSE_MENU_ENTRIES_STANDARD:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
+    {
+      text: 'Resume',
+      callback: resume
+    },
     {
       text: 'Restart Song',
       callback: restartPlayState
@@ -70,55 +73,81 @@ class PauseSubState extends MusicBeatSubState
       callback: enablePracticeMode,
       filter: () -> !(PlayState.instance?.isPracticeMode ?? false)
     },
-    {text: 'Exit to Menu', callback: quitToMenu},
+    {
+      text: 'Exit to Menu',
+      callback: quitToMenu
+    },
   ];
 
   /**
    * Pause menu entries for when the game is paused in the Chart Editor preview.
    */
   static final PAUSE_MENU_ENTRIES_CHARTING:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
+    {
+      text: 'Resume',
+      callback: resume
+    },
     {
       text: 'Restart Song',
       callback: restartPlayState
     },
-    {text: 'Return to Chart Editor', callback: quitToChartEditor},
+    {
+      text: 'Return to Chart Editor',
+      callback: quitToChartEditor
+    },
   ];
 
   /**
    * Pause menu entries for when the user selects "Change Difficulty".
    */
-  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [
-    {
-      text: 'Back',
-      callback: switchMode.bind(_, Standard)
-    } // Other entries are added dynamically.
+  static final PAUSE_MENU_ENTRIES_DIFFICULTY:Array<PauseMenuEntry> = [{
+    text: 'Back',
+    callback: switchMode.bind(_, Standard)
+  } // Other entries are added dynamically.
   ];
 
   /**
    * Pause menu entries for when the game is paused during a video cutscene.
    */
   static final PAUSE_MENU_ENTRIES_VIDEO_CUTSCENE:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
+    {
+      text: 'Resume',
+      callback: resume
+    },
     {
       text: 'Skip Cutscene',
       callback: skipVideoCutscene
     },
-    {text: 'Restart Cutscene', callback: restartVideoCutscene},
-    {text: 'Exit to Menu', callback: quitToMenu},
+    {
+      text: 'Restart Cutscene',
+      callback: restartVideoCutscene
+    },
+    {
+      text: 'Exit to Menu',
+      callback: quitToMenu
+    },
   ];
 
   /**
    * Pause menu entries for when the game is paused during a conversation.
    */
   static final PAUSE_MENU_ENTRIES_CONVERSATION:Array<PauseMenuEntry> = [
-    {text: 'Resume', callback: resume},
+    {
+      text: 'Resume',
+      callback: resume
+    },
     {
       text: 'Skip Dialogue',
       callback: skipConversation
     },
-    {text: 'Restart Dialogue', callback: restartConversation},
-    {text: 'Exit to Menu', callback: quitToMenu},
+    {
+      text: 'Restart Dialogue',
+      callback: restartConversation
+    },
+    {
+      text: 'Exit to Menu',
+      callback: quitToMenu
+    },
   ];
 
   /**
@@ -472,9 +501,12 @@ class PauseSubState extends MusicBeatSubState
     metadata.scrollFactor.set(0, 0);
     add(metadata);
 
-    var metadataSong:FlxText = new FlxText(20,
+    var metadataSong:FlxText = new FlxText(
+      20,
       #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
-      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x), 'Song Name');
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Song Name'
+    );
     metadataSong.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -483,8 +515,12 @@ class PauseSubState extends MusicBeatSubState
     metadataSong.scrollFactor.set(0, 0);
     metadata.add(metadataSong);
 
-    metadataArtist = new FlxText(20, metadataSong.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Artist: ${Constants.DEFAULT_ARTIST}');
+    metadataArtist = new FlxText(
+      20,
+      metadataSong.y + 32,
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Artist: ${Constants.DEFAULT_ARTIST}'
+    );
     metadataArtist.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentChart != null)
     {
@@ -493,8 +529,12 @@ class PauseSubState extends MusicBeatSubState
     metadataArtist.scrollFactor.set(0, 0);
     metadata.add(metadataArtist);
 
-    var metadataDifficulty:FlxText = new FlxText(20, metadataArtist.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Difficulty: ');
+    var metadataDifficulty:FlxText = new FlxText(
+      20,
+      metadataArtist.y + 32,
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Difficulty: '
+    );
     metadataDifficulty.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     if (PlayState.instance?.currentDifficulty != null)
     {
@@ -503,8 +543,12 @@ class PauseSubState extends MusicBeatSubState
     metadataDifficulty.scrollFactor.set(0, 0);
     metadata.add(metadataDifficulty);
 
-    metadataDeaths = new FlxText(20, metadataDifficulty.y + 32, camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      '${PlayState.instance?.deathCounter} Blue Balls');
+    metadataDeaths = new FlxText(
+      20,
+      metadataDifficulty.y + 32,
+      camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      '${PlayState.instance?.deathCounter} Blue Balls'
+    );
     metadataDeaths.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 32, FlxColor.WHITE, FlxTextAlign.RIGHT);
     metadataDeaths.scrollFactor.set(0, 0);
     metadata.add(metadataDeaths);
@@ -516,13 +560,21 @@ class PauseSubState extends MusicBeatSubState
     metadata.add(metadataPractice);
 
     // Right side
-    offsetText = new FlxText(20, metadataSong.y - 12, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Global Offset: ${Preferences.globalOffset ?? 0}ms');
+    offsetText = new FlxText(
+      20,
+      metadataSong.y - 12,
+      (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Global Offset: ${Preferences.globalOffset ?? 0}ms'
+    );
     offsetText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetText.scrollFactor.set(0, 0);
 
-    offsetTextInfo = new FlxText(20, offsetText.y + 16, (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
-      'Hold SHIFT-UP/DOWN,\nto change the offset.');
+    offsetTextInfo = new FlxText(
+      20,
+      offsetText.y + 16,
+      (camera.width + 10) - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
+      'Hold SHIFT-UP/DOWN,\nto change the offset.'
+    );
     offsetTextInfo.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, FlxTextAlign.RIGHT);
     offsetTextInfo.scrollFactor.set(0, 0);
 
@@ -549,7 +601,9 @@ class PauseSubState extends MusicBeatSubState
 
   function startCharterTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+    charterFadeTween = FlxTween.tween(metadataArtist, {
+      alpha: 0.0
+    }, CHARTER_FADE_DURATION, {
       startDelay: CHARTER_FADE_DELAY,
       ease: FlxEase.quartOut,
       onComplete: (_) ->
@@ -563,7 +617,9 @@ class PauseSubState extends MusicBeatSubState
           metadataArtist.text = 'Charter: ${Constants.DEFAULT_CHARTER}';
         }
 
-        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+        FlxTween.tween(metadataArtist, {
+          alpha: 1.0
+        }, CHARTER_FADE_DURATION, {
           ease: FlxEase.quartOut,
           onComplete: (_) ->
           {
@@ -576,7 +632,9 @@ class PauseSubState extends MusicBeatSubState
 
   function startArtistTimer():Void
   {
-    charterFadeTween = FlxTween.tween(metadataArtist, {alpha: 0.0}, CHARTER_FADE_DURATION, {
+    charterFadeTween = FlxTween.tween(metadataArtist, {
+      alpha: 0.0
+    }, CHARTER_FADE_DURATION, {
       startDelay: CHARTER_FADE_DELAY,
       ease: FlxEase.quartOut,
       onComplete: (_) ->
@@ -590,7 +648,9 @@ class PauseSubState extends MusicBeatSubState
           metadataArtist.text = 'Artist: ${Constants.DEFAULT_ARTIST}';
         }
 
-        FlxTween.tween(metadataArtist, {alpha: 1.0}, CHARTER_FADE_DURATION, {
+        FlxTween.tween(metadataArtist, {
+          alpha: 1.0
+        }, CHARTER_FADE_DURATION, {
           ease: FlxEase.quartOut,
           onComplete: (_) ->
           {
@@ -609,7 +669,11 @@ class PauseSubState extends MusicBeatSubState
    */
   function transitionIn():Void
   {
-    FlxTween.tween(background, {alpha: 0.6}, 0.8, {ease: FlxEase.quartOut});
+    FlxTween.tween(background, {
+      alpha: 0.6
+    }, 0.8, {
+      ease: FlxEase.quartOut
+    });
 
     #if mobile
     HapticUtil.vibrate(0, 0.05, 0.5);
@@ -617,8 +681,17 @@ class PauseSubState extends MusicBeatSubState
     pauseButton.animation.play('confirm');
     pauseCircle.scale.set(0.84 * 1.4, 0.8 * 1.4);
     pauseCircle.alpha = 0.4;
-    FlxTween.tween(pauseCircle.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});
-    FlxTween.tween(pauseCircle, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
+    FlxTween.tween(pauseCircle.scale, {
+      x: 0.84 * 0.8,
+      y: 0.8 * 0.8
+    }, 0.4, {
+      ease: FlxEase.backInOut
+    });
+    FlxTween.tween(pauseCircle, {
+      alpha: 0
+    }, 0.6, {
+      ease: FlxEase.quartOut
+    });
 
     hapticTimer.start(0.2, function(_)
     {
@@ -628,7 +701,11 @@ class PauseSubState extends MusicBeatSubState
     dataFadeTimer.start(0.3, function(_)
     {
       transitionMetadataIn();
-      FlxTween.tween(pauseButton, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(pauseButton, {
+        alpha: 0
+      }, 0.6, {
+        ease: FlxEase.quartOut
+      });
     });
     #else
     transitionMetadataIn();
@@ -641,7 +718,13 @@ class PauseSubState extends MusicBeatSubState
     var delay:Float = 0.1;
     for (child in metadata.members)
     {
-      FlxTween.tween(child, {alpha: 1, y: #if mobile child.y - 5 #else child.y + 5 #end}, 1.8, {ease: FlxEase.quartOut, startDelay: delay});
+      FlxTween.tween(child, {
+        alpha: 1,
+        y: #if mobile child.y - 5 #else child.y + 5 #end
+      }, 1.8, {
+        ease: FlxEase.quartOut,
+        startDelay: delay
+      });
       delay += 0.1;
     }
   }
@@ -825,13 +908,22 @@ class PauseSubState extends MusicBeatSubState
       {
         FlxTween.globalManager.cancelTweensOf(text);
         text.x = 165;
-        FlxTween.tween(text, {x: 150}, 0.2, {ease: FlxEase.backInOut});
+        FlxTween.tween(text, {
+          x: 150
+        }, 0.2, {
+          ease: FlxEase.backInOut
+        });
       }
       #else
       var targetX = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 20 + Math.max(90, funkin.ui.FullScreenScaleMode.gameNotchSize.x);
       var targetY = FlxMath.remapToRange((entryIndex - currentEntry), 0, 1, 0, 1.3) * 120 + (camera.height * 0.48);
       FlxTween.globalManager.cancelTweensOf(text);
-      FlxTween.tween(text, {x: targetX, y: targetY}, 0.33, {ease: FlxEase.quartOut});
+      FlxTween.tween(text, {
+        x: targetX,
+        y: targetY
+      }, 0.33, {
+        ease: FlxEase.quartOut
+      });
       #end
     }
   }
@@ -887,7 +979,10 @@ class PauseSubState extends MusicBeatSubState
           var difficultiesInVariation = PlayState.instance.currentSong.listDifficulties(PlayState.instance.currentChart.variation, true);
           for (difficulty in difficultiesInVariation)
           {
-            entries.push({text: difficulty.toTitleCase(), callback: (state) -> changeDifficulty(state, difficulty)});
+            entries.push({
+              text: difficulty.toTitleCase(),
+              callback: (state) -> changeDifficulty(state, difficulty)
+            });
           }
         }
 
@@ -943,7 +1038,11 @@ class PauseSubState extends MusicBeatSubState
         }
         menuEntryText.add(text);
 
-        FlxTween.tween(text, {x: 150}, 0.4 * (entryIndex + 1), {ease: FlxEase.expoOut});
+        FlxTween.tween(text, {
+          x: 150
+        }, 0.4 * (entryIndex + 1), {
+          ease: FlxEase.expoOut
+        });
 
         entry.sprite = text;
         #else
@@ -1040,8 +1139,9 @@ class PauseSubState extends MusicBeatSubState
    */
   static function changeDifficulty(state:PauseSubState, difficulty:String):Void
   {
-    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase(),
-      {variation: PlayState.instance.currentChart.variation});
+    PlayState.instance.currentSong = SongRegistry.instance.fetchEntry(PlayState.instance.currentSong.id.toLowerCase(), {
+      variation: PlayState.instance.currentChart.variation
+    });
 
     // Reset campaign score when changing difficulty
     // So if you switch difficulty on the last song of a week you get a really low overall score.
@@ -1203,8 +1303,9 @@ class PauseSubState extends MusicBeatSubState
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
 
-    var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) ->
-      new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+    var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(
+      sticker
+    ) : (sticker) -> FreeplayState.build(sticker);
 
     // Do this AFTER because this resets the value of isStoryMode!
     if (PlayStatePlaylist.isStoryMode)
@@ -1229,7 +1330,10 @@ class PauseSubState extends MusicBeatSubState
     AdMobUtil.removeBanner();
     #end
 
-    state.openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
+    state.openSubState(new funkin.ui.transition.stickers.StickerSubState({
+      targetState: targetState,
+      stickerPack: stickerPackId
+    }));
   }
 
   /**

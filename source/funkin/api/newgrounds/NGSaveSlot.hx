@@ -7,7 +7,8 @@ import io.newgrounds.Call.CallError;
 import io.newgrounds.objects.events.Outcome;
 import funkin.save.Save;
 
-@:nullSafety @:access(funkin.save.Save)
+@:nullSafety
+@:access(funkin.save.Save)
 class NGSaveSlot
 {
   public static var instance(get, never):NGSaveSlot;
@@ -114,7 +115,10 @@ class NGSaveSlot
 
       if (onError != null)
       {
-        onError(RESPONSE({message: error, code: 500}));
+        onError(RESPONSE({
+          message: error,
+          code: 500
+        }));
       }
     }
   }

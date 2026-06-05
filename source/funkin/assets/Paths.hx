@@ -290,7 +290,9 @@ class Paths implements ConsoleClass
  * and pass a series of checks to ensure the file exists and is properly cached,
  * rather than passing a raw string by accident.
  */
-@:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
+@:nullSafety
+@:allow(funkin.assets.Paths)
+@:access(funkin.assets.Paths)
 class AssetPath
 {
   /**
@@ -517,7 +519,9 @@ class AssetPath
  * Holds the directory containing an Adobe Animate texture atlas,
  * and provides methods to construct asset paths for the texture and animation data.
  */
-@:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
+@:nullSafety
+@:allow(funkin.assets.Paths)
+@:access(funkin.assets.Paths)
 class AnimateAtlasAssetPathBuilder
 {
   /**
@@ -617,7 +621,9 @@ class AnimateAtlasAssetPathBuilder
  * Holds the directory containing a music track,
  * and provides methods to construct asset paths for the audio and the metadata.
  */
-@:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
+@:nullSafety
+@:allow(funkin.assets.Paths)
+@:access(funkin.assets.Paths)
 class MusicAssetPathBuilder
 {
   /**

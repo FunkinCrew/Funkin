@@ -463,8 +463,10 @@ class Conductor
     if (currentTimeChange != null && this.songPosition > 0.0)
     {
       // roundDecimal prevents representing 8 as 7.9999999
-      this.currentStepTime = FlxMath.roundDecimal((currentTimeChange.beatTime * Constants.STEPS_PER_BEAT)
-        + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs, 6);
+      this.currentStepTime = FlxMath.roundDecimal(
+        (currentTimeChange.beatTime * Constants.STEPS_PER_BEAT) + (this.songPosition - currentTimeChange.timeStamp) / stepLengthMs,
+        6
+      );
       this.currentBeatTime = currentStepTime / Constants.STEPS_PER_BEAT;
       this.currentMeasureTime = getTimeInMeasures(this.songPosition);
       this.currentStep = Math.floor(currentStepTime);
@@ -568,10 +570,13 @@ class Conductor
         if (songTimeChange.timeStamp > 0.0 && timeChanges.length > 0)
         {
           var prevTimeChange:SongTimeChange = timeChanges[timeChanges.length - 1];
-          songTimeChange.beatTime = FlxMath.roundDecimal(prevTimeChange.beatTime
-            +
-            ((songTimeChange.timeStamp - prevTimeChange.timeStamp) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC * (prevTimeChange.timeSignatureDen / 4)),
-            4);
+          songTimeChange.beatTime = FlxMath.roundDecimal(
+            prevTimeChange.beatTime + ((
+              songTimeChange.timeStamp
+              - prevTimeChange.timeStamp
+            ) * prevTimeChange.bpm / Constants.SECS_PER_MIN / Constants.MS_PER_SEC * (prevTimeChange.timeSignatureDen / 4)),
+            4
+          );
         }
       }
 

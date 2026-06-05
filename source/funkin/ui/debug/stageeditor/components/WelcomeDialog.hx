@@ -58,8 +58,11 @@ class WelcomeDialog extends Dialog
       contentRecent.addComponent(fileText);
     }
 
-    boxDrag.onClick = function(_) FileUtil.browseForFile("Open Stage Data", [FileUtil.FILE_FILTER_FNFS],
-      (fileInfo) -> loadFromFilePath(fileInfo.fullPath, null, 0, 0));
+    boxDrag.onClick = function(_) FileUtil.browseForFile(
+      "Open Stage Data",
+      [FileUtil.FILE_FILTER_FNFS],
+      (fileInfo) -> loadFromFilePath(fileInfo.fullPath, null, 0, 0)
+    );
 
     var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();
     defaultStages.sort(funkin.util.SortUtil.alphabetically);
@@ -87,7 +90,11 @@ class WelcomeDialog extends Dialog
 
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+      Dialogs.messageBox(
+        "You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.",
+        "Load Stage",
+        MessageBoxType.TYPE_YESNO,
+        true,
         function(btn:DialogButton)
         {
           if (btn == DialogButton.YES)
@@ -95,7 +102,8 @@ class WelcomeDialog extends Dialog
             stageEditorState.saved = true;
             loadFromPreset(data);
           }
-        });
+        }
+      );
 
       return;
     }
@@ -110,7 +118,11 @@ class WelcomeDialog extends Dialog
   {
     if (!stageEditorState.saved)
     {
-      Dialogs.messageBox("You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.", "Load Stage", MessageBoxType.TYPE_YESNO, true,
+      Dialogs.messageBox(
+        "You will lose all of your unsaved work.\n\nAre you sure? This cannot be undone.",
+        "Load Stage",
+        MessageBoxType.TYPE_YESNO,
+        true,
         function(btn:DialogButton)
         {
           if (btn == DialogButton.YES)
@@ -118,7 +130,8 @@ class WelcomeDialog extends Dialog
             stageEditorState.saved = true;
             loadFromFilePath(file, state, x, y);
           }
-        });
+        }
+      );
 
       return;
     }

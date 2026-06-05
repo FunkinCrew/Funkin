@@ -77,7 +77,10 @@ class SongEventHelper
   static function getEaseRange(func:Dynamic, samples:Int):
     {min:Float, max:Float}
   {
-    if (func == null || samples <= 0) return {min: 0.0, max: 1.0};
+    if (func == null || samples <= 0) return {
+      min: 0.0,
+      max: 1.0
+    };
 
     var min:Float = 0.0;
     var max:Float = 1.0;
@@ -102,8 +105,14 @@ class SongEventHelper
       }
     }
 
-    if (!hasValue) return {min: 0.0, max: 1.0};
-    return {min: min, max: max};
+    if (!hasValue) return {
+      min: 0.0,
+      max: 1.0
+    };
+    return {
+      min: min,
+      max: max
+    };
   }
 
   static function getEaseY(raw:Float, size:Int, range:
@@ -145,15 +154,23 @@ class SongEventHelper
           var y:Int = getEaseY(raw, size, range);
           if (lastY == -1)
           {
-            for (xx in (i - half)...(i + half + 1)) if (xx >= 0 && xx < size) for (yy in (y - half)...(y + half + 1)) if (yy >= 0 && yy < size)
-              bd.setPixel32(xx, yy, 0xFFFFFFFF);
+            for (xx in (
+              i
+              - half
+            )...(
+              i
+              + half
+              + 1
+              )) if (xx >= 0 && xx < size) for (yy in (y - half)...(y + half + 1)) if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
           }
           else
           {
             var a = Std.int(Math.min(y, lastY));
             var b = Std.int(Math.max(y, lastY));
-            for (xx in (i - half)...(i + half + 1)) if (xx >= 0 && xx < size) for (yy in a - half...b + half + 1) if (yy >= 0 && yy < size) bd.setPixel32(xx,
-              yy, 0xFFFFFFFF);
+            for (xx in (
+              i
+              - half
+            )...(i + half + 1)) if (xx >= 0 && xx < size) for (yy in a - half...b + half + 1) if (yy >= 0 && yy < size) bd.setPixel32(xx, yy, 0xFFFFFFFF);
           }
           lastY = y;
         }

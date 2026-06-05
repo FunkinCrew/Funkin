@@ -41,9 +41,7 @@ class RetroCameraFade
       0, 0, 1, 0, 1.0 * 255,
       0, 0, 0, 1,         0
     ];
-    camera.filters = [
-      new ColorMatrixFilter(matrixDerp)
-    ];
+    camera.filters = [new ColorMatrixFilter(matrixDerp)];
 
     new FlxTimer().start(time / stepsTotal, _ ->
     {
@@ -93,9 +91,7 @@ class RetroCameraFade
       0, 0, 1, 0, -1.0 * 255,
       0, 0, 0, 1,          0
     ];
-    camera.filters = [
-      new ColorMatrixFilter(matrixDerp)
-    ];
+    camera.filters = [new ColorMatrixFilter(matrixDerp)];
 
     new FlxTimer().start(time / stepsTotal, _ ->
     {

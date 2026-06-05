@@ -336,9 +336,11 @@ class BaseCharacter extends Bopper
   {
     super.onAnimationFinished(animationName);
 
-    if ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
-      || animationName.startsWith('combo')
-      || animationName.startsWith('drop'))
+    if
+      ((animationName.endsWith(Constants.ANIMATION_END_SUFFIX) && !animationName.startsWith('idle') && !animationName.startsWith('dance'))
+        || animationName.startsWith('combo')
+        || animationName.startsWith('drop')
+      )
     {
       // Force the character to play the idle after the animation ends.
       this.dance(true);
@@ -417,9 +419,11 @@ class BaseCharacter extends Bopper
     // and Darnell (this keeps the flame on his lighter flickering).
     // Works for idle, singLEFT/RIGHT/UP/DOWN, alt singing animations, and anything else really.
 
-    if (isAnimationFinished()
+    if (
+      isAnimationFinished()
       && !getCurrentAnimation().endsWith(Constants.ANIMATION_HOLD_SUFFIX)
-      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX))
+      && hasAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX)
+    )
     {
       playAnimation(getCurrentAnimation() + Constants.ANIMATION_HOLD_SUFFIX);
     }
@@ -458,7 +462,9 @@ class BaseCharacter extends Bopper
 
         var currentAnimation:String = getCurrentAnimation();
         // Strip "-hold" from the end.
-        if (currentAnimation.endsWith(Constants.ANIMATION_HOLD_SUFFIX)) currentAnimation = currentAnimation.substring(0, currentAnimation.length - Constants.ANIMATION_HOLD_SUFFIX.length);
+        if (currentAnimation.endsWith(
+          Constants.ANIMATION_HOLD_SUFFIX
+        )) currentAnimation = currentAnimation.substring(0, currentAnimation.length - Constants.ANIMATION_HOLD_SUFFIX.length);
 
         var endAnimation:String = currentAnimation + Constants.ANIMATION_END_SUFFIX;
         if (hasAnimation(endAnimation))
@@ -517,12 +523,14 @@ class BaseCharacter extends Bopper
     switch (player)
     {
       case 1:
-        return PlayerSettings.player1.controls.NOTE_LEFT_P
+        return
+          PlayerSettings.player1.controls.NOTE_LEFT_P
           || PlayerSettings.player1.controls.NOTE_DOWN_P
           || PlayerSettings.player1.controls.NOTE_UP_P
           || PlayerSettings.player1.controls.NOTE_RIGHT_P;
       case 2:
-        return PlayerSettings.player2.controls.NOTE_LEFT_P
+        return
+          PlayerSettings.player2.controls.NOTE_LEFT_P
           || PlayerSettings.player2.controls.NOTE_DOWN_P
           || PlayerSettings.player2.controls.NOTE_UP_P
           || PlayerSettings.player2.controls.NOTE_RIGHT_P;
@@ -541,12 +549,14 @@ class BaseCharacter extends Bopper
     switch (player)
     {
       case 1:
-        return PlayerSettings.player1.controls.NOTE_LEFT
+        return
+          PlayerSettings.player1.controls.NOTE_LEFT
           || PlayerSettings.player1.controls.NOTE_DOWN
           || PlayerSettings.player1.controls.NOTE_UP
           || PlayerSettings.player1.controls.NOTE_RIGHT;
       case 2:
-        return PlayerSettings.player2.controls.NOTE_LEFT
+        return
+          PlayerSettings.player2.controls.NOTE_LEFT
           || PlayerSettings.player2.controls.NOTE_DOWN
           || PlayerSettings.player2.controls.NOTE_UP
           || PlayerSettings.player2.controls.NOTE_RIGHT;

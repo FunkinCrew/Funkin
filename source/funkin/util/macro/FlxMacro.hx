@@ -58,12 +58,30 @@ class FlxMacro
     var fields:Array<haxe.macro.Expr.Field> = haxe.macro.Context.getBuildFields();
 
     var fieldsToAdd = [];
-    fieldsToAdd.push({name: "localX", kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})});
-    fieldsToAdd.push({name: "localY", kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})});
-    fieldsToAdd.push({name: "localAngle", kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})});
-    fieldsToAdd.push({name: "localScale", kind: haxe.macro.Expr.FieldType.FVar(macro :flixel.math.FlxPoint, macro new flixel.math.FlxPoint(1, 1))});
-    fieldsToAdd.push({name: "localAlpha", kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{1})});
-    fieldsToAdd.push({name: "localVisible", kind: haxe.macro.Expr.FieldType.FVar(macro :Bool, macro $v{true})});
+    fieldsToAdd.push({
+      name: "localX",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
+    });
+    fieldsToAdd.push({
+      name: "localY",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
+    });
+    fieldsToAdd.push({
+      name: "localAngle",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{0})
+    });
+    fieldsToAdd.push({
+      name: "localScale",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :flixel.math.FlxPoint, macro new flixel.math.FlxPoint(1, 1))
+    });
+    fieldsToAdd.push({
+      name: "localAlpha",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :Float, macro $v{1})
+    });
+    fieldsToAdd.push({
+      name: "localVisible",
+      kind: haxe.macro.Expr.FieldType.FVar(macro :Bool, macro $v{true})
+    });
 
     var alreadyOwnedFields = [];
 

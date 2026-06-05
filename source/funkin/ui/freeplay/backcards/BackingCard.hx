@@ -47,10 +47,14 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow')), FreeplayState.CUTOUT_WIDTH);
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
-    confirmGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30,
-      240).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-1'));
-    confirmTextGlow = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8,
-      115).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
+    confirmGlow = new FlxSprite(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -30,
+      240
+    ).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-1'));
+    confirmTextGlow = new FlxSprite(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -8,
+      115
+    ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
 
     var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back')), FreeplayState.CUTOUT_WIDTH);
     pinkBack = new FunkinSprite();
@@ -60,8 +64,11 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
 
-    backingTextYeah = FunkinSprite.createTextureAtlas((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320, 120,
-      'ui/freeplay/styles/bf/backing-card');
+    backingTextYeah = FunkinSprite.createTextureAtlas(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320,
+      120,
+      'ui/freeplay/styles/bf/backing-card'
+    );
     backingTextYeah.anim.addBySymbol('wholeTimeline', backingTextYeah.getDefaultSymbol(), backingTextYeah.library.frameRate, false);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
@@ -135,7 +142,13 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     orangeBackShit.visible = true;
     alsoOrangeLOL.visible = true;
     cardGlow.visible = true;
-    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.45, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {
+      alpha: 0,
+      'scale.x': 1.2,
+      'scale.y': 1.2
+    }, 0.45, {
+      ease: FlxEase.sineOut
+    });
   }
 
   /**
@@ -143,7 +156,9 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    */
   public function confirm():Void
   {
-    FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {ease: FlxEase.quadOut});
+    FlxTween.color(pinkBack, 0.33, 0xFFFFD0D5, 0xFF171831, {
+      ease: FlxEase.quadOut
+    });
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;
 
@@ -160,7 +175,9 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
         instance.angleMaskShader.extraColor = instance.backingImage.color;
       }
     });
-    FlxTween.tween(confirmGlow2, {alpha: 0.5}, 0.33, {
+    FlxTween.tween(confirmGlow2, {
+      alpha: 0.5
+    }, 0.33, {
       ease: FlxEase.quadOut,
       onComplete: function(_)
       {
@@ -168,8 +185,12 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
         confirmGlow.alpha = 1;
         confirmTextGlow.visible = true;
         confirmTextGlow.alpha = 1;
-        FlxTween.tween(confirmTextGlow, {alpha: 0.4}, 0.5);
-        FlxTween.tween(confirmGlow, {alpha: 0}, 0.5);
+        FlxTween.tween(confirmTextGlow, {
+          alpha: 0.4
+        }, 0.5);
+        FlxTween.tween(confirmGlow, {
+          alpha: 0
+        }, 0.5);
         FlxTween.color(instance.backingImage, 2, 0xFFCDCDCD, 0xFF555555, {
           ease: FlxEase.expoOut,
           onUpdate: function(_)
@@ -200,12 +221,20 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    */
   public function disappear():Void
   {
-    FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {ease: FlxEase.quadOut});
+    FlxTween.color(pinkBack, 0.25, 0xFFFFD863, 0xFFFFD0D5, {
+      ease: FlxEase.quadOut
+    });
 
     cardGlow.visible = true;
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
-    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.25, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {
+      alpha: 0,
+      'scale.x': 1.2,
+      'scale.y': 1.2
+    }, 0.25, {
+      ease: FlxEase.sineOut
+    });
 
     orangeBackShit.visible = false;
     alsoOrangeLOL.visible = false;
@@ -220,7 +249,11 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    */
   public function onCreate(event:ScriptEvent):Void
   {
-    FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
+    FlxTween.tween(pinkBack, {
+      x: 0
+    }, 0.6, {
+      ease: FlxEase.quartOut
+    });
     add(pinkBack);
 
     add(orangeBackShit);

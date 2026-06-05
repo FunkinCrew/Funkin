@@ -64,9 +64,7 @@ class VisShit
     while (c < samples.length)
     {
       // take a chunk (zero-padded if needed) and apply the window
-      final chunk = [
-        for (n in 0...fftN) (c + n < samples.length ? samples[c + n] : 0.0) * window(n)
-      ];
+      final chunk = [for (n in 0...fftN) (c + n < samples.length ? samples[c + n] : 0.0) * window(n)];
 
       // compute positive spectrum with sampling correction and BP filter
       final freqs = FFT.rfft(chunk).map(z -> z.scale(1 / fftN).magnitude).mapi(melodicBandPass);
@@ -105,7 +103,11 @@ class VisShit
     var right = aud[index + 2] / 32767;
     var balanced = (left + right) / 2;
 
-    var funny:CurAudioInfo = {left: left, right: right, balanced: balanced};
+    var funny:CurAudioInfo = {
+      left: left,
+      right: right,
+      balanced: balanced
+    };
 
     return funny;
   }

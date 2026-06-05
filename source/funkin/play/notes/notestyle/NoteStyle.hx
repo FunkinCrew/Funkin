@@ -160,17 +160,41 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   function buildNoteAnimations(target:NoteSprite):Void
   {
     var leftData:Null<AnimationData> = fetchNoteAnimationData(LEFT);
-    if (leftData != null) target.animation.addByPrefix('purpleScroll', leftData.prefix ?? '', leftData.frameRate ?? 24, leftData.looped ?? false,
-      leftData.flipX, leftData.flipY);
+    if (leftData != null) target.animation.addByPrefix(
+      'purpleScroll',
+      leftData.prefix ?? '',
+      leftData.frameRate ?? 24,
+      leftData.looped ?? false,
+      leftData.flipX,
+      leftData.flipY
+    );
     var downData:Null<AnimationData> = fetchNoteAnimationData(DOWN);
-    if (downData != null) target.animation.addByPrefix('blueScroll', downData.prefix ?? '', downData.frameRate ?? 24, downData.looped ?? false,
-      downData.flipX, downData.flipY);
+    if (downData != null) target.animation.addByPrefix(
+      'blueScroll',
+      downData.prefix ?? '',
+      downData.frameRate ?? 24,
+      downData.looped ?? false,
+      downData.flipX,
+      downData.flipY
+    );
     var upData:Null<AnimationData> = fetchNoteAnimationData(UP);
-    if (upData != null) target.animation.addByPrefix('greenScroll', upData.prefix ?? '', upData.frameRate ?? 24, upData.looped ?? false, upData.flipX,
-      upData.flipY);
+    if (upData != null) target.animation.addByPrefix(
+      'greenScroll',
+      upData.prefix ?? '',
+      upData.frameRate ?? 24,
+      upData.looped ?? false,
+      upData.flipX,
+      upData.flipY
+    );
     var rightData:Null<AnimationData> = fetchNoteAnimationData(RIGHT);
-    if (rightData != null) target.animation.addByPrefix('redScroll', rightData.prefix ?? '', rightData.frameRate ?? 24, rightData.looped ?? false,
-      rightData.flipX, rightData.flipY);
+    if (rightData != null) target.animation.addByPrefix(
+      'redScroll',
+      rightData.prefix ?? '',
+      rightData.frameRate ?? 24,
+      rightData.looped ?? false,
+      rightData.flipX,
+      rightData.flipY
+    );
   }
 
   public function isNoteAnimated():Bool

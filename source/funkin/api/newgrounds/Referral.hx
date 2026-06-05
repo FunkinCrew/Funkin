@@ -21,21 +21,18 @@ class Referral
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      NG.core?.calls.loader.loadReferral(false)
-        .addComponentParameter("referral_name", referralName)
-        .addResponseHandler(response ->
+      NG.core?.calls.loader.loadReferral(false).addComponentParameter('referral_name', referralName).addResponseHandler(response ->
+      {
+        trace(response);
+        if (response.success)
         {
-          trace(response);
-          if (response.success)
-          {
-            WindowUtil.openURL(response.result.data.url);
-          }
-          else
-          {
-            WindowUtil.openURL(fallbackUrl);
-          }
-        })
-        .send();
+          WindowUtil.openURL(response.result.data.url);
+        }
+        else
+        {
+          WindowUtil.openURL(fallbackUrl);
+        }
+      }).send();
     }
     else
     {

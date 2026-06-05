@@ -30,9 +30,7 @@ class PropertyAnimator implements IFlxDestroyable
   var _animTimer:FlxTimer = new FlxTimer();
 
   public var object:Dynamic;
-
   public var onFinish:Null<() -> Void> = null;
-
   public var curAnim(default, set):String;
 
   function set_curAnim(val:String):String
@@ -149,15 +147,15 @@ class PropertyAnimator implements IFlxDestroyable
 
     if (restoreDefaults) reset();
 
-    for (property in anims[name])
-      property.interrupted = false;
+    for (property in anims[name]) property.interrupted = false;
 
     curAnim = name;
     curFrame = 0;
     onFinish = null;
 
     // just separating out this lil function to make things less clutter perhaps?
-    var setCurFrameOnTimer:FlxTimer->Void = (timer:FlxTimer) -> {
+    var setCurFrameOnTimer:FlxTimer->Void = (timer:FlxTimer) ->
+    {
       curFrame = curAnimInfo.loop ? FlxMath.wrap(curFrame + 1, 0, curAnimInfo.length - 1) : timer.elapsedLoops;
       if (!curAnimInfo.loop && timer.finished && onFinish != null) onFinish();
     };
@@ -168,12 +166,11 @@ class PropertyAnimator implements IFlxDestroyable
   public function addAnimationByName(name:String, framerate:Int, ?loop:Bool = false):Void
   {
     anims.set(name, []);
-    animInfo.set(name,
-      {
-        framerate: framerate,
-        length: 0,
-        loop: loop
-      });
+    animInfo.set(name, {
+      framerate: framerate,
+      length: 0,
+      loop: loop
+    });
 
     // trace('PROPERTYANIMATOR: Added animation $name! $animInfo');
   }
@@ -188,6 +185,7 @@ class PropertyAnimator implements IFlxDestroyable
   }
 
   // todo: fix this lol
+
   public function setPropertyOffset(animName:String, propertyToFind:String, offset:Float):Void
   {
     var propertyToOffset:Null<AnimatorProperty> = anims[animName].find(property -> property.field == propertyToFind);
@@ -217,15 +215,14 @@ class PropertyAnimator implements IFlxDestroyable
         if (!Reflect.isObject(target)) throw 'The object does not have the property "$component" in "$property"';
       }
 
-      anims[name].push(
-        {
-          object: target,
-          field: field,
-          startValue: null,
-          values: values,
-          interrupted: false,
-          offset: offset
-        });
+      anims[name].push({
+        object: target,
+        field: field,
+        startValue: null,
+        values: values,
+        interrupted: false,
+        offset: offset
+      });
 
       // if values array is longer than anything this animation had before, set the length to this one.
       if (animInfo[name].length < values.length) animInfo[name].length = values.length;

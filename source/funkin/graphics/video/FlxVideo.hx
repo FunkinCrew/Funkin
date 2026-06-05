@@ -43,7 +43,9 @@ class FlxVideo extends FunkinSprite
     netConnection.connect(null);
 
     netStream = new NetStream(netConnection);
-    netStream.client = {onMetaData: onClientMetaData};
+    netStream.client = {
+      onMetaData: onClientMetaData
+    };
     netConnection.addEventListener(NetStatusEvent.NET_STATUS, onNetConnectionNetStatus);
     netStream.play(videoPath);
 

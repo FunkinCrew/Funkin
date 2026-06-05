@@ -52,8 +52,7 @@ class MeshRender extends FlxStrip
     index_count += 3;
   }
 
-  public function build_tri(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, au:Float = 0, av:Float = 0, bu:Float = 0, bv:Float = 0, cu:Float = 0,
-      cv:Float = 0):Void
+  public function build_tri(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, au:Float = 0, av:Float = 0, bu:Float = 0, bv:Float = 0, cu:Float = 0, cv:Float = 0):Void
   {
     add_tri(build_vertex(ax, ay, au, av), build_vertex(bx, by, bu, bv), build_vertex(cx, cy, cu, cv));
   }
@@ -83,8 +82,7 @@ class MeshRender extends FlxStrip
    * bottom right  - c
    * bottom left - d
    */
-  public function build_quad(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float, au:Float = 0, av:Float = 0, bu:Float = 0,
-      bv:Float = 0, cu:Float = 0, cv:Float = 0, du:Float = 0, dv:Float = 0):Void
+  public function build_quad(ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, dx:Float, dy:Float, au:Float = 0, av:Float = 0, bu:Float = 0, bv:Float = 0, cu:Float = 0, cv:Float = 0, du:Float = 0, dv:Float = 0):Void
   {
     // top left
     var b = build_vertex(bx, by, bu, bv);

@@ -13,7 +13,8 @@ import haxe.ui.events.UIEvent;
 
 using StringTools;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-anims.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState)
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-anims.xml"))
 class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;
@@ -44,9 +45,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     objAnims.onChange = function(_)
     {
-      var animData = linkedObj?.animDatas[
-        objAnims.selectedItem?.text ?? ""
-      ];
+      var animData = linkedObj?.animDatas[objAnims.selectedItem?.text ?? ""];
 
       if (linkedObj == null || objAnims.selectedIndex == -1 || animData == null)
       {
@@ -107,11 +106,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
       linkedObj.animDatas.remove(daAnim);
       linkedObj.offset.set();
 
-      state.notifyChange("Animation Deletion Done", "Animation "
-        + objAnims.selectedItem.text
-        + " has been removed from the Object "
-        + linkedObj.name
-        + ".");
+      state.notifyChange("Animation Deletion Done", "Animation " + objAnims.selectedItem.text + " has been removed from the Object " + linkedObj.name + ".");
 
       updateAnimList();
 
@@ -144,9 +139,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     // Otherwise, update them accordingly.
 
-    if (previousFrames !=[
-      for (f in linkedObj.frames.frames) f.name
-    ]) updateFrameList();
+    if (previousFrames !=[for (f in linkedObj.frames.frames) f.name]) updateFrameList();
     if (previousAnims != linkedObj.animation.getNameList().copy()) updateAnimList();
   }
 
@@ -159,7 +152,9 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     for (fname in linkedObj.frames.frames)
     {
-      if (fname != null) objFrameList.dataSource.add({name: fname.name});
+      if (fname != null) objFrameList.dataSource.add({
+        name: fname.name
+      });
 
       previousFrames.push(fname.name);
     }
@@ -174,7 +169,9 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     for (aname in linkedObj.animation.getNameList())
     {
-      objAnims.dataSource.add({text: aname});
+      objAnims.dataSource.add({
+        text: aname
+      });
       previousAnims.push(aname);
     }
 
@@ -199,8 +196,16 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     var shouldDoIndices:Bool = (indices.length > 0 && !indices.contains(null));
 
-    linkedObj.addAnim(objAnimName.text, objAnimPrefix.text, [objAnimOffsetX.pos, objAnimOffsetY.pos], (shouldDoIndices ? indices : []),
-      Std.int(objAnimFramerate.pos), objAnimLooped.selected, objAnimFlipX.selected, objAnimFlipY.selected);
+    linkedObj.addAnim(
+      objAnimName.text,
+      objAnimPrefix.text,
+      [objAnimOffsetX.pos, objAnimOffsetY.pos],
+      (shouldDoIndices ? indices : []),
+      Std.int(objAnimFramerate.pos),
+      objAnimLooped.selected,
+      objAnimFlipX.selected,
+      objAnimFlipY.selected
+    );
 
     if (linkedObj.animation.getByName(objAnimName.text) == null)
     {

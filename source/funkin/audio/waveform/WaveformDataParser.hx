@@ -81,9 +81,7 @@ class WaveformDataParser
       {
         for (channelIndex in 0...channels)
         {
-          var sampleValue:Int = soundData[
-            sampleIndex * channels + channelIndex
-          ];
+          var sampleValue:Int = soundData[sampleIndex * channels + channelIndex];
 
           if (sampleValue < minValues[channelIndex]) minValues[channelIndex] = sampleValue;
           if (sampleValue > maxValues[channelIndex]) maxValues[channelIndex] = sampleValue;
@@ -95,9 +93,7 @@ class WaveformDataParser
       for (channelIndex in 0...channels)
       {
         outputData[baseIndex + channelIndex * 2] = minValues[channelIndex];
-        outputData[
-          baseIndex + channelIndex * 2 + 1
-        ] = maxValues[channelIndex];
+        outputData[baseIndex + channelIndex * 2 + 1] = maxValues[channelIndex];
       }
     }
 
@@ -114,7 +110,9 @@ class WaveformDataParser
 
   public static function parseWaveformDataString(contents:String, ?fileName:String):Null<WaveformData>
   {
-    var parser = new json2object.JsonParser<WaveformData>({ignoreUnknownVariables: false});
+    var parser = new json2object.JsonParser<WaveformData>({
+      ignoreUnknownVariables: false
+    });
     trace('[WAVEFORM] Parsing waveform data: ${contents}');
     parser.fromJson(contents, fileName);
 

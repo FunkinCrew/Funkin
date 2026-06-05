@@ -225,7 +225,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     isInDemo = true;
 
-    FlxTween.tween(hsv, {hue: 0, saturation: 0, value: 0.5}, 0.5);
+    FlxTween.tween(hsv, {
+      hue: 0,
+      saturation: 0,
+      value: 0.5
+    }, 0.5);
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase)
     {
@@ -253,7 +257,11 @@ class ControlsSchemeMenu extends MusicBeatSubState
   {
     isInDemo = false;
 
-    FlxTween.tween(hsv, {hue: -0.6, saturation: 0.9, value: 3.6}, 0.5);
+    FlxTween.tween(hsv, {
+      hue: -0.6,
+      saturation: 0.9,
+      value: 3.6
+    }, 0.5);
 
     hitboxShowcases.forEach(function(hitboxShowcase:HitboxShowcase)
     {
@@ -360,8 +368,12 @@ class ControlsSchemeMenu extends MusicBeatSubState
     }
     else
     {
-      hitboxShowcases.x = MathUtil.smoothLerpPrecision(hitboxShowcases.x, (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex),
-        elapsed, 0.5);
+      hitboxShowcases.x = MathUtil.smoothLerpPrecision(
+        hitboxShowcases.x,
+        (-1500 * currentIndex) + (-1500 / (availableSchemes.length + 1) * currentIndex),
+        elapsed,
+        0.5
+      );
     }
   }
   #end

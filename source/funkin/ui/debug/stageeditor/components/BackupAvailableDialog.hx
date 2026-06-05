@@ -58,7 +58,10 @@ class BackupAvailableDialog extends Dialog
 
     buttonOpenBackup.onClick = function(_)
     {
-      if (FileUtil.fileExists(filePath) && state.welcomeDialog != null) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
+      if (
+        FileUtil.fileExists(filePath)
+        && state.welcomeDialog != null
+      ) // doing a check in case a sleezy FUCK decides to delete the backup file AFTER dialog opens
       {
         state.welcomeDialog.loadFromFilePath(filePath, null, 0, 0);
       }

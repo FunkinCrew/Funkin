@@ -22,10 +22,13 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       createItem("LOAD FROM NG", function()
       {
-        openConfirmPrompt("This will overwrite
+        openConfirmPrompt(
+          "This will overwrite
         \nALL your save data.
-        \nAre you sure?", "Overwrite",
-          () -> Save.loadFromNewgrounds(() -> FlxG.switchState(() -> new funkin.InitState())));
+        \nAre you sure?",
+          "Overwrite",
+          () -> Save.loadFromNewgrounds(() -> FlxG.switchState(() -> new funkin.InitState()))
+        );
       });
 
       createItem("SAVE TO NG", function()
@@ -87,7 +90,8 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     // Disable page navigation while the prompt is open
     codex.currentPage.enabled = false;
 
-    final closePrompt:()->Void = () -> {
+    final closePrompt:() -> Void = () ->
+    {
       codex.currentPage.enabled = true;
       prompt.close();
       prompt.destroy();

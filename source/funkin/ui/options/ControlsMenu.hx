@@ -54,9 +54,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     ]
   ];
 
-  var itemGroups:Array<Array<InputItem>> = [
-    for (i in 0...controlGroups.length) []
-  ];
+  var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
   var controlGrid:MenuTypedList<InputItem>;
   var deviceList:TextMenuList;
   var menuCamera:FlxCamera;
@@ -196,9 +194,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);
-      labels.members[
-        Std.int(controlGrid.selectedIndex / COLUMNS)
-      ].alpha = 1.0;
+      labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
     });
 
     prompt = new Prompt("\nPress any key to rebind\n\n\nBackspace to unbind\n    Escape to cancel", None);
@@ -272,9 +268,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   function goToDeviceList():Void
   {
     controlGrid.selectedItem.idle();
-    labels.members[
-      Std.int(controlGrid.selectedIndex / COLUMNS)
-    ].alpha = 0.6;
+    labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 0.6;
     controlGrid.enabled = false;
     deviceList.enabled = true;
     canExit = true;
@@ -302,9 +296,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     controlGrid.selectedItem.select();
-    labels.members[
-      Std.int(controlGrid.selectedIndex / COLUMNS)
-    ].alpha = 1.0;
+    labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
     controlGrid.enabled = true;
     deviceList.enabled = false;
     deviceListSelected = false;

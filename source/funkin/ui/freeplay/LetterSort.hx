@@ -138,11 +138,15 @@ class LetterSort extends FlxSpriteGroup
     }
     #end
 
-    if (controls.FREEPLAY_LEFT #if FEATURE_TOUCH_CONTROLS
-      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft && !pressedOnCapsule) #end) changeSelection(-1);
+    if (controls.FREEPLAY_LEFT
+      #if FEATURE_TOUCH_CONTROLS
+      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeLeft && !pressedOnCapsule)
+      #end) changeSelection(-1);
 
-    if (controls.FREEPLAY_RIGHT #if FEATURE_TOUCH_CONTROLS
-      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight && !pressedOnCapsule) #end) changeSelection(1);
+    if (controls.FREEPLAY_RIGHT
+      #if FEATURE_TOUCH_CONTROLS
+      || (TouchUtil.overlaps(swipeBounds, instance.funnyCam) && SwipeUtil.swipeRight && !pressedOnCapsule)
+      #end) changeSelection(1);
   }
 
   public function changeSelection(diff:Int = 0, playSound:Bool = true):Void

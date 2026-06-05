@@ -277,13 +277,15 @@ class HealthIcon extends FunkinSprite
           // Update the animation based on the current state.
           updateHealthIcon(PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.healthBar.x
+          this.x =
+            PlayState.instance.healthBar.x
             + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01) - POSITION_OFFSET);
         case 1: // Dad
           // Update the animation based on the current state.
           updateHealthIcon(MAXIMUM_HEALTH - PlayState.instance.health);
           // Update the position to match the health bar.
-          this.x = PlayState.instance.healthBar.x
+          this.x =
+            PlayState.instance.healthBar.x
             + (PlayState.instance.healthBar.width * (FlxMath.remapToRange(PlayState.instance.healthBar.value, 0, 2, 100, 0) * 0.01))
             - (this.width - POSITION_OFFSET);
       }
@@ -303,15 +305,21 @@ class HealthIcon extends FunkinSprite
     {
       bopTween?.cancel();
       setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);
-      bopTween = FlxTween.num(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE), HEALTH_ICON_SIZE * this.size.x, Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {
-        onComplete: _ -> bopTween = null
-      }, value ->
-      {
-        setGraphicSize(Std.int(value), 0);
-        // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
-        this.updateHitbox();
-        this.updatePosition();
-      });
+      bopTween = FlxTween.num(
+        this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE),
+        HEALTH_ICON_SIZE * this.size.x,
+        Math.min(Conductor.instance.stepLengthMs * 0.002, .175),
+        {
+          onComplete: _ -> bopTween = null
+        },
+        value ->
+        {
+          setGraphicSize(Std.int(value), 0);
+          // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
+          this.updateHitbox();
+          this.updatePosition();
+        }
+      );
       // Ensure the icon is positioned correctly after updating the hitbox.
       this.updateHitbox();
       this.updatePosition();
@@ -442,7 +450,12 @@ class HealthIcon extends FunkinSprite
     }
     else
     {
-      loadGraphic(Paths.image('gameplay/characters/$charId/icon-$charId'), true, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE, isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE);
+      loadGraphic(
+        Paths.image('gameplay/characters/$charId/icon-$charId'),
+        true,
+        isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE,
+        isPixel ? PIXEL_ICON_SIZE : HEALTH_ICON_SIZE
+      );
 
       loadAnimationOld();
     }

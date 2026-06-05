@@ -114,7 +114,9 @@ class Medals
 
     var jsonString = Assets.getText(jsonPath);
 
-    var parser = new json2object.JsonParser<Array<MedalJSON>>({ignoreUnknownVariables: false});
+    var parser = new json2object.JsonParser<Array<MedalJSON>>({
+      ignoreUnknownVariables: false
+    });
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Parsing local medal data...');
     parser.fromJson(jsonString, jsonPath);
 

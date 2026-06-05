@@ -17,7 +17,8 @@ import io.newgrounds.objects.User;
 import funkin.mobile.util.WebViewUtil;
 #end
 
-@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build())
+@:nullSafety
 class NewgroundsClient
 {
   @:envField
@@ -206,12 +207,14 @@ class NewgroundsClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(API_NG_APP_ID == null
-      || API_NG_APP_ID == ""
-      || (API_NG_APP_ID != null && API_NG_APP_ID.contains(" "))
+    return !(
+      API_NG_APP_ID == null
+      || API_NG_APP_ID == ''
+      || (API_NG_APP_ID != null && API_NG_APP_ID.contains(' '))
       || API_NG_ENC_KEY == null
-      || API_NG_ENC_KEY == ""
-      || (API_NG_ENC_KEY != null && API_NG_ENC_KEY.contains(" ")));
+      || API_NG_ENC_KEY == ''
+      || (API_NG_ENC_KEY != null && API_NG_ENC_KEY.contains(' '))
+    );
   }
 
   function onLoginResolved(outcome:LoginOutcome):Void

@@ -211,12 +211,7 @@ class HorizontalVirtualLayout extends VirtualLayout
         }
       }
 
-      size.width = (itemWidth * comp.itemCount)
-        + paddingLeft
-        + paddingRight
-        + contentsPadding
-        + (borderSize * 2)
-        + ((comp.itemCount - 1) * horizontalSpacing);
+      size.width = (itemWidth * comp.itemCount) + paddingLeft + paddingRight + contentsPadding + (borderSize * 2) + ((comp.itemCount - 1) * horizontalSpacing);
     }
 
     return size;

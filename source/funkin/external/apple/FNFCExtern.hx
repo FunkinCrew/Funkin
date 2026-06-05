@@ -4,7 +4,9 @@ package funkin.external.apple;
 /**
  * A utility class for FNFC loading on apple devices.
  */
-@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml')) @:include('FNFCExtern.hpp') @:unreflective
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
+@:include('FNFCExtern.hpp')
+@:unreflective
 extern class FNFCExtern
 {
   /**

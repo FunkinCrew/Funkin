@@ -13,7 +13,8 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 /**
  * A `FunkinSprite` with its sole purpose of rendering a `FlxCamera`.
  */
-@:access(funkin.graphics.FunkinCamera) @:nullSafety
+@:access(funkin.graphics.FunkinCamera)
+@:nullSafety
 class FunkinBufferSprite extends FunkinSprite
 {
   /**

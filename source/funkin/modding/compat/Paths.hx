@@ -3595,15 +3595,21 @@ class Paths
         // Specific redirect for health icons
         var iconFilePath:String = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath:String = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+        var freeplayIconFilePath:String = filePath
+          .replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
           .replace('.png', 'pixel.png');
         // Specific redirect for char select nametags
-        var nametagFilePath:String = filePath.replace('ui/character-select/characters/nametag-', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+        var nametagFilePath:String = filePath
+          .replace('ui/character-select/characters/nametag-', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           .replace('.png', 'Nametag.png');
         // Specific redirect for char select animate atlases
-        var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+        var charSelectFilePath:String =
+          dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
-        var difficultyFilePath:String = filePath.replace('ui/freeplay/difficulty/', (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay');
+        var difficultyFilePath:String = filePath.replace(
+          'ui/freeplay/difficulty/',
+          (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay'
+        );
 
         usePathIfExists(typeFilePath);
         usePathIfExists(iconFilePath);
@@ -3624,7 +3630,8 @@ class Paths
         var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
         // Specific redirect for freeplay icon paths
-        var freeplayIconFilePath:String = filePath.replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
+        var freeplayIconFilePath:String = filePath
+          .replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
           .replace('.xml', 'pixel.xml');
 
         usePathIfExists(dataFilePath);
@@ -3639,7 +3646,8 @@ class Paths
         var songFilePath:String = filePath.replace('gameplay/songs/', 'songs/');
         var songDataFilePath:String = dataFilePath.replace('gameplay/songs/', 'songs/');
         // Specific redirect for char select animate atlases
-        var charSelectFilePath:String = dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
+        var charSelectFilePath:String =
+          dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
 
         // Redirect for music metadata

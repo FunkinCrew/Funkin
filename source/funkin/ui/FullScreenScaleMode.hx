@@ -225,8 +225,14 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       {
         var game = FlxG.game;
 
-        cutoutBitmaps[i] = bitmap = new Bitmap(new BitmapData((ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(FlxG.scaleMode.gameSize.x)) + 1,
-          (ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(FlxG.scaleMode.gameSize.y)) + 1, true, 0xFF000000));
+        cutoutBitmaps[i] = bitmap = new Bitmap(
+          new BitmapData(
+            (ratioAxis == X ? Math.ceil(cutoutSize.x / 2) : Math.ceil(FlxG.scaleMode.gameSize.x)) + 1,
+            (ratioAxis == Y ? Math.ceil(cutoutSize.y / 2) : Math.ceil(FlxG.scaleMode.gameSize.y)) + 1,
+            true,
+            0xFF000000
+          )
+        );
         game.parent.addChildAt(bitmap, game.parent.getChildIndex(game) + 1);
       }
 
@@ -252,7 +258,13 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
       if (tweenDuration > 0.0)
       {
-        FlxTween.tween(bitmap, {x: targetX, y: targetY, alpha: 1}, tweenDuration, {ease: ease ?? FlxEase.linear});
+        FlxTween.tween(bitmap, {
+          x: targetX,
+          y: targetY,
+          alpha: 1
+        }, tweenDuration, {
+          ease: ease ?? FlxEase.linear
+        });
       }
       else
       {
@@ -285,7 +297,13 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
       if (tweenDuration > 0.0)
       {
-        FlxTween.tween(bitmap, {x: targetX, y: targetY, alpha: 0}, tweenDuration, {ease: ease ?? FlxEase.linear});
+        FlxTween.tween(bitmap, {
+          x: targetX,
+          y: targetY,
+          alpha: 0
+        }, tweenDuration, {
+          ease: ease ?? FlxEase.linear
+        });
       }
       else
       {
@@ -506,9 +524,10 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   @:noCompletion
   static function set_enabled(Value:Bool):Bool
   {
-    if (ratioAxis == FlxAxes.X #if android
-      && (extension.androidtools.os.Build.VERSION.SDK_INT >= extension.androidtools.os.Build.VERSION_CODES.P
-        || extension.androidtools.Tools.isTablet()) #end)
+    if (ratioAxis == FlxAxes.X
+      #if android
+      && (extension.androidtools.os.Build.VERSION.SDK_INT >= extension.androidtools.os.Build.VERSION_CODES.P || extension.androidtools.Tools.isTablet())
+      #end)
     {
       enabled = Value;
     }

@@ -119,7 +119,10 @@ class UndoRedoHandler
   {
     if (state == null) return;
 
-    var finalAction:UndoAction = {type: action, data: null};
+    var finalAction:UndoAction = {
+      type: action,
+      data: null
+    };
 
     if (!redo && state.redoArray.length > 0) state.redoArray = []; // incorporate resetting as well
 
@@ -127,13 +130,21 @@ class UndoRedoHandler
     {
       case CHARACTER_MOVED:
         var char = state.selectedChar.characterType;
-        finalAction.data = {type: char, pos: state.charPos[char].copy()};
+        finalAction.data = {
+          type: char,
+          pos: state.charPos[char].copy()
+        };
 
       case OBJECT_MOVED:
-        finalAction.data = {ID: state.selectedSprite.ID, pos: [state.selectedSprite.x, state.selectedSprite.y]}
+        finalAction.data = {
+          ID: state.selectedSprite.ID,
+          pos: [state.selectedSprite.x, state.selectedSprite.y]
+        }
 
       case OBJECT_CREATED:
-        finalAction.data = {ID: state.selectedSprite.ID}
+        finalAction.data = {
+          ID: state.selectedSprite.ID
+        }
 
       case OBJECT_DELETED:
         finalAction.data = {
@@ -142,7 +153,10 @@ class UndoRedoHandler
         }
 
       case OBJECT_ROTATED:
-        finalAction.data = {ID: state.selectedSprite.ID, angle: state.selectedSprite.angle}
+        finalAction.data = {
+          ID: state.selectedSprite.ID,
+          angle: state.selectedSprite.angle
+        }
 
       default: // nop
     }

@@ -5,13 +5,18 @@ package funkin.audio.visualize.dsp;
  *
  * Usages include 1-indexed sequences or zero-centered buffers with negative indexing.
  */
-@:forward(array, offset) @:nullSafety
-abstract OffsetArray<T>({
-  final array:Array<T>;
-  final offset:Int;
-})
+@:forward(array, offset)
+@:nullSafety
+abstract OffsetArray<T>(
+  {
+    final array:Array<T>;
+    final offset:Int;
+  })
 {
-  public inline function new(array:Array<T>, offset:Int) this = {array: array, offset: offset};
+  public inline function new(array:Array<T>, offset:Int) this = {
+    array: array,
+    offset: offset
+  };
 
   public var length(get, never):Int;
 
@@ -86,7 +91,10 @@ private class OffsetArrayIterator<T>
     {key:Int, value:T}
   {
     var i = this.enumeration++;
-    return {key: i + this.offset, value: this.array[i]};
+    return {
+      key: i + this.offset,
+      value: this.array[i]
+    };
   }
 
   public inline function hasNext():Bool

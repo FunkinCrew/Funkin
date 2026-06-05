@@ -101,10 +101,7 @@ class PolygonSpectogram extends MeshRender
         coolPoint.x = (curAud.balanced * waveAmplitude);
         coolPoint.y = (i / funnyPixels * daHeight);
 
-        build_quad(prevPoint.x, prevPoint.y, prevPoint.x
-          + thickness, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x
-          + thickness, coolPoint.y
-          + thickness);
+        build_quad(prevPoint.x, prevPoint.y, prevPoint.x + thickness, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x + thickness, coolPoint.y + thickness);
 
         prevPoint.x = coolPoint.x;
         prevPoint.y = coolPoint.y;

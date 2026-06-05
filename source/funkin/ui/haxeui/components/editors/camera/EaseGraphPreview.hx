@@ -99,10 +99,12 @@ class EaseGraphPreview extends HBox
     final easeType:String = SongEventHelper.resolveEaseTypeFromKey(easeStr);
     final easeDir:String = resolveEaseDirStr(easeStr);
 
-    easeDropdown.selectItemBy(function(data):Bool {
+    easeDropdown.selectItemBy(function(data):Bool
+    {
       return data.id == easeType;
     });
-    easeDirDropdown.selectItemBy(function(data):Bool {
+    easeDirDropdown.selectItemBy(function(data):Bool
+    {
       return data.id == easeDir;
     });
 
@@ -130,7 +132,10 @@ class EaseGraphPreview extends HBox
     if (value)
     {
       // Insert CLASSIC right after INSTANT so the order matches the historical layout.
-      easeDropdown.dataSource.insert(2, {id: 'CLASSIC', text: 'Classic (Ignores duration)'});
+      easeDropdown.dataSource.insert(2, {
+        id: 'CLASSIC',
+        text: 'Classic (Ignores duration)'
+      });
     }
     else
     {

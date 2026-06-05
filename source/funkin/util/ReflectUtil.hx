@@ -7,7 +7,8 @@ import polymod.hscript._internal.PolymodScriptClass;
  * Provides sanitized and blacklisted access to haxe's Reflection functions.
  * Used for sandboxing in scripts.
  */
-@:nullSafety @SuppressWarnings(['checkstyle:VarTypeHint', 'checkstyle:FieldDocComment'])
+@:nullSafety
+@SuppressWarnings(['checkstyle:VarTypeHint', 'checkstyle:FieldDocComment'])
 class ReflectUtil
 {
   /**

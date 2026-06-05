@@ -35,8 +35,7 @@ class IntervalShake implements IFlxDestroyable
    * @param   ProgressCallback     Callback on each shake interval
    * @return The `IntervalShake` object. `IntervalShake`s are pooled internally, so beware of storing references.
    */
-  public static function shake(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0,
-      Ease:EaseFunction, ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):IntervalShake
+  public static function shake(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0, Ease:EaseFunction, ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):IntervalShake
   {
     if (isShaking(Object))
     {
@@ -155,8 +154,7 @@ class IntervalShake implements IFlxDestroyable
   /**
    * Starts shaking behavior.
    */
-  function start(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0, Ease:EaseFunction,
-      ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):Void
+  function start(Object:FlxObject, Duration:Float = 1, Interval:Float = 0.04, StartIntensity:Float = 0, EndIntensity:Float = 0, Ease:EaseFunction, ?CompletionCallback:IntervalShake->Void, ?ProgressCallback:IntervalShake->Void):Void
   {
     object = Object;
     duration = Duration;

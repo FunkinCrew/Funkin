@@ -22,7 +22,8 @@ typedef LayerRowHandles =
   cancelling:Bool
 };
 
-@:composite(TimelineLayerPanelBuilder) @:xml('
+@:composite(TimelineLayerPanelBuilder)
+@:xml('
 <vbox width="120" style="background-color: #2A2A2A; spacing: 0; clip: true; overflow: hidden;">
 </vbox>
 ')
@@ -37,7 +38,6 @@ class TimelineLayerPanel extends VBox
   // "cold load" path rebuilds this; surgical commands mutate it via
   // insertLayerRow / removeLayerRow so we don't do a full rebuild each update.
   var _handlesByLayer:Map<TimelineLayerData, LayerRowHandles> = new Map();
-
   var _editingLayer:TimelineLayerData = null;
   var _editingHandles:LayerRowHandles = null;
   var _screenMouseDownBound:MouseEvent->Void;
@@ -127,7 +127,8 @@ class TimelineLayerPanel extends VBox
     if (viewport != null && viewport.layers.indexOf(layer) == viewport.selectedLayerIndex) row.customStyle.backgroundColor = 0x505050;
 
     // Click handler captures `layer` (stable) and resolves current index at click time.
-    row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) -> {
+    row.registerEvent(MouseEvent.CLICK, (_:MouseEvent) ->
+    {
       if (viewport == null) return;
       var idx:Int = viewport.layers.indexOf(layer);
       if (idx < 0) return;
@@ -159,16 +160,23 @@ class TimelineLayerPanel extends VBox
 
     field.disabled = true;
 
-    var handles:LayerRowHandles = {row: row, field: field, editOriginal: null, cancelling: false};
+    var handles:LayerRowHandles = {
+      row: row,
+      field: field,
+      editOriginal: null,
+      cancelling: false
+    };
 
     row.registerEvent(MouseEvent.DBL_CLICK, (_:MouseEvent) -> _enterEditMode(layer));
 
-    field.registerEvent(UIEvent.CHANGE, (_:UIEvent) -> {
+    field.registerEvent(UIEvent.CHANGE, (_:UIEvent) ->
+    {
       if (_editingHandles != handles) return;
       _refreshInvalidStyle(layer, handles);
     });
 
-    field.registerEvent(UIEvent.SUBMIT, (_:UIEvent) -> {
+    field.registerEvent(UIEvent.SUBMIT, (_:UIEvent) ->
+    {
       if (_editingHandles != handles) return;
       _attemptSubmit();
     });
@@ -178,7 +186,8 @@ class TimelineLayerPanel extends VBox
     // Escape cancels the edit. TextField already handles Enter via UIEvent.SUBMIT.
     // KEY_DOWN fires on focused components via KeyboardHelper's focus-chain dispatch,
     // so a field-level listener runs without needing a Screen-level handler.
-    field.registerEvent(KeyboardEvent.KEY_DOWN, (e:KeyboardEvent) -> {
+    field.registerEvent(KeyboardEvent.KEY_DOWN, (e:KeyboardEvent) ->
+    {
       if (_editingHandles != handles) return;
       if (e.keyCode != Platform.instance.KeyEscape) return;
       handles.cancelling = true;
@@ -263,7 +272,8 @@ class TimelineLayerPanel extends VBox
   function _setInvalidStyle(field:TextField, invalid:Bool):Void
   {
     if (invalid) field.addClass('invalid');
-    else field.removeClass('invalid');
+    else
+      field.removeClass('invalid');
   }
 
   function _attemptSubmit():Void
@@ -344,7 +354,8 @@ class TimelineLayerPanel extends VBox
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class TimelineLayerPanelBuilder extends CompositeBuilder
 {
   var _panel:TimelineLayerPanel;

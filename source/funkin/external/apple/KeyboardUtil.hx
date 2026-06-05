@@ -4,7 +4,9 @@ package funkin.external.apple;
 /**
  * Utility class for keyboard detection.
  */
-@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml')) @:include('KeyboardUtil.hpp') @:unreflective
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
+@:include('KeyboardUtil.hpp')
+@:unreflective
 extern class KeyboardUtil
 {
   /**

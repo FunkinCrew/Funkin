@@ -233,9 +233,10 @@ class CharacterPlayer extends Box
     {
       character.onNoteHit(event);
 
-      if ((event.note.noteData.getMustHitNote() && characterType == BF)
-        || (!event.note.noteData.getMustHitNote()
-          && characterType == DAD)) character.holdTimer = -event.note.noteData?.length / Constants.MS_PER_SEC;
+      if
+        ((event.note.noteData.getMustHitNote() && characterType == BF)
+          || (!event.note.noteData.getMustHitNote() && characterType == DAD)
+        ) character.holdTimer = -event.note.noteData?.length / Constants.MS_PER_SEC;
       // At least i tried yaknow?
     }
   }
@@ -271,7 +272,8 @@ class CharacterPlayer extends Box
   }
 }
 
-@:access(funkin.ui.haxeui.components.CharacterPlayer) @:access(funkin.play.character.BaseCharacter)
+@:access(funkin.ui.haxeui.components.CharacterPlayer)
+@:access(funkin.play.character.BaseCharacter)
 private class Layout extends DefaultLayout
 {
   override public function resizeChildren():Void

@@ -180,7 +180,12 @@ class FocusCameraSongEvent extends SongEvent
         title: 'Target',
         defaultValue: DEFAULT_TARGET,
         type: SongEventFieldType.ENUM,
-        keys: ['Position' => -1, 'Player' => 0, 'Opponent' => 1, 'Girlfriend' => 2]
+        keys: [
+          'Position' => -1,
+          'Player' => 0,
+          'Opponent' => 1,
+          'Girlfriend' => 2
+        ]
       },
       {
         name: 'x',
@@ -235,7 +240,11 @@ class FocusCameraSongEvent extends SongEvent
         title: 'Easing Direction',
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+        keys: [
+          'In' => 'In',
+          'Out' => 'Out',
+          'In/Out' => 'InOut'
+        ]
       }
     ]);
   }

@@ -913,11 +913,21 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   // Creates a preference item with a number input.
 
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int,
-      step:Float = 0.1, precision:Int, dragStepMultiplier:Float = 1):NumberPreferenceItem
+  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Int, min:Int, max:Int, step:Float = 0.1, precision:Int, dragStepMultiplier:Float = 1):NumberPreferenceItem
   {
-    var item = new NumberPreferenceItem(funkin.ui.FullScreenScaleMode.gameNotchSize.x, (120 * items.length) + 30, prefName, defaultValue, min, max, step,
-      precision, onChange, valueFormatter, dragStepMultiplier);
+    var item = new NumberPreferenceItem(
+      funkin.ui.FullScreenScaleMode.gameNotchSize.x,
+      (120 * items.length) + 30,
+      prefName,
+      defaultValue,
+      min,
+      max,
+      step,
+      precision,
+      onChange,
+      valueFormatter,
+      dragStepMultiplier
+    );
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;

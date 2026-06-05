@@ -11,8 +11,7 @@ class TextMenuList extends MenuTypedList<TextMenuItem>
     super(navControls, wrapMode);
   }
 
-  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false,
-      available:Bool = true):TextMenuItem
+  public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = BOLD, ?callback:Void->Void, fireInstantly = false, available:Bool = true):TextMenuItem
   {
     var item:TextMenuItem = new TextMenuItem(x, y, name, font, callback, available);
     item.fireInstantly = fireInstantly;

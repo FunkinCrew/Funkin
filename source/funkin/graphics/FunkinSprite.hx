@@ -112,7 +112,8 @@ typedef AtlasSpriteSettings =
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
-@:nullSafety @:access(animate.FlxAnimateController)
+@:nullSafety
+@:access(animate.FlxAnimateController)
 class FunkinSprite extends FlxAnimate
 {
   public var vcamPoint:Null<FlxPoint> = null;
@@ -266,37 +267,38 @@ class FunkinSprite extends FlxAnimate
     var fadeTween:Null<FlxTween> = null;
     if (fade)
     {
-      fadeTween = FlxTween.tween(this, {alpha: 0}, 0.25);
+      fadeTween = FlxTween.tween(this, {
+        alpha: 0
+      }, 0.25);
     }
 
     trace('[ASYNC] Start loading image (${key})');
     graphic.persist = true;
-    openfl.Assets.loadBitmapData(key)
-      .onComplete(function(bitmapData:openfl.display.BitmapData)
-      {
-        trace('[ASYNC] Finished loading image');
-        var cache:Bool = false;
-        loadBitmapData(bitmapData, cache);
+    openfl.Assets.loadBitmapData(key).onComplete(function(bitmapData:openfl.display.BitmapData)
+    {
+      trace('[ASYNC] Finished loading image');
+      var cache:Bool = false;
+      loadBitmapData(bitmapData, cache);
 
-        if (fadeTween != null)
-        {
-          fadeTween.cancel();
-          FlxTween.tween(this, {alpha: 1.0}, 0.25);
-        }
-      })
-      .onError(function(error:Dynamic)
+      if (fadeTween != null)
       {
+        fadeTween.cancel();
+        FlxTween.tween(this, {
+          alpha: 1.0
+        }, 0.25);
+      }
+    }).onError(function(error:Dynamic)
+    {
         trace('[ASYNC] Failed to load image: ${error}');
         if (fadeTween != null)
         {
           fadeTween.cancel();
           this.alpha = 1.0;
         }
-      })
-      .onProgress(function(progress:Int, total:Int)
-      {
+    }).onProgress(function(progress:Int, total:Int)
+    {
         trace('[ASYNC] Loading image progress: ${progress}/${total}');
-      });
+    });
   }
 
   /**

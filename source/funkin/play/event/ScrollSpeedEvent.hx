@@ -156,7 +156,11 @@ class ScrollSpeedEvent extends SongEvent
         title: 'Easing Direction',
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+        keys: [
+          'In' => 'In',
+          'Out' => 'Out',
+          'In/Out' => 'InOut'
+        ]
       },
       {
         name: 'advanced',
@@ -169,7 +173,11 @@ class ScrollSpeedEvent extends SongEvent
             title: 'Target Strumline',
             defaultValue: DEFAULT_STRUMLINE,
             type: SongEventFieldType.ENUM,
-            keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
+            keys: [
+              'Both' => 'both',
+              'Player' => 'player',
+              'Opponent' => 'opponent'
+            ]
           },
           {
             name: 'absolute',

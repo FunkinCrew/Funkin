@@ -46,8 +46,7 @@ class NumberPreferenceItem extends TextMenuItem
    * @param valueFormatter Will get called every time the game needs to display the float value; use this to change how the displayed string looks
    * @param dragStepMultiplier The multiplier for step value in case player does touch drag.
    */
-  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void,
-      ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
+  public function new(x:Float, y:Float, name:String, defaultValue:Float, min:Float, max:Float, step:Float, precision:Int, ?callback:Float->Void, ?valueFormatter:Float->String, dragStepMultiplier:Float = 1):Void
   {
     super(x, y, name, function()
     {

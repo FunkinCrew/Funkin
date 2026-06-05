@@ -64,8 +64,12 @@ class ScreenUtil
     var deviceWidth:Float = -1;
     var deviceHeight:Float = -1;
 
-    NativeScreenUtil.getSafeAreaInsets(cpp.RawPointer.addressOf(topInset), cpp.RawPointer.addressOf(bottomInset), cpp.RawPointer.addressOf(leftInset),
-      cpp.RawPointer.addressOf(rightInset));
+    NativeScreenUtil.getSafeAreaInsets(
+      cpp.RawPointer.addressOf(topInset),
+      cpp.RawPointer.addressOf(bottomInset),
+      cpp.RawPointer.addressOf(leftInset),
+      cpp.RawPointer.addressOf(rightInset)
+    );
     NativeScreenUtil.getScreenSize(cpp.RawPointer.addressOf(deviceWidth), cpp.RawPointer.addressOf(deviceHeight));
 
     // Calculate the rectangle dimensions for the notch

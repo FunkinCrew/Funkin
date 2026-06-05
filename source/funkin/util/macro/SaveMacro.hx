@@ -147,7 +147,11 @@ class SaveMacro
                 {
                   switch (exprs[i].expr)
                   {
-                    case EBinop(OpAssign, {expr: EField({expr: EConst(CIdent("this"))}, "data")}, _):
+                    case EBinop(OpAssign, {
+                      expr: EField({
+                        expr: EConst(CIdent("this"))
+                      }, "data")
+                    }, _):
                       insertIndex = i + 1;
                       break;
                     case _:
@@ -157,7 +161,10 @@ class SaveMacro
                 // Insert initialization expressions at the calculated position
                 var newExprs = exprs.slice(0, insertIndex).concat(initExprs).concat(exprs.slice(insertIndex));
 
-                func.expr = {expr: EBlock(newExprs), pos: func.expr.pos};
+                func.expr = {
+                  expr: EBlock(newExprs),
+                  pos: func.expr.pos
+                };
 
               case _:
                 Context.error("Constructor must have a block expression", field.pos);

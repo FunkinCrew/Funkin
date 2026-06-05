@@ -8,14 +8,14 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 
 /**
  * An FlxTiledSprite that inherits the vcam positioning from FunkinSprite.
- **/
+**/
 @:nullSafety
 class FunkinTiledSprite extends FlxTiledSprite
 {
   public var vcamPoint:Null<FlxPoint> = null;
 
-	public function new(?graphic:FlxGraphicAsset, width:Float, height:Float, repeatX = true, repeatY = true)
-	{
+  public function new(?graphic:FlxGraphicAsset, width:Float, height:Float, repeatX = true, repeatY = true)
+  {
     super(graphic, width, height, repeatX, repeatY);
   }
 
@@ -24,7 +24,7 @@ class FunkinTiledSprite extends FlxTiledSprite
    * @param result An optional `FlxPoint` to store the result in. If null, a new `FlxPoint` will be created.
    * @param camera The camera to calculate the screen position relative to. If null, the default camera will be used.
    * @return The screen position of the sprite.
-   **/
+  **/
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     if (result == null) result = FlxPoint.get();

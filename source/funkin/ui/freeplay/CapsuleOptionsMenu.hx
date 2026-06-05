@@ -101,9 +101,10 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.controls.ACCEPT_P #if mobile
-        || ((TouchUtil.pressAction(currentInstrumental))
-          && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
+      if (parent.controls.ACCEPT_P
+        #if mobile
+        || ((TouchUtil.pressAction(currentInstrumental)) && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow)))
+        #end)
       {
         setBusy(true);
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');

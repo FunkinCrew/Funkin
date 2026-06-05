@@ -12,7 +12,13 @@ import animate.internal.FilterRenderer;
 /**
  * A helper for rendering filters on `FunkinSprite` instances.
  */
-@:access(animate.FlxAnimate) @:access(openfl.filters.BitmapFilter) @:access(animate.internal.FilterRenderer) @:access(openfl.display.OpenGLRenderer) @:access(openfl.geom.ColorTransform) @:access(openfl.display.BitmapData) @:nullSafety
+@:access(animate.FlxAnimate)
+@:access(openfl.filters.BitmapFilter)
+@:access(animate.internal.FilterRenderer)
+@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.geom.ColorTransform)
+@:access(openfl.display.BitmapData)
+@:nullSafety
 class FunkinFilterRenderer implements IFlxDestroyable
 {
   /**
@@ -85,8 +91,7 @@ class FunkinFilterRenderer implements IFlxDestroyable
     parent.filtered = true;
   }
 
-  function _applyFilters(target:BitmapData, bmp:BitmapData, filters:Array<BitmapFilter>, target1:Null<BitmapData>, target2:Null<BitmapData>,
-      bounds:FlxRect):Void
+  function _applyFilters(target:BitmapData, bmp:BitmapData, filters:Array<BitmapFilter>, target1:Null<BitmapData>, target2:Null<BitmapData>, bounds:FlxRect):Void
   {
     var renderer = FilterRenderer.renderer;
 

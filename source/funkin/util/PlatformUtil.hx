@@ -17,7 +17,8 @@ class PlatformUtil
     #if mac
     return true;
     #elseif html5
-    return js.Browser.window.navigator.platform.startsWith('Mac')
+    return
+      js.Browser.window.navigator.platform.startsWith('Mac')
       || js.Browser.window.navigator.platform.startsWith('iPad')
       || js.Browser.window.navigator.platform.startsWith('iPhone');
     #else

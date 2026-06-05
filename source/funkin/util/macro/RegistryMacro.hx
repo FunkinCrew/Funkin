@@ -132,7 +132,10 @@ class RegistryMacro
           throw 'Not a class';
       }
     }
-    return {entryType: typeParams[0], dataType: typeParams[1]};
+    return {
+      entryType: typeParams[0],
+      dataType: typeParams[1]
+    };
   }
 
   /**
@@ -195,7 +198,10 @@ class RegistryMacro
           @:privateAccess
           switch (this.loadEntryFile(id))
           {
-            case {fileName: fileName, contents: contents}:
+            case {
+              fileName: fileName,
+              contents: contents
+            }:
               parser.fromJson(funkin.util.SerializerUtil.sanitizeJSON(contents), fileName);
             default:
               return null;

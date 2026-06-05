@@ -345,7 +345,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (shouldLoadPartial)
     {
-      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0, params.loop ?? true, false, false, params.onComplete);
+      var music = FunkinSound.loadPartial(
+        pathToUse,
+        params.partialParams?.start ?? 0.0,
+        params.partialParams?.end ?? 1.0,
+        params?.startingVolume ?? 1.0,
+        params.loop ?? true,
+        false,
+        false,
+        params.onComplete
+      );
 
       if (music != null)
       {

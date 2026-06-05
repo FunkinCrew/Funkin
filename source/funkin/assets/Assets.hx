@@ -230,13 +230,19 @@ class Assets implements ConsoleClass
       throw 'No texture exists at the specified path (${assetPath})';
     }
 
-    return FlxAnimateFrames.fromAnimate(assetPath.toString(), validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
-      validatedSettings.uniqueInCache, {
+    return FlxAnimateFrames.fromAnimate(
+      assetPath.toString(),
+      validatedSettings.spritemaps,
+      validatedSettings.metadataJson,
+      validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache,
+      {
         swfMode: validatedSettings.swfMode,
         cacheOnLoad: validatedSettings.cacheOnLoad,
         filterQuality: validatedSettings.filterQuality,
         onSymbolCreate: validatedSettings.onSymbolCreate
-      });
+      }
+    );
   }
 
   /**
@@ -691,8 +697,7 @@ class Assets implements ConsoleClass
         ]);
 
       case SHADER:
-        results = results.concat([
-          Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+        results = results.concat([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
         ]);
 
       default:

@@ -38,7 +38,9 @@ class SongTemplateList extends ScrollView
 
     for (targetSongId in songList)
     {
-      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
+      var songData:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {
+        variation: Constants.DEFAULT_VARIATION
+      });
       if (songData == null) continue;
 
       var songName:Null<String> = songData.getDifficulty('normal')?.songName;

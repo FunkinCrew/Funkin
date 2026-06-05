@@ -91,7 +91,9 @@ class Level implements IRegistryEntry<LevelData>
 
   static function getSongDisplayName(songId:String, difficulty:String):String
   {
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {
+      variation: Constants.DEFAULT_VARIATION
+    });
     if (song == null) return 'Unknown';
 
     return song.songName;
@@ -169,7 +171,9 @@ class Level implements IRegistryEntry<LevelData>
     var songList:Array<String> = getSongs();
 
     var firstSongId:String = songList[0];
-    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId, {variation: Constants.DEFAULT_VARIATION});
+    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId, {
+      variation: Constants.DEFAULT_VARIATION
+    });
 
     if (firstSong != null)
     {
@@ -187,7 +191,9 @@ class Level implements IRegistryEntry<LevelData>
     for (songIndex in 1...songList.length)
     {
       var songId:String = songList[songIndex];
-      var song:Song = SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
+      var song:Song = SongRegistry.instance.fetchEntry(songId, {
+        variation: Constants.DEFAULT_VARIATION
+      });
 
       if (song == null) continue;
 

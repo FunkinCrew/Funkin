@@ -123,7 +123,11 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
 
     if (fadeTime > 0.0)
     {
-      FlxTween.tween(music, {volume: 1.0}, fadeTime, {ease: FlxEase.linear});
+      FlxTween.tween(music, {
+        volume: 1.0
+      }, fadeTime, {
+        ease: FlxEase.linear
+      });
     }
     else
     {
@@ -175,7 +179,11 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
         if (fadeTime > 0.0)
         {
           backdrop.alpha = 0.0;
-          FlxTween.tween(backdrop, {alpha: 1.0}, fadeTime, {ease: EaseUtil.stepped(10)});
+          FlxTween.tween(backdrop, {
+            alpha: 1.0
+          }, fadeTime, {
+            ease: EaseUtil.stepped(10)
+          });
         }
         else
         {
@@ -406,14 +414,18 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     switch (_data?.outro)
     {
       case FADE(outroData):
-        outroTween = FlxTween.tween(this, {alpha: 0.0}, outroData.fadeTime, {
+        outroTween = FlxTween.tween(this, {
+          alpha: 0.0
+        }, outroData.fadeTime, {
           type: ONESHOT, // holy shit like the game no way
           startDelay: 0,
           onComplete: (_) -> endOutro(),
           ease: EaseUtil.stepped(8)
         });
 
-        if (this.music != null) FlxTween.tween(this.music, {volume: 0.0}, outroData.fadeTime);
+        if (this.music != null) FlxTween.tween(this.music, {
+          volume: 0.0
+        }, outroData.fadeTime);
       case NONE(_):
         // Immediately clean up.
         endOutro();
@@ -532,9 +544,10 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       case ConversationState.Opening:
         // Backdrop animation should have started.
         // Box animations should have started.
-        if (currentDialogueBox != null
-          && (currentDialogueBox.isAnimationFinished()
-            || currentDialogueBox.getCurrentAnimation() != currentDialogueEntryData?.boxAnimation))
+        if (
+          currentDialogueBox != null
+          && (currentDialogueBox.isAnimationFinished() || currentDialogueBox.getCurrentAnimation() != currentDialogueEntryData?.boxAnimation)
+        )
         {
           // Box animations have finished.
 

@@ -501,9 +501,7 @@ class AnsiUtil
    *
    * @return `true` if ANSI codes are supported, `false` otherwise.
    */
-  @SuppressWarnings([
-    'checkstyle:SimplifyBooleanExpression'
-  ])
+  @SuppressWarnings(['checkstyle:SimplifyBooleanExpression'])
   public static function isColorCodesSupported():Bool
   {
     if (codesSupported == null)
@@ -555,7 +553,8 @@ class AnsiUtil
 
           if (codesSupported != true)
           {
-            codesSupported = getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
+            codesSupported =
+              getEnvSafe('TERM_PROGRAM') == 'iTerm.app'
               || getEnvSafe('TERM_PROGRAM') == 'Apple_Terminal'
               || getEnvSafe('COLORTERM') != null
               || getEnvSafe('ANSICON') != null

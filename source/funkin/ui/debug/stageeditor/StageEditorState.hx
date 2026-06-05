@@ -370,7 +370,10 @@ class StageEditorState extends UIState
       var floorLine = new FlxSprite().makeGraphic(FlxG.width * 10, 15, CHARACTER_COLORS[i]);
       floorLine.screenCenter(X);
 
-      var pointer = new FlxShapeCircle(0, 0, 30, cast {thickness: 2, color: CHARACTER_COLORS[i]}, CHARACTER_COLORS[i]);
+      var pointer = new FlxShapeCircle(0, 0, 30, cast {
+        thickness: 2,
+        color: CHARACTER_COLORS[i]
+      }, CHARACTER_COLORS[i]);
 
       var field = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, CHARACTER_COLORS[i]);
 
@@ -484,8 +487,7 @@ class StageEditorState extends UIState
         var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          while (!files[files.length - 1].endsWith(FileUtil.FILE_FILTER_FNFS.extension)
-            || !files[files.length - 1].startsWith('stage-editor-'))
+          while (!files[files.length - 1].endsWith(FileUtil.FILE_FILTER_FNFS.extension) || !files[files.length - 1].startsWith('stage-editor-'))
           {
             if (files.length == 0) break;
             files.pop();
@@ -622,8 +624,7 @@ class StageEditorState extends UIState
     camGame.follow(camFollow);
     // camera movement
 
-    if ((FlxG.mouse.deltaWheel.y > 0 || (FlxG.mouse.deltaWheel.y < 0 && camGame.zoom > 0.11))
-      && !isCursorOverHaxeUI) // include the floating poing error thing
+    if ((FlxG.mouse.deltaWheel.y > 0 || (FlxG.mouse.deltaWheel.y < 0 && camGame.zoom > 0.11)) && !isCursorOverHaxeUI) // include the floating poing error thing
     {
       camGame.zoom += FlxG.mouse.deltaWheel.y / 10;
       updateBGSize();
@@ -686,10 +687,12 @@ class StageEditorState extends UIState
 
     if (moveMode == 'assets')
     {
-      if (selectedSprite != null
+      if (
+        selectedSprite != null
         && (!FlxG.mouse.overlaps(selectedSprite) || (FlxG.mouse.overlaps(selectedSprite) && pressingControl()))
         && FlxG.mouse.justPressed
-        && !isCursorOverHaxeUI)
+        && !isCursorOverHaxeUI
+      )
       {
         selectedSprite = null;
       }
@@ -931,16 +934,14 @@ class StageEditorState extends UIState
 
     if (allowInput && welcomeDialog == null)
     {
-      if ((FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
-        && !moveUndoed)
+      if ((FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT) && !moveUndoed)
       {
         saved = false;
         moveUndoed = true;
         this.createAndPushAction(moveMode == 'assets' ? OBJECT_MOVED : CHARACTER_MOVED);
       }
 
-      if ((FlxG.keys.justReleased.UP || FlxG.keys.justReleased.DOWN || FlxG.keys.justReleased.LEFT || FlxG.keys.justReleased.RIGHT)
-        && moveUndoed)
+      if ((FlxG.keys.justReleased.UP || FlxG.keys.justReleased.DOWN || FlxG.keys.justReleased.LEFT || FlxG.keys.justReleased.RIGHT) && moveUndoed)
       {
         moveUndoed = false;
       }
@@ -1231,15 +1232,20 @@ class StageEditorState extends UIState
       {
         if (!saved)
         {
-          Dialogs.messageBox('Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?', 'Open Stage',
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
-          {
-            if (btn == DialogButton.YES)
+          Dialogs.messageBox(
+            'Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?',
+            'Open Stage',
+            MessageBoxType.TYPE_YESNO,
+            true,
+            function(btn:DialogButton)
             {
-              saved = true;
-              load(file);
+              if (btn == DialogButton.YES)
+              {
+                saved = true;
+                load(file);
+              }
             }
-          });
+          );
         }
         else
         {
@@ -1305,15 +1311,20 @@ class StageEditorState extends UIState
       case 'open stage':
         if (!saved)
         {
-          Dialogs.messageBox('Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?', 'Open Stage',
-            MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
-          {
-            if (btn == DialogButton.YES)
+          Dialogs.messageBox(
+            'Opening a new Stage will reset all your progress for this Stage.\n\nAre you sure you want to proceed?',
+            'Open Stage',
+            MessageBoxType.TYPE_YESNO,
+            true,
+            function(btn:DialogButton)
             {
-              saved = true;
-              onMenuItemClick('open stage'); // ough
+              if (btn == DialogButton.YES)
+              {
+                saved = true;
+                onMenuItemClick('open stage'); // ough
+              }
             }
-          });
+          );
 
           return;
         }
@@ -1338,16 +1349,21 @@ class StageEditorState extends UIState
         {
           if (exitConfirmDialog == null)
           {
-            exitConfirmDialog = Dialogs.messageBox('You are about to leave the editor without saving.\n\nAre you sure? ', 'Leave Editor',
-              MessageBoxType.TYPE_YESNO, true, function(btn:DialogButton)
-            {
-              exitConfirmDialog = null;
-              if (btn == DialogButton.YES)
+            exitConfirmDialog = Dialogs.messageBox(
+              'You are about to leave the editor without saving.\n\nAre you sure? ',
+              'Leave Editor',
+              MessageBoxType.TYPE_YESNO,
+              true,
+              function(btn:DialogButton)
               {
-                saveBackup();
-                onMenuItemClick('exit');
+                exitConfirmDialog = null;
+                if (btn == DialogButton.YES)
+                {
+                  saveBackup();
+                  onMenuItemClick('exit');
+                }
               }
-            });
+            );
           }
 
           return;
@@ -1367,7 +1383,9 @@ class StageEditorState extends UIState
         if (testingMode) return;
         moveMode = (moveMode == 'assets' ? 'chars' : 'assets');
 
-        infoSelection = (moveMode == 'chars') ? (Std.string(selectedChar?.characterType) ?? 'None') : (moveMode == 'assets') ? (selectedSprite?.name ?? 'None') : 'Wut';
+        infoSelection = (moveMode == 'chars') ? (Std.string(
+          selectedChar?.characterType
+        ) ?? 'None') : (moveMode == 'assets') ? (selectedSprite?.name ?? 'None') : 'Wut';
 
         selectedSprite?.selectedShader.setAmount((moveMode == 'assets' ? 1 : 0));
 
@@ -1462,19 +1480,24 @@ class StageEditorState extends UIState
         testingMode = !testingMode;
 
       case 'clear assets':
-        Dialogs.messageBox('This will destroy all Objects in this Stage.\n\nAre you sure? This cannot be undone.', 'Clear Assets', MessageBoxType.TYPE_YESNO,
-          true, function(btn:DialogButton)
-        {
-          if (btn == DialogButton.YES)
+        Dialogs.messageBox(
+          'This will destroy all Objects in this Stage.\n\nAre you sure? This cannot be undone.',
+          'Clear Assets',
+          MessageBoxType.TYPE_YESNO,
+          true,
+          function(btn:DialogButton)
           {
-            clearAssets();
-            saved = false;
+            if (btn == DialogButton.YES)
+            {
+              clearAssets();
+              saved = false;
 
-            updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
-            updateDialog(StageEditorDialogType.OBJECT_ANIMS);
-            updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+              updateDialog(StageEditorDialogType.OBJECT_GRAPHIC);
+              updateDialog(StageEditorDialogType.OBJECT_ANIMS);
+              updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
+            }
           }
-        });
+        );
 
       case 'center on screen':
         if (selectedSprite != null && moveMode == 'assets')

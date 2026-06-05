@@ -207,12 +207,19 @@ class Paths implements ConsoleClass
       throw 'No Animation.json file exists at the specified path (${graphicKey})';
     }
 
-    return FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey, validatedSettings.uniqueInCache, {
-      swfMode: validatedSettings.swfMode,
-      cacheOnLoad: validatedSettings.cacheOnLoad,
-      filterQuality: validatedSettings.filterQuality,
-      onSymbolCreate: validatedSettings.onSymbolCreate
-    });
+    return FlxAnimateFrames.fromAnimate(
+      graphicKey,
+      validatedSettings.spritemaps,
+      validatedSettings.metadataJson,
+      validatedSettings.cacheKey,
+      validatedSettings.uniqueInCache,
+      {
+        swfMode: validatedSettings.swfMode,
+        cacheOnLoad: validatedSettings.cacheOnLoad,
+        filterQuality: validatedSettings.filterQuality,
+        onSymbolCreate: validatedSettings.onSymbolCreate
+      }
+    );
   }
 
   // deprecated("Use funkin.assets.Assets.getPackerAtlas() instead")

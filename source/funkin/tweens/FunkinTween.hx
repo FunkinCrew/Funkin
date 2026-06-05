@@ -16,12 +16,12 @@ import funkin.Conductor;
 typedef FunkinTweenOptions =
 {
   > TweenOptions,
-
-  @:optional var shouldUseConductorSync:Bool;
-
-  @:optional var conductor:Conductor;
-
-  @:optional var lengthMs:Float;
+  @:optional
+  var shouldUseConductorSync:Bool;
+  @:optional
+  var conductor:Conductor;
+  @:optional
+  var lengthMs:Float;
 }
 
 class ConductorSyncHelper
@@ -29,9 +29,12 @@ class ConductorSyncHelper
   public var shouldUseConductorSync:Bool = false;
   public var startMs:Null<Float> = null;
   public var endMs:Null<Float> = null;
+
   var _lastSongPositionMs:Null<Float> = null;
 
-  public function new() {}
+  public function new()
+  {
+  }
 
   public function init(options:FunkinTweenOptions):Void
   {
@@ -96,7 +99,9 @@ class FunkinTween extends FlxTween
   public var endMs(get, never):Null<Float>;
 
   function get_shouldUseConductorSync() return _sync.shouldUseConductorSync;
+
   function get_startMs() return _sync.startMs;
+
   function get_endMs() return _sync.endMs;
 
   function new(?options:FunkinTweenOptions, ?manager:FlxTweenManager)
@@ -141,7 +146,9 @@ class FunkinVarTween extends VarTween
   public var endMs(get, never):Null<Float>;
 
   function get_shouldUseConductorSync() return _sync.shouldUseConductorSync;
+
   function get_startMs() return _sync.startMs;
+
   function get_endMs() return _sync.endMs;
 
   public function new(?options:FunkinTweenOptions, ?manager:FlxTweenManager)

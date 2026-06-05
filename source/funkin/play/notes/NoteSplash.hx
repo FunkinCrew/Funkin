@@ -41,7 +41,8 @@ class NoteSplash extends FlxSprite
   {
     if (variant == null)
     {
-      var animationAmount:Int = this.animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length
+      var animationAmount:Int =
+        this.animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length
         - 1;
       variant = FlxG.random.int(0, animationAmount);
     }

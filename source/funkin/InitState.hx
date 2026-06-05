@@ -181,19 +181,47 @@ class InitState extends FlxState
       diamond.destroyOnNoUse = false;
 
       // NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
-      var tileData:TransitionTileData = {asset: diamond, width: 32, height: 32};
+      var tileData:TransitionTileData = {
+        asset: diamond,
+        width: 32,
+        height: 32
+      };
 
-      FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-      FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+      FlxTransitionableState.defaultTransIn = new TransitionData(
+        FADE,
+        FlxColor.BLACK,
+        1,
+        new FlxPoint(0, -1),
+        tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+      );
+      FlxTransitionableState.defaultTransOut = new TransitionData(
+        FADE,
+        FlxColor.BLACK,
+        0.7,
+        new FlxPoint(0, 1),
+        tileData,
+        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+      );
 
       FlxG.signals.gameResized.add(function(width:Int, height:Int)
       {
-        FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-        FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+        FlxTransitionableState.defaultTransIn = new TransitionData(
+          FADE,
+          FlxColor.BLACK,
+          1,
+          new FlxPoint(0, -1),
+          tileData,
+          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+        );
+        FlxTransitionableState.defaultTransOut = new TransitionData(
+          FADE,
+          FlxColor.BLACK,
+          0.7,
+          new FlxPoint(0, 1),
+          tileData,
+          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+        );
       });
 
       // SDL for some reason enables VSync on focus lost/gained in Android
@@ -240,9 +268,7 @@ class InitState extends FlxState
       // ANDROID SETUP
       //
       #if android
-      FlxG.android.preventDefaultKeys = [
-        flixel.input.android.FlxAndroidKey.BACK
-      ];
+      FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
       #end
 
       //
@@ -514,7 +540,9 @@ class InitState extends FlxState
    */
   function startSong(songId:String, difficultyId:String = 'normal'):Void
   {
-    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId, {variation: Constants.DEFAULT_VARIATION});
+    var songData:Null<funkin.play.song.Song> = funkin.data.song.SongRegistry.instance.fetchEntry(songId, {
+      variation: Constants.DEFAULT_VARIATION
+    });
 
     if (songData == null)
     {
@@ -575,7 +603,9 @@ class InitState extends FlxState
 
     var targetSong:Null<funkin.play.song.Song> = null;
 
-    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
+    if (targetSongId != null) targetSong = SongRegistry.instance.fetchEntry(targetSongId, {
+      variation: Constants.DEFAULT_VARIATION
+    });
 
     if (targetSongId == null)
     {

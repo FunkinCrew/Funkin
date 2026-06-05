@@ -8,16 +8,12 @@ class SnapButton extends IconButton
 {
   @:clonable @:behaviour(SnapIconBehaviour)
   public var iconSnapOn:Variant;
-
   @:clonable @:behaviour(SnapIconBehaviour)
   public var iconSnapOff:Variant;
-
   @:clonable @:behaviour(SnapIconBehaviour)
   public var iconShiftOn:Variant;
-
   @:clonable @:behaviour(SnapIconBehaviour)
   public var iconShiftOff:Variant;
-
   @:clonable @:behaviour(SnapIconBehaviour)
   public var shiftActive:Bool;
 
@@ -42,7 +38,8 @@ class SnapButton extends IconButton
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class SnapIconBehaviour extends DataBehaviour
 {
   override function validateData():Void

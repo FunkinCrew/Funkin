@@ -67,8 +67,7 @@ class NoteKindManager
     for (noteKindCls in BUILTIN_KINDS)
     {
       var noteKindClsName:String = Type.getClassName(noteKindCls);
-      if (noteKindClsName == 'funkin.play.notes.notekind.NoteKind'
-        || noteKindClsName == 'funkin.play.notes.notekind.ScriptedNoteKind') continue;
+      if (noteKindClsName == 'funkin.play.notes.notekind.NoteKind' || noteKindClsName == 'funkin.play.notes.notekind.ScriptedNoteKind') continue;
 
       var kind:NoteKind = Type.createInstance(noteKindCls, ['UNKNOWN']);
 

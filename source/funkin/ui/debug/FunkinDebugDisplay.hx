@@ -90,11 +90,20 @@ class FunkinDebugDisplay extends Sprite
 
     background = new Shape();
     background.graphics.beginFill(0x3D3F41, 1);
-    background.graphics.drawRect(0, 0, (OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier) + (INNER_RECT_DIFF * 2),
-      (OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier) + (INNER_RECT_DIFF * 2));
+    background.graphics.drawRect(
+      0,
+      0,
+      (OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier) + (INNER_RECT_DIFF * 2),
+      (OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier) + (INNER_RECT_DIFF * 2)
+    );
     background.graphics.endFill();
     background.graphics.beginFill(0x2C2F30, 1);
-    background.graphics.drawRect(INNER_RECT_DIFF, INNER_RECT_DIFF, OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier, OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier);
+    background.graphics.drawRect(
+      INNER_RECT_DIFF,
+      INNER_RECT_DIFF,
+      OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier,
+      OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier
+    );
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
     addChild(background);
@@ -130,8 +139,13 @@ class FunkinDebugDisplay extends Sprite
 
     if (MemoryUtil.supportsTaskMem())
     {
-      taskMemGraph = new FunkinStatsGraph(OTHERS_OFFSET, Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22), graphsWidth, graphsHeight,
-        color);
+      taskMemGraph = new FunkinStatsGraph(
+        OTHERS_OFFSET,
+        Math.floor(OTHERS_OFFSET + (gcMemGraph.y + gcMemGraph.axisHeight) + 22),
+        graphsWidth,
+        graphsHeight,
+        color
+      );
       taskMemGraph.minValue = 0;
       addChild(taskMemGraph);
     }

@@ -145,7 +145,10 @@ class DebugBoundingState extends FlxState
 
     for (i in frameShit)
     {
-      var lineStyle:LineStyle = {color: FlxColor.RED, thickness: 2};
+      var lineStyle:LineStyle = {
+        color: FlxColor.RED,
+        thickness: 2
+      };
 
       var uvW:Float = (i.uv.right * i.parent.width) - (i.uv.left * i.parent.width);
       var uvH:Float = (i.uv.bottom * i.parent.height) - (i.uv.top * i.parent.height);
@@ -199,7 +202,9 @@ class DebugBoundingState extends FlxState
     var charDropdown:DropDown = offsetEditorDialog.findComponent('characterDropdown', DropDown);
     for (char in characters)
     {
-      charDropdown.dataSource.add({text: char});
+      charDropdown.dataSource.add({
+        text: char
+      });
     }
 
     charDropdown.onChange = function(e:UIEvent)
@@ -392,7 +397,10 @@ class DebugBoundingState extends FlxState
 
       if (targetLabel != currentAnimationName)
       {
-        offsetAnimationDropdown.value = {id: targetLabel, text: targetLabel};
+        offsetAnimationDropdown.value = {
+          id: targetLabel,
+          text: targetLabel
+        };
 
         // Play the new animation if the IDs are different.
         // Override the onion skin.
@@ -421,9 +429,15 @@ class DebugBoundingState extends FlxState
     // Plays the idle animation
     if (FlxG.keys.justPressed.SPACE)
     {
-      if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {id: 'danceLeft', text: 'danceLeft'};
+      if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {
+        id: 'danceLeft',
+        text: 'danceLeft'
+      };
       else
-        offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
+        offsetAnimationDropdown.value = {
+          id: 'idle',
+          text: 'idle'
+        };
 
       playCharacterAnimation(currentAnimationName, true);
     }
@@ -488,8 +502,13 @@ class DebugBoundingState extends FlxState
     if (charData.healthIcon.isPixel == CharacterDataParser.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
     if (charData.healthIcon.offsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
 
-    if (charData.healthIcon.id == null && charData.healthIcon.scale == null && charData.healthIcon.flipX == null && charData.healthIcon.isPixel == null
-      && charData.healthIcon.offsets == null)
+    if (
+      charData.healthIcon.id == null
+      && charData.healthIcon.scale == null
+      && charData.healthIcon.flipX == null
+      && charData.healthIcon.isPixel == null
+      && charData.healthIcon.offsets == null
+    )
     {
       Reflect.deleteField(charData, "healthIcon");
     }
@@ -578,7 +597,10 @@ class DebugBoundingState extends FlxState
 
     for (charAnim in characterAnimNames)
     {
-      offsetAnimationDropdown.dataSource.add({id: charAnim, text: charAnim});
+      offsetAnimationDropdown.dataSource.add({
+        id: charAnim,
+        text: charAnim
+      });
     }
 
     offsetAnimationDropdown.selectedIndex = 0;

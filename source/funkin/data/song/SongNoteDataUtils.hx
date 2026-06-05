@@ -20,8 +20,7 @@ class SongNoteDataUtils
    * Note that it's only guaranteed to work properly if the provided notes are sorted.
    * @return Stacked notes.
    */
-  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float, includeOverlapped:Bool = true,
-      ?overlapped:Array<SongNoteData>):Array<SongNoteData>
+  public static function listStackedNotes(notes:Array<SongNoteData>, threshold:Float, includeOverlapped:Bool = true, ?overlapped:Array<SongNoteData>):Array<SongNoteData>
   {
     var stackedNotes:Array<SongNoteData> = [];
 
@@ -85,8 +84,7 @@ class SongNoteDataUtils
    * @param threshold The note stack threshold. Refer to `doNotesStack` for more details.
    * @return The unsorted resulting array.
    */
-  public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>,
-      threshold:Float = 0):Array<SongNoteData>
+  public static function concatOverwrite(lhs:Array<SongNoteData>, rhs:Array<SongNoteData>, ?overwrittenNotes:Array<SongNoteData>, threshold:Float = 0):Array<SongNoteData>
   {
     if (lhs == null || rhs == null || rhs.length == 0) return lhs;
     if (lhs.length == 0) return rhs;

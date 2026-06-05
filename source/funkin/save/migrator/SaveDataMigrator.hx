@@ -39,7 +39,8 @@ class SaveDataMigrator
       else
       {
         var slot:Int = Save.system.archiveBadSaveData(inputData);
-        var message:String = 'An error occurred migrating your save data.'
+        var message:String =
+          'An error occurred migrating your save data.'
           + '\nError migrating save data, expected ${Save.SAVE_DATA_VERSION}.'
           + '\nInvalid data has been moved to save slot ${slot}.';
 

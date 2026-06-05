@@ -208,8 +208,10 @@ class LoadingState extends MusicBeatSubState
    */
   public static function loadPlayState(params:PlayStateParams, shouldStopMusic = false, asSubState = false, ?onConstruct:PlayState->Void):Void
   {
-    var daChart:Null<SongDifficulty> = params.targetSong?.getDifficulty(params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
-      params.targetVariation ?? Constants.DEFAULT_VARIATION);
+    var daChart:Null<SongDifficulty> = params.targetSong?.getDifficulty(
+      params.targetDifficulty ?? Constants.DEFAULT_DIFFICULTY,
+      params.targetVariation ?? Constants.DEFAULT_VARIATION
+    );
 
     var daStage = funkin.data.stage.StageRegistry.instance.fetchEntry(daChart?.stage ?? Constants.DEFAULT_STAGE);
 
@@ -487,7 +489,9 @@ class MultiCallback
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;
-    FlxTween.tween(screenWipeShit, {daAlphaShit: 1}, time, {
+    FlxTween.tween(screenWipeShit, {
+      daAlphaShit: 1
+    }, time, {
       ease: FlxEase.quadInOut,
       onComplete: function(twn)
       {
@@ -495,8 +499,6 @@ class MultiCallback
         FlxG.switchState(state);
       }
     });
-    FlxG.camera.filters = [
-      new ShaderFilter(screenWipeShit)
-    ];
+    FlxG.camera.filters = [new ShaderFilter(screenWipeShit)];
   }
 }

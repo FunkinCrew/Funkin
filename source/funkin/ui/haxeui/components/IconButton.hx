@@ -24,7 +24,8 @@ class IconButton extends Button
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class ApplyIconBehaviour extends DataBehaviour
 {
   override function validateData():Void
@@ -33,7 +34,8 @@ private class ApplyIconBehaviour extends DataBehaviour
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class IconButtonBuilder extends CompositeBuilder
 {
   var _btn:IconButton;
@@ -46,7 +48,8 @@ private class IconButtonBuilder extends CompositeBuilder
 
   override public function create():Void
   {
-    _btn.registerEvent(MouseEvent.MOUSE_DOWN, (_:MouseEvent) -> {
+    _btn.registerEvent(MouseEvent.MOUSE_DOWN, (_:MouseEvent) ->
+    {
       var icon:Image = cast _btn.findComponent("button-icon");
       if (icon != null)
       {
@@ -54,7 +57,8 @@ private class IconButtonBuilder extends CompositeBuilder
         _btn.invalidateComponentLayout();
       }
     });
-    _btn.registerEvent(MouseEvent.MOUSE_UP, (_:MouseEvent) -> {
+    _btn.registerEvent(MouseEvent.MOUSE_UP, (_:MouseEvent) ->
+    {
       var icon:Image = cast _btn.findComponent("button-icon");
       if (icon != null)
       {
@@ -62,7 +66,8 @@ private class IconButtonBuilder extends CompositeBuilder
         _btn.invalidateComponentLayout();
       }
     });
-    _btn.registerEvent(MouseEvent.MOUSE_OUT, (_:MouseEvent) -> {
+    _btn.registerEvent(MouseEvent.MOUSE_OUT, (_:MouseEvent) ->
+    {
       var icon:Image = cast _btn.findComponent("button-icon");
       if (icon != null)
       {

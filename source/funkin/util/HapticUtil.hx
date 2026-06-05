@@ -33,9 +33,7 @@ class HapticUtil
    * @param amplitude The intensity of the vibration (0.0 to 1.0).
    * @param sharpness Controls the feel of vibration.
    */
-  public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
-      amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE, sharpness:Float = Constants.DEFAULT_VIBRATION_SHARPNESS,
-      ?targetHapticsModes:Array<HapticsMode>):Void
+  public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION, amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE, sharpness:Float = Constants.DEFAULT_VIBRATION_SHARPNESS, ?targetHapticsModes:Array<HapticsMode>):Void
   {
     #if FEATURE_HAPTICS
     if (!HapticUtil.hapticsAvailable) return;

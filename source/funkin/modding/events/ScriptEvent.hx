@@ -158,8 +158,7 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Float, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0,
-      doesNotesplash:Bool = false):Void
+  public function new(note:NoteSprite, healthChange:Float, score:Float, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0, doesNotesplash:Bool = false):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
     this.score = score;
@@ -171,8 +170,22 @@ class HitNoteScriptEvent extends NoteScriptEvent
 
   override public function toString():String
   {
-    return 'HitNoteScriptEvent(note=' + note + ', comboCount=' + comboCount + ', judgement=' + judgement + ', score=' + score + ', isComboBreak='
-      + isComboBreak + ', hitDiff=' + hitDiff + ', doesNotesplash=' + doesNotesplash + ')';
+    return
+      'HitNoteScriptEvent(note='
+      + note
+      + ', comboCount='
+      + comboCount
+      + ', judgement='
+      + judgement
+      + ', score='
+      + score
+      + ', isComboBreak='
+      + isComboBreak
+      + ', hitDiff='
+      + hitDiff
+      + ', doesNotesplash='
+      + doesNotesplash
+      + ')';
   }
 }
 
@@ -257,8 +270,7 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Float, isComboBreak:Bool, comboCount:Int = 0,
-      cancelable:Bool = false):Void
+  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Float, isComboBreak:Bool, comboCount:Int = 0, cancelable:Bool = false):Void
   {
     super(type, null, healthChange, comboCount, true);
     this.holdNote = holdNote;

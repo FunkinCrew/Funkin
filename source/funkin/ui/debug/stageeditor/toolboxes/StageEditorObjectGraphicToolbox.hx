@@ -14,7 +14,8 @@ import haxe.ui.ToolkitAssets;
 import openfl.display.BitmapData;
 import haxe.ui.events.UIEvent;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-graphic.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState)
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/ui/editors/stage-editor/toolboxes/object-graphic.xml"))
 class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;

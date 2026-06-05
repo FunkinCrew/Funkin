@@ -169,15 +169,19 @@ class Strumline extends FlxSpriteGroup
    */
   public var noteVibrations:NoteVibrationsHandler = new NoteVibrationsHandler();
 
-  final inArrowControlSchemeMode:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.hasExternalInputDevice) #else false #end;
+  final inArrowControlSchemeMode:Bool = #if mobile (
+    Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+    && !ControlsHandler.hasExternalInputDevice
+  ) #else false #end;
 
   /**
    * Whether the strumline is downscroll.
    */
-  public var isDownscroll:Bool = #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
-    && !ControlsHandler.hasExternalInputDevice)
-    || #end Preferences.downscroll;
+  public var isDownscroll:Bool =
+    #if mobile (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
+    || #end
+
+  Preferences.downscroll;
 
   /**
    * The note data for the song. Should NOT be altered after the song starts (but we alter it in OffsetState :DDD),
@@ -434,7 +438,9 @@ class Strumline extends FlxSpriteGroup
 
       var targetY:Float = FlxG.height + note.y;
       if (isDownscroll) targetY = note.y - FlxG.height;
-      FlxTween.tween(note, {y: targetY}, vwooshTime, {
+      FlxTween.tween(note, {
+        y: targetY
+      }, vwooshTime, {
         ease: FlxEase.expoIn,
         onComplete: function(twn)
         {
@@ -455,7 +461,9 @@ class Strumline extends FlxSpriteGroup
 
       var targetY:Float = FlxG.height + holdNote.y;
       if (isDownscroll) targetY = holdNote.y - FlxG.height;
-      FlxTween.tween(holdNote, {y: targetY}, vwooshTime, {
+      FlxTween.tween(holdNote, {
+        y: targetY
+      }, vwooshTime, {
         ease: FlxEase.expoIn,
         onComplete: function(twn)
         {
@@ -535,7 +543,9 @@ class Strumline extends FlxSpriteGroup
       {
         note.yOffset = -200;
       }
-      FlxTween.tween(note, {yOffset: 0}, vwooshTime, {
+      FlxTween.tween(note, {
+        yOffset: 0
+      }, vwooshTime, {
         ease: FlxEase.expoOut,
         onComplete: function(twn)
         {
@@ -554,7 +564,9 @@ class Strumline extends FlxSpriteGroup
       {
         holdNote.yOffset = -200;
       }
-      FlxTween.tween(holdNote, {yOffset: 0}, vwooshTime, {
+      FlxTween.tween(holdNote, {
+        yOffset: 0
+      }, vwooshTime, {
         ease: FlxEase.expoOut,
         onComplete: function(twn)
         {
@@ -611,7 +623,8 @@ class Strumline extends FlxSpriteGroup
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData) note.y = this.y
+      if (!customPositionData) note.y =
+        this.y
         - INITIAL_OFFSET
         + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
         + note.yOffset;
@@ -693,7 +706,8 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y
+            holdNote.y =
+              this.y
               - INITIAL_OFFSET
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
@@ -702,7 +716,8 @@ class Strumline extends FlxSpriteGroup
           }
           else
           {
-            holdNote.y = this.y
+            holdNote.y =
+              this.y
               - INITIAL_OFFSET
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               + yOffset
@@ -752,7 +767,8 @@ class Strumline extends FlxSpriteGroup
         {
           if (isDownscroll)
           {
-            holdNote.y = this.y
+            holdNote.y =
+              this.y
               - INITIAL_OFFSET
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               - holdNote.height
@@ -761,7 +777,8 @@ class Strumline extends FlxSpriteGroup
           }
           else
           {
-            holdNote.y = this.y
+            holdNote.y =
+              this.y
               - INITIAL_OFFSET
               + GRhythmUtil.getNoteY(holdNote.strumTime, scrollSpeed, isDownscroll, conductorInUse)
               + STRUMLINE_SIZE / 2
@@ -969,8 +986,10 @@ class Strumline extends FlxSpriteGroup
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
 
-      note.holdNoteSprite.sustainLength = Math.min(note.holdNoteSprite.fullSustainLength,
-        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition);
+      note.holdNoteSprite.sustainLength = Math.min(
+        note.holdNoteSprite.fullSustainLength,
+        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition
+      );
     }
 
     #if FEATURE_GHOST_TAPPING
@@ -1154,8 +1173,10 @@ class Strumline extends FlxSpriteGroup
       if (inArrowControlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-        trueScale.set(strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
-          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification);
+        trueScale.set(
+          strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
+          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification
+        );
       }
       #end
 
@@ -1363,7 +1384,13 @@ class Strumline extends FlxSpriteGroup
   {
     arrow.y -= 10;
     arrow.alpha = 0.0;
-    FlxTween.tween(arrow, {y: arrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index)});
+    FlxTween.tween(arrow, {
+      y: arrow.y + 10,
+      alpha: 1
+    }, 1, {
+      ease: FlxEase.circOut,
+      startDelay: 0.5 + (0.2 * index)
+    });
   }
 
   /**
@@ -1375,7 +1402,12 @@ class Strumline extends FlxSpriteGroup
    */
   public function fadeOutArrow(index:Int, arrow:StrumlineNote):Void
   {
-    FlxTween.tween(arrow, {y: arrow.y - 10, alpha: 0}, 0.5, {ease: FlxEase.circIn});
+    FlxTween.tween(arrow, {
+      y: arrow.y - 10,
+      alpha: 0
+    }, 0.5, {
+      ease: FlxEase.circIn
+    });
   }
 
   /**

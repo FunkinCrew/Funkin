@@ -154,7 +154,9 @@ class DifficultyDot extends FlxSpriteGroup
             color = normalColors[1];
 
           case DESELECTING:
-            colorTween = FlxTween.color(this, 0.5, normalColors[1], normalColors[0], {ease: FlxEase.quartOut});
+            colorTween = FlxTween.color(this, 0.5, normalColors[1], normalColors[0], {
+              ease: FlxEase.quartOut
+            });
 
           case DESELECTED:
             color = normalColors[0];
@@ -172,7 +174,9 @@ class DifficultyDot extends FlxSpriteGroup
             color = nightColors[1];
 
           case DESELECTING:
-            colorTween = FlxTween.color(this, 0.5, nightColors[1], nightColors[0], {ease: FlxEase.quartOut});
+            colorTween = FlxTween.color(this, 0.5, nightColors[1], nightColors[0], {
+              ease: FlxEase.quartOut
+            });
 
           case DESELECTED:
             color = nightColors[0];
@@ -205,11 +209,19 @@ class DifficultyDot extends FlxSpriteGroup
 
     if (type == INACTIVE)
     {
-      fadeTween = FlxTween.tween(dot, {alpha: 0.33}, 0.5, {ease: FlxEase.quartOut});
+      fadeTween = FlxTween.tween(dot, {
+        alpha: 0.33
+      }, 0.5, {
+        ease: FlxEase.quartOut
+      });
     }
     else
     {
-      fadeTween = FlxTween.tween(dot, {alpha: 1}, 0.5, {ease: FlxEase.quartOut});
+      fadeTween = FlxTween.tween(dot, {
+        alpha: 1
+      }, 0.5, {
+        ease: FlxEase.quartOut
+      });
     }
   }
 
@@ -223,7 +235,11 @@ class DifficultyDot extends FlxSpriteGroup
       fadeTween.cancel();
     }
 
-    fadeTween = FlxTween.tween(dot, {alpha: 0}, 0.25, {ease: FlxEase.quartOut});
+    fadeTween = FlxTween.tween(dot, {
+      alpha: 0
+    }, 0.25, {
+      ease: FlxEase.quartOut
+    });
     pulse.alpha = 0;
   }
 

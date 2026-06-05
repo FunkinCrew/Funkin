@@ -27,7 +27,9 @@ class Lock extends FunkinSprite
       {
         if (symbol.timeline.getLayer('color') != null)
         {
-          var colorSymbol:Null<animate.internal.elements.SymbolInstance> = symbol.timeline.getLayer('color')?.getFrameAtIndex(0)?.convertToSymbol(0, 1) ?? null;
+          var colorSymbol:Null<animate.internal.elements.SymbolInstance> = symbol.timeline.getLayer(
+            'color'
+          )?.getFrameAtIndex(0)?.convertToSymbol(0, 1) ?? null;
 
           if (colorSymbol != null)
           {

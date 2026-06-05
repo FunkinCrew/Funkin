@@ -34,9 +34,7 @@ class FunkinMemory
 
     for (file in allImages)
     {
-      if (!(file.endsWith('.png') #if FEATURE_COMPRESSED_TEXTURES || file.endsWith('.astc') #end)
-        || file.contains('chart-editor')
-        || !file.contains('ui/'))
+      if (!(file.endsWith('.png') #if FEATURE_COMPRESSED_TEXTURES || file.endsWith('.astc') #end) || file.contains('chart-editor') || !file.contains('ui/'))
       {
         continue;
       }
@@ -266,8 +264,7 @@ class FunkinMemory
    */
   public static function isTextureCached(key:String):Bool
   {
-    return FlxG.bitmap.get(key) != null
-      && (permanentCachedTextures.exists(key) || currentCachedTextures.exists(key) || previousCachedTextures.exists(key));
+    return FlxG.bitmap.get(key) != null && (permanentCachedTextures.exists(key) || currentCachedTextures.exists(key) || previousCachedTextures.exists(key));
   }
 
   ///// NOTE STYLE //////

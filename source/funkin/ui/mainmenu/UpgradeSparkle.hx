@@ -66,8 +66,17 @@ class UpgradeSparkle extends FlxSprite
     angularDrag = 200;
 
     var targetTime:Float = FlxG.random.float(0.3, 0.8);
-    FlxTween.tween(this.scale, {x: targetScale * 0.001, y: targetScale * 0.001}, targetTime, {ease: FlxEase.backIn});
-    FlxTween.tween(this, {alpha: 0}, targetTime, {ease: FlxEase.quintIn});
+    FlxTween.tween(this.scale, {
+      x: targetScale * 0.001,
+      y: targetScale * 0.001
+    }, targetTime, {
+      ease: FlxEase.backIn
+    });
+    FlxTween.tween(this, {
+      alpha: 0
+    }, targetTime, {
+      ease: FlxEase.quintIn
+    });
 
     sparkleTimer = new FlxTimer().start(FlxG.random.float(2, 7), sparkleEffect);
   }

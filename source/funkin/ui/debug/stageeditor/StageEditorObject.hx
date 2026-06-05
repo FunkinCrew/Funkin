@@ -100,8 +100,7 @@ class StageEditorObject extends FunkinSprite
     }
   }
 
-  public function addAnim(name:String, prefix:String, offsets:Array<Float>, indices:Array<Int>, frameRate:Int = 24, looped:Bool = true, flipX:Bool = false,
-      flipY:Bool = false)
+  public function addAnim(name:String, prefix:String, offsets:Array<Float>, indices:Array<Int>, frameRate:Int = 24, looped:Bool = true, flipX:Bool = false, flipY:Bool = false)
   {
     if (indices.length > 0) animation.addByIndices(name, prefix, indices, "", frameRate, looped, flipX, flipY);
     else

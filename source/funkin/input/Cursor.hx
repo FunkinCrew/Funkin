@@ -187,31 +187,83 @@ class Cursor
     var data = switch (mode)
     {
       case Default:
-        {cache: assetCursorDefault, params: CURSOR_DEFAULT_PARAMS, set: (bmp) -> assetCursorDefault = bmp};
+        {
+          cache: assetCursorDefault,
+          params: CURSOR_DEFAULT_PARAMS,
+          set: (bmp) -> assetCursorDefault = bmp
+        };
       case Cross:
-        {cache: assetCursorCross, params: CURSOR_CROSS_PARAMS, set: (bmp) -> assetCursorCross = bmp};
+        {
+          cache: assetCursorCross,
+          params: CURSOR_CROSS_PARAMS,
+          set: (bmp) -> assetCursorCross = bmp
+        };
       case Eraser:
-        {cache: assetCursorEraser, params: CURSOR_ERASER_PARAMS, set: (bmp) -> assetCursorEraser = bmp};
+        {
+          cache: assetCursorEraser,
+          params: CURSOR_ERASER_PARAMS,
+          set: (bmp) -> assetCursorEraser = bmp
+        };
       case Grabbing:
-        {cache: assetCursorGrabbing, params: CURSOR_GRABBING_PARAMS, set: (bmp) -> assetCursorGrabbing = bmp};
+        {
+          cache: assetCursorGrabbing,
+          params: CURSOR_GRABBING_PARAMS,
+          set: (bmp) -> assetCursorGrabbing = bmp
+        };
       case Hourglass:
-        {cache: assetCursorHourglass, params: CURSOR_HOURGLASS_PARAMS, set: (bmp) -> assetCursorHourglass = bmp};
+        {
+          cache: assetCursorHourglass,
+          params: CURSOR_HOURGLASS_PARAMS,
+          set: (bmp) -> assetCursorHourglass = bmp
+        };
       case Pointer:
-        {cache: assetCursorPointer, params: CURSOR_POINTER_PARAMS, set: (bmp) -> assetCursorPointer = bmp};
+        {
+          cache: assetCursorPointer,
+          params: CURSOR_POINTER_PARAMS,
+          set: (bmp) -> assetCursorPointer = bmp
+        };
       case Text:
-        {cache: assetCursorText, params: CURSOR_TEXT_PARAMS, set: (bmp) -> assetCursorText = bmp};
+        {
+          cache: assetCursorText,
+          params: CURSOR_TEXT_PARAMS,
+          set: (bmp) -> assetCursorText = bmp
+        };
       case TextVertical:
-        {cache: assetCursorTextVertical, params: CURSOR_TEXT_VERTICAL_PARAMS, set: (bmp) -> assetCursorTextVertical = bmp};
+        {
+          cache: assetCursorTextVertical,
+          params: CURSOR_TEXT_VERTICAL_PARAMS,
+          set: (bmp) -> assetCursorTextVertical = bmp
+        };
       case ZoomIn:
-        {cache: assetCursorZoomIn, params: CURSOR_ZOOM_IN_PARAMS, set: (bmp) -> assetCursorZoomIn = bmp};
+        {
+          cache: assetCursorZoomIn,
+          params: CURSOR_ZOOM_IN_PARAMS,
+          set: (bmp) -> assetCursorZoomIn = bmp
+        };
       case ZoomOut:
-        {cache: assetCursorZoomOut, params: CURSOR_ZOOM_OUT_PARAMS, set: (bmp) -> assetCursorZoomOut = bmp};
+        {
+          cache: assetCursorZoomOut,
+          params: CURSOR_ZOOM_OUT_PARAMS,
+          set: (bmp) -> assetCursorZoomOut = bmp
+        };
       case Crosshair:
-        {cache: assetCursorCrosshair, params: CURSOR_CROSSHAIR_PARAMS, set: (bmp) -> assetCursorCrosshair = bmp};
+        {
+          cache: assetCursorCrosshair,
+          params: CURSOR_CROSSHAIR_PARAMS,
+          set: (bmp) -> assetCursorCrosshair = bmp
+        };
       case Cell:
-        {cache: assetCursorCell, params: CURSOR_CELL_PARAMS, set: (bmp) -> assetCursorCell = bmp};
+        {
+          cache: assetCursorCell,
+          params: CURSOR_CELL_PARAMS,
+          set: (bmp) -> assetCursorCell = bmp
+        };
       case Scroll:
-        {cache: assetCursorScroll, params: CURSOR_SCROLL_PARAMS, set: (bmp) -> assetCursorScroll = bmp};
+        {
+          cache: assetCursorScroll,
+          params: CURSOR_SCROLL_PARAMS,
+          set: (bmp) -> assetCursorScroll = bmp
+        };
       default:
         null;
     }
@@ -302,7 +354,6 @@ class Cursor
     "wait" => MouseCursor.WAIT,
     "progress" => MouseCursor.WAIT_ARROW,
   ];
-
   static var lastResolvedCursor:Null<String> = null;
 
   static function onMouseMoveSyncCursor(_:MouseEvent):Void

@@ -76,7 +76,10 @@ class HitboxShowcase extends FlxSpriteGroup
    */
   function setupObjects(controlsScheme:String):Void
   {
-    final bg:FlxShapeBox = new FlxShapeBox(0, 0, FlxG.width + 2, FlxG.height + 2, {thickness: 6, color: FlxColor.BLACK}, FlxColor.GRAY);
+    final bg:FlxShapeBox = new FlxShapeBox(0, 0, FlxG.width + 2, FlxG.height + 2, {
+      thickness: 6,
+      color: FlxColor.BLACK
+    }, FlxColor.GRAY);
     bg.screenCenter();
     add(bg);
 

@@ -38,15 +38,22 @@ class TimelineToolbar extends HBox
     songLength = 0;
 
     var scrollTypes = new ArrayDataSource<Dynamic>();
-    scrollTypes.add({text: "No Scroll"});
-    scrollTypes.add({text: "Page Scroll"});
-    scrollTypes.add({text: "Smooth Scroll"});
+    scrollTypes.add({
+      text: "No Scroll"
+    });
+    scrollTypes.add({
+      text: "Page Scroll"
+    });
+    scrollTypes.add({
+      text: "Smooth Scroll"
+    });
     ddAutoScroll.dataSource = scrollTypes;
     ddAutoScroll.selectedIndex = 1;
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class SongPositionBehaviour extends DataBehaviour
 {
   override public function validateData():Void
@@ -62,7 +69,8 @@ private class SongPositionBehaviour extends DataBehaviour
   }
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class SongLengthBehaviour extends DataBehaviour
 {
   override public function validateData():Void

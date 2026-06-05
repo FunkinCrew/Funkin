@@ -136,7 +136,10 @@ class SRTParser
     var e = parseTimecode(right);
 
     if (s < 0 || e < 0) return null;
-    return {start: s, end: e};
+    return {
+      start: s,
+      end: e
+    };
   }
 
   /**

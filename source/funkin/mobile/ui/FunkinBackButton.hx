@@ -37,8 +37,7 @@ class FunkinBackButton extends FunkinButton
    * @param restingOpacity An optional float that is the alpha the button will be when not selected/hovered over.
    * @param instant An optional flag that makes the button not play the full animation before calling the callback.
    */
-  public function new(?x:Float = 0, ?y:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void, ?restingOpacity:Float = 0.3,
-      instant:Bool = false):Void
+  public function new(?x:Float = 0, ?y:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void, ?restingOpacity:Float = 0.3, instant:Bool = false):Void
   {
     super(x, y);
 
@@ -136,7 +135,9 @@ class FunkinBackButton extends FunkinButton
     HapticUtil.vibrate(0, 0.01, 0.2);
     animation.play('idle');
 
-    FlxTween.tween(this, {alpha: restingOpacity}, 0.5, {
+    FlxTween.tween(this, {
+      alpha: restingOpacity
+    }, 0.5, {
       ease: FlxEase.expoOut,
       onComplete: function(tween:FlxTween):Void
       {

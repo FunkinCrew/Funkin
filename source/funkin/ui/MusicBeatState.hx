@@ -73,8 +73,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var optionsButton:Null<FunkinOptionsButton>;
   public var camControls:Null<FunkinCamera>;
 
-  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>,
-      ?colorsOverride:Array<FlxColor>):Void
+  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
   {
     if (hitbox != null)
     {
@@ -98,8 +97,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
 
-  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null,
-      ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
+  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null, ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
   {
     if (backButton != null) remove(backButton);
 

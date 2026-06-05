@@ -196,8 +196,15 @@ class CreditsState extends MusicBeatState
     creditsLine.fieldWidth = width;
     creditsLine.text = text;
     creditsLine.bold = header;
-    creditsLine.setFormat(funkin.assets.Paths.font('ui/fonts/Inconsolata Black'), size, CREDITS_FONT_COLOR, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE,
-      CREDITS_FONT_STROKE_COLOR, true);
+    creditsLine.setFormat(
+      funkin.assets.Paths.font('ui/fonts/Inconsolata Black'),
+      size,
+      CREDITS_FONT_COLOR,
+      FlxTextAlign.LEFT,
+      FlxTextBorderStyle.OUTLINE,
+      CREDITS_FONT_STROKE_COLOR,
+      true
+    );
 
     return creditsLine;
   }

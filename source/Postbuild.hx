@@ -36,7 +36,24 @@ class Postbuild
 
   static function format(time:Float, decimals:Int = 1):String
   {
-    var units = [{name: 'day', secs: 86400}, {name: 'hour', secs: 3600}, {name: 'minute', secs: 60}, {name: 'second', secs: 1}];
+    var units = [
+      {
+        name: 'day',
+        secs: 86400
+      },
+      {
+        name: 'hour',
+        secs: 3600
+      },
+      {
+        name: 'minute',
+        secs: 60
+      },
+      {
+        name: 'second',
+        secs: 1
+      }
+    ];
 
     var parts:Array<String> = [];
     var remaining:Float = time;

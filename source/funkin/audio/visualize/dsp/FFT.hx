@@ -47,9 +47,7 @@ class FFT
   static function do_fft(input:Array<Complex>, inverse:Bool):Array<Complex>
   {
     final n = nextPow2(input.length);
-    var ts = [
-      for (i in 0...n) if (i < input.length) input[i] else Complex.zero
-    ];
+    var ts = [for (i in 0...n) if (i < input.length) input[i] else Complex.zero];
     var fs = [for (_ in 0...n) Complex.zero];
     ditfft2(ts, 0, fs, 0, n, 1, inverse);
     return inverse ? fs.map(z -> z.scale(1 / n)) : fs;
@@ -125,48 +123,35 @@ class FFT
 
     // build a time signal as a sum of sinusoids
     final freqs = [5919.911];
-    final ts = [
-      for (n in 0...N) freqs.map(f -> Math.sin(2 * Math.PI * f * n / Fs)).sum()
-    ];
+    final ts = [for (n in 0...N) freqs.map(f -> Math.sin(2 * Math.PI * f * n / Fs)).sum()];
 
     // get positive spectrum and use its symmetry to reconstruct negative domain
     final fs_pos = rfft(ts);
-    final fs_fft = new OffsetArray([
-      for (k in -(halfN - 1)...0) fs_pos[-k].conj()
-    ].concat(fs_pos), -(halfN - 1));
+    final fs_fft = new OffsetArray([for (k in -(halfN - 1)...0) fs_pos[-k].conj()].concat(fs_pos), -(halfN - 1));
 
     // double-check with naive DFT
     final fs_dft = new OffsetArray(dft(ts.map(Complex.fromReal)).circShift(halfN - 1), -(halfN - 1));
-    final fs_err = [
-      for (k in -(halfN - 1)...halfN) fs_fft[k] - fs_dft[k]
-    ];
+    final fs_err = [for (k in -(halfN - 1)...halfN) fs_fft[k] - fs_dft[k]];
     final max_fs_err = fs_err.map(z -> z.magnitude).max();
     if (max_fs_err > 1e-6) haxe.Log.trace('FT Error: ${max_fs_err}', null);
     // else for (k => s in fs_fft) haxe.Log.trace('${k * Fs / N};${s.scale(1 / Fs).magnitude}', null);
 
     // find spectral peaks to detect signal frequencies
-    final freqis = fs_fft.array.map(z -> z.magnitude)
-      .findPeaks()
-      .map(k -> (k - (halfN - 1)) * Fs / N)
-      .filter(f -> f >= 0);
+    final freqis = fs_fft.array.map(z -> z.magnitude).findPeaks().map(k -> (k - (halfN - 1)) * Fs / N).filter(f -> f >= 0);
     if (freqis.length != freqs.length)
     {
       trace('Found frequencies: ${freqis}');
     }
     else
     {
-      final freqs_err = [
-        for (i in 0...freqs.length) freqis[i] - freqs[i]
-      ];
+      final freqs_err = [for (i in 0...freqs.length) freqis[i] - freqs[i]];
       final max_freqs_err = freqs_err.map(Math.abs).max();
       if (max_freqs_err > Fs / N) trace('Frequency Errors: ${freqs_err}');
     }
 
     // recover time signal from the frequency domain
     final ts_ifft = ifft(fs_fft.array.circShift(-(halfN - 1)).map(z -> z.scale(1 / Fs)));
-    final ts_err = [
-      for (n in 0...N) ts_ifft[n].scale(Fs).real - ts[n]
-    ];
+    final ts_err = [for (n in 0...N) ts_ifft[n].scale(Fs).real - ts[n]];
     final max_ts_err = ts_err.map(Math.abs).max();
     if (max_ts_err > 1e-6) haxe.Log.trace('IFT Error: ${max_ts_err}', null);
     // else for (n in 0...ts_ifft.length) haxe.Log.trace('${n / Fs};${ts_ifft[n].scale(Fs).real}', null);

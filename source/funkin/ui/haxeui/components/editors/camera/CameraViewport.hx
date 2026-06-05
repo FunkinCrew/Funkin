@@ -23,7 +23,8 @@ private enum PanSource
   ALT_KEY;
 }
 
-@:dox(hide) @:noCompletion
+@:dox(hide)
+@:noCompletion
 private class CameraViewportEvents extends haxe.ui.events.Events
 {
   #if FEATURE_MACOS_GESTURES
@@ -163,10 +164,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
   #if FEATURE_MACOS_GESTURES
   function _hitTest(x:Float, y:Float):Bool
   {
-    return x >= _viewport.screenLeft
-      && x <= _viewport.screenLeft + _viewport.width
-      && y >= _viewport.screenTop
-      && y <= _viewport.screenTop + _viewport.height;
+    return x >= _viewport.screenLeft && x <= _viewport.screenLeft + _viewport.width && y >= _viewport.screenTop && y <= _viewport.screenTop + _viewport.height;
   }
 
   function preGestureStart(g:Gesture):Bool

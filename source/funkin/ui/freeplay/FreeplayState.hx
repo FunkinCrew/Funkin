@@ -387,7 +387,10 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
-    DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
+    DiscordClient.instance.setPresence({
+      state: 'In the Menus',
+      details: null
+    });
     #end
 
     // Block input until the intro finishes.
@@ -409,7 +412,9 @@ class FreeplayState extends MusicBeatSubState
 
       for (songId in level.getSongs())
       {
-        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: currentVariation});
+        var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {
+          variation: currentVariation
+        });
 
         if (song == null)
         {
@@ -537,8 +542,16 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      FlxTween.tween(overhangStuff, {y: -100}, 0.3, {ease: FlxEase.quartOut});
-      FlxTween.tween(blackOverlayBullshitLOLXD, {x: backingImage.x}, 0.7, {ease: FlxEase.quintOut});
+      FlxTween.tween(overhangStuff, {
+        y: -100
+      }, 0.3, {
+        ease: FlxEase.quartOut
+      });
+      FlxTween.tween(blackOverlayBullshitLOLXD, {
+        x: backingImage.x
+      }, 0.7, {
+        ease: FlxEase.quintOut
+      });
     }
 
     var topLeftCornerText:FlxText = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, 'FREEPLAY');
@@ -567,7 +580,11 @@ class FreeplayState extends MusicBeatSubState
     if (!fromCharSelect)
     {
       charSelectHint.y -= 100;
-      FlxTween.tween(charSelectHint, {y: charSelectHint.y + 100}, 0.8, {ease: FlxEase.quartOut});
+      FlxTween.tween(charSelectHint, {
+        y: charSelectHint.y + 100
+      }, 0.8, {
+        ease: FlxEase.quartOut
+      });
     }
 
     exitMovers.set([
@@ -650,13 +667,21 @@ class FreeplayState extends MusicBeatSubState
       switch (str)
       {
         case 'fav':
-          generateSongList({filterType: FAVORITE}, true, false);
+          generateSongList({
+            filterType: FAVORITE
+          }, true, false);
         case 'ALL':
           generateSongList(null, true, false);
         case '#':
-          generateSongList({filterType: REGEXP, filterData: '0-9'}, true, false);
+          generateSongList({
+            filterType: REGEXP,
+            filterData: '0-9'
+          }, true, false);
         default:
-          generateSongList({filterType: REGEXP, filterData: str}, true, false);
+          generateSongList({
+            filterType: REGEXP,
+            filterData: str
+          }, true, false);
       }
 
       // If the current song is still in the list, or if it was random, we'll land on it
@@ -743,11 +768,19 @@ class FreeplayState extends MusicBeatSubState
       {
         if (diff == null) continue;
         FlxTween.cancelTweensOf(diff);
-        FlxTween.tween(diff, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
+        FlxTween.tween(diff, {
+          x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90
+        }, 0.6, {
+          ease: FlxEase.quartOut
+        });
         diff.y = 80;
         diff.visible = diff == currentDifficultySprite;
       }
-      FlxTween.tween(grpDifficulties, {x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90}, 0.6, {ease: FlxEase.quartOut});
+      FlxTween.tween(grpDifficulties, {
+        x: (CUTOUT_WIDTH * DJ_POS_MULTI) + 90
+      }, 0.6, {
+        ease: FlxEase.quartOut
+      });
 
       diffSelLeft.visible = true;
       diffSelRight.visible = true;
@@ -839,7 +872,11 @@ class FreeplayState extends MusicBeatSubState
     #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 0.3, true);
 
-    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5, {ease: FlxEase.expoOut});
+    FlxTween.tween(backButton, {
+      x: FlxG.width - 230
+    }, 0.5, {
+      ease: FlxEase.expoOut
+    });
     #end
 
     if (prepForNewRank)
@@ -1140,10 +1177,18 @@ class FreeplayState extends MusicBeatSubState
     HapticUtil.increasingVibrate(Constants.MIN_VIBRATION_AMPLITUDE, Constants.MAX_VIBRATION_AMPLITUDE, 0.6);
 
     rankCamera.zoom = 1.85;
-    FlxTween.tween(rankCamera, {'zoom': 1.8}, 0.6, {ease: FlxEase.sineIn});
+    FlxTween.tween(rankCamera, {
+      'zoom': 1.8
+    }, 0.6, {
+      ease: FlxEase.sineIn
+    });
 
     funnyCam.zoom = 1.15;
-    FlxTween.tween(funnyCam, {'zoom': 1.1}, 0.6, {ease: FlxEase.sineIn});
+    FlxTween.tween(funnyCam, {
+      'zoom': 1.1
+    }, 0.6, {
+      ease: FlxEase.sineIn
+    });
 
     capsuleToRank.cameras = [rankCamera];
     // capsuleToRank.targetPos.set((FlxG.width / 2) - (capsuleToRank.width / 2),
@@ -1169,13 +1214,19 @@ class FreeplayState extends MusicBeatSubState
       capsuleToRank.ranking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
 
-    FlxTween.tween(capsuleToRank.ranking, {'scale.x': 0.9, 'scale.y': 0.9}, 0.1);
+    FlxTween.tween(capsuleToRank.ranking, {
+      'scale.x': 0.9,
+      'scale.y': 0.9
+    }, 0.1);
 
     if (fromResults != null && fromResults.newRank != null)
     {
       capsuleToRank.blurredRanking.animation.play(fromResults.newRank.getFreeplayRankIconAsset(), true);
     }
-    FlxTween.tween(capsuleToRank.blurredRanking, {'scale.x': 0.9, 'scale.y': 0.9}, 0.1);
+    FlxTween.tween(capsuleToRank.blurredRanking, {
+      'scale.x': 0.9,
+      'scale.y': 0.9
+    }, 0.1);
 
     new FlxTimer().start(0.1, _ ->
     {
@@ -1209,24 +1260,49 @@ class FreeplayState extends MusicBeatSubState
       }
       rankCamera.zoom = 1.3;
 
-      FlxTween.tween(rankCamera, {'zoom': 1.5}, 0.3, {ease: FlxEase.backInOut});
+      FlxTween.tween(rankCamera, {
+        'zoom': 1.5
+      }, 0.3, {
+        ease: FlxEase.backInOut
+      });
 
       capsuleToRank.x -= 10;
       capsuleToRank.y -= 20;
 
-      FlxTween.tween(funnyCam, {'zoom': 1.05}, 0.3, {ease: FlxEase.elasticOut});
+      FlxTween.tween(funnyCam, {
+        'zoom': 1.05
+      }, 0.3, {
+        ease: FlxEase.elasticOut
+      });
 
       capsuleToRank.angle = -3;
-      FlxTween.tween(capsuleToRank, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+      FlxTween.tween(capsuleToRank, {
+        angle: 0
+      }, 0.5, {
+        ease: FlxEase.backOut
+      });
 
       IntervalShake.shake(capsuleToRank, 0.3, 1 / 30, 0.1, 0, FlxEase.quadOut);
     });
 
     new FlxTimer().start(0.4, _ ->
     {
-      FlxTween.tween(funnyCam, {'zoom': 1}, 0.8, {ease: FlxEase.sineIn});
-      FlxTween.tween(rankCamera, {'zoom': 1.2}, 0.8, {ease: FlxEase.backIn});
-      FlxTween.tween(capsuleToRank, {x: originalPos.x - 7, y: originalPos.y - 80}, 0.8 + 0.5, {ease: FlxEase.quartIn});
+      FlxTween.tween(funnyCam, {
+        'zoom': 1
+      }, 0.8, {
+        ease: FlxEase.sineIn
+      });
+      FlxTween.tween(rankCamera, {
+        'zoom': 1.2
+      }, 0.8, {
+        ease: FlxEase.backIn
+      });
+      FlxTween.tween(capsuleToRank, {
+        x: originalPos.x - 7,
+        y: originalPos.y - 80
+      }, 0.8 + 0.5, {
+        ease: FlxEase.quartIn
+      });
     });
 
     new FlxTimer().start(0.6, _ ->
@@ -1238,7 +1314,11 @@ class FreeplayState extends MusicBeatSubState
   function rankAnimSlam(fromResultsParams:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
   {
     // FlxTween.tween(rankCamera, {"zoom": 1.9}, 0.5, {ease: FlxEase.backOut});
-    FlxTween.tween(rankBg, {alpha: 0}, 0.5, {ease: FlxEase.expoIn});
+    FlxTween.tween(rankBg, {
+      alpha: 0
+    }, 0.5, {
+      ease: FlxEase.expoIn
+    });
 
     // FlxTween.tween(capsuleToRank, {angle: 5}, 0.5, {ease: FlxEase.backIn});
 
@@ -1260,7 +1340,12 @@ class FreeplayState extends MusicBeatSubState
         FunkinSound.playOnce(Paths.sound('ui/freeplay/ranks/slam/loss'));
     }
 
-    FlxTween.tween(capsuleToRank.targetPos, {x: originalPos.x, y: originalPos.y}, 0.5, {ease: FlxEase.expoOut});
+    FlxTween.tween(capsuleToRank.targetPos, {
+      x: originalPos.x,
+      y: originalPos.y
+    }, 0.5, {
+      ease: FlxEase.expoOut
+    });
     new FlxTimer().start(0.5, _ ->
     {
       // Capsule slam vibration.
@@ -1272,8 +1357,16 @@ class FreeplayState extends MusicBeatSubState
 
       rankCamera.zoom = 0.8;
       funnyCam.zoom = 0.8;
-      FlxTween.tween(rankCamera, {'zoom': 1}, 1, {ease: FlxEase.elasticOut});
-      FlxTween.tween(funnyCam, {'zoom': 1}, 0.8, {ease: FlxEase.elasticOut});
+      FlxTween.tween(rankCamera, {
+        'zoom': 1
+      }, 1, {
+        ease: FlxEase.elasticOut
+      });
+      FlxTween.tween(funnyCam, {
+        'zoom': 1
+      }, 0.8, {
+        ease: FlxEase.elasticOut
+      });
 
       for (index => capsule in grpCapsules.members)
       {
@@ -1289,7 +1382,11 @@ class FreeplayState extends MusicBeatSubState
 
             rankVignette.color = capsule.getTrailColor();
             rankVignette.alpha = 1;
-            FlxTween.tween(rankVignette, {alpha: 0}, 0.6, {ease: FlxEase.expoOut});
+            FlxTween.tween(rankVignette, {
+              alpha: 0
+            }, 0.6, {
+              ease: FlxEase.expoOut
+            });
 
             capsule.doLerp = false;
             capsule.setPosition(originalPos.x, originalPos.y);
@@ -1311,7 +1408,11 @@ class FreeplayState extends MusicBeatSubState
             //       capsule.cameras = [funnyCam];
             //     }
             //   });
-            FlxTween.tween(capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+            FlxTween.tween(capsule, {
+              angle: 0
+            }, 0.5, {
+              ease: FlxEase.backOut
+            });
           }
           if (index > curSelected)
           {
@@ -1321,7 +1422,11 @@ class FreeplayState extends MusicBeatSubState
               capsule.doLerp = false;
 
               capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
-              FlxTween.tween(capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+              FlxTween.tween(capsule, {
+                angle: 0
+              }, 0.5, {
+                ease: FlxEase.backOut
+              });
 
               IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_)
               {
@@ -1338,7 +1443,11 @@ class FreeplayState extends MusicBeatSubState
               capsule.doLerp = false;
 
               capsule.angle = FlxG.random.float(-10 + (distFromSelected * 2), 10 - (distFromSelected * 2));
-              FlxTween.tween(capsule, {angle: 0}, 0.5, {ease: FlxEase.backOut});
+              FlxTween.tween(capsule, {
+                angle: 0
+              }, 0.5, {
+                ease: FlxEase.backOut
+              });
 
               IntervalShake.shake(capsule, 0.6, 1 / 24, 0.12 / (distFromSelected + 1), 0, FlxEase.quadOut, function(_)
               {
@@ -1550,11 +1659,17 @@ class FreeplayState extends MusicBeatSubState
 
     #if FEATURE_TOUCH_CONTROLS
     backTransitioning = true;
-    FlxTween.tween(backButton, {alpha: 0}, 0.4, {ease: FlxEase.quadOut});
+    FlxTween.tween(backButton, {
+      alpha: 0
+    }, 0.4, {
+      ease: FlxEase.quadOut
+    });
     #end
 
     funnyCam.filtersEnabled = true;
-    fadeShader.fade(1.0, 0.0, 0.8, {ease: FlxEase.quadIn});
+    fadeShader.fade(1.0, 0.0, 0.8, {
+      ease: FlxEase.quadIn
+    });
     FlxG.sound.music?.fadeOut(0.9, 0);
 
     // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
@@ -1574,7 +1689,11 @@ class FreeplayState extends MusicBeatSubState
         var moveDataY = exitMoversCharSel.get(grpSpr)?.y ?? spr.y;
         var moveDataSpeed = exitMoversCharSel.get(grpSpr)?.speed ?? 0.2;
 
-        FlxTween.tween(spr, {y: moveDataY + spr.y}, moveDataSpeed, {ease: FlxEase.backIn});
+        FlxTween.tween(spr, {
+          y: moveDataY + spr.y
+        }, moveDataSpeed, {
+          ease: FlxEase.backIn
+        });
       }
     }
     backingCard.enterCharSel();
@@ -1597,7 +1716,10 @@ class FreeplayState extends MusicBeatSubState
     add(transitionGradient);
 
     funnyCam.filtersEnabled = true;
-    fadeShader.fade(0.0, 1.0, 0.8, {ease: FlxEase.quadIn, onComplete: (twn) -> funnyCam.filtersEnabled = false});
+    fadeShader.fade(0.0, 1.0, 0.8, {
+      ease: FlxEase.quadIn,
+      onComplete: (twn) -> funnyCam.filtersEnabled = false
+    });
 
     for (grpSpr in exitMoversCharSel.keys())
     {
@@ -1612,7 +1734,9 @@ class FreeplayState extends MusicBeatSubState
 
         spr.y += moveDataY;
 
-        FlxTween.tween(spr, {y: spr.y - moveDataY}, moveDataSpeed * 1.2, {
+        FlxTween.tween(spr, {
+          y: spr.y - moveDataY
+        }, moveDataSpeed * 1.2, {
           ease: FlxEase.expoOut,
           onComplete: (_) ->
           {
@@ -1688,9 +1812,12 @@ class FreeplayState extends MusicBeatSubState
 
     if (uiStateMachine.canInteract())
     {
-      if ((controls.FREEPLAY_CHAR_SELECT && !fromCharSelect #if FEATURE_TOUCH_CONTROLS
-        || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
-        && !FlxG.debugger.visible)
+      if
+        ((
+          controls.FREEPLAY_CHAR_SELECT
+          && !fromCharSelect #if FEATURE_TOUCH_CONTROLS || (TouchUtil.pressAction(djHitbox, funnyCam, false) && !SwipeUtil.swipeAny) #end)
+          && !FlxG.debugger.visible
+        )
       {
         tryOpenCharSelect();
       }
@@ -2322,15 +2449,29 @@ class FreeplayState extends MusicBeatSubState
         var moveDataSpeed = funnyMoveShit.speed ?? 0.2;
         var moveDataWait = funnyMoveShit.wait ?? 0.0;
 
-        FlxTween.tween(spr, {x: moveDataX, y: moveDataY}, moveDataSpeed, {ease: FlxEase.expoIn});
+        FlxTween.tween(spr, {
+          x: moveDataX,
+          y: moveDataY
+        }, moveDataSpeed, {
+          ease: FlxEase.expoIn
+        });
 
         longestTimer = Math.max(longestTimer, moveDataSpeed + moveDataWait);
       }
     }
 
     #if FEATURE_TOUCH_CONTROLS
-    FlxTween.tween(backButton, {x: FlxG.width + 300}, 0.45, {ease: FlxEase.expoIn});
-    FlxTween.tween(backButton, {alpha: 0}, 0.3, {ease: FlxEase.quadOut, startDelay: 0.15});
+    FlxTween.tween(backButton, {
+      x: FlxG.width + 300
+    }, 0.45, {
+      ease: FlxEase.expoIn
+    });
+    FlxTween.tween(backButton, {
+      alpha: 0
+    }, 0.3, {
+      ease: FlxEase.quadOut,
+      startDelay: 0.15
+    });
     #end
 
     for (caps in grpCapsules.members)
@@ -2417,8 +2558,17 @@ class FreeplayState extends MusicBeatSubState
         currentCapsule.doLerp = false;
 
         var movement:Float = (change > 0) ? 15 : -15;
-        FlxTween.tween(currentCapsule, {x: currentCapsule.x - movement}, 0.1, {ease: FlxEase.expoOut});
-        FlxTween.tween(currentCapsule, {x: currentCapsule.x + movement}, 0.1, {ease: FlxEase.expoIn, startDelay: 0.1});
+        FlxTween.tween(currentCapsule, {
+          x: currentCapsule.x - movement
+        }, 0.1, {
+          ease: FlxEase.expoOut
+        });
+        FlxTween.tween(currentCapsule, {
+          x: currentCapsule.x + movement
+        }, 0.1, {
+          ease: FlxEase.expoIn,
+          startDelay: 0.1
+        });
       }
     }
 
@@ -2432,7 +2582,9 @@ class FreeplayState extends MusicBeatSubState
 
       uiStateMachine.transition(Interacting);
 
-      FlxTween.tween(diff, {x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2, {
+      FlxTween.tween(diff, {
+        x: newX + (CUTOUT_WIDTH * DJ_POS_MULTI)
+      }, 0.2, {
         ease: FlxEase.circInOut,
         onComplete: function(_)
         {
@@ -2495,7 +2647,9 @@ class FreeplayState extends MusicBeatSubState
 
     if (daSong != null)
     {
-      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id, {variation: currentVariation});
+      var targetSong:Null<Song> = SongRegistry.instance.fetchEntry(daSong.data.id, {
+        variation: currentVariation
+      });
       if (targetSong == null)
       {
         FlxG.log.warn('WARN: could not find song with id (${daSong.data.id})');
@@ -2535,7 +2689,9 @@ class FreeplayState extends MusicBeatSubState
       diffSprite.x = (change > 0) ? 500 : -320;
       diffSprite.x += (CUTOUT_WIDTH * DJ_POS_MULTI);
 
-      FlxTween.tween(diffSprite, {x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)}, 0.2, {
+      FlxTween.tween(diffSprite, {
+        x: 90 + (CUTOUT_WIDTH * DJ_POS_MULTI)
+      }, 0.2, {
         ease: FlxEase.circInOut,
         onComplete: function(_)
         {
@@ -2715,7 +2871,9 @@ class FreeplayState extends MusicBeatSubState
     var targetDifficultyId:String = currentDifficulty;
     var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {
+      variation: targetVariation
+    });
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2795,7 +2953,9 @@ class FreeplayState extends MusicBeatSubState
 
     var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
-    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {variation: targetVariation});
+    var targetSongNullable:Null<Song> = SongRegistry.instance.fetchEntry(targetSongId, {
+      variation: targetVariation
+    });
     if (targetSongNullable == null)
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
@@ -2861,7 +3021,11 @@ class FreeplayState extends MusicBeatSubState
       if (backButton != null)
       {
         backTransitioning = true;
-        FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+        FlxTween.tween(backButton, {
+          alpha: 0
+        }, 0.2, {
+          ease: FlxEase.quadOut
+        });
       }
       #end
       funnyCam.fade(FlxColor.BLACK, 0.2, false, function()
@@ -3154,9 +3318,15 @@ class FreeplayState extends MusicBeatSubState
         uiStateMachine.transition(Interacting);
 
         selectedCapsule.doLerp = false;
-        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1, {ease: FlxEase.expoOut});
+        FlxTween.tween(selectedCapsule, {
+          y: selectedCapsule.y - 5
+        }, 0.1, {
+          ease: FlxEase.expoOut
+        });
 
-        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1, {
+        FlxTween.tween(selectedCapsule, {
+          y: selectedCapsule.y + 5
+        }, 0.1, {
           ease: FlxEase.expoIn,
           startDelay: 0.1,
           onComplete: function(_)
@@ -3182,8 +3352,14 @@ class FreeplayState extends MusicBeatSubState
 
         uiStateMachine.transition(Interacting);
         selectedCapsule.doLerp = false;
-        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y + 5}, 0.1, {ease: FlxEase.expoOut});
-        FlxTween.tween(selectedCapsule, {y: selectedCapsule.y - 5}, 0.1, {
+        FlxTween.tween(selectedCapsule, {
+          y: selectedCapsule.y + 5
+        }, 0.1, {
+          ease: FlxEase.expoOut
+        });
+        FlxTween.tween(selectedCapsule, {
+          y: selectedCapsule.y - 5
+        }, 0.1, {
           ease: FlxEase.expoIn,
           startDelay: 0.1,
           onComplete: function(_)
@@ -3348,7 +3524,9 @@ class FreeplaySongData
   {
     // This looks jank but the haxe compiler is on crack or something so 2 `privateAccess` lines are needed for some reason
     @:privateAccess
-    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {variation: curVariation});
+    var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {
+      variation: curVariation
+    });
     @:privateAccess
     if (song == null) throw 'Song entry not found for id: $songId with variation: ${curVariation}';
 

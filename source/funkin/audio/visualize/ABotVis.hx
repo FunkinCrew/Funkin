@@ -32,7 +32,9 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     var visCount = pixel ? (BAR_COUNT + 1) : (BAR_COUNT + 1);
     var visScale = pixel ? 6 : 1;
 
-    var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(pixel ? 'gameplay/characters/nene-pixel/abot-pixel/abot-pixel-viz' : 'gameplay/characters/nene/abot-viz');
+    var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(
+      pixel ? 'gameplay/characters/nene-pixel/abot-pixel/abot-pixel-viz' : 'gameplay/characters/nene/abot-viz'
+    );
 
     // these are the differences in X position, from left to right
     var positionX:Array<Float> = pixel ? [
@@ -173,7 +175,10 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
     for (i in 0...BAR_COUNT)
     {
-      result.push({value: 0, peak: 0.0});
+      result.push({
+        value: 0,
+        peak: 0.0
+      });
     }
 
     return result;

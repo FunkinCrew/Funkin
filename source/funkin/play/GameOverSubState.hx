@@ -253,7 +253,11 @@ class GameOverSubState extends MusicBeatSubState
         }
         else
         {
-          boyfriend.playAnimation('firstDeath' + animationSuffix, true, false); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
+          boyfriend.playAnimation(
+            'firstDeath' + animationSuffix,
+            true,
+            false
+          ); // ignoreOther is set to FALSE since you WANT to be able to mash and confirm game over!
           // Play the "blue balled" sound. May play a variant if one has been assigned.
           playBlueBalledSFX();
         }
@@ -268,9 +272,7 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Restart the level when pressing the assigned key.
-    if ((controls.ACCEPT_P #if mobile || (TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput) #end)
-      && blueballed
-      && !mustNotExit)
+    if ((controls.ACCEPT_P #if mobile || (TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput) #end) && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();
@@ -581,7 +583,9 @@ class GameOverSubState extends MusicBeatSubState
     }
     else
     {
-      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(sticker) : (sticker) -> FreeplayState.build(sticker);
+      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(
+        sticker
+      ) : (sticker) -> FreeplayState.build(sticker);
 
       if (PlayStatePlaylist.isStoryMode)
       {
@@ -601,7 +605,10 @@ class GameOverSubState extends MusicBeatSubState
         }
       }
 
-      openSubState(new funkin.ui.transition.stickers.StickerSubState({targetState: targetState, stickerPack: stickerPackId}));
+      openSubState(new funkin.ui.transition.stickers.StickerSubState({
+        targetState: targetState,
+        stickerPack: stickerPackId
+      }));
     }
   }
 

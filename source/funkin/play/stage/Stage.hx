@@ -86,7 +86,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
 
   /**
    * Called by the camera editor to reset the event state.
-   **/
+  **/
   public function onEventReset():Void
   {
   }

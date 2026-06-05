@@ -20,42 +20,54 @@ typedef RegistryCompatPath =
 class RegistryData
 {
   static final REGISTRY_COMPAT_PATHS:Map<String, Array<RegistryCompatPath>> = [
-    'gameplay/dialogue/boxes/' => [
-      {path: 'data/dialogue/boxes/', nestedEntries: false}
-    ],
-    'gameplay/dialogue/conversations/' => [
-      {path: 'data/dialogue/conversations/', nestedEntries: false}
-    ],
-    'gameplay/dialogue/speakers/' => [
-      {path: 'data/dialogue/speakers/', nestedEntries: false}
-    ],
-    'gameplay/playable-characters/' => [
-      {path: 'data/players/', nestedEntries: false}
-    ],
-    'gameplay/characters/' => [
-      {path: 'data/characters/', nestedEntries: false}
-    ],
-    'gameplay/stages/' => [
-      {path: 'data/stages/', nestedEntries: false}
-    ],
-    'gameplay/songs/' => [
-      {path: 'data/songs/', nestedEntries: true}
-    ],
-    'gameplay/notestyles/' => [
-      {path: 'data/notestyles/', nestedEntries: false}
-    ],
-    'ui/freeplay/albums/' => [
-      {path: 'data/ui/freeplay/albums/', nestedEntries: false}
-    ],
-    'ui/freeplay/styles/' => [
-      {path: 'data/ui/freeplay/styles/', nestedEntries: false}
-    ],
-    'ui/loading/stickers/stickerpacks/' => [
-      {path: 'data/stickerpacks/', nestedEntries: false}
-    ],
-    'ui/story-mode/levels/' => [
-      {path: 'data/levels/', nestedEntries: false}
-    ]
+    'gameplay/dialogue/boxes/' => [{
+      path: 'data/dialogue/boxes/',
+      nestedEntries: false
+    }],
+    'gameplay/dialogue/conversations/' => [{
+      path: 'data/dialogue/conversations/',
+      nestedEntries: false
+    }],
+    'gameplay/dialogue/speakers/' => [{
+      path: 'data/dialogue/speakers/',
+      nestedEntries: false
+    }],
+    'gameplay/playable-characters/' => [{
+      path: 'data/players/',
+      nestedEntries: false
+    }],
+    'gameplay/characters/' => [{
+      path: 'data/characters/',
+      nestedEntries: false
+    }],
+    'gameplay/stages/' => [{
+      path: 'data/stages/',
+      nestedEntries: false
+    }],
+    'gameplay/songs/' => [{
+      path: 'data/songs/',
+      nestedEntries: true
+    }],
+    'gameplay/notestyles/' => [{
+      path: 'data/notestyles/',
+      nestedEntries: false
+    }],
+    'ui/freeplay/albums/' => [{
+      path: 'data/ui/freeplay/albums/',
+      nestedEntries: false
+    }],
+    'ui/freeplay/styles/' => [{
+      path: 'data/ui/freeplay/styles/',
+      nestedEntries: false
+    }],
+    'ui/loading/stickers/stickerpacks/' => [{
+      path: 'data/stickerpacks/',
+      nestedEntries: false
+    }],
+    'ui/story-mode/levels/' => [{
+      path: 'data/levels/',
+      nestedEntries: false
+    }]
   ];
   static final REGISTRY_ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
   static final VALIDATE:Bool = false;
@@ -78,7 +90,9 @@ class RegistryData
 
     for (compatDataFilePath in compatDataFilePaths)
     {
-      result.append(funkin.assets.Assets.listDataFilesInPath(compatDataFilePath.path, '$suffix.json', REGISTRY_ASSET_BLACKLIST, compatDataFilePath.nestedEntries));
+      result.append(
+        funkin.assets.Assets.listDataFilesInPath(compatDataFilePath.path, '$suffix.json', REGISTRY_ASSET_BLACKLIST, compatDataFilePath.nestedEntries)
+      );
     }
 
     return result;
@@ -97,7 +111,10 @@ class RegistryData
   {
     var compatDataFilePaths:Array<RegistryCompatPath> = REGISTRY_COMPAT_PATHS.get(dataFilePath) ?? [];
 
-    var entryFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json(nestedEntries ? '$dataFilePath$id/$id$suffix' : '$dataFilePath$id$suffix', VALIDATE);
+    var entryFilePath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.json(
+      nestedEntries ? '$dataFilePath$id/$id$suffix' : '$dataFilePath$id$suffix',
+      VALIDATE
+    );
 
     if (!funkin.assets.Assets.exists(entryFilePath.toString()))
     {

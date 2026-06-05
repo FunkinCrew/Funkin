@@ -11,7 +11,8 @@ import sys.thread.Thread;
 /**
  * Handles integration with the Discord Rich Presence API.
  */
-@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build())
+@:nullSafety
 class DiscordClient
 {
   @:envField

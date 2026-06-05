@@ -27,9 +27,7 @@ class ColorsMenu extends Page<OptionsState.OptionsMenuPageName>
       note.x = (100 * i) + i;
       note.screenCenter(Y);
 
-      var _effectSpr:FlxEffectSprite = new FlxEffectSprite(note, [
-        new FlxOutlineEffect(FlxOutlineMode.FAST, FlxColor.WHITE, 4, 1)
-      ]);
+      var _effectSpr:FlxEffectSprite = new FlxEffectSprite(note, [new FlxOutlineEffect(FlxOutlineMode.FAST, FlxColor.WHITE, 4, 1)]);
       add(_effectSpr);
       _effectSpr.y = 0;
       _effectSpr.x = i * 130;

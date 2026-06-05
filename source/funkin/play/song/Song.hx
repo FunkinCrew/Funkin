@@ -201,9 +201,13 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     @:privateAccess
     var result:Null<Song> = null;
 
-    if (includeScript && SongRegistry.instance.isScriptedEntry(songId, {variation: variation}))
+    if (includeScript && SongRegistry.instance.isScriptedEntry(songId, {
+      variation: variation
+    }))
     {
-      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId, {variation: variation});
+      var songClassName:Null<String> = SongRegistry.instance.getScriptedEntryClassName(songId, {
+        variation: variation
+      });
       @:privateAccess
       if (songClassName != null) result = SongRegistry.instance.createScriptedEntry(songClassName);
     }
@@ -526,10 +530,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     {
       var metadata = _metadata.get(variationId);
       return metadata?.playData?.difficulties ?? [];
-    })
-      .flatten()
-      .filterNull()
-      .distinct();
+    }).flatten().filterNull().distinct();
 
     diffFiltered = diffFiltered.filter(function(diffId:String):Bool
     {
@@ -560,8 +561,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
       var difficulties = listDifficulties(variation, null, showLocked, showHidden);
       for (difficulty in difficulties)
       {
-        var suffixedDifficulty = (variation != Constants.DEFAULT_VARIATION
-          && variation != 'erect') ? '$difficulty-${variation}' : difficulty;
+        var suffixedDifficulty = (variation != Constants.DEFAULT_VARIATION && variation != 'erect') ? '$difficulty-${variation}' : difficulty;
         result.push(suffixedDifficulty);
       }
     }

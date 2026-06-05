@@ -129,7 +129,13 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
           var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroEndFrame() ?? 0 : playableCharData?.getFistPumpLoopEndFrame() ?? 0;
           if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
-            playAnimation(FISTPUMP, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroStartFrame() : playableCharData?.getFistPumpLoopStartFrame());
+            playAnimation(
+              FISTPUMP,
+              true,
+              false,
+              false,
+              (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroStartFrame() : playableCharData?.getFistPumpLoopStartFrame()
+            );
           }
         }
         else if (getCurrentAnimation() == FISTPUMPLOSS)
@@ -137,7 +143,13 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
           var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadEndFrame() ?? 0 : playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
           if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
           {
-            playAnimation(FISTPUMPLOSS, true, false, false, (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadStartFrame() : playableCharData?.getFistPumpLoopBadStartFrame());
+            playAnimation(
+              FISTPUMPLOSS,
+              true,
+              false,
+              false,
+              (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadStartFrame() : playableCharData?.getFistPumpLoopBadStartFrame()
+            );
           }
         }
         else

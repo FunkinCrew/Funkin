@@ -215,7 +215,10 @@ class StoryMenuState extends MusicBeatState
 
     #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence
-    DiscordClient.instance.setPresence({state: 'In the Menus', details: null});
+    DiscordClient.instance.setPresence({
+      state: 'In the Menus',
+      details: null
+    });
     #end
 
     #if mobile
@@ -285,7 +288,10 @@ class StoryMenuState extends MusicBeatState
     difficultySprite.y = leftDifficultyArrow.y - 15;
     var targetY:Float = leftDifficultyArrow.y + 10;
     targetY -= (difficultySprite.height - difficultySprites.get(Constants.DEFAULT_DIFFICULTY).height) / 2;
-    FlxTween.tween(difficultySprite, {y: targetY, alpha: 1}, 0.07);
+    FlxTween.tween(difficultySprite, {
+      y: targetY,
+      alpha: 1
+    }, 0.07);
 
     add(difficultySprite);
   }
@@ -373,26 +379,28 @@ class StoryMenuState extends MusicBeatState
         }
 
         // TODO: Querying UI_RIGHT_P (justPressed) after UI_RIGHT always returns false. Fix it!
-        if (controls.UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS
+        if (controls.UI_RIGHT_P
+          #if FEATURE_TOUCH_CONTROLS
           || (SwipeUtil.swipeRight && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
-          || (TouchUtil.pressAction(rightDifficultyArrow, null, false)) #end)
+          || (TouchUtil.pressAction(rightDifficultyArrow, null, false))
+          #end)
         {
           #if FEATURE_TOUCH_CONTROLS
           @:privateAccess
-          if (TouchUtil.touch != null
-            && !TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          if (TouchUtil.touch != null && !TouchUtil.pressAction(rightDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
           #end
           changeDifficulty(1);
         }
 
-        if (controls.UI_LEFT_P #if FEATURE_TOUCH_CONTROLS
+        if (controls.UI_LEFT_P
+          #if FEATURE_TOUCH_CONTROLS
           || (SwipeUtil.swipeLeft && TouchUtil.touch != null && TouchUtil.touch.deltaViewY < 10 && TouchUtil.touch.deltaViewY > -10)
-          || (TouchUtil.pressAction(leftDifficultyArrow, null, false)) #end)
+          || (TouchUtil.pressAction(leftDifficultyArrow, null, false))
+          #end)
         {
           #if FEATURE_TOUCH_CONTROLS
           @:privateAccess
-          if (TouchUtil.touch != null
-            && !TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
+          if (TouchUtil.touch != null && !TouchUtil.pressAction(leftDifficultyArrow, null, false)) TouchUtil.touch._startY = TouchUtil.touch.viewY;
           #end
           changeDifficulty(-1);
         }
@@ -427,9 +435,7 @@ class StoryMenuState extends MusicBeatState
         for (i in 0...levelTitles.members.length)
         {
           final item = levelTitles.members[i];
-          final selectedItem = levelTitles.members[
-            levelList.indexOf(currentLevelId)
-          ];
+          final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
 
           if (!TouchUtil.pressAction(item, null, false)) continue;
 
@@ -595,7 +601,9 @@ class StoryMenuState extends MusicBeatState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
+    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
+      variation: Constants.DEFAULT_VARIATION
+    });
 
     if (targetSong == null)
     {
@@ -612,7 +620,11 @@ class StoryMenuState extends MusicBeatState
     new FlxTimer().start(1, function(tmr:FlxTimer)
     {
       #if mobile
-      FlxTween.tween(backButton, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      FlxTween.tween(backButton, {
+        alpha: 0
+      }, 0.2, {
+        ease: FlxEase.quadOut
+      });
       #end
 
       FlxTransitionableState.skipNextTransIn = false;
@@ -657,7 +669,9 @@ class StoryMenuState extends MusicBeatState
           // Fade between colors directly, rather than fading one background out and another in.
           // cancels potential tween in progress, and tweens from there
           FlxTween.cancelTweensOf(levelBackground);
-          FlxTween.color(levelBackground, 0.9, levelBackground.color, currentColor, {ease: FlxEase.quartOut});
+          FlxTween.color(levelBackground, 0.9, levelBackground.color, currentColor, {
+            ease: FlxEase.quartOut
+          });
         }
         else
         {
@@ -671,7 +685,9 @@ class StoryMenuState extends MusicBeatState
 
         // Reference the old background and fade it out.
         var oldBackground:FlxSprite = levelBackground;
-        FlxTween.tween(oldBackground, {alpha: 0.0}, 0.6, {
+        FlxTween.tween(oldBackground, {
+          alpha: 0.0
+        }, 0.6, {
           ease: FlxEase.linear,
           onComplete: function(_)
           {
@@ -687,7 +703,9 @@ class StoryMenuState extends MusicBeatState
         levelBackground.zIndex = 100;
         add(levelBackground);
 
-        FlxTween.tween(levelBackground, {alpha: 1.0}, 0.6, {
+        FlxTween.tween(levelBackground, {
+          alpha: 1.0
+        }, 0.6, {
           ease: FlxEase.linear
         });
       }

@@ -186,11 +186,13 @@ class CharacterDataParser
 
     scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool
     {
-      return !(scriptedCharClassNames1.contains(charCls)
+      return !(
+        scriptedCharClassNames1.contains(charCls)
         || scriptedCharClassNames2.contains(charCls)
         || scriptedCharClassNames3.contains(charCls)
         || scriptedCharClassNames4.contains(charCls)
-        || scriptedCharClassNames5.contains(charCls));
+        || scriptedCharClassNames5.contains(charCls)
+      );
     });
 
     if (scriptedCharClassNames.length > 0)

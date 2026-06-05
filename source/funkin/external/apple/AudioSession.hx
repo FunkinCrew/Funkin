@@ -4,7 +4,9 @@ package funkin.external.apple;
 /**
  * A utility class to manage the audio session on apple devices.
  */
-@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml')) @:include('AudioSession.hpp') @:unreflective
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
+@:include('AudioSession.hpp')
+@:unreflective
 extern class AudioSession
 {
   /**

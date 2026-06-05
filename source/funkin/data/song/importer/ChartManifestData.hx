@@ -132,7 +132,9 @@ class ChartManifestData implements ISerializable
    */
   public static function deserialize(contents:String):Null<ChartManifestData>
   {
-    var parser = new json2object.JsonParser<ChartManifestData>({ignoreUnknownVariables: false});
+    var parser = new json2object.JsonParser<ChartManifestData>({
+      ignoreUnknownVariables: false
+    });
     parser.fromJson(contents, 'manifest.json');
 
     if (parser.errors.length > 0)

@@ -147,7 +147,11 @@ class ZoomCameraSongEvent extends SongEvent
         title: 'Easing Direction',
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
-        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+        keys: [
+          'In' => 'In',
+          'Out' => 'Out',
+          'In/Out' => 'InOut'
+        ]
       },
       {
         name: 'advanced',

@@ -260,8 +260,9 @@ class WaveformSprite extends MeshRender
           continue;
         }
 
-        var isAfterClipRect:Bool = (clipRect != null)
-          && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
+        var isAfterClipRect:Bool =
+          (clipRect != null)
+            && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
 
         if (isAfterClipRect)
         {
@@ -287,14 +288,26 @@ class WaveformSprite extends MeshRender
           if (orientation == HORIZONTAL)
           {
             vertexTopIndex = buildClippedVertex(pixelPos, vertexTopY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
-            vertexBottomIndex = buildClippedVertex(pixelPos, vertexBottomY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
-              bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(
+              pixelPos,
+              vertexBottomY,
+              topLeftVertexIndex,
+              topRightVertexIndex,
+              bottomLeftVertexIndex,
+              bottomRightVertexIndex
+            );
           }
           else
           {
             vertexTopIndex = buildClippedVertex(vertexTopY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
-            vertexBottomIndex = buildClippedVertex(vertexBottomY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
-              bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(
+              vertexBottomY,
+              pixelPos,
+              topLeftVertexIndex,
+              topRightVertexIndex,
+              bottomLeftVertexIndex,
+              bottomRightVertexIndex
+            );
           }
         }
         else
@@ -312,10 +325,7 @@ class WaveformSprite extends MeshRender
         }
 
         // Don't render if we don't have a previous different set of vertices to create a quad from.
-        if (prevVertexTopIndex != -1
-          && prevVertexBottomIndex != -1
-          && prevVertexTopIndex != vertexTopIndex
-          && prevVertexBottomIndex != vertexBottomIndex)
+        if (prevVertexTopIndex != -1 && prevVertexBottomIndex != -1 && prevVertexTopIndex != vertexTopIndex && prevVertexBottomIndex != vertexBottomIndex)
         {
           switch (orientation) // the line of code that makes you gay
           {
@@ -344,8 +354,9 @@ class WaveformSprite extends MeshRender
 
         if (isBeforeClipRect) continue;
 
-        var isAfterClipRect:Bool = (clipRect != null)
-          && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
+        var isAfterClipRect:Bool =
+          (clipRect != null)
+            && ((orientation == HORIZONTAL) ? pixelPos > (clipRect.x + clipRect.width) : pixelPos > (clipRect.y + clipRect.height));
 
         if (isAfterClipRect)
         {
@@ -373,14 +384,26 @@ class WaveformSprite extends MeshRender
           if (orientation == HORIZONTAL)
           {
             vertexTopIndex = buildClippedVertex(pixelPos, vertexTopY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
-            vertexBottomIndex = buildClippedVertex(pixelPos, vertexBottomY, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
-              bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(
+              pixelPos,
+              vertexBottomY,
+              topLeftVertexIndex,
+              topRightVertexIndex,
+              bottomLeftVertexIndex,
+              bottomRightVertexIndex
+            );
           }
           else
           {
             vertexTopIndex = buildClippedVertex(vertexTopY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex, bottomRightVertexIndex);
-            vertexBottomIndex = buildClippedVertex(vertexBottomY, pixelPos, topLeftVertexIndex, topRightVertexIndex, bottomLeftVertexIndex,
-              bottomRightVertexIndex);
+            vertexBottomIndex = buildClippedVertex(
+              vertexBottomY,
+              pixelPos,
+              topLeftVertexIndex,
+              topRightVertexIndex,
+              bottomLeftVertexIndex,
+              bottomRightVertexIndex
+            );
           }
         }
         else

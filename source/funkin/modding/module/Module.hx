@@ -23,8 +23,7 @@ typedef ModuleParams =
  * You may have the module active at all times, or only when another script enables it.
  */
 @:nullSafety
-class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass
-    implements ICharacterSelectScriptedClass
+class Module implements IPlayStateScriptedClass implements IStateChangingScriptedClass implements IFreeplayScriptedClass implements ICharacterSelectScriptedClass
 {
   /**
    * Whether the module is currently active.

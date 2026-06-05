@@ -12,7 +12,7 @@
  * @param left Pointer to a double to receive the left safe area inset (in pixels).
  * @param right Pointer to a double to receive the right safe area inset (in pixels).
  */
-void Apple_ScreenUtil_GetSafeAreaInsets(double* top, double* bottom, double* left, double* right);
+void Apple_ScreenUtil_GetSafeAreaInsets(double *top, double *bottom, double *left, double *right);
 
 /**
  * Retrieves the size of the main screen in pixels.
@@ -20,4 +20,4 @@ void Apple_ScreenUtil_GetSafeAreaInsets(double* top, double* bottom, double* lef
  * @param width  Pointer to a double where the screen width (in pixels) will be stored.
  * @param height Pointer to a double where the screen height (in pixels) will be stored.
  */
-void Apple_ScreenUtil_GetScreenSize(double* width, double* height);
+void Apple_ScreenUtil_GetScreenSize(double *width, double *height);

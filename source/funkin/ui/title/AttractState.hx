@@ -165,8 +165,12 @@ class AttractState extends MusicBeatState
     super.update(elapsed);
 
     // If the user presses any button or hold their screen for 1.5 seconds, skip the video.
-    if ((FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) #if FEATURE_TOUCH_CONTROLS
-      || TouchUtil.touch != null && TouchUtil.touch.pressed #end)
+    if ((
+      FlxG.keys.pressed.ANY
+      && !controls.VOLUME_MUTE
+      && !controls.VOLUME_UP
+      && !controls.VOLUME_DOWN
+    ) #if FEATURE_TOUCH_CONTROLS || TouchUtil.touch != null && TouchUtil.touch.pressed #end)
     {
       holdDelta += elapsed;
     }

@@ -388,13 +388,18 @@ class SongMenuItem extends FlxSpriteGroup
     impactThing.alpha = 0;
     impactThing.zIndex = capsule.zIndex - 3;
     add(impactThing);
-    FlxTween.tween(impactThing.scale, {x: 2.5, y: 2.5}, 0.5);
+    FlxTween.tween(impactThing.scale, {
+      x: 2.5,
+      y: 2.5
+    }, 0.5);
     // FlxTween.tween(impactThing, {alpha: 0}, 0.5);
 
     evilTrail = new FlxTrail(impactThing, null, 15, 0.03, 0.01, 0.069);
     evilTrail.blend = BlendMode.ADD;
     evilTrail.zIndex = capsule.zIndex - 5;
-    FlxTween.tween(evilTrail, {alpha: 0}, 0.6, {
+    FlxTween.tween(evilTrail, {
+      alpha: 0
+    }, 0.6, {
       ease: FlxEase.quadOut,
       onComplete: function(_)
       {
@@ -657,9 +662,7 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        targetPos.x = FlxG.width * xPosLerpLol[
-          Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))
-        ];
+        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
@@ -686,9 +689,7 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        this.x = FlxG.width * xPosOutLerpLol[
-          Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))
-        ];
+        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;

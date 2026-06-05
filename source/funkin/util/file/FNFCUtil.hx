@@ -360,8 +360,7 @@ class FNFCUtil
     return instBytes;
   }
 
-  static function loadVocalBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData,
-      metadata:SongMetadata):Map<String, Bytes>
+  static function loadVocalBytesFromFNFCZipEntries(mappedFileEntries:Map<String, haxe.zip.Entry>, manifest:ChartManifestData, metadata:SongMetadata):Map<String, Bytes>
   {
     var vocals:Map<String, Bytes> = [];
 
@@ -370,12 +369,8 @@ class FNFCUtil
     // Get the player vocal list and opponent vocal list
     // If either are null, default to the player and opponent characters
     // If either are empty, don't load vocals for them
-    var playerVoiceList:Array<String> = metadata.playData.characters.playerVocals ?? [
-      metadata.playData.characters.player ?? Constants.DEFAULT_CHARACTER
-    ];
-    var opponentVoiceList:Array<String> = metadata.playData.characters.opponentVocals ?? [
-      metadata.playData.characters.opponent ?? 'dad'
-    ];
+    var playerVoiceList:Array<String> = metadata.playData.characters.playerVocals ?? [metadata.playData.characters.player ?? Constants.DEFAULT_CHARACTER];
+    var opponentVoiceList:Array<String> = metadata.playData.characters.opponentVocals ?? [metadata.playData.characters.opponent ?? 'dad'];
     var voicesList:Array<String> = playerVoiceList.concat(opponentVoiceList);
 
     for (voiceId in voicesList)
@@ -401,12 +396,8 @@ class FNFCUtil
     // Get the player vocal list and opponent vocal list
     // If either are null, default to the player and opponent characters
     // If either are empty, don't load vocals for them
-    var playerVoiceList:Array<String> = metadata.playData.characters.playerVocals ?? [
-      metadata.playData.characters.player ?? Constants.DEFAULT_CHARACTER
-    ];
-    var opponentVoiceList:Array<String> = metadata.playData.characters.opponentVocals ?? [
-      metadata.playData.characters.opponent ?? 'dad'
-    ];
+    var playerVoiceList:Array<String> = metadata.playData.characters.playerVocals ?? [metadata.playData.characters.player ?? Constants.DEFAULT_CHARACTER];
+    var opponentVoiceList:Array<String> = metadata.playData.characters.opponentVocals ?? [metadata.playData.characters.opponent ?? 'dad'];
     var voicesList:Array<String> = playerVoiceList.concat(opponentVoiceList);
 
     for (voiceId in voicesList)

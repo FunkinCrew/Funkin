@@ -750,7 +750,10 @@ class SongChartEditorData implements ICloneable<SongChartEditorData>
   {
     var result = new SongChartEditorData();
 
-    result.eventLayers.push({name: 'Layer 1', color: '#FF0000'});
+    result.eventLayers.push({
+      name: 'Layer 1',
+      color: '#FF0000'
+    });
 
     return result;
   }
@@ -1433,7 +1436,11 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 
   public function toString():String
   {
-    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}' + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+    return
+      'SongNoteData(${this.time}ms, '
+      + (this.length > 0 ? '[${this.length}ms hold]' : '')
+      + ' ${this.data}'
+      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 
   /**
@@ -1587,7 +1594,11 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
    */
   public function toString():String
   {
-    return 'SongNoteData(${this.time}ms, ' + (this.length > 0 ? '[${this.length}ms hold]' : '') + ' ${this.data}' + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
+    return
+      'SongNoteData(${this.time}ms, '
+      + (this.length > 0 ? '[${this.length}ms hold]' : '')
+      + ' ${this.data}'
+      + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 }
 

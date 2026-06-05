@@ -228,7 +228,9 @@ class Countdown
     if (noteStyle.isCountdownSpritePixel(index)) fadeEase = EaseUtil.stepped(8);
 
     // Fade sprite in, then out, then destroy it.
-    FlxTween.tween(countdownSprite, {alpha: 0}, Conductor.instance.beatLengthMs / Constants.MS_PER_SEC, {
+    FlxTween.tween(countdownSprite, {
+      alpha: 0
+    }, Conductor.instance.beatLengthMs / Constants.MS_PER_SEC, {
       ease: fadeEase,
       onComplete: function(twn:FlxTween)
       {

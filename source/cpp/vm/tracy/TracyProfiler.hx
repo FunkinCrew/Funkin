@@ -110,8 +110,13 @@ class Cppia_TracyProfiler
   public static function plot(_name:String, _val:Float) Native_TracyProfiler.plot(_name, _val);
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.plotConfig)
-  public static function plotConfig(_name:String, _format:PlotFormatType, ?_step:Bool = false, ?_fill:Bool = false,
-      ?_color:Int = 0x000000) Native_TracyProfiler.plotConfig(_name, _format, _step, _fill, _color);
+  public static function plotConfig(_name:String, _format:PlotFormatType, ?_step:Bool = false, ?_fill:Bool = false, ?_color:Int = 0x000000) Native_TracyProfiler.plotConfig(
+    _name,
+    _format,
+    _step,
+    _fill,
+    _color
+  );
 
   @:inheritDoc(cpp.vm.tracy.Native_TracyProfiler.setThreadName)
   public static function setThreadName(_name:String, ?_groupHint:Int = 1) Native_TracyProfiler.setThreadName(_name, _groupHint);

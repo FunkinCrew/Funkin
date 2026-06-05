@@ -38,7 +38,15 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
  *   - COLOR
  *   - LUMINOSITY
  */
-@:nullSafety @:access(openfl.display.DisplayObject) @:access(openfl.display.BitmapData) @:access(openfl.display3D.Context3D) @:access(openfl.display3D.textures.TextureBase) @:access(flixel.graphics.FlxGraphic) @:access(flixel.graphics.frames.FlxFrame) @:access(openfl.display.OpenGLRenderer) @:access(openfl.geom.ColorTransform)
+@:nullSafety
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.BitmapData)
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.textures.TextureBase)
+@:access(flixel.graphics.FlxGraphic)
+@:access(flixel.graphics.frames.FlxFrame)
+@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.geom.ColorTransform)
 class FunkinCamera extends FlxCamera
 {
   /**
@@ -143,8 +151,7 @@ class FunkinCamera extends FlxCamera
     crossCameraBlending = false;
   }
 
-  override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false,
-      ?shader:FlxShader):Void
+  override function drawPixels(?frame:FlxFrame, ?pixels:BitmapData, matrix:FlxMatrix, ?transform:ColorTransform, ?blend:BlendMode, ?smoothing:Bool = false, ?shader:FlxShader):Void
   {
     var shouldUseShader:Bool = (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend);
 
@@ -235,8 +242,7 @@ class FunkinCamera extends FlxCamera
     }
   }
 
-  override function startQuadBatch(graphic:FlxGraphic, colored:Bool, hasColorOffsets:Bool = false, ?blend:BlendMode, smooth:Bool = false,
-      ?shader:FlxShader):FlxDrawQuadsItem
+  override function startQuadBatch(graphic:FlxGraphic, colored:Bool, hasColorOffsets:Bool = false, ?blend:BlendMode, smooth:Bool = false, ?shader:FlxShader):FlxDrawQuadsItem
   {
     // Can't batch complex non-coherent blends, so always force a new batch
     if (hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
@@ -319,13 +325,14 @@ class FunkinCamera extends FlxCamera
     }
   }
 
-  override function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool,
-      ?shader:FlxShader):FlxDrawTrianglesItem
+  override function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool, ?shader:FlxShader):FlxDrawTrianglesItem
   {
     // Can't batch complex non-coherent blends, so always force a new batch
-    if (hasKhronosExtension
+    if (
+      hasKhronosExtension
       && !(OpenGLRenderer.__coherentBlendsSupported ?? false)
-      && KHR_BLEND_MODES.contains(blend)) return getNewDrawTrianglesItem(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
+      && KHR_BLEND_MODES.contains(blend)
+    ) return getNewDrawTrianglesItem(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
 
     return super.startTrianglesBatch(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
   }

@@ -141,7 +141,9 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       if (pointer.touchId != -2)
       {
         pointer.alpha = 0.8;
-        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9), {
+        FlxTween.tween(pointer, {
+          alpha: 0
+        }, FlxG.random.float(0.8, 0.9), {
           ease: FlxEase.cubeIn,
           onComplete: function(_)
           {
@@ -212,7 +214,9 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       }
 
       pointer.alpha = 0.8;
-      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1), {
+      FlxTween.tween(pointer, {
+        alpha: 0
+      }, FlxG.random.float(0.8, 1), {
         ease: FlxEase.quadIn,
         onComplete: function(_)
         {

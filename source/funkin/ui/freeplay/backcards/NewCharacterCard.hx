@@ -94,22 +94,56 @@ class NewCharacterCard extends BackingCard
     lightLayer3.visible = true;
 
     cardGlow.visible = true;
-    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.45, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {
+      alpha: 0,
+      'scale.x': 1.2,
+      'scale.y': 1.2
+    }, 0.45, {
+      ease: FlxEase.sineOut
+    });
   }
 
   override public function enterCharSel():Void
   {
-    FlxTween.tween(friendFoe, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
-    FlxTween.tween(newUnlock1, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
-    FlxTween.tween(waiting, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
-    FlxTween.tween(newUnlock2, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
-    FlxTween.tween(friendFoe2, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
-    FlxTween.tween(newUnlock3, {speed: 0}, 0.8, {ease: FlxEase.sineIn});
+    FlxTween.tween(friendFoe, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
+    FlxTween.tween(newUnlock1, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
+    FlxTween.tween(waiting, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
+    FlxTween.tween(newUnlock2, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
+    FlxTween.tween(friendFoe2, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
+    FlxTween.tween(newUnlock3, {
+      speed: 0
+    }, 0.8, {
+      ease: FlxEase.sineIn
+    });
   }
 
   override public function onCreate(event:ScriptEvent):Void
   {
-    FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
+    FlxTween.tween(pinkBack, {
+      x: 0
+    }, 0.6, {
+      ease: FlxEase.quartOut
+    });
     add(pinkBack);
 
     confirmTextGlow.blend = BlendMode.ADD;
@@ -127,7 +161,10 @@ class NewCharacterCard extends BackingCard
     friendFoe2 = new BGScrollingText(0, 402, 'COULD IT BE A NEW FRIEND? OR FOE??', FlxG.width, true, 43);
     newUnlock3 = new BGScrollingText(0, 458, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back')),
+      FreeplayState.CUTOUT_WIDTH
+    );
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
     add(darkBg);
 
@@ -154,14 +191,18 @@ class NewCharacterCard extends BackingCard
     newUnlock3.color = 0xFF99BDF2;
     newUnlock3.speed = 2;
     add(newUnlock3);
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar')),
-      FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar')),
+      FreeplayState.CUTOUT_WIDTH
+    );
     multiplyBar = new FlxSprite(-10, 440).loadGraphic(bitmap);
     multiplyBar.blend = BlendMode.MULTIPLY;
     add(multiplyBar);
 
-    lightLayer = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
-      230).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
+    lightLayer = new FlxSprite(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
+      230
+    ).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
     lightLayer.blend = BlendMode.ADD;
     add(lightLayer);
     var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/red')), FreeplayState.CUTOUT_WIDTH);
@@ -173,18 +214,25 @@ class NewCharacterCard extends BackingCard
     multiply2.blend = BlendMode.MULTIPLY;
     add(multiply2);
 
-    lightLayer2 = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
-      230).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
+    lightLayer2 = new FlxSprite(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
+      230
+    ).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
     lightLayer2.blend = BlendMode.ADD;
     add(lightLayer2);
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg')),
+      FreeplayState.CUTOUT_WIDTH
+    );
     yellow = new FlxSprite(0, 0).loadGraphic(bitmap);
     yellow.blend = BlendMode.MULTIPLY;
     add(yellow);
 
-    lightLayer3 = new FlxSprite((FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
-      290).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/red'));
+    lightLayer3 = new FlxSprite(
+      (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -360,
+      290
+    ).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/red'));
     lightLayer3.blend = BlendMode.ADD;
     add(lightLayer3);
 
@@ -234,7 +282,9 @@ class NewCharacterCard extends BackingCard
 
   override public function disappear():Void
   {
-    FlxTween.color(pinkBack, 0.25, 0xFF05020E, 0xFFFFD0D5, {ease: FlxEase.quadOut});
+    FlxTween.color(pinkBack, 0.25, 0xFF05020E, 0xFFFFD0D5, {
+      ease: FlxEase.quadOut
+    });
 
     darkBg.visible = false;
     friendFoe.visible = false;
@@ -254,6 +304,12 @@ class NewCharacterCard extends BackingCard
     cardGlow.visible = true;
     cardGlow.alpha = 1;
     cardGlow.scale.set(1, 1);
-    FlxTween.tween(cardGlow, {alpha: 0, 'scale.x': 1.2, 'scale.y': 1.2}, 0.25, {ease: FlxEase.sineOut});
+    FlxTween.tween(cardGlow, {
+      alpha: 0,
+      'scale.x': 1.2,
+      'scale.y': 1.2
+    }, 0.25, {
+      ease: FlxEase.sineOut
+    });
   }
 }

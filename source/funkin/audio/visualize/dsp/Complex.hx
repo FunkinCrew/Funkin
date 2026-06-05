@@ -3,13 +3,20 @@ package funkin.audio.visualize.dsp;
 /**
  * Complex number representation.
  */
-@:forward(real, imag) @:notNull @:pure @:nullSafety
-abstract Complex({
-  final real:Float;
-  final imag:Float;
-})
+@:forward(real, imag)
+@:notNull
+@:pure
+@:nullSafety
+abstract Complex(
+  {
+    final real:Float;
+    final imag:Float;
+  })
 {
-  public inline function new(real:Float, imag:Float) this = {real: real, imag: imag};
+  public inline function new(real:Float, imag:Float) this = {
+    real: real,
+    imag: imag
+  };
 
   /**
    * Makes a Complex number with the given Float as its real part and a zero imag part.
@@ -38,7 +45,10 @@ abstract Complex({
   public inline function sub(rhs:Complex):Complex return new Complex(this.real - rhs.real, this.imag - rhs.imag);
 
   @:op(A * B)
-  public inline function mult(rhs:Complex):Complex return new Complex(this.real * rhs.real - this.imag * rhs.imag, this.real * rhs.imag + this.imag * rhs.real);
+  public inline function mult(rhs:Complex):Complex return new Complex(
+    this.real * rhs.real - this.imag * rhs.imag,
+    this.real * rhs.imag + this.imag * rhs.real
+  );
 
   /**
    * Returns the complex conjugate, does not modify this object.

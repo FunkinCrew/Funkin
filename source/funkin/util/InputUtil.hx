@@ -270,7 +270,8 @@ class InputUtil
  * Represents a list of controller names, determined based on driver data.
  * Used for displaying names and button prompts in the UI.
  */
-@:nullSafety @:forward
+@:nullSafety
+@:forward
 enum abstract ControllerName(String) from String to String
 {
   /**

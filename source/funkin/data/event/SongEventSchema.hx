@@ -1,6 +1,7 @@
 package funkin.data.event;
 
-@:nullSafety @:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
+@:nullSafety
+@:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
   /**

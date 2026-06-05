@@ -374,7 +374,9 @@ class VideoCutscene
 
     PlayState.instance.camHUD.visible = true;
 
-    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime, {
+    FlxTween.tween(blackScreen, {
+      alpha: 0
+    }, transitionTime, {
       ease: FlxEase.quadInOut,
       onComplete: (twn:FlxTween) ->
       {
@@ -382,7 +384,9 @@ class VideoCutscene
         blackScreen = null;
       }
     });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime, {
+    FlxTween.tween(FlxG.camera, {
+      zoom: PlayState.instance.stageZoom
+    }, transitionTime, {
       ease: FlxEase.quadInOut,
       onComplete: (twn:FlxTween) ->
       {

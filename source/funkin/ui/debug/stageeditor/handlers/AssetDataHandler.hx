@@ -134,8 +134,16 @@ class AssetDataHandler
 
     for (anim in data.animations)
     {
-      object.addAnim(anim.name, anim.prefix, anim.offsets ?? [0, 0], anim.frameIndices ?? [], anim.frameRate ?? 24, anim.looped ?? false, anim.flipX ?? false,
-        anim.flipY ?? false);
+      object.addAnim(
+        anim.name,
+        anim.prefix,
+        anim.offsets ?? [0, 0],
+        anim.frameIndices ?? [],
+        anim.frameRate ?? 24,
+        anim.looped ?? false,
+        anim.flipX ?? false,
+        anim.flipY ?? false
+      );
     }
 
     if (object.animation.getNameList().contains(data.startingAnimation)) object.startingAnimation = data.startingAnimation;

@@ -6,7 +6,7 @@
  * @param event The name of the event as a null-terminated string.
  * @param value The value associated with the event as a null-terminated string.
  */
-typedef void (*FNFCCallback)(const char* event, const char* value);
+typedef void (*FNFCCallback)(const char *event, const char *value);
 
 /**
  * Copies the FNFC resource from the specified URL into the cache.
