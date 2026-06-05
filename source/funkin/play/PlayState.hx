@@ -1286,10 +1286,10 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-        #end
           persistentDraw = false;
-        #if FEATURE_DEBUG_FUNCTIONS
         }
+        #else
+        persistentDraw = false;
         #end
 
         isPlayerDying = true;
@@ -1301,7 +1301,7 @@ class PlayState extends MusicBeatSubState
         var deathPreTransitionDelay = currentStage?.getBoyfriend()?.getDeathPreTransitionDelay() ?? 0.0;
         if (deathPreTransitionDelay > 0)
         {
-          new FlxTimer().start(deathPreTransitionDelay, function(_)
+          new FlxTimer().start(deathPreTransitionDelay, (_) ->
           {
             moveToGameOver();
           });
@@ -1350,10 +1350,10 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Pause the game.
-     * @param mode Which set of pause menu options to display (distinguishes between standard, charting, and cutscene)
-     * @param lostFocus Whether the game paused because the window lost focus
-     */
+   * Pause the game.
+   * @param mode Which set of pause menu options to display (distinguishes between standard, charting, and cutscene)
+   * @param lostFocus Whether the game paused because the window lost focus
+   */
   function pause(mode:PauseMode = Standard, lostFocus:Bool = false):Void
   {
     if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying || isSongEnd) return;
@@ -1547,9 +1547,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Function called before opening a new substate.
-     * @param subState The substate to open.
-     */
+   * Function called before opening a new substate.
+   * @param subState The substate to open.
+   */
   override public function openSubState(subState:FlxSubState):Void
   {
     if (shouldSubstatePause)
@@ -1628,9 +1628,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Function called before closing the current substate.
-     * @param subState
-     */
+   * Function called before closing the current substate.
+   * @param subState
+   */
   override public function closeSubState():Void
   {
     if (shouldSubstatePause)
@@ -1741,8 +1741,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Function called when the game window gains focus.
-     */
+   * Function called when the game window gains focus.
+   */
   override public function onFocus():Void
   {
     if (VideoCutscene.isPlaying() #if !mobile && Preferences.autoPause #end && isGamePaused) VideoCutscene.pauseVideo();
@@ -1782,8 +1782,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Function called when the game window loses focus.
-     */
+   * Function called when the game window loses focus.
+   */
   override public function onFocusLost():Void
   {
     #if html5
@@ -1823,8 +1823,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Call this by pressing F5 on a debug build.
-     */
+   * Call this by pressing F5 on a debug build.
+   */
   override function reloadAssets():Void
   {
     performCleanup();
@@ -1971,8 +1971,8 @@ class PlayState extends MusicBeatSubState
   };
 
   /**
-     * Initializes the game and HUD cameras.
-     */
+   * Initializes the game and HUD cameras.
+   */
   function initCameras():Void
   {
     camGame.bgColor = BACKGROUND_COLOR; // Show a pink background behind the stage.
@@ -2003,8 +2003,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Initializes the health bar on the HUD.
-     */
+   * Initializes the health bar on the HUD.
+   */
   function initHealthBar():Void
   {
     final isDownscroll:Bool = #if mobile (
@@ -2063,8 +2063,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Generates the stage and all its props.
-     */
+   * Generates the stage and all its props.
+   */
   function initStage():Void
   {
     loadStage(currentStageId);
@@ -2084,10 +2084,10 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Loads stage data from cache, assembles the props,
-     * and adds it to the state.
-     * @param id
-     */
+   * Loads stage data from cache, assembles the props,
+   * and adds it to the state.
+   * @param id
+   */
   function loadStage(id:String):Void
   {
     currentStage = StageRegistry.instance.fetchEntry(id);
@@ -2128,8 +2128,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Generates the character sprites and adds them to the stage.
-     */
+   * Generates the character sprites and adds them to the stage.
+   */
   function initCharacters():Void
   {
     if (currentSong == null || currentChart == null)
@@ -2258,8 +2258,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Constructs the strumlines for each player.
-     */
+   * Constructs the strumlines for each player.
+   */
   function initStrumlines():Void
   {
     playerStrumline.onNoteIncoming.add(onStrumlineNoteIncoming);
@@ -2306,8 +2306,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Configures the position of strumline for the default control scheme
-     */
+   * Configures the position of strumline for the default control scheme
+   */
   #if mobile
   function initNoteHitbox()
   {
@@ -2415,8 +2415,8 @@ class PlayState extends MusicBeatSubState
   #end
 
   /**
-     * Configures the judgement and combo popups.
-     */
+   * Configures the judgement and combo popups.
+   */
   function initPopups():Void
   {
     // Initialize the judgements and combo meter.
@@ -2426,8 +2426,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Initializes the Discord Rich Presence.
-     */
+   * Initializes the Discord Rich Presence.
+   */
   function initDiscord():Void
   {
     #if FEATURE_DISCORD_RPC
@@ -2508,9 +2508,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Initializes the song (applying the chart, generating the notes, etc.)
-     * Should be done before the countdown starts.
-     */
+   * Initializes the song (applying the chart, generating the notes, etc.)
+   * Should be done before the countdown starts.
+   */
   function generateSong():Void
   {
     if (currentChart == null)
@@ -2541,8 +2541,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Read note data from the chart and generate the notes.
-     */
+   * Read note data from the chart and generate the notes.
+   */
   function regenNoteData(startTime:Float = 0):Void
   {
     if (currentChart == null)
@@ -2614,10 +2614,10 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Prepares to start the countdown.
-     * Ends any running cutscenes, creates the strumlines, and starts the countdown.
-     * This is public so that scripts can call it.
-     */
+   * Prepares to start the countdown.
+   * Ends any running cutscenes, creates the strumlines, and starts the countdown.
+   * This is public so that scripts can call it.
+   */
   public function startCountdown():Void
   {
     // If Countdown.performCountdown returns false, then the countdown was canceled by a script.
@@ -2631,9 +2631,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Displays a dialogue cutscene with the given ID.
-     * This is used by song scripts to display dialogue.
-     */
+   * Displays a dialogue cutscene with the given ID.
+   * This is used by song scripts to display dialogue.
+   */
   public function startConversation(conversationId:String):Void
   {
     isInCutscene = true;
@@ -2653,8 +2653,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handler function called when a conversation ends.
-     */
+   * Handler function called when a conversation ends.
+   */
   function onConversationComplete():Void
   {
     isInCutscene = false;
@@ -2673,8 +2673,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Starts playing the song after the countdown has completed.
-     */
+   * Starts playing the song after the countdown has completed.
+   */
   function startSong():Void
   {
     startingSong = false;
@@ -2763,8 +2763,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resynchronize the vocal tracks if they have become offset from the instrumental.
-     */
+   * Resynchronize the vocal tracks if they have become offset from the instrumental.
+   */
   function resyncVocals():Void
   {
     if (vocals == null) return;
@@ -2789,8 +2789,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Updates the position and contents of the score display.
-     */
+   * Updates the position and contents of the score display.
+   */
   function updateScoreText():Void
   {
     // TODO: Add functionality for modules to update the score text.
@@ -2807,8 +2807,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Updates the values of the health bar.
-     */
+   * Updates the values of the health bar.
+   */
   function updateHealthBar():Void
   {
     if (isBotPlayMode)
@@ -2822,8 +2822,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Callback executed when one of the note keys is pressed.
-     */
+   * Callback executed when one of the note keys is pressed.
+   */
   function onKeyPress(event:PreciseInputEvent):Void
   {
     if (isGamePaused) return;
@@ -2833,8 +2833,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Callback executed when one of the note keys is released.
-     */
+   * Callback executed when one of the note keys is released.
+   */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
     // Do the minimal possible work here.
@@ -2842,8 +2842,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handles opponent note hits and player note misses.
-     */
+   * Handles opponent note hits and player note misses.
+   */
   function processNotes(elapsed:Float):Void
   {
     if (playerStrumline.notes?.members == null || opponentStrumline.notes?.members == null) return;
@@ -3063,9 +3063,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * PreciseInputEvents are put into a queue between update() calls,
-     * and then processed here.
-     */
+   * PreciseInputEvents are put into a queue between update() calls,
+   * and then processed here.
+   */
   function processInputQueue():Void
   {
     if (inputPressQueue.length + inputReleaseQueue.length == 0) return;
@@ -3221,9 +3221,9 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Called when a note leaves the screen and is considered missed by the player.
-     * @param note
-     */
+   * Called when a note leaves the screen and is considered missed by the player.
+   * @param note
+   */
   function onNoteMiss(note:NoteSprite, playSound:Bool = false, healthChange:Float):Void
   {
     // If we are here, we already CALLED the onNoteMiss script hook!
@@ -3251,13 +3251,13 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Called when a player presses a key with no note present.
-     * Scripts can modify the amount of health/score lost, whether player animations or sounds are used,
-     * or even cancel the event entirely.
-     *
-     * @param direction
-     * @param hasPossibleNotes
-     */
+   * Called when a player presses a key with no note present.
+   * Scripts can modify the amount of health/score lost, whether player animations or sounds are used,
+   * or even cancel the event entirely.
+   *
+   * @param direction
+   * @param hasPossibleNotes
+   */
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true):Void
   {
     var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
@@ -3293,8 +3293,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Debug keys. Disabled while in cutscenes.
-     */
+   * Debug keys. Disabled while in cutscenes.
+   */
   function debugKeyShit():Void
   {
     #if FEATURE_STAGE_EDITOR
@@ -3410,8 +3410,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handles applying health, score, and ratings.
-     */
+   * Handles applying health, score, and ratings.
+   */
   function applyScore(score:Float, daRating:String, healthChange:Float, isComboBreak:Bool)
   {
     switch (daRating)
@@ -3445,8 +3445,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handles rating popups when a note is hit.
-     */
+   * Handles rating popups when a note is hit.
+   */
   function popUpScore(daRating:String, ?combo:Int):Void
   {
     if (daRating == 'miss')
@@ -3477,10 +3477,10 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handle keyboard inputs during cutscenes.
-     * This includes advancing conversations and skipping videos.
-     * @param elapsed Time elapsed since last game update.
-     */
+   * Handle keyboard inputs during cutscenes.
+   * This includes advancing conversations and skipping videos.
+   * @param elapsed Time elapsed since last game update.
+   */
   function handleCutsceneKeys(elapsed:Float):Void
   {
     if (isGamePaused) return;
@@ -3519,20 +3519,20 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Handle logic for actually skipping a video cutscene after it has been held.
-     */
+   * Handle logic for actually skipping a video cutscene after it has been held.
+   */
   function skipVideoCutscene():Void
   {
     VideoCutscene.finishVideo();
   }
 
   /**
-     * End the song. Handle saving high scores and transitioning to the results screen.
-     *
-     * Broadcasts an `onSongEnd` event, which can be cancelled to prevent the song from ending (for a cutscene or something).
-     * Remember to call `endSong` again when the song should actually end!
-     * @param rightGoddamnNow If true, don't play the fancy animation where you zoom onto Girlfriend. Used after a cutscene.
-     */
+   * End the song. Handle saving high scores and transitioning to the results screen.
+   *
+   * Broadcasts an `onSongEnd` event, which can be cancelled to prevent the song from ending (for a cutscene or something).
+   * Remember to call `endSong` again when the song should actually end!
+   * @param rightGoddamnNow If true, don't play the fancy animation where you zoom onto Girlfriend. Used after a cutscene.
+   */
   public function endSong(rightGoddamnNow:Bool = false):Void
   {
     if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
@@ -3810,8 +3810,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Perform necessary cleanup before leaving the PlayState.
-     */
+   * Perform necessary cleanup before leaving the PlayState.
+   */
   function performCleanup():Void
   {
     // If the camera is being tweened, stop it.
@@ -3879,8 +3879,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Play the camera zoom animation and then move to the results screen once it's done.
-     */
+   * Play the camera zoom animation and then move to the results screen once it's done.
+   */
   function zoomIntoResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
   {
     trace('WENT TO RESULTS SCREEN!');
@@ -3949,17 +3949,17 @@ class PlayState extends MusicBeatSubState
       // Zoom over to the Results screen.
       // TODO: Re-enable this.
       /*
-          FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
-            {
-              ease: FlxEase.expoIn,
-            });
-         */
+        FlxTween.tween(FlxG.camera, {zoom: 1200}, 1.1,
+          {
+            ease: FlxEase.expoIn,
+          });
+       */
     });
   }
 
   /**
-     * Move to the results screen right goddamn now.
-     */
+   * Move to the results screen right goddamn now.
+   */
   function moveToResultsScreen(isNewHighscore:Bool, ?prevScoreData:SaveScoreData):Void
   {
     var currentChart:SongDifficulty = currentChart ?? {
@@ -4003,8 +4003,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Pauses music and vocals easily.
-     */
+   * Pauses music and vocals easily.
+   */
   public function pauseMusic():Void
   {
     if (FlxG.sound.music != null) FlxG.sound.music.pause();
@@ -4012,8 +4012,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Resets the camera's zoom level and focus point.
-     */
+   * Resets the camera's zoom level and focus point.
+   */
   public function resetCamera(resetZoom:Bool = true, cancelTweens:Bool = true, snap:Bool = true):Void
   {
     // Cancel camera tweens if any are active.
@@ -4037,8 +4037,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Sets the camera follow point's position and tweens the camera there.
-     */
+   * Sets the camera follow point's position and tweens the camera there.
+   */
   public function tweenCameraToPosition(x:Float = 0, y:Float = 0, duration:Float = 0, ?ease:Null<Float->Float>):Void
   {
     cameraFollowPoint.setPosition(x, y);
@@ -4046,8 +4046,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Disables camera following and tweens the camera to the follow point manually.
-     */
+   * Disables camera following and tweens the camera to the follow point manually.
+   */
   public function tweenCameraToFollowPoint(duration:Float = 0, ?ease:Null<Float->Float>):Void
   {
     // Cancel the current tween if it's active.
@@ -4096,8 +4096,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Tweens the camera zoom to the desired amount.
-     */
+   * Tweens the camera zoom to the desired amount.
+   */
   public function tweenCameraZoom(zoom:Float = 1, duration:Float = 0, direct:Bool = false, ?ease:Null<Float->Float>):Void
   {
     // Cancel the current tween if it's active.
@@ -4139,8 +4139,8 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Cancel all active camera tweens simultaneously.
-     */
+   * Cancel all active camera tweens simultaneously.
+   */
   public function cancelAllCameraTweens()
   {
     cancelCameraFollowTween();
@@ -4150,8 +4150,8 @@ class PlayState extends MusicBeatSubState
   var prevScrollTargets:Array<Dynamic> = []; // used to snap scroll speed when things go unruly
 
   /**
-     * The magical function that shall tween the scroll speed.
-     */
+   * The magical function that shall tween the scroll speed.
+   */
   public function tweenScrollSpeed(?speed:Float, duration:Float = 0, ?ease:Null<Float->Float>, strumlines:Array<String>):Void
   {
     // Cancel the current tween if it's active.
@@ -4214,11 +4214,11 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
-     * Jumps forward or backward a number of sections in the song.
-     * Accounts for BPM changes.
-     * @param sections The number of sections to jump, negative to go backwards.
-     * @param preventDeath Decides if time skip should prevent player from dying.
-     */
+   * Jumps forward or backward a number of sections in the song.
+   * Accounts for BPM changes.
+   * @param sections The number of sections to jump, negative to go backwards.
+   * @param preventDeath Decides if time skip should prevent player from dying.
+   */
   function changeSection(sections:Int, preventDeath:Bool = false):Void
   {
     // FlxG.sound.music.pause();
