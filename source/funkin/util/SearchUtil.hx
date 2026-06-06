@@ -1,5 +1,7 @@
 package funkin.util;
 
+import haxe.ui.util.Color as HaxeUIColor;
+
 /**
  * Utilities for searching, filtering, and fuzzy matching.
  *
@@ -10,6 +12,10 @@ package funkin.util;
 class SearchUtil
 {
   static final NO_MATCH:Int = 0;
+
+  /**
+   * A score for no match.
+   */
   public static final NO_SCORE:FuzzyScore = {
     score: NO_MATCH,
     matches: []
@@ -179,6 +185,66 @@ class SearchUtil
 
     // trace('  total: $score')
     return score;
+  }
+
+  /**
+   * Produces a styled HTML string from a fuzzy search input.
+   *
+   * @param target The target string to highlight.
+   * @param input The fuzzy search input.
+   * @return An array of text components with the highlighted matches.
+   */
+  public static function highlightFuzzyText(target:String, input:FuzzyScore):String
+  {
+    if (target.length == 0 || input.matches.length == 0) return target;
+    trace('highlightFuzzyText($target, $input)');
+
+    var result:Array<funkin.util.HaxeUIUtil.TextComponent> = [];
+
+    final YELLOW:HaxeUIColor = 0xD9D900;
+    final NO_COLOR:HaxeUIColor = 0xF9F9F9;
+
+    var currentComponent:funkin.util.HaxeUIUtil.TextComponent = {
+      text: '',
+      color: NO_COLOR,
+    };
+
+    var pushComponent = (match:Bool) ->
+    {
+      result.push(currentComponent);
+      currentComponent = match ? {
+        text: '',
+        color: YELLOW
+      } : {
+        text: '',
+        color: NO_COLOR
+        };
+    };
+
+    for (index in 0...target.length)
+    {
+      var char:String = target.charAt(index);
+
+      var currMatch:Bool = input.matches.contains(index);
+      var prevMatch:Bool = currentComponent.color == YELLOW;
+
+      // When match/nomatch switches, push component.
+      if (currMatch && !prevMatch)
+      {
+        pushComponent(true);
+      }
+      else if (!currMatch && prevMatch)
+      {
+        pushComponent(false);
+      }
+      currentComponent.text += char;
+    }
+
+    pushComponent(false);
+
+    trace('  result: $result');
+
+    return HaxeUIUtil.buildStyledHTML(result);
   }
 
   static function stringEqual(a:String, b:String):Bool
