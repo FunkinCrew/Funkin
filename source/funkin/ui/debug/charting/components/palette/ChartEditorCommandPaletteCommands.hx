@@ -141,7 +141,13 @@ class ChartEditorCommandPaletteCommands
       }).filter((commandScore) -> commandScore.score.score > 0);
     commandScores.sort((a, b) -> b.score.score - a.score.score);
 
-    return commandScores.map((commandScore) -> commandScore.command);
+    return commandScores.map((commandScore) -> {
+      title: SearchUtil.highlightFuzzyText(commandScore.command.title, commandScore.score),
+      html: true,
+      subtitle: commandScore.command.subtitle,
+      shortcut: commandScore.command.shortcut,
+      execute: commandScore.command.execute,
+    });
   }
 
   /**

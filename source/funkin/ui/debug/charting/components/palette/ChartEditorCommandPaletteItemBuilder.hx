@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.components.palette;
 
+import haxe.DynamicAccess;
 import funkin.util.SearchUtil.FuzzyScore;
 import funkin.util.SearchUtil;
 import funkin.data.song.SongData.CommentData;
@@ -26,7 +27,22 @@ class ChartEditorCommandPaletteItemBuilder
 
     for (item in items)
     {
-      palette.commandPaletteList.dataSource.add(item);
+      var listItem:DynamicAccess<Dynamic> = {
+        subtitle: item.subtitle,
+        shortcut: item.shortcut,
+        execute: item.execute,
+      };
+      // I wish there was an easier way to directly initialize a struct with a `.` in a property name.
+      if (item.html ?? false)
+      {
+        listItem.set('title.htmlText', item.title);
+      }
+      else
+      {
+        listItem.set('title.htmlText', '<font color="#F9F9F9">${item.title}</font>');
+      }
+
+      palette.commandPaletteList.dataSource.add(listItem);
     }
 
     handleSelection(palette);
@@ -144,11 +160,12 @@ class ChartEditorCommandPaletteItemBuilder
     var input:String = palette.commandPaletteInput.text;
 
     var subInput:String = input.substr(1);
+    var filtered:Bool = subInput.length > 0;
 
     var commentScores:Array<
       {score:FuzzyScore, comment:CommentData}> = [];
 
-    if (subInput.length > 0)
+    if (filtered)
     {
       commentScores = palette.chartEditorState.currentSongChartCommentData.map((comment) ->
       {
@@ -178,7 +195,8 @@ class ChartEditorCommandPaletteItemBuilder
     var goToCommentCommands:Array<PaletteCommand> = commentScores.map((score) ->
     {
       return {
-        title: score.comment.text,
+        title: SearchUtil.highlightFuzzyText(score.comment.text, score.score),
+        html: filtered,
         subtitle: 'Go to comment',
         shortcut: '',
         execute: (_) ->
@@ -266,6 +284,7 @@ class ChartEditorCommandPaletteItemBuilder
 typedef PaletteCommand =
 {
   var title:String;
+  var ?html:Bool;
   var subtitle:String;
   var shortcut:String;
 
