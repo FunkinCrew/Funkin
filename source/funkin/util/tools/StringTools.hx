@@ -107,6 +107,28 @@ class StringTools
   }
 
   /**
+   * Whether the given string is upper case.
+   *
+   * @param value The value to compare.
+   * @return Whether the given string is upper case.
+   */
+  public static function isUpperCase(value:String):Bool
+  {
+    return value == value.toUpperCase();
+  }
+
+  /**
+   * Whether the given string is lower case.
+   *
+   * @param value The value to compare.
+   * @return Whether the given string is lower case.
+   */
+  public static function isLowerCase(value:String):Bool
+  {
+    return value == value.toLowerCase();
+  }
+
+  /**
    * Parses the string data as JSON and returns the resulting object.
    * This is here so you can use `string.parseJSON()` when `using StringTools`.
    *

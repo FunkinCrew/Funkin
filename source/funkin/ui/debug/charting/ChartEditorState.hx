@@ -6389,6 +6389,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       ChartEditorCommandPalette.openPalette(this, ':');
     }
+    // CTRL + B = Go to Comment
+    if (pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && canOpenCommandPalette)
+    {
+      ChartEditorCommandPalette.openPalette(this, '#');
+    }
   }
 
   /**

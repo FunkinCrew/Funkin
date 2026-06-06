@@ -1,5 +1,9 @@
 package funkin.ui.debug.charting.components.palette;
 
+import funkin.util.SearchUtil.FuzzyScore;
+import funkin.util.SearchUtil;
+import funkin.data.song.SongData.CommentData;
+
 #if FEATURE_CHART_EDITOR
 /**
  * Utility functions for building the item list in the command palette.
@@ -139,27 +143,53 @@ class ChartEditorCommandPaletteItemBuilder
   {
     var input:String = palette.commandPaletteInput.text;
 
-    if (input == '#')
+    var subInput:String = input.substr(1);
+
+    var commentScores:Array<
+      {score:FuzzyScore, comment:CommentData}> = [];
+
+    if (subInput.length > 0)
     {
-      return [{
-        title: '#',
-        subtitle: 'Enter a term to search for across comments.',
-        shortcut: '',
-        execute: (_) -> false,
-      }];
+      commentScores = palette.chartEditorState.currentSongChartCommentData.map((comment) ->
+      {
+        trace('  Checking comment "${comment.text}"');
+        var score:FuzzyScore = SearchUtil.scoreFuzzy(comment.text, subInput, {
+          allowNonContiguous: true,
+          allowPartial: false
+        });
+        return {
+          score: score,
+          comment: comment
+        };
+      }).filter((commentScore) -> commentScore.score.score > 0);
+      commentScores.sort((a, b) -> b.score.score - a.score.score);
     }
     else
     {
-      var subInput:String = input.substr(1);
-
-      // TODO: Actually implement.
-      return [{
-        title: '#',
-        subtitle: 'Enter a term to search for across comments.',
-        shortcut: '',
-        execute: (_) -> false,
-      }];
+      commentScores = palette.chartEditorState.currentSongChartCommentData.map((comment) ->
+      {
+        return {
+          score: SearchUtil.NO_SCORE,
+          comment: comment
+        };
+      });
     }
+
+    var goToCommentCommands:Array<PaletteCommand> = commentScores.map((score) ->
+    {
+      return {
+        title: score.comment.text,
+        subtitle: 'Go to comment',
+        shortcut: '',
+        execute: (_) ->
+        {
+          palette.chartEditorState.easeToSongTimeMs(score.comment.time);
+          return true;
+        },
+      }
+    });
+
+    return goToCommentCommands;
   }
 
   static function buildItemsRunCommand(palette:ChartEditorCommandPalette):Array<PaletteCommand>
@@ -206,11 +236,16 @@ class ChartEditorCommandPaletteItemBuilder
           return false;
         },
       },
-      // {
-      //   title '#',
-      //   subtitle 'Search for Comment',
-      //   shortcut '',
-      // },
+      {
+        title: '#',
+        subtitle: 'Search for Comment',
+        shortcut: 'Ctrl+B',
+        execute: (_) ->
+        {
+          ChartEditorCommandPalette.openPalette(palette.chartEditorState, '#');
+          return false;
+        },
+      },
       {
         title: '>',
         subtitle: 'Show and Run Commands',
