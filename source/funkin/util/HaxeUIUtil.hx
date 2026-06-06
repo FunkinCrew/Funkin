@@ -46,7 +46,7 @@ class HaxeUIUtil
       // font color is sadly the only supported thing in HaxeUI
       if (component.color != null)
       {
-        part = '<font color="${component.color.toHex()};">${component.text}</font>';
+        part = '<font color="${component.color.toHex()}">${component.text}</font>';
       }
 
       result += part;
