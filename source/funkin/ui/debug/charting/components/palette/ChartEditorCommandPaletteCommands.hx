@@ -1,6 +1,8 @@
 package funkin.ui.debug.charting.components.palette;
 
 #if FEATURE_CHART_EDITOR
+import funkin.util.SearchUtil;
+import funkin.util.SearchUtil.FuzzyScore;
 import funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemBuilder.PaletteCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
@@ -93,6 +95,26 @@ class ChartEditorCommandPaletteCommands
         return true;
       }
     },
+    {
+      title: 'Decrement Difficulty',
+      subtitle: 'Switch to the previous difficulty.',
+      shortcut: 'Ctrl+Left',
+      execute: (palette) ->
+      {
+        palette.chartEditorState.incrementDifficulty(-1);
+        return true;
+      }
+    },
+    {
+      title: 'Increment Difficulty',
+      subtitle: 'Switch to the next difficulty.',
+      shortcut: 'Ctrl+Right',
+      execute: (palette) ->
+      {
+        palette.chartEditorState.incrementDifficulty(1);
+        return true;
+      }
+    },
   ];
 
   /**
@@ -105,9 +127,21 @@ class ChartEditorCommandPaletteCommands
   {
     if (filter == '') return COMMANDS;
 
-    // Filter the command list.
-    // If you think you can do a better job then `startsWith`, let's see you take a crack at it!
-    return COMMANDS.filter((command) -> command.title.startsWith(filter));
+    var commandScores:Array<
+      {score:FuzzyScore, command:PaletteCommand}> = COMMANDS.map((command) ->
+      {
+        var score:FuzzyScore = SearchUtil.scoreFuzzy(command.title, filter, {
+          allowNonContiguous: true,
+          allowPartial: false
+        });
+        return {
+          score: score,
+          command: command
+        };
+      }).filter((commandScore) -> commandScore.score.score > 0);
+    commandScores.sort((a, b) -> b.score.score - a.score.score);
+
+    return commandScores.map((commandScore) -> commandScore.command);
   }
 
   /**
