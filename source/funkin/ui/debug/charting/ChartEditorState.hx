@@ -4931,8 +4931,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // early return if we shouldn't handle the cursor at all
     if (!shouldHandleCursor)
     {
-      trace('Cannot handle cursor: $isHaxeUIFocused: ${FocusManager.instance.focus}');
-
       if (gridGhostNote != null) gridGhostNote.visible = false;
       if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
       if (gridGhostEvent != null) gridGhostEvent.visible = false;

@@ -8,10 +8,10 @@ import flixel.util.FlxColor;
  */
 class ColorUtil
 {
-  static final WHITE:HaxeUIColor = 0xFFFFFFFF;
-  static final OFFWHITE:HaxeUIColor = 0xFFF9F9F9;
-  static final OFFBLACK:HaxeUIColor = 0xFF1A1A1A;
-  static final BLACK:HaxeUIColor = 0xFF000000;
+  static final WHITE:HaxeUIColor = 0xFFFFFF;
+  static final OFFWHITE:HaxeUIColor = 0xF9F9F9;
+  static final OFFBLACK:HaxeUIColor = 0x1A1A1A;
+  static final BLACK:HaxeUIColor = 0x000000;
 
   /**
    * Based on the provided background color, calculate the text color that will be most readable.
