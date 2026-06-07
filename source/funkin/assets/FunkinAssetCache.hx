@@ -136,7 +136,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     });
 
     stagedCaches = [
-      FunkinBitmapFrontend.instance.stagedFlxGraphic,
+      // FunkinBitmapFrontend.instance.stagedFlxGraphic,
       stagedBitmapData,
       stagedFont,
       stagedSound,
@@ -179,6 +179,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function preparePurgeCache():Void
   {
     for (cache in stagedCaches) cache.preparePurgeCache();
+    FunkinBitmapFrontend.instance.preparePurgeCache();
   }
 
   /**
