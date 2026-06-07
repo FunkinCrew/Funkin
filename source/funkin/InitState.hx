@@ -20,6 +20,7 @@ import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongRegistry;
 import funkin.data.stickers.StickerRegistry;
+import funkin.util.plugins.SidePanelPlugin;
 import funkin.play.event.SongEventHelper;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.stage.StageRegistry;
@@ -63,6 +64,8 @@ class InitState extends FlxState
    */
   @:noCompletion
   static var _coreInitialized:Bool = false;
+
+  public static var customTitleState:Null<FlxState> = null;
 
   /**
    * Perform a bunch of game setup, then immediately transition to the title screen.
@@ -297,6 +300,7 @@ class InitState extends FlxState
       funkin.util.plugins.TouchPointerPlugin.initialize();
       funkin.mobile.input.ControlsHandler.initInputTrackers();
       #end
+      funkin.util.plugins.SidePanelPlugin.initialize();
 
       _coreInitialized = true;
     }
@@ -455,6 +459,12 @@ class InitState extends FlxState
     #end
   }
 
+  public static function resetTitleState():Void
+  {
+    if (customTitleState != null) customTitleState.destroy();
+    customTitleState = null;
+  }
+
   /**
    * Start the game by moving to the title state and play the game as normal.
    */
@@ -528,6 +538,14 @@ class InitState extends FlxState
         FlxG.switchState(() -> new TitleState());
       }
       #else
+
+      if (customTitleState != null)
+      {
+        SidePanelPlugin.showGrabber = true;
+        FlxG.switchState(() -> customTitleState);
+        return;
+      }
+
       FlxG.switchState(() -> new TitleState());
       #end
     }

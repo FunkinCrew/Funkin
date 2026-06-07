@@ -688,7 +688,7 @@ class ModMenuState extends MusicBeatState
       }
 
       oldSelection = selection;
-      acceptDelay = 0.1;
+      acceptDelay = 0.08;
     }
 
     if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;

@@ -585,6 +585,24 @@ class Controls extends FlxActionSet
     return getDialogueName(getActionFromControl(control), ignoreSurrounding);
   }
 
+  public function getDeviceFromName(name:String):Device
+  {
+    return switch (name.toUpperCase())
+    {
+      case 'KEYS':
+        Keys;
+      case 'GAMEPAD':
+        Gamepad(0); // later
+      case device:
+        throw 'unhandled device: $device';
+    }
+  }
+
+  public function getControlFromName(name:String):Control
+  {
+    return Control.createByName(name.toUpperCase());
+  }
+
   function getActionFromControl(control:Control):FlxActionDigital
   {
     return switch (control)
