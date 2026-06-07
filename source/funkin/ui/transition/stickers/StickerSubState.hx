@@ -203,26 +203,13 @@ class StickerSubState extends MusicBeatSubState
             switchingState = true;
             FlxTransitionableState.skipNextTransIn = true;
             FlxTransitionableState.skipNextTransOut = true;
-            FlxG.signals.preStateSwitch.addOnce(() -> {
-              #if ios
-              trace(DeviceUtil.iPhoneNumber);
-              if (DeviceUtil.iPhoneNumber > 12)
-              {
-                FunkinAssetCache.instance.preparePurgeCache();
-                // TODO: In loading screens, you should be caching BETWEEN these.
-                FunkinAssetCache.instance.purgeCache(true);
-              }
-              else
-              {
-                FunkinAssetCache.instance.preparePurgeCache();
-                // TODO: In loading screens, you should be caching BETWEEN these.
-                FunkinAssetCache.instance.purgeCache();
-              }
-              #else
+            FlxG.signals.preStateSwitch.addOnce(() ->
+            {
               FunkinAssetCache.instance.preparePurgeCache();
+            });
+            FlxG.signals.postStateSwitch.addOnce(() -> {
               // TODO: In loading screens, you should be caching BETWEEN these.
-              FunkinAssetCache.instance.purgeCache(true);
-              #end
+              FunkinAssetCache.instance.purgeCache(#if ios DeviceUtil.iPhoneNumber > 12 #else true #end);
             });
             FlxG.switchState(() ->
             {

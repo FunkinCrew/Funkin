@@ -152,8 +152,10 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // Clear everything in the cache, except permanent assets.
     // trace("CLEARED CACHED");
     // stagedFlxGraphic.clearCache();
+    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
+      if (persistentAssetsKeys.contains(key)) return false;
       if (graphic == null) return true;
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
@@ -170,8 +172,10 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearExcept(filter:Array<String>):Void
   {
+    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
     stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
     {
+      if (persistentAssetsKeys.contains(key)) return false;
       if (graphic == null) return true;
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
@@ -189,8 +193,10 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearOnly(filter:Array<String>):Void
   {
+    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
     stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
     {
+      if (persistentAssetsKeys.contains(key)) return false;
       if (graphic == null) return true;
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;

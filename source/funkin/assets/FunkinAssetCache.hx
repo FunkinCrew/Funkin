@@ -179,7 +179,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function preparePurgeCache():Void
   {
     for (cache in stagedCaches) cache.preparePurgeCache();
-    FunkinBitmapFrontend.instance.preparePurgeCache();
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.preparePurgeCache();
   }
 
   /**
@@ -191,7 +191,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     for (cache in stagedCaches) cache.purgeCache();
     // TODO: Cleanup purging to work with Freeplay?
-    FunkinBitmapFrontend.instance.clearExcept(['freeplay/', 'stickers/']);
+    FunkinBitmapFrontend.instance.clearExcept(['stickers/']);
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
