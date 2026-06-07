@@ -1,6 +1,7 @@
 package funkin.ui.debug.stageeditor.toolboxes;
 
 #if FEATURE_STAGE_EDITOR
+import animate.FlxAnimateFrames;
 import haxe.ui.components.Button;
 import haxe.ui.components.CheckBox;
 import haxe.ui.components.DropDown;
@@ -40,11 +41,18 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     {
       if (objFrameList.selectedIndex == -1) return;
       objAnimPrefix.text = objFrameList.selectedItem.name;
+
+      // Remove the indicators from the prefix text if the selected item is from an atlas sprite.
+      if (objFrameList.selectedItem.isLabel != null)
+      {
+        var isLabel:Bool = objFrameList.selectedItem.isLabel ?? false;
+        objAnimPrefix.text = objAnimPrefix.text.replace(' ${isLabel ? "(Label)" : "(Symbol)"}', '');
+      }
     }
 
     objAnims.onChange = function(_)
     {
-      var animData = linkedObj?.animDatas[
+      var animData = linkedObj?.animationDatas[
         objAnims.selectedItem?.text ?? ""
       ];
 
@@ -104,8 +112,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
       if (linkedObj.startingAnimation == daAnim) linkedObj.startingAnimation = "";
 
       linkedObj.animation.remove(daAnim);
-      linkedObj.animDatas.remove(daAnim);
-      linkedObj.offset.set();
+      linkedObj.animationDatas.remove(daAnim);
 
       state.notifyChange("Animation Deletion Done", "Animation "
         + objAnims.selectedItem.text
@@ -143,11 +150,28 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     }
 
     // Otherwise, update them accordingly.
-
-    if (previousFrames !=[
-      for (f in linkedObj.frames.frames) f.name
-    ]) updateFrameList();
+    if (previousFrames != getObjectFrameList()) updateFrameList();
     if (previousAnims != linkedObj.animation.getNameList().copy()) updateAnimList();
+  }
+
+  /**
+   * Get a formatted list of frames for the object.
+   */
+  function getObjectFrameList():Array<String>
+  {
+    if (linkedObj == null) return [];
+
+    if (linkedObj.frames is FlxAnimateFrames)
+    {
+      var frames:FlxAnimateFrames = cast linkedObj.frames;
+
+      @:privateAccess
+      return linkedObj.getFrameLabelList().concat(frames.dictionary.keys().array());
+    }
+
+    return[
+      for (f in linkedObj.frames.frames) f.name
+    ];
   }
 
   function updateFrameList()
@@ -157,11 +181,30 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     if (linkedObj == null) return;
 
-    for (fname in linkedObj.frames.frames)
+    if (linkedObj.frames is FlxAnimateFrames)
     {
-      if (fname != null) objFrameList.dataSource.add({name: fname.name});
+      for (fname in linkedObj.getFrameLabelList())
+      {
+        objFrameList.dataSource.add({name: '$fname (Label)', isLabel: true});
+        previousFrames.push(fname);
+      }
 
-      previousFrames.push(fname.name);
+      var frames:FlxAnimateFrames = cast linkedObj.frames;
+
+      @:privateAccess
+      for (fname in frames.dictionary.keys())
+      {
+        objFrameList.dataSource.add({name: '$fname (Symbol)', isLabel: false});
+        previousFrames.push(fname);
+      }
+    }
+    else
+    {
+      for (fname in linkedObj.frames.frames)
+      {
+        if (fname != null) objFrameList.dataSource.add({name: fname.name});
+        previousFrames.push(fname.name);
+      }
     }
   }
 
@@ -198,9 +241,24 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     }
 
     var shouldDoIndices:Bool = (indices.length > 0 && !indices.contains(null));
+    var isSymbol:Bool = false;
 
-    linkedObj.addAnim(objAnimName.text, objAnimPrefix.text, [objAnimOffsetX.pos, objAnimOffsetY.pos], (shouldDoIndices ? indices : []),
-      Std.int(objAnimFramerate.pos), objAnimLooped.selected, objAnimFlipX.selected, objAnimFlipY.selected);
+    if (linkedObj.frames is FlxAnimateFrames)
+    {
+      isSymbol = cast(linkedObj.frames, FlxAnimateFrames).existsSymbol(objAnimPrefix.text);
+    }
+
+    linkedObj.addAnimation({
+      name: objAnimName.text,
+      prefix: objAnimPrefix.text,
+      offsets: [objAnimOffsetX.pos, objAnimOffsetY.pos],
+      looped: objAnimLooped.selected,
+      frameIndices: (shouldDoIndices ? indices : []),
+      frameRate: Std.int(objAnimFramerate.pos),
+      flipX: objAnimFlipX.selected,
+      flipY: objAnimFlipY.selected,
+      animType: isSymbol ? 'symbol' : 'framelabel'
+    });
 
     if (linkedObj.animation.getByName(objAnimName.text) == null)
     {
@@ -209,7 +267,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     }
 
     if (objAnimStart.selected) linkedObj.startingAnimation = objAnimName.text;
-    linkedObj.playAnim(objAnimName.text);
+    linkedObj.playAnimation(objAnimName.text);
 
     stageEditorState.notifyChange("Animation Saving Done", "Animation " + objAnimName.text + " has been saved to the Object " + linkedObj.name + ".");
     updateAnimList();
