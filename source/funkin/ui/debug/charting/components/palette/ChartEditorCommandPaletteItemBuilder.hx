@@ -1,101 +1,97 @@
 package funkin.ui.debug.charting.components.palette;
 
+#if FEATURE_CHART_EDITOR
 import haxe.DynamicAccess;
 import funkin.util.SearchUtil.FuzzyScore;
 import funkin.util.SearchUtil;
 import funkin.data.song.SongData.CommentData;
+import funkin.ui.debug.charting.components.ChartEditorCommandPalette.PaletteCommand;
 
-#if FEATURE_CHART_EDITOR
 /**
  * Utility functions for building the item list in the command palette.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:access(funkin.ui.debug.charting.components.ChartEditorCommandPalette)
 class ChartEditorCommandPaletteItemBuilder
 {
   /**
-   * Clear and repopulate the command palette.
+   * Clear the command palette, then populate the list of commands.
    *
    * @param palette The CommandPalette to operate on.
    */
   public static function populatePaletteItems(palette:ChartEditorCommandPalette):Void
   {
-    clearPalette(palette);
+    palette.clearPalette();
 
     var items:Array<PaletteCommand> = buildItems(palette);
 
     for (item in items)
     {
-      var listItem:DynamicAccess<Dynamic> = {
-        subtitle: item.subtitle,
-        shortcut: item.shortcut,
-        execute: item.execute,
-      };
-      // I wish there was an easier way to directly initialize a struct with a `.` in a property name.
-      if (item.html ?? false)
-      {
-        listItem.set('title.htmlText', item.title);
-      }
-      else
-      {
-        listItem.set('title.htmlText', '<font color="#F9F9F9">${item.title}</font>');
-      }
-
-      palette.commandPaletteList.dataSource.add(listItem);
+      palette.commandPaletteList.dataSource.add(renderPaletteItem(item));
     }
 
-    handleSelection(palette);
+    palette.handleSelection();
   }
 
-  static function clearPalette(palette:ChartEditorCommandPalette):Void
+  static inline function renderPaletteItem(item:PaletteCommand):Dynamic
   {
-    palette.commandPaletteList.dataSource.clear();
+    // Restructure the palette item so that it sets the item's HTML text rather than merely setting the text.
+    // If only there was an easier way to add a struct value with a `.` in the property name...
+
+    var listItem:DynamicAccess<Dynamic> = {
+      subtitle: item.subtitle,
+      shortcut: item.shortcut,
+      execute: item.execute,
+    };
+    // I wish there was an easier way to directly initialize a struct with a `.` in a property name.
+    listItem.set('title.htmlText', (item.html ?? false) ? item.title : '<font color="#F9F9F9">${item.title}</font>');
+
+    return listItem;
   }
 
-  static function handleSelection(palette:ChartEditorCommandPalette):Void
-  {
-    // Clamp the selection index.
-    var itemCount:Int = palette.commandPaletteList.dataSource.size;
-
-    // Make it loop around
-    if (palette.selectionIndex < 0) palette.selectionIndex = itemCount - 1;
-    if (palette.selectionIndex >= itemCount) palette.selectionIndex = 0;
-
-    if (itemCount > 1)
-    {
-      // Select the correct element.
-      palette.commandPaletteList.selectedIndex = palette.selectionIndex;
-    }
-    else
-    {
-      // Don't select the only element.
-      palette.commandPaletteList.selectedIndex = -1;
-    }
-  }
-
+  /**
+   * Build a list of available commands to display, based on the current input.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
+   */
   static function buildItems(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
 
     if (input.startsWith(':'))
     {
+      // : - Go to Measure (type to choose a measure number)
       return buildItemsGoToMeasure(palette);
     }
     else if (input.startsWith('#'))
     {
+      // # - Go to Comment (type to search for comments)
       return buildItemsGoToComment(palette);
     }
     else if (input.startsWith('>'))
     {
+      // > - Run Command (type to search for commands)
       return buildItemsRunCommand(palette);
+    }
+    else if (input.startsWith('?'))
+    {
+      // ? - Display Help
+      return buildItemsHelp(palette);
     }
     else
     {
+      // ? - Display Help
       return buildItemsHelp(palette);
     }
   }
 
+  /**
+   * Build a list of items for the "Go to Measure" command.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
+   */
   static function buildItemsGoToMeasure(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
@@ -134,6 +130,12 @@ class ChartEditorCommandPaletteItemBuilder
     }
   }
 
+  /**
+   * Parse the measure number from the Command Palette input.
+   *
+   * @param input The input string to parse.
+   * @return The measure number to navigate to, or `null` if the input is invalid.
+   */
   public static function parseMeasureNumber(input:String):Null<Int>
   {
     var subInput:String = input.substr(1);
@@ -155,6 +157,12 @@ class ChartEditorCommandPaletteItemBuilder
     return measureNumber;
   }
 
+  /**
+   * Build a list of items for the "Go to Comment" command.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
+   */
   static function buildItemsGoToComment(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
@@ -169,7 +177,6 @@ class ChartEditorCommandPaletteItemBuilder
     {
       commentScores = palette.chartEditorState.currentSongChartCommentData.map((comment) ->
       {
-        trace('  Checking comment "${comment.text}"');
         var score:FuzzyScore = SearchUtil.scoreFuzzy(comment.text, subInput, {
           allowNonContiguous: true,
           allowPartial: false
@@ -210,20 +217,29 @@ class ChartEditorCommandPaletteItemBuilder
     return goToCommentCommands;
   }
 
+  /**
+   * Build a list of items for the "Run Command" command.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
+   */
   static function buildItemsRunCommand(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
     var input:String = palette.commandPaletteInput.text;
 
     if (input == '>')
     {
+      // Display the full command list.
       return ChartEditorCommandPaletteCommands.buildCommandList();
     }
     else
     {
+      // Filter the command list based on the user input.
       var subInput:String = input.substr(1);
 
       var result:Array<PaletteCommand> = ChartEditorCommandPaletteCommands.buildCommandList(subInput);
 
+      // Show a fallback if there is no matching command.
       if (result.length == 0)
       {
         return [{
@@ -239,7 +255,10 @@ class ChartEditorCommandPaletteItemBuilder
   }
 
   /**
-   * Show the list of options
+   * Build a list of other commands that can be run.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
    */
   static function buildItemsHelp(palette:ChartEditorCommandPalette):Array<PaletteCommand>
   {
@@ -276,23 +295,5 @@ class ChartEditorCommandPaletteItemBuilder
       }
     ];
   }
-}
-
-/**
- * The data for displaying a single command in the command palette.
- */
-typedef PaletteCommand =
-{
-  var title:String;
-  var ?html:Bool;
-  var subtitle:String;
-  var shortcut:String;
-
-  /**
-   * The command to execute.
-   * @param palette The palette that is executing the command.
-   * @return Whether the palette should close after executing the command.
-   */
-  var execute:(ChartEditorCommandPalette) -> Bool;
 }
 #end

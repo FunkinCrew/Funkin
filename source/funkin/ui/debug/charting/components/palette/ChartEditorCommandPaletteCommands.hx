@@ -3,122 +3,78 @@ package funkin.ui.debug.charting.components.palette;
 #if FEATURE_CHART_EDITOR
 import funkin.util.SearchUtil;
 import funkin.util.SearchUtil.FuzzyScore;
-import funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemBuilder.PaletteCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
-import funkin.ui.debug.charting.commands.SelectItemsCommand;
-import funkin.ui.debug.charting.commands.AddEventsCommand;
-import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
-import funkin.ui.debug.charting.commands.AddNotesCommand;
-import funkin.ui.debug.charting.commands.ChartEditorCommand;
-import funkin.ui.debug.charting.commands.CopyItemsCommand;
-import funkin.ui.debug.charting.commands.CutItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectAllItemsBetweenTimeCommand;
+import funkin.ui.debug.charting.components.ChartEditorCommandPalette.PaletteCommand;
 import funkin.ui.debug.charting.commands.DeselectAllItemsCommand;
-import funkin.ui.debug.charting.commands.DeselectItemsCommand;
-import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
-import funkin.ui.debug.charting.commands.FlipNotesCommand;
-import funkin.ui.debug.charting.commands.InvertSelectedItemsCommand;
-import funkin.ui.debug.charting.commands.MirrorNotesCommand;
-import funkin.ui.debug.charting.commands.MoveEventsCommand;
-import funkin.ui.debug.charting.commands.MoveItemsCommand;
-import funkin.ui.debug.charting.commands.MoveNotesCommand;
-import funkin.ui.debug.charting.commands.PasteItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveEventsCommand;
-import funkin.ui.debug.charting.commands.RemoveItemsCommand;
-import funkin.ui.debug.charting.commands.RemoveNotesCommand;
-import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
-import funkin.ui.debug.charting.commands.SelectAllItemsBetweenTimeCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
-import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
-import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 
 /**
  * Holds and filters the list of available commands for the command palette.
  */
 @:nullSafety
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:access(funkin.ui.debug.charting.components.ChartEditorCommandPalette)
 class ChartEditorCommandPaletteCommands
 {
   /**
    * The full list of available commands to be executed.
    */
   public static final COMMANDS:Array<PaletteCommand> = [
+    command('Select All Notes', 'Select all notes and events in chart.', 'Ctrl+Shift+A', (palette) ->
     {
-      title: 'Select All Notes',
-      subtitle: 'Select all notes in chart.',
-      shortcut: 'Ctrl+A',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.performCommand(new SelectAllItemsCommand(true, false));
-        return true;
-      }
-    },
+      palette.chartEditorState.performCommand(new SelectAllItemsCommand(true, true));
+    }),
+    command('Select All Notes (Append)', 'Add all notes and events in chart to selection.', 'Ctrl+Shift+A', (palette) ->
     {
-      title: 'Select All Notes (Append)',
-      subtitle: 'Add all notes in chart to selection.',
-      shortcut: 'Ctrl+Shift+A',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.performCommand(new SelectItemsCommand(palette.chartEditorState.currentSongChartNoteData, []));
-        return true;
-      }
-    },
+      palette.chartEditorState.performCommand(new SelectItemsCommand(palette.chartEditorState.currentSongChartNoteData, []));
+    }),
+    command('Select All Events', 'Select all events in chart.', 'Ctrl+Alt+A', (palette) ->
     {
-      title: 'Select All Events',
-      subtitle: 'Select all events in chart.',
-      shortcut: 'Ctrl+Alt+A',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.performCommand(new SelectAllItemsCommand(false, true));
-        return true;
-      }
-    },
+      palette.chartEditorState.performCommand(new SelectAllItemsCommand(false, true));
+    }),
+    command('Select All Events (Append)', 'Add all events in chart to selection.', 'Ctrl+Alt+Shift+A', (palette) ->
     {
-      title: 'Select All Events (Append)',
-      subtitle: 'Add all events in chart to selection.',
-      shortcut: 'Ctrl+Alt+Shift+A',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.performCommand(new SelectItemsCommand([], palette.chartEditorState.currentSongChartEventData));
-        return true;
-      }
-    },
+      palette.chartEditorState.performCommand(new SelectItemsCommand([], palette.chartEditorState.currentSongChartEventData));
+    }),
+    command('Deselect All', 'Remove all notes and events from selection.', 'Ctrl+D', (palette) ->
     {
-      title: 'Deselect All',
-      subtitle: 'Remove all notes and events from selection.',
-      shortcut: 'Ctrl+D',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.performCommand(new DeselectAllItemsCommand());
-        return true;
-      }
-    },
+      palette.chartEditorState.performCommand(new DeselectAllItemsCommand());
+    }),
+    command('Decrement Difficulty', 'Switch to the previous difficulty.', 'Ctrl+Left', (palette) ->
     {
-      title: 'Decrement Difficulty',
-      subtitle: 'Switch to the previous difficulty.',
-      shortcut: 'Ctrl+Left',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.incrementDifficulty(-1);
-        return true;
-      }
-    },
+      palette.chartEditorState.incrementDifficulty(-1);
+    }),
+    command('Increment Difficulty', 'Switch to the next difficulty.', 'Ctrl+Right', (palette) ->
     {
-      title: 'Increment Difficulty',
-      subtitle: 'Switch to the next difficulty.',
-      shortcut: 'Ctrl+Right',
-      execute: (palette) ->
-      {
-        palette.chartEditorState.incrementDifficulty(1);
-        return true;
-      }
-    },
+      palette.chartEditorState.incrementDifficulty(1);
+    }),
   ];
 
   /**
-   * Output a list of commands to display in the palette.
+   * A helper function for constructing a PaletteCommand.
+   * @param title The title of the command.
+   * @param subtitle The subtitle of the command.
+   * @param shortcut The keyboard shortcut to display.
+   * @param execute The function to run when the command is executed.
+   *   Always returns `true` to close the palette.
+   * @return The constructed PaletteCommand.
+   */
+  static inline function command(title:String, subtitle:String = '', shortcut:String = '', execute:(ChartEditorCommandPalette) -> Void):PaletteCommand
+  {
+    return {
+      title: title,
+      html: false,
+      subtitle: subtitle,
+      shortcut: shortcut,
+      execute: (palette) ->
+      {
+        execute(palette);
+        return true;
+      }
+    }
+  }
+
+  /**
+   * Build a list of commands for the palette.
    *
    * @param filter The filter string to apply to the command list.
    * @return The list of commands.
@@ -127,21 +83,25 @@ class ChartEditorCommandPaletteCommands
   {
     if (filter == '') return COMMANDS;
 
+    // Score each command based on similarity.
+    // Remove any entry that has 0 points (no matches).
     var commandScores:Array<
       {score:FuzzyScore, command:PaletteCommand}> = COMMANDS.map((command) ->
       {
         var score:FuzzyScore = SearchUtil.scoreFuzzy(command.title, filter, {
-          allowNonContiguous: true,
-          allowPartial: false
+          allowNonContiguous: true, // The characters can be split up as long as they appear in order.
+          allowPartial: false // All characters must be present.
         });
         return {
           score: score,
           command: command
         };
       }).filter((commandScore) -> commandScore.score.score > 0);
+    // Sort by highest score first.
     commandScores.sort((a, b) -> b.score.score - a.score.score);
 
     return commandScores.map((commandScore) -> {
+      // Apply inline style to the title to highlight the matching characters.
       title: SearchUtil.highlightFuzzyText(commandScore.command.title, commandScore.score),
       html: true,
       subtitle: commandScore.command.subtitle,
@@ -158,6 +118,7 @@ class ChartEditorCommandPaletteCommands
    */
   public static function tryGoToMeasure(palette:ChartEditorCommandPalette):Bool
   {
+    // Read the input.
     var input:String = palette.commandPaletteInput.text;
     // Don't do anything if blank.
     if (input == ':')
@@ -165,6 +126,7 @@ class ChartEditorCommandPaletteCommands
       trace('Command Palette: Invalid input for GoToMeasure "$input"');
       return false;
     }
+    // Parse the measure number to jump to.
     var measureNumber:Null<Int> = ChartEditorCommandPaletteItemBuilder.parseMeasureNumber(input);
     // Don't do anything if unparsed.
     if (measureNumber == null)
@@ -173,18 +135,19 @@ class ChartEditorCommandPaletteCommands
       return false;
     }
 
+    // Go to the start of the measure, not the end.
     measureNumber -= 1;
 
+    // Clamp to song start/end.
     var endMeasure:Int = Std.int(Math.ceil(Conductor.instance.getTimeInMeasures(palette.chartEditorState.songLengthInMs)));
     if (measureNumber > endMeasure) measureNumber = endMeasure;
     if (measureNumber < 0) measureNumber = 0;
 
+    // Determine the target position.
     var targetTimeMs:Float = Conductor.instance.getMeasureTimeInMs(measureNumber);
-    var targetTimeSteps:Float = Conductor.instance.getTimeInSteps(targetTimeMs);
-    var targetTimePixels:Float = targetTimeSteps * ChartEditorState.GRID_SIZE;
 
-    trace('Command Palette: Jumping to measure $measureNumber at $targetTimeMs ms!');
-    palette.chartEditorState.currentScrollEase = targetTimePixels;
+    // Scroll to the target position.
+    palette.chartEditorState.easeToSongTimeMs(targetTimeMs);
 
     // Command was successful.
     return true;
