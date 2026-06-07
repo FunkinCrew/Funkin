@@ -1,5 +1,6 @@
 package funkin.util;
 
+#if FEATURE_HAXEUI
 import haxe.ui.util.Color as HaxeUIColor;
 import flixel.util.FlxColor;
 
@@ -36,3 +37,4 @@ class ColorUtil
     return ((color.r / 255 * 299) + (color.g / 255 * 587) + (color.b / 255 * 114)) / 1000;
   }
 }
+#end
