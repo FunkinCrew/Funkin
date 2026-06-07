@@ -1,5 +1,6 @@
 package funkin.util;
 
+#if FEATURE_HAXEUI
 import haxe.ui.util.Color as HaxeUIColor;
 
 /**
@@ -309,3 +310,4 @@ typedef FuzzyScore =
    */
   var matches:Array<Int>;
 }
+#end
