@@ -3,7 +3,9 @@ package funkin.ui.debug.stageeditor.components;
 #if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorAssetFile;
 import openfl.display.BitmapData;
+import haxe.io.Bytes;
 import haxe.ui.notifications.NotificationType;
 import haxe.ui.notifications.NotificationManager;
 
@@ -13,14 +15,14 @@ class NewObjDialog extends Dialog
   public var bitmapName:Null<String> = null;
 
   var stageEditorState:StageEditorState;
-  var bitmap:BitmapData;
+  var data:Bytes;
 
-  override public function new(state:StageEditorState, img:BitmapData = null)
+  override public function new(state:StageEditorState, data:Bytes = null)
   {
     super();
 
     stageEditorState = state;
-    bitmap = img;
+    this.data = data;
 
     field.onChange = function(_)
     {
@@ -39,8 +41,8 @@ class NewObjDialog extends Dialog
 
     if (button == '{{Create}}')
     {
-      var objNames = [
-        for (obj in StageEditorState.instance.spriteArray) obj.name
+      var objNames:Array<String> = [
+        for (obj in stageEditorState.spriteArray) obj.name
       ];
 
       if (field.text == '' || field.text == null || objNames.contains(field.text))
@@ -57,10 +59,12 @@ class NewObjDialog extends Dialog
       {
         var spr = new StageEditorObject();
 
-        if (bitmap != null)
+        if (data != null)
         {
-          var bitToLoad = stageEditorState.addBitmap(bitmap, bitmapName);
-          spr.loadGraphic(stageEditorState.bitmaps[bitToLoad]);
+          var file:StageEditorAssetFile = stageEditorState.createFile(bitmapName, data);
+          spr.loadGraphic(BitmapData.fromBytes(file.data));
+
+          spr.usedFiles.push(file);
         }
         else
           spr.loadGraphic(AssetDataHandler.getDefaultGraphic());
@@ -68,7 +72,7 @@ class NewObjDialog extends Dialog
         spr.name = field.text;
         spr.screenCenter();
 
-        var sprArray = stageEditorState.spriteArray;
+        var sprArray:Array<StageEditorObject> = stageEditorState.spriteArray;
         spr.zIndex = sprArray.length == 0 ? 0 : (sprArray[sprArray.length - 1].zIndex + 1);
 
         stageEditorState.selectedSprite = spr;
