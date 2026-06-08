@@ -44,7 +44,8 @@ class ChartEditorCommandPaletteItemBuilder
       execute: item.execute,
     };
     // I wish there was an easier way to directly initialize a struct with a `.` in a property name.
-    listItem.set('title.htmlText', (item.html ?? false) ? item.title : '<font color="#F9F9F9">${item.title}</font>');
+    listItem.set('title', item.title);
+    listItem.set('title.htmlText', (item.html ?? false) ? item.title : null);
 
     return listItem;
   }
