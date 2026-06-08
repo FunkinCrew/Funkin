@@ -192,45 +192,51 @@ class ChartEditorCommandPaletteCommands
       ChartEditorToolboxHandler.hideAllToolboxes(palette.chartEditorState);
       palette.chartEditorState.testSongInPlayState(true);
     }),
-    command('Open Difficulty Toolbox', 'Show the chart difficulty toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
-    }),
-    command('Open Metadata Toolbox', 'Show the song metadata toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-    }),
-    command('Open Offsets Toolbox', 'Show the audio offsets toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
-    }),
-    command('Open Note Data Toolbox', 'Show the note data toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
-    }),
-    command('Open Event Data Toolbox', 'Show the event data toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
-    }),
-    command('Open Freeplay Toolbox', 'Show the freeplay preview toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
-    }),
-    command('Open Playtest Properties Toolbox', 'Show the playtest properties toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT);
-    }),
-    command('Open Player Preview Toolbox', 'Show the player character preview toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
-    }),
-    command('Open Opponent Preview Toolbox', 'Show the opponent character preview toolbox.', (palette) ->
-    {
-      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
-    }),
     command('Move to Camera Editor', 'Move this chart into the camera editor.', (palette) ->
     {
       palette.chartEditorState.moveToCameraEditor();
+    }),
+  ];
+
+  /**
+   * The full list of toolboxes to be opened.
+   */
+  public static final TOOLBOX_COMMANDS:Array<PaletteCommand> = [
+    command('Difficulty Toolbox', 'Show the chart difficulty toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
+    }),
+    command('Metadata Toolbox', 'Show the song metadata toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+    }),
+    command('Offsets Toolbox', 'Show the audio offsets toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT);
+    }),
+    command('Note Data Toolbox', 'Show the note data toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
+    }),
+    command('Event Data Toolbox', 'Show the event data toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+    }),
+    command('Freeplay Toolbox', 'Show the freeplay preview toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT);
+    }),
+    command('Playtest Properties Toolbox', 'Show the playtest properties toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT);
+    }),
+    command('Player Preview Toolbox', 'Show the player character preview toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT);
+    }),
+    command('Opponent Preview Toolbox', 'Show the opponent character preview toolbox.', (palette) ->
+    {
+      openToolbox(palette, ChartEditorState.CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT);
     }),
   ];
 
@@ -349,6 +355,43 @@ class ChartEditorCommandPaletteCommands
     // Remove any entry that has 0 points (no matches).
     var commandScores:Array<
       {score:FuzzyScore, command:PaletteCommand}> = COMMANDS.map((command) ->
+      {
+        var score:FuzzyScore = SearchUtil.scoreFuzzy(command.title, filter, {
+          allowNonContiguous: true, // The characters can be split up as long as they appear in order.
+          allowPartial: false // All characters must be present.
+        });
+        return {
+          score: score,
+          command: command
+        };
+      }).filter((commandScore) -> commandScore.score.score > 0);
+    // Sort by highest score first.
+    commandScores.sort((a, b) -> b.score.score - a.score.score);
+
+    return commandScores.map((commandScore) -> {
+      // Apply inline style to the title to highlight the matching characters.
+      title: SearchUtil.highlightFuzzyText(commandScore.command.title, commandScore.score),
+      html: true,
+      subtitle: commandScore.command.subtitle,
+      shortcut: commandScore.command.shortcut,
+      execute: commandScore.command.execute,
+    });
+  }
+
+  /**
+   * Build a list of toolbox commands for the palette.
+   *
+   * @param filter The filter string to apply to the command list.
+   * @return The list of toolbox commands.
+   */
+  public static function buildToolboxList(filter:String = ''):Array<PaletteCommand>
+  {
+    if (filter == '') return TOOLBOX_COMMANDS;
+
+    // Score each command based on similarity.
+    // Remove any entry that has 0 points (no matches).
+    var commandScores:Array<
+      {score:FuzzyScore, command:PaletteCommand}> = TOOLBOX_COMMANDS.map((command) ->
       {
         var score:FuzzyScore = SearchUtil.scoreFuzzy(command.title, filter, {
           allowNonContiguous: true, // The characters can be split up as long as they appear in order.
