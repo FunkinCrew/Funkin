@@ -27,6 +27,8 @@ class FunkinMemory
    */
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
+    funkin.assets.FunkinAssetCache.instance.preparePurgeCache();
+    funkin.assets.FunkinAssetCache.instance.purgeCache(callGarbageCollector);
     trace(' WARNING '.warning() + 'FunkinMemory.purgeCache() is deprecated and should not be used.');
   }
 
@@ -40,7 +42,42 @@ class FunkinMemory
    */
   public static function cacheTexture(assetPath:String):Void
   {
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    funkin.assets.Assets.cacheFlxGraphic(trueAssetPath);
     log(' WARNING ' + 'FunkinMemory.cacheTexture($assetPath) is deprecated and should not be used.');
+  }
+
+  static function parseAssetPath(path:String):Array<String>
+  {
+    // trace('the path is $path');
+    if (!StringTools.startsWith(path, "assets/"))
+    {
+      return null;
+    }
+
+    var lastDot:Int = path.lastIndexOf(".");
+
+    if (lastDot <= 6 || lastDot == path.length - 1)
+    {
+      return null;
+    }
+
+    var assetPart:String = path.substring(7, lastDot);
+
+    var extensionPart:String = path.substring(lastDot + 1);
+
+    if (extensionPart.length == 0 || extensionPart.indexOf("/") != -1)
+    {
+      return null;
+    }
+
+    return [assetPart, extensionPart];
   }
 
   /**
@@ -49,6 +86,14 @@ class FunkinMemory
    */
   static function permanentCacheTexture(assetPath:String):Void
   {
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    funkin.assets.Assets.cacheFlxGraphic(trueAssetPath);
     log(' WARNING ' + 'FunkinMemory.permanentCacheTexture($assetPath) is deprecated and should not be used.');
   }
 
@@ -58,9 +103,16 @@ class FunkinMemory
    * @param assetPath The path of the asset to retrieve.
    * @return A future for the FlxGraphic for the asset.
    */
-  public static function getCachedGraphic(assetPath:AssetPath):Future<FlxGraphic>
+  public static function getCachedGraphic(assetPath:String):Future<FlxGraphic>
   {
-    return funkin.assets.Assets.loadFlxGraphic(assetPath);
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    return funkin.assets.Assets.loadFlxGraphic(trueAssetPath);
   }
 
   /**
@@ -85,9 +137,16 @@ class FunkinMemory
    * @param assetPath The asset path of the texture to check.
    * @return Whether the texture is cached.
    */
-  public static function isTextureCached(assetPath:AssetPath):Bool
+  public static function isTextureCached(assetPath:String):Bool
   {
-    return funkin.assets.Assets.isFlxGraphicCached(assetPath);
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    return funkin.assets.Assets.isFlxGraphicCached(trueAssetPath);
   }
 
   // =========
@@ -113,8 +172,16 @@ class FunkinMemory
    *
    * @param assetPath The asset path of the sound to cache.
    */
-  public static function cacheSound(assetPath:AssetPath):Void
+  public static function cacheSound(assetPath:String):Void
   {
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    funkin.assets.Assets.cacheSound(trueAssetPath);
     log(' WARNING '.warning() + 'FunkinMemory.cacheSound($assetPath) is deprecated and should not be used.');
   }
 
@@ -123,8 +190,16 @@ class FunkinMemory
    *
    * @param assetPath The asset path of the sound to cache.
    */
-  public static function permanentCacheSound(assetPath:AssetPath):Void
+  public static function permanentCacheSound(assetPath:String):Void
   {
+    var parsedPath = parseAssetPath(assetPath);
+    if (parsedPath == null)
+    {
+      throw 'Invalid asset path: $assetPath';
+    }
+
+    var trueAssetPath = funkin.assets.Paths.file(parsedPath[0], parsedPath[1]);
+    funkin.assets.Assets.cacheSound(trueAssetPath);
     log(' WARNING '.warning() + 'FunkinMemory.permanentCacheSound($assetPath) is deprecated and should not be used.');
   }
 
