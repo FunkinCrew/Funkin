@@ -4,7 +4,7 @@
       "name": "FlxPartialSound",
       "type": "git",
       "dir": null,
-      "ref": "3635052152b58d07a60a266f18d226cb162389a6",
+      "ref": "5eb435f35c65442fb0c24e5c5836983a6b98c4a2",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
@@ -198,7 +198,7 @@
       "name": "openfl",
       "type": "git",
       "dir": null,
-      "ref": "23c6db6c4c8f1cc10eec9396acf231931336f07f",
+      "ref": "e6f54038498ecf3ec2ab3e999bb824799fbdd4d0",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {

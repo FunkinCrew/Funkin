@@ -1192,21 +1192,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     if (!enabled) throw 'FunkinAssetCache cannot be disabled!';
     return enabled;
   }
-
-  /**
-   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
-   */
-  public var bitmapData:Map<String, BitmapData> = [];
-
-  /**
-   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
-   */
-  public var font:Map<String, Font> = [];
-
-  /**
-   * A dummy cache. IAssetCache mandates that these exist but we don't use them.
-   */
-  public var sound:Map<String, Sound> = [];
 }
 
 /**
