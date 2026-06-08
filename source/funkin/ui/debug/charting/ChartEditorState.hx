@@ -6385,6 +6385,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       ChartEditorCommandPalette.openPalette(this, '#');
     }
+    // CTRL + W = Open Toolbox
+    if (pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.W && canOpenCommandPalette)
+    {
+      ChartEditorCommandPalette.openPalette(this, '%');
+    }
   }
 
   /**
