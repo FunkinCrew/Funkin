@@ -3376,17 +3376,6 @@ class PlayState extends MusicBeatSubState
     }
     if (combo == null) combo = Highscore.tallies.combo;
 
-    if (!isPracticeMode)
-    {
-      // TODO: Input splitter uses old input system, make it pull from the precise input queue directly.
-      var pressArray:Array<Bool> = [controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P];
-
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
-      {
-        if (pressArray[i]) indices.push(i);
-      }
-    }
     comboPopUps.displayRating(daRating);
     if (combo >= 10) comboPopUps.displayCombo(combo);
 
