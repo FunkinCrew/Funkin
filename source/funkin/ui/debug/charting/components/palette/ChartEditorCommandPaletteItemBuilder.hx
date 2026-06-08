@@ -70,6 +70,11 @@ class ChartEditorCommandPaletteItemBuilder
       // # - Go to Comment (type to search for comments)
       return buildItemsGoToComment(palette);
     }
+    else if (input.startsWith('%'))
+    {
+      // % - Open Toolbox (type to search)
+      return buildItemsOpenToolbox(palette);
+    }
     else if (input.startsWith('>'))
     {
       // > - Run Command (type to search for commands)
@@ -219,6 +224,43 @@ class ChartEditorCommandPaletteItemBuilder
   }
 
   /**
+   * Build a list of items for the "Open Toolbox" command.
+   *
+   * @param palette The CommandPalette to operate on.
+   * @return An array of commands to display.
+   */
+  static function buildItemsOpenToolbox(palette:ChartEditorCommandPalette):Array<PaletteCommand>
+  {
+    var input:String = palette.commandPaletteInput.text;
+
+    if (input == '%')
+    {
+      // Display the full toolbox list.
+      return ChartEditorCommandPaletteCommands.buildToolboxList();
+    }
+    else
+    {
+      // Filter the toolbox list based on the user input.
+      var subInput:String = input.substr(1);
+
+      var result:Array<PaletteCommand> = ChartEditorCommandPaletteCommands.buildToolboxList(subInput);
+
+      // Show a fallback if there is no matching toolbox.
+      if (result.length == 0)
+      {
+        return [{
+          title: '%',
+          subtitle: 'Unknown toolbox "$subInput", please refine your search.',
+          shortcut: '',
+          execute: (_) -> false,
+        }];
+      }
+
+      return result;
+    }
+  }
+
+  /**
    * Build a list of items for the "Run Command" command.
    *
    * @param palette The CommandPalette to operate on.
@@ -281,6 +323,16 @@ class ChartEditorCommandPaletteItemBuilder
         execute: (_) ->
         {
           ChartEditorCommandPalette.openPalette(palette.chartEditorState, '#');
+          return false;
+        },
+      },
+      {
+        title: '%',
+        subtitle: 'Open Toolbox',
+        shortcut: 'Ctrl+W',
+        execute: (_) ->
+        {
+          ChartEditorCommandPalette.openPalette(palette.chartEditorState, '%');
           return false;
         },
       },
