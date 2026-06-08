@@ -1675,7 +1675,14 @@ class FreeplayState extends MusicBeatSubState
     // Passing the currrent Freeplay character to the CharSelect so we can start it with that character selected
     new FlxTimer().start(0.9, _ ->
     {
-      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState({character: currentCharacterId}));
+      funkin.assets.FunkinAssetCache.instance.preparePurgeCache();
+      FlxG.signals.preStateSwitch.addOnce(() ->
+      {
+        funkin.assets.FunkinAssetCache.instance.purgeCache();
+      });
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterSelectState({
+        character: currentCharacterId
+      }));
     });
 
     for (grpSpr in exitMoversCharSel.keys())
