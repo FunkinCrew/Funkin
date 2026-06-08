@@ -53,7 +53,7 @@ class FunkinMemory
     log(' WARNING ' + 'FunkinMemory.cacheTexture($assetPath) is deprecated and should not be used.');
   }
 
-  static function parseAssetPath(path:String):Array<String>
+  static function parseAssetPath(path:String):Null<Array<String>>
   {
     // trace('the path is $path');
     if (!StringTools.startsWith(path, "assets/"))
