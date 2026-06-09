@@ -305,7 +305,11 @@ class ChartEditorImportExportHandler
    * @param onSaveCb Callback for when the file is saved.
    * @param onCancelCb Callback for when saving is cancelled.
    */
-  public static function exportCurrentChartToFNFC(state:ChartEditorState, force:Bool = false, ?targetPath:String, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
+  public static function exportCurrentChartToFNFC(state:ChartEditorState,
+    force:Bool = false,
+    ?targetPath:String,
+    ?onSaveCb:String->Void,
+    ?onCancelCb:Void->Void):Void
   {
     var fnfcData:FNFCData = ChartEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
     var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
@@ -372,6 +376,7 @@ class ChartEditorImportExportHandler
           state.currentWorkingFilePath = paths[0];
           state.applyWindowTitle();
           if (onSaveCb != null) onSaveCb(paths[0]);
+          state.saveDataDirty = false;
         }
       };
 
@@ -385,11 +390,51 @@ class ChartEditorImportExportHandler
       try
       {
         FileUtil.saveChartAsFNFC(zipEntries, onSave, onCancel, '${state.currentSongId}.${Constants.EXT_CHART}');
-        state.saveDataDirty = false;
       }
       catch (e)
       {
       }
+    }
+  }
+
+  /**
+   * Build a folder of files from the current chart data and export it to a user-defined directory.
+   *
+   * @param state The Chart Editor state containing the chart data to export.
+   * @param targetPath where to export if `force` is `true`. If `null`, will export to the `backups` folder.
+   * @param onSaveCb Callback for when the file is saved.
+   * @param onCancelCb Callback for when saving is cancelled.
+   */
+  public static function exportCurrentChartToFolder(state:ChartEditorState, ?targetPath:String, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
+  {
+    var fnfcData:FNFCData = ChartEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
+    var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
+
+    trace('Exporting ${zipEntries.length} files to folder...');
+
+    // Prompt and save.
+    var onSave:Array<String>->Void = function(paths:Array<String>)
+    {
+      var directory:String = haxe.io.Path.directory(paths[0]);
+      trace('Exported to "${directory}"');
+      // state.currentWorkingFilePath = paths[0];
+      // state.applyWindowTitle();
+      if (onSaveCb != null) onSaveCb(directory);
+    };
+
+    var onCancel:Void->Void = function()
+    {
+      trace('Export cancelled.');
+      if (onCancelCb != null) onCancelCb();
+    };
+
+    trace('Exporting to user-defined location...');
+    try
+    {
+      FileUtil.saveMultipleFiles(zipEntries, onSave, onCancel);
+    }
+    catch (e)
+    {
     }
   }
 }
