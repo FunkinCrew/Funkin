@@ -17,8 +17,11 @@ class ZoomCameraContainer extends BaseEventContainer
     zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
 
     bindFloatField(zoomCameraDuration, 'duration');
+    bindFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX');
+    bindFloatField(zoomCameraWidescreenScaleY, 'widescreenScaleY');
 
-    zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void {
+    zoomCameraEaseFrame.easeGraphPreview.registerEvent(UIEvent.CHANGE, function(_:UIEvent):Void
+    {
       updateCameraPreview();
       updateBlockVisuals();
     });
@@ -48,7 +51,10 @@ class ZoomCameraContainer extends BaseEventContainer
 
     zoomCameraZoomLevel.value = cameraEditorState.selectedSongEvent.getFloat('zoom') ?? ZoomCameraSongEvent.DEFAULT_ZOOM;
     zoomCameraZoomLevelSlider.value = zoomCameraZoomLevel.value;
+
     loadFloatField(zoomCameraDuration, 'duration', ZoomCameraSongEvent.DEFAULT_DURATION);
+    loadFloatField(zoomCameraWidescreenScaleX, 'widescreenScaleX', ZoomCameraSongEvent.DEFAULT_WIDESCREEN_SCALE);
+    loadFloatField(zoomCameraWidescreenScaleY, 'widescreenScaleY', ZoomCameraSongEvent.DEFAULT_WIDESCREEN_SCALE);
 
     zoomCameraEaseFrame.easeGraphPreview.event = cameraEditorState.selectedSongEvent;
     updateCameraPreview();
@@ -108,6 +114,5 @@ class ZoomCameraContainer extends BaseEventContainer
     cameraEditorState.selectedSongEvent.set('mode', value);
     updateCameraPreview();
   }
-
 }
 #end
