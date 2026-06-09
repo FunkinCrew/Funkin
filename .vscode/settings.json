@@ -169,6 +169,10 @@
       "label": "Debug (Straight to Chart Editor)",
       "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
+    {
+      "label": "Debug (Straight to Camera Editor)",
+      "args": ["-debug", "-DEYESOFGOD", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
     { "label": "Release", "args": ["-release"] },
     {
       "label": "Release (GitHub Actions)",
