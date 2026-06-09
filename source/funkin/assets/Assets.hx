@@ -52,6 +52,7 @@ class Assets implements ConsoleClass
   /**
    * Perform initialization for internal asset management.
    */
+  @:access(funkin.assets.FunkinAssetCache) @:access(funkin.assets.FunkinBitmapFrontend)
   public static function initialize():Void
   {
     if (initialized) return;
@@ -62,13 +63,39 @@ class Assets implements ConsoleClass
     // Enable our custom asset caches
     LimeAssets.cache = funkin.assets.FunkinAssetCache.FunkinLimeAssetCache.instance;
     OpenFLAssets.cache = funkin.assets.FunkinAssetCache.FunkinAssetCache.instance;
-    @:privateAccess
-    FlxG.bitmap = funkin.assets.FunkinBitmapFrontend.instance;
+    untyped FlxG.bitmap = funkin.assets.FunkinBitmapFrontend.instance;
 
     // Cache the results of Assets.list()
     for (type in ASSET_TYPES)
     {
       Assets.list(type);
+    }
+
+    for (image in Assets.queryPersistentAssets(IMAGE))
+    {
+      var key = image.toString();
+      try
+      {
+        FunkinAssetCache.instance.stagedBitmapData.cachePermanent(key, FunkinAssetCache.instance.getBitmapData(key));
+        FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(key, FunkinBitmapFrontend.instance.getSafe(key));
+      }
+      catch (_)
+      {
+        trace(' ERROR '.bold().error() + ' Could not cache permanent iamge "$key". does it exist?');
+      }
+    }
+
+    for (sound in Assets.queryPersistentAssets(SOUND))
+    {
+      var key = sound.toString();
+      try
+      {
+        FunkinAssetCache.instance.stagedSound.cachePermanent(key, FunkinAssetCache.instance.getSound(key));
+      }
+      catch (_)
+      {
+        trace(' ERROR '.bold().error() + ' Could not cache permanent sound "$key". does it exist?');
+      }
     }
   }
 
@@ -678,11 +705,14 @@ class Assets implements ConsoleClass
       case IMAGE:
         results = results.concat([
           // Built-in
-          Paths.file('images/logo/default', 'png', 'flixel'), // Fonts
+          Paths.file('images/logo/default', 'png', 'flixel'),
 
+          // Fonts
           Paths.image('ui/fonts/default'),
-          Paths.image('ui/fonts/bold'), // Soundtray
+          Paths.image('ui/fonts/bold'),
+          Paths.image('ui/fonts/freeplay-clear'),
 
+          // Soundtray
           Paths.image('ui/soundtray/volume-box'),
           Paths.image('ui/soundtray/bars-01'),
           Paths.image('ui/soundtray/bars-02'),
