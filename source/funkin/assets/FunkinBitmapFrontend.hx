@@ -152,10 +152,8 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // Clear everything in the cache, except permanent assets.
     // trace("CLEARED CACHED");
     // stagedFlxGraphic.clearCache();
-    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
-      if (persistentAssetsKeys.contains(key)) return false;
       if (graphic == null) return true;
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
@@ -172,16 +170,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearExcept(filter:Array<String>):Void
   {
-    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
-    {
-      if (persistentAssetsKeys.contains(key)) return false;
-      if (graphic == null) return true;
-      if (graphic.useCount > 0) return false;
-      if (graphic.persist) return false;
-
-      return !filter.exists(keyword -> key.contains(keyword));
-    });
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return !filter.exists(keyword -> key.contains(keyword)));
   }
 
   /**
@@ -193,16 +182,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearOnly(filter:Array<String>):Void
   {
-    var persistentAssetsKeys = [for (asset in Assets.queryPersistentAssets(IMAGE)) asset.toString()];
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
-    {
-      if (persistentAssetsKeys.contains(key)) return false;
-      if (graphic == null) return true;
-      if (graphic.useCount > 0) return false;
-      if (graphic.persist) return false;
-
-      return filter.exists(keyword -> key.contains(keyword));
-    });
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return filter.exists(keyword -> key.contains(keyword)));
   }
 
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
