@@ -534,7 +534,31 @@
     "functionSignature": {
       "defaultWrap": "noWrap",
       "defaultLocation": "afterLast",
-      "defaultAdditionalIndent": 0
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "type": "onePerLineAfterFirst",
+          "conditions": [
+            {
+              "cond": "anyItemLength >= n",
+              "value": 32
+            }
+          ]
+        },
+        {
+          "type": "onePerLineAfterFirst",
+          "conditions": [
+            {
+              "cond": "itemCount >= n",
+              "value": 5
+            },
+            {
+              "cond": "lineLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
     },
 
     "multiVar": {
