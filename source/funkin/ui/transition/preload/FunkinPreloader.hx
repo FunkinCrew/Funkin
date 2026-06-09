@@ -169,9 +169,9 @@ class FunkinPreloader extends FlxBasePreloader
 
     // Create the progress message.
 
-    var progressLeftTextFormat:TextFormat = new TextFormat('LCDMono2 Bold', Std.int(32 * ratio), Constants.COLOR_PRELOADER_BAR, true);
+    var progressLeftTextFormat:TextFormat = new TextFormat('DS-Digital', Std.int(32 * ratio), Constants.COLOR_PRELOADER_BAR, true);
     progressLeftTextFormat.align = TextFormatAlign.LEFT;
-    var progressRightTextFormat:TextFormat = new TextFormat('LCDMono2 Bold', 16, Constants.COLOR_PRELOADER_BAR, true);
+    var progressRightTextFormat:TextFormat = new TextFormat('DS-Digital', 16, Constants.COLOR_PRELOADER_BAR, true);
     progressRightTextFormat.align = TextFormatAlign.RIGHT;
 
     progressLeftText = makeText(BAR_PADDING * ratio, progressLines.y, 'Downloading assets...', Constants.COLOR_PRELOADER_BAR);
@@ -922,7 +922,7 @@ class FunkinPreloader extends FlxBasePreloader
     else if (progressLeftText.text != text)
     {
       // We have to keep updating the text format, because the font can take a frame or two to load.
-      progressLeftText.defaultTextFormat = new TextFormat('LCDMono2 Bold', 32, Constants.COLOR_PRELOADER_BAR, true);
+      progressLeftText.defaultTextFormat = new TextFormat('DS-Digital', 32, Constants.COLOR_PRELOADER_BAR, true);
       progressLeftText.defaultTextFormat.align = TextFormatAlign.LEFT;
       progressLeftText.text = text;
 
