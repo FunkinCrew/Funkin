@@ -3432,13 +3432,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         });
       }
     };
-    menubarItemSaveChartAs.onClick = _ -> this.exportCurrentChartToFNFC(false, null, function(path:String)
+    menubarItemSaveChartAs.onClick = _ -> this.exportCurrentChartToFNFC(false, null, (path:String) ->
     {
       // CTRL + SHIFT + S Successful
       this.success('Saved Chart', 'Chart saved successfully to ${path}.');
-    }, function()
+    }, () -> {
+        // CTRL + SHIFT + S Cancelled
+    });
+    menubarItemExportChartAsFolder.onClick = _ -> this.exportCurrentChartToFolder(null, (path:String) ->
     {
-      // CTRL + SHIFT + S Cancelled
+      this.success('Exported Chart', 'Chart exported successfully to ${path}.');
+    }, () -> {
+        // Cancelled
     });
     menubarItemExit.onClick = _ -> quitChartEditor(true);
 
@@ -7867,7 +7872,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return note != null && currentNoteSelection.indexOf(note) != -1;
   }
 
-  function doesNoteStack(note:Null<SongNoteData>, curStackedNotes:Array<SongNoteData>):Bool
+  function doesNoteStack(note:Null<SongNoteData>,
+    curStackedNotes:Array<SongNoteData>):Bool
   {
     return note != null && curStackedNotes.contains(note);
   }
