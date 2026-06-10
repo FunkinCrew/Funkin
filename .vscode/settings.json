@@ -172,6 +172,15 @@
       "args": ["-debug", "-DUNLOCK_EVERYTHING"]
     },
     {
+      "label": "Debug (Tracy + Unlock Everything)",
+      "args": [
+        "-debug",
+        "-DFEATURE_DEBUG_TRACY",
+        "-DUNLOCK_EVERYTHING",
+        "-DFEATURE_DEBUG_FUNCTIONS"
+      ]
+    },
+    {
       "label": "Debug (Tracy)",
       "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
     },

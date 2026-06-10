@@ -167,6 +167,11 @@ class Constants
   public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
 
   /**
+   * The default color for story levels.
+   */
+  public static final DEFAULT_COLOR_STORY_LEVEL:FlxColor = 0xFFF9CF51;
+
+  /**
    * GAME DEFAULTS
    */
   // ==============================

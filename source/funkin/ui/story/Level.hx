@@ -1,18 +1,18 @@
 package funkin.ui.story;
 
 import funkin.util.SortUtil;
-import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.util.FlxColor;
 import funkin.play.song.Song;
 import funkin.data.IRegistryEntry;
 import funkin.data.song.SongRegistry;
-import funkin.data.story.level.LevelRegistry;
 import funkin.data.story.level.LevelData;
 
 /**
  * An object used to retrieve data about a story mode level (also known as "weeks").
  * Can be scripted to override each function, for custom behavior.
  */
+@:nullSafety
 class Level implements IRegistryEntry<LevelData>
 {
   /**
@@ -31,45 +31,49 @@ class Level implements IRegistryEntry<LevelData>
 
   /**
    * Get the list of songs in this level, as an array of IDs.
-   * @return Array<String>
+   *
+   * @return The list of song IDs.
    */
   public function getSongs():Array<String>
   {
     // Copy the array so that it can't be modified on accident
-    return _data.songs.copy();
+    return (_data == null) ? [] : _data.songs.copy();
   }
 
   /**
    * Retrieve the title of the level for display on the menu.
-   * @return Title of the level as a string
+   *
+   * @return Title of the level as a string.
    */
   public function getTitle():String
   {
-    // TODO: Maybe add localization support?
-    return _data.name;
+    return _data?.name ?? 'Unknown';
   }
 
   /**
    * Retrieve the title of the level for display on a capsule.
-   * @return Title of the capsule as a string
+   *
+   * @return Title of the capsule as a string.
    */
-  public function getCapsuleTitle():String
+  public function getCapsuleTitle():Null<String>
   {
-    return _data.capsule?.name ?? null;
+    return _data?.capsule?.name ?? null;
   }
 
   public function getCapsuleTitleOffsets():Array<Float>
   {
-    return _data.capsule?.offsets ?? [0.0, 0.0];
+    return _data?.capsule?.offsets ?? [0.0, 0.0];
   }
 
   /**
    * Construct the title graphic for the level.
+   *
    * @return The constructed graphic as a sprite.
    */
-  public function buildTitleGraphic():FlxSprite
+  public function buildTitleGraphic():FunkinSprite
   {
-    var result:FlxSprite = new FlxSprite().loadGraphic(Paths.image(_data.titleAsset));
+    var titleAsset:String = _data?.titleAsset ?? '';
+    var result:FunkinSprite = new FunkinSprite().loadTexture(titleAsset);
 
     return result;
   }
@@ -118,24 +122,26 @@ class Level implements IRegistryEntry<LevelData>
    */
   public function isVisible():Bool
   {
-    return _data.visible;
+    return _data?.visible ?? true;
   }
 
   /**
    * Build a sprite for the background of the level.
    * Can be overriden by ScriptedLevel. Not used if `isBackgroundSimple` returns true.
+   *
    * @return The constructed sprite
    */
-  public function buildBackground():FlxSprite
+  public function buildBackground():FunkinSprite
   {
-    if (!_data.background.startsWith('#'))
+    var background:String = _data?.background ?? '#F9CF51';
+    if (!background.startsWith('#'))
     {
       // Image specified
-      return new FlxSprite().loadGraphic(Paths.image(_data.background));
+      return new FunkinSprite().loadTexture(background);
     }
 
     // Color specified
-    var result:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 400, FlxColor.WHITE);
+    var result:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, 400, FlxColor.WHITE);
     result.color = getBackgroundColor();
     return result;
   }
@@ -143,21 +149,25 @@ class Level implements IRegistryEntry<LevelData>
   /**
    * Returns true if the background is a solid color.
    * If you have a ScriptedLevel with a fancy background, you may want to override this to false.
+   *
    * @return Whether the background is a simple color
    */
   public function isBackgroundSimple():Bool
   {
-    return _data.background.startsWith('#');
+    var background:String = _data?.background ?? '#F9CF51';
+    return background.startsWith('#');
   }
 
   /**
    * Returns true if the background is a solid color.
    * If you have a ScriptedLevel with a fancy background, you may want to override this to false.
+   *
    * @return The background as a simple color. May not be valid if `isBackgroundSimple` returns false.
    */
   public function getBackgroundColor():FlxColor
   {
-    return FlxColor.fromString(_data.background);
+    var background:String = _data?.background ?? '#F9CF51';
+    return FlxColor.fromString(background) ?? Constants.DEFAULT_COLOR_STORY_LEVEL;
   }
 
   /**
@@ -171,7 +181,7 @@ class Level implements IRegistryEntry<LevelData>
     var songList:Array<String> = getSongs();
 
     var firstSongId:String = songList[0];
-    var firstSong:Song = SongRegistry.instance.fetchEntry(firstSongId, {
+    var firstSong:Null<Song> = SongRegistry.instance.fetchEntry(firstSongId, {
       variation: Constants.DEFAULT_VARIATION
     });
 
@@ -191,7 +201,7 @@ class Level implements IRegistryEntry<LevelData>
     for (songIndex in 1...songList.length)
     {
       var songId:String = songList[songIndex];
-      var song:Song = SongRegistry.instance.fetchEntry(songId, {
+      var song:Null<Song> = SongRegistry.instance.fetchEntry(songId, {
         variation: Constants.DEFAULT_VARIATION
       });
 
@@ -213,11 +223,14 @@ class Level implements IRegistryEntry<LevelData>
 
   /**
    * Build the props for display over the colored background.
-   * @param existingProps The existing prop sprites, if any.
+   *
+   * @param existingProps The existing prop sprites to recycle, if any.
    * @return The constructed prop sprites
    */
   public function buildProps(?existingProps:Array<LevelProp>):Array<LevelProp>
   {
+    if (_data == null || _data.props == null) return existingProps ?? [];
+
     var props:Array<LevelProp> = existingProps == null ? [] : [for (x in existingProps) x];
 
     if (_data.props.length == 0) return props;
@@ -233,7 +246,12 @@ class Level implements IRegistryEntry<LevelData>
 
     for (propIndex in 0..._data.props.length)
     {
-      var propData:LevelPropData = _data.props[propIndex];
+      var propData:Null<LevelPropData> = _data.props[propIndex];
+      if (propData == null) continue;
+
+      propData.offsets ??= [0.0, 0.0];
+      var xOffset:Float = propData?.offsets[0] ?? 0.0;
+      var yOffset:Float = propData?.offsets[1] ?? 0.0;
 
       // Attempt to reuse the `LevelProp` object.
       // This prevents animations from resetting.
@@ -248,7 +266,8 @@ class Level implements IRegistryEntry<LevelData>
         else
         {
           existingProp.visible = true;
-          existingProp.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+          existingProp.x = xOffset + FlxG.width * 0.25 * propIndex;
+          existingProp.y = yOffset;
         }
       }
       else
@@ -256,7 +275,8 @@ class Level implements IRegistryEntry<LevelData>
         var propSprite:Null<LevelProp> = LevelProp.build(propData);
         if (propSprite == null) continue;
 
-        propSprite.x = propData.offsets[0] + FlxG.width * 0.25 * propIndex;
+        propSprite.x = xOffset + FlxG.width * 0.25 * propIndex;
+        propSprite.y = yOffset;
         props.push(propSprite);
       }
     }
