@@ -815,7 +815,8 @@ class CameraEditorState extends UIState implements ConsoleClass
    * @param data The event data to use.
    * @param preserveCurrentState
    */
-  public function handleSetCameraBopEvent(data:SongEventData, preserveCurrentState:Bool = false):Void
+  public function handleSetCameraBopEvent(data:SongEventData,
+    preserveCurrentState:Bool = false):Void
   {
     var rate:Float = data.getFloat('rate') ?? Constants.DEFAULT_ZOOM_RATE;
     var offset:Float = data.getFloat('offset') ?? Constants.DEFAULT_ZOOM_OFFSET;
@@ -2187,6 +2188,17 @@ class CameraEditorState extends UIState implements ConsoleClass
     }, function()
     {
       // Failed to save backup?
+    });
+  }
+
+  @:bind(menubarItemExportChartAsFolder, MouseEvent.CLICK)
+  function onMenubarExportChartAsFolder(_)
+  {
+    CameraEditorImportExportHandler.exportCurrentChartToFolder(this, (path:String) ->
+    {
+      notifyChange('Exported Chart', 'Chart exported successfully to ${path}');
+    }, () -> {
+        // Cancelled
     });
   }
 
