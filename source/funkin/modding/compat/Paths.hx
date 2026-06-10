@@ -3606,9 +3606,17 @@ class Paths
         var charSelectFilePath:String =
           dirName.replace('ui/character-select/characters/', (library == 'default') ? 'images/charSelect/' : '$library/images/charSelect/')
           + 'Chill/$fileName';
-        var difficultyFilePath:String = filePath.replace(
+        var freeplayDifficultyFilePath:String = filePath.replace(
           'ui/freeplay/difficulty/',
           (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay'
+        );
+        var storyDifficultyFilePath:String = filePath.replace(
+          'ui/story-mode/difficulties/',
+          (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay'
+        );
+        var resultsDifficultyFilePath:String = filePath.replace(
+          'ui/results/difficulty/',
+          (library == 'default') ? 'images/resultScreen/diff_' : '$library/images/resultScreen/diff_'
         );
 
         usePathIfExists(typeFilePath);
@@ -3616,7 +3624,9 @@ class Paths
         usePathIfExists(freeplayIconFilePath);
         usePathIfExists(nametagFilePath);
         usePathIfExists(charSelectFilePath);
-        usePathIfExists(difficultyFilePath);
+        usePathIfExists(freeplayDifficultyFilePath);
+        usePathIfExists(storyDifficultyFilePath);
+        usePathIfExists(resultsDifficultyFilePath);
 
       case 'frag' | 'vert': // Shader text
         var typeFilePath:String = (library == 'default') ? 'assets/shaders/$id' : 'assets/$library/shaders/$id';
@@ -3633,10 +3643,25 @@ class Paths
         var freeplayIconFilePath:String = filePath
           .replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
           .replace('.xml', 'pixel.xml');
+        var freeplayDifficultyFilePath:String = filePath.replace(
+          'ui/freeplay/difficulty/',
+          (library == 'default') ? 'images/freeplay/freeplay' : '$library/images/freeplay/freeplay'
+        );
+        var storyDifficultyFilePath:String = filePath.replace(
+          'ui/story-mode/difficulties/',
+          (library == 'default') ? 'images/storymenu/difficulties' : '$library/images/storymenu/difficulties'
+        );
+        var resultsDifficultyFilePath:String = filePath.replace(
+          'ui/results/difficulty/',
+          (library == 'default') ? 'images/resultScreen/diff_' : '$library/images/resultScreen/diff_'
+        );
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
         usePathIfExists(freeplayIconFilePath);
+        usePathIfExists(freeplayDifficultyFilePath);
+        usePathIfExists(storyDifficultyFilePath);
+        usePathIfExists(resultsDifficultyFilePath);
 
       case 'json': // Data or image text
         var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
