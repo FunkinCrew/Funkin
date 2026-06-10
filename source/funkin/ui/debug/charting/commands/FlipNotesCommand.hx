@@ -7,8 +7,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Command that flips a given array of notes from the player's side of the chart editor to the opponent's side, or vice versa.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class FlipNotesCommand implements ChartEditorCommand
 {
   var notes:Array<SongNoteData> = [];

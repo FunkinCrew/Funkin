@@ -22,15 +22,40 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 {
   public static inline final COLUMNS = 2;
   static var controlList = Control.createAll();
-  /*
+
+  /**
    * Defines groups of controls that cannot share inputs, like left and right. Say, if ACCEPT is Z, Back is X,
    * if the player sets Back to Z it also set ACCEPT to X. This prevents the player from setting the controls in
    * a way the prevents them from changing more controls or exiting the menu.
    */
-  static var controlGroups:Array<Array<Control>> = [[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT], [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK], [CUTSCENE_ADVANCE], [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT], [WINDOW_FULLSCREEN, #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end], [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE], [#if FEATURE_DEBUG_MENU DEBUG_MENU, #end#if FEATURE_CHART_EDITOR DEBUG_CHART, #end#if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end DEBUG_DISPLAY]];
+  static var controlGroups:Array<Array<Control>> = [
+    [NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT],
+    [
+      UI_UP,
+      UI_DOWN,
+      UI_LEFT,
+      UI_RIGHT,
+      ACCEPT,
+      BACK
+    ],
+    [CUTSCENE_ADVANCE],
+    [FREEPLAY_FAVORITE, FREEPLAY_LEFT, FREEPLAY_RIGHT, FREEPLAY_CHAR_SELECT],
+    [
+      WINDOW_FULLSCREEN,
+      #if FEATURE_SCREENSHOTS WINDOW_SCREENSHOT, #end
+    ],
+    [VOLUME_UP, VOLUME_DOWN, VOLUME_MUTE],
+    [
+      #if FEATURE_DEBUG_MENU DEBUG_MENU, #end
+      #if FEATURE_CHART_EDITOR DEBUG_CHART, #end
+      #if FEATURE_STAGE_EDITOR DEBUG_STAGE, #end
+      DEBUG_DISPLAY
+    ]
+  ];
 
-  var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
-
+  var itemGroups:Array<Array<InputItem>> = [
+    for (i in 0...controlGroups.length) []
+  ];
   var controlGrid:MenuTypedList<InputItem>;
   var deviceList:TextMenuList;
   var menuCamera:FlxCamera;
@@ -38,10 +63,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   var popup:Prompt;
   var camFollow:FlxObject;
   var labels:FlxTypedGroup<AtlasText>;
-
   var currentDevice:Device = Keys;
   var deviceListSelected:Bool = false;
-
   var actionPrevented:Bool = false;
 
   static final CONTROL_BASE_X = 50;
@@ -148,8 +171,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       var formatName = name.replace('_', ' ');
       var label = labels.add(new AtlasText(Math.max(FullScreenScaleMode.gameNotchSize.x, CONTROL_BASE_X), y, formatName, AtlasFont.BOLD));
       label.alpha = 0.6;
-      for (i in 0...COLUMNS)
-        createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
+      for (i in 0...COLUMNS) createItem(label.x + CONTROL_MARGIN_X + i * CONTROL_SPACING_X, y, control, i);
 
       y += spacer;
     }
@@ -173,7 +195,9 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       camFollow.y = selected.y;
 
       labels.forEach((label) -> label.alpha = 0.6);
-      labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
+      labels.members[
+        Std.int(controlGrid.selectedIndex / COLUMNS)
+      ].alpha = 1.0;
     });
 
     prompt = new Prompt("\nPress any key to rebind\n\n\nBackspace to unbind\n    Escape to cancel", None);
@@ -223,10 +247,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       case Keys:
         {
+          if (!FlxG.keys.enabled) return;
           keyUsedToEnterPrompt = FlxG.keys.firstJustPressed();
         }
       case Gamepad(id):
         {
+          if (FlxG.gamepads.getByID(id) == null) return;
           buttonUsedToEnterPrompt = FlxG.gamepads.getByID(id).firstJustPressedID();
         }
     }
@@ -245,7 +271,9 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   function goToDeviceList():Void
   {
     controlGrid.selectedItem.idle();
-    labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 0.6;
+    labels.members[
+      Std.int(controlGrid.selectedIndex / COLUMNS)
+    ].alpha = 0.6;
     controlGrid.enabled = false;
     deviceList.enabled = true;
     canExit = true;
@@ -257,10 +285,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   {
     currentDevice = device;
 
-    for (item in controlGrid.members)
-      item.updateDevice(currentDevice);
+    for (item in controlGrid.members) item.updateDevice(currentDevice);
 
-    var inputName = device == Keys ? "key" : "button";
     var cancel = device == Keys ? "Escape" : "Back";
     // todo: alignment
     if (device == Keys)
@@ -275,7 +301,9 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     }
 
     controlGrid.selectedItem.select();
-    labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
+    labels.members[
+      Std.int(controlGrid.selectedIndex / COLUMNS)
+    ].alpha = 1.0;
     controlGrid.enabled = true;
     deviceList.enabled = false;
     deviceListSelected = false;
@@ -304,7 +332,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
 
             // keyUsedToEnterPrompt is my weird workaround.
 
-            var key = FlxG.keys.firstJustReleased();
+            var key = FlxG.keys?.firstJustReleased();
+            if (key == null) return;
             if (key != NONE && key != keyUsedToEnterPrompt)
             {
               if (key == ESCAPE)
@@ -325,7 +354,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
           }
         case Gamepad(id):
           {
-            var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
+            var button = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
+            if (button == null) return;
             if (button != NONE && button != buttonUsedToEnterPrompt)
             {
               if (button != BACK) onInputSelect(button);
@@ -357,12 +387,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
       {
         case Keys:
           {
-            var key = FlxG.keys.firstJustReleased();
+            var key = FlxG.keys?.firstJustReleased();
             if (key == ESCAPE) closePopup();
           }
         case Gamepad(id):
           {
-            var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
+            var button = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
             if (button == BACK) closePopup();
 
             var key = FlxG.keys.firstJustReleased();
@@ -375,7 +405,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       case Keys:
         {
-          var keyJustReleased:Int = FlxG.keys.firstJustReleased();
+          var keyJustReleased:Null<Int> = FlxG.keys?.firstJustReleased();
+          if (keyJustReleased == null) return;
           if (keyJustReleased != NONE && keyJustReleased == keyUsedToEnterPrompt)
           {
             keyUsedToEnterPrompt = null;
@@ -384,7 +415,8 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
         }
       case Gamepad(id):
         {
-          var buttonJustReleased:Int = FlxG.gamepads.getByID(id).firstJustReleasedID();
+          var buttonJustReleased:Null<Int> = FlxG.gamepads?.getByID(id)?.firstJustReleasedID();
+          if (buttonJustReleased == null) return;
           if (buttonJustReleased != NONE && buttonJustReleased == buttonUsedToEnterPrompt)
           {
             buttonUsedToEnterPrompt = null;

@@ -66,10 +66,13 @@ class SaveMacro
       case FVar(t, _):
         switch (t)
         {
-          case TPath(p): p.name == "SaveProperty";
-          case _: false;
+          case TPath(p):
+            p.name == "SaveProperty";
+          case _:
+            false;
         }
-      case _: false;
+      case _:
+        false;
     };
   }
 

@@ -71,7 +71,6 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
 
   var boxSprite:FlxSprite;
   var textDisplay:FunkinTypeText;
-
   var text(default, set):String;
 
   function set_text(value:String):String
@@ -203,7 +202,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
    * Calls `kill()` on the group's members and then on the group itself.
    * You can revive this group later via `revive()` after this.
    */
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
     if (this.boxSprite != null)
@@ -219,7 +218,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     this.clear();
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
 
@@ -272,7 +271,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
    * For example, if an animation was defined as having the indexes [3, 0, 1, 2],
    * then the first callback would have frameNumber = 0 and frameIndex = 3.
    */
-  function onAnimationFrame(name:String = "", frameNumber:Int = -1, frameIndex:Int = -1):Void
+  function onAnimationFrame(name:String = '', frameNumber:Int = -1, frameIndex:Int = -1):Void
   {
     // Do nothing by default.
     // This can be overridden by, for example, scripts,
@@ -289,7 +288,9 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
       FlxColor.fromString(_data.text.shadowColor ?? '#00000000'), false);
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
     // TODO: Add an option to configure this.
-    textDisplay.sounds = [FunkinSound.load(Paths.sound('pixelText'), 0.6)];
+    textDisplay.sounds = [
+      FunkinSound.load(Paths.sound('pixelText'), 0.6)
+    ];
 
     textDisplay.completeCallback = onTypingComplete;
 
@@ -362,7 +363,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
    */
   public function getCurrentAnimation():String
   {
-    if (this.animation == null || this.animation.curAnim == null) return "";
+    if (this.animation == null || this.animation.curAnim == null) return '';
     return this.animation.curAnim.name;
   }
 

@@ -25,7 +25,7 @@ class MapTools
   public static function values<K, T>(map:Null<Map<K, T>>):Array<T>
   {
     if (map == null) return [];
-    return [for (i in map.iterator()) i];
+    return[for (i in map.iterator()) i];
   }
 
   /**
@@ -61,17 +61,7 @@ class MapTools
   public static function deepClone<K, T, U:ICloneable<T>>(map:Map<K, U>):Map<K, T>
   {
     // TODO: This function does NOT work.
-    throw "Not implemented";
-
-    /*
-      var newMap:Map<K, T> = [];
-      // Replace each value with a clone of itself.
-      for (key in newMap.keys())
-      {
-        newMap.set(key, newMap.get(key).clone());
-      }
-      return newMap;
-     */
+    throw 'Not implemented';
   }
 
   /**

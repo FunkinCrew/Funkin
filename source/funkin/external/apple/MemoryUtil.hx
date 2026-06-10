@@ -4,9 +4,7 @@ package funkin.external.apple;
 /**
  * A utility class to get information about the mem usage.
  */
-@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
-@:include('MemoryUtil.hpp')
-@:unreflective
+@:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml')) @:include('MemoryUtil.hpp') @:unreflective
 extern class MemoryUtil
 {
   /**

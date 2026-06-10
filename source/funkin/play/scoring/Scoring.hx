@@ -1,5 +1,6 @@
 package funkin.play.scoring;
 
+import flixel.util.FlxColor;
 import funkin.save.Save.SaveScoreData;
 import funkin.save.Save.SaveScoreTallyData;
 
@@ -12,19 +13,19 @@ enum abstract ScoringSystem(String)
    * The scoring system used in versions of the game Week 6 and older.
    * Scores the player based on judgement, represented by a step function.
    */
-  var LEGACY;
+  public var LEGACY;
 
   /**
    * The scoring system used in Week 7. It has tighter scoring windows than Legacy.
    * Scores the player based on judgement, represented by a step function.
    */
-  var WEEK7;
+  public var WEEK7;
 
   /**
    * Points Based On Timing scoring system, version 1
    * Scores the player based on the offset based on timing, represented by a sigmoid function.
    */
-  var PBOT1;
+  public var PBOT1;
 }
 
 /**
@@ -42,9 +43,12 @@ class Scoring
   {
     return switch (scoringSystem)
     {
-      case LEGACY: scoreNoteLEGACY(msTiming);
-      case WEEK7: scoreNoteWEEK7(msTiming);
-      case PBOT1: scoreNotePBOT1(msTiming);
+      case LEGACY:
+        scoreNoteLEGACY(msTiming);
+      case WEEK7:
+        scoreNoteWEEK7(msTiming);
+      case PBOT1:
+        scoreNotePBOT1(msTiming);
       default:
         FlxG.log.error('Unknown scoring system: ${scoringSystem}');
         0;
@@ -61,9 +65,12 @@ class Scoring
   {
     return switch (scoringSystem)
     {
-      case LEGACY: judgeNoteLEGACY(msTiming);
-      case WEEK7: judgeNoteWEEK7(msTiming);
-      case PBOT1: judgeNotePBOT1(msTiming);
+      case LEGACY:
+        judgeNoteLEGACY(msTiming);
+      case WEEK7:
+        judgeNoteWEEK7(msTiming);
+      case PBOT1:
+        judgeNotePBOT1(msTiming);
       default:
         FlxG.log.error('Unknown scoring system: ${scoringSystem}');
         'miss';
@@ -74,9 +81,12 @@ class Scoring
   {
     return switch (scoringSystem)
     {
-      case LEGACY: LEGACY_MISS_SCORE;
-      case WEEK7: WEEK7_MISS_SCORE;
-      case PBOT1: PBOT1_MISS_SCORE;
+      case LEGACY:
+        LEGACY_MISS_SCORE;
+      case WEEK7:
+        WEEK7_MISS_SCORE;
+      case PBOT1:
+        PBOT1_MISS_SCORE;
       default:
         FlxG.log.error('Unknown scoring system: ${scoringSystem}');
         0;
@@ -427,12 +437,12 @@ class Scoring
 
 enum abstract ScoringRank(String)
 {
-  var PERFECT_GOLD;
-  var PERFECT;
-  var EXCELLENT;
-  var GREAT;
-  var GOOD;
-  var SHIT;
+  public var PERFECT_GOLD;
+  public var PERFECT;
+  public var EXCELLENT;
+  public var GREAT;
+  public var GOOD;
+  public var SHIT;
 
   /**
    * Converts ScoringRank to an integer value for comparison.
@@ -461,7 +471,8 @@ enum abstract ScoringRank(String)
   }
 
   // Yes, we really need a different function for each comparison operator.
-  @:op(A > B) static function compareGT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  @:op(A > B)
+  static function compareGT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
     if (a == null || b == null) return false;
@@ -473,7 +484,8 @@ enum abstract ScoringRank(String)
   }
 
   // Greater than or equal to comparison
-  @:op(A >= B) static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  @:op(A >= B)
+  static function compareGTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
     if (a == null || b == null) return false;
@@ -485,7 +497,8 @@ enum abstract ScoringRank(String)
   }
 
   // Less than comparison
-  @:op(A < B) static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  @:op(A < B)
+  static function compareLT(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
     if (a == null || b == null) return false;
@@ -497,7 +510,8 @@ enum abstract ScoringRank(String)
   }
 
   // Less than or equal to comparison
-  @:op(A <= B) static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
+  @:op(A <= B)
+  static function compareLTEQ(a:Null<ScoringRank>, b:Null<ScoringRank>):Bool
   {
     if (a != null && b == null) return true;
     if (a == null || b == null) return false;
@@ -518,7 +532,6 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD | PERFECT:
-        // return 2.5;
         return 95 / 24;
       case EXCELLENT:
         return 0;
@@ -538,7 +551,6 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD | PERFECT:
-        // return 2.5;
         return 95 / 24;
       case EXCELLENT:
         return 97 / 24;
@@ -558,7 +570,6 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD | PERFECT:
-        // return 2.5;
         return 129 / 24;
       case EXCELLENT:
         return 122 / 24;
@@ -578,7 +589,6 @@ enum abstract ScoringRank(String)
     switch (abstract)
     {
       case PERFECT_GOLD | PERFECT:
-        // return 2.5;
         return 140 / 24;
       case EXCELLENT:
         return 140 / 24;
@@ -614,7 +624,7 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function getHorTextAsset()
+  public function getHorTextAsset():String
   {
     switch (abstract)
     {
@@ -635,7 +645,7 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function getVerTextAsset()
+  public function getVerTextAsset():String
   {
     switch (abstract)
     {
@@ -656,7 +666,7 @@ enum abstract ScoringRank(String)
     }
   }
 
-  public function getRankingFreeplayColor()
+  public function getRankingFreeplayColor():FlxColor
   {
     return switch (abstract)
     {

@@ -9,8 +9,7 @@ import funkin.data.song.SongDataUtils;
  * Command to deselect all items that are currently selected in the chart editor,
  * then select all the items that were previously unselected.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class InvertSelectedItemsCommand implements ChartEditorCommand
 {
   var previousNoteSelection:Array<SongNoteData> = [];

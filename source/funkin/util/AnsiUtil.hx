@@ -15,7 +15,6 @@ enum abstract AnsiCode(String) from String to String
   public var INVERSE = '\x1b[7m';
   public var HIDDEN = '\x1b[8m';
   public var STRIKETHROUGH = '\x1b[9m';
-
   // 30-37 set foreground to standard colors
   public var BLACK = '\x1b[30m';
   public var RED = '\x1b[31m';
@@ -25,17 +24,14 @@ enum abstract AnsiCode(String) from String to String
   public var MAGENTA = '\x1b[35m';
   public var CYAN = '\x1b[36m';
   public var WHITE = '\x1b[37m';
-
   // 38 has two modes
   // [38;2;#m uses one of 256 colors
   public var ORANGE = '\x1b[38;5;208m';
-
   // [38;2;RR;GG;BBm uses 24-bit color RGB
   public var NOTE_LEFT = '\x1b[38;2;255;34;170m';
   public var NOTE_DOWN = '\x1b[38;2;0;238;255m';
   public var NOTE_UP = '\x1b[38;2;0;204;0m';
   public var NOTE_RIGHT = '\x1b[38;2;204;17;17m';
-
   // 40-47 set background to standard colors
   public var BG_BLACK = '\x1b[40m';
   public var BG_RED = '\x1b[41m';
@@ -45,7 +41,6 @@ enum abstract AnsiCode(String) from String to String
   public var BG_MAGENTA = '\x1b[45m';
   public var BG_CYAN = '\x1b[46m';
   public var BG_WHITE = '\x1b[47m';
-
   // 48 has two modes
   // [48;2;#m uses one of 256 colors
   // Color names via https://hexdocs.pm/color_palette/ansi_color_codes.html
@@ -66,14 +61,12 @@ enum abstract AnsiCode(String) from String to String
   public var BG_ORANGE = '\x1b[48;5;208m';
   public var BG_SALMON = '\x1b[48;5;209m';
   public var BG_LIGHT_PINK = '\x1b[48;5;213m';
-
   // [48;2;RR;GG;BBm uses 24-bit color RGB
   public var BG_PURPLE = '\x1b[48;2;121;37;199m';
   public var BG_NOTE_LEFT = '\x1b[48;2;255;34;170m';
   public var BG_NOTE_DOWN = '\x1b[48;2;0;238;255m';
   public var BG_NOTE_UP = '\x1b[48;2;0;204;0m';
   public var BG_NOTE_RIGHT = '\x1b[48;2;204;17;17m';
-
   // 90-97 sets a bright foreground color (non-standard)
   public var BRIGHT_BLACK = '\x1b[90m';
   public var BRIGHT_RED = '\x1b[91m';
@@ -83,7 +76,6 @@ enum abstract AnsiCode(String) from String to String
   public var BRIGHT_MAGENTA = '\x1b[95m';
   public var BRIGHT_CYAN = '\x1b[96m';
   public var BRIGHT_WHITE = '\x1b[97m';
-
   // 100-107 sets a bright background color (non-standard)
   public var BG_BRIGHT_BLACK = '\x1b[100m';
   public var BG_BRIGHT_RED = '\x1b[101m';
@@ -104,17 +96,13 @@ class AnsiUtil
   #if sys
   @:noCompletion
   static final REGEX_TEAMCITY_VERSION:EReg = ~/^9\.(0*[1-9]\d*)\.|\d{2,}\./;
-
   @:noCompletion
   static final REGEX_TERM_256:EReg = ~/(?i)-256(color)?$/;
-
   @:noCompletion
   static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
   #end
-
   @:noCompletion
   static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
-
   @:noCompletion
   static var codesSupported:Null<Bool> = null;
 
@@ -506,7 +494,9 @@ class AnsiUtil
    *
    * @return `true` if ANSI codes are supported, `false` otherwise.
    */
-  @SuppressWarnings(["checkstyle:SimplifyBooleanExpression"])
+  @SuppressWarnings([
+    "checkstyle:SimplifyBooleanExpression"
+  ])
   public static function isColorCodesSupported():Bool
   {
     if (codesSupported == null)

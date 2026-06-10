@@ -18,7 +18,6 @@ class EnumPreferenceItem<T> extends TextMenuItem
   }
 
   public var lefthandText:AtlasText;
-
   public var currentKey:String;
   public var onChangeCallback:Null<String->T->Void>;
   public var map:Map<String, T>;
@@ -43,8 +42,6 @@ class EnumPreferenceItem<T> extends TextMenuItem
     var i:Int = 0;
     for (key in map.keys())
     {
-      var value:T = map[key];
-
       this.keys.push(key);
       if (this.currentKey == key) index = i;
       i += 1;

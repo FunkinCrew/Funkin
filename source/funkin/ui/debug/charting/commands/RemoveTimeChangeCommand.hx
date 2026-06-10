@@ -7,14 +7,11 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 /**
  * A command which removes the given timechange from the current song's timechanges.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveTimeChangeCommand implements ChartEditorCommand
 {
   var timeChangeIndex:Int;
-
   var previousTimeChanges:Null<Array<SongTimeChange>>;
-
   var removedTimeChange:Null<Array<SongTimeChange>>;
 
   public function new(timeChangeIndex:Int)

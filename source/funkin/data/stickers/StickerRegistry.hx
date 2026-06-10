@@ -15,7 +15,6 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
   public static final STICKER_DATA_VERSION:thx.semver.Version = '1.0.0';
 
   public static final STICKER_DATA_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
-
   public static final instance:StickerRegistry = new StickerRegistry();
 
   public function new()

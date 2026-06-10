@@ -4,8 +4,7 @@ package funkin.ui.debug.charting.commands;
 /**
  * Switch the current difficulty (and possibly variation) of the chart in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class SwitchDifficultyCommand implements ChartEditorCommand
 {
   var prevDifficulty:String;

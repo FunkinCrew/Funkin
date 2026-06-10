@@ -81,6 +81,11 @@ class HealthIcon extends FunkinSprite
   var isLegacyStyle:Bool = false;
 
   /**
+   * Whether this icon should bop or not.
+   */
+  var shouldBop:Bool = true;
+
+  /**
    * At this amount of health, play the Winning animation instead of the idle.
    */
   static final WINNING_THRESHOLD:Float = 0.8 * 2;
@@ -199,6 +204,7 @@ class HealthIcon extends FunkinSprite
     {
       this.characterId = data.id;
       this.isPixel = data.isPixel ?? false;
+      this.shouldBop = data.shouldBop ?? true;
 
       loadCharacter(characterId);
 
@@ -226,15 +232,13 @@ class HealthIcon extends FunkinSprite
 
     if (bopEvery != 0)
     {
-      var dt:Float = elapsed * 60;
-
-      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, dt, 0.512);
+      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, Constants.HEALTH_ICON_ANGLE_HALF_LIFE);
     }
 
     this.updatePosition();
   }
 
-  /*
+  /**
    * Immediately snap the health icon to its target size without lerping.
    */
   public function snapToTargetSize():Void
@@ -252,6 +256,7 @@ class HealthIcon extends FunkinSprite
   }
 
   // Apply custom icons offset after hitbox update.
+
   override public function updateHitbox():Void
   {
     super.updateHitbox();
@@ -294,7 +299,7 @@ class HealthIcon extends FunkinSprite
   public function onStepHit(curStep:Int):Void
   {
     // Make the icons bop.
-    if (bopEvery != 0 && curStep % bopEvery == 0 && isLegacyStyle)
+    if (bopEvery != 0 && curStep % bopEvery == 0 && shouldBop)
     {
       bopTween?.cancel();
       setGraphicSize(Std.int(this.width + (HEALTH_ICON_SIZE * this.size.x * BOP_SCALE)), 0);

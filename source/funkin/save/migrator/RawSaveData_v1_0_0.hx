@@ -7,13 +7,9 @@ typedef RawSaveData_v1_0_0 =
   var seenVideo:Bool;
   var mute:Bool;
   var volume:Float;
-
   var sessionId:String;
-
   var songCompletion:Map<String, Float>;
-
   var songScores:Map<String, Int>;
-
   var ?controls:
     {
       ?p1:SavePlayerControlsData_v1_0_0,

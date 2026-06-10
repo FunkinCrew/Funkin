@@ -21,29 +21,19 @@ class SongMetadata_v2_1_0
   // ==========
   // UNMODIFIED VALUES
   // ==========
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:Version;
-
   @:default("Unknown")
   public var songName:String;
-
   @:default("Unknown")
   public var artist:String;
-
-  @:optional
-  @:default(96)
+  @:optional @:default(96)
   public var divisions:Null<Int>; // Optional field
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var looped:Bool;
-
   @:default(funkin.data.song.SongRegistry.DEFAULT_GENERATEDBY)
   public var generatedBy:String;
-
   public var timeFormat:SongData.SongTimeFormat;
-
   public var timeChanges:Array<SongData.SongTimeChange>;
 
   /**
@@ -93,8 +83,7 @@ class SongPlayData_v2_1_0
   // ==========
   // UNMODIFIED VALUES
   // ==========
-  @:default([])
-  @:optional
+  @:default([]) @:optional
   public var songVariations:Array<String>;
   public var difficulties:Array<String>;
   public var characters:SongData.SongCharacterData;

@@ -15,7 +15,6 @@ class Subtitles extends FlxSpriteGroup
 {
   var subtitleText:SubtitlesText;
   var background:FlxSprite;
-
   var subtitlesData:Array<SubtitleEntry>;
   var assignedSound:FlxSound;
 
@@ -39,7 +38,7 @@ class Subtitles extends FlxSpriteGroup
     setText([], true);
   }
 
-  override function update(elapsed:Float)
+  override function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -180,10 +179,10 @@ enum abstract SubtitlesAlignment(String) from String to String
   /**
    * Subtitles will be aligned at the top.
    */
-  var SUBTITLES_TOP:String = 'top';
+  public var SUBTITLES_TOP:String = 'top';
 
   /**
    * Subtitles will be aligned at the bottom.
    */
-  var SUBTITLES_BOTTOM:String = 'bottom';
+  public var SUBTITLES_BOTTOM:String = 'bottom';
 }

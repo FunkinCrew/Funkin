@@ -33,7 +33,6 @@ import openfl.net.FileReference;
 class StageOffsetSubState extends HaxeUISubState
 {
   var uiStuff:Component;
-
   var outlineShader:StrokeShader;
 
   static final STAGE_EDITOR_LAYOUT = Paths.ui('stage-editor/stage-editor-view');
@@ -196,7 +195,6 @@ class StageOffsetSubState extends HaxeUISubState
 
   var mosPosOld:FlxPoint = new FlxPoint();
   var sprOld:FlxPoint = new FlxPoint();
-
   private var char:FlxSprite = null;
   var overlappingChar:Bool = false;
 

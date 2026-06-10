@@ -12,7 +12,7 @@ class IteratorTools
 {
   public static function array<T>(iterator:Iterator<T>):Array<T>
   {
-    return [for (i in iterator) i];
+    return[for (i in iterator) i];
   }
 
   public static function count<T>(iterator:Iterator<T>, ?predicate:(item:T) -> Bool):Int
@@ -21,13 +21,11 @@ class IteratorTools
 
     if (predicate == null)
     {
-      for (_ in iterator)
-        n++;
+      for (_ in iterator) n++;
     }
     else
     {
-      for (x in iterator)
-        if (predicate(x)) n++;
+      for (x in iterator) if (predicate(x)) n++;
     }
 
     return n;

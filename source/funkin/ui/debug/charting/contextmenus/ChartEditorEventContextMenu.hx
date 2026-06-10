@@ -11,8 +11,7 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/event.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/event.xml"))
 class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuEventKind:Label;
@@ -22,7 +21,6 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
   var contextmenuDelete:MenuItem;
 
   public var selectedUnit:Int;
-
   public var data:SongEventData;
 
   public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0, data:SongEventData, selectedUnit:Int = 0)

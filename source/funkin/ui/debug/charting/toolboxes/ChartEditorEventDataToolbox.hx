@@ -31,17 +31,13 @@ import flixel.FlxG;
 /**
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/event-data.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/toolboxes/event-data.xml'))
 class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 {
   var toolboxEventsEventKind:DropDown;
-  var toolboxEventsDataFrame:Frame;
   var toolboxEventsDataBox:VBox;
-
   var easeGraphImage:Image;
   var easeDotImage:Image;
-
   var _easeGraphSprite:Null<flixel.FlxSprite> = null;
   var _easeDotSprites:Array<flixel.FlxSprite> = [];
   var _dotTimer:Null<FlxTimer> = null;
@@ -146,7 +142,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 
@@ -253,7 +249,7 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       // Add a label for the data field.
       var label:Label = new Label();
       label.text = field.title;
-      label.verticalAlign = "center";
+      label.verticalAlign = 'center';
       label.percentWidth = 50;
       hbox.addComponent(label);
 
@@ -342,17 +338,17 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       inputBox.percentWidth = 50;
       if (field.type != FRAME) inputBox.addComponent(input);
 
-      if (field.type == ENUM && (field.name == "ease" || field.name == "easeDir"))
+      if (field.type == ENUM && (field.name == 'ease' || field.name == 'easeDir'))
       {
         _needEasePreview = true;
       }
 
       // Add a unit label if applicable.
-      if (field.units != null && field.units != "")
+      if (field.units != null && field.units != '')
       {
         var units:Label = new Label();
         units.text = field.units;
-        units.verticalAlign = "center";
+        units.verticalAlign = 'center';
         inputBox.addComponent(units);
       }
 
@@ -424,26 +420,26 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       if (easeGraphImage == null)
       {
         easeGraphImage = new Image();
-        easeGraphImage.id = "easeGraph";
+        easeGraphImage.id = 'easeGraph';
         easeGraphImage.width = 100;
         easeGraphImage.height = 100;
         easeGraphImage.hidden = true;
-        easeGraphImage.verticalAlign = "bottom";
+        easeGraphImage.verticalAlign = 'bottom';
       }
       if (easeDotImage == null)
       {
         easeDotImage = new Image();
-        easeDotImage.id = "easeDot";
+        easeDotImage.id = 'easeDot';
         easeDotImage.width = 16;
         easeDotImage.height = 100;
         easeDotImage.hidden = true;
-        easeDotImage.verticalAlign = "bottom";
+        easeDotImage.verticalAlign = 'bottom';
       }
 
       var easeHBox = new HBox();
       easeHBox.percentWidth = 100;
       easeHBox.height = 100;
-      easeHBox.verticalAlign = "bottom";
+      easeHBox.verticalAlign = 'bottom';
 
       easeHBox.addComponent(easeGraphImage);
       easeHBox.addComponent(easeDotImage);
@@ -462,14 +458,14 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
   {
     if (easeGraphImage == null || easeDotImage == null) return;
 
-    final easeVal:Null<String> = chartEditorState.eventDataToPlace.get("ease");
-    final easeDirVal:Null<String> = chartEditorState.eventDataToPlace.get("easeDir");
-    final easeStr:String = easeVal == null ? "linear" : easeVal;
-    final easeDirStr:String = easeDirVal == null ? "In" : easeDirVal;
-    final key:String = easeStr + (easeDirStr == "" ? "" : easeDirStr);
+    final easeVal:Null<String> = chartEditorState.eventDataToPlace.get('ease');
+    final easeDirVal:Null<String> = chartEditorState.eventDataToPlace.get('easeDir');
+    final easeStr:String = easeVal == null ? 'linear' : easeVal;
+    final easeDirStr:String = easeDirVal == null ? 'In' : easeDirVal;
+    final key:String = easeStr + (easeDirStr == '' ? '' : easeDirStr);
 
     // Hide preview when easing indicates a non-visual/legacy type such as "classic"
-    if (easeStr != null && easeStr.toLowerCase().indexOf("classic") != -1)
+    if (easeStr != null && easeStr.toLowerCase().indexOf('classic') != -1)
     {
       _dotTimer?.cancel();
       _pauseTimer?.cancel();

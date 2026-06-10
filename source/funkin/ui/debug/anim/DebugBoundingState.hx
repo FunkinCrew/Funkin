@@ -34,31 +34,18 @@ using flixel.util.FlxSpriteUtil;
 
 class DebugBoundingState extends FlxState
 {
-  /*
-    TODAY'S TO-DO
-    - Cleaner UI
-   */
   var bg:FlxBackdrop;
-  var fileInfo:FlxText;
-
   var txtGrp:FlxTypedGroup<FlxText>;
-
   var hudCam:FlxCamera;
-
   var curView:ANIMDEBUGVIEW = SPRITESHEET;
-
   var spriteSheetView:FlxGroup;
   var offsetView:FlxGroup;
   var dropDownSetup:Bool = false;
-
   var onionSkinChar:BaseCharacter;
   var txtOffsetShit:FlxText;
-
   var offsetEditorDialog:CollapsibleDialog;
   var offsetAnimationDropdown:DropDown;
-
   var haxeUIFocused(get, default):Bool = false;
-
   var currentAnimationName(get, never):String;
 
   function get_currentAnimationName():String
@@ -239,7 +226,10 @@ class DebugBoundingState extends FlxState
 
       if (FlxG.mouse.pressed)
       {
-        swagChar.animOffsets = [(FlxG.mouse.x - mouseOffset.x) * -1, (FlxG.mouse.y - mouseOffset.y) * -1];
+        swagChar.animOffsets = [
+          (FlxG.mouse.x - mouseOffset.x) * -1,
+          (FlxG.mouse.y - mouseOffset.y) * -1
+        ];
 
         swagChar.animationOffsets.set(swagChar.getCurrentAnimation(), swagChar.animOffsets);
 
@@ -277,23 +267,6 @@ class DebugBoundingState extends FlxState
   function clearInfo()
   {
     txtGrp.clear();
-  }
-
-  function checkLibrary(library:String)
-  {
-    trace(Assets.hasLibrary(library));
-    if (Assets.getLibrary(library) == null)
-    {
-      @:privateAccess
-      if (!LimeAssets.libraryPaths.exists(library)) throw "Missing library: " + library;
-
-      // var callback = callbacks.add("library:" + library);
-      Assets.loadLibrary(library).onComplete(function(_)
-      {
-        trace('LOADED... awesomeness...');
-        // callback();
-      });
-    }
   }
 
   override function update(elapsed:Float)
@@ -449,7 +422,8 @@ class DebugBoundingState extends FlxState
     if (FlxG.keys.justPressed.SPACE)
     {
       if (swagChar?.hasAnimation('danceLeft')) offsetAnimationDropdown.value = {id: 'danceLeft', text: 'danceLeft'};
-      else offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
+      else
+        offsetAnimationDropdown.value = {id: 'idle', text: 'idle'};
 
       playCharacterAnimation(currentAnimationName, true);
     }
@@ -515,8 +489,8 @@ class DebugBoundingState extends FlxState
 
   var swagChar:BaseCharacter;
 
-  /*
-    Called when animation dropdown is changed!
+  /**
+   * Called when animation dropdown is changed!
    */
   function loadAnimShit(char:String)
   {

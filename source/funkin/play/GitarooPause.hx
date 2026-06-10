@@ -15,9 +15,7 @@ class GitarooPause extends MusicBeatState
 {
   var replayButton:FlxSprite;
   var cancelButton:FlxSprite;
-
   var replaySelect:Bool = false;
-
   var previousParams:Null<PlayStateParams>;
 
   public function new(?previousParams:PlayStateParams):Void

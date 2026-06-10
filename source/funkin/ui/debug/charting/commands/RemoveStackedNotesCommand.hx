@@ -9,8 +9,7 @@ import funkin.data.song.SongNoteDataUtils;
  * Deletes the given notes from the current chart in the chart editor if any overlap another.
  * Use when ONLY notes are being deleted.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveStackedNotesCommand implements ChartEditorCommand
 {
   var notes:Null<Array<SongNoteData>>;

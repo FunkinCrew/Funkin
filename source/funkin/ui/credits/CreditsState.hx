@@ -83,7 +83,6 @@ class CreditsState extends MusicBeatState
   var creditsGroup:FlxSpriteGroup;
 
   var scrollPaused:Bool = false;
-
   var backersToBuild:Array<String>;
   var entriesToBuild:Array<CreditsEntry>;
 
@@ -92,7 +91,7 @@ class CreditsState extends MusicBeatState
     super();
   }
 
-  public override function create():Void
+  override public function create():Void
   {
     super.create();
 
@@ -135,8 +134,6 @@ class CreditsState extends MusicBeatState
     creditsGroup = new FlxSpriteGroup();
     creditsGroup.x = Math.max(funkin.ui.FullScreenScaleMode.gameNotchSize.x, SCREEN_PAD);
     creditsGroup.y = STARTING_HEIGHT;
-
-    // buildCreditsGroup();
 
     add(creditsGroup);
 
@@ -257,7 +254,7 @@ class CreditsState extends MusicBeatState
     creditsLineY += CREDITS_FONT_SIZE * 2.5;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -300,7 +297,7 @@ class CreditsState extends MusicBeatState
     FlxG.switchState(() -> new MainMenuState());
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
   }

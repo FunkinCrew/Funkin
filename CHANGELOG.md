@@ -697,6 +697,7 @@ The LE SSERAFIM collab update!
 
 ## New Contributors for 0.7.4
 
+* @Trofem made their first contribution in [#5476](https://github.com/FunkinCrew/Funkin/pull/5476)
 * @ThatOneCalculator made their first contribution in [#5507](https://github.com/FunkinCrew/Funkin/pull/5507)
 * @SrtHero278 made their first contribution in [#5565](https://github.com/FunkinCrew/Funkin/pull/5565)
 * @VirtuGuy made their first contribution in [#5598](https://github.com/FunkinCrew/Funkin/pull/5598)

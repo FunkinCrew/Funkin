@@ -18,8 +18,7 @@ import haxe.ui.events.UIEvent;
 
 using StringTools;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/character-properties.xml"))
 class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 {
   public var charPosX:NumberStepper;
@@ -50,14 +49,18 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
     charZIdx.onChange = function(_)
     {
       if (state.selectedChar == null) return;
-      state.charGroups[state.selectedChar.characterType].zIndex = Std.int(charZIdx.pos);
+      state.charGroups[
+        state.selectedChar.characterType
+      ].zIndex = Std.int(charZIdx.pos);
       state.sortAssets();
     }
 
     charCamX.onChange = charCamY.onChange = function(_)
     {
       if (state.selectedChar == null) return;
-      state.charCamOffsets[state.selectedChar.characterType] = [charCamX.pos ?? 0, charCamY.pos ?? 0];
+      state.charCamOffsets[
+        state.selectedChar.characterType
+      ] = [charCamX.pos ?? 0, charCamY.pos ?? 0];
       state.updateMarkerPos();
     }
 

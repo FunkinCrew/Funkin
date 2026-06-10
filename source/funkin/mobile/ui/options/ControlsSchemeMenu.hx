@@ -64,7 +64,13 @@ class ControlsSchemeMenu extends MusicBeatSubState
   /**
    * An array of every single scheme.
    */
-  final availableSchemes:Array<String> = [FunkinHitbox.FunkinHitboxControlSchemes.Arrows, FunkinHitbox.FunkinHitboxControlSchemes.FourLanes, FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbTriangle, FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbSquare, FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbDPad];
+  final availableSchemes:Array<String> = [
+    FunkinHitbox.FunkinHitboxControlSchemes.Arrows,
+    FunkinHitbox.FunkinHitboxControlSchemes.FourLanes,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbTriangle,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbSquare,
+    FunkinHitbox.FunkinHitboxControlSchemes.DoubleThumbDPad
+  ];
 
   /**
    * Current selected index
@@ -86,7 +92,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var hsv:HSVShader = new HSVShader();
 
-  public override function create():Void
+  override public function create():Void
   {
     super.create();
 
@@ -332,7 +338,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var originX:Float;
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

@@ -10,7 +10,6 @@ class LevelTitle extends FlxSpriteGroup
   static final LOCK_PAD:Int = 4;
 
   public final level:Level;
-
   public var targetY:Float;
 
   var title:FlxSprite;
@@ -22,7 +21,7 @@ class LevelTitle extends FlxSpriteGroup
 
     this.level = level;
 
-    if (this.level == null) throw "Level cannot be null!";
+    if (this.level == null) throw 'Level cannot be null!';
 
     buildLevelTitle();
     buildLevelLock();
@@ -47,7 +46,7 @@ class LevelTitle extends FlxSpriteGroup
   var flashTick:Float = 0;
   final flashFramerate:Float = 20;
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     this.y = MathUtil.smoothLerpPrecision(y, targetY, elapsed, 0.451);
 

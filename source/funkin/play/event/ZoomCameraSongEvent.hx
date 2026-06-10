@@ -34,7 +34,7 @@ class ZoomCameraSongEvent extends SongEvent
   public static final DEFAULT_DURATION:Float = 4.0;
   public static final DEFAULT_MODE:String = 'direct';
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -57,7 +57,7 @@ class ZoomCameraSongEvent extends SongEvent
     var ease:String = data.getString('ease') ?? SongEvent.DEFAULT_EASE;
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
 
-    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
     // If it's a string, check the value.
     switch (ease)
@@ -65,7 +65,7 @@ class ZoomCameraSongEvent extends SongEvent
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(scaledZoom, 0, isDirectMode);
       default:
-        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
@@ -83,7 +83,7 @@ class ZoomCameraSongEvent extends SongEvent
     return (wideScale.x - 1) * scale.x + (wideScale.y - 1) * scale.y;
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Zoom Camera';
   }
@@ -99,64 +99,89 @@ class ZoomCameraSongEvent extends SongEvent
    * }
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([{
-      name: 'zoom',
-      title: 'Zoom Level',
-      defaultValue: DEFAULT_ZOOM,
-      min: 0,
-      step: 0.05,
-      type: SongEventFieldType.FLOAT,
-      units: 'x'
-    }, {
-      name: 'duration',
-      title: 'Duration',
-      defaultValue: DEFAULT_DURATION,
-      min: 0,
-      step: 0.5,
-      type: SongEventFieldType.FLOAT,
-      units: 'steps'
-    }, {
-      name: 'ease',
-      title: 'Easing Type',
-      defaultValue: SongEvent.DEFAULT_EASE,
-      type: SongEventFieldType.ENUM,
-      keys: ['Linear' => 'linear', 'Instant (Ignores duration)' => 'INSTANT', 'Sine' => 'sine', 'Quad' => 'quad', 'Cube' => 'cube', 'Quart' => 'quart', 'Quint' => 'quint', 'Expo' => 'expo', 'Smooth Step' => 'smoothStep', 'Smoother Step' => 'smootherStep', 'Elastic' => 'elastic', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ ' => 'circ',]
-    }, {
-      name: 'easeDir',
-      title: 'Easing Direction',
-      defaultValue: SongEvent.DEFAULT_EASE_DIR,
-      type: SongEventFieldType.ENUM,
-      keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-    }, {
-      name: 'advanced',
-      title: 'Advanced',
-      type: SongEventFieldType.FRAME,
-      collapsible: true,
-      children: [{
-        name: 'mode',
-        title: 'Mode',
-        defaultValue: DEFAULT_MODE,
+    return new SongEventSchema([
+      {
+        name: 'zoom',
+        title: 'Zoom Level',
+        defaultValue: DEFAULT_ZOOM,
+        min: 0,
+        step: 0.05,
+        type: SongEventFieldType.FLOAT,
+        units: 'x'
+      },
+      {
+        name: 'duration',
+        title: 'Duration',
+        defaultValue: DEFAULT_DURATION,
+        min: 0,
+        step: 0.5,
+        type: SongEventFieldType.FLOAT,
+        units: 'steps'
+      },
+      {
+        name: 'ease',
+        title: 'Easing Type',
+        defaultValue: SongEvent.DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
-        keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
-      }, {
-        name: 'widescreenScaleX',
-        title: 'Widescreen Scale X',
-        defaultValue: DEFAULT_WIDESCREEN_SCALE,
-        min: 0,
-        max: 1,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      }, {
-        name: 'widescreenScaleY',
-        title: 'Widescreen Scale Y',
-        defaultValue: DEFAULT_WIDESCREEN_SCALE,
-        min: 0,
-        max: 1,
-        type: SongEventFieldType.FLOAT,
-        units: 'x'
-      }]
-    }]);
+        keys: [
+          'Linear' => 'linear',
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Sine' => 'sine',
+          'Quad' => 'quad',
+          'Cube' => 'cube',
+          'Quart' => 'quart',
+          'Quint' => 'quint',
+          'Expo' => 'expo',
+          'Smooth Step' => 'smoothStep',
+          'Smoother Step' => 'smootherStep',
+          'Elastic' => 'elastic',
+          'Back' => 'back',
+          'Bounce' => 'bounce',
+          'Circ ' => 'circ',
+        ]
+      },
+      {
+        name: 'easeDir',
+        title: 'Easing Direction',
+        defaultValue: SongEvent.DEFAULT_EASE_DIR,
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+      },
+      {
+        name: 'advanced',
+        title: 'Advanced',
+        type: SongEventFieldType.FRAME,
+        collapsible: true,
+        children: [
+          {
+            name: 'mode',
+            title: 'Mode',
+            defaultValue: DEFAULT_MODE,
+            type: SongEventFieldType.ENUM,
+            keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+          },
+          {
+            name: 'widescreenScaleX',
+            title: 'Widescreen Scale X',
+            defaultValue: DEFAULT_WIDESCREEN_SCALE,
+            min: 0,
+            max: 1,
+            type: SongEventFieldType.FLOAT,
+            units: 'x'
+          },
+          {
+            name: 'widescreenScaleY',
+            title: 'Widescreen Scale Y',
+            defaultValue: DEFAULT_WIDESCREEN_SCALE,
+            min: 0,
+            max: 1,
+            type: SongEventFieldType.FLOAT,
+            units: 'x'
+          }
+        ]
+      }
+    ]);
   }
 }

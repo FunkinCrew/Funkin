@@ -8,6 +8,11 @@ class FloatTools
 {
   /**
    * Constrain a float between a minimum and maximum value.
+   *
+   * @param value The value to clamp.
+   * @param min The minimum value.
+   * @param max The maximum value.
+   * @return The clamped value.
    */
   public static function clamp(value:Float, min:Float, max:Float):Float
   {
@@ -15,11 +20,16 @@ class FloatTools
   }
 
   /**
-    Round a float to a certain number of decimal places.
-  **/
+   * Round a float to a certain number of decimal places.
+   *
+   * @param number The number to round.
+   * @param precision The number of decimal places to round to.
+   * @return The rounded number.
+   */
   public static function round(number:Float, precision:Int = 2):Float
   {
-    number *= Math.pow(10, precision);
-    return Math.round(number) / Math.pow(10, precision);
+    final PLACE:Int = 10;
+    number *= Math.pow(PLACE, precision);
+    return Math.round(number) / Math.pow(PLACE, precision);
   }
 }

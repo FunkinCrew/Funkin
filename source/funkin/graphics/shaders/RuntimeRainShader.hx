@@ -22,7 +22,6 @@ class RuntimeRainShader extends RuntimePostEffectShader
       color:ShaderParameter<Float>,
       radius:ShaderParameter<Float>,
     }>;
-
   public var time(default, set):Float = 1;
 
   function set_time(value:Float):Float
@@ -97,7 +96,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_rainColor(color:FlxColor):FlxColor
   {
-    this.setFloatArray("uRainColor", [color.red / 255, color.green / 255, color.blue / 255]);
+    this.setFloatArray('uRainColor', [color.red / 255, color.green / 255, color.blue / 255]);
     return rainColor = color;
   }
 
@@ -133,12 +132,13 @@ class RuntimeRainShader extends RuntimePostEffectShader
     super.__processGLData(source, storageType);
     if (storageType == 'uniform')
     {
-      lights = [for (i in 0...MAX_LIGHTS)
-        {
+      lights = [
+        for (i in 0...MAX_LIGHTS) {
           position: addFloatUniform('lights[$i].position', 2),
           color: addFloatUniform('lights[$i].color', 3),
           radius: addFloatUniform('lights[$i].radius', 1),
-        }];
+        }
+      ];
     }
   }
 
@@ -147,7 +147,13 @@ class RuntimeRainShader extends RuntimePostEffectShader
   {
     final res = new ShaderParameter<Float>();
     res.name = name;
-    res.type = [null, FLOAT, FLOAT2, FLOAT3, FLOAT4][length];
+    res.type = [
+      null,
+      FLOAT,
+      FLOAT2,
+      FLOAT3,
+      FLOAT4
+    ][length];
     res.__arrayLength = 1;
     res.__isFloat = true;
     res.__isUniform = true;

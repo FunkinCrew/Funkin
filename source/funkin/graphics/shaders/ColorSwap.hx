@@ -9,9 +9,7 @@ class ColorSwap
   public var colorToReplace(default, set):FlxColor;
   public var newColor(default, set):FlxColor;
   public var daTime(default, set):Float;
-
   public var hasOutline(default, set):Bool = false;
-
   public var hueShit:Float = 0;
 
   public function new():Void

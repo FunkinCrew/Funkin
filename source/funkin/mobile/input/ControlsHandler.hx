@@ -1,18 +1,21 @@
 package funkin.mobile.input;
 
-import funkin.input.Controls;
-import flixel.input.FlxInput;
-import flixel.input.actions.FlxAction;
+import flixel.input.actions.FlxAction.FlxActionDigital;
 import flixel.input.actions.FlxActionInput;
-import flixel.input.actions.FlxActionInputDigital;
+import flixel.input.FlxInput.FlxInputState;
+import flixel.input.actions.FlxActionInputDigital.FlxActionInputDigitalIFlxInput;
+import funkin.input.Controls;
 import funkin.mobile.ui.FunkinButton;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
-import openfl.events.KeyboardEvent;
-import openfl.events.TouchEvent;
 #if android
 import funkin.external.android.KeyboardUtil;
+#elseif ios
+import funkin.external.apple.KeyboardUtil;
 #end
+import lime.ui.Gamepad as LimeGamepad;
+import openfl.events.KeyboardEvent;
+import openfl.events.TouchEvent;
 
 /**
  * Handles setting up and managing input controls for the game.
@@ -20,17 +23,17 @@ import funkin.external.android.KeyboardUtil;
 class ControlsHandler
 {
   /**
-   * Returns wether the last input was sent through touch.
+   * Returns whether the last input was sent through touch.
    */
   public static var lastInputTouch(default, null):Bool = true;
 
   /**
-   * Returns wether there's a gamepad or keyboard devices connected and active.
+   * Returns whether there's a gamepad or keyboard devices connected and active.
    */
   public static var hasExternalInputDevice(get, never):Bool;
 
   /**
-   * Returns wether an external input device is currently used as the main input.
+   * Returns whether an external input device is currently used as the main input.
    */
   public static var usingExternalInputDevice(get, never):Bool;
 
@@ -41,6 +44,15 @@ class ControlsHandler
   {
     FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (_) -> lastInputTouch = false);
     FlxG.stage.addEventListener(TouchEvent.TOUCH_BEGIN, (_) -> lastInputTouch = true);
+
+    function doGamepad(gamepad:LimeGamepad)
+    {
+      gamepad.onButtonDown.add((_) -> lastInputTouch = false);
+    }
+
+    for (gamepad in LimeGamepad.devices.values()) doGamepad(gamepad);
+
+    LimeGamepad.onConnect.add((gamepad) -> doGamepad(gamepad));
   }
 
   /**
@@ -130,15 +142,17 @@ class ControlsHandler
   }
 
   @:noCompletion
-  private static function get_hasExternalInputDevice():Bool
+  static function get_hasExternalInputDevice():Bool
   {
-    return FlxG.gamepads.numActiveGamepads > 0 #if android
-    || KeyboardUtil.keyboardConnected
-    || extension.androidtools.Tools.isChromebook() #end;
+    var gamepads:Bool = FlxG.gamepads.numActiveGamepads > 0;
+    var keyboards:Bool = #if android KeyboardUtil.keyboardConnected #elseif ios KeyboardUtil.isKeyboardConnected() #else false #end;
+    var chromebook:Bool = #if android extension.androidtools.Tools.isChromebook() #else false #end;
+
+    return gamepads || keyboards || chromebook;
   }
 
   @:noCompletion
-  private static function get_usingExternalInputDevice():Bool
+  static function get_usingExternalInputDevice():Bool
   {
     return ControlsHandler.hasExternalInputDevice && !ControlsHandler.lastInputTouch;
   }

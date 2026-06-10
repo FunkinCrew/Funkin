@@ -1,11 +1,9 @@
 package funkin.util;
 
 import flixel.FlxG;
-import flixel.FlxObject;
 #if FLX_POINTER_INPUT
 import flixel.input.FlxSwipe;
 #end
-import funkin.util.TouchUtil;
 import flixel.util.FlxAxes;
 
 /**
@@ -102,6 +100,9 @@ class SwipeUtil
    */
   public static var flickAny(get, never):Bool;
 
+  static final DEFAULT_SWIPE_THRESHOLD:Float = 100;
+  static final MIN_SWIPE_DISTANCE:Float = 20;
+
   /**
    * Updates the swipe threshold based on the provided group.
    *
@@ -112,11 +113,11 @@ class SwipeUtil
   public static function calculateSwipeThreshold(items:Array<Dynamic>, axes:FlxAxes, ?multiplier:Float = 1):Void
   {
     #if FEATURE_TOUCH_CONTROLS
-    final itemCount:Int = items.length - 1;
+    var itemCount:Int = items.length - 1;
 
     if (itemCount <= 0)
     {
-      FlxG.touches.swipeThreshold.set(100, 100);
+      FlxG.touches.swipeThreshold.set(DEFAULT_SWIPE_THRESHOLD, DEFAULT_SWIPE_THRESHOLD);
       return;
     }
 
@@ -132,14 +133,14 @@ class SwipeUtil
     totalDistanceX = Math.abs((totalDistanceX / itemCount) * 0.9);
     totalDistanceY = Math.abs((totalDistanceY / itemCount) * 0.9);
 
-    FlxG.touches.swipeThreshold.x = (axes.x) ? totalDistanceX * multiplier : 100;
-    FlxG.touches.swipeThreshold.y = (axes.y) ? totalDistanceY * multiplier : 100;
+    FlxG.touches.swipeThreshold.x = (axes.x) ? totalDistanceX * multiplier : DEFAULT_SWIPE_THRESHOLD;
+    FlxG.touches.swipeThreshold.y = (axes.y) ? totalDistanceY * multiplier : DEFAULT_SWIPE_THRESHOLD;
     #end
     return;
   }
 
   @:noCompletion
-  inline static function get_swipeUp():Bool
+  static inline function get_swipeUp():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -153,7 +154,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_swipeRight():Bool
+  static inline function get_swipeRight():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -167,7 +168,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_swipeLeft():Bool
+  static inline function get_swipeLeft():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -181,7 +182,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_swipeDown():Bool
+  static inline function get_swipeDown():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -195,57 +196,60 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_swipeAny():Bool return swipeDown || swipeLeft || swipeRight || swipeUp;
+  static inline function get_swipeAny():Bool return swipeDown || swipeLeft || swipeRight || swipeUp;
 
   @:noCompletion
-  inline static function get_justSwipedUp():Bool
+  static inline function get_justSwipedUp():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
-    return (swipe?.degrees > 45 && swipe?.degrees < 135 && swipe?.distance > 20);
+    return (swipe?.degrees > 45 && swipe?.degrees < 135 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
     #end
   }
 
   @:noCompletion
-  inline static function get_justSwipedRight():Bool
+  static inline function get_justSwipedRight():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
-    return (swipe?.degrees > -45 && swipe?.degrees < 45 && swipe?.distance > 20);
+    return (swipe?.degrees > -45 && swipe?.degrees < 45 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
     #end
   }
 
   @:noCompletion
-  inline static function get_justSwipedLeft():Bool
+  static inline function get_justSwipedLeft():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
-    return ((swipe?.degrees > 135 || swipe?.degrees < -135) && swipe?.distance > 20);
+    return ((swipe?.degrees > 135 || swipe?.degrees < -135) && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
     #end
   }
 
   @:noCompletion
-  inline static function get_justSwipedDown():Bool
+  static inline function get_justSwipedDown():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     final swipe:FlxSwipe = (FlxG.swipes.length > 0) ? FlxG.swipes[0] : null;
-    return (swipe?.degrees > -135 && swipe?.degrees < -45 && swipe?.distance > 20);
+    return (swipe?.degrees > -135 && swipe?.degrees < -45 && swipe?.distance > MIN_SWIPE_DISTANCE);
     #else
     return false;
     #end
   }
 
   @:noCompletion
-  inline static function get_justSwipedAny():Bool return justSwipedDown || justSwipedLeft || justSwipedRight || justSwipedUp;
+  static inline function get_justSwipedAny():Bool
+  {
+    return justSwipedDown || justSwipedLeft || justSwipedRight || justSwipedUp;
+  }
 
   @:noCompletion
-  inline static function get_flickUp():Bool
+  static inline function get_flickUp():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -259,7 +263,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_flickRight():Bool
+  static inline function get_flickRight():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -273,7 +277,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_flickLeft():Bool
+  static inline function get_flickLeft():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -287,7 +291,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_flickDown():Bool
+  static inline function get_flickDown():Bool
   {
     #if FEATURE_TOUCH_CONTROLS
     #if mobile
@@ -301,7 +305,7 @@ class SwipeUtil
   }
 
   @:noCompletion
-  inline static function get_flickAny():Bool
+  static inline function get_flickAny():Bool
   {
     return flickUp || flickRight || flickLeft || flickDown;
   }

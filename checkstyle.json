@@ -33,6 +33,9 @@
         "allowReturn": true,
         "allowFunction": true,
         "allowCurlyBody": true,
+
+        "enforceArrowForNonMemberFunctions": true,
+
         "severity": "INFO"
       },
       "type": "ArrowFunction"
@@ -46,6 +49,14 @@
       "comment": "If enabled, prevents imports like 'import flixel.*' from being used.",
       "props": { "severity": "INFO" },
       "type": "AvoidStarImport"
+    },
+    {
+      "comment": "If enabled, prevents ternary operators from being nested.",
+      "props": {
+        "severity": "INFO",
+        "maxDepth": 1
+      },
+      "type": "AvoidTernaryOperator"
     },
     {
       "comment": "If enabled, prevents conditional compilation from crossing blocks. This prevents the case where conditional compilation could potentially create invalid syntax.",
@@ -64,6 +75,7 @@
       "comment": "If enabled, flags when large blocks of similar code should be extracted to a function.",
       "props": {
         "thresholdSimilar": 120,
+        "severity": "IGNORE",
         "thresholdIdentical": 60,
         "severityIdentical": "IGNORE"
       },
@@ -84,11 +96,21 @@
       "type": "ConditionalCompilation"
     },
     {
-      "comment": "Specifies a specific naming format for constant (static) identifiers.",
+      "comment": "Specifies a specific naming format for static var identifiers.",
       "props": {
         "ignoreExtern": true,
         "format": "^?:_[a-zA-Z0-9]+(?:_[a-zA-Z0-9]+)*$",
-        "tokens": ["INLINE", "NOTINLINE"],
+        "tokens": ["INLINE", "NOTINLINE", "NOTFINAL"],
+        "severity": "INFO"
+      },
+      "type": "ConstantName"
+    },
+    {
+      "comment": "Specifies a specific naming format for static final identifiers.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z]([_A-Z0-9]+)*$",
+        "tokens": ["INLINE", "NOTINLINE", "FINAL"],
         "severity": "INFO"
       },
       "type": "ConstantName"
@@ -111,7 +133,13 @@
     },
     {
       "comment": "Specifies the format for doc-style comments ().",
-      "props": { "lineStyle": "onestar", "startStyle": "ignore" },
+      "props": {
+        "startStyle": "twostars",
+        "endStyle": "onestar",
+        "lineStyle": "onestar",
+
+        "severity": "INFO"
+      },
       "type": "DocCommentStyle"
     },
     {
@@ -188,7 +216,21 @@
         "fieldType": "BOTH",
         "requireReturn": true,
         "ignoreOverride": true,
-        "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF"],
+        "tokens": ["ABSTRACT_DEF", "CLASS_DEF", "INTERFACE_DEF"],
+        "modifier": "PUBLIC",
+        "excludeNames": ["new", "toString"],
+        "severity": "INFO"
+      },
+      "type": "FieldDocComment"
+    },
+    {
+      "comment": "If enabled, mandates documentation comments for public fields.",
+      "props": {
+        "requireParams": true,
+        "fieldType": "FUNCTIONS",
+        "requireReturn": true,
+        "ignoreOverride": true,
+        "tokens": ["ENUM_DEF"],
         "modifier": "PUBLIC",
         "excludeNames": ["new", "toString"],
         "severity": "INFO"
@@ -240,7 +282,10 @@
     },
     {
       "comment": "If enabled, warns about assignments performed within another expression, like 'if (a=b){}'",
-      "props": { "ignoreReturnAssignments": true, "severity": "WARNING" },
+      "props": {
+        "ignoreReturnAssignments": true,
+        "severity": "WARNING"
+      },
       "type": "InnerAssignment"
     },
     {
@@ -270,7 +315,6 @@
           "SWITCH",
           "TRY",
           "CATCH",
-          "REIFICATION",
           "ARRAY_COMPREHENSION"
         ],
         "severity": "INFO"
@@ -306,24 +350,48 @@
       "type": "ListenerName"
     },
     {
-      "comment": "Specifies a specific naming format for local variables.",
+      "comment": "Specifies a specific naming format for local var variables.",
       "props": {
         "ignoreExtern": true,
         "format": "^[a-z][a-zA-Z0-9]*$",
-        "tokens": [],
+        "tokens": ["NOTFINAL"],
         "severity": "INFO"
       },
       "type": "LocalVariableName"
     },
     {
+      "comment": "Specifies a specific naming format for local final variables.",
+      "props": {
+        "ignoreExtern": true,
+        "format": "^[A-Z][_A-Z0-9]*$",
+        "tokens": ["FINAL"],
+        "severity": "INFO"
+      },
+      "type": "LocalVariableName"
+    },
+    {
+      "comment": "Puts a warning on long numbers without separators. 1000000 is invalid and 1_000_000 is valid.",
+      "props": {
+        "severity": "INFO",
+
+        "decimalGroupSize": 3,
+        "fractionalGroupSize": -1,
+        "binaryGroupSize": 8,
+        "hexadecimalGroupSize": 8,
+
+        "decimalMinimum": 10000
+      },
+      "type": "LongNumber"
+    },
+    {
       "comment": "If enabled, warns when unlabelled numeric values get used. Use named constants instead to improve code clarity.",
-      "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "INFO" },
+      "props": { "ignoreNumbers": [-1, 0, 1, 2], "severity": "IGNORE" },
       "type": "MagicNumber"
     },
     {
       "comment": "Specifies a specific naming format for public abstract member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
         "tokens": ["PUBLIC", "ABSTRACT"]
       },
       "type": "MemberName"
@@ -340,7 +408,7 @@
     {
       "comment": "Specifies a specific naming format for public class member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[a-zA-Z][a-z][a-zA-Z0-9]*$",
         "tokens": ["PUBLIC", "CLASS"]
       },
       "type": "MemberName"
@@ -348,7 +416,7 @@
     {
       "comment": "Specifies a specific naming format for private class member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
+        "format": "^[_a-zA-Z][_a-zA-Z0-9]*$",
         "tokens": ["PRIVATE", "CLASS"]
       },
       "type": "MemberName"
@@ -356,8 +424,8 @@
     {
       "comment": "Specifies a specific naming format for enum member fields.",
       "props": {
-        "format": "^[_a-zA-Z][a-z][a-zA-Z0-9]*$",
-        "tokens": ["ENUM"]
+        "format": "^[a-zA-Z][_a-zA-Z0-9]*$",
+        "tokens": ["PUBLIC", "ENUM"]
       },
       "type": "MemberName"
     },
@@ -388,9 +456,9 @@
       "comment": "Specifies a specific naming format for method names.",
       "props": {
         "ignoreExtern": true,
-        "format": "^[a-z][a-zA-Z0-9]*$",
+        "format": "^[a-z][_a-zA-Z0-9]*$",
         "tokens": [],
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "MethodName"
     },
@@ -398,15 +466,21 @@
       "comment": "Specifies a specific order for modifiers on fields.",
       "props": {
         "modifiers": [
+          "OVERRIDE",
+          "OVERLOAD",
+
           "PUBLIC_PRIVATE",
           "STATIC",
-          "MACRO",
-          "OVERRIDE",
+          "ABSTRACT",
+
+          "EXTERN",
           "INLINE",
+
           "DYNAMIC",
+          "MACRO",
           "FINAL"
         ],
-        "severity": "IGNORE"
+        "severity": "INFO"
       },
       "type": "ModifierOrder"
     },
@@ -429,15 +503,16 @@
       "comment": "If enabled, mandates the use of braces on specific block types, unless they fit on a single line.",
       "props": {
         "allowSingleLineStatement": true,
-        "tokens": [
-          "FUNCTION",
-          "FOR",
-          "IF",
-          "ELSE_IF",
-          "WHILE",
-          "DO_WHILE",
-          "CATCH"
-        ],
+        "tokens": ["FUNCTION", "FOR", "IF", "IF_WITH_ELSE", "ELSE"],
+        "severity": "INFO"
+      },
+      "type": "NeedBraces"
+    },
+    {
+      "comment": "If enabled, mandates the use of braces on specific block types, and prevent them from being placed on a single line.",
+      "props": {
+        "allowSingleLineStatement": false,
+        "tokens": ["IF_WITH_ELSE", "CATCH", "WHILE", "DO_WHILE", "ELSE_IF"],
         "severity": "INFO"
       },
       "type": "NeedBraces"
@@ -630,7 +705,11 @@
     },
     {
       "comment": "If enabled, complains about overly complicated boolean expressions.",
-      "props": { "severity": "WARNING" },
+      "props": {
+        "severity": "WARNING",
+
+        "allowEqualsFalse": false
+      },
       "type": "SimplifyBooleanExpression"
     },
     {
@@ -662,6 +741,14 @@
       "type": "StringLiteral"
     },
     {
+      "comment": "If enabled, requires that switch conditions be wrapped in parenthesis.",
+      "props": {
+        "policy": "require",
+        "severity": "INFO"
+      },
+      "type": "SwitchParentheses"
+    },
+    {
       "comment": "Puts a warning on unresolved TODO/FIXME comments.",
       "props": {
         "format": "^\\s*(TODO|FIXME|HACK|XXX|BUG)",
@@ -680,6 +767,16 @@
       "type": "Trace"
     },
     {
+      "comment": "If enabled, complains about trailing commas at the end of array and object literals.",
+      "props": {
+        "severity": "INFO",
+        "enforceArrayComprehension": false,
+        "enforceArrayLiterals": false,
+        "enforceObjectLiterals": false
+      },
+      "type": "TrailingComma"
+    },
+    {
       "comment": "If enabled, complains about trailing whitespaces at the end of lines.",
       "props": { "severity": "INFO" },
       "type": "TrailingWhitespace"
@@ -692,7 +789,13 @@
     {
       "comment": "If enabled, mandates documentation comments on classes and interfaces.",
       "props": {
-        "tokens": ["CLASS_DEF", "ENUM_DEF", "INTERFACE_DEF", "TYPEDEF_DEF"],
+        "tokens": [
+          "CLASS_DEF",
+          "INTERFACE_DEF",
+          "TYPEDEF_DEF",
+          "ABSTRACT_DEF",
+          "ENUM_DEF"
+        ],
         "severity": "INFO"
       },
       "type": "TypeDocComment"

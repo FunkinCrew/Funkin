@@ -1,11 +1,11 @@
 package funkin.data.song;
 
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.data.song.SongData;
 import funkin.data.song.migrator.SongData_v2_0_0.SongMetadata_v2_0_0;
 import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
+import funkin.data.song.SongData.SongMusicData;
 import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.assets.DataAssets;
@@ -15,25 +15,21 @@ import funkin.data.DefaultRegistryImpl;
 
 using funkin.data.song.migrator.SongDataMigrator;
 
-@:nullSafety class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
+@:nullSafety
+class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
 {
   /**
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migrateStageData()` function.
    */
-  public static final SONG_METADATA_VERSION:thx.semver.Version = "2.2.4";
+  public static final SONG_METADATA_VERSION:thx.semver.Version = '2.2.4';
 
-  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = "2.2.x";
-
-  public static final SONG_CHART_DATA_VERSION:thx.semver.Version = "2.0.0";
-
-  public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
-
-  public static final SONG_MUSIC_DATA_VERSION:thx.semver.Version = "2.0.0";
-
-  public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = "2.0.x";
-
+  public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = '2.2.x';
+  public static final SONG_CHART_DATA_VERSION:thx.semver.Version = '2.0.0';
+  public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
+  public static final SONG_MUSIC_DATA_VERSION:thx.semver.Version = '2.0.0';
+  public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
   public static var DEFAULT_GENERATEDBY(get, never):String;
 
   public var scriptedSongVariations:Map<String, Song> = new Map<String, Song>();
@@ -48,7 +44,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     super('SONG', 'songs', SONG_METADATA_VERSION_RULE);
   }
 
-  public override function loadEntries():Void
+  override public function loadEntries():Void
   {
     clearEntries();
 
@@ -131,7 +127,7 @@ using funkin.data.song.migrator.SongDataMigrator;
     return parseEntryMetadataRaw(contents);
   }
 
-  public override function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
+  override public function isScriptedEntry(id:String, ?params:Null<SongEntryParams>)
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
@@ -141,14 +137,14 @@ using funkin.data.song.migrator.SongDataMigrator;
     return super.isScriptedEntry(id, params);
   }
 
-  public override function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
+  override public function getScriptedEntryClassName(id:String, ?params:Null<SongEntryParams>):Null<String>
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
     {
       final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
       @:privateAccess
-      var path:String = variationSongId._asc._c.name;
+      var path:String = variationSongId._asc.fullyQualifiedName;
       return path;
     }
     return super.getScriptedEntryClassName(id, params);
@@ -157,7 +153,7 @@ using funkin.data.song.migrator.SongDataMigrator;
   /**
    * We override `fetchEntry` to handle song variations!
    */
-  public override function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
+  override public function fetchEntry(id:String, ?params:SongEntryParams):Null<Song>
   {
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
 
@@ -224,11 +220,11 @@ using funkin.data.song.migrator.SongDataMigrator;
     {
       return parseEntryMetadata(id, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    else if (VersionUtil.validateVersion(version, '2.1.x'))
     {
       return parseEntryMetadata_v2_1_0(id, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.0.x"))
+    else if (VersionUtil.validateVersion(version, '2.0.x'))
     {
       return parseEntryMetadata_v2_0_0(id, variation);
     }
@@ -246,11 +242,11 @@ using funkin.data.song.migrator.SongDataMigrator;
     {
       return parseEntryMetadataRaw(contents, fileName, variation);
     }
-    else if (VersionUtil.validateVersion(version, "2.1.x"))
+    else if (VersionUtil.validateVersion(version, '2.1.x'))
     {
       return parseEntryMetadataRaw_v2_1_0(contents, fileName);
     }
-    else if (VersionUtil.validateVersion(version, "2.0.x"))
+    else if (VersionUtil.validateVersion(version, '2.0.x'))
     {
       return parseEntryMetadataRaw_v2_0_0(contents, fileName);
     }
@@ -489,13 +485,6 @@ using funkin.data.song.migrator.SongDataMigrator;
     if (rawJson == null) return null;
     rawJson = rawJson.trim();
     return {fileName: entryFilePath, contents: rawJson};
-  }
-
-  function hasMusicDataFile(id:String, ?variation:String):Bool
-  {
-    variation = variation == null ? Constants.DEFAULT_VARIATION : variation;
-    var entryFilePath:String = Paths.file('music/$id/$id-metadata${variation == Constants.DEFAULT_VARIATION ? '' : '-$variation'}.json');
-    return openfl.Assets.exists(entryFilePath);
   }
 
   function loadEntryChartFile(id:String, ?variation:String):Null<JsonFile>

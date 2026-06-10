@@ -125,7 +125,18 @@ class ScoreNum extends FlxSprite
     updateHitbox();
   }
 
-  final numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  final numToString:Array<String> = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "SIX",
+    "SEVEN",
+    "EIGHT",
+    "NINE"
+  ];
 
   function getIntToString(number:Int):String
   {

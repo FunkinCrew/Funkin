@@ -16,14 +16,11 @@ using flixel.util.FlxSpriteUtil;
 class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 {
   var sampleRate:Int;
-
   var lengthOfShit:Int = 500;
 
   public var visType:VISTYPE = UPDATED;
-
   public var col:Int = FlxColor.WHITE;
   public var daHeight:Float = FlxG.height;
-
   public var vis:VisShit;
 
   public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?amnt:Int = 500)
@@ -193,8 +190,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           var freqPower:Float = 0;
 
-          for (pow in 0...freqShit.length)
-            freqPower += freqShit[pow][remappedFreq];
+          for (pow in 0...freqShit.length) freqPower += freqShit[pow][remappedFreq];
 
           freqPower /= freqShit.length;
           var freqIDK:Float = FlxMath.remapToRange(freqPower, 0, 0.000005, 0, 50);

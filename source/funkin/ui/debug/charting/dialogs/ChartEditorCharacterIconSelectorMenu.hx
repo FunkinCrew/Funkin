@@ -16,8 +16,7 @@ import flixel.tweens.FlxEase;
 import haxe.ui.components.Button;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/character-icon-selector.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/character-icon-selector.xml"))
 class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
 {
   public var charSelectScroll:ScrollView;
@@ -49,18 +48,25 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
   {
     currentCharId = switch (charType)
     {
-      case BF: chartEditorState.currentSongMetadata.playData.characters.player;
-      case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend;
-      case DAD: chartEditorState.currentSongMetadata.playData.characters.opponent;
-      default: throw 'Invalid charType: ' + charType;
+      case BF:
+        chartEditorState.currentSongMetadata.playData.characters.player;
+      case GF:
+        chartEditorState.currentSongMetadata.playData.characters.girlfriend;
+      case DAD:
+        chartEditorState.currentSongMetadata.playData.characters.opponent;
+      default:
+        throw 'Invalid charType: ' + charType;
     };
 
     // Position this menu.
     var targetHealthIcon:Null<HealthIcon> = switch (charType)
     {
-      case BF: chartEditorState.healthIconBF;
-      case DAD: chartEditorState.healthIconDad;
-      default: null;
+      case BF:
+        chartEditorState.healthIconBF;
+      case DAD:
+        chartEditorState.healthIconDad;
+      default:
+        null;
     };
 
     if (lockPosition && targetHealthIcon != null)
@@ -120,11 +126,13 @@ class ChartEditorCharacterIconSelectorMenu extends ChartEditorBaseMenu
           case BF:
             chartEditorState.currentSongMetadata.playData.characters.player = charId;
             chartEditorState.playerPreviewDirty = true;
-          case GF: chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
+          case GF:
+            chartEditorState.currentSongMetadata.playData.characters.girlfriend = charId;
           case DAD:
             chartEditorState.currentSongMetadata.playData.characters.opponent = charId;
             chartEditorState.opponentPreviewDirty = true;
-          default: throw 'Invalid charType: ' + charType;
+          default:
+            throw 'Invalid charType: ' + charType;
         };
 
         defaultText = (charId != "") ? '${charData.name} [${charId}]' : 'None';

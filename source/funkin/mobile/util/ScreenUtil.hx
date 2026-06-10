@@ -72,19 +72,19 @@ class ScreenUtil
     // Note: iOS only spits out *insets* for "safe areas", so we can only get a broad position for the notch
     // Note: *inset* is the distance from the edge of the screen where a safe area gets defined
     // see: https://developer.apple.com/documentation/uikit/uiview/safeareainsets
-    switch (System.getDisplayOrientation(Application.current.window.display))
+    switch (lime.app.Application.current.window.display.orientation)
     {
-      case DISPLAY_ORIENTATION_LANDSCAPE: // landscape
+      case LANDSCAPE: // landscape
         notchRect.width = leftInset;
         notchRect.height = deviceHeight;
-      case DISPLAY_ORIENTATION_LANDSCAPE_FLIPPED: // landscape
+      case LANDSCAPE_FLIPPED: // landscape
         notchRect.width = leftInset;
         notchRect.height = deviceHeight;
         notchRect.x = deviceWidth - rightInset;
-      case DISPLAY_ORIENTATION_PORTRAIT: // portrait
+      case PORTRAIT: // portrait
         notchRect.width = deviceWidth;
         notchRect.height = topInset;
-      case DISPLAY_ORIENTATION_PORTRAIT_FLIPPED: // portrait
+      case PORTRAIT_FLIPPED: // portrait
         notchRect.width = deviceWidth;
         notchRect.height = bottomInset;
         notchRect.y = deviceHeight - notchRect.height; // move notchRect if we are flipped, the notch is at the bottom of screen

@@ -23,14 +23,26 @@ class SustainTrail extends FlxSprite
    * `top left, top right, bottom left`
    * `top left, bottom left, bottom right`
    */
-  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7];
+  static final TRIANGLE_VERTEX_INDICES:Array<Int> = [
+    0,
+    1,
+    2,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    5,
+    6,
+    7
+  ];
 
   public var strumTime:Float = 0; // millis
   public var noteDirection:NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
   public var parentStrumline:Strumline;
-
   public var cover:NoteHoldCover = null;
 
   /**
@@ -85,7 +97,7 @@ class SustainTrail extends FlxSprite
    */
   public var uvtData:DrawData<Float> = new DrawData<Float>();
 
-  private var zoom:Float = 1;
+  var zoom:Float = 1;
 
   /**
    * What part of the trail's end actually represents the end of the note.
@@ -274,7 +286,7 @@ class SustainTrail extends FlxSprite
     updateHitbox();
   }
 
-  public override function updateHitbox():Void
+  override public function updateHitbox():Void
   {
     width = graphicWidth;
     height = graphicHeight;
@@ -407,7 +419,7 @@ class SustainTrail extends FlxSprite
       if (!camera.visible || !camera.exists) continue;
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
-      getScreenPosition(_point, camera).subtractPoint(offset);
+      getScreenPosition(_point, camera).subtract(offset);
       camera.drawTriangles(graphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
@@ -416,11 +428,11 @@ class SustainTrail extends FlxSprite
     #end
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 
-    if (!((cover?.animation?.name ?? "").startsWith("holdCoverEnd"))) cover?.playEnd();
+    if (!((cover?.animation?.name ?? '').startsWith('holdCoverEnd'))) cover?.playEnd();
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
@@ -431,7 +443,7 @@ class SustainTrail extends FlxSprite
     missedNote = false;
   }
 
-  public override function revive():Void
+  override public function revive():Void
   {
     super.revive();
 

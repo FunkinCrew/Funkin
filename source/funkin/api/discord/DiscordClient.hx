@@ -8,24 +8,35 @@ import hxdiscord_rpc.Types.DiscordRichPresence;
 import hxdiscord_rpc.Types.DiscordUser;
 import sys.thread.Thread;
 
-@:build(funkin.util.macro.EnvironmentMacro.build())
-@:nullSafety
+/**
+ * Handles integration with the Discord Rich Presence API.
+ */
+@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class DiscordClient
 {
   @:envField
   static final DISCORD_CLIENT_ID:Null<String>;
 
+  /**
+   * The current instance of the singleton Discord client.
+   */
   public static var instance(get, never):DiscordClient;
+
   static var _instance:Null<DiscordClient> = null;
 
   static function get_instance():DiscordClient
   {
     if (DiscordClient._instance == null) _instance = new DiscordClient();
-    if (DiscordClient._instance == null) throw "Could not initialize singleton DiscordClient!";
+    if (DiscordClient._instance == null) throw 'Could not initialize singleton DiscordClient!';
     return DiscordClient._instance;
   }
 
   var handlers:DiscordEventHandlers;
+
+  /**
+   * Latest passed parameters for the presence.
+   */
+  public static var presenceParamsCache:Null<DiscordClientPresenceParams>;
 
   private function new()
   {
@@ -44,13 +55,13 @@ class DiscordClient
 
     if (!hasValidCredentials())
     {
-      FlxG.log.warn("Tried to initialize Discord connection, but credentials are invalid!");
+      FlxG.log.warn('Tried to initialize Discord connection, but credentials are invalid!');
       return;
     }
 
     @:nullSafety(Off)
     {
-      Discord.Initialize(DISCORD_CLIENT_ID, cpp.RawPointer.addressOf(handlers), false, "");
+      Discord.Initialize(DISCORD_CLIENT_ID, cpp.RawPointer.addressOf(handlers), false, '');
     }
 
     createDaemon();
@@ -61,7 +72,7 @@ class DiscordClient
    */
   static function hasValidCredentials():Bool
   {
-    return !(DISCORD_CLIENT_ID == null || DISCORD_CLIENT_ID == "" || (DISCORD_CLIENT_ID != null && DISCORD_CLIENT_ID.contains(" ")));
+    return !(DISCORD_CLIENT_ID == null || DISCORD_CLIENT_ID == '' || (DISCORD_CLIENT_ID != null && DISCORD_CLIENT_ID.contains(' ')));
   }
 
   var daemon:Null<Thread> = null;
@@ -93,6 +104,8 @@ class DiscordClient
 
   public function setPresence(params:DiscordClientPresenceParams):Void
   {
+    presenceParamsCache = params;
+
     var presence:DiscordRichPresence = new DiscordRichPresence();
 
     // Presence should always be playing the game.
@@ -102,35 +115,33 @@ class DiscordClient
     presence.largeImageText = "Friday Night Funkin'";
 
     // State should be generally what the person is doing, like "In the Menus" or "Pico (Pico Mix) [Freeplay Hard]"
-    presence.state = cast(params.state, Null<String>) ?? "";
+    presence.state = cast(params.state, Null<String>) ?? '';
     // Details should be what the person is specifically doing, including stuff like timestamps (maybe something like "03:24 elapsed").
-    presence.details = cast(params.details, Null<String>) ?? "";
+    presence.details = cast(params.details, Null<String>) ?? '';
 
     // The large image displaying what the user is doing.
     // This should probably be album art.
     // IMPORTANT NOTE: This can be an asset key uploaded to Discord's developer panel OR any URL you like.
-    presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "album-volume1";
+    presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? 'album-volume1';
 
     // TODO: Make this use the song's album art.
     // presence.largeImageKey = "icon";
-    // presence.largeImageKey = "https://f4.bcbits.com/img/a0746694746_16.jpg";
 
     // The small inset image for what the user is doing.
     // This can be the opponent's health icon?
     // NOTE: Like largeImageKey, this can be a URL, or an asset key.
-    presence.smallImageKey = cast(params.smallImageKey, Null<String>) ?? "";
+    presence.smallImageKey = cast(params.smallImageKey, Null<String>) ?? '';
 
     // NOTE: In previous versions, this showed as "Elapsed", but now shows as playtime and doesn't look good
     // presence.startTimestamp = time - 10;
-    // presence.endTimestamp = time + 30;
 
     final button1:DiscordButton = new DiscordButton();
-    button1.label = "Play on Web";
+    button1.label = 'Play on Web';
     button1.url = Constants.URL_NEWGROUNDS;
     presence.buttons[0] = button1;
 
     final button2:DiscordButton = new DiscordButton();
-    button2.label = "Download";
+    button2.label = 'Download';
     button2.url = Constants.URL_ITCH;
     presence.buttons[1] = button2;
 
@@ -138,6 +149,7 @@ class DiscordClient
   }
 
   // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
+
   private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
   {
     trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
@@ -166,17 +178,6 @@ class DiscordClient
     trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
   }
 
-  // public var type(get, set):DiscordActivityType;
-  // public var state(get, set):String;
-  // public var details(get, set):String;
-  // public var startTimestamp(get, set):Int;
-  // public var endTimestamp(get, set):Int;
-  // public var largeImageKey(get, set):String;
-  // public var largeImageText(get, set):String;
-  // public var smallImageKey(get, set):String;
-  // public var smallImageText(get, set):String;
-  //
-  //
   // public var partyId(get, set)
   // public var partySize(get, set)
   // public var partyMax(get, set)

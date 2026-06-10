@@ -7,8 +7,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Adds the given events to the current chart in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class AddEventsCommand implements ChartEditorCommand
 {
   var events:Array<SongEventData>;

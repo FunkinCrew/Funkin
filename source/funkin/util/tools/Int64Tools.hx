@@ -8,7 +8,7 @@ import haxe.Int64;
 @:nullSafety
 class Int64Tools
 {
-  private inline static var MAX_32_PRECISION:Float = 4294967296.0;
+  static inline var MAX_32_PRECISION:Float = 4294967296.0;
 
   public static function fromFloat(f:Float):Int64
   {

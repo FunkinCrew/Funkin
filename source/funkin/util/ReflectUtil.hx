@@ -1,29 +1,30 @@
 package funkin.util;
 
 import Type.ValueType;
+import polymod.hscript._internal.PolymodScriptClass;
 
 /**
  * Provides sanitized and blacklisted access to haxe's Reflection functions.
  * Used for sandboxing in scripts.
  */
-@:nullSafety
-@SuppressWarnings("checkstyle:VarTypeHint")
+@:nullSafety @SuppressWarnings(['checkstyle:VarTypeHint', 'checkstyle:FieldDocComment'])
 class ReflectUtil
 {
   /**
-   * A list of field names which cannot be retrieved with `getAnonymousField()`
+   * Calls a method value of a specific field on an object.
+   * Accounts for property blacklist for security.
+   * @param obj The object to modify.
+   * @param name The field to modify.
+   * @param value The new value to apply.
+   * @throws error When trying to call a blacklisted method.
    */
-  @:unreflective
-  static var FIELD_NAME_BLACKLIST:Array<String> = ['_interp'];
-
-  /**
-   * This function is not allowed to be used by scripts.
-   * @throws error When called by a script.
-   */
-  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function callMethod(obj:Any, name:String, args:Array<Any>):Any
   {
-    throw "Function Reflect.callMethod is blacklisted.";
+    if (!isAccessAllowed(obj, name))
+    {
+      throw 'Attempted to call blacklisted method "${name}"';
+    }
+    return Reflect.callMethod(getReflectionParent(obj), Reflect.field(getReflectionParent(obj), name), args);
   }
 
   /**
@@ -107,6 +108,10 @@ class ReflectUtil
    */
   public static function deleteAnonymousField(obj:Any, name:String):Bool
   {
+    if (!isAccessAllowed(obj, name))
+    {
+      throw 'Attempted to delete blacklisted field "${name}"';
+    };
     return Reflect.deleteField(obj, name);
   }
 
@@ -143,12 +148,12 @@ class ReflectUtil
    */
   public static function getAnonymousField(obj:Any, name:String):Any
   {
-    if (FIELD_NAME_BLACKLIST.contains(name))
+    if (!isAccessAllowed(obj, name))
     {
       throw 'Attempted to retrieve blacklisted field "${name}"';
     };
 
-    return Reflect.field(obj, name);
+    return Reflect.field(getReflectionParent(obj), name);
   }
 
   /**
@@ -194,12 +199,12 @@ class ReflectUtil
    */
   public static function getProperty(obj:Any, name:String):Any
   {
-    if (FIELD_NAME_BLACKLIST.contains(name))
+    if (!isAccessAllowed(obj, name))
     {
       throw 'Attempted to retrieve blacklisted field "${name}"';
     };
 
-    return Reflect.getProperty(obj, name);
+    return Reflect.getProperty(getReflectionParent(obj), name);
   }
 
   /**
@@ -218,16 +223,16 @@ class ReflectUtil
    * Determine whether the given anonymous structure has the given field.
    * @param obj The structure to query.
    * @param name The field name to query.
-   * @return Whether the field exists.
+   * @return Whether the field exists and isnt blacklisted.
    */
   public static function hasAnonymousField(obj:Any, name:String):Bool
   {
-    if (FIELD_NAME_BLACKLIST.contains(name))
+    if (!isAccessAllowed(obj, name))
     {
       return false;
     }
 
-    return Reflect.hasField(obj, name);
+    return Reflect.hasField(getReflectionParent(obj), name);
   }
 
   /**
@@ -277,72 +282,106 @@ class ReflectUtil
    * @param obj The object to modify.
    * @param name The field to modify.
    * @param value The new value to apply.
+   * @throws error When trying to set a blacklisted field.
    */
   public static function setAnonymousField(obj:Any, name:String, value:Any):Void
   {
-    return Reflect.setField(obj, name, value);
+    if (!isAccessAllowed(obj, name))
+    {
+      throw 'Attempted to set blacklisted field "${name}"';
+    };
+    return Reflect.setField(getReflectionParent(obj), name, value);
   }
 
   /**
    * Set the value of a specific field on an object.
    * Accounts for property fields with getters and setters.
+   *
    * @param obj The object to modify.
    * @param name The field to modify.
    * @param value The new value to apply.
+   * @throws error When trying to set a blacklisted field.
    */
   public static function setProperty(obj:Any, name:String, value:Any):Void
   {
-    return Reflect.setProperty(obj, name, value);
+    if (!isAccessAllowed(obj, name))
+    {
+      throw 'Attempted to set blacklisted field "${name}"';
+    };
+    return Reflect.setProperty(getReflectionParent(obj), name, value);
   }
 
   /**
-   * This function is not allowed to be used by scripts.
-   * @throws error When called by a script.
+   * Creats a empty instance of specified class
+   * Accounts for property blacklist for security.
+   * @param cls The class to create.
+   * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function createEmptyInstance(cls:Class<Any>):Any
   {
-    throw "Function Type.createEmptyInstance is blacklisted.";
+    if (!isAccessAllowed(cls))
+    {
+      throw 'Attempted to call createInstance onto a blacklisted class "${getClassNameOf(cls)}"';
+    }
+    return Type.createEmptyInstance(getReflectionParent(cls));
   }
 
   /**
-   * This function is not allowed to be used by scripts.
-   * @throws error When called by a script.
+   * Creats a instance of specified class
+   * Accounts for property blacklist for security.
+   * @param cls The class to create.
+   * @param args Parameters to give to the constructor
+   * @throws error When trying to create a blacklisted class.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function createInstance(cls:Class<Any>, args:Array<Any>):Any
   {
-    throw "Function Type.createInstance is blacklisted.";
+    if (!isAccessAllowed(cls))
+    {
+      throw 'Attempted to call createInstance onto a blacklisted class "${getClassNameOf(cls)}"';
+    }
+    return Type.createInstance(getReflectionParent(cls), args);
   }
 
   /**
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
-  public static function resolveClass(name:String):Class<Any>
+  public static function resolveClass(name:String):Null<Class<Any>>
   {
-    throw "Function Type.resolveClass is blacklisted.";
+    var resolved = getReflectionParent(getClassOrEnumFromName(name));
+    if (resolved == null) return null;
+    if (!Std.isOfType(resolved, Class)) return null;
+    if (!isAccessAllowed(resolved))
+    {
+      throw 'Attempted to resolve a blacklisted class "${getClassNameOf(getClassOrEnumFromName(name))}"';
+    }
+    return resolved;
   }
 
   /**
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
-  public static function resolveEnum(name:String):Enum<Any>
+  @SuppressWarnings('checkstyle:FieldDocComment')
+  public static function resolveEnum(name:String):Null<Enum<Any>>
   {
-    throw "Function Type.resolveEnum is blacklisted.";
+    var resolved = getReflectionParent(getClassOrEnumFromName(name));
+    if (resolved == null) return null;
+    if (!Std.isOfType(resolved, Enum)) return null;
+    if (!isAccessAllowed(resolved))
+    {
+      throw 'Attempted to resolve a blacklisted enum "${getClassNameOf(getClassOrEnumFromName(name))}"';
+    }
+    return resolved;
   }
 
   /**
    * This function is not allowed to be used by scripts.
    * @throws error When called by a script.
    */
-  @SuppressWarnings("checkstyle:FieldDocComment")
   public static function typeof(value:Any):ValueType
   {
-    throw "Function Type.typeof is blacklisted.";
+    throw 'Function Type.typeof is blacklisted.';
   }
 
   /**
@@ -376,6 +415,7 @@ class ReflectUtil
    */
   public static function getInstanceFields(cls:Class<Any>):Array<String>
   {
+    if (cls == null) return [];
     return Type.getInstanceFields(cls);
   }
 
@@ -410,19 +450,98 @@ class ReflectUtil
    */
   public static function getClassNameOf(obj:Any):String
   {
-    if (obj == null) return "Unknown";
+    if (obj == null) return 'Unknown';
+    if (obj is String && Type.resolveClass(obj) != null) return obj;
     @:nullSafety(Off)
     var cls = Type.getClass(obj);
-    if (cls == null) return "Unknown";
+    if (cls == null) return 'Unknown';
     return Type.getClassName(cls);
   }
 
   /**
    * Transform a function taking an array of arguments into a function that can
    * be called with any number of arguments.
+   *
+   * @param f A function which takes an array of arguments.
+   * @return A new function that takes any number of arguments and passes them as an array to `f`.
    */
   public static function makeVarArgs(f:Array<Dynamic>->Dynamic):Dynamic
   {
     return Reflect.makeVarArgs(f);
+  }
+
+  @:unreflective
+  static var pathResolveCache:Map<String, Any> = new Map();
+  @:unreflective
+  static var blacklistedFieldsCache:Map<String, Any> = new Map();
+
+  @:unreflective @:nullSafety(Off)
+  static function getClassOrEnumFromName(path:String):Any
+  {
+    if (pathResolveCache.exists(path)) return pathResolveCache.get(path);
+    var resultCls:Class<Dynamic> = Type.resolveClass(path);
+    if (resultCls != null)
+    {
+      pathResolveCache.set(path, resultCls);
+      return resultCls;
+    }
+    else
+    {
+      var resultEnm:Enum<Dynamic> = Type.resolveEnum(path);
+      if (resultEnm != null) pathResolveCache.set(path, resultEnm);
+      return resultEnm;
+    }
+  }
+
+  @:unreflective @:nullSafety(Off)
+  static function getReflectionParent(obj:Dynamic):Dynamic
+  {
+    var clsName = getClassNameOf(obj);
+    if (clsName == 'Unknown') clsName = null;
+    var objName = obj is String ? obj : (clsName ?? obj);
+    return PolymodScriptClass.importOverrides.exists(objName) ? PolymodScriptClass.importOverrides.get(objName) : obj;
+  }
+
+  @:unreflective @:nullSafety(Off)
+  static function isAccessAllowed(obj:Dynamic, ?varName:String):Bool
+  {
+    var reflectedObj = getReflectionParent(obj);
+    var isClassReflect = Std.isOfType(reflectedObj, Class);
+
+    var key:String;
+    if (isClassReflect)
+    {
+      key = Type.getClassName(cast reflectedObj);
+    }
+    else
+    {
+      key = getClassNameOf(reflectedObj);
+    }
+
+    if (varName != null)
+    {
+      var cacheKey = '${isClassReflect ? "C_" : "I_"}$key';
+      var blacklistedFields:Array<String> = blacklistedFieldsCache.get(cacheKey);
+      if (blacklistedFields == null)
+      {
+        if (isClassReflect)
+        {
+          blacklistedFields = PolymodScriptClass.blacklistedStaticFields.get(cast reflectedObj);
+        }
+        else
+        {
+          blacklistedFields = PolymodScriptClass.blacklistedInstanceFields.get(key);
+        }
+
+        if (blacklistedFields == null) blacklistedFields = [];
+        blacklistedFieldsCache.set(cacheKey, blacklistedFields);
+      }
+
+      if (blacklistedFields.contains(varName)) return false;
+    }
+
+    if (PolymodScriptClass.importOverrides.exists(key) && PolymodScriptClass.importOverrides.get(key) == null) return false;
+
+    return true;
   }
 }

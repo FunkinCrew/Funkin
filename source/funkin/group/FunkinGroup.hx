@@ -3,6 +3,7 @@ package funkin.group;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.math.FlxRect;
 import flixel.util.FlxSort;
 import funkin.util.SortUtil;
 import flixel.math.FlxPoint;
@@ -67,20 +68,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   }
 
   /**
-   * The width of all the FunkinGroup's children's displays put together.
-   *
-   * Meant as a replacement of frameWidth.
-   */
-  public var accurateWidth(get, null):Float = 0;
-
-  /**
-   * The height of all the FunkinGroup's children's displays put together.
-   *
-   * Meant as a replacement of frameHeight.
-   */
-  public var accurateHeight(get, null):Float = 0;
-
-  /**
    * If this is false, the FunkinGroup will update children normally. Otherwise,
    * it will not (obviously).
    *
@@ -107,80 +94,51 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
 
   override function get_width():Float
   {
+    updateChildren();
+
     if (size < 1) return 0;
 
-    var leftMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, x + a.localX, x + b.localX);
-    }, false)[0];
+    var minLeft:Float = Math.POSITIVE_INFINITY;
+    var maxRight:Float = Math.NEGATIVE_INFINITY;
 
-    var rightMostSpr:T = sort(function(order:Int, a:T, b:T):Int
+    for (child in children)
     {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (x + a.localX) + a.width, (x + b.localX) + b.width);
-    }, false, FlxSort.DESCENDING)[0];
+      if (child == null || !child.alive || !child.localVisible) continue;
 
-    return Math.abs((x + rightMostSpr.localX) + rightMostSpr.width) - (x + leftMostSpr.localX);
+      var left:Float = child.localX * scale.x;
+      var right:Float = left + child.frameWidth * child.scale.x;
+
+      if (left < minLeft) minLeft = left;
+      if (right > maxRight) maxRight = right;
+    }
+
+    if (minLeft == Math.POSITIVE_INFINITY) return 0;
+    return maxRight - minLeft;
   }
 
   override function get_height():Float
   {
+    updateChildren();
+
     if (size < 1) return 0;
 
-    var downwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
+    var minTop:Float = Math.POSITIVE_INFINITY;
+    var maxBottom:Float = Math.NEGATIVE_INFINITY;
+
+    for (child in children)
     {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (y + a.localY) + a.height, (y + b.localY) + b.height);
-    }, false, FlxSort.DESCENDING)[0];
+      if (child == null || !child.alive || !child.localVisible) continue;
+      if (child.scale.y != scale.y * child.localScale.y) continue;
 
-    var upwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, y + a.localY, y + b.localY);
-    }, false)[0];
+      var top:Float = child.localY;
+      var bottom:Float = top + child.frameHeight * child.scale.y;
 
-    return Math.abs(((y + downwardsMostSpr.localY) + downwardsMostSpr.height) - (y + upwardsMostSpr.localY));
-  }
+      if (top < minTop) minTop = top;
+      if (bottom > maxBottom) maxBottom = bottom;
+    }
 
-  // include scale with frame sizes for better accuracy
-
-  function get_accurateWidth():Float
-  {
-    if (size < 1) return 0;
-
-    var leftMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, x + a.localX, x + b.localX);
-    }, false)[0];
-
-    var rightMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (x + a.localX) + (a.frameWidth * a.scale.x), (x + b.localX) + (b.frameWidth * a.scale.x));
-    }, false, FlxSort.DESCENDING)[0];
-
-    return Math.abs(((x + rightMostSpr.localX) + (rightMostSpr.frameWidth * rightMostSpr.scale.x)) - (x + leftMostSpr.localX));
-  }
-
-  function get_accurateHeight():Float
-  {
-    if (size < 1) return 0;
-
-    var downwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, (y + a.localY) + (a.frameHeight * a.scale.y), (y + b.localY) + (b.frameHeight * a.scale.y));
-    }, false, FlxSort.DESCENDING)[0];
-
-    var upwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
-    {
-      if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, y + a.localY, y + b.localY);
-    }, false)[0];
-
-    return Math.abs(((y + downwardsMostSpr.localY) + (downwardsMostSpr.frameHeight * downwardsMostSpr.scale.y)) - (y + upwardsMostSpr.localY));
+    if (minTop == Math.POSITIVE_INFINITY) return 0;
+    return maxBottom - minTop;
   }
 
   /**
@@ -270,7 +228,51 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   {
     for (child in children)
     {
-      if (child != null && child.exists && child.visible) child.draw();
+      if (child == null || !child.exists || !child.visible) continue;
+      if (clipRect != null)
+      {
+        // Preserve the child's original clip so we can restore it after drawing.
+        var originalClip:Null<FlxRect> = child.clipRect;
+
+        // Convert this group's clipRect into the child's local space.
+        var groupClip:FlxRect = FlxRect.get(x + clipRect.x, y + clipRect.y, clipRect.width, clipRect.height);
+        var childClip:FlxRect = null;
+
+        if (Std.isOfType(child, FunkinGroup))
+        {
+          // Nested groups expect clipRect in group-local world units.
+          childClip = FlxRect.get(groupClip.x - child.x, groupClip.y - child.y, groupClip.width, groupClip.height);
+        }
+        else
+        {
+          // Sprites expect clipRect in texture-local units, so include scale.
+          var sx:Float = child.scale.x != 0 ? child.scale.x : 1.0;
+          var sy:Float = child.scale.y != 0 ? child.scale.y : 1.0;
+          childClip = FlxRect.get((groupClip.x - child.x) / sx, (groupClip.y - child.y) / sy, groupClip.width / sx, groupClip.height / sy);
+        }
+
+        // If the child already has its own clip, intersect it in the same local space.
+        if (originalClip != null)
+        {
+          var ix:Float = Math.max(childClip.x, originalClip.x);
+          var iy:Float = Math.max(childClip.y, originalClip.y);
+          var ir:Float = Math.min(childClip.right, originalClip.right);
+          var ib:Float = Math.min(childClip.bottom, originalClip.bottom);
+
+          childClip.set(ix, iy, Math.max(0, ir - ix), Math.max(0, ib - iy));
+        }
+
+        child.clipRect = childClip;
+        child.draw();
+        childClip.put();
+
+        // Restore the child's original clip object.
+        child.clipRect = originalClip;
+      }
+      else
+      {
+        child.draw();
+      }
     }
   }
 
@@ -677,7 +679,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override public function makeGraphic(Width:Int, Height:Int, Color:Int = FlxColor.WHITE, Unique:Bool = false, ?Key:String):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
   }
@@ -689,7 +691,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override public function loadGraphicFromSprite(Sprite:FlxSprite):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
   }
@@ -712,19 +714,9 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
       AutoBuffer:Bool = false, ?Key:String):FlxSprite
   {
     #if FLX_DEBUG
-    throw "This function is not supported in FunkinGroup";
+    throw 'This function is not supported in FunkinGroup';
     #end
     return this;
-  }
-
-  override function set_pixels(Value:openfl.display.BitmapData):openfl.display.BitmapData
-  {
-    return Value;
-  }
-
-  override function set_frame(Value:flixel.graphics.frames.FlxFrame):flixel.graphics.frames.FlxFrame
-  {
-    return Value;
   }
 
   override function get_pixels():openfl.display.BitmapData
@@ -767,4 +759,50 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   override inline function updateColorTransform():Void
   {
   }
+
+  /**
+	 * Iterates through every member.
+	 */
+	public inline function iterator(?filter:T->Bool):FunkinGroupIterator<T>
+	{
+		return new FunkinGroupIterator<T>(children, filter);
+	}
+
+	/**
+	 * Iterates through every member and index.
+	 */
+	public inline function keyValueIterator()
+	{
+		return children.keyValueIterator();
+	}
+}
+
+class FunkinGroupIterator<T>
+{
+	var _groupMembers:Array<T>;
+	var _filter:T->Bool;
+	var _cursor:Int;
+	var _length:Int;
+
+	public inline function new(groupMembers:Array<T>, ?filter:T->Bool)
+	{
+		_groupMembers = groupMembers;
+		_filter = filter;
+		_cursor = 0;
+		_length = _groupMembers.length;
+	}
+
+	public inline function next()
+	{
+		return hasNext() ? _groupMembers[_cursor++] : null;
+	}
+
+	public inline function hasNext():Bool
+	{
+		while (_cursor < _length && (_groupMembers[_cursor] == null || _filter != null && !_filter(_groupMembers[_cursor])))
+		{
+			_cursor++;
+		}
+		return _cursor < _length;
+	}
 }

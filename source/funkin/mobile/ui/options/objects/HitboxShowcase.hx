@@ -108,7 +108,7 @@ class HitboxShowcase extends FlxSpriteGroup
     }
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

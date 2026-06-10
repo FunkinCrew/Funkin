@@ -196,7 +196,7 @@ class MathUtil
   @:deprecated('Use smoothLerpPrecision instead')
   public static function cameraLerp(lerp:Float):Float
   {
-    return lerp * (FlxG.elapsed / (1 / 60));
+    return lerp * (FlxG.elapsed / (1 / Constants.SECS_PER_MIN));
   }
 
   /**
@@ -235,10 +235,9 @@ class MathUtil
    * It's used in FullScreenScaleMode to prevent weird window resolutions from being counted as wide screen since those were causing issues positioning the game
    * It returns the greatest common divisor between m and n
    *
-   * think it's from hxp..?
-   * @param m
-   * @param n
-   * @return Int the common divisor between m and n
+   * @param m The first number to factor
+   * @param n The second number to factor
+   * @return The greatest common divisor between m and n
    */
   public static function gcd(m:Int, n:Int):Int
   {

@@ -50,15 +50,12 @@ import funkin.mobile.util.InAppPurchasesUtil;
 class MainMenuState extends MusicBeatState
 {
   var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
-
   var bg:Null<FlxSprite>;
   var magenta:FlxSprite;
   var camFollow:FlxObject;
-
   #if mobile
   var gyroPan:Null<FlxPoint>;
   #end
-
   var overrideMusic:Bool = false;
   var uiStateMachine:UIStateMachine = new UIStateMachine();
   var canInteract(get, never):Bool;

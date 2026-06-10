@@ -82,9 +82,7 @@ typedef RawTallies =
   var good:Int;
   var sick:Int;
   var maxCombo:Int;
-
   var score:Int;
-
   var isNewHighscore:Bool;
 
   /**

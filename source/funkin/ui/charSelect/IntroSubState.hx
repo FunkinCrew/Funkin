@@ -18,12 +18,11 @@ class IntroSubState extends MusicBeatSubState
   #if html5
   static final LIGHTS_VIDEO_PATH:String = Paths.stripLibrary(Paths.videos('introSelect'));
   #end
-
   #if hxvlc
   static final LIGHTS_VIDEO_PATH:String = Paths.videos('introSelect');
   #end
 
-  public override function create():Void
+  override public function create():Void
   {
     if (Save.instance.oldChar.value)
     {
@@ -120,7 +119,7 @@ class IntroSubState extends MusicBeatSubState
   }
   #end
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

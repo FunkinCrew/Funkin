@@ -7,8 +7,7 @@ import funkin.data.song.SongDataUtils;
 /**
  * Command that sets the start time or end time of the Freeplay preview.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class SetFreeplayPreviewCommand implements ChartEditorCommand
 {
   var previousStartTime:Float = 0;

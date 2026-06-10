@@ -29,7 +29,7 @@ class WebViewUtil
   {
     if (!WebView.isOpened())
     {
-      var protocol:Array<String> = url.split("://");
+      var protocol:Array<String> = url.split('://');
 
       if (protocol.length == 1)
       {
@@ -37,7 +37,7 @@ class WebViewUtil
       }
       else if (protocol[0] != 'http' && protocol[0] != 'https')
       {
-        throw "openURL can only open http and https links.";
+        throw 'openURL can only open http and https links.';
       }
 
       function onButtonClicked():Void

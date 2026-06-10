@@ -31,12 +31,12 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
   /**
    * A singleton instance of the plugin.
    */
-  private static var instance:TouchPointerPlugin = null;
+  static var instance:TouchPointerPlugin = null;
 
   /**
    * A camera dedicated to displaying the pointers.
    */
-  private static var pointerCamera:FlxCamera;
+  static var pointerCamera:FlxCamera;
 
   public function new()
   {
@@ -159,7 +159,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
    * @param touchId The ID of the touch to find.
    * @return The TouchPointer object with the specified touch ID, or null if not found.
    */
-  private function findPointerByTouchId(touchId:Int):TouchPointer
+  function findPointerByTouchId(touchId:Int):TouchPointer
   {
     for (pointer in members)
     {
@@ -176,7 +176,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
    * @param touchId The ID of the touch to check for.
    * @return True if a touch with the specified ID exists, false otherwise.
    */
-  private function touchExists(touchId:Int):Bool
+  function touchExists(touchId:Int):Bool
   {
     for (touch in FlxG.touches.list)
     {
@@ -188,7 +188,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
   }
 
   @:noCompletion
-  private static function set_enabled(value:Bool):Bool
+  static function set_enabled(value:Bool):Bool
   {
     if (instance != null)
     {
@@ -198,7 +198,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     return enabled = value;
   }
 
-  public function removeAll(skipTween:Bool = false)
+  public function removeAll(skipTween:Bool = false):Void
   {
     for (pointer in members)
     {
@@ -237,12 +237,12 @@ class TouchPointer extends FlxSprite
    * An internal point for grabbing the view position of the camera.
    * Useful for reducing point allocation.
    */
-  private var viewPoint:FlxPoint;
+  var viewPoint:FlxPoint;
 
   /**
    * Stores the last position of the touch pointer.
    */
-  private var lastPosition:FlxPoint;
+  var lastPosition:FlxPoint;
 
   /**
    * Constructor for the TouchPointerPlugin class.
@@ -266,7 +266,7 @@ class TouchPointer extends FlxSprite
   public function initialize(touchId:Int):Void
   {
     this.touchId = touchId;
-    loadGraphic("assets/images/cursor/michael.png");
+    loadGraphic('assets/images/cursor/michael.png');
   }
 
   /**
@@ -296,12 +296,12 @@ class TouchPointer extends FlxSprite
     {
       var angle = FlxAngle.angleBetweenPoint(this, lastPosition, true);
       this.angle = angle;
-      loadGraphic("assets/images/cursor/kevin.png");
+      loadGraphic('assets/images/cursor/kevin.png');
     }
     else
     {
       angle = 0;
-      loadGraphic("assets/images/cursor/michael.png");
+      loadGraphic('assets/images/cursor/michael.png');
     }
 
     lastPosition.copyFrom(viewPoint);
@@ -317,8 +317,8 @@ class TouchPointer extends FlxSprite
   override public function loadGraphic(graphic:FlxGraphicAsset, animated = false, frameWidth = 0, frameHeight = 0, unique = false, ?key:String):FlxSprite
   {
     super.loadGraphic(graphic, animated, frameWidth, frameHeight, unique, key);
-    color = 0xff6666e1;
-    blend = "screen";
+    color = 0xFF6666E1;
+    blend = 'screen';
     return this;
   }
 }

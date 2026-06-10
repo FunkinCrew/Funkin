@@ -24,7 +24,10 @@ class CLIUtil
     trace(' WARNING '.warning() + ' : Reseting the Current Working Directory is unavailable on iOS targets');
     gameDir = cwd;
     #elseif mac
-    gameDir = Path.addTrailingSlash(Path.join([Path.directory(Sys.programPath()), '../Resources/']));
+    gameDir = Path.addTrailingSlash(Path.join([
+      Path.directory(Sys.programPath()),
+      '../Resources/'
+    ]));
     #else
     gameDir = Path.addTrailingSlash(Path.directory(Sys.programPath()));
     #end
@@ -80,7 +83,7 @@ class CLIUtil
               result.chart.shouldLoadChart = true;
               result.chart.chartPath = args.shift();
             }
-          case "--stage":
+          case '--stage':
             if (args.length == 0)
             {
               trace('No stage path provided.');
@@ -91,7 +94,7 @@ class CLIUtil
               result.stage.shouldLoadStage = true;
               result.stage.stagePath = args.shift();
             }
-          case "--song":
+          case '--song':
             if (args.length == 0)
             {
               trace('No chart path provided.');
@@ -180,7 +183,6 @@ class CLIUtil
 typedef CLIParams =
 {
   var args:Array<String>;
-
   var chart:CLIChartParams;
   var stage:CLIStageParams;
   var song:CLISongParams;

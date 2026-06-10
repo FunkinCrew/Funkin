@@ -137,7 +137,7 @@ class OptionsState extends MusicBeatState
     optionsCodex.switchPage(Options);
   }
 
-  function exitToMainMenu()
+  function exitToMainMenu():Void
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
@@ -152,7 +152,6 @@ class OptionsState extends MusicBeatState
 class OptionsMenu extends Page<OptionsMenuPageName>
 {
   var items:TextMenuList;
-
   #if FEATURE_TOUCH_CONTROLS
   var backButton:FunkinBackButton;
   var goingBack:Bool = false;
@@ -170,18 +169,18 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     super();
     add(items = new TextMenuList());
 
-    createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    createItem('PREFERENCES', function() codex.switchPage(Preferences));
     #if mobile
     if (ControlsHandler.hasExternalInputDevice)
     #end
-    createItem("CONTROLS", function() codex.switchPage(Controls));
+    createItem('CONTROLS', function() codex.switchPage(Controls));
     // createItem("CONTROL SCHEMES", function() {
     //   FlxG.state.openSubState(new ControlsSchemeMenu());
     // });
     #if FEATURE_LAG_ADJUSTMENT
-    createItem("LAG ADJUSTMENT", function()
+    createItem('LAG ADJUSTMENT', function()
     {
-      FlxG.sound.music.fadeOut(0.5, 0, function(tw)
+      var switchToOffsets = function()
       {
         FunkinSound.playMusic('offsetsLoop', {
           startingVolume: 0,
@@ -191,19 +190,30 @@ class OptionsMenu extends Page<OptionsMenuPageName>
         });
         OptionsState.instance.drumsBG.play(true);
         FlxG.sound.music.fadeIn(1, 1);
-      });
+        codex.switchPage(Offsets);
+      };
 
-      codex.switchPage(Offsets);
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.fadeOut(0.5, 0, function(tw)
+        {
+          switchToOffsets();
+        });
+      }
+      else
+      {
+        switchToOffsets();
+      }
     });
     #end
     #if FEATURE_MOBILE_IAP
-    createItem("RESTORE PURCHASES", function()
+    createItem('RESTORE PURCHASES', function()
     {
       InAppPurchasesUtil.restorePurchases();
     });
     #end
     #if android
-    createItem("OPEN DATA FOLDER", function()
+    createItem('OPEN DATA FOLDER', function()
     {
       funkin.external.android.DataFolderUtil.openDataFolder();
     });
@@ -211,7 +221,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
     {
-      createItem("LOGOUT OF NG", function()
+      createItem('LOGOUT OF NG', function()
       {
         NewgroundsClient.instance.logout(function()
         {
@@ -220,13 +230,13 @@ class OptionsMenu extends Page<OptionsMenuPageName>
           FlxG.resetState();
         }, function()
         {
-          FlxG.log.warn("Newgrounds logout failed!");
+          FlxG.log.warn('Newgrounds logout failed!');
         });
       });
     }
     else
     {
-      createItem("LOGIN TO NG", function()
+      createItem('LOGIN TO NG', function()
       {
         NewgroundsClient.instance.login(function()
         {
@@ -237,7 +247,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
           FlxG.resetState();
         }, function()
         {
-          FlxG.log.warn("Newgrounds login failed!");
+          FlxG.log.warn('Newgrounds login failed!');
         });
       });
     }
@@ -268,21 +278,21 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     // no need to show an entire new menu for just one option
     if (saveDataMenu.hasMultipleOptions())
     {
-      createItem("SAVE DATA OPTIONS", function()
+      createItem('SAVE DATA OPTIONS', function()
       {
         codex.switchPage(SaveData);
       });
     }
     else
     {
-      createItem("CLEAR SAVE DATA", saveDataMenu.openSaveDataPrompt);
+      createItem('CLEAR SAVE DATA', saveDataMenu.openSaveDataPrompt);
     }
   }
 
   public function addExitItem():Void
   {
     #if NO_FEATURE_TOUCH_CONTROLS
-    createItem("EXIT", exit);
+    createItem('EXIT', exit);
     #else
     backButton = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, exit, 1.0);
     backButton.onConfirmStart.add(function()
@@ -339,11 +349,11 @@ class OptionsMenu extends Page<OptionsMenuPageName>
 
 enum abstract OptionsMenuPageName(String) to PageName
 {
-  var Options = "options";
-  var Controls = "controls";
-  var Colors = "colors";
-  var Mods = "mods";
-  var Preferences = "preferences";
-  var Offsets = "offsets";
-  var SaveData = "saveData";
+  public var Options = 'options';
+  public var Controls = 'controls';
+  public var Colors = 'colors';
+  public var Mods = 'mods';
+  public var Preferences = 'preferences';
+  public var Offsets = 'offsets';
+  public var SaveData = 'saveData';
 }

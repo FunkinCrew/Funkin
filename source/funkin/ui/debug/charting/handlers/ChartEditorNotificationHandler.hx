@@ -24,6 +24,7 @@ class ChartEditorNotificationHandler
   // since GUTTER_SIZE affects both x and y, we'll replace the positioning with this!
   // for some reason the first notif always has a downwards offset of like 10 and idk how to fix that
   // that was also a problem before this
+
   public static function AnimateFromBottom(notifications:Array<Notification>):Array<AnimationBuilder>
   {
     var builders = [];
@@ -137,8 +138,6 @@ class ChartEditorNotificationHandler
   static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType,
       ?actions:Array<NotificationActionData>):Notification
   {
-    var actionNames:Array<String> = actions == null ? [] : actions.map(action -> action.text);
-
     var notif = NotificationManager.instance.addNotification({
       title: title,
       body: body,

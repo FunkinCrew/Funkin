@@ -8,10 +8,8 @@ import flixel.math.FlxPoint;
 class SprStage extends FlxSprite
 {
   public var imgName:String = '';
-
   public var layer:Int = 0;
   public var mousePressing:Bool = false;
-
   public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
   public var oldPos:FlxPoint = FlxPoint.get(0, 0);
 

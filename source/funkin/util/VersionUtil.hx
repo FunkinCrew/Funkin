@@ -23,7 +23,6 @@ class VersionUtil
   {
     try
     {
-      var versionRaw:thx.semver.Version.SemVer = version;
       return version.satisfies(versionRule);
     }
     catch (e)
@@ -33,6 +32,11 @@ class VersionUtil
     }
   }
 
+  /**
+   * Repair a potentially broken version object.
+   * @param version The version to repair, if necessary.
+   * @return The fixed version.
+   */
   @:nullSafety(Off)
   public static function repairVersion(version:thx.semver.Version):thx.semver.Version
   {
@@ -48,12 +52,11 @@ class VersionUtil
 
       // This is so jank but it should work.
       var buildData:Dynamic<String> = cast versionData.build;
-      var buildDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(buildData)
-        .map(function(d:Dynamic) return StringId(d.toString()));
+      var buildDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(buildData).map((d:Dynamic) -> return StringId(d.toString()));
       versionData.build = buildDataFixed;
 
       var preData:Dynamic<String> = cast versionData.pre;
-      var preDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(preData).map(function(d:Dynamic) return StringId(d.toString()));
+      var preDataFixed:Array<thx.semver.Version.Identifier> = thx.Dynamics.DynamicsT.values(preData).map((d:Dynamic) -> StringId(d.toString()));
       versionData.pre = preDataFixed;
 
       var fixedVersion:thx.semver.Version = versionData;

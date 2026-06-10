@@ -5,14 +5,12 @@ import extension.admob.Admob;
 import extension.admob.AdmobBannerAlign;
 import extension.admob.AdmobBannerSize;
 import extension.admob.AdmobEvent;
-import flixel.FlxG;
-import funkin.play.cutscene.VideoCutscene;
+import lime.media.AudioManager;
 
 /**
  * Provides utility functions for working with admob advertisements.
  */
-@:build(funkin.util.macro.EnvironmentMacro.build())
-@:nullSafety
+@:build(funkin.util.macro.EnvironmentMacro.build()) @:nullSafety
 class AdMobUtil
 {
   /**
@@ -28,7 +26,7 @@ class AdMobUtil
   /**
    * The AdMob Interstitial Preload ID used for loading interstitial ads.
    */
-  static final ADMOB_INTERSTITIAL_PRELOAD_ID:String = "FNF_INTERSTITIAL_PRELOAD_ID";
+  static final ADMOB_INTERSTITIAL_PRELOAD_ID:String = 'FNF_INTERSTITIAL_PRELOAD_ID';
 
   /**
    * The number of interstitial ads to preload and keep in buffer for AdMob.
@@ -39,30 +37,28 @@ class AdMobUtil
    * AdMob publisher ID used for the application.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_PUBLISHER:Null<String>;
   #else
-  static final ADMOB_PUBLISHER:Null<String> = "ca-app-pub-3940256099942544";
+  static final ADMOB_PUBLISHER:Null<String> = 'ca-app-pub-3940256099942544';
   #end
-
   /**
    * Ad unit ID for displaying banner ads.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_BANNER_AD_UNIT_ID:Null<String>;
   #else
-  static final ADMOB_BANNER_AD_UNIT_ID:Null<String> = #if android "9214589741" #elseif ios "2435281174" #else null #end;
+  static final ADMOB_BANNER_AD_UNIT_ID:Null<String> = #if android '9214589741' #elseif ios '2435281174' #else null #end;
   #end
-
   /**
    * Ad unit ID for displaying interstitial ads.
    */
   #if NO_TESTING_ADS
-  @:envField({mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"})
+  @:envField({mandatoryIfDefined: 'FEATURE_MOBILE_ADVERTISEMENTS'})
   static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String>;
   #else
-  static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String> = #if android "1033173712" #elseif ios "4411468910" #else null #end;
+  static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String> = #if android '1033173712' #elseif ios '4411468910' #else null #end;
   #end
 
   /**
@@ -79,27 +75,22 @@ class AdMobUtil
         case AdmobEvent.INIT_OK:
           if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID != null)
           {
-            final adUnitID:String = [AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/');
+            final adUnitID:String = [
+              AdMobUtil.ADMOB_PUBLISHER,
+              AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID
+            ].join('/');
 
             Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
           }
-        #if ios
-        case AdmobEvent.INTERSTITIAL_LOADED:
-          lime.media.AudioManager.suspend();
+        case AdmobEvent.INTERSTITIAL_SHOWED:
+          AudioManager.suspend();
         case AdmobEvent.INTERSTITIAL_DISMISSED:
-          lime.media.AudioManager.resume();
-        #end
+          AudioManager.resume();
         default:
       }
 
       Sys.println(event.toString());
     });
-
-    Admob.configureUnity(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
-
-    Admob.configurePangle(Admob.getTCFConsentForPurpose(0) == 1, StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
-
-    Admob.configureVungle(StringTools.startsWith(Admob.getUSPrivacy(), '1Y'));
 
     Admob.init(#if TESTING_ADS true #else false #end);
   }
@@ -120,7 +111,10 @@ class AdMobUtil
 
     if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_BANNER_AD_UNIT_ID != null)
     {
-      Admob.showBanner([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_BANNER_AD_UNIT_ID].join('/'), size, align);
+      Admob.showBanner([
+        AdMobUtil.ADMOB_PUBLISHER,
+        AdMobUtil.ADMOB_BANNER_AD_UNIT_ID
+      ].join('/'), size, align);
     }
   }
 
@@ -187,7 +181,10 @@ class AdMobUtil
       }
       else
       {
-        Admob.loadInterstitial([AdMobUtil.ADMOB_PUBLISHER, AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID].join('/'));
+        Admob.loadInterstitial([
+          AdMobUtil.ADMOB_PUBLISHER,
+          AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID
+        ].join('/'));
       }
     }
     else
@@ -206,41 +203,6 @@ class AdMobUtil
   public static inline function setVolume(volume:Float):Void
   {
     Admob.setVolume(volume);
-  }
-
-  /**
-   * Checks whether consent for a specific advertising purpose has been granted.
-   * @param purpose The purpose for which consent is required.
-   * @return An Int indicating consent status (-1 for no consent, 1 for granted).
-   */
-  public static inline function getTCFConsentForPurpose(purpose:Int):Int
-  {
-    return Admob.getTCFConsentForPurpose(purpose);
-  }
-
-  /**
-   * Checks if the user has given consent for all ad purposes.
-   * This is typically required for GDPR compliance, where each purpose (0-9) needs to be individually consented.
-   * @return Bool indicating whether the user has consented to all purposes.
-   */
-  public static function hasFullTCFConsent():Bool
-  {
-    for (purpose in 0...Admob.getTCFPurposeConsent().length)
-    {
-      if (Admob.getTCFConsentForPurpose(purpose) != 1) return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Retrieves the current user's consent status as a string.
-   * Useful for GDPR compliance to understand if ads can be personalized.
-   * @return A String with the consent status.
-   */
-  public static inline function getTCFPurposeConsent():String
-  {
-    return Admob.getTCFPurposeConsent();
   }
 
   /**

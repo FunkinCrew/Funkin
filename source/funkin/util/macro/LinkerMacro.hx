@@ -21,7 +21,10 @@ class LinkerMacro
 
     final sourcePath:String = haxe.io.Path.directory(haxe.macro.Context.getPosInfos(pos).file);
     final absSourcePath:String = haxe.io.Path.removeTrailingSlashes(sys.FileSystem.absolutePath(sourcePath));
-    final fileToInclude:String = haxe.io.Path.join([absSourcePath, fileName?.length > 0 ? fileName : 'Build.xml']);
+    final fileToInclude:String = haxe.io.Path.join([
+      absSourcePath,
+      fileName?.length > 0 ? fileName : 'Build.xml'
+    ]);
 
     if (!sys.FileSystem.exists(fileToInclude))
     {
@@ -32,10 +35,12 @@ class LinkerMacro
 
     includeElement.set('name', fileToInclude);
 
-    cls.meta.add(':buildXml', [{
-      expr: EConst(CString(haxe.xml.Printer.print(includeElement, true))),
-      pos: pos
-    }], pos);
+    cls.meta.add(':buildXml', [
+      {
+        expr: EConst(CString(haxe.xml.Printer.print(includeElement, true))),
+        pos: pos
+      }
+    ], pos);
 
     return fields;
   }

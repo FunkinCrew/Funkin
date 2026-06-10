@@ -3,14 +3,13 @@ package funkin.audio.waveform;
 @:nullSafety
 class WaveformDataParser
 {
-  @:native("int16_max")
+  @:native('int16_max')
   static final INT16_MAX:Int = 32767;
-  @:native("int16_min")
+  @:native('int16_min')
   static final INT16_MIN:Int = -32768;
-
-  @:native("int8_max")
+  @:native('int8_max')
   static final INT8_MAX:Int = 127;
-  @:native("int8_min")
+  @:native('int8_min')
   static final INT8_MIN:Int = -128;
 
   public static function interpretFlxSound(sound:Null<flixel.sound.FlxSound>):Null<WaveformData>
@@ -82,7 +81,9 @@ class WaveformDataParser
       {
         for (channelIndex in 0...channels)
         {
-          var sampleValue:Int = soundData[sampleIndex * channels + channelIndex];
+          var sampleValue:Int = soundData[
+            sampleIndex * channels + channelIndex
+          ];
 
           if (sampleValue < minValues[channelIndex]) minValues[channelIndex] = sampleValue;
           if (sampleValue > maxValues[channelIndex]) maxValues[channelIndex] = sampleValue;
@@ -94,7 +95,9 @@ class WaveformDataParser
       for (channelIndex in 0...channels)
       {
         outputData[baseIndex + channelIndex * 2] = minValues[channelIndex];
-        outputData[baseIndex + channelIndex * 2 + 1] = maxValues[channelIndex];
+        outputData[
+          baseIndex + channelIndex * 2 + 1
+        ] = maxValues[channelIndex];
       }
     }
 
@@ -129,6 +132,8 @@ class WaveformDataParser
     trace('[WAVEFORM] Failed to parse waveform data: ${id}');
 
     for (error in errors)
+    {
       funkin.data.DataError.printError(error);
+    }
   }
 }

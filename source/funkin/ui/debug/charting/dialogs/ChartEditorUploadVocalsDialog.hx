@@ -17,17 +17,14 @@ import haxe.ui.core.Component;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-vocals.xml"))
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/dialogs/upload-vocals.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
-
   var vocalContainer:Component;
   var dialogCancel:Button;
   var dialogNoVocals:Button;
   var dialogContinue:Button;
-
   var charIds:Array<String>;
   var instId:String;
   var hasClearedVocals:Bool = false;
@@ -109,7 +106,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
       vocalsEntry.onClick = function(_event)
       {
-        Dialogs.openBinaryFile('Open $charName Vocals', [{label: 'Audio File (.ogg)', extension: 'ogg'}], function(selectedFile)
+        FileUtil.browseForFile('Open $charName Vocals', [FileUtil.FILE_FILTER_OGG], function(selectedFile)
         {
           if (selectedFile != null && selectedFile.bytes != null)
           {
@@ -174,7 +171,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
+  override public function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
 
@@ -190,13 +187,13 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
     }
   }
 
-  public override function lock():Void
+  override public function lock():Void
   {
     super.lock();
     this.dialogCancel.disabled = true;
   }
 
-  public override function unlock():Void
+  override public function unlock():Void
   {
     super.unlock();
     this.dialogCancel.disabled = false;
@@ -211,41 +208,13 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
 
     this.lock();
 
-    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
-  }
-
-  /**
-   * Called when a file is selected by dropping a file onto the Upload Chart box.
-   */
-  function onDropFileChartBox(pathStr:String):Void
-  {
-    var path:Path = new Path(pathStr);
-    trace('Dropped file (${path})');
-
-    try
-    {
-      var result:Null<Array<String>> = ChartEditorImportExportHandler.loadFromFNFCPath(chartEditorState, path.toString());
-      if (result != null)
-      {
-        chartEditorState.success('Loaded Chart',
-          result.length == 0 ? 'Loaded chart (${path.toString()})' : 'Loaded chart (${path.toString()})\n${result.join("\n")}');
-        this.hideDialog(DialogButton.APPLY);
-      }
-      else
-      {
-        chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()})');
-      }
-    }
-    catch (err)
-    {
-      chartEditorState.failure('Failed to Load Chart', 'Failed to load chart (${path.toString()}): ${err}');
-    }
+    FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
   }
 
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
     this.unlock();
 
@@ -276,7 +245,7 @@ class ChartEditorUploadVocalsDialog extends ChartEditorBaseDialog
   }
 }
 
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-vocals-entry.xml"))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/dialogs/upload-vocals-entry.xml'))
 class ChartEditorUploadVocalsEntry extends Box
 {
   public var vocalsEntryLabel:Label;

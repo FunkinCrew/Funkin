@@ -13,9 +13,7 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 {
   public var curNumber:Float = 0;
   public var neededNumber:Int = 0;
-
   public var flavour:Int = 0xFFFFFFFF;
-
   public var align:FlxTextAlign = FlxTextAlign.LEFT;
 
   public function new(x:Float, y:Float, neededNumber:Int = 0, ?flavour:Int, align:FlxTextAlign = FlxTextAlign.LEFT)
@@ -30,8 +28,6 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     if (curNumber == neededNumber) drawNumbers();
   }
-
-  var tmr:Float = 0;
 
   override function update(elapsed:Float)
   {
@@ -89,8 +85,7 @@ class TallyNumber extends FlxSprite
 
     frames = Paths.getSparrowAtlas("resultScreen/tallieNumber");
 
-    for (i in 0...10)
-      animation.addByPrefix(Std.string(i), i + " small", 24, false);
+    for (i in 0...10) animation.addByPrefix(Std.string(i), i + " small", 24, false);
 
     animation.play(Std.string(digit));
     updateHitbox();

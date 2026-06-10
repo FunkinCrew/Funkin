@@ -11,12 +11,10 @@ import haxe.ui.util.Color;
 import flixel.util.FlxColor;
 import haxe.ui.events.UIEvent;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/stage-editor/toolboxes/object-properties.xml'))
 class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;
-
   var objPosX:NumberStepper;
   var objPosY:NumberStepper;
   var objZIdx:NumberStepper;
@@ -27,11 +25,9 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
   var objScrollX:NumberStepper;
   var objScrollY:NumberStepper;
   var objDance:NumberStepper;
-
   var objPixel:CheckBox;
   var objFlipX:CheckBox;
   var objFlipY:CheckBox;
-
   var objBlend:DropDown;
   var objTint:DropDown;
 
@@ -40,7 +36,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     super(state);
 
     // Initialize the custom DropDown view.
-    DropDownBuilder.HANDLER_MAP.set("objTint", Type.getClassName(ObjectTintHandler));
+    DropDownBuilder.HANDLER_MAP.set('objTint', Type.getClassName(ObjectTintHandler));
 
     // Numeric callbacks.
     objPosX.onChange = function(_)
@@ -126,7 +122,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     {
       if (linkedObj != null)
       {
-        linkedObj.blend = (objBlend.selectedItem?.text ?? "NONE") == "NONE" ? null : AssetDataHandler.blendFromString(objBlend.selectedItem.text);
+        linkedObj.blend = (objBlend.selectedItem?.text ?? 'NONE') == 'NONE' ? null : AssetDataHandler.blendFromString(objBlend.selectedItem.text);
       }
     }
 
@@ -173,7 +169,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
       objFlipY.selected = false;
 
       objBlend.selectedIndex = 0;
-      objTint.selectedItem = Color.fromString("white");
+      objTint.selectedItem = Color.fromString('white');
 
       return;
     }
@@ -194,7 +190,7 @@ class StageEditorObjectPropertiesToolbox extends StageEditorDefaultToolbox
     if (objFlipX.selected != linkedObj.flipX) objFlipX.selected = linkedObj.flipX;
     if (objFlipY.selected != linkedObj.flipY) objFlipY.selected = linkedObj.flipY;
 
-    var blendMode:String = Std.string(linkedObj.blend) ?? "NONE";
+    var blendMode:String = Std.string(linkedObj.blend) ?? 'NONE';
     if (objBlend.selectedItem != blendMode.toUpperCase()) objBlend.selectedItem = blendMode.toUpperCase();
 
     var objColor:Color = Color.fromComponents(linkedObj.color.red, linkedObj.color.green, linkedObj.color.blue, linkedObj.color.alpha);
@@ -223,7 +219,7 @@ private class ObjectTintHandler extends DropDownHandler
     return _view;
   }
 
-  public override function prepare(_)
+  override public function prepare(_)
   {
     super.prepare(_);
     if (_view != null) _view.currentColor = _cachedSelectedColor;
@@ -279,7 +275,6 @@ private class ObjectTintHandler extends DropDownHandler
 private class ObjectTintView extends VBox
 {
   public var dropdown:DropDown = null;
-
   public var currentColor(get, set):Null<Color>;
 
   private function get_currentColor():Null<Color>

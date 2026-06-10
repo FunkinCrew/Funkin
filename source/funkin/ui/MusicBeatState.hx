@@ -37,7 +37,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
-
   public var conductorInUse(get, set):Conductor;
 
   var _conductorInUse:Null<Conductor>;
@@ -117,6 +116,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   }
 
   // this should get moved post ui update but this is easier rn lolll
+
   public function addOptionsButton(?xPos:Float = 0, ?yPos:Float = 0, ?confirmCallback:Void->Void = null, ?instant:Bool = false):Void
   {
     if (optionsButton != null) remove(optionsButton);
@@ -145,7 +145,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new ScriptEvent(STATE_CREATE));
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
 
@@ -223,6 +223,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function stepHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return false;
+
     var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
@@ -234,6 +236,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   public function beatHit():Bool
   {
+    if (this.subState != null && !persistentUpdate) return false;
+
     var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
@@ -271,7 +275,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     }
   }
 
-  public override function openSubState(targetSubState:FlxSubState):Void
+  override public function openSubState(targetSubState:FlxSubState):Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
@@ -287,7 +291,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
   }
 
-  public override function closeSubState():Void
+  override public function closeSubState():Void
   {
     var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 

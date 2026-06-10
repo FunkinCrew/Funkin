@@ -16,10 +16,8 @@ class Page<T:PageName> extends FlxGroup
 {
   public var onSwitch(default, null) = new FlxTypedSignal<T->Void>();
   public var onExit(default, null) = new FlxSignal();
-
   public var enabled(default, set) = true;
   public var canExit = true;
-
   public var codex:Codex<T>;
 
   var controls(get, never):Controls;

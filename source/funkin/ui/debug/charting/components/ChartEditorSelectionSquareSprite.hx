@@ -11,8 +11,7 @@ import funkin.ui.debug.charting.handlers.ChartEditorThemeHandler;
  * A sprite that can be used to display a square over a selected note or event in the chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorSelectionSquareSprite extends FlxSliceSprite
 {
   public var noteData:Null<SongNoteData>;

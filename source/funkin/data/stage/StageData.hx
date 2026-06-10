@@ -15,13 +15,9 @@ class StageData
   public var name:String = 'Unknown';
   public var props:Array<StageDataProp> = [];
   public var characters:StageDataCharacters;
-
-  @:default(1.0)
-  @:optional
+  @:default(1.0) @:optional
   public var cameraZoom:Null<Float>;
-
-  @:default("shared")
-  @:optional
+  @:default('shared') @:optional
   public var directory:Null<String>;
 
   public function new()
@@ -106,8 +102,7 @@ typedef StageDataProp =
    * This is just like CSS, it isn't hard.
    * @default 0
    */
-  @:optional
-  @:default(0)
+  @:optional @:default(0)
   var zIndex:Int;
 
   /**
@@ -115,42 +110,35 @@ typedef StageDataProp =
    * This prevents blurry images on pixel-art levels.
    * @default false
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var isPixel:Bool;
 
   /**
    * If set to true, the prop will be flipped horizontally.
    * @default false
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var flipX:Bool;
 
   /**
    * If set to true, the prop will be flipped vertically.
    * @default false
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var flipY:Bool;
 
   /**
    * Either the scale of the prop as a float, or the [w, h] scale as an array of two floats.
    * Pro tip: On pixel-art levels, save the sprite small and set this value to 6 or so to save memory.
    */
-  @:jcustomparse(funkin.data.DataParse.eitherFloatOrFloats)
-  @:jcustomwrite(funkin.data.DataWrite.eitherFloatOrFloats)
-  @:optional
-  @:default(Left(1.0))
+  @:jcustomparse(funkin.data.DataParse.eitherFloatOrFloats) @:jcustomwrite(funkin.data.DataWrite.eitherFloatOrFloats) @:optional @:default(Left(1.0))
   var scale:haxe.ds.Either<Float, Array<Float>>;
 
   /**
    * The alpha of the prop, as a float.
    * @default 1.0
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var alpha:Float;
 
   /**
@@ -160,8 +148,7 @@ typedef StageDataProp =
    * Supports up to 0.25 precision.
    * @default 0.0
    */
-  @:default(0.0)
-  @:optional
+  @:default(0.0) @:optional
   var danceEvery:Float;
 
   /**
@@ -172,16 +159,14 @@ typedef StageDataProp =
    * [0, 0] means the prop is not moved.
    * @default [1, 1]
    */
-  @:optional
-  @:default([1, 1])
+  @:optional @:default([1, 1])
   var scroll:Array<Float>;
 
   /**
    * An optional array of animations which the prop can play.
    * @default Prop has no animations.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   var animations:Array<AnimationData>;
 
   /**
@@ -196,16 +181,14 @@ typedef StageDataProp =
    * Options: "sparrow", "packer", "animateatlas"
    * @default "sparrow"
    */
-  @:default("sparrow")
-  @:optional
+  @:default('sparrow') @:optional
   var animType:String;
 
   /**
    * The angle of the prop, as a float.
    * @default 0.0
    */
-  @:optional
-  @:default(0.0)
+  @:optional @:default(0.0)
   var angle:Float;
 
   /**
@@ -213,8 +196,7 @@ typedef StageDataProp =
    * Just like in photoshop.
    * @default Nothing.
    */
-  @:default("")
-  @:optional
+  @:default('') @:optional
   var blend:String;
 
   /**
@@ -222,8 +204,7 @@ typedef StageDataProp =
    * White overlays, or the ones with the value #FFFFFF, do not appear.
    * @default `#FFFFFF`
    */
-  @:default("#FFFFFF")
-  @:optional
+  @:default('#FFFFFF') @:optional
   var color:String;
 
   /**
@@ -291,22 +272,19 @@ typedef StageDataCharacter =
    * Again, just like CSS.
    * @default 0
    */
-  @:optional
-  @:default(0)
+  @:optional @:default(0)
   var zIndex:Int;
 
   /**
    * The position to render the character at.
    */
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   var position:Array<Float>;
 
   /**
    * The scale to render the character at.
    */
-  @:optional
-  @:default(1)
+  @:optional @:default(1)
   var scale:Float;
 
   /**
@@ -324,23 +302,20 @@ typedef StageDataCharacter =
    * [0, 0] means the character is not moved.
    * @default [1, 1]
    */
-  @:optional
-  @:default([1, 1])
+  @:optional @:default([1, 1])
   var scroll:Array<Float>;
 
   /**
    * The alpha of the character, as a float.
    * @default 1.0
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var alpha:Float;
 
   /**
    * The angle of the character, as a float.
    * @default 0.0
    */
-  @:optional
-  @:default(0.0)
+  @:optional @:default(0.0)
   var angle:Float;
 };

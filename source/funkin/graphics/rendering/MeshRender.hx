@@ -70,7 +70,7 @@ class MeshRender extends FlxStrip
     add_tri(a, c, d);
   }
 
-  public override function draw():Void
+  override public function draw():Void
   {
     super.draw();
   }

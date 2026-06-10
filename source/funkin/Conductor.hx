@@ -362,7 +362,7 @@ class Conductor
   static function get_instance():Conductor
   {
     if (Conductor._instance == null) set_instance(new Conductor());
-    if (Conductor._instance == null) throw "Could not initialize singleton Conductor!";
+    if (Conductor._instance == null) throw 'Could not initialize singleton Conductor!';
     return Conductor._instance;
   }
 
@@ -849,7 +849,7 @@ class Conductor
    * @param type The type of length to return. Either "step", "beat", or "measure" works, along with their first character.
    * @return The length of a step/beat/measure in milliseconds.
    */
-  public function getTypeLengthAtMs(ms:Float, type:String = "beat"):Float
+  public function getTypeLengthAtMs(ms:Float, type:String = 'beat'):Float
   {
     if (timeChanges.length == 0) return 0;
     var wantedTimeChange:SongTimeChange = timeChanges[0];
@@ -868,10 +868,14 @@ class Conductor
     var wantedBeatLengthMs:Float = ((Constants.SECS_PER_MIN / wantedTimeChange.bpm) * Constants.MS_PER_SEC) * (4 / wantedTimeChange.timeSignatureDen);
     return switch (type.toLowerCase())
     {
-      case "measure", "m": wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
-      case "beat", "b": wantedBeatLengthMs;
-      case "step", "s": wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
-      default: wantedBeatLengthMs;
+      case 'measure', 'm':
+        wantedBeatLengthMs * wantedTimeChange.timeSignatureNum;
+      case 'beat', 'b':
+        wantedBeatLengthMs;
+      case 'step', 's':
+        wantedBeatLengthMs / Constants.STEPS_PER_BEAT;
+      default:
+        wantedBeatLengthMs;
     }
   }
 

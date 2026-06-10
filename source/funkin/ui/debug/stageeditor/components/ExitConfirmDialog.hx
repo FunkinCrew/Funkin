@@ -3,7 +3,7 @@ package funkin.ui.debug.stageeditor.components;
 #if FEATURE_STAGE_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/dialogs/exit-confirm.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/stage-editor/dialogs/exit-confirm.xml'))
 class ExitConfirmDialog extends Dialog
 {
   var onComplete:Void->Void = null;
@@ -14,15 +14,15 @@ class ExitConfirmDialog extends Dialog
 
     onComplete = onComp;
 
-    buttons = DialogButton.CANCEL | "{{Proceed}}";
-    defaultButton = "{{Proceed}}";
+    buttons = DialogButton.CANCEL | '{{Proceed}}';
+    defaultButton = '{{Proceed}}';
 
     destroyOnClose = true;
   }
 
-  public override function validateDialog(button:DialogButton, fn:Bool->Void)
+  override public function validateDialog(button:DialogButton, fn:Bool->Void)
   {
-    if (button == "{{Proceed}}" && onComplete != null)
+    if (button == '{{Proceed}}' && onComplete != null)
     {
       onComplete();
     }

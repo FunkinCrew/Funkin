@@ -40,7 +40,9 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
 
     var assetList = [];
     for (anim in playableCharData.getAnimationsList())
+    {
       if (anim.assetPath != null && !assetList.contains(anim.assetPath)) assetList.push(anim.assetPath);
+    }
 
     var texture:FlxAtlasFrames = Paths.getSparrowAtlas(playableCharData.getAssetPath());
 
@@ -81,7 +83,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
     log('[MULTISPARROWDJ] Successfully loaded ${animationList.length} animations for ${characterId}');
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     switch (currentState)
     {
@@ -137,7 +139,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPumpIntro: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
         }
 
       case FistPump:
@@ -162,7 +164,7 @@ class MultiSparrowFreeplayDJ extends BaseFreeplayDJ
         }
         else
         {
-          FlxG.log.warn("Unrecognized animation in FistPump: " + getCurrentAnimation());
+          FlxG.log.warn('Unrecognized animation in FistPump: ' + getCurrentAnimation());
         }
 
       case IdleEasterEgg:

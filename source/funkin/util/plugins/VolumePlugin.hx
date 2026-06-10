@@ -13,12 +13,15 @@ class VolumePlugin extends FlxBasic
     super();
   }
 
-  public static function initialize()
+  /**
+   * Initialize the plugin.
+   */
+  public static function initialize():Void
   {
     FlxG.plugins.addPlugin(new VolumePlugin());
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 

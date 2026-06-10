@@ -77,6 +77,11 @@ class BaseCharacter extends Bopper
   final singTimeSteps:Float;
 
   /**
+   * When set to true, the next animation to play will temporarily force the character's vocals to play.
+   */
+  public var tempVocals:Bool = false;
+
+  /**
    * The offset between the corner of the sprite and the origin of the sprite (at the character's feet).
    * cornerPosition = stageData - characterOrigin
    */
@@ -166,7 +171,7 @@ class BaseCharacter extends Bopper
 
     this.characterId = id;
 
-    ignoreExclusionPref = ["sing"];
+    ignoreExclusionPref = ['sing'];
 
     _data = CharacterDataParser.fetchCharacterData(this.characterId);
     if (_data == null)
@@ -326,6 +331,20 @@ class BaseCharacter extends Bopper
       // Force the character to play the idle after the animation ends.
       this.dance(true);
     }
+    if (tempVocals)
+    {
+      // stop the temporary vocals
+      if (characterType == BF && PlayState.instance.vocals.playerVolume == 1)
+      {
+        PlayState.instance.vocals.playerVolume = 0;
+      }
+
+      if (characterType == DAD && PlayState.instance.vocals.opponentVolume == 1)
+      {
+        PlayState.instance.vocals.opponentVolume = 0;
+      }
+      tempVocals = false;
+    }
   }
 
   public function resetCameraFocusPoint():Void
@@ -364,7 +383,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onUpdate(event:UpdateScriptEvent):Void
+  override public function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
 
@@ -525,7 +544,7 @@ class BaseCharacter extends Bopper
    * Every time a note is hit, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteHit(event:HitNoteScriptEvent)
+  override public function onNoteHit(event:HitNoteScriptEvent):Void
   {
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
@@ -580,7 +599,7 @@ class BaseCharacter extends Bopper
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  public override function onNoteMiss(event:NoteScriptEvent)
+  override public function onNoteMiss(event:NoteScriptEvent)
   {
     super.onNoteMiss(event);
 
@@ -603,7 +622,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  override public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
     super.onNoteHoldDrop(event);
 
@@ -661,7 +680,7 @@ class BaseCharacter extends Bopper
   /**
    * Every time a wrong key is pressed, play the miss animation if we are Boyfriend.
    */
-  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+  override public function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
   {
     super.onNoteGhostMiss(event);
 
@@ -678,7 +697,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  public override function onDestroy(event:ScriptEvent):Void
+  override public function onDestroy(event:ScriptEvent):Void
   {
     this.characterType = OTHER;
   }
@@ -698,8 +717,22 @@ class BaseCharacter extends Bopper
     playAnimation(anim, true);
   }
 
-  public override function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
+  override public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reversed:Bool = false):Void
   {
+    if (tempVocals)
+    {
+      // restart the character's vocals for the duration of the animation
+      if (characterType == BF && PlayState.instance.vocals.playerVolume == 0)
+      {
+        PlayState.instance.vocals.playerVolume = 1;
+      }
+      else if (characterType == DAD && PlayState.instance.vocals.opponentVolume == 0)
+      {
+        PlayState.instance.vocals.opponentVolume = 1;
+      }
+      else if (characterType != BF || characterType != DAD) tempVocals = false;
+    }
+
     super.playAnimation(name, restart, ignoreOther, reversed);
   }
 

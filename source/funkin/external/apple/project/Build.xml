@@ -17,12 +17,14 @@
 		<file name="${this_dir}/src/MemoryUtil.mm" />
 		<file name="${this_dir}/src/ScreenUtil.mm" />
 		<file name="${this_dir}/src/FNFCExtern.mm" />
+		<file name="${this_dir}/src/KeyboardUtil.mm" />
 	</files>
 
 	<target id="haxe">
 		<vflag name="-framework" value="UIKit" unless="macos" />
 		<vflag name="-framework" value="Foundation" />
 		<vflag name="-framework" value="AVFAudio" />
+		<vflag name="-framework" value="GameController" />
 
 		<files id="external-apple" />
 	</target>

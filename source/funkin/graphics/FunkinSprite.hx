@@ -1,6 +1,5 @@
 package funkin.graphics;
 
-import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
@@ -13,7 +12,6 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMatrix;
 import flixel.graphics.frames.FlxFrame;
 import flixel.FlxCamera;
-import openfl.system.System;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.FunkinMemory;
 import animate.internal.SymbolItem;
@@ -21,7 +19,8 @@ import animate.internal.elements.Element;
 import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.SymbolInstance;
 import animate.FlxAnimate;
-import animate.FlxAnimateFrames;
+import animate.FlxAnimateFrames.FilterQuality;
+import animate.FlxAnimateFrames.SpritemapInput;
 import animate.internal.RenderTexture;
 import openfl.filters.BitmapFilter;
 import haxe.io.Path;
@@ -113,8 +112,7 @@ typedef AtlasSpriteSettings =
  * - A more efficient method for creating solid color sprites.
  * - TODO: Better cache handling for textures.
  */
-@:nullSafety
-@:access(animate.FlxAnimateController)
+@:nullSafety @:access(animate.FlxAnimateController)
 class FunkinSprite extends FlxAnimate
 {
   /**
@@ -740,11 +738,11 @@ class FunkinSprite extends FlxAnimate
   }
 
   /**
-   * Ensure scale is applied when cloning a sprite.R
+   * Ensure scale is applied when cloning a sprite.
    * The default `clone()` method acts kinda weird TBH.
    * @return A clone of this sprite.
    */
-  public override function clone():FunkinSprite
+  override public function clone():FunkinSprite
   {
     var result = new FunkinSprite(this.x, this.y);
     result.frames = this.frames;
@@ -876,7 +874,15 @@ class FunkinSprite extends FlxAnimate
     #if !flash
     if (willUseRenderTexture)
     {
-      if (_renderTexture == null) _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
+      if (_renderTexture == null)
+      {
+        _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
+
+        // Replace the render texture's camera with a FunkinCamera
+        // This allows the blend shader to work inside the render texture!
+        @:privateAccess
+        _renderTexture._camera = new FunkinCamera('', 0, 0, Math.ceil(bounds.width), Math.ceil(bounds.height));
+      }
 
       if (_renderTextureDirty)
       {
@@ -909,7 +915,7 @@ class FunkinSprite extends FlxAnimate
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
     frames = null;

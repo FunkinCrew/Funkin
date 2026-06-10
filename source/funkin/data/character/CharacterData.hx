@@ -39,7 +39,6 @@ class CharacterDataParser
 
   static final characterCache:Map<String, CharacterData> = new Map<String, CharacterData>();
   static final characterScriptedClass:Map<String, String> = new Map<String, String>();
-
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
 
   /**
@@ -323,11 +322,11 @@ class CharacterDataParser
    */
   public static function getCharPixelIconAsset(char:String):Null<FlxFrame>
   {
-    var charPath:String = "freeplay/icons/";
+    var charPath:String = 'freeplay/icons/';
 
-    final charIDParts:Array<String> = char.split("-");
-    var iconName:String = "";
-    var lastValidIconName:String = "";
+    final charIDParts:Array<String> = char.split('-');
+    var iconName:String = '';
+    var lastValidIconName:String = '';
     for (i in 0...charIDParts.length)
     {
       iconName += charIDParts[i];
@@ -460,12 +459,13 @@ class CharacterDataParser
   public static final DEFAULT_NAME:String = 'Untitled Character';
   public static final DEFAULT_OFFSETS:Array<Float> = [0, 0];
   public static final DEFAULT_HEALTHICON_OFFSETS:Array<Int> = [0, 25];
+  public static final DEFAULT_SHOULDBOP:Bool = true;
   public static final DEFAULT_RENDERTYPE:CharacterRenderType = CharacterRenderType.Sparrow;
   public static final DEFAULT_SCALE:Float = 1;
   public static final DEFAULT_SCROLL:Array<Float> = [0, 0];
   public static final DEFAULT_STARTINGANIM:String = 'idle';
   public static final DEFAULT_APPLYSTAGEMATRIX:Bool = false;
-  public static final DEFAULT_ANIMTYPE:String = "framelabel";
+  public static final DEFAULT_ANIMTYPE:String = 'framelabel';
   public static final DEFAULT_ATLASSETTINGS:funkin.data.stage.StageData.TextureAtlasData = {
     swfMode: true,
     cacheOnLoad: false,
@@ -532,6 +532,7 @@ class CharacterDataParser
     {
       input.healthIcon = {
         id: null,
+        shouldBop: null,
         scale: null,
         flipX: null,
         isPixel: null,
@@ -542,6 +543,11 @@ class CharacterDataParser
     if (input.healthIcon.id == null)
     {
       input.healthIcon.id = id;
+    }
+
+    if (input.healthIcon.shouldBop == null)
+    {
+      input.healthIcon.shouldBop = DEFAULT_SHOULDBOP;
     }
 
     if (input.healthIcon.scale == null)
@@ -770,8 +776,7 @@ typedef CharacterData =
    * Supports up to `0.25` precision.
    * @default `1.0` on characters
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var danceEvery:Null<Float>;
 
   /**
@@ -832,6 +837,12 @@ typedef HealthIconData =
    * @default The character's ID
    */
   var id:Null<String>;
+
+  /**
+   * Whether the health icon should bop or not.
+   * @default true
+   */
+  var shouldBop:Null<Bool>;
 
   /**
    * The scale of the health icon.

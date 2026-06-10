@@ -27,42 +27,36 @@ typedef SpeakerData =
   /**
    * Whether the sprite should be flipped horizontally.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var flipX:Bool;
 
   /**
    * Whether the sprite should be flipped vertically.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var flipY:Bool;
 
   /**
    * Whether to disable anti-aliasing for the dialogue box sprite.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var isPixel:Bool;
 
   /**
    * The offsets to apply to the sprite's position.
    */
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   public var offsets:Array<Float>;
 
   /**
    * The scale to apply to the sprite.
    */
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   public var scale:Float;
 
   /**
    * The available animations for the speaker.
    */
-  @:optional
-  @:default([])
+  @:optional @:default([])
   public var animations:Array<AnimationData>;
 }

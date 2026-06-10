@@ -38,15 +38,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
  *   - COLOR
  *   - LUMINOSITY
  */
-@:nullSafety
-@:access(openfl.display.DisplayObject)
-@:access(openfl.display.BitmapData)
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(flixel.graphics.FlxGraphic)
-@:access(flixel.graphics.frames.FlxFrame)
-@:access(openfl.display.OpenGLRenderer)
-@:access(openfl.geom.ColorTransform)
+@:nullSafety @:access(openfl.display.DisplayObject) @:access(openfl.display.BitmapData) @:access(openfl.display3D.Context3D) @:access(openfl.display3D.textures.TextureBase) @:access(flixel.graphics.FlxGraphic) @:access(flixel.graphics.frames.FlxFrame) @:access(openfl.display.OpenGLRenderer) @:access(openfl.geom.ColorTransform)
 class FunkinCamera extends FlxCamera
 {
   /**
@@ -72,7 +64,21 @@ class FunkinCamera extends FlxCamera
    *  - `LIGHTEN` is supported natively on desktop, but not other platforms.
    *  - While `DARKEN` is supported natively on desktop, it causes issues with transparency.
    */
-  static final KHR_BLEND_MODES:Array<BlendMode> = [DARKEN, HARDLIGHT, #if !desktop LIGHTEN, #end OVERLAY, DIFFERENCE, COLORDODGE, COLORBURN, SOFTLIGHT, EXCLUSION, HUE, SATURATION, COLOR, LUMINOSITY];
+  static final KHR_BLEND_MODES:Array<BlendMode> = [
+    DARKEN,
+    HARDLIGHT,
+    #if !desktop LIGHTEN, #end
+    OVERLAY,
+    DIFFERENCE,
+    COLORDODGE,
+    COLORBURN,
+    SOFTLIGHT,
+    EXCLUSION,
+    HUE,
+    SATURATION,
+    COLOR,
+    LUMINOSITY
+  ];
 
   /**
    * A list of blend modes that require the shader no matter what.
@@ -95,10 +101,8 @@ class FunkinCamera extends FlxCamera
 
   var _blendShader:RuntimeCustomBlendShader;
   var _backgroundFrame:FlxFrame;
-
   var _blendRenderTexture:RenderTexture;
   var _backgroundRenderTexture:RenderTexture;
-
   var _cameraTexture:FixedBitmapData;
   var _cameraMatrix:FlxMatrix;
 

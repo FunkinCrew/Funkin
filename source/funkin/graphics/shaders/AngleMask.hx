@@ -37,7 +37,7 @@ class AngleMask extends FlxShader
     }
 
     vec4 mainPass(vec2 fragCoord) {
-      vec4 base = texture2D(bitmap, fragCoord);
+      vec4 base = flixel_texture2D(bitmap, fragCoord);
 
       vec2 uv = fragCoord.xy;
 

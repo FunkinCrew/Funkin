@@ -15,13 +15,9 @@ typedef CreditsDataRole =
 {
   @:optional
   var header:String;
-
-  @:optional
-  @:default([])
+  @:optional @:default([])
   var body:Array<CreditsDataMember>;
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var appendBackers:Bool;
 }
 

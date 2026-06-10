@@ -107,7 +107,7 @@ class Paths implements ConsoleClass
     return getPath('data/$key.json', TEXT, library);
   }
 
-  public static function srt(key:String, ?library:String, ?directory:String = "data/"):String
+  public static function srt(key:String, ?library:String, ?directory:String = 'data/'):String
   {
     return getPath('$directory$key.srt', TEXT, library);
   }
@@ -181,10 +181,10 @@ class Paths implements ConsoleClass
 
   public static function getAnimateAtlas(key:String, ?library:String, settings:AtlasSpriteSettings):FlxAnimateFrames
   {
-    var assetLibrary:String = library ?? "";
-    var graphicKey:String = "";
+    var assetLibrary:String = library ?? '';
+    var graphicKey:String = '';
 
-    if (assetLibrary != "")
+    if (assetLibrary != '')
     {
       graphicKey = Paths.animateAtlas(key, assetLibrary);
     }
@@ -229,8 +229,8 @@ class Paths implements ConsoleClass
 
 enum abstract PathsFunction(String)
 {
-  var MUSIC;
-  var INST;
-  var VOICES;
-  var SOUND;
+  public var MUSIC;
+  public var INST;
+  public var VOICES;
+  public var SOUND;
 }

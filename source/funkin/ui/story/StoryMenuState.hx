@@ -38,18 +38,14 @@ class StoryMenuState extends MusicBeatState
   static final BACKGROUND_HEIGHT:Int = 400;
 
   var currentDifficultyId:String = 'normal';
-
   var currentLevelId:String = 'tutorial';
   var currentLevel:Level;
   var isLevelUnlocked:Bool;
   var currentLevelTitle:LevelTitle;
-
   var highScore:Int = 42069420;
   var highScoreLerp:Int = 12345678;
-
   var exitingMenu:Bool = false;
   var selectedLevel:Bool = false;
-
   //
   // RENDER OBJECTS
   //
@@ -63,11 +59,6 @@ class StoryMenuState extends MusicBeatState
    * The score text at the top.
    */
   var scoreText:FlxText;
-
-  /**
-   * The mode text at the top-middle.
-   */
-  var modeText:FlxText;
 
   /**
    * The list of songs on the left.
@@ -110,7 +101,6 @@ class StoryMenuState extends MusicBeatState
   var levelList:Array<String> = [];
 
   var difficultySprites:Map<String, FlxSprite>;
-
   var stickerSubState:StickerSubState;
 
   static var rememberedLevelId:Null<String> = null;
@@ -179,7 +169,7 @@ class StoryMenuState extends MusicBeatState
     updateProps();
 
     // x on tracklistText is set/updated later, we dont need to init it
-    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, 'Tracks', 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
@@ -375,7 +365,7 @@ class StoryMenuState extends MusicBeatState
           changeDifficulty(0);
         }
 
-        final wheelAmount:Int = Std.int(FlxMath.bound(FlxG.mouse.wheel, -1, 1));
+        final wheelAmount:Int = Math.round(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
 
         if (wheelAmount != 0)
         {
@@ -437,7 +427,9 @@ class StoryMenuState extends MusicBeatState
         for (i in 0...levelTitles.members.length)
         {
           final item = levelTitles.members[i];
-          final selectedItem = levelTitles.members[levelList.indexOf(currentLevelId)];
+          final selectedItem = levelTitles.members[
+            levelList.indexOf(currentLevelId)
+          ];
 
           if (!TouchUtil.pressAction(item, null, false)) continue;
 
@@ -551,7 +543,7 @@ class StoryMenuState extends MusicBeatState
 
   function funnyMusicThing():Void
   {
-    if (currentDifficultyId == "nightmare")
+    if (currentDifficultyId == 'nightmare')
     {
       FlxG.sound.music.fadeOut(FADE_OUT_TIME, 0.0);
     }
@@ -561,7 +553,7 @@ class StoryMenuState extends MusicBeatState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event);

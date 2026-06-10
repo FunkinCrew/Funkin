@@ -58,7 +58,7 @@ class Medals
         // Play the medal unlock animation, but only if the user has not already unlocked it.
         #if html5
         // Web builds support parsing the bitmap data from the URL directly.
-        BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData)
+        BitmapData.loadFromFile('https:' + medalData.icon).onComplete(function(bmp:BitmapData)
         {
           var medalGraphic = FlxGraphic.fromBitmapData(bmp);
           medalGraphic.persist = true;
@@ -78,12 +78,12 @@ class Medals
           #end
         })[0];
 
-        if (localMedalData == null) throw "You forgot to encode a Base64 image for medal: " + medal;
+        if (localMedalData == null) throw 'You forgot to encode a Base64 image for medal: ' + medal;
 
         var str:String = localMedalData.icon;
         // Lime/OpenFL parses it without the included prefix stuff, so we remove it.
-        str = str.replace("data:image/png;base64,", "").trim();
-        var bitmapData = BitmapData.fromBase64(str, "image/png");
+        str = str.replace('data:image/png;base64,', '').trim();
+        var bitmapData = BitmapData.fromBase64(str, 'image/png');
         var medalGraphic:Null<FlxGraphic> = null;
         if (str != null)
         {
@@ -122,8 +122,7 @@ class Medals
     if (parser.errors.length > 0)
     {
       trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to parse local medal data!');
-      for (error in parser.errors)
-        funkin.data.DataError.printError(error);
+      for (error in parser.errors) funkin.data.DataError.printError(error);
       medalJSON = [];
     }
     else
@@ -407,25 +406,25 @@ enum abstract Medal(Int) from Int to Int
   {
     switch (levelId)
     {
-      case "tutorial":
+      case 'tutorial':
         return StoryTutorial;
-      case "week1":
+      case 'week1':
         return StoryWeek1;
-      case "week2":
+      case 'week2':
         return StoryWeek2;
-      case "week3":
+      case 'week3':
         return StoryWeek3;
-      case "week4":
+      case 'week4':
         return StoryWeek4;
-      case "week5":
+      case 'week5':
         return StoryWeek5;
-      case "week6":
+      case 'week6':
         return StoryWeek6;
-      case "week7":
+      case 'week7':
         return StoryWeek7;
-      case "weekend1":
+      case 'weekend1':
         return StoryWeekend1;
-      case "sserafim":
+      case 'sserafim':
         return StoryCollab1;
       default:
         return Unknown;
@@ -438,7 +437,27 @@ enum abstract Medal(Int) from Int to Int
    */
   public static function getAllMedals():Array<Medal>
   {
-    return
-      [StartGame, StoryTutorial, StoryWeek1, StoryWeek2, StoryWeek3, StoryWeek4, StoryWeek5, StoryWeek6, StoryWeek7, StoryWeekend1, CharSelect, FreeplayPicoMix, FreeplayStressPico, LossRating, PerfectRatingHard, GoldPerfectRatingHard, ErectDifficulty, GoldPerfectRatingNightmare, FridayNight, Nice];
+    return [
+      StartGame,
+      StoryTutorial,
+      StoryWeek1,
+      StoryWeek2,
+      StoryWeek3,
+      StoryWeek4,
+      StoryWeek5,
+      StoryWeek6,
+      StoryWeek7,
+      StoryWeekend1,
+      CharSelect,
+      FreeplayPicoMix,
+      FreeplayStressPico,
+      LossRating,
+      PerfectRatingHard,
+      GoldPerfectRatingHard,
+      ErectDifficulty,
+      GoldPerfectRatingNightmare,
+      FridayNight,
+      Nice
+    ];
   }
 }

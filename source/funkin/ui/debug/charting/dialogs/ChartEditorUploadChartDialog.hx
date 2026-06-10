@@ -8,11 +8,9 @@ import funkin.util.FileUtil;
 import haxe.io.Path;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
-import haxe.ui.containers.dialogs.Dialogs.SelectedFileInfo;
 
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml"))
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/dialogs/upload-chart.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 {
   var dropHandlers:Array<DialogDropTarget> = [];
@@ -58,7 +56,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
+  override public function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
 
@@ -74,13 +72,13 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
     }
   }
 
-  public override function lock():Void
+  override public function lock():Void
   {
     super.lock();
     this.dialogCancel.disabled = true;
   }
 
-  public override function unlock():Void
+  override public function unlock():Void
   {
     super.unlock();
     this.dialogCancel.disabled = false;
@@ -95,7 +93,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
 
     this.lock();
 
-    FileUtil.browseForBinaryFile('Open Chart', [FileUtil.FILE_EXTENSION_INFO_FNFC], onSelectFile, onCancelBrowse);
+    FileUtil.browseForFile('Open Chart', [FileUtil.FILE_FILTER_FNFC], onSelectFile, onCancelBrowse);
   }
 
   /**
@@ -129,7 +127,7 @@ class ChartEditorUploadChartDialog extends ChartEditorBaseDialog
   /**
    * Called when a file is selected by the dialog displayed when clicking the Upload Chart box.
    */
-  function onSelectFile(selectedFile:SelectedFileInfo):Void
+  function onSelectFile(selectedFile:SelectedFileData):Void
   {
     this.unlock();
 

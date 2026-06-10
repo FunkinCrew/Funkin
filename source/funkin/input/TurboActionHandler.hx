@@ -1,8 +1,6 @@
 package funkin.input;
 
-import flixel.input.keyboard.FlxKey;
 import flixel.FlxBasic;
-import funkin.input.Controls;
 import funkin.input.Controls.Action;
 
 /**
@@ -48,11 +46,9 @@ class TurboActionHandler extends FlxBasic
   }
 
   var action:Action;
-
   var delay:Float;
   var interval:Float;
   var gamepadOnly:Bool;
-
   var pressedTime:Float = 0;
 
   function new(action:Action, delay:Float = DEFAULT_DELAY, interval:Float = DEFAULT_INTERVAL, gamepadOnly:Bool = false)
@@ -69,7 +65,7 @@ class TurboActionHandler extends FlxBasic
     return controls.check(action, PRESSED, gamepadOnly);
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -104,7 +100,7 @@ class TurboActionHandler extends FlxBasic
    * @param repeatDelay How long to wait between repeats.
    * @return A TurboActionHandler
    */
-  public static overload inline extern function build(action:Action, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL,
+  overload public static extern inline function build(action:Action, ?delay:Float = DEFAULT_DELAY, ?interval:Float = DEFAULT_INTERVAL,
       ?gamepadOnly:Bool = false):TurboActionHandler
   {
     return new TurboActionHandler(action, delay, interval);

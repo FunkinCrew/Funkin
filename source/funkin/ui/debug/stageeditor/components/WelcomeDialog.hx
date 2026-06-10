@@ -58,7 +58,7 @@ class WelcomeDialog extends Dialog
       contentRecent.addComponent(fileText);
     }
 
-    boxDrag.onClick = function(_) FileUtil.browseForBinaryFile("Open Stage Data", [FileUtil.FILE_EXTENSION_INFO_FNFS],
+    boxDrag.onClick = function(_) FileUtil.browseForFile("Open Stage Data", [FileUtil.FILE_FILTER_FNFS],
       (fileInfo) -> loadFromFilePath(fileInfo.fullPath, null, 0, 0));
 
     var defaultStages:Array<String> = StageRegistry.instance.listEntryIds();

@@ -22,15 +22,11 @@ class VideoCutscene
   @:noCompletion
   static final DEFAULT_LANGUAGE:String = 'English';
   #end
-
   static var blackScreen:FlxSprite;
-
   static var cutsceneType:CutsceneType;
-
   #if html5
   static var vid:FlxVideo;
   #end
-
   #if hxvlc
   static var vid:FunkinVideoSprite;
   #end

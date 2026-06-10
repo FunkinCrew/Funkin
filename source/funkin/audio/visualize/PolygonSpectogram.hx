@@ -23,7 +23,6 @@ class PolygonSpectogram extends MeshRender
 
   public var audioData:Int16Array;
   public var detail:Float = 1;
-
   public var thickness:Float = 2;
   public var waveAmplitude:Int = 100;
 

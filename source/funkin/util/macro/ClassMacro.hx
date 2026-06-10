@@ -194,7 +194,6 @@ class ClassMacro
   }
 
   static var onGenerateCallbackRegistered:Bool = false;
-
   static var classListsRaw:Map<String, Array<String>> = [];
   static var classListsToGenerate:Array<String> = [];
   #end

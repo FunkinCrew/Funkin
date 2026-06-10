@@ -3,7 +3,7 @@ package funkin.data.animation;
 @:nullSafety
 class AnimationDataUtil
 {
-  public static function toNamed(data:UnnamedAnimationData, name:String = ""):AnimationData
+  public static function toNamed(data:UnnamedAnimationData, name:String = ''):AnimationData
   {
     return {
       name: name,
@@ -23,7 +23,7 @@ class AnimationDataUtil
    * @param name (adds index to name)
    * @return Array<AnimationData>
    */
-  public static function toNamedArray(data:Array<UnnamedAnimationData>, name:String = ""):Array<AnimationData>
+  public static function toNamedArray(data:Array<UnnamedAnimationData>, name:String = ''):Array<AnimationData>
   {
     return data.mapi(function(animItem, ind) return toNamed(animItem, '$name$ind'));
   }
@@ -93,40 +93,35 @@ typedef UnnamedAnimationData =
    * Offset the character's position by this amount when playing this animation.
    * @default [0, 0]
    */
-  @:default([0, 0])
-  @:optional
+  @:default([0, 0]) @:optional
   var offsets:Null<Array<Float>>;
 
   /**
    * Whether the animation should loop when it finishes.
    * @default false
    */
-  @:default(false)
-  @:optional
+  @:default(false) @:optional
   var looped:Bool;
 
   /**
    * Whether the animation's sprites should be flipped horizontally.
    * @default false
    */
-  @:default(false)
-  @:optional
+  @:default(false) @:optional
   var flipX:Null<Bool>;
 
   /**
    * Whether the animation's sprites should be flipped vertically.
    * @default false
    */
-  @:default(false)
-  @:optional
+  @:default(false) @:optional
   var flipY:Null<Bool>;
 
   /**
    * The frame rate of the animation.
    * @default 24
    */
-  @:default(24)
-  @:optional
+  @:default(24) @:optional
   var frameRate:Null<Int>;
 
   /**
@@ -135,8 +130,7 @@ typedef UnnamedAnimationData =
    * @example [0, 1, 2, 3] (use only the first four frames)
    * @default [] (all frames)
    */
-  @:default([])
-  @:optional
+  @:default([]) @:optional
   var frameIndices:Null<Array<Int>>;
 
   /**
@@ -144,8 +138,7 @@ typedef UnnamedAnimationData =
    * Only available for texture atlases.
    * Options: "framelabel", "symbol"
    */
-  @:default("framelabel")
-  @:optional
+  @:default('framelabel') @:optional
   var animType:String;
 
   /**
@@ -153,8 +146,7 @@ typedef UnnamedAnimationData =
    * Only available for multi-sparrow and multi-animateatlas characters.
    * Options: "sparrow", "animateatlas"
    */
-  @:default("")
-  @:optional
+  @:default('') @:optional
   var renderType:String;
 
   /**

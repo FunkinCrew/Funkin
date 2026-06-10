@@ -21,8 +21,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/freeplay.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/toolboxes/freeplay.xml'))
 class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 {
   var waveformContainer:Absolute;
@@ -40,18 +39,14 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   var previewSelectionSprite:SpriteWrapper;
 
   static final TICK_LABEL_X_OFFSET:Float = 4.0;
-
   static final PLAYHEAD_RIGHT_PAD:Float = 10.0;
-
   static final BASE_SCALE:Float = 64.0;
   static final STARTING_SCALE:Float = 1024.0;
   static final MIN_SCALE:Float = 4.0;
   static final WAVEFORM_ZOOM_MULT:Float = 1.5;
-
   static final MAGIC_SCALE_BASE_TIME:Float = 5.0;
 
   var waveformScale:Float = STARTING_SCALE;
-
   var playheadAbsolutePos(get, set):Float;
 
   function get_playheadAbsolutePos():Float
@@ -101,40 +96,13 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     return previewSelectionSprite.width = value - previewBoxStartPosAbsolute;
   }
 
-  var previewBoxStartPosRelative(get, set):Float;
-
-  function get_previewBoxStartPosRelative():Float
-  {
-    return previewSelectionSprite.left - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxStartPosRelative(value:Float):Float
-  {
-    return previewSelectionSprite.left = waveformScrollview.hscrollPos + value;
-  }
-
-  var previewBoxEndPosRelative(get, set):Float;
-
-  function get_previewBoxEndPosRelative():Float
-  {
-    return previewSelectionSprite.left + previewSelectionSprite.width - waveformScrollview.hscrollPos;
-  }
-
-  function set_previewBoxEndPosRelative(value:Float):Float
-  {
-    if (value < previewBoxStartPosRelative) return previewSelectionSprite.left = previewBoxStartPosRelative;
-    return previewSelectionSprite.width = value - previewBoxStartPosRelative;
-  }
-
   /**
    * The amount you need to multiply the zoom by such that, at the base zoom level, one tick is equal to `MAGIC_SCALE_BASE_TIME` seconds.
    */
   var waveformMagicFactor:Float = 1.0;
 
   var audioPreviewTracks:SoundGroup;
-
   var tickTiledSprite:FlxTiledSprite;
-
   var freeplayPreviewVolume(get, null):Float;
 
   function get_freeplayPreviewVolume():Float
@@ -332,7 +300,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
       var tickLabel:Label = new Label();
       tickLabel.text = formatTime(tickTime);
-      tickLabel.styleNames = "offset-ticks-label";
+      tickLabel.styleNames = 'offset-ticks-label';
       tickLabel.height = labelHeight;
       // Positioning within offsetTicksContainer is absolute (relative to the container itself).
       tickLabel.top = labelYPos;
@@ -345,27 +313,23 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
   function formatTime(seconds:Float):String
   {
-    if (seconds <= 0) return "0.0";
+    if (seconds <= 0) return '0.0';
 
     var integerSeconds = Math.floor(seconds);
     var decimalSeconds = Math.floor((seconds - integerSeconds) * 10);
 
-    if (integerSeconds < 60)
+    if (integerSeconds < Constants.SECS_PER_MIN)
     {
       return '${integerSeconds}.${decimalSeconds}';
     }
     else
     {
-      var integerMinutes = Math.floor(integerSeconds / 60);
-      var remainingSeconds = integerSeconds % 60;
+      var integerMinutes = Math.floor(integerSeconds / Constants.SECS_PER_MIN);
+      var remainingSeconds = integerSeconds % Constants.SECS_PER_MIN;
       var remainingSecondsPad:String = remainingSeconds < 10 ? '0$remainingSeconds' : '$remainingSeconds';
 
       return '${integerMinutes}:${remainingSecondsPad}${decimalSeconds > 0 ? '.$decimalSeconds' : ''}';
     }
-  }
-
-  function buildTickLabel():Void
-  {
   }
 
   public function onStartDragPlayhead():Void
@@ -406,7 +370,6 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
   }
 
   var waveformDragStartPos:Null<Float> = null;
-
   var waveformDragPreviewStartPos:Float;
   var waveformDragPreviewEndPos:Float;
 
@@ -607,7 +570,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     audioPreviewTracks.pause();
   }
 
-  public override function update(elapsed:Float)
+  override public function update(elapsed:Float)
   {
     super.update(elapsed);
 
@@ -635,9 +598,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       var targetScrollPos:Float = waveformMusic.waveform.waveformData.secondsToIndex(audioPreviewTracks.time / Constants.MS_PER_SEC) / (waveformScale / BASE_SCALE * waveformMagicFactor);
       // waveformScrollview.hscrollPos = targetScrollPos;
-      var prevPlayheadAbsolutePos = playheadAbsolutePos;
       playheadAbsolutePos = targetScrollPos;
-      var playheadDiff = playheadAbsolutePos - prevPlayheadAbsolutePos;
 
       // BEHAVIOR C.
       // Copy Audacity!
@@ -679,7 +640,7 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     }
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 

@@ -44,7 +44,6 @@ class Strumline extends FlxSpriteGroup
   // Positional fixes for new strumline graphics.
   static final INITIAL_OFFSET:Float = -0.275 * STRUMLINE_SIZE;
   static final NUDGE:Float = 2.0;
-
   public static final KEY_COUNT:Int = 4;
   static final NOTE_SPLASH_CAP:Int = 6;
 
@@ -153,9 +152,7 @@ class Strumline extends FlxSpriteGroup
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
-
   final noteStyle:NoteStyle;
-
   var noteSpacingScale:Float = 1;
 
   /**
@@ -232,7 +229,7 @@ class Strumline extends FlxSpriteGroup
     this.notesVwoosh.zIndex = 31;
     this.add(this.notesVwoosh);
 
-    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>(0, 0, 4);
+    this.noteHoldCovers = new FlxTypedSpriteGroup<NoteHoldCover>();
     this.noteHoldCovers.zIndex = 40;
     this.add(this.noteHoldCovers);
 
@@ -320,7 +317,7 @@ class Strumline extends FlxSpriteGroup
     return KEY_COUNT * Strumline.NOTE_SPACING * noteSpacingScale * strumlineScale.x;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -776,7 +773,7 @@ class Strumline extends FlxSpriteGroup
 
     for (dir in DIRECTIONS)
     {
-      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == "static")
+      if (isKeyHeld(dir) && getByDirection(dir).getCurrentAnimation() == 'static')
       {
         playPress(dir);
       }
@@ -1264,30 +1261,18 @@ class Strumline extends FlxSpriteGroup
    */
   function constructNoteHoldCover():NoteHoldCover
   {
-    var result:NoteHoldCover = null;
+    var result:NoteHoldCover = this.noteHoldCovers.getFirstAvailable();
 
-    // If we haven't filled the pool yet...
-    if (noteHoldCovers.length < noteHoldCovers.maxSize)
+    if (result != null)
     {
-      // Create a new note hold cover.
-      result = new NoteHoldCover(noteStyle);
-      this.noteHoldCovers.add(result);
+      result.revive();
     }
     else
     {
-      // Else, find a note splash which is inactive so we can revive it.
-      result = this.noteHoldCovers.getFirstAvailable();
-
-      if (result != null)
-      {
-        result.revive();
-      }
-      else
-      {
-        // The note hold cover pool is full and all note hold covers are active,
-        // so we just pick one at random to destroy and restart.
-        result = FlxG.random.getObject(this.noteHoldCovers.members);
-      }
+      // The note hold cover pool is full and all note hold covers are active,
+      // We have to create a new note hold cover.
+      result = new NoteHoldCover(noteStyle);
+      this.noteHoldCovers.add(result);
     }
 
     return result;
@@ -1353,14 +1338,16 @@ class Strumline extends FlxSpriteGroup
     #end
     return switch (direction)
     {
-      case NoteDirection.LEFT: -pos * 2;
+      case NoteDirection.LEFT:
+        -pos * 2;
       case NoteDirection.DOWN:
         -(pos * 2) + (1 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
       case NoteDirection.UP:
         pos + (2 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
       case NoteDirection.RIGHT:
         pos + (3 * Strumline.NOTE_SPACING) * (noteSpacingScale * strumlineScale.x);
-      default: -pos * 2;
+      default:
+        -pos * 2;
     }
   }
 

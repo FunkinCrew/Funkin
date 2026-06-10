@@ -27,8 +27,7 @@ class PlayerData
   /**
    * Whether to show songs with character IDs that aren't associated with any specific character.
    */
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var showUnownedChars:Bool = false;
 
   /**
@@ -36,15 +35,13 @@ class PlayerData
    * Can be overridden by specific songs.
    * @default `default`
    */
-  @:optional
-  @:default(funkin.util.Constants.DEFAULT_STICKER_PACK)
+  @:optional @:default(funkin.util.Constants.DEFAULT_STICKER_PACK)
   public var stickerPack:String = Constants.DEFAULT_STICKER_PACK;
 
   /**
    * Which freeplay style to use for this character.
    */
-  @:optional
-  @:default("bf")
+  @:optional @:default('bf')
   public var freeplayStyle:String = Constants.DEFAULT_FREEPLAY_STYLE;
 
   /**
@@ -71,8 +68,7 @@ class PlayerData
    * Whether this character is unlocked by default.
    * Use a ScriptedPlayableCharacter to add custom logic.
    */
-  @:optional
-  @:default(true)
+  @:optional @:default(true)
   public var unlocked:Bool = true;
 
   public function new()
@@ -102,52 +98,33 @@ class PlayerFreeplayDJData
 {
   var assetPath:String;
   var animations:Array<AnimationData>;
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var applyStageMatrix:Bool;
-
-  @:optional
-  @:default("BOYFRIEND")
+  @:optional @:default('BOYFRIEND')
   var text1:String;
-
-  @:optional
-  @:default("HOT BLOODED IN MORE WAYS THAN ONE")
+  @:optional @:default('HOT BLOODED IN MORE WAYS THAN ONE')
   var text2:String;
-
-  @:optional
-  @:default("PROTECT YO NUTS")
+  @:optional @:default('PROTECT YO NUTS')
   var text3:String;
-
   @:jignored
   var animationMap:Map<String, AnimationData>;
-
   @:jignored
   var prefixToOffsetsMap:Map<String, Array<Float>>;
-
   @:optional
   var charSelect:Null<PlayerFreeplayDJCharSelectData>;
-
   @:optional
   var fistPump:Null<PlayerFreeplayDJFistPumpData>;
 
   @:optional
   public var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
-
-  @:optional
-  @:default("animateatlas")
+  @:optional @:default('animateatlas')
   public var renderType:Null<String>;
-
-  @:optional
-  @:default("")
+  @:optional @:default('')
   public var scriptClass:Null<String>;
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var useAnimatePosition:Bool;
 
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   var offsets:Array<Float>;
 
   public function new()
@@ -306,19 +283,15 @@ typedef PlayerCharSelectGFData =
 {
   @:optional
   public var assetPath:String;
-
   @:optional
   public var animInfoPath:String;
-
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   public var visualizer:Bool;
 }
 
 typedef PlayerResultsData =
 {
   var music:PlayerResultsMusicData;
-
   var perfectGold:Array<PlayerResultsAnimationData>;
   var perfect:Array<PlayerResultsAnimationData>;
   var excellent:Array<PlayerResultsAnimationData>;
@@ -331,19 +304,14 @@ typedef PlayerResultsMusicData =
 {
   @:optional
   var PERFECT_GOLD:String;
-
   @:optional
   var PERFECT:String;
-
   @:optional
   var EXCELLENT:String;
-
   @:optional
   var GREAT:String;
-
   @:optional
   var GOOD:String;
-
   @:optional
   var SHIT:String;
 }
@@ -355,51 +323,30 @@ typedef PlayerResultsAnimationData =
    */
   var renderType:String;
 
-  @:optional
-  @:default(false)
+  @:optional @:default(false)
   var applyStageMatrix:Bool;
-
   @:optional
   var assetPath:Null<String>;
-
   @:optional
   var scriptClass:Null<String>;
-
-  @:optional
-  @:default([0, 0])
+  @:optional @:default([0, 0])
   var offsets:Array<Float>;
-
-  @:optional
-  @:default("both")
+  @:optional @:default('both')
   var filter:String;
-
-  @:optional
-  @:default(500)
+  @:optional @:default(500)
   var zIndex:Int;
-
-  @:optional
-  @:default(0.0)
+  @:optional @:default(0.0)
   var delay:Float;
-
-  @:optional
-  @:default(1.0)
+  @:optional @:default(1.0)
   var scale:Float;
-
-  @:optional
-  @:default('')
+  @:optional @:default('')
   var startFrameLabel:Null<String>;
-
-  @:optional
-  @:default('')
+  @:optional @:default('')
   var sound:Null<String>;
-
-  @:optional
-  @:default(true)
+  @:optional @:default(true)
   var looped:Bool;
-
   @:optional
   var loopFrame:Null<Int>;
-
   @:optional
   var loopFrameLabel:Null<String>;
 };
@@ -413,25 +360,18 @@ typedef PlayerFreeplayDJFistPumpData =
 {
   @:default(0)
   var introStartFrame:Int;
-
   @:default(4)
   var introEndFrame:Int;
-
   @:default(4)
   var loopStartFrame:Int;
-
   @:default(-1)
   var loopEndFrame:Int;
-
   @:default(0)
   var introBadStartFrame:Int;
-
   @:default(4)
   var introBadEndFrame:Int;
-
   @:default(4)
   var loopBadStartFrame:Int;
-
   @:default(-1)
   var loopBadEndFrame:Int;
 };

@@ -16,7 +16,6 @@ class FunkinSoundTray extends FlxSoundTray
   var graphicScale:Float = 0.30;
   var lerpYPos:Float = 0;
   var alphaTarget:Float = 0;
-
   var volumeMaxSound:String;
 
   public function new()
@@ -73,7 +72,7 @@ class FunkinSoundTray extends FlxSoundTray
 
   override public function update(ms:Float):Void
   {
-    var elapsed = ms / 1000.0;
+    var elapsed = ms / Constants.MS_PER_SEC;
 
     // If it has volume, we want to auto-hide after 1 second (1000ms), we simply decrement a timer
     var hasVolume:Bool = (!FlxG.sound.muted && FlxG.sound.volume > 0);

@@ -1,8 +1,6 @@
 package funkin.data.freeplay.player;
 
-import funkin.data.freeplay.player.PlayerData;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
-import funkin.ui.freeplay.charselect.ScriptedPlayableCharacter;
 import funkin.save.Save;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
@@ -15,9 +13,9 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
    * Handle breaking changes by incrementing this value
    * and adding migration to the `migratePlayerData()` function.
    */
-  public static final PLAYER_DATA_VERSION:thx.semver.Version = "1.0.0";
+  public static final PLAYER_DATA_VERSION:thx.semver.Version = '1.0.0';
 
-  public static final PLAYER_DATA_VERSION_RULE:thx.semver.VersionRule = "1.0.x";
+  public static final PLAYER_DATA_VERSION_RULE:thx.semver.VersionRule = '1.0.x';
 
   /**
    * A mapping between stage character IDs and Freeplay playable character IDs.
@@ -29,7 +27,7 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
     super('PLAYER', 'players', PLAYER_DATA_VERSION_RULE);
   }
 
-  public override function loadEntries():Void
+  override public function loadEntries():Void
   {
     super.loadEntries();
 

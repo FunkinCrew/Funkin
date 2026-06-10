@@ -15,7 +15,6 @@ class BGScrollingText extends FlxText
   public var widthShit:Float = FlxG.width;
   public var placementOffset:Float = 20;
   public var speed:Float = 1;
-
   @:deprecated("Use color instead")
   public var funnyColor(get, set):FlxColor;
 

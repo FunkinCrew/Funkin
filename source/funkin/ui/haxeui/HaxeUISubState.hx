@@ -56,24 +56,6 @@ class HaxeUISubState extends MusicBeatSubState
 
   function refreshComponent()
   {
-    /*
-      if (component != null)
-      {
-        remove(component);
-        component = null;
-      }
-
-      if (component != null)
-      {
-        trace('Success!');
-        add(component);
-      }
-      else
-      {
-        trace('Failed to build component $_componentKey');
-      }
-     */
-
     if (component == null)
     {
       component = buildComponent(_componentKey);

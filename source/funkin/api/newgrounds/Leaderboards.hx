@@ -24,7 +24,7 @@ class Leaderboards
     var leaderboardList:Null<ScoreBoardList> = NewgroundsClient.instance.leaderboards;
     if (leaderboardList == null)
     {
-      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch medal data!');
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Not logged in, cannot fetch leaderboard data!');
       return [];
     }
 
@@ -161,7 +161,7 @@ class LeaderboardsSandboxed
    * @param leaderboard The leaderboard to fetch scores from.
    * @param params Additional parameters for fetching the score.
    */
-  public function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
+  public static function requestScores(leaderboard:Leaderboard, params:RequestScoresParams)
   {
     Leaderboards.requestScores(leaderboard, params);
   }
@@ -217,6 +217,7 @@ typedef RequestScoresParams =
 /**
  * An enumeration of Newgrounds leaderboards for the game's levels and songs.
  */
+@SuppressWarnings('checkstyle:FieldDocComment')
 enum abstract Leaderboard(Int) from Int to Int
 {
   /**
@@ -236,14 +237,12 @@ enum abstract Leaderboard(Int) from Int to Int
   public var StoryWeek6 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14244 #else 9957 #end;
   public var StoryWeek7 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14245 #else 14682 #end;
   public var StoryWeekend1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14237 #else 14683 #end;
-
   // Collab 1 only has one song.
   //
   // SONGS
   //
   // Tutorial
   public var Tutorial = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14249 #else 14684 #end;
-
   // Week 1
   public var Bopeebo = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14246 #else 9603 #end;
   public var BopeeboErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14685 #end;
@@ -254,7 +253,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var DadBattle = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 14248 #else 9605 #end;
   public var DadBattleErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14689 #end;
   public var DadBattlePicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14690 #end;
-
   // Week 2
   public var Spookeez = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9604 #end;
   public var SpookeezErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14691 #end;
@@ -263,7 +261,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var SouthErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14693 #end;
   public var SouthPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14694 #end;
   public var Monster = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14703 #end;
-
   // Week 3
   public var Pico = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9766 #end;
   public var PicoErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14695 #end;
@@ -274,14 +271,12 @@ enum abstract Leaderboard(Int) from Int to Int
   public var Blammed = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9768 #end;
   public var BlammedErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14704 #end;
   public var BlammedPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14705 #end;
-
   // Week 4
   public var SatinPanties = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9869 #end;
   public var SatinPantiesErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14701 #end;
   public var High = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9867 #end;
   public var HighErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14699 #end;
   public var MILF = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9868 #end;
-
   // Week 5
   public var Cocoa = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14706 #end;
   public var CocoaErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14707 #end;
@@ -290,7 +285,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var EggnogErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14711 #end;
   public var EggnogPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14710 #end;
   public var WinterHorrorland = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14712 #end;
-
   // Week 6
   public var Senpai = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9958 #end;
   public var SenpaiErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14713 #end;
@@ -300,7 +294,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var RosesPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14717 #end;
   public var Thorns = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 9960 #end;
   public var ThornsErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14715 #end;
-
   // Week 7
   public var Ugh = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14718 #end;
   public var UghErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14722 #end;
@@ -309,7 +302,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var GunsPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14723 #end;
   public var Stress = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14720 #end;
   public var StressPicoMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14724 #end;
-
   // Weekend 1
   public var Darnell = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14725 #end;
   public var DarnellErect = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14727 #end;
@@ -318,7 +310,6 @@ enum abstract Leaderboard(Int) from Int to Int
   public var LitUpBFMix = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14729 #end;
   public var TwoHot = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14730 #end; // Variable names can't start with a number!
   public var Blazin = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14731 #end;
-
   // Collab 1
   public var Spaghetti = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 15448 #else 15451 #end;
 
@@ -340,21 +331,21 @@ enum abstract Leaderboard(Int) from Int to Int
   {
     switch (levelId)
     {
-      case "week1":
+      case 'week1':
         return StoryWeek1;
-      case "week2":
+      case 'week2':
         return StoryWeek2;
-      case "week3":
+      case 'week3':
         return StoryWeek3;
-      case "week4":
+      case 'week4':
         return StoryWeek4;
-      case "week5":
+      case 'week5':
         return StoryWeek5;
-      case "week6":
+      case 'week6':
         return StoryWeek6;
-      case "week7":
+      case 'week7':
         return StoryWeek7;
-      case "weekend1":
+      case 'weekend1':
         return StoryWeekend1;
       // Collab 1 has only one song.
       default:
@@ -380,153 +371,153 @@ enum abstract Leaderboard(Int) from Int to Int
     }
     else if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(difficulty))
     {
-      variation = "erect";
+      variation = 'erect';
     }
 
     switch (variation)
     {
-      case "pico":
+      case 'pico':
         switch (songId)
         {
-          case "bopeebo":
+          case 'bopeebo':
             return BopeeboPicoMix;
-          case "fresh":
+          case 'fresh':
             return FreshPicoMix;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattlePicoMix;
-          case "spookeez":
+          case 'spookeez':
             return SpookeezPicoMix;
-          case "south":
+          case 'south':
             return SouthPicoMix;
-          case "pico":
+          case 'pico':
             return PicoPicoMix;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNicePicoMix;
-          case "blammed":
+          case 'blammed':
             return BlammedPicoMix;
-          case "cocoa":
+          case 'cocoa':
             return CocoaPicoMix;
-          case "eggnog":
+          case 'eggnog':
             return EggnogPicoMix;
-          case "senpai":
+          case 'senpai':
             return SenpaiPicoMix;
-          case "roses":
+          case 'roses':
             return RosesPicoMix;
-          case "ugh":
+          case 'ugh':
             return UghPicoMix;
-          case "guns":
+          case 'guns':
             return GunsPicoMix;
-          case "stress":
+          case 'stress':
             return StressPicoMix;
           default:
             return Unknown;
         }
-      case "bf":
+      case 'bf':
         switch (songId)
         {
-          case "darnell":
+          case 'darnell':
             return DarnellBFMix;
-          case "lit-up":
+          case 'lit-up':
             return LitUpBFMix;
           default:
             return Unknown;
         }
-      case "erect":
+      case 'erect':
         switch (songId)
         {
-          case "bopeebo":
+          case 'bopeebo':
             return BopeeboErect;
-          case "fresh":
+          case 'fresh':
             return FreshErect;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattleErect;
-          case "spookeez":
+          case 'spookeez':
             return SpookeezErect;
-          case "south":
+          case 'south':
             return SouthErect;
-          case "pico":
+          case 'pico':
             return PicoErect;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNiceErect;
-          case "blammed":
+          case 'blammed':
             return BlammedErect;
-          case "satin-panties":
+          case 'satin-panties':
             return SatinPantiesErect;
-          case "high":
+          case 'high':
             return HighErect;
-          case "cocoa":
+          case 'cocoa':
             return CocoaErect;
-          case "eggnog":
+          case 'eggnog':
             return EggnogErect;
-          case "senpai":
+          case 'senpai':
             return SenpaiErect;
-          case "roses":
+          case 'roses':
             return RosesErect;
-          case "thorns":
+          case 'thorns':
             return ThornsErect;
-          case "ugh":
+          case 'ugh':
             return UghErect;
-          case "darnell":
+          case 'darnell':
             return DarnellErect;
           default:
             return Unknown;
         }
-      case "default":
+      case 'default':
         switch (songId)
         {
-          case "tutorial":
+          case 'tutorial':
             return Tutorial;
-          case "bopeebo":
+          case 'bopeebo':
             return Bopeebo;
-          case "fresh":
+          case 'fresh':
             return Fresh;
-          case "dadbattle":
+          case 'dadbattle':
             return DadBattle;
-          case "spookeez":
+          case 'spookeez':
             return Spookeez;
-          case "south":
+          case 'south':
             return South;
-          case "monster":
+          case 'monster':
             return Monster;
-          case "pico":
+          case 'pico':
             return Pico;
-          case "philly-nice":
+          case 'philly-nice':
             return PhillyNice;
-          case "blammed":
+          case 'blammed':
             return Blammed;
-          case "satin-panties":
+          case 'satin-panties':
             return SatinPanties;
-          case "high":
+          case 'high':
             return High;
-          case "milf":
+          case 'milf':
             return MILF;
-          case "cocoa":
+          case 'cocoa':
             return Cocoa;
-          case "eggnog":
+          case 'eggnog':
             return Eggnog;
-          case "winter-horrorland":
+          case 'winter-horrorland':
             return WinterHorrorland;
-          case "senpai":
+          case 'senpai':
             return Senpai;
-          case "roses":
+          case 'roses':
             return Roses;
-          case "thorns":
+          case 'thorns':
             return Thorns;
-          case "ugh":
+          case 'ugh':
             return Ugh;
-          case "guns":
+          case 'guns':
             return Guns;
-          case "stress":
+          case 'stress':
             return Stress;
-          case "darnell":
+          case 'darnell':
             return Darnell;
-          case "lit-up":
+          case 'lit-up':
             return LitUp;
-          case "2hot":
+          case '2hot':
             return TwoHot;
-          case "blazin":
+          case 'blazin':
             return Blazin;
-          case "spaghetti":
+          case 'spaghetti':
             return Spaghetti;
           default:
             return Unknown;

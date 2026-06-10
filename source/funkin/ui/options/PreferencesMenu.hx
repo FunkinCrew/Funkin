@@ -34,7 +34,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   var preferenceDesc:Array<String> = [];
   var itemDesc:FlxText;
   var itemDescBox:FunkinSprite;
-
   var menuCamera:FlxCamera;
   var hudCamera:FlxCamera;
   var camFollow:FlxObject;
@@ -126,15 +125,21 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);
     #if FEATURE_HAPTICS
-    createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.',
-      ["All" => HapticsMode.ALL, "Notes Only" => HapticsMode.NOTES_ONLY, "None" => HapticsMode.NONE,], function(key:String, value:HapticsMode):Void
+    createPrefItemEnum('Haptics', 'When enabled, the game plays haptic feedback effects.', [
+      "All" => HapticsMode.ALL,
+      "Notes Only" => HapticsMode.NOTES_ONLY,
+      "None" => HapticsMode.NONE,
+    ], function(key:String, value:HapticsMode):Void
     {
       Preferences.hapticsMode = value;
     }, switch (Preferences.hapticsMode)
       {
-        case HapticsMode.NOTES_ONLY: "Notes Only";
-        case HapticsMode.NONE: "None";
-        default: "All";
+        case HapticsMode.NOTES_ONLY:
+          "Notes Only";
+        case HapticsMode.NONE:
+          "None";
+        default:
+          "All";
       });
     createPrefItemNumber('Haptics Intensity', 'Intensity multiplier for all haptic feedback effects.', function(value:Float)
     {
@@ -156,8 +161,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     }, Preferences.subtitles);
     #if FEATURE_DEBUG_DISPLAY
     // note: technically we can do DebugDisplayMode.Advanced => DebugDisplayMode.Advanced, etc. here, but that's a bit headache inducing.
-    createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.',
-      ["Advanced" => DebugDisplayMode.Advanced, "Simple" => DebugDisplayMode.Simple, "Off" => DebugDisplayMode.Off], (key:String, value:DebugDisplayMode) ->
+    createPrefItemEnum('Debug Display', 'When enabled, FPS and other debug stats are displayed.', [
+      "Advanced" => DebugDisplayMode.Advanced,
+      "Simple" => DebugDisplayMode.Simple,
+      "Off" => DebugDisplayMode.Off
+    ], (key:String, value:DebugDisplayMode) ->
       {
         Preferences.debugDisplay = value;
       }, Preferences.debugDisplay);
@@ -179,16 +187,22 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
 
     // disable on mobile and web since it barely has any effect
     #if !(mobile || web)
-    createPrefItemEnum('VSync', "When enabled, the game attempts to match the framerate with your monitor's refresh rate.",
-      ["Off" => WindowVSyncMode.OFF, "On" => WindowVSyncMode.ON, "Adaptive" => WindowVSyncMode.ADAPTIVE,], function(key:String, value:WindowVSyncMode):Void
+    createPrefItemEnum('VSync', "When enabled, the game attempts to match the framerate with your monitor's refresh rate.", [
+      "Off" => WindowVSyncMode.OFF,
+      "On" => WindowVSyncMode.ON,
+      "Adaptive" => WindowVSyncMode.ADAPTIVE,
+    ], function(key:String, value:WindowVSyncMode):Void
     {
       trace("Setting vsync mode to " + key);
       Preferences.vsyncMode = value;
     }, switch (Preferences.vsyncMode)
       {
-        case WindowVSyncMode.OFF: "Off";
-        case WindowVSyncMode.ON: "On";
-        case WindowVSyncMode.ADAPTIVE: "Adaptive";
+        case WindowVSyncMode.OFF:
+          "Off";
+        case WindowVSyncMode.ON:
+          "On";
+        case WindowVSyncMode.ADAPTIVE:
+          "Adaptive";
       });
     createPrefItemCheckbox('Unlocked Framerate', 'When enabled, the framerate is unlocked.\nThis setting is mutually exclusive with FPS.',
       function(value:Bool):Void
@@ -215,6 +229,13 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       Preferences.previewOnSave = value;
     }, Preferences.previewOnSave);
+    #end
+
+    #if FEATURE_DISCORD_RPC
+    createPrefItemCheckbox('Discord RPC', 'Toggles Discord RPC.', function(value:Bool):Void
+    {
+      Preferences.enabledDiscordRPC = value;
+    }, Preferences.enabledDiscordRPC);
     #end
   }
 

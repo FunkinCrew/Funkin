@@ -20,15 +20,12 @@ import funkin.input.Cursor;
 class ChartPlaytestMenu extends MusicBeatState
 {
   var filePath:String;
-
   var songName:FlxText;
   var variationButton:ChartPlaytestMenuButtonListToggle;
   var difficultyButton:ChartPlaytestMenuButtonListToggle;
   var playtestButton:ChartPlaytestMenuButton;
-
   var currentVariation:String;
   var currentDifficulty:String;
-
   var playtestCam:FunkinCamera;
 
   public function new(filePath:String)

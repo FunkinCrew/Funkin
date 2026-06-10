@@ -48,34 +48,25 @@ class SongMenuItem extends FlxSpriteGroup
 
   public var favIconBlurred:FlxSprite;
   public var favIcon:FlxSprite;
-
   public var ranking:FreeplayRank;
   public var blurredRanking:FreeplayRank;
-
   public var fakeRanking:FreeplayRank;
   public var fakeBlurredRanking:FreeplayRank;
-
   public var targetPos:FlxPoint = new FlxPoint();
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
-
   public var doJumpOut:Bool = false;
-
   public var onConfirm:Void->Void;
   public var grayscaleShader:Grayscale;
-
   public var hsvShader(default, set):HSVShader;
-
   // var diffRatingSprite:FlxSprite;
   public var bpmText:FlxSprite;
   public var difficultyText:FlxSprite;
   public var weekText:FunkinSprite;
-
   public var newText:FlxSprite;
 
   var difficultyNumbers:Array<CapsuleNumber> = []; // referred to as "bignumbers" in the .fla file!
   var bpmNumbers:Array<CapsuleNumber> = []; // referred to as "smallnumbers" in the .fla file!
-
   var impactThing:FunkinSprite;
 
   public var sparkle:FlxSprite;
@@ -256,7 +247,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     var levelId:String = this.freeplayData.levelId;
     var levelIdData:Level = LevelRegistry.instance.fetchEntry(levelId);
-    var levelIdClean:String = "";
+    var levelIdClean:String = '';
 
     if (levelIdData.getCapsuleTitle() != null)
     {
@@ -278,9 +269,9 @@ class SongMenuItem extends FlxSpriteGroup
         var previousChar:String = levelId.charAt(i - 1);
         var currentChar:String = levelId.charAt(i);
 
-        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += " ";
-        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += " ";
-        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += " ";
+        if (previousChar.toLowerCase() == previousChar && currentChar.toLowerCase() != currentChar) levelIdClean += ' ';
+        if (Std.parseInt(previousChar) == null && Std.parseInt(currentChar) != null) levelIdClean += ' ';
+        if (Std.parseInt(previousChar) != null && Std.parseInt(currentChar) == null) levelIdClean += ' ';
 
         levelIdClean += currentChar;
       }
@@ -473,7 +464,7 @@ class SongMenuItem extends FlxSpriteGroup
 
   function updateDifficultyRating(newRating:Int):Void
   {
-    var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
+    // var ratingPadded:String = newRating < 10 ? '0$newRating' : '$newRating';
 
     for (i in 0...difficultyNumbers.length)
     {
@@ -555,7 +546,7 @@ class SongMenuItem extends FlxSpriteGroup
     this.y = y;
   }
 
-  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, index:Int = null):Void
+  public function initData(freeplayData:Null<FreeplaySongData>, ?styleData:FreeplayStyle = null, ?index:Int):Void
   {
     this.freeplayData = freeplayData;
 
@@ -581,7 +572,7 @@ class SongMenuItem extends FlxSpriteGroup
     checkWeek();
   }
 
-  public function initRandom(?styleData:FreeplayStyle = null):Void
+  public function initRandom(?styleData:FreeplayStyle):Void
   {
     initPosition(FlxG.width, 0);
     initData(null, styleData, 1);
@@ -596,13 +587,33 @@ class SongMenuItem extends FlxSpriteGroup
 
   var frameInTicker:Float = 0;
   var frameInTypeBeat:Int = 0;
-
   var frameOutTicker:Float = 0;
   var frameOutTypeBeat:Int = 0;
-
-  var xFrames:Array<Float> = [1.7, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
-  var xPosLerpLol:Array<Float> = [0, 0, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
-  var xPosOutLerpLol:Array<Float> = [0.245, 0.75, 0.98, 0.98, 1.2]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xFrames:Array<Float> = [
+    1.7,
+    1.8,
+    0.85,
+    0.85,
+    0.97,
+    0.97,
+    1
+  ];
+  var xPosLerpLol:Array<Float> = [
+    0,
+    0,
+    0.16,
+    0.16,
+    0.22,
+    0.22,
+    0.245
+  ]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+  var xPosOutLerpLol:Array<Float> = [
+    0.245,
+    0.75,
+    0.98,
+    0.98,
+    1.2
+  ]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
   public var realScaled:Float = 0.8;
 
@@ -674,7 +685,9 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameInTypeBeat];
         capsule.scale.y = 1 / xFrames[frameInTypeBeat];
-        targetPos.x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))];
+        targetPos.x = FlxG.width * xPosLerpLol[
+          Std.int(Math.min(frameInTypeBeat, xPosLerpLol.length - 1))
+        ];
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
 
@@ -701,7 +714,9 @@ class SongMenuItem extends FlxSpriteGroup
 
         capsule.scale.x = xFrames[frameOutTypeBeat];
         capsule.scale.y = 1 / xFrames[frameOutTypeBeat];
-        this.x = FlxG.width * xPosOutLerpLol[Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))];
+        this.x = FlxG.width * xPosOutLerpLol[
+          Std.int(Math.min(frameOutTypeBeat, xPosOutLerpLol.length - 1))
+        ];
 
         capsule.scale.x *= realScaled;
         capsule.scale.y *= realScaled;
@@ -780,7 +795,7 @@ class SongMenuItem extends FlxSpriteGroup
     songText.alpha = isSelected ? 1 : 0.6;
     songText.blurredText.visible = isSelected ? true : false;
     capsule.offset.x = isSelected ? 0 : -5;
-    capsule.animation.play(isSelected ? "selected" : "unselected");
+    capsule.animation.play(isSelected ? 'selected' : 'unselected');
     ranking.alpha = isSelected ? 1 : 0.7;
     favIcon.alpha = isSelected ? 1 : 0.6;
     favIconBlurred.alpha = isSelected ? 1 : 0;
@@ -791,7 +806,7 @@ class SongMenuItem extends FlxSpriteGroup
     if (selected && songText.tooLong) songText.initMove();
   }
 
-  public override function kill():Void
+  override public function kill():Void
   {
     super.kill();
 
@@ -907,7 +922,18 @@ class CapsuleNumber extends FlxSprite
   public var baseY:Float = 0;
   public var baseX:Float = 0;
 
-  var numToString:Array<String> = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"];
+  var numToString:Array<String> = [
+    'ZERO',
+    'ONE',
+    'TWO',
+    'THREE',
+    'FOUR',
+    'FIVE',
+    'SIX',
+    'SEVEN',
+    'EIGHT',
+    'NINE'
+  ];
 
   public function new(x:Float, y:Float, big:Bool = false, ?initDigit:Int = 0)
   {

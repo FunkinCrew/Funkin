@@ -62,7 +62,7 @@ class FocusCameraSongEvent extends SongEvent
   static final DEFAULT_CAMERA_EASE:String = 'CLASSIC';
   static final DEFAULT_TARGET:Int = 0; // Boyfriend
 
-  public override function handleEvent(data:SongEventData):Void
+  override public function handleEvent(data:SongEventData):Void
   {
     // Does nothing if there is no PlayState camera or stage.
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
@@ -86,7 +86,7 @@ class FocusCameraSongEvent extends SongEvent
     if (ease == null) ease = DEFAULT_CAMERA_EASE; // No linear in defaults lol
 
     var easeDir:String = data.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
-    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == "linear") easeDir = "";
+    if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
 
     var currentStage = PlayState.instance.currentStage;
 
@@ -146,7 +146,7 @@ class FocusCameraSongEvent extends SongEvent
       case 'INSTANT': // Instant ease. Duration is automatically 0.
         PlayState.instance.tweenCameraToPosition(targetX, targetY, 0);
       default:
-        var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+        var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
@@ -158,7 +158,7 @@ class FocusCameraSongEvent extends SongEvent
     }
   }
 
-  public override function getTitle():String
+  override public function getTitle():String
   {
     return 'Focus Camera';
   }
@@ -172,48 +172,71 @@ class FocusCameraSongEvent extends SongEvent
    * }
    * @return SongEventSchema
    */
-  public override function getEventSchema():SongEventSchema
+  override public function getEventSchema():SongEventSchema
   {
-    return new SongEventSchema([{
-      name: "char",
-      title: "Target",
-      defaultValue: DEFAULT_TARGET,
-      type: SongEventFieldType.ENUM,
-      keys: ["Position" => -1, "Player" => 0, "Opponent" => 1, "Girlfriend" => 2]
-    }, {
-      name: "x",
-      title: "X Position",
-      defaultValue: DEFAULT_X_POSITION,
-      step: 10.0,
-      type: SongEventFieldType.FLOAT,
-      units: "px"
-    }, {
-      name: "y",
-      title: "Y Position",
-      defaultValue: DEFAULT_Y_POSITION,
-      step: 10.0,
-      type: SongEventFieldType.FLOAT,
-      units: "px"
-    }, {
-      name: 'duration',
-      title: 'Duration',
-      defaultValue: DEFAULT_DURATION,
-      min: 0,
-      step: 0.5,
-      type: SongEventFieldType.FLOAT,
-      units: 'steps'
-    }, {
-      name: 'ease',
-      title: 'Easing Type',
-      defaultValue: DEFAULT_CAMERA_EASE,
-      type: SongEventFieldType.ENUM,
-      keys: ['Linear' => 'linear', 'Instant (Ignores duration)' => 'INSTANT', 'Classic (Ignores duration)' => 'CLASSIC', 'Sine' => 'sine', 'Quad' => 'quad', 'Cube' => 'cube', 'Quart' => 'quart', 'Quint' => 'quint', 'Expo' => 'expo', 'Smooth Step' => 'smoothStep', 'Smoother Step' => 'smootherStep', 'Elastic' => 'elastic', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ ' => 'circ',]
-    }, {
-      name: 'easeDir',
-      title: 'Easing Direction',
-      defaultValue: SongEvent.DEFAULT_EASE_DIR,
-      type: SongEventFieldType.ENUM,
-      keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
-    }]);
+    return new SongEventSchema([
+      {
+        name: 'char',
+        title: 'Target',
+        defaultValue: DEFAULT_TARGET,
+        type: SongEventFieldType.ENUM,
+        keys: ['Position' => -1, 'Player' => 0, 'Opponent' => 1, 'Girlfriend' => 2]
+      },
+      {
+        name: 'x',
+        title: 'X Position',
+        defaultValue: DEFAULT_X_POSITION,
+        step: 10.0,
+        type: SongEventFieldType.FLOAT,
+        units: 'px'
+      },
+      {
+        name: 'y',
+        title: 'Y Position',
+        defaultValue: DEFAULT_Y_POSITION,
+        step: 10.0,
+        type: SongEventFieldType.FLOAT,
+        units: 'px'
+      },
+      {
+        name: 'duration',
+        title: 'Duration',
+        defaultValue: DEFAULT_DURATION,
+        min: 0,
+        step: 0.5,
+        type: SongEventFieldType.FLOAT,
+        units: 'steps'
+      },
+      {
+        name: 'ease',
+        title: 'Easing Type',
+        defaultValue: DEFAULT_CAMERA_EASE,
+        type: SongEventFieldType.ENUM,
+        keys: [
+          'Linear' => 'linear',
+          'Instant (Ignores duration)' => 'INSTANT',
+          'Classic (Ignores duration)' => 'CLASSIC',
+          'Sine' => 'sine',
+          'Quad' => 'quad',
+          'Cube' => 'cube',
+          'Quart' => 'quart',
+          'Quint' => 'quint',
+          'Expo' => 'expo',
+          'Smooth Step' => 'smoothStep',
+          'Smoother Step' => 'smootherStep',
+          'Elastic' => 'elastic',
+          'Back' => 'back',
+          'Bounce' => 'bounce',
+          'Circ ' => 'circ',
+        ]
+      },
+      {
+        name: 'easeDir',
+        title: 'Easing Direction',
+        defaultValue: SongEvent.DEFAULT_EASE_DIR,
+        type: SongEventFieldType.ENUM,
+        keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
+      }
+    ]);
   }
 }

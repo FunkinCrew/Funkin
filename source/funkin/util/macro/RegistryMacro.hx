@@ -262,7 +262,6 @@ class RegistryMacro
     return (macro class TempClass
       {
         public final id:String;
-
         public final _data:Null<$entryDataType>;
       }).fields.filter((field) -> return !MacroUtil.fieldAlreadyExists(field.name));
   }

@@ -10,8 +10,6 @@ class NoteSplash extends FlxSprite
   public var splashFramerate:Int = 24;
   public var splashFramerateVariance:Int = 2;
 
-  static var frameCollection:FlxFramesCollection;
-
   public function new(noteStyle:NoteStyle)
   {
     super(0, 0);
@@ -39,7 +37,7 @@ class NoteSplash extends FlxSprite
     this.animation.play(name, force, reversed, startFrame);
   }
 
-  public function play(direction:NoteDirection, variant:Int = null):Void
+  public function play(direction:NoteDirection, ?variant:Int):Void
   {
     if (variant == null)
     {

@@ -90,15 +90,12 @@ class GameOverSubState extends MusicBeatSubState
   var isStarting:Bool = true;
 
   var isChartingMode:Bool = false;
-
   var mustNotExit:Bool = false;
-
   var transparent:Bool;
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
   var targetCameraZoom:Float = 1.0;
-
   var canInput:Bool = false;
 
   public function new(params:GameOverParams)
@@ -132,7 +129,7 @@ class GameOverSubState extends MusicBeatSubState
     blueballed = false;
   }
 
-  public override function create():Void
+  override public function create():Void
   {
     if (instance != null)
     {
@@ -460,7 +457,7 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
@@ -616,7 +613,7 @@ class GameOverSubState extends MusicBeatSubState
 
   var hasPlayedDeathQuote:Bool = false;
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     if (gameOverMusic != null)
@@ -628,7 +625,7 @@ class GameOverSubState extends MusicBeatSubState
     instance = null;
   }
 
-  public override function toString():String
+  override public function toString():String
   {
     return 'GameOverSubState';
   }

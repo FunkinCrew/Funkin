@@ -13,8 +13,6 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import funkin.play.notes.NoteDirection;
 import funkin.util.FlxGamepadUtil;
 import haxe.Int64;
-import lime.ui.Gamepad as LimeGamepad;
-import lime.ui.GamepadAxis as LimeGamepadAxis;
 import lime.ui.GamepadButton as LimeGamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
@@ -56,7 +54,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   var _buttonList:Map<Int, Array<FlxGamepadInputID>>;
 
   var _buttonListArray:Array<FlxInput<FlxGamepadInputID>>;
-
   var _buttonListMap:Map<Int, Map<FlxGamepadInputID, FlxInput<FlxGamepadInputID>>>;
 
   /**
@@ -115,10 +112,14 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   {
     return switch (noteDirection)
     {
-      case NoteDirection.LEFT: controls.getKeysForAction(NOTE_LEFT);
-      case NoteDirection.DOWN: controls.getKeysForAction(NOTE_DOWN);
-      case NoteDirection.UP: controls.getKeysForAction(NOTE_UP);
-      case NoteDirection.RIGHT: controls.getKeysForAction(NOTE_RIGHT);
+      case NoteDirection.LEFT:
+        controls.getKeysForAction(NOTE_LEFT);
+      case NoteDirection.DOWN:
+        controls.getKeysForAction(NOTE_DOWN);
+      case NoteDirection.UP:
+        controls.getKeysForAction(NOTE_UP);
+      case NoteDirection.RIGHT:
+        controls.getKeysForAction(NOTE_RIGHT);
     };
   }
 
@@ -126,10 +127,14 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   {
     return switch (noteDirection)
     {
-      case NoteDirection.LEFT: controls.getButtonsForAction(NOTE_LEFT);
-      case NoteDirection.DOWN: controls.getButtonsForAction(NOTE_DOWN);
-      case NoteDirection.UP: controls.getButtonsForAction(NOTE_UP);
-      case NoteDirection.RIGHT: controls.getButtonsForAction(NOTE_RIGHT);
+      case NoteDirection.LEFT:
+        controls.getButtonsForAction(NOTE_LEFT);
+      case NoteDirection.DOWN:
+        controls.getButtonsForAction(NOTE_DOWN);
+      case NoteDirection.UP:
+        controls.getButtonsForAction(NOTE_UP);
+      case NoteDirection.RIGHT:
+        controls.getButtonsForAction(NOTE_RIGHT);
     };
   }
 
@@ -240,6 +245,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
   // TODO: Why doesn't this work?
   // @:allow(funkin.input.PreciseInputManager.PreciseInputList)
+
   public function getInputByKey(key:FlxKey):FlxKeyInput
   {
     return _keyListMap.get(key);
@@ -386,7 +392,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
     _deviceBinds.clear();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     // Keyboard
     FlxG.stage.application.window.onKeyDownPrecise.remove(handleKeyDown);

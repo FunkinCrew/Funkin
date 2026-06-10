@@ -1,7 +1,6 @@
 package funkin.data.event;
 
-@:nullSafety
-@:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
+@:nullSafety @:forward(name, title, type, keys, min, max, step, units, defaultValue, iterator)
 abstract SongEventSchema(SongEventSchemaRaw)
 {
   /**
@@ -209,46 +208,39 @@ typedef SongEventSchemaField =
    * The key is the display name and the value is the actual value.
    */
   ?keys:Map<String, Dynamic>,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The minimum value that can be entered.
    * @default No minimum
    */
   ?min:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The maximum value that can be entered.
    * @default No maximum
    */
   ?max:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The step value that will be used when incrementing/decrementing the value.
    * @default `0.1`
    */
   ?step:Float,
-
   /**
    * Used for INTEGER and FLOAT values.
    * The units that the value is expressed in (pixels, percent, etc).
    */
   ?units:String,
-
   /**
    * Used for FRAME values.
    * The child components that this frame contains.
    */
   ?children:SongEventSchemaRaw,
-
   /**
    * Used for FRAME values.
    * Whether to make the frame be collapsible.
    */
   ?collapsible:Bool,
-
   /**
    * An optional default value for the field.
    */
@@ -263,32 +255,32 @@ enum abstract SongEventFieldType(String) from String to String
   /**
    * The STRING type will display as a text field.
    */
-  public var STRING = "string";
+  public var STRING = 'string';
 
   /**
    * The INTEGER type will display as a text field that only accepts numbers.
    */
-  public var INTEGER = "integer";
+  public var INTEGER = 'integer';
 
   /**
    * The FLOAT type will display as a text field that only accepts numbers.
    */
-  public var FLOAT = "float";
+  public var FLOAT = 'float';
 
   /**
    * The BOOL type will display as a checkbox.
    */
-  public var BOOL = "bool";
+  public var BOOL = 'bool';
 
   /**
    * The ENUM type will display as a dropdown.
    * Make sure to specify the `keys` field in the schema.
    */
-  public var ENUM = "enum";
+  public var ENUM = 'enum';
 
   /**
    * The FRAME type will display a frame with child components.
    * Make sure to specify the `children` field in the schema.
    */
-  public var FRAME = "frame";
+  public var FRAME = 'frame';
 }

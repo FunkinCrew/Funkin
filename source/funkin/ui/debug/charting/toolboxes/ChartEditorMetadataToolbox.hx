@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.toolboxes;
 #if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
+import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -11,6 +12,7 @@ import funkin.ui.debug.charting.commands.AddNewTimeChangeCommand;
 import funkin.ui.debug.charting.commands.ModifyTimeChangeCommand;
 import funkin.ui.debug.charting.commands.RemoveTimeChangeCommand;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
+import funkin.ui.freeplay.Album;
 import haxe.ui.components.Button;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Label;
@@ -25,8 +27,7 @@ import haxe.ui.events.UIEvent;
  * The toolbox which allows modifying information like Song Title, Scroll Speed, Characters/Stages, and starting BPM.
  */
 // @:nullSafety // TODO: Fix null safety when used with HaxeUI build macros.
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/toolboxes/metadata.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/toolboxes/metadata.xml'))
 class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 {
   var inputSongId:TextField;
@@ -35,6 +36,8 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   var inputSongCharter:TextField;
   var inputStage:DropDown;
   var inputNoteStyle:DropDown;
+  var inputAlbum:DropDown;
+  var inputStickerPack:DropDown;
   var buttonCharacterPlayer:Button;
   var buttonCharacterGirlfriend:Button;
   var buttonCharacterOpponent:Button;
@@ -154,16 +157,45 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var startingValueNoteStyle = ChartEditorDropdowns.populateDropdownWithNoteStyles(inputNoteStyle, chartEditorState.currentSongMetadata.playData.noteStyle);
     inputNoteStyle.value = startingValueNoteStyle;
 
+    inputAlbum.onChange = (event:UIEvent) ->
+    {
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongAlbum = event.data.id;
+      }
+    }
+    var startingValueAlbum = ChartEditorDropdowns.populateDropdownWithAlbums(inputAlbum, chartEditorState.currentSongMetadata.playData?.album);
+    inputAlbum.value = startingValueAlbum;
+
+    inputStickerPack.onChange = (event:UIEvent) ->
+    {
+      var valid:Bool = event.data != null && event.data.id != null;
+
+      if (valid)
+      {
+        chartEditorState.currentSongStickerPack = event.data.id;
+      }
+    }
+    var startingValueStickerPack = ChartEditorDropdowns.populateDropdownWithStickerPacks(inputStickerPack,
+      chartEditorState.currentSongMetadata.playData?.stickerPack);
+    inputStickerPack.value = startingValueStickerPack;
+
     inputTimeChange.onChange = function(event:UIEvent)
     {
       var currentTimeChange = refreshTimeChangeInputs();
-      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex - 1];
+      var previousTimeChange = chartEditorState.currentSongMetadata.timeChanges[
+        inputTimeChange.selectedIndex - 1
+      ];
       // Set the step of the timestamp to the step.
       inputTimeStamp.step = ((Constants.SECS_PER_MIN / (previousTimeChange?.bpm ?? currentTimeChange?.bpm ?? 100)) * Constants.MS_PER_SEC) * (4 / (previousTimeChange?.timeSignatureDen ?? currentTimeChange?.timeSignatureDen ?? 4)) / Constants.STEPS_PER_BEAT;
       // Set the min max values of the input timestamp to previous and next time change timestamps to in the array,
       // to prevent the conductor from breaking due to time change timestamps not being in ascending order.
       inputTimeStamp.min = (previousTimeChange?.timeStamp ?? 0);
-      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[inputTimeChange.selectedIndex + 1]?.timeStamp ?? chartEditorState.songLengthInMs);
+      inputTimeStamp.max = (chartEditorState.currentSongMetadata.timeChanges[
+        inputTimeChange.selectedIndex + 1
+      ]?.timeStamp ?? chartEditorState.songLengthInMs);
       inputTimeStamp.max -= 1;
 
       // Prevent the inital time change timestamp from being modified (it should always be 0) or removed.
@@ -297,6 +329,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
   }
 
   // Separate function because it needs to be refreshed in some of the time change commands, updating the entire toolbox would be wasteful.
+
   public function refreshTimeChanges(startingTimeChangeIndex:Int = 0):Void
   {
     // Reset time change dropdown and the associated inputs
@@ -327,7 +360,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     return currentTimeChange;
   }
 
-  public override function refresh():Void
+  override public function refresh():Void
   {
     super.refresh();
 
@@ -337,6 +370,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     inputSongCharter.value = chartEditorState.currentSongMetadata.charter;
     inputStage.value = chartEditorState.currentSongMetadata.playData.stage;
     inputNoteStyle.value = chartEditorState.currentSongMetadata.playData.noteStyle;
+    inputAlbum.value = chartEditorState.currentSongMetadata.playData.album;
     inputDifficultyRating.value = chartEditorState.currentSongChartDifficultyRating;
     inputScrollSpeed.value = chartEditorState.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
@@ -349,14 +383,21 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     var stage:Null<Stage> = StageRegistry.instance.fetchEntry(stageId);
     if (inputStage != null)
     {
-      inputStage.value = (stage != null) ? {id: stage.id, text: stage.stageName} : {id: "mainStage", text: "Main Stage"};
+      inputStage.value = (stage != null) ? {id: stage.id, text: stage.stageName} : {id: 'mainStage', text: 'Main Stage'};
     }
 
     var noteStyleId:String = chartEditorState.currentSongNoteStyle;
     var noteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (inputNoteStyle != null)
     {
-      inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: "Funkin", text: "Funkin'"};
+      inputNoteStyle.value = (noteStyle != null) ? {id: noteStyle.id, text: noteStyle.getName()} : {id: 'Funkin', text: "Funkin'"};
+    }
+
+    var albumId:String = chartEditorState.currentSongAlbum;
+    var album:Null<Album> = AlbumRegistry.instance.fetchEntry(albumId);
+    if (inputAlbum != null)
+    {
+      inputAlbum.value = (album != null) ? {id: album.id, text: album.getAlbumName()} : {id: 'volume1', text: 'Volume 1'};
     }
 
     var LIMIT = 6;
@@ -370,7 +411,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterOpponent.icon = null;
-      buttonCharacterOpponent.text = "None";
+      buttonCharacterOpponent.text = 'None';
     }
 
     var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
@@ -382,7 +423,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterGirlfriend.icon = null;
-      buttonCharacterGirlfriend.text = "None";
+      buttonCharacterGirlfriend.text = 'None';
     }
 
     var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
@@ -394,7 +435,7 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
     else
     {
       buttonCharacterPlayer.icon = null;
-      buttonCharacterPlayer.text = "None";
+      buttonCharacterPlayer.text = 'None';
     }
   }
 

@@ -21,8 +21,7 @@ import haxe.ui.tooltips.ToolTipManager;
  * A sprite that can be used to display a note in a chart.
  * Designed to be used and reused efficiently. Has no gameplay functionality.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorNoteSprite extends FlxSprite
 {
   /**
@@ -118,8 +117,7 @@ class ChartEditorNoteSprite extends FlxSprite
     return NoteStyleRegistry.instance.fetchDefault();
   }
 
-  @:access(funkin.play.notes.notestyle.NoteStyle)
-  @:nullSafety(Off)
+  @:access(funkin.play.notes.notestyle.NoteStyle) @:nullSafety(Off)
   static function addNoteStyleFrames(noteStyle:NoteStyle):Void
   {
     var prefix:String = noteStyle.id.toTitleCase();
@@ -141,8 +139,7 @@ class ChartEditorNoteSprite extends FlxSprite
     }
   }
 
-  @:access(funkin.play.notes.notestyle.NoteStyle)
-  @:nullSafety(Off)
+  @:access(funkin.play.notes.notestyle.NoteStyle) @:nullSafety(Off)
   function addNoteStyleAnimations(noteStyle:NoteStyle):Void
   {
     var prefix:String = noteStyle.id.toTitleCase();
@@ -294,7 +291,6 @@ class ChartEditorNoteSprite extends FlxSprite
 
     // Play the appropriate animation for the type, direction, and skin.
     var dirName:String = overrideData != null ? SongNoteData.buildDirectionName(overrideData) : this.noteData.getDirectionName();
-    var noteStyleSuffix:String = this.noteStyle?.toTitleCase() ?? Constants.DEFAULT_NOTE_STYLE.toTitleCase();
     var animationName:String = '${baseAnimationName}${dirName}${this.noteStyle.toTitleCase()}';
 
     this.animation.play(animationName);

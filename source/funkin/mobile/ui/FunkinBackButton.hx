@@ -12,9 +12,7 @@ class FunkinBackButton extends FunkinButton
 {
   public var onConfirmStart(default, null):FlxSignal = new FlxSignal();
   public var onConfirmEnd(default, null):FlxSignal = new FlxSignal();
-
   public var enabled:Bool = true;
-
   public var confirming(get, never):Bool;
 
   function get_confirming():Bool
@@ -44,11 +42,29 @@ class FunkinBackButton extends FunkinButton
   {
     super(x, y);
 
-    frames = Paths.getSparrowAtlas("backButton");
-    animation.addByIndices('idle', 'back', [0], "", 24, false);
-    animation.addByIndices('hold', 'back', [5], "", 24, false);
-    animation.addByIndices('confirm', 'back', [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], "", 24, false);
-    animation.play("idle");
+    frames = Paths.getSparrowAtlas('backButton');
+    animation.addByIndices('idle', 'back', [0], '', 24, false);
+    animation.addByIndices('hold', 'back', [5], '', 24, false);
+    animation.addByIndices('confirm', 'back', [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ], '', 24, false);
+    animation.play('idle');
 
     scale.set(0.7, 0.7);
     updateHitbox();

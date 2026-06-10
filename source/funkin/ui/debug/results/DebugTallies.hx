@@ -5,6 +5,7 @@ import funkin.save.Save.SaveScoreTallyData;
 /**
  * Just lil class to hold different score tallies for debug purposes
  */
+@SuppressWarnings('checkstyle:MagicNumber')
 class DebugTallies
 {
   /**
@@ -112,30 +113,52 @@ class DebugTallies
     totalNotes: 190
   };
 
+  /**
+   * Retrieve the score tally data for the given rank.
+   * Used for debugging the Results screen.
+   *
+   * @param rank The intended rank to display.
+   * @return A score
+   */
   public static function getTallyForRank(rank:DebugRank):SaveScoreTallyData
   {
     return switch (rank)
     {
-      case LOSS_RANK: LOSS;
-      case NICE_RANK: NICE;
-      case GOOD_RANK: GOOD;
-      case GREAT_RANK: GREAT;
-      case EXCELLENT_RANK: EXCELLENT;
-      case PERFECT_RANK: PERFECT;
-      case PERFECT_GOLD_RANK: PERFECT_GOLD;
+      case LOSS_RANK:
+        LOSS;
+      case NICE_RANK:
+        NICE;
+      case GOOD_RANK:
+        GOOD;
+      case GREAT_RANK:
+        GREAT;
+      case EXCELLENT_RANK:
+        EXCELLENT;
+      case PERFECT_RANK:
+        PERFECT;
+      case PERFECT_GOLD_RANK:
+        PERFECT_GOLD;
     }
   }
 
-  public static var DEBUG_RANKS:Array<DebugRank> = [LOSS_RANK, NICE_RANK, GOOD_RANK, GREAT_RANK, EXCELLENT_RANK, PERFECT_RANK, PERFECT_GOLD_RANK];
+  public static var DEBUG_RANKS:Array<DebugRank> = [
+    LOSS_RANK,
+    NICE_RANK,
+    GOOD_RANK,
+    GREAT_RANK,
+    EXCELLENT_RANK,
+    PERFECT_RANK,
+    PERFECT_GOLD_RANK
+  ];
 }
 
 enum abstract DebugRank(String) from String to String
 {
-  var LOSS_RANK = "Loss";
-  var NICE_RANK = "Nice";
-  var GOOD_RANK = "Good";
-  var GREAT_RANK = "Great";
-  var EXCELLENT_RANK = "Excellent";
-  var PERFECT_RANK = "Perfect";
-  var PERFECT_GOLD_RANK = "Perfect (Gold)";
+  public var LOSS_RANK = 'Loss';
+  public var NICE_RANK = 'Nice';
+  public var GOOD_RANK = 'Good';
+  public var GREAT_RANK = 'Great';
+  public var EXCELLENT_RANK = 'Excellent';
+  public var PERFECT_RANK = 'Perfect';
+  public var PERFECT_GOLD_RANK = 'Perfect (Gold)';
 }

@@ -66,7 +66,7 @@ class GRhythmUtil
    * @param isControlled True if the note is controlled by the player, false otherwise.
    * @return A HitWindowRes object containing the result of the hit window check.
    */
-  public static function processWindow(note:NoteSprite, isControlled:Bool = true, ?inUseConductor:Conductor = null):HitWindowRes
+  public static function processWindow(note:NoteSprite, isControlled:Bool = true, ?inUseConductor:Conductor):HitWindowRes
   {
     if (inUseConductor == null) inUseConductor = Conductor.instance;
 
@@ -119,7 +119,7 @@ class GRhythmUtil
    * @param conductorInUse The conductor to use for calculating the y-position.
    * @return The y-position of the note.
    */
-  public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor = null):Float
+  public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor):Float
   {
     if (conductorInUse == null) conductorInUse = Conductor.instance;
     return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime) * scrollSpeed * (downscroll ? 1 : -1);

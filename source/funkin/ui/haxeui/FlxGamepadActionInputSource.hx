@@ -26,7 +26,7 @@ class FlxGamepadActionInputSource extends FlxBasic
     FlxG.plugins.addPlugin(this);
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -44,7 +44,7 @@ class FlxGamepadActionInputSource extends FlxBasic
     }
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     super.destroy();
     FlxG.plugins.remove(this);

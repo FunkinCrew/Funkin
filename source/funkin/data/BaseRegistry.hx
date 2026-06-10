@@ -16,9 +16,7 @@ typedef EntryConstructorFunction = (String, ?Dynamic) -> Void;
  * @param J The type of the JSON data used when constructing.
  * @param P The type of the parameters used for `fetchEntry()`.
  */
-@:nullSafety
-@:generic
-@:autoBuild(funkin.util.macro.RegistryMacro.buildRegistry())
+@:nullSafety @:generic @:autoBuild(funkin.util.macro.RegistryMacro.buildRegistry())
 abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructorFunction>), J, P>
 {
   /**

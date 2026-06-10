@@ -33,7 +33,9 @@ class SongDataUtils
       return new SongNoteData(time, data, length, kind);
     };
 
-    var result = [for (i in 0...notes.length) offsetNote(notes[i])];
+    var result = [
+      for (i in 0...notes.length) offsetNote(notes[i])
+    ];
     return result;
   }
 
@@ -301,8 +303,7 @@ class SongDataUtils
     if (parser.errors.length > 0)
     {
       trace('[SongDataUtils] Error parsing note JSON data from clipboard.');
-      for (error in parser.errors)
-        DataError.printError(error);
+      for (error in parser.errors) DataError.printError(error);
       return {
         valid: false,
         notes: [],

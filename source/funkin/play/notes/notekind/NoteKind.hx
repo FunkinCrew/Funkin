@@ -128,9 +128,7 @@ class NoteKind implements INoteScriptedClass
 abstract NoteKindParamType(String) from String to String
 {
   public static final STRING:String = 'String';
-
   public static final INT:String = 'Int';
-
   public static final FLOAT:String = 'Float';
 }
 
@@ -140,22 +138,18 @@ typedef NoteKindParamData =
    * If `min` is null, there is no minimum
    */
   ?min:Null<Float>,
-
   /**
    * If `max` is null, there is no maximum
    */
   ?max:Null<Float>,
-
   /**
    * If `step` is null, it will use 1.0
    */
   ?step:Null<Float>,
-
   /**
    * If `precision` is null, there will be 0 decimal places
    */
   ?precision:Null<Int>,
-
   ?defaultValue:Dynamic
 }
 

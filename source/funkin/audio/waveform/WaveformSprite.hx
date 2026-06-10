@@ -178,7 +178,7 @@ class WaveformSprite extends MeshRender
     isWaveformDirty = true;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -197,7 +197,7 @@ class WaveformSprite extends MeshRender
     makeGraphic(1, 1, this.waveformColor);
   }
 
-  public override function draw():Void
+  override public function draw():Void
   {
     super.draw();
   }

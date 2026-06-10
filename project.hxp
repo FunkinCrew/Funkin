@@ -531,6 +531,14 @@ class Project extends HXProject
   {
     super();
 
+    #if !target.unicode
+    if (isWindowsHost())
+    {
+      // Enable code page 65001 for unicode support
+      Sys.command("chcp 65001 > nul");
+    }
+    #end
+
     envConfig = readEnvironmentFile("./.env");
 
     flair();
@@ -870,8 +878,7 @@ class Project extends HXProject
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
-    // HXCPP has trouble with iOS simulator builds though...
-    FEATURE_VIDEO_PLAYBACK.apply(this, !(isIOSSimulator() || isHashLink()));
+    FEATURE_VIDEO_PLAYBACK.apply(this, !isHashLink());
 
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
@@ -906,13 +913,13 @@ class Project extends HXProject
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
 
-    // Should be true except on web and mobile builds.
-    // Screenshots doesn't work there, and mobile has its own screenshots anyway.
-    FEATURE_SCREENSHOTS.apply(this, !(isWeb() || isMobile()));
+    // Should be true only on Desktop builds.
+    // Mobile has its own screenshot methods.
+    // Web has it disabled due to performance cost of `preserveDrawingBuffer`.
+    FEATURE_SCREENSHOTS.apply(this, isDesktop());
 
-    // Should be true except on MacOS and mobile builds.
-    // Dragging and dropping files onto the window doesn't work there.
-    FEATURE_FILE_DROP.apply(this, !(isMac() || isMobile()));
+    // Should be true except on mobile builds.
+    FEATURE_FILE_DROP.apply(this, !isMobile());
 
     // Audio context issues only exist on web builds.
     FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
@@ -922,9 +929,9 @@ class Project extends HXProject
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
-    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease()) && envConfig != null);
+    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease()) && envConfig != null);
+    FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
 
     // The coveted ghost tapping feature.
@@ -955,16 +962,6 @@ class Project extends HXProject
     var disabledFlags:Array<String> = [];
     var unicodeCheck:String = "✓ ";
     var unicodeCross:String = "× ";
-
-    if (isWindowsHost())
-    {
-      #if (!target.unicode)
-      // lime build tools uses neko (unless compiling with `-eval`), and neko on windows doesn't support UTF8/unicode characters
-      // so we need to remove our cute emoji!
-      unicodeCheck = "o ";
-      unicodeCross = "x ";
-      #end
-    }
 
     for (flagStr in this.haxedefs.keys())
     {
@@ -2159,8 +2156,8 @@ class Project extends HXProject
 
         if (haxe.io.Path.isAbsolute(devPath))
         {
-          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
-          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
+          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".bright_cyan());
+          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).bright_blue());
         }
         else
         {

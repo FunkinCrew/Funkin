@@ -13,16 +13,13 @@ import haxe.ui.events.UIEvent;
 
 using StringTools;
 
-@:access(funkin.ui.debug.stageeditor.StageEditorState)
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-anims.xml"))
+@:access(funkin.ui.debug.stageeditor.StageEditorState) @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/stage-editor/toolboxes/object-anims.xml"))
 class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 {
   var linkedObj:StageEditorObject = null;
-
   var objAnims:DropDown;
   var objAnimName:TextField;
   var objFrameList:ListView;
-
   var objAnimPrefix:TextField;
   var objAnimIndices:TextField;
   var objAnimLooped:CheckBox;
@@ -32,7 +29,6 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
   var objAnimFramerate:NumberStepper;
   var objAnimOffsetX:NumberStepper;
   var objAnimOffsetY:NumberStepper;
-
   var objAnimSave:Button;
   var objAnimDelete:Button;
 
@@ -48,7 +44,9 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     objAnims.onChange = function(_)
     {
-      var animData = linkedObj?.animDatas[objAnims.selectedItem?.text ?? ""];
+      var animData = linkedObj?.animDatas[
+        objAnims.selectedItem?.text ?? ""
+      ];
 
       if (linkedObj == null || objAnims.selectedIndex == -1 || animData == null)
       {
@@ -146,7 +144,9 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
 
     // Otherwise, update them accordingly.
 
-    if (previousFrames != [for (f in linkedObj.frames.frames) f.name]) updateFrameList();
+    if (previousFrames !=[
+      for (f in linkedObj.frames.frames) f.name
+    ]) updateFrameList();
     if (previousAnims != linkedObj.animation.getNameList().copy()) updateAnimList();
   }
 
@@ -194,8 +194,7 @@ class StageEditorObjectAnimsToolbox extends StageEditorDefaultToolbox
     {
       var splitter = objAnimIndices.text.replace(" ", "").split(",");
 
-      for (num in splitter)
-        indices.push(Std.parseInt(num));
+      for (num in splitter) indices.push(Std.parseInt(num));
     }
 
     var shouldDoIndices:Bool = (indices.length > 0 && !indices.contains(null));

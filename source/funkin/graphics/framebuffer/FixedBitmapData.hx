@@ -11,9 +11,7 @@ import openfl.Lib;
 /**
  * `BitmapData` is kinda broken so I fixed it.
  */
-@:nullSafety
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display.OpenGLRenderer)
+@:nullSafety @:access(openfl.display3D.textures.TextureBase) @:access(openfl.display.OpenGLRenderer)
 class FixedBitmapData extends BitmapData
 {
   override function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void

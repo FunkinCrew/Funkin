@@ -19,8 +19,7 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void

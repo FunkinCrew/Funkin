@@ -61,7 +61,7 @@ runs:
   - name: Get latest butler version
     shell: bash
     run: |
-      LATEST=$(curl -sfL https://broth.itch.ovh/butler/$OS_AND_ARCH/LATEST)
+      LATEST=$(curl -sfL https://broth.itch.zone/butler/$OS_AND_ARCH/LATEST)
       echo BUTLER_LATEST=$LATEST >> "$GITHUB_ENV"
 
       command -v butler \
@@ -70,7 +70,7 @@ runs:
 
   - name: Try to get butler from cache
     id: cache-butler
-    uses: actions/cache@v4
+    uses: actions/cache@v5
     with:
       path: ${{ env.BUTLER_INSTALL_PATH }}
       key: butler-${{ runner.os }}-${{ env.BUTLER_LATEST }}
@@ -88,7 +88,7 @@ runs:
       mkdir -p $BUTLER_INSTALL_PATH
       cd $BUTLER_INSTALL_PATH
 
-      curl -L -o butler.zip https://broth.itch.ovh/butler/$OS_AND_ARCH/LATEST/archive/default
+      curl -L -o butler.zip https://broth.itch.zone/butler/$OS_AND_ARCH/LATEST/archive/default
       unzip butler.zip
       chmod +x butler
 

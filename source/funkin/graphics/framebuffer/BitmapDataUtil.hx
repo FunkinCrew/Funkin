@@ -15,14 +15,7 @@ import openfl.geom.ColorTransform;
 /**
  * A utility class for `BitmapData`s.
  */
-@:nullSafety
-@:access(openfl.display.BitmapData)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display.OpenGLRenderer)
-@:access(flixel.FlxCamera)
-@:access(openfl.display.Sprite)
-@:access(openfl.geom.ColorTransform)
+@:nullSafety @:access(openfl.display.BitmapData) @:access(openfl.display3D.textures.TextureBase) @:access(openfl.display3D.Context3D) @:access(openfl.display.OpenGLRenderer) @:access(flixel.FlxCamera) @:access(openfl.display.Sprite) @:access(openfl.geom.ColorTransform)
 class BitmapDataUtil
 {
   static var renderer(get, never):OpenGLRenderer;

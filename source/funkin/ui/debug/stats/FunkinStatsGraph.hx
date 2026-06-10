@@ -14,19 +14,12 @@ class FunkinStatsGraph extends Sprite
   static inline var HISTORY_MAX:Int = 100;
 
   public var minValue:Float = FlxMath.MAX_VALUE_FLOAT;
-
   public var maxValue:Float = FlxMath.MIN_VALUE_FLOAT;
-
   public var graphColor:FlxColor;
-
   public var history:Array<Float> = [];
-
   public var textDisplay:TextField;
-
   public var axis:Shape;
-
   public var axisWidth:Int;
-
   public var axisHeight:Int;
 
   public function new(x:Int, y:Int, width:Int, height:Int, graphColor:FlxColor):Void

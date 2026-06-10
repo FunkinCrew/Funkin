@@ -84,25 +84,24 @@ class SaveDataMenu extends Page<OptionsState.OptionsMenuPageName>
     prompt.createBgFromMargin(100, 0xFFFAFD6D);
     prompt.back.scrollFactor.set(0, 0);
     FlxG.state.add(prompt);
+    // Disable page navigation while the prompt is open
+    codex.currentPage.enabled = false;
+
+    final closePrompt:()->Void = () -> {
+      codex.currentPage.enabled = true;
+      prompt.close();
+      prompt.destroy();
+      prompt = null;
+    };
 
     prompt.onYes = function()
     {
       onYes();
 
-      if (prompt != null)
-      {
-        prompt.close();
-        prompt.destroy();
-        prompt = null;
-      }
+      closePrompt();
     };
 
-    prompt.onNo = function()
-    {
-      prompt.close();
-      prompt.destroy();
-      prompt = null;
-    }
+    prompt.onNo = closePrompt;
   }
 
   public function openSaveDataPrompt()

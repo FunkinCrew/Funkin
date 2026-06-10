@@ -163,14 +163,14 @@ class VoicesGroup extends SoundGroup
     return opponentVoices?.members[0]?.length ?? 0.0;
   }
 
-  public override function clear():Void
+  override public function clear():Void
   {
     playerVoices?.clear();
     opponentVoices?.clear();
     super.clear();
   }
 
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (playerVoices != null)
     {

@@ -8,12 +8,11 @@ class ChartManifestData
   /**
    * The current semantic version of the chart manifest data.
    */
-  public static final CHART_MANIFEST_DATA_VERSION:thx.semver.Version = "1.0.0";
+  public static final CHART_MANIFEST_DATA_VERSION:thx.semver.Version = '1.0.0';
 
   public static final invalidIdRegex:EReg = ~/[\/\\:*?"<>|]/g;
 
-  @:jcustomparse(funkin.data.DataParse.semverVersion)
-  @:jcustomwrite(funkin.data.DataWrite.semverVersion)
+  @:jcustomparse(funkin.data.DataParse.semverVersion) @:jcustomwrite(funkin.data.DataWrite.semverVersion)
   public var version:thx.semver.Version;
 
   /**
@@ -89,8 +88,7 @@ class ChartManifestData
     {
       trace('[ChartManifest] Failed to parse chart file manifest');
 
-      for (error in parser.errors)
-        DataError.printError(error);
+      for (error in parser.errors) DataError.printError(error);
 
       return null;
     }

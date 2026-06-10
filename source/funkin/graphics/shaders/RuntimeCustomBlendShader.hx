@@ -10,7 +10,7 @@ class RuntimeCustomBlendShader extends RuntimePostEffectShader
 
   function set_sourceSwag(value:BitmapData):BitmapData
   {
-    this.setBitmapData("sourceSwag", value);
+    this.setBitmapData('sourceSwag', value);
     return sourceSwag = value;
   }
 
@@ -18,7 +18,7 @@ class RuntimeCustomBlendShader extends RuntimePostEffectShader
 
   function set_backgroundSwag(value:BitmapData):BitmapData
   {
-    this.setBitmapData("backgroundSwag", value);
+    this.setBitmapData('backgroundSwag', value);
     return backgroundSwag = value;
   }
 
@@ -27,12 +27,12 @@ class RuntimeCustomBlendShader extends RuntimePostEffectShader
 
   function set_blendSwag(value:BlendMode):BlendMode
   {
-    this.setInt("blendMode", cast value);
+    this.setInt('blendMode', cast value);
     return blendSwag = value;
   }
 
   public function new()
   {
-    super(Assets.getText("assets/shaders/customBlend.frag"));
+    super(Assets.getText('assets/shaders/customBlend.frag'));
   }
 }

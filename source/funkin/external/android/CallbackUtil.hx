@@ -8,7 +8,7 @@ import haxe.ds.Map;
 /**
  * A Utility class to handle Android API level callbacks and events.
  */
-class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
+class CallbackUtil #if (lime >= '8.0.0') implements JNISafety #end
 {
   /**
    * The result code for `DATA_FOLDER_CLOSED` activity.
@@ -52,7 +52,6 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
 
   @:noCompletion
   private static var __staticFields:Array<Dynamic> = null;
-
   @:noCompletion
   public static var __callbacksFields:Map<String, Dynamic> = new Map<String, Dynamic>();
 
@@ -72,7 +71,7 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
 
   @:noCompletion
   @:keep
-  #if (lime >= "8.0.0")
+  #if (lime >= '8.0.0')
   @:runOnMainThread
   #end
   private function dispatchCallback(callbackName:String, arguments:Array<Dynamic>)
@@ -83,7 +82,7 @@ class CallbackUtil #if (lime >= "8.0.0") implements JNISafety #end
 
       if (!__callbacksFields.exists(callbackName))
       {
-        __callbacksFields.set(callbackName, Reflect.field(field, "dispatch"));
+        __callbacksFields.set(callbackName, Reflect.field(field, 'dispatch'));
       }
       Reflect.callMethod(field, __callbacksFields.get(callbackName), arguments);
     }

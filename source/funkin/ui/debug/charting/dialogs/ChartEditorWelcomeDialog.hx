@@ -17,8 +17,7 @@ import haxe.ui.events.MouseEvent;
  * Builds and opens a dialog letting the user create a new chart, open a recent chart, or load from a template.
  * Opens when the chart editor first opens.
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/dialogs/welcome.xml"))
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/dialogs/welcome.xml')) @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
 {
   /**
@@ -33,8 +32,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     this.splashCreateFromSongBasicOnly.onClick = _ -> onClickLinkCreateBasicOnly();
     this.splashCreateFromSongErectOnly.onClick = _ -> onClickLinkCreateErectOnly();
     this.splashCreateFromSongBasicErect.onClick = _ -> onClickLinkCreateBasicErect();
-    this.splashImportChartLegacy.onClick = _ -> onClickLinkImport("legacy");
-    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImport("osumania");
+    this.splashImportChartLegacy.onClick = _ -> onClickLinkImport('legacy');
+    this.splashImportChartOsuMania.onClick = _ -> onClickLinkImport('osumania');
     this.splashImportChartStepMania.onClick = _ -> onClickLinkImport('stepmania');
 
     // Add items to the Recent Charts list
@@ -68,7 +67,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     return dialog;
   }
 
-  public override function onClose(event:DialogEvent):Void
+  override public function onClose(event:DialogEvent):Void
   {
     super.onClose(event);
   }
@@ -81,7 +80,7 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
   {
     var linkRecentChart:Link = new Link();
 
-    var fileNamePattern:EReg = new EReg("([^/\\\\]+)$", "");
+    var fileNamePattern:EReg = new EReg('([^/\\\\]+)$', '');
     var fileName:String = fileNamePattern.match(chartPath) ? fileNamePattern.matched(1) : chartPath;
     linkRecentChart.text = fileName;
 
@@ -95,8 +94,8 @@ class ChartEditorWelcomeDialog extends ChartEditorBaseDialog
     }
     else
     {
-      var lastModified:String = "Last Modified: " + sys.FileSystem.stat(chartPath).mtime.toString();
-      linkRecentChart.tooltip += "\n" + lastModified;
+      var lastModified:String = 'Last Modified: ' + sys.FileSystem.stat(chartPath).mtime.toString();
+      linkRecentChart.tooltip += '\n' + lastModified;
     }
     #end
 

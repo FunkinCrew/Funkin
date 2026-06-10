@@ -34,7 +34,7 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected property $name to be non-empty.';
+        if (s == '') throw 'Expected property $name to be non-empty.';
         return s;
       default:
         throw 'Expected property $name to be a string, but it was ${json.value}.';
@@ -52,7 +52,7 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected version property $name to be non-empty.';
+        if (s == '') throw 'Expected version property $name to be non-empty.';
         return s;
       default:
         throw 'Expected version property $name to be a string, but it was ${json.value}.';
@@ -70,22 +70,11 @@ class DataParse
     switch (json.value)
     {
       case JString(s):
-        if (s == "") throw 'Expected version rule property $name to be non-empty.';
+        if (s == '') throw 'Expected version rule property $name to be non-empty.';
         return s;
       default:
         throw 'Expected version rule property $name to be a string, but it was ${json.value}.';
     }
-  }
-
-  /**
-   * Parser which outputs a Dynamic value, either a object or something else.
-   * @param json
-   * @param name
-   * @return The value of the property.
-   */
-  public static function dynamicValue(json:Json, name:String):Dynamic
-  {
-    return Tools.getValue(json);
   }
 
   /**
@@ -224,7 +213,9 @@ class DataParse
    */
   static function jsonArrayToDynamicArray(jsons:Array<Json>):Array<Null<Dynamic>>
   {
-    return [for (json in jsons) Tools.getValue(json)];
+    return[
+      for (json in jsons) Tools.getValue(json)
+    ];
   }
 
   static function legacyNoteSectionArray(json:Json, name:String):Array<LegacyNoteSection>
@@ -232,7 +223,9 @@ class DataParse
     switch (json.value)
     {
       case JArray(values):
-        return [for (value in values) legacyNoteSection(value, name)];
+        return[
+          for (value in values) legacyNoteSection(value, name)
+        ];
       default:
         throw 'Expected property to be an array, but it was ${json.value}.';
     }
@@ -293,7 +286,9 @@ class DataParse
     switch (json.value)
     {
       case JArray(values):
-        return [for (value in values) legacyNote(value, name)];
+        return[
+          for (value in values) legacyNote(value, name)
+        ];
       default:
         throw 'Expected property $name to be an array of notes, but it was ${json.value}.';
     }

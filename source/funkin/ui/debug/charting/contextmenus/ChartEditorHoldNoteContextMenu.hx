@@ -13,8 +13,7 @@ import funkin.ui.debug.charting.commands.FlipNotesCommand;
 import funkin.ui.debug.charting.commands.RemoveNotesCommand;
 import funkin.ui.debug.charting.commands.ExtendNoteLengthCommand;
 
-@:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/hold-note.xml"))
+@:access(funkin.ui.debug.charting.ChartEditorState) @:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/chart-editor/context-menus/hold-note.xml"))
 class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
 {
   var contextmenuNoteKind:Label;
@@ -27,7 +26,6 @@ class ChartEditorHoldNoteContextMenu extends ChartEditorBaseContextMenu
   var contextmenuDelete:MenuItem;
 
   public var selectedUnit:Int;
-
   public var data:SongNoteData;
 
   public function new(chartEditorState2:ChartEditorState, xPos2:Float = 0, yPos2:Float = 0, data:SongNoteData, selectedUnit:Int = 0)

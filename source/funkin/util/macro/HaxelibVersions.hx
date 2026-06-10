@@ -54,7 +54,12 @@ class HaxelibVersions
 
   static function readLibraryCurrentVersion(libraryName:String):String
   {
-    var path = Path.join([Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+    var path = Path.join([
+      Path.addTrailingSlash(Sys.getCwd()),
+      '.haxelib',
+      libraryName,
+      '.current'
+    ]);
     // This is compile time so we should always have Sys available.
     var result = sys.io.File.getContent(path);
 

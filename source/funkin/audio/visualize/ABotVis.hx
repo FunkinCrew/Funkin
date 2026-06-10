@@ -15,7 +15,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   // public var vis:VisShit;
   var analyzer:Null<SpectralAnalyzer> = null;
   var analyzerLevelsCache:Array<Bar> = new Array<Bar>();
-
   var volumes:Array<Float> = [];
 
   public var snd:Null<FlxSound> = null;
@@ -23,6 +22,7 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   static final BAR_COUNT:Int = 7;
 
   // TODO: Make the sprites easier to soft code.
+
   public function new(snd:FlxSound, pixel:Bool)
   {
     super();
@@ -35,8 +35,40 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     var visFrms:FlxAtlasFrames = Paths.getSparrowAtlas(pixel ? 'characters/abotPixel/aBotVizPixel' : 'characters/abot/aBotViz');
 
     // these are the differences in X position, from left to right
-    var positionX:Array<Float> = pixel ? [0, 7 * 6, 8 * 6, 9 * 6, 10 * 6, 6 * 6, 7 * 6] : [0, 59, 56, 66, 54, 52, 51];
-    var positionY:Array<Float> = pixel ? [0, -2 * 6, -1 * 6, 0, 0, 1 * 6, 2 * 6] : [0, -8, -3.5, -0.4, 0.5, 4.7, 7];
+    var positionX:Array<Float> = pixel ? [
+      0,
+      7 * 6,
+      8 * 6,
+      9 * 6,
+      10 * 6,
+      6 * 6,
+      7 * 6
+    ] : [
+      0,
+      59,
+      56,
+      66,
+      54,
+      52,
+      51
+      ];
+    var positionY:Array<Float> = pixel ? [
+      0,
+      -2 * 6,
+      -1 * 6,
+      0,
+      0,
+      1 * 6,
+      2 * 6
+    ] : [
+      0,
+      -8,
+      -3.5,
+      -0.4,
+      0.5,
+      4.7,
+      7
+      ];
 
     for (index in 1...visCount)
     {
@@ -88,9 +120,6 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     snd = null;
     analyzer = null;
   }
-
-  var visTimer:Float = -1;
-  var visTimeMax:Float = 1 / 30;
 
   override function update(elapsed:Float)
   {

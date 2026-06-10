@@ -1,8 +1,11 @@
-// Hey!! Slight note from little me, Zack, I got rid of the for loops because essentially the functions just return the first touch they find back then.
-// Now it looks more clean but the descriptions for some variables are inaccurate. Well they were already inaccurate but still.
+// Hey!! Slight note from little me, Zack, I got rid of the for loops because essentially the functions
+// just return the first touch they find back then. Now it looks more clean but the descriptions
+// for some variables are inaccurate. Well they were already inaccurate but still.
 // - Zack xoxo
 //
-// Another slight note from little me, it turns out it WAS accurate, my ass during clean up just completely forgot. My fault!! I gotta focus on multi-touch next time.
+// Another slight note from little me, it turns out it WAS accurate,
+// I just my ass during clean up just completely forgot. My fault!!
+// I gotta focus on multi-touch next time.
 // Easy to fix but I'll tackle it for later.
 // - Zack
 package funkin.util;
@@ -47,16 +50,18 @@ class TouchUtil
    */
   public static var justMoved(get, never):Bool;
 
+  #if mobile
   /**
    * The first touch in the FlxG.touches list.
    */
-  #if mobile
   public static var touch(get, never):FlxTouch;
   #else
+
+  /**
+   * The first touch in the FlxG.touches list.
+   */
   public static var touch(get, never):FlxMouse;
   #end
-
-  // static var _touchTween:FlxTween;
 
   /**
    * Checks if the specified object overlaps with any active touch.
@@ -128,6 +133,7 @@ class TouchUtil
    * @param object The optional FlxBasic to check for overlap.
    * @param camera Optional camera for the overlap check. Defaults to all cameras of the object.
    * @param useOverlapsComplex If true and atleast the object is not null, the function will use complex overlaps method.
+   * @return `true` if the selection was pressed.
    */
   public static function pressAction(?object:FlxBasic, ?camera:FlxCamera, useOverlapsComplex:Bool = true):Bool
   {
@@ -149,16 +155,16 @@ class TouchUtil
   // weird mix between "looks weird" and "looks neat" but i'll keep it for now -Zack
 
   @:noCompletion
-  inline static function get_justMoved():Bool return touch != null && touch.justMoved;
+  static inline function get_justMoved():Bool return touch != null && touch.justMoved;
 
   @:noCompletion
-  inline static function get_pressed():Bool return touch != null && touch.pressed;
+  static inline function get_pressed():Bool return touch != null && touch.pressed;
 
   @:noCompletion
-  inline static function get_justPressed():Bool return touch != null && touch.justPressed;
+  static inline function get_justPressed():Bool return touch != null && touch.justPressed;
 
   @:noCompletion
-  inline static function get_justReleased():Bool return touch != null && touch.justReleased;
+  static inline function get_justReleased():Bool return touch != null && touch.justReleased;
 
   @:noCompletion
   static function get_released():Bool return touch != null && touch.released;

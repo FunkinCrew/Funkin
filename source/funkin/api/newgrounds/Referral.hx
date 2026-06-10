@@ -3,7 +3,6 @@ package funkin.api.newgrounds;
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.NG;
 #end
-import funkin.api.newgrounds.NewgroundsClient;
 import funkin.util.WindowUtil;
 
 /**
@@ -22,7 +21,7 @@ class Referral
     if (NewgroundsClient.instance.isLoggedIn())
     {
       NG.core?.calls.loader.loadReferral(false)
-        .addComponentParameter("referral_name", referralName)
+        .addComponentParameter('referral_name', referralName)
         .addResponseHandler(response ->
         {
           trace(response);
@@ -51,6 +50,6 @@ class Referral
    */
   public static function doMerchReferral():Void
   {
-    doReferral("merch_link", Constants.URL_MERCH_FALLBACK);
+    doReferral('merch_link', Constants.URL_MERCH_FALLBACK);
   }
 }

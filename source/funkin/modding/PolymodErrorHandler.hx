@@ -29,8 +29,6 @@ class PolymodErrorHandler
       case MOD_MISSING_METADATA:
         // A mod ID was included in the list of mods to load, but the mod folder doesn't have metadata.
         trace(' ERROR '.error() + ' Tried to load a mod with no metadata: ${error.message}');
-        // Notify the user via popup.
-        funkin.util.WindowUtil.showError('Mod Load Error', error.message);
 
       case MOD_METADATA_PARSE_FAILED:
         // Polymod tries to load the mod's metadata, but it could not be parsed.

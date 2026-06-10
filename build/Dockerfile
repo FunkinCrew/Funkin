@@ -1,8 +1,8 @@
 FROM ubuntu:noble
 
-ARG haxe_version=4.3.6
-ARG haxelib_version=4.1.0
-ARG neko_version=2.4.0
+ARG haxe_version=4.3.7
+ARG haxelib_version=4.2.0
+ARG neko_version=2.4.1
 
 # prepare runner
 ENV GITHUB_HOME="/github/home"
@@ -80,11 +80,13 @@ EOF
 # Haxe native dependencies
 RUN <<EOF
 apt-fast install -y --no-install-recommends \
-  libc6-dev libffi-dev \
-  libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev \
-  libgl-dev libgl1-mesa-dev \
+  build-essential \
+  libc6-dev libffi-dev libdbus-1-dev libudev-dev libgbm-dev \
+  libx11-dev libxi-dev libxext-dev libxinerama-dev libxrandr-dev libxcursor-dev libxss-dev \
+  libgl-dev libgl1-mesa-dev libglu1-mesa-dev libdrm-dev \
   libasound2-dev libpulse-dev \
-  libvlc-dev libvlccore-dev
+  libvlc-dev libvlccore-dev \
+  gcc-multilib g++-multilib
 EOF
 
 # Janky libffi.6 fix
@@ -98,11 +100,11 @@ EOF
 # neko
 # https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-linux64.tar.gz
 RUN <<EOF
-#neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -fL \
-#  | jq '.[] | select(.name == "'"$neko_version"'")' \
-#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-#  | jq -r '.browser_download_url')
-neko_url="https://geo.thei.rs/funkin/neko-2.4.1-linux64.tar.gz"
+neko_url=$(curl https://api.github.com/repos/HaxeFoundation/neko/releases -fL \
+  | jq '.[] | select(.name == "'"$neko_version"'")' \
+  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+  | jq -r '.browser_download_url')
+#neko_url="https://geo.thei.rs/funkin/neko-2.4.1-linux64.tar.gz"
 curl -fL "$neko_url" | tar -xz -C /usr/local
 EOF
 
@@ -112,16 +114,16 @@ ln -s "$neko_path" /usr/local/neko
 EOF
 
 ENV NEKOPATH="/usr/local/neko"
-ENV LD_LIBRARY_PATH="$NEKOPATH:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="$NEKOPATH"
 ENV PATH="$NEKOPATH:$PATH"
 
 # haxe
 # https://github.com/HaxeFoundation/haxe/releases/download/4.0.5/haxe-4.0.5-linux64.tar.gz
 RUN <<EOF
-#haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -fL \
-#  | jq '.[] | select(.name == "'"$haxe_version"'")' \
-#  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
-#  | jq -r '.browser_download_url')
+haxe_url=$(curl https://api.github.com/repos/HaxeFoundation/haxe/releases -fL \
+  | jq '.[] | select(.name == "'"$haxe_version"'")' \
+  | jq '.assets[] | select(.name | endswith("linux64.tar.gz"))' \
+  | jq -r '.browser_download_url')
 haxe_url="https://geo.thei.rs/funkin/haxe-4.3.6-linux64.tar.gz"
 curl -fL "$haxe_url" | tar -xz -C /usr/local
 EOF

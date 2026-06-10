@@ -81,11 +81,20 @@ class StageDataHandler
     endData.characters.gf.scroll = [state.gf.scrollFactor.x, state.gf.scrollFactor.y];
     endData.characters.dad.scroll = [state.dad.scrollFactor.x, state.dad.scrollFactor.y];
 
-    endData.characters.bf.position = [state.bf.feetPosition.x - state.bf.globalOffsets[0], state.bf.feetPosition.y - state.bf.globalOffsets[1]];
+    endData.characters.bf.position = [
+      state.bf.feetPosition.x - state.bf.globalOffsets[0],
+      state.bf.feetPosition.y - state.bf.globalOffsets[1]
+    ];
 
-    endData.characters.gf.position = [state.gf.feetPosition.x - state.gf.globalOffsets[0], state.gf.feetPosition.y - state.gf.globalOffsets[1]];
+    endData.characters.gf.position = [
+      state.gf.feetPosition.x - state.gf.globalOffsets[0],
+      state.gf.feetPosition.y - state.gf.globalOffsets[1]
+    ];
 
-    endData.characters.dad.position = [state.dad.feetPosition.x - state.dad.globalOffsets[0], state.dad.feetPosition.y - state.dad.globalOffsets[1]];
+    endData.characters.dad.position = [
+      state.dad.feetPosition.x - state.dad.globalOffsets[0],
+      state.dad.feetPosition.y - state.dad.globalOffsets[1]
+    ];
 
     // step 2: saving everything to entryList
     var entryList = new Array<Entry>();

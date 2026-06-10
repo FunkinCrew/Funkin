@@ -43,8 +43,10 @@ class FunkinHint extends FunkinButton
    * - The second value corresponds to the alpha when the hint is not pressed.
    * - The third value corresponds to the duratuon it'll take to tween between the two values.
    */
-  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle,
-    Array<Float>> = [INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01], VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]];
+  static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
+    INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],
+    VISIBLE_TILL_PRESS => [0.4, 0.2, 0.08]
+  ];
 
   /**
    * Indicates whether the hint is pixel.
@@ -77,7 +79,6 @@ class FunkinHint extends FunkinButton
   var alphaTween:Null<FlxTween>;
 
   var followTarget:Null<FunkinSprite>;
-
   var followTargetSize:Bool = false;
 
   /**
@@ -170,7 +171,7 @@ class FunkinHint extends FunkinButton
     hsvShader.hue = hue;
   }
 
-  public override function update(elapsed:Float):Void
+  override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
 
@@ -192,7 +193,7 @@ class FunkinHint extends FunkinButton
     }
   }
 
-  public override function draw():Void
+  override public function draw():Void
   {
     super.draw();
 
@@ -204,7 +205,7 @@ class FunkinHint extends FunkinButton
   }
 
   #if FLX_DEBUG
-  public override function drawDebug():Void
+  override public function drawDebug():Void
   {
     super.drawDebug();
 
@@ -215,7 +216,7 @@ class FunkinHint extends FunkinButton
   /**
    * Cleans up memory used by the `FunkinHint`.
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (alphaTween != null) alphaTween = FlxDestroyUtil.destroy(alphaTween);
 
@@ -247,11 +248,11 @@ class FunkinHint extends FunkinButton
 
 enum abstract FunkinHitboxControlSchemes(String) from String to String
 {
-  var FourLanes = 'Four Lanes';
-  var DoubleThumbTriangle = 'Double Thumb Triangle';
-  var DoubleThumbSquare = 'Double Thumb Square';
-  var DoubleThumbDPad = 'Double Thumb DPad';
-  var Arrows = 'Arrows';
+  public var FourLanes = 'Four Lanes';
+  public var DoubleThumbTriangle = 'Double Thumb Triangle';
+  public var DoubleThumbSquare = 'Double Thumb Square';
+  public var DoubleThumbDPad = 'Double Thumb DPad';
+  public var Arrows = 'Arrows';
 }
 
 /**
@@ -653,17 +654,49 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
 
     return switch (facing)
     {
-      case UP: [width / 2, 0, 0, height, width, height];
-      case DOWN: [0, 0, width, 0, width / 2, height];
-      case LEFT: [0, 0, width, height / 2, 0, height];
-      case RIGHT: [width, 0, 0, height / 2, width, height];
+      case UP:
+        [
+          width / 2,
+          0,
+          0,
+          height,
+          width,
+          height
+        ];
+      case DOWN:
+        [
+          0,
+          0,
+          width,
+          0,
+          width / 2,
+          height
+        ];
+      case LEFT:
+        [
+          0,
+          0,
+          width,
+          height / 2,
+          0,
+          height
+        ];
+      case RIGHT:
+        [
+          width,
+          0,
+          0,
+          height / 2,
+          width,
+          height
+        ];
     }
   }
 
   /**
    * Cleans up memory used by the `FunkinHitbox`.
    */
-  public override function destroy():Void
+  override public function destroy():Void
   {
     if (trackedInputs != null && trackedInputs.length > 0) ControlsHandler.removeCachedInput(PlayerSettings.player1.controls, trackedInputs);
 

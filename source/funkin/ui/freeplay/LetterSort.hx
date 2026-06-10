@@ -42,12 +42,12 @@ class LetterSort extends FlxSpriteGroup
     grpSeperators = new FlxSpriteGroup();
     add(grpSeperators);
 
-    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image('freeplay/miniArrow'));
     // leftArrow.animation.play("arrow");
     leftArrow.flipX = true;
     add(leftArrow);
 
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image("freeplay/miniArrow"));
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image('freeplay/miniArrow'));
     // rightArrow.animation.play("arrow");
     add(rightArrow);
 
@@ -75,7 +75,7 @@ class LetterSort extends FlxSpriteGroup
       // don't put the last seperator
       if (i == 4) continue;
 
-      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image("freeplay/seperator"));
+      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image('freeplay/seperator'));
       // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
       grpSeperators.add(sep);
@@ -114,7 +114,13 @@ class LetterSort extends FlxSpriteGroup
 
         if (index == 2 || index == 5) continue;
 
-        var selectionChanges:Array<Int> = [-1, -1, 0, 1, 1];
+        var selectionChanges:Array<Int> = [
+          -1,
+          -1,
+          0,
+          1,
+          1
+        ];
         var changeValue = selectionChanges[index];
 
         if (changeValue != 0)
@@ -214,14 +220,13 @@ class LetterSort extends FlxSpriteGroup
     if (curSelection < 0) curSelection = letters[0].regexLetters.length - 1;
     if (curSelection >= letters[0].regexLetters.length) curSelection = 0;
 
-    for (letter in letters)
-      letter.changeLetter(diff, curSelection);
+    for (letter in letters) letter.changeLetter(diff, curSelection);
 
     if (changeSelectionCallback != null) changeSelectionCallback(letters[2].regexLetters[letters[2].curLetter]); // bullshit and long lol!
   }
 
   @:noCompletion
-  private function set_instance(value:FreeplayState):FreeplayState
+  function set_instance(value:FreeplayState):FreeplayState
   {
     instance = value;
 
@@ -265,7 +270,7 @@ class FreeplayLetter extends FunkinSprite
   {
     super(x, y);
 
-    loadTextureAtlas("freeplay/sortedLetters");
+    loadTextureAtlas('freeplay/sortedLetters');
 
     // this is used for the regex
     // /^[OR].*/gi doesn't work for showing the song Pico, so now it's
@@ -285,7 +290,7 @@ class FreeplayLetter extends FunkinSprite
 
     if (letterInd != null)
     {
-      this.anim.play(animLetters[letterInd] + " move", true);
+      this.anim.play(animLetters[letterInd] + ' move', true);
       curLetter = letterInd;
 
       if (curSelected != curLetter)
@@ -295,7 +300,7 @@ class FreeplayLetter extends FunkinSprite
 
       this.anim.onFinish.add(function(name:String)
       {
-        this.anim.play(animLetters[curLetter] + " move", true);
+        this.anim.play(animLetters[curLetter] + ' move', true);
       });
     }
   }
@@ -316,12 +321,12 @@ class FreeplayLetter extends FunkinSprite
 
     switch (animLetters[curLetter])
     {
-      case "IL":
-        animName = "IL move";
-      case "s":
-        animName = "S move";
-      case "t":
-        animName = "T move";
+      case 'IL':
+        animName = 'IL move';
+      case 's':
+        animName = 'S move';
+      case 't':
+        animName = 'T move';
     }
 
     this.anim.play(animName, true);

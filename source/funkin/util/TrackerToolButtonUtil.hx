@@ -16,12 +16,12 @@ class TrackerToolButtonUtil extends Tool
   {
     super.init(brain);
 
-    _name = "Add Tracker";
+    _name = 'Add Tracker';
     setButton(GraphicCursorCross);
 
-    button.upHandler = function()
+    button.upHandler = () ->
     {
-      brain.selectedItems.forEach(function(item)
+      brain.selectedItems.forEach((item) ->
       {
         FlxG.debugger.track(item);
       });

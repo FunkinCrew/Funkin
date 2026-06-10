@@ -51,8 +51,6 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
     flashShader.colorSet = enabled;
   }
 
-  var tmr:Float = 0;
-
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);

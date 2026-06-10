@@ -7,16 +7,13 @@ import funkin.data.song.SongDataUtils;
 /**
  * Command that deselects all selected notes and/or events above or past the time given in the chart editor.
  */
-@:nullSafety
-@:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
 class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
 {
   var time:Float;
   var above:Bool;
-
   var notes:Array<SongNoteData>;
   var events:Array<SongEventData>;
-
   var shouldDeselectNotes:Bool;
   var shouldDeselectEvents:Bool;
 
@@ -40,8 +37,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
       {
         for (i in 0...state.currentSongChartNoteData.length)
         {
-          if (state.currentSongChartNoteData[i].time < time)
-            notes.push(state.currentSongChartNoteData[i]);
+          if (state.currentSongChartNoteData[i].time < time) notes.push(state.currentSongChartNoteData[i]);
           else
             // We've reached the end of the notes above this time,
             // there's no reason to waste our time running this loop to completion
@@ -52,8 +48,7 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
       {
         for (i in 0...state.currentSongChartEventData.length)
         {
-          if (state.currentSongChartEventData[i].time < time)
-            events.push(state.currentSongChartEventData[i]);
+          if (state.currentSongChartEventData[i].time < time) events.push(state.currentSongChartEventData[i]);
           else
             break;
         }
@@ -66,8 +61,11 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
         for (i in 0...state.currentSongChartNoteData.length)
         {
           // Backwards for loop (kinda). Neat!
-          if (state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1].time > time)
-          notes.push(state.currentSongChartNoteData[state.currentSongChartNoteData.length - i - 1]);
+          if (state.currentSongChartNoteData[
+            state.currentSongChartNoteData.length - i - 1
+          ].time > time) notes.push(state.currentSongChartNoteData[
+            state.currentSongChartNoteData.length - i - 1
+            ]);
           else
             // We've reached the end of the notes below this time,
             // there's no reason to waste our time running this loop to completion
@@ -78,8 +76,11 @@ class DeselectAllItemsBetweenTimeCommand implements ChartEditorCommand
       {
         for (i in 0...state.currentSongChartEventData.length)
         {
-          if (state.currentSongChartEventData[state.currentSongChartEventData.length - i - 1].time > time)
-          events.push(state.currentSongChartEventData[state.currentSongChartEventData.length- i - 1]);
+          if (state.currentSongChartEventData[
+            state.currentSongChartEventData.length - i - 1
+          ].time > time) events.push(state.currentSongChartEventData[
+            state.currentSongChartEventData.length - i - 1
+            ]);
           else
             break;
         }

@@ -301,9 +301,12 @@ class CrashHandler
     {
       switch (FlxG.renderMethod)
       {
-        case FlxRenderMethod.DRAW_TILES: 'DRAW_TILES';
-        case FlxRenderMethod.BLITTING: 'BLITTING';
-        default: 'UNKNOWN';
+        case FlxRenderMethod.DRAW_TILES:
+          'DRAW_TILES';
+        case FlxRenderMethod.BLITTING:
+          'BLITTING';
+        default:
+          'UNKNOWN';
       }
     }
     catch (e)
