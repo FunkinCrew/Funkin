@@ -256,5 +256,43 @@ class CameraEditorImportExportHandler
       catch (e) {}
     }
   }
+
+  /**
+   * Build a folder of files from the current chart data and export it to a user-defined directory.
+   *
+   * @param state The Camera Editor state containing the chart data to export.
+   * @param onSaveCb Callback for when the files are saved.
+   * @param onCancelCb Callback for when saving is cancelled.
+   */
+  public static function exportCurrentChartToFolder(state:CameraEditorState, ?onSaveCb:String->Void, ?onCancelCb:Void->Void):Void
+  {
+    var fnfcData:FNFCData = CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(state);
+    var zipEntries:Array<haxe.zip.Entry> = FNFCUtil.buildZIPEntriesFromFNFCData(fnfcData);
+
+    trace('Exporting ${zipEntries.length} files to folder...');
+
+    // Prompt and save.
+    var onSave:Array<String>->Void = function(paths:Array<String>)
+    {
+      var directory:String = haxe.io.Path.directory(paths[0]);
+      trace('Exported to "${directory}"');
+      if (onSaveCb != null) onSaveCb(directory);
+    };
+
+    var onCancel:Void->Void = function()
+    {
+      trace('Export cancelled.');
+      if (onCancelCb != null) onCancelCb();
+    };
+
+    trace('Exporting to user-defined location...');
+    try
+    {
+      FileUtil.saveMultipleFiles(zipEntries, onSave, onCancel);
+    }
+    catch (e)
+    {
+    }
+  }
 }
 #end
