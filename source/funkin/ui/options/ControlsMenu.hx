@@ -247,10 +247,12 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     {
       case Keys:
         {
+          if (!FlxG.keys.enabled) return;
           keyUsedToEnterPrompt = FlxG.keys.firstJustPressed();
         }
       case Gamepad(id):
         {
+          if (FlxG.gamepads.getByID(id) == null) return;
           buttonUsedToEnterPrompt = FlxG.gamepads.getByID(id).firstJustPressedID();
         }
     }
