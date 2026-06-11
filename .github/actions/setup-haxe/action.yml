@@ -5,7 +5,7 @@ inputs:
   haxe:
     description: 'Version of haxe to install'
     required: true
-    default: '4.3.6'
+    default: '4.3.7'
   hxcpp-cache:
     description: 'Whether to use a shared hxcpp compile cache'
     required: true
@@ -71,7 +71,7 @@ runs:
 
   - name: Restore cached dependencies
     id: cache-hmm
-    uses: actions/cache@v4
+    uses: actions/cache@v5
     with:
       path: .haxelib
       key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
@@ -98,7 +98,7 @@ runs:
   # by default use a shared hxcpp cache
   - if: ${{ inputs.hxcpp-cache == 'true' }}
     name: Restore hxcpp cache
-    uses: actions/cache@v4
+    uses: actions/cache@v5
     with:
       path: ${{ inputs.hxcpp-cache-path }}
       key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
@@ -114,7 +114,7 @@ runs:
   # if it's explicitly disabled, still cache export/ since that then contains the builds
   - if: ${{ inputs.hxcpp-cache != 'true' }}
     name: Restore export cache
-    uses: actions/cache@v4
+    uses: actions/cache@v5
     with:
       path: ${{ inputs.hxcpp-cache-path }}
       key: haxe-export-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
