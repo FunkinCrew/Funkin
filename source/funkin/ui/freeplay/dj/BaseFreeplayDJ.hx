@@ -123,40 +123,6 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
         playAnimation(CONFIRM, false);
 
         timeIdling = 0;
-      case FistPumpIntro | FistPump:
-        if (getCurrentAnimation() == FISTPUMP)
-        {
-          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroEndFrame() ?? 0 : playableCharData?.getFistPumpLoopEndFrame() ?? 0;
-          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
-          {
-            playAnimation(
-              FISTPUMP,
-              true,
-              false,
-              false,
-              (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroStartFrame() : playableCharData?.getFistPumpLoopStartFrame()
-            );
-          }
-        }
-        else if (getCurrentAnimation() == FISTPUMPLOSS)
-        {
-          var endFrame:Int = (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadEndFrame() ?? 0 : playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
-          if (endFrame > -1 && animation.curAnim.curFrame >= endFrame)
-          {
-            playAnimation(
-              FISTPUMPLOSS,
-              true,
-              false,
-              false,
-              (currentState == FistPumpIntro) ? playableCharData?.getFistPumpIntroBadStartFrame() : playableCharData?.getFistPumpLoopBadStartFrame()
-            );
-          }
-        }
-        else
-        {
-          FlxG.log.warn('Unrecognized animation in FistPumpIntro: ' + getCurrentAnimation());
-        }
-
       case IdleEasterEgg:
         seenIdleEasterEgg = true;
         onIdleEasterEgg.dispatch();
@@ -198,6 +164,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
     {
       animation.onFinish.add(onAnimationFinished);
       animation.onLoop.add(onAnimationFinished);
+      animation.onFrameChange.add(onAnimationFrame);
     }
   }
 
@@ -234,6 +201,31 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
         currentState = Idle;
       case CHARSELECT:
         onCharSelectComplete();
+    }
+  }
+
+  function onAnimationFrame(name:String, frameNumber:Int, frameIndex:Int):Void
+  {
+    if (name != FISTPUMP && name != FISTPUMPLOSS) return;
+
+    var isIntro:Bool = (currentState == FistPumpIntro);
+    var startFrame:Int = -1;
+    var endFrame:Int = -1;
+
+    if (name == FISTPUMPLOSS)
+    {
+      endFrame = isIntro ? playableCharData?.getFistPumpIntroBadEndFrame() ?? 0 : playableCharData?.getFistPumpLoopBadEndFrame() ?? 0;
+      startFrame = isIntro ? playableCharData?.getFistPumpIntroBadStartFrame() ?? 0 : playableCharData?.getFistPumpLoopBadStartFrame() ?? 0;
+    }
+    else
+    {
+      endFrame = isIntro ? playableCharData?.getFistPumpIntroEndFrame() ?? 0 : playableCharData?.getFistPumpLoopEndFrame() ?? 0;
+      startFrame = isIntro ? playableCharData?.getFistPumpIntroStartFrame() ?? 0 : playableCharData?.getFistPumpLoopStartFrame() ?? 0;
+    }
+
+    if (endFrame > -1 && frameNumber >= endFrame)
+    {
+      playAnimation(name, true, false, false, startFrame);
     }
   }
 
