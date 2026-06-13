@@ -344,8 +344,8 @@ class PlayState extends MusicBeatSubState
   public var cameraBopIntensity:Float = Constants.DEFAULT_BOP_INTENSITY;
 
   /**
-   * Camera bop decay eate.
-   * Applied for cameraBopMultiplier lerp ratio.
+   * Camera bop decay rate.
+   * Applied for camera bop ratio.
    * @default `95%`
    */
   public var decayRate:Float = Constants.DEFAULT_DECAY_RATE;
