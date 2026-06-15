@@ -407,10 +407,9 @@ class ModMenuState extends MusicBeatState
     {
       var fileClean = StringTools.replace(path, '\\', '/');
       var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), ".zip", "");
-      var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName;
+      var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
 
-      trace('Unzipping mod from $path to $destPath');
-      FileUtil.unzipToFolder(FileUtil.readBytesFromPath(path), destPath);
+      FileUtil.moveFile(path, destPath);
 
       buildDisabledModList();
       disabledModItems.repositionItems();
