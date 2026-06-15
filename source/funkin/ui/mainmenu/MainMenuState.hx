@@ -310,12 +310,6 @@ class MainMenuState extends MusicBeatState
 
     // This has to come AFTER!
     initLeftWatermarkText();
-
-    // DEBUG STUFF FOR MY TESTING! REMOVE THIS AT SOME POINT!
-    FlxTimer.wait(2, () ->
-    {
-      openQuickPanel();
-    });
   }
 
   function initLeftWatermarkText():Void
@@ -340,20 +334,6 @@ class MainMenuState extends MusicBeatState
       // Continue playing this music between states, until a different music track gets played.
       persist: true
     });
-  }
-
-  // DEBUG STUFF FOR MY TESTING! REMOVE THIS AT SOME POINT!
-
-  function openQuickPanel():Void
-  {
-    var panel:QuickPanelState;
-
-    persistentDraw = true;
-    persistentUpdate = false;
-
-    panel = new QuickPanelState();
-
-    openSubState(panel);
   }
 
   function resetCamStuff(snap:Bool = true):Void

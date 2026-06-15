@@ -18,7 +18,6 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
-import funkin.util.plugins.SidePanelPlugin;
 import funkin.ui.modmenu.ModMenuButton;
 import funkin.util.PropertyAnimator;
 
@@ -76,8 +75,6 @@ class ModMenuState extends MusicBeatState
   override public function create():Void
   {
     super.create();
-
-    funkin.util.plugins.SidePanelPlugin.showGrabber = false;
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
@@ -791,7 +788,6 @@ class ModMenuState extends MusicBeatState
     PolymodHandler.forceReloadAssets();
     if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
     else {
-      SidePanelPlugin.showGrabber = true;
       FlxG.switchState(() -> InitState.customTitleState);
     }
   }

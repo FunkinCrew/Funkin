@@ -20,6 +20,12 @@ import funkin.util.SwipeUtil;
 import funkin.util.MathUtil;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
+import flixel.FlxSubState;
+
+class PanelBlockerSubState extends FlxSubState
+{
+  public function new() { super(); }
+}
 
 enum PanelState
 {
@@ -65,6 +71,13 @@ typedef QuickPanelButtonData =
  */
 class QuickPanelGroup extends FunkinSpriteGroup
 {
+  static var shouldDecayTimer:Bool = true;
+
+  static var tabFadeTimer:Float = 0;
+  static final TAB_FADE_DELAY:Float = 3.0;
+  static final TAB_FADE_DURATION:Float = 1.5;
+  public static final TAB_MIN_ALPHA:Float = 0.25;
+
   /**
    * Lock user input
    */
@@ -110,7 +123,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   /**
    * The current state of the panel.
    */
-  var curState:PanelState = CLOSED;
+  public var curState:PanelState = CLOSED;
 
   var curSelected:Int = 0;
   var grpButtons:FunkinGroup<QuickPanelButton>;
@@ -128,13 +141,23 @@ class QuickPanelGroup extends FunkinSpriteGroup
     return grpButtons.children[curSelected];
   }
 
+  public static function playMenuMusic():Void
+  {
+    FunkinSound.playMusic('ui/main-menu/freaky-menu/freaky-menu', {
+      overrideExisting: true,
+      restartTrack: false,
+      persist: true
+    });
+  }
+
   // maybe this could not be hardcoded one day? but it also lowkey doesnt matter at all
   var defaultButtonData:Array<QuickPanelButtonData> = [
     {
       text: 'Exit Mod',
       callback: () ->
       {
-        trace('imagine im exiting the mod');
+        playMenuMusic();
+        FlxG.switchState(new funkin.ui.title.TitleState());
       },
       icon: 'back',
       description: "Return to the base game's title screen.",
@@ -144,7 +167,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Mods',
       callback: () ->
       {
-        trace('imagine im entering the mods menu');
+        playMenuMusic();
+        FlxG.switchState(new funkin.ui.modmenu.ModMenuState());
       },
       icon: 'mods',
       description: "Add, remove or install custom content for the game.",
@@ -154,7 +178,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Freeplay',
       callback: () ->
       {
-        trace('Okay. Lets imagine for a second. I enter the freeplay menu. Right now. Okay? You see where im going?');
+        FlxG.switchState(new funkin.ui.freeplay.FreeplayState());
       },
       icon: 'freeplay',
       description: "Choose and play any song you've previously unlocked.",
@@ -164,7 +188,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Online',
       callback: () ->
       {
-        trace('Alright. Actually Okay We Cant Actually Go Here So its okay. Dont imagine anything.');
+        // imagine this takes us to the online mode.... that would be cool, right? yeah, i think so :-)
       },
       icon: 'online',
       description: "Play against friends, or with people around the world.",
@@ -174,7 +198,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Options',
       callback: () ->
       {
-        trace('Alright. Imagine this takes us to the options menu. Okay? I think this makes sense');
+        playMenuMusic();
+        FlxG.switchState(new funkin.ui.options.OptionsState());
       },
       icon: 'options',
       description: "Configure various gameplay and visual settings.",
@@ -197,7 +222,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   /**
    * The actual visible tab to pull.
    */
-  var pullTabVisual:QuickPanelPullTab;
+  public var pullTabVisual:QuickPanelPullTab;
 
   var pullExtra:FlxSprite;
 
@@ -206,7 +231,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
    */
   var pullHint:FlxText;
 
-  var inactivityTimer:Float = 0;
+  public var inactivityTimer:Float = 0;
   var breatheTimer:Float = 0;
   var hintBreathe:Bool = false;
   var hintOpen:Bool = false;
@@ -272,8 +297,6 @@ class QuickPanelGroup extends FunkinSpriteGroup
     super();
 
     quickPanelState = _state;
-
-    rememberedVolume = FlxG.sound.music?.volume;
 
     pullExtra = new FlxSprite().makeGraphic(1, 1, 0xFF000000);
     pullExtra.scrollFactor.set(0, 0);
@@ -364,6 +387,56 @@ class QuickPanelGroup extends FunkinSpriteGroup
     repositionSide(left);
 
     refresh();
+  }
+
+  function handleTabFade(elapsed:Float):Void
+  {
+    #if mobile
+    if (trackDist)
+    {
+      tabFadeTimer = 0;
+      pullTabVisual.alpha = 1.0;
+      return;
+    }
+    #end
+
+    if (curState != CLOSED || hintOpen) return;
+
+    tabFadeTimer += elapsed;
+
+    var fadeStart:Float = TAB_FADE_DELAY;
+    var fadeEnd:Float = TAB_FADE_DELAY + TAB_FADE_DURATION;
+
+    if (tabFadeTimer < fadeStart)
+    {
+      pullTabVisual.alpha = 1.0;
+    }
+    else if (tabFadeTimer < fadeEnd)
+    {
+      pullTabVisual.alpha = FlxMath.lerp(1.0, TAB_MIN_ALPHA, (tabFadeTimer - fadeStart) / TAB_FADE_DURATION);
+    }
+    else
+    {
+      pullTabVisual.alpha = TAB_MIN_ALPHA;
+    }
+  }
+
+  function resetTabFade():Void
+  {
+    tabFadeTimer = 0;
+    FlxTween.cancelTweensOf(pullTabVisual);
+    FlxTween.tween(pullTabVisual, {alpha: 1.0}, 0.3, {ease: FlxEase.expoOut});
+  }
+
+  /**
+   * Fade the pull tab in or out.
+   * @param targetAlpha the target alpha to fade to.
+   * @param duration the duration of the fade animation.
+   */
+  public function fadeTab(targetAlpha:Float, duration:Float = 0.3):Void
+  {
+    FlxTween.cancelTweensOf(pullTabVisual);
+    FlxTween.tween(pullTabVisual, {alpha: targetAlpha}, duration, {ease: FlxEase.expoOut});
   }
 
   /**
@@ -737,9 +810,30 @@ class QuickPanelGroup extends FunkinSpriteGroup
     curState = OPENING;
   }
 
+  var blockerSubState:Null<PanelBlockerSubState> = null;
+
+  function openBlocker():Void
+  {
+    if (blockerSubState != null) return;
+    FlxG.state.persistentDraw = true;
+    FlxG.state.persistentUpdate = false;
+    blockerSubState = new PanelBlockerSubState();
+    FlxG.state.openSubState(blockerSubState);
+  }
+
+  function closeBlocker():Void
+  {
+    if (blockerSubState == null) return;
+    FlxG.state.persistentUpdate = true;
+    blockerSubState.close();
+    blockerSubState = null;
+  }
+
   function openPanel(instant:Bool = false):Void
   {
     curState = OPEN;
+    openBlocker();
+    rememberedVolume = FlxG.sound.music?.volume;
 
     if (FlxG.sound.music != null)
     {
@@ -772,6 +866,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   function closePanel(instant:Bool = false):Void
   {
     curState = CLOSED;
+    closeBlocker();
 
     if (FlxG.sound.music != null)
     {
@@ -820,7 +915,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   function handleHint(elapsed:Float):Void
   {
-    if (inactivityTimer > 0)
+    if (inactivityTimer > 0 && shouldDecayTimer)
     {
       inactivityTimer -= elapsed;
     }
@@ -841,7 +936,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     if (inactivityTimer < 0 && !hintOpen)
     {
+      shouldDecayTimer = false;
       hintOpen = true;
+      resetTabFade();
       pullHint.text = resolveHint(curState == OPEN);
       paHint.playAnimation(left ? 'slideRight' : 'slideLeft');
 
@@ -888,6 +985,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       case CLOSED:
         if (FlxG.keys.justPressed.TAB)
         {
+          resetTabFade();
           openPanel();
           FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/open-tab-click'));
           return;
@@ -982,6 +1080,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       case OPEN:
         if (FlxG.keys.justPressed.TAB)
         {
+          resetTabFade();
           closePanel();
           FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/close-tab-click'));
           return;
@@ -1055,7 +1154,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     }
 
     handleHint(elapsed);
-
+    handleTabFade(elapsed);
     handleState(elapsed);
 
     if (hintBreathe)

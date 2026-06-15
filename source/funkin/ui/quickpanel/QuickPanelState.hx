@@ -37,7 +37,7 @@ class QuickPanelState extends MusicBeatSubState
   var circleWipe:CircleWipeShader;
   var descriptionText:FlxText;
   var descriptionPanel:FunkinSprite;
-  var panel:QuickPanelGroup;
+  public var panel:QuickPanelGroup;
   var DESCRIPTION_PANEL_Y:Float = 0;
   var DESCRIPTION_TEXT_Y:Float = 0;
   var DESCRIPTION_OFFSET:Float = 100;
@@ -66,17 +66,17 @@ class QuickPanelState extends MusicBeatSubState
   public function new()
   {
     super();
-  }
-
-  override function create()
-  {
-    super.create();
 
     // dedicated camera for the ability to have our own zoom/scroll
     panelCam = new FunkinCamera('panelCam', 0, 0, FlxG.width, FlxG.height);
     panelCam.bgColor = FlxColor.TRANSPARENT;
     panelCam.zoom = 1;
     FlxG.cameras.add(panelCam, false);
+  }
+
+  override function create()
+  {
+    super.create();
 
     bg = new FunkinSprite(0, 0);
     bg.makeSolidColor(camera.width * 2, camera.height * 2, 0xFF1A1A1A);
@@ -142,6 +142,7 @@ class QuickPanelState extends MusicBeatSubState
 
     repositionSide(left);
   }
+
 
   public function fadeScreen(out:Bool = false)
   {

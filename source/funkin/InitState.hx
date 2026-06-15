@@ -541,7 +541,6 @@ class InitState extends FlxState
 
       if (customTitleState != null)
       {
-        SidePanelPlugin.showGrabber = true;
         FlxG.switchState(() -> customTitleState);
         return;
       }
