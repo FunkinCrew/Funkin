@@ -243,7 +243,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     TAB_BASE_X = left ? 467 : -467;
 
     pullTabVisual.localX = left ? 120 - pullTabVisual.width : -120;
-    pullTabHitbox.localX = left ? 125 - pullTabHitbox.width : -125;
+    pullTabHitbox.localX = left ? 145 - pullTabHitbox.width : -145;
 
     panel.localX = left ? -panel.width : 0;
     pullExtra.localX = left ? -(pullExtra.width + panel.width) + 5 : panel.width - 5;
@@ -320,7 +320,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullHint = new FlxText(0, 0, 600, "you're not supposed to see this! if you do, i seriously messed up!", 30);
     pullHint.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, HINT_COLOR_NORMAL, RIGHT);
     pullHint.localY = (FlxG.height / 2) - (pullHint.height / 2);
-    pullHint.offset.y = -6;
+    pullHint.offset.y = 0;
     pullHint.localAlpha = 0;
     add(pullHint);
 
@@ -336,10 +336,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     });
     panelShader.updateFrameInfo(panel.frame);
 
-    pullTabHitbox = new FlxSprite().makeGraphic(130, 200, 0xFFFF9191);
+    pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
     pullTabHitbox.scrollFactor.set(0, 0);
     pullTabHitbox.localAlpha = 0;
     pullTabHitbox.updateHitbox();
+    pullTabHitbox.zIndex = 200;
     pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
 

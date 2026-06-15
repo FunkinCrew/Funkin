@@ -338,7 +338,7 @@ class QuickPanelButton extends FunkinSpriteGroup
     {
       paFade.playAnimation('press');
 
-      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/tab-press'), 0.5);
+      FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-press'), 0.1);
     }
 
     if (TouchUtil.justReleased)
