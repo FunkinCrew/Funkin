@@ -46,43 +46,38 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     switch (type)
     {
       case IMAGE:
-        return [
+        var paths = [
           // TODO: Make these functions return asset paths directly, then rewrite queryAssets properly!
+
+          // Note sprites
           getNoteAssetPath(),
           getHoldNoteAssetPath(),
           getStrumlineAssetPath(),
+          getSplashAssetPath(),
 
-          // TODO: Allow Countdown sprites to be animated.
+          // Countdown sprites
           buildCountdownSpritePath(THREE),
           buildCountdownSpritePath(TWO),
           buildCountdownSpritePath(ONE),
           buildCountdownSpritePath(GO),
 
+          // Judgement sprites
           buildJudgementSpritePath('sick'),
           buildJudgementSpritePath('good'),
           buildJudgementSpritePath('bad'),
           buildJudgementSpritePath('shit'),
-          buildComboNumSpritePath(0),
-          buildComboNumSpritePath(1),
-          buildComboNumSpritePath(2),
-          buildComboNumSpritePath(3),
-          buildComboNumSpritePath(4),
-          buildComboNumSpritePath(5),
-          buildComboNumSpritePath(6),
-          buildComboNumSpritePath(7),
-          buildComboNumSpritePath(8),
-          buildComboNumSpritePath(9),
 
-          getSplashAssetPath(),
+          // Hold cover sprites
           getHoldCoverDirectionAssetPath(NoteDirection.LEFT),
           getHoldCoverDirectionAssetPath(NoteDirection.DOWN),
           getHoldCoverDirectionAssetPath(NoteDirection.UP),
           getHoldCoverDirectionAssetPath(NoteDirection.RIGHT),
-        ].map((path) ->
-        {
-          if (path == null) return null;
-          return funkin.assets.Paths.image(path);
-        }).filterNull();
+        ].filterNull().map((path) -> funkin.assets.Paths.image(path));
+
+        // Combo count sprites
+        paths.append([for (i in 0...9) buildComboNumSpritePath(i)].filterNull().map((path) -> funkin.assets.Paths.image(path)));
+
+        return paths;
       case XML:
         return [
           getNoteAssetPath(),
