@@ -37,6 +37,80 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
   }
 
   /**
+   * Determine a list of the assets of the given type that are required to display this note style.
+   * @param type The type of asset to query.
+   * @return The list of assets to query.
+   */
+  public function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return [
+          // TODO: Make these functions return asset paths directly, then rewrite queryAssets properly!
+          getNoteAssetPath(),
+          getHoldNoteAssetPath(),
+          getStrumlineAssetPath(),
+
+          // TODO: Allow Countdown sprites to be animated.
+          buildCountdownSpritePath(THREE),
+          buildCountdownSpritePath(TWO),
+          buildCountdownSpritePath(ONE),
+          buildCountdownSpritePath(GO),
+
+          buildJudgementSpritePath('sick'),
+          buildJudgementSpritePath('good'),
+          buildJudgementSpritePath('bad'),
+          buildJudgementSpritePath('shit'),
+          buildComboNumSpritePath(0),
+          buildComboNumSpritePath(1),
+          buildComboNumSpritePath(2),
+          buildComboNumSpritePath(3),
+          buildComboNumSpritePath(4),
+          buildComboNumSpritePath(5),
+          buildComboNumSpritePath(6),
+          buildComboNumSpritePath(7),
+          buildComboNumSpritePath(8),
+          buildComboNumSpritePath(9),
+
+          getSplashAssetPath(),
+          getHoldCoverDirectionAssetPath(NoteDirection.LEFT),
+          getHoldCoverDirectionAssetPath(NoteDirection.DOWN),
+          getHoldCoverDirectionAssetPath(NoteDirection.UP),
+          getHoldCoverDirectionAssetPath(NoteDirection.RIGHT),
+        ].map((path) ->
+        {
+          if (path == null) return null;
+          return funkin.assets.Paths.image(path);
+        }).filterNull();
+      case XML:
+        return [
+          getNoteAssetPath(),
+          getHoldNoteAssetPath(),
+          getStrumlineAssetPath(),
+
+          getSplashAssetPath(),
+          getHoldCoverDirectionAssetPath(NoteDirection.LEFT),
+          getHoldCoverDirectionAssetPath(NoteDirection.DOWN),
+          getHoldCoverDirectionAssetPath(NoteDirection.UP),
+          getHoldCoverDirectionAssetPath(NoteDirection.RIGHT),
+        ].map((path) ->
+        {
+          if (path == null) return null;
+          return funkin.assets.Paths.xml(path);
+        }).filterNull();
+      case SOUND:
+        return [getCountdownSoundPath(THREE), getCountdownSoundPath(TWO), getCountdownSoundPath(ONE), getCountdownSoundPath(GO)].map((path) ->
+        {
+          if (path == null) return null;
+          return funkin.assets.Paths.sound(path);
+        }).filterNull();
+      default:
+        return [];
+    }
+  }
+
+  /**
    * @param id The ID of the JSON file to parse.
    */
   public function new(id:String, ?params:Dynamic)
