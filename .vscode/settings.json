@@ -185,6 +185,10 @@
       "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
+      "label": "Release (Tracy)",
+      "args": ["-debug", "-DFEATURE_DEBUG_TRACY", "-DGITHUB_BUILD"]
+    },
+    {
       "label": "Debug (Straight to Chart Editor)",
       "args": ["-debug", "-DCHARTING", "-DFEATURE_DEBUG_FUNCTIONS"]
     },

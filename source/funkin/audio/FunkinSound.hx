@@ -284,7 +284,8 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    *   Data should be at `music/<key>/<key>-metadata.json`.
    * @return Whether the music was started. `false` if music was already playing or could not be started
    */
-  public static function playMusic(key:String, params:FunkinSoundPlayMusicParams):Bool
+  public static function playMusic(key:String,
+    params:FunkinSoundPlayMusicParams):Bool
   {
     if (!(params.overrideExisting ?? false) && (FlxG.sound.music?.exists ?? false) && FlxG.sound.music.playing) return false;
 
@@ -433,7 +434,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param important       If `true`, the sound channel will forcefully be added onto the channel array, even if full. Use sparingly!
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
-  public static function load(embeddedSound:FlxSoundAsset, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = false, persist:Bool = false, ?onComplete:Void->Void, ?onLoad:Void->Void, important:Bool = false):Null<FunkinSound>
+  public static function load(embeddedSound:FlxSoundAsset,
+    volume:Float = 1.0,
+    looped:Bool = false,
+    autoDestroy:Bool = false,
+    autoPlay:Bool = false,
+    persist:Bool = false,
+    ?onComplete:Void->Void,
+    ?onLoad:Void->Void,
+    important:Bool = false):Null<FunkinSound>
   {
     @:privateAccess
     if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS && !important)
@@ -444,11 +453,23 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var sound:FunkinSound = pool.recycle(construct);
 
-    if (Std.isOfType(embeddedSound, String)) embeddedSound = funkin.modding.compat.Sound.cleanupSoundPath(embeddedSound);
+    if (Std.isOfType(embeddedSound, String))
+    {
+      embeddedSound = funkin.modding.compat.Sound.cleanupSoundPath(embeddedSound);
 
-    // Load the sound.
-    // Sets `exists = true` as a side effect.
-    sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
+      var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.sound(embeddedSound);
+      var soundAsset:openfl.media.Sound = funkin.assets.Assets.getSound(assetPath);
+
+      // Load the sound.
+      // Sets `exists = true` as a side effect.
+      sound.loadEmbedded(soundAsset, looped, autoDestroy, onComplete);
+    }
+    else
+    {
+      // If the embeddedSound is a sound, load it directly.
+      // TODO: This should probably be a separate function.
+      sound.loadEmbedded(embeddedSound, looped, autoDestroy, onComplete);
+    }
 
     if (embeddedSound is String)
     {
@@ -491,7 +512,15 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param onLoad Callback when the sound finishes loading
    * @return A FunkinSound object
    */
-  public static function loadPartial(path:String, start:Float = 0, end:Float = 1, volume:Float = 1.0, looped:Bool = false, autoDestroy:Bool = false, autoPlay:Bool = true, ?onComplete:Void->Void, ?onLoad:Void->Void):Promise<Null<FunkinSound>>
+  public static function loadPartial(path:String,
+    start:Float = 0,
+    end:Float = 1,
+    volume:Float = 1.0,
+    looped:Bool = false,
+    autoDestroy:Bool = false,
+    autoPlay:Bool = true,
+    ?onComplete:Void->Void,
+    ?onLoad:Void->Void):Promise<Null<FunkinSound>>
   {
     var promise:lime.app.Promise<Null<FunkinSound>> = new lime.app.Promise<Null<FunkinSound>>();
 

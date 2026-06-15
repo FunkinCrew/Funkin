@@ -145,7 +145,10 @@ class FunkinSprite extends FlxAnimate
    * @param path The asset path for the graphic
    * @param atlasSettings The optional settings for the texture atlas
    */
-  public function new(?x:Float = 0, ?y:Float = 0, ?path:String, ?atlasSettings:AtlasSpriteSettings)
+  public function new(?x:Float = 0,
+    ?y:Float = 0,
+    ?path:String,
+    ?atlasSettings:AtlasSpriteSettings)
   {
     super(x, y);
 
@@ -267,7 +270,7 @@ class FunkinSprite extends FlxAnimate
       FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
     }
 
-    loadGraphic(graphicKey.toFlxGraphicAsset());
+    loadGraphic(funkin.assets.Assets.getFlxGraphic(graphicKey));
 
     return this;
   }
@@ -386,7 +389,7 @@ class FunkinSprite extends FlxAnimate
   public function loadSparrow(key:String):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
-    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Sparrow texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getSparrowAtlas(key);
 
@@ -401,7 +404,7 @@ class FunkinSprite extends FlxAnimate
   public function loadPacker(key:String):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
-    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Texture not cached, may experience stuttering! $graphicKey');
+    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Packer texture not cached, may experience stuttering! $graphicKey');
 
     this.frames = Paths.getPackerAtlas(key);
 
@@ -597,7 +600,8 @@ class FunkinSprite extends FlxAnimate
    * @param name The name of the frame label to retrieve.
    * @return The frame label, or null if it doesn't exist.
    */
-  public function getFrameLabel(name:String, ?timeline:animate.internal.Timeline):Null<animate.internal.Frame>
+  public function getFrameLabel(name:String,
+    ?timeline:animate.internal.Timeline):Null<animate.internal.Frame>
   {
     if (!this.anim.hasAnimateAtlas)
     {
@@ -640,7 +644,9 @@ class FunkinSprite extends FlxAnimate
    * @param graphic The new graphic to use.
    * @param adjustScale Whether to adjust the scale of new frame to match the old one.
    */
-  public function replaceSymbolGraphic(symbol:String, ?graphic:Null<FlxGraphicAsset>, ?adjustScale:Bool = true):Void
+  public function replaceSymbolGraphic(symbol:String,
+    ?graphic:Null<FlxGraphicAsset>,
+    ?adjustScale:Bool = true):Void
   {
     if (!this.anim.hasAnimateAtlas)
     {

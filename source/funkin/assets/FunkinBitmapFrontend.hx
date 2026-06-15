@@ -80,6 +80,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function addGraphic(graphic:FlxGraphic):FlxGraphic
   {
+    trace('[BITMAPFRONTEND] Caching FlxGraphic: ${graphic.key}');
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
     {
       stagedFlxGraphic.cache(graphic.key, graphic);
@@ -107,7 +108,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Flixel graphic not cached, cannot load synchronously: $id';
     #else
-    FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
+    FlxG.log.warn('BitmapFrontend says not cached, may experience stuttering! ${id}');
     var graphic:FlxGraphic = FlxGraphic.fromBitmapData(FunkinAssetCache.instance.getBitmapData(id), false, id);
     // TODO: make the graphic keys (graphic.key) be set too EVERYWHERE
     return addGraphic(graphic);

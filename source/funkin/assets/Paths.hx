@@ -49,6 +49,9 @@ class Paths implements ConsoleClass
    */
   static function build(file:String, ext:String, validate:Bool = true, ?library:String):AssetPath
   {
+    // Remove redundant file extensions! This helps prevent `image.png.png`.
+    if (file.endsWith('.$ext')) file = file.substring(0, file.length - (ext.length + 1));
+
     var assetPathStr = funkin.modding.compat.Paths.getPath('$file.$ext', library, validate);
     var assetPathId:String = haxe.io.Path.withoutExtension(assetPathStr);
     var assetPathExt:String = haxe.io.Path.extension(assetPathStr);
@@ -290,7 +293,9 @@ class Paths implements ConsoleClass
  * and pass a series of checks to ensure the file exists and is properly cached,
  * rather than passing a raw string by accident.
  */
-@:nullSafety @:allow(funkin.assets.Paths) @:access(funkin.assets.Paths)
+@:nullSafety
+@:allow(funkin.assets.Paths)
+@:access(funkin.assets.Paths)
 class AssetPath
 {
   /**

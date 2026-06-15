@@ -165,7 +165,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      trace('[ASSETS] Force clearing cached assets with prefix: $prefix');
+      #if FEATURE_DEBUG_TRACY
+      cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.clear($prefix)');
+      #end
       for (cache in stagedCaches) cache.clearCacheByPrefix(prefix);
       FunkinBitmapFrontend.instance.resetByPrefix(prefix);
     }
@@ -208,6 +210,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFlxGraphic(id:String):FlxGraphic
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getFlxGraphic($id)');
+    #end
     return FunkinBitmapFrontend.instance.getSafe(id);
   }
 
@@ -219,6 +224,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getBitmapData(id:String):BitmapData
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getBitmapData($id)');
+    #end
     var result:Null<BitmapData> = stagedBitmapData.get(id);
     if (result != null)
     {
@@ -246,6 +254,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFont(id:String):Font
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getFont($id)');
+    #end
     var result:Null<Font> = stagedFont.get(id);
     if (result != null)
     {
@@ -273,6 +284,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getSound(id:String):Sound
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getSound($id)');
+    #end
     var result:Null<Sound> = stagedSound.get(id);
     if (result != null)
     {
@@ -299,6 +313,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getText(id:String):String
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getText($id)');
+    #end
     var result:Null<String> = stagedText.get(id);
     if (result != null)
     {
@@ -334,6 +351,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getBytes(id:String):openfl.utils.ByteArray
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getBytes($id)');
+    #end
     var result:Null<openfl.utils.ByteArray> = stagedBytes.get(id);
     if (result != null)
     {
@@ -362,6 +382,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getSparrowAtlas(${assetPath.toString()})');
+    #end
     var xmlAssetPath = assetPath.withAssetType(XML);
 
     var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
@@ -379,6 +402,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getPackerAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getPackerAtlas(${assetPath.toString()})');
+    #end
     var txtAssetPath = assetPath.withAssetType(TEXT);
 
     var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
@@ -453,6 +479,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function removeFlxGraphic(id:String):Bool
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.removeFlxGraphic($id)');
+    #end
     if (FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(id))
     {
       FunkinBitmapFrontend.instance.removeByKey(id);
@@ -533,9 +562,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
       throw 'Could not locate bitmap data for cached graphic ($id)';
     }
     // Make sure we don't accidentally destroy the graphic while we're using it.
+    @:privateAccess
+    flxGraphic.key = id;
     flxGraphic.persist = true;
     flxGraphic.destroyOnNoUse = false;
-    FunkinBitmapFrontend.instance.add(flxGraphic, id);
+    FunkinBitmapFrontend.instance.addGraphic(flxGraphic);
   }
 
   /**
@@ -680,6 +711,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
       {
+        trace('[ASSETS] Cached Sound: ${assetPath.toString()}');
         setSound(assetPath.toString(), sound);
         return Future.withValue(sound);
       });
@@ -934,6 +966,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBitmapData(${assetPath.toString()})');
+    #end
+
     threadCheck('cacheBitmapData(${assetPath.toString()})');
 
     if (hasBitmapData(assetPath.toString()))
@@ -975,6 +1011,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool):Future<FlxGraphic>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFlxGraphic(${assetPath.toString()})');
+    #end
+
     threadCheck('cacheFlxGraphic(${assetPath.toString()})');
 
     if (hasFlxGraphic(assetPath))
@@ -990,6 +1030,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // Create an FlxGraphic from the BitmapData.
       var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData, false, null, false);
+      trace('[ASSETS] Cached FlxGraphic: ${assetPath.toString()}');
       setFlxGraphic(assetPath.toString(), graphic);
       return Future.withValue(graphic);
     }).onError((err) ->
@@ -1021,6 +1062,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheSound(assetPath:AssetPath):Future<Sound>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheSound(${assetPath.toString()})');
+    #end
+
     threadCheck('cacheSound(${assetPath.toString()})');
 
     if (hasSound(assetPath.toString()))
@@ -1052,6 +1097,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheText(assetPath:AssetPath):Future<String>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheText(${assetPath.toString()})');
+    #end
+
     threadCheck('cacheText(${assetPath.toString()})');
 
     if (hasText(assetPath.toString()))
@@ -1083,6 +1132,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheBytes(assetPath:AssetPath):Future<ByteArray>
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBytes(${assetPath.toString()})');
+    #end
+
     threadCheck('cacheBytes(${assetPath.toString()})');
 
     if (hasBytes(assetPath.toString()))

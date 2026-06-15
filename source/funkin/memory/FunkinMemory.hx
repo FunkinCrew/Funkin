@@ -154,7 +154,7 @@ class FunkinMemory
   // =========
 
   /**
-   *  Caches all assets for the given note style.
+   * Caches all assets for the given note style.
    *
    * @param style The note style to cache.
    */
