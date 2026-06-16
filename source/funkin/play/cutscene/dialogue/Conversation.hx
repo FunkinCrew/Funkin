@@ -6,6 +6,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import funkin.audio.FunkinSound;
+import funkin.group.FunkinGroup;
+import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.data.dialogue.ConversationData;
 import funkin.data.dialogue.ConversationData.DialogueEntryData;
 import funkin.data.dialogue.ConversationRegistry;
@@ -26,7 +28,7 @@ import funkin.util.EaseUtil;
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
 @:nullSafety
-class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
+class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
 {
   /**
    * The current state of the conversation.
@@ -250,11 +252,6 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
     if (nextSpeakerAnimation == null) return;
 
     if (currentSpeaker != null) currentSpeaker.playAnimation(nextSpeakerAnimation);
-  }
-
-  public function refresh():Void
-  {
-    sort(SortUtil.byZIndex, FlxSort.ASCENDING);
   }
 
   function showCurrentDialogueBox():Void
@@ -647,17 +644,16 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
    */
   override public function kill():Void
   {
-    _skipTransformChildren = true;
     alive = false;
     exists = false;
-    _skipTransformChildren = false;
-    if (group != null) group.kill();
 
     if (outroTween != null)
     {
       outroTween.cancel();
       outroTween = null;
     }
+
+    super.kill();
   }
 }
 
