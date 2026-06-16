@@ -684,7 +684,10 @@ class ModMenuState extends MusicBeatState
       }
 
       oldSelection = selection;
-      acceptDelay = 0.08;
+
+      // Mashing causes a weird bug where the item gets set to the top left of the disabled list.
+      // Most defn a bug with local coordinates vs world coordinates in FunkinGroup, couldn't figure out how to fix it though!
+      acceptDelay = 0.06;
     }
 
     if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
