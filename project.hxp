@@ -114,7 +114,11 @@ class Project extends HXProject
    */
   static final ANDROID_TARGET_SDK_VERSION:Int = 35;
 
-  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension", "funkin.extensions.AudioSession"];
+  static final ANDROID_EXTENSIONS:Array<String> = [
+    "funkin.extensions.CallbackUtil",
+    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.AudioSession"
+  ];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -147,7 +151,16 @@ class Project extends HXProject
   /**
    * Asset path globs to always exclude from asset libraries.
    */
-  static final EXCLUDE_ASSETS:Array<String> = [".*", "cvs", "thumbs.db", "desktop.ini", "*.hash", "*.md", "*.fla", "*/.git*"];
+  static final EXCLUDE_ASSETS:Array<String> = [
+    ".*",
+    "cvs",
+    "thumbs.db",
+    "desktop.ini",
+    "*.hash",
+    "*.md",
+    "*.fla",
+    "*/.git*"
+  ];
 
   /**
    * Asset path globs to exclude on web platforms.
@@ -167,7 +180,11 @@ class Project extends HXProject
   /**
    * Asset path globs to exclude on platforms with `CENSOR_EXPLETIVES` disabled.
    */
-  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = ["stressCutscene-censored.mp4", "stressPicoCutscene-censored.mp4", "darnellCutscene-censored.mp4"];
+  static final EXCLUDE_ASSETS_UNCENSORED:Array<String> = [
+    "stressCutscene-censored.mp4",
+    "stressPicoCutscene-censored.mp4",
+    "darnellCutscene-censored.mp4"
+  ];
 
   //
   // ASSET EMBEDDING
@@ -941,10 +958,11 @@ class Project extends HXProject
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CAMERA_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this)
-      || FEATURE_CHART_EDITOR.isEnabled(this)
-      || FEATURE_STAGE_EDITOR.isEnabled(this)
-      || FEATURE_CAMERA_EDITOR.isEnabled(this));
+    FEATURE_HAXEUI.apply(
+      this, FEATURE_ANIMATION_EDITOR.isEnabled(
+        this
+      ) || FEATURE_CHART_EDITOR.isEnabled(this) || FEATURE_STAGE_EDITOR.isEnabled(this) || FEATURE_CAMERA_EDITOR.isEnabled(this)
+    );
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
@@ -1121,7 +1139,9 @@ class Project extends HXProject
 
     // Forcibly include all Funkin' classes in builds.
     // This prevents classes that are unused by the base game from being unavailable to HScript.
-    addHaxeMacro("include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])");
+    addHaxeMacro(
+      "include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])"
+    );
 
     if (isMobile())
     {
@@ -1175,7 +1195,9 @@ class Project extends HXProject
 
     // Ensure all Flixel classes are available at runtime.
     // Explicitly ignore packages which require additional dependencies.
-    addHaxeMacro("include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])");
+    addHaxeMacro(
+      "include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*', 'flixel.addons.tile.FlxRayCastTilemap' ])"
+    );
   }
 
   /**
@@ -1184,7 +1206,6 @@ class Project extends HXProject
   function configureCustomMacros()
   {
     // These macros allow additions of new functionality to existing Flixel. -->
-    addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')");
   }
 
@@ -1260,7 +1281,10 @@ class Project extends HXProject
     action.set('android:name', 'android.intent.action.VIEW');
     intentFilter.addChild(action);
 
-    final intentFilterCategories:Array<String> = ["android.intent.category.DEFAULT", "android.intent.category.BROWSABLE"];
+    final intentFilterCategories:Array<String> = [
+      "android.intent.category.DEFAULT",
+      "android.intent.category.BROWSABLE"
+    ];
 
     for (categoryName in intentFilterCategories)
     {
@@ -1269,12 +1293,19 @@ class Project extends HXProject
       intentFilter.addChild(category);
     }
 
-    final intentFilterDatas:Map<String,
-      Array<String>> = ["android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
+    final intentFilterDatas:Map<String, Array<String>> = [
+      "android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
       // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
       // "android:host"        => ["*"],
       "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
-      "android:pathPattern" => [".*\\.fnfc", ".*\\..*\\.fnfc", ".*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\.fnfc", ".*\\..*\\..*\\..*\\..*\\.fnfc"]];
+      "android:pathPattern" => [
+        ".*\\.fnfc",
+        ".*\\..*\\.fnfc",
+        ".*\\..*\\..*\\.fnfc",
+        ".*\\..*\\..*\\..*\\.fnfc",
+        ".*\\..*\\..*\\..*\\..*\\.fnfc"
+      ]
+    ];
 
     for (key => values in intentFilterDatas)
     {
@@ -1533,7 +1564,13 @@ class Project extends HXProject
       case PlatformType.DESKTOP:
         if (isMac())
         {
-          assetsPath = Path.join([basePath, '${this.app.file}.app', "Contents", "Resources", "assets"]);
+          assetsPath = Path.join([
+            basePath,
+            '${this.app.file}.app',
+            "Contents",
+            "Resources",
+            "assets"
+          ]);
         }
         else
         {
@@ -1542,11 +1579,24 @@ class Project extends HXProject
       case PlatformType.MOBILE:
         if (isAndroid() && !isBundle())
         {
-          assetsPath = Path.join([basePath, "app", "src", "main", "assets", "assets"]);
+          assetsPath = Path.join([
+            basePath,
+            "app",
+            "src",
+            "main",
+            "assets",
+            "assets"
+          ]);
         }
         else if (isIOS())
         {
-          assetsPath = Path.join([exportPath, platform, '${this.app.file}', "assets", "assets"]);
+          assetsPath = Path.join([
+            exportPath,
+            platform,
+            '${this.app.file}',
+            "assets",
+            "assets"
+          ]);
         }
         else
         {
@@ -1947,8 +1997,13 @@ class Project extends HXProject
    * @param embed Whether to embed the assets in the executable.
    * @param padName The name of the Play Assets Delivery that this asset path will be added to. (Android only)
    */
-  public function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false,
-      ?padName:String):Void
+  public function addAssetPath(path:String,
+    ?rename:String,
+    library:String,
+    ?include:Array<String>,
+    ?exclude:Array<String>,
+    embed:Bool = false,
+    ?padName:String):Void
   {
     // Argument parsing.
     if (path == "") return;
@@ -2198,7 +2253,12 @@ class Project extends HXProject
   {
     var commit:String = '';
 
-    var gitProccess = new sys.io.Process("git", ["-C", getLibraryGitPath(libraryName), "rev-parse", "HEAD"]);
+    var gitProccess = new sys.io.Process("git", [
+      "-C",
+      getLibraryGitPath(libraryName),
+      "rev-parse",
+      "HEAD"
+    ]);
     gitProccess.exitCode(true);
     commit = gitProccess.stdout.readAll().toString().trim();
 
@@ -2214,17 +2274,32 @@ class Project extends HXProject
 
   static function getLibraryCurrentFile(libraryName:String):String
   {
-    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+    return haxe.io.Path.join([
+      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
+      '.haxelib',
+      libraryName,
+      '.current'
+    ]);
   }
 
   static function getLibraryDevFile(libraryName:String):String
   {
-    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+    return haxe.io.Path.join([
+      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
+      '.haxelib',
+      libraryName,
+      '.dev'
+    ]);
   }
 
   static function getLibraryGitPath(libraryName:String):String
   {
-    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, 'git']);
+    return haxe.io.Path.join([
+      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
+      '.haxelib',
+      libraryName,
+      'git'
+    ]);
   }
 
   static function isLibraryLocalGitDev(libraryName:String):Bool
@@ -2448,8 +2523,7 @@ class Project extends HXProject
     @:nullSafety(Off)
     astcExcludes = haxe.Json.parse(File.getContent('./astc-compression-data.json')).excludes;
 
-    for (i in 0...astcExcludes.length)
-      astcExcludes[i] = astcExcludes[i].trim();
+    for (i in 0...astcExcludes.length) astcExcludes[i] = astcExcludes[i].trim();
   }
 
   public function isASTCExcluded(file:String):Bool

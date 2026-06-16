@@ -160,7 +160,7 @@ class ResultState extends MusicBeatSubState
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
     // We need multiple cameras so we can put one at an angle.
-    cameraScroll.canvas.rotation = -3.8;
+    cameraScroll.scrollAngle = -3.8;
 
     cameraBG.bgColor = FlxColor.MAGENTA;
     cameraScroll.bgColor = FlxColor.TRANSPARENT;
@@ -583,7 +583,9 @@ class ResultState extends MusicBeatSubState
     super.destroy();
   }
 
-  function getMusicPath(playerCharacter:Null<PlayableCharacter>, rank:ScoringRank, suffix:String = ''):String
+  function getMusicPath(playerCharacter:Null<PlayableCharacter>,
+    rank:ScoringRank,
+    suffix:String = ''):String
   {
     return (playerCharacter?.getResultsMusicPath(rank) ?? 'gameplay/playable-characters/bf/results/music/results-normal/results-normal') + suffix;
   }
@@ -1081,7 +1083,10 @@ class ResultState extends MusicBeatSubState
     super.update(elapsed);
   }
 
-  function transitionToState(targetState:FlxState, targetStateFactory:Null<Void->StickerSubState>, shouldTween:Bool, shouldUseSubstate:Bool):Void
+  function transitionToState(targetState:FlxState,
+    targetStateFactory:Null<Void->StickerSubState>,
+    shouldTween:Bool,
+    shouldUseSubstate:Bool):Void
   {
     if (shouldTween)
     {

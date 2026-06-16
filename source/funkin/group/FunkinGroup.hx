@@ -8,6 +8,7 @@ import flixel.util.FlxSort;
 import funkin.util.SortUtil;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
+import flixel.group.IFlxGroupable;
 
 /**
  * A FunkinGroup of FlxSprites.
@@ -17,8 +18,11 @@ typedef FunkinSpriteGroup = FunkinGroup<FlxSprite>;
 /**
  * FlxSpriteGroup but better. Kinda like if `FlxNestedSprite` and `FlxSpriteGroup` were merged.
  */
-class FunkinGroup<T:FlxSprite> extends FlxSprite
+class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 {
+  /**
+   * A `FlxPoint` used by the Camera Editor to determine positioning.
+   */
   public var vcamPoint:Null<FlxPoint> = null;
 
   /**
@@ -377,6 +381,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
     if (maxSize > 0 && size >= maxSize) return null;
 
     children.push(child);
+    child.container = cast this;
+
     return child;
   }
 
@@ -446,12 +452,15 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
    * Removes a child from the group, also returns it for convenience.
    *
    * @param child The child to remove.
+   * @param splice Unused: Only here because the interface mandates it.
    * @return The removed child.
    */
-  public function remove(child:T):Null<T>
+  public function remove(child:T, splice:Bool = false):Null<T>
   {
     var index = children.indexOf(child);
     if (index != -1) children.splice(index, 1);
+
+    child.container = null;
 
     return child;
   }
@@ -734,8 +743,12 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
    * This functionality isn't supported in `FunkinGroup`.
    * @return this group
    */
-  override public function loadGraphic(Graphic:flixel.system.FlxAssets.FlxGraphicAsset, Animated:Bool = false, Width:Int = 0, Height:Int = 0,
-      Unique:Bool = false, ?Key:String):FlxSprite
+  override public function loadGraphic(Graphic:flixel.system.FlxAssets.FlxGraphicAsset,
+    Animated:Bool = false,
+    Width:Int = 0,
+    Height:Int = 0,
+    Unique:Bool = false,
+    ?Key:String):FlxSprite
   {
     return this;
   }
@@ -744,8 +757,12 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
    * This functionality isn't supported in `FunkinGroup`.
    * @return this group
    */
-  override public function loadRotatedGraphic(Graphic:flixel.system.FlxAssets.FlxGraphicAsset, Rotations:Int = 16, Frame:Int = -1, AntiAliasing:Bool = false,
-      AutoBuffer:Bool = false, ?Key:String):FlxSprite
+  override public function loadRotatedGraphic(Graphic:flixel.system.FlxAssets.FlxGraphicAsset,
+    Rotations:Int = 16,
+    Frame:Int = -1,
+    AntiAliasing:Bool = false,
+    AutoBuffer:Bool = false,
+    ?Key:String):FlxSprite
   {
     #if FLX_DEBUG
     throw 'This function is not supported in FunkinGroup';
