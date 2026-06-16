@@ -157,7 +157,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (prefix == null)
     {
-      trace('[ASSETS] Force clearing asset cache...');
+      trace(' ASSETS '.bold().bg_lime() + 'Force clearing asset cache...');
       for (cache in stagedCaches) cache.clearCache();
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
@@ -234,7 +234,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      // trace('[ASSETS] Bitmap data not found in cache: ' + id);
+      // trace(' ASSETS '.bold().bg_lime() + 'Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
@@ -260,7 +260,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     var result:Null<Font> = stagedFont.get(id);
     if (result != null)
     {
-      trace('[ASSETS] Font data found in cache: ' + id);
+      trace(' ASSETS '.bold().bg_lime() + 'Font data found in cache: ' + id);
       return result;
     }
     else
@@ -331,7 +331,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (!OpenFLAssets.exists(id))
       {
-        trace(' ASSETS '.bg_green() + 'Text file does not exist: $id');
+        trace(' ASSETS '.bold().bg_lime() + 'Text file does not exist: $id');
         funkin.util.DebugUtil.printCallStack();
         throw 'Text file does not exist: $id';
       }
@@ -378,7 +378,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path to the image, created with `Paths.image`.
    *   We automatically assume the XML is next to it.
    * @throws error If the graphic does not exist in the cache and strict asset caching is enabled.
-   * @return The atlas frames, if available.
+   * @return The atlas frames, if available.pixel/
    */
   public function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
@@ -711,7 +711,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
       {
-        trace('[ASSETS] Cached Sound: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + 'Cached Sound: ${assetPath.toString()}');
         setSound(assetPath.toString(), sound);
         return Future.withValue(sound);
       });
@@ -996,7 +996,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(bitmapData);
     }).onError((err) ->
     {
-      trace('[ASSETS] Error while fetching BitmapData (${assetPath}): ${err}');
+      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching BitmapData (${assetPath}): ${err}');
     });
     return future;
   }
@@ -1030,12 +1030,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // Create an FlxGraphic from the BitmapData.
       var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData, false, null, false);
-      trace('[ASSETS] Cached FlxGraphic: ${assetPath.toString()}');
+      trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
       setFlxGraphic(assetPath.toString(), graphic);
       return Future.withValue(graphic);
     }).onError((err) ->
     {
-      trace('[ASSETS] Error while fetching FlxGraphic (${assetPath}): ${err}');
+      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching FlxGraphic (${assetPath}): ${err}');
     });
     return future;
   }
@@ -1086,7 +1086,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(sound);
     }).onError((err) ->
     {
-      trace('[ASSETS] Error while fetching Sound (${assetPath}): ${err}');
+      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Sound (${assetPath}): ${err}');
     });
   }
 
@@ -1121,7 +1121,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(text);
     }).onError((err) ->
     {
-      trace('[ASSETS] Error while fetching Text (${assetPath}): ${err}');
+      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Text (${assetPath}): ${err}');
     });
   }
 
@@ -1156,7 +1156,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return Future.withValue(bytes);
     }).onError((err) ->
     {
-      trace('[ASSETS] Error while fetching Bytes (${assetPath}): ${err}');
+      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Bytes (${assetPath}): ${err}');
     });
   }
 
@@ -1165,53 +1165,53 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function debug_listCachedAssets():Void
   {
-    trace('[ASSETS] Cached assets:');
-    trace('[ASSETS] BITMAP DATA:');
+    trace(' ASSETS '.bold().bg_lime() + 'Cached assets:');
+    trace(' ASSETS '.bold().bg_lime() + 'BITMAP DATA:');
     var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace('[ASSETS] FLX GRAPHIC:');
+    trace(' ASSETS '.bold().bg_lime() + 'FLX GRAPHIC:');
     var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace('[ASSETS] FONT:');
+    trace(' ASSETS '.bold().bg_lime() + 'FONT:');
     var keys:Array<String> = stagedFont.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace('[ASSETS] SOUND:');
+    trace(' ASSETS '.bold().bg_lime() + 'SOUND:');
     var keys:Array<String> = stagedSound.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace('[ASSETS] TEXT:');
+    trace(' ASSETS '.bold().bg_lime() + 'TEXT:');
     var keys:Array<String> = stagedText.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace('[ASSETS] BYTES:');
+    trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
     var keys:Array<String> = stagedBytes.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace('[ASSETS] - $key');
+      trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
   }
 
