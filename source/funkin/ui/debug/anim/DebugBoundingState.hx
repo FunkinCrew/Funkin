@@ -377,7 +377,7 @@ class DebugBoundingState extends FlxState
 
     // Keyboards controls for general WASD "movement"
     // modifies the animDrooffsetAnimationDropdownpDownMenu so that it's properly updated and shit
-    // and then it's just played and updated from the offsetAnimationDropdown callback, which is set in the loadAnimShit() function probabbly
+    // and then it's just played and updated from the offsetAnimationDropdown callback, which is set in the loadAnimShit() function probably
     if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.D || FlxG.keys.justPressed.A)
     {
       var suffix:String = '';
