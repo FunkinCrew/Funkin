@@ -87,9 +87,9 @@ class FunkinMemory
     permanentCacheSound(Paths.music('freakyMenu/freakyMenu'));
     permanentCacheSound(Paths.music('offsetsLoop/offsetsLoop'));
     permanentCacheSound(Paths.music('offsetsLoop/drumsLoop'));
-    permanentCacheSound(Paths.sound('missnote1', 'shared'));
-    permanentCacheSound(Paths.sound('missnote2', 'shared'));
-    permanentCacheSound(Paths.sound('missnote3', 'shared'));
+    for(i in 1...4) {
+      permanentCacheSound(Paths.sound('missnote$i', 'shared'));
+    }
   }
 
   /**
@@ -309,16 +309,9 @@ class FunkinMemory
     cacheTexture(Paths.image(style.buildJudgementSpritePath('bad') ?? 'bad'));
     cacheTexture(Paths.image(style.buildJudgementSpritePath('shit') ?? 'shit'));
 
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(0) ?? '0'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(1) ?? '1'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(2) ?? '2'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(3) ?? '3'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(4) ?? '4'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(5) ?? '5'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(6) ?? '6'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(7) ?? '7'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(8) ?? '8'));
-    cacheTexture(Paths.image(style.buildComboNumSpritePath(9) ?? '9'));
+    for(i in 0...10) {
+      cacheTexture(Paths.image(style.buildComboNumSpritePath(i) ?? '$i'));
+    }
   }
 
   ///// SOUND //////
