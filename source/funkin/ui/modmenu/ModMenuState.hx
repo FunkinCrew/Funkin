@@ -1154,6 +1154,7 @@ class ModMenuState extends MusicBeatState
   function openModsFolder():Void
   {
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
+    openFolderAnimator.playAnimation('select');
   }
 
   /**
