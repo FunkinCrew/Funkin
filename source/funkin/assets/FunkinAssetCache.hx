@@ -234,7 +234,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      // trace(' ASSETS '.bold().bg_lime() + 'Bitmap data not found in cache: ' + id);
+      trace(' ASSETS '.bold().bg_lime() + 'Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
@@ -579,6 +579,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setBitmapData($id)');
     #end
+    // Check if the graphic is valid before returning.
+    if (bitmapData == null) throw 'Bitmap cache tried to add a null bitmap "$id"';
+    @:privateAccess
+    if (bitmapData.image == null && bitmapData.__texture == null)
+    {
+      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
+      throw 'Bitmap cache tried to add a graphic with a destroyed texture "$id"';
+    }
+    if (bitmapData.width == 0 || bitmapData.height == 0)
+    {
+      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
+      throw 'Bitmap cache tried to add a graphic with invalid dimensions "$id"';
+    }
+
     stagedBitmapData.cache(id, bitmapData);
   }
 

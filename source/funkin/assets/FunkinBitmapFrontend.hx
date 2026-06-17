@@ -80,6 +80,21 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function addGraphic(graphic:FlxGraphic):FlxGraphic
   {
+    // Check if the graphic is valid before adding it to cache.
+    if (graphic == null) throw 'FlxGraphic cache tried to add a null graphic!';
+    if (graphic.bitmap == null) throw 'FlxGraphic cache tried to add a graphic with no bitmap "${graphic.key}"';
+    @:privateAccess
+    if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
+    {
+      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
+      throw 'FlxGraphic cache tried to add a graphic with a destroyed texture "${graphic.key}"';
+    }
+    if (graphic.bitmap.width == 0 || graphic.bitmap.height == 0)
+    {
+      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
+      throw 'FlxGraphic cache tried to add a graphic with invalid dimensions "${graphic.key}"';
+    }
+
     trace('[BITMAPFRONTEND] Caching FlxGraphic: ${graphic.key}');
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
     {
@@ -103,7 +118,23 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   public function getSafe(id:String):FlxGraphic
   {
     var result:Null<FlxGraphic> = stagedFlxGraphic.get(id);
-    if (result != null) return result;
+    if (result != null)
+    {
+      // Check if the graphic is valid before returning.
+      if (result.bitmap == null) throw 'FlxGraphic cache contains a graphic with no bitmap "$id"';
+      @:privateAccess
+      if (result.bitmap.image == null && result.bitmap.__texture == null)
+      {
+        // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
+        throw 'FlxGraphic cache contains a graphic with a destroyed texture "$id"';
+      }
+      if (result.bitmap.width == 0 || result.bitmap.height == 0)
+      {
+        // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
+        throw 'FlxGraphic cache contains a graphic with invalid dimensions "$id"';
+      }
+      return result;
+    }
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Flixel graphic not cached, cannot load synchronously: $id';

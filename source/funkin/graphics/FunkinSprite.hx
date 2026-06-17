@@ -845,6 +845,24 @@ class FunkinSprite extends FlxAnimate
     return super.checkRenderTexture();
   }
 
+  override function set_frames(value:flixel.graphics.frames.FlxFramesCollection):flixel.graphics.frames.FlxFramesCollection
+  {
+    return super.set_frames(value);
+  }
+
+  override function set_graphic(value:FlxGraphic):FlxGraphic
+  {
+    if (value == null) return super.set_graphic(value);
+
+    if (value.bitmap == null)
+    {
+      FlxG.log.warn('FunkinSprite is using disposed FlxGraphic "${value.key}"! Expect graphical glitches!');
+      trace(' WARN '.warning() + 'FunkinSprite is using disposed FlxGraphic "${value.key}"! Expect graphical glitches!');
+    }
+
+    return super.set_graphic(value);
+  }
+
   function set_filters(value:Null<Array<BitmapFilter>>):Null<Array<BitmapFilter>>
   {
     if (filters != value) _renderTextureDirty = true;
