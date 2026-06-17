@@ -18,6 +18,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import funkin.assets.FunkinAssetCache;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
@@ -6548,6 +6549,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
+    FunkinAssetCache.instance.preparePurgeCache();
+    // TODO: In loading screens, you should be  caching BETWEEN these.
+    FunkinAssetCache.instance.purgeCache(true);
     FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
