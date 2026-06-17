@@ -18,13 +18,17 @@ import funkin.util.TouchUtil;
 import funkin.audio.FunkinSound;
 import funkin.util.SwipeUtil;
 import funkin.util.MathUtil;
+import funkin.input.Controls;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelPullTab;
 import flixel.FlxSubState;
 
 class PanelBlockerSubState extends FlxSubState
 {
-  public function new() { super(); }
+  public function new()
+  {
+    super();
+  }
 }
 
 enum PanelState
@@ -72,7 +76,6 @@ typedef QuickPanelButtonData =
 class QuickPanelGroup extends FunkinSpriteGroup
 {
   static var shouldDecayTimer:Bool = true;
-
   static var tabFadeTimer:Float = 0;
   static final TAB_FADE_DELAY:Float = 3.0;
   static final TAB_FADE_DURATION:Float = 1.5;
@@ -92,8 +95,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
   public var rememberedVolume:Float = 1;
 
   var quickPanelState:QuickPanelState;
-  var controls = PlayerSettings.player1.controls;
   var panelBoilTimer:Float = 0;
+  var controls(get, never):Controls;
+
+  inline function get_controls():Controls return PlayerSettings.controls;
 
   /**
    * The edge of the screen.
@@ -186,8 +191,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     },
     {
       text: 'Online',
-      callback: () ->
-      {
+      callback: () -> {
         // imagine this takes us to the online mode.... that would be cool, right? yeah, i think so :-)
       },
       icon: 'online',
@@ -232,6 +236,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   var pullHint:FlxText;
 
   public var inactivityTimer:Float = 0;
+
   var breatheTimer:Float = 0;
   var hintBreathe:Bool = false;
   var hintOpen:Bool = false;
@@ -425,7 +430,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     tabFadeTimer = 0;
     FlxTween.cancelTweensOf(pullTabVisual);
-    FlxTween.tween(pullTabVisual, {alpha: 1.0}, 0.3, {ease: FlxEase.expoOut});
+    FlxTween.tween(pullTabVisual, {
+      alpha: 1.0
+    }, 0.3, {
+      ease: FlxEase.expoOut
+    });
   }
 
   /**
@@ -436,7 +445,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
   public function fadeTab(targetAlpha:Float, duration:Float = 0.3):Void
   {
     FlxTween.cancelTweensOf(pullTabVisual);
-    FlxTween.tween(pullTabVisual, {alpha: targetAlpha}, duration, {ease: FlxEase.expoOut});
+    FlxTween.tween(pullTabVisual, {
+      alpha: targetAlpha
+    }, duration, {
+      ease: FlxEase.expoOut
+    });
   }
 
   /**
@@ -1165,10 +1178,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     if (lock || curState != OPEN) return;
 
-    final upP:Bool = controls.UI_UP;
-    final downP:Bool = controls.UI_DOWN;
+    final upP:Bool = controls.UI_UP_P;
+    final downP:Bool = controls.UI_DOWN_P;
 
-    if (controls.ACCEPT)
+    if (controls.ACCEPT_P)
     {
       clickSelected();
     }
