@@ -256,6 +256,12 @@ class PolymodHandler
     #end
   }
 
+  /**
+   * Replace the file system used for scanning.
+   * NOTE: Won't replace the file system used for actual mods until you rerun `Polymod.init()`.
+   *
+   * @return polymod.fs.ZipFileSystem
+   */
   static function buildFileSystem():polymod.fs.ZipFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
@@ -589,13 +595,15 @@ class PolymodHandler
 
   /**
    * Retrieve a list of metadata for ALL installed mods, including disabled mods.
+   *
+   * @param force Force the game to reload the list of mods from the file system.
    * @return An array of mod metadata
    */
-  public static function getAllMods():Array<ModMetadata>
+  public static function getAllMods(force:Bool = false):Array<ModMetadata>
   {
     trace('Scanning the mods folder...');
 
-    if (modFileSystem == null) modFileSystem = buildFileSystem();
+    if (modFileSystem == null || force) modFileSystem = buildFileSystem();
 
     var modMetadata:Array<ModMetadata> = Polymod.scan({
       modRoot: MOD_FOLDER,
@@ -630,7 +638,7 @@ class PolymodHandler
   /**
    * Enable a mod by its ID.
    * @param modId The ID of the mod to enable, which can be found in the mod's metadata.
-   **/
+   */
   public static function enableMod(modId:String):Void
   {
     var enabledModIds:Array<String> = Save.instance.enabledModIds.value;
@@ -645,7 +653,7 @@ class PolymodHandler
   /**
    * Disable a mod by its ID.
    * @param modId The ID of the mod to disable, which can be found in the mod's metadata.
-   **/
+   */
   public static function disableMod(modId:String):Void
   {
     var enabledModIds:Array<String> = Save.instance.enabledModIds.value;

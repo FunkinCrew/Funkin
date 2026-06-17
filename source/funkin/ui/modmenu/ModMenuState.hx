@@ -20,7 +20,6 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import funkin.ui.modmenu.ModMenuButton;
 import funkin.util.PropertyAnimator;
-
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
@@ -58,13 +57,10 @@ class ModMenuState extends MusicBeatState
   var pendingTransitions:Array<TransitionRecord> = [];
 
   var bgWires:FunkinSprite;
-
   var darkness:FunkinSprite;
   var fileDrop:FunkinSprite;
-
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
-
   var lastSelectDir:Int = 0;
 
   public function new()
@@ -128,8 +124,7 @@ class ModMenuState extends MusicBeatState
     bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
     bfAndGF.updateHitbox();
 
-    buildDisabledModList();
-    buildEnabledModList();
+    refreshModList();
 
     add(enabledModItems);
     add(disabledModItems);
@@ -156,7 +151,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.x = 8;
     buttonBackToMenu.y = 32;
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
-    //add(buttonBackToMenu);
+    // add(buttonBackToMenu);
 
     add(bfAndGF);
 
@@ -194,10 +189,50 @@ class ModMenuState extends MusicBeatState
     openFolderAnimator.addProperty('deselect', 'invert', [false]);
 
     openFolderAnimator.addAnimationByName('accept', 24);
-    openFolderAnimator.addProperty('accept', 'scale.x', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
-    openFolderAnimator.addProperty('accept', 'scale.y', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
-    openFolderAnimator.addProperty('accept', 'invert',  [true, true, false, false, false, false, false, false, false]);
-    openFolderAnimator.addProperty('accept', 'selected', [false, false, true, true, true, false, false, false, false]);
+    openFolderAnimator.addProperty('accept', 'scale.x', [
+      0.65 - 0.04,
+      0.65 - 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65,
+      0.65,
+      0.65,
+      0.65
+    ]);
+    openFolderAnimator.addProperty('accept', 'scale.y', [
+      0.65 - 0.04,
+      0.65 - 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65,
+      0.65,
+      0.65,
+      0.65
+    ]);
+    openFolderAnimator.addProperty('accept', 'invert', [
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]);
+    openFolderAnimator.addProperty('accept', 'selected', [
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]);
 
     doneButtonAnimator.addAnimationByName('select', 24);
     doneButtonAnimator.addProperty('select', 'scale.x', [0.72]);
@@ -212,10 +247,50 @@ class ModMenuState extends MusicBeatState
     doneButtonAnimator.addProperty('deselect', 'invert', [false]);
 
     doneButtonAnimator.addAnimationByName('accept', 24);
-    doneButtonAnimator.addProperty('accept', 'scale.x', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
-    doneButtonAnimator.addProperty('accept', 'scale.y', [0.65 - 0.04, 0.65 - 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65 + 0.04, 0.65, 0.65, 0.65, 0.65]);
-    doneButtonAnimator.addProperty('accept', 'invert', [true, true, false, false, false, false, false, false, false]);
-    doneButtonAnimator.addProperty('accept', 'selected', [false, false, true, true, true, false, false, false, false]);
+    doneButtonAnimator.addProperty('accept', 'scale.x', [
+      0.65 - 0.04,
+      0.65 - 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65,
+      0.65,
+      0.65,
+      0.65
+    ]);
+    doneButtonAnimator.addProperty('accept', 'scale.y', [
+      0.65 - 0.04,
+      0.65 - 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65 + 0.04,
+      0.65,
+      0.65,
+      0.65,
+      0.65
+    ]);
+    doneButtonAnimator.addProperty('accept', 'invert', [
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]);
+    doneButtonAnimator.addProperty('accept', 'selected', [
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]);
 
     darkness = new FunkinSprite();
     darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -224,7 +299,7 @@ class ModMenuState extends MusicBeatState
     darkness.visible = false;
     add(darkness);
 
-    fileDrop = FunkinSprite.create(0,0,'ui/mods/mod-menu-drop-hover');
+    fileDrop = FunkinSprite.create(0, 0, 'ui/mods/mod-menu-drop-hover');
     fileDrop.setGraphicSize(FlxG.width, FlxG.height);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();
@@ -308,7 +383,9 @@ class ModMenuState extends MusicBeatState
    * @param destinationList
    * @param index
    */
-  function finishItemTransitionToList(item:ModMenuItem, destinationList:ModMenuItemList, index:Int):Void
+  function finishItemTransitionToList(item:ModMenuItem,
+    destinationList:ModMenuItemList,
+    index:Int):Void
   {
     if (item == null || destinationList == null || transitionLayer == null) return;
 
@@ -321,8 +398,7 @@ class ModMenuState extends MusicBeatState
 
     item.localX = ModMenuItemList.ITEM_X_OFFSET;
 
-    if (incomingCount(destinationList) == 0)
-      destinationList.repositionItems();
+    if (incomingCount(destinationList) == 0) destinationList.repositionItems();
     else
       destinationList.updateScrollbar();
   }
@@ -331,14 +407,26 @@ class ModMenuState extends MusicBeatState
    * Tween an item from the transition layer into its destination list, tracking it
    * so it can be force-settled later if another swap interrupts it.
    */
-  function startItemTransition(item:ModMenuItem, targetX:Float, targetY:Float, destinationList:ModMenuItemList, index:Int):Void
+  function startItemTransition(item:ModMenuItem,
+    targetX:Float,
+    targetY:Float,
+    destinationList:ModMenuItemList,
+    index:Int):Void
   {
     if (item == null) return;
 
-    var record:TransitionRecord = {item: item, dest: destinationList, index: index, tween: null};
+    var record:TransitionRecord = {
+      item: item,
+      dest: destinationList,
+      index: index,
+      tween: null
+    };
     pendingTransitions.push(record);
 
-    record.tween = FlxTween.tween(item, {localX: targetX, localY: targetY}, 0.2, {
+    record.tween = FlxTween.tween(item, {
+      localX: targetX,
+      localY: targetY
+    }, 0.2, {
       ease: FlxEase.quadOut,
       onComplete: _ -> completeTransition(record)
     });
@@ -411,7 +499,7 @@ class ModMenuState extends MusicBeatState
 
       FileUtil.moveFile(path, destPath);
 
-      buildDisabledModList();
+      refreshModList();
       disabledModItems.repositionItems();
     }
   }
@@ -474,7 +562,8 @@ class ModMenuState extends MusicBeatState
       else if (buttonOpenFolder.overlapsPoint(target))
       {
         openModsFolder();
-      } else if (buttonDone.overlapsPoint(target))
+      }
+      else if (buttonDone.overlapsPoint(target))
       {
         applyModlist();
       }
@@ -486,7 +575,6 @@ class ModMenuState extends MusicBeatState
   var doHoldAction:Bool = false;
   var delay:Float = 0;
   var acceptDelay:Float = 0;
-
   var oldSelection:ModMenuSelection;
 
   function handleKeyboard():Void
@@ -508,10 +596,12 @@ class ModMenuState extends MusicBeatState
         holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
         holdTimer = 0.5; // initial delay before starting to scroll
       }
-      else if ((controls.UI_UP && holdDirection == -1)
-        || (controls.UI_DOWN && holdDirection == 1)
-        || (controls.UI_LEFT && holdDirection == -2)
-        || (controls.UI_RIGHT && holdDirection == 2))
+      else if
+        ((controls.UI_UP && holdDirection == -1)
+          || (controls.UI_DOWN && holdDirection == 1)
+          || (controls.UI_LEFT && holdDirection == -2)
+          || (controls.UI_RIGHT && holdDirection == 2)
+        )
       {
         holdTimer -= FlxG.elapsed;
         if (holdTimer <= 0)
@@ -529,13 +619,15 @@ class ModMenuState extends MusicBeatState
     if (doHoldAction && delay <= 0)
     {
       delay = 0.1;
-      switch(selection)
+      switch (selection)
       {
         case DisabledModList:
-          switch(holdDirection)
+          switch (holdDirection)
           {
-            case -1: disabledModItems.moveUp();
-            case 1: disabledModItems.moveDown();
+            case -1:
+              disabledModItems.moveUp();
+            case 1:
+              disabledModItems.moveDown();
             case -2:
               selection = Done;
               lastSelectDir = -2;
@@ -544,33 +636,52 @@ class ModMenuState extends MusicBeatState
               lastSelectDir = 2;
           }
         case EnabledModList:
-          switch(holdDirection)
+          switch (holdDirection)
           {
-            case -1: enabledModItems.moveUp();
-            case 1: enabledModItems.moveDown();
+            case -1:
+              enabledModItems.moveUp();
+            case 1:
+              enabledModItems.moveDown();
             case -2:
               if (disabledModItems.modItems.length > 0) selection = DisabledModList;
-              else selection = Done;
+              else
+                selection = Done;
               lastSelectDir = -2;
             case 2:
               selection = OpenModsFolder;
               lastSelectDir = 2;
           }
         case OpenModsFolder:
-          switch(holdDirection)
+          switch (holdDirection)
           {
-            case -1: selection = DisabledModList; lastSelectDir = -1;
-            case 1: selection = DisabledModList; lastSelectDir = 1;
-            case -2: selection = EnabledModList; lastSelectDir = -2;
-            case 2: selection = Done; lastSelectDir = 2;
+            case -1:
+              selection = DisabledModList;
+              lastSelectDir = -1;
+            case 1:
+              selection = DisabledModList;
+              lastSelectDir = 1;
+            case -2:
+              selection = EnabledModList;
+              lastSelectDir = -2;
+            case 2:
+              selection = Done;
+              lastSelectDir = 2;
           }
         case Done:
-          switch(holdDirection)
+          switch (holdDirection)
           {
-            case -1: selection = EnabledModList; lastSelectDir = -1;
-            case 1: selection = EnabledModList; lastSelectDir = 1;
-            case -2: selection = OpenModsFolder; lastSelectDir = -2;
-            case 2: selection = DisabledModList; lastSelectDir = 2;
+            case -1:
+              selection = EnabledModList;
+              lastSelectDir = -1;
+            case 1:
+              selection = EnabledModList;
+              lastSelectDir = 1;
+            case -2:
+              selection = OpenModsFolder;
+              lastSelectDir = -2;
+            case 2:
+              selection = DisabledModList;
+              lastSelectDir = 2;
           }
         case BackToMenu:
           // Do nothing
@@ -586,7 +697,11 @@ class ModMenuState extends MusicBeatState
           selection = Done;
           lastSelectDir = -2;
         case EnabledModList:
-          if (disabledModItems.modItems.length > 0) { selection = DisabledModList; lastSelectDir = -2; }
+          if (disabledModItems.modItems.length > 0)
+          {
+            selection = DisabledModList;
+            lastSelectDir = -2;
+          }
         case OpenModsFolder:
           selection = EnabledModList;
           lastSelectDir = -2;
@@ -603,7 +718,11 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          if (enabledModItems.modItems.length > 0) { selection = EnabledModList; lastSelectDir = 2; }
+          if (enabledModItems.modItems.length > 0)
+          {
+            selection = EnabledModList;
+            lastSelectDir = 2;
+          }
         case EnabledModList:
           selection = OpenModsFolder;
           lastSelectDir = 2;
@@ -626,7 +745,8 @@ class ModMenuState extends MusicBeatState
           disabledModItems.moveUp();
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
-          else enabledModItems.moveUp();
+          else
+            enabledModItems.moveUp();
         case OpenModsFolder:
           selection = DisabledModList;
           lastSelectDir = -1;
@@ -643,12 +763,20 @@ class ModMenuState extends MusicBeatState
       switch (selection)
       {
         case DisabledModList:
-          if (!disabledModItems.moveDown(false)) { selection = OpenModsFolder; lastSelectDir = 1; }
+          if (!disabledModItems.moveDown(false))
+          {
+            selection = OpenModsFolder;
+            lastSelectDir = 1;
+          }
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
           else
           {
-            if (!enabledModItems.moveDown(false)) { selection = Done; lastSelectDir = 1; }
+            if (!enabledModItems.moveDown(false))
+            {
+              selection = Done;
+              lastSelectDir = 1;
+            }
           }
         case OpenModsFolder:
           selection = DisabledModList;
@@ -663,7 +791,6 @@ class ModMenuState extends MusicBeatState
 
     if (controls.ACCEPT_P && !isTransitioning() && acceptDelay <= 0)
     {
-
       enabledModItems.repositionItems();
       disabledModItems.repositionItems();
 
@@ -706,10 +833,12 @@ class ModMenuState extends MusicBeatState
     {
       case DisabledModList:
         if (oldSelection == OpenModsFolder) disabledModItems.selectLastItem(lastSelectDir);
-        else disabledModItems.selectFirstItem(lastSelectDir);
+        else
+          disabledModItems.selectFirstItem(lastSelectDir);
       case EnabledModList:
         if (oldSelection == OpenModsFolder) enabledModItems.selectLastItem(lastSelectDir);
-        else enabledModItems.selectFirstItem(lastSelectDir);
+        else
+          enabledModItems.selectFirstItem(lastSelectDir);
       case OpenModsFolder:
         openFolderAnimator.playAnimation('select');
       case Done:
@@ -722,6 +851,14 @@ class ModMenuState extends MusicBeatState
   }
 
   // MOD LIST BUILDING //
+
+  function refreshModList():Void
+  {
+    PolymodHandler.getAllMods(true);
+
+    buildDisabledModList();
+    buildEnabledModList();
+  }
 
   function buildDisabledModList():Void
   {
@@ -789,7 +926,8 @@ class ModMenuState extends MusicBeatState
 
     PolymodHandler.forceReloadAssets();
     if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
-    else {
+    else
+    {
       FlxG.switchState(() -> InitState.customTitleState);
     }
   }
@@ -814,7 +952,8 @@ class ModMenuState extends MusicBeatState
 
     var originalInsertIndex:Int = forcedInsertIndex;
 
-    if (originalInsertIndex == -1) {
+    if (originalInsertIndex == -1)
+    {
       originalInsertIndex = enabledModItems.modItems.length;
       for (enabledMod in enabledModItems.modItems)
       {
@@ -977,9 +1116,15 @@ class ModMenuState extends MusicBeatState
     item.localY = restY;
 
     var dir:Float = moveUp ? -1 : 1;
-    FlxTween.tween(item, {localY: restY + dir * 14}, 0.07, {
+    FlxTween.tween(item, {
+      localY: restY + dir * 14
+    }, 0.07, {
       ease: FlxEase.quadOut,
-      onComplete: _ -> FlxTween.tween(item, {localY: restY}, 0.12, {ease: FlxEase.quadOut})
+      onComplete: _ -> FlxTween.tween(item, {
+        localY: restY
+      }, 0.12, {
+        ease: FlxEase.quadOut
+      })
     });
   }
 
@@ -1013,30 +1158,38 @@ class ModMenuState extends MusicBeatState
 
     if (moveUp)
     {
-      for (depId => version in modItem.getDependencies())
-        if (otherModItem.getModId() == depId) { blocked = true; break; }
+      for (depId => version in modItem.getDependencies()) if (otherModItem.getModId() == depId)
+      {
+        blocked = true;
+        break;
+      }
 
       if (!blocked)
       {
         var otherOpt = otherModItem.getOptionalDependencies();
-        if (otherOpt != null)
-          for (depId => version in otherOpt)
-            if (modItem.getModId() == depId
-                && version.isSatisfiedBy(modItem.getModVersion())) { blocked = true; break; }
+        if (otherOpt != null) for (depId => version in otherOpt) if (modItem.getModId() == depId && version.isSatisfiedBy(modItem.getModVersion()))
+        {
+          blocked = true;
+          break;
+        }
       }
     }
     else
     {
-      for (depId => version in otherModItem.getDependencies())
-        if (modItem.getModId() == depId) { blocked = true; break; }
+      for (depId => version in otherModItem.getDependencies()) if (modItem.getModId() == depId)
+      {
+        blocked = true;
+        break;
+      }
 
       if (!blocked)
       {
         var myOpt = modItem.getOptionalDependencies();
-        if (myOpt != null)
-          for (depId => version in myOpt)
-            if (otherModItem.getModId() == depId
-                && version.isSatisfiedBy(otherModItem.getModVersion())) { blocked = true; break; }
+        if (myOpt != null) for (depId => version in myOpt) if (otherModItem.getModId() == depId && version.isSatisfiedBy(otherModItem.getModVersion()))
+        {
+          blocked = true;
+          break;
+        }
       }
     }
 
@@ -1058,6 +1211,7 @@ class ModMenuState extends MusicBeatState
   }
 
   // return an array of mod IDs that depend on the given mod that are currently enabled, which would be broken by disabling this mod
+
   function validateDependencies(mod:ModMetadata):Array<String>
   {
     var brokenDependencies:Array<String> = [];
@@ -1078,6 +1232,7 @@ class ModMenuState extends MusicBeatState
   }
 
   // return an array of mod IDs that the given mod depends on that are currently disabled.
+
   function checkDependencies(mod:ModMetadata):Array<String>
   {
     var toEnable:Array<String> = [];
@@ -1085,8 +1240,10 @@ class ModMenuState extends MusicBeatState
     var dependencies:ModDependencies = mod.dependencies;
     for (dependencyId => version in dependencies)
     {
-      if (!toEnable.contains(dependencyId) &&
-        !enabledModItems.modItems.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion())))
+      if (
+        !toEnable.contains(dependencyId)
+        && !enabledModItems.modItems.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion()))
+      )
       {
         toEnable.push(dependencyId);
       }
