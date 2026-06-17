@@ -333,14 +333,15 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // TODO: Add support for multi-Sparrow.
     // Will be less annoying after this is merged: https://github.com/HaxeFlixel/flixel/pull/2772
 
-    var atlas:FlxAtlasFrames = Paths.getSparrowAtlas(getStrumlineAssetPath() ?? '', getAssetLibrary(getStrumlineAssetPath(true)));
+    var assetPath = funkin.assets.Paths.image(getStrumlineAssetPath() ?? '');
+    var noteFrames = funkin.assets.Assets.getSparrowAtlas(assetPath);
 
-    if (atlas == null)
+    if (noteFrames == null)
     {
       throw 'Could not load spritesheet for note style: $id';
     }
 
-    target.frames = atlas;
+    target.frames = noteFrames;
 
     target.scale.set(_data.assets.noteStrumline?.scale ?? 1.0);
     target.antialiasing = !(_data.assets.noteStrumline?.isPixel ?? false);
