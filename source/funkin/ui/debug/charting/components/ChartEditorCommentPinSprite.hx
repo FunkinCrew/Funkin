@@ -48,7 +48,7 @@ class ChartEditorCommentPinSprite extends FunkinSprite
    */
   function buildSprite():Void
   {
-    loadTexture('ui/editors/chart-editor/comment-pin');
+    loadTexture('ui/chart-editor/comment-pin');
     this.updateHitbox();
     this.angle = 270;
   }
