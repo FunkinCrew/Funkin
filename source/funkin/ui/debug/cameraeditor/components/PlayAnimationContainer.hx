@@ -24,7 +24,7 @@ import haxe.ui.events.UIEvent;
  * No ease preview, no `duration` field — base's `getEasePreview()` default
  * `null` makes `destroy()` a no-op.
  */
-@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/ui/editors/camera-editor/components/properties/play-animation.xml'))
+@:build(haxe.ui.macros.ComponentMacros.build('assets/exclude/data/ui/camera-editor/components/properties/play-animation.xml'))
 class PlayAnimationContainer extends BaseEventContainer
 {
   public function new(state:CameraEditorState)
