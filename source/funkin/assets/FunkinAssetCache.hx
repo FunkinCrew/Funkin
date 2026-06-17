@@ -137,7 +137,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     stagedCaches = [
       // FunkinBitmapFrontend.instance.stagedFlxGraphic,
-      stagedBitmapData,
+      // stagedBitmapData, <-- Technically we do not need this since we call FunkinBitmapFrontEnd's purge and it already removes the bitmapdata BUT with safety checks soooooo :P
       stagedFont,
       stagedSound,
       stagedText,
@@ -562,11 +562,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
       throw 'Could not locate bitmap data for cached graphic ($id)';
     }
     // Make sure we don't accidentally destroy the graphic while we're using it.
-    @:privateAccess
-    flxGraphic.key = id;
     flxGraphic.persist = true;
     flxGraphic.destroyOnNoUse = false;
-    FunkinBitmapFrontend.instance.addGraphic(flxGraphic);
+    FunkinBitmapFrontend.instance.add(flxGraphic, id);
   }
 
   /**
