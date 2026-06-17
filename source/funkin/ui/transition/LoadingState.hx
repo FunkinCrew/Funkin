@@ -319,7 +319,7 @@ class LoadingState extends MusicBeatSubState
       for (assetPath in spritesToCache)
       {
         trace('Queueing ${assetPath.toString()} to preload.');
-        funkin.assets.Assets.getBitmapData(assetPath);
+        funkin.assets.Assets.cacheFlxGraphic(assetPath);
         // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
         // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
         if (assetPath.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || assetPath.toString().endsWith('spritemap1.astc') #end)
