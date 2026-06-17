@@ -270,10 +270,12 @@ class LoadingState extends MusicBeatSubState
 
     if (shouldPreloadLevelAssets)
     {
-      FunkinAssetCache.instance.preparePurgeCache();
-      // TODO: In loading screens, you should be caching BETWEEN these.
-      FunkinAssetCache.instance.purgeCache(true);
-
+      if (!asSubState)
+      {
+        FunkinAssetCache.instance.preparePurgeCache();
+        // TODO: In loading screens, you should be  caching BETWEEN these.
+        FunkinAssetCache.instance.purgeCache(true);
+      }
       preloadLevelAssets();
 
       var spritesToCache:Array<funkin.assets.Paths.AssetPath> = [];
