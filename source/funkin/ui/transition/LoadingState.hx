@@ -279,7 +279,6 @@ class LoadingState extends MusicBeatSubState
       preloadLevelAssets();
 
       var spritesToCache:Array<funkin.assets.Paths.AssetPath> = [];
-
       var soundsToCache:Array<funkin.assets.Paths.AssetPath> = [];
 
       // Cache the note style.

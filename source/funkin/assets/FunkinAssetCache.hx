@@ -157,7 +157,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (prefix == null)
     {
-      trace(' ASSETS '.bold().bg_lime() + 'Force clearing asset cache...');
+      trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
       for (cache in stagedCaches) cache.clearCache();
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
@@ -234,7 +234,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      trace(' ASSETS '.bold().bg_lime() + 'Bitmap data not found in cache: ' + id);
+      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
@@ -260,7 +260,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     var result:Null<Font> = stagedFont.get(id);
     if (result != null)
     {
-      trace(' ASSETS '.bold().bg_lime() + 'Font data found in cache: ' + id);
+      trace(' ASSETS '.bold().bg_lime() + ' Font data found in cache: ' + id);
       return result;
     }
     else
@@ -331,7 +331,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (!OpenFLAssets.exists(id))
       {
-        trace(' ASSETS '.bold().bg_lime() + 'Text file does not exist: $id');
+        trace(' ASSETS '.bold().bg_lime() + ' Text file does not exist: $id');
         funkin.util.DebugUtil.printCallStack();
         throw 'Text file does not exist: $id';
       }
@@ -723,7 +723,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
       {
-        trace(' ASSETS '.bold().bg_lime() + 'Cached Sound: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
         setSound(assetPath.toString(), sound);
         return Future.withValue(sound);
       });
@@ -1021,7 +1021,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future for the FlxGraphic for the asset.
    */
-  public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool):Future<FlxGraphic>
+  public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool = true):Future<FlxGraphic>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFlxGraphic(${assetPath.toString()})');
@@ -1177,8 +1177,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function debug_listCachedAssets():Void
   {
-    trace(' ASSETS '.bold().bg_lime() + 'Cached assets:');
-    trace(' ASSETS '.bold().bg_lime() + 'BITMAP DATA:');
+    trace(' ASSETS '.bold().bg_lime() + ' Cached assets:');
+    trace(' ASSETS '.bold().bg_lime() + ' BITMAP DATA:');
     var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
@@ -1186,23 +1186,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'FLX GRAPHIC:');
+    trace(' ASSETS '.bold().bg_lime() + ' FLX GRAPHIC:');
     var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      trace(' ASSETS '.bold().bg_lime() + ' - $key');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'FONT:');
+    trace(' ASSETS '.bold().bg_lime() + ' FONT:');
     var keys:Array<String> = stagedFont.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      trace(' ASSETS '.bold().bg_lime() + ' - $key');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'SOUND:');
+    trace(' ASSETS '.bold().bg_lime() + ' SOUND:');
     var keys:Array<String> = stagedSound.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
@@ -1210,12 +1210,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
       trace(' ASSETS '.bold().bg_lime() + '- $key');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'TEXT:');
+    trace(' ASSETS '.bold().bg_lime() + ' TEXT:');
     var keys:Array<String> = stagedText.keys();
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      trace(' ASSETS '.bold().bg_lime() + ' - $key');
     }
 
     trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
@@ -1223,7 +1223,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     keys.sort(SortUtil.alphabetically);
     for (key in keys)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      trace(' ASSETS '.bold().bg_lime() + ' - $key');
     }
   }
 
@@ -1242,7 +1242,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // if (!TaskHandler;.isMainThread())
     if (false)
     {
-      trace(' ERROR '.error() + '$info: Tried to queue asset caching from the main thread.');
+      trace(' ERROR '.error() + ' $info: Tried to queue asset caching from the main thread.');
       throw '$info: Tried to queue asset caching from the main thread.';
     }
   }
