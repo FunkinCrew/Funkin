@@ -19,7 +19,7 @@ using funkin.ui.debug.charting.components.palette.ChartEditorCommandPaletteItemB
  *
  * @see https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette
  */
-@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/components/command-palette.xml'))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/components/command-palette.xml'))
 @:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorCommandPalette extends Panel
 {

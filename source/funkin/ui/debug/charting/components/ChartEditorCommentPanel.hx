@@ -19,7 +19,7 @@ import funkin.util.ColorUtil;
  * The panel that displays the contents of a comment.
  */
 @:access(funkin.ui.debug.charting.ChartEditorState)
-@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/components/comment.xml'))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/components/comment.xml'))
 class ChartEditorCommentPanel extends Panel
 {
   var chartEditorState:ChartEditorState;

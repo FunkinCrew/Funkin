@@ -12,7 +12,7 @@ import flixel.util.FlxTimer;
 /**
  * A dialog which allows the user to select a color with an intuitive wheel interface.
  */
-@:build(haxe.ui.ComponentBuilder.build('assets/exclude/ui/editors/chart-editor/dialogs/color-picker.xml'))
+@:build(haxe.ui.ComponentBuilder.build('assets/exclude/data/ui/chart-editor/dialogs/color-picker.xml'))
 class ChartEditorColorPicker extends ChartEditorBaseDialog
 {
   /**
