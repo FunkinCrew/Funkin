@@ -118,7 +118,8 @@ class VideoCutscene
    * @param assetPath The path to the video file. Use Paths.file(path) to get the correct path.
    * @param cutseneType The type of cutscene to play, determines what the game does after. Defaults to `CutsceneType.STARTING`.
    */
-  public static function play(assetPath:Dynamic, ?cutsceneType:CutsceneType = STARTING):Void
+  public static function play(assetPath:Dynamic,
+    ?cutsceneType:CutsceneType = STARTING):Void
   {
     if (Std.isOfType(assetPath, AssetPath))
     {
@@ -138,5 +139,71 @@ class VideoCutscene
     {
       OriginalVideoCutscene.play(null);
     }
+  }
+
+  /**
+   * @return Whether a video cutscene is currently playing.
+   */
+  public static function isPlaying():Bool
+  {
+    return OriginalVideoCutscene.isPlaying();
+  }
+
+  /**
+   * Restart the current video cutscene from the beginning.
+   */
+  public static function restartVideo():Void
+  {
+    OriginalVideoCutscene.restartVideo();
+  }
+
+  /**
+   * Pause the current video cutscene.
+   */
+  public static function pauseVideo():Void
+  {
+    OriginalVideoCutscene.pauseVideo();
+  }
+
+  /**
+   * Hide the current video cutscene.
+   */
+  public static function hideVideo():Void
+  {
+    OriginalVideoCutscene.hideVideo();
+  }
+
+  /**
+   * Show the current video cutscene, if it is hidden.
+   */
+  public static function showVideo():Void
+  {
+    OriginalVideoCutscene.showVideo();
+  }
+
+  /**
+   * Resume the current video cutscene, if it is paused.
+   */
+  public static function resumeVideo():Void
+  {
+    OriginalVideoCutscene.resumeVideo();
+  }
+
+  /**
+   * Finish the active video cutscene. Done when the video is finished or when the player skips the cutscene.
+   * @param transitionTime The duration of the transition to the next state. Defaults to 0.5 seconds (this time is always used when cancelling the video).
+   * @param finishCutscene The callback to call when the transition is finished.
+   */
+  public static function finishVideo(?transitionTime:Float = 0.5):Void
+  {
+    OriginalVideoCutscene.finishVideo(transitionTime);
+  }
+
+  /**
+   * Destroy the active cutscene, if any. Separate from finishVideo() so that it doesn't trigger onCutsceneFinish().
+   */
+  public static function destroyVideo():Void
+  {
+    OriginalVideoCutscene.destroyVideo();
   }
 }
