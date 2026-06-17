@@ -216,7 +216,7 @@ class PolymodErrorHandler
           case INFO:
             trace(' INFO '.info() + ' ' + error.message);
           case DEBUG:
-            // trace(' DEBUG '.debug() + error.message);
+            // trace(' DEBUG '.bg_white() + error.message);
         }
     }
   }

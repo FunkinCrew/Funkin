@@ -296,24 +296,10 @@ class CrashHandler
 
   static function renderMethod():String
   {
+    // switch/case resulted in a Null Object Reference when called before Flixel initialized.
     var outputStr:String = 'UNKNOWN';
-    outputStr = try
-    {
-      switch (FlxG.renderMethod)
-      {
-        case FlxRenderMethod.DRAW_TILES:
-          'DRAW_TILES';
-        case FlxRenderMethod.BLITTING:
-          'BLITTING';
-        default:
-          'UNKNOWN';
-      }
-    }
-    catch (e)
-    {
-      'ERROR ON QUERY RENDER METHOD: ${e}';
-    }
-
+    if (FlxG.renderMethod == FlxRenderMethod.DRAW_TILES) outputStr = 'DRAW_TILES';
+    if (FlxG.renderMethod == FlxRenderMethod.BLITTING) outputStr = 'BLITTING';
     return outputStr;
   }
 }
