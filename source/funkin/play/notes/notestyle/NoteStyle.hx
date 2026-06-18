@@ -205,6 +205,86 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return result ?? fallback?.fetchNoteAnimationData(dir);
   }
 
+  public function buildHoldNoteSprite(target:SustainTrail)
+  {
+    var noteHoldPath:Null<String> = getHoldNoteAssetPath();
+    if (noteHoldPath == null)
+    {
+      FlxG.log.warn('Note asset path not found: ${id}');
+      return;
+    }
+
+    if (!FunkinMemory.isTextureCached(Paths.image(noteHoldPath)))
+    {
+      FlxG.log.warn('Note texture is not cached: ${noteHoldPath}');
+    }
+
+    var dirs:Array<NoteDirection> = [LEFT, DOWN, UP, RIGHT];
+
+    // If an xml file exists, make the asset animated. Otherwise, use the static format.
+    if (!Assets.exists(Paths.file('images/$noteHoldPath.xml')))
+    {
+      var graphic:openfl.display.BitmapData = Assets.getBitmapData(Paths.image(noteHoldPath));
+      target.loadGraphic(Paths.image(noteHoldPath), true, Math.round(graphic.width / 8), graphic.height);
+
+      for (i in 0...dirs.length)
+      {
+        target.animation.add(dirs[i].name, [i * 2], 1, false);
+        target.holdEnd.animation.add(dirs[i].name, [i * 2 + 1], 1, false);
+      }
+
+      return;
+    }
+
+    target.frames = Paths.getSparrowAtlas(getHoldNoteAssetPath() ?? '');
+
+    for (dir in dirs)
+    {
+      var anim:Null<AnimationData> = fetchHoldNoteAnimationData(dir);
+      if (anim != null) target.animation.addByPrefix(dir.name, anim.prefix ?? '', anim.frameRate ?? 24, anim.looped ?? false, anim.flipX ?? false,
+        anim.flipY ?? false);
+
+      var endAnim:Null<AnimationData> = fetchHoldNoteAnimationData(dir, true);
+      if (endAnim != null) target.holdEnd.animation.addByPrefix(dir.name, endAnim.prefix ?? '', endAnim.frameRate ?? 24, endAnim.looped ?? false,
+        endAnim.flipX ?? false, endAnim.flipY ?? false);
+    }
+  }
+
+  function fetchHoldNoteAnimationData(dir:NoteDirection, end:Bool = false):Null<AnimationData>
+  {
+    var result:Null<AnimationData> = null;
+    if (end)
+    {
+      result = switch (dir)
+      {
+        case LEFT:
+          _data.assets?.holdNote?.data?.leftEnd?.toNamed();
+        case DOWN:
+          _data.assets?.holdNote?.data?.downEnd?.toNamed();
+        case UP:
+          _data.assets?.holdNote?.data?.upEnd?.toNamed();
+        case RIGHT:
+          _data.assets?.holdNote?.data?.rightEnd?.toNamed();
+      };
+    }
+    else
+    {
+      result = switch (dir)
+      {
+        case LEFT:
+          _data.assets?.holdNote?.data?.left?.toNamed();
+        case DOWN:
+          _data.assets?.holdNote?.data?.down?.toNamed();
+        case UP:
+          _data.assets?.holdNote?.data?.up?.toNamed();
+        case RIGHT:
+          _data.assets?.holdNote?.data?.right?.toNamed();
+      };
+    }
+
+    return result ?? fallback?.fetchHoldNoteAnimationData(dir, end);
+  }
+
   public function getHoldNoteAssetPath(raw:Bool = false):Null<String>
   {
     if (raw)
@@ -216,8 +296,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     // library:path
     var parts = getHoldNoteAssetPath(true)?.split(Constants.LIBRARY_SEPARATOR) ?? [];
     if (parts.length == 0) return null;
-    if (parts.length == 1) return Paths.image(parts[0]);
-    return Paths.image(parts[1], parts[0]);
+    if (parts.length == 1) return getHoldNoteAssetPath(true);
+    return parts[1];
   }
 
   public function isHoldNotePixel():Bool

@@ -285,7 +285,7 @@ class FunkinMemory
   {
     // TODO: Texture paths should fall back to the default values.
     cacheTexture(Paths.image(style.getNoteAssetPath() ?? 'note'));
-    cacheTexture(style.getHoldNoteAssetPath() ?? 'noteHold');
+    cacheTexture(Paths.image(style.getHoldNoteAssetPath() ?? 'noteHold'));
     cacheTexture(Paths.image(style.getStrumlineAssetPath() ?? 'strumline'));
     cacheTexture(Paths.image(style.getSplashAssetPath() ?? 'noteSplash'));
 

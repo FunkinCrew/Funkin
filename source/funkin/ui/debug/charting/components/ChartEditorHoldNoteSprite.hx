@@ -2,6 +2,7 @@ package funkin.ui.debug.charting.components;
 
 #if FEATURE_CHART_EDITOR
 import funkin.play.notes.Strumline;
+import funkin.play.notes.NoteDirection;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.FlxObject;
@@ -56,8 +57,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     if (overrideData == value) return overrideData;
 
     overrideData = value;
-    if (overrideData != null) this.noteDirection = overrideData;
-    updateHoldNoteGraphic();
+    if (overrideData != null) this.noteDirection = NoteDirection.fromInt(overrideData);
     updateHoldNotePosition();
     return overrideData;
   }
@@ -81,9 +81,10 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
   override function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    var graphicPath = noteStyle.getHoldNoteAssetPath();
-    if (graphicPath == null) return;
-    loadGraphic(graphicPath);
+    noteStyle.buildHoldNoteSprite(this);
+
+    this.animation.onFrameChange.add((_, _, _) -> updateClipping());
+    holdEnd.animation.onFrameChange.add((_, _, _) -> updateClipping());
 
     antialiasing = true;
 
@@ -104,7 +105,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     zoom *= 0.7;
     zoom *= ChartEditorState.GRID_SIZE / Strumline.STRUMLINE_SIZE;
 
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainLength * 0.45; // sustainHeight
 
     flipY = false;
@@ -174,7 +174,6 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     active = true;
     visible = true;
     alpha = 1.0;
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
 
     updateHitbox();
   }
@@ -194,7 +193,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
     visible = false;
     noteData = null;
     strumTime = 999999999;
-    noteDirection = 0;
+    noteDirection = NoteDirection.fromInt(0);
     sustainLength = 0;
     fullSustainLength = 0;
   }

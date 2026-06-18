@@ -4142,14 +4142,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           var noteLengthPixels:Float = noteSprite.noteData.getStepLength() * GRID_SIZE;
 
+          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
           holdNoteSprite.noteData = noteSprite.noteData;
           holdNoteSprite.overrideStepTime = null;
           holdNoteSprite.overrideData = null;
           holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
 
           holdNoteSprite.setHeightDirectly(noteLengthPixels);
-
-          holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteSprite.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
           holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
         }
@@ -4212,13 +4211,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
         var noteLengthPixels:Float = noteData.getStepLength() * GRID_SIZE;
 
+        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
         holdNoteSprite.noteData = noteData;
         holdNoteSprite.overrideStepTime = null;
         holdNoteSprite.overrideData = null;
         holdNoteSprite.noteDirection = noteData.getDirection();
         holdNoteSprite.setHeightDirectly(noteLengthPixels);
-
-        holdNoteSprite.noteStyle = NoteKindManager.getNoteStyleId(noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
 
         holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
       }
@@ -4319,7 +4317,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               {
                 holdNoteSprite.overrideData = null;
                 holdNoteSprite.noteDirection = noteSprite.noteData.getDirection();
-                holdNoteSprite.updateHoldNoteGraphic();
                 holdNoteSprite.updateHoldNotePosition(renderedHoldNotes);
               }
             }
@@ -5292,13 +5289,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
           var sameHold:Bool = (gridGhostHoldNote.noteData == currentPlaceNoteData);
 
+          gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
           gridGhostHoldNote.visible = true;
           gridGhostHoldNote.noteData = currentPlaceNoteData;
           gridGhostHoldNote.noteDirection = currentPlaceNoteData.getDirection();
           gridGhostHoldNote.setHeightDirectly(dragLengthPixels, sameHold);
-          gridGhostHoldNote.noteStyle = NoteKindManager.getNoteStyleId(currentPlaceNoteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
           gridGhostHoldNote.updateHoldNotePosition(renderedHoldNotes);
-          gridGhostHoldNote.updateHoldNoteGraphic();
         }
         else
         {
@@ -5929,12 +5925,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (targetNoteData != null && ghostHold.noteData == null)
       {
         // Readd the new ghost hold note.
+        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
         ghostHold.noteData = targetNoteData.clone();
         ghostHold.noteDirection = ghostHold.noteData.getDirection();
         ghostHold.visible = true;
         ghostHold.alpha = 0.6;
         ghostHold.setHeightDirectly(0);
-        ghostHold.noteStyle = NoteKindManager.getNoteStyleId(ghostHold.noteData.kind, currentSongNoteStyle) ?? currentSongNoteStyle;
         ghostHold.updateHoldNotePosition(renderedHoldNotes);
       }
 
