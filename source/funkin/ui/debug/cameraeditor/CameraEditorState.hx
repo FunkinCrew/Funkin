@@ -972,6 +972,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       return;
     }
 
+    if (criticalFailure) return;
+
     if (autoSeek)
     {
       _autoSeekTimer += elapsed;
@@ -1376,6 +1378,16 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       menubarItemSave.disabled = false;
     }
+  }
+
+  /**
+   * Automatically goes through and calls render on everything you added.
+   */
+  override public function draw():Void
+  {
+    if (criticalFailure) return;
+
+    super.draw();
   }
 
   function resetWindowTitle():Void
@@ -2279,11 +2291,19 @@ class CameraEditorState extends UIState implements ConsoleClass
     super.reloadAssets();
   }
 
+  @:nullSafety(Off)
+  function destroyHaxeUIComponents():Void
+  {
+    CameraEditorNotificationHandler.clearNotifications(this);
+  }
+
   /**
    * Called before we exit the editor to perform any necessary cleanup.
    */
   function performCleanup():Void
   {
+    criticalFailure = true;
+
     // Remove reference to stage and remove sprites from it to save memory and prevent crashes.
     if (currentStage != null)
     {
@@ -2293,6 +2313,8 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage.kill();
       currentStage = null;
     }
+
+    destroyHaxeUIComponents();
 
     writePreferences(!saved);
     resetWindowTitle();

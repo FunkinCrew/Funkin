@@ -129,7 +129,7 @@ class SongEvent implements IPlayStateScriptedClass
    */
   public function getIconPath():String
   {
-    return 'ui/editors/chart-editor/events/default';
+    return 'ui/editors/chart-editor/events/Default';
   }
 
   /**

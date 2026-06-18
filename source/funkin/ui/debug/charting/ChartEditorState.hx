@@ -3068,6 +3068,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   override public function draw():Void
   {
+    if (criticalFailure) return;
+
     super.draw();
   }
 
@@ -6534,6 +6536,55 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   @:nullSafety(Off)
+  function destroyHaxeUIComponents():Void
+  {
+    this.clearNotifications();
+
+    if (playbarHeadLayout != null)
+    {
+      remove(playbarHeadLayout);
+      playbarHeadLayout.destroy();
+      playbarHeadLayout = null;
+    }
+    if (commentPanel != null)
+    {
+      remove(commentPanel);
+      commentPanel.destroy();
+      commentPanel = null;
+    }
+    if (txtCopyNotif != null)
+    {
+      remove(txtCopyNotif);
+      txtCopyNotif.destroy();
+      txtCopyNotif = null;
+    }
+    if (buttonSelectPlayer != null)
+    {
+      remove(buttonSelectPlayer);
+      buttonSelectPlayer.destroy();
+      buttonSelectPlayer = null;
+    }
+    if (buttonSelectPlayer != null)
+    {
+      remove(buttonSelectPlayer);
+      buttonSelectPlayer.destroy();
+      buttonSelectPlayer = null;
+    }
+    if (buttonSelectEvent != null)
+    {
+      remove(buttonSelectEvent);
+      buttonSelectEvent.destroy();
+      buttonSelectEvent = null;
+    }
+    if (buttonSelectDummy != null)
+    {
+      remove(buttonSelectDummy);
+      buttonSelectDummy.destroy();
+      buttonSelectDummy = null;
+    }
+  }
+
+  @:nullSafety(Off)
   function quitChartEditor(exitPrompt:Bool = false):Void
   {
     if (saveDataDirty && exitPrompt)
@@ -6549,9 +6600,19 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     stopWelcomeMusic();
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
+
     FunkinAssetCache.instance.preparePurgeCache();
+
+    destroyHaxeUIComponents();
+
+    @:privateAccess
+    ChartEditorNoteSprite.noteFrameCollection = null;
+    @:privateAccess
+    ChartEditorEventSprite.eventFrames = null;
+
     // TODO: In loading screens, you should be  caching BETWEEN these.
     FunkinAssetCache.instance.purgeCache(true);
+
     FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
@@ -7983,8 +8044,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return note != null && curStackedNotes.contains(note);
   }
 
+  @:nullSafety(Off)
   override function destroy():Void
   {
+    trace('Destroying ChartEditorState...');
     super.destroy();
 
     cleanupAutoSave();
@@ -7994,13 +8057,32 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Hide the mouse cursor on other states.
     Cursor.hide();
 
-    @:privateAccess
-    ChartEditorNoteSprite.noteFrameCollection = null;
-
     // Stop the music.
     if (welcomeMusic != null) welcomeMusic.destroy();
     if (audioInstTrack != null) audioInstTrack.destroy();
     if (audioVocalTrackGroup != null) audioVocalTrackGroup.destroy();
+
+    // Destroy graphics and components.
+    if (renderedNotes != null)
+    {
+      renderedNotes.destroy();
+      renderedNotes = null;
+    }
+    if (renderedHoldNotes != null)
+    {
+      renderedHoldNotes.destroy();
+      renderedHoldNotes = null;
+    }
+    if (renderedEvents != null)
+    {
+      renderedEvents.destroy();
+      renderedEvents = null;
+    }
+    if (renderedSelectionSquares != null)
+    {
+      renderedSelectionSquares.destroy();
+      renderedSelectionSquares = null;
+    }
 
     // Reset the sounds used by some playables.
     funkin.play.GameOverSubState.reset();

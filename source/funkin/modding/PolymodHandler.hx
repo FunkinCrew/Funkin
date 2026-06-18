@@ -322,8 +322,6 @@ class PolymodHandler
 
     // Sandboxing for compatibility.
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
-
-    Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
   }
 
   /**
