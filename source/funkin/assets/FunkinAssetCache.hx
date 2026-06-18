@@ -721,7 +721,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
+      return OpenFLAssets.loadSound(Assets.getPath(assetPath.toString())).then((sound:Sound) ->
       {
         trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
         setSound(assetPath.toString(), sound);
