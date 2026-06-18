@@ -145,7 +145,20 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
     difficulties = new Map<String, Map<String, SongDifficulty>>();
 
-    _data = _fetchData(id);
+    if (params?.debug ?? false)
+    {
+      try
+      {
+        _data = _fetchData(id);
+      }
+      catch (e)
+      {
+      }
+    }
+    else
+    {
+      _data = _fetchData(id);
+    }
 
     _metadata = _data == null ? [] : [
       Constants.DEFAULT_VARIATION => _data
@@ -196,7 +209,12 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param validScore Whether the song is elegible for highscores.
    * @return The constructed song object.
    */
-  public static function buildRaw(songId:String, metadata:Array<SongMetadata>, variation:String, charts:Map<String, SongChartData>, includeScript:Bool = true, validScore:Bool = false):Song
+  public static function buildRaw(songId:String,
+    metadata:Array<SongMetadata>,
+    variation:String,
+    charts:Map<String, SongChartData>,
+    includeScript:Bool = true,
+    validScore:Bool = false):Song
   {
     @:privateAccess
     var result:Null<Song> = null;
@@ -214,7 +232,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     else
     {
       @:privateAccess
-      result = SongRegistry.instance.createEntry(songId);
+      result = new Song(songId, {
+        variation: variation,
+        debug: true
+      });
     }
 
     if (result == null) throw 'ERROR: Could not build Song instance ($songId), is the attached script bad?';
@@ -445,7 +466,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
    * @param possibleVariations
    * @return Null<String>
    */
-  public function getFirstValidVariation(?diffId:String, ?currentCharacter:PlayableCharacter, ?possibleVariations:Array<String>):Null<String>
+  public function getFirstValidVariation(?diffId:String,
+    ?currentCharacter:PlayableCharacter,
+    ?possibleVariations:Array<String>):Null<String>
   {
     if (possibleVariations == null)
     {
@@ -1062,5 +1085,10 @@ typedef SongParams =
   /**
    * The variation to use for this song.
    */
-  variation:String
+  variation:String,
+
+  /**
+   * Whether the song is currently part of a debug state
+   */
+  ?debug:Bool
 }
