@@ -212,6 +212,9 @@ class Save implements ConsoleClass implements ISerializable
       optionsCameraEditor: {
         previousFiles: [],
         theme: ChartEditorTheme.Light,
+      },
+      optionsQuickMenu: {
+        firstRun: false
       }
     };
   }
@@ -400,6 +403,9 @@ class Save implements ConsoleClass implements ISerializable
     Save.system.flush();
     return data.optionsStageEditor.dadChar;
   }
+
+  @:saveProperty(data.optionsQuickMenu.firstRun, false)
+  public var quickMenuFirstRun:SaveProperty<Bool>;
 
   ///
   /// CAMERA EDITOR OPTIONS
@@ -1151,6 +1157,11 @@ typedef RawSaveData =
    * The user's preferences specific to the Camera Editor.
    */
   var optionsCameraEditor:SaveDataCameraEditorOptions;
+
+  /**
+   * The user's preferences specific to the Quick Menu.
+   */
+  var optionsQuickMenu:SaveDataQuickMenuOptions;
 };
 
 /**
@@ -1743,4 +1754,12 @@ typedef SaveDataCameraEditorOptions =
    * @default `ChartEditorTheme.Light`
    */
   var ?theme:ChartEditorTheme;
+}
+
+typedef SaveDataQuickMenuOptions =
+{
+  /**
+   * Whether the user has been given the prompt for the 'tab' inactivity screen (as a tutorial) yet.
+   */
+  var ?firstRun:Bool;
 }

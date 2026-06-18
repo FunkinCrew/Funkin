@@ -940,7 +940,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     if ((FlxG.keys.pressed.ANY && !controls.VOLUME_MUTE && !controls.VOLUME_UP && !controls.VOLUME_DOWN) || TouchUtil.touch != null && TouchUtil.touch.pressed)
     {
-      inactivityTimer = 20;
+      inactivityTimer = 45;
 
       if (hintOpen)
       {

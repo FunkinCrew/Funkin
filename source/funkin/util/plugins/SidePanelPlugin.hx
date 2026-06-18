@@ -8,6 +8,8 @@ import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelGroup;
 import polymod.hscript.HScriptedClass;
 
+import funkin.save.Save;
+
 class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBasic>
 {
   public static var instance(get, never):SidePanelPlugin;
@@ -18,7 +20,6 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
 
   static function set_showGrabber(value:Bool):Bool
   {
-    if (!value) shouldShowHint = true;
     showGrabber = value;
     if (_instance == null) return value;
     if (value) _instance.addPanel();
@@ -40,6 +41,9 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
   {
     super();
     _instance = this;
+
+    shouldShowHint = !Save.instance.quickMenuFirstRun.value;
+
     FlxG.signals.postStateSwitch.add(onPostStateSwitch);
   }
 
@@ -96,6 +100,8 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
       if (hintTimer > 3 && panelState.panel.curState != PanelState.OPEN)
       {
         hintTimer = 0;
+        Save.instance.quickMenuFirstRun.value = true;
+        Save.instance.flush();
         shouldShowHint = false;
         panelState.panel.inactivityTimer = -1;
       }
