@@ -313,11 +313,13 @@ class ModMenuState extends MusicBeatState
     {
       disabledModItems.selectFirstItem();
       selection = DisabledModList;
+      enabledModItems.deselectAll();
     }
     else
     {
       enabledModItems.selectFirstItem();
       selection = EnabledModList;
+      disabledModItems.deselectAll();
     }
 
     FlxG.stage.window.onDropFile.add(onDropFile);
