@@ -319,11 +319,10 @@ class ModMenuState extends MusicBeatState
       enabledModItems.selectFirstItem();
       selection = EnabledModList;
     }
+
     FlxG.stage.window.onDropFile.add(onDropFile);
     FlxG.stage.window.onDropBegin.add(startFileDropHover);
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
-
-    applyInitialSelection();
 
     FlxG.autoPause = false;
   }
@@ -499,8 +498,16 @@ class ModMenuState extends MusicBeatState
 
       FileUtil.moveFile(path, destPath);
 
-      refreshModList();
-      disabledModItems.repositionItems();
+      var newItems = refreshModList();
+      for (item in newItems)
+      {
+        if (item.mod != null)
+        {
+          item.flashBackground();
+          break;
+        }
+      }
+
     }
   }
 
@@ -538,10 +545,6 @@ class ModMenuState extends MusicBeatState
     return pendingTransitions.length > 0;
   }
 
-  function applyInitialSelection():Void
-  {
-    disabledModItems.selectFirstItem();
-  }
 
   // INPUT //
 
@@ -576,6 +579,7 @@ class ModMenuState extends MusicBeatState
   var delay:Float = 0;
   var acceptDelay:Float = 0;
   var oldSelection:ModMenuSelection;
+  var lastInput:String = '';
 
   function handleKeyboard():Void
   {
@@ -739,14 +743,25 @@ class ModMenuState extends MusicBeatState
 
     if (controls.UI_UP_P)
     {
+      lastInput = 'up';
       switch (selection)
       {
         case DisabledModList:
-          disabledModItems.moveUp();
+          if (!disabledModItems.moveUp(false))
+          {
+            selection = OpenModsFolder;
+            lastSelectDir = -1;
+          }
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
           else
-            enabledModItems.moveUp();
+          {
+            if (!enabledModItems.moveUp(false))
+            {
+              selection = Done;
+              lastSelectDir = -1;
+            }
+          }
         case OpenModsFolder:
           selection = DisabledModList;
           lastSelectDir = -1;
@@ -760,6 +775,7 @@ class ModMenuState extends MusicBeatState
 
     if (controls.UI_DOWN_P)
     {
+      lastInput = 'down';
       switch (selection)
       {
         case DisabledModList:
@@ -814,7 +830,7 @@ class ModMenuState extends MusicBeatState
 
       // Mashing causes a weird bug where the item gets set to the top left of the disabled list.
       // Most defn a bug with local coordinates vs world coordinates in FunkinGroup, couldn't figure out how to fix it though!
-      acceptDelay = 0.06;
+      acceptDelay = 0.08;
     }
 
     if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
@@ -832,11 +848,11 @@ class ModMenuState extends MusicBeatState
     switch (selection)
     {
       case DisabledModList:
-        if (oldSelection == OpenModsFolder) disabledModItems.selectLastItem(lastSelectDir);
+        if (oldSelection == OpenModsFolder && lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
         else
           disabledModItems.selectFirstItem(lastSelectDir);
       case EnabledModList:
-        if (oldSelection == OpenModsFolder) enabledModItems.selectLastItem(lastSelectDir);
+        if (oldSelection == OpenModsFolder && lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
         else
           enabledModItems.selectFirstItem(lastSelectDir);
       case OpenModsFolder:
@@ -847,22 +863,94 @@ class ModMenuState extends MusicBeatState
         // Do nothing
     }
 
+    lastInput = '';
     lastSelectDir = 0;
   }
 
   // MOD LIST BUILDING //
 
-  function refreshModList():Void
+  var tempDisabledMods:Array<ModMetadata> = [];
+  var tempEnabledMods:Array<ModMetadata> = [];
+
+  function refreshModList():Array<ModMenuItem>
   {
     PolymodHandler.getAllMods(true);
 
-    buildDisabledModList();
+    tempDisabledMods = disabledModItems.modItems.map((item) -> item.mod);
+    tempEnabledMods = enabledModItems.modItems.map((item) -> item.mod).filter((m) -> m != null && m.id != BASE_GAME_MOD_ID);
+
+    var oldSelectedId:Null<String> = null;
+    if (selection == DisabledModList && disabledModItems.selectedModItem != null) oldSelectedId = disabledModItems.selectedModItem.getModId();
+    else if (selection == EnabledModList && enabledModItems.selectedModItem != null) oldSelectedId = enabledModItems.selectedModItem.getModId();
+
+    var newItems = buildDisabledModList();
     buildEnabledModList();
+
+    tempDisabledMods = [];
+    tempEnabledMods = [];
+
+    // reselect items if possible, otherwise select first item in the list
+
+    if (oldSelectedId != null)
+    {
+      if (selection == DisabledModList)
+      {
+        var itemToSelect = disabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
+        if (itemToSelect != null) disabledModItems.selectModItem(itemToSelect);
+        else
+          disabledModItems.selectFirstItem();
+      }
+      else if (selection == EnabledModList)
+      {
+        var itemToSelect = enabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
+        if (itemToSelect != null) enabledModItems.selectModItem(itemToSelect);
+        else
+          enabledModItems.selectFirstItem();
+      }
+    }
+    else
+    {
+      if (selection == DisabledModList) disabledModItems.selectFirstItem();
+      else if (selection == EnabledModList) enabledModItems.selectFirstItem();
+    }
+
+    disabledModItems.repositionItems();
+    enabledModItems.repositionItems();
+
+    return newItems;
   }
 
-  function buildDisabledModList():Void
+  function buildDisabledModList():Array<ModMenuItem>
   {
     var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
+    var newModId:Array<String> = [];
+
+    if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
+    {
+      var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
+      var reconciled:Array<ModMetadata> = tempDisabledMods.copy();
+
+      for (mod in disabledMods)
+      {
+        if (!allKnownIds.contains(mod.id))
+        {
+          reconciled.push(mod);
+          newModId.push(mod.id);
+        }
+      }
+
+      for (mod in PolymodHandler.getEnabledMods())
+      {
+        if (mod.id == BASE_GAME_MOD_ID) continue;
+        if (!allKnownIds.contains(mod.id))
+        {
+          reconciled.push(mod);
+          newModId.push(mod.id);
+        }
+      }
+
+      disabledMods = reconciled;
+    }
 
     disabledModItems.removeAll();
     disabledModItems.title = 'DISABLED';
@@ -874,11 +962,34 @@ class ModMenuState extends MusicBeatState
       if (mod.id == BASE_GAME_MOD_ID) continue;
       disabledModItems.addMod(mod);
     }
+
+    var newItems:Array<ModMenuItem> = [];
+    for (modId in newModId)
+    {
+      var item = disabledModItems.modItems.find((it) -> it.getModId() == modId);
+      if (item != null) newItems.push(item);
+    }
+    return newItems;
   }
 
   function buildEnabledModList():Void
   {
     var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
+
+    if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
+    {
+      var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
+
+      var reconciled:Array<ModMetadata> = tempEnabledMods.copy();
+
+      for (mod in enabledMods)
+      {
+        if (mod.id == BASE_GAME_MOD_ID) continue;
+        if (!allKnownIds.contains(mod.id)) reconciled.push(mod);
+      }
+
+      enabledMods = reconciled;
+    }
 
     enabledModItems.removeAll();
     enabledModItems.title = 'ENABLED';
@@ -889,6 +1000,14 @@ class ModMenuState extends MusicBeatState
     {
       if (mod.id == BASE_GAME_MOD_ID) continue;
       enabledModItems.addMod(mod);
+    }
+
+    if (enabledModItems.modItems.exists((item) -> item.getModId() == BASE_GAME_MOD_ID))
+    {
+      // make sure its not selected (weird ass bug)
+      var baseGameItem = enabledModItems.modItems.find((item) -> item.getModId() == BASE_GAME_MOD_ID);
+      if (baseGameItem != null) baseGameItem.selected = false;
+      return;
     }
 
     var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Default game content');

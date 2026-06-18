@@ -8,6 +8,8 @@ import polymod.Polymod.ModMetadata;
 import polymod.Polymod.ModDependencies;
 import flixel.math.FlxRect;
 import funkin.Paths;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 /**
  * Represents an installed mod visually in the mod menu.
@@ -67,7 +69,6 @@ class ModMenuItem extends FunkinSpriteGroup
   function set_selected(value:Bool):Bool
   {
     this.selected = value;
-    updateBackgroundColor();
     return selected;
   }
 
@@ -181,6 +182,8 @@ class ModMenuItem extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
+    updateBackgroundColor();
+
     if (bgOffsetX != 0 || bgOffsetY != 0)
     {
       var t = Math.min(1, BG_SLIDE_LERP * elapsed);
@@ -195,10 +198,19 @@ class ModMenuItem extends FunkinSpriteGroup
     }
   }
 
+  var flashTween:Null<FlxTween> = null;
+
   function updateBackgroundColor():Void
   {
     if (this.selected) background.localAlpha = 0.25;
     else background.localAlpha = 0;
+  }
+
+  public function flashBackground():Void
+  {
+    background.localAlpha = 1.0;
+    if (flashTween != null) flashTween.cancel();
+    flashTween = FlxTween.tween(background, {localAlpha: 0.25}, 0.5, {ease: FlxEase.quintOut});
   }
 
   function loadModIcon(bytes:haxe.io.Bytes):Void

@@ -9,6 +9,7 @@ import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
 import flixel.FlxObject;
+import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
@@ -48,6 +49,7 @@ class OptionsState extends MusicBeatState
   public var drumsBG:FunkinSound;
 
   public static var rememberedSelectedIndex:Int = 0;
+  public static var backState:Null<String> = null;
 
   override function create():Void
   {
@@ -141,8 +143,20 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
-    FlxG.keys.enabled = false;
-    FlxG.switchState(() -> new MainMenuState());
+    if (backState != null)
+    {
+      var state:Dynamic = ScriptedMusicBeatState.scriptInit(backState);
+      if (state != null) FlxG.switchState(state);
+      else {
+        FlxG.keys.enabled = false;
+        FlxG.switchState(() -> new MainMenuState());
+      }
+    }
+    else
+    {
+      FlxG.keys.enabled = false;
+      FlxG.switchState(() -> new MainMenuState());
+    }
   }
 }
 

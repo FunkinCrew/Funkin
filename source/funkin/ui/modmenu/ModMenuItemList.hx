@@ -269,6 +269,12 @@ class ModMenuItemList extends FunkinSpriteGroup
     return true;
   }
 
+  public function selectItem(index:Int, slideDir:Int = 0):Void
+  {
+    if (index < 0 || index >= modItems.length) return;
+    selectModItem(modItems[index], true, slideDir);
+  }
+
   public function selectModItem(item:Null<ModMenuItem>, autoScroll:Bool = true, slideDir:Int = 0):Void
   {
     if (selectedModItem != null) selectedModItem.selected = false;

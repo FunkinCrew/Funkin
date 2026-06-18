@@ -203,6 +203,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         playMenuMusic();
+        // We have to be in a scripted state, otherwise this quick panel wouldn't exist!
+        var s:ScriptedMusicBeatState = cast FlxG.state;
+        @:privateAccess
+        var path = s._asc.fullyQualifiedName;
+        funkin.ui.options.OptionsState.backState = path;
         FlxG.switchState(new funkin.ui.options.OptionsState());
       },
       icon: 'options',
