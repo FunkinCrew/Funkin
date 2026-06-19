@@ -708,6 +708,7 @@ class ModMenuState extends MusicBeatState
             selection = DisabledModList;
             lastSelectDir = -2;
           }
+          else selection = OpenModsFolder;
         case OpenModsFolder:
           selection = EnabledModList;
           lastSelectDir = -2;
@@ -846,6 +847,8 @@ class ModMenuState extends MusicBeatState
     enabledModItems.deselect();
     if (openFolderAnimator.curAnim == 'select' && selection != OpenModsFolder) openFolderAnimator.playAnimation('deselect');
     if (doneButtonAnimator.curAnim == 'select' && selection != Done) doneButtonAnimator.playAnimation('deselect');
+
+    if (disabledModItems.modItems.length == 0 && selection == DisabledModList) selection = EnabledModList;
 
     switch (selection)
     {
