@@ -90,9 +90,10 @@ class ModMenuState extends MusicBeatState
     topText.x = FlxG.width / 2 - (topText.width / 2);
     topText.y = 25;
 
-    var dragText:FlxText = new FlxText(112, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
+    var dragText:FlxText = new FlxText(98, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, false);
     dragText.scale.set(1, 0.8);
+    dragText.letterSpacing = 5;
     add(dragText);
 
     leftRectangle.x = 60;
@@ -300,9 +301,11 @@ class ModMenuState extends MusicBeatState
     add(darkness);
 
     fileDrop = FunkinSprite.create(0, 0, 'ui/mods/mod-menu-drop-hover');
-    fileDrop.setGraphicSize(FlxG.width, FlxG.height);
+    fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.94);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();
+    fileDrop.x = FlxG.width / 2 - (fileDrop.width / 2);
+    fileDrop.y = FlxG.height / 2 - (fileDrop.height / 2);
     fileDrop.visible = false;
     add(fileDrop);
 
@@ -536,7 +539,7 @@ class ModMenuState extends MusicBeatState
         animDone = true;
       }
       fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
-      darkness.alpha = FlxMath.lerp(0, 0.5, FlxEase.backOut(adjustT));
+      darkness.alpha = FlxMath.lerp(0, 0.72, FlxEase.backOut(adjustT));
     }
 
     handleKeyboard();
