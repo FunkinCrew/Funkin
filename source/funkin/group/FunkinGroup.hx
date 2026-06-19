@@ -52,7 +52,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   public function setChildClipRect(child:FlxSprite, ?localClip:FlxRect):Void
   {
     if (localClip == null) _childOwnClips.remove(child);
-    else _childOwnClips.set(child, localClip);
+    else
+      _childOwnClips.set(child, localClip);
   }
 
   function get_size():Int
@@ -74,7 +75,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   /**
    * The combined screen-space clip for this group.
-   **/
+  **/
   function getEffectiveClipRect():Null<FlxRect>
   {
     if (clipRect == null && _inheritedClipRect == null) return null;
@@ -89,7 +90,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   /**
    * Pushes this group's screen-space clip down to its children.
-   **/
+  **/
   public function updateClipRects():Void
   {
     var screenClip:Null<FlxRect> = getEffectiveClipRect();
@@ -135,7 +136,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   /**
    * Projects a screen-space rect into a child sprite's local graphic-pixel space.
-   **/
+  **/
   function screenToLocalClipRect(child:FlxSprite, screenClip:FlxRect, result:FlxRect, ?camera:FlxCamera):FlxRect
   {
     var minX:Float = Math.POSITIVE_INFINITY;
@@ -388,6 +389,11 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     for (child in children)
     {
       if (child != null && child.exists && child.active) child.update(elapsed);
+
+      if (this.scrollFactor.x != 1 || this.scrollFactor.y != 1)
+      {
+        child.scrollFactor.set(child.scrollFactor.x * this.scrollFactor.x, child.scrollFactor.y * this.scrollFactor.y);
+      }
     }
 
     updateClipRects();
