@@ -297,7 +297,8 @@ class LoadingState extends MusicBeatSubState
         spritesToCache.append([
           funkin.assets.Paths.image('gameplay/songs/darnell/cutscene/cutscene-can'),
           funkin.assets.Paths.image('gameplay/songs/2hot/graphics/spraycan-explosion-ez'),
-          funkin.assets.Paths.image('gameplay/songs/2hot/graphics/can-impact')
+          funkin.assets.Paths.image('gameplay/songs/2hot/graphics/can-impact'),
+          funkin.assets.Paths.image('gameplay/songs/2hot/spraycan/spritemap1')
         ]);
 
         soundsToCache.append([
@@ -305,7 +306,6 @@ class LoadingState extends MusicBeatSubState
           funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/gun-prep'),
           funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-forward'),
           funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-up'),
-          funkin.assets.Paths.sound('gameplay/songs/2hot/spraycan/spritemap1'),
           funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-1'),
           funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-2'),
           funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-3'),
