@@ -301,7 +301,7 @@ class ModMenuState extends MusicBeatState
     add(darkness);
 
     fileDrop = FunkinSprite.create(0, 0, 'ui/mods/mod-menu-drop-hover');
-    fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.94);
+    fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();
     fileDrop.x = FlxG.width / 2 - (fileDrop.width / 2);
