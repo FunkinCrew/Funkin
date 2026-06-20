@@ -823,13 +823,13 @@ class Project extends HXProject
     switch (this.platformType)
     {
       case PlatformType.DESKTOP:
-        info('Platform Type: Desktop');
+        info('Target Platform Type: Desktop');
       case PlatformType.MOBILE:
-        info('Platform Type: Mobile');
+        info('Target Platform Type: Mobile');
       case PlatformType.WEB:
-        info('Platform Type: Web');
+        info('Target Platform Type: Web');
       case PlatformType.CONSOLE:
-        info('Platform Type: Console');
+        info('Target Platform Type: Console');
       default:
         error('Unknown platform type (got ${platformType})');
     }
@@ -874,23 +874,23 @@ class Project extends HXProject
       switch (arch)
       {
         case Architecture.X86:
-          info('Architecture: x86');
+          info('Target Architecture: x86');
         case Architecture.X64:
-          info('Architecture: x64');
+          info('Target Architecture: x64');
         case Architecture.ARMV5:
-          info('Architecture: ARMv5');
+          info('Target Architecture: ARMv5');
         case Architecture.ARMV6:
-          info('Architecture: ARMv6');
+          info('Target Architecture: ARMv6');
         case Architecture.ARMV7:
-          info('Architecture: ARMv7');
+          info('Target Architecture: ARMv7');
         case Architecture.ARMV7S:
-          info('Architecture: ARMv7S');
+          info('Target Architecture: ARMv7S');
         case Architecture.ARM64:
-          info('Architecture: ARMx64');
+          info('Target Architecture: ARMx64');
         case Architecture.MIPS:
-          info('Architecture: MIPS');
+          info('Target Architecture: MIPS');
         case Architecture.MIPSEL:
-          info('Architecture: MIPSEL');
+          info('Target Architecture: MIPSEL');
         case null:
           if (!isWeb())
           {
@@ -898,7 +898,7 @@ class Project extends HXProject
           }
           else
           {
-            info('Architecture: Web');
+            info('Target Architecture: Web');
           }
         default:
           error('Unsupported architecture (got ${arch})');
