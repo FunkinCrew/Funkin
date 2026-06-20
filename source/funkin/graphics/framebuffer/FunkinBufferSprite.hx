@@ -68,9 +68,36 @@ class FunkinBufferSprite extends FunkinSprite
     return _usedCamera.bufferRenderer;
   }
 
+  /**
+   * The resolution scale of the buffer.
+   * Setting it lower than 1.0 will make the buffer render at a lower resolution.
+   */
+  public var resolutionScale(default, set):Float = 1.0;
+
+  function set_resolutionScale(value:Float):Float
+  {
+    if (value == resolutionScale) return value;
+    if (value > 1.0) value = 1.0; // Clamp it down to 1.0
+
+    resolutionScale = value;
+
+    var newWidth:Int = Std.int(_usedCamera.width * resolutionScale);
+    var newHeight:Int = Std.int(_usedCamera.height * resolutionScale);
+
+    renderer.resize(newWidth, newHeight);
+    this.setSize(newWidth, newHeight);
+    this.graphic.bitmap = renderer.texture;
+    this.frameWidth = newWidth;
+    this.frameHeight = newHeight;
+    this.frames = this.graphic.imageFrame;
+    this.updateHitbox();
+
+    return value;
+  }
+
   var _usedCamera:FunkinCamera;
 
-  public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0)
+  public function new(x:Float = 0, y:Float = 0, camera:FunkinCamera, baseZoom:Float = -1, bufferDelay:Float = 0, resolutionScale:Float = 1.0)
   {
     super(x, y);
 
@@ -95,6 +122,9 @@ class FunkinBufferSprite extends FunkinSprite
 
     // Prevent the buffer from being rendered onto itself.
     this.renderer.blacklistSprite(this);
+
+    // Setting this last since everything else needs to initialize first
+    this.resolutionScale = resolutionScale;
   }
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
@@ -105,9 +135,15 @@ class FunkinBufferSprite extends FunkinSprite
     frame.prepareMatrix(matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
     prepareDrawMatrix(matrix, camera);
 
+    if (resolutionScale != 1.0)
+    {
+      var scale:Float = 1.0 / resolutionScale;
+      matrix.scale(scale, scale);
+    }
+
     if (this.filters != null && this.filters.length > 0)
     {
-      filterRenderer.applyFilters(this._usedCamera.texture);
+      filterRenderer.applyFilters(renderer.texture);
 
       if (filtered)
       {

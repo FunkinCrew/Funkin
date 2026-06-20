@@ -66,6 +66,21 @@ class FunkinBufferRenderer
   }
 
   /**
+   * Resizes the buffer to a new size.
+   * @param width The new width.
+   * @param height The new height.
+   */
+  public function resize(width:Int, height:Int):Void
+  {
+    if (texture != null)
+    {
+      texture.dispose();
+    }
+
+    texture = FixedBitmapData.create(width, height);
+  }
+
+  /**
    * Renders the buffer onto the texture.
    */
   public function render():Void

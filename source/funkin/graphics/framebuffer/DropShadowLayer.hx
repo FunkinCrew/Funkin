@@ -9,9 +9,11 @@ import openfl.filters.ShaderFilter;
 
 class DropShadowLayer extends FunkinBufferSprite
 {
-  public function new(camera:FunkinCamera, _color:FlxColor = 0xFFFFFFFF, sampleSteps:Int = 3, blurAmt:Float = 4, distX:Float = 5, distY:Float = 5)
+  public function new(camera:FunkinCamera, _color:FlxColor = 0xFFFFFFFF, sampleSteps:Int = 2, blurAmt:Float = 4, distX:Float = 5, distY:Float = 5)
   {
-    super(0, 0, camera, 1, 0);
+    // The resolution scale here is 0.35
+    // This is just to prevent the game from applying a shader to a massive texture lmao
+    super(0, 0, camera, 1, 0.010, 0.35);
 
     filters = [];
 
@@ -31,7 +33,5 @@ class DropShadowLayer extends FunkinBufferSprite
 
     var finalFilter:ShaderFilter = new ShaderFilter(new BlurShaderShadow(_color, distX, distY));
     filters.push(finalFilter);
-
-    this.screenCenter();
   }
 }
