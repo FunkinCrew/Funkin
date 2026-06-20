@@ -595,13 +595,20 @@ class Project extends HXProject
 
     configureApp();
 
+    configureOutputDir();
+
     displayTarget();
+
+    if (this.command == "run" || this.command == "install")
+    {
+      // These commands dont really need much in order to run so to improve the speed, we return here.
+      return;
+    }
 
     configureFeatureFlags();
     configureCompileDefines();
     configureIncludeMacros();
     configureCustomMacros();
-    configureOutputDir();
     configurePolymod();
     configureHaxelibs();
     configureASTCTextures();
