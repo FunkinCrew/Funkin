@@ -29,7 +29,7 @@ class LetterSort extends FlxSpriteGroup
 
   var leftArrow:FlxSprite;
   var rightArrow:FlxSprite;
-  var grpSeperators:FlxSpriteGroup;
+  var grpSeparators:FlxSpriteGroup;
 
   public var instance(default, set):FreeplayState;
 
@@ -39,8 +39,8 @@ class LetterSort extends FlxSpriteGroup
   {
     super(x, y);
 
-    grpSeperators = new FlxSpriteGroup();
-    add(grpSeperators);
+    grpSeparators = new FlxSpriteGroup();
+    add(grpSeparators);
 
     leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image('freeplay/miniArrow'));
     // leftArrow.animation.play("arrow");
@@ -78,7 +78,7 @@ class LetterSort extends FlxSpriteGroup
       var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image('freeplay/seperator'));
       // sep.animation.play("seperator");
       sep.color = letter.color.getDarkened(darkness);
-      grpSeperators.add(sep);
+      grpSeparators.add(sep);
     }
 
     var letterHitbox:FlxObject = new FlxObject(0, 0, 1, 1);
@@ -182,7 +182,7 @@ class LetterSort extends FlxSpriteGroup
     // if we're moving left, we want to move the positions the same amount, but negative direciton
     var multiPosOrNeg:Float = diff > 0 ? 1 : -1;
 
-    for (sep in grpSeperators.members)
+    for (sep in grpSeparators.members)
     {
       ezTimer(0, sep, positions[0] * multiPosOrNeg);
       ezTimer(1, sep, positions[1] * multiPosOrNeg);

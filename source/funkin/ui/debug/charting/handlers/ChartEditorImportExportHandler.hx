@@ -269,8 +269,8 @@ class ChartEditorImportExportHandler
     var baseMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath,
       baseMetadataVersion) ?? throw 'Could not read metadata (default).';
 
-    var songMetadatas:Map<String, SongMetadata> = [];
-    songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
+    var songMetadata:Map<String, SongMetadata> = [];
+    songMetadata.set(Constants.DEFAULT_VARIATION, baseMetadata);
 
     var baseChartDataPath:String = manifest.getChartDataFileName();
     var baseChartDataString:String = mappedFileEntries.get(baseChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data (default).';
@@ -278,8 +278,8 @@ class ChartEditorImportExportHandler
     var baseChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
       baseChartDataVersion) ?? throw 'Could not read chart data (default).';
 
-    var songChartDatas:Map<String, SongChartData> = [];
-    songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
+    var songChartData:Map<String, SongChartData> = [];
+    songChartData.set(Constants.DEFAULT_VARIATION, baseChartData);
 
     var variationList:Array<String> = baseMetadata.playData.songVariations;
 
@@ -291,16 +291,16 @@ class ChartEditorImportExportHandler
       var variMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath, variMetadataVersion,
         variation) ?? throw 'Could not read metadata ($variation).';
 
-      songMetadatas.set(variation, variMetadata);
+      songMetadata.set(variation, variMetadata);
 
       var variChartDataPath:String = manifest.getChartDataFileName(variation);
       var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
       var variChartDataVersion:SemverVersion = VersionUtil.getVersionFromJSON(variChartDataString) ?? throw 'Could not read chart data version ($variation).';
       var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
         variChartDataVersion, variation) ?? throw 'Could not read chart data ($variation).';
-      songChartDatas.set(variation, variChartData);
+      songChartData.set(variation, variChartData);
     }
-    loadSong(state, songMetadatas, songChartDatas, manifest);
+    loadSong(state, songMetadata, songChartData, manifest);
 
     state.sortChartData();
 
@@ -310,7 +310,7 @@ class ChartEditorImportExportHandler
     // Load instrumentals
     for (variation in state.availableVariations)
     {
-      var variMetadata:Null<SongMetadata> = songMetadatas.get(variation);
+      var variMetadata:Null<SongMetadata> = songMetadata.get(variation);
       if (variMetadata == null) continue;
 
       var instId:String = variMetadata?.playData?.characters?.instrumental ?? '';
@@ -355,8 +355,8 @@ class ChartEditorImportExportHandler
     }
 
     // Apply chart data.
-    trace(songMetadatas);
-    trace(songChartDatas);
+    trace(songMetadata);
+    trace(songChartData);
 
     state.switchToCurrentInstrumental();
     state.postLoadInstrumental();

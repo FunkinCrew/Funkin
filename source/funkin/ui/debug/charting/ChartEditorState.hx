@@ -21,7 +21,7 @@ import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
-import funkin.audio.visualize.PolygonSpectogram;
+import funkin.audio.visualize.PolygonSpectrogram;
 import funkin.audio.VoicesGroup;
 import funkin.audio.waveform.WaveformSprite;
 import funkin.data.notestyle.NoteStyleRegistry;
@@ -3863,8 +3863,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var currentMeasureTime:Float = Conductor.instance.getMeasureTimeInMs(Conductor.instance.currentMeasure);
       var currentStepTime:Float = Conductor.instance.getStepTimeInMs(Conductor.instance.currentStep);
-      final msTreshold:Float = 10.0;
-      playMetronomeTick(currentMeasureTime >= currentStepTime - msTreshold && currentMeasureTime <= currentStepTime + msTreshold);
+      final msThreshold:Float = 10.0;
+      playMetronomeTick(currentMeasureTime >= currentStepTime - msThreshold && currentMeasureTime <= currentStepTime + msThreshold);
     }
 
     // Show the mouse cursor.

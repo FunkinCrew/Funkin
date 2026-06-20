@@ -8,14 +8,14 @@ import funkin.audio.visualize.VisShit.CurAudioInfo;
 import funkin.graphics.rendering.MeshRender;
 import lime.utils.Int16Array;
 
-class PolygonSpectogram extends MeshRender
+class PolygonSpectrogram extends MeshRender
 {
   var sampleRate:Int;
 
   public var vis:VisShit;
   public var visType:VISTYPE = UPDATED;
   public var daHeight:Float = FlxG.height;
-  public var realtimeVisLenght:Float = 0.2;
+  public var realtimeVisLength:Float = 0.2;
   public var realtimeStartOffset:Float = 0;
 
   var numSamples:Int = 0;
@@ -130,7 +130,7 @@ class PolygonSpectogram extends MeshRender
 
         curTime = vis.snd.time;
 
-        if (vis.snd.time < vis.snd.length - realtimeVisLenght) generateSection(vis.snd.time + realtimeStartOffset, realtimeVisLenght);
+        if (vis.snd.time < vis.snd.length - realtimeVisLength) generateSection(vis.snd.time + realtimeStartOffset, realtimeVisLength);
       }
     }
   }

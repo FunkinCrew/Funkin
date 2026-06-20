@@ -157,8 +157,8 @@ class FNFCUtil
     var baseMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(baseMetadataString, baseMetadataPath,
       baseMetadataVersion) ?? throw 'Could not read metadata (default).';
 
-    var songMetadatas:Map<String, SongMetadata> = [];
-    songMetadatas.set(Constants.DEFAULT_VARIATION, baseMetadata);
+    var songMetadata:Map<String, SongMetadata> = [];
+    songMetadata.set(Constants.DEFAULT_VARIATION, baseMetadata);
 
     // id-chart.json
 
@@ -168,8 +168,8 @@ class FNFCUtil
     var baseChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(baseChartDataString, baseChartDataPath,
       baseChartDataVersion) ?? throw 'Could not read chart data (default).';
 
-    var songChartDatas:Map<String, SongChartData> = [];
-    songChartDatas.set(Constants.DEFAULT_VARIATION, baseChartData);
+    var songChartData:Map<String, SongChartData> = [];
+    songChartData.set(Constants.DEFAULT_VARIATION, baseChartData);
 
     // Variation metadata and chart data
 
@@ -183,7 +183,7 @@ class FNFCUtil
       var variMetadata:SongMetadata = SongRegistry.instance.parseEntryMetadataRawWithMigration(variMetadataString, variMetadataPath, variMetadataVersion,
         variation) ?? throw 'Could not read metadata ($variation).';
 
-      songMetadatas.set(variation, variMetadata);
+      songMetadata.set(variation, variMetadata);
 
       var variChartDataPath:String = manifest.getChartDataFileName(variation);
       var variChartDataString:String = mappedFileEntries.get(variChartDataPath)?.data?.toString() ?? throw 'Could not locate chart data ($variation).';
@@ -191,11 +191,11 @@ class FNFCUtil
       var variChartData:SongChartData = SongRegistry.instance.parseEntryChartDataRawWithMigration(variChartDataString, variChartDataPath,
         variChartDataVersion) ?? throw 'Could not read chart data ($variation).';
 
-      songChartDatas.set(variation, variChartData);
+      songChartData.set(variation, variChartData);
     }
 
     // Combine into a Song object that can be played in PlayState.
-    var song = Song.buildRaw(songId, songMetadatas.values(), Constants.DEFAULT_VARIATION, songChartDatas, false, false);
+    var song = Song.buildRaw(songId, songMetadata.values(), Constants.DEFAULT_VARIATION, songChartData, false, false);
 
     return song;
   }

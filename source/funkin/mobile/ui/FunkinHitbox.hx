@@ -284,7 +284,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Creates a new `FunkinHitbox` object.
    */
-  public function new(?schemeOverride:String, ?showGradint:Bool = true, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
+  public function new(?schemeOverride:String, ?showGradient:Bool = true, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
   {
     super();
 
@@ -303,7 +303,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
         for (i in 0...hintsNoteDirections.length)
         {
           add(createHintLane(i * hintWidth, 0, hintsNoteDirections[i % hintsNoteDirections.length], hintWidth, hintHeight,
-            hintsColors[i % hintsColors.length], true, showGradint));
+            hintsColors[i % hintsColors.length], true, showGradient));
         }
       case FunkinHitboxControlSchemes.DoubleThumbTriangle:
         final screenHalf:Int = Math.floor(FlxG.width / 2);
@@ -312,12 +312,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
         {
           final xOffset:Int = (i == 1) ? screenHalf : 0;
 
-          add(createHintTriangle(xOffset, 0, hintsNoteDirections[0], Math.floor(FlxG.width / 4), FlxG.height, hintsColors[0], showGradint));
+          add(createHintTriangle(xOffset, 0, hintsNoteDirections[0], Math.floor(FlxG.width / 4), FlxG.height, hintsColors[0], showGradient));
           add(createHintTriangle(xOffset, FlxG.height / 2, hintsNoteDirections[1], Math.floor(FlxG.width / 2), Math.floor(FlxG.height / 2), hintsColors[1],
-            showGradint));
-          add(createHintTriangle(xOffset, 0, hintsNoteDirections[2], Math.floor(FlxG.width / 2), Math.floor(FlxG.height / 2), hintsColors[2], showGradint));
+            showGradient));
+          add(createHintTriangle(xOffset, 0, hintsNoteDirections[2], Math.floor(FlxG.width / 2), Math.floor(FlxG.height / 2), hintsColors[2], showGradient));
           add(createHintTriangle(xOffset + Math.floor(FlxG.width / 4), 0, hintsNoteDirections[3], Math.floor(FlxG.width / 4), FlxG.height, hintsColors[3],
-            showGradint));
+            showGradient));
         }
       case FunkinHitboxControlSchemes.DoubleThumbSquare:
         final screenHalf:Int = Math.floor(FlxG.width / 2);
@@ -337,12 +337,12 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
             if (j == 1 || j == 2)
             {
               add(createHintLane(xOffset + hintWidth, (j == 1) ? boxHeight : 0, hintsNoteDirections[j], boxWidth, boxHeight,
-                hintsColors[j % hintsColors.length], false, showGradint));
+                hintsColors[j % hintsColors.length], false, showGradient));
             }
             else
             {
               add(createHintLane(xOffset + (j == 0 ? 0 : hintWidth + boxWidth), 0, hintsNoteDirections[j], hintWidth, hintHeight,
-                hintsColors[j % hintsColors.length], false, showGradint));
+                hintsColors[j % hintsColors.length], false, showGradient));
             }
           }
         }

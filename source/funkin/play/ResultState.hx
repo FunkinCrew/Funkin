@@ -204,9 +204,9 @@ class ResultState extends MusicBeatSubState
 
     trace('Got playable character: ${playerCharacter?.getName()}');
     // Query JSON data based on the rank, then use that to build the animation(s) the player sees.
-    var playerAnimationDatas:Array<PlayerResultsAnimationData> = playerCharacter != null ? playerCharacter.getResultsAnimationDatas(rank) : [];
+    var playerAnimationData:Array<PlayerResultsAnimationData> = playerCharacter != null ? playerCharacter.getResultsAnimationData(rank) : [];
 
-    for (animData in playerAnimationDatas)
+    for (animData in playerAnimationData)
     {
       if (animData == null) continue;
 

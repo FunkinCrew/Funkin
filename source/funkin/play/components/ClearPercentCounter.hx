@@ -60,25 +60,25 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
   function drawNumbers():Void
   {
-    var seperatedScore:Array<Int> = [];
+    var separatedScore:Array<Int> = [];
     var tempCombo:Int = Math.round(curNumber);
 
     while (tempCombo > 0 && tempCombo != 0)
     {
-      seperatedScore.push(tempCombo % 10);
+      separatedScore.push(tempCombo % 10);
       tempCombo = Math.floor(tempCombo / 10);
     }
 
-    if (seperatedScore.length == 0) seperatedScore.push(0);
+    if (separatedScore.length == 0) separatedScore.push(0);
 
-    seperatedScore.reverse();
+    separatedScore.reverse();
 
-    for (ind => num in seperatedScore)
+    for (ind => num in separatedScore)
     {
       var digitIndex:Int = ind + 1;
       // If there's only one digit, move it to the right
       // If there's three digits, move them all to the left
-      var digitOffset = (seperatedScore.length == 1) ? 1 : (seperatedScore.length == 3) ? -1 : 0;
+      var digitOffset = (separatedScore.length == 1) ? 1 : (separatedScore.length == 3) ? -1 : 0;
       var digitSize = small ? 32 : 72;
       var digitHeightOffset = small ? -4 : 0;
 
@@ -90,7 +90,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
       if (digitIndex >= members.length)
       {
         // Three digits = LLR because the 1 and 0 won't be the same anyway.
-        var variant:Bool = (seperatedScore.length == 3) ? (digitIndex >= 2) : (digitIndex >= 1);
+        var variant:Bool = (separatedScore.length == 3) ? (digitIndex >= 2) : (digitIndex >= 1);
         // var variant:Bool = (seperatedScore.length % 2 != 0) ? (digitIndex % 2 == 0) : (digitIndex % 2 == 1);
         var numb:ClearPercentNumber = new ClearPercentNumber(xPos, yPos, num, variant, this.small);
         numb.scale.set(this.scale.x, this.scale.y);
@@ -107,7 +107,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
         members[digitIndex].visible = true;
       }
     }
-    for (ind in (seperatedScore.length + 1)...(members.length))
+    for (ind in (separatedScore.length + 1)...(members.length))
     {
       members[ind].visible = false;
     }

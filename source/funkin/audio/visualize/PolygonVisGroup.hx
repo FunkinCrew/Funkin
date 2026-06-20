@@ -4,17 +4,17 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 
 @:nullSafety
-class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
+class PolygonVisGroup extends FlxTypedGroup<PolygonSpectrogram>
 {
-  public var playerVis:Null<PolygonSpectogram>;
-  public var opponentVis:Null<PolygonSpectogram>;
-  public var instVis:Null<PolygonSpectogram>;
+  public var playerVis:Null<PolygonSpectrogram>;
+  public var opponentVis:Null<PolygonSpectrogram>;
+  public var instVis:Null<PolygonSpectrogram>;
 
   public function new()
   {
     super();
-    playerVis = new PolygonSpectogram();
-    opponentVis = new PolygonSpectogram();
+    playerVis = new PolygonSpectrogram();
+    opponentVis = new PolygonSpectrogram();
   }
 
   /**
@@ -23,7 +23,7 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
    */
   public function addPlayerVis(visSnd:FlxSound):Void
   {
-    var vis:PolygonSpectogram = new PolygonSpectogram(visSnd);
+    var vis:PolygonSpectrogram = new PolygonSpectrogram(visSnd);
     super.add(vis);
     playerVis = vis;
   }
@@ -34,7 +34,7 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
    */
   public function addOpponentVis(visSnd:FlxSound):Void
   {
-    var vis:PolygonSpectogram = new PolygonSpectogram(visSnd);
+    var vis:PolygonSpectrogram = new PolygonSpectrogram(visSnd);
     super.add(vis);
     opponentVis = vis;
   }
@@ -45,7 +45,7 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
    */
   public function addInstVis(visSnd:FlxSound):Void
   {
-    var vis:PolygonSpectogram = new PolygonSpectogram(visSnd);
+    var vis:PolygonSpectrogram = new PolygonSpectrogram(visSnd);
     super.add(vis);
     instVis = vis;
   }
@@ -92,9 +92,9 @@ class PolygonVisGroup extends FlxTypedGroup<PolygonSpectogram>
    * @param vis The visualizer to add.
    * @return The added visualizer.
    */
-  override public function add(vis:PolygonSpectogram):PolygonSpectogram
+  override public function add(vis:PolygonSpectrogram):PolygonSpectrogram
   {
-    var result:PolygonSpectogram = super.add(vis);
+    var result:PolygonSpectrogram = super.add(vis);
     return result;
   }
 

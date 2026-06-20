@@ -38,22 +38,22 @@ class TallyCounter extends FlxTypedSpriteGroup<FlxSprite>
 
   function drawNumbers()
   {
-    var seperatedScore:Array<Int> = [];
+    var separatedScore:Array<Int> = [];
     var tempCombo:Int = Math.round(curNumber);
 
     var fullNumberDigits:Int = Std.int(Math.max(1, Math.ceil(MathUtil.logBase(10, neededNumber))));
 
     while (tempCombo != 0)
     {
-      seperatedScore.push(tempCombo % 10);
+      separatedScore.push(tempCombo % 10);
       tempCombo = Math.floor(tempCombo / 10);
     }
 
-    if (seperatedScore.length == 0) seperatedScore.push(0);
+    if (separatedScore.length == 0) separatedScore.push(0);
 
-    seperatedScore.reverse();
+    separatedScore.reverse();
 
-    for (ind => num in seperatedScore)
+    for (ind => num in separatedScore)
     {
       if (ind >= members.length)
       {

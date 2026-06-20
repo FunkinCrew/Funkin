@@ -99,7 +99,7 @@ class PlayableCharacter implements IRegistryEntry<PlayerData>
    * @param rank Which rank to get info for
    * @return An array of animations. For example, BF Great has two animations, one for BF and one for GF
    */
-  public function getResultsAnimationDatas(rank:ScoringRank):Array<PlayerResultsAnimationData>
+  public function getResultsAnimationData(rank:ScoringRank):Array<PlayerResultsAnimationData>
   {
     if (_data == null || _data.results == null)
     {
