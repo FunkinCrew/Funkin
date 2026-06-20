@@ -755,6 +755,29 @@ class Project extends HXProject
 
       config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
       config.set("android.target-sdk-version", ANDROID_TARGET_SDK_VERSION);
+
+      if (isRelease())
+      {
+        if (envConfig != null)
+        {
+          keystore = new Keystore();
+          keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));
+          keystore.alias = Std.string(envConfig.get('KEYSTORE_ALIAS'));
+          keystore.password = Std.string(envConfig.get('KEYSTORE_PASSWORD'));
+        }
+
+        if (isBundle())
+        {
+          config.set("android.gradle-project-directory", "bin-bundle");
+        }
+      }
+    }
+
+    if (isIOS())
+    {
+      config.set("ios.non-exempt-encryption", "false");
+      config.set("ios.team-id", IOS_TEAM_ID);
+      config.set("ios.deployment", "16.0");
     }
   }
 
@@ -1237,22 +1260,6 @@ class Project extends HXProject
   {
     javaPaths.push(Path.join([SOURCE_DIR, 'funkin/external/android/java']));
 
-    if (isRelease())
-    {
-      if (envConfig != null)
-      {
-        keystore = new Keystore();
-        keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));
-        keystore.alias = Std.string(envConfig.get('KEYSTORE_ALIAS'));
-        keystore.password = Std.string(envConfig.get('KEYSTORE_PASSWORD'));
-      }
-
-      if (isBundle())
-      {
-        config.set("android.gradle-project-directory", "bin-bundle");
-      }
-    }
-
     // Custom android.application XML Children for the AndroidManifest
     final modsFolderProvider:Xml = Xml.createElement('provider');
     modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
@@ -1349,10 +1356,6 @@ class Project extends HXProject
 
   function configureIOS()
   {
-    config.set("ios.non-exempt-encryption", "false");
-    config.set("ios.team-id", IOS_TEAM_ID);
-    config.set("ios.deployment", "16.0");
-
     // launchStoryboard = new LaunchStoryboard();
     // launchStoryboard.path = "./LaunchScreen.storyboard";
 
