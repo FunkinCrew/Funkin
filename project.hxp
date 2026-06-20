@@ -2423,7 +2423,7 @@ class Project extends HXProject
    */
   public function info(message:String):Void
   {
-    if (!(isDisplay() || isCleanCommand()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
     {
       Sys.println(' INFO '.bold().bg_blue() + " " + message);
     }
@@ -2434,7 +2434,7 @@ class Project extends HXProject
    */
   public function warn(message:String):Void
   {
-    if (!(isDisplay() || isCleanCommand()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
     {
       Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }
