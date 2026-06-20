@@ -599,7 +599,7 @@ class Project extends HXProject
 
     displayTarget();
 
-    if (this.command == "run" || this.command == "install")
+    if (isRun() || isInstall())
     {
       // These commands dont really need much in order to run so to improve the speed, we return here.
       return;
@@ -1858,6 +1858,16 @@ class Project extends HXProject
   public function isCleanFlag():Bool
   {
     return this.targetFlags.exists("clean");
+  }
+
+  public function isRun():Bool
+  {
+    return this.command == "run";
+  }
+
+  public function isInstall():Bool
+  {
+    return this.command == "install";
   }
 
   public function isBuild():Bool
