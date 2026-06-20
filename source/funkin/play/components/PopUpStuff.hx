@@ -55,11 +55,6 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     rating.graphic.destroyOnNoUse = false;
 
-    if (PlayState.instance != null)
-    {
-      PlayState.instance.dropShadowLayer.renderer.blacklistSprite(rating);
-    }
-
     add(rating);
 
     var fadeEase = noteStyle.isJudgementSpritePixel(daRating) ? EaseUtil.stepped(2) : null;

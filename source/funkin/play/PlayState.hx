@@ -2014,14 +2014,8 @@ class PlayState extends MusicBeatSubState
     dropShadowLayer.camera = camHUD;
     dropShadowLayer.zIndex = 0;
 
-    // Don't render a dropshadow for some UI elements
-    dropShadowLayer.renderer.blacklistSprite(healthBar);
-    dropShadowLayer.renderer.blacklistSprite(healthBarBG);
-    dropShadowLayer.renderer.blacklistSprite(scoreText);
     dropShadowLayer.renderer.blacklistSprite(leftWatermarkText);
     dropShadowLayer.renderer.blacklistSprite(rightWatermarkText);
-    dropShadowLayer.renderer.blacklistSprite(iconP1);
-    dropShadowLayer.renderer.blacklistSprite(iconP2);
 
     add(dropShadowLayer);
   }
