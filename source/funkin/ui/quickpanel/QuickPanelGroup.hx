@@ -162,7 +162,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         playMenuMusic();
-        FlxG.switchState(new funkin.ui.title.TitleState());
+        FlxG.switchState(() -> new funkin.ui.title.TitleState());
       },
       icon: 'back',
       description: "Return to the base game's title screen.",
@@ -173,7 +173,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         playMenuMusic();
-        FlxG.switchState(new funkin.ui.modmenu.ModMenuState());
+        FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
       },
       icon: 'mods',
       description: "Add, remove or install custom content for the game.",
@@ -183,7 +183,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Freeplay',
       callback: () ->
       {
-        FlxG.switchState(new funkin.ui.freeplay.FreeplayState());
+        FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
       },
       icon: 'freeplay',
       description: "Choose and play any song you've previously unlocked.",
@@ -208,7 +208,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         @:privateAccess
         var path = s._asc.fullyQualifiedName;
         funkin.ui.options.OptionsState.backState = path;
-        FlxG.switchState(new funkin.ui.options.OptionsState());
+        FlxG.switchState(() -> new funkin.ui.options.OptionsState());
       },
       icon: 'options',
       description: "Configure various gameplay and visual settings.",
