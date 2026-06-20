@@ -639,7 +639,7 @@ class Project extends HXProject
       buildHxCppTools();
     }
 
-    if (!isDisplay())
+    if (!(isDisplay() || isClean()))
     {
       checkLibraries();
     }
@@ -1495,7 +1495,7 @@ class Project extends HXProject
 
   function configureAssets()
   {
-    if (!isDisplay())
+    if (!(isDisplay() || isClean()))
     {
       // Delete the assets folder from the export folder before adding anything.
       clearAssets();
