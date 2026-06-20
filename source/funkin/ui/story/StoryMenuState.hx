@@ -244,7 +244,21 @@ class StoryMenuState extends MusicBeatState
 
   function rememberSelection():Void
   {
-    if (rememberedLevelId != null) currentLevelId = rememberedLevelId;
+    if (rememberedLevelId != null)
+    {
+      final levelList:Array<String> = LevelRegistry.instance.listEntryIds();
+      if (!levelList.contains(rememberedLevelId))
+      {
+        rememberedLevelId = null;
+        rememberedDifficulty = null;
+
+        return;
+      }
+      else
+      {
+        currentLevelId = rememberedLevelId;
+      }
+    }
 
     if (rememberedDifficulty != null) currentDifficultyId = rememberedDifficulty;
   }
