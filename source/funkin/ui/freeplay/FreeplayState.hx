@@ -257,6 +257,12 @@ class FreeplayState extends MusicBeatSubState
    */
   public var backingImage:FunkinSprite;
 
+  /**
+   * If true, we are currently in the process of quitting Freeplay.
+   * Skip any update functions as most of them will call a crash.
+   */
+  var criticalFailure:Bool = false;
+
   public var angleMaskShader:AngleMask = new AngleMask();
 
   var fadeShader:BlueFade = new BlueFade();
@@ -1064,7 +1070,8 @@ class FreeplayState extends MusicBeatSubState
    * @param songFilter The filter to apply
    * @return Array<FreeplaySongData>
    */
-  public function sortSongs(songsToFilter:Array<Null<FreeplaySongData>>, songFilter:SongFilter):Array<Null<FreeplaySongData>>
+  public function sortSongs(songsToFilter:Array<Null<FreeplaySongData>>,
+    songFilter:SongFilter):Array<Null<FreeplaySongData>>
   {
     var filterAlphabetically = function(a:Null<FreeplaySongData>, b:Null<FreeplaySongData>):Int
     {
@@ -1202,7 +1209,8 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  function rankDisplayNew(fromResults:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
+  function rankDisplayNew(fromResults:Null<FromResultsParams>,
+    capsuleToRank:SongMenuItem):Void
   {
     capsuleToRank.ranking.visible = true;
     capsuleToRank.blurredRanking.visible = true;
@@ -1311,7 +1319,8 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  function rankAnimSlam(fromResultsParams:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
+  function rankAnimSlam(fromResultsParams:Null<FromResultsParams>,
+    capsuleToRank:SongMenuItem):Void
   {
     // FlxTween.tween(rankCamera, {"zoom": 1.9}, 0.5, {ease: FlxEase.backOut});
     FlxTween.tween(rankBg, {
@@ -1770,8 +1779,17 @@ class FreeplayState extends MusicBeatSubState
   var allowPicoBulletsVibration:Bool = false;
   var backTransitioning:Bool = false;
 
-  override function update(elapsed:Float):Void
+  override public function draw():Void
   {
+    if (criticalFailure) return;
+
+    super.draw();
+  }
+
+  override public function update(elapsed:Float):Void
+  {
+    if (criticalFailure) return;
+
     super.update(elapsed);
 
     Conductor.instance.update(FlxG.sound?.music?.time ?? 0.0);
@@ -2522,7 +2540,8 @@ class FreeplayState extends MusicBeatSubState
    * @param diff
    * @return Int
    */
-  function findClosestDiff(characterVariations:Array<String>, diff:String):Int
+  function findClosestDiff(characterVariations:Array<String>,
+    diff:String):Int
   {
     var closestIndex:Int = 0;
     var closest:Int = curSelected;
@@ -2820,7 +2839,8 @@ class FreeplayState extends MusicBeatSubState
   /**
    * Called when hitting ENTER on an instrumental choice for random capsule
    */
-  function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
+  function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>,
+    instChoice:String):Void
   {
     cleanupInstSelectMenu();
 
@@ -3037,6 +3057,8 @@ class FreeplayState extends MusicBeatSubState
       #end
       funnyCam.fade(FlxColor.BLACK, 0.2, false, function()
       {
+        criticalFailure = true;
+
         LoadingState.loadPlayState({
           targetSong: targetSong,
           targetDifficulty: currentDifficulty,
