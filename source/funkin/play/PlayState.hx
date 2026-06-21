@@ -1036,6 +1036,13 @@ class PlayState extends MusicBeatSubState
     return true;
   }
 
+  override public function draw():Void
+  {
+    if (criticalFailure) return;
+
+    super.draw();
+  }
+
   override public function update(elapsed:Float):Void
   {
     if (criticalFailure) return;
@@ -1831,6 +1838,8 @@ class PlayState extends MusicBeatSubState
    */
   override function reloadAssets():Void
   {
+    criticalFailure = true;
+
     performCleanup();
 
     // `performCleanup()` clears the static reference to this state
