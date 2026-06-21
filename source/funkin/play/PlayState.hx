@@ -797,9 +797,9 @@ class PlayState extends MusicBeatSubState
     camTransition = new FunkinCamera('playStateCamTransition');
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
-    var noteStyleId:Null<String> = currentChart?.noteStyle;
-    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId ?? Constants.DEFAULT_NOTE_STYLE);
-    if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
+    var noteStyleId:String = currentChart?.noteStyle ?? '';
+    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (nulNoteStyle == null) nulNoteStyle = NoteStyleRegistry.instance.fetchDefault();
     noteStyle = nulNoteStyle;
 
     // Strumlines
