@@ -64,8 +64,6 @@ class DebugBoundingState extends FlxState
 
   override function create():Void
   {
-    Paths.setCurrentLevel('week1');
-
     FlxG.sound.music?.stop();
 
     Cursor.show();

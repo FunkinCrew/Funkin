@@ -11,8 +11,6 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.save.Save;
-import funkin.FunkinMemory;
-import funkin.audio.FunkinSound;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
@@ -91,10 +89,7 @@ class Main extends Sprite
     {
       // Dispose of cached audio and textures.
       funkin.audio.FunkinSound.stopAllAudio(true, true);
-      funkin.FunkinMemory.purgeCache(true);
-
-      // Dispose of any assets still in the OpenFL cache, just incase.
-      openfl.Assets.cache.clear();
+      funkin.assets.FunkinAssetCache.instance.clear();
 
       trace(' EXITING '.bold().bg_red() + ' Resources are disposed, Game is closing now.');
 
