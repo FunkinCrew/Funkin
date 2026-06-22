@@ -135,7 +135,6 @@ class FunkinCamera extends FlxCamera
   var _blendShader:RuntimeCustomBlendShader;
   var _blendBackgroundFrame:FlxFrame;
   var _foregroundRenderTexture:RenderTexture;
-  var _blendedRenderTexture:RenderTexture;
   var _cameraTexture:FixedBitmapData;
   var _cameraMatrix:FlxMatrix;
 
@@ -148,7 +147,6 @@ class FunkinCamera extends FlxCamera
 
     _blendShader = new RuntimeCustomBlendShader();
 
-    _blendedRenderTexture = new RenderTexture(this.width, this.height);
     _foregroundRenderTexture = new RenderTexture(this.width, this.height);
 
     _blendBackgroundFrame = new FlxFrame(new FlxGraphic('', _foregroundRenderTexture.graphic.bitmap));
@@ -220,6 +218,7 @@ class FunkinCamera extends FlxCamera
         frameMatrix.copyFrom(matrix);
         frameMatrix.translate(-pivotX, -pivotY);
         frameMatrix.scale(this.scaleX, this.scaleY);
+        frameMatrix.rotateWithTrig(_cosScrollAngle, _sinScrollAngle);
         frameMatrix.translate(pivotX, pivotY);
         camera.drawPixels(frame, pixels, frameMatrix, transform, null, smoothing, shader);
       });
@@ -235,22 +234,15 @@ class FunkinCamera extends FlxCamera
       // We just clamp the scale to 1 to avoid this!
       var clampedScale:Float = Math.max(1, Lib.current.stage.window.scale);
 
-      _blendedRenderTexture.init(Std.int(this.width * clampedScale), Std.int(this.height * clampedScale));
-      _blendedRenderTexture.drawToCamera((camera, matrix) ->
-      {
-        camera.zoom = this.zoom;
-        matrix.scale(clampedScale, clampedScale);
-        camera.drawPixels(_blendBackgroundFrame, null, matrix, canvas.transform.colorTransform, null, false, _blendShader);
-      });
-
-      _blendedRenderTexture.render();
-
       // Resize the frame so it always fills the screen
       _cameraMatrix.identity();
       _cameraMatrix.scale(1 / (this.scaleX * clampedScale), 1 / (this.scaleY * clampedScale));
       _cameraMatrix.translate(((width - width / this.scaleX) * 0.5), ((height - height / this.scaleY) * 0.5));
+      _cameraMatrix.translate(-width * 0.5, -height * 0.5);
+      _cameraMatrix.rotateWithTrig(_cosScrollAngle, -_sinScrollAngle);
+      _cameraMatrix.translate(width * 0.5, height * 0.5);
 
-      super.drawPixels(_blendedRenderTexture.graphic.imageFrame.frame, null, _cameraMatrix, null, null, smoothing, null);
+      super.drawPixels(_blendBackgroundFrame, null, _cameraMatrix, canvas.transform.colorTransform, null, smoothing, _blendShader);
 
       bufferRenderer.active = true;
     }
@@ -378,7 +370,6 @@ class FunkinCamera extends FlxCamera
     super.destroy();
 
     _foregroundRenderTexture.destroy();
-    _blendedRenderTexture.destroy();
 
     _cameraTexture.dispose();
 
