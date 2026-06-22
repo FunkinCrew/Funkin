@@ -1,37 +1,13 @@
 package funkin.assets;
 
-import funkin.util.assets.StagedCache;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.util.FlxDestroyUtil;
-import funkin.assets.Assets.AssetType as FunkinAssetType;
-import funkin.assets.Paths.AssetPath;
-import funkin.util.assets.AssetsUtil;
-import funkin.util.MemoryUtil;
-import funkin.util.SortUtil;
-import funkin.util.collection.CallbackMap;
-import haxe.io.Bytes;
-import lime.app.Future;
-import lime.app.Promise;
-import lime.graphics.Image as LimeImage;
-import lime.media.AudioBuffer as LimeAudioBuffer;
-import lime.utils.AssetCache as LimeAssetCache;
-import lime.utils.AssetType as LimeAssetType;
+import funkin.util.assets.StagedCache;
 import openfl.display.BitmapData;
-import openfl.media.Sound;
-import openfl.text.Font;
-import openfl.utils.Assets as OpenFLAssets;
-import openfl.utils.ByteArray;
-import openfl.utils.IAssetCache as OpenFLIAssetCache;
+import animate.FlxAnimateFrames;
+
 //
 // ~PATHS~
 //
-import funkin.assets.Assets as Assets;
-import funkin.assets.ValidatedPaths as Paths;
-
-using StringTools;
-using Lambda;
-
 // MOON NOTES
 // * A potential issue I can see with the current implementation is that checking if a cached graphic even exists
 // * puts that same said cached graphic into the current cache, which may cause issues if the same asset is being loaded multiple times in a row,
@@ -275,8 +251,16 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   function onRemoveFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
   {
+    // Remove the graphic from flixel-animate's cache if it exists
+    @:privateAccess
+    if (FlxAnimateFrames._cachedAtlases.exists(assetPath))
+    {
+      FlxAnimateFrames._cachedAtlases.remove(assetPath);
+    }
+
     // Called when an FlxGraphic is purged from the StagedCache.
     FunkinAssetCache.instance.removeBitmapData(assetPath);
+
     if (graphic != null) graphic.destroy();
   }
 
