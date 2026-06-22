@@ -93,7 +93,8 @@ class CharacterDataParser
       {
         try
         {
-          var character:SparrowCharacter = ScriptedSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          var character:Null<SparrowCharacter> = ScriptedSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null) throw 'Error in the new() function';
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -113,7 +114,8 @@ class CharacterDataParser
       {
         try
         {
-          var character:PackerCharacter = ScriptedPackerCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          var character:Null<PackerCharacter> = ScriptedPackerCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null) throw 'Error in the new() function';
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -133,7 +135,8 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          var character:Null<MultiSparrowCharacter> = ScriptedMultiSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null) throw 'Error in the new() function';
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -153,7 +156,8 @@ class CharacterDataParser
       {
         try
         {
-          var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          var character:Null<AnimateAtlasCharacter> = ScriptedAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null) throw 'Error in the new() function';
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -173,7 +177,8 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiAnimateAtlasCharacter = ScriptedMultiAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          var character:Null<MultiAnimateAtlasCharacter> = ScriptedMultiAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null) throw 'Error in the new() function';
           log('Loaded character ${character.characterName} (scripted: $charCls)');
           characterScriptedClass.set(character.characterId, charCls);
         }
@@ -190,11 +195,13 @@ class CharacterDataParser
     var scriptedCharClassNames:Array<String> = ScriptedBaseCharacter.listScriptClasses();
     scriptedCharClassNames = scriptedCharClassNames.filter(function(charCls:String):Bool
     {
-      return !(scriptedCharClassNames1.contains(charCls)
+      return !(
+        scriptedCharClassNames1.contains(charCls)
         || scriptedCharClassNames2.contains(charCls)
         || scriptedCharClassNames3.contains(charCls)
         || scriptedCharClassNames4.contains(charCls)
-        || scriptedCharClassNames5.contains(charCls));
+        || scriptedCharClassNames5.contains(charCls)
+      );
     });
 
     if (scriptedCharClassNames.length > 0)
@@ -202,7 +209,7 @@ class CharacterDataParser
       log('Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
       for (charCls in scriptedCharClassNames)
       {
-        var character:BaseCharacter = ScriptedBaseCharacter.scriptInit(charCls, DEFAULT_CHAR_ID, Custom);
+        var character:Null<BaseCharacter> = ScriptedBaseCharacter.scriptInit(charCls, DEFAULT_CHAR_ID, Custom);
         if (character == null)
         {
           log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');

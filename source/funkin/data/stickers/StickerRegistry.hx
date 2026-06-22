@@ -43,7 +43,10 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
 
     switch (loadEntryFile(id))
     {
-      case {fileName: fileName, contents: contents}:
+      case {
+        fileName: fileName,
+        contents: contents
+      }:
         parser.fromJson(contents, fileName);
       default:
         return null;
@@ -79,7 +82,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):StickerPack
+  function createScriptedEntry(clsName:String):Null<StickerPack>
   {
     return ScriptedStickerPack.scriptInit(clsName, 'unknown');
   }
