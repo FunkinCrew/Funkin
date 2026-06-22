@@ -7833,7 +7833,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
       /**
        * We hit a note.
-       * We're gonna create scripted event and dispatch it al over ChartEditor.
+       * We're gonna create scripted event and dispatch it all over the Chart Editor.
        */
       _scriptNoteObj = new NoteSprite(NoteStyleRegistry.instance.fetchDefault());
       _scriptNoteObj.noteData = noteData;
@@ -7847,28 +7847,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // Calling event.cancelEvent() skips all the other logic! Neat!
       if (_noteScriptEvent.eventCanceled)
       {
-        _scriptNoteObj.destroy();
         _scriptNoteObj = null;
-
         _noteScriptEvent = null;
 
         continue;
       }
 
       // Hitsounds.
-      if (hitsoundsEnabled) switch (noteData.getStrumlineIndex())
+      if (hitsoundsEnabled)
       {
-        case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer);
-        case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
+        switch (noteData.getStrumlineIndex())
+        {
+          case 0: // Player
+            if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer);
+          case 1: // Opponent
+            if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
+        }
       }
     }
-    // Clearing memory before next event call.
-    _scriptNoteObj?.destroy();
-    _scriptNoteObj = null;
 
+    // Clearing memory before next event call.
+    _scriptNoteObj = null;
     _noteScriptEvent = null;
+
     for (data in _allowedEvents)
     {
       switch (data.eventKind)
@@ -8088,6 +8089,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     funkin.play.GameOverSubState.reset();
     funkin.play.PauseSubState.reset();
     funkin.play.Countdown.reset();
+
+    // Clear graphics from HaxeUI's cache
+    @:privateAccess {
+      haxe.ui.ToolkitAssets.instance._imageCache.clear();
+      haxe.ui.ToolkitAssets.instance._imageCallbacks._map.clear();
+    }
   }
 
   function applyCanQuickSave():Void

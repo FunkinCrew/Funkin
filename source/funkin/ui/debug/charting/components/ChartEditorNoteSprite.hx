@@ -247,19 +247,19 @@ class ChartEditorNoteSprite extends FlxSprite
     }
   }
 
-  override public function draw()
+  override public function draw():Void
   {
     super.draw();
 
     if (!parentState.showNoteKindIndicators) return;
-    if ((this.noteData?.kind ?? "").length == 0) return; // Do not render the note kind indicator if the note kind is default.
+    if ((this.noteData?.kind ?? '').length == 0) return; // Do not render the note kind indicator if the note kind is default.
 
     kindIndicator.x = this.x;
     kindIndicator.y = this.y;
     kindIndicator.draw();
   }
 
-  override public function kill()
+  override public function kill():Void
   {
     super.kill();
 
