@@ -935,12 +935,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
           library = 'haxeui-flixel';
         }
 
-        if (dir.startsWith('flxanimate/'))
-        {
-          dir = dir.substring('flxanimate/'.length);
-          library = 'flxanimate';
-        }
-
         if (dir == 'assets') dir = 'assets/';
 
         if (dir.startsWith('assets/')) dir = dir.substring('assets/'.length);
