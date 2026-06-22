@@ -133,7 +133,7 @@ class RegistryData
       throw 'Could not find file $entryFilePath';
     }
 
-    var rawJson:String = funkin.assets.Assets.getText(entryFilePath).trim();
+    var rawJson:String = openfl.Assets.getText(entryFilePath.toString()).trim();
     rawJson = SerializerUtil.sanitizeJSON(rawJson);
 
     // JSON _merge Patches for the main path were applied automatically by Polymod.

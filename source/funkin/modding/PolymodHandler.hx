@@ -723,10 +723,6 @@ class PolymodHandler
    */
   public static function forceReloadAssets():Void
   {
-    // We need to clear the cache, including persistent assets,
-    // because some persistent assets may have changed since they were cached.
-    funkin.assets.FunkinAssetCache.instance.clear();
-
     // Forcibly clear scripts so that scripts can be edited.
     ModuleHandler.clearModuleCache();
     Polymod.clearScripts();
