@@ -3,9 +3,6 @@ package funkin.util.assets;
 import haxe.io.Path;
 import funkin.assets.Assets.AssetType as FunkinAssetType;
 import openfl.display.BitmapData;
-import openfl.display3D.Context3D;
-import openfl.display3D.Context3DTextureFormat;
-import openfl.display3D.textures.Texture;
 
 using StringTools;
 
@@ -16,47 +13,24 @@ using StringTools;
 class AssetsUtil
 {
   /**
-   * This function does the following:
-   * - Retrieves the underlying texture from a BitmapData object.
-   * - Uploads the texture to the GPU via the render context. This is handled by OpenFL differently based on target platform.
-   * - Creates a new BitmapData object and ties the uploaded texture to it.
-   *
+   * Uploads the specified bitmap data to the GPU.
    * NOTE: From what I've read, this must be done from the main thread to prevent corrupted graphics.
    *
    * @param bitmapData The BitmapData to upload.
-   * @param optimizeForRender
-   * @return BitmapData
+   * @return The bitmap data
    */
-  static function uploadBitmapDataToGPU(bitmapData:BitmapData, optimizeForRender = true):BitmapData
+  public static function uploadBitmapDataToGPU(bitmapData:BitmapData):BitmapData
   {
     #if FEATURE_GPU_TEXTURES
     trace('Uploading bitmap data to GPU... ${bitmapData?.image?.premultiplied}');
 
-    // Retrieve the render context.
-    var context:Context3D = FlxG.stage.context3D;
-
-    // Create a new texture object using the render context.
-    var texture:Texture = context.createTexture(bitmapData.width, bitmapData.height, Context3DTextureFormat.BGRA, optimizeForRender);
-
-    // TODO: Figure out how to use texture.uploadCompressedTextureFromByteArray to save GPU memory.
-
-    // Upload the texture to the GPU.
-    // This is an expensive operation so don't do it in the UI thread if you can help it.
-    texture.uploadFromBitmapData(bitmapData);
-
-    // Now that the texture is uploaded, the `Texture` object is all we need to render it in-game.
-    // We can dispose of the BitmapData object now.
-    bitmapData.dispose();
+    // `disposeImage()` sets `readable` to false
+    // calling `getTexture()` afterwards disposes the image from the CPU
     bitmapData.disposeImage();
-
-    // Build a new, optimized BitmapData object using the Texture object.
-    var output:BitmapData = BitmapData.fromTexture(texture);
-
-    return output;
-    #else
-    // Don't do anything on builds with GPU textures turned off.
-    return bitmapData;
+    bitmapData.getTexture(FlxG.stage.context3D);
     #end
+
+    return bitmapData;
   }
 
   /**
