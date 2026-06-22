@@ -270,12 +270,16 @@ class LoadingState extends MusicBeatSubState
 
     if (shouldPreloadLevelAssets)
     {
-      if (!asSubState)
+      FlxG.signals.preStateSwitch.addOnce(() ->
       {
         FunkinAssetCache.instance.preparePurgeCache();
-        // TODO: In loading screens, you should be  caching BETWEEN these.
-        FunkinAssetCache.instance.purgeCache(true);
-      }
+      });
+      FlxG.signals.postStateSwitch.addOnce(() ->
+      {
+        // TODO: In loading screens, you should be caching BETWEEN these.
+        FunkinAssetCache.instance.purgeCache(#if ios DeviceUtil.iPhoneNumber > 12 #else true #end);
+      });
+
       preloadLevelAssets();
 
       var spritesToCache:Array<funkin.assets.Paths.AssetPath> = [];
