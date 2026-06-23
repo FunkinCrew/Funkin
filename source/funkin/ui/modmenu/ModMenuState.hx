@@ -18,8 +18,10 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.modmenu.ModMenuButton;
 import funkin.util.PropertyAnimator;
+import funkin.util.WindowUtil;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
@@ -71,6 +73,9 @@ class ModMenuState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+
+    transIn = FlxTransitionableState.defaultTransIn;
+    transOut = FlxTransitionableState.defaultTransOut;
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
@@ -501,7 +506,16 @@ class ModMenuState extends MusicBeatState
       var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), ".zip", "");
       var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
 
-      FileUtil.moveFile(path, destPath);
+      try
+      {
+        FileUtil.moveFile(path, destPath);
+      }
+      catch (e:Dynamic)
+      {
+        trace('Failed to move file: ' + e);
+        WindowUtil.showError('Failed to move file (PLACEHOLDER)', 'Could not move zip file to mods folder. Check logs for details.');
+        return;
+      }
 
       var newItems = refreshModList();
       for (item in newItems)
@@ -513,7 +527,10 @@ class ModMenuState extends MusicBeatState
         }
       }
 
+      handleSelection();
     }
+    else
+      WindowUtil.showWarning('Invalid file type (PLACEHOLDER)', 'Only .zip files are supported for mod installation.');
   }
 
   override public function update(elapsed:Float):Void
@@ -848,6 +865,7 @@ class ModMenuState extends MusicBeatState
   {
     disabledModItems.deselect();
     enabledModItems.deselect();
+
     if (openFolderAnimator.curAnim == 'select' && selection != OpenModsFolder) openFolderAnimator.playAnimation('deselect');
     if (doneButtonAnimator.curAnim == 'select' && selection != Done) doneButtonAnimator.playAnimation('deselect');
 
@@ -1051,12 +1069,21 @@ class ModMenuState extends MusicBeatState
 
     InitState.resetTitleState();
 
-    PolymodHandler.forceReloadAssets();
-    if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
-    else
+    transitionOut(() ->
     {
-      FlxG.switchState(() -> InitState.customTitleState);
-    }
+      var blackScreen = new FunkinSprite();
+      blackScreen.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+      blackScreen.scrollFactor.set(0, 0);
+      blackScreen.alpha = 1;
+      add(blackScreen);
+
+      PolymodHandler.forceReloadAssets();
+      if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
+      else
+      {
+        FlxG.switchState(() -> InitState.customTitleState);
+      }
+    });
   }
 
   function enableMod(item:Null<ModMenuItem>, ?forcedInsertIndex:Int = -1, ?batchFutureCount:Int = -1):Void

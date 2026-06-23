@@ -114,7 +114,6 @@ class ModMenuItemList extends FunkinSpriteGroup
       pinnedItem.localX = ITEM_X_OFFSET;
       pinnedItem.localY = getModItemYPos(0) + scrollOffset;
       selectedModItem = pinnedItem;
-      pinnedItem.selected = true;
     }
     else
     {
