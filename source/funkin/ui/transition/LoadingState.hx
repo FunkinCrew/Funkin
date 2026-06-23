@@ -342,7 +342,7 @@ class LoadingState extends MusicBeatSubState
       FlxG.signals.postStateSwitch.addOnce(() ->
       {
         // TODO: In loading screens, you should be caching BETWEEN these.
-        FunkinAssetCache.instance.purgeCache(#if ios DeviceUtil.iPhoneNumber > 12 #else true #end);
+        FunkinAssetCache.instance.purgeCache(#if ios funkin.util.DeviceUtil.iPhoneNumber > 12 #else true #end);
       });
     }
 
