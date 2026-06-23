@@ -24,6 +24,7 @@ import openfl.text.Font;
 import openfl.utils.Assets as OpenFLAssets;
 import openfl.utils.ByteArray;
 import openfl.utils.IAssetCache as OpenFLIAssetCache;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 
 // @:nullSafety
 
@@ -213,6 +214,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getFlxGraphic($id)');
     #end
+    getBitmapData(id);
     return FunkinBitmapFrontend.instance.getSafe(id);
   }
 
@@ -238,7 +240,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
-      // FlxG.log.warn('Texture not cached, may experience stuttering! ${id}');
       var bitmapData:BitmapData = OpenFLAssets.getBitmapData(id);
       setBitmapData(id, bitmapData);
       return bitmapData;
@@ -419,7 +420,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasFlxGraphic(path:AssetPath):Bool
   {
-    return FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(path.toString());
+    if (FunkinBitmapFrontend.instance.exists(path.toString()) && !FunkinBitmapFrontend.instance.isValidByKey(path.toString()))
+    {
+      FunkinBitmapFrontend.instance.removeByKey(path.toString());
+      return false;
+    }
+
+    return FunkinBitmapFrontend.instance.exists(path.toString());
   }
 
   /**
@@ -546,25 +553,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param id The asset id of the FlxGraphic.
    * @param flxGraphic The FlxGraphic to add to the cache.
    */
-  function setFlxGraphic(id:String, flxGraphic:FlxGraphic):Void
+  function setFlxGraphic(id:String, flxGraphic:FlxGraphicAsset):FlxGraphic
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
     #end
     // Make sure we don't accidentally dispose the bitmap associated with this FlxGraphic.
-    var bitmap:Null<BitmapData> = stagedBitmapData.get(id);
-    if (bitmap != null)
-    {
-      setBitmapData(id, bitmap);
-    }
-    else
-    {
-      throw 'Could not locate bitmap data for cached graphic ($id)';
-    }
+    if (hasBitmapData(id)) getBitmapData(id);
+
+    var graphic = FunkinBitmapFrontend.instance.add(flxGraphic, false, id);
     // Make sure we don't accidentally destroy the graphic while we're using it.
-    flxGraphic.persist = true;
-    flxGraphic.destroyOnNoUse = false;
-    FunkinBitmapFrontend.instance.add(flxGraphic, id);
+    graphic.persist = true;
+    graphic.destroyOnNoUse = false;
+    return graphic;
   }
 
   /**
@@ -697,8 +698,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       var future:Future<FlxGraphic> = fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
       {
         // Create an FlxGraphic from the BitmapData.
-        var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData, false, null, false);
-        setFlxGraphic(assetPath.toString(), graphic);
+        var graphic:FlxGraphic = setFlxGraphic(assetPath.toString(), bitmapData);
         return Future.withValue(graphic);
       });
       return future;
