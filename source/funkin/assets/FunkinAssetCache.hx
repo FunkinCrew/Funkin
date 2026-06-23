@@ -32,9 +32,18 @@ import lime.app.Promise;
 /**
  * An override for the OpenFL AssetCache class to override the internal cache with our own.
  * This allows us to be more specific about when assets are cached, and when they are purged.
+ *
+ * USAGE GUIDE:
+ * Call fetch functions when you want to get and/or load an Asset asynchronously.
+ * Call cache functions when you want to load the Asset into memory asynchronously, without necessarily needing the asset.
+ * Call get functions when you want to get the Asset synchronously, this will cause stutters during the game's process.
  */
 class FunkinAssetCache implements OpenFLIAssetCache
 {
+  // NOTE FROM MOON: In theory, this async thing could cause issues where we try and fetch assets multiple times between frames causing overhead
+  // because we don't check if an asset is in progress of being fetched/loaded or not.. right now as of writing this it isn't happening.
+  // But, I'm keeping this here just as a heads up!
+
   /**
    * An internal list of all the available StagedCaches.
    */
