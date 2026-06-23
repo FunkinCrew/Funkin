@@ -579,21 +579,27 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setBitmapData($id)');
     #end
+    if (!validateBitmapData(bitmapData)) throw "Bitmap cache tried to add an invalid Bitmap!";
+    stagedBitmapData.cache(id, bitmapData);
+  }
+
+  public function validateBitmapData(bitmapData:BitmapData):Bool
+  {
     // Check if the graphic is valid before returning.
-    if (bitmapData == null) throw 'Bitmap cache tried to add a null bitmap "$id"';
+    if (bitmapData == null) return false;
     @:privateAccess
     if (bitmapData.image == null && bitmapData.__texture == null)
     {
       // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
-      throw 'Bitmap cache tried to add a graphic with a destroyed texture "$id"';
+      return false;
     }
     if (bitmapData.width == 0 || bitmapData.height == 0)
     {
       // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
-      throw 'Bitmap cache tried to add a graphic with invalid dimensions "$id"';
+      return false;
     }
 
-    stagedBitmapData.cache(id, bitmapData);
+    return true;
   }
 
   /**
@@ -973,7 +979,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
-   * @return A future for the result of
+   * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
   public function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
   {
@@ -988,9 +994,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
     fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
     {
       // On success, resolve the promise with true
-      if (bitmapData != null) trace(' ASSETS '.bold().bg_lime() + ' Cached BitmapData: ${assetPath.toString()}');
+      if (validateBitmapData(bitmapData))
+      {
+        var _:Int = bitmapData.width; // Trigger
+        trace(' ASSETS '.bold().bg_lime() + ' Cached BitmapData: ${assetPath.toString()}');
+      }
 
-      promise.complete(bitmapData != null);
+      promise.complete(validateBitmapData(bitmapData));
       return Future.withValue(bitmapData);
     }).onError((err) ->
       {
@@ -1003,12 +1013,12 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
-   * Fetch and cache a FlxGraphic asynchronously.
+   * Fetch a FlxGraphic asynchronously and cache it.
    * If it's previously cached, it will be returned immediately.
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the FlxGraphic to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
-   * @return A future for the FlxGraphic for the asset.
+   * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
   public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool = true):Future<Bool>
   {
@@ -1022,6 +1032,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     fetchFlxGraphic(assetPath, uploadToGPU).then((flxGraphic:FlxGraphic) ->
     {
+      if (FunkinBitmapFrontend.instance.isValid(flxGraphic))
+      {
+        // warm up the dang graphic you dang old janky old dang stupid white idfk
+        // Taken from old funkin memory.
+        var sprite = new flixel.FlxSprite();
+        sprite.loadGraphic(flxGraphic);
+        sprite.draw(); // Draw sprite and load it into game's memory.
+        flxGraphic.bitmap?.getTexture(FlxG.stage.context3D); // Just in case that didn't work...
+        sprite.destroy();
+      }
+
       // On success, resolve the promise with true
       promise.complete(FunkinBitmapFrontend.instance.isValid(flxGraphic));
       return Future.withValue(flxGraphic);
@@ -1038,7 +1059,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Cache a Sound asynchronously.
    * @param assetPath The path of the asset to cache.
-   * @return A future for the Sound for the asset.
+   * @return A future that returns whether or not the Sound has been succesfully cached.
    */
   public function cacheSound(assetPath:AssetPath):Future<Bool>
   {
@@ -1070,7 +1091,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Cache a text asynchronously.
    * @param assetPath The path of the asset to cache.
-   * @return A future for the text for the asset.
+   * @return A future that returns whether or not the text has been succesfully cached.
    */
   public function cacheText(assetPath:AssetPath):Future<Bool>
   {
@@ -1102,7 +1123,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Cache a file's bytes asynchronously.
    * @param assetPath The path of the asset to cache.
-   * @return A future for the bytes for the asset.
+   * @return A future that returns whether or not the Bytes has been succesfully cached.
    */
   public function cacheBytes(assetPath:AssetPath):Future<Bool>
   {
