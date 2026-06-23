@@ -228,7 +228,8 @@ class Assets implements ConsoleClass
    * @param settings Additional settings to use when loading the atlas sprite.
    * @return The generated FlxAnimateFrames.
    */
-  public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPathBuilder, settings:AtlasSpriteSettings):FlxAnimateFrames
+  public static function getAnimateAtlas(assetPath:AnimateAtlasAssetPathBuilder,
+    settings:AtlasSpriteSettings):FlxAnimateFrames
   {
     if (assetPath == null) throw 'Input is not a valid texture atlas AssetPath, did you call Paths.animateAtlas()?';
 
@@ -494,7 +495,7 @@ class Assets implements ConsoleClass
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the BitmapData for the asset.
    */
-  public static function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
+  public static function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
@@ -508,7 +509,7 @@ class Assets implements ConsoleClass
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the FlxGraphic for the asset.
    */
-  public static function cacheFlxGraphic(assetPath:AssetPath, uploadToGPU:Bool = true):Future<FlxGraphic>
+  public static function cacheFlxGraphic(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
@@ -521,7 +522,7 @@ class Assets implements ConsoleClass
    * @param assetPath The path of the asset to cache.
    * @return A future for the Sound for the asset.
    */
-  public static function cacheSound(assetPath:AssetPath):Future<Sound>
+  public static function cacheSound(assetPath:AssetPath):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
@@ -534,7 +535,7 @@ class Assets implements ConsoleClass
    * @param assetPath The path of the asset to cache.
    * @return A future for the Text for the asset.
    */
-  public static function cacheText(assetPath:AssetPath):Future<String>
+  public static function cacheText(assetPath:AssetPath):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.txt()?';
 
@@ -547,7 +548,7 @@ class Assets implements ConsoleClass
    * @param assetPath The path of the asset to cache.
    * @return A future for the bytes for the asset.
    */
-  public static function cacheBytes(assetPath:AssetPath):Future<openfl.utils.ByteArray>
+  public static function cacheBytes(assetPath:AssetPath):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
 
@@ -572,7 +573,8 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheBitmapData(assetPath, uploadToGPU));
+      cacheBitmapData(assetPath, uploadToGPU);
+      futures.push(loadBitmapData(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -596,7 +598,8 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheFlxGraphic(assetPath, uploadToGPU));
+      cacheFlxGraphic(assetPath, uploadToGPU);
+      futures.push(loadFlxGraphic(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -619,7 +622,8 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheSound(assetPath));
+      cacheSound(assetPath);
+      futures.push(loadSound(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -642,7 +646,8 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheText(assetPath));
+      cacheText(assetPath);
+      futures.push(loadText(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -665,7 +670,8 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheBytes(assetPath));
+      cacheBytes(assetPath);
+      futures.push(loadBytes(assetPath));
     }
 
     return Promises.allSettled(futures);

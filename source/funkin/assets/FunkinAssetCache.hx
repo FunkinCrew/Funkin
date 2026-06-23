@@ -25,6 +25,7 @@ import openfl.utils.Assets as OpenFLAssets;
 import openfl.utils.ByteArray;
 import openfl.utils.IAssetCache as OpenFLIAssetCache;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import lime.app.Promise;
 
 // @:nullSafety
 
@@ -723,8 +724,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
       {
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
         setSound(assetPath.toString(), sound);
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
         return Future.withValue(sound);
       });
     }
@@ -758,7 +759,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to fetch.
    * @return The bytes, if fetched.
    */
-  public function fetchBytes(assetPath:AssetPath):Future<openfl.utils.ByteArray>
+  public function fetchBytes(assetPath:AssetPath):Future<ByteArray>
   {
     if (hasBytes(assetPath.toString()))
     {
@@ -786,6 +787,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function fetchSparrowAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
     var xmlAssetPath:AssetPath = assetPath.withAssetType(XML);
+    cacheFlxGraphic(assetPath);
+    cacheText(xmlAssetPath);
 
     var result:Promise<FlxAtlasFrames> = new Promise();
     var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath);
@@ -832,6 +835,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function fetchPackerAtlas(assetPath:AssetPath):Future<FlxAtlasFrames>
   {
     var txtAssetPath:AssetPath = assetPath.withAssetType(XML);
+    cacheFlxGraphic(assetPath);
+    cacheText(txtAssetPath);
 
     var result:Promise<FlxAtlasFrames> = new Promise();
     var graphic:Future<FlxGraphic> = fetchFlxGraphic(assetPath);
@@ -968,9 +973,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
-   * @return A future for the BitmapData for the asset.
+   * @return A future for the result of
    */
-  public function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
+  public function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBitmapData(${assetPath.toString()})');
@@ -978,44 +983,34 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     threadCheck('cacheBitmapData(${assetPath.toString()})');
 
-    if (hasBitmapData(assetPath.toString()))
-    {
-      return Future.withValue(getBitmapData(assetPath.toString()));
-    }
+    var promise = new Promise<Bool>();
 
-    var recachedBitmapData:Null<BitmapData> = stagedBitmapData.get(assetPath.toString());
-    if (recachedBitmapData != null)
+    fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
     {
-      // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
-      var value:BitmapData = recachedBitmapData;
-      return Future.withValue(value);
-    }
+      // On success, resolve the promise with true
+      if (bitmapData != null) trace(' ASSETS '.bold().bg_lime() + ' Cached BitmapData: ${assetPath.toString()}');
 
-    // bitmap is NULL augghghggh
-    var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(assetPath.toString(), false).then((bitmapData:BitmapData) ->
-    {
-      if (uploadToGPU)
-      {
-        bitmapData = AssetsUtil.uploadBitmapDataToGPU(bitmapData);
-      }
-      setBitmapData(assetPath.toString(), bitmapData);
+      promise.complete(bitmapData != null);
       return Future.withValue(bitmapData);
     }).onError((err) ->
-    {
-      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching BitmapData (${assetPath}): ${err}');
-    });
-    return future;
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while caching BitmapData (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
+
+    return promise.future;
   }
 
   /**
-   * Fetch a FlxGraphic asynchronously and cache it.
+   * Fetch and cache a FlxGraphic asynchronously.
    * If it's previously cached, it will be returned immediately.
    * @param assetPath The path of the asset to cache.
    * @param uploadToGPU Whether or not to upload the FlxGraphic to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future for the FlxGraphic for the asset.
    */
-  public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool = true):Future<FlxGraphic>
+  public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool = true):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFlxGraphic(${assetPath.toString()})');
@@ -1023,42 +1018,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     threadCheck('cacheFlxGraphic(${assetPath.toString()})');
 
-    if (hasFlxGraphic(assetPath))
-    {
-      return Future.withValue(getFlxGraphic(assetPath.toString()));
-    }
+    var promise = new Promise<Bool>();
 
-    var recachedFlxGraphic:Null<Future<FlxGraphic>> = recacheFlxGraphic(assetPath, uploadToGPU);
-    if (recachedFlxGraphic != null) return recachedFlxGraphic;
-
-    // NOTE: This also caches the BitmapData. Nice.
-    var future:Future<FlxGraphic> = this.fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
+    fetchFlxGraphic(assetPath, uploadToGPU).then((flxGraphic:FlxGraphic) ->
     {
-      // Create an FlxGraphic from the BitmapData.
-      var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData, false, null, false);
-      trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
-      setFlxGraphic(assetPath.toString(), graphic);
-      return Future.withValue(graphic);
+      // On success, resolve the promise with true
+      promise.complete(FunkinBitmapFrontend.instance.isValid(flxGraphic));
+      return Future.withValue(flxGraphic);
     }).onError((err) ->
-    {
-      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching FlxGraphic (${assetPath}): ${err}');
-    });
-    return future;
-  }
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while caching BitmapData (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
 
-  function recacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool):Null<Future<FlxGraphic>>
-  {
-    if (!FunkinBitmapFrontend.instance.stagedFlxGraphic.exists(assetPath.toString())) return null;
-
-    // NOTE: This moves the bitmap data from the previous cache to the current cache.
-    var future:Future<FlxGraphic> = this.cacheBitmapData(assetPath, uploadToGPU).then((_bitmapData:BitmapData) ->
-    {
-      var cacheValue:Null<FlxGraphic> = FunkinBitmapFrontend.instance.stagedFlxGraphic.get(assetPath.toString());
-      if (cacheValue == null) throw 'Whuh?';
-      var validCacheValue:FlxGraphic = cacheValue;
-      return Future.withValue(validCacheValue);
-    });
-    return future;
+    return promise.future;
   }
 
   /**
@@ -1066,7 +1040,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to cache.
    * @return A future for the Sound for the asset.
    */
-  public function cacheSound(assetPath:AssetPath):Future<Sound>
+  public function cacheSound(assetPath:AssetPath):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheSound(${assetPath.toString()})');
@@ -1074,26 +1048,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     threadCheck('cacheSound(${assetPath.toString()})');
 
-    if (hasSound(assetPath.toString()))
-    {
-      return Future.withValue(getSound(assetPath.toString()));
-    }
+    var promise = new Promise<Bool>();
 
-    var recachedSound:Null<Sound> = stagedSound.get(assetPath.toString());
-    if (recachedSound != null)
+    fetchSound(assetPath).then((sound:Sound) ->
     {
-      // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
-      var value:Sound = recachedSound;
-      return Future.withValue(value);
-    }
+      // On success, resolve the promise with true
+      if (sound != null) trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
 
-    return fetchSound(assetPath).then((sound:Sound) ->
-    {
+      promise.complete(sound != null);
       return Future.withValue(sound);
     }).onError((err) ->
-    {
-      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Sound (${assetPath}): ${err}');
-    });
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Sound (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
+
+    return promise.future;
   }
 
   /**
@@ -1101,7 +1072,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to cache.
    * @return A future for the text for the asset.
    */
-  public function cacheText(assetPath:AssetPath):Future<String>
+  public function cacheText(assetPath:AssetPath):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheText(${assetPath.toString()})');
@@ -1109,26 +1080,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     threadCheck('cacheText(${assetPath.toString()})');
 
-    if (hasText(assetPath.toString()))
-    {
-      return Future.withValue(getText(assetPath.toString()));
-    }
+    var promise = new Promise<Bool>();
 
-    var recachedText:Null<String> = stagedText.get(assetPath.toString());
-    if (recachedText != null)
+    fetchText(assetPath).then((text:String) ->
     {
-      // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
-      var value:String = recachedText;
-      return Future.withValue(value);
-    }
+      // On success, resolve the promise with true
+      if (text != null && text != "") trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
 
-    return fetchText(assetPath).then((text:String) ->
-    {
+      promise.complete(text != null && text != "");
       return Future.withValue(text);
     }).onError((err) ->
-    {
-      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Text (${assetPath}): ${err}');
-    });
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Text (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
+
+    return promise.future;
   }
 
   /**
@@ -1136,7 +1104,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The path of the asset to cache.
    * @return A future for the bytes for the asset.
    */
-  public function cacheBytes(assetPath:AssetPath):Future<ByteArray>
+  public function cacheBytes(assetPath:AssetPath):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBytes(${assetPath.toString()})');
@@ -1144,26 +1112,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     threadCheck('cacheBytes(${assetPath.toString()})');
 
-    if (hasBytes(assetPath.toString()))
-    {
-      return Future.withValue(getBytes(assetPath.toString()));
-    }
+    var promise = new Promise<Bool>();
 
-    var recachedBytes:Null<ByteArray> = stagedBytes.get(assetPath.toString());
-    if (recachedBytes != null)
+    fetchBytes(assetPath).then((bytes:ByteArray) ->
     {
-      // This line exists because null-safety creates a Future<Null<T>> instead of a Future<T>.
-      var value:ByteArray = recachedBytes;
-      return Future.withValue(value);
-    }
+      // On success, resolve the promise with true
+      if (bytes != null) trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');
 
-    return fetchBytes(assetPath).then((bytes:ByteArray) ->
-    {
+      promise.complete(bytes != null);
       return Future.withValue(bytes);
     }).onError((err) ->
-    {
-      trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Bytes (${assetPath}): ${err}');
-    });
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Bytes (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
+
+    return promise.future;
   }
 
   /**
