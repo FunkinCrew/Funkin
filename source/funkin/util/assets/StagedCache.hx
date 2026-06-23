@@ -57,15 +57,16 @@ class StagedCache<T> implements IStagedCache
    * If the asset exists in the previous cache, transfer it over.
    *
    * @param key The key of the asset to retrieve.
+   * @param reuse Whether to reuse the asset if its found in previous. True by default.
    * @return The asset, if it exists in the cache. Otherwise, `null`.
    */
-  public function get(key:String):Null<T>
+  public function get(key:String, reuse:Bool = true):Null<T>
   {
     // Use the existing cache first.
     if (existsPermanent(key)) return permanent.get(key);
     if (existsCurrent(key)) return current.get(key);
 
-    if (existsPrevious(key)) return reusePrevious(key);
+    if (existsPrevious(key)) return (reuse) ? reusePrevious(key) : previous.get(key);
 
     // The asset isn't cached.
     return null;

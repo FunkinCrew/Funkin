@@ -57,19 +57,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function addGraphic(graphic:FlxGraphic):FlxGraphic
   {
     // Check if the graphic is valid before adding it to cache.
-    if (graphic == null) throw 'FlxGraphic cache tried to add a null graphic!';
-    if (graphic.bitmap == null) throw 'FlxGraphic cache tried to add a graphic with no bitmap "${graphic.key}"';
-    @:privateAccess
-    if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
-    {
-      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
-      throw 'FlxGraphic cache tried to add a graphic with a destroyed texture "${graphic.key}"';
-    }
-    if (graphic.bitmap.width == 0 || graphic.bitmap.height == 0)
-    {
-      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
-      throw 'FlxGraphic cache tried to add a graphic with invalid dimensions "${graphic.key}"';
-    }
+    if (!isValid(graphic)) throw "FlxGraphic tried to add an invalid graphic!";
 
     trace('[BITMAPFRONTEND] Caching FlxGraphic: ${graphic.key}');
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
@@ -94,21 +82,8 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   public function getSafe(id:String):FlxGraphic
   {
     var result:Null<FlxGraphic> = stagedFlxGraphic.get(id);
-    if (result != null)
+    if (result != null && isValid(result))
     {
-      // Check if the graphic is valid before returning.
-      if (result.bitmap == null) throw 'FlxGraphic cache contains a graphic with no bitmap "$id"';
-      @:privateAccess
-      if (result.bitmap.image == null && result.bitmap.__texture == null)
-      {
-        // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
-        throw 'FlxGraphic cache contains a graphic with a destroyed texture "$id"';
-      }
-      if (result.bitmap.width == 0 || result.bitmap.height == 0)
-      {
-        // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
-        throw 'FlxGraphic cache contains a graphic with invalid dimensions "$id"';
-      }
       return result;
     }
 
@@ -117,7 +92,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     #else
     FlxG.log.warn('BitmapFrontend says not cached, may experience stuttering! ${id}');
     var graphic:FlxGraphic = FlxGraphic.fromBitmapData(FunkinAssetCache.instance.getBitmapData(id), false, id);
-    // TODO: make the graphic keys (graphic.key) be set too EVERYWHERE
     return addGraphic(graphic);
     #end
   }
@@ -128,6 +102,11 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function get(assetPath:String):Null<FlxGraphic>
   {
     return stagedFlxGraphic.get(assetPath);
+  }
+
+  public function exists(key:String)
+  {
+    return stagedFlxGraphic.exists(key);
   }
 
   override public function findKeyForBitmap(bmd:BitmapData):Null<String>
@@ -153,6 +132,29 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function removeByKey(key:String):Void
   {
     stagedFlxGraphic.remove(key);
+  }
+
+  public function isValid(graphic:Null<FlxGraphic>):Bool
+  {
+    if (graphic == null) return false; // graphic is null
+    if (graphic.bitmap == null) return false; // graphic's bitmap is null
+    @:privateAccess
+    if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
+    {
+      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
+      return false;
+    }
+    if (graphic.bitmap.width == 0 || graphic.bitmap.height == 0)
+    {
+      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
+      return false;
+    }
+    return true;
+  }
+
+  public function isValidByKey(key:String):Bool
+  {
+    return isValid(stagedFlxGraphic.get(key, false));
   }
 
   override public function clearCache():Void
