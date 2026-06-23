@@ -39,6 +39,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var rightWatermarkText:Null<FlxText> = null;
   public var conductorInUse(get, set):Conductor;
 
+  public var default_trans_isTransitioning:Bool = false;
+
   var _conductorInUse:Null<Conductor>;
 
   function get_conductorInUse():Conductor
@@ -50,6 +52,32 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   function set_conductorInUse(value:Conductor):Conductor
   {
     return _conductorInUse = value;
+  }
+
+  override function transitionIn():Void
+  {
+    default_trans_isTransitioning = true;
+    super.transitionIn();
+  }
+
+  override function transitionOut(?onComplete:Void->Void):Void
+  {
+    default_trans_isTransitioning = true;
+    super.transitionOut(onComplete);
+  }
+
+  override function finishTransIn()
+  {
+    super.finishTransIn();
+
+    default_trans_isTransitioning = false;
+  }
+
+  override function finishTransOut()
+  {
+    super.finishTransOut();
+
+    default_trans_isTransitioning = false;
   }
 
   public function new()

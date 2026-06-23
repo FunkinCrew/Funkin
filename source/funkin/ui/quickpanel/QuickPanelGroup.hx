@@ -75,6 +75,8 @@ typedef QuickPanelButtonData =
  */
 class QuickPanelGroup extends FunkinSpriteGroup
 {
+  var mbState:Null<MusicBeatState> = null;
+
   static var shouldDecayTimer:Bool = true;
   static var tabFadeTimer:Float = 0;
   static final TAB_FADE_DELAY:Float = 3.0;
@@ -984,6 +986,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   function handleState(elapsed:Float):Void
   {
+    var state:Dynamic = FlxG.state;
+
+    if (mbState == null && state is MusicBeatState) mbState = cast FlxG.state;
+    else if (mbState != null && mbState.default_trans_isTransitioning) return;
+
     if (TouchUtil.justReleased) trackDist = false;
     if (trackDist)
     {

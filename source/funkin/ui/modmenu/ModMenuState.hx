@@ -562,7 +562,7 @@ class ModMenuState extends MusicBeatState
     handleKeyboard();
   }
 
-  function isTransitioning():Bool
+  function hasTransitions():Bool
   {
     return pendingTransitions.length > 0;
   }
@@ -572,7 +572,7 @@ class ModMenuState extends MusicBeatState
 
   function handleMouse():Void
   {
-    if (isTransitioning()) return;
+    if (hasTransitions()) return;
 
     if (FlxG.mouse.justPressed)
     {
@@ -605,7 +605,7 @@ class ModMenuState extends MusicBeatState
 
   function handleKeyboard():Void
   {
-    if (isTransitioning()) return;
+    if (hasTransitions()) return;
 
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
@@ -828,7 +828,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.ACCEPT_P && !isTransitioning() && acceptDelay <= 0)
+    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
     {
       enabledModItems.repositionItems();
       disabledModItems.repositionItems();
