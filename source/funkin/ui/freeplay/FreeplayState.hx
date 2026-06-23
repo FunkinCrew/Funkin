@@ -281,8 +281,6 @@ class FreeplayState extends MusicBeatSubState
   var fromCharSelect:Bool = false;
   var forceSkipIntro:Bool = false;
 
-  public var freeplayArrow:Null<FlxText>;
-
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     var fetchPlayableCharacter = function():PlayableCharacter
@@ -401,7 +399,7 @@ class FreeplayState extends MusicBeatSubState
         // Set rememberedSongId to last played song if accessed from the RANDOM option
         rememberedSongId = fromResultsParams.songId;
       }
-    
+
       @:privateAccess
       this._parentState._constructor = () ->
       {
@@ -586,15 +584,6 @@ class FreeplayState extends MusicBeatSubState
     topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     topLeftCornerText.visible = false;
 
-    var freeplayTxtBg:FlxSprite = new FlxSprite()
-      .makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16), FlxColor.BLACK);
-    freeplayTxtBg.x = topLeftCornerText.x - 8;
-    freeplayTxtBg.visible = false;
-
-    freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---');
-    freeplayArrow.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
-    freeplayArrow.visible = false;
-
     ostName.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     ostName.alignment = RIGHT;
     ostName.visible = false;
@@ -619,9 +608,7 @@ class FreeplayState extends MusicBeatSubState
       overhangStuff,
       topLeftCornerText,
       ostName,
-      charSelectHint,
-      freeplayTxtBg,
-      freeplayArrow
+      charSelectHint
     ], {
       y: -overhangStuff.height,
       x: 0,
@@ -633,9 +620,7 @@ class FreeplayState extends MusicBeatSubState
       overhangStuff,
       topLeftCornerText,
       ostName,
-      charSelectHint,
-      freeplayTxtBg,
-      freeplayArrow
+      charSelectHint
     ], {
       y: -300,
       speed: 0.8,
@@ -644,7 +629,6 @@ class FreeplayState extends MusicBeatSubState
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     topLeftCornerText.shader = sillyStroke;
-    freeplayArrow.shader = sillyStroke;
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 420), 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('ui/freeplay/interface/highscore');
@@ -752,8 +736,6 @@ class FreeplayState extends MusicBeatSubState
 
     // putting these here to fix the layering
     add(overhangStuff);
-    add(freeplayArrow);
-    add(freeplayTxtBg);
     add(topLeftCornerText);
     add(ostName);
 
@@ -832,8 +814,6 @@ class FreeplayState extends MusicBeatSubState
       {
         fnfHighscoreSpr.visible = true;
         topLeftCornerText.visible = true;
-        freeplayTxtBg.visible = true;
-        if (freeplayArrow != null) freeplayArrow.visible = true;
         ostName.visible = true;
         updateOSTName(true);
         fpScoreDisplay.visible = true;
@@ -1397,7 +1377,7 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(0.5, _ ->
     {
       dispatchEvent(new CapsuleScriptEvent(FREEPLAY_CAPSULE_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResultsParams?.newRank));
-      
+
       // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
 
