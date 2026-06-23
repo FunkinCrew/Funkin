@@ -838,7 +838,15 @@ class QuickPanelGroup extends FunkinSpriteGroup
     FlxG.state.persistentDraw = true;
     FlxG.state.persistentUpdate = false;
     blockerSubState = new PanelBlockerSubState();
-    FlxG.state.openSubState(blockerSubState);
+    if (FlxG.state.subState != null)
+      {
+        FlxG.state.subState.persistentDraw = true;
+        FlxG.state.subState.persistentUpdate = false;
+        FlxG.state.subState.openSubState(blockerSubState);
+        // dude if theres another substate in here im going to kms
+        if (FlxG.state.subState.subState != null) trace("WARNING: QuickPanelGroup is opening a blocker substate while another substate is already open. This may cause issues.");
+      }
+    else FlxG.state.openSubState(blockerSubState);
   }
 
   function closeBlocker():Void
@@ -846,6 +854,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     if (blockerSubState == null) return;
     FlxG.state.persistentUpdate = true;
     blockerSubState.close();
+    if (FlxG.state.subState != null) FlxG.state.subState.persistentUpdate = true;
     blockerSubState = null;
   }
 
@@ -988,6 +997,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     var state:Dynamic = FlxG.state;
 
+    // Prevent the panel from being opened during a transition
     if (mbState == null && state is MusicBeatState) mbState = cast FlxG.state;
     else if (mbState != null && mbState.default_trans_isTransitioning) return;
 
