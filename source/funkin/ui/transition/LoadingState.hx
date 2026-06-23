@@ -273,72 +273,77 @@ class LoadingState extends MusicBeatSubState
       FlxG.signals.preStateSwitch.addOnce(() ->
       {
         FunkinAssetCache.instance.preparePurgeCache();
+
+        preloadLevelAssets();
+
+        var spritesToCache:Array<funkin.assets.Paths.AssetPath> = [];
+        var soundsToCache:Array<funkin.assets.Paths.AssetPath> = [];
+
+        // Cache the note style.
+        var songDifficulty = params.targetSong.getDifficulty(params.targetDifficulty, params.targetVariation);
+        if (songDifficulty != null)
+        {
+          var noteStyle = NoteStyleRegistry.instance.fetchEntry(songDifficulty.noteStyle ?? '');
+          if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
+          spritesToCache.append(noteStyle.queryAssets(IMAGE));
+          soundsToCache.append(noteStyle.queryAssets(SOUND));
+        }
+
+        // TODO: This sucks lol.
+        if (params.targetSong.songName == '2hot')
+        {
+          spritesToCache.append([
+            funkin.assets.Paths.image('gameplay/songs/darnell/cutscene/cutscene-can'),
+            funkin.assets.Paths.image('gameplay/songs/2hot/graphics/spraycan-explosion-ez'),
+            funkin.assets.Paths.image('gameplay/songs/2hot/graphics/can-impact'),
+            funkin.assets.Paths.image('gameplay/songs/2hot/spraycan/spritemap1')
+          ]);
+
+          soundsToCache.append([
+            funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/darnell-lighter'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/gun-prep'),
+            funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-forward'),
+            funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-up'),
+            funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-1'),
+            funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-2'),
+            funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-3'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/bonk'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-1'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-2'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-3'),
+            funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-4')
+          ]);
+        }
+
+        for (assetPath in spritesToCache)
+        {
+          trace('Queueing ${assetPath.toString()} to preload.');
+          funkin.assets.Assets.cacheFlxGraphic(assetPath).onComplete((success:Bool) ->
+          {
+            // TODO: This should be where the the progress bar should be handled, i think
+            trace('Succesfully cached ${assetPath.toString()}!');
+          });
+          // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
+          // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
+          if (assetPath.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || assetPath.toString().endsWith('spritemap1.astc') #end)
+          {
+            trace('Preloading FlxAnimate asset: ${assetPath}');
+            funkin.assets.Assets.getBitmapData(assetPath, true);
+          }
+        }
+
+        for (assetPath in soundsToCache)
+        {
+          trace('Queueing ${assetPath.toString()} to preload.');
+          funkin.assets.Assets.cacheSound(assetPath);
+        }
       });
+
       FlxG.signals.postStateSwitch.addOnce(() ->
       {
         // TODO: In loading screens, you should be caching BETWEEN these.
         FunkinAssetCache.instance.purgeCache(#if ios DeviceUtil.iPhoneNumber > 12 #else true #end);
       });
-
-      preloadLevelAssets();
-
-      var spritesToCache:Array<funkin.assets.Paths.AssetPath> = [];
-      var soundsToCache:Array<funkin.assets.Paths.AssetPath> = [];
-
-      // Cache the note style.
-      var songDifficulty = params.targetSong.getDifficulty(params.targetDifficulty, params.targetVariation);
-      if (songDifficulty != null)
-      {
-        var noteStyle = NoteStyleRegistry.instance.fetchEntry(songDifficulty.noteStyle ?? '');
-        if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
-        spritesToCache.append(noteStyle.queryAssets(IMAGE));
-        soundsToCache.append(noteStyle.queryAssets(SOUND));
-      }
-
-      // TODO: This sucks lol.
-      if (params.targetSong.songName == '2hot')
-      {
-        spritesToCache.append([
-          funkin.assets.Paths.image('gameplay/songs/darnell/cutscene/cutscene-can'),
-          funkin.assets.Paths.image('gameplay/songs/2hot/graphics/spraycan-explosion-ez'),
-          funkin.assets.Paths.image('gameplay/songs/2hot/graphics/can-impact'),
-          funkin.assets.Paths.image('gameplay/songs/2hot/spraycan/spritemap1')
-        ]);
-
-        soundsToCache.append([
-          funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/darnell-lighter'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/gun-prep'),
-          funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-forward'),
-          funkin.assets.Paths.sound('gameplay/songs/2hot/sounds/kick-can-up'),
-          funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-1'),
-          funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-2'),
-          funkin.assets.Paths.sound('gameplay/stages/phillyBlazin/sounds/lightning-3'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/bonk'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-1'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-2'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-3'),
-          funkin.assets.Paths.sound('gameplay/characters/pico-playable/sounds/shot-4')
-        ]);
-      }
-
-      for (assetPath in spritesToCache)
-      {
-        trace('Queueing ${assetPath.toString()} to preload.');
-        funkin.assets.Assets.cacheFlxGraphic(assetPath);
-        // Another dumb hack: FlxAnimate fetches from OpenFL's BitmapData cache directly and skips the FlxGraphic cache.
-        // Since FlxGraphic tells OpenFL to not cache it, we have to do it manually.
-        if (assetPath.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || assetPath.toString().endsWith('spritemap1.astc') #end)
-        {
-          trace('Preloading FlxAnimate asset: ${assetPath}');
-          openfl.Assets.getBitmapData(assetPath.toString(), true);
-        }
-      }
-
-      for (assetPath in soundsToCache)
-      {
-        trace('Queueing ${assetPath.toString()} to preload.');
-        funkin.assets.Assets.cacheSound(assetPath);
-      }
     }
 
     if (asSubState)
