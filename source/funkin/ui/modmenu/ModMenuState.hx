@@ -1,5 +1,7 @@
 package funkin.ui.modmenu;
 
+import haxe.io.Path;
+import polymod.PolymodConfig;
 import funkin.input.Cursor;
 import funkin.util.FileUtil;
 import funkin.ui.mainmenu.MainMenuState;
@@ -514,6 +516,37 @@ class ModMenuState extends MusicBeatState
       {
         trace('Failed to move file: ' + e);
         WindowUtil.showError('Failed to move file (PLACEHOLDER)', 'Could not move zip file to mods folder. Check logs for details.');
+        return;
+      }
+
+      var newItems = refreshModList();
+      for (item in newItems)
+      {
+        if (item.mod != null)
+        {
+          item.flashBackground();
+          break;
+        }
+      }
+
+      handleSelection();
+    }
+    else if (Path.isAbsolute(path) && FileUtil.directoryExists(path))
+    {
+      if (!FileUtil.pathExists(Path.join([path, PolymodConfig.modMetadataFile])))
+      {
+        WindowUtil.showError('Failed to move folder (PLACEHOLDER)', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
+        return;
+      }
+
+      try
+      {
+        FileUtil.copyDirectory(path, Path.join([PolymodHandler.MOD_FOLDER, Path.withoutDirectory(path)]));
+      }
+      catch (e:Dynamic)
+      {
+        trace('Failed to move folder: ' + e);
+        WindowUtil.showError('Failed to move folder (PLACEHOLDER)', 'Could not move folder to mods folder. Check logs for details.');
         return;
       }
 
