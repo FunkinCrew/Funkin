@@ -32,6 +32,8 @@ import polymod.PolymodConfig;
 #if android
 import funkin.external.android.DataFolderUtil;
 #end
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 
 /**
  * The user interface for the mod menu.
@@ -898,7 +900,7 @@ class ModMenuState extends MusicBeatState
     }
     if (delay > 0) delay -= FlxG.elapsed;
 
-    if (controls.UI_LEFT_P)
+    if (controls.UI_LEFT_P || SwipeUtil.justSwipedLeft)
     {
       switch (selection)
       {
@@ -924,7 +926,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_RIGHT_P)
+    if (controls.UI_RIGHT_P || SwipeUtil.justSwipedRight)
     {
       switch (selection)
       {
@@ -948,7 +950,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_UP_P)
+    if (controls.UI_UP_P || SwipeUtil.justSwipedUp)
     {
       lastInput = 'up';
       switch (selection)
@@ -980,7 +982,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_DOWN_P)
+    if (controls.UI_DOWN_P || SwipeUtil.justSwipedDown)
     {
       lastInput = 'down';
       switch (selection)
@@ -1012,7 +1014,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
+    if ((controls.ACCEPT_P || (TouchUtil.justReleased && !SwipeUtil.justSwipedAny)) && !hasTransitions() && acceptDelay <= 0)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
