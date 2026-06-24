@@ -420,7 +420,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param autoPlay        Whether to play the sound immediately or wait for a `play()` call.
    * @param persist         Whether to keep this `FunkinSound` between states, or destroy it.
    * @param onComplete      Called when the sound finished playing.
-   * @param onLoad          Called when the sound finished loading.  Called immediately for succesfully loaded embedded sounds.
+   * @param onLoad          Called when the sound finished loading.  Called immediately for successfully loaded embedded sounds.
    * @param important       If `true`, the sound channel will forcefully be added onto the channel array, even if full. Use sparingly!
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */

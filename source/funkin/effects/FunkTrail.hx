@@ -7,7 +7,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.math.FlxPoint;
 
 /**
- * An offshoot of FlxTrail, but accomodates the way Funkin
+ * An offshoot of FlxTrail, but accommodates the way Funkin
  * does offsets for characters. example, fixes Spirits trail
  */
 @:nullSafety

@@ -2,7 +2,7 @@ package funkin.data.song.importer;
 
 /**
  * Structure of a parsed Osu!Mania .osu file
- * Stuctured like a INI file format by CSV for HitObjects and more
+ * Structured like a INI file format by CSV for HitObjects and more
  */
 typedef OsuManiaData =
 {

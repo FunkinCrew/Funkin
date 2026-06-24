@@ -163,8 +163,8 @@ class LetterSort extends FlxSpriteGroup
   }
 
   /**
-   * Buncho timers and stuff to move the letters and seperators
-   * Seperated out so we can call it again on letters with songs within them
+   * Buncho timers and stuff to move the letters and separators
+   * Separated out so we can call it again on letters with songs within them
    * @param diff
    */
   function doLetterChangeAnims(diff:Int):Void
@@ -284,7 +284,7 @@ class FreeplayLetter extends FunkinSprite
     regexLetters.insert(0, '#');
 
     // the symbols from flash don't have dashes, so we clean this up for use with animations
-    // (we don't need to re-export, rule of thumb is to accomodate files named in flash from dave
+    // (we don't need to re-export, rule of thumb is to accommodate files named in flash from dave
     //    until we get him programming classes (and since i cant find the .fla file....))
     animLetters = regexLetters.map(animLetter -> animLetter.replace('-', ''));
 

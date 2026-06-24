@@ -112,7 +112,7 @@ class SustainTrail extends FlxSprite
   public var bottomClip:Float = 0.9;
 
   /**
-   * Whether the note will recieve custom vertex data
+   * Whether the note will receive custom vertex data
    */
   public var customVertexData:Bool = false;
 
