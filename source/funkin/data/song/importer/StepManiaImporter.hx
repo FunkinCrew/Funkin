@@ -433,7 +433,7 @@ class StepManiaImporter
       result = pushWorking(workingDiff, result);
     }
 
-    // Syncronize timing points with StepStops
+    // Synchronize timing points with StepStops
     result.TimingPoints = synchronizeStepTimingPoints(result.Stops, result.TimingPoints);
 
     return result;

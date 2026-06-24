@@ -1000,7 +1000,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   /**
    * Whether or not we are in flipped landscape device rotation,
-   * generally for mobile to accomodate the device notch!
+   * generally for mobile to accommodate the device notch!
    * @return Bool
    */
   function isLandscapeFlipped():Bool

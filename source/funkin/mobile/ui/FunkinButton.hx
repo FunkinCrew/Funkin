@@ -88,13 +88,13 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   public var deadZones:Array<FunkinSprite> = [];
 
   /**
-   * Whether the button should be released if you swiped over somwhere else.
+   * Whether the button should be released if you swiped over somewhere else.
    */
   public var limitToBounds:Bool = true;
 
   /**
    * A radius for circular buttons.
-   * If this radius is larger than 0 then the overlap check will look if the touch point is inside this raius.
+   * If this radius is larger than 0 then the overlap check will look if the touch point is inside this radius.
    */
   public var radius:Float = 0;
 

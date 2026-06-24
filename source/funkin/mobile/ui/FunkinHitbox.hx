@@ -41,7 +41,7 @@ class FunkinHint extends FunkinButton
    * Each style is represented as a key with an associated array of two alpha values:
    * - The first value corresponds to the alpha when the hint is pressed.
    * - The second value corresponds to the alpha when the hint is not pressed.
-   * - The third value corresponds to the duratuon it'll take to tween between the two values.
+   * - The third value corresponds to the duration it'll take to tween between the two values.
    */
   static final HINT_ALPHA_STYLE:Map<FunkinHintAlphaStyle, Array<Float>> = [
     INVISIBLE_TILL_PRESS => [0.3, 0.00001, 0.01],

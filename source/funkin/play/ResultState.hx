@@ -1259,7 +1259,7 @@ typedef ResultsStateParams =
   var scoreData:SaveScoreData;
 
   /**
-   * The previous score data, used for rank comparision.
+   * The previous score data, used for rank comparison.
    */
   var ?prevScoreData:SaveScoreData;
 

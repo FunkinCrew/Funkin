@@ -11,7 +11,7 @@ import funkin.util.tools.ISerializable;
 class PlayerData implements ISerializable
 {
   /**
-   * The sematic version number of the player data JSON format.
+   * The semantic version number of the player data JSON format.
    * Supports fancy comparisons like NPM does it's neat.
    */
   @:default(funkin.data.freeplay.player.PlayerRegistry.PLAYER_DATA_VERSION)

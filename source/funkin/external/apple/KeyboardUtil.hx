@@ -10,7 +10,7 @@ package funkin.external.apple;
 extern class KeyboardUtil
 {
   /**
-   * Retrieves wether a hardware keyboard is connected to the device.
+   * Retrieves whether a hardware keyboard is connected to the device.
    *
    * Works on iOS 16.4 and later.
    *

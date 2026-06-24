@@ -121,7 +121,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       dividerColor
     );
 
-    // Draw the beat ticks and dividers, and step ticks. No need for two seperate loops thankfully.
+    // Draw the beat ticks and dividers, and step ticks. No need for two separate loops thankfully.
     for (i in 1...stepsPerMeasure)
     {
       if ((i % Constants.STEPS_PER_BEAT) == 0) // If we're on a beat, draw a beat tick and divider.

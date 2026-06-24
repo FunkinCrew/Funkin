@@ -11,7 +11,7 @@ import funkin.util.tools.ISerializable;
 class StageData implements ISerializable
 {
   /**
-   * The sematic version number of the stage data JSON format.
+   * The semantic version number of the stage data JSON format.
    * Supports fancy comparisons like NPM does it's neat.
    */
   @:default(funkin.data.stage.StageRegistry.STAGE_DATA_VERSION)

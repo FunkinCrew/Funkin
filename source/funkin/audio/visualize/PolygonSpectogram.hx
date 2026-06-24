@@ -88,7 +88,7 @@ class PolygonSpectogram extends MeshRender
 
       var funnyPixels:Int = Std.int(daHeight * detail); // sorta redundant but just need it for different var...
 
-      if (prevAudioData == audioData.subarray(startSample, startSample + samplesToGen)) return; // optimize / finish funciton here, no need to re-render
+      if (prevAudioData == audioData.subarray(startSample, startSample + samplesToGen)) return; // optimize / finish function here, no need to re-render
 
       prevAudioData = audioData.subarray(startSample, samplesToGen);
 

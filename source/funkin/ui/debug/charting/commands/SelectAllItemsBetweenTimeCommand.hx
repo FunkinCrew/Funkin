@@ -117,7 +117,7 @@ class SelectAllItemsBetweenTimeCommand implements ChartEditorCommand
       state.currentEventSelection.pushUnique(event);
     }
 
-    // I don't think it's neccesary to copy this code in, but someone will make an issue out of this if I don't, I'm sure.
+    // I don't think it's necessary to copy this code in, but someone will make an issue out of this if I don't, I'm sure.
     // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
     if (this.notes.length == 0 && this.events.length == 1)
     {

@@ -18,7 +18,7 @@ abstract SongEventSchema(SongEventSchemaRaw)
    * Retrieve a SongEventSchemaField by name. This works even if the field is inside a Frame.
    * You can use array access to call this function; `schema["field_name"]`
    *
-   * @param name The name of the field to retreive.
+   * @param name The name of the field to retrieve.
    * @return The retrieved field, or null if not found.
    */
   @:arrayAccess
