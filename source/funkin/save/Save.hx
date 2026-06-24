@@ -68,7 +68,7 @@ class Save implements ConsoleClass
     this.data = data ??= Save.getDefaultData();
     // Build macro will inject SaveProperty initialization here automatically
 
-    // Make sure the verison number is up to date before we flush.
+    // Make sure the version number is up to date before we flush.
     updateVersionToLatest();
   }
 
@@ -80,7 +80,7 @@ class Save implements ConsoleClass
     #end
     return {
       // Version number is an abstract(Array) internally.
-      // This means it copies by reference, so merging save data overides the version number lol.
+      // This means it copies by reference, so merging save data overrides the version number lol.
       version: thx.Dynamics.clone(Save.SAVE_DATA_VERSION),
       volume: 1.0,
       mute: false,
@@ -950,7 +950,7 @@ class Save implements ConsoleClass
 }
 
 /**
- * An anonymous structure containingg all the user's save data.
+ * An anonymous structure containing all the user's save data.
  * Isn't stored with JSON, stored with some sort of Haxe built-in serialization?
  */
 typedef RawSaveData =
@@ -1030,7 +1030,7 @@ typedef SaveDataUnlocks =
 }
 
 /**
- * An anoymous structure containing options about the user's high scores.
+ * An anonymous structure containing options about the user's high scores.
  */
 typedef SaveHighScoresData =
 {
