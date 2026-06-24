@@ -924,6 +924,40 @@ class FileUtil
   }
 
   /**
+   * Copies a directory and its contents from the source to the destination path.
+   * Creates the destination directory if it does not exist.
+   *
+   * @param src The path to the source directory.
+   * @param dest The path to the destination directory.
+   */
+  public static function copyDirectory(src:String, dest:String):Void
+  {
+    #if sys
+    if (!directoryExists(src))
+    {
+      throw 'Path is not a directory: "$src"';
+    }
+
+    createDirIfNotExists(dest);
+
+    for (file in readDir(src))
+    {
+      final srcPath:String = Path.join([src, file]);
+      final destPath:String = Path.join([dest, file]);
+
+      if (directoryExists(srcPath))
+      {
+        copyDirectory(srcPath, destPath);
+      }
+      else
+      {
+        sys.io.File.copy(srcPath, destPath);
+      }
+    }
+    #end
+  }
+
+  /**
    * Delete a directory, optionally including its contents, and optionally ignoring some paths.
    * Only works on native.
    *
