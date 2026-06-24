@@ -29,6 +29,9 @@ import haxe.io.Path;
 import polymod.Polymod.ModDependencies;
 import polymod.Polymod.ModMetadata;
 import polymod.PolymodConfig;
+#if android
+import funkin.external.android.DataFolderUtil;
+#end
 
 /**
  * The user interface for the mod menu.
@@ -1724,7 +1727,11 @@ class ModMenuState extends MusicBeatState
    */
   function openModsFolder():Void
   {
+    #if android
+    DataFolderUtil.openDataFolder();
+    #else
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
+    #end
     openFolderAnimator.playAnimation('select');
   }
 
