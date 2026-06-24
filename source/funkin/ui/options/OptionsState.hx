@@ -226,10 +226,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       InAppPurchasesUtil.restorePurchases();
     });
     #end
-    #if android
-    createItem('OPEN DATA FOLDER', function()
+    #if mobile
+    createItem('OPEN MOD MENU', function()
     {
-      funkin.external.android.DataFolderUtil.openDataFolder();
+      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
     });
     #end
     #if FEATURE_NEWGROUNDS
