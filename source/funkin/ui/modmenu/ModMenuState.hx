@@ -501,7 +501,6 @@ class ModMenuState extends MusicBeatState
 
   public function onDropFile(path:String, state:String, x:Float, y:Float):Void
   {
-    // If zip file, move to mods folder.
     if (StringTools.endsWith(path, '.zip'))
     {
       var fileClean = StringTools.replace(path, '\\', '/');
@@ -563,7 +562,7 @@ class ModMenuState extends MusicBeatState
       handleSelection();
     }
     else
-      WindowUtil.showWarning('Invalid file type (PLACEHOLDER)', 'Only .zip files are supported for mod installation.');
+      WindowUtil.showWarning('Invalid file type (PLACEHOLDER)', 'Only .zip files and mod folders are supported for mod installation.');
   }
 
   override public function update(elapsed:Float):Void
