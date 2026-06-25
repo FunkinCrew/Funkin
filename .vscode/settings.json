@@ -59,6 +59,7 @@
   "haxe.displayPort": "auto",
   "haxe.enableCompilationServer": true,
   "haxe.enableServerView": true,
+  "haxe.exclude": ["polymod"],
   "haxe.displayServer": { "arguments": ["-v"] },
   "files.associations": {
     "*.hxp": "haxe",

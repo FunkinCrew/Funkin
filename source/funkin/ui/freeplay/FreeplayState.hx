@@ -199,6 +199,10 @@ class FreeplayState extends MusicBeatSubState
 
   function get_currentCapsule():SongMenuItem
   {
+    // I got a NOR error once while the state was deconstructing.
+    @:nullSafety(Off)
+    if (grpCapsules == null || grpCapsules.members == null) return null;
+
     return grpCapsules.members[curSelected];
   }
 

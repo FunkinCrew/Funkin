@@ -484,17 +484,26 @@ class GameOverSubState extends MusicBeatSubState
     }
 
     var musicPath:String = Paths.music(basePath);
-    while (!Assets.exists(musicPath) && suffix.length > 0)
+    var musicSuffix:String = suffix;
+    trace('Checking path: $musicPath');
+    while (!Assets.exists(musicPath) && musicSuffix.length > 0)
     {
-      suffix = suffix.split('-').slice(0, -1).join('-');
-      musicPath = Paths.music(basePath + suffix);
+      musicSuffix = musicSuffix.split('-').slice(0, -1).join('-');
+      musicPath = Paths.music(basePath + musicSuffix);
+      trace('Checking path: $musicPath');
     }
     if (!Assets.exists(musicPath))
     {
-      // who gaf
-      if (starting || ending) return null;
+      // wtf is this crap
+      if (starting || ending)
+      {
+        if (suffix.length == 0) return null;
 
-      FlxG.log.error('[GAMEOVER] Could not find game over music (expected path "${Paths.music(basePath)}" based on suffix "$suffix")!');
+        var newSuffix:String = suffix.split('-').slice(0, -1).join('-');
+        return resolveMusicPath(newSuffix, starting, ending);
+      }
+
+      FlxG.log.error('[GAMEOVER] Could not find game over music (expected path "${Paths.music(basePath)}" based on suffix "$musicSuffix")!');
       return null;
     }
     trace('Resolved music path: ' + musicPath);
