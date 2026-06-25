@@ -6,7 +6,6 @@ import polymod.Polymod.ModMetadata;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
 class ModMenuItemList extends FunkinSpriteGroup
@@ -111,6 +110,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     {
       modItems = [pinnedItem];
       children = children.filter((c) -> (Std.isOfType(c, ModMenuItem) && c == pinnedItem));
+      pinnedItem.cancelFlight();
       pinnedItem.localX = ITEM_X_OFFSET;
       pinnedItem.localY = getModItemYPos(0) + scrollOffset;
       selectedModItem = pinnedItem;
@@ -166,6 +166,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     }
 
     var index = modItems.indexOf(item);
+    item.cancelFlight();
     item.localX = ITEM_X_OFFSET;
     item.localY = getModItemYPos(index) + scrollOffset;
 
@@ -295,6 +296,7 @@ class ModMenuItemList extends FunkinSpriteGroup
   {
     for (index => modMenuItem in modItems)
     {
+      modMenuItem.cancelFlight();
       modMenuItem.localY = getModItemYPos(index) + scrollOffset;
       modMenuItem.localX = ITEM_X_OFFSET;
     }
@@ -302,24 +304,19 @@ class ModMenuItemList extends FunkinSpriteGroup
     updateScrollbar();
   }
 
-  public function animateItemsToLayout(duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  public function animateItemsToLayout(duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
   {
     if (ease == null) ease = FlxEase.quadOut;
     for (index => modMenuItem in modItems)
     {
       if (modMenuItem == null || !modMenuItem.exists) continue;
-
-      FlxTween.cancelTweensOf(modMenuItem);
-      FlxTween.tween(modMenuItem, {
-        localX: ITEM_X_OFFSET,
-        localY: getModItemYPos(index) + scrollOffset
-      }, duration, {ease: ease, startDelay: startDelay});
+      modMenuItem.startFlight(ITEM_X_OFFSET, getModItemYPos(index) + scrollOffset, duration, ease);
     }
 
     updateScrollbar();
   }
 
-  public function animateItemsToLayoutForInsert(insertIndex:Int, duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  public function animateItemsToLayoutForInsert(insertIndex:Int, duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
   {
     animateItemsToLayoutForInsertCount(insertIndex, 1, duration, ease, startDelay);
   }
@@ -328,7 +325,7 @@ class ModMenuItemList extends FunkinSpriteGroup
    * Like animateItemsToLayoutForInsert, but makes room for `insertCount` items being
    * inserted starting at `insertIndex`.
    */
-  public function animateItemsToLayoutForInsertCount(insertIndex:Int, insertCount:Int, duration:Float = 0.2, ?ease:EaseFunction = null, startDelay:Float = 0):Void
+  public function animateItemsToLayoutForInsertCount(insertIndex:Int, insertCount:Int, duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
   {
     if (ease == null) ease = FlxEase.quadOut;
     if (insertCount < 1) insertCount = 1;
@@ -342,11 +339,7 @@ class ModMenuItemList extends FunkinSpriteGroup
       var targetIndex = index;
       if (index >= insertIndex) targetIndex = index + insertCount;
 
-      FlxTween.cancelTweensOf(modMenuItem);
-      FlxTween.tween(modMenuItem, {
-        localX: ITEM_X_OFFSET,
-        localY: getModItemYPosForCount(targetIndex, futureCount) + scrollOffset
-      }, duration, {ease: ease, startDelay: startDelay});
+      modMenuItem.startFlight(ITEM_X_OFFSET, getModItemYPosForCount(targetIndex, futureCount) + scrollOffset, duration, ease);
     }
 
     updateScrollbar();

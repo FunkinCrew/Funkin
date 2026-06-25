@@ -24,7 +24,6 @@ import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.modmenu.ModMenuButton;
 import funkin.util.PropertyAnimator;
 import funkin.util.WindowUtil;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -56,7 +55,8 @@ class ModMenuState extends MusicBeatState
 
   /**
    * Items that are currently flying between the two lists.
-   * Each one owns the tween that carries it, plus the list/index it should land in.
+   * Each one owns the manual flight state (via ModMenuItem.startFlight), plus the
+   * list/index it should land in once that flight completes.
    */
   var pendingTransitions:Array<TransitionRecord> = [];
 
@@ -384,6 +384,7 @@ class ModMenuState extends MusicBeatState
 
     item.clipRect = null;
     transitionLayer.add(item);
+    item.cancelFlight();
     item.localX = worldX - transitionLayer.x;
     item.localY = worldY - transitionLayer.y;
   }
@@ -415,8 +416,9 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
-   * Tween an item from the transition layer into its destination list, tracking it
-   * so it can be force-settled later if another swap interrupts it.
+   * Starts the manual flight that carries an item from the transition layer into its
+   * destination list, tracking it via `pendingTransitions` so it can be force-settled
+   * later if another swap interrupts it.
    */
   function startItemTransition(item:ModMenuItem,
     targetX:Float,
@@ -429,18 +431,11 @@ class ModMenuState extends MusicBeatState
     var record:TransitionRecord = {
       item: item,
       dest: destinationList,
-      index: index,
-      tween: null
+      index: index
     };
     pendingTransitions.push(record);
 
-    record.tween = FlxTween.tween(item, {
-      localX: targetX,
-      localY: targetY
-    }, 0.2, {
-      ease: FlxEase.quadOut,
-      onComplete: _ -> completeTransition(record)
-    });
+    item.startFlight(targetX, targetY, 0.2, FlxEase.quadOut, () -> completeTransition(record));
   }
 
   /**
@@ -453,12 +448,6 @@ class ModMenuState extends MusicBeatState
     if (!pendingTransitions.contains(record)) return;
     pendingTransitions.remove(record);
 
-    if (record.tween != null)
-    {
-      record.tween.cancel();
-      record.tween = null;
-    }
-
     finishItemTransitionToList(record.item, record.dest, record.index);
   }
 
@@ -470,7 +459,7 @@ class ModMenuState extends MusicBeatState
     if (pendingTransitions.length == 0) return;
     for (record in pendingTransitions.copy())
     {
-      completeTransition(record);
+      record.item.finishFlight();
     }
   }
 
@@ -883,9 +872,7 @@ class ModMenuState extends MusicBeatState
 
       oldSelection = selection;
 
-      // Mashing causes a weird bug where the item gets set to the top left of the disabled list.
-      // Most defn a bug with local coordinates vs world coordinates in FunkinGroup, couldn't figure out how to fix it though!
-      acceptDelay = 0.08;
+      acceptDelay = 0.02;
     }
 
     if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
@@ -1129,8 +1116,6 @@ class ModMenuState extends MusicBeatState
     var dependenciesToEnable:Array<String> = checkDependencies(item.mod);
     trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
 
-    // Top-level call locks the denominator for the whole batch (this mod + all the
-    // deps that fly with it), so every flying item animates to the SAME final layout.
     if (batchFutureCount == -1)
     {
       batchFutureCount = enabledModItems.modItems.length + countEnableBatch(item, []);
@@ -1297,20 +1282,14 @@ class ModMenuState extends MusicBeatState
 
     var restY:Float = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
 
-    FlxTween.cancelTweensOf(item);
+    item.cancelFlight();
     item.localX = ModMenuItemList.ITEM_X_OFFSET;
     item.localY = restY;
 
     var dir:Float = moveUp ? -1 : 1;
-    FlxTween.tween(item, {
-      localY: restY + dir * 14
-    }, 0.07, {
-      ease: FlxEase.quadOut,
-      onComplete: _ -> FlxTween.tween(item, {
-        localY: restY
-      }, 0.12, {
-        ease: FlxEase.quadOut
-      })
+    item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY + dir * 14, 0.07, FlxEase.quadOut, () ->
+    {
+      item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY, 0.12, FlxEase.quadOut);
     });
   }
 
@@ -1341,26 +1320,7 @@ class ModMenuState extends MusicBeatState
     var otherModItem = modList[newIndex];
 
     var blocked:Bool = false;
-
     if (moveUp)
-    {
-      for (depId => version in modItem.getDependencies()) if (otherModItem.getModId() == depId)
-      {
-        blocked = true;
-        break;
-      }
-
-      if (!blocked)
-      {
-        var otherOpt = otherModItem.getOptionalDependencies();
-        if (otherOpt != null) for (depId => version in otherOpt) if (modItem.getModId() == depId && version.isSatisfiedBy(modItem.getModVersion()))
-        {
-          blocked = true;
-          break;
-        }
-      }
-    }
-    else
     {
       for (depId => version in otherModItem.getDependencies()) if (modItem.getModId() == depId)
       {
@@ -1372,6 +1332,24 @@ class ModMenuState extends MusicBeatState
       {
         var myOpt = modItem.getOptionalDependencies();
         if (myOpt != null) for (depId => version in myOpt) if (otherModItem.getModId() == depId && version.isSatisfiedBy(otherModItem.getModVersion()))
+        {
+          blocked = true;
+          break;
+        }
+      }
+    }
+    else
+    {
+      for (depId => version in modItem.getDependencies()) if (otherModItem.getModId() == depId)
+      {
+        blocked = true;
+        break;
+      }
+
+      if (!blocked)
+      {
+        var otherOpt = otherModItem.getOptionalDependencies();
+        if (otherOpt != null) for (depId => version in otherOpt) if (modItem.getModId() == depId && version.isSatisfiedBy(modItem.getModVersion()))
         {
           blocked = true;
           break;
@@ -1530,5 +1508,4 @@ typedef TransitionRecord =
   var item:ModMenuItem;
   var dest:ModMenuItemList;
   var index:Int;
-  var tween:Null<flixel.tweens.FlxTween>;
 }

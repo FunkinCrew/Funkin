@@ -8,7 +8,7 @@ import polymod.Polymod.ModMetadata;
 import polymod.Polymod.ModDependencies;
 import flixel.math.FlxRect;
 import funkin.Paths;
-import flixel.tweens.FlxTween;
+import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 
 /**
@@ -101,6 +101,93 @@ class ModMenuItem extends FunkinSpriteGroup
     return enabled;
   }
 
+  /**
+   * True while this item is being manually lerped from one list to another (or within a list).
+   */
+  public var isInFlight(default, null):Bool = false;
+
+  var flightStartX:Float = 0;
+  var flightStartY:Float = 0;
+  var flightTargetX:Float = 0;
+  var flightTargetY:Float = 0;
+  var flightElapsed:Float = 0;
+  var flightDuration:Float = 0.2;
+  var flightEase:Float->Float = FlxEase.quadOut;
+  var flightOnComplete:Null<Void->Void> = null;
+
+  /**
+   * Starts a manual lerp of localX/localY from the item's CURRENT position to the given target.
+   * @param targetX Target localX.
+   * @param targetY Target localY.
+   * @param duration Flight duration in seconds.
+   * @param ease Optional ease function (defaults to FlxEase.quadOut).
+   * @param onComplete Optional callback fired once, when the flight finishes (naturally or via finishFlight()).
+   */
+  public function startFlight(targetX:Float, targetY:Float, duration:Float, ?ease:Float->Float, ?onComplete:Void->Void):Void
+  {
+    flightStartX = localX;
+    flightStartY = localY;
+    flightTargetX = targetX;
+    flightTargetY = targetY;
+    flightElapsed = 0;
+    flightDuration = duration > 0 ? duration : 0.0001;
+    flightEase = ease != null ? ease : FlxEase.quadOut;
+    flightOnComplete = onComplete;
+    isInFlight = true;
+  }
+
+  /**
+   * Immediately finishes the flight, snapping to the exact target and firing the
+   * completion callback (if any). Safe to call even when not in flight (no-op then).
+   */
+  public function finishFlight():Void
+  {
+    if (!isInFlight) return;
+
+    isInFlight = false;
+    localX = flightTargetX;
+    localY = flightTargetY;
+
+    var cb = flightOnComplete;
+    flightOnComplete = null;
+
+    if (cb != null) cb();
+  }
+
+  /**
+   * Cancels the flight in place, WITHOUT snapping to the target and WITHOUT firing
+   * the completion callback. Use when something else is about to take over positioning
+   * this frame anyway (e.g. a fresh startFlight() call, or a hard repositionItems()).
+   */
+  public function cancelFlight():Void
+  {
+    isInFlight = false;
+    flightOnComplete = null;
+  }
+
+  function updateFlight(elapsed:Float):Void
+  {
+    if (!isInFlight) return;
+
+    flightElapsed += elapsed;
+    var t:Float = flightElapsed / flightDuration;
+
+    if (t >= 1)
+    {
+      finishFlight();
+      return;
+    }
+
+    var easedT:Float = flightEase(t);
+    localX = FlxMath.lerp(flightStartX, flightTargetX, easedT);
+    localY = FlxMath.lerp(flightStartY, flightTargetY, easedT);
+  }
+
+  var flashElapsed:Float = -1; // -1 means "not flashing"
+  static inline final FLASH_DURATION:Float = 0.5;
+  static inline final FLASH_START_ALPHA:Float = 1.0;
+  var flashTargetAlpha:Float = 0.25;
+
   public function new(
       mod:Null<ModMetadata>,
       iconAssetPath:Null<String> = null,
@@ -182,7 +269,9 @@ class ModMenuItem extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
+    updateFlight(elapsed);
     updateBackgroundColor();
+    updateFlash(elapsed);
 
     if (bgOffsetX != 0 || bgOffsetY != 0)
     {
@@ -198,19 +287,42 @@ class ModMenuItem extends FunkinSpriteGroup
     }
   }
 
-  var flashTween:Null<FlxTween> = null;
-
   function updateBackgroundColor():Void
   {
+    // While flashing, updateFlash() owns background.localAlpha for this frame.
+    if (flashElapsed >= 0) return;
+
     if (this.selected) background.localAlpha = 0.25;
     else background.localAlpha = 0;
   }
 
+  /**
+   * Briefly flashes the background to full alpha, then eases back down to its
+   * resting alpha (0.25 if selected, 0 otherwise) over FLASH_DURATION seconds.
+   */
   public function flashBackground():Void
   {
-    background.localAlpha = 1.0;
-    if (flashTween != null) flashTween.cancel();
-    flashTween = FlxTween.tween(background, {localAlpha: 0.25}, 0.5, {ease: FlxEase.quintOut});
+    flashTargetAlpha = this.selected ? 0.25 : 0;
+    background.localAlpha = FLASH_START_ALPHA;
+    flashElapsed = 0;
+  }
+
+  function updateFlash(elapsed:Float):Void
+  {
+    if (flashElapsed < 0) return;
+
+    flashElapsed += elapsed;
+    var t:Float = flashElapsed / FLASH_DURATION;
+
+    if (t >= 1)
+    {
+      background.localAlpha = flashTargetAlpha;
+      flashElapsed = -1;
+      return;
+    }
+
+    var easedT:Float = FlxEase.quintOut(t);
+    background.localAlpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
   }
 
   function loadModIcon(bytes:haxe.io.Bytes):Void
