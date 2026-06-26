@@ -119,8 +119,15 @@ class FunkinTween extends FlxTween
       return;
     }
 
+    var delta:Float = rawProgress * duration - _secondsSinceStart;
     _secondsSinceStart = rawProgress * duration;
     super.update(0);
+
+    var delay:Float = (executions > 0) ? loopDelay : startDelay;
+    if (onUpdate != null && delta != 0 && _secondsSinceStart < duration + delay)
+    {
+      onUpdate(this);
+    }
   }
 
   public function resetConductorSync():Void
@@ -165,8 +172,16 @@ class FunkinVarTween extends VarTween
       super.update(elapsed);
       return;
     }
+
+    var delta:Float = rawProgress * duration - _secondsSinceStart;
     _secondsSinceStart = rawProgress * duration;
     super.update(0);
+
+    var delay:Float = (executions > 0) ? loopDelay : startDelay;
+    if (onUpdate != null && delta != 0 && _secondsSinceStart < duration + delay)
+    {
+      onUpdate(this);
+    }
   }
 
   public function resetConductorSync():Void
