@@ -324,7 +324,7 @@ class FreeplayState extends MusicBeatSubState
       var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
       for (cardClass in allScriptedCards)
       {
-        var card:BackingCard = ScriptedBackingCard.scriptInit(cardClass, 'unknown');
+        var card:Null<BackingCard> = ScriptedBackingCard.scriptInit(cardClass, 'unknown');
         if (card == null) continue;
         if (card.currentCharacter == currentCharacterId)
         {

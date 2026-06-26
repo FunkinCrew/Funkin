@@ -93,9 +93,17 @@ class CharacterDataParser
       {
         try
         {
-          var character:SparrowCharacter = ScriptedSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
-          log('Loaded character ${character.characterName} (scripted: $charCls)');
-          characterScriptedClass.set(character.characterId, charCls);
+          var character:Null<SparrowCharacter> = ScriptedSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null)
+          {
+            log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
+            continue;
+          }
+          else
+          {
+            log('Loaded character ${character.characterName} (scripted: $charCls)');
+            characterScriptedClass.set(character.characterId, charCls);
+          }
         }
         catch (e)
         {
@@ -112,9 +120,17 @@ class CharacterDataParser
       {
         try
         {
-          var character:PackerCharacter = ScriptedPackerCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
-          log('Loaded character ${character.characterName} (scripted: $charCls)');
-          characterScriptedClass.set(character.characterId, charCls);
+          var character:Null<PackerCharacter> = ScriptedPackerCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null)
+          {
+            log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
+            continue;
+          }
+          else
+          {
+            log('Loaded character ${character.characterName} (scripted: $charCls)');
+            characterScriptedClass.set(character.characterId, charCls);
+          }
         }
         catch (e)
         {
@@ -131,9 +147,17 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiSparrowCharacter = ScriptedMultiSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
-          log('Loaded character ${character.characterName} (scripted: $charCls)');
-          characterScriptedClass.set(character.characterId, charCls);
+          var character:Null<MultiSparrowCharacter> = ScriptedMultiSparrowCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null)
+          {
+            log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
+            continue;
+          }
+          else
+          {
+            log('Loaded character ${character.characterName} (scripted: $charCls)');
+            characterScriptedClass.set(character.characterId, charCls);
+          }
         }
         catch (e)
         {
@@ -150,9 +174,17 @@ class CharacterDataParser
       {
         try
         {
-          var character:AnimateAtlasCharacter = ScriptedAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
-          log('Loaded character ${character.characterName} (scripted: $charCls)');
-          characterScriptedClass.set(character.characterId, charCls);
+          var character:Null<AnimateAtlasCharacter> = ScriptedAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null)
+          {
+            log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
+            continue;
+          }
+          else
+          {
+            log('Loaded character ${character.characterName} (scripted: $charCls)');
+            characterScriptedClass.set(character.characterId, charCls);
+          }
         }
         catch (e)
         {
@@ -169,9 +201,17 @@ class CharacterDataParser
       {
         try
         {
-          var character:MultiAnimateAtlasCharacter = ScriptedMultiAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
-          log('Loaded character ${character.characterName} (scripted: $charCls)');
-          characterScriptedClass.set(character.characterId, charCls);
+          var character:Null<MultiAnimateAtlasCharacter> = ScriptedMultiAnimateAtlasCharacter.scriptInit(charCls, DEFAULT_CHAR_ID);
+          if (character == null)
+          {
+            log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
+            continue;
+          }
+          else
+          {
+            log('Loaded character ${character.characterName} (scripted: $charCls)');
+            characterScriptedClass.set(character.characterId, charCls);
+          }
         }
         catch (e)
         {
@@ -200,7 +240,7 @@ class CharacterDataParser
       log('Instantiating ${scriptedCharClassNames.length} (Base) scripted characters...');
       for (charCls in scriptedCharClassNames)
       {
-        var character:BaseCharacter = ScriptedBaseCharacter.scriptInit(charCls, DEFAULT_CHAR_ID, Custom);
+        var character:Null<BaseCharacter> = ScriptedBaseCharacter.scriptInit(charCls, DEFAULT_CHAR_ID, Custom);
         if (character == null)
         {
           log(' ERROR '.error() + 'Failed to initialize scripted character: $charCls');
