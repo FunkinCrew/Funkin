@@ -67,6 +67,8 @@ class ModMenuState extends MusicBeatState
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
 
+  var itemsInFolder:Array<String> = [];
+
   public function new()
   {
     super();
@@ -366,6 +368,13 @@ class ModMenuState extends MusicBeatState
     fileDropTimer = -0.08;
   }
 
+  function rescanFolder():Void
+  {
+    var newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+
+    if (newItems.length != itemsInFolder.length) refreshModList();
+  }
+
   // TRANSITION CODE //
 
   /**
@@ -554,9 +563,19 @@ class ModMenuState extends MusicBeatState
       WindowUtil.showWarning('Invalid file type (PLACEHOLDER)', 'Only .zip files and mod folders are supported for mod installation.');
   }
 
+  var secondCounter:Float = 0;
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    secondCounter += elapsed;
+
+    if (secondCounter >= 0.5)
+    {
+      secondCounter = 0;
+      rescanFolder();
+    }
 
     if (!animDone)
     {
@@ -920,6 +939,7 @@ class ModMenuState extends MusicBeatState
   function refreshModList():Array<ModMenuItem>
   {
     PolymodHandler.getAllMods(true);
+    itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
 
     tempDisabledMods = disabledModItems.modItems.map((item) -> item.mod);
     tempEnabledMods = enabledModItems.modItems.map((item) -> item.mod).filter((m) -> m != null && m.id != BASE_GAME_MOD_ID);
