@@ -331,7 +331,7 @@ class MainMenuState extends MusicBeatState
   {
     if (leftWatermarkText == null) return;
 
-    leftWatermarkText.text = Constants.VERSION;
+    leftWatermarkText.text = '${Constants.VERSION} Preview #3';
 
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
@@ -339,6 +339,10 @@ class MainMenuState extends MusicBeatState
       leftWatermarkText.text += ' | Newgrounds: Logged in as ${NewgroundsClient.instance.user?.name}';
     }
     #end
+
+    if (rightWatermarkText == null) return;
+
+    rightWatermarkText.text += 'Mod Menu Playtest Build (v0.9 Feature Preview #3)';
   }
 
   function playMenuMusic():Void
