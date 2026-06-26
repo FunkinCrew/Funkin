@@ -67,6 +67,7 @@ class ModMenuState extends MusicBeatState
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
 
+  var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
 
   public function new()
@@ -570,11 +571,21 @@ class ModMenuState extends MusicBeatState
     super.update(elapsed);
 
     secondCounter += elapsed;
-
     if (secondCounter >= 0.5)
     {
       secondCounter = 0;
       rescanFolder();
+    }
+
+    if (fadingItems.length > 0)
+    {
+      for (fade in fadingItems.copy())
+      {
+        fade.elapsed += elapsed;
+        var t = Math.min(1, fade.elapsed / fade.duration);
+        fade.item.localAlpha = FlxEase.quadOut(t);
+        if (t >= 1) fadingItems.remove(fade);
+      }
     }
 
     if (!animDone)
@@ -936,6 +947,24 @@ class ModMenuState extends MusicBeatState
   var tempDisabledMods:Array<ModMetadata> = [];
   var tempEnabledMods:Array<ModMetadata> = [];
 
+  function animateNewItemsIn(list:ModMenuItemList, newItems:Array<ModMenuItem>):Void
+  {
+    list.animateItemsToLayout(0.28, FlxEase.quartOut);
+
+    for (item in newItems)
+    {
+      fadeItemIn(item);
+    }
+  }
+
+  var fadingItems:Array<{item:ModMenuItem, elapsed:Float, duration:Float}> = [];
+
+  function fadeItemIn(item:ModMenuItem, duration:Float = 0.28):Void
+  {
+    item.localAlpha = 0;
+    fadingItems.push({item: item, elapsed: 0, duration: duration});
+  }
+
   function refreshModList():Array<ModMenuItem>
   {
     PolymodHandler.getAllMods(true);
@@ -948,14 +977,14 @@ class ModMenuState extends MusicBeatState
     if (selection == DisabledModList && disabledModItems.selectedModItem != null) oldSelectedId = disabledModItems.selectedModItem.getModId();
     else if (selection == EnabledModList && enabledModItems.selectedModItem != null) oldSelectedId = enabledModItems.selectedModItem.getModId();
 
-    var newItems = buildDisabledModList();
+    newEnabledItems = [];
+    var newDisabledItems = buildDisabledModList();
     buildEnabledModList();
 
     tempDisabledMods = [];
     tempEnabledMods = [];
 
     // reselect items if possible, otherwise select first item in the list
-
     if (oldSelectedId != null)
     {
       if (selection == DisabledModList)
@@ -979,10 +1008,15 @@ class ModMenuState extends MusicBeatState
       else if (selection == EnabledModList) enabledModItems.selectFirstItem();
     }
 
-    disabledModItems.repositionItems();
-    enabledModItems.repositionItems();
+    if (newDisabledItems.length > 0) animateNewItemsIn(disabledModItems, newDisabledItems);
+    else
+      disabledModItems.repositionItems();
 
-    return newItems;
+    if (newEnabledItems.length > 0) animateNewItemsIn(enabledModItems, newEnabledItems);
+    else
+      enabledModItems.repositionItems();
+
+    return newDisabledItems;
   }
 
   function buildDisabledModList():Array<ModMenuItem>
@@ -1017,23 +1051,29 @@ class ModMenuState extends MusicBeatState
       disabledMods = reconciled;
     }
 
-    disabledModItems.removeAll();
     disabledModItems.title = 'DISABLED';
     disabledModItems.x = leftRectangle.x;
     disabledModItems.y = leftRectangle.y;
 
-    for (mod in disabledMods)
+    var keepIds:Array<String> = disabledMods.map((m) -> m.id);
+    for (item in disabledModItems.modItems.copy())
     {
-      if (mod.id == BASE_GAME_MOD_ID) continue;
-      disabledModItems.addMod(mod);
+      if (item.mod == null) continue; // shouldn't happen in disabled list, but be safe
+      if (!keepIds.contains(item.getModId())) disabledModItems.removeMod(item);
     }
 
     var newItems:Array<ModMenuItem> = [];
-    for (modId in newModId)
+    for (mod in disabledMods)
     {
-      var item = disabledModItems.modItems.find((it) -> it.getModId() == modId);
-      if (item != null) newItems.push(item);
+      if (mod.id == BASE_GAME_MOD_ID) continue;
+      if (disabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
+
+      var item = new ModMenuItem(mod);
+      item.alpha = 0;
+      disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
+      newItems.push(item);
     }
+
     return newItems;
   }
 
@@ -1044,7 +1084,6 @@ class ModMenuState extends MusicBeatState
     if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
     {
       var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
-
       var reconciled:Array<ModMetadata> = tempEnabledMods.copy();
 
       for (mod in enabledMods)
@@ -1056,33 +1095,34 @@ class ModMenuState extends MusicBeatState
       enabledMods = reconciled;
     }
 
-    enabledModItems.removeAll();
     enabledModItems.title = 'ENABLED';
     enabledModItems.x = rightRectangle.x;
     enabledModItems.y = rightRectangle.y;
 
+    var keepIds:Array<String> = enabledMods.map((m) -> m.id);
+    for (item in enabledModItems.modItems.copy())
+    {
+      if (item.getModId() == BASE_GAME_MOD_ID) continue; // never touch the pinned base item
+      if (!keepIds.contains(item.getModId())) enabledModItems.removeMod(item);
+    }
+
     for (mod in enabledMods)
     {
       if (mod.id == BASE_GAME_MOD_ID) continue;
-      enabledModItems.addMod(mod);
+      if (enabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
+
+      var item = new ModMenuItem(mod);
+      item.localAlpha = 0;
+      enabledModItems.addModRawWithoutLayout(item, enabledModItems.modItems.length);
+      newEnabledItems.push(item);
     }
 
-    if (enabledModItems.modItems.exists((item) -> item.getModId() == BASE_GAME_MOD_ID))
+    if (!enabledModItems.modItems.exists((item) -> item.getModId() == BASE_GAME_MOD_ID))
     {
-      // make sure its not selected (weird ass bug)
-      var baseGameItem = enabledModItems.modItems.find((item) -> item.getModId() == BASE_GAME_MOD_ID);
-      if (baseGameItem != null) baseGameItem.selected = false;
-      return;
+      var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Default game content');
+      baseGameItem.locked = true;
+      enabledModItems.addModRawWithoutLayout(baseGameItem, 0);
     }
-
-    var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Default game content');
-    baseGameItem.locked = true;
-    enabledModItems.addModRaw(baseGameItem);
-
-    enabledModItems.modItems.remove(baseGameItem);
-    enabledModItems.modItems.insert(0, baseGameItem);
-    enabledModItems.remove(baseGameItem);
-    enabledModItems.insert(baseGameItem, 0);
   }
 
   function applyModlist():Void
@@ -1178,7 +1218,7 @@ class ModMenuState extends MusicBeatState
       }
       else
       {
-        trace('Error: Dependency ${dependencyId} for mod ${item.getModTitle()} not found!');
+        WindowUtil.showError('Missing dependency (PLACEHOLDER)', 'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.');
         return;
       }
     }

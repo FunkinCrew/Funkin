@@ -606,10 +606,10 @@ class PolymodHandler
     trace('Scanning the mods folder...');
 
     if (modFileSystem == null || force) modFileSystem = buildFileSystem();
-
+    var modMetadata:Array<ModMetadata> = [];
     try
     {
-      var modMetadata:Array<ModMetadata> = Polymod.scan({
+      modMetadata = Polymod.scan({
         modRoot: MOD_FOLDER,
         apiVersionRule: API_VERSION_RULE,
         fileSystem: modFileSystem,
