@@ -32,7 +32,7 @@ class ModuleHandler
     trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
     for (moduleCls in scriptedModuleClassNames)
     {
-      var module:Module = ScriptedModule.scriptInit(moduleCls, moduleCls);
+      var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
       if (module != null)
       {
         trace('   Loaded module: ${moduleCls}');

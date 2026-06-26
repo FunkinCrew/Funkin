@@ -68,7 +68,7 @@ class SongEventRegistry
 
     for (eventCls in scriptedEventClassNames)
     {
-      var event:SongEvent = ScriptedSongEvent.scriptInit(eventCls, 'UKNOWN');
+      var event:Null<SongEvent> = ScriptedSongEvent.scriptInit(eventCls, 'UKNOWN');
 
       if (event != null)
       {
