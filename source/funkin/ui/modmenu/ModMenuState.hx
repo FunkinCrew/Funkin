@@ -120,16 +120,16 @@ class ModMenuState extends MusicBeatState
     topText.updateHitbox();
 
     topText.x = FlxG.width / 2 - (topText.width / 2);
-    topText.y = 25;
+    topText.y = FlxG.height * 0.035;
 
-    var dragText:FlxText = new FlxText(98, 95, FlxG.width, 'Drag packs onto this window to add new stuff');
+    var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Drag packs onto this window to add new stuff');
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, false);
     dragText.scale.set(1, 0.8);
     dragText.letterSpacing = 5;
     add(dragText);
 
-    leftRectangle.x = 60;
-    leftRectangle.y = 138;
+    leftRectangle.x = FlxG.width * 0.047;
+    leftRectangle.y = FlxG.height * 0.19;
     leftRectangle.scale.set(0.64, 0.67);
     leftRectangle.loadTexture('ui/mods/mod-menu-box');
     add(leftRectangle);
@@ -142,12 +142,17 @@ class ModMenuState extends MusicBeatState
     add(rightRectangle);
     rightRectangle.updateHitbox();
 
-    bgWires = new FunkinSprite(1040, 240).loadTexture('ui/mods/mod-menu-bgwires');
+    bgWires = new FunkinSprite().loadTexture('ui/mods/mod-menu-bgwires');
+    ;
+    bgWires.x = FlxG.width * 0.81;
+    bgWires.y = FlxG.height * 0.33;
     bgWires.scale.set(0.7, 0.7);
     bgWires.updateHitbox();
     add(bgWires);
 
-    var bfAndGF:FunkinSprite = new FunkinSprite(705, 40);
+    var bfAndGF:FunkinSprite = new FunkinSprite();
+    bfAndGF.x = FlxG.width * 0.55;
+    bfAndGF.y = FlxG.height * 0.055;
     bfAndGF.scale.set(0.7, 0.7);
     bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
     bfAndGF.updateHitbox();
@@ -204,15 +209,15 @@ class ModMenuState extends MusicBeatState
     smoke.alpha = 0;
     add(smoke);
 
-    buttonDone.x = 865;
-    buttonDone.y = 642;
+    buttonDone.x = FlxG.width * 0.68;
+    buttonDone.y = FlxG.height * 0.89;
     buttonDone.scale.set(0.65, 0.65);
     buttonDone.loadTexture('ui/mods/mod-menu-done');
     buttonDone.updateHitbox();
     add(buttonDone);
 
-    buttonOpenFolder.x = 240;
-    buttonOpenFolder.y = 640;
+    buttonOpenFolder.x = FlxG.width * 0.19;
+    buttonOpenFolder.y = FlxG.height * 0.89;
     buttonOpenFolder.scale.set(0.65, 0.65);
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
     buttonOpenFolder.updateHitbox();
@@ -900,7 +905,7 @@ class ModMenuState extends MusicBeatState
     }
     if (delay > 0) delay -= FlxG.elapsed;
 
-    if (controls.UI_LEFT_P || SwipeUtil.justSwipedLeft)
+    if (controls.UI_LEFT_P)
     {
       switch (selection)
       {
@@ -926,7 +931,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_RIGHT_P || SwipeUtil.justSwipedRight)
+    if (controls.UI_RIGHT_P)
     {
       switch (selection)
       {
@@ -950,7 +955,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_UP_P || SwipeUtil.justSwipedUp)
+    if (controls.UI_UP_P)
     {
       lastInput = 'up';
       switch (selection)
@@ -982,7 +987,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.UI_DOWN_P || SwipeUtil.justSwipedDown)
+    if (controls.UI_DOWN_P)
     {
       lastInput = 'down';
       switch (selection)
@@ -1014,7 +1019,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if ((controls.ACCEPT_P || (TouchUtil.justReleased && !SwipeUtil.justSwipedAny)) && !hasTransitions() && acceptDelay <= 0)
+    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
@@ -1087,6 +1092,104 @@ class ModMenuState extends MusicBeatState
     if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
 
     if (oldSelection != selection) handleSelection();
+  }
+
+  var grabbedItem:Bool = false;
+  var ghostItem:FunkinSpriteGroup = null;
+
+  function handleTouch():Void
+  {
+    FlxG.mouse.visible = true;
+
+    for (index => item in disabledModItems.modItems)
+    {
+      if (!grabbedItem)
+      {
+        if (TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
+        {
+          grabbedItem = true;
+
+          ghostItem = item.clone();
+          add(ghostItem);
+
+          disabledModItems.selectModItem(item);
+
+          break;
+        }
+      }
+      else
+      {
+        if (disabledModItems.selectedModItem == item)
+        {
+          ghostItem.x = TouchUtil.touch.x;
+          ghostItem.y = TouchUtil.touch.y;
+        }
+
+        if (TouchUtil.justReleased)
+        {
+          grabbedItem = false;
+
+          remove(ghostItem);
+          ghostItem = null;
+
+          if (TouchUtil.overlapsComplex(rightRectangle))
+          {
+            enableMod(item);
+          }
+        }
+      }
+    }
+
+    for (index => item in enabledModItems.modItems)
+    {
+      if (!grabbedItem)
+      {
+        if (TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
+        {
+          grabbedItem = true;
+
+          ghostItem = item.clone();
+          add(ghostItem);
+
+          enabledModItems.selectModItem(item);
+
+          break;
+        }
+      }
+      else
+      {
+        if (enabledModItems.selectedModItem == item)
+        {
+          ghostItem.x = TouchUtil.touch.x;
+          ghostItem.y = TouchUtil.touch.y;
+        }
+
+        if (TouchUtil.justReleased)
+        {
+          grabbedItem = false;
+
+          remove(ghostItem);
+          ghostItem = null;
+
+          if (TouchUtil.overlapsComplex(leftRectangle))
+          {
+            trace('YESSS');
+            disableMod(item);
+          }
+        }
+      }
+    }
+
+    if (TouchUtil.pressAction(buttonOpenFolder))
+    {
+      openFolderAnimator.playAnimation('accept');
+      openFolderAnimator.onFinish = openModsFolder;
+    }
+    else if (TouchUtil.pressAction(buttonDone))
+    {
+      doneButtonAnimator.playAnimation('accept');
+      doneButtonAnimator.onFinish = applyModlist;
+    }
   }
 
   function handleSelection():Void
@@ -1466,6 +1569,8 @@ class ModMenuState extends MusicBeatState
 
     if (!enabledModItems.modItems.contains(item)) return;
     if (enabledModItems.isPinnedItem(item) || item.locked) return;
+
+    trace('ugh');
 
     item.selected = false;
 
