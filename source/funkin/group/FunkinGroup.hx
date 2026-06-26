@@ -542,6 +542,19 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   }
 
   /**
+   * Clears all children from this FunkinGroup.
+   */
+  public inline function clear():Void
+  {
+    for (child in children)
+    {
+      child.destroy();
+    }
+
+    children = [];
+  }
+
+  /**
    * Counts the amount of alive children in this FunkinGroup.
    *
    * @return The alive child number or null.
@@ -782,48 +795,48 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite
   }
 
   /**
-	 * Iterates through every member.
-	 */
-	public inline function iterator(?filter:T->Bool):FunkinGroupIterator<T>
-	{
-		return new FunkinGroupIterator<T>(children, filter);
-	}
+   * Iterates through every member.
+   */
+  public inline function iterator(?filter:T->Bool):FunkinGroupIterator<T>
+  {
+    return new FunkinGroupIterator<T>(children, filter);
+  }
 
-	/**
-	 * Iterates through every member and index.
-	 */
-	public inline function keyValueIterator()
-	{
-		return children.keyValueIterator();
-	}
+  /**
+   * Iterates through every member and index.
+   */
+  public inline function keyValueIterator()
+  {
+    return children.keyValueIterator();
+  }
 }
 
 class FunkinGroupIterator<T>
 {
-	var _groupMembers:Array<T>;
-	var _filter:T->Bool;
-	var _cursor:Int;
-	var _length:Int;
+  var _groupMembers:Array<T>;
+  var _filter:T->Bool;
+  var _cursor:Int;
+  var _length:Int;
 
-	public inline function new(groupMembers:Array<T>, ?filter:T->Bool)
-	{
-		_groupMembers = groupMembers;
-		_filter = filter;
-		_cursor = 0;
-		_length = _groupMembers.length;
-	}
+  public inline function new(groupMembers:Array<T>, ?filter:T->Bool)
+  {
+    _groupMembers = groupMembers;
+    _filter = filter;
+    _cursor = 0;
+    _length = _groupMembers.length;
+  }
 
-	public inline function next()
-	{
-		return hasNext() ? _groupMembers[_cursor++] : null;
-	}
+  public inline function next()
+  {
+    return hasNext() ? _groupMembers[_cursor++] : null;
+  }
 
-	public inline function hasNext():Bool
-	{
-		while (_cursor < _length && (_groupMembers[_cursor] == null || _filter != null && !_filter(_groupMembers[_cursor])))
-		{
-			_cursor++;
-		}
-		return _cursor < _length;
-	}
+  public inline function hasNext():Bool
+  {
+    while (_cursor < _length && (_groupMembers[_cursor] == null || _filter != null && !_filter(_groupMembers[_cursor])))
+    {
+      _cursor++;
+    }
+    return _cursor < _length;
+  }
 }
