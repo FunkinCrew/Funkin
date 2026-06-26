@@ -776,6 +776,67 @@ class Save implements ConsoleClass implements ISerializable
     return false;
   }
 
+  /**
+   * Determine if the song has a score for the specified difficulty.
+   *
+   * @param songId The song ID to check.
+   * @param difficultyId The difficulty ID to check. Null checks for a score on any difficulty for the variation.
+   * @param variation The variation ID to check. Defaults to the default variation.
+   * @return Whether the song has a score for the specified difficulty.
+   */
+  public function hasSongScore(songId:String, ?difficultyId:String, ?variation:String):Bool
+  {
+    if (variation.isBlank()) variation = Constants.DEFAULT_VARIATION;
+
+    // Check each difficulty for a score.
+    if (difficultyId.isBlank())
+    {
+      var difficultyList = variation == 'erect' ? Constants.DEFAULT_DIFFICULTY_LIST_ERECT : Constants.DEFAULT_DIFFICULTY_LIST;
+
+      for (difficulty in difficultyList)
+      {
+        if (getSongScore(songId, difficulty, variation) != null)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Check a specific difficulty for a score.
+    var scoreData:Null<SaveScoreData> = getSongScore(songId, difficultyId, variation);
+    var score = scoreData?.score ?? 0;
+
+    return score > 0;
+  }
+
+  /**
+   * Determine if ANY song has a score on any difficulty, indicating they've completed at least one song.
+   *
+   * @return `true` if any song has a score on any difficulty.
+   */
+  public function hasAnySongScore():Bool
+  {
+    if (data.scores == null) return false;
+    if (data.scores.songs == null) return false;
+    if (data.scores.songs.size() == 0) return false;
+
+    for (songId => saveScoreDifficultiesData in data.scores.songs)
+    {
+      if (saveScoreDifficultiesData.size() == 0) continue;
+
+      for (difficultyId => saveScoreData in saveScoreDifficultiesData)
+      {
+        // Found a song that has a score saved!
+        // This player has beaten at least one song.
+        var currentScore:Int = saveScoreData?.score ?? 0;
+        if (currentScore > 0) return true;
+      }
+    }
+
+    return false;
+  }
+
   public function isSongFavorited(id:String):Bool
   {
     if (data.favoriteSongs == null)
