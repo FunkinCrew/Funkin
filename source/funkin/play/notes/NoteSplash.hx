@@ -17,11 +17,6 @@ class NoteSplash extends FlxSprite
 
     setupSplashGraphic(noteStyle);
 
-    if (PlayState.instance != null)
-    {
-      PlayState.instance.dropShadowLayer.renderer.blacklistSprite(this);
-    }
-
     this.animation.onFinish.add(this.onAnimationFinished);
   }
 

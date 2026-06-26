@@ -29,7 +29,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   /**
    * The children of this FunkinGroup.
    */
-  public var children:Null<Array<T>>;
+  public var children:Array<T>;
 
   /**
    * The size of this FunkinGroup. Read only.
@@ -415,7 +415,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         child.scale.x = scale.x * child.localScale.x;
         child.scale.y = scale.y * child.localScale.y;
 
-        var displace = new FlxPoint(child.localX, child.localY);
+        var displace:FlxPoint = FlxPoint.weak(child.localX, child.localY);
 
         var dx:Float = 0;
         var dy:Float = 0;
@@ -426,7 +426,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         if (preciseScale && !preciseAngle)
         {
           dx += scale.x * (child.localX - origin.x + child.width / 2);
-
           dy += scale.y * (child.localY - origin.y + child.height / 2);
         }
         else if (preciseAngle && !preciseScale)
@@ -458,6 +457,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
         child.x = x + displace.x;
         child.y = y + displace.y;
+
+        displace.put();
 
         child.alpha = alpha * child.localAlpha;
         child.visible = visible && child.localVisible;
@@ -541,7 +542,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       child.destroy();
     }
 
-    children = null;
+    children = [];
 
     _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
     _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);

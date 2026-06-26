@@ -100,7 +100,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   var panelBoilTimer:Float = 0;
   var controls(get, never):Controls;
 
-  inline function get_controls():Controls return PlayerSettings.controls;
+  inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   /**
    * The edge of the screen.
@@ -839,14 +839,17 @@ class QuickPanelGroup extends FunkinSpriteGroup
     FlxG.state.persistentUpdate = false;
     blockerSubState = new PanelBlockerSubState();
     if (FlxG.state.subState != null)
-      {
-        FlxG.state.subState.persistentDraw = true;
-        FlxG.state.subState.persistentUpdate = false;
-        FlxG.state.subState.openSubState(blockerSubState);
-        // dude if theres another substate in here im going to kms
-        if (FlxG.state.subState.subState != null) trace("WARNING: QuickPanelGroup is opening a blocker substate while another substate is already open. This may cause issues.");
-      }
-    else FlxG.state.openSubState(blockerSubState);
+    {
+      FlxG.state.subState.persistentDraw = true;
+      FlxG.state.subState.persistentUpdate = false;
+      FlxG.state.subState.openSubState(blockerSubState);
+      // dude if theres another substate in here im going to kms
+      if (FlxG.state.subState.subState != null) trace(
+        "WARNING: QuickPanelGroup is opening a blocker substate while another substate is already open. This may cause issues."
+      );
+    }
+    else
+      FlxG.state.openSubState(blockerSubState);
   }
 
   function closeBlocker():Void

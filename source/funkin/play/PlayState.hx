@@ -930,8 +930,6 @@ class PlayState extends MusicBeatSubState
     }
     #end
 
-    initDropShadow();
-
     #if FEATURE_DISCORD_RPC
     // Initialize Discord Rich Presence.
     initDiscord();
@@ -2013,20 +2011,6 @@ class PlayState extends MusicBeatSubState
       previousCameraFollowPoint = null;
     }
     add(cameraFollowPoint);
-  }
-
-  /**
-   * Initializes the drop shadow underneath the HUD.
-   */
-  function initDropShadow():Void
-  {
-    dropShadowLayer.camera = camHUD;
-    dropShadowLayer.zIndex = 0;
-
-    dropShadowLayer.renderer.blacklistSprite(leftWatermarkText);
-    dropShadowLayer.renderer.blacklistSprite(rightWatermarkText);
-
-    add(dropShadowLayer);
   }
 
   /**
@@ -3775,8 +3759,9 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId,
-            {variation: currentVariation}) ?? throw 'Could not find a song with ID $targetSongId';
+          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {
+            variation: currentVariation
+          }) ?? throw 'Could not find a song with ID $targetSongId';
           var targetVariation:String = currentVariation;
           if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
           {

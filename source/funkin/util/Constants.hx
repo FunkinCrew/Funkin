@@ -225,6 +225,11 @@ class Constants
   public static final DEFAULT_SONG:String = 'tutorial';
 
   /**
+   * Default level for Story Mode.
+   */
+  public static final DEFAULT_LEVEL:String = 'tutorial';
+
+  /**
    * Default variation for charts.
    */
   public static final DEFAULT_VARIATION:String = 'default';

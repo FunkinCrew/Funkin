@@ -108,11 +108,6 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
       numScore.graphic.destroyOnNoUse = false;
 
-      if (PlayState.instance != null)
-      {
-        PlayState.instance.dropShadowLayer.renderer.blacklistSprite(numScore);
-      }
-
       add(numScore);
 
       var fadeEase = noteStyle.isComboNumSpritePixel(digit) ? EaseUtil.stepped(2) : null;

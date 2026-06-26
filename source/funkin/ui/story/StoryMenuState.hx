@@ -45,7 +45,7 @@ class StoryMenuState extends MusicBeatState
 
   var currentDifficultyId:String = Constants.DEFAULT_DIFFICULTY;
   var currentLevelId:String = Constants.DEFAULT_LEVEL;
-  var currentLevel:Level = LevelRegistry.instance.fetchDefault();
+  var currentLevel:Level;
   var isLevelUnlocked:Bool = true;
   var currentLevelTitle:LevelTitle;
   var highScore:Int = 42069420;
@@ -116,13 +116,15 @@ class StoryMenuState extends MusicBeatState
   {
     super();
 
-    // Default level title for null safety
-    currentLevelTitle = new LevelTitle(0, 0, currentLevel);
-
     if (stickers != null && stickers.members != null)
     {
       stickerSubState = stickers;
     }
+
+    currentLevel = LevelRegistry.instance.fetchEntry(Constants.DEFAULT_LEVEL) ?? throw 'Could not find a level with ID ${Constants.DEFAULT_LEVEL}';
+
+    // Default level title for null safety
+    currentLevelTitle = new LevelTitle(0, 0, currentLevel);
   }
 
   override function create():Void

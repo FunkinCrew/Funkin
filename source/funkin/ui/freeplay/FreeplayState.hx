@@ -358,8 +358,11 @@ class FreeplayState extends MusicBeatSubState
 
     // ui/freeplay/backgrounds/charId/levelId
 
-    backingImage = FunkinSprite.create(backingCard.pinkBack.width * 0.74, 0,
-      styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey());
+    backingImage = FunkinSprite.create(
+      backingCard.pinkBack.width * 0.74,
+      0,
+      styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey()
+    );
 
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData, uiStateMachine);
@@ -568,8 +571,8 @@ class FreeplayState extends MusicBeatSubState
     topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     topLeftCornerText.visible = false;
 
-    var freeplayTxtBg:FlxSprite = new FlxSprite().makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16),
-      FlxColor.BLACK);
+    var freeplayTxtBg:FlxSprite = new FlxSprite()
+      .makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16), FlxColor.BLACK);
     freeplayTxtBg.x = topLeftCornerText.x - 8;
     freeplayTxtBg.visible = false;
 
@@ -645,8 +648,10 @@ class FreeplayState extends MusicBeatSubState
     fpScoreDisplay.visible = false;
     add(fpScoreDisplay);
 
-    var clearBoxSprite:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 115),
-      65).loadGraphic(Paths.image('ui/freeplay/interface/clear-box'));
+    var clearBoxSprite:FlxSprite = new FlxSprite(
+      FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 115),
+      65
+    ).loadGraphic(Paths.image('ui/freeplay/interface/clear-box'));
     clearBoxSprite.visible = false;
     add(clearBoxSprite);
 
@@ -944,13 +949,21 @@ class FreeplayState extends MusicBeatSubState
     switch (renderType)
     {
       case 'animateatlas':
-        dj = (scriptClass != '') ? (ScriptedAnimateAtlasFreeplayDJ.scriptInit(scriptClass, x, y,
-          characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (ScriptedAnimateAtlasFreeplayDJ.scriptInit(
+          scriptClass,
+          x,
+          y,
+          characterId
+        )) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
       case 'sparrow':
         dj = (scriptClass != '') ? (ScriptedSparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
       case 'multisparrow':
-        dj = (scriptClass != '') ? (ScriptedMultiSparrowFreeplayDJ.scriptInit(scriptClass, x, y,
-          characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (ScriptedMultiSparrowFreeplayDJ.scriptInit(
+          scriptClass,
+          x,
+          y,
+          characterId
+        )) : (new MultiSparrowFreeplayDJ(x, y, characterId));
       case 'packer':
         dj = (scriptClass != '') ? (ScriptedPackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
@@ -1693,7 +1706,7 @@ class FreeplayState extends MusicBeatSubState
       {
         funkin.assets.FunkinAssetCache.instance.purgeCache();
       });
-      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterSelectState({
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState({
         character: currentCharacterId
       }));
     });
@@ -2386,8 +2399,12 @@ class FreeplayState extends MusicBeatSubState
       if (!draggingDifficulty) return;
 
       if (_dragOffset == 0 && TouchUtil.pressed) _dragOffset = TouchUtil.touch.x;
-      currentDifficultySprite.offset.x = MathUtil.smoothLerpPrecision(currentDifficultySprite.offset.x, (TouchUtil.touch.x - _dragOffset) * -1, FlxG.elapsed,
-        0.2);
+      currentDifficultySprite.offset.x = MathUtil.smoothLerpPrecision(
+        currentDifficultySprite.offset.x,
+        (TouchUtil.touch.x - _dragOffset) * -1,
+        FlxG.elapsed,
+        0.2
+      );
 
       var vibDist:Float = 5; // essentially how far the touch needs to be before it will trigger a tiny haptic feel
       if (Std.int((TouchUtil.touch.x - _dragOffset) / vibDist) * vibDist != _prevRoundedDragOffset)
@@ -2878,8 +2895,10 @@ class FreeplayState extends MusicBeatSubState
     if (instChoice == 'random')
     {
       var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-      var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
-        targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+      var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(
+        targetDifficultyId,
+        targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION
+      ) ?? [];
 
       // Choose a random instrumental
       var instrumentalIds:Array<String> = [baseInstrumentalId].concat(altInstrumentalIds);
@@ -2927,8 +2946,10 @@ class FreeplayState extends MusicBeatSubState
     trace('target variation: ${targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION}');
 
     var baseInstrumentalId:String = targetSong.getBaseInstrumentalId(targetDifficultyId, targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(targetDifficultyId,
-      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+    var altInstrumentalIds:Array<String> = targetSong.listAltInstrumentalIds(
+      targetDifficultyId,
+      targetDifficulty?.variation ?? Constants.DEFAULT_VARIATION
+    ) ?? [];
 
     #if !mobile
     if (altInstrumentalIds.length > 0)
@@ -3249,8 +3270,10 @@ class FreeplayState extends MusicBeatSubState
       var songDifficulty:Null<SongDifficulty> = previewSong.getDifficulty(currentDifficulty, currentVariation);
 
       var baseInstrumentalId:String = previewSong.getBaseInstrumentalId(currentDifficulty, songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? '';
-      var altInstrumentalIds:Array<String> = previewSong.listAltInstrumentalIds(currentDifficulty,
-        songDifficulty?.variation ?? Constants.DEFAULT_VARIATION) ?? [];
+      var altInstrumentalIds:Array<String> = previewSong.listAltInstrumentalIds(
+        currentDifficulty,
+        songDifficulty?.variation ?? Constants.DEFAULT_VARIATION
+      ) ?? [];
       var instSuffix:String = baseInstrumentalId;
       #if FEATURE_DEBUG_FUNCTIONS
       if (altInstrumentalIds.length > 0 && FlxG.keys.pressed.CONTROL)
@@ -3408,8 +3431,7 @@ class FreeplayState extends MusicBeatSubState
   function updateFreeplayHintText()
   {
     #if FEATURE_TOUCH_CONTROLS
-    if (ControlsHandler.usingExternalInputDevice)
-      charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
+    if (ControlsHandler.usingExternalInputDevice) charSelectHint.text = 'Press [ ${controls.getDialogueNameFromControl(FREEPLAY_CHAR_SELECT, true)} ] to change characters';
     else
       charSelectHint.text = 'Tap the DJ to change characters';
     #else
