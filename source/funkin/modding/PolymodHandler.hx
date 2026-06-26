@@ -607,12 +607,20 @@ class PolymodHandler
 
     if (modFileSystem == null || force) modFileSystem = buildFileSystem();
 
-    var modMetadata:Array<ModMetadata> = Polymod.scan({
-      modRoot: MOD_FOLDER,
-      apiVersionRule: API_VERSION_RULE,
-      fileSystem: modFileSystem,
-      errorCallback: PolymodErrorHandler.onPolymodError
-    });
+    try
+    {
+      var modMetadata:Array<ModMetadata> = Polymod.scan({
+        modRoot: MOD_FOLDER,
+        apiVersionRule: API_VERSION_RULE,
+        fileSystem: modFileSystem,
+        errorCallback: PolymodErrorHandler.onPolymodError
+      });
+    }
+    catch (e:Dynamic)
+    {
+      trace('Error scanning mods folder: ${Std.string(e)}');
+      return [];
+    }
     trace('Found ${modMetadata.length} mods when scanning.');
     return modMetadata;
   }
