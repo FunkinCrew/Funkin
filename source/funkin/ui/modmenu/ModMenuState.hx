@@ -11,7 +11,7 @@ import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.modding.PolymodHandler;
-import polymod.Polymod;
+import funkin.graphics.framebuffer.DropShadowLayer;
 import polymod.Polymod.ModMetadata;
 import polymod.Polymod.ModDependencies;
 import funkin.save.Save;
@@ -66,9 +66,9 @@ class ModMenuState extends MusicBeatState
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
-
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
+  var dropShadowLayer:DropShadowLayer;
 
   public function new()
   {
@@ -91,6 +91,9 @@ class ModMenuState extends MusicBeatState
     menuBG.scrollFactor.set(0, 0);
     menuBG.zIndex = -1000;
     add(menuBG);
+
+    dropShadowLayer = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2, 0, 0);
+    add(dropShadowLayer);
 
     var topText:FunkinSprite = FunkinSprite.create('ui/mods/mod-menu-top-text');
     topText.scale.set(0.66, 0.67);
@@ -340,6 +343,11 @@ class ModMenuState extends MusicBeatState
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
 
     FlxG.autoPause = false;
+
+    // Adding the dropshadow blacklist here since everything is initialized by this point
+    dropShadowLayer.renderer.blacklistSprite(bfAndGF);
+    dropShadowLayer.renderer.blacklistSprite(menuBG);
+    dropShadowLayer.renderer.blacklistSprite(bgWires);
   }
 
   var fileDropTimer:Float = 0;
@@ -618,7 +626,6 @@ class ModMenuState extends MusicBeatState
     return pendingTransitions.length > 0;
   }
 
-
   // INPUT //
 
   function handleMouse():Void
@@ -779,7 +786,8 @@ class ModMenuState extends MusicBeatState
             selection = DisabledModList;
             lastSelectDir = -2;
           }
-          else selection = OpenModsFolder;
+          else
+            selection = OpenModsFolder;
         case OpenModsFolder:
           selection = EnabledModList;
           lastSelectDir = -2;
@@ -943,7 +951,6 @@ class ModMenuState extends MusicBeatState
   }
 
   // MOD LIST BUILDING //
-
   var tempDisabledMods:Array<ModMetadata> = [];
   var tempEnabledMods:Array<ModMetadata> = [];
 
@@ -957,12 +964,17 @@ class ModMenuState extends MusicBeatState
     }
   }
 
-  var fadingItems:Array<{item:ModMenuItem, elapsed:Float, duration:Float}> = [];
+  var fadingItems:Array<
+    {item:ModMenuItem, elapsed:Float, duration:Float}> = [];
 
   function fadeItemIn(item:ModMenuItem, duration:Float = 0.28):Void
   {
     item.localAlpha = 0;
-    fadingItems.push({item: item, elapsed: 0, duration: duration});
+    fadingItems.push({
+      item: item,
+      elapsed: 0,
+      duration: duration
+    });
   }
 
   function refreshModList():Array<ModMenuItem>
@@ -1218,7 +1230,10 @@ class ModMenuState extends MusicBeatState
       }
       else
       {
-        WindowUtil.showError('Missing dependency (PLACEHOLDER)', 'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.');
+        WindowUtil.showError(
+          'Missing dependency (PLACEHOLDER)',
+          'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.'
+        );
         return;
       }
     }
