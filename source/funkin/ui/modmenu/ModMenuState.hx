@@ -381,7 +381,11 @@ class ModMenuState extends MusicBeatState
   {
     var newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
 
-    if (newItems.length != itemsInFolder.length) refreshModList();
+    if (newItems.length != itemsInFolder.length)
+    {
+      trace("Mod folder changed, refreshing list.");
+      refreshModList();
+    }
   }
 
   // TRANSITION CODE //
@@ -1036,10 +1040,14 @@ class ModMenuState extends MusicBeatState
     var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
     var newModId:Array<String> = [];
 
+    var liveIds:Array<String> = disabledMods.map((m) -> m.id).concat(PolymodHandler.getEnabledMods().map((m) -> m.id));
+
     if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
     {
       var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
-      var reconciled:Array<ModMetadata> = tempDisabledMods.copy();
+
+      // Drop carried-over mods that no longer exist on disk at all.
+      var reconciled:Array<ModMetadata> = tempDisabledMods.filter((m) -> liveIds.contains(m.id));
 
       for (mod in disabledMods)
       {
@@ -1070,7 +1078,7 @@ class ModMenuState extends MusicBeatState
     var keepIds:Array<String> = disabledMods.map((m) -> m.id);
     for (item in disabledModItems.modItems.copy())
     {
-      if (item.mod == null) continue; // shouldn't happen in disabled list, but be safe
+      if (item.mod == null) continue;
       if (!keepIds.contains(item.getModId())) disabledModItems.removeMod(item);
     }
 
@@ -1081,7 +1089,7 @@ class ModMenuState extends MusicBeatState
       if (disabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
 
       var item = new ModMenuItem(mod);
-      item.alpha = 0;
+      item.localAlpha = 0;
       disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
       newItems.push(item);
     }
@@ -1093,10 +1101,12 @@ class ModMenuState extends MusicBeatState
   {
     var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
 
+    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledMods().map((m) -> m.id));
+
     if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
     {
       var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
-      var reconciled:Array<ModMetadata> = tempEnabledMods.copy();
+      var reconciled:Array<ModMetadata> = tempEnabledMods.filter((m) -> liveIds.contains(m.id));
 
       for (mod in enabledMods)
       {
@@ -1114,7 +1124,7 @@ class ModMenuState extends MusicBeatState
     var keepIds:Array<String> = enabledMods.map((m) -> m.id);
     for (item in enabledModItems.modItems.copy())
     {
-      if (item.getModId() == BASE_GAME_MOD_ID) continue; // never touch the pinned base item
+      if (item.getModId() == BASE_GAME_MOD_ID) continue;
       if (!keepIds.contains(item.getModId())) enabledModItems.removeMod(item);
     }
 
