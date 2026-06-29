@@ -2775,7 +2775,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
     add(menuBG);
 
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
