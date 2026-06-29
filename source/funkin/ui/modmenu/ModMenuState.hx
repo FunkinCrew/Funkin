@@ -70,6 +70,9 @@ class ModMenuState extends MusicBeatState
   var itemsInFolder:Array<String> = [];
   var dropShadowLayer:DropShadowLayer;
 
+  var bf:FunkinSprite;
+  var smoke:FunkinSprite;
+
   public function new()
   {
     super();
@@ -138,6 +141,15 @@ class ModMenuState extends MusicBeatState
     bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
     bfAndGF.updateHitbox();
 
+    bf = FunkinSprite.createTextureAtlas(0,0, 'ui/mods/bf-electrocuted');
+    bf.anim.addBySymbol("idle", "bf idle", 24, false);
+    bf.anim.addBySymbol("electrocuted", "bf electrocuted", 24);
+    bf.anim.addBySymbol("crispy", "crispy bf anim", 24, false);
+    bf.anim.addBySymbol("empty chair", "chair bf", 24);
+    bf.scale.set(0.7, 0.7);
+    bf.x = 846;
+    bf.y = 120;
+
     refreshModList();
 
     add(enabledModItems);
@@ -168,6 +180,13 @@ class ModMenuState extends MusicBeatState
     // add(buttonBackToMenu);
 
     add(bfAndGF);
+    add(bf);
+
+    smoke = FunkinSprite.create(0, 0, 'ui/mods/mods-temp-smoke');
+    add(smoke);
+    smoke.x = bfAndGF.x + 40;
+    smoke.y = bfAndGF.y + 40;
+    smoke.alpha = 0;
 
     buttonDone.x = 865;
     buttonDone.y = 642;
@@ -578,6 +597,14 @@ class ModMenuState extends MusicBeatState
 
   var secondCounter:Float = 0;
 
+  var blinkTimer:Float = 10.1;
+  var bfBlink:Float = 999;
+  var gfBlink:Float = 999;
+
+  var crispyTimer:Float = 0;
+
+  var allowInput:Bool = true;
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -587,6 +614,48 @@ class ModMenuState extends MusicBeatState
     {
       secondCounter = 0;
       rescanFolder();
+    }
+
+    if (allowInput)
+    {
+      blinkTimer += elapsed;
+
+      if (blinkTimer >= bfBlink)
+      {
+        bfBlink = blinkTimer + Math.random() + 1.8;
+        playBFAnim('idle');
+      }
+
+      if (blinkTimer >= gfBlink)
+      {
+        gfBlink = blinkTimer + Math.random() + 2.4;
+        // TODO: gf.anim.play('idle');
+      }
+
+      if (blinkTimer >= 10) {
+        blinkTimer = 0;
+        bfBlink = Math.random() + 1.8;
+        gfBlink = Math.random() + 2.4;
+      }
+
+      handleKeyboard();
+    }
+
+    if (bf.anim.name == 'crispy')
+    {
+      crispyTimer += elapsed;
+      smoke.alpha = 1 - (crispyTimer / 1.4);
+      if (smoke.alpha < 0.82 && bf.anim.paused)
+      {
+        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/cough').toString());
+        bf.anim.resume();
+      }
+      else if (smoke.alpha < 0) smoke.alpha = 0;
+
+      if (crispyTimer >= 2.5)
+      {
+        applyModlist();
+      }
     }
 
     if (fadingItems.length > 0)
@@ -621,8 +690,6 @@ class ModMenuState extends MusicBeatState
       fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
       darkness.alpha = FlxMath.lerp(0, 0.72, FlxEase.backOut(adjustT));
     }
-
-    handleKeyboard();
   }
 
   function hasTransitions():Bool
@@ -665,6 +732,28 @@ class ModMenuState extends MusicBeatState
   var oldSelection:ModMenuSelection;
   var lastInput:String = '';
 
+  function playBFAnim(animName:String):Void
+  {
+    if (animName == 'crispy')
+    {
+      smoke.alpha = 1;
+      bf.anim.play('crispy');
+      bf.anim.pause();
+      bf.offset.set(-33, 0);
+      crispyTimer = 0;
+    }
+    else if (animName == 'electrocuted')
+    {
+      bf.anim.play('electrocuted');
+      bf.offset.set(0, 0);
+    }
+    else if (animName == 'idle')
+    {
+      bf.anim.play('idle');
+      bf.offset.set(-33, -2);
+    }
+  }
+
   function handleKeyboard():Void
   {
     if (hasTransitions()) return;
@@ -681,6 +770,7 @@ class ModMenuState extends MusicBeatState
     {
       if (holdDirection == 0)
       {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
         holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
         holdTimer = 0.5; // initial delay before starting to scroll
       }
@@ -893,6 +983,7 @@ class ModMenuState extends MusicBeatState
 
     if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
     {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
       disabledModItems.repositionItems();
 
@@ -908,8 +999,13 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
+          playBFAnim('electrocuted');
+          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () -> {
+            playBFAnim('crispy');
+          });
+          bf.offset.set(0, 0);
           doneButtonAnimator.playAnimation('accept');
-          doneButtonAnimator.onFinish = applyModlist;
+          allowInput = false;
       }
 
       oldSelection = selection;
@@ -1572,7 +1668,7 @@ class ModMenuState extends MusicBeatState
     FlxG.keys.enabled = false;
     Cursor.hide();
     FlxG.switchState(() -> new MainMenuState());
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu').toString());
   }
 }
 
