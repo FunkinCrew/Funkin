@@ -69,7 +69,6 @@ class ModMenuState extends MusicBeatState
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
   var dropShadowLayer:DropShadowLayer;
-
   var bf:FunkinSprite;
   var smoke:FunkinSprite;
 
@@ -126,29 +125,22 @@ class ModMenuState extends MusicBeatState
     add(rightRectangle);
     rightRectangle.updateHitbox();
 
-    bgWires = new FunkinSprite();
-    bgWires.x = 1040;
-    bgWires.y = 240;
+    bgWires = new FunkinSprite(1040, 240).loadTexture('ui/mods/mod-menu-bgwires');
     bgWires.scale.set(0.7, 0.7);
-    bgWires.loadTexture('ui/mods/mod-menu-bgwires');
-    add(bgWires);
     bgWires.updateHitbox();
+    add(bgWires);
 
-    var bfAndGF:FunkinSprite = new FunkinSprite();
-    bfAndGF.x = 705;
-    bfAndGF.y = 40;
+    var bfAndGF:FunkinSprite = new FunkinSprite(705, 40);
     bfAndGF.scale.set(0.7, 0.7);
     bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
     bfAndGF.updateHitbox();
 
-    bf = FunkinSprite.createTextureAtlas(0,0, 'ui/mods/bf-electrocuted');
-    bf.anim.addBySymbol("idle", "bf idle", 24, false);
-    bf.anim.addBySymbol("electrocuted", "bf electrocuted", 24);
-    bf.anim.addBySymbol("crispy", "crispy bf anim", 24, false);
-    bf.anim.addBySymbol("empty chair", "chair bf", 24);
+    bf = FunkinSprite.createTextureAtlas(846, 120, 'ui/mods/bf-electrocuted');
+    bf.anim.addByFrameLabel('idle', 'bf idle', 24, false);
+    bf.anim.addByFrameLabel('electrocuted', 'bf shocked', 24);
+    bf.anim.addByFrameLabel('crispy', 'bf crispy', 24, false);
+    bf.anim.addByFrameLabel('empty chair', 'mod character', 24);
     bf.scale.set(0.7, 0.7);
-    bf.x = 846;
-    bf.y = 120;
 
     refreshModList();
 
@@ -182,11 +174,9 @@ class ModMenuState extends MusicBeatState
     add(bfAndGF);
     add(bf);
 
-    smoke = FunkinSprite.create(0, 0, 'ui/mods/mods-temp-smoke');
-    add(smoke);
-    smoke.x = bfAndGF.x + 40;
-    smoke.y = bfAndGF.y + 40;
+    smoke = FunkinSprite.create(bfAndGF.x + 40, bfAndGF.y + 40, 'ui/mods/mods-temp-smoke');
     smoke.alpha = 0;
+    add(smoke);
 
     buttonDone.x = 865;
     buttonDone.y = 642;
@@ -534,7 +524,7 @@ class ModMenuState extends MusicBeatState
     if (StringTools.endsWith(path, '.zip'))
     {
       var fileClean = StringTools.replace(path, '\\', '/');
-      var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), ".zip", "");
+      var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
       var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
 
       try
@@ -596,13 +586,10 @@ class ModMenuState extends MusicBeatState
   }
 
   var secondCounter:Float = 0;
-
   var blinkTimer:Float = 10.1;
   var bfBlink:Float = 999;
   var gfBlink:Float = 999;
-
   var crispyTimer:Float = 0;
-
   var allowInput:Bool = true;
 
   override public function update(elapsed:Float):Void
@@ -623,16 +610,17 @@ class ModMenuState extends MusicBeatState
       if (blinkTimer >= bfBlink)
       {
         bfBlink = blinkTimer + Math.random() + 1.8;
-        playBFAnim('idle');
+        playChairAnim('idle');
       }
 
       if (blinkTimer >= gfBlink)
       {
         gfBlink = blinkTimer + Math.random() + 2.4;
-        // TODO: gf.anim.play('idle');
+        // TODO: gf.animation.play('idle');
       }
 
-      if (blinkTimer >= 10) {
+      if (blinkTimer >= 10)
+      {
         blinkTimer = 0;
         bfBlink = Math.random() + 1.8;
         gfBlink = Math.random() + 2.4;
@@ -732,25 +720,17 @@ class ModMenuState extends MusicBeatState
   var oldSelection:ModMenuSelection;
   var lastInput:String = '';
 
-  function playBFAnim(animName:String):Void
+  function playChairAnim(animName:String):Void
   {
+    bf.animation.play(animName);
+    // TODO: Add GF here too perhaps
+    // gf.animation.play(animName);
+
     if (animName == 'crispy')
     {
-      smoke.alpha = 1;
-      bf.anim.play('crispy');
-      bf.anim.pause();
-      bf.offset.set(-33, 0);
+      bf.animation.play('crispy');
       crispyTimer = 0;
-    }
-    else if (animName == 'electrocuted')
-    {
-      bf.anim.play('electrocuted');
-      bf.offset.set(0, 0);
-    }
-    else if (animName == 'idle')
-    {
-      bf.anim.play('idle');
-      bf.offset.set(-33, -2);
+      smoke.alpha = 1;
     }
   }
 
@@ -999,9 +979,10 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
-          playBFAnim('electrocuted');
-          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () -> {
-            playBFAnim('crispy');
+          playChairAnim('electrocuted');
+          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
+          {
+            playChairAnim('crispy');
           });
           bf.offset.set(0, 0);
           doneButtonAnimator.playAnimation('accept');
