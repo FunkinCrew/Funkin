@@ -3102,8 +3102,6 @@ class PlayState extends MusicBeatSubState
       if (input == null) continue;
 
       // Whether this direction is already held by another key.
-      var isAlreadyHeld = playerStrumline.isKeyHeld(input.noteDirection);
-
       playerStrumline.pressKey(input.noteDirection, input.keyCode);
 
       // Don't credit or penalize inputs in Bot Play.
@@ -3112,9 +3110,9 @@ class PlayState extends MusicBeatSubState
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0 && !isAlreadyHeld)
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
       #else
-      if (notesInDirection.length == 0 && !isAlreadyHeld)
+      if (notesInDirection.length == 0)
       #end
       {
         // Pressed a wrong key with no notes nearby.
