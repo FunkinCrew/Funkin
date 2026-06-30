@@ -29,11 +29,13 @@ import haxe.io.Path;
 import polymod.Polymod.ModDependencies;
 import polymod.Polymod.ModMetadata;
 import polymod.PolymodConfig;
+import funkin.util.MathUtil;
 #if android
 import funkin.external.android.DataFolderUtil;
 #end
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+import funkin.mobile.input.ControlsHandler;
 
 /**
  * The user interface for the mod menu.
@@ -59,6 +61,11 @@ class ModMenuState extends MusicBeatState
   var buttonBackToMenu:ModMenuButton = new ModMenuButton();
   var buttonOpenFolder:ModMenuButton = new ModMenuButton();
   var buttonDone:ModMenuButton = new ModMenuButton();
+
+  /**
+   * For some reason back to menu button's hitbox is bigger than the graphics.
+   */
+  var hitboxOpenFolder:FunkinSprite;
 
   /**
    * This flag is enabled when returning to the main menu.
@@ -222,6 +229,13 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
     buttonOpenFolder.updateHitbox();
     add(buttonOpenFolder);
+
+    hitboxOpenFolder = new FunkinSprite(
+      buttonOpenFolder.x,
+      buttonOpenFolder.y
+    ).makeSolidColor(Std.int(buttonOpenFolder.width), Std.int(buttonOpenFolder.height), FlxColor.GREEN);
+    hitboxOpenFolder.updateHitbox();
+    // add(hitboxOpenFolder);
 
     buttonDone.graphicName = 'mod-menu-done';
     buttonOpenFolder.graphicName = 'mod-menu-open-folder';
@@ -750,6 +764,13 @@ class ModMenuState extends MusicBeatState
       fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
       darkness.alpha = FlxMath.lerp(0, 0.72, FlxEase.backOut(adjustT));
     }
+
+    handleKeyboard();
+
+    // if (!ControlsHandler.usingExternalInputDevice)
+    {
+      handleTouch(elapsed);
+    }
   }
 
   function hasTransitions():Bool
@@ -1094,98 +1115,135 @@ class ModMenuState extends MusicBeatState
     if (oldSelection != selection) handleSelection();
   }
 
-  var grabbedItem:Bool = false;
-  var ghostItem:FunkinSpriteGroup = null;
+  var grabbedItem:ModMenuItem = null;
+  var grabbedIndex:Int = 0;
 
-  function handleTouch():Void
+  function checkItemGrab(itemList:ModMenuItemList,
+    targetSelection:ModMenuSelection):Void
+  {
+    for (item in itemList.modItems)
+    {
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
+      {
+        itemList.selectModItem(item, false);
+
+        grabbedItem = item;
+        grabbedIndex = itemList.modItems.indexOf(item);
+
+        for (record in pendingTransitions)
+        {
+          if (record.item == grabbedItem)
+          {
+            completeTransition(record);
+
+            break;
+          }
+        }
+
+        putItemInTransitionLayer(item, grabbedItem.x, grabbedItem.y);
+
+        selection = targetSelection;
+      }
+    }
+
+    if (grabbedItem == null)
+    {
+      itemList.deselect();
+    }
+  }
+
+  function handleTouch(elapsed:Float):Void
   {
     FlxG.mouse.visible = true;
 
-    for (index => item in disabledModItems.modItems)
+    if (grabbedItem == null)
     {
-      if (!grabbedItem)
+      checkItemGrab(enabledModItems, EnabledModList);
+      checkItemGrab(disabledModItems, DisabledModList);
+    }
+    else
+    {
+      final targetX:Float = TouchUtil.touch.x - grabbedItem.width / 2;
+      final targetY:Float = TouchUtil.touch.y - grabbedItem.height / 2;
+
+      grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
+      grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
+
+      if (TouchUtil.justReleased)
       {
-        if (TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
+        var targetList:ModMenuItemList = null;
+
+        var listChanged:Bool = false;
+
+        switch (selection)
         {
-          grabbedItem = true;
+          case EnabledModList:
+            targetList = enabledModItems;
 
-          ghostItem = item.clone();
-          add(ghostItem);
+            if (TouchUtil.overlapsComplex(leftRectangle))
+            {
+              targetList = disabledModItems;
 
-          disabledModItems.selectModItem(item);
+              selection = DisabledModList;
 
-          break;
+              disableMod(grabbedItem);
+
+              listChanged = true;
+            }
+
+          case DisabledModList:
+            targetList = disabledModItems;
+
+            if (TouchUtil.overlapsComplex(rightRectangle))
+            {
+              targetList = enabledModItems;
+
+              selection = EnabledModList;
+
+              enableMod(grabbedItem);
+
+              listChanged = true;
+            }
+
+          default:
+            // Isnt supposed to happen.
         }
-      }
-      else
-      {
-        if (disabledModItems.selectedModItem == item)
+
+        if (!listChanged)
         {
-          ghostItem.x = TouchUtil.touch.x;
-          ghostItem.y = TouchUtil.touch.y;
+          var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
+
+          var batchFutureCount:Int = targetList.modItems.length;
+
+          var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
+          var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
+
+          startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
         }
 
-        if (TouchUtil.justReleased)
-        {
-          grabbedItem = false;
-
-          remove(ghostItem);
-          ghostItem = null;
-
-          if (TouchUtil.overlapsComplex(rightRectangle))
-          {
-            enableMod(item);
-          }
-        }
+        grabbedItem = null;
+        grabbedIndex = 0;
       }
     }
-
-    for (index => item in enabledModItems.modItems)
+    if (TouchUtil.overlapsComplex(hitboxOpenFolder) && selection != OpenModsFolder)
     {
-      if (!grabbedItem)
-      {
-        if (TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
-        {
-          grabbedItem = true;
-
-          ghostItem = item.clone();
-          add(ghostItem);
-
-          enabledModItems.selectModItem(item);
-
-          break;
-        }
-      }
-      else
-      {
-        if (enabledModItems.selectedModItem == item)
-        {
-          ghostItem.x = TouchUtil.touch.x;
-          ghostItem.y = TouchUtil.touch.y;
-        }
-
-        if (TouchUtil.justReleased)
-        {
-          grabbedItem = false;
-
-          remove(ghostItem);
-          ghostItem = null;
-
-          if (TouchUtil.overlapsComplex(leftRectangle))
-          {
-            trace('YESSS');
-            disableMod(item);
-          }
-        }
-      }
+      selection = OpenModsFolder;
+    }
+    else if (TouchUtil.overlapsComplex(buttonDone) && selection != Done)
+    {
+      selection = Done;
     }
 
-    if (TouchUtil.pressAction(buttonOpenFolder))
+    if (TouchUtil.pressAction(hitboxOpenFolder))
     {
       openFolderAnimator.playAnimation('accept');
-      openFolderAnimator.onFinish = openModsFolder;
+      openFolderAnimator.onFinish = () ->
+      {
+        openModsFolder();
+        openFolderAnimator.playAnimation('deselect');
+      };
     }
-    else if (TouchUtil.pressAction(buttonDone))
+    if (TouchUtil.pressAction(buttonDone))
     {
       doneButtonAnimator.playAnimation('accept');
       doneButtonAnimator.onFinish = applyModlist;
@@ -1530,7 +1588,10 @@ class ModMenuState extends MusicBeatState
 
     var insertIndex:Int = originalInsertIndex;
 
-    putItemInTransitionLayer(item, worldX, worldY);
+    if (!transitionLayer.children.contains(item))
+    {
+      putItemInTransitionLayer(item, worldX, worldY);
+    }
 
     var finalIndex:Int = insertIndex;
     for (record in pendingTransitions)
@@ -1599,7 +1660,10 @@ class ModMenuState extends MusicBeatState
     var worldY:Float = enabledModItems.y + srcLocalY;
     enabledModItems.removeModWithoutLayout(item);
 
-    putItemInTransitionLayer(item, worldX, worldY);
+    if (!transitionLayer.children.contains(item))
+    {
+      putItemInTransitionLayer(item, worldX, worldY);
+    }
 
     // Always insert at the top of the disabled list; order there doesn't matter.
     var destIndex:Int = disabledModItems.modItems.length;
