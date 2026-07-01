@@ -2017,8 +2017,15 @@ class CameraEditorState extends UIState implements ConsoleClass
         cameraRect.update(0);
       }
 
-      var lastEvent = replayEvents[replayEvents.length - 1];
-      cachedEventIndex = songEvents.indexOf(lastEvent);
+      var lastEvent:Null<SongEventData> = replayEvents[replayEvents.length - 1];
+      if (lastEvent != null)
+      {
+        cachedEventIndex = songEvents.indexOf(lastEvent);
+      }
+      else
+      {
+        cachedEventIndex = 0;
+      }
     }
 
     var notes:Array<SongNoteData> = currentNotes;
