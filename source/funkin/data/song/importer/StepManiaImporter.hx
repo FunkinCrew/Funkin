@@ -544,6 +544,17 @@ class StepManiaImporter
     return result;
   }
 
+  static function sanatizeDifficultyName(name:String):String
+  {
+    var diffName:String = name.toLowerCase();
+
+    if (diffName == 'beginner') diffName = 'easy';
+    else if (diffName == 'medium') diffName = 'normal';
+    else if (diffName == 'challenge') diffName = 'hard';
+
+    return diffName;
+  }
+
   /**
    * Migrates StepManiaData to SongMetadata.
    * @param songData The StepManiaData to migrate.
@@ -569,8 +580,10 @@ class StepManiaImporter
         trace('[WARN] Skipping unknown StepMania chart type. Name: ' + diff.name);
         continue; // skip unknown chart types
       }
-      difficulties.push(diff.name);
-      metadata.playData.ratings.set(diff.name, diff.difficultyRating);
+      var diffName:String = sanatizeDifficultyName(diff.name);
+
+      difficulties.push(diffName);
+      metadata.playData.ratings.set(diffName, diff.difficultyRating);
     }
 
     metadata.playData.difficulties = difficulties;
@@ -606,8 +619,10 @@ class StepManiaImporter
         trace('[WARN] Skipping unknown StepMania chart type. Name: ' + diff.name);
         continue; // skip unknown chart types
       }
-      scrollsMap.set(diff.name, Constants.DEFAULT_SCROLLSPEED);
-      stepNoteMap.set(diff.name, convertStepNotes(songData.Metadata.Offset, diff.type, diff.notes, songData.TimingPoints, songData.Stops));
+      var diffName:String = sanatizeDifficultyName(diff.name);
+
+      scrollsMap.set(diffName, Constants.DEFAULT_SCROLLSPEED);
+      stepNoteMap.set(diffName, convertStepNotes(songData.Metadata.Offset, diff.type, diff.notes, songData.TimingPoints, songData.Stops));
     }
 
     var songChartData:SongChartData = new SongChartData(scrollsMap, [], stepNoteMap);
