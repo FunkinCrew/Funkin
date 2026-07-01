@@ -7305,7 +7305,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       measureTicks.setHeight(gridTiledSprite.height);
     }
 
-    if (currentSongChartData.notes.get(selectedDifficulty) != null)
+    if (audioInstTrack != null && currentSongChartData.notes.get(selectedDifficulty) != null)
     {
       // Remove any notes past the end of the song, if this difficulty exists.
       var songCutoffPointSteps:Float = songLengthInSteps - 0.1;
