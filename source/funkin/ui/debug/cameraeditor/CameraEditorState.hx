@@ -851,6 +851,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     for (i in cachedEventIndex...songEvents.length)
     {
       var eventData = songEvents[i];
+      if (eventData == null) continue;
+
       if (completedEvents.contains(eventData)) continue;
       var activationTime = eventData.getActivationTime(conductorInUse);
       if (eventData == null || activationTime > conductorInUse.songPosition || activationTime < previousTime) continue;
