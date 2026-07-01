@@ -889,13 +889,10 @@ class SongEventDataRaw implements ICloneable<SongEventDataRaw>
    * Get the timestamp at which `handleEvent()` should be called for this event.
    * This may be offset relative to `time`, which indicates where the event is placed in the chart.
    *
-   * @param force Force the value to be recalculated.
    * @return The position of the event in the song, in milliseconds.
    */
-  public function getActivationTime(?conductor:Conductor, force:Bool = false):Float
+  public function getActivationTime(?conductor:Conductor):Float
   {
-    if (_activationTime != null && !force) return _activationTime;
-
     return _activationTime = this.getHandler()?.calculateActivationTime(this, conductor ?? Conductor.instance) ?? this.time;
   }
 
