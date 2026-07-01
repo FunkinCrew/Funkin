@@ -605,14 +605,14 @@ class PolymodHandler
   {
     trace('Scanning the mods folder...');
 
-    if (modFileSystem == null) modFileSystem = buildFileSystem();
+    if (modFileSystem == null || force) modFileSystem = buildFileSystem();
     var modMetadata:Array<ModMetadata> = [];
     try
     {
       modMetadata = Polymod.scan({
         modRoot: MOD_FOLDER,
         apiVersionRule: API_VERSION_RULE,
-        fileSystem: force ? buildFileSystem() : modFileSystem,
+        fileSystem: modFileSystem,
         errorCallback: PolymodErrorHandler.onPolymodError
       });
     }
