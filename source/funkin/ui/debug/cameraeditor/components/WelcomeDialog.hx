@@ -148,7 +148,7 @@ class WelcomeDialog extends Dialog
 
     try
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCBytes(this.cameraEditorState, selectedFile.bytes);
+      CameraEditorImportExportHandler.loadSongFromFNFCBytes(this.cameraEditorState, selectedFile.bytes, selectedFile.fullPath);
       // If we failed, it'd throw.
       this.hideDialog(DialogButton.APPLY);
     }
