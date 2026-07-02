@@ -3975,9 +3975,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     handleCommentDisplay();
     handleNoteDisplay();
 
-    if (isHaxeUIFocused
-      && !isCursorOverHaxeUI
-      && (FlxG.mouse.justPressedRight || FlxG.mouse.deltaWheel.y != 0))
+    if (isHaxeUIFocused && !isCursorOverHaxeUI && (FlxG.mouse.justPressedRight || FlxG.mouse.deltaWheel.y != 0))
     {
       ChartEditorToolboxHandler.clearHaxeUIFocus();
     }
@@ -7053,12 +7051,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (f != null) f.focus = false;
       }
 
+      FunkinAssetCache.instance.preparePurgeCache();
+
+      destroyHaxeUIComponents();
+
+      @:privateAccess
+      ChartEditorNoteSprite.noteFrameCollection = null;
+      @:privateAccess
+      ChartEditorEventSprite.eventFrames = null;
+
+      // TODO: In loading screens, you should be  caching BETWEEN these.
+      FunkinAssetCache.instance.purgeCache(true);
+
       FlxG.switchState(() -> new CameraEditorState({
         loadFromPath: this.currentWorkingFilePath,
         targetSongDifficulty: this.selectedDifficulty,
         targetSongVariation: this.selectedVariation,
         targetSongPosition: startTimestamp,
       }));
+
+      criticalFailure = true;
     }
   }
 
