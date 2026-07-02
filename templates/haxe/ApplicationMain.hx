@@ -64,11 +64,6 @@ class ApplicationMain
     appMeta.set("packageName", "::meta.packageName::");
     appMeta.set("version", "::meta.version::");
 
-    ::if (config.hxtelemetry != null)::#if hxtelemetry
-    appMeta.set("hxtelemetry-allocations", "::config.hxtelemetry.allocations::");
-    appMeta.set("hxtelemetry-host", "::config.hxtelemetry.host::");
-    #end::end::
-
     var app = new openfl.display.Application(appMeta);
 
     #if linux
@@ -82,7 +77,6 @@ class ApplicationMain
     ManifestResources.init(config);
     #end
 
-    #if !flash
     ::foreach windows::
     var attributes:lime.ui.WindowAttributes = {
       allowHighDPI: ::allowHighDPI::,
@@ -92,9 +86,11 @@ class ApplicationMain
       // display: ::display::,
       element: null,
       frameRate: ::fps::,
-      #if !web fullscreen: ::fullscreen::, #end
+      #if !web
+      fullscreen: ::fullscreen::,
+      #end
       height: ::height::,
-      hidden: #if munit true #else ::hidden:: #end,
+      hidden: ::hidden::,
       maximized: ::maximized::,
       minimized: ::minimized::,
       parameters: ::parameters::,
@@ -143,12 +139,6 @@ class ApplicationMain
 
     app.createWindow(attributes);
     ::end::
-    #elseif air
-    app.window.title = "::meta.title::";
-    #else
-    app.window.context.attributes.background = ::WIN_BACKGROUND::;
-    app.window.frameRate = ::WIN_FPS::;
-    #end
 
     var preloader = getPreloader();
     app.preloader.onProgress.add (function(loaded, total)
@@ -178,7 +168,7 @@ class ApplicationMain
 
     var result = app.exec();
 
-    #if (sys && !ios && !nodejs && !emscripten)
+    #if (sys && !ios && !nodejs)
     lime.system.System.exit(result);
     #end
 
@@ -189,9 +179,6 @@ class ApplicationMain
 
   public static function start(stage:openfl.display.Stage):Void
   {
-    #if flash
-    ApplicationMain.getEntryPoint();
-    #else
     if (stage.__uncaughtErrorEvents.__enabled)
     {
       try
@@ -223,7 +210,6 @@ class ApplicationMain
         stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
       }
     }
-    #end
   }
   #end
 
@@ -344,7 +330,7 @@ class DocumentClass
 
     while (searchTypes != null)
     {
-      if (searchTypes.module == "openfl.display.DisplayObject" || searchTypes.module == "flash.display.DisplayObject")
+      if (searchTypes.module == "openfl.display.DisplayObject")
       {
         var fields = Context.getBuildFields();
 
