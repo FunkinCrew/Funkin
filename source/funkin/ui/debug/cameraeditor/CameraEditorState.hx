@@ -13,6 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.audio.FunkinSound;
+import funkin.assets.FunkinAssetCache;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.event.SongEventRegistry;
 import funkin.data.song.SongData.SongCharacterData;
@@ -2320,8 +2321,11 @@ class CameraEditorState extends UIState implements ConsoleClass
       currentStage.kill();
       currentStage = null;
     }
+    FunkinAssetCache.instance.preparePurgeCache();
 
     destroyHaxeUIComponents();
+
+    FunkinAssetCache.instance.purgeCache(true);
 
     writePreferences(!saved);
     resetWindowTitle();
