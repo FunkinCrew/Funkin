@@ -71,7 +71,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   public var hudZoom(default, set):Float = 1;
 
   var isClassicEase:Bool = false;
-  var lastVCamPoint:FlxPoint = new FlxPoint();
+  var isClassicZoom:Bool = false;
   var cameraFollowPoint:FlxObject = new FlxObject();
   var cameraFollowTween:Float = 0;
   var cameraFollowStart:FlxPoint = new FlxPoint();
@@ -232,6 +232,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     cameraZoomTween = 0;
     cameraZoomDuration = 0;
     cameraZoomEase = null;
+    isClassicZoom = false;
   }
 
   /**
@@ -241,6 +242,36 @@ class VirtualCameraRectangle extends FlxSpriteGroup
   {
     cancelCameraFollowTween();
     cancelCameraZoomTween();
+  }
+
+  /**
+   * Starts a CLASSIC-style exponential follow toward the current follow point.
+   */
+  function startClassicFollow():Void
+  {
+    cancelCameraFollowTween();
+
+    isClassicEase = true;
+    cameraFollowTween = Conductor.instance.songPosition;
+    cameraFollowStart.copyFrom(vcamPoint);
+    cameraFollowDuration = 0;
+    cameraFollowEase = null;
+  }
+
+  /**
+   * Starts a CLASSIC-style exponential zoom toward the target zoom.
+   * Used for INSTANT / zero-duration zoom events.
+   */
+  function startClassicZoom(targetZoom:Float):Void
+  {
+    cancelCameraZoomTween();
+
+    isClassicZoom = true;
+    cameraZoomTween = Conductor.instance.songPosition;
+    cameraZoomStart = doBopping ? (zoom - (hudZoom - 1)) : zoom;
+    cameraZoomEnd = targetZoom;
+    cameraZoomDuration = 0;
+    cameraZoomEase = null;
   }
 
   /**
@@ -257,7 +288,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
   /**
    * Tweens the camera to the current cameraFollowPoint over the specified duration using the specified easing function.
-   * @param duration Duration of the tween in seconds. If 0, the camera will snap to the follow point immediately.
+   * @param duration Duration of the tween in seconds. If 0, the camera smoothly glides to the follow point.
    * @param ease Easing function to use for the tween. If null, the default easing will be used.
    */
   public function tweenCameraToFollowPoint(duration:Float = 0, ?ease:Null<Float->Float>):Void
@@ -267,12 +298,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (duration == 0)
     {
-      resetCamera(false, false);
+      startClassicFollow();
     }
     else
     {
       cameraFollowTween = Conductor.instance.songPosition;
-      cameraFollowStart.copyFrom(lastVCamPoint);
+      cameraFollowStart.copyFrom(vcamPoint);
       cameraFollowDuration = duration;
       cameraFollowEase = ease;
     }
@@ -282,7 +313,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
    * Tweens the camera zoom to the specified level over the specified duration using the specified easing function.
    * @param stageZoom The stage's default zoom level.
    * @param z The target zoom level.
-   * @param duration Duration of the tween in seconds. If 0, the zoom will change immediately.
+   * @param duration Duration of the tween in seconds. If 0, the zoom smoothly glides to the target.
    * @param direct Whether the zoom level is absolute (true) or relative to the stage's default zoom (false).
    * @param ease Easing function to use for the tween. If null, the default easing will be used.
    */
@@ -300,7 +331,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (duration == 0)
     {
-      zoom = targetZoom;
+      startClassicZoom(targetZoom);
     }
     else
     {
@@ -322,7 +353,6 @@ class VirtualCameraRectangle extends FlxSpriteGroup
    */
   public function setFocusPoint(x:Float, y:Float, force:Bool = false):Void
   {
-    lastVCamPoint.copyFrom(vcamPoint);
     cameraFollowPoint.x = x;
     cameraFollowPoint.y = y;
     if (force)
@@ -386,20 +416,14 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (ease == 'CLASSIC')
     {
-      isClassicEase = true;
-      cameraFollowTween = Conductor.instance.songPosition;
-      cameraFollowStart.copyFrom(lastVCamPoint);
-      cameraFollowDuration = 0;
-      cameraFollowEase = null;
+      startClassicFollow();
       return;
     }
 
-    isClassicEase = false;
-
     switch (ease)
     {
-      case 'INSTANT': // Instant ease. Duration is automatically 0.
-        resetCamera(false, true, true);
+      case 'INSTANT':
+        startClassicFollow();
       default:
         var easeDir:String = eventData.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
         if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
@@ -407,7 +431,12 @@ class VirtualCameraRectangle extends FlxSpriteGroup
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunctionName = '$ease$easeDir';
         var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
-        if (easeFunction == null) return;
+        if (easeFunction == null)
+        {
+          trace('Invalid ease function: $easeFunctionName');
+          startClassicFollow();
+          return;
+        }
 
         tweenCameraToFollowPoint(durSeconds, easeFunction);
     }
@@ -445,6 +474,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
         if (easeFunction == null)
         {
           trace('Invalid ease function: $easeFunctionName');
+          tweenCameraZoom(stageZoom, zoom, 0, isDirectMode);
           return;
         }
 
@@ -701,7 +731,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     if (isClassicEase)
     {
-      var cameraFollowElapsed = Conductor.instance.songPosition - cameraFollowTween;
+      var cameraFollowElapsed = Math.max(0, Conductor.instance.songPosition - cameraFollowTween);
 
       // Apply CLASSIC ease: 1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, elapsed * 60)
       var adjustedProgressElapsed = cameraFollowElapsed / 1000 * 60;
@@ -730,7 +760,21 @@ class VirtualCameraRectangle extends FlxSpriteGroup
       }
     }
     // Handle camera zoom tweening
-    if (cameraZoomEase != null)
+    if (isClassicZoom)
+    {
+      var cameraZoomElapsed = Math.max(0, Conductor.instance.songPosition - cameraZoomTween);
+      var adjustedZoomElapsed = cameraZoomElapsed / 1000 * 60;
+      var zoomProgress = (1.0 - Math.pow(1.0 - Constants.DEFAULT_CAMERA_FOLLOW_RATE, adjustedZoomElapsed)).clamp(0, 1);
+
+      zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, zoomProgress);
+
+      if (zoomProgress >= 0.9999)
+      {
+        zoom = cameraZoomEnd;
+        isClassicZoom = false;
+      }
+    }
+    else if (cameraZoomEase != null)
     {
       var cameraZoomElapsed = Conductor.instance.songPosition - cameraZoomTween;
       zoom = FlxMath.lerp(cameraZoomStart, cameraZoomEnd, cameraZoomEase((cameraZoomElapsed / (cameraZoomDuration * 1000)).clamp(0, 1)));

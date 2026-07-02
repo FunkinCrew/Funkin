@@ -1994,7 +1994,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       for (eventData in replayEvents)
       {
-        conductorInUse.update(eventData.time);
+        conductorInUse.update(eventData.getActivationTime(conductorInUse));
+        cameraRect.update(0);
 
         switch (eventData.eventKind)
         {
@@ -2030,7 +2031,6 @@ class CameraEditorState extends UIState implements ConsoleClass
                 dadLastPlayAnimationEvent = eventData;
                 dadPlayAnimationWindowEnd = nextBeatTimeMs;
               default:
-                // Non-singing targets (props/GF/etc.) do not affect note replay suppression.
             }
           default:
             if (doSongEvents)
@@ -2039,14 +2039,12 @@ class CameraEditorState extends UIState implements ConsoleClass
               currentStage.onSongEvent(ev);
             }
         }
-
-        cameraRect.update(0);
       }
 
       var lastEvent:Null<SongEventData> = replayEvents[replayEvents.length - 1];
       if (lastEvent != null)
       {
-        cachedEventIndex = songEvents.indexOf(lastEvent);
+        cachedEventIndex = songEvents.indexOf(lastEvent) + 1;
       }
       else
       {
