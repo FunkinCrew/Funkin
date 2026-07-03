@@ -11,7 +11,14 @@ class CreditsDataMacro
 {
   public static macro function loadCreditsData():haxe.macro.Expr.ExprOf<CreditsData>
   {
-    #if !display
+    if (Context.defined('display'))
+    {
+      // `display` is used for code completion. In this case we return
+      // a minimal value to keep code completion fast.
+      Context.info('Using fallback credits', Context.currentPos());
+      return macro $v{CreditsDataHandler.getFallback()};
+    }
+
     Sys.println(' INFO '.info() + ' Hardcoding credits data...');
     var json = CreditsDataMacro.fetchJSON();
 
@@ -31,12 +38,6 @@ class CreditsDataMacro
 
     CreditsDataHandler.debugPrint(creditsData);
     return macro $v{creditsData};
-    // return macro $v{null};
-    #else
-    // `#if display` is used for code completion. In this case we return
-    // a minimal value to keep code completion fast.
-    return macro $v{CreditsDataHandler.getFallback()};
-    #end
   }
 
   #if macro
