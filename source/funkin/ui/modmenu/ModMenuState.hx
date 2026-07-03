@@ -1,32 +1,33 @@
 package funkin.ui.modmenu;
 
-import haxe.io.Path;
-import polymod.PolymodConfig;
-import funkin.input.Cursor;
-import funkin.util.FileUtil;
-import funkin.ui.mainmenu.MainMenuState;
-import funkin.InitState;
-import funkin.ui.title.TitleState;
-import funkin.audio.FunkinSound;
-import funkin.graphics.FunkinSprite;
-import funkin.group.FunkinGroup.FunkinSpriteGroup;
-import funkin.modding.PolymodHandler;
-import funkin.graphics.framebuffer.DropShadowLayer;
-import polymod.Polymod.ModMetadata;
-import polymod.Polymod.ModDependencies;
-import funkin.save.Save;
-import funkin.ui.MusicBeatState;
 import flixel.FlxG;
-import flixel.util.FlxColor;
-import flixel.math.FlxRect;
-import flixel.text.FlxText;
 import flixel.addons.transition.FlxTransitionableState;
-import funkin.ui.modmenu.ModMenuButton;
-import funkin.util.PropertyAnimator;
-import funkin.util.WindowUtil;
-import flixel.tweens.FlxEase;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
+import funkin.InitState;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.framebuffer.DropShadowLayer;
+import funkin.group.FunkinGroup.FunkinSpriteGroup;
+import funkin.input.Cursor;
+import funkin.modding.PolymodHandler;
+import funkin.save.Save;
+import funkin.ui.MusicBeatState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.modmenu.ModMenuButton;
+import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
+import funkin.ui.title.TitleState;
+import funkin.util.FileUtil;
+import funkin.util.PropertyAnimator;
+import funkin.util.WindowUtil;
+import haxe.io.Path;
+import polymod.Polymod.ModDependencies;
+import polymod.Polymod.ModMetadata;
+import polymod.PolymodConfig;
 
 /**
  * The user interface for the mod menu.
@@ -36,7 +37,18 @@ class ModMenuState extends MusicBeatState
   static inline final BASE_GAME_MOD_ID:String = '__base_game__';
   static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/mod-menu-base-icon';
 
+  /**
+   * BF in the mod menu.
+   */
+  public var bf:ModMenuCharacter;
+
+  /**
+   * GF in the mod menu.
+   * TODO: Implement.
+   */
+  // public var gf:ModMenuCharacter;
   var leftRectangle:FunkinSprite = new FunkinSprite();
+
   var rightRectangle:FunkinSprite = new FunkinSprite();
   var buttonBackToMenu:ModMenuButton = new ModMenuButton();
   var buttonOpenFolder:ModMenuButton = new ModMenuButton();
@@ -69,7 +81,6 @@ class ModMenuState extends MusicBeatState
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
   var dropShadowLayer:DropShadowLayer;
-  var bf:FunkinSprite;
   var smoke:FunkinSprite;
 
   public function new()
@@ -135,12 +146,8 @@ class ModMenuState extends MusicBeatState
     bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
     bfAndGF.updateHitbox();
 
-    bf = FunkinSprite.createTextureAtlas(846, 120, 'ui/mods/bf-electrocuted');
-    bf.anim.addByFrameLabel('idle', 'bf idle', 24, false);
-    bf.anim.addByFrameLabel('electrocuted', 'bf shocked', 24);
-    bf.anim.addByFrameLabel('crispy', 'bf crispy', 24, false);
-    bf.anim.addByFrameLabel('empty chair', 'mod character', 24);
-    bf.scale.set(0.7, 0.7);
+    bf = new ModMenuCharacter(0, 0, 'bf');
+    // gf = new ModMenuCharacter(0, 0, 'gf');
 
     refreshModList();
 
@@ -172,6 +179,9 @@ class ModMenuState extends MusicBeatState
     // add(buttonBackToMenu);
 
     add(bfAndGF);
+
+    // This is in reverse order since BF should be above GF!
+    // add(gf);
     add(bf);
 
     smoke = FunkinSprite.create(bfAndGF.x + 40, bfAndGF.y + 40, 'ui/mods/mods-temp-smoke');
@@ -610,13 +620,15 @@ class ModMenuState extends MusicBeatState
       if (blinkTimer >= bfBlink)
       {
         bfBlink = blinkTimer + Math.random() + 1.8;
-        playChairAnim('idle');
+
+        bf.playAnimation(IDLE, true);
       }
 
       if (blinkTimer >= gfBlink)
       {
         gfBlink = blinkTimer + Math.random() + 2.4;
-        // TODO: gf.animation.play('idle');
+
+        // gf.playAnimation(IDLE, true);
       }
 
       if (blinkTimer >= 10)
@@ -629,14 +641,14 @@ class ModMenuState extends MusicBeatState
       handleKeyboard();
     }
 
-    if (bf.anim.name == 'crispy')
+    if (bf.getCurrentAnimation() == CRISPY)
     {
       crispyTimer += elapsed;
       smoke.alpha = 1 - (crispyTimer / 1.4);
       if (smoke.alpha < 0.82 && bf.anim.paused)
       {
         FunkinSound.playOnce(Paths.sound('ui/mods/sounds/cough').toString());
-        bf.anim.resume();
+        bf.animation.resume();
       }
       else if (smoke.alpha < 0) smoke.alpha = 0;
 
@@ -719,20 +731,6 @@ class ModMenuState extends MusicBeatState
   var acceptDelay:Float = 0;
   var oldSelection:ModMenuSelection;
   var lastInput:String = '';
-
-  function playChairAnim(animName:String):Void
-  {
-    bf.animation.play(animName);
-    // TODO: Add GF here too perhaps
-    // gf.animation.play(animName);
-
-    if (animName == 'crispy')
-    {
-      bf.animation.play('crispy');
-      crispyTimer = 0;
-      smoke.alpha = 1;
-    }
-  }
 
   function handleKeyboard():Void
   {
@@ -979,12 +977,30 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
-          playChairAnim('electrocuted');
+          bf.playAnimation(ELECTROCUTED, true);
+          // gf.playAnimation(ELECTROCUTED, true);
+
           FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
           {
-            playChairAnim('crispy');
+            // Get the topmost enabled mod swap out BF and GF with the mod's own assets... if it exists
+            var topMod:ModMenuItem = enabledModItems.modItems[enabledModItems.modItems.length - 1];
+            var topModId:String = topMod.getModId();
+
+            if (topModId == BASE_GAME_MOD_ID)
+            {
+              topModId = '';
+            }
+
+            bf.switchCharacter(null, topModId);
+            // gf.switchCharacter(null, topModId);
+
+            bf.playAnimation(CRISPY, true);
+            // gf.playAnimation(CRISPY, true);
+
+            crispyTimer = 0;
+            smoke.alpha = 1;
           });
-          bf.offset.set(0, 0);
+
           doneButtonAnimator.playAnimation('accept');
           allowInput = false;
       }

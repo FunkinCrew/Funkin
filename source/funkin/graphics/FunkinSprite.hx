@@ -1,30 +1,32 @@
 package funkin.graphics;
 
-import flixel.util.FlxColor;
-import flixel.graphics.FlxGraphic;
-import flixel.tweens.FlxTween;
-import openfl.display3D.textures.TextureBase;
-import funkin.graphics.framebuffer.FixedBitmapData;
-import funkin.graphics.framebuffer.FunkinFilterRenderer;
-import openfl.display.BitmapData;
-import flixel.math.FlxRect;
-import flixel.math.FlxPoint;
-import flixel.math.FlxMatrix;
-import flixel.graphics.frames.FlxFrame;
-import flixel.FlxCamera;
-import flixel.system.FlxAssets.FlxGraphicAsset;
-import animate.internal.SymbolItem;
-import animate.internal.elements.Element;
-import animate.internal.elements.AtlasInstance;
-import animate.internal.elements.SymbolInstance;
 import animate.FlxAnimate;
 import animate.FlxAnimateFrames.FilterQuality;
 import animate.FlxAnimateFrames.SpritemapInput;
-import animate.internal.RenderTexture;
-import openfl.filters.BitmapFilter;
-import haxe.io.Path;
-import funkin.assets.Paths;
+import animate.FlxAnimateFrames;
+import animate.internal.SymbolItem;
+import animate.internal.elements.AtlasInstance;
+import animate.internal.elements.Element;
+import animate.internal.elements.SymbolInstance;
+import flixel.FlxCamera;
+import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxMatrix;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import funkin.assets.Assets;
+import funkin.assets.Paths;
+import funkin.graphics.framebuffer.FixedBitmapData;
+import funkin.graphics.framebuffer.FunkinFilterRenderer;
+import funkin.util.SerializerUtil;
+import haxe.io.Path;
+import openfl.display.BitmapData;
+import openfl.display3D.textures.TextureBase;
+import openfl.filters.BitmapFilter;
+import polymod.Polymod;
 
 using StringTools;
 
@@ -124,6 +126,7 @@ typedef AtlasSpriteSettings =
  */
 @:nullSafety
 @:access(animate.FlxAnimateController)
+@:access(polymod.Polymod)
 class FunkinSprite extends FlxAnimate
 {
   public var vcamPoint:Null<FlxPoint> = null;
@@ -356,9 +359,10 @@ class FunkinSprite extends FlxAnimate
    * Loads an Adobe Animate texture atlas as the sprite's texture.
    * @param key The key of the texture to load.
    * @param settings Additional settings for loading the atlas.
+   * @param modId The mod ID to load the texture atlas from.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, ?modId:String):FunkinSprite
   {
     if (key == null)
     {
@@ -374,9 +378,62 @@ class FunkinSprite extends FlxAnimate
     this.postStageMatrixApply = settings.postStageMatrixApply ?? false;
     this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    frames = Paths.getAnimateAtlas(key, settings);
+    if (modId != null)
+    {
+      // Null-safety kinda dumb #1
+      var id:String = modId;
 
-    __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
+      var assetPath:String = Paths.animateAtlas(key).toString();
+      var jsons:Array<String> = Polymod.assetLibrary
+        .listDirectly(id, TEXT)
+        .filter((str) -> str.contains(assetPath.substring(7)))
+        .map((str) -> str.substring(0, str.length - '.json'.length));
+
+      var spritemaps:Array<SpritemapInput> = [];
+      var animationJson:Null<String> = null;
+
+      for (json in jsons)
+      {
+        if (json.endsWith('Animation'))
+        {
+          animationJson = Polymod.assetLibrary.getTextDirectly('assets/$json.json', id);
+          jsons.remove(json);
+          break;
+        }
+      }
+
+      for (json in jsons)
+      {
+        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$json.png', id);
+        if (bitmap == null) continue;
+
+        var jsonString:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$json.json', id);
+        if (jsonString == null) continue;
+
+        // Null-safety kinda dumb #2
+        var bNotNull:BitmapData = bitmap;
+        var jNotNull:String = jsonString;
+
+        spritemaps.push({
+          source: bNotNull,
+          json: jNotNull
+        });
+      }
+
+      if (animationJson == null) throw 'Could not find Animation.json in path "$assetPath" from mod "$id"';
+
+      frames = FlxAnimateFrames.fromAnimate(animationJson, spritemaps, settings.metadataJson, settings.cacheKey, settings.uniqueInCache, {
+        swfMode: settings.swfMode,
+        cacheOnLoad: settings.cacheOnLoad,
+        filterQuality: settings.filterQuality,
+        onSymbolCreate: settings.onSymbolCreate
+      });
+    }
+    else
+    {
+      frames = Paths.getAnimateAtlas(key, settings);
+      __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
+    }
 
     return this;
   }
