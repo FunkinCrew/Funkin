@@ -367,6 +367,20 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.renderer.blacklistSprite(bfAndGF);
     dropShadowLayer.renderer.blacklistSprite(menuBG);
     dropShadowLayer.renderer.blacklistSprite(bgWires);
+
+    var topMod:ModMenuItem = enabledModItems.modItems[enabledModItems.modItems.length - 1];
+    var topModId:String = topMod.getModId();
+
+    if (topModId == BASE_GAME_MOD_ID)
+    {
+      topModId = '';
+    }
+
+    if (!topModId.isBlank())
+    {
+      bf.switchCharacter(null, topModId);
+      // gf.switchCharacter(null, topModId);
+    }
   }
 
   var fileDropTimer:Float = 0;
@@ -601,6 +615,7 @@ class ModMenuState extends MusicBeatState
   var gfBlink:Float = 999;
   var crispyTimer:Float = 0;
   var allowInput:Bool = true;
+  var playedCough:Bool = false;
 
   override public function update(elapsed:Float):Void
   {
@@ -641,16 +656,19 @@ class ModMenuState extends MusicBeatState
       handleKeyboard();
     }
 
-    if (bf.getCurrentAnimation() == CRISPY)
+    if (bf.getCurrentAnimation() == CRISPY || (bf.getCurrentAnimation() == IDLE && !allowInput))
     {
       crispyTimer += elapsed;
-      smoke.alpha = 1 - (crispyTimer / 1.4);
-      if (smoke.alpha < 0.82 && bf.anim.paused)
+      smoke.alpha = FlxMath.bound(smoke.alpha, 0, 1 - (crispyTimer / 1.4));
+
+      if (bf.getCurrentAnimation() == CRISPY)
       {
-        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/cough').toString());
-        bf.animation.resume();
+        if (smoke.alpha < 0.82 && !playedCough)
+        {
+          playedCough = true;
+          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/cough').toString());
+        }
       }
-      else if (smoke.alpha < 0) smoke.alpha = 0;
 
       if (crispyTimer >= 2.5)
       {
@@ -991,11 +1009,21 @@ class ModMenuState extends MusicBeatState
               topModId = '';
             }
 
+            var previousModId:String = bf.currentModId;
+
             bf.switchCharacter(null, topModId);
             // gf.switchCharacter(null, topModId);
 
-            bf.playAnimation(CRISPY, true);
-            // gf.playAnimation(CRISPY, true);
+            if (bf.currentModId != previousModId)
+            {
+              bf.playAnimation(IDLE, true);
+              // gf.playAnimation(IDLE, true);
+            }
+            else
+            {
+              bf.playAnimation(CRISPY, true);
+              // gf.playAnimation(CRISPY, true);
+            }
 
             crispyTimer = 0;
             smoke.alpha = 1;

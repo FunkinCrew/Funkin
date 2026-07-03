@@ -21,7 +21,6 @@ import funkin.assets.Assets;
 import funkin.assets.Paths;
 import funkin.graphics.framebuffer.FixedBitmapData;
 import funkin.graphics.framebuffer.FunkinFilterRenderer;
-import funkin.util.SerializerUtil;
 import haxe.io.Path;
 import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;

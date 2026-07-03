@@ -8,6 +8,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
+import polymod.Polymod;
 import polymod.PolymodAssets;
 
 enum abstract CharacterAnimation(String) to String
@@ -129,6 +130,7 @@ class ModMenuCharacter extends FunkinSprite
   {
     if (characterId == null) characterId = currentCharacterId;
     if (characterId == currentCharacterId && modId == currentModId) return;
+    if (!hasModdedAssets(modId)) return;
 
     currentCharacterId = characterId;
     currentModId = modId;
@@ -151,6 +153,13 @@ class ModMenuCharacter extends FunkinSprite
       applyStageMatrix: data?.atlasSettings?.applyStageMatrix ?? true,
       useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false
     }
+  }
+
+  function hasModdedAssets(modId:String):Bool
+  {
+    var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation');
+    @:privateAccess
+    return Polymod.assetLibrary.checkDirectly(assetPath, modId);
   }
 
   function loadGraphics():Void
