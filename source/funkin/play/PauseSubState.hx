@@ -743,7 +743,7 @@ class PauseSubState extends MusicBeatSubState
 
         if (controls.UI_UP_P || controls.UI_DOWN_P)
         {
-          offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
+          offset += (controls.UI_UP_P || controls.UI_UP) ? -1 : 1;
 
           offsetText.text = 'Global Offset: ${Std.int(offset)}ms';
         }
