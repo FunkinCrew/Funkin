@@ -20,7 +20,7 @@ import funkin.util.FileUtil;
 import funkin.util.SortUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.Polymod;
-import polymod.backends.PolymodAssets.PolymodAssetType;
+import polymod.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
 import polymod.fs.ZipFileSystem;
 
