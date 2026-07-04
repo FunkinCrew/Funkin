@@ -147,7 +147,17 @@ class ModMenuState extends MusicBeatState
     bfAndGF.updateHitbox();
 
     bf = new ModMenuCharacter(0, 0, 'bf');
+    bf.anim.onFinish.add((name:String) ->
+    {
+      bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
+    });
+    bfBlink = Math.random() + (Math.random() * 12);
     gf = new ModMenuCharacter(0, 0, 'gf', true);
+    gf.anim.onFinish.add((name:String) ->
+    {
+      gfBlink = blinkTimer + Math.random() + (Math.random() * 15);
+    });
+    gfBlink = Math.random() + (Math.random() * 15);
 
     refreshModList();
 
@@ -610,9 +620,9 @@ class ModMenuState extends MusicBeatState
   }
 
   var secondCounter:Float = 0;
-  var blinkTimer:Float = 10.1;
-  var bfBlink:Float = 999;
-  var gfBlink:Float = 999;
+  var blinkTimer:Float = 0;
+  var bfBlink:Float = 0;
+  var gfBlink:Float = 0;
   var crispyTimer:Float = 0;
   var allowInput:Bool = true;
   var playedCough:Bool = false;
@@ -632,23 +642,21 @@ class ModMenuState extends MusicBeatState
     {
       blinkTimer += elapsed;
 
-      if (blinkTimer >= 10)
+      if (blinkTimer >= 100)
       {
         blinkTimer = 0;
-        bfBlink = Math.random() + 1.8;
-        gfBlink = Math.random() + 2.4;
       }
 
-      if (blinkTimer >= bfBlink)
+      if (blinkTimer >= bfBlink && bf.anim.finished)
       {
-        bfBlink = blinkTimer + Math.random() + 1.8;
+        bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
 
         bf.playAnimation(IDLE, true);
       }
 
-      if (blinkTimer >= gfBlink)
+      if (blinkTimer >= gfBlink && gf.anim.finished)
       {
-        gfBlink = blinkTimer + Math.random() + 2.4;
+        gfBlink = blinkTimer + Math.random() + (Math.random() * 15);
 
         gf.playAnimation(IDLE, true);
       }
@@ -656,7 +664,7 @@ class ModMenuState extends MusicBeatState
       handleKeyboard();
     }
 
-    if (bf.getCurrentAnimation() == CRISPY || (bf.getCurrentAnimation() == IDLE && !allowInput))
+    if (!allowInput)
     {
       crispyTimer += elapsed;
       smoke.alpha = FlxMath.bound(smoke.alpha, 0, 1 - (crispyTimer / 1.4));
@@ -1014,15 +1022,10 @@ class ModMenuState extends MusicBeatState
             bf.switchCharacter(null, topModId);
             gf.switchCharacter(null, topModId);
 
-            if (bf.currentModId != previousModId)
+            if (topModId == '')
             {
-              bf.playAnimation(IDLE, true);
-              gf.playAnimation(IDLE, true);
-            }
-            else
-            {
-              bf.playAnimation(CRISPY, true);
-              gf.playAnimation(CRISPY, true);
+              if (bf.hasAnimation(CRISPY)) bf.playAnimation(CRISPY, true);
+              if (gf.hasAnimation(CRISPY)) gf.playAnimation(CRISPY, true);
             }
 
             crispyTimer = 0;

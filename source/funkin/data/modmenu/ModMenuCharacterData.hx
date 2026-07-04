@@ -32,6 +32,12 @@ typedef ModMenuCharacterData =
   var offsets:Array<Float>;
 
   /**
+   * The local offsets for the character's position.
+   */
+  @:optional @:default([0, 0])
+  var localOffsets:Array<Float>;
+
+  /**
    * The scale of the character.
    */
   @:optional @:default(1)

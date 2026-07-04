@@ -58,6 +58,11 @@ class ModMenuCharacter extends FunkinSprite
   var globalOffsets:Array<Float> = [0, 0];
 
   /**
+   * The local offsets for the character.
+   */
+  var localOffsets:Array<Float> = [0, 0];
+
+  /**
    * The current animation offset for the character.
    * TODO: Move animation offsets to `FunkinSprite`
    */
@@ -70,6 +75,7 @@ class ModMenuCharacter extends FunkinSprite
     this.currentCharacterId = characterId;
     this.isGF = gf;
 
+    loadCharacterData();
     loadGraphics();
     loadAnimations();
 
@@ -131,7 +137,11 @@ class ModMenuCharacter extends FunkinSprite
   {
     if (characterId == null) characterId = currentCharacterId;
     if (characterId == currentCharacterId && modId == currentModId) return;
-    if (!hasModdedAssets(modId)) return;
+    if (!hasModdedAssets(modId))
+    {
+      characterId = 'pinhead';
+      modId = '';
+    }
 
     currentCharacterId = characterId;
     currentModId = modId;
@@ -203,6 +213,8 @@ class ModMenuCharacter extends FunkinSprite
     }
 
     this.globalOffsets = data?.offsets ?? [isGF ? 680 : 846, 120];
+    this.localOffsets = data?.localOffsets ?? [0, 0];
+    trace(' MOD MENU '.bold().bg_orange() + ' Character offsets: ' + globalOffsets + ', ' + localOffsets);
     this.scale.set(data?.scale ?? 0.7, data?.scale ?? 0.7);
   }
 
@@ -211,12 +223,20 @@ class ModMenuCharacter extends FunkinSprite
     data = null;
 
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId');
-    if (!PolymodAssets.existsInMod(assetPath, currentModId))
+    var modExists:Bool = PolymodAssets.existsInMod(assetPath, currentModId);
+    var tryBase = !modExists;
+
+    if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
     {
+      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $currentModId!');
       return;
     }
 
-    var jsonString:String = PolymodAssets.getTextFromMod(assetPath, currentModId);
+    var jsonString:String = '';
+    if (tryBase) jsonString = Assets.getText(assetPath);
+    else
+      jsonString = PolymodAssets.getTextFromMod(assetPath, currentModId);
+
     var parser:JsonParser<ModMenuCharacterData> = new JsonParser<ModMenuCharacterData>({
       ignoreUnknownVariables: false
     });
@@ -236,8 +256,8 @@ class ModMenuCharacter extends FunkinSprite
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= (currentAnimationOffset[0] - globalOffsets[0]);
-    output.y -= (currentAnimationOffset[1] - globalOffsets[1]);
+    output.x -= (currentAnimationOffset[0] - (globalOffsets[0] + localOffsets[0]));
+    output.y -= (currentAnimationOffset[1] - (globalOffsets[1] + localOffsets[1]));
 
     // Small offset for mobile!
     output.x += FullScreenScaleMode.gameCutoutSize.x / 2;
