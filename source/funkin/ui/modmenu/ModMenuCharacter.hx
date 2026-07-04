@@ -79,16 +79,33 @@ class ModMenuCharacter extends FunkinSprite
     return [r, g, b];
   }
 
+  function applyShader():Void
+  {
+    if (currentCharacterId == 'pinhead')
+    {
+      if (replaceColorShader == null)
+      {
+        replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
+        replaceColorShader.setFloatArray("uTargetColor", [0, 1, 0.04]);
+        replaceColorShader.setFloatArray("uReplaceColor", getRandomColor());
+        replaceColorShader.setFloat("uThreshold", 0.12);
+      }
+      shader = replaceColorShader;
+    }
+    else
+    {
+      shader = null;
+      replaceColorShader = null;
+    }
+  }
+
   public function new(x:Float = 0, y:Float = 0, characterId:String = '', gf:Bool = false)
   {
     super(x, y);
 
-    replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
-    replaceColorShader.setFloatArray("uTargetColor", [1, 1, 1]);
-    replaceColorShader.setFloatArray("uReplaceColor", getRandomColor());
-    replaceColorShader.setFloat("uThreshold", 1.0);
+    if (characterId == '') characterId = 'pinhead';
 
-    shader = replaceColorShader;
+    applyShader();
 
     this.currentCharacterId = characterId;
     this.isGF = gf;
@@ -154,8 +171,13 @@ class ModMenuCharacter extends FunkinSprite
   public function switchCharacter(?characterId:String, modId:String):Void
   {
     if (characterId == null) characterId = currentCharacterId;
-    if (characterId == currentCharacterId && modId == currentModId) return;
-    if (!hasModdedAssets(modId))
+    if (characterId == currentCharacterId && modId == currentModId)
+    {
+      applyShader();
+      return;
+    }
+
+    if (!hasModdedAssets(modId) && modId != '')
     {
       characterId = 'pinhead';
       modId = '';
@@ -167,6 +189,8 @@ class ModMenuCharacter extends FunkinSprite
     loadCharacterData();
     loadGraphics();
     loadAnimations();
+
+    applyShader();
   }
 
   /**

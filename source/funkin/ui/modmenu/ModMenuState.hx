@@ -155,9 +155,11 @@ class ModMenuState extends MusicBeatState
     gf = new ModMenuCharacter(0, 0, 'gf', true);
     gf.anim.onFinish.add((name:String) ->
     {
-      gfBlink = blinkTimer + Math.random() + (Math.random() * 15);
+      gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
     });
-    gfBlink = Math.random() + (Math.random() * 15);
+    gfBlink = Math.random() + 6 + (Math.random() * 15);
+
+    // we want GF blink to be offset from BF at least.
 
     refreshModList();
 
@@ -188,7 +190,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
     // add(buttonBackToMenu);
 
-    add(bfAndGF);
+    //add(bfAndGF);
 
     // This is in reverse order since BF should be above GF!
     add(gf);
@@ -1019,8 +1021,10 @@ class ModMenuState extends MusicBeatState
 
             var previousModId:String = bf.currentModId;
 
-            bf.switchCharacter(null, topModId);
-            gf.switchCharacter(null, topModId);
+            bf.switchCharacter('bf', topModId);
+            gf.switchCharacter('gf', topModId);
+
+            trace('Switched BF and GF to mod ' + topModId + ' (was ' + previousModId + ')');
 
             if (topModId == '')
             {
