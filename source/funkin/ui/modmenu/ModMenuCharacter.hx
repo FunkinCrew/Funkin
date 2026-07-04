@@ -10,6 +10,7 @@ import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
 import polymod.Polymod;
 import polymod.PolymodAssets;
+import flixel.addons.display.FlxRuntimeShader;
 
 enum abstract CharacterAnimation(String) to String
 {
@@ -68,9 +69,26 @@ class ModMenuCharacter extends FunkinSprite
    */
   var currentAnimationOffset:Array<Float> = [0, 0];
 
+  var replaceColorShader:FlxRuntimeShader = null;
+
+  function getRandomColor():Array<Float>
+  {
+    var r:Float = Math.random();
+    var g:Float = Math.random();
+    var b:Float = Math.random();
+    return [r, g, b];
+  }
+
   public function new(x:Float = 0, y:Float = 0, characterId:String = '', gf:Bool = false)
   {
     super(x, y);
+
+    replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
+    replaceColorShader.setFloatArray("uTargetColor", [1, 1, 1]);
+    replaceColorShader.setFloatArray("uReplaceColor", getRandomColor());
+    replaceColorShader.setFloat("uThreshold", 1.0);
+
+    shader = replaceColorShader;
 
     this.currentCharacterId = characterId;
     this.isGF = gf;

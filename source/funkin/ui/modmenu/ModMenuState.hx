@@ -1027,7 +1027,13 @@ class ModMenuState extends MusicBeatState
               if (bf.hasAnimation(CRISPY)) bf.playAnimation(CRISPY, true);
               if (gf.hasAnimation(CRISPY)) gf.playAnimation(CRISPY, true);
             }
-
+            else
+            {
+              bf.playAnimation(IDLE, true);
+              bf.anim.pause();
+              gf.playAnimation(IDLE, true);
+              gf.anim.pause();
+            }
             crispyTimer = 0;
             smoke.alpha = 1;
           });
