@@ -1123,7 +1123,7 @@ class ModMenuState extends MusicBeatState
   {
     for (item in itemList.modItems)
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.justPressed)
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && TouchUtil.touch.deltaViewX != 0)
       {
         itemList.selectModItem(item, false);
 
@@ -1152,79 +1152,113 @@ class ModMenuState extends MusicBeatState
     }
   }
 
+  var touchScrolling:Bool = false;
+
   function handleTouch(elapsed:Float):Void
   {
     FlxG.mouse.visible = true;
 
-    if (grabbedItem == null)
+    if (touchScrolling)
     {
-      checkItemGrab(enabledModItems, EnabledModList);
-      checkItemGrab(disabledModItems, DisabledModList);
-    }
-    else
-    {
-      final targetX:Float = TouchUtil.touch.x - grabbedItem.width / 2;
-      final targetY:Float = TouchUtil.touch.y - grabbedItem.height / 2;
+      var targetList:ModMenuItemList = null;
 
-      grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
-      grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
+      switch (selection)
+      {
+        case EnabledModList:
+          targetList = enabledModItems;
+
+        case DisabledModList:
+          targetList = disabledModItems;
+
+        default:
+          // nothing.
+      }
+
+      targetList?.scrollBy(TouchUtil.touch?.deltaViewY);
 
       if (TouchUtil.justReleased)
       {
-        var targetList:ModMenuItemList = null;
-
-        var listChanged:Bool = false;
-
-        switch (selection)
-        {
-          case EnabledModList:
-            targetList = enabledModItems;
-
-            if (TouchUtil.overlapsComplex(leftRectangle))
-            {
-              targetList = disabledModItems;
-
-              selection = DisabledModList;
-
-              disableMod(grabbedItem);
-
-              listChanged = true;
-            }
-
-          case DisabledModList:
-            targetList = disabledModItems;
-
-            if (TouchUtil.overlapsComplex(rightRectangle))
-            {
-              targetList = enabledModItems;
-
-              selection = EnabledModList;
-
-              enableMod(grabbedItem);
-
-              listChanged = true;
-            }
-
-          default:
-            // Isnt supposed to happen.
-        }
-
-        if (!listChanged)
-        {
-          var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
-
-          var batchFutureCount:Int = targetList.modItems.length;
-
-          var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
-          var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
-
-          startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
-        }
-
-        grabbedItem = null;
-        grabbedIndex = 0;
+        touchScrolling = false;
       }
     }
+    else
+    {
+      if (grabbedItem == null)
+      {
+        checkItemGrab(enabledModItems, EnabledModList);
+        checkItemGrab(disabledModItems, DisabledModList);
+
+        if (TouchUtil.pressed && TouchUtil.touch.deltaViewY != 0)
+        {
+          touchScrolling = true;
+        }
+      }
+      else
+      {
+        final targetX:Float = TouchUtil.touch.x - grabbedItem.width / 2;
+        final targetY:Float = TouchUtil.touch.y - grabbedItem.height / 2;
+
+        grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
+        grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
+
+        if (TouchUtil.justReleased)
+        {
+          var targetList:ModMenuItemList = null;
+
+          var listChanged:Bool = false;
+
+          switch (selection)
+          {
+            case EnabledModList:
+              targetList = enabledModItems;
+
+              if (TouchUtil.overlapsComplex(leftRectangle))
+              {
+                targetList = disabledModItems;
+
+                selection = DisabledModList;
+
+                disableMod(grabbedItem);
+
+                listChanged = true;
+              }
+
+            case DisabledModList:
+              targetList = disabledModItems;
+
+              if (TouchUtil.overlapsComplex(rightRectangle))
+              {
+                targetList = enabledModItems;
+
+                selection = EnabledModList;
+
+                enableMod(grabbedItem);
+
+                listChanged = true;
+              }
+
+            default:
+              // Isnt supposed to happen.
+          }
+
+          if (!listChanged)
+          {
+            var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
+
+            var batchFutureCount:Int = targetList.modItems.length;
+
+            var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
+            var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
+
+            startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
+          }
+
+          grabbedItem = null;
+          grabbedIndex = 0;
+        }
+      }
+    }
+
     if (TouchUtil.overlapsComplex(hitboxOpenFolder) && selection != OpenModsFolder)
     {
       selection = OpenModsFolder;
