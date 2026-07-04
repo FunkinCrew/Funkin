@@ -63,11 +63,12 @@ class ModMenuCharacter extends FunkinSprite
    */
   var currentAnimationOffset:Array<Float> = [0, 0];
 
-  public function new(x:Float = 0, y:Float = 0, characterId:String = '')
+  public function new(x:Float = 0, y:Float = 0, characterId:String = '', gf:Bool = false)
   {
     super(x, y);
 
     this.currentCharacterId = characterId;
+    this.isGF = gf;
 
     loadGraphics();
     loadAnimations();
@@ -150,7 +151,7 @@ class ModMenuCharacter extends FunkinSprite
       swfMode: data?.atlasSettings?.swfMode ?? false,
       cacheOnLoad: data?.atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast data?.atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
-      applyStageMatrix: data?.atlasSettings?.applyStageMatrix ?? true,
+      applyStageMatrix: data?.atlasSettings?.applyStageMatrix ?? false,
       useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false
     }
   }
@@ -201,8 +202,8 @@ class ModMenuCharacter extends FunkinSprite
       animationOffsetsList.set(animation.name, animation.offsets ?? [0, 0]);
     }
 
-    this.globalOffsets = data?.offsets ?? [0, 0];
-    this.scale.set(data?.scale ?? 1, data?.scale ?? 1);
+    this.globalOffsets = data?.offsets ?? [isGF ? 680 : 846, 120];
+    this.scale.set(data?.scale ?? 0.7, data?.scale ?? 0.7);
   }
 
   function loadCharacterData():Void

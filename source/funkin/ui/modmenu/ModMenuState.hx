@@ -46,9 +46,9 @@ class ModMenuState extends MusicBeatState
    * GF in the mod menu.
    * TODO: Implement.
    */
-  // public var gf:ModMenuCharacter;
-  var leftRectangle:FunkinSprite = new FunkinSprite();
+  public var gf:ModMenuCharacter;
 
+  var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
   var buttonBackToMenu:ModMenuButton = new ModMenuButton();
   var buttonOpenFolder:ModMenuButton = new ModMenuButton();
@@ -147,7 +147,7 @@ class ModMenuState extends MusicBeatState
     bfAndGF.updateHitbox();
 
     bf = new ModMenuCharacter(0, 0, 'bf');
-    // gf = new ModMenuCharacter(0, 0, 'gf');
+    gf = new ModMenuCharacter(0, 0, 'gf', true);
 
     refreshModList();
 
@@ -181,7 +181,7 @@ class ModMenuState extends MusicBeatState
     add(bfAndGF);
 
     // This is in reverse order since BF should be above GF!
-    // add(gf);
+    add(gf);
     add(bf);
 
     smoke = FunkinSprite.create(bfAndGF.x + 40, bfAndGF.y + 40, 'ui/mods/mods-temp-smoke');
@@ -379,7 +379,7 @@ class ModMenuState extends MusicBeatState
     if (!topModId.isBlank())
     {
       bf.switchCharacter(null, topModId);
-      // gf.switchCharacter(null, topModId);
+      gf.switchCharacter(null, topModId);
     }
   }
 
@@ -632,6 +632,13 @@ class ModMenuState extends MusicBeatState
     {
       blinkTimer += elapsed;
 
+      if (blinkTimer >= 10)
+      {
+        blinkTimer = 0;
+        bfBlink = Math.random() + 1.8;
+        gfBlink = Math.random() + 2.4;
+      }
+
       if (blinkTimer >= bfBlink)
       {
         bfBlink = blinkTimer + Math.random() + 1.8;
@@ -643,14 +650,7 @@ class ModMenuState extends MusicBeatState
       {
         gfBlink = blinkTimer + Math.random() + 2.4;
 
-        // gf.playAnimation(IDLE, true);
-      }
-
-      if (blinkTimer >= 10)
-      {
-        blinkTimer = 0;
-        bfBlink = Math.random() + 1.8;
-        gfBlink = Math.random() + 2.4;
+        gf.playAnimation(IDLE, true);
       }
 
       handleKeyboard();
@@ -996,7 +996,7 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
           bf.playAnimation(ELECTROCUTED, true);
-          // gf.playAnimation(ELECTROCUTED, true);
+          gf.playAnimation(ELECTROCUTED, true);
 
           FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
           {
@@ -1012,17 +1012,17 @@ class ModMenuState extends MusicBeatState
             var previousModId:String = bf.currentModId;
 
             bf.switchCharacter(null, topModId);
-            // gf.switchCharacter(null, topModId);
+            gf.switchCharacter(null, topModId);
 
             if (bf.currentModId != previousModId)
             {
               bf.playAnimation(IDLE, true);
-              // gf.playAnimation(IDLE, true);
+              gf.playAnimation(IDLE, true);
             }
             else
             {
               bf.playAnimation(CRISPY, true);
-              // gf.playAnimation(CRISPY, true);
+              gf.playAnimation(CRISPY, true);
             }
 
             crispyTimer = 0;
