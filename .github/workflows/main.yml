@@ -25,15 +25,15 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
-          
-          # 1. Вырезаем hxcpp из hmm.json, чтобы hmm его не трогал
-          sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
 
-          # 2. Клонируем официальный стабильный hxcpp вместо битого форка
+          # 1. Клонируем официальный стабильный hxcpp в нужную структуру папок
           git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
 
-          # 3. Ставим hmm и накатываем остальные либы без конфликтов
+          # 2. Создаем маркер версии, чтобы hmm думал, что hxcpp уже установлен
+          echo "git" > .haxelib/hxcpp/.current
+
+          # 3. Ставим hmm и накатываем остальные либы из hmm.json
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
@@ -80,13 +80,13 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
-          
-          # Вырезаем hxcpp из манифеста зависимостей для Android
-          sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
 
-          # Клонируем стабильный официальный hxcpp для Android-сборки
+          # Клонируем стабильный hxcpp для Android
           git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
+          
+          # Маркер версии для Android-сборки
+          echo "git" > .haxelib/hxcpp/.current
 
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
