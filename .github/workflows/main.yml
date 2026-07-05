@@ -29,11 +29,8 @@ jobs:
           # 1. Вырезаем hxcpp из hmm.json, чтобы hmm его не трогал
           sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
 
-          # 2. Ручной клон правильного коммита hxcpp
-          git clone https://github.com/FunkinCrew/hxcpp .haxelib/hxcpp/git
-          cd .haxelib/hxcpp/git
-          git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
-          cd ../../..
+          # 2. Клонируем официальный стабильный hxcpp вместо битого форка
+          git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
 
           # 3. Ставим hmm и накатываем остальные либы без конфликтов
@@ -87,11 +84,8 @@ jobs:
           # Вырезаем hxcpp из манифеста зависимостей для Android
           sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
 
-          # Ручной клон hxcpp
-          git clone https://github.com/FunkinCrew/hxcpp .haxelib/hxcpp/git
-          cd .haxelib/hxcpp/git
-          git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
-          cd ../../..
+          # Клонируем стабильный официальный hxcpp для Android-сборки
+          git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
 
           haxelib install hmm --always --quiet
