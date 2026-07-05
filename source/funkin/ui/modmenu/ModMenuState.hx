@@ -34,7 +34,7 @@ import polymod.PolymodConfig;
  */
 class ModMenuState extends MusicBeatState
 {
-  static inline final BASE_GAME_MOD_ID:String = '__base_game__';
+  public static inline final BASE_GAME_MOD_ID:String = '__base_game__';
   static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/mod-menu-base-icon';
 
   /**
@@ -161,7 +161,7 @@ class ModMenuState extends MusicBeatState
 
     // we want GF blink to be offset from BF at least.
 
-    refreshModList();
+    refreshModList(false);
 
     add(enabledModItems);
     add(disabledModItems);
@@ -190,7 +190,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
     // add(buttonBackToMenu);
 
-    //add(bfAndGF);
+    // add(bfAndGF);
 
     // This is in reverse order since BF should be above GF!
     add(gf);
@@ -380,19 +380,26 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.renderer.blacklistSprite(menuBG);
     dropShadowLayer.renderer.blacklistSprite(bgWires);
 
-    var topMod:ModMenuItem = enabledModItems.modItems[enabledModItems.modItems.length - 1];
-    var topModId:String = topMod.getModId();
+    var modIds:Array<String> = grabEnabledModList();
 
-    if (topModId == BASE_GAME_MOD_ID)
-    {
-      topModId = '';
-    }
+    bf.switchCharacter('mod-bf', modIds);
+    gf.switchCharacter('mod-gf', modIds);
+  }
 
-    if (!topModId.isBlank())
+  /**
+   * Grabs the list of mod IDs that are currently enabled in the menu.
+   */
+  function grabEnabledModList():Array<String>
+  {
+    var modIds:Array<String> = [];
+
+    for (item in enabledModItems.modItems)
     {
-      bf.switchCharacter(null, topModId);
-      gf.switchCharacter(null, topModId);
+      if (item.mod != null) modIds.push(item.getModId());
     }
+    modIds.push(BASE_GAME_MOD_ID);
+
+    return modIds;
   }
 
   var fileDropTimer:Float = 0;
@@ -670,6 +677,8 @@ class ModMenuState extends MusicBeatState
     {
       crispyTimer += elapsed;
       smoke.alpha = FlxMath.bound(smoke.alpha, 0, 1 - (crispyTimer / 1.4));
+
+      if (crispyTimer >= 0.3 && gf.anim.paused) gf.anim.resume();
 
       if (bf.getCurrentAnimation() == CRISPY)
       {
@@ -1010,34 +1019,23 @@ class ModMenuState extends MusicBeatState
 
           FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
           {
-            // Get the topmost enabled mod swap out BF and GF with the mod's own assets... if it exists
-            var topMod:ModMenuItem = enabledModItems.modItems[enabledModItems.modItems.length - 1];
-            var topModId:String = topMod.getModId();
+            var modIds:Array<String> = grabEnabledModList();
 
-            if (topModId == BASE_GAME_MOD_ID)
-            {
-              topModId = '';
-            }
+            var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+            var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
 
-            var previousModId:String = bf.currentModId;
-
-            bf.switchCharacter('bf', topModId);
-            gf.switchCharacter('gf', topModId);
-
-            trace('Switched BF and GF to mod ' + topModId + ' (was ' + previousModId + ')');
-
-            if (topModId == '')
-            {
-              if (bf.hasAnimation(CRISPY)) bf.playAnimation(CRISPY, true);
-              if (gf.hasAnimation(CRISPY)) gf.playAnimation(CRISPY, true);
-            }
+            if (bfNotPinhead && bf.hasAnimation(CRISPY)) bf.playAnimation(CRISPY, true);
             else
             {
               bf.playAnimation(IDLE, true);
-              bf.anim.pause();
+            }
+            if (gfNotPinhead && gf.hasAnimation(CRISPY)) gf.playAnimation(CRISPY, true);
+            else
+            {
               gf.playAnimation(IDLE, true);
               gf.anim.pause();
             }
+
             crispyTimer = 0;
             smoke.alpha = 1;
           });
@@ -1094,7 +1092,7 @@ class ModMenuState extends MusicBeatState
 
   function animateNewItemsIn(list:ModMenuItemList, newItems:Array<ModMenuItem>):Void
   {
-    list.animateItemsToLayout(0.28, FlxEase.quartOut);
+    list.animateItemsToLayout(0.28, FlxEase.linear);
 
     for (item in newItems)
     {
@@ -1105,7 +1103,7 @@ class ModMenuState extends MusicBeatState
   var fadingItems:Array<
     {item:ModMenuItem, elapsed:Float, duration:Float}> = [];
 
-  function fadeItemIn(item:ModMenuItem, duration:Float = 0.28):Void
+  function fadeItemIn(item:ModMenuItem, duration:Float = 0.5):Void
   {
     item.localAlpha = 0;
     fadingItems.push({
@@ -1115,7 +1113,7 @@ class ModMenuState extends MusicBeatState
     });
   }
 
-  function refreshModList():Array<ModMenuItem>
+  function refreshModList(doFade:Bool = true):Array<ModMenuItem>
   {
     PolymodHandler.getAllMods(true);
     itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
@@ -1158,13 +1156,19 @@ class ModMenuState extends MusicBeatState
       else if (selection == EnabledModList) enabledModItems.selectFirstItem();
     }
 
-    if (newDisabledItems.length > 0) animateNewItemsIn(disabledModItems, newDisabledItems);
+    if (newDisabledItems.length > 0 && doFade) animateNewItemsIn(disabledModItems, newDisabledItems);
     else
       disabledModItems.repositionItems();
 
-    if (newEnabledItems.length > 0) animateNewItemsIn(enabledModItems, newEnabledItems);
+    if (newEnabledItems.length > 0 && doFade) animateNewItemsIn(enabledModItems, newEnabledItems);
     else
       enabledModItems.repositionItems();
+
+    if (!doFade)
+    {
+      for (item in newDisabledItems) item.localAlpha = 1;
+      for (item in newEnabledItems) item.localAlpha = 1;
+    }
 
     return newDisabledItems;
   }

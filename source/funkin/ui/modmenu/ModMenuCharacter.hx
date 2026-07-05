@@ -12,6 +12,8 @@ import polymod.Polymod;
 import polymod.PolymodAssets;
 import flixel.addons.display.FlxRuntimeShader;
 
+using StringTools;
+
 enum abstract CharacterAnimation(String) to String
 {
   public var IDLE = 'idle';
@@ -168,19 +170,40 @@ class ModMenuCharacter extends FunkinSprite
    * @param characterId The new character ID to use.
    * @param modId The new mod ID to use.
    */
-  public function switchCharacter(?characterId:String, modId:String):Void
+  public function switchCharacter(?characterId:String, modIds:Array<String>):Bool
   {
     if (characterId == null) characterId = currentCharacterId;
-    if (characterId == currentCharacterId && modId == currentModId)
+    if (characterId == currentCharacterId && modIds.contains(currentModId))
     {
       applyShader();
-      return;
+      return true;
     }
 
-    if (!hasModdedAssets(modId) && modId != '')
+    var isPinhead:Bool = false;
+    var modId:String = '';
+
+    currentCharacterId = characterId;
+
+    for (mod in modIds)
+    {
+      if (mod == ModMenuState.BASE_GAME_MOD_ID) continue;
+      if (hasModdedAssets(mod))
+      {
+        modId = mod;
+        break;
+      }
+    }
+
+    trace(' MOD MENU '.bold().bg_orange() + ' Switching character to $characterId with mod $modId. Mods checked: $modIds');
+    if (modId == '' && modIds.length > 1)
     {
       characterId = 'pinhead';
-      modId = '';
+      isPinhead = true;
+    }
+    else if (modId == '' && modIds.length == 1)
+    {
+      characterId = StringTools.replace(characterId, 'mod-', '');
+      isPinhead = true;
     }
 
     currentCharacterId = characterId;
@@ -191,6 +214,7 @@ class ModMenuCharacter extends FunkinSprite
     loadAnimations();
 
     applyShader();
+    return !isPinhead;
   }
 
   /**
@@ -218,7 +242,7 @@ class ModMenuCharacter extends FunkinSprite
   function loadGraphics():Void
   {
     var assetPath:Null<String> = 'ui/mods/characters/$currentCharacterId';
-
+    trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $currentModId. Asset path: $assetPath');
     switch (data?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
@@ -270,7 +294,7 @@ class ModMenuCharacter extends FunkinSprite
 
     if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
     {
-      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $currentModId!');
+      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $currentModId! (asset path: $assetPath)');
       return;
     }
 
@@ -286,7 +310,7 @@ class ModMenuCharacter extends FunkinSprite
 
     if (parser.errors.length > 0)
     {
-      trace(' MOD MENU '.bold().bg_orange() + ' Failed to parse character data!');
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to parse character data! (asset path: $assetPath)');
       for (error in parser.errors) funkin.data.DataError.printError(error);
     }
     else
