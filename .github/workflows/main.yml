@@ -21,14 +21,20 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install HMM & Dependencies
+      - name: Install Dependencies (FunkinCrew Style)
+        shell: bash
         run: |
-          haxelib setup ~/haxelib
-          haxelib install hmm
-          haxelib run hmm setup --global
+          haxelib --never newrepo
+
+          haxelib install hmm --always
+          haxelib run hmm setup
+
           haxelib run hmm install
-          haxelib install hxp 1.3.0 --always
-          haxelib dev hxp $(haxelib libpath hxp)
+
+          cd .haxelib/hxcpp/git/tools/hxcpp
+          haxe compile.hxml
+          cd ../../../../..
+
           haxelib run lime setup
 
       - name: Compile Game
@@ -62,14 +68,18 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install HMM & Setup Android
+      - name: Install Dependencies & Setup Android
+        shell: bash
         run: |
-          haxelib setup ~/haxelib
-          haxelib install hmm
-          haxelib run hmm setup --global
+          haxelib --never newrepo
+          haxelib install hmm --always
+          haxelib run hmm setup
           haxelib run hmm install
-          haxelib install hxp 1.3.0 --always
-          haxelib dev hxp $(haxelib libpath hxp)
+
+          cd .haxelib/hxcpp/git/tools/hxcpp
+          haxe compile.hxml
+          cd ../../../../..
+          
           haxelib run lime setup
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
