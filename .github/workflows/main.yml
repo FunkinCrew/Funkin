@@ -46,8 +46,8 @@ jobs:
           haxe compile.hxml
           cd ../../../../..
 
-          # 5. Компилируем и настраиваем lime инструмент
-          cd .haxelib/lime/git/tools
+          # 5. Компилируем и настраиваем lime инструмент из корня репозитория
+          cd .haxelib/lime/git
           haxe tools.hxml
           cd ../../..
           haxelib run lime setup
@@ -102,12 +102,13 @@ jobs:
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
-          # Сборка инструментов
+          # Сборка инструментов hxcpp
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
 
-          cd .haxelib/lime/git/tools
+          # Сборка инструментов lime
+          cd .haxelib/lime/git
           haxe tools.hxml
           cd ../../..
           
