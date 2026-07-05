@@ -26,9 +26,12 @@ jobs:
         run: |
           haxelib --never newrepo
           haxelib install hmm --always --quiet
+          
+          # Настраиваем hmm локально, запрещая ему лезть в систему за симлинками
+          haxelib run hmm setup --unregistered
+          haxelib run hmm install -q
 
-          haxe --run hmm.Hmm install -q
-
+          # Компилируем инструменты hxcpp из исходников git
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
@@ -71,8 +74,10 @@ jobs:
         run: |
           haxelib --never newrepo
           haxelib install hmm --always --quiet
-
-          haxe --run hmm.Hmm install -q
+          
+          # Настраиваем hmm локально для Android-окружения
+          haxelib run hmm setup --unregistered
+          haxelib run hmm install -q
 
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
