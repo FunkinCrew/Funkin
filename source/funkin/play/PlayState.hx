@@ -52,6 +52,7 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.scoring.Scoring;
+import funkin.play.scoring.ScoringPBOT1;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
@@ -450,6 +451,11 @@ class PlayState extends MusicBeatSubState
    * The current dialogue.
    */
   public var currentConversation:Null<Conversation>;
+
+  /**
+   * The current scoring system used for judging and calculating scores.
+   */
+  public var scoring = new ScoringPBOT1();
 
   /**
    * Key press inputs which have been received but not yet processed.
@@ -3125,8 +3131,8 @@ class PlayState extends MusicBeatSubState
     // Round inward (trim remainder) for consistency.
     var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
 
-    var score = Scoring.scoreNote(noteDiff, PBOT1);
-    var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+    var score = scoring.scoreNote(noteDiff);
+    var daRating = scoring.judgeNote(noteDiff);
 
     var healthChange = 0.0;
     var isComboBreak = false;
@@ -3200,7 +3206,7 @@ class PlayState extends MusicBeatSubState
       }
     }
 
-    applyScore(Scoring.getMissScore(), 'miss', healthChange, true);
+    applyScore(scoring.getMissScore(), 'miss', healthChange, true);
 
     if (playSound)
     {
