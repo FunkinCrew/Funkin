@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-13]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - name: Checkout Repository
@@ -26,9 +26,8 @@ jobs:
         run: |
           haxelib --never newrepo
           haxelib install hmm --always --quiet
-          haxelib run hmm setup
 
-          haxelib --global run hmm install -q
+          haxe --run hmm.Hmm install -q
 
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
@@ -38,7 +37,7 @@ jobs:
 
       - name: Compile Game
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'ubuntu-latest' && 'linux' || 'mac' }} -release
+          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -72,9 +71,8 @@ jobs:
         run: |
           haxelib --never newrepo
           haxelib install hmm --always --quiet
-          haxelib run hmm setup
 
-          haxelib --global run hmm install -q
+          haxe --run hmm.Hmm install -q
 
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
