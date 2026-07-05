@@ -36,7 +36,12 @@ jobs:
           haxelib dev lime .haxelib/lime/git
           echo "git" > .haxelib/lime/.current
 
-          # 3. Ставим hmm и накатываем остальные либы из hmm.json (lime и hxcpp он пропустит)
+          # Фикс для Windows: hmm падает, если не видит HAXEPATH
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            export HAXEPATH=$HAXE_PATH
+          fi
+
+          # 3. Ставим hmm и накатываем остальные либы из hmm.json
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
@@ -46,11 +51,8 @@ jobs:
           haxe compile.hxml
           cd ../../../../..
 
-          # 5. Компилируем и настраиваем lime инструмент из корня репозитория
-          cd .haxelib/lime/git
-          haxe tools.hxml
-          cd ../../..
-          haxelib run lime setup
+          # 5. Собираем инструменты lime через нативный ребилд
+          haxelib run lime rebuild tools
 
       - name: Compile Game
         run: |
@@ -108,11 +110,8 @@ jobs:
           cd ../../../../..
 
           # Сборка инструментов lime
-          cd .haxelib/lime/git
-          haxe tools.hxml
-          cd ../../..
+          haxelib run lime rebuild tools
           
-          haxelib run lime setup
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
