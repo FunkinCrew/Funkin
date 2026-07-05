@@ -26,14 +26,17 @@ jobs:
         run: |
           haxelib --never newrepo
 
-          # 1. Клонируем официальный стабильный hxcpp в нужную структуру папок
+          # 1. Клонируем и фиксируем официальный hxcpp
           git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
-
-          # 2. Создаем маркер версии, чтобы hmm думал, что hxcpp уже установлен
           echo "git" > .haxelib/hxcpp/.current
 
-          # 3. Ставим hmm и накатываем остальные либы из hmm.json
+          # 2. Клонируем и фиксируем официальный стабильный lime
+          git clone --recursive https://github.com/haxelime/lime .haxelib/lime/git
+          haxelib dev lime .haxelib/lime/git
+          echo "git" > .haxelib/lime/.current
+
+          # 3. Ставим hmm и накатываем остальные либы из hmm.json (lime и hxcpp он пропустит)
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
@@ -43,6 +46,10 @@ jobs:
           haxe compile.hxml
           cd ../../../../..
 
+          # 5. Компилируем и настраиваем lime инструмент
+          cd .haxelib/lime/git/tools
+          haxe tools.hxml
+          cd ../../..
           haxelib run lime setup
 
       - name: Compile Game
@@ -81,20 +88,28 @@ jobs:
         run: |
           haxelib --never newrepo
 
-          # Клонируем стабильный hxcpp для Android
+          # Клонируем официальный hxcpp для Android
           git clone https://github.com/HaxeFoundation/hxcpp .haxelib/hxcpp/git
           haxelib dev hxcpp .haxelib/hxcpp/git
-          
-          # Маркер версии для Android-сборки
           echo "git" > .haxelib/hxcpp/.current
+
+          # Клонируем официальный lime для Android
+          git clone --recursive https://github.com/haxelime/lime .haxelib/lime/git
+          haxelib dev lime .haxelib/lime/git
+          echo "git" > .haxelib/lime/.current
 
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
+          # Сборка инструментов
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
+
+          cd .haxelib/lime/git/tools
+          haxe tools.hxml
+          cd ../../..
           
           haxelib run lime setup
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
