@@ -922,9 +922,9 @@ class Project extends HXProject
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
-    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
-    FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+    FEATURE_MOBILE_ADVERTISEMENTS.apply(this, false);
+    FEATURE_MOBILE_IAP.apply(this, false);
+    FEATURE_MOBILE_IAR.apply(this, false);
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
 
     // The coveted ghost tapping feature.
