@@ -27,7 +27,9 @@ jobs:
           haxelib --never newrepo
           haxelib install hmm --always --quiet
           
-          # Настраиваем hmm локально, запрещая ему лезть в систему за симлинками
+          # Отключаем shallow-клонирование, чтобы haxelib мог находить конкретные коммиты в истории git
+          git config --global clone.depth 0
+          
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
@@ -75,7 +77,9 @@ jobs:
           haxelib --never newrepo
           haxelib install hmm --always --quiet
           
-          # Настраиваем hmm локально для Android-окружения
+          # Отключаем shallow-клонирование и здесь
+          git config --global clone.depth 0
+          
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
