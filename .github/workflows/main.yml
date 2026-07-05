@@ -25,15 +25,23 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
+          
+          # 1. Вырезаем hxcpp из hmm.json, чтобы hmm его не трогал
+          sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
+
+          # 2. Ручной клон правильного коммита hxcpp
+          git clone https://github.com/FunkinCrew/hxcpp .haxelib/hxcpp/git
+          cd .haxelib/hxcpp/git
+          git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
+          cd ../../..
+          haxelib dev hxcpp .haxelib/hxcpp/git
+
+          # 3. Ставим hmm и накатываем остальные либы без конфликтов
           haxelib install hmm --always --quiet
-          
-          # Отключаем shallow-клонирование, чтобы haxelib мог находить конкретные коммиты в истории git
-          git config --global clone.depth 0
-          
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
-          # Компилируем инструменты hxcpp из исходников git
+          # 4. Компилируем инструменты hxcpp
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
           cd ../../../../..
@@ -75,11 +83,18 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
+          
+          # Вырезаем hxcpp из манифеста зависимостей для Android
+          sed -i '/"hxcpp"/d' hmm.json || sed -i '' '/"hxcpp"/d' hmm.json
+
+          # Ручной клон hxcpp
+          git clone https://github.com/FunkinCrew/hxcpp .haxelib/hxcpp/git
+          cd .haxelib/hxcpp/git
+          git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
+          cd ../../..
+          haxelib dev hxcpp .haxelib/hxcpp/git
+
           haxelib install hmm --always --quiet
-          
-          # Отключаем shallow-клонирование и здесь
-          git config --global clone.depth 0
-          
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
