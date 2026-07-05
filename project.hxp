@@ -53,7 +53,7 @@ class Project extends HXProject
   /**
    * A package name used for identifying the app on various app stores.
    */
-  static final PACKAGE_NAME:String = "me.funkin.fnf";
+  static final PACKAGE_NAME:String = "md.dankert.fnf";
 
   /**
    * The name of the generated executable file.
