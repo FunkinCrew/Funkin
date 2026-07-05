@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-13]
 
     steps:
       - name: Checkout Repository
@@ -27,8 +27,9 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
+          haxelib install hxp
           haxelib run lime setup
-  
+
       - name: Compile Game
         run: |
           haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'ubuntu-latest' && 'linux' || 'mac' }} -release
@@ -66,6 +67,7 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
+          haxelib install hxp
           haxelib run lime setup
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
