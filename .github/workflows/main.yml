@@ -25,11 +25,10 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
-
-          haxelib install hmm --always
+          haxelib install hmm --always --quiet
           haxelib run hmm setup
 
-          haxelib run hmm install
+          haxelib --global run hmm install -q
 
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
@@ -72,9 +71,10 @@ jobs:
         shell: bash
         run: |
           haxelib --never newrepo
-          haxelib install hmm --always
+          haxelib install hmm --always --quiet
           haxelib run hmm setup
-          haxelib run hmm install
+
+          haxelib --global run hmm install -q
 
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
