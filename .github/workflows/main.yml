@@ -21,13 +21,12 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install Haxelibs
+      - name: Install HMM & Dependencies
         run: |
           haxelib setup ~/haxelib
-          haxelib install lime
-          haxelib install openfl
-          haxelib install flixel
-          haxelib install hxp
+          haxelib install hmm
+          haxelib run hmm setup
+          haxelib run hmm install
           haxelib run lime setup
 
       - name: Compile Game
@@ -61,13 +60,12 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install Haxelibs & Setup Android
+      - name: Install HMM & Setup Android
         run: |
           haxelib setup ~/haxelib
-          haxelib install lime
-          haxelib install openfl
-          haxelib install flixel
-          haxelib install hxp
+          haxelib install hmm
+          haxelib run hmm setup
+          haxelib run hmm install
           haxelib run lime setup
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
