@@ -101,8 +101,8 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Собираем lime.ndll для текущей ОС хоста (исправляет ошибку отсутствия файла)
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+          # Собираем lime.ndll без HashLink (-no-hl) под текущую ОС хоста
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -no-hl
 
           # Неинтерактивное связывание openfl и lime
           haxelib run lime run openfl
@@ -210,8 +210,8 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
           
-          # Сборка lime.ndll для хоста Android-раннера (Ubuntu)
-          haxelib run lime rebuild linux
+          # Сборка lime.ndll без HashLink (-no-hl) для хоста Android-раннера (Ubuntu)
+          haxelib run lime rebuild linux -no-hl
 
           # Связывание утилит
           haxelib run lime run openfl
