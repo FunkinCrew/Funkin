@@ -101,6 +101,9 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
+          # Собираем lime.ndll для текущей ОС хоста (исправляет ошибку отсутствия файла)
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+
           # Неинтерактивное связывание openfl и lime
           haxelib run lime run openfl
 
@@ -204,8 +207,13 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Настройка hxcpp и связывание утилит
+          # Настройка hxcpp
           haxelib run hxcpp
+          
+          # Сборка lime.ndll для хоста Android-раннера (Ubuntu)
+          haxelib run lime rebuild linux
+
+          # Связывание утилит
           haxelib run lime run openfl
           
           # Конфигурация путей для Android
