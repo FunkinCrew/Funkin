@@ -98,9 +98,9 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Ребилд инструментов
+          # Ребилд инструментов без HashLink (убирает ошибку отсутствия hl.h)
           haxelib run hxcpp
-          haxelib run lime rebuild tools
+          haxelib run lime rebuild tools -no-hl
 
       - name: Compile Game
         run: |
@@ -202,9 +202,9 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Ребилд инструментов
+          # Ребилд инструментов без HashLink (убирает ошибку отсутствия hl.h)
           haxelib run hxcpp
-          haxelib run lime rebuild tools
+          haxelib run lime rebuild tools -no-hl
           
           # Конфигурация путей
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
@@ -218,3 +218,4 @@ jobs:
         with:
           name: Funkin-Android
           path: export/release/android/bin/app/build/outputs/apk/release/*.apk
+          
