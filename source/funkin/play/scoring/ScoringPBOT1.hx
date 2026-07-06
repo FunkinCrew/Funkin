@@ -77,11 +77,6 @@ class ScoringPBOT1 extends Scoring
     super('pbot1');
   }
 
-  /**
-   * Determine the score a note receives under a given scoring system.
-   * @param msTiming The difference between the note's time and when it was hit.
-   * @return The score the note receives.
-   */
   public override function scoreNote(msTiming:Float):Int
   {
     // Absolute value because otherwise late hits are always given the max score.

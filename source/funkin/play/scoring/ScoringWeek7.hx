@@ -21,16 +21,6 @@ class ScoringWeek7 extends Scoring
   public static final WEEK7_GOOD_SCORE:Int = 200;
   public static final WEEK7_SICK_SCORE:Int = 350;
 
-  /**
-   * The score a note receives when hit within the Sick threshold.
-   */
-  public static final LEGACY_SICK_SCORE:Int = 350;
-
-  /**
-   * The score a note receives when hit within the Good threshold.
-   */
-  public static final LEGACY_GOOD_SCORE:Int = 200;
-
   public function new()
   {
     super('week7');
