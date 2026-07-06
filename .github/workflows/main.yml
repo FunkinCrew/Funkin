@@ -48,7 +48,7 @@ jobs:
           haxelib install extension-iarcore 1.0.3 --always --quiet
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Функция ручного клонирования для обхода багов haxelib git и ошибок отсутствия коммитов
+          # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
             local name=$1
             local url=$2
@@ -56,15 +56,19 @@ jobs:
             local sub_dir=$4
 
             echo "Safely installing $name ($rev)..."
-            mkdir -p .haxelib/$name
-            
-            # Клонируем без автоматического чекаута, чтобы подгрузить всю историю
-            git clone --no-checkout "$url" .haxelib/$name/git
+            mkdir -p .haxelib/$name/git
             cd .haxelib/$name/git
-            git checkout "$rev"
+            
+            # Инициализируем чистый репозиторий локально
+            git init -q
+            git remote add origin "$url"
+            
+            # Запрашиваем конкретный SHA1 коммит напрямую у GitHub (решает проблему утерянных деревьев)
+            git fetch --depth=1 origin "$rev" --quiet || git fetch origin --quiet
+            git reset --hard "$rev" --quiet
             cd ../../..
 
-            # Регистрируем библиотеку локально
+            # Регистрируем библиотеку локально в haxelib
             if [ -n "$sub_dir" ]; then
               haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
             else
@@ -151,7 +155,7 @@ jobs:
           haxelib install extension-iarcore 1.0.3 --always --quiet
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Функция ручного клонирования для обхода багов haxelib git и ошибок отсутствия коммитов
+          # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
             local name=$1
             local url=$2
@@ -159,11 +163,14 @@ jobs:
             local sub_dir=$4
 
             echo "Safely installing $name ($rev)..."
-            mkdir -p .haxelib/$name
-            
-            git clone --no-checkout "$url" .haxelib/$name/git
+            mkdir -p .haxelib/$name/git
             cd .haxelib/$name/git
-            git checkout "$rev"
+            
+            git init -q
+            git remote add origin "$url"
+            
+            git fetch --depth=1 origin "$rev" --quiet || git fetch origin --quiet
+            git reset --hard "$rev" --quiet
             cd ../../..
 
             if [ -n "$sub_dir" ]; then
