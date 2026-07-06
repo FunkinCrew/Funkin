@@ -24,19 +24,21 @@ jobs:
       - name: Install Dependencies
         shell: bash
         run: |
+          # Ядерная очистка кэша, чтобы избежать конфликтов путей
+          rm -rf .haxelib
           haxelib --never newrepo
 
-          # Фикс путей для Windows раннера, чтобы hmm не падал
+          # Фикс путей для Windows
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             export HAXEPATH=$HAXE_PATH
           fi
 
-          # Устанавливаем hmm и даем ему стянуть ВСЕ правильные зависимости из hmm.json
+          # Установка зависимостей
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
-          # Собираем инструменты hxcpp и lime из тех исходников, что скачал hmm
+          # Ребилд инструментов
           haxelib run hxcpp
           haxelib run lime rebuild tools
 
@@ -74,18 +76,20 @@ jobs:
       - name: Install Dependencies & Setup Android
         shell: bash
         run: |
+          # Ядерная очистка кэша для Android-раннера
+          rm -rf .haxelib
           haxelib --never newrepo
 
-          # Ставим зависимости строго по твоему hmm.json
+          # Установка зависимостей
           haxelib install hmm --always --quiet
           haxelib run hmm setup --unregistered
           haxelib run hmm install -q
 
-          # Нативный ребилд инструментов
+          # Ребилд инструментов
           haxelib run hxcpp
           haxelib run lime rebuild tools
           
-          # Конфигурируем Android окружение внутри haxelib
+          # Конфигурация путей
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
@@ -97,3 +101,4 @@ jobs:
         with:
           name: Funkin-Android
           path: export/release/android/bin/app/build/outputs/apk/release/*.apk
+          
