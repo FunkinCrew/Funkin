@@ -63,7 +63,7 @@ jobs:
             git init -q
             git remote add origin "$url"
             
-            # Запрашиваем конкретный SHA1 коммит напрямую у GitHub (решает проблему утерянных деревьев)
+            # Запрашиваем конкретный SHA1 коммит напрямую у GitHub
             git fetch --depth=1 origin "$rev" --quiet || git fetch origin --quiet
             git reset --hard "$rev" --quiet
             cd ../../..
@@ -98,10 +98,11 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Настройка инструментов без принудительной пересборки бинарников
+          # Инициализируем hxcpp
           haxelib run hxcpp
-          haxelib run lime setup
-          haxelib run openfl setup
+          
+          # Неинтерактивное связывание openfl и lime
+          haxelib run lime run openfl
 
       - name: Compile Game
         run: |
@@ -203,12 +204,11 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Настройка инструментов без принудительной пересборки бинарников
+          # Настройка hxcpp и связывание утилит
           haxelib run hxcpp
-          haxelib run lime setup
-          haxelib run openfl setup
+          haxelib run lime run openfl
           
-          # Конфигурация путей
+          # Конфигурация путей для Android
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
@@ -220,4 +220,3 @@ jobs:
         with:
           name: Funkin-Android
           path: export/release/android/bin/app/build/outputs/apk/release/*.apk
-          
