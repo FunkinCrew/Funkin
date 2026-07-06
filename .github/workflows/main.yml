@@ -24,6 +24,12 @@ jobs:
       - name: Install Dependencies
         shell: bash
         run: |
+          # Устанавливаем системные зависимости HashLink, чтобы исправить баг сборщика Lime
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ] || [ "$RUNNER_OS" = "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libhl-dev
+          fi
+
           # Ядерная очистка кэша, чтобы избежать конфликтов путей
           rm -rf .haxelib
           haxelib --never newrepo
@@ -101,15 +107,15 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Собираем lime.ndll с принудительным отключением HashLink через дефайн
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -D no_hashlink
+          # Оставляем пересборку lime (теперь она успешно завершится, найдя hl.h)
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -no-hl
 
           # Неинтерактивное связывание openfl и lime
           haxelib run lime run openfl
 
       - name: Compile Game
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -D no_hashlink
+          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -141,6 +147,10 @@ jobs:
       - name: Install Dependencies & Setup Android
         shell: bash
         run: |
+          # Устанавливаем системные зависимости HashLink, чтобы исправить баг сборщика Lime
+          sudo apt-get update
+          sudo apt-get install -y libhl-dev
+
           # Ядерная очистка кэша для Android-раннера
           rm -rf .haxelib
           haxelib --never newrepo
@@ -210,8 +220,8 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
           
-          # Сборка lime.ndll с принудительным отключением HashLink через дефайн для хоста Android-раннера (Ubuntu)
-          haxelib run lime rebuild linux -D no_hashlink
+          # Сборка lime.ndll для хоста Android-раннера (Ubuntu)
+          haxelib run lime rebuild linux -no-hl
 
           # Связывание утилит
           haxelib run lime run openfl
@@ -221,8 +231,7 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
       - name: Compile APK
-        # Собираем APK с флагом отключения HL
-        run: haxelib run lime build android -release -D no_hashlink
+        run: haxelib run lime build android -release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
