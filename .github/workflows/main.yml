@@ -101,15 +101,15 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Собираем lime.ndll без HashLink (-no-hl) под текущую ОС хоста
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -no-hl
+          # Собираем lime.ndll с принудительным отключением HashLink через дефайн
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -D no_hashlink
 
           # Неинтерактивное связывание openfl и lime
           haxelib run lime run openfl
 
       - name: Compile Game
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release
+          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -D no_hashlink
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -210,8 +210,8 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
           
-          # Сборка lime.ndll без HashLink (-no-hl) для хоста Android-раннера (Ubuntu)
-          haxelib run lime rebuild linux -no-hl
+          # Сборка lime.ndll с принудительным отключением HashLink через дефайн для хоста Android-раннера (Ubuntu)
+          haxelib run lime rebuild linux -D no_hashlink
 
           # Связывание утилит
           haxelib run lime run openfl
@@ -221,7 +221,8 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
       - name: Compile APK
-        run: haxelib run lime build android -release
+        # Собираем APK с флагом отключения HL
+        run: haxelib run lime build android -release -D no_hashlink
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
