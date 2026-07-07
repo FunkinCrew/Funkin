@@ -9,6 +9,7 @@ import haxe.ui.events.MouseEvent;
 import lime.ui.Gesture;
 import lime.ui.Gesture.GestureType;
 import funkin.input.macos.FunkinGesture;
+import funkin.util.HaxeUIUtil;
 #end
 
 @:composite(CameraViewportEvents)
@@ -169,6 +170,7 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function preGestureStart(g:Gesture):Bool
   {
+    if (HaxeUIUtil.isModalDialogOpen()) return false;
     return _hitTest(FlxG.mouse.gameX, FlxG.mouse.gameY);
   }
 
