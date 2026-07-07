@@ -511,6 +511,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
   static inline var DOUBLE_CLICK_MAX_DIST_PX:Float = 4.0;
 
   #if FEATURE_MACOS_GESTURES
+  static inline var GESTURE_PAN_SCALE_X:Float = 1.0;
+  static inline var GESTURE_PAN_SCALE_Y:Float = 1.0;
+
   var gesture:FunkinGesture;
   #end
   var _viewport:TimelineViewport;
@@ -1343,7 +1346,7 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function preGestureStart(g:Gesture):Bool
   {
-    return _hitTest(g.x, g.y);
+    return _hitTest(FlxG.mouse.gameX, FlxG.mouse.gameY);
   }
 
   function onGestureStart(g:Gesture):Void
@@ -1376,14 +1379,16 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function onScrollGesture(delta:Array<Float>):Void
   {
-    var pxPerMs = _viewport.pixelsPerMs * _viewport.zoomLevel;
-    var scrollMs = pxPerMs > 0 ? (delta[0] * 100) / pxPerMs : 0;
+    var pxPerMs:Float = _viewport.pixelsPerMs * _viewport.zoomLevel;
+    var scrollMs:Float = pxPerMs > 0 ? (delta[0] * GESTURE_PAN_SCALE_X) / pxPerMs : 0;
     _viewport.scrollOffsetMs = _viewport.scrollOffsetMs - scrollMs;
     if (_viewport.scrollOffsetMs < 0) _viewport.scrollOffsetMs = 0;
 
+    if (delta[1] != 0) _viewport.scrollVertical((delta[1] * GESTURE_PAN_SCALE_Y) / TimelineViewport.LAYER_HEIGHT);
+
     _viewport.refreshLayout();
 
-    var zoomEvent = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
+    var zoomEvent:TimelineEvent = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
     _viewport.dispatch(zoomEvent);
   }
   #end
