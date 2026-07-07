@@ -81,6 +81,26 @@ class ModMenuCharacter extends FunkinSprite
     return [r, g, b];
   }
 
+  var pinheadColor:Array<Float> = [];
+
+  function setPinheadColor(color:Array<Float>):Void
+  {
+    pinheadColor = color;
+    if (replaceColorShader != null)
+    {
+      replaceColorShader.setFloatArray("uReplaceColor", pinheadColor);
+      trace(' MOD MENU '.bold().bg_orange() + ' Setting pinhead color to $pinheadColor');
+    }
+  }
+
+  // Pastelify pinhead
+  public function setLightningPinhead():Void
+  {
+    pinheadColor[0] = Math.min(pinheadColor[0] * 1.8, 1);
+    pinheadColor[1] = Math.min(pinheadColor[1] * 1.8, 1);
+    pinheadColor[2] = Math.min(pinheadColor[2] * 1.8, 1);
+  }
+
   function applyShader():Void
   {
     if (currentCharacterId == 'pinhead')
@@ -89,7 +109,7 @@ class ModMenuCharacter extends FunkinSprite
       {
         replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
         replaceColorShader.setFloatArray("uTargetColor", [0, 1, 0.04]);
-        replaceColorShader.setFloatArray("uReplaceColor", getRandomColor());
+        setPinheadColor(pinheadColor);
         replaceColorShader.setFloat("uThreshold", 0.12);
       }
       shader = replaceColorShader;
@@ -106,6 +126,8 @@ class ModMenuCharacter extends FunkinSprite
     super(x, y);
 
     if (characterId == '') characterId = 'pinhead';
+
+    pinheadColor = getRandomColor();
 
     applyShader();
 
@@ -173,11 +195,7 @@ class ModMenuCharacter extends FunkinSprite
   public function switchCharacter(?characterId:String, modIds:Array<String>):Bool
   {
     if (characterId == null) characterId = currentCharacterId;
-    if (characterId == currentCharacterId && modIds.contains(currentModId))
-    {
-      applyShader();
-      return true;
-    }
+    if (characterId == currentCharacterId && modIds.contains(currentModId)) return true;
 
     var isPinhead:Bool = false;
     var modId:String = '';

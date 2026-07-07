@@ -1014,7 +1014,9 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
+          bf.setLightningPinhead();
           bf.playAnimation(ELECTROCUTED, true);
+          gf.setLightningPinhead();
           gf.playAnimation(ELECTROCUTED, true);
 
           FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
