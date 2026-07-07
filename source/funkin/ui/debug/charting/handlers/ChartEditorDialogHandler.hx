@@ -615,7 +615,7 @@ class ChartEditorDialogHandler
     var newSongMetadata:SongMetadata = new SongMetadata('', '', '', Constants.DEFAULT_VARIATION);
 
     newSongMetadata.variation = targetVariation;
-    newSongMetadata.playData.difficulties = (erect) ? ['erect', 'nightmare'] : ['easy', 'normal', 'hard'];
+    newSongMetadata.playData.difficulties = (erect) ? Constants.DEFAULT_DIFFICULTY_LIST_ERECT : Constants.DEFAULT_DIFFICULTY_LIST;
 
     var inputSongName:Null<TextField> = dialog.findComponent('inputSongName', TextField);
     if (inputSongName == null) throw 'Could not locate inputSongName TextField in Song Metadata dialog';

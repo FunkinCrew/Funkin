@@ -97,7 +97,7 @@ class FunkinOptionsButton extends FunkinButton
     HapticUtil.vibrate(0, 0.05, 0.5);
     animation.play('confirm');
 
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
 
     new FlxTimer().start(0.05, function(_)
     {

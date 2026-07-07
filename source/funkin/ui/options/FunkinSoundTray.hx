@@ -65,9 +65,9 @@ class FunkinSoundTray extends FlxSoundTray
     screenCenter();
     y = -height - 10;
 
-    volumeUpSound = Paths.sound("soundtray/Volup");
-    volumeDownSound = Paths.sound("soundtray/Voldown");
-    volumeMaxSound = Paths.sound("soundtray/VolMAX");
+    volumeUpSound = Paths.sound(Constants.SOUND_TRAY_VOL_UP);
+    volumeDownSound = Paths.sound(Constants.SOUND_TRAY_VOL_DOWN);
+    volumeMaxSound = Paths.sound(Constants.SOUND_TRAY_VOL_MAX);
   }
 
   override public function update(ms:Float):Void

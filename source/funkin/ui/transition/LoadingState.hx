@@ -109,7 +109,7 @@ class LoadingState extends MusicBeatSubState
     if (!OpenFLAssets.cache.hasSound(path))
     {
       var library = Assets.getLibrary('songs');
-      var symbolPath = path.split(':').pop();
+      var symbolPath = path.split(Constants.LIBRARY_SEPARATOR).pop();
       // @:privateAccess
       // library.types.set(symbolPath, SOUND);
       // @:privateAccess

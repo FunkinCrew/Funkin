@@ -510,7 +510,7 @@ class Conductor
 
       // Update the timestamp for use in-between frames
       prevTime = this.songPosition;
-      prevTimestamp = Std.int(Timer.stamp() * 1000);
+      prevTimestamp = Std.int(Timer.stamp() * Constants.MS_PER_SEC);
     }
 
     if (this == Conductor.instance) @:privateAccess SongSequence.update.dispatch();

@@ -289,7 +289,7 @@ class DialogueBox extends FlxSpriteGroup implements IDialogueScriptedClass imple
     textDisplay.borderSize = _data.text.shadowWidth ?? 2;
     // TODO: Add an option to configure this.
     textDisplay.sounds = [
-      FunkinSound.load(Paths.sound('pixelText'), 0.6)
+      FunkinSound.load(Paths.sound(Constants.SOUND_DIALOGUE_TYPING), 0.6)
     ];
 
     textDisplay.completeCallback = onTypingComplete;

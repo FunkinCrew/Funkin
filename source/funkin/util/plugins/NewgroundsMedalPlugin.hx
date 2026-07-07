@@ -86,7 +86,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
             moveText = true;
           }
         case "fade":
-          FunkinSound.playOnce(Paths.sound('NGFadeOut'), 1.0);
+          FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_NG_FADEOUT_SOUND), 1.0);
         case "hide":
           pointsLabel.visible = false;
           nameLabel.visible = false;
@@ -170,7 +170,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.nameLabel.text = name;
       instance.updatePositions();
 
-      FunkinSound.playOnce(Paths.sound('NGFadeIn'), 1.0);
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_NG_FADEIN_SOUND), 1.0);
       instance.medal.anim.play("");
 
       instance.medal.visible = true;

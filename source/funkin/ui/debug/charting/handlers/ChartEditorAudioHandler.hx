@@ -295,7 +295,8 @@ class ChartEditorAudioHandler
   {
     if (state.stretchySounds)
     {
-      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.load(Paths.sound('chartingSounds/stretch1_UI'));
+
+      if (state.stretchySound1 == null) state.stretchySound1 = FunkinSound.load(Paths.sound(ChartEditorState.CHART_EDITOR_STRETCH1_SOUND));
       if (state.stretchySound1 == null) return;
 
       // Prevent spam playing that could cause issues.
@@ -307,7 +308,7 @@ class ChartEditorAudioHandler
     }
     else
     {
-      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.load(Paths.sound('chartingSounds/stretch2_UI'));
+      if (state.stretchySound2 == null) state.stretchySound2 = FunkinSound.load(Paths.sound(ChartEditorState.CHART_EDITOR_STRETCH2_SOUND));
       if (state.stretchySound2 == null) return;
 
       // Prevent spam playing that could cause issues.

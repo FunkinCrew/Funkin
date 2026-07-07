@@ -38,7 +38,7 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     state.currentNoteSelection = isSelection ? overlappedNotes.copy() : [];
     state.currentEventSelection = [];
 
-    state.playSound(Paths.sound('chartingSounds/noteErase'));
+    state.playSound(Paths.sound(ChartEditorState.CHART_EDITOR_NOTE_ERASE_SOUND));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
@@ -54,7 +54,7 @@ class RemoveStackedNotesCommand implements ChartEditorCommand
     state.currentSongChartNoteData = state.currentSongChartNoteData.concat(removedNotes);
     state.currentNoteSelection = overlappedNotes.concat(removedNotes).copy();
     state.currentEventSelection = [];
-    state.playSound(Paths.sound('chartingSounds/undo'));
+    state.playSound(Paths.sound(ChartEditorState.CHART_EDITOR_UNDO_SOUND));
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;

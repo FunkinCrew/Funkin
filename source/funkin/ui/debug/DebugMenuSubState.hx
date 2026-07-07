@@ -89,7 +89,7 @@ class DebugMenuSubState extends MusicBeatSubState
 
     if (controls.BACK_P)
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
       exitDebugMenu();
     }
   }

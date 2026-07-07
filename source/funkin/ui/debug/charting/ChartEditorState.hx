@@ -151,6 +151,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('chart-editor/toolbox/playtest-properties');
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = #if sys ['ogg'] #else ['mp3'] #end;
+
+  // Sounds
+  public static final CHART_EDITOR_NOTELAY_SOUND:String = 'chartingSounds/noteLay';
+  public static final CHART_EDITOR_UNDO_SOUND:String = 'chartingSounds/undo';
+  public static final CHART_EDITOR_NOTE_ERASE_SOUND:String = 'chartingSounds/noteErase';
+  public static final CHART_EDITOR_STRETCH_SOUND:String = 'chartingSounds/stretchSNAP_UI';
+  public static final CHART_EDITOR_STRETCH1_SOUND:String = 'chartingSounds/stretch1_UI';
+  public static final CHART_EDITOR_STRETCH2_SOUND:String = 'chartingSounds/stretch2_UI';
+  public static final CHART_EDITOR_OPEN_WINDOW_SOUND:String = 'chartingSounds/openWindow';
+  public static final CHART_EDITOR_EXIT_WINDOW_SOUND:String = 'chartingSounds/exitWindow';
+  public static final CHART_EDITOR_METRONOME_HIGH_SOUND:String = 'chartingSounds/metronome1';
+  public static final CHART_EDITOR_METRONOME_LOW_SOUND:String = 'chartingSounds/metronome2';
+  public static final CHART_EDITOR_PLAYER_NOTE_HIT_SOUND:String = 'chartingSounds/hitNotePlayer';
+  public static final CHART_EDITOR_OPPONENT_NOTE_HIT_SOUND:String = 'chartingSounds/hitNoteOpponent';
+  public static final CHART_EDITOR_CLICK_DOWN_SOUND:String = 'chartingSounds/ClickDown';
+  public static final CHART_EDITOR_CLICK_UP_SOUND:String = 'chartingSounds/ClickUp';
+
   // Layout
 
   /**
@@ -1672,7 +1689,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (currentSongMetadata.playData.stage == null)
     {
       // Initialize to the default value if not set.
-      currentSongMetadata.playData.stage = 'mainStage';
+      currentSongMetadata.playData.stage = Constants.DEFAULT_STAGE;
     }
     return currentSongMetadata.playData.stage;
   }
@@ -1720,7 +1737,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (currentSongMetadata.artist == null)
     {
       // Initialize to the default value if not set.
-      currentSongMetadata.artist = 'Unknown';
+      currentSongMetadata.artist = Constants.DEFAULT_ARTIST;
     }
     return currentSongMetadata.artist;
   }
@@ -4692,8 +4709,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleCursor():Void
   {
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('chartingSounds/ClickDown'));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('chartingSounds/ClickUp'));
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound(CHART_EDITOR_CLICK_DOWN_SOUND));
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound(CHART_EDITOR_CLICK_UP_SOUND));
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool = !(isHaxeUIFocused || playbarHeadDragging || isHaxeUIDialogOpen)
@@ -5268,7 +5285,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
         {
           // Play a sound as we drag.
-          this.playSound(Paths.sound('chartingSounds/noteLay'));
+          this.playSound(Paths.sound(CHART_EDITOR_NOTELAY_SOUND));
 
           dragTargetCurrentStep = dragDistanceSteps;
           dragTargetCurrentColumn = dragDistanceColumns;
@@ -5318,7 +5335,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (dragLengthSteps > 0)
         {
-          this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+          this.playSound(Paths.sound(CHART_EDITOR_STRETCH_SOUND));
           // Apply the new length.
           performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
         }
@@ -5327,7 +5344,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Apply the new (zero) length if we are changing the length.
           if (currentPlaceNoteData.length > 0)
           {
-            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+            this.playSound(Paths.sound(CHART_EDITOR_STRETCH_SOUND));
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
           }
         }
@@ -5536,7 +5553,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else
           {
             // Right click removes hold from the note.
-            this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+            this.playSound(Paths.sound(CHART_EDITOR_STRETCH_SOUND));
             performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
           }
         }
@@ -6011,7 +6028,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Extend the note to the playhead position.
       trace('Extending note. ${column}');
-      this.playSound(Paths.sound('chartingSounds/stretchSNAP_UI'));
+      this.playSound(Paths.sound(CHART_EDITOR_STRETCH_SOUND));
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
@@ -6759,7 +6776,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function playMetronomeTick(high:Bool = false):Void
   {
-    this.playSound(Paths.sound('chartingSounds/metronome${high ? '1' : '2'}'), metronomeVolume);
+    this.playSound(Paths.sound(high ? CHART_EDITOR_METRONOME_HIGH_SOUND : CHART_EDITOR_METRONOME_LOW_SOUND), metronomeVolume);
   }
 
   function switchToCurrentInstrumental():Void
@@ -7323,9 +7340,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (hitsoundsEnabled) switch (noteData.getStrumlineIndex())
       {
         case 0: // Player
-          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('chartingSounds/hitNotePlayer'), hitsoundVolumePlayer);
+          if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound(CHART_EDITOR_PLAYER_NOTE_HIT_SOUND), hitsoundVolumePlayer);
         case 1: // Opponent
-          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('chartingSounds/hitNoteOpponent'), hitsoundVolumeOpponent);
+          if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound(CHART_EDITOR_OPPONENT_NOTE_HIT_SOUND), hitsoundVolumeOpponent);
       }
     }
     // Clearing memory before next event call.

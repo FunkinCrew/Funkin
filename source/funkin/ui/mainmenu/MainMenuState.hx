@@ -534,7 +534,7 @@ class MainMenuState extends MusicBeatState
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, W]))
     {
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
       // Give the user a score of 1 point on Weekend 1 story mode (Easy difficulty).
       // This makes the level count as cleared and displays the songs in Freeplay.
       funkin.save.Save.instance.setLevelScore('weekend1', 'easy', {
@@ -555,10 +555,10 @@ class MainMenuState extends MusicBeatState
 
     if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, M]))
     {
-      FunkinSound.playOnce(Paths.sound('confirmMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
       // Give the user a score of 0 points on Weekend 1 story mode (all difficulties).
       // This makes the level count as uncleared and no longer displays the songs in Freeplay.
-      for (diff in ['easy', 'normal', 'hard'])
+      for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
       {
         funkin.save.Save.instance.setLevelScore('weekend1', diff, {
           score: 0,
@@ -625,7 +625,7 @@ class MainMenuState extends MusicBeatState
   {
     uiStateMachine.transition(Exiting);
     rememberedSelectedIndex = menuItems?.selectedIndex ?? 0;
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
 
     FlxG.switchState(() -> new TitleState());
   }

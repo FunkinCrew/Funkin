@@ -306,26 +306,26 @@ class CharSelectSubState extends MusicBeatSubState
     charHitbox.active = false;
     charHitbox.scrollFactor.set();
 
-    selectSound.loadEmbedded(Paths.sound('CS_select'));
+    selectSound.loadEmbedded(Paths.sound(Constants.SOUND_CHARACTER_SELECT));
     selectSound.volume = 0.7;
 
     FlxG.sound.defaultSoundGroup.add(selectSound);
     FlxG.sound.list.add(selectSound);
 
-    unlockSound.loadEmbedded(Paths.sound('CS_unlock'));
+    unlockSound.loadEmbedded(Paths.sound(Constants.SOUND_CHARACTER_UNLOCK));
     unlockSound.volume = 0;
     unlockSound.play(true);
 
     FlxG.sound.defaultSoundGroup.add(unlockSound);
     FlxG.sound.list.add(unlockSound);
 
-    lockedSound.loadEmbedded(Paths.sound('CS_locked'));
+    lockedSound.loadEmbedded(Paths.sound(Constants.SOUND_CHARACTER_LOCKED));
     lockedSound.volume = 1.;
 
     FlxG.sound.defaultSoundGroup.add(lockedSound);
     FlxG.sound.list.add(lockedSound);
 
-    staticSound.loadEmbedded(Paths.sound('static loop'));
+    staticSound.loadEmbedded(Paths.sound(Constants.SOUND_CHARACTER_STATIC));
     staticSound.looped = true;
     staticSound.volume = 0.6;
 
@@ -412,7 +412,7 @@ class CharSelectSubState extends MusicBeatSubState
     add(blackScreen);
 
     introSound = new FunkinSound();
-    introSound.loadEmbedded(Paths.sound('CS_Lights'));
+    introSound.loadEmbedded(Paths.sound(Constants.SOUND_CHARACTER_LIGHTS));
     introSound.volume = 0;
 
     FlxG.sound.defaultSoundGroup.add(introSound);
@@ -890,7 +890,7 @@ class CharSelectSubState extends MusicBeatSubState
 
         cursors.confirm();
 
-        FunkinSound.playOnce(Paths.sound('CS_confirm'));
+        FunkinSound.playOnce(Paths.sound(Constants.SOUND_CHARACTER_CONFIRM));
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
 
@@ -966,7 +966,7 @@ class CharSelectSubState extends MusicBeatSubState
     #end
 
     wentBackToFreeplay = true;
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
     FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
     goToFreeplay();
   }

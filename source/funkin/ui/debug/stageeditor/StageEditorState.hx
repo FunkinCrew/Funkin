@@ -591,7 +591,7 @@ class StageEditorState extends UIState
       findObjDialog.hideDialog(DialogButton.CANCEL);
 
       // cam
-      camGame.follow(camFollow, LOCKON, 0.04);
+      camGame.follow(camFollow, LOCKON, Constants.DEFAULT_CAMERA_FOLLOW_RATE);
       FlxG.camera.zoom = stageZoom;
 
       if (FlxG.keys.justPressed.TAB && !FlxG.keys.pressed.SHIFT) curTestChar++;

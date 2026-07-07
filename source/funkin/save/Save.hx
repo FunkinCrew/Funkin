@@ -151,7 +151,7 @@ class Save implements ConsoleClass
       },
       unlocks: {
         // Default to having seen the default character.
-        charactersSeen: ["bf"],
+        charactersSeen: [Constants.DEFAULT_CHARACTER],
         oldChar: false
       },
       optionsChartEditor: {
@@ -458,7 +458,7 @@ class Save implements ConsoleClass
     #end
     if (difficultyList == null)
     {
-      difficultyList = ['easy', 'normal', 'hard'];
+      difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
     }
     for (difficulty in difficultyList)
     {
@@ -630,7 +630,7 @@ class Save implements ConsoleClass
   {
     if (difficultyList == null)
     {
-      difficultyList = ['easy', 'normal', 'hard'];
+      difficultyList = Constants.DEFAULT_DIFFICULTY_LIST;
     }
     if (variation == null) variation = '';
     for (difficulty in difficultyList)

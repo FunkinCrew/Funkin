@@ -41,7 +41,7 @@ class FNFLegacyImporter
     // Set generatedBy string for debugging.
     songMetadata.generatedBy = 'Chart Editor Import (FNF Legacy)';
 
-    songMetadata.playData.stage = songData.song?.stageDefault ?? 'mainStage';
+    songMetadata.playData.stage = songData.song?.stageDefault ?? Constants.DEFAULT_STAGE;
     songMetadata.songName = songData.song?.song ?? 'Import';
     songMetadata.playData.difficulties = [];
 

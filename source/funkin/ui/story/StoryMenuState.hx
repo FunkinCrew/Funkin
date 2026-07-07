@@ -37,8 +37,8 @@ class StoryMenuState extends MusicBeatState
   static final DEFAULT_BACKGROUND_COLOR:FlxColor = FlxColor.fromString('#F9CF51');
   static final BACKGROUND_HEIGHT:Int = 400;
 
-  var currentDifficultyId:String = 'normal';
-  var currentLevelId:String = 'tutorial';
+  var currentDifficultyId:String = Constants.DEFAULT_DIFFICULTY;
+  var currentLevelId:String = Constants.DEFAULT_SONG;
   var currentLevel:Level;
   var isLevelUnlocked:Bool;
   var currentLevelTitle:LevelTitle;
@@ -158,7 +158,7 @@ class StoryMenuState extends MusicBeatState
 
     updateBackground();
 
-    var black:FunkinSprite = new FunkinSprite(levelBackground.x, 0).makeSolidColor(FlxG.width, Std.int(400 + levelBackground.y), FlxColor.BLACK);
+    var black:FunkinSprite = new FunkinSprite(levelBackground.x, 0).makeSolidColor(FlxG.width, Std.int(BACKGROUND_HEIGHT + levelBackground.y), FlxColor.BLACK);
     black.zIndex = levelBackground.zIndex - 1;
     add(black);
 
@@ -484,7 +484,7 @@ class StoryMenuState extends MusicBeatState
       }
     }
 
-    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    if (currentIndex != prevIndex) FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
 
     repositionTitles();
     updateText();
@@ -530,7 +530,7 @@ class StoryMenuState extends MusicBeatState
     if (hasChanged)
     {
       buildDifficultySprite();
-      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
       // Disable the funny music thing for now.
       // funnyMusicThing();
     }
@@ -572,7 +572,7 @@ class StoryMenuState extends MusicBeatState
   {
     if (!currentLevel.isUnlocked())
     {
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
+      FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
       return;
     }
 
@@ -580,7 +580,7 @@ class StoryMenuState extends MusicBeatState
 
     selectedLevel = true;
 
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CONFIRM_SOUND));
 
     currentLevelTitle.isFlashing = true;
 
@@ -723,7 +723,7 @@ class StoryMenuState extends MusicBeatState
     exitingMenu = true;
     FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
-    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_CANCEL_SOUND));
   }
 
   /**

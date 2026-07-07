@@ -30,41 +30,6 @@ import funkin.util.SortUtil;
 @:nullSafety
 class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMetadata>
 {
-  /**
-   * The default value for the song's name
-   */
-  public static final DEFAULT_SONGNAME:String = 'Unknown';
-
-  /**
-   * The default value for the song's artist
-   */
-  public static final DEFAULT_ARTIST:String = 'Unknown';
-
-  /**
-   * The default value for the song's time format
-   */
-  public static final DEFAULT_TIMEFORMAT:SongTimeFormat = SongTimeFormat.MILLISECONDS;
-
-  /**
-   * The default value for the song's divisions
-   */
-  public static final DEFAULT_DIVISIONS:Null<Int> = null;
-
-  /**
-   * The default value for whether the song loops.
-   */
-  public static final DEFAULT_LOOPED:Bool = false;
-
-  /**
-   * The default value for the song's playable stage.
-   */
-  public static final DEFAULT_STAGE:String = 'mainStage';
-
-  /**
-   * The default value for the song's scroll speed.
-   */
-  public static final DEFAULT_SCROLLSPEED:Float = 1.0;
-
   // key = variation id, value = metadata
   final _metadata:Map<String, SongMetadata>;
 
@@ -103,9 +68,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   function get_songName():String
   {
-    if (_data != null) return _data?.songName ?? DEFAULT_SONGNAME;
-    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.songName ?? DEFAULT_SONGNAME;
-    return DEFAULT_SONGNAME;
+    if (_data != null) return _data?.songName ?? Constants.DEFAULT_SONGNAME;
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.songName ?? Constants.DEFAULT_SONGNAME;
+    return Constants.DEFAULT_SONGNAME;
   }
 
   /**
@@ -115,9 +80,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
 
   function get_songArtist():String
   {
-    if (_data != null) return _data?.artist ?? DEFAULT_ARTIST;
-    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.artist ?? DEFAULT_ARTIST;
-    return DEFAULT_ARTIST;
+    if (_data != null) return _data?.artist ?? Constants.DEFAULT_ARTIST;
+    if (_metadata.size() > 0) return _metadata.get(Constants.DEFAULT_VARIATION)?.artist ?? Constants.DEFAULT_ARTIST;
+    return Constants.DEFAULT_ARTIST;
   }
 
   /**

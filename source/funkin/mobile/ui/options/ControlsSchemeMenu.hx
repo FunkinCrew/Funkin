@@ -284,7 +284,7 @@ class ControlsSchemeMenu extends MusicBeatSubState
       return;
     }
 
-    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.4);
+    FunkinSound.playOnce(Paths.sound(Constants.DEFAULT_SCROLL_SOUND), 0.4);
 
     schemeNameText.text = availableSchemes[currentIndex];
 

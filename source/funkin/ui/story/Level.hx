@@ -200,7 +200,7 @@ class Level implements IRegistryEntry<LevelData>
       }
     }
 
-    if (difficulties.length == 0) difficulties = ['normal'];
+    if (difficulties.length == 0) difficulties = [Constants.DEFAULT_DIFFICULTY];
 
     return difficulties;
   }
