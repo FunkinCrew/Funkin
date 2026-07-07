@@ -1,6 +1,8 @@
 package funkin.util;
 
 #if FEATURE_HAXEUI
+import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.core.Screen;
 import haxe.ui.tooltips.ToolTipRegionOptions;
 import haxe.ui.util.Color as HaxeUIColor;
 
@@ -52,6 +54,15 @@ class HaxeUIUtil
       result += part;
     }
     return result;
+  }
+
+  public static function isModalDialogOpen():Bool
+  {
+    for (component in Screen.instance.rootComponents)
+    {
+      if (Std.isOfType(component, Dialog) && cast(component, Dialog).modal) return true;
+    }
+    return false;
   }
 }
 
