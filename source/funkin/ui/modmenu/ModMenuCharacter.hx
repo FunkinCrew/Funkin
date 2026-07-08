@@ -213,15 +213,14 @@ class ModMenuCharacter extends FunkinSprite
     }
 
     trace(' MOD MENU '.bold().bg_orange() + ' Switching character to $characterId with mod $modId. Mods checked: $modIds');
-    if (modId == '' && modIds.length > 1)
+    if (modId == '' && modIds.length > 1) // no modded assets found, but multiple mods are loaded,  so show pinhead
     {
       characterId = 'pinhead';
       isPinhead = true;
     }
-    else if (modId == '' && modIds.length == 1)
+    else if (modId == '' && modIds.length == 1) // no mods but base game, so show bf/gf
     {
       characterId = StringTools.replace(characterId, 'mod-', '');
-      isPinhead = true;
     }
 
     currentCharacterId = characterId;
