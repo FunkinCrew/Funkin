@@ -98,22 +98,20 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ИСПРАВЛЕННАЯ СБОРКА ИНСТРУМЕНТАРИЯ LIME
+          # ПОЛНОСТЬЮ ПЕРЕНОСИМ СБОРКУ В ПАПКУ TOOLS
           echo "Rebuilding Lime tools from source..."
-          cd .haxelib/lime/git
+          cd .haxelib/lime/git/tools
           
-          # Заходим в папку tools для сборки run.n
-          cd tools
+          # Собираем run.n
           haxe tools.hxml
-          cd ..
           
-          # Компилируем нативный бинарник из корня репозитория lime
+          # Компилируем нативный бинарник прямо из папки tools
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             haxelib run hxcpp tools.xml -Dwindows
           else
             haxelib run hxcpp tools.xml -Dlinux
           fi
-          cd ../../..
+          cd ../../../..
 
           haxelib run hxcpp
 
@@ -221,14 +219,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Исправленная сборка для Android (Ubuntu окружение)
+          # Переносим сборку для Android (Окружение Ubuntu)
           echo "Rebuilding Lime tools from source..."
-          cd .haxelib/lime/git
-          cd tools
+          cd .haxelib/lime/git/tools
           haxe tools.hxml
-          cd ..
           haxelib run hxcpp tools.xml -Dlinux
-          cd ../../..
+          cd ../../../..
 
           haxelib run hxcpp
 
