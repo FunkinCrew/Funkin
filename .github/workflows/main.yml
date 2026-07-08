@@ -33,11 +33,10 @@ jobs:
             export HAXEPATH=$HAXE_PATH
           fi
 
-          # 1. Базовый инструментарий
+          # 1. Базовый рантайм
           haxelib install hxcpp 4.3.2 --always --quiet
-          haxelib install lime 8.1.2 --always --quiet --nodeps
 
-          # 2. Обычные библиотеки (строго без автоматических зависимостей)
+          # 2. Обычные библиотеки без автоматических зависимостей
           haxelib install format 3.5.0 --always --quiet --nodeps
           haxelib install hamcrest 3.0.0 --always --quiet --nodeps
           haxelib install hxdiscord_rpc 1.3.0 --always --quiet --nodeps
@@ -68,18 +67,17 @@ jobs:
             git reset --hard "$rev" --quiet
             cd ../../..
 
-            if [ "$name" != "lime-git" ]; then
-              if [ -n "$sub_dir" ]; then
-                haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
-              else
-                haxelib dev "$name" ".haxelib/$name/git"
-              fi
+            if [ -n "$sub_dir" ]; then
+              haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
+            else
+              haxelib dev "$name" ".haxelib/$name/git"
             fi
           }
 
-          # 3. Git-зависимости (Lime качаем изолированно, не регистрируя через haxelib dev)
-          safe_git_install "lime-git" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
-          
+          # 3. Ставим кастомный форк Lime от FunkinCrew и регистрируем его в системе
+          safe_git_install "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
+
+          # Остальные Git-зависимости
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -100,6 +98,20 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
+          # СБОРКА ИНСТРУМЕНТАРИЯ LIME ИЗ ИСХОДНИКОВ ФОРКА
+          echo "Rebuilding Lime tools from source..."
+          cd .haxelib/lime/git
+          haxe tools.hxml
+          
+          # Компилируем нативный бинарник под текущую ОС (Windows или Linux)
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            haxelib run hxcpp tools.xml -Dwindows
+          else
+            haxelib run hxcpp tools.xml -Dlinux
+          fi
+          cd ../../..
+
+          # Инициализируем hxcpp
           haxelib run hxcpp
 
       - name: Setup Lime Command
@@ -109,7 +121,7 @@ jobs:
         env:
           HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -Dno_hl -D lime-no-hl -haxeflag "-cp .haxelib/lime-git/git/src/"
+          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -Dno_hl -D lime-no-hl
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -147,7 +159,6 @@ jobs:
           haxelib --never newrepo
 
           haxelib install hxcpp 4.3.2 --always --quiet
-          haxelib install lime 8.1.2 --always --quiet --nodeps
 
           haxelib install format 3.5.0 --always --quiet --nodeps
           haxelib install hamcrest 3.0.0 --always --quiet --nodeps
@@ -178,17 +189,17 @@ jobs:
             git reset --hard "$rev" --quiet
             cd ../../..
 
-            if [ "$name" != "lime-git" ]; then
-              if [ -n "$sub_dir" ]; then
-                haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
-              else
-                haxelib dev "$name" ".haxelib/$name/git"
-              fi
+            if [ -n "$sub_dir" ]; then
+              haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
+            else
+              haxelib dev "$name" ".haxelib/$name/git"
             fi
           }
 
-          safe_git_install "lime-git" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
+          # Регистрируем форк Lime
+          safe_git_install "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
 
+          # Остальные зависимости
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -209,6 +220,13 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
+          # СБОРКА ИНСТРУМЕНТАРИЯ LIME ДЛЯ АНДРОИД-ДЖОБЫ (Ubuntu окружение)
+          echo "Rebuilding Lime tools from source..."
+          cd .haxelib/lime/git
+          haxe tools.hxml
+          haxelib run hxcpp tools.xml -Dlinux
+          cd ../../..
+
           haxelib run hxcpp
 
       - name: Setup Lime/Android Env
@@ -221,7 +239,7 @@ jobs:
         env:
           HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
         run: |
-          haxelib run lime build android -release -Dno_hl -D lime-no-hl -haxeflag "-cp .haxelib/lime-git/git/src/"
+          haxelib run lime build android -release -Dno_hl -D lime-no-hl
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
