@@ -24,14 +24,10 @@ jobs:
       - name: Install Dependencies
         shell: bash
         run: |
-          # Устанавливаем системные зависимости HashLink, чтобы исправить баг сборщика Lime
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ] || [ "$RUNNER_OS" = "Linux" ]; then
-            sudo apt-get update
-            sudo apt-get install -y libhl-dev
-          fi
-
-          # Ядерная очистка кэша, чтобы избежать конфликтов путей
+          # Ядерная очистка кэша и привязка к локальной папке проекта
           rm -rf .haxelib
+          mkdir -p .haxelib
+          haxelib setup .haxelib
           haxelib --never newrepo
 
           # Фикс путей для Windows
@@ -65,16 +61,13 @@ jobs:
             mkdir -p .haxelib/$name/git
             cd .haxelib/$name/git
             
-            # Инициализируем чистый репозиторий локально
             git init -q
             git remote add origin "$url"
             
-            # Запрашиваем конкретный SHA1 коммит напрямую у GitHub
             git fetch --depth=1 origin "$rev" --quiet || git fetch origin --quiet
             git reset --hard "$rev" --quiet
             cd ../../..
 
-            # Регистрируем библиотеку локально в haxelib
             if [ -n "$sub_dir" ]; then
               haxelib dev "$name" ".haxelib/$name/git/$sub_dir"
             else
@@ -107,10 +100,10 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Оставляем пересборку lime (теперь она успешно завершится, найдя hl.h)
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -no-hl
+          # Пересборка Lime с флагом --no-output изолирует генерацию кода от сторонних либ
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} --no-output
 
-          # Неинтерактивное связывание openfl и lime
+          # Интеграция утилит сборки
           haxelib run lime run openfl
 
       - name: Compile Game
@@ -147,12 +140,10 @@ jobs:
       - name: Install Dependencies & Setup Android
         shell: bash
         run: |
-          # Устанавливаем системные зависимости HashLink, чтобы исправить баг сборщика Lime
-          sudo apt-get update
-          sudo apt-get install -y libhl-dev
-
-          # Ядерная очистка кэша для Android-раннера
+          # Конфигурация изолированного окружения
           rm -rf .haxelib
+          mkdir -p .haxelib
+          haxelib setup .haxelib
           haxelib --never newrepo
 
           # Стандартные библиотеки из haxelib
@@ -220,13 +211,13 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
           
-          # Сборка lime.ndll для хоста Android-раннера (Ubuntu)
-          haxelib run lime rebuild linux -no-hl
+          # Сборка служебных ndll модулей без генерации кода HashLink
+          haxelib run lime rebuild linux --no-output
 
           # Связывание утилит
           haxelib run lime run openfl
           
-          # Конфигурация путей для Android
+          # Точная конфигурация путей для Android
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
