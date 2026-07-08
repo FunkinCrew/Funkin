@@ -21,23 +21,7 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install System Dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libhl-dev libpng-dev libjpeg-dev libopenal-dev libgmp-dev
-
-      - name: Cache Haxelib
-        id: cache-haxelib
-        uses: actions/cache@v4
-        with:
-          path: .haxelib
-          key: ${{ matrix.os }}-haxelib-${{ hashFiles('**/main.yml') }}
-          restore-keys: |
-            ${{ matrix.os }}-haxelib-
-
-      - name: Install Dependencies & Rebuild Engine
-        if: steps.cache-haxelib.outputs.cache-hit != 'true'
+      - name: Install Dependencies
         shell: bash
         run: |
           rm -rf .haxelib
@@ -64,6 +48,9 @@ jobs:
           haxelib install extension-iarcore 1.0.3 --always --quiet
           haxelib install hxcpp 4.3.2 --always --quiet
 
+          # Скачиваем официальный собранный lime ради готовых ndll бинарников
+          haxelib install lime 8.1.2 --always --quiet
+
           # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
             local name=$1
@@ -89,7 +76,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости через безопасную функцию
+          # Git-зависимости (включая исходники lime от FunkinCrew)
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -111,11 +98,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
+          # ХАК: Переносим готовые бинарники ndll из официального релиза прямо в кастомный git-пакет
+          echo "Injecting precompiled ndll binaries into git lime..."
+          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
+
           # Инициализируем hxcpp
           haxelib run hxcpp
-          
-          # Пересборка lime на сервере под конкретную целевую платформу
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
 
       - name: Setup Lime Command
         run: haxelib run lime run openfl
@@ -153,22 +141,7 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install System Dependencies (Android Build Host)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libhl-dev libpng-dev libjpeg-dev libopenal-dev libgmp-dev
-
-      - name: Cache Haxelib Android
-        id: cache-haxelib-android
-        uses: actions/cache@v4
-        with:
-          path: .haxelib
-          key: android-haxelib-${{ hashFiles('**/main.yml') }}
-          restore-keys: |
-            android-haxelib-
-
       - name: Install Dependencies & Setup Android Tools
-        if: steps.cache-haxelib-android.outputs.cache-hit != 'true'
         shell: bash
         run: |
           rm -rf .haxelib
@@ -190,6 +163,9 @@ jobs:
           haxelib install extension-iapcore 1.0.4 --always --quiet
           haxelib install extension-iarcore 1.0.3 --always --quiet
           haxelib install hxcpp 4.3.2 --always --quiet
+
+          # Скачиваем официальный собранный lime ради готовых ndll бинарников
+          haxelib install lime 8.1.2 --always --quiet
 
           # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
@@ -216,7 +192,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости через безопасную функцию
+          # Git-зависимости (включая исходники lime от FunkinCrew)
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -238,11 +214,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
+          # ХАК: Подкидываем готовые бинарники в форк для сборщика Android
+          echo "Injecting precompiled ndll binaries into git lime..."
+          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
+
           # Настройка hxcpp
           haxelib run hxcpp
-
-          # Пересборка хост-инструментов lime для сборщика Android
-          haxelib run lime rebuild linux
 
       - name: Setup Lime/Android Env
         run: |
