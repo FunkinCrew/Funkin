@@ -60,6 +60,8 @@ class PasteEventsCommand implements CameraEditorCommand
     state.selectedSongEvents = addedEvents.copy();
     state.saved = false;
 
+    state.replayCameraTimeline(state.conductorInUse.songPosition);
+
     FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
     var title = isRedo ? 'Redone Paste Successfully' : 'Paste Successful';
@@ -71,16 +73,18 @@ class PasteEventsCommand implements CameraEditorCommand
 
   public function undo(state:CameraEditorState):Void
   {
-    state.currentSongChartData.events = SongDataUtils.subtractEvents(state.currentSongChartData.events, addedEvents);
-    state.selectedSongEvents = selectionBefore.copy();
-
     for (event in addedEvents)
     {
+      state.currentSongChartData.events.remove(event);
       state.timeline.viewport.removeEventBlock(event);
     }
 
+    state.selectedSongEvents = selectionBefore.copy();
+
     state.timeline.viewport.refreshLayout();
     state.saved = false;
+
+    state.replayCameraTimeline(state.conductorInUse.songPosition);
 
     FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
 
