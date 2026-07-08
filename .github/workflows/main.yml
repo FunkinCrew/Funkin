@@ -33,10 +33,10 @@ jobs:
             export HAXEPATH=$HAXE_PATH
           fi
 
-          # Базовый hxcpp ставим первым
+          # Устанавливаем базовый hxcpp
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Ставим библиотеки строго с флагом --nodeps, чтобы haxelib не качал новые версии зависимостей с сервера
+          # Устанавливаем остальные библиотеки строго без зависимостей
           haxelib install format 3.5.0 --always --quiet --nodeps
           haxelib install hamcrest 3.0.0 --always --quiet --nodeps
           haxelib install hxdiscord_rpc 1.3.0 --always --quiet --nodeps
@@ -50,10 +50,10 @@ jobs:
           haxelib install extension-iapcore 1.0.4 --always --quiet --nodeps
           haxelib install extension-iarcore 1.0.3 --always --quiet --nodeps
 
-          # Скачиваем официальный собранный lime 8.1.2 ради готовых ndll бинарников
+          # Ставим официальный, рабочий lime 8.1.2. Он будет отвечать за CLI команды.
           haxelib install lime 8.1.2 --always --quiet --nodeps
 
-          # Бронебойная функция ручного скачивания конкретного коммита напрямую
+          # Функция безопасной установки git-репозиториев
           safe_git_install() {
             local name=$1
             local url=$2
@@ -78,7 +78,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости (включая кастомный lime от FunkinCrew)
+          # Git-зависимости (ВНИМАНИЕ: для lime кастомный путь мы сделаем отдельно ниже)
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -93,21 +93,31 @@ jobs:
           safe_git_install "hxcpp-debug-server" "https://github.com/FunkinCrew/hxcpp-debugger" "7459934666a473a4cc4d066ba4a93ef92f1ce94c" "hxcpp-debug-server"
           safe_git_install "hxjsonast" "https://github.com/nadako/hxjsonast/" "20e72cc68c823496359775ac1f06500e67f189d5"
           safe_git_install "json2object" "https://github.com/FunkinCrew/json2object" "59e0467c953d1f26e3cbf2a070f140e2d2e8457d"
-          safe_git_install "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
+          
+          # Скачиваем кастомный форк lime от FunkinCrew, но НЕ делаем его активным через haxelib dev
+          mkdir -p .haxelib/lime/git
+          cd .haxelib/lime/git
+          git init -q
+          git remote add origin "https://github.com/FunkinCrew/lime"
+          git fetch --depth=1 origin "826d25199c17329b730ae09838f3df7a2903c471" --quiet
+          git reset --hard "826d25199c17329b730ae09838f3df7a2903c471" --quiet
+          cd ../../..
+
           safe_git_install "newgrounds" "https://github.com/FunkinCrew/Newgrounds" "b2b53cd0a5f030af74efd325732951cddbea8826"
           safe_git_install "openfl" "https://github.com/FunkinCrew/openfl" "88534506595a32c3f02b21b3987e789a24074ae7"
           safe_git_install "polymod" "https://github.com/FunkinCrew/polymod" "fb123758b90127f5647727727f273d27e93cabdb"
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ХАК по раскладке бинарников в кастомный git-пакет lime
-          echo "Injecting precompiled bin/ndll files into git lime..."
-          rm -rf .haxelib/lime/git/ndll
-          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
-          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/run.n
+          # БРОНЕБОЙНЫЙ ХАК: Оставляем lime зарегистрированным на рабочую официальную версию 8.1.2,
+          # но заменяем папки с исходным кодом (src/ и lime/) внутри официального пакета файлами из форка FunkinCrew.
+          # Таким образом, CLI работает идеально через родные ndll, а игра компилируется на базе кода FunkinCrew.
+          echo "Injecting FunkinCrew lime source files into stable release..."
+          cp -r .haxelib/lime/git/src/* .haxelib/lime/8,1,2/src/
+          cp -r .haxelib/lime/git/lime/* .haxelib/lime/8,1,2/lime/
           
-          if [ -f ".haxelib/lime/8,1,2/lime" ]; then cp ".haxelib/lime/8,1,2/lime" ".haxelib/lime/git/lime"; fi
-          if [ -f ".haxelib/lime/8,1,2/lime.exe" ]; then cp ".haxelib/lime/8,1,2/lime.exe" ".haxelib/lime/git/lime.exe"; fi
+          # Убедимся, что активен именно стабильный релиз с нашими инъекциями
+          haxelib set lime 8.1.2
 
           # Инициализируем hxcpp
           haxelib run hxcpp
@@ -156,10 +166,10 @@ jobs:
           haxelib setup .haxelib
           haxelib --never newrepo
 
-          # Базовый hxcpp ставим первым
+          # Инициализируем hxcpp
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Ставим библиотеки строго с флагом --nodeps
+          # Устанавливаем остальные библиотеки без зависимостей
           haxelib install format 3.5.0 --always --quiet --nodeps
           haxelib install hamcrest 3.0.0 --always --quiet --nodeps
           haxelib install hxdiscord_rpc 1.3.0 --always --quiet --nodeps
@@ -173,10 +183,8 @@ jobs:
           haxelib install extension-iapcore 1.0.4 --always --quiet --nodeps
           haxelib install extension-iarcore 1.0.3 --always --quiet --nodeps
 
-          # Скачиваем официальный собранный lime 8.1.2 ради готовых ndll бинарников
           haxelib install lime 8.1.2 --always --quiet --nodeps
 
-          # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
             local name=$1
             local url=$2
@@ -216,19 +224,27 @@ jobs:
           safe_git_install "hxcpp-debug-server" "https://github.com/FunkinCrew/hxcpp-debugger" "7459934666a473a4cc4d066ba4a93ef92f1ce94c" "hxcpp-debug-server"
           safe_git_install "hxjsonast" "https://github.com/nadako/hxjsonast/" "20e72cc68c823496359775ac1f06500e67f189d5"
           safe_git_install "json2object" "https://github.com/FunkinCrew/json2object" "59e0467c953d1f26e3cbf2a070f140e2d2e8457d"
-          safe_git_install "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
+          
+          mkdir -p .haxelib/lime/git
+          cd .haxelib/lime/git
+          git init -q
+          git remote add origin "https://github.com/FunkinCrew/lime"
+          git fetch --depth=1 origin "826d25199c17329b730ae09838f3df7a2903c471" --quiet
+          git reset --hard "826d25199c17329b730ae09838f3df7a2903c471" --quiet
+          cd ../../..
+
           safe_git_install "newgrounds" "https://github.com/FunkinCrew/Newgrounds" "b2b53cd0a5f030af74efd325732951cddbea8826"
           safe_git_install "openfl" "https://github.com/FunkinCrew/openfl" "88534506595a32c3f02b21b3987e789a24074ae7"
           safe_git_install "polymod" "https://github.com/FunkinCrew/polymod" "fb123758b90127f5647727727f273d27e93cabdb"
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ХАК по раскладке бинарников в кастомный git-пакет lime
-          echo "Injecting precompiled bin/ndll files into git lime..."
-          rm -rf .haxelib/lime/git/ndll
-          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
-          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/run.n
-          if [ -f ".haxelib/lime/8,1,2/lime" ]; then cp ".haxelib/lime/8,1,2/lime" ".haxelib/lime/git/lime"; fi
+          # Внедряем исходники в релизную версию для Android
+          echo "Injecting FunkinCrew lime source files into stable release..."
+          cp -r .haxelib/lime/git/src/* .haxelib/lime/8,1,2/src/
+          cp -r .haxelib/lime/git/lime/* .haxelib/lime/8,1,2/lime/
+          
+          haxelib set lime 8.1.2
 
           # Настройка hxcpp
           haxelib run hxcpp
