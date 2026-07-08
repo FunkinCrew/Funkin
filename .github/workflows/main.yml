@@ -100,15 +100,15 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Пересборка lime ИСКЛЮЧИТЕЛЬНО для целевой платформы БЕЗ HashLink флагов (-Dno_hl)
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -Dno_hl
-
           # Интеграция утилит сборки
           haxelib run lime run openfl
 
       - name: Compile Game
+        env:
+          # Принудительно глушим HashLink на этапе вызова hxcpp
+          HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release
+          haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -Dno_hl -D lime-no-hl
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -210,9 +210,6 @@ jobs:
 
           # Настройка hxcpp
           haxelib run hxcpp
-          
-          # Для Android-раннера собираем инструменты Linux без HashLink
-          haxelib run lime rebuild linux -Dno_hl
 
           # Связывание утилит
           haxelib run lime run openfl
@@ -222,7 +219,10 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
       - name: Compile APK
-        run: haxelib run lime build android -release
+        env:
+          HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
+        run: |
+          haxelib run lime build android -release -Dno_hl -D lime-no-hl
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
