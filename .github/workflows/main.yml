@@ -98,13 +98,15 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ХАК 1: Переносим готовые бинарники ndll из официального релиза в кастомный git-пакет
-          echo "Injecting precompiled ndll binaries into git lime..."
-          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
-
-          # ХАК 2: Вместо компиляции утилит через `rebuild tools`, берем готовый рабочий файл run.n 
-          # из официального релиза и подсовываем его в git-папку. Это решает проблему ошибки Primitive not found.
-          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/
+          # ИСПРАВЛЕНИЕ: Переносим вообще все бинарники CLI (ndll папки, файлы run.n и исполняемые файлы хоста lime/lime.exe)
+          echo "Injecting precompiled bin/ndll files into git lime..."
+          rm -rf .haxelib/lime/git/ndll
+          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
+          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/run.n
+          
+          # Копируем нативные бинарники вызова CLI (устраняет ошибку примитивов)
+          if [ -f ".haxelib/lime/8,1,2/lime" ]; then cp ".haxelib/lime/8,1,2/lime" ".haxelib/lime/git/lime"; fi
+          if [ -f ".haxelib/lime/8,1,2/lime.exe" ]; then cp ".haxelib/lime/8,1,2/lime.exe" ".haxelib/lime/git/lime.exe"; fi
 
           # Инициализируем hxcpp
           haxelib run hxcpp
@@ -218,12 +220,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ХАК 1: Переносим готовые бинарники ndll из официального релиза в кастомный git-пакет
-          echo "Injecting precompiled ndll binaries into git lime..."
-          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
-
-          # ХАК 2: Копируем готовый файл run.n из официального релиза
-          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/
+          # ИСПРАВЛЕНИЕ: Полный перенос инструментов хоста для Android-блока окружения
+          echo "Injecting precompiled bin/ndll files into git lime..."
+          rm -rf .haxelib/lime/git/ndll
+          cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
+          cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/run.n
+          if [ -f ".haxelib/lime/8,1,2/lime" ]; then cp ".haxelib/lime/8,1,2/lime" ".haxelib/lime/git/lime"; fi
 
           # Настройка hxcpp
           haxelib run hxcpp
