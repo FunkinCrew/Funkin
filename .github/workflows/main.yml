@@ -102,6 +102,10 @@ jobs:
           echo "Injecting precompiled ndll binaries into git lime..."
           cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
 
+          # Перекомпилируем CLI инструменты (только .n файл / neko, C++ код движка не трогается)
+          # Это заставит утилиту lime увидеть подкинутые ndll без ошибок о примитивах
+          haxelib run lime rebuild tools
+
           # Инициализируем hxcpp
           haxelib run hxcpp
 
@@ -217,6 +221,9 @@ jobs:
           # ХАК: Подкидываем готовые бинарники в форк для сборщика Android
           echo "Injecting precompiled ndll binaries into git lime..."
           cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/
+
+          # Пересборка инструментов хоста для Android окружения
+          haxelib run lime rebuild tools
 
           # Настройка hxcpp
           haxelib run hxcpp
