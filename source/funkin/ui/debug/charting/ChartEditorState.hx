@@ -7822,7 +7822,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess measureTicks?.updateMeasureNumbers(true);
 
     this.songLengthInMs = (audioInstTrack?.length ?? 1000.0) + Conductor.instance.instrumentalOffset;
-    Conductor.instance.currentTimeChange.bpm = currentSongMetadata.timeChanges[0].bpm;
+    Conductor.instance.update(0, false);
 
     // Many things get reset when song length changes.
     healthIconsDirty = true;
