@@ -423,7 +423,7 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     switch (ease)
     {
       case 'INSTANT':
-        startClassicFollow();
+        resetCamera(false, true, true);
       default:
         var easeDir:String = eventData.getString('easeDir') ?? SongEvent.DEFAULT_EASE_DIR;
         if (SongEvent.EASE_TYPE_DIR_REGEX.match(ease) || ease == 'linear') easeDir = '';
@@ -466,7 +466,10 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     switch (ease)
     {
       case 'INSTANT':
-        tweenCameraZoom(stageZoom, zoom, 0, isDirectMode);
+        cancelCameraZoomTween();
+        var targetZoom:Float = zoom;
+        if (!isDirectMode) targetZoom *= stageZoom;
+        this.zoom = targetZoom;
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
         var easeFunctionName = '$ease$easeDir';
