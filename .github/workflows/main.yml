@@ -98,12 +98,16 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # СБОРКА ИНСТРУМЕНТАРИЯ LIME ИЗ ИСХОДНИКОВ ФОРКА
+          # ИСПРАВЛЕННАЯ СБОРКА ИНСТРУМЕНТАРИЯ LIME
           echo "Rebuilding Lime tools from source..."
           cd .haxelib/lime/git
-          haxe tools.hxml
           
-          # Компилируем нативный бинарник под текущую ОС (Windows или Linux)
+          # Заходим в папку tools для сборки run.n
+          cd tools
+          haxe tools.hxml
+          cd ..
+          
+          # Компилируем нативный бинарник из корня репозитория lime
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             haxelib run hxcpp tools.xml -Dwindows
           else
@@ -111,7 +115,6 @@ jobs:
           fi
           cd ../../..
 
-          # Инициализируем hxcpp
           haxelib run hxcpp
 
       - name: Setup Lime Command
@@ -196,10 +199,8 @@ jobs:
             fi
           }
 
-          # Регистрируем форк Lime
           safe_git_install "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
 
-          # Остальные зависимости
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -220,10 +221,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # СБОРКА ИНСТРУМЕНТАРИЯ LIME ДЛЯ АНДРОИД-ДЖОБЫ (Ubuntu окружение)
+          # Исправленная сборка для Android (Ubuntu окружение)
           echo "Rebuilding Lime tools from source..."
           cd .haxelib/lime/git
+          cd tools
           haxe tools.hxml
+          cd ..
           haxelib run hxcpp tools.xml -Dlinux
           cd ../../..
 
