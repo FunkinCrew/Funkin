@@ -33,23 +33,25 @@ jobs:
             export HAXEPATH=$HAXE_PATH
           fi
 
-          # Стандартные библиотеки из haxelib
-          haxelib install format 3.5.0 --always --quiet
-          haxelib install hamcrest 3.0.0 --always --quiet
-          haxelib install hxdiscord_rpc 1.3.0 --always --quiet
-          haxelib install hxgamemode 1.0.1 --always --quiet
-          haxelib install hxp 1.3.0 --always --quiet
-          haxelib install hxvlc 2.2.6 --always --quiet
-          haxelib install jsonpatch 1.1.0 --always --quiet
-          haxelib install jsonpath 1.1.0 --always --quiet
-          haxelib install extension-androidtools 2.2.2 --always --quiet
-          haxelib install extension-haptics 1.0.4 --always --quiet
-          haxelib install extension-iapcore 1.0.4 --always --quiet
-          haxelib install extension-iarcore 1.0.3 --always --quiet
+          # Базовый hxcpp ставим первым
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Скачиваем официальный собранный lime ради готовых ndll бинарников
-          haxelib install lime 8.1.2 --always --quiet
+          # Ставим библиотеки строго с флагом --nodeps, чтобы haxelib не качал новые версии зависимостей с сервера
+          haxelib install format 3.5.0 --always --quiet --nodeps
+          haxelib install hamcrest 3.0.0 --always --quiet --nodeps
+          haxelib install hxdiscord_rpc 1.3.0 --always --quiet --nodeps
+          haxelib install hxgamemode 1.0.1 --always --quiet --nodeps
+          haxelib install hxp 1.3.0 --always --quiet --nodeps
+          haxelib install hxvlc 2.2.6 --always --quiet --nodeps
+          haxelib install jsonpatch 1.1.0 --always --quiet --nodeps
+          haxelib install jsonpath 1.1.0 --always --quiet --nodeps
+          haxelib install extension-androidtools 2.2.2 --always --quiet --nodeps
+          haxelib install extension-haptics 1.0.4 --always --quiet --nodeps
+          haxelib install extension-iapcore 1.0.4 --always --quiet --nodeps
+          haxelib install extension-iarcore 1.0.3 --always --quiet --nodeps
+
+          # Скачиваем официальный собранный lime 8.1.2 ради готовых ndll бинарников
+          haxelib install lime 8.1.2 --always --quiet --nodeps
 
           # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
@@ -76,7 +78,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости (включая исходники lime от FunkinCrew)
+          # Git-зависимости (включая кастомный lime от FunkinCrew)
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -98,13 +100,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ИСПРАВЛЕНИЕ: Переносим вообще все бинарники CLI (ndll папки, файлы run.n и исполняемые файлы хоста lime/lime.exe)
+          # ХАК по раскладке бинарников в кастомный git-пакет lime
           echo "Injecting precompiled bin/ndll files into git lime..."
           rm -rf .haxelib/lime/git/ndll
           cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
           cp .haxelib/lime/8,1,2/run.n .haxelib/lime/git/run.n
           
-          # Копируем нативные бинарники вызова CLI (устраняет ошибку примитивов)
           if [ -f ".haxelib/lime/8,1,2/lime" ]; then cp ".haxelib/lime/8,1,2/lime" ".haxelib/lime/git/lime"; fi
           if [ -f ".haxelib/lime/8,1,2/lime.exe" ]; then cp ".haxelib/lime/8,1,2/lime.exe" ".haxelib/lime/git/lime.exe"; fi
 
@@ -155,23 +156,25 @@ jobs:
           haxelib setup .haxelib
           haxelib --never newrepo
 
-          # Стандартные библиотеки из haxelib
-          haxelib install format 3.5.0 --always --quiet
-          haxelib install hamcrest 3.0.0 --always --quiet
-          haxelib install hxdiscord_rpc 1.3.0 --always --quiet
-          haxelib install hxgamemode 1.0.1 --always --quiet
-          haxelib install hxp 1.3.0 --always --quiet
-          haxelib install hxvlc 2.2.6 --always --quiet
-          haxelib install jsonpatch 1.1.0 --always --quiet
-          haxelib install jsonpath 1.1.0 --always --quiet
-          haxelib install extension-androidtools 2.2.2 --always --quiet
-          haxelib install extension-haptics 1.0.4 --always --quiet
-          haxelib install extension-iapcore 1.0.4 --always --quiet
-          haxelib install extension-iarcore 1.0.3 --always --quiet
+          # Базовый hxcpp ставим первым
           haxelib install hxcpp 4.3.2 --always --quiet
 
-          # Скачиваем официальный собранный lime ради готовых ndll бинарников
-          haxelib install lime 8.1.2 --always --quiet
+          # Ставим библиотеки строго с флагом --nodeps
+          haxelib install format 3.5.0 --always --quiet --nodeps
+          haxelib install hamcrest 3.0.0 --always --quiet --nodeps
+          haxelib install hxdiscord_rpc 1.3.0 --always --quiet --nodeps
+          haxelib install hxgamemode 1.0.1 --always --quiet --nodeps
+          haxelib install hxp 1.3.0 --always --quiet --nodeps
+          haxelib install hxvlc 2.2.6 --always --quiet --nodeps
+          haxelib install jsonpatch 1.1.0 --always --quiet --nodeps
+          haxelib install jsonpath 1.1.0 --always --quiet --nodeps
+          haxelib install extension-androidtools 2.2.2 --always --quiet --nodeps
+          haxelib install extension-haptics 1.0.4 --always --quiet --nodeps
+          haxelib install extension-iapcore 1.0.4 --always --quiet --nodeps
+          haxelib install extension-iarcore 1.0.3 --always --quiet --nodeps
+
+          # Скачиваем официальный собранный lime 8.1.2 ради готовых ndll бинарников
+          haxelib install lime 8.1.2 --always --quiet --nodeps
 
           # Бронебойная функция ручного скачивания конкретного коммита напрямую
           safe_git_install() {
@@ -198,7 +201,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости (включая исходники lime от FunkinCrew)
+          # Git-зависимости
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -220,7 +223,7 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # ИСПРАВЛЕНИЕ: Полный перенос инструментов хоста для Android-блока окружения
+          # ХАК по раскладке бинарников в кастомный git-пакет lime
           echo "Injecting precompiled bin/ndll files into git lime..."
           rm -rf .haxelib/lime/git/ndll
           cp -r .haxelib/lime/8,1,2/ndll .haxelib/lime/git/ndll
