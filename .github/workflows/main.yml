@@ -100,8 +100,8 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Пересборка Lime с флагом --no-output изолирует генерацию кода от сторонних либ
-          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} --no-output
+          # Пересборка lime ИСКЛЮЧИТЕЛЬНО для целевой платформы БЕЗ HashLink флагов (-Dno_hl)
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -Dno_hl
 
           # Интеграция утилит сборки
           haxelib run lime run openfl
@@ -211,8 +211,8 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
           
-          # Сборка служебных ndll модулей без генерации кода HashLink
-          haxelib run lime rebuild linux --no-output
+          # Для Android-раннера собираем инструменты Linux без HashLink
+          haxelib run lime rebuild linux -Dno_hl
 
           # Связывание утилит
           haxelib run lime run openfl
