@@ -78,7 +78,7 @@ jobs:
             fi
           }
 
-          # Git-зависимости (ВНИМАНИЕ: для lime кастомный путь мы сделаем отдельно ниже)
+          # Git-зависимости
           safe_git_install "FlxPartialSound" "https://github.com/FunkinCrew/FlxPartialSound.git" "2f984e244f1544ca98c0e03b9b21ae570f07ac55"
           safe_git_install "astc-compressor" "https://github.com/KarimAkra/astc-compressor" "b7a91b3072dc16e785a9bde847f17ba0ef15dd47"
           safe_git_install "extension-admob" "https://github.com/FunkinCrew/extension-admob" "5c908b3f7c74115a8b52eddf1e05525f4873f26e"
@@ -94,7 +94,7 @@ jobs:
           safe_git_install "hxjsonast" "https://github.com/nadako/hxjsonast/" "20e72cc68c823496359775ac1f06500e67f189d5"
           safe_git_install "json2object" "https://github.com/FunkinCrew/json2object" "59e0467c953d1f26e3cbf2a070f140e2d2e8457d"
           
-          # Скачиваем кастомный форк lime от FunkinCrew, но НЕ делаем его активным через haxelib dev
+          # Скачиваем кастомный форк lime от FunkinCrew
           mkdir -p .haxelib/lime/git
           cd .haxelib/lime/git
           git init -q
@@ -109,14 +109,12 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # БРОНЕБОЙНЫЙ ХАК: Оставляем lime зарегистрированным на рабочую официальную версию 8.1.2,
-          # но заменяем папки с исходным кодом (src/ и lime/) внутри официального пакета файлами из форка FunkinCrew.
-          # Таким образом, CLI работает идеально через родные ndll, а игра компилируется на базе кода FunkinCrew.
+          # БРОНЕБОЙНЫЙ ХАК: Слияние исходников через extglob
+          shopt -s extglob
           echo "Injecting FunkinCrew lime source files into stable release..."
-          cp -r .haxelib/lime/git/src/* .haxelib/lime/8,1,2/src/
-          cp -r .haxelib/lime/git/lime/* .haxelib/lime/8,1,2/lime/
+          cp -r .haxelib/lime/git/!(ndll|run.n|lime|lime.exe) .haxelib/lime/8,1,2/
+          shopt -u extglob
           
-          # Убедимся, что активен именно стабильный релиз с нашими инъекциями
           haxelib set lime 8.1.2
 
           # Инициализируем hxcpp
@@ -239,10 +237,11 @@ jobs:
           safe_git_install "thx.core" "https://github.com/fponticelli/thx.core" "2bf2b992e06159510f595554e6b952e47922f128"
           safe_git_install "thx.semver" "https://github.com/fponticelli/thx.semver" "bdb191fe7cf745c02a980749906dbf22719e200b"
 
-          # Внедряем исходники в релизную версию для Android
+          # БРОНЕБОЙНЫЙ ХАК для Android
+          shopt -s extglob
           echo "Injecting FunkinCrew lime source files into stable release..."
-          cp -r .haxelib/lime/git/src/* .haxelib/lime/8,1,2/src/
-          cp -r .haxelib/lime/git/lime/* .haxelib/lime/8,1,2/lime/
+          cp -r .haxelib/lime/git/!(ndll|run.n|lime|lime.exe) .haxelib/lime/8,1,2/
+          shopt -u extglob
           
           haxelib set lime 8.1.2
 
