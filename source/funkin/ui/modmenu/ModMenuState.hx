@@ -382,8 +382,21 @@ class ModMenuState extends MusicBeatState
 
     var modIds:Array<String> = grabEnabledModList();
 
-    bf.switchCharacter('mod-bf', modIds);
-    gf.switchCharacter('mod-gf', modIds);
+    var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+    var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
+
+    bf.previousModId = bf.currentModId;
+    gf.previousModId = bf.previousModId;
+
+    bf.visible = true;
+    gf.visible = true;
+
+    // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
+    if (modIds.length > 1)
+    {
+      if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
+      else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
+    }
   }
 
   /**
@@ -1026,12 +1039,26 @@ class ModMenuState extends MusicBeatState
             var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
             var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
 
-            if (bfNotPinhead && bf.hasAnimation(CRISPY)) bf.playAnimation(CRISPY, true);
+            gf.previousModId = bf.previousModId;
+
+            bf.visible = true;
+            gf.visible = true;
+
+            // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
+            if (modIds.length > 1)
+            {
+              if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
+              else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
+            }
+
+            trace('bf previous mod: ' + bf.previousModId + ', current mod: ' + bf.currentModId);
+            trace('gf previous mod: ' + gf.previousModId + ', current mod: ' + gf.currentModId);
+            if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId) bf.playAnimation(CRISPY, true);
             else
             {
               bf.playAnimation(IDLE, true);
             }
-            if (gfNotPinhead && gf.hasAnimation(CRISPY)) gf.playAnimation(CRISPY, true);
+            if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId) gf.playAnimation(CRISPY, true);
             else
             {
               gf.playAnimation(IDLE, true);

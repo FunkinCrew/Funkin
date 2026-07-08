@@ -109,9 +109,9 @@ class ModMenuCharacter extends FunkinSprite
       {
         replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
         replaceColorShader.setFloatArray("uTargetColor", [0, 1, 0.04]);
-        setPinheadColor(pinheadColor);
         replaceColorShader.setFloat("uThreshold", 0.12);
       }
+      setPinheadColor(getRandomColor());
       shader = replaceColorShader;
     }
     else
@@ -126,9 +126,6 @@ class ModMenuCharacter extends FunkinSprite
     super(x, y);
 
     if (characterId == '') characterId = 'pinhead';
-
-    pinheadColor = getRandomColor();
-
     applyShader();
 
     this.currentCharacterId = characterId;
@@ -187,6 +184,11 @@ class ModMenuCharacter extends FunkinSprite
     }
   }
 
+  static var shortestIndex:Int = 0;
+
+  public var previousCharacterId:String = '';
+  public var previousModId:String = '';
+
   /**
    * Switches out the character's graphics.
    * @param characterId The new character ID to use.
@@ -194,6 +196,7 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function switchCharacter(?characterId:String, modIds:Array<String>):Bool
   {
+    if (!isGF) shortestIndex = 0;
     if (characterId == null) characterId = currentCharacterId;
     if (characterId == currentCharacterId && modIds.contains(currentModId)) return true;
 
@@ -202,14 +205,28 @@ class ModMenuCharacter extends FunkinSprite
 
     currentCharacterId = characterId;
 
+    var i = 0;
     for (mod in modIds)
     {
-      if (mod == ModMenuState.BASE_GAME_MOD_ID) continue;
+      if (mod == ModMenuState.BASE_GAME_MOD_ID) {
+        i++;
+        continue;
+      }
       if (hasModdedAssets(mod))
       {
+        if (i > shortestIndex)
+        {
+          if (!isGF) shortestIndex = i;
+          else
+          {
+            modId = '';
+            break;
+          }
+        }
         modId = mod;
         break;
       }
+      i++;
     }
 
     trace(' MOD MENU '.bold().bg_orange() + ' Switching character to $characterId with mod $modId. Mods checked: $modIds');
@@ -222,6 +239,9 @@ class ModMenuCharacter extends FunkinSprite
     {
       characterId = StringTools.replace(characterId, 'mod-', '');
     }
+
+    previousCharacterId = currentCharacterId;
+    previousModId = currentModId;
 
     currentCharacterId = characterId;
     currentModId = modId;
