@@ -21,16 +21,30 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install Dependencies
+      - name: Install System Dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libhl-dev libpng-dev libjpeg-dev libopenal-dev libgmp-dev
+
+      - name: Cache Haxelib
+        id: cache-haxelib
+        uses: actions/cache@v4
+        with:
+          path: .haxelib
+          key: ${{ matrix.os }}-haxelib-${{ hashFiles('**/main.yml') }}
+          restore-keys: |
+            ${{ matrix.os }}-haxelib-
+
+      - name: Install Dependencies & Rebuild Engine
+        if: steps.cache-haxelib.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          # Ядерная очистка кэша и привязка к локальной папке проекта
           rm -rf .haxelib
           mkdir -p .haxelib
           haxelib setup .haxelib
           haxelib --never newrepo
 
-          # Фикс путей для Windows
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             export HAXEPATH=$HAXE_PATH
           fi
@@ -100,12 +114,14 @@ jobs:
           # Инициализируем hxcpp
           haxelib run hxcpp
           
-          # Интеграция утилит сборки
-          haxelib run lime run openfl
+          # Пересборка lime на сервере под конкретную целевую платформу
+          haxelib run lime rebuild ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+
+      - name: Setup Lime Command
+        run: haxelib run lime run openfl
 
       - name: Compile Game
         env:
-          # Принудительно глушим HashLink на этапе вызова hxcpp
           HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
         run: |
           haxelib run lime build ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }} -release -Dno_hl -D lime-no-hl
@@ -137,10 +153,24 @@ jobs:
         with:
           haxe-version: 4.3.4
 
-      - name: Install Dependencies & Setup Android
+      - name: Install System Dependencies (Android Build Host)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libhl-dev libpng-dev libjpeg-dev libopenal-dev libgmp-dev
+
+      - name: Cache Haxelib Android
+        id: cache-haxelib-android
+        uses: actions/cache@v4
+        with:
+          path: .haxelib
+          key: android-haxelib-${{ hashFiles('**/main.yml') }}
+          restore-keys: |
+            android-haxelib-
+
+      - name: Install Dependencies & Setup Android Tools
+        if: steps.cache-haxelib-android.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          # Конфигурация изолированного окружения
           rm -rf .haxelib
           mkdir -p .haxelib
           haxelib setup .haxelib
@@ -211,10 +241,12 @@ jobs:
           # Настройка hxcpp
           haxelib run hxcpp
 
-          # Связывание утилит
+          # Пересборка хост-инструментов lime для сборщика Android
+          haxelib run lime rebuild linux
+
+      - name: Setup Lime/Android Env
+        run: |
           haxelib run lime run openfl
-          
-          # Точная конфигурация путей для Android
           haxelib run lime config ANDROID_SDK_ROOT $ANDROID_HOME
           haxelib run lime config JAVA_HOME $JAVA_HOME
 
