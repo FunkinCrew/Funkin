@@ -1,6 +1,5 @@
 package funkin.util.macro;
 
-#if !display
 #if macro
 @:nullSafety
 class FlxMacro
@@ -68,5 +67,4 @@ class FlxMacro
     return fields;
   }
 }
-#end
 #end
