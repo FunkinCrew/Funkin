@@ -9,11 +9,6 @@ mkdir -p .haxelib
 haxelib setup .haxelib
 haxelib --never newrepo
 
-if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
-  sudo apt-get update -qq
-  sudo apt-get install -y libhl-dev
-fi
-
 haxelib install hxcpp 4.3.2 --always --quiet
 
 safe_git_install() {
