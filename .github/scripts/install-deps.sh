@@ -28,6 +28,11 @@ safe_git_install() {
       git fetch origin --quiet
     fi
     git reset --hard "$rev" --quiet
+
+    if [ -f .gitmodules ]; then
+      echo "  Initializing submodules for $name..."
+      git submodule update --init --recursive --depth 1
+    fi
   )
 
   if [ -n "$sub_dir" ]; then
@@ -80,6 +85,9 @@ echo "Compiling Lime tools (run.n)..."
 echo "Setting up Lime..."
 haxelib run lime setup -y
 
+echo "Rebuilding Lime tools..."
+haxelib run lime rebuild tools -v
+
 if [ "$TARGET" = "android" ]; then
   mkdir -p "$HOME/.lime"
   cat > "$HOME/.lime/config.xml" << EOF
@@ -89,9 +97,9 @@ if [ "$TARGET" = "android" ]; then
   <set name="ANDROID_NDK_ROOT" value="$ANDROID_NDK_HOME" />
 </xml>
 EOF
-  echo "Rebuilding Lime Android..."
+  echo "Rebuilding Lime Android ndll..."
   haxelib run lime rebuild android -v
 else
-  echo "Rebuilding Lime tools..."
-  haxelib run lime rebuild tools -v
+  echo "Rebuilding Lime $TARGET ndll..."
+  haxelib run lime rebuild "$TARGET" -v
 fi
