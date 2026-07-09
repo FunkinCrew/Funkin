@@ -16,7 +16,7 @@ mkdir -p .haxelib
 haxelib setup .haxelib
 haxelib --never newrepo
 
-# --- ВСПУМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СКАЧИВАНИЯ ZIP-АРХИВОВ (Обход багов Git на CI) ---
+# --- ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СКАЧИВАНИЯ ZIP-АРХИВОВ (Обход багов Git на CI) ---
 download_zip_dependency() {
   local name=$1
   local url=$2
@@ -26,17 +26,21 @@ download_zip_dependency() {
   rm -rf ".haxelib/$name"
   mkdir -p ".haxelib/$name/git"
   
-  # Скачиваем архив коммита напрямую через GitHub
-  curl -sSL "$url/archive/$commit.zip" -o "$name.zip"
-  unzip -q "$name.zip"
+  # Скачиваем архив коммита напрямую через GitHub, сохраняя во временную папку
+  curl -sSL "$url/archive/$commit.zip" -o "temp_${name}.zip"
+  unzip -q "temp_${name}.zip"
   
-  # GitHub пакует архивы с корневой папкой вида имя_репозитория-хэш_коммита или имя-хэш.
-  # Ищем созданную папку динамически и перемещаем её содержимое.
+  # Ищем только директории (-type d), исключая скрытые и саму .haxelib
   local unpacked_dir
-  unpacked_dir=$(find . -maxdepth 1 -type d -name "${name}*" -o -name "*${name}*" | head -n 1)
+  unpacked_dir=$(find . -maxdepth 1 -type d -name "${name}-*" -o -name "*-${name}-*" | head -n 1)
+  
+  if [ -z "$unpacked_dir" ] || [ ! -d "$unpacked_dir" ]; then
+    # Фолбэк на случай, если имя репозитория в GitHub архиве отличается
+    unpacked_dir=$(find . -maxdepth 1 -type d ! -name "." ! -name ".." ! -name ".git" ! -name ".github" ! -name ".haxelib" | head -n 1)
+  fi
   
   mv "$unpacked_dir"/* ".haxelib/$name/git/"
-  rm -rf "$unpacked_dir" "$name.zip"
+  rm -rf "$unpacked_dir" "temp_${name}.zip"
   
   # Регистрируем в локальном haxelib через dev-путь
   haxelib dev "$name" ".haxelib/$name/git"
