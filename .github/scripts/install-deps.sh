@@ -16,20 +16,20 @@ mkdir -p .haxelib
 haxelib setup .haxelib
 haxelib --never newrepo
 
-# 1. НАДЕЖНАЯ УСТАНОВКА HXCPP (Через прямой клонинг, обход багов Git на CI)
-echo "Manually fetching specific hxcpp commit via clone..."
+# 1. НАДЕЖНАЯ УСТАНОВКА HXCPP (Через скачивание ZIP, обход багов Git на CI)
+echo "Manually downloading hxcpp source ZIP..."
 rm -rf .haxelib/hxcpp
-mkdir -p .haxelib/hxcpp
+mkdir -p .haxelib/hxcpp/git
 
-# Клонируем репозиторий целиком со всей историей в папку git
-git clone https://github.com/FunkinCrew/hxcpp.git .haxelib/hxcpp/git
+# Скачиваем архив конкретного коммита напрямую через GitHub API
+curl -sSL "https://github.com/FunkinCrew/hxcpp/archive/450d112e50acff57b1bc9d584dcf1374c9e33995.zip" -o hxcpp.zip
 
-cd .haxelib/hxcpp/git
-# Теперь коммит гарантированно есть в локальной базе объектов, переключаемся на него
-git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
-cd ../../..
+# Распаковываем его. GitHub пакует архивы с корневой папкой вида hxcpp-commit_hash
+unzip -q hxcpp.zip
+mv hxcpp-450d112e50acff57b1bc9d584dcf1374c9e33995/* .haxelib/hxcpp/git/
+rm -rf hxcpp-450d112e50acff57b1bc9d584dcf1374c9e33995 hxcpp.zip
 
-# Регистрируем hxcpp в haxelib локально
+# Регистрируем hxcpp в haxelib локально через dev-путь
 haxelib dev hxcpp .haxelib/hxcpp/git
 
 # 2. ХИРУРГИЧЕСКИЙ ПАТЧ СТАНДАРТА C++ (Решаем проблему Bit Rot для openal-soft)
@@ -45,7 +45,7 @@ find .haxelib/hxcpp/git -name "msvc-setup.bat" | xargs -r sed -i 's/\/std:c++14/
 haxelib install hmm --quiet
 
 echo "Installing dependencies via hmm (hmm.json)..."
-# hmm увидит, что hxcpp уже на месте (dev-путь), и просто пропустит его скачивание
+# hmm увидит, что hxcpp уже зарегистрирован в системе, и пропустит его скачивание
 haxelib run hmm install -q
 
 # Компиляция hxcpp-тулов (compile.hxml) — обязательный шаг перед использованием hxcpp/lime
