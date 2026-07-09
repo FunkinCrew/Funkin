@@ -16,23 +16,39 @@ mkdir -p .haxelib
 haxelib setup .haxelib
 haxelib --never newrepo
 
-# 1. НАДЕЖНАЯ УСТАНОВКА HXCPP (Через скачивание ZIP, обход багов Git на CI)
-echo "Manually downloading hxcpp source ZIP..."
-rm -rf .haxelib/hxcpp
-mkdir -p .haxelib/hxcpp/git
+# --- ВСПУМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ СКАЧИВАНИЯ ZIP-АРХИВОВ (Обход багов Git на CI) ---
+download_zip_dependency() {
+  local name=$1
+  local url=$2
+  local commit=$3
+  
+  echo "Manually downloading $name source ZIP (commit: $commit)..."
+  rm -rf ".haxelib/$name"
+  mkdir -p ".haxelib/$name/git"
+  
+  # Скачиваем архив коммита напрямую через GitHub
+  curl -sSL "$url/archive/$commit.zip" -o "$name.zip"
+  unzip -q "$name.zip"
+  
+  # GitHub пакует архивы с корневой папкой вида имя_репозитория-хэш_коммита или имя-хэш.
+  # Ищем созданную папку динамически и перемещаем её содержимое.
+  local unpacked_dir
+  unpacked_dir=$(find . -maxdepth 1 -type d -name "${name}*" -o -name "*${name}*" | head -n 1)
+  
+  mv "$unpacked_dir"/* ".haxelib/$name/git/"
+  rm -rf "$unpacked_dir" "$name.zip"
+  
+  # Регистрируем в локальном haxelib через dev-путь
+  haxelib dev "$name" ".haxelib/$name/git"
+}
 
-# Скачиваем архив конкретного коммита напрямую через GitHub API
-curl -sSL "https://github.com/FunkinCrew/hxcpp/archive/450d112e50acff57b1bc9d584dcf1374c9e33995.zip" -o hxcpp.zip
+# --- 1. НАДЕЖНАЯ УСТАНОВКА ОСНОВНЫХ БИБЛИОТЕК (Без использования Git) ---
+download_zip_dependency "hxcpp" "https://github.com/FunkinCrew/hxcpp" "450d112e50acff57b1bc9d584dcf1374c9e33995"
+download_zip_dependency "lime" "https://github.com/FunkinCrew/lime" "826d25199c17329b730ae09838f3df7a2903c471"
+download_zip_dependency "openfl" "https://github.com/FunkinCrew/openfl" "88534506595a32c3f02b21b3987e789a24074ae7"
+download_zip_dependency "flixel" "https://github.com/FunkinCrew/flixel" "f7b94eebf7dbb452a929d0c67ab31a9cbd71d3a0"
 
-# Распаковываем его. GitHub пакует архивы с корневой папкой вида hxcpp-commit_hash
-unzip -q hxcpp.zip
-mv hxcpp-450d112e50acff57b1bc9d584dcf1374c9e33995/* .haxelib/hxcpp/git/
-rm -rf hxcpp-450d112e50acff57b1bc9d584dcf1374c9e33995 hxcpp.zip
-
-# Регистрируем hxcpp в haxelib локально через dev-путь
-haxelib dev hxcpp .haxelib/hxcpp/git
-
-# 2. ХИРУРГИЧЕСКИЙ ПАТЧ СТАНДАРТА C++ (Решаем проблему Bit Rot для openal-soft)
+# --- 2. ХИРУРГИЧЕСКИЙ ПАТЧ СТАНДАРТА C++ (Решаем проблему Bit Rot для openal-soft) ---
 echo "Patching hxcpp toolchains to force C++17 standard..."
 # Меняем -std=c++11 и -std=c++14 на -std=c++17 для GCC (Linux/Android)
 find .haxelib/hxcpp/git -name "toolchain.xml" -o -name "gcc-toolchain.xml" | xargs -r sed -i 's/-std=c++11/-std=c++17/g' || true
@@ -40,12 +56,12 @@ find .haxelib/hxcpp/git -name "toolchain.xml" -o -name "gcc-toolchain.xml" | xar
 # Меняем /std:c++14 на /std:c++17 для MSVC (Windows)
 find .haxelib/hxcpp/git -name "msvc-setup.bat" | xargs -r sed -i 's/\/std:c++14/\/std:c++17/g' || true
 
-# 3. УСТАНОВКА ОСТАЛЬНЫХ ЗАВИСИМОСТЕЙ
+# --- 3. УСТАНОВКА ОСТАЛЬНЫХ ЗАВИСИМОСТЕЙ ---
 # hmm сам ставится как обычный haxelib-пакет
 haxelib install hmm --quiet
 
-echo "Installing dependencies via hmm (hmm.json)..."
-# hmm увидит, что hxcpp уже зарегистрирован в системе, и пропустит его скачивание
+echo "Installing remaining dependencies via hmm (hmm.json)..."
+# hmm увидит, что hxcpp, lime, openfl и flixel уже зарегистрированы, и займется только мелочью
 haxelib run hmm install -q
 
 # Компиляция hxcpp-тулов (compile.hxml) — обязательный шаг перед использованием hxcpp/lime
