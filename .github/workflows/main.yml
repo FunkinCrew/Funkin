@@ -9,11 +9,13 @@ on:
 
 env:
   HAXE_VERSION: 4.3.4
+
   HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
 
 jobs:
   build:
     name: Build for ${{ matrix.os }}
+
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -33,7 +35,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .haxelib
-          key: haxelib-${{ matrix.os }}-${{ env.HAXE_VERSION }}-${{ hashFiles('.github/scripts/install-deps.sh') }}
+          key: haxelib-${{ matrix.os }}-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
 
       - name: Install Dependencies & Rebuild Tools
         shell: bash
@@ -85,7 +87,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .haxelib
-          key: haxelib-android-${{ env.HAXE_VERSION }}-${{ hashFiles('.github/scripts/install-deps.sh') }}
+          key: haxelib-android-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
 
       - name: Install Dependencies & Build Android
         shell: bash
