@@ -6352,10 +6352,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // SHIFT + End = Select all below playhead
     if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.END)
     {
-      // CTRL +  SHIFT + Home = Inverse - deselect all below playhead
+      // CTRL + SHIFT + Home = Inverse - deselect all below playhead
       if (FlxG.keys.pressed.CONTROL) performCommand(new DeselectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
       else
         performCommand(new SelectAllItemsBetweenTimeCommand(scrollPositionInMs + playheadPositionInMs, false, true, true));
+    }
+    
+    // CTRL + Right Arrow = Increase difficulty
+    if (pressingControl() && FlxG.keys.justPressed.RIGHT)
+    {
+      incrementDifficulty(1);
+    }
+
+    // CTRL + Left Arrow = Decrease difficulty
+    if (pressingControl() && FlxG.keys.justPressed.LEFT) 
+    {
+      incrementDifficulty(-1);
     }
   }
 
