@@ -223,7 +223,7 @@ class BaseFreeplayDJ extends FunkinSprite implements IFreeplayScriptedClass
       startFrame = isIntro ? playableCharData?.getFistPumpIntroStartFrame() ?? 0 : playableCharData?.getFistPumpLoopStartFrame() ?? 0;
     }
 
-    if (endFrame > -1 && frameNumber >= endFrame)
+    if (endFrame > -1 && frameNumber > endFrame)
     {
       playAnimation(name, true, false, false, startFrame);
     }
