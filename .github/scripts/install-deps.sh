@@ -16,16 +16,19 @@ mkdir -p .haxelib
 haxelib setup .haxelib
 haxelib --never newrepo
 
-# 1. НАДЕЖНАЯ УСТАНОВКА HXCPP (Обход багов скачивания hmm/haxelib на CI)
-echo "Manually fetching specific hxcpp commit..."
-mkdir -p .haxelib/hxcpp/git
+# 1. НАДЕЖНАЯ УСТАНОВКА HXCPP (Через прямой клонинг, обход багов Git на CI)
+echo "Manually fetching specific hxcpp commit via clone..."
+rm -rf .haxelib/hxcpp
+mkdir -p .haxelib/hxcpp
+
+# Клонируем репозиторий целиком со всей историей в папку git
+git clone https://github.com/FunkinCrew/hxcpp.git .haxelib/hxcpp/git
+
 cd .haxelib/hxcpp/git
-git init -q
-git remote add origin "https://github.com/FunkinCrew/hxcpp"
-# Fetch всей истории коммитов, чтобы точно найти старый хэш в ветке
-git fetch origin --quiet
-git reset --hard "450d112e50acff57b1bc9d584dcf1374c9e33995" --quiet
+# Теперь коммит гарантированно есть в локальной базе объектов, переключаемся на него
+git checkout 450d112e50acff57b1bc9d584dcf1374c9e33995
 cd ../../..
+
 # Регистрируем hxcpp в haxelib локально
 haxelib dev hxcpp .haxelib/hxcpp/git
 
