@@ -1,9 +1,10 @@
 package funkin.graphics.framebuffer;
 
+import animate.FlxAnimateFrames.FlxAnimateSpritemapCollection;
 import flixel.FlxSprite;
-import funkin.graphics.FunkinCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxSignal;
+import funkin.graphics.FunkinCamera;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
@@ -145,14 +146,31 @@ class FunkinBufferRenderer
       return;
     }
 
-    if (_blackList.contains(sprite.graphic.key))
+    var graphicKeys:Array<String> = [sprite.graphic.key];
+
+    // Texture atlases use a spritemap collection
+    // We'll need to add all the spritemaps to the blacklist
+    if (sprite.graphic is FlxAnimateSpritemapCollection)
     {
-      _blackList.remove(sprite.graphic.key);
+      var spritemaps:FlxAnimateSpritemapCollection = cast sprite.graphic;
+      @:privateAccess
+      for (spritemap in spritemaps.spritemaps)
+      {
+        graphicKeys.push(spritemap.key);
+      }
     }
 
-    if (!_whiteList.contains(sprite.graphic.key))
+    for (key in graphicKeys)
     {
-      _whiteList.push(sprite.graphic.key);
+      if (_blackList.contains(key))
+      {
+        _blackList.remove(key);
+      }
+
+      if (!_whiteList.contains(key))
+      {
+        _whiteList.push(key);
+      }
     }
   }
 
@@ -168,14 +186,31 @@ class FunkinBufferRenderer
       return;
     }
 
-    if (_whiteList.contains(sprite.graphic.key))
+    var graphicKeys:Array<String> = [sprite.graphic.key];
+
+    // Texture atlases use a spritemap collection
+    // We'll need to add all the spritemaps to the blacklist
+    if (sprite.graphic is FlxAnimateSpritemapCollection)
     {
-      _whiteList.remove(sprite.graphic.key);
+      var spritemaps:FlxAnimateSpritemapCollection = cast sprite.graphic;
+      @:privateAccess
+      for (spritemap in spritemaps.spritemaps)
+      {
+        graphicKeys.push(spritemap.key);
+      }
     }
 
-    if (!_blackList.contains(sprite.graphic.key))
+    for (key in graphicKeys)
     {
-      _blackList.push(sprite.graphic.key);
+      if (_whiteList.contains(key))
+      {
+        _whiteList.remove(key);
+      }
+
+      if (!_blackList.contains(key))
+      {
+        _blackList.push(key);
+      }
     }
   }
 
