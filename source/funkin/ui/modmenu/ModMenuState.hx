@@ -92,7 +92,7 @@ class ModMenuState extends MusicBeatState
     menuBG.zIndex = -1000;
     add(menuBG);
 
-    dropShadowLayer = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2, 0, 0);
+    dropShadowLayer = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2);
     add(dropShadowLayer);
 
     var topText:FunkinSprite = FunkinSprite.create('ui/mods/mod-menu-top-text');

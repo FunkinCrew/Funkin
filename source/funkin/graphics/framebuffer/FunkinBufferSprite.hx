@@ -3,7 +3,6 @@ package funkin.graphics.framebuffer;
 import flixel.FlxCamera;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxFrame;
-import flixel.math.FlxPoint;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 
@@ -140,7 +139,19 @@ class FunkinBufferSprite extends FunkinSprite
    *
    * By default, it's disabled. So it renders in world space.
    */
-  public var useScreenspace:Bool = false;
+  public var useScreenspace(default, set):Bool = false;
+
+  function set_useScreenspace(value:Bool):Bool
+  {
+    if (value == useScreenspace) return value;
+
+    useScreenspace = value;
+
+    // Buffer sprite needs to stick with the camera in screen space
+    this.scrollFactor.set(0, 0);
+
+    return value;
+  }
 
   var _usedCamera:FunkinCamera;
 
