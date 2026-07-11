@@ -135,6 +135,18 @@ class FunkinSprite extends FlxAnimate
    */
   public var filters(default, set):Null<Array<BitmapFilter>> = null;
 
+  override function set_clipRect(rect:FlxRect):FlxRect
+  {
+    if (!isAnimate) return super.set_clipRect(rect);
+
+    if (rect != null) clipRect = rect.round();
+    else
+      @:nullSafety(Off)
+      clipRect = null;
+
+    return rect;
+  }
+
   /**
    * Only used for mods that don't use the new asset system.
    */
@@ -898,6 +910,8 @@ class FunkinSprite extends FlxAnimate
     // Forcefully enable render texture when we have filters.
     if (filters != null && filters.length > 0) return true;
 
+    if (this.isAnimate && this.clipRect != null) return true;
+
     return super.checkRenderTexture();
   }
 
@@ -948,7 +962,7 @@ class FunkinSprite extends FlxAnimate
     if (willUseRenderTexture)
     {
       var bounds:Array<Int> = [Math.ceil(frame.frame.width), Math.ceil(frame.frame.height)];
-      if (_renderTexture == null) _renderTexture = new RenderTexture(bounds[0], bounds[1]);
+      if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(bounds[0], bounds[1], this);
 
       if (_renderTextureDirty)
       {
@@ -1001,23 +1015,11 @@ class FunkinSprite extends FlxAnimate
     {
       if (_renderTexture == null)
       {
-        _renderTexture = new RenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height));
-
-        // Replace the render texture's camera with a FunkinCamera
-        // This allows the blend shader to work inside the render texture!
-        @:privateAccess
-        _renderTexture._camera = new FunkinCamera('', 0, 0, Math.ceil(bounds.width), Math.ceil(bounds.height));
+        _renderTexture = new FunkinRenderTexture(Math.ceil(bounds.width), Math.ceil(bounds.height), this);
       }
 
       if (_renderTextureDirty)
       {
-        @:privateAccess
-        if (_renderTexture._camera.width != Math.ceil(bounds.width) || _renderTexture._camera.height != Math.ceil(bounds.height))
-        {
-          // TODO: This is shitty, but resizing doesn't seem to work properly!!!
-          _renderTexture._camera.destroy();
-          _renderTexture._camera = new FunkinCamera('', 0, 0, Math.ceil(bounds.width), Math.ceil(bounds.height));
-        }
         _renderTexture.init(Math.ceil(bounds.width), Math.ceil(bounds.height));
         _renderTexture.drawToCamera((camera, matrix) ->
         {
