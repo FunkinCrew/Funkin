@@ -30,6 +30,9 @@ haxelib --always fixrepo
 echo "Installing dependencies via hmm (hmm.json)..."
 haxelib --global run hmm install -q
 
+haxelib set hxcpp git --always
+
+# Компиляция hxcpp-тулов (compile.hxml) — обязательный шаг перед использованием hxcpp/lime.
 echo "Compiling hxcpp tools..."
 (
   cd .haxelib/hxcpp/git/tools/hxcpp
@@ -39,7 +42,11 @@ echo "Compiling hxcpp tools..."
 echo "Setting up Lime..."
 haxelib run lime setup -y
 
+echo "Forcing hxcpp to use the git-installed (FunkinCrew fork) version..."
+haxelib set hxcpp git --always
+
 if [ "$TARGET" = "android" ]; then
+  # Обход интерактивной проверки Android-окружения в Lime.
   mkdir -p "$HOME/.lime"
   cat > "$HOME/.lime/config.xml" << EOF
 <xml>
