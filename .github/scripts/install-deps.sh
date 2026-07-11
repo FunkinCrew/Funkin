@@ -36,6 +36,9 @@ echo "Compiling hxcpp tools..."
   haxe compile.hxml
 )
 
+echo "Setting up Lime..."
+haxelib run lime setup -y
+
 if [ "$TARGET" = "android" ]; then
   mkdir -p "$HOME/.lime"
   cat > "$HOME/.lime/config.xml" << EOF
@@ -45,4 +48,9 @@ if [ "$TARGET" = "android" ]; then
   <set name="ANDROID_NDK_ROOT" value="$ANDROID_NDK_HOME" />
 </xml>
 EOF
+  echo "Rebuilding Lime Android ndll..."
+  haxelib run lime rebuild android -v
+else
+  echo "Rebuilding Lime $TARGET ndll..."
+  haxelib run lime rebuild "$TARGET" -v
 fi
