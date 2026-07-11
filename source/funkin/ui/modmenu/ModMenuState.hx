@@ -159,8 +159,6 @@ class ModMenuState extends MusicBeatState
     });
     gfBlink = Math.random() + 6 + (Math.random() * 15);
 
-    // we want GF blink to be offset from BF at least.
-
     refreshModList(false);
 
     add(enabledModItems);

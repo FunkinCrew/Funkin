@@ -233,6 +233,7 @@ class ModMenuCharacter extends FunkinSprite
     if (modId == '' && modIds.length > 1) // no modded assets found, but multiple mods are loaded,  so show pinhead
     {
       characterId = 'pinhead';
+      modId = 'basegame';
       isPinhead = true;
     }
     else if (modId == '' && modIds.length == 1) // no mods but base game, so show bf/gf
@@ -278,12 +279,14 @@ class ModMenuCharacter extends FunkinSprite
 
   function loadGraphics():Void
   {
+    var modId:String = currentModId;
+    if (modId == 'basegame') modId = '';
     var assetPath:Null<String> = 'ui/mods/characters/$currentCharacterId';
-    trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $currentModId. Asset path: $assetPath');
+    trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $modId. Asset path: $assetPath');
     switch (data?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
-        this.loadTextureAtlas(assetPath, getAtlasSettings(), currentModId);
+        this.loadTextureAtlas(assetPath, getAtlasSettings(), modId);
 
       // BF and GF by default use animate atlases
       // We can ignore the mod IDs for the sparrow and packer render types, since
@@ -325,20 +328,23 @@ class ModMenuCharacter extends FunkinSprite
   {
     data = null;
 
+    var modId:String = currentModId;
+    if (modId == 'basegame') modId = '';
+
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId');
-    var modExists:Bool = PolymodAssets.existsInMod(assetPath, currentModId);
+    var modExists:Bool = PolymodAssets.existsInMod(assetPath, modId);
     var tryBase = !modExists;
 
     if ((tryBase && !Assets.exists(assetPath)) || (!tryBase && !modExists))
     {
-      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $currentModId! (asset path: $assetPath)');
+      trace(' MOD MENU '.bold().bg_orange() + ' No character data found for $currentCharacterId in mod $modId! (asset path: $assetPath)');
       return;
     }
 
     var jsonString:String = '';
     if (tryBase) jsonString = Assets.getText(assetPath);
     else
-      jsonString = PolymodAssets.getTextFromMod(assetPath, currentModId);
+      jsonString = PolymodAssets.getTextFromMod(assetPath, modId);
 
     var parser:JsonParser<ModMenuCharacterData> = new JsonParser<ModMenuCharacterData>({
       ignoreUnknownVariables: false
