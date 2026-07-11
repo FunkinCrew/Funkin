@@ -33,9 +33,11 @@ import funkin.util.MathUtil;
 #if android
 import funkin.external.android.DataFolderUtil;
 #end
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 import funkin.mobile.input.ControlsHandler;
+#end
 
 /**
  * The user interface for the mod menu.
@@ -150,7 +152,6 @@ class ModMenuState extends MusicBeatState
     rightRectangle.updateHitbox();
 
     bgWires = new FunkinSprite().loadTexture('ui/mods/mod-menu-bgwires');
-    ;
     bgWires.x = FlxG.width * 0.81;
     bgWires.y = FlxG.height * 0.33;
     bgWires.scale.set(0.7, 0.7);
@@ -421,6 +422,15 @@ class ModMenuState extends MusicBeatState
       if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
       else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
     }
+
+    #if FEATURE_TOUCH_CONTROLS
+    addBackButton(0, 0, FlxColor.WHITE, backToMainMenu);
+
+    backButton.onConfirmStart.add(function()
+    {
+      allowInput = false;
+    });
+    #end
   }
 
   /**
@@ -707,6 +717,17 @@ class ModMenuState extends MusicBeatState
         gf.playAnimation(IDLE, true);
       }
 
+      #if FEATURE_TOUCH_CONTROLS
+      if (ControlsHandler.usingExternalInputDevice)
+      {
+        handleKeyboard();
+      }
+      else
+      {
+        handleTouch(elapsed);
+      }
+      #end
+
       handleKeyboard();
     }
 
@@ -763,13 +784,6 @@ class ModMenuState extends MusicBeatState
       }
       fileDrop.alpha = FlxMath.lerp(0, 1, FlxEase.backOut(adjustT));
       darkness.alpha = FlxMath.lerp(0, 0.72, FlxEase.backOut(adjustT));
-    }
-
-    handleKeyboard();
-
-    // if (!ControlsHandler.usingExternalInputDevice)
-    {
-      handleTouch(elapsed);
     }
   }
 
@@ -1115,6 +1129,7 @@ class ModMenuState extends MusicBeatState
     if (oldSelection != selection) handleSelection();
   }
 
+  #if FEATURE_TOUCH_CONTROLS
   var grabbedItem:ModMenuItem = null;
   var grabbedIndex:Int = 0;
 
@@ -1156,8 +1171,6 @@ class ModMenuState extends MusicBeatState
 
   function handleTouch(elapsed:Float):Void
   {
-    FlxG.mouse.visible = true;
-
     if (touchScrolling)
     {
       var targetList:ModMenuItemList = null;
@@ -1283,6 +1296,7 @@ class ModMenuState extends MusicBeatState
       doneButtonAnimator.onFinish = applyModlist;
     }
   }
+  #end
 
   function handleSelection():Void
   {
@@ -1664,8 +1678,6 @@ class ModMenuState extends MusicBeatState
 
     if (!enabledModItems.modItems.contains(item)) return;
     if (enabledModItems.isPinnedItem(item) || item.locked) return;
-
-    trace('ugh');
 
     item.selected = false;
 
