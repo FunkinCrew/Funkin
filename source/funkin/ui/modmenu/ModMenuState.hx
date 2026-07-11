@@ -1132,13 +1132,14 @@ class ModMenuState extends MusicBeatState
   #if FEATURE_TOUCH_CONTROLS
   var grabbedItem:ModMenuItem = null;
   var grabbedIndex:Int = 0;
+  final touchDeltaThreshold:Int = 20;
 
   function checkItemGrab(itemList:ModMenuItemList,
     targetSelection:ModMenuSelection):Void
   {
     for (item in itemList.modItems)
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && TouchUtil.touch.deltaViewX != 0)
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaThreshold)
       {
         itemList.selectModItem(item, false);
 
@@ -1201,7 +1202,7 @@ class ModMenuState extends MusicBeatState
         checkItemGrab(enabledModItems, EnabledModList);
         checkItemGrab(disabledModItems, DisabledModList);
 
-        if (TouchUtil.pressed && TouchUtil.touch.deltaViewY != 0)
+        if (TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewY) >= touchDeltaThreshold)
         {
           touchScrolling = true;
         }
