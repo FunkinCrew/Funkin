@@ -9,6 +9,7 @@ if [ ! -f hmm.json ]; then
   exit 1
 fi
 
+# hxvlc
 if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   sudo apt-get update -qq
   sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9
@@ -32,8 +33,13 @@ haxelib --global run hmm install -q
 
 haxelib set hxcpp git --always
 
-# Компиляция hxcpp-тулов (compile.hxml) — обязательный шаг перед использованием hxcpp/lime.
-echo "Compiling hxcpp tools..."
+echo "Compiling hxcpp run stub (tools/run)..."
+(
+  cd .haxelib/hxcpp/git/tools/run
+  haxe compile.hxml
+)
+
+echo "Compiling hxcpp tools (tools/hxcpp)..."
 (
   cd .haxelib/hxcpp/git/tools/hxcpp
   haxe compile.hxml
