@@ -152,8 +152,34 @@ class Strumline extends FlxSpriteGroup
 
   var notesVwoosh:FlxTypedSpriteGroup<NoteSprite>;
   var holdNotesVwoosh:FlxTypedSpriteGroup<SustainTrail>;
-  final noteStyle:NoteStyle;
   var noteSpacingScale:Float = 1;
+
+  public var noteStyle(default, set):NoteStyle;
+
+  function set_noteStyle(value:NoteStyle):NoteStyle
+  {
+    noteStyle = value;
+
+    for (note in strumlineNotes.members)
+    {
+      if (note == null) continue;
+      note.destroy();
+    }
+
+    strumlineNotes.clear();
+
+    for (i in 0...Strumline.KEY_COUNT)
+		{
+			var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, Strumline.DIRECTIONS[i]);
+			child.x = getXPos(Strumline.DIRECTIONS[i]);
+			child.x += Strumline.INITIAL_OFFSET;
+			child.y = 0;
+			noteStyle.applyStrumlineOffsets(child);
+			strumlineNotes.add(child);
+		}
+
+    return value;
+  }
 
   /**
    * The scale of the strumline. Use this to resize it rather than setting the scale directly.
@@ -210,7 +236,6 @@ class Strumline extends FlxSpriteGroup
     super();
 
     this.isPlayer = isPlayer;
-    this.noteStyle = noteStyle;
 
     this.strumlineNotes = new FlxTypedSpriteGroup<StrumlineNote>();
     this.strumlineNotes.zIndex = 10;
@@ -265,15 +290,7 @@ class Strumline extends FlxSpriteGroup
     this.onNoteIncoming = new FlxTypedSignal<NoteSprite->Void>();
     resetScrollSpeed(scrollSpeed);
 
-    for (i in 0...KEY_COUNT)
-    {
-      var child:StrumlineNote = new StrumlineNote(noteStyle, isPlayer, DIRECTIONS[i]);
-      child.x = getXPos(DIRECTIONS[i]);
-      child.x += INITIAL_OFFSET;
-      child.y = 0;
-      noteStyle.applyStrumlineOffsets(child);
-      this.strumlineNotes.add(child);
-    }
+    this.noteStyle = noteStyle;
 
     this.heldKeys = [];
     for (i in 0...KEY_COUNT)
