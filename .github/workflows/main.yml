@@ -10,12 +10,9 @@ on:
 env:
   HAXE_VERSION: 4.3.4
 
-  HXCPP_DEFINES: "no_hl=1,HXCPP_CHECK_POINTER=1"
-
 jobs:
   build:
     name: Build for ${{ matrix.os }}
-
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,6 +22,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@v1
@@ -35,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .haxelib
-          key: haxelib-${{ matrix.os }}-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
+          key: haxelib-v2-${{ matrix.os }}-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
 
       - name: Install Dependencies & Rebuild Tools
         shell: bash
@@ -49,7 +48,7 @@ jobs:
       - name: Compile Game
         shell: bash
         run: |
-          haxelib run lime build ${{ matrix.os == 'windows-2022' && 'windows' || 'linux' }} -release -Dno_hl -D lime-no-hl
+          haxelib run lime build ${{ matrix.os == 'windows-2022' && 'windows' || 'linux' }} -release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -63,6 +62,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -87,7 +88,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .haxelib
-          key: haxelib-android-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
+          key: haxelib-android-v2-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
 
       - name: Install Dependencies & Build Android
         shell: bash
@@ -96,7 +97,7 @@ jobs:
       - name: Compile APK
         shell: bash
         run: |
-          haxelib run lime build android -release -Dno_hl -D lime-no-hl
+          haxelib run lime build android -release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
