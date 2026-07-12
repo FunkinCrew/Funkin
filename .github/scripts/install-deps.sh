@@ -10,10 +10,15 @@ if [ ! -f hmm.json ]; then
 fi
 
 if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
-  echo "Installing system dependencies..."
+  echo "Installing system dependencies and 32-bit support..."
+  
+  sudo dpkg --add-architecture i386
   sudo apt-get update -qq
+  
   sudo apt-get install -y --no-install-recommends \
     build-essential cmake \
+    gcc-multilib g++-multilib \
+    libc6-dev-i386 \
     libbsd-dev \
     libvlc-dev libvlccore-dev libvlccore9 \
     libasound2-dev libpulse-dev libdbus-1-dev \
