@@ -59,18 +59,18 @@ import funkin.util.DeviceUtil;
 class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
-  final rank:ScoringRank;
-  final songName:FlxBitmapText;
-  final difficulty:FlxSprite;
-  final clearPercentSmall:ClearPercentCounter;
-  final maskShaderSongName:LeftMaskShader = new LeftMaskShader();
-  final maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
-  final resultsAnim:FunkinSprite;
-  final ratingsPopin:FunkinSprite;
-  final scorePopin:FunkinSprite;
-  final bgFlash:FlxSprite;
-  final highscoreNew:FlxSprite;
-  final score:ResultScore;
+  var rank:ScoringRank;
+  var songName:FlxBitmapText;
+  var difficulty:FlxSprite;
+  var clearPercentSmall:ClearPercentCounter;
+  var maskShaderSongName:LeftMaskShader = new LeftMaskShader();
+  var maskShaderDifficulty:LeftMaskShader = new LeftMaskShader();
+  var resultsAnim:FunkinSprite;
+  var ratingsPopin:FunkinSprite;
+  var scorePopin:FunkinSprite;
+  var bgFlash:FlxSprite;
+  var highscoreNew:FlxSprite;
+  var score:ResultScore;
   var characterAtlasAnimations:Array<
     {
       sprite:FunkinSprite,
@@ -94,9 +94,9 @@ class ResultState extends MusicBeatSubState
   var resultsMusic:Null<FunkinSound> = null;
 
   var rankBg:FunkinSprite;
-  final cameraBG:FunkinCamera;
-  final cameraScroll:FunkinCamera;
-  final cameraEverything:FunkinCamera;
+  var cameraBG:FunkinCamera;
+  var cameraScroll:FunkinCamera;
+  var cameraEverything:FunkinCamera;
   var blackTopBar:FlxSprite = new FlxSprite();
   var busy:Bool = false;
 
