@@ -15,6 +15,7 @@ if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   sudo apt-get install -y --no-install-recommends \
     libvlc-dev libvlccore-dev libvlccore9 \
     libasound2-dev libpulse-dev libdbus-1-dev \
+    libudev-dev libxkbcommon-dev \
     libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
     libxxf86vm-dev libxss-dev \
     libgl1-mesa-dev libglu1-mesa-dev
