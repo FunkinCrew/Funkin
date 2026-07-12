@@ -103,4 +103,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Funkin-Android
-          path: export/release/android/bin/app/build/outputs/apk/release/*.apk
+          path: export/**/*.apk
