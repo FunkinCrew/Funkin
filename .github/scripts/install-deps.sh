@@ -72,7 +72,7 @@ if [ "$TARGET" = "android" ]; then
   cat > "$HOME/.lime/config.xml" << EOF
 <xml>
   <set name="ANDROID_SETUP" value="true" />
-  <set name="ANDROID_SDK_ROOT" value="$ANDROID_HOME" />
+  <set name="ANDROID_SDK" value="$ANDROID_HOME" />
   <set name="ANDROID_NDK_ROOT" value="$ANDROID_NDK_HOME" />
 </xml>
 EOF
