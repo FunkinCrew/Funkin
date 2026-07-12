@@ -16,6 +16,7 @@ if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
     libvlc-dev libvlccore-dev libvlccore9 \
     libasound2-dev libpulse-dev libdbus-1-dev \
     libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
+    libxxf86vm-dev libxss-dev \
     libgl1-mesa-dev libglu1-mesa-dev
 fi
 
