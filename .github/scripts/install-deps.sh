@@ -13,6 +13,8 @@ if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   echo "Installing system dependencies..."
   sudo apt-get update -qq
   sudo apt-get install -y --no-install-recommends \
+    build-essential cmake \
+    libbsd-dev \
     libvlc-dev libvlccore-dev libvlccore9 \
     libasound2-dev libpulse-dev libdbus-1-dev \
     libudev-dev libxkbcommon-dev \
