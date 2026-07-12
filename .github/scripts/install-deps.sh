@@ -10,8 +10,13 @@ if [ ! -f hmm.json ]; then
 fi
 
 if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
+  echo "Installing system dependencies..."
   sudo apt-get update -qq
-  sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9 libasound2-dev libpulse-dev
+  sudo apt-get install -y --no-install-recommends \
+    libvlc-dev libvlccore-dev libvlccore9 \
+    libasound2-dev libpulse-dev libdbus-1-dev \
+    libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
+    libgl1-mesa-dev libglu1-mesa-dev
 fi
 
 rm -rf .haxelib
