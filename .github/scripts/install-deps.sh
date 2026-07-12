@@ -14,18 +14,20 @@ if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   
   sudo dpkg --add-architecture i386
   sudo apt-get update -qq
-  
+ 
   sudo apt-get install -y --no-install-recommends \
     build-essential cmake \
     gcc-multilib g++-multilib \
     libc6-dev-i386 \
-    libbsd-dev \
+    libbsd-dev libbsd-dev:i386 \
+    libdbus-1-dev libdbus-1-dev:i386 \
     libvlc-dev libvlccore-dev libvlccore9 \
-    libasound2-dev libpulse-dev libdbus-1-dev \
+    libasound2-dev libpulse-dev \
     libudev-dev libxkbcommon-dev \
-    libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
+    libx11-dev libx11-dev:i386 \
+    libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
     libxxf86vm-dev libxss-dev \
-    libgl1-mesa-dev libglu1-mesa-dev \
+    libgl1-mesa-dev libgl1-mesa-dev:i386 libglu1-mesa-dev \
     libdrm-dev libgbm-dev libegl1-mesa-dev
 fi
 
