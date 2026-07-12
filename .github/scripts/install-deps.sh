@@ -11,7 +11,7 @@ fi
 
 if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   sudo apt-get update -qq
-  sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9 libasound2-dev
+  sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9 libasound2-dev libpulse-dev
 fi
 
 rm -rf .haxelib
