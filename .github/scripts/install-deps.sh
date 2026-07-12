@@ -18,7 +18,8 @@ if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
     libudev-dev libxkbcommon-dev \
     libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev \
     libxxf86vm-dev libxss-dev \
-    libgl1-mesa-dev libglu1-mesa-dev
+    libgl1-mesa-dev libglu1-mesa-dev \
+    libdrm-dev libgbm-dev libegl1-mesa-dev
 fi
 
 rm -rf .haxelib
