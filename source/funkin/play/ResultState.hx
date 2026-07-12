@@ -55,7 +55,6 @@ import funkin.util.DeviceUtil;
 /**
  * The state for the results screen after a song or week is finished.
  */
-@:nullSafety
 class ResultState extends MusicBeatSubState
 {
   final params:ResultsStateParams;
@@ -100,6 +99,11 @@ class ResultState extends MusicBeatSubState
   var blackTopBar:FlxSprite = new FlxSprite();
   var busy:Bool = false;
 
+  var soundSystem:FlxSprite = new FlxSprite();
+  var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
+
+  var textChange:Void->Void = () -> {};
+
   public var isChartingMode(get, never):Bool;
 
   function get_isChartingMode():Bool
@@ -116,6 +120,9 @@ class ResultState extends MusicBeatSubState
     this.params = params;
 
     rank = Scoring.calculateRank(params.scoreData) ?? SHIT;
+
+    rankVertAsset = rank.getVerTextAsset();
+    rankBackAsset = rank.getHorTextAsset();
 
     cameraBG = new FunkinCamera('resultsBG', 0, 0, FlxG.width, FlxG.height);
     cameraScroll = new FunkinCamera('resultsScroll', 0, 0, FlxG.width, Math.round(FlxG.height * 1.2));
@@ -190,7 +197,7 @@ class ResultState extends MusicBeatSubState
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
-    var soundSystem:FlxSprite = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'ui/results/interface/sound-system');
+    soundSystem = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'ui/results/interface/sound-system');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(8 / 24, _ ->
@@ -439,7 +446,6 @@ class ResultState extends MusicBeatSubState
 
     var hStuf:Int = 50;
 
-    var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
     ratingGrp.zIndex = 1200;
     add(ratingGrp);
 
@@ -687,6 +693,12 @@ class ResultState extends MusicBeatSubState
     refresh();
   }
 
+  var rankTextVert:FlxBackdrop = new FlxBackdrop();
+  var rankTextBack:FlxBackdrop = new FlxBackdrop();
+
+  var rankVertAsset:String = "";
+  var rankBackAsset:String = "";
+
   function displayRankText():Void
   {
     bgFlash.visible = true;
@@ -695,7 +707,7 @@ class ResultState extends MusicBeatSubState
       alpha: 0
     }, 14 / 24);
 
-    var rankTextVert:FlxBackdrop = new FlxBackdrop(rank.getVerTextAsset(), Y, 0, 30);
+    rankTextVert = new FlxBackdrop(rankVertAsset, Y, 0, 30);
     rankTextVert.x = FlxG.width - 44;
     rankTextVert.y = 100;
     rankTextVert.zIndex = 990;
@@ -711,7 +723,7 @@ class ResultState extends MusicBeatSubState
 
     for (i in 0...12)
     {
-      var rankTextBack:FlxBackdrop = new FlxBackdrop(rank.getHorTextAsset(), X, 10, 0);
+      rankTextBack = new FlxBackdrop(rankBackAsset, X, 10, 0);
       rankTextBack.x = FlxG.width / 2 - 320;
       rankTextBack.y = 50 + (135 * i / 2) + 10;
       // rankTextBack.angle = -3.8;
@@ -821,6 +833,8 @@ class ResultState extends MusicBeatSubState
 
       movingSongStuff = (autoScroll);
     });
+
+    textChange();
   }
 
   function showSmallClearPercent():Void
@@ -849,13 +863,22 @@ class ResultState extends MusicBeatSubState
   var movingSongStuff:Bool = false;
   var speedOfTween:FlxPoint = FlxPoint.get(-1, 1);
 
+  var shouldClipSongName:Bool = true;
+
   override function draw():Void
   {
     super.draw();
 
-    songName.clipRect = FlxRect.get(Math.max(0, 520 - songName.x), 0, FlxG.width, songName.height);
-    clearPercentSmall.forEachAlive(spr -> spr.clipRect = FlxRect.get(Math.max(0, 520 - spr.x), 0, FlxG.width, spr.height));
-
+    if (shouldClipSongName)
+    {
+      songName.clipRect = FlxRect.get(Math.max(0, 520 - songName.x), 0, FlxG.width, songName.height);
+      clearPercentSmall.forEachAlive(spr -> spr.clipRect = FlxRect.get(Math.max(0, 520 - spr.x), 0, FlxG.width, spr.height));
+    }
+    else
+    {
+      songName.clipRect = null;
+      clearPercentSmall.forEachAlive(spr -> spr.clipRect = null);
+    }
     // PROBABLY SHOULD FIX MEMORY FREE OR WHATEVER THE PUT() FUNCTION DOES !!!! FEELS LIKE IT STUTTERS!!!
 
     // if (songName != null && songName.frame != null)
@@ -864,7 +887,7 @@ class ResultState extends MusicBeatSubState
 
   override function update(elapsed:Float):Void
   {
-    maskShaderDifficulty.swagSprX = difficulty.x;
+    maskShaderDifficulty.swagSprX = difficulty.x + difficulty.offset.x;
 
     if (movingSongStuff)
     {

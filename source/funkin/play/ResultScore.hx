@@ -76,6 +76,18 @@ class ResultScore extends FlxTypedSpriteGroup<ScoreNum>
     this.scoreShit = scoreShit;
   }
 
+  function setScale(scale:Float):Void
+  {
+    var index:Int = 0;
+    for (i in group.members)
+    {
+      i.scale.set(scale, scale);
+      i.x = (x + (65 * index) * scale);
+      index++;
+    }
+  }
+
+
   public function updateScore(scoreNew:Int)
   {
     scoreShit = scoreNew;
