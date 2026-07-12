@@ -9,10 +9,9 @@ if [ ! -f hmm.json ]; then
   exit 1
 fi
 
-# hxvlc
 if [ "$TARGET" = "linux" ] || [ "$TARGET" = "android" ]; then
   sudo apt-get update -qq
-  sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9
+  sudo apt-get install -y libvlc-dev libvlccore-dev libvlccore9 libasound2-dev
 fi
 
 rm -rf .haxelib
@@ -52,7 +51,6 @@ echo "Forcing hxcpp to use the git-installed (FunkinCrew fork) version..."
 haxelib set hxcpp git --always
 
 if [ "$TARGET" = "android" ]; then
-  # Обход интерактивной проверки Android-окружения в Lime.
   mkdir -p "$HOME/.lime"
   cat > "$HOME/.lime/config.xml" << EOF
 <xml>
@@ -61,9 +59,11 @@ if [ "$TARGET" = "android" ]; then
   <set name="ANDROID_NDK_ROOT" value="$ANDROID_NDK_HOME" />
 </xml>
 EOF
+  echo "Rebuilding Lime host (linux) ndll for asset packaging tools..."
+  haxelib run lime rebuild linux
   echo "Rebuilding Lime Android ndll..."
-  haxelib run lime rebuild android -v
+  haxelib run lime rebuild android
 else
   echo "Rebuilding Lime $TARGET ndll..."
-  haxelib run lime rebuild "$TARGET" -v
+  haxelib run lime rebuild "$TARGET"
 fi
