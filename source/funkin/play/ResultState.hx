@@ -10,6 +10,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxSignal;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.text.FlxBitmapText;
@@ -102,7 +103,7 @@ class ResultState extends MusicBeatSubState
   var soundSystem:FlxSprite = new FlxSprite();
   var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
 
-  var textChange:Void->Void = () -> {};
+  var textChange:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
   public var isChartingMode(get, never):Bool;
 
@@ -834,7 +835,7 @@ class ResultState extends MusicBeatSubState
       movingSongStuff = (autoScroll);
     });
 
-    textChange();
+    textChange.dispatch();
   }
 
   function showSmallClearPercent():Void
