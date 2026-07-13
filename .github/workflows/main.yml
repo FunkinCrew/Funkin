@@ -137,10 +137,11 @@ jobs:
         shell: bash
         run: |
           cd export/release/html5/bin
-          zip -r ../../../Funkin-HTML5.zip .
+          zip -r "$GITHUB_WORKSPACE/Funkin-HTML5.zip" .
 
       - name: Upload HTML5 ZIP
         uses: actions/upload-artifact@v4
         with:
           name: Funkin-HTML5
           path: Funkin-HTML5.zip
+          
