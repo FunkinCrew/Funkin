@@ -189,6 +189,8 @@ class ModMenuCharacter extends FunkinSprite
   public var previousCharacterId:String = '';
   public var previousModId:String = '';
 
+  public var jsons:Array<String> = [];
+
   /**
    * Switches out the character's graphics.
    * @param characterId The new character ID to use.
@@ -240,6 +242,11 @@ class ModMenuCharacter extends FunkinSprite
     {
       characterId = StringTools.replace(characterId, 'mod-', '');
     }
+    else
+    {
+      @:privateAccess
+      if (!isGF) jsons = Polymod.assetLibrary.listDirectly(modId, TEXT);
+    }
 
     previousCharacterId = currentCharacterId;
     previousModId = currentModId;
@@ -286,7 +293,7 @@ class ModMenuCharacter extends FunkinSprite
     switch (data?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
-        this.loadTextureAtlas(assetPath, getAtlasSettings(), modId);
+        this.loadTextureAtlas(assetPath, getAtlasSettings(), modId, jsons);
 
       // BF and GF by default use animate atlases
       // We can ignore the mod IDs for the sparrow and packer render types, since

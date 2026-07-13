@@ -373,7 +373,7 @@ class FunkinSprite extends FlxAnimate
    * @param modId The mod ID to load the texture atlas from.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, ?modId:String):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, ?modId:String, ?jsonsAr:Array<String>):FunkinSprite
   {
     if (key == null)
     {
@@ -389,15 +389,13 @@ class FunkinSprite extends FlxAnimate
     this.postStageMatrixApply = settings.postStageMatrixApply ?? false;
     this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    if (modId != null)
+    if (modId != null && modId != '' && jsonsAr != null)
     {
       // Null-safety kinda dumb #1
       var id:String = modId;
 
       var assetPath:String = Paths.animateAtlas(key).toString();
-      var jsons:Array<String> = Polymod.assetLibrary
-        .listDirectly(id, TEXT)
-        .filter((str) -> str.contains(assetPath.substring(7)))
+      var jsons:Array<String> = jsonsAr.filter((str) -> str.contains(assetPath.substring(7)))
         .map((str) -> str.substring(0, str.length - '.json'.length));
 
       var spritemaps:Array<SpritemapInput> = [];

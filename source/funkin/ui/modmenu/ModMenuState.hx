@@ -381,6 +381,7 @@ class ModMenuState extends MusicBeatState
     var modIds:Array<String> = grabEnabledModList();
 
     var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+    gf.jsons = bf.jsons;
     var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
 
     bf.previousModId = bf.currentModId;
@@ -1035,6 +1036,7 @@ class ModMenuState extends MusicBeatState
             var modIds:Array<String> = grabEnabledModList();
 
             var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+            gf.jsons = bf.jsons;
             var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
 
             gf.previousModId = bf.previousModId;
