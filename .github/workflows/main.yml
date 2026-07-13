@@ -104,3 +104,43 @@ jobs:
         with:
           name: Funkin-Android
           path: export/**/*.apk
+
+  build-html5:
+    name: Build for HTML5 (Web)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ env.HAXE_VERSION }}
+
+      - name: Cache haxelib dependencies
+        uses: actions/cache@v4
+        with:
+          path: .haxelib
+          key: haxelib-html5-v2-${{ env.HAXE_VERSION }}-${{ hashFiles('hmm.json') }}
+
+      - name: Install Dependencies
+        shell: bash
+        run: bash .github/scripts/install-deps.sh linux
+
+      - name: Compile HTML5
+        shell: bash
+        run: haxelib run lime build html5 -release
+
+      - name: Zip HTML5 Build
+        shell: bash
+        run: |
+          cd export/release/html5/bin
+          zip -r ../../../Funkin-HTML5.zip .
+
+      - name: Upload HTML5 ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Funkin-HTML5
+          path: Funkin-HTML5.zip
