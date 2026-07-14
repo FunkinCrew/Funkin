@@ -168,7 +168,7 @@ class ApplicationMain
   @:noCompletion
   private static function checkRenderer(context:lime.graphics.RenderContext):Void
   {
-    if (context.type != WEBGL && context.type != OPENGL && context.type != OPENGLES)
+    if (context.type != WEBGL && context.type != OPENGL && context.type != OPENGLES && context.type != BGFX)
     {
       var tech:String = #if web 'WebGL' #elseif desktop 'OpenGL' #else 'OpenGL ES' #end;
 

@@ -29,7 +29,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(flixel.graphics.FlxGraphic)
 @:access(flixel.graphics.frames.FlxFrame)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.geom.ColorTransform)
 @:access(funkin.graphics.framebuffer.FunkinBufferRenderer)
 class FunkinCamera extends FlxCamera

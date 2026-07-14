@@ -33,7 +33,7 @@ class AngleMask extends FlxShader
     // Helps with color mixing -- good to have by default in almost any shader
     // See https://www.shadertoy.com/view/lscSzl
     vec3 gamma(in vec3 color) {
-      return pow(color, vec3(1.0 / 2.2));
+      return pow(color, vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
     }
 
     vec4 mainPass(vec2 fragCoord) {
@@ -57,7 +57,7 @@ class AngleMask extends FlxShader
       if (uvA < angle)
         return base;
       else
-        return vec4(0.0);
+        return vec4(0.0, 0.0, 0.0, 0.0);
     }
 
     vec4 antialias(vec2 fragCoord) {

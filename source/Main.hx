@@ -118,9 +118,15 @@ class Main extends Sprite
     {
       case DebugDisplayMode.Off:
         nextMode = DebugDisplayMode.Simple;
+        lime.graphics.bgfx.BGFX.setDebug(0);
       case DebugDisplayMode.Simple:
+        lime.graphics.bgfx.BGFX.setDebug(0);
         nextMode = DebugDisplayMode.Advanced;
       case DebugDisplayMode.Advanced:
+        lime.graphics.bgfx.BGFX.setDebug(lime.graphics.bgfx.BGFX.DEBUG_STATS);
+        // trace('Render Texture memory: ' + lime.graphics.bgfx.BGFX.getStats().rtMemoryUsed);
+        // trace('texture memory: ' + lime.graphics.bgfx.BGFX.getStats().textureMemoryUsed);
+        // trace('GPU memory: ' + lime.graphics.bgfx.BGFX.getStats().gpuMemoryUsed);
         nextMode = DebugDisplayMode.Off;
     }
 

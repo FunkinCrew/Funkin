@@ -116,8 +116,8 @@ class BitmapUtil
         var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
 
         context.setRenderToTexture(bitmap.__texture);
-        context.__flushGLFramebuffer();
-        context.__flushGLViewport();
+        context.__flushFramebuffer();
+        context.__flushViewport();
 
         gl.readPixels(0, 0, bitmap.width, bitmap.height, bitmap.__texture.__format, gl.UNSIGNED_BYTE, image.buffer.data);
 

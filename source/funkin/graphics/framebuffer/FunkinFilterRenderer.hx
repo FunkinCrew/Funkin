@@ -16,7 +16,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(animate.FlxAnimate)
 @:access(openfl.filters.BitmapFilter)
 @:access(animate.internal.FilterRenderer)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.display.BitmapData)
 @:nullSafety

@@ -24,7 +24,7 @@ class BlurShaderUp extends FlxShader
 			vec2 halfpixel = rcp * 0.5;
 			vec2 o = halfpixel * (offset / scale);
 
-			vec4 color = vec4(0.0);
+			vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 
 			color += flixel_texture2D(bitmap, uv + vec2(-o.x * 2.0, 0.0));
 			color += flixel_texture2D(bitmap, uv + vec2( o.x * 2.0, 0.0));
