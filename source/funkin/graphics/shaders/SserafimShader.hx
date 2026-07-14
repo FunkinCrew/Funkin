@@ -175,7 +175,7 @@ class SserafimShader extends FlxShader
 			  mat3 m3 = mat3(-0.213, 0.143, -0.787, -0.715, 0.140, 0.715, 0.928, -0.283, 0.072);
 			  mat3 m = m1 + cos(angle) * m2 + sin(angle) * m3;
 
-			  return m * aColor;
+			  return mul(aColor, m);
 		  }
 
 		  vec3 applySaturation(vec3 aColor, float value){
@@ -213,12 +213,12 @@ class SserafimShader extends FlxShader
 
       #define saturate(v) clamp(v,0.,1.)
 
-      vec3 hue2rgb(float hue){
-	      hue=fract(hue);
+      vec3 hue2rgb(float _hue){
+	      _hue=fract(_hue);
 	      return saturate(vec3(
-		      abs(hue*6.-3.)-1.,
-		      2.-abs(hue*6.-2.),
-		      2.-abs(hue*6.-4.)
+		      abs(_hue*6.-3.)-1.,
+		      2.-abs(_hue*6.-2.),
+		      2.-abs(_hue*6.-4.)
 	      ));
       }
 

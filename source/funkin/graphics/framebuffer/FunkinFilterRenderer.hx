@@ -16,7 +16,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(animate.FlxAnimate)
 @:access(openfl.filters.BitmapFilter)
 @:access(animate.internal.FilterRenderer)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.display.BitmapData)
 @:nullSafety
@@ -142,6 +142,9 @@ class FunkinFilterRenderer implements IFlxDestroyable
 
   function getBitmap(width:Int, height:Int):BitmapData
   {
+    width = Std.int(Math.max(1, width));
+    height = Std.int(Math.max(1, height));
+
     final id:String = Std.string(width) + 'x' + Std.string(height);
     var bitmaps:Array<BitmapData> = bitmapPool.get(id) ?? [];
     if (bitmaps.length < 1)
