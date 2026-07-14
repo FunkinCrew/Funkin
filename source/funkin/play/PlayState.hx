@@ -1034,6 +1034,12 @@ class PlayState extends MusicBeatSubState
 
     super.update(elapsed);
 
+    // Handle keybinds.
+    processInputQueue();
+
+    // Moving notes into position is now done by Strumline.update().
+    if (!isInCutscene) processNotes(elapsed);
+
     updateHealthBar();
     updateScoreText();
 
@@ -1323,13 +1329,8 @@ class PlayState extends MusicBeatSubState
 
     processSongEvents();
 
-    // Handle keybinds.
-    processInputQueue();
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
-
-    // Moving notes into position is now done by Strumline.update().
-    if (!isInCutscene) processNotes(elapsed);
 
     #if mobile
     if ((VideoCutscene.isPlaying() || isInCutscene) && !pauseButton.visible) pauseButton.visible = true;
