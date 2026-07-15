@@ -955,6 +955,7 @@ class Project extends HXProject
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
+    FEATURE_MULTITHREADING.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
@@ -1156,6 +1157,10 @@ class Project extends HXProject
 
       setHaxedef("absolute-paths"); // Fix source locations so Tracy can see them
     }
+
+    if (FEATURE_MULTITHREADING.isEnabled(this)) {
+			setHaxedef("lime_threads");
+		}
   }
 
   /**
@@ -1451,6 +1456,10 @@ class Project extends HXProject
       addHaxelib('hxdiscord_rpc'); // Discord API
     }
 
+		if (FEATURE_MULTITHREADING.isEnabled(this)) {
+			addHaxelib('haxe-concurrent'); // Multithreading
+		}
+
     if (FEATURE_NEWGROUNDS.isEnabled(this))
     {
       addHaxelib('newgrounds'); // Newgrounds API
@@ -1515,6 +1524,9 @@ class Project extends HXProject
     // Default asset library
     var shouldPreloadDefault = !isWeb();
     var shouldEmbedDefault = false;
+
+    setHaxedef("disable_preload_default_library", !shouldPreloadDefault ? "1" : "0");
+
     // removeAssetPath("assets/", "default");
     addAssetLibrary("default", shouldEmbedDefault, shouldPreloadDefault);
     addAssetPath("assets", "assets", "default", ["*"], exclude, shouldEmbedDefault);

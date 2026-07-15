@@ -3,19 +3,70 @@ package funkin.util.collection;
 import haxe.Constraints.IMap;
 import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 /**
  * A wrapper for a `Map<String, V>` which receives callbacks when elements are added, removed, or accessed.
- * Due to weird issues with Haxe's maps, you can only make a map with String keys with this.
  */
-@:nullSafety
-class CallbackMap<V> implements IMap<String, V>
+@:forward
+abstract CallbackMap<V>(CallbackMapImpl<V>) from CallbackMapImpl<V> to CallbackMapImpl<V>
 {
-  var map:Map<String, V>;
+  /**
+   * Get an element from the map.
+   * @param k The key to get.
+   * @return The value associated with the key, or `null` if the key does not exist.
+   */
+  @:arrayAccess
+  public inline function get(k:String):Null<V>
+  {
+    return this.get(k);
+  }
+
+  /**
+   * Set an element in the map.
+   * @param k The key to set.
+   * @param v The value to set to.
+   * @return The value that was set.
+   */
+  @:arrayAccess
+  public inline function set(k:String, v:V):V
+  {
+    this.set(k, v);
+    return v;
+  }
 
   public function new()
   {
+    this = new CallbackMapImpl<V>();
+  }
+}
+
+/**
+ * The underlying implementation of `CallbackMap`.
+ * We need an abstract to allow you to do map[key] instead of map.get(key)
+ */
+@:nullSafety
+class CallbackMapImpl<V> implements IMap<String, V>
+{
+  /**
+   * The actual data being stored.
+   * We use a synchronized map to make it thread-safe.
+   */
+  #if FEATURE_MULTITHREADING
+  final map:SynchronizedMap<String, V>;
+  #else
+  final map:Map<String, V>;
+  #end
+
+  public function new()
+  {
+    #if FEATURE_MULTITHREADING
+    this.map = SynchronizedMap.newStringMap();
+    #else
     this.map = [];
+    #end
   }
 
   /**
@@ -126,6 +177,24 @@ class CallbackMap<V> implements IMap<String, V>
   {
     onKeys.dispatch();
     return map.keys();
+  }
+
+  /**
+   * Returns an array of the map's keys.
+   * @return An array of the map's keys.
+   */
+  public function keyValues():Array<String>
+  {
+    return keys().array();
+  }
+
+  /**
+   * @return The number of keys currently in the map.
+   */
+  public function size<K, T>():Int
+  {
+    if (map == null) return 0;
+    return keyValues().length;
   }
 
   /**

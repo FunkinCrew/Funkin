@@ -2,6 +2,18 @@ package funkin.data;
 
 import funkin.util.VersionUtil;
 import haxe.Constraints.Constructible;
+import funkin.util.tasks.TaskHandler;
+import funkin.util.tasks.TaskHandler.Task;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets as Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 typedef RegistryParams =
 {
@@ -130,19 +142,19 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       }
       catch (e)
       {
-        log('Failed to create scripted entry (${entryCls})');
+        log('Failed to instantiate scripted entry (${entryCls})');
         continue;
       }
 
       if (entry != null)
       {
-        log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+        log('Instantiated scripted entry (${entryCls} = ${entry.id})');
         entries.set(entry.id, entry);
         scriptedEntryIds.set(entry.id, entryCls);
       }
       else
       {
-        log('Failed to create scripted entry (${entryCls})');
+        log('Failed to instantiate scripted entry (${entryCls})');
       }
     }
 
@@ -162,20 +174,207 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
-          log('Loaded entry data: ${entry}');
+          log('Instantiated unscripted entry (${entry.id})');
           entries.set(entry.id, entry);
         }
       }
       catch (e)
       {
         // Print the error.
-        log(' WARNING '.warning() + ' Failed to load entry data: ${entryId}');
+        log(' WARNING '.warning() + ' Failed to instantiate unscripted entry (${entryId})');
         continue;
       }
     }
 
     perf.print();
   }
+
+  #if FEATURE_MULTITHREADING
+  /**
+   * Loads all JSON files, constructs the appropriate entries, and adds them to the registry.
+   * This function operates asynchronously, and returns a Future representing a fulfilled promise.
+   * You can add an `onComplete` callback to perform some action when all entries have been loaded.
+   * @return A future representing the fulfilled entry loading.
+   */
+  public function loadEntriesAsync():lime.app.Future<LoadEntriesResult>
+  {
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadEntriesAsync(${registryId})');
+
+    // Clear the entries before we start loading new ones.
+    clearEntries();
+
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+
+    var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
+
+    var entryIdList:Array<String> = fetchEntryIdsFromFiles();
+    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId) ->
+    {
+      return !entries.exists(entryId);
+    });
+
+    var entryCount:Int = scriptedEntryClassNames.length + unscriptedEntryIds.length;
+
+    // A thread-safe array to store errors in.
+    var entryErrors:hx.concurrent.collection.CopyOnWriteArray<
+      {
+        entryId:String,
+        error:Any,
+        ?entryCls:String
+      }> = new hx.concurrent.collection.CopyOnWriteArray();
+
+    // Callback when one task completes
+    // When the last task completes, we can complete the promise.
+    var checkComplete:Void->Void = () ->
+    {
+      if (entries.size() + entryErrors.length == entryCount)
+      {
+        log('Finished loading entries (${entries.size()}+${entryErrors.length} / ${entryCount})');
+        promise.complete({
+          entriesLoaded: entries.size(),
+          entriesFailed: entryErrors.length
+        });
+        perf.print();
+      }
+    };
+
+    // Callback when one task completes with failure
+    var onError:(String,
+      {error:Any, entryCls:Null<String>}) -> Void = (entryId, state) ->
+      {
+        entryErrors.add({
+          entryId: entryId,
+          error: state.error
+        });
+        log('  Failed to load entry data (${entryId}): ${state.error}');
+        checkComplete();
+      };
+
+    // Callback when one task completes with success
+    var onScriptedEntryLoaded:(String,
+      {entry:T, entryCls:String}) -> Void = (entryId, state) ->
+      {
+        entries.set(entryId, state.entry);
+        scriptedEntryIds.set(entryId, state.entryCls);
+
+        log('  Loaded scripted entry: ${entryId} (${entries.size()}/${entryCount})');
+        checkComplete();
+      };
+
+    // Callback when one task completes with success
+    var onUnscriptedEntryLoaded:(String,
+      {entry:T}) -> Void = (entryId, state) ->
+      {
+        entries.set(entryId, state.entry);
+        log('  Loaded unscripted entry: ${entryId} (${entries.size()}/${entryCount})');
+        checkComplete();
+      };
+
+    // Task to perform for each scripted entry
+    var performScriptedEntryLoad:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var entryCls:String = currentState.entryCls;
+
+      try
+      {
+        var entry:Null<T> = createScriptedEntry(entryCls);
+
+        if (entry != null)
+        {
+          workOutput.sendComplete({
+            entryCls: entryCls,
+            entry: entry
+          }, []);
+          log('(THREAD) Successfully created scripted entry (${entryCls} = ${entry.id})');
+        }
+        else
+        {
+          workOutput.sendError({
+            entryCls: entryCls,
+            error: 'Failed to create scripted entry (${entryCls})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          entryCls: entryCls,
+          error: e,
+        });
+      }
+    };
+
+    // Task to perform for each unscripted entry
+    var performUnscriptedEntryLoad:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var entryId:String = currentState.entryId;
+      try
+      {
+        var entry:Null<T> = createEntry(entryId);
+        if (entry != null)
+        {
+          workOutput.sendComplete({
+            entry: entry
+          }, []);
+          log('(THREAD) Successfully created entry (${entry.id})');
+        }
+        else
+        {
+          workOutput.sendError({
+            error: 'Failed to create entry (${entryId})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          entryId: entryId,
+          error: e
+        });
+      }
+    };
+
+    for (entryCls in scriptedEntryClassNames)
+    {
+      log('Queuing scripted entry load: ${entryCls}');
+      TaskHandler.performTask({
+        task: performScriptedEntryLoad,
+        initialState: {
+          entryCls: entryCls
+        },
+        taskCallbacks: {
+          onStart: (_) ->
+          {
+            trace('Started task: ${entryCls}');
+          },
+          onError: onError.bind(entryCls),
+          onComplete: onScriptedEntryLoaded.bind(entryCls)
+        }
+      });
+    }
+
+    for (entryId in unscriptedEntryIds)
+    {
+      log('Queuing unscripted entry load: ${entryId}');
+      TaskHandler.performTask({
+        task: performUnscriptedEntryLoad,
+        initialState: {
+          entryId: entryId
+        },
+        taskCallbacks: {
+          onStart: (_) ->
+          {
+            trace('Started task: ${entryId}');
+          },
+          onError: onError.bind(entryId),
+          onComplete: onUnscriptedEntryLoaded.bind(entryId)
+        }
+      });
+    }
+
+    return promise.future;
+  }
+  #end
 
   /**
    * Retrieve a list of all entry IDs in this registry.
@@ -204,11 +403,28 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
   }
 
   /**
+   * Query assets needed by the REGISTRY ITSELF, usually for parsing entry data.
+   *
+   * @param type The type of asset to query.
+   * @return The list of asset paths.
+   */
+  public function queryRegistryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case JSON:
+        return funkin.modding.compat.RegistryData.listAssetPaths(dataFilePath).filterNull();
+      default:
+        return [];
+    }
+  }
+
+  /**
    * Return whether the entry ID is known to have an attached script.
    * @param id The ID of the entry.
    * @return `true` if the entry has an attached script, `false` otherwise.
    */
-  public function isScriptedEntry(id:String, ?params:Null<P>):Bool
+  public function isScriptedEntry(id:String, ?params:P):Bool
   {
     return scriptedEntryIds.exists(id);
   }
@@ -218,7 +434,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry.
    * @return The class name, or `null` if it does not exist.
    */
-  public function getScriptedEntryClassName(id:String, ?params:Null<P>):Null<String>
+  public function getScriptedEntryClassName(id:String, ?params:P):Null<String>
   {
     return scriptedEntryIds.get(id);
   }
@@ -238,7 +454,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param id The ID of the entry to fetch.
    * @return The entry, or `null` if it does not exist.
    */
-  public function fetchEntry(id:String, ?params:Null<P>):Null<T>
+  public function fetchEntry(id:String, ?params:P):Null<T>
   {
     var result:Null<T> = entries.get(id);
     if (result == null)
@@ -406,3 +622,19 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     }
   }
 }
+
+/**
+ * The result of attempting to load all the registry's entries.
+ */
+typedef LoadEntriesResult =
+{
+  /**
+   * The number of entries with successfully loaded.
+   */
+  var entriesLoaded:Int;
+
+  /**
+   * The number of entries with successfully loaded.
+   */
+  var entriesFailed:Int;
+};

@@ -18,6 +18,39 @@ class Medals
   public static var medalJSON:Array<MedalJSON> = [];
 
   /**
+   * Query the list of assets needed to display the medal popup UI.
+   *
+   * @param type The type of asset to query.
+   * @return A list of assets of that type.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+        results.append(funkin.assets.Paths.animateAtlas('ui/medals/medal-popup').image());
+
+        return results;
+      case JSON:
+        var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+        results.push(funkin.assets.Paths.json('gameplay/medals/medals'));
+        results.append(funkin.assets.Paths.animateAtlas('ui/medals/medal-popup').json());
+
+        return results;
+      case SOUND:
+        return [
+          funkin.assets.Paths.sound('ui/medals/ng-fade-in'),
+          funkin.assets.Paths.sound('ui/medals/ng-fade-out')
+        ];
+      default:
+        return [];
+    }
+  }
+
+  /**
    * Retrieve the leaderboard data via the Newgrounds API.
    * @return The leaderboard data.
    */

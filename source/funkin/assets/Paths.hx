@@ -49,10 +49,15 @@ class Paths implements ConsoleClass
    */
   static function build(file:String, ext:String, validate:Bool = true, ?library:String):AssetPath
   {
+    // Remove redundant `assets/` from the path! This helps prevent `assets/assets/image.png`.
+    if (file.startsWith('assets/')) file = file.substring(7);
     // Remove redundant file extensions! This helps prevent `image.png.png`.
     if (file.endsWith('.$ext')) file = file.substring(0, file.length - (ext.length + 1));
 
-    var assetPathStr = funkin.modding.compat.Paths.getPath('$file.$ext', library, validate);
+    @:privateAccess
+    var shouldValidateCompat = validate && funkin.assets.Assets.initialized;
+
+    var assetPathStr = funkin.modding.compat.Paths.getPath('$file.$ext', library, shouldValidateCompat);
     var assetPathId:String = haxe.io.Path.withoutExtension(assetPathStr);
     var assetPathExt:String = haxe.io.Path.extension(assetPathStr);
 
@@ -78,13 +83,30 @@ class Paths implements ConsoleClass
    *
    * @param file The file path without extension
    * @param ext The file extension to use
-   * @param validate Whether to validate the file exists, defaults to `true`
+   * @param validate Whether to validate the file exists, defaults to `true`.
+   *   If `true`, the game will complain if the asset path doesn't exist.
+   *   This is helpful most of the time but obviously isn't helpful if you're querying IF a path exists yourself.
    * @param library The library to use, defaults to `default`
    * @return AssetPath
    */
   public static function file(file:String, ext:String, validate:Bool = true, ?library:String):AssetPath
   {
     return build(file, ext, validate, library);
+  }
+
+  /**
+   * Convert a string ID directly to an asset path.
+   * Try to avoid using this, ehe.
+   *
+   * @param id The asset path to convert.
+   * @return AssetPath
+   */
+  public static function raw(id:String, validate:Bool = true):AssetPath
+  {
+    var ext:String = haxe.io.Path.extension(id);
+    var idWithoutExt:String = haxe.io.Path.withoutExtension(id);
+
+    return file(idWithoutExt, ext, validate);
   }
 
   /**
@@ -424,6 +446,17 @@ class AssetPath
   public function exists():Bool
   {
     return Assets.assetExists(this);
+  }
+
+  /**
+   * Used to revert an AssetPath to null if the asset does not exist.
+   * Good for making retrieving an asset "optional".
+   *
+   * @return If the asset does not exist, return `null` . Otherwise, return the asset path.
+   */
+  public function orNull():Null<AssetPath>
+  {
+    return this.exists() ? this : null;
   }
 
   /**

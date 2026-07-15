@@ -186,9 +186,9 @@ class PolymodHandler
 
       skipDependencyErrors: true,
 
-      // Parse hxc files and register the scripted classes in them.
-      useScriptedClasses: true,
-      loadScriptsAsync: #if html5 true #else false #end,
+      // We plan to parse hxc files LATER!
+      useScriptedClasses: false,
+      loadScriptsAsync: false
     });
 
     if (loadedModList == null)
@@ -256,6 +256,41 @@ class PolymodHandler
     #end
   }
 
+  public static function loadScripts(async:Bool = true):lime.app.Future<
+    {success:Int, total:Int}>
+  {
+    if (async)
+    {
+      return Polymod.registerAllScriptClassesAsync().then((result) ->
+      {
+        var total = 0;
+        var success = 0;
+
+        for (future in result)
+        {
+          total += 1;
+          if (future.isComplete) success += 1;
+        }
+
+        return lime.app.Future.withValue({
+          success: success,
+          total: total
+        });
+      });
+    }
+    else
+    {
+      var result = Polymod.registerAllScriptClasses();
+
+      var total = result.size();
+      var success = result.values().filter((v) -> (v == true)).length;
+      return lime.app.Future.withValue({
+        success: success,
+        total: total
+      });
+    }
+  }
+
   /**
    * Replace the file system used for scanning.
    * NOTE: Won't replace the file system used for actual mods until you rerun `Polymod.init()`.
@@ -284,7 +319,7 @@ class PolymodHandler
   static function buildConvenienceAliases():Void
   {
     // Add default imports for common classes.
-    static final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
+    final DEFAULT_IMPORTS:Array<Class<Dynamic>> = [
       funkin.Assets,
       funkin.Paths,
       funkin.Preferences,
@@ -726,7 +761,7 @@ class PolymodHandler
   }
 
   /**
-   * Clear and reload from disk all data assets.
+   * Clear and reload from disk all data assets, synchronously.
    * Useful for "hot reloading" for fast iteration!
    */
   public static function forceReloadAssets():Void

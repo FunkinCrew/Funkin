@@ -127,7 +127,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     stagedSound = new StagedCache<Sound>();
     stagedSound.onRemove.add((key:String, asset:Sound) ->
     {
-      // asset.close();
       FunkinLimeAssetCache.instance.removeAudio(key);
       asset = null;
     });
@@ -157,6 +156,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     assetListCaches = [];
     assetListBaseCache = null;
+
     enabled = true;
   }
 
@@ -202,9 +202,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function purgeCache(garbageCollect:Bool = false):Void
   {
-    for (cache in stagedCaches) cache.purgeCache();
     // TODO: Cleanup purging to work with Freeplay?
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/']);
+    for (cache in stagedCaches) cache.purgeCache();
+
+    // Clear everything except:
+    // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
+    // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
+    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
@@ -242,6 +246,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     var result:Null<BitmapData> = stagedBitmapData.get(id);
     if (result != null)
     {
+      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ' + id);
       return result;
     }
     else
@@ -425,22 +430,30 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Check if a FlxGraphic exists in the cache.
-   * @param path The asset path of the FlxGraphic.
+   * @param assetPath The asset path of the FlxGraphic.
    * @return `true` if the FlxGraphic exists in the cache, `false` otherwise.
    */
-  public function hasFlxGraphic(path:AssetPath):Bool
+  public function hasFlxGraphic(assetPath:AssetPath):Bool
   {
-    if (FunkinBitmapFrontend.instance.exists(path.toString()) && !FunkinBitmapFrontend.instance.isValidByKey(path.toString()))
+    if (!FunkinBitmapFrontend.instance.exists(assetPath.toString()))
     {
-      FunkinBitmapFrontend.instance.removeByKey(path.toString());
       return false;
     }
 
-    return FunkinBitmapFrontend.instance.exists(path.toString());
+    if (!FunkinBitmapFrontend.instance.isValidByKey(assetPath.toString()))
+    {
+      trace(' ASSETS ' + ' Removing invalid FlxGraphic "${assetPath.toString()} from cache.');
+      FunkinBitmapFrontend.instance.removeByKey(assetPath.toString());
+      return false;
+    }
+
+    return true;
   }
 
   /**
    * Check if a BitmapData exists in the cache.
+   * NOTE: This has to take a String id for `IAssetCache`.
+   *
    * @param id The asset id of the BitmapData.
    * @return `true` if the BitmapData exists in the cache, `false` otherwise.
    */
@@ -451,6 +464,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Check if a Font exists in the cache.
+   * NOTE: This has to take a String id for `IAssetCache`.
+   *
    * @param id The asset id of the Font.
    * @return `true` if the Font exists in the cache, `false` otherwise.
    */
@@ -461,6 +476,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Check if a Sound exists in the cache.
+   * NOTE: This has to take a String id for `IAssetCache`.
+   *
    * @param id The asset id of the Sound.
    * @return `true` if the Sound exists in the cache, `false` otherwise.
    */
@@ -471,6 +488,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Check if a Text exists in the cache.
+   * NOTE: This has to take a String id for `IAssetCache`.
+   *
    * @param id The asset id of the Text.
    * @return `true` if the Text exists in the cache, `false` otherwise.
    */
@@ -481,6 +500,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Check if a file's Bytes exists in the cache.
+   * NOTE: This has to take a String id for `IAssetCache`.
+   *
    * @param id The asset id of the bytes.
    * @return `true` if the bytes exist in the cache, `false` otherwise.
    */
@@ -621,7 +642,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFont($id)');
     #end
-    stagedFont.cache(id, font);
+    // Always permanent cache fonts.
+    stagedFont.cachePermanent(id, font);
   }
 
   /**
@@ -674,6 +696,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function fetchBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
   {
+    trace(' ASSETS '.bold().bg_lime() + ' Fetching BitmapData: ${assetPath.toString()}');
     if (hasBitmapData(assetPath.toString()))
     {
       return Future.withValue(getBitmapData(assetPath.toString()));
@@ -763,7 +786,30 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return OpenFLAssets.loadText(assetPath.toString()).then((text:String) ->
       {
         setText(assetPath.toString(), text);
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
         return Future.withValue(text);
+      });
+    }
+  }
+
+  /**
+   * Fetch font data from a file asynchronously and return it.
+   *
+   * @param assetPath The path of the asset to fetch.
+   * @return The font, if fetched.
+   */
+  public function fetchFont(assetPath:AssetPath):Future<Font>
+  {
+    if (hasText(assetPath.toString()))
+    {
+      return Future.withValue(getFont(assetPath.toString()));
+    }
+    else
+    {
+      return OpenFLAssets.loadFont(assetPath.toString()).then((font:Font) ->
+      {
+        setFont(assetPath.toString(), font);
+        return Future.withValue(font);
       });
     }
   }
@@ -985,12 +1031,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Fetch a BitmapData asynchronously and cache it.
    * If it's previously cached, it will be returned immediately.
+   *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
-  public function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
+  public function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBitmapData(${assetPath.toString()})');
@@ -1009,6 +1057,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
         trace(' ASSETS '.bold().bg_lime() + ' Cached BitmapData: ${assetPath.toString()}');
       }
 
+      if (permanent)
+      {
+        stagedBitmapData.cachePermanent(assetPath.toString(), bitmapData);
+      }
       promise.complete(validateBitmapData(bitmapData));
       return Future.withValue(bitmapData);
     }).onError((err) ->
@@ -1024,12 +1076,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Fetch a FlxGraphic asynchronously and cache it.
    * If it's previously cached, it will be returned immediately.
+   *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether or not to upload the FlxGraphic to the GPU, and delete the original image.
    *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
-  public function cacheFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool = true):Future<Bool>
+  public function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFlxGraphic(${assetPath.toString()})');
@@ -1052,6 +1106,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
         sprite.destroy();
       }
 
+      if (permanent)
+      {
+        FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
+      }
+
       // On success, resolve the promise with true
       promise.complete(FunkinBitmapFrontend.instance.isValid(flxGraphic));
       return Future.withValue(flxGraphic);
@@ -1067,10 +1126,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Cache a Sound asynchronously.
+   * If it's previously cached, it will be returned immediately.
+   *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future that returns whether or not the Sound has been succesfully cached.
    */
-  public function cacheSound(assetPath:AssetPath):Future<Bool>
+  public function cacheSound(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheSound(${assetPath.toString()})');
@@ -1083,7 +1145,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
     fetchSound(assetPath).then((sound:Sound) ->
     {
       // On success, resolve the promise with true
-      if (sound != null) trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
+
+      if (permanent)
+      {
+        stagedSound.cachePermanent(assetPath.toString(), sound);
+      }
 
       promise.complete(sound != null);
       return Future.withValue(sound);
@@ -1099,10 +1165,13 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Cache a text asynchronously.
+   * If it's previously cached, it will be returned immediately.
+   *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future that returns whether or not the text has been succesfully cached.
    */
-  public function cacheText(assetPath:AssetPath):Future<Bool>
+  public function cacheText(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheText(${assetPath.toString()})');
@@ -1115,9 +1184,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
     fetchText(assetPath).then((text:String) ->
     {
       // On success, resolve the promise with true
-      if (text != null && text != "") trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
 
-      promise.complete(text != null && text != "");
+      if (permanent)
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
+        stagedText.cachePermanent(assetPath.toString(), text);
+      }
+
+      promise.complete(text != null && text != '');
       return Future.withValue(text);
     }).onError((err) ->
       {
@@ -1130,11 +1204,52 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
-   * Cache a file's bytes asynchronously.
+   * Cache a font asynchronously.
+   * If it's previously cached, it will be returned immediately.
+   *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future that returns whether or not the font has been succesfully cached.
+   */
+  public function cacheFont(assetPath:AssetPath):Future<Bool>
+  {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFont(${assetPath.toString()})');
+    #end
+
+    threadCheck('cacheFont(${assetPath.toString()})');
+
+    var promise = new Promise<Bool>();
+
+    fetchFont(assetPath).then((font:Font) ->
+    {
+      // On success, resolve the promise with true
+
+      trace(' ASSETS '.bold().bg_lime() + ' Cached Font: ${assetPath.toString()}');
+
+      // Always permanent cache fonts.
+      stagedFont.cachePermanent(assetPath.toString(), font);
+
+      promise.complete(font != null);
+      return Future.withValue(font);
+    }).onError((err) ->
+      {
+        trace(' ASSETS '.bold().bg_lime() + ' ERROR '.error() + ' Error while fetching Font (${assetPath}): ${err}');
+        // On failure, intercept the error and safely resolve with false
+        promise.complete(false);
+      });
+
+    return promise.future;
+  }
+
+  /**
+   * Cache a file's bytes asynchronously.
+   *
+   * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future that returns whether or not the Bytes has been succesfully cached.
    */
-  public function cacheBytes(assetPath:AssetPath):Future<Bool>
+  public function cacheBytes(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBytes(${assetPath.toString()})');
@@ -1147,7 +1262,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
     fetchBytes(assetPath).then((bytes:ByteArray) ->
     {
       // On success, resolve the promise with true
-      if (bytes != null) trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');
+
+      if (permanent)
+      {
+        stagedBytes.cachePermanent(assetPath.toString(), bytes);
+      }
 
       promise.complete(bytes != null);
       return Future.withValue(bytes);
@@ -1284,9 +1403,8 @@ class FunkinLimeAssetCache extends LimeAssetCache
       trace('[LIME] Retrieved cached audio: ' + key);
     });
 
-    cb_audio.onSet.add((key:String, value:LimeAudioBuffer) ->
-    {
-      trace('[LIME] Cached audio: ' + key);
+    cb_audio.onSet.add((key:String, value:LimeAudioBuffer) -> {
+      // trace('[LIME] Cached audio: ' + key);
     });
 
     cb_font.onGet.add((key:String) ->
@@ -1400,6 +1518,54 @@ class FunkinLimeAssetCache extends LimeAssetCache
   }
 
   /**
+   * @return A list of keys in the audio cache.
+   */
+  public function audioKeys():Array<String>
+  {
+    return cb_audio.keyValues();
+  }
+
+  /**
+   * @return The number of keys in the audio cache.
+   */
+  public function audioSize():Int
+  {
+    return cb_audio.size();
+  }
+
+  /**
+   * @return A list of keys in the font cache.
+   */
+  public function fontKeys():Array<String>
+  {
+    return cb_font.keyValues();
+  }
+
+  /**
+   * @return The number of keys in the font cache.
+   */
+  public function fontSize():Int
+  {
+    return cb_font.size();
+  }
+
+  /**
+   * @return A list of keys in the image cache.
+   */
+  public function imageKeys():Array<String>
+  {
+    return cb_image.keyValues();
+  }
+
+  /**
+   * @return The number of keys in the image cache.
+   */
+  public function imageSize():Int
+  {
+    return cb_image.size();
+  }
+
+  /**
    * Remove an audio from the cache by key.
    * @param id The key of the audio to remove.
    */
@@ -1428,6 +1594,6 @@ class FunkinLimeAssetCache extends LimeAssetCache
 
   public function toString():String
   {
-    return 'FunkinLimeAssetCache';
+    return 'FunkinLimeAssetCache(${audioSize()} audios, ${fontSize()} fonts, ${imageSize()} images)';
   }
 }

@@ -99,6 +99,43 @@ class RegistryData
   }
 
   /**
+   * List the entries for a given registry as asset paths, taking into account old backwards-compatibility paths.
+   *
+   * @param dataFilePath The main path to check for data at.
+   * @param suffix A suffix to the file path for the data files.
+   * @param nestedEntries Whether entries are in `dataFilePath/id/id-suffix.json`, or just `dataFilePath/id-suffix.json`.
+   * @return The list of available entries as JSON asset paths.
+   */
+  public static function listAssetPaths(dataFilePath:String, suffix:String = ''):Array<funkin.assets.Paths.AssetPath>
+  {
+    var result:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var compatDataFilePaths:Array<RegistryCompatPath> = REGISTRY_COMPAT_PATHS.get(dataFilePath) ?? [];
+
+    result.append(funkin.assets.Assets.listInPath(dataFilePath, JSON));
+
+    for (compatDataFilePath in compatDataFilePaths)
+    {
+      result.append(funkin.assets.Assets.listInPath(compatDataFilePath.path, JSON));
+    }
+
+    // Filter blacklisted files.
+    result = result.filter((path) ->
+    {
+      // Enforce the suffix.
+      if (suffix != '' && !path.id.endsWith('$suffix')) return false;
+      // Enforce the blacklist.
+      for (blacklisted in REGISTRY_ASSET_BLACKLIST)
+      {
+        if (path.id.endsWith(blacklisted)) return false;
+      }
+      return true;
+    });
+
+    return result;
+  }
+
+  /**
    * Load the JSON data for a given registry entry ID.
    *
    * @param id The ID of the entry to load.
@@ -133,7 +170,7 @@ class RegistryData
       throw 'Could not find file $entryFilePath';
     }
 
-    var rawJson:String = openfl.Assets.getText(entryFilePath.toString()).trim();
+    var rawJson:String = funkin.assets.Assets.getText(entryFilePath).trim();
     rawJson = SerializerUtil.sanitizeJSON(rawJson);
 
     // JSON _merge Patches for the main path were applied automatically by Polymod.

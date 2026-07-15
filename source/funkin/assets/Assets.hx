@@ -5,9 +5,22 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxBitmapFont;
 import flixel.math.FlxPoint;
-import funkin.assets.Paths.AssetPath;
+import flixel.system.frontEnds.AssetFrontEnd.FlxAssetType;
 import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.data.stickers.StickerRegistry;
+import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import lime.app.Future;
@@ -16,6 +29,7 @@ import lime.utils.AssetType as LimeAssetType;
 import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
+import openfl.utils.AssetType as OpenFLAssetType;
 import openfl.utils.Assets as OpenFLAssets;
 //
 // ~PATHS~
@@ -65,37 +79,20 @@ class Assets implements ConsoleClass
     OpenFLAssets.cache = funkin.assets.FunkinAssetCache.FunkinAssetCache.instance;
     untyped FlxG.bitmap = funkin.assets.FunkinBitmapFrontend.instance;
 
+    animate.FlxAnimateAssets.getText = (path) -> FunkinAssetCache.instance.getText(path);
+    animate.FlxAnimateAssets.getBytes = (path) -> FunkinAssetCache.instance.getBytes(path);
+    animate.FlxAnimateAssets.getBitmapData = (path) -> FunkinAssetCache.instance.getBitmapData(path);
+
+    FlxG.assets.getAssetUnsafe = flxGetAssetUnsafe;
+    FlxG.assets.loadAsset = flxLoadAsset;
+    FlxG.assets.exists = flxExists;
+    FlxG.assets.isLocal = flxIsLocal;
+    FlxG.assets.list = flxList;
+
     // Cache the results of Assets.list()
     for (type in ASSET_TYPES)
     {
       Assets.list(type);
-    }
-
-    for (image in Assets.queryPersistentAssets(IMAGE))
-    {
-      var key = image.toString();
-      try
-      {
-        FunkinAssetCache.instance.stagedBitmapData.cachePermanent(key, FunkinAssetCache.instance.getBitmapData(key));
-        FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(key, FunkinBitmapFrontend.instance.getSafe(key));
-      }
-      catch (_)
-      {
-        trace(' ERROR '.bold().error() + ' Could not cache permanent iamge "$key". does it exist?');
-      }
-    }
-
-    for (sound in Assets.queryPersistentAssets(SOUND))
-    {
-      var key = sound.toString();
-      try
-      {
-        FunkinAssetCache.instance.stagedSound.cachePermanent(key, FunkinAssetCache.instance.getSound(key));
-      }
-      catch (_)
-      {
-        trace(' ERROR '.bold().error() + ' Could not cache permanent sound "$key". does it exist?');
-      }
     }
   }
 
@@ -114,7 +111,7 @@ class Assets implements ConsoleClass
     var queryPath:String = 'assets/${path}';
     var textAssets:Array<String> = openfl.utils.Assets.list(TEXT);
 
-    var uniqueResults:Map<String, Bool> = new Map<String, Bool>();
+    var results:Array<String> = [];
     for (textPath in textAssets)
     {
       // Filter matching assets
@@ -126,14 +123,9 @@ class Assets implements ConsoleClass
 
       if (blacklist != null && blacklist.contains(id)) continue;
 
-      // Deduplicate by assigning a key map value
-      uniqueResults.set(id, true);
+      results.pushUnique(id);
     }
 
-    // Convert the unique map keys back into a standard Array
-    var results:Array<String> = [for (key in uniqueResults.keys()) key];
-
-    trace('[ASSETS] Got ${results.length} data files in path: ${queryPath}*${suffix}');
     return results;
   }
 
@@ -296,7 +288,7 @@ class Assets implements ConsoleClass
       throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
     }
     #else
-    return FlxBitmapFont.fromMonospace(assetPath.toFlxBitmapFontGraphicAsset(), fontLetters, letterSize);
+    return FlxBitmapFont.fromMonospace(Assets.getBitmapData(assetPath), fontLetters, letterSize);
     #end
   }
 
@@ -322,7 +314,7 @@ class Assets implements ConsoleClass
       throw 'Asset not cached, cannot load synchronously: ${assetPath.toString()}';
     }
     #else
-    return FlxBitmapFont.fromAngelCode(assetPath.toFlxBitmapFontGraphicAsset(), assetPath.withExt('fnt').toString());
+    return FlxBitmapFont.fromAngelCode(Assets.getBitmapData(assetPath), Assets.getText(assetPath.withExt('fnt')));
     #end
   }
 
@@ -489,92 +481,158 @@ class Assets implements ConsoleClass
   }
 
   /**
+   * Load a Sound file from the given asset path, asynchronously.
+   *
+   * @param assetPath The asset path to load from.
+   * @return A future which promises to return the loaded sound.
+   */
+  public static function loadFont(assetPath:AssetPath):Future<openfl.text.Font>
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.font()?';
+
+    return FunkinAssetCache.instance.fetchFont(assetPath);
+  }
+
+  /**
    * Cache the BitmapData from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the BitmapData for the asset.
    */
-  public static function cacheBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
+  public static function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.cacheBitmapData(assetPath, uploadToGPU);
+    return FunkinAssetCache.instance.cacheBitmapData(assetPath, permanent, uploadToGPU);
   }
 
   /**
    * Cache the FlxGraphic from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the FlxGraphic for the asset.
    */
-  public static function cacheFlxGraphic(assetPath:AssetPath, uploadToGPU:Bool = true):Future<Bool>
+  public static function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.cacheFlxGraphic(assetPath, uploadToGPU);
+    return FunkinAssetCache.instance.cacheFlxGraphic(assetPath, permanent, uploadToGPU);
   }
 
   /**
    * Cache the Sound from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future for the Sound for the asset.
    */
-  public static function cacheSound(assetPath:AssetPath):Future<Bool>
+  public static function cacheSound(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
-    return FunkinAssetCache.instance.cacheSound(assetPath);
+    return FunkinAssetCache.instance.cacheSound(assetPath, permanent);
   }
 
   /**
    * Cache the text from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future for the Text for the asset.
    */
-  public static function cacheText(assetPath:AssetPath):Future<Bool>
+  public static function cacheText(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.txt()?';
 
-    return FunkinAssetCache.instance.cacheText(assetPath);
+    return FunkinAssetCache.instance.cacheText(assetPath, permanent);
   }
 
   /**
    * Cache the byte data from the given asset path, asynchronously.
    *
    * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @return A future for the bytes for the asset.
    */
-  public static function cacheBytes(assetPath:AssetPath):Future<Bool>
+  public static function cacheBytes(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
 
-    return FunkinAssetCache.instance.cacheBytes(assetPath);
+    return FunkinAssetCache.instance.cacheBytes(assetPath, permanent);
+  }
+
+  /**
+   * Cache the font data from the given asset path, asynchronously.
+   *
+   * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future for the font for the asset.
+   */
+  public static function cacheFont(assetPath:AssetPath):Future<Bool>
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.font()?';
+
+    return FunkinAssetCache.instance.cacheFont(assetPath);
+  }
+
+  /**
+   * Cache the asset from the given asset path, asynchronously.
+   * Determines the asset type and guesses the correct caching function.
+   *
+   * @param assetPath The path of the asset to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future for the bytes for the asset.
+   */
+  public static function cacheAsset(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
+    switch (assetPath.getAssetType())
+    {
+      case IMAGE:
+        return cacheFlxGraphic(assetPath, permanent);
+
+      case SOUND:
+        return cacheSound(assetPath, permanent);
+
+      case TEXT | JSON | SHADER | SCRIPT | SCRIPTED_CLASS | XML:
+        return cacheText(assetPath, permanent);
+
+      case FONT:
+        return cacheFont(assetPath);
+
+      case VIDEO | CHART | STAGE | UNKNOWN:
+        return cacheBytes(assetPath, permanent);
+
+      default:
+        return cacheBytes(assetPath, permanent);
+    }
   }
 
   /**
    * Cache the BitmapDatas for all the given asset paths, asynchronously.
    *
    * @param assetPaths The paths of the assets to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether to upload the bitmap datas to the GPU, saving memory.
-   * @return A future for an array of results.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllBitmapData(assetPaths:Array<AssetPath>, uploadToGPU:Bool = true):Future<Array<Future<BitmapData>>>
+  public static function cacheAllBitmapData(assetPaths:Array<AssetPath>, permanent:Bool = false, uploadToGPU:Bool = true):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
 
     if (assetPaths.length == 0) return Future.withValue([]);
 
-    var futures:Array<Future<BitmapData>> = [];
+    var futures:Array<Future<Bool>> = [];
 
     for (assetPath in assetPaths)
     {
-      cacheBitmapData(assetPath, uploadToGPU);
-      futures.push(loadBitmapData(assetPath));
+      futures.push(cacheBitmapData(assetPath, permanent, uploadToGPU));
     }
 
     return Promises.allSettled(futures);
@@ -584,22 +642,22 @@ class Assets implements ConsoleClass
    * Cache the FlxGraphics for all the given asset paths, asynchronously.
    *
    * @param assetPaths The paths of the assets to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
    * @param uploadToGPU Whether to use GPU caching for this graphic.
-   * @return A future for an array of results.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllFlxGraphics(assetPaths:Array<AssetPath>, uploadToGPU:Bool = true):Future<Array<Future<FlxGraphic>>>
+  public static function cacheAllFlxGraphics(assetPaths:Array<AssetPath>, permanent:Bool = false, uploadToGPU:Bool = true):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
 
     if (assetPaths.length == 0) return Future.withValue([]);
 
-    var futures:Array<Future<FlxGraphic>> = [];
+    var futures:Array<Future<Bool>> = [];
 
     for (assetPath in assetPaths)
     {
-      cacheFlxGraphic(assetPath, uploadToGPU);
-      futures.push(loadFlxGraphic(assetPath));
+      futures.push(cacheFlxGraphic(assetPath, permanent, uploadToGPU));
     }
 
     return Promises.allSettled(futures);
@@ -609,21 +667,21 @@ class Assets implements ConsoleClass
    * Cache the Sound for all the given asset paths, asynchronously.
    *
    * @param assetPaths The paths of the assets to cache.
-   * @return A future for an array of results.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllSounds(assetPaths:Array<AssetPath>):Future<Array<Future<Sound>>>
+  public static function cacheAllSounds(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
 
     if (assetPaths.length == 0) return Future.withValue([]);
 
-    var futures:Array<Future<Sound>> = [];
+    var futures:Array<Future<Bool>> = [];
 
     for (assetPath in assetPaths)
     {
-      cacheSound(assetPath);
-      futures.push(loadSound(assetPath));
+      futures.push(cacheSound(assetPath, permanent));
     }
 
     return Promises.allSettled(futures);
@@ -633,21 +691,44 @@ class Assets implements ConsoleClass
    * Cache the Text for all the given asset paths, asynchronously.
    *
    * @param assetPaths The paths of the assets to cache.
-   * @return A future for an array of results.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllText(assetPaths:Array<AssetPath>):Future<Array<Future<String>>>
+  public static function cacheAllText(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
 
     if (assetPaths.length == 0) return Future.withValue([]);
 
-    var futures:Array<Future<String>> = [];
+    var futures:Array<Future<Bool>> = [];
 
     for (assetPath in assetPaths)
     {
-      cacheText(assetPath);
-      futures.push(loadText(assetPath));
+      futures.push(cacheText(assetPath, permanent));
+    }
+
+    return Promises.allSettled(futures);
+  }
+
+  /**
+   * Cache the font for all the given asset paths, asynchronously.
+   *
+   * @param assetPaths The paths of the assets to cache.
+   * @return A future, which provides progress updates for each cached font, and an array of results when completed.
+   */
+  public static function cacheAllFonts(assetPaths:Array<AssetPath>):Future<Array<Future<Bool>>>
+  {
+    // Exclude null values, and ensure each path is only loaded once.
+    assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
+
+    if (assetPaths.length == 0) return Future.withValue([]);
+
+    var futures:Array<Future<Bool>> = [];
+
+    for (assetPath in assetPaths)
+    {
+      futures.push(cacheFont(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -657,21 +738,46 @@ class Assets implements ConsoleClass
    * Cache the Bytes for all the given asset paths, asynchronously.
    *
    * @param assetPaths The paths of the assets to cache.
-   * @return A future for an array of results.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllBytes(assetPaths:Array<AssetPath>):Future<Array<Future<openfl.utils.ByteArray>>>
+  public static function cacheAllBytes(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
 
     if (assetPaths.length == 0) return Future.withValue([]);
 
-    var futures:Array<Future<openfl.utils.ByteArray>> = [];
+    var futures:Array<Future<Bool>> = [];
 
     for (assetPath in assetPaths)
     {
-      cacheBytes(assetPath);
-      futures.push(loadBytes(assetPath));
+      futures.push(cacheBytes(assetPath, permanent));
+    }
+
+    return Promises.allSettled(futures);
+  }
+
+  /**
+   * Cache all the given asset paths, asynchronously.
+   * Determines the asset type and guesses the correct caching function.
+   *
+   * @param assetPaths The paths of the assets to cache.
+   * @param permanent If `true`, cache the asset permanently, persisting between state switches.
+   * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
+   */
+  public static function cacheAll(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
+  {
+    // Exclude null values, and ensure each path is only loaded once.
+    assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
+
+    if (assetPaths.length == 0) return Future.withValue([]);
+
+    var futures:Array<Future<Bool>> = [];
+
+    for (assetPath in assetPaths)
+    {
+      futures.push(cacheAsset(assetPath));
     }
 
     return Promises.allSettled(futures);
@@ -691,6 +797,87 @@ class Assets implements ConsoleClass
   }
 
   /**
+   * Return true if the bitmap data at the given asset path exists, and has been cached by a loading screen.
+   *
+   * @param assetPath The asset path to check.
+   * @return Whether it is currently cached.
+   */
+  public static function isBitmapDataCached(assetPath:AssetPath):Bool
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
+    return FunkinAssetCache.instance.hasBitmapData(assetPath.toString());
+  }
+
+  /**
+   * Return true if the sound at the given asset path exists, and has been cached by a loading screen.
+   *
+   * @param assetPath The asset path to check.
+   * @return Whether it is currently cached.
+   */
+  public static function isSoundCached(assetPath:AssetPath):Bool
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
+
+    return FunkinAssetCache.instance.hasSound(assetPath.toString());
+  }
+
+  /**
+   * Return true if the text at the given asset path exists, and has been cached by a loading screen.
+   *
+   * @param assetPath The asset path to check.
+   * @return Whether it is currently cached.
+   */
+  public static function isTextCached(assetPath:AssetPath):Bool
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.text()?';
+
+    return FunkinAssetCache.instance.hasText(assetPath.toString());
+  }
+
+  /**
+   * Return true if the byte data at the given asset path exists, and has been cached by a loading screen.
+   *
+   * @param assetPath The asset path to check.
+   * @return Whether it is currently cached.
+   */
+  public static function isBytesCached(assetPath:AssetPath):Bool
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
+
+    return FunkinAssetCache.instance.hasBytes(assetPath.toString());
+  }
+
+  /**
+   * Return true if the asset at the given asset path exists, and has been cached by a loading screen.
+   *
+   * @param assetPath The asset path to check.
+   * @return Whether it is currently cached.
+   */
+  public static function isAssetCached(assetPath:AssetPath):Bool
+  {
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
+
+    switch (assetPath.getAssetType())
+    {
+      case IMAGE:
+        return isFlxGraphicCached(assetPath);
+
+      case SOUND:
+        return isSoundCached(assetPath);
+
+      case TEXT | JSON | SHADER | SCRIPT | SCRIPTED_CLASS | XML:
+        return isTextCached(assetPath);
+
+      case VIDEO | CHART | STAGE | FONT | UNKNOWN:
+        return isBytesCached(assetPath);
+
+      default:
+        return isBytesCached(assetPath);
+    }
+  }
+
+  /**
    * Return a list of all the asset paths which should be available in all states.
    *
    * @param type The type of asset to list.
@@ -702,21 +889,26 @@ class Assets implements ConsoleClass
 
     var results:Array<AssetPath> = [];
 
-    // results = results;.concat(funkin.input.Cursor.queryAssets(type));
-    // results = results;.concat(funkin.ui.transition.Transition.queryAssets(type));
-    // results = results;.concat(funkin.api.newgrounds.Medals.queryAssets(type));
+    // Keep the cursor assets cached persistently, since they could be used at any time.
+    results = results.concat(funkin.input.Cursor.queryAssets(type));
+    // Keep the medal popup assets cached persistently, since it could show up at any time.
+    results = results.concat(funkin.api.newgrounds.Medals.queryAssets(type));
+
+    // Keep transition assets cached persistently, since we don't want to require a loading screen FOR a loading screen.
+    // results = results.concat(funkin.ui.transition.Transition.queryAssets(type));
 
     switch (type)
     {
       case IMAGE:
-        results = results.concat([
+        results.appendUnique([
           // Built-in
-          Paths.file('images/logo/default', 'png', 'flixel'),
+          Paths.file('images/logo/default', 'png', true, 'flixel'),
 
           // Fonts
           Paths.image('ui/fonts/default'),
           Paths.image('ui/fonts/bold'),
           Paths.image('ui/fonts/freeplay-clear'),
+          Paths.image('ui/fonts/vcr-bmp'),
 
           // Soundtray
           Paths.image('ui/soundtray/volume-box'),
@@ -729,12 +921,14 @@ class Assets implements ConsoleClass
           Paths.image('ui/soundtray/bars-07'),
           Paths.image('ui/soundtray/bars-08'),
           Paths.image('ui/soundtray/bars-09'),
-          Paths.image('ui/soundtray/bars-10'), // Medals,
+          Paths.image('ui/soundtray/bars-10'),
         ]);
 
+        // Medal popup
+        results.appendUnique(Paths.animateAtlas('ui/medals/medal-popup').image());
+
       case SOUND:
-        results = results.concat(Paths.animateAtlas('ui/medals/medal-popup').image());
-        results = results.concat([
+        results.appendUnique([
           // Built-in
           Paths.file('sounds/beep', 'ogg', 'flixel'), // Menus
 
@@ -749,20 +943,31 @@ class Assets implements ConsoleClass
           Paths.sound('ui/main-menu/screenshot'),
         ]);
 
+      case JSON:
+        // Medal popup
+        results.appendUnique(Paths.animateAtlas('ui/medals/medal-popup').json());
+
       case XML:
-        results = results.concat([
+        results.appendUnique([
           // Fonts
           Paths.xml('ui/fonts/default'),
           Paths.xml('ui/fonts/bold'),
         ]);
 
       case SHADER:
-        results = results.concat([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
+        results.appendUnique([Paths.frag('ui/shaders/custom-blend'), // Powers custom blend modes on FunkinCamera
         ]);
+
+      case FONT:
+        // Permenent precache ALL fonts.
+        results.appendUnique(Assets.list(FONT));
+
+      case TEXT:
+        results.appendUnique([Paths.file('ui/fonts/vcr-bmp', 'fnt')]);
 
       default:
         // Nothing
-        // results = results.concat([]);
+        // results.appendUnique([]);
     }
     return results;
   }
@@ -777,39 +982,41 @@ class Assets implements ConsoleClass
   {
     if (type == null) throw 'Input is not a valid AssetType';
 
+    var results:Array<AssetPath> = [];
+
     // Start with the assets we use in every state.
-    var results:Array<AssetPath> = queryPersistentAssets(type);
+    results.appendUnique(queryPersistentAssets(type));
 
     // Fetch assets required by each registry at startup.
     // This is mainly used to fetch JSON data to register entries in each registry.
     // These will get uncached after the game starts but we don't need them anymore at that point.
-    // results = results;.concat(SongRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(LevelRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(NoteStyleRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(PlayerRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(ConversationRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(DialogueBoxRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(SpeakerRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(FreeplayStyleRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(AlbumRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(StickerRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(StageRegistry.instance.queryRegistryAssets(type).filterNull());
-    // results = results;.concat(CharacterDataParser.queryRegistryAssets(type).filterNull());
+    results.appendUnique(SongRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(LevelRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(NoteStyleRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(PlayerRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(ConversationRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(DialogueBoxRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(SpeakerRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(FreeplayStyleRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(AlbumRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(StickerRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(StageRegistry.instance.queryRegistryAssets(type).filterNull());
+    results.appendUnique(CharacterDataParser.queryRegistryAssets(type).filterNull());
 
     // We need the assets used to render the first state.
-    // results = results;.concat(funkin.ui.title.TitleState.queryAssets(type));
+    // results.appendUnique(funkin.ui.title.TitleState.queryAssets(type));
 
     switch (type)
     {
       case SCRIPTED_CLASS:
         // Cache all scripted class files
-        results = results.concat(Assets.list(SCRIPTED_CLASS));
+        results.appendUnique(Assets.list(SCRIPTED_CLASS));
       case SCRIPT:
         // Cache all script files
-        results = results.concat(Assets.list(SCRIPT));
+        results.appendUnique(Assets.list(SCRIPT));
       case FONT:
-        // Cache all script files
-        results = results.concat(Assets.list(FONT));
+        // Cache all font files
+        results.appendUnique(Assets.list(FONT));
       default:
         // Nothing
     }
@@ -921,6 +1128,79 @@ class Assets implements ConsoleClass
   {
     return openfl.utils.Assets.loadLibrary(name);
   }
+
+  /**
+   * Called when running `FlxG.assets.getAssetUnsafe()`.
+   *
+   * @param id The id of the asset, usually a path
+   * @param type The type of asset to look for, determines the type
+   * @param useCache IGNORED.
+   * @return The asset, if found, otherwise `null` is returned
+   */
+  static function flxGetAssetUnsafe(id:String, type:FlxAssetType, useCache = true):Null<Any>
+  {
+    final VALIDATE = true;
+    return switch (type)
+    {
+      case TEXT:
+        funkin.assets.Assets.getText(Paths.raw(id, VALIDATE));
+      case IMAGE:
+        funkin.assets.Assets.getBitmapData(Paths.raw(id, VALIDATE));
+      case SOUND:
+        funkin.assets.Assets.getSound(Paths.raw(id, VALIDATE));
+      case FONT:
+        // uhhh idk
+        OpenFLAssets.getFont(id, useCache);
+      case BINARY:
+        funkin.assets.Assets.getBytes(Paths.raw(id, VALIDATE));
+    }
+  }
+
+  static function flxLoadAsset(id:String, type:FlxAssetType, useCache = true):Future<Any>
+  {
+    final VALIDATE = true;
+    return switch (type)
+    {
+      case TEXT:
+        Assets.loadText(Paths.txt(id));
+      case IMAGE:
+        Assets.loadBitmapData(Paths.image(id));
+      case SOUND:
+        Assets.loadSound(Paths.sound(id));
+      case BINARY:
+        Assets.loadBytes(Paths.raw(id, VALIDATE));
+      case FONT:
+        OpenFLAssets.loadFont(id, useCache);
+    }
+  }
+
+  static function flxExists(id:String, ?type:FlxAssetType):Bool
+  {
+    final VALIDATE = false;
+    return assetExists(Paths.raw(id, VALIDATE));
+  }
+
+  /**
+   * We kinda change the behavior of this function a bit.
+   *
+   * If the Funkin asset cache has cached the asset, we consider it local,
+   * since it can be retrieved synchronously.
+   */
+  static function flxIsLocal(id:String, ?type:FlxAssetType, useCache = true):Bool
+  {
+    #if FEATURE_STRICT_ASSET_CACHING
+    final VALIDATE = false;
+    return isAssetCached(Paths.raw(id, VALIDATE));
+    #else
+    // NOTE: If this returns false, Flixel doesn't let the game load the asset!
+    return true;
+    #end
+  }
+
+  static function flxList(?type:FlxAssetType):Array<String>
+  {
+    return list(type).map((assetPath) -> assetPath.toString());
+  }
 }
 
 /**
@@ -990,7 +1270,102 @@ enum abstract AssetType(String) from String to String from LimeAssetType
   public var FONT = 'FONT';
 
   /**
+   * Files in (*.swf) format.
+   */
+  public var MOVIE_CLIP = 'MOVIE_CLIP';
+
+  /**
    * Files in an undetermined file format.
    */
   public var UNKNOWN = 'UNKNOWN';
+
+  /**
+   * @param value The input LimeAssetType
+   * @return Funkin AssetType
+   */
+  @:from
+  public static function fromLimeAssetType(?value:LimeAssetType):AssetType
+  {
+    if (value == null) return null;
+
+    switch (value)
+    {
+      case LimeAssetType.BINARY:
+        return UNKNOWN;
+      case LimeAssetType.FONT:
+        return FONT;
+      case LimeAssetType.IMAGE:
+        return IMAGE;
+      case LimeAssetType.MANIFEST:
+        return TEXT;
+      case LimeAssetType.MUSIC:
+        return SOUND;
+      case LimeAssetType.SOUND:
+        return SOUND;
+      case LimeAssetType.TEMPLATE:
+        return TEXT;
+      case LimeAssetType.TEXT:
+        return TEXT;
+      default:
+        return cast value;
+    }
+  }
+
+  /**
+   * @param value The input OpenFLAssetType
+   * @return Funkin AssetType
+   */
+  @:from
+  public static function fromOpenFLAssetType(?value:OpenFLAssetType):AssetType
+  {
+    if (value == null) return null;
+
+    switch (value)
+    {
+      case OpenFLAssetType.BINARY:
+        return UNKNOWN;
+      case OpenFLAssetType.FONT:
+        return FONT;
+      case OpenFLAssetType.IMAGE:
+        return IMAGE;
+      case OpenFLAssetType.MOVIE_CLIP:
+        return MOVIE_CLIP;
+      case OpenFLAssetType.MUSIC:
+        return SOUND;
+      case OpenFLAssetType.SOUND:
+        return SOUND;
+      case OpenFLAssetType.TEXT:
+        return TEXT;
+
+      default:
+        return cast value;
+    }
+  }
+
+  /**
+   * @param value The input FlxAssetType
+   * @return Funkin AssetType
+   */
+  @:from
+  public static function fromFlxAssetType(?value:FlxAssetType):AssetType
+  {
+    if (value == null) return null;
+
+    switch (value)
+    {
+      case FlxAssetType.BINARY:
+        return UNKNOWN;
+      case FlxAssetType.FONT:
+        return FONT;
+      case FlxAssetType.IMAGE:
+        return IMAGE;
+      case FlxAssetType.SOUND:
+        return SOUND;
+      case FlxAssetType.TEXT:
+        return TEXT;
+
+      default:
+        return cast value;
+    }
+  }
 }

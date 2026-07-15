@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
+import funkin.ui.transition.preload.hotreload.HotReloadState;
 #if android
 import funkin.external.android.CallbackUtil;
 #end
@@ -71,21 +72,15 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       trace('Current scripted state path: ' + path);
     }
 
-    if ((state is MusicBeatState || state is MusicBeatSubState) && !isScripted) state.reloadAssets();
+    if (isScripted)
+    {
+      trace('Reloading scripted state: ' + path);
+      var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
+      FlxG.switchState(() -> new HotReloadState(state));
+    }
     else
     {
-      funkin.modding.PolymodHandler.forceReloadAssets();
-
-      trace('Reloaded assets, checking for scripted state. Scripted: ' + isScripted + ', Path: ' + path);
-      if (isScripted)
-      {
-        trace('Reloading scripted state: ' + path);
-        var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
-        FlxG.switchState(state);
-      }
-
-      // Create a new instance of the current state, so old data is cleared.
-      if (!isScripted) FlxG.resetState();
+      FlxG.switchState(() -> new HotReloadState(state._constructor));
     }
   }
 

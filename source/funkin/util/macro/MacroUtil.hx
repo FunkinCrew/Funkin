@@ -4,6 +4,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
 
+using haxe.macro.ExprTools;
+
 /**
  * A collection of utility functions for Haxe macros.
  */
@@ -113,6 +115,30 @@ class MacroUtil
   public static function isFieldStatic(field:haxe.macro.Expr.Field):Bool
   {
     return field.access.contains(AStatic);
+  }
+
+  /**
+   * Determine whether the macro expression is `Null`.
+   * @param e The expression to check.
+   * @return Whether the expression is `Null`.
+   */
+  public static function isNullExpr(?input:Expr):Bool
+  {
+    if (input == null) return true;
+
+    switch (input.expr)
+    {
+      case EConst(const):
+        switch (const)
+        {
+          case CIdent(s):
+            return s == 'null';
+          default:
+            return false;
+        }
+      default:
+        return false;
+    }
   }
 
   /**

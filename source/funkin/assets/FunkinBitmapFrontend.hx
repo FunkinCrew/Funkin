@@ -50,6 +50,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // Called whenever a graphic is purged from the cache.
     stagedFlxGraphic.onRemove.add(onRemoveFlxGraphic);
     stagedFlxGraphic.onPrePurge.add(onPrePurgeFlxGraphic);
+    stagedFlxGraphic.onPostPurge.add(onPostPurgeFlxGraphic);
 
     super();
   }
@@ -57,9 +58,12 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function addGraphic(graphic:FlxGraphic):FlxGraphic
   {
     // Check if the graphic is valid before adding it to cache.
-    if (!isValid(graphic)) throw "FlxGraphic tried to add an invalid graphic!";
+    if (!isValid(graphic))
+    {
+      throw 'FlxGraphic tried to add an invalid graphic!';
+    }
 
-    trace('[BITMAPFRONTEND] Caching FlxGraphic: ${graphic.key}');
+    // trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${graphic.key}');
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
     {
       stagedFlxGraphic.cache(graphic.key, graphic);
@@ -101,10 +105,18 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function get(assetPath:String):Null<FlxGraphic>
   {
-    return stagedFlxGraphic.get(assetPath);
+    var result:Null<FlxGraphic> = stagedFlxGraphic.get(assetPath);
+    if (result == null) return null;
+    if (!isValid(result))
+    {
+      // throw 'Cached FlxGraphic ${assetPath} is invalid!'
+      return null;
+    }
+
+    return result;
   }
 
-  public function exists(key:String)
+  public function exists(key:String):Bool
   {
     return stagedFlxGraphic.exists(key);
   }
@@ -134,6 +146,10 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.remove(key);
   }
 
+  /**
+   * @param graphic The FlxGraphic to validate.
+   * @return `true` only if the FlxGraphic is valid and ready to use.
+   */
   public function isValid(graphic:Null<FlxGraphic>):Bool
   {
     if (graphic == null) return false; // graphic is null
@@ -164,7 +180,9 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     // stagedFlxGraphic.clearCache();
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
-      if (graphic == null) return true;
+      // Always clear graphics that are invalid.
+      if (!isValid(graphic)) return true;
+      // Never
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
 
@@ -180,7 +198,16 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearExcept(filter:Array<String>):Void
   {
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return !filter.exists(keyword -> key.contains(keyword)));
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
+    {
+      // Always clear graphics that are invalid.
+      if (!isValid(graphic)) return true;
+      // Don't clear graphics we know are in use right now.
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+
+      return !filter.exists(keyword -> key.contains(keyword));
+    });
   }
 
   /**
@@ -192,7 +219,16 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearOnly(filter:Array<String>):Void
   {
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return filter.exists(keyword -> key.contains(keyword)));
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
+    {
+      // Always clear graphics that are invalid.
+      if (!isValid(graphic)) return true;
+      // Don't clear graphics we know are in use right now.
+      if (graphic.useCount > 0) return false;
+      if (graphic.persist) return false;
+
+      return filter.exists(keyword -> key.contains(keyword));
+    });
   }
 
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
@@ -203,7 +239,9 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   {
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
-      if (graphic == null) return true;
+      // Always clear graphics that are invalid.
+      if (!isValid(graphic)) return true;
+      // Don't clear graphics we know are in use right now.
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
       if (!graphic.destroyOnNoUse) return false;
@@ -269,9 +307,17 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   function onPrePurgeFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
   {
     // Called before a mass purge is performed on the StagedCache.
+    // This specific graphic may not necessarily be purged.
     if (graphic != null)
     {
       graphic.persist = false;
     }
+  }
+
+  function onPostPurgeFlxGraphic(assetPath:String):Void
+  {
+    trace('[BITMAPFRONTEND] Purging FlxGraphic: ${assetPath}');
+
+    funkin.util.DebugUtil.printCallStack();
   }
 }

@@ -1,5 +1,6 @@
 package funkin.ui.transition.preload;
 
+import lime.app.Future;
 import funkin.mobile.util.ScreenUtil;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
@@ -13,6 +14,8 @@ import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+import funkin.assets.Assets;
+import funkin.assets.Paths.AssetPath;
 
 using StringTools;
 
@@ -55,6 +58,9 @@ class FunkinPreloader extends FlxBasePreloader
   // private var downloadingAssetsStartTime:Float = -1;
   var downloadingAssetsPercent:Float = -1;
   var downloadingAssetsComplete:Bool = false;
+  var initializingScriptsPercent:Float = -1;
+  var initializingScriptsStartTime:Float = -1;
+  var initializingScriptsComplete:Bool = false;
   var preloadingPlayAssetsPercent:Float = -1;
   var preloadingPlayAssetsStartTime:Float = -1;
   var preloadingPlayAssetsComplete:Bool = false;
@@ -79,7 +85,6 @@ class FunkinPreloader extends FlxBasePreloader
   var parsingSongsPercent:Float = -1;
   var parsingSongsStartTime:Float = -1;
   var parsingSongsComplete:Bool = false;
-  var initializingScriptsPercent:Float = -1;
 
   /**
    * The timestamp when the other steps completed and the `Finishing up` step started.
@@ -307,6 +312,18 @@ class FunkinPreloader extends FlxBasePreloader
           // This is quick enough to do synchronously.
           funkin.assets.Assets.initialize();
 
+          // Couldn't think of a better spot to put this.
+          var fontsToPreload = Assets.queryPreloadAssets(FONT);
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAllFonts(fontsToPreload);
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            trace('PRELOADER: Caching fonts... ${loaded}/${total}');
+          });
+          future.onComplete((_result) ->
+          {
+            trace('PRELOADER: Completed caching fonts.');
+          });
+
           preloadingPlayAssetsPercent = 1.0;
           preloadingPlayAssetsComplete = true;
           return 0.0;
@@ -343,22 +360,51 @@ class FunkinPreloader extends FlxBasePreloader
         if (initializingScriptsPercent < 0.0)
         {
           initializingScriptsPercent = 0.0;
+          initializingScriptsStartTime = elapsed;
 
-          /*
-            var future:Future<Array<String>> = []; // PolymodHandler.loadNoModsAsync();
+          // Load mods to override assets BEFORE we cache them.
+          funkin.modding.PolymodHandler.loadEnabledMods();
 
-            future.onProgress((loaded:Int, total:Int) -> {
-              trace('PolymodHandler.loadNoModsAsync() progress: ' + loaded + '/' + total);
-              initializingScriptsPercent = loaded / total;
-            });
-            future.onComplete((result:Array<String>) -> {
-              trace('Completed initializing scripts: ' + result);
-            });
-           */
+          // Then, initialize scripts.
+          var future = funkin.modding.PolymodHandler.loadScripts(true);
 
-          initializingScriptsPercent = 1.0;
-          currentState = FunkinPreloaderState.CachingGraphics;
-          return 0.0;
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            trace('PRELOADER: PROGRESS initializing scripts (${loaded} / ${total})...');
+            initializingScriptsPercent = loaded / total;
+          });
+          future.onComplete((_result) ->
+          {
+            trace('PRELOADER: Completed initializing scripts...');
+            initializingScriptsComplete = true;
+          });
+
+          return initializingScriptsPercent;
+        }
+        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
+        {
+          var elapsedInitializingScripts:Float = elapsed - initializingScriptsStartTime;
+          if (initializingScriptsComplete && elapsedInitializingScripts >= Constants.PRELOADER_MIN_STAGE_TIME)
+          {
+            currentState = FunkinPreloaderState.CachingGraphics;
+            return 0.0;
+          }
+          else
+          {
+            // We need to return SIMULATED progress here.
+            if (initializingScriptsPercent < (elapsedInitializingScripts / Constants.PRELOADER_MIN_STAGE_TIME))
+            {
+              return initializingScriptsPercent;
+            }
+            else
+            {
+              return elapsedInitializingScripts / Constants.PRELOADER_MIN_STAGE_TIME;
+            }
+          }
+        }
+        else
+        {
+          if (initializingScriptsComplete) currentState = FunkinPreloaderState.InitializingScripts;
         }
 
         return initializingScriptsPercent;
@@ -369,21 +415,24 @@ class FunkinPreloader extends FlxBasePreloader
           cachingGraphicsPercent = 0.0;
           cachingGraphicsStartTime = elapsed;
 
-          /*
-            var assetsToCache:Array<String> = []; // Assets.listGraphics('core');
+          final CACHE_PERMANENT:Bool = true;
 
-            var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
-            future.onProgress((loaded:Int, total:Int) -> {
-              cachingGraphicsPercent = loaded / total;
-            });
-            future.onComplete((_result) -> {
-              trace('Completed caching graphics.');
-            });
-           */
+          var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);
 
-          // TODO: Reimplement this.
-          cachingGraphicsPercent = 1.0;
-          cachingGraphicsComplete = true;
+          trace('PRELOADER: Begin caching ${assetsToCache.length} graphics...');
+
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAllFlxGraphics(assetsToCache, CACHE_PERMANENT);
+
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            cachingGraphicsPercent = loaded / total;
+          });
+          future.onComplete((_result) ->
+          {
+            trace('PRELOADER: Completed caching graphics.');
+            cachingGraphicsComplete = true;
+          });
+
           return 0.0;
         }
         else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
@@ -427,21 +476,24 @@ class FunkinPreloader extends FlxBasePreloader
           cachingAudioPercent = 0.0;
           cachingAudioStartTime = elapsed;
 
-          /*
-            var assetsToCache:Array<String> = []; // Assets.listSound('core');
-              var future:Future<Array<String>> = []; // Assets.cacheAssets(assetsToCache);
+          final CACHE_PERMANENT:Bool = true;
 
-              future.onProgress((loaded:Int, total:Int) -> {
-                cachingAudioPercent = loaded / total;
-              });
-              future.onComplete((_result) -> {
-                trace('Completed caching audio.');
-              });
-           */
+          var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(SOUND);
 
-          // TODO: Reimplement this.
-          cachingAudioPercent = 1.0;
-          cachingAudioComplete = true;
+          trace('PRELOADER: Begin caching ${assetsToCache.length} sounds...');
+
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAllSounds(assetsToCache, CACHE_PERMANENT);
+
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            cachingAudioPercent = loaded / total;
+          });
+          future.onComplete((_result) ->
+          {
+            trace('PRELOADER: Completed caching audio.');
+            cachingAudioComplete = true;
+          });
+
           return 0.0;
         }
         else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
@@ -484,32 +536,30 @@ class FunkinPreloader extends FlxBasePreloader
           cachingDataPercent = 0.0;
           cachingDataStartTime = elapsed;
 
-          var assetsToCache:Array<String> = [];
-          var sparrowFramesToCache:Array<String> = [];
+          final CACHE_PERMANENT:Bool = true;
 
-          // Core files
-          // assetsToCache = assetsToCache.concat(Assets.listText('core'));
-          // assetsToCache = assetsToCache.concat(Assets.listJSON('core'));
-          // Core spritesheets
-          // assetsToCache = assetsToCache.concat(Assets.listXML('core'));
+          var assetsToCache:Array<AssetPath> = [];
 
-          // Gameplay files
-          // assetsToCache = assetsToCache.concat(Assets.listText('gameplay'));
-          // assetsToCache = assetsToCache.concat(Assets.listJSON('gameplay'));
-          // We're not caching gameplay spritesheets here because they're fetched on demand.
+          assetsToCache.append(Assets.queryPreloadAssets(TEXT));
+          assetsToCache.append(Assets.queryPreloadAssets(JSON));
+          assetsToCache.append(Assets.queryPreloadAssets(SHADER));
+          assetsToCache.append(Assets.queryPreloadAssets(SCRIPT));
+          assetsToCache.append(Assets.queryPreloadAssets(XML));
 
-          /*
-            var future:Future<Array<String>> = [];
-            // Assets.cacheAssets(assetsToCache, true);
-            future.onProgress((loaded:Int, total:Int) -> {
-              cachingDataPercent = loaded / total;
-            });
-            future.onComplete((_result) -> {
-              trace('Completed caching data.');
-            });
-           */
-          cachingDataPercent = 1.0;
-          cachingDataComplete = true;
+          trace('PRELOADER: Begin caching ${assetsToCache.length} data files...');
+
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAllText(assetsToCache, CACHE_PERMANENT);
+
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            cachingDataPercent = loaded / total;
+          });
+          future.onComplete((_result) ->
+          {
+            trace('PRELOADER: Completed caching data.');
+            cachingDataComplete = true;
+          });
+
           return 0.0;
         }
         else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)

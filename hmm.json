@@ -71,7 +71,7 @@
       "name": "flixel-animate",
       "type": "git",
       "dir": null,
-      "ref": "660e638e49fca336ce6cafbbe950f53112bf4b31",
+      "ref": "34e5760063b2303d74acf85d1dba152c9aa4a17c",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {
@@ -205,7 +205,7 @@
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "e2e65a526d9bbdc12578cd087c4af0703675a897",
+      "ref": "3b056c11382ec9b72e471b0114ce9922f8df5c89",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

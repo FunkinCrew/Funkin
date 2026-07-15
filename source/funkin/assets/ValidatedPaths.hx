@@ -6,6 +6,8 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 import funkin.util.macro.MacroUtil;
 
+using haxe.macro.ExprTools;
+
 /**
  * We alias this class over the `Paths` class, then implement macro functions which redirect the originals.
  * This provides identical behavior while providing additional compile-time functionality via macros.
@@ -36,7 +38,14 @@ class ValidatedPaths
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.txt(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.txt($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.txt($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.txt($e{key});
+    }
   }
 
   /**
@@ -58,7 +67,14 @@ class ValidatedPaths
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.frag(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.frag($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.frag($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.frag($e{key});
+    }
   }
 
   /**
@@ -80,7 +96,14 @@ class ValidatedPaths
     }
 
     // This expression gets inserted at the location that `ValidatedPaths.vert(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.vert($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.vert($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.vert($e{key});
+    }
   }
 
   /**
@@ -104,8 +127,15 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, [staticExt ?? 'ttf'], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.font(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.font($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.font(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.font($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.font($e{key});
+    }
   }
 
   /**
@@ -127,8 +157,15 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, ['xml'], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.xml(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.xml($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.xml(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.xml($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.xml($e{key});
+    }
   }
 
   /**
@@ -150,8 +187,15 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, ['json'], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.json(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.json($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.json(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.json($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.json($e{key});
+    }
   }
 
   /**
@@ -172,8 +216,15 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, ['ogg'], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.sound(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.sound($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.sound(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.sound($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.sound($e{key});
+    }
   }
 
   /**
@@ -211,8 +262,15 @@ class ValidatedPaths
       }
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.music(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.music($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.music(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.music($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.music($e{key});
+    }
   }
 
   /**
@@ -234,8 +292,15 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, [staticExt], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.video(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.video($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.video(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.video($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.video($e{key});
+    }
   }
 
   /**
@@ -256,8 +321,45 @@ class ValidatedPaths
       if (staticPath != null) validateAssetPath(staticPath, ['png'], key.pos);
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.image(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.image($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      Context.info('[ASSETS] validate = "${validate.toString()}"', key.pos);
+      // This expression gets inserted at the location that `ValidatedPaths.image(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.image($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.image($e{key});
+    }
+  }
+
+  /**
+   * Constructs an asset path for a subtitle file.
+   * @param key The path to the subtitle file, without file extension.
+   * @return An AssetPath pointing to the subtitle file.
+   */
+  public static macro function srt(key:Expr, ?validate:Expr):Expr
+  {
+    var shouldValidate:Bool = MacroUtil.extractBooleanConstant(validate) ?? true;
+    if (!shouldValidate)
+    {
+      Context.info('[ASSETS] Skipping validation for asset path...', key.pos);
+    }
+    else
+    {
+      var staticPath:Null<String> = MacroUtil.extractStringConstant(key);
+      if (staticPath != null) validateAssetPath(staticPath, ['srt'], key.pos);
+    }
+
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.srt(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.srt($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.srt($e{key});
+    }
   }
 
   /**
@@ -283,8 +385,15 @@ class ValidatedPaths
       }
     }
 
-    // This expression gets inserted at the location that `ValidatedPaths.animateAtlas(key)` got called.
-    return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.animateAtlas($e{key});
+    if (!shouldValidate || !MacroUtil.isNullExpr(validate))
+    {
+      // This expression gets inserted at the location that `ValidatedPaths.animateAtlas(key)` got called.
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.animateAtlas($e{key}, $e{validate});
+    }
+    else
+    {
+      return macro @:pos(haxe.macro.Context.currentPos()) funkin.assets.Paths.animateAtlas($e{key});
+    }
   }
 
   #if macro

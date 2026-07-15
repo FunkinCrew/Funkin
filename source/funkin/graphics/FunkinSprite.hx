@@ -395,8 +395,7 @@ class FunkinSprite extends FlxAnimate
       var id:String = modId;
 
       var assetPath:String = Paths.animateAtlas(key).toString();
-      var jsons:Array<String> = jsonsAr.filter((str) -> str.contains(assetPath.substring(7)))
-        .map((str) -> str.substring(0, str.length - '.json'.length));
+      var jsons:Array<String> = jsonsAr.filter((str) -> str.contains(assetPath.substring(7))).map((str) -> str.substring(0, str.length - '.json'.length));
 
       var spritemaps:Array<SpritemapInput> = [];
       var animationJson:Null<String> = null;
@@ -455,7 +454,11 @@ class FunkinSprite extends FlxAnimate
   public function loadSparrow(key:String):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
-    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Sparrow texture not cached, may experience stuttering! $graphicKey');
+    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey))
+    {
+      trace('Sparrow texture not cached, may experience stuttering! $graphicKey');
+      FlxG.log.warn('Sparrow texture not cached, may experience stuttering! $graphicKey');
+    }
 
     this.frames = Paths.getSparrowAtlas(key);
 
@@ -470,7 +473,11 @@ class FunkinSprite extends FlxAnimate
   public function loadPacker(key:String):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
-    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey)) FlxG.log.warn('Packer texture not cached, may experience stuttering! $graphicKey');
+    if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey))
+    {
+      trace('Packer texture not cached, may experience stuttering! $graphicKey');
+      FlxG.log.warn('Packer texture not cached, may experience stuttering! $graphicKey');
+    }
 
     this.frames = Paths.getPackerAtlas(key);
 

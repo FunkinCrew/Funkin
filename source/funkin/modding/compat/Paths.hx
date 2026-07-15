@@ -14,6 +14,20 @@ class Paths
    * Try not to remove any, even if they're super old!
    */
   static final PATHS:Map<String, String> = [
+    'assets/flixel/sounds/beep.mp3' => 'flixel/sounds/beep.mp3',
+    'assets/flixel/sounds/flixel.mp3' => 'flixel/sounds/flixel.mp3',
+    'assets/flixel/sounds/beep.ogg' => 'flixel/sounds/beep.ogg',
+    'assets/flixel/sounds/flixel.ogg' => 'flixel/sounds/flixel.ogg',
+    'assets/flixel/fonts/nokiafc22.ttf' => 'flixel/fonts/nokiafc22.ttf',
+    'assets/flixel/fonts/monsterrat.ttf' => 'flixel/fonts/monsterrat.ttf',
+    'assets/flixel/images/ui/button.png' => 'flixel/images/ui/button.png',
+    'assets/flixel/images/logo/default.png' => 'flixel/images/logo/default.png',
+    'assets/flixel/images/transitions/circle.png' => 'flixel/images/transitions/circle.png',
+    'assets/flixel/images/transitions/diagonal_gradient.png' => 'flixel/images/transitions/diagonal_gradient.png',
+    'assets/flixel/images/transitions/diamond.png' => 'flixel/images/transitions/diamond.png',
+    'assets/flixel/images/transitions/square.png' => 'flixel/images/transitions/square.png',
+    'assets/haxeui-flixel/styles/default/cursors/pointer.png' => 'haxeui-flixel/styles/default/cursors/pointer.png',
+    'assets/haxeui-flixel/styles/default/main.css' => 'haxeui-flixel/styles/default/main.css',
     'assets/5by7.ttf' => 'assets/ui/fonts/5by7.ttf',
     'assets/5by7_b.ttf' => 'assets/ui/fonts/5by7-bold.ttf',
     'assets/ANGRY.ogg' => 'assets/gameplay/dialogue/boxes/roses/angry-click.ogg',
@@ -3503,6 +3517,9 @@ class Paths
     // Don't use library:path since new Funkin' doesn't use asset libraries.
     var filePath:String = (library == 'default') ? 'assets/$id' : 'assets/$library/$id';
 
+    // Filter out stuff like double slashes or backslashes.
+    filePath = haxe.io.Path.normalize(filePath);
+
     // If the path just exists, return it. This is the most common case.
     if (funkin.assets.Assets.exists(filePath))
     {
@@ -3552,7 +3569,7 @@ class Paths
   static function tryGuessPath(id:String, filePath:String, library:String = 'default'):Null<String>
   {
     #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('Paths.tryGuessPath($id)');
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Paths.tryGuessPath(' + id + ')');
     #end
 
     var result:Null<String> = null;

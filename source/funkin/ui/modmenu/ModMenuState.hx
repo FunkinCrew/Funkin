@@ -1,5 +1,6 @@
 package funkin.ui.modmenu;
 
+import funkin.ui.transition.preload.hotreload.HotReloadState;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
@@ -1337,21 +1338,18 @@ class ModMenuState extends MusicBeatState
 
     InitState.resetTitleState();
 
-    transitionOut(() ->
-    {
-      var blackScreen = new FunkinSprite();
-      blackScreen.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
-      blackScreen.scrollFactor.set(0, 0);
-      blackScreen.alpha = 1;
-      add(blackScreen);
+    var blackScreen = new FunkinSprite();
+    blackScreen.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    blackScreen.scrollFactor.set(0, 0);
+    blackScreen.alpha = 1;
+    add(blackScreen);
 
-      PolymodHandler.forceReloadAssets();
-      if (InitState.customTitleState == null) FlxG.switchState(() -> new TitleState());
-      else
-      {
-        FlxG.switchState(() -> InitState.customTitleState);
-      }
-    });
+    FlxG.switchState(() -> new HotReloadState());
+
+    // transitionOut(() ->
+    // {
+    //
+    // });
   }
 
   function enableMod(item:Null<ModMenuItem>, ?forcedInsertIndex:Int = -1, ?batchFutureCount:Int = -1):Void

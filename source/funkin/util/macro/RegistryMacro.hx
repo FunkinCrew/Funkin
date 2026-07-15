@@ -29,6 +29,11 @@ typedef RegistryTypeParams =
    */
   var dataType:Any; // DefType or ClassType
 
+  /**
+   * The type for the params of an entry. This is usually a typedef of a struct.
+   */
+  var paramsType:Any; // DefType or ClassType
+
 }
 
 /**
@@ -63,7 +68,7 @@ class RegistryMacro
     // Build an internal class with static functions that allow the Entry class to call functions on the Registry class.
     buildEntryImpl(typeParams.entryType, cls);
 
-    fields = fields.concat(buildRegistryMethods(cls, fields, typeParams.entryType, typeParams.dataType));
+    fields = fields.concat(buildRegistryMethods(cls, fields, typeParams.entryType, typeParams.dataType, typeParams.paramsType));
 
     // Indicate that the class has been processed so we don't process twice.
     cls.meta.add(":funkinProcessed", [], cls.pos);
@@ -134,7 +139,8 @@ class RegistryMacro
     }
     return {
       entryType: typeParams[0],
-      dataType: typeParams[1]
+      dataType: typeParams[1],
+      paramsType: typeParams[2]
     };
   }
 
@@ -147,21 +153,28 @@ class RegistryMacro
    * @param dataType The type of the data for entries in the registry.
    * @return The modified list of fields for the target class.
    */
-  static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:DefType):Array<Field>
+  static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:DefType, paramsType:DefType):Array<Field>
   {
-    var scriptedEntryClsName:String = entryType.pack.join('.') + '.Scripted' + entryType.name;
+    var clsTypeName:String = '${cls.pack.join('.')}.${cls.name}';
+    var clsTypeExpr:Expr = Context.parse(clsTypeName, cls.pos);
 
-    var getScriptedClassName:String = '${scriptedEntryClsName}';
+    var entryClsName:String = '${entryType.pack.join('.')}.${entryType.name}';
+    var entryTypeExpr:Expr = Context.parse(entryClsName, cls.pos);
 
+    var scriptedEntryClsName:String = '${entryType.pack.join('.')}.Scripted${entryType.name}';
+    var scriptedEntryClsExpr:Expr = Context.parse(scriptedEntryClsName, cls.pos);
     var createScriptedEntry:String = '${scriptedEntryClsName}.scriptInit(clsName, "unknown")';
 
-    var newJsonParser:String = 'new json2object.JsonParser<${dataType.module}.${dataType.name}>({ignoreUnknownVariables: false})';
-
+    var dataTypeClassName:String = '${dataType.module}.${dataType.name}';
+    var newJsonParser:String = 'new json2object.JsonParser<${dataTypeClassName}>({ignoreUnknownVariables: false})';
     var dataFilePath:String = getRegistryDataFilePath(cls, fields);
+
+    var paramsTypeClassName:String = '${paramsType.module}.${paramsType.name}';
+    var paramsComplexType:ComplexType = Context.toComplexType(Context.getType(paramsTypeClassName));
 
     var dataPath:String = DATA_FILE_BASE_PATH;
     #if ios
-    if (!sys.FileSystem.exists(dataPath)) dataPath = "../../../../../" + dataPath;
+    if (!sys.FileSystem.exists(dataPath)) dataPath = '../../../../../' + dataPath;
     #end
 
     var baseGameEntryIds:Array<Expr> = listBaseGameEntryIds('${dataPath}/${dataFilePath}/');
@@ -183,17 +196,15 @@ class RegistryMacro
 
         function getScriptedClassNames():Array<String>
         {
-          return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
+          return ${Context.parse(scriptedEntryClsName, Context.currentPos())}.listScriptClasses();
         }
 
         override function createScriptedEntry(clsName:String)
-
         {
           return ${Context.parse(createScriptedEntry, Context.currentPos())};
         }
 
         public function parseEntryData(id:String)
-
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
 
@@ -220,7 +231,6 @@ class RegistryMacro
         }
 
         public function parseEntryDataRaw(contents:String, ?fileName:String)
-
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
           parser.fromJson(contents, fileName);
@@ -233,12 +243,14 @@ class RegistryMacro
           }
           return parser.value;
         }
-      }).fields.filter(function(field:Field):Bool
-      {
-        // Exclude fields which already exist on the CURRENT class
-        // (use override for the superclass)
-        return !MacroUtil.fieldAlreadyExists(field.name, false);
-      });
+      }).fields;
+
+    result = result.filter(function(field:Field):Bool
+    {
+      // Exclude fields which already exist on the CURRENT class
+      // (use override for the superclass)
+      return !MacroUtil.fieldAlreadyExists(field.name, false);
+    });
 
     return result;
   }
@@ -297,9 +309,9 @@ class RegistryMacro
 
     return (macro class TempClass
       {
-        public function _fetchData(id:String)
+        public static function _fetchData(id:String)
         {
-          return ${Context.parse(impl, Context.currentPos())}._fetchData(this, id);
+          return ${Context.parse(impl, Context.currentPos())}._fetchData(id);
         }
 
         public function toString()
@@ -332,7 +344,7 @@ class RegistryMacro
       kind: TypeDefKind.TDClass(null, [], false, false, false),
       fields: (macro class TempClass
         {
-          public static inline function _fetchData(me:$clsType, id:String)
+          public static inline function _fetchData(id:String)
           {
             return $
             {

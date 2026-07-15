@@ -38,7 +38,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var leftWatermarkText:Null<FlxText> = null;
   public var rightWatermarkText:Null<FlxText> = null;
   public var conductorInUse(get, set):Conductor;
-
   public var default_trans_isTransitioning:Bool = false;
 
   var _conductorInUse:Null<Conductor>;
@@ -101,7 +100,11 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public var optionsButton:Null<FunkinOptionsButton>;
   public var camControls:Null<FunkinCamera>;
 
-  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
+  public function addHitbox(visible:Bool = true,
+    initInput:Bool = true,
+    ?schemeOverride:String,
+    ?directionsOverride:Array<NoteDirection>,
+    ?colorsOverride:Array<FlxColor>):Void
   {
     if (hitbox != null)
     {
@@ -125,7 +128,12 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
 
-  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null, ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
+  public function addBackButton(?xPos:Float = 0,
+    ?yPos:Float = 0,
+    ?color:FlxColor = FlxColor.WHITE,
+    ?confirmCallback:Void->Void = null,
+    ?restOpacity:Float = 0.3,
+    ?instant:Bool = false):Void
   {
     if (backButton != null) remove(backButton);
 
@@ -143,7 +151,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   // this should get moved post ui update but this is easier rn lolll
 
-  public function addOptionsButton(?xPos:Float = 0, ?yPos:Float = 0, ?confirmCallback:Void->Void = null, ?instant:Bool = false):Void
+  public function addOptionsButton(?xPos:Float = 0,
+    ?yPos:Float = 0,
+    ?confirmCallback:Void->Void = null,
+    ?instant:Bool = false):Void
   {
     if (optionsButton != null) remove(optionsButton);
 
@@ -242,9 +253,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   function reloadAssets()
   {
     PolymodHandler.forceReloadAssets();
-
-    // Create a new instance of the current state, so old data is cleared.
-    FlxG.resetState();
   }
 
   public function stepHit():Bool
