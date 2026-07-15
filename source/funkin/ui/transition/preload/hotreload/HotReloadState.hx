@@ -55,7 +55,7 @@ class HotReloadState extends MusicBeatState
     mainCamera = new FunkinCamera('hotReload');
 
     this.targetState = targetState;
-    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD).makeSolidColor(10, 12, 0xFFFF16D2);
+    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD).makeSolidColor(10, 12, Constants.COLOR_PRELOADER_BAR);
 
     throbber = FunkinSprite.create(Paths.image('ui/loading/throbber'));
   }
@@ -69,7 +69,7 @@ class HotReloadState extends MusicBeatState
 
     // Build progress bar
 
-    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFEFEFEF);
+    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFCCCCCC);
     progressBarBack.zIndex = 100;
     progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
     progressBarBack.updateHitbox();
