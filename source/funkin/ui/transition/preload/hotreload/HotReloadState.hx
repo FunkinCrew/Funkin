@@ -11,6 +11,7 @@ import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.style.FreeplayStyleRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongRegistry;
 import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import funkin.data.story.level.LevelRegistry;
@@ -18,39 +19,80 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.ui.title.TitleState;
-import funkin.util.MathUtil;
+import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinCamera;
 import lime.app.Future;
 import polymod.Polymod;
 
 /**
- * Use this state to reload all the game's data and assets.
+ * State which reloads all the game's data and assets.
  * Use when pressing F5 (to force a hot reload) or when the mod list has updated.
+ *
+ * Includes a progress bar and a throbber to indicate progress and working status.
  */
 @:nullSafety
 class HotReloadState extends MusicBeatState
 {
+  static final BAR_PAD:Int = 16;
+  static final BAR_HEIGHT:Int = 24;
+
+  // The state to move to.
   var targetState:Null<NextState> = null;
+  // Status.
   var hasStartedLoading:Bool = false;
   var isComplete:Bool = false;
   var transitioning:Bool = false;
+  var totalElapsed:Float = 0;
+  // Graphical elements
+  var mainCamera:FunkinCamera;
   var progressBar:FunkinSprite;
+  var throbber:FunkinSprite;
 
   public function new(?targetState:NextState)
   {
     super();
 
+    mainCamera = new FunkinCamera('hotReload');
+
     this.targetState = targetState;
-    this.progressBar = new FunkinSprite(0, FlxG.height - 24).makeSolidColor(10, 12, 0xFFFF16D2);
+    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD).makeSolidColor(10, 12, 0xFFFF16D2);
+
+    throbber = FunkinSprite.create(Paths.image('ui/loading/throbber'));
   }
 
   override public function create():Void
   {
     super.create();
 
+    // Set up our own camera to ensure consistent rendering.
+    FlxG.cameras.reset(mainCamera);
+
+    // Build progress bar
+
+    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFEFEFEF);
+    progressBarBack.zIndex = 100;
+    progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
+    progressBarBack.updateHitbox();
+    progressBarBack.x = BAR_PAD;
+    progressBarBack.y = FlxG.height - BAR_HEIGHT - BAR_PAD;
+    add(progressBarBack);
+
     this.progressBar.zIndex = 200;
     add(progressBar);
 
     updateProgress(0, 10);
+
+    throbber.setGraphicSize(64, 64);
+    throbber.updateHitbox();
+    throbber.x = FlxG.width - BAR_PAD - throbber.width;
+    throbber.y = FlxG.height - throbber.height - BAR_PAD - BAR_HEIGHT - BAR_PAD;
+    add(throbber);
+
+    // Fade the throbber in over a short period.
+    throbber.alpha = 0;
+    FlxTween.tween(throbber, {
+      alpha: 1.0
+    }, 0.2);
   }
 
   override public function update(elapsed:Float):Void
@@ -65,12 +107,14 @@ class HotReloadState extends MusicBeatState
       clearScripts();
 
       // TODO: Make this async, then call loadRegistryData in onComplete
-      // funkin.modding.PolymodHandler.loadEnabledMods();
+      funkin.modding.PolymodHandler.loadEnabledMods();
 
       var future = loadRegistryData();
 
       future.onProgress((loaded:Int, total:Int) ->
       {
+        trace('Completed: $loaded/$total');
+
         updateProgress(loaded, total);
       });
 
@@ -84,6 +128,15 @@ class HotReloadState extends MusicBeatState
       });
     }
 
+    // Update throbber.
+    totalElapsed += elapsed;
+
+    var timesPerSecond:Int = 8;
+    var angleSnaps:Int = 12;
+
+    var rotation:Float = Math.floor(totalElapsed * timesPerSecond) % angleSnaps;
+    throbber.angle = 360 / angleSnaps * rotation;
+
     if (isComplete)
     {
       moveToTitleState();
@@ -95,11 +148,10 @@ class HotReloadState extends MusicBeatState
     var currentProgress:Float = (loaded / total).clamp(0, 1);
 
     // Update progress bar display.
-    var currentWidth:Float = progressBar.width;
-    var targetWidth:Float = FlxG.width * currentProgress;
+    var targetWidth:Float = FlxG.width * currentProgress - BAR_PAD - BAR_PAD;
 
-    progressBar.x = 0;
-    progressBar.setGraphicSize(targetWidth, 24);
+    progressBar.x = BAR_PAD;
+    progressBar.setGraphicSize(targetWidth, BAR_HEIGHT);
     progressBar.updateHitbox();
   }
 

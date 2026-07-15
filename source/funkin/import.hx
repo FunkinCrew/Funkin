@@ -26,4 +26,8 @@ using funkin.util.tools.SongEventDataArrayTools;
 using funkin.util.tools.SongNoteDataArrayTools;
 using funkin.util.tools.StringTools;
 using funkin.util.AnsiUtil;
+#if FEATURE_MULTITHREADING
+using funkin.util.tools.SynchronizedArrayTools;
+using funkin.util.tools.SynchronizedMapTools;
+#end
 #end
