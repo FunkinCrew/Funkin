@@ -86,11 +86,11 @@ class RegistryData
 
     var compatDataFilePaths:Array<RegistryCompatPath> = REGISTRY_COMPAT_PATHS.get(dataFilePath) ?? [];
 
-    result.append(funkin.assets.Assets.listDataFilesInPath(dataFilePath, '$suffix.json', REGISTRY_ASSET_BLACKLIST, nestedEntries));
+    result.appendUnique(funkin.assets.Assets.listDataFilesInPath(dataFilePath, '$suffix.json', REGISTRY_ASSET_BLACKLIST, nestedEntries));
 
     for (compatDataFilePath in compatDataFilePaths)
     {
-      result.append(
+      result.appendUnique(
         funkin.assets.Assets.listDataFilesInPath(compatDataFilePath.path, '$suffix.json', REGISTRY_ASSET_BLACKLIST, compatDataFilePath.nestedEntries)
       );
     }
