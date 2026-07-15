@@ -141,10 +141,9 @@ class HotReloadState extends MusicBeatState
   function loadAdditionalData():Void
   {
     // Load additional data that needs to be loaded synchronously
-
+    // TODO: Fix these up to be async, then call them in loadRegistryData.
     SongEventRegistry.loadEventCache();
-
-    // TODO: Migrate characters to BaseRegistry.
+    SongRegistry.instance.loadEntries();
     CharacterDataParser.loadCharacterCache();
     NoteKindManager.initialize();
   }
