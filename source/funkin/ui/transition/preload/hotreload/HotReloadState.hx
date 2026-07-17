@@ -21,6 +21,7 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.ui.title.TitleState;
 import flixel.tweens.FlxTween;
 import funkin.graphics.FunkinCamera;
+import animate.FlxAnimateAssets;
 import lime.app.Future;
 import polymod.Polymod;
 

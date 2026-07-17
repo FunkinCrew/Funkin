@@ -957,8 +957,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       // Else, continue.
     }
-
-    if (!force && type != null && assetListCaches.exists(type))
+    else if (!force && type != null && assetListCaches.exists(type))
     {
       var result:Null<Array<AssetPath>> = assetListCaches.get(type);
       // Invalidate empty cache.
@@ -969,6 +968,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       // Else, continue.
     }
+
+    // Invalidate cache if we're forcing.
+    if (force) assetListBaseCache = null;
 
     // Actually list the assets and evaluate them by type.
     // If we've already cached the list of ALL the assets, we can start there :)

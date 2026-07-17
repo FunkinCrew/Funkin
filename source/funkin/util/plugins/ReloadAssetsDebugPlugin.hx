@@ -57,8 +57,6 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     #end
   }
 
-  var path:String = '';
-
   @:noCompletion
   function reload():Void
   {
@@ -68,19 +66,17 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     {
       var s:ScriptedMusicBeatState = cast FlxG.state;
       @:privateAccess
-      path = s._asc.fullyQualifiedName;
-      trace('Current scripted state path: ' + path);
-    }
-
-    if (isScripted)
-    {
-      trace('Reloading scripted state: ' + path);
+      var path = s._asc.fullyQualifiedName;
+      trace('Hot-reloading scripted state: ' + path);
       var state:Dynamic = ScriptedMusicBeatState.scriptInit(path);
       FlxG.switchState(() -> new HotReloadState(state));
     }
     else
     {
-      FlxG.switchState(() -> new HotReloadState(state._constructor));
+      var builder = state._constructor;
+
+      trace('Hot-reloading unscripted state: ' + state);
+      FlxG.switchState(() -> new HotReloadState(builder));
     }
   }
 

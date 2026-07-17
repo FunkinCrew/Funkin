@@ -89,10 +89,10 @@ class Assets implements ConsoleClass
     FlxG.assets.isLocal = flxIsLocal;
     FlxG.assets.list = flxList;
 
-    // Cache the results of Assets.list()
+    // Cache the results of Assets.list(), forcibly clearing any previous cache.
     for (type in ASSET_TYPES)
     {
-      Assets.list(type);
+      FunkinAssetCache.instance.list(type, true);
     }
   }
 

@@ -1,5 +1,6 @@
 package funkin.ui.transition.preload;
 
+import funkin.assets.FunkinAssetCache;
 import lime.app.Future;
 import funkin.mobile.util.ScreenUtil;
 import openfl.events.MouseEvent;
@@ -364,6 +365,13 @@ class FunkinPreloader extends FlxBasePreloader
 
           // Load mods to override assets BEFORE we cache them.
           funkin.modding.PolymodHandler.loadEnabledMods();
+
+          // Cache the results of Assets.list(), forcibly clearing any previous cache.
+          @:privateAccess
+          for (type in Assets.ASSET_TYPES)
+          {
+            FunkinAssetCache.instance.list(type, true);
+          }
 
           // Then, initialize scripts.
           var future = funkin.modding.PolymodHandler.loadScripts(true);
