@@ -3,21 +3,18 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "dir": null,
-      "ref": "5eb435f35c65442fb0c24e5c5836983a6b98c4a2",
+      "ref": "0acb16612f51bd241fb5261be829fff3e6039b92",
       "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
     },
     {
       "name": "astc-compressor",
       "type": "git",
-      "dir": null,
       "ref": "6c0fa6f46d3547ca58859b6ede87e659018a7ff5",
       "url": "https://github.com/KarimAkra/astc-compressor"
     },
     {
       "name": "extension-admob",
       "type": "git",
-      "dir": null,
       "ref": "5755982af97f63f35203ecb28d7fbdcbb0161b17",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
@@ -49,28 +46,24 @@
     {
       "name": "extension-webviewcore",
       "type": "git",
-      "dir": null,
       "ref": "d13109450d65c40678244ca23b1aa88ac18d77e6",
       "url": "https://github.com/LimeExtensions/extension-webviewcore"
     },
     {
       "name": "flixel",
       "type": "git",
-      "dir": null,
       "ref": "a05db74b890a711d877384b4bb87b54fa519a4c6",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "dir": null,
       "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
-      "dir": null,
       "ref": "34e5760063b2303d74acf85d1dba152c9aa4a17c",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
@@ -87,7 +80,6 @@
     {
       "name": "funkin.vis",
       "type": "git",
-      "dir": null,
       "ref": "02bada154b474c2554709b9d12aef0cbf0da3ec9",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
@@ -111,21 +103,18 @@
     {
       "name": "haxeui-core",
       "type": "git",
-      "dir": null,
       "ref": "30019728717e641cb866ba518141696ed3b4ae0a",
       "url": "https://github.com/FunkinCrew/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
-      "dir": null,
       "ref": "152df5f8542e32eef650b495eae7d105867e35c0",
       "url": "https://github.com/FunkinCrew/haxeui-flixel"
     },
     {
       "name": "hxcpp",
       "type": "git",
-      "dir": null,
       "ref": "2e969d0154ac536c1b5a5c89d2c2b73d7126bd2e",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
@@ -144,7 +133,6 @@
     {
       "name": "hxjsonast",
       "type": "git",
-      "dir": null,
       "ref": "20e72cc68c823496359775ac1f06500e67f189d5",
       "url": "https://github.com/nadako/hxjsonast/"
     },
@@ -166,7 +154,6 @@
     {
       "name": "json2object",
       "type": "git",
-      "dir": null,
       "ref": "316eaefbbe6ea4aad9726611662a75605c2f6b20",
       "url": "https://github.com/FunkinCrew/json2object"
     },
@@ -177,48 +164,43 @@
     },
     {
       "name": "jsonpath",
-      "type": "haxelib",
-      "version": "1.1.0"
+      "type": "git",
+      "ref": "23f5821ed0a5241c10afe2fa12bfb6ae4fb8f17f",
+      "url": "https://github.com/EliteMasterEric/jsonpath"
     },
     {
       "name": "lime",
       "type": "git",
-      "dir": null,
       "ref": "fbe2959b57f80d6a8b6d4f5604f14dcf117f68e9",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "newgrounds",
       "type": "git",
-      "dir": null,
       "ref": "60162762e6ca65da011ffee7a6617f547ea5dff9",
       "url": "https://github.com/FunkinCrew/Newgrounds"
     },
     {
       "name": "openfl",
       "type": "git",
-      "dir": null,
       "ref": "0c5a3c6ac50987c4d0c32b562bbdcb5bf1346db5",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
-      "dir": null,
-      "ref": "3b056c11382ec9b72e471b0114ce9922f8df5c89",
+      "ref": "7bce28c6958c8a7ee55a2bd6bbc1e9baef5e11a0",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
       "name": "thx.core",
       "type": "git",
-      "dir": null,
       "ref": "2bf2b992e06159510f595554e6b952e47922f128",
       "url": "https://github.com/fponticelli/thx.core"
     },
     {
       "name": "thx.semver",
       "type": "git",
-      "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
     }
