@@ -366,6 +366,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     TaskHandler.performTask({
       task: (currentState:State, workOutput:WorkOutput) ->
       {
+        log('Queuing entries for registry...');
+
         scriptedEntryClassNames = getScriptedClassNames();
 
         var entryIdList:Array<String> = fetchEntryIdsFromFiles();
@@ -387,6 +389,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         onError: onError.bind(''),
         onComplete: (_) ->
         {
+          log('Queuing loading for ${scriptedEntryClassNames.length} scripted and ${unscriptedEntryIds.length} unscripted entries...');
+
           for (entryCls in scriptedEntryClassNames)
           {
             TaskHandler.performTask({
@@ -567,6 +571,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
   function clearEntries():Void
   {
+    log('Destroying ${countEntries()} entries in registry...');
+
     for (entry in entries)
     {
       entry.destroy();
