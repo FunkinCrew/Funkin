@@ -109,22 +109,36 @@ class HotReloadState extends MusicBeatState
       // TODO: Make this async, then call loadRegistryData in onComplete
       funkin.modding.PolymodHandler.loadEnabledMods();
 
-      var future = loadRegistryData();
+      var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
 
-      future.onProgress((loaded:Int, total:Int) ->
+      scriptFuture.onProgress((loaded:Int, total:Int) ->
       {
-        trace('Completed: $loaded/$total');
+        trace('Script loading completed: $loaded/$total');
 
         updateProgress(loaded, total);
       });
 
-      future.onComplete((_) ->
+      scriptFuture.onComplete((_result) ->
       {
-        loadAdditionalData();
+        trace('Script loading complete');
 
-        initModules();
+        var registryFuture = loadRegistryData();
 
-        isComplete = true;
+        registryFuture.onProgress((loaded:Int, total:Int) ->
+        {
+          trace('Registry loading completed: $loaded/$total');
+
+          updateProgress(loaded, total);
+        });
+
+        registryFuture.onComplete((_) ->
+        {
+          loadAdditionalData();
+
+          initModules();
+
+          isComplete = true;
+        });
       });
     }
 

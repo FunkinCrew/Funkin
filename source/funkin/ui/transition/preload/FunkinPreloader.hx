@@ -367,7 +367,6 @@ class FunkinPreloader extends FlxBasePreloader
 
           // Then, initialize scripts.
           var future = funkin.modding.PolymodHandler.loadScripts(true);
-
           future.onProgress((loaded:Int, total:Int) ->
           {
             trace('PRELOADER: PROGRESS initializing scripts (${loaded} / ${total})...');
@@ -375,11 +374,20 @@ class FunkinPreloader extends FlxBasePreloader
           });
           future.onComplete((_result) ->
           {
-            trace('PRELOADER: Completed initializing scripts...');
+            var classList = polymod.hscript._internal.PolymodScriptClass.listScriptClasses();
+            trace('PRELOADER: Completed initializing ${classList.length} scripts...');
             initializingScriptsComplete = true;
           });
-
           return initializingScriptsPercent;
+
+          /*
+            // Synchronous script loading.
+            polymod.Polymod.registerAllScriptClasses();
+            var classList = polymod.hscript._internal.PolymodScriptClass.listScriptClasses();
+            trace('POLYMOD: Parsed and registered ${classList.length} scripted classes.');
+            initializingScriptsComplete = true;
+            return 1.0;
+           */
         }
         else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
         {

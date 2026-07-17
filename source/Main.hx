@@ -144,8 +144,8 @@ class Main extends Sprite
     // George recommends binding the save before FlxGame is created.
     Save.load();
 
-    // Load mods to override assets.
-    funkin.modding.PolymodHandler.loadEnabledMods();
+    // Loading mods happens in the preloader now.
+    // funkin.modding.PolymodHandler.loadEnabledMods()
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
