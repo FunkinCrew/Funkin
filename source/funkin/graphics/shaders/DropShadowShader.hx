@@ -449,12 +449,7 @@ class DropShadowShader extends FlxShader
 
         float delta = lwidth_manual(color3_light, uv, px);
 
-        // FIXME: Threshold now uses Luma instead of Gray.
-        // The -0.05 offset is a temporary hack and does NOT accurately match
-        // the old behavior, since the difference varies per color.
-        // Proper fix: adjust thresholds in scripts/mods to account for Luma.
-        float threshold = getThreshold(uv) - 0.05;
-
+        float threshold = getThreshold(uv);
         float intensity = smoothstep(threshold - delta, threshold + delta, color3_light);
 
         float shadowAlpha = 0.0;
