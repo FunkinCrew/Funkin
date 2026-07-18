@@ -1132,14 +1132,15 @@ class ModMenuState extends MusicBeatState
   #if FEATURE_TOUCH_CONTROLS
   var grabbedItem:ModMenuItem = null;
   var grabbedIndex:Int = 0;
-  final touchDeltaThreshold:Int = 20;
+  final touchDeltaXThreshold:Int = 5;
+  final touchDeltaYThreshold:Int = 10;
 
   function checkItemGrab(itemList:ModMenuItemList,
     targetSelection:ModMenuSelection):Void
   {
     for (item in itemList.modItems)
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaThreshold)
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaXThreshold)
       {
         itemList.selectModItem(item, false);
 
@@ -1202,7 +1203,7 @@ class ModMenuState extends MusicBeatState
         checkItemGrab(enabledModItems, EnabledModList);
         checkItemGrab(disabledModItems, DisabledModList);
 
-        if (TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewY) >= touchDeltaThreshold)
+        if (TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewY) >= touchDeltaYThreshold)
         {
           touchScrolling = true;
         }
@@ -1232,7 +1233,7 @@ class ModMenuState extends MusicBeatState
 
                 selection = DisabledModList;
 
-                disableMod(grabbedItem);
+                disableMod(grabbedItem, true);
 
                 listChanged = true;
               }
@@ -1246,7 +1247,7 @@ class ModMenuState extends MusicBeatState
 
                 selection = EnabledModList;
 
-                enableMod(grabbedItem);
+                enableMod(grabbedItem, true);
 
                 listChanged = true;
               }
@@ -1567,7 +1568,10 @@ class ModMenuState extends MusicBeatState
     // });
   }
 
-  function enableMod(item:Null<ModMenuItem>, ?forcedInsertIndex:Int = -1, ?batchFutureCount:Int = -1):Void
+  function enableMod(item:Null<ModMenuItem>,
+    ?forcedInsertIndex:Int = -1,
+    ?batchFutureCount:Int = -1,
+    shouldUpdateSelection:Bool = true):Void
   {
     if (item == null) return;
     if (!disabledModItems.modItems.contains(item)) return;
@@ -1659,6 +1663,8 @@ class ModMenuState extends MusicBeatState
     disabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
     startItemTransition(item, targetX, targetY, enabledModItems, finalIndex);
 
+    if (!shouldUpdateSelection) return;
+
     enabledModItems.selectModItem(item, false);
 
     if (disabledModItems.modItems.length > 0)
@@ -1673,7 +1679,9 @@ class ModMenuState extends MusicBeatState
     }
   }
 
-  function disableMod(item:Null<ModMenuItem>, ?batchFutureCount:Int = -1):Void
+  function disableMod(item:Null<ModMenuItem>,
+    ?batchFutureCount:Int = -1,
+    shouldUpdateSelection:Bool = true):Void
   {
     if (item == null) return;
 
@@ -1731,6 +1739,8 @@ class ModMenuState extends MusicBeatState
     disabledModItems.animateItemsToLayoutForInsertCount(finalIndex, inFlight + 1, 0.28, FlxEase.quartOut);
     enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
     startItemTransition(item, targetX, targetY, disabledModItems, finalIndex);
+
+    if (!shouldUpdateSelection) return;
 
     disabledModItems.selectModItem(item, false);
 
