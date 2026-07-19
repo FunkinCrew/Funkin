@@ -1,5 +1,7 @@
 package funkin.util.tools;
 
+import haxe.Utf8;
+
 /**
  * A static extension which provides utility functions for Strings.
  */
@@ -139,5 +141,13 @@ class StringTools
   public static function parseJSON(value:String):Dynamic
   {
     return SerializerUtil.fromJSON(value);
+  }
+
+  @:haxe.warning('-WDeprecated')
+  public static function fromUTF8CharCode(value:Int):String
+  {
+    var result = new Utf8();
+    result.addChar(value);
+    return result.toString();
   }
 }
