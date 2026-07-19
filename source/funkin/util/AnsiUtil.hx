@@ -102,6 +102,8 @@ class AnsiUtil
   static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
   #end
   @:noCompletion
+  static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
+  @:noCompletion
   static var codesSupported:Null<Bool> = null;
 
   /**
@@ -572,7 +574,11 @@ class AnsiUtil
   @:noCompletion
   static function stripCodes(output:String):String
   {
-    final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
-    return isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, '');
+    // Regex.replace() isn't thread safe and this function is commonly accessed in a multi-threaded environment.
+    // We use an RLock here to prevent crashes and race conditions.
+    static final SYNC = new hx.concurrent.lock.RLock();
+
+    // The body of SYNC.execute() can only be called by one thread at a time.
+    return SYNC.execute(() -> isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, ''));
   }
 }
