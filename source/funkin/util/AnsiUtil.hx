@@ -102,8 +102,6 @@ class AnsiUtil
   static final REGEX_TERM_TYPES:EReg = ~/(?i)^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/;
   #end
   @:noCompletion
-  static final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
-  @:noCompletion
   static var codesSupported:Null<Bool> = null;
 
   /**
@@ -574,6 +572,7 @@ class AnsiUtil
   @:noCompletion
   static function stripCodes(output:String):String
   {
+    final REGEX_ANSI_CODES:EReg = ~/\x1b\[[0-9;]*m/g;
     return isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, '');
   }
 }
