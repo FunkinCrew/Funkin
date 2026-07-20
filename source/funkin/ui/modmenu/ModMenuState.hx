@@ -1131,13 +1131,17 @@ class ModMenuState extends MusicBeatState
 
   #if FEATURE_TOUCH_CONTROLS
   var grabbedItem:ModMenuItem = null;
-  var grabbedIndex:Int = 0;
   final touchDeltaXThreshold:Int = 5;
   final touchDeltaYThreshold:Int = 10;
 
   function checkItemGrab(itemList:ModMenuItemList,
     targetSelection:ModMenuSelection):Void
   {
+    if (grabbedItem == null)
+    {
+      itemList.deselect();
+    }
+
     for (item in itemList.modItems)
     {
       if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaXThreshold)
@@ -1145,7 +1149,6 @@ class ModMenuState extends MusicBeatState
         itemList.selectModItem(item, false);
 
         grabbedItem = item;
-        grabbedIndex = itemList.modItems.indexOf(item);
 
         for (record in pendingTransitions)
         {
@@ -1161,11 +1164,6 @@ class ModMenuState extends MusicBeatState
 
         selection = targetSelection;
       }
-    }
-
-    if (grabbedItem == null)
-    {
-      itemList.deselect();
     }
   }
 
@@ -1268,8 +1266,9 @@ class ModMenuState extends MusicBeatState
             startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
           }
 
+          targetList.deselect();
+
           grabbedItem = null;
-          grabbedIndex = 0;
         }
       }
     }
@@ -1619,7 +1618,7 @@ class ModMenuState extends MusicBeatState
       var dependencyItem = disabledModItems.modItems.find((it) -> it.getModId() == dependencyId);
       if (dependencyItem != null)
       {
-        enableMod(dependencyItem, nextInsertIndex, batchFutureCount); // share denominator
+        enableMod(dependencyItem, nextInsertIndex, batchFutureCount, shouldUpdateSelection); // share denominator
         nextInsertIndex++;
       }
       else
@@ -1704,7 +1703,7 @@ class ModMenuState extends MusicBeatState
       if (dependencyItem != null)
       {
         trace('Disabling ${dependencyItem.getModTitle()} since it depends on ${item.getModTitle()}');
-        disableMod(dependencyItem, batchFutureCount); // share denominator
+        disableMod(dependencyItem, batchFutureCount, shouldUpdateSelection); // share denominator
       }
     }
 
