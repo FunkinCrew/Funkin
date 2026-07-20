@@ -94,7 +94,7 @@ class StringTools
   /**
    * The regular expression to sanitize strings.
    */
-  static final SANTIZE_REGEX:EReg = ~/[^-a-zA-Z0-9]/g;
+  static final SANITIZE_REGEX:EReg = ~/[^-a-zA-Z0-9]/g;
 
   /**
    * Remove all instances of symbols other than alpha-numeric characters (and dashes)from a string.
@@ -103,7 +103,7 @@ class StringTools
    */
   public static function sanitize(value:String):String
   {
-    return SANTIZE_REGEX.replace(value, '');
+    return SANITIZE_REGEX.replace(value, '');
   }
 
   /**

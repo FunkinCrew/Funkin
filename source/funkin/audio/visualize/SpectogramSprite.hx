@@ -6,7 +6,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.util.FlxColor;
-import funkin.audio.visualize.PolygonSpectogram.VISTYPE;
+import funkin.audio.visualize.PolygonSpectrogram.VISTYPE;
 import funkin.audio.visualize.VisShit.CurAudioInfo;
 import lime.utils.Int16Array;
 

@@ -159,15 +159,15 @@ class NoteKindManager
   /**
    * Get a list of all the note styles used by the given notes.
    * Great for preloading.
-   * @param songNoteDatas The notes to query for note styles.
+   * @param songNoteData The notes to query for note styles.
    * @return The note styles to load.
    */
-  public static function listNoteStylesByNoteData(songNoteDatas:Array<SongNoteData>):Array<NoteStyle>
+  public static function listNoteStylesByNoteData(songNoteData:Array<SongNoteData>):Array<NoteStyle>
   {
     var results:Array<NoteStyle> = [];
-    for (songNoteData in songNoteDatas)
+    for (noteData in songNoteData)
     {
-      var noteStyle:NoteStyle = getNoteStyle(songNoteData.kind, null);
+      var noteStyle:NoteStyle = getNoteStyle(noteData.kind, null);
       if (noteStyle != null && !results.contains(noteStyle))
       {
         results.push(noteStyle);

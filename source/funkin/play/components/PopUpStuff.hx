@@ -71,21 +71,21 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
   public function displayCombo(combo:Int = 0):Void
   {
-    var seperatedScore:Array<Int> = [];
+    var separatedScore:Array<Int> = [];
     var tempCombo:Int = combo;
 
     while (tempCombo != 0)
     {
-      seperatedScore.push(tempCombo % 10);
+      separatedScore.push(tempCombo % 10);
       tempCombo = Std.int(tempCombo / 10);
     }
-    while (seperatedScore.length < 3)
-      seperatedScore.push(0);
+    while (separatedScore.length < 3)
+      separatedScore.push(0);
 
     // seperatedScore.reverse();
 
     var daLoop:Int = 1;
-    for (digit in seperatedScore)
+    for (digit in separatedScore)
     {
       var numScore:Null<FunkinSprite> = noteStyle.buildComboNumSprite(digit);
       if (numScore == null) continue;
