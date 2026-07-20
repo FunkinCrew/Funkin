@@ -58,54 +58,39 @@ class StickerSubState extends MusicBeatSubState
 
   var stickerPackId:String;
   var stickerPack:StickerPack;
-  // what "folders" to potentially load from (as of writing only "keys" exist)
-  var soundSelections:Array<String> = [];
-  // what "folder" was randomly selected
-  var soundSelection:String = "";
-  var sounds:Array<String> = [];
+
+  /**
+   * The list of randomly chosen sticker sounds for the game to play.
+   */
+  var stickerSounds:Array<String> = [];
 
   public function new(params:StickerSubStateParams):Void
   {
     super();
+
+    grpStickers = new FlxTypedGroup<StickerSprite>();
     transitionSprite ??= new StickerTransitionSprite();
+
     // Define the target state, with a default fallback.
     this.targetState = params?.targetState ?? (sticker) -> FreeplayState.build(null, sticker);
     this.stickerPackId = params.stickerPack ?? Constants.DEFAULT_STICKER_PACK;
     var targetStickerPack = StickerRegistry.instance.fetchEntry(this.stickerPackId);
     this.stickerPack = targetStickerPack ?? StickerRegistry.instance.fetchDefault();
-    // TODO: Make this tied to the sticker pack more closely.
-    var assetsInList = Assets.list();
-    var soundFilterFunc = function(a:String)
+
+    var soundFolder:String = stickerPack.getRandomStickerSoundFolder();
+    stickerSounds = Assets.list(SOUND).filter((sound:String) ->
     {
-      return a.startsWith('assets/shared/sounds/stickersounds/');
-    };
-    soundSelections = assetsInList.filter(soundFilterFunc);
-    soundSelections = soundSelections.map(function(a:String)
-    {
-      return a.replace('assets/shared/sounds/stickersounds/', '').split('/')[0];
+      // We want to filter out any sounds that aren't apart of the selected sound folder.
+      return sound.startsWith(('assets/shared/sounds/stickersounds/$soundFolder/'));
     });
-    grpStickers = new FlxTypedGroup<StickerSprite>();
-    // cracked cleanup... yuchh...
-    for (i in soundSelections)
+
+    // Clean up the list of sounds to be re-usable asset paths for when they're played.
+    stickerSounds = stickerSounds.map((sound:String) ->
     {
-      while (soundSelections.contains(i))
-      {
-        soundSelections.remove(i);
-      }
-      soundSelections.push(i);
-    }
-    soundSelection = FlxG.random.getObject(soundSelections);
-    var filterFunc = function(a:String)
-    {
-      return a.startsWith('assets/shared/sounds/stickersounds/' + soundSelection + '/');
-    };
-    var assetsInList3 = Assets.list();
-    sounds = assetsInList3.filter(filterFunc);
-    for (i in 0...sounds.length)
-    {
-      sounds[i] = sounds[i].replace('assets/shared/sounds/', '');
-      sounds[i] = sounds[i].substring(0, sounds[i].lastIndexOf('.'));
-    }
+      sound = sound.replace('assets/shared/sounds/', ''); // Removes asset prefix.
+      sound = sound.substring(0, sound.lastIndexOf('.')); // Removes file extension.
+    });
+
     if (params.oldStickers != null)
     {
       for (sticker in params.oldStickers) grpStickers.add(sticker);
@@ -136,7 +121,7 @@ class StickerSubState extends MusicBeatSubState
       new FlxTimer().start(sticker.timing, _ ->
       {
         sticker.visible = false;
-        var daSound:String = FlxG.random.getObject(sounds);
+        var daSound:String = FlxG.random.getObject(stickerSounds);
         FunkinSound.playOnce(Paths.sound(daSound));
         // Do the small vibration each time sticker disappears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);
@@ -196,7 +181,7 @@ class StickerSubState extends MusicBeatSubState
       {
         if (grpStickers == null) return;
         sticker.visible = true;
-        var daSound:String = FlxG.random.getObject(sounds);
+        var daSound:String = FlxG.random.getObject(stickerSounds);
         FunkinSound.playOnce(Paths.sound(daSound));
         // Do the small vibration each time sticker appears.
         HapticUtil.vibrate(0, 0.01, Constants.MIN_VIBRATION_AMPLITUDE * 0.5);

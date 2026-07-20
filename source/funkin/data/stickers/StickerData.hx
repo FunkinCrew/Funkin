@@ -27,4 +27,10 @@ typedef StickerData =
    * This is simply a list of asset files to use.
    */
   public var stickers:Array<String>;
+
+  /**
+   * A list of folders to use for sticker sounds.
+   */
+  @:optional @:default(['keys'])
+  public var stickerSoundFolders:Array<String>;
 }

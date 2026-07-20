@@ -59,6 +59,15 @@ class StickerPack implements IRegistryEntry<StickerData>
   }
 
   /**
+   * Gets a list of all sticker sound folders available in the pack.
+   * @return The list of sound folders as strings.
+   */
+  public function getStickerSoundFolders():Array<String>
+  {
+    return _data.stickerSoundFolders;
+  }
+
+  /**
    * Retrieve a random sticker from the pack.
    * @param last Whether this will be the last sticker to be placed on the screen.
    * @return An asset path to a sticker to display.
@@ -66,6 +75,15 @@ class StickerPack implements IRegistryEntry<StickerData>
   public function getRandomStickerPath(last:Bool):String
   {
     return FlxG.random.getObject(getStickers());
+  }
+
+  /**
+   * Retrieve a random sticker sound folder from the pack.
+   * @return The path to a random sound folder.
+   */
+  public function getRandomStickerSoundFolder():String
+  {
+    return FlxG.random.getObject(getStickerSoundFolders());
   }
 
   public function toString():String
