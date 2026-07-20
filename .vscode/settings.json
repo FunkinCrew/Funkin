@@ -85,8 +85,7 @@
     { "name": "air", "enabled": false },
     { "name": "electron", "enabled": false },
     { "name": "flash", "enabled": false },
-    { "name": "neko", "enabled": false },
-    { "name": "tvos", "enabled": false }
+    { "name": "neko", "enabled": false }
   ],
   "lime.defaultTargetConfiguration": "Windows / Debug",
   "lime.targetConfigurations": [
