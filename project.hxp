@@ -811,7 +811,6 @@ class Project extends HXProject
       // case Platform.PS3:
       // case Platform.PS4:
       // case Platform.TIZEN:
-      // case Platform.TVOS:
       // case Platform.VITA:
       // case Platform.WEBOS:
       // case Platform.WIIU:
