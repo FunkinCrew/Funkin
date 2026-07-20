@@ -60,11 +60,16 @@ class Save implements ConsoleClass implements ISerializable
 
   /**
    * Load the game's save data from disk.
+   *
+   * @param force Whether to force a reload from disk, even if the save data is already loaded.
    * @return The resulting Save.
    */
-  public static function load():Save
+  public static function load(force:Bool = false):Save
   {
     trace(' SAVE '.bold().bg_note_down() + ' Loading save...');
+
+    if (force) _instance = null;
+    if (!force && _instance != null) return _instance;
 
     // Bind save data.
     final loadedSave:Save = loadFromSlot(Constants.BASE_SAVE_SLOT);
@@ -406,7 +411,6 @@ class Save implements ConsoleClass implements ISerializable
 
   @:saveProperty(data.optionsQuickMenu.firstRun, false)
   public var quickMenuFirstRun:SaveProperty<Bool>;
-
   ///
   /// CAMERA EDITOR OPTIONS
   ///
@@ -1075,7 +1079,8 @@ class Save implements ConsoleClass implements ISerializable
    *        or pretty printed formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     var writer = new json2object.JsonWriter<RawSaveData>(params ?? {
       ignoreNullOptionals: true,
