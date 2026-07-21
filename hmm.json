@@ -201,8 +201,8 @@
     {
       "name": "thx.semver",
       "type": "git",
-      "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
-      "url": "https://github.com/fponticelli/thx.semver"
+      "ref": "7714c5ed3547cc996c9ee318aa360abbd7f85f74",
+      "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]
 }
