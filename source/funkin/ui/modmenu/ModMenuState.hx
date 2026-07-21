@@ -380,15 +380,30 @@ class ModMenuState extends MusicBeatState
     enabledModItems.repositionItems();
     disabledModItems.repositionItems();
 
+    var usingTouch:Bool = false;
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (!ControlsHandler.usingExternalInputDevice)
+    {
+      usingTouch = true;
+    }
+    #end
+
     if (disabledModItems.modItems.length > 0)
     {
-      disabledModItems.selectFirstItem();
+      if (!usingTouch)
+      {
+        disabledModItems.selectFirstItem();
+      }
       selection = DisabledModList;
       enabledModItems.deselectAll();
     }
     else
     {
-      enabledModItems.selectFirstItem();
+      if (!usingTouch)
+      {
+        enabledModItems.selectFirstItem();
+      }
       selection = EnabledModList;
       disabledModItems.deselectAll();
     }
@@ -1377,28 +1392,40 @@ class ModMenuState extends MusicBeatState
     tempDisabledMods = [];
     tempEnabledMods = [];
 
-    // reselect items if possible, otherwise select first item in the list
-    if (oldSelectedId != null)
+    var usingTouch:Bool = false;
+
+    #if FEATURE_TOUCH_CONTROLS
+    if (!ControlsHandler.usingExternalInputDevice)
     {
-      if (selection == DisabledModList)
-      {
-        var itemToSelect = disabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
-        if (itemToSelect != null) disabledModItems.selectModItem(itemToSelect);
-        else
-          disabledModItems.selectFirstItem();
-      }
-      else if (selection == EnabledModList)
-      {
-        var itemToSelect = enabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
-        if (itemToSelect != null) enabledModItems.selectModItem(itemToSelect);
-        else
-          enabledModItems.selectFirstItem();
-      }
+      usingTouch = true;
     }
-    else
+    #end
+
+    if (!usingTouch)
     {
-      if (selection == DisabledModList) disabledModItems.selectFirstItem();
-      else if (selection == EnabledModList) enabledModItems.selectFirstItem();
+      // reselect items if possible, otherwise select first item in the list
+      if (oldSelectedId != null)
+      {
+        if (selection == DisabledModList)
+        {
+          var itemToSelect = disabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
+          if (itemToSelect != null) disabledModItems.selectModItem(itemToSelect);
+          else
+            disabledModItems.selectFirstItem();
+        }
+        else if (selection == EnabledModList)
+        {
+          var itemToSelect = enabledModItems.modItems.find((item) -> item.getModId() == oldSelectedId);
+          if (itemToSelect != null) enabledModItems.selectModItem(itemToSelect);
+          else
+            enabledModItems.selectFirstItem();
+        }
+      }
+      else
+      {
+        if (selection == DisabledModList) disabledModItems.selectFirstItem();
+        else if (selection == EnabledModList) enabledModItems.selectFirstItem();
+      }
     }
 
     if (newDisabledItems.length > 0 && doFade) animateNewItemsIn(disabledModItems, newDisabledItems);
