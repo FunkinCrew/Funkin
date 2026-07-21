@@ -6,9 +6,6 @@ import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
-#if android
-import funkin.external.android.CallbackUtil;
-#end
 
 /**
  * A plugin which adds functionality to press `F5` to reload all game assets, then reload the current state.
@@ -17,15 +14,6 @@ import funkin.external.android.CallbackUtil;
 @:nullSafety
 class ReloadAssetsDebugPlugin extends FlxBasic
 {
-  public function new()
-  {
-    super();
-
-    #if android
-    CallbackUtil.onActivityResult.add(onActivityResult);
-    #end
-  }
-
   public static function initialize():Void
   {
     FlxG.plugins.addPlugin(new ReloadAssetsDebugPlugin());
@@ -43,18 +31,6 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     {
       reload();
     }
-  }
-
-  override public function destroy():Void
-  {
-    super.destroy();
-
-    #if android
-    if (CallbackUtil.onActivityResult.has(onActivityResult))
-    {
-      CallbackUtil.onActivityResult.remove(onActivityResult);
-    }
-    #end
   }
 
   @:noCompletion
@@ -79,15 +55,4 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       FlxG.switchState(() -> new HotReloadState(builder));
     }
   }
-
-  #if android
-  @:noCompletion
-  function onActivityResult(requestCode:Int, resultCode:Int):Void
-  {
-    if (requestCode == CallbackUtil.DATA_FOLDER_CLOSED)
-    {
-      reload();
-    }
-  }
-  #end
 }
