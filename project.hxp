@@ -384,9 +384,15 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_MOBILE_WEBVIEW`
-   * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
+   * If this feature flag is enabled, the game will be able to load WebViews, mainly needed for the Newgrounds impl.
    */
   static final FEATURE_MOBILE_WEBVIEW:FeatureFlag = "FEATURE_MOBILE_WEBVIEW";
+
+  /**
+   * `-DFEATURE_MOBILE_AGESIGNALS`
+   * If this feature flag is enabled, the game will be able to use age singals.
+   */
+  static final FEATURE_MOBILE_AGESIGNALS:FeatureFlag = "FEATURE_MOBILE_AGESIGNALS";
 
   /**
    * `-DFEATURE_NAUGHTYNESS`
@@ -962,6 +968,7 @@ class Project extends HXProject
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease()) && envConfig != null);
     FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
+    FEATURE_MOBILE_AGESIGNALS.apply(this, isMobile() && isRelease());
 
     // The coveted ghost tapping feature.
     // Essential on mobile but delayed on desktop.
@@ -1411,6 +1418,11 @@ class Project extends HXProject
     if (FEATURE_MOBILE_WEBVIEW.isEnabled(this))
     {
       addHaxelib('extension-webviewcore'); // WebView Extension
+    }
+
+    if (FEATURE_MOBILE_AGESIGNALS.isEnabled(this))
+    {
+      addHaxelib('extension-agesignals'); // WebView Extension
     }
   }
 

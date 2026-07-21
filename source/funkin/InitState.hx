@@ -124,6 +124,11 @@ class InitState extends FlxState
       funkin.mobile.util.WebViewUtil.init();
       #end
 
+      #if FEATURE_MOBILE_AGESIGNALS
+      // Setup AgeSignals
+      funkin.mobile.util.AgeSignalsUtil.init();
+      #end
+
       #if android
       // Setup Callback util.
       funkin.external.android.CallbackUtil.init();

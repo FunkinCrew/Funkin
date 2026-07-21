@@ -22,6 +22,12 @@
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
+      "name": "extension-agesignals",
+      "type": "git",
+      "ref": "bc5351fc30d8c8c0772fbaa3a291a5e48fca752b",
+      "url": "https://github.com/FunkinCrew/extension-agesignals"
+    },
+    {
       "name": "extension-androidtools",
       "type": "haxelib",
       "version": "2.2.2"
