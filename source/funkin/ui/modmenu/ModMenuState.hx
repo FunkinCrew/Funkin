@@ -1166,6 +1166,8 @@ class ModMenuState extends MusicBeatState
     {
       if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaXThreshold)
       {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
         itemList.selectModItem(item, false);
 
         grabbedItem = item;
@@ -1304,6 +1306,8 @@ class ModMenuState extends MusicBeatState
 
     if (TouchUtil.pressAction(hitboxOpenFolder))
     {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
       openFolderAnimator.playAnimation('accept');
       openFolderAnimator.onFinish = () ->
       {
@@ -1313,6 +1317,8 @@ class ModMenuState extends MusicBeatState
     }
     if (TouchUtil.pressAction(buttonDone))
     {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
       playElectrocutionSequence();
     }
   }
