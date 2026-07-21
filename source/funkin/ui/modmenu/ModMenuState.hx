@@ -1164,7 +1164,7 @@ class ModMenuState extends MusicBeatState
 
     for (item in itemList.modItems)
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewX) >= touchDeltaXThreshold)
+      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewX) >= touchDeltaXThreshold)
       {
         FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
@@ -1223,15 +1223,15 @@ class ModMenuState extends MusicBeatState
         checkItemGrab(enabledModItems, EnabledModList);
         checkItemGrab(disabledModItems, DisabledModList);
 
-        if (TouchUtil.pressed && Math.abs(TouchUtil.touch.deltaViewY) >= touchDeltaYThreshold)
+        if (TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewY) >= touchDeltaYThreshold)
         {
           touchScrolling = true;
         }
       }
       else
       {
-        final targetX:Float = TouchUtil.touch.x - grabbedItem.width / 2;
-        final targetY:Float = TouchUtil.touch.y - grabbedItem.height / 2;
+        final targetX:Float = TouchUtil.touch?.x - grabbedItem.width / 2;
+        final targetY:Float = TouchUtil.touch?.y - grabbedItem.height / 2;
 
         grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
         grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
