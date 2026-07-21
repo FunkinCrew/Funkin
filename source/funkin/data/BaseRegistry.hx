@@ -212,14 +212,19 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * You can add an `onComplete` callback to perform some action when all entries have been loaded.
    * @return A future representing the fulfilled entry loading.
    */
+  @:haxe.warning('-WVarInit')
   public function loadEntriesAsync():lime.app.Future<LoadEntriesResult>
   {
+    // Fuuuck dude this code is so nasty fuuuck
+
     var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadEntriesAsync(${registryId})');
 
     // Clear the entries before we start loading new ones.
     clearEntries();
 
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+
+    var doneScriptedEntries:Bool = false;
 
     var entryCount:Int = 0;
     var scriptedEntryClassNames:Array<String> = [];
@@ -233,6 +238,9 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         ?entryCls:String
       }> = new SynchronizedArray();
 
+    var startScriptedEntries:() -> Void;
+    var startUnscriptedEntries:() -> Void;
+
     // Callback when one task completes
     // When the last task completes, we can complete the promise.
     var checkComplete:Void->Void = () ->
@@ -240,30 +248,39 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
       var completedCount = entries.size() + entryErrors.length;
       if (completedCount == entryCount)
       {
-        log('Finished loading entries (${entries.size()}+${entryErrors.length} / ${entryCount})');
-        promise.complete({
-          entriesLoaded: entries.size(),
-          entriesFailed: entryErrors.length
-        });
-        perf.print();
+        if (!doneScriptedEntries)
+        {
+          doneScriptedEntries = true;
+          startUnscriptedEntries();
+          log('Finished loading entries (1/2) (${entries.size()}+${entryErrors.length} / ${entryCount})');
+          return;
+        }
+        else
+        {
+          log('Finished loading entries (2/2) (${entries.size()}+${entryErrors.length} / ${entryCount})');
+          promise.complete({
+            entriesLoaded: entries.size(),
+            entriesFailed: entryErrors.length
+          });
+          perf.print();
+        }
       }
       else
       {
-        /*
-          var unfinishedEntries = getUnfinishedEntries()
-          log('  ${unfinishedEntries.length} entries remaining: ${unfinishedEntries.join(', ')}')
-          if ((entryCount - completedCount) == 1);
-          {
-           var unfinishedEntries:Array<String> = []
-           unfinishedEntries.appendUnique(unscriptedEntryIds.filter((id) -> !entries.exists(id)))
-           unfinishedEntries.appendUnique(scriptedEntryClassNames.filter((clsName) -> !scriptedEntryIds.exists(clsName)))
-           log('  Only one entry left!')
-           log('  Unfinished: ${unfinishedEntries.join(', ')}')
-           log('  Scripted (${scriptedEntryIds.length}): ${scriptedEntryClassNames.join(', ')}')
-           log('  Unscripted (${unscriptedEntryIds.length}): ${unscriptedEntryIds.join(', ')}')
-           log('  Entries (${entries.size()}): ${entries.keys().array().join(', ')}')
-          }
-         */
+        if ((entryCount - completedCount) == 1)
+        {
+          // *mercy gif* Use this snippet if the asset loading gets stuck.
+          /*
+            var unfinishedEntries:Array<String> = []
+            unfinishedEntries.appendUnique(unscriptedEntryIds.filter((id) -> !entries.exists(id)))
+            unfinishedEntries.appendUnique(scriptedEntryClassNames.filter((clsName) -> !scriptedEntryIds.exists(clsName)))
+            log('  Only one entry left!')
+            log('  Unfinished: ${unfinishedEntries.join(', ')}')
+            log('  Scripted (${scriptedEntryIds.length}): ${scriptedEntryClassNames.join(', ')}')
+            log('  Unscripted (${unscriptedEntryIds.length}): ${unscriptedEntryIds.join(', ')}')
+            log('  Entries (${entries.size()}): ${entries.keys().array().join(', ')}')
+           */
+        }
       }
     };
 
@@ -281,12 +298,13 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
     // Callback when one task completes with success
     var onScriptedEntryLoaded:(String,
-      {entry:T, entryCls:String}) -> Void = (entryId, state) ->
+      {entry:T, entryCls:String}) -> Void = (_, state) ->
       {
+        var entryId:String = state.entry.id;
         entries.set(entryId, state.entry);
         scriptedEntryIds.set(entryId, state.entryCls);
 
-        log('  Loaded scripted entry: ${entryId} (${entries.size()}+${entryErrors.length}/${entryCount})');
+        log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${entries.size()}+${entryErrors.length}/${entryCount})');
         checkComplete();
       };
 
@@ -310,7 +328,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
 
         if (entry != null)
         {
-          log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+          // log('Successfully created scripted entry (${entryCls} = ${entry.id})');
           workOutput.sendComplete({
             entryCls: entryCls,
             entry: entry
@@ -342,7 +360,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
         var entry:Null<T> = createEntry(entryId);
         if (entry != null)
         {
-          log('Successfully created unscripted entry (${entry.id})');
+          // log('Successfully created unscripted entry (${entry.id})');
           workOutput.sendComplete({
             entry: entry
           }, []);
@@ -361,72 +379,118 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
           error: e
         });
       }
-    };
+    }
 
-    TaskHandler.performTask({
-      task: (currentState:State, workOutput:WorkOutput) ->
-      {
-        log('Queuing entries for registry...');
-
-        scriptedEntryClassNames = getScriptedClassNames();
-
-        var entryIdList:Array<String> = fetchEntryIdsFromFiles();
-        unscriptedEntryIds = entryIdList.filter((entryId) ->
+    // Start loading scripted entries.
+    startScriptedEntries = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
         {
-          return !entries.exists(entryId);
-        });
+          // Asynchronously tally up the scripted entries to load,
+          // then queue the tasks on the main thread in onComplete,
+          // because you can't add tasks from another thread.
 
-        entryCount = scriptedEntryClassNames.length + unscriptedEntryIds.length;
+          scriptedEntryClassNames = getScriptedClassNames();
 
-        workOutput.sendComplete({}, []);
-      },
-      initialState: {
-      },
-      taskCallbacks: {
-        onStart: (_) -> {
-          // trace('Started main task');
+          log('Queuing loading for ${scriptedEntryClassNames.length} scripted entries...');
+
+          entryCount = scriptedEntryClassNames.length;
+
+          workOutput.sendComplete({}, []);
         },
-        onError: onError.bind(''),
-        onComplete: (_) ->
-        {
-          log('Queuing loading for ${scriptedEntryClassNames.length} scripted and ${unscriptedEntryIds.length} unscripted entries...');
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: (_) -> {
+          },
+          onError: onError.bind(''),
 
-          for (entryCls in scriptedEntryClassNames)
+          onComplete: (_) ->
           {
-            TaskHandler.performTask({
-              task: performScriptedEntryLoad,
-              initialState: {
-                entryCls: entryCls
-              },
-              taskCallbacks: {
-                onStart: (_) -> {
-                  // trace('Started task: ${entryCls}');
-                },
-                onError: onError.bind(entryCls),
-                onComplete: onScriptedEntryLoaded.bind(entryCls)
+            if (scriptedEntryClassNames.length == 0)
+            {
+              checkComplete();
+            }
+            else
+            {
+              for (entryCls in scriptedEntryClassNames)
+              {
+                TaskHandler.performTask({
+                  task: performScriptedEntryLoad,
+                  initialState: {
+                    entryCls: entryCls
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(entryCls),
+                    onComplete: onScriptedEntryLoaded.bind(entryCls)
+                  }
+                });
               }
-            });
-          }
-
-          for (entryId in unscriptedEntryIds)
-          {
-            TaskHandler.performTask({
-              task: performUnscriptedEntryLoad,
-              initialState: {
-                entryId: entryId
-              },
-              taskCallbacks: {
-                onStart: (_) -> {
-                  // trace('Started task: ${entryId}');
-                },
-                onError: onError.bind(entryId),
-                onComplete: onUnscriptedEntryLoaded.bind(entryId)
-              }
-            });
+            }
           }
         }
-      }
-    });
+      });
+    };
+
+    // Start loading unscripted entries.
+    startUnscriptedEntries = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          // Asynchronously tally up the unscripted entries to load,
+          // then queue the tasks on the main thread in onComplete,
+          // because you can't add tasks from another thread.
+          var entryIdList:Array<String> = fetchEntryIdsFromFiles();
+          log('  Found ${entryIdList.length} entry files, ${entries.size()} entries already loaded...');
+          unscriptedEntryIds = entryIdList.filter((entryId) ->
+          {
+            return !entries.exists(entryId);
+          });
+
+          entryCount = scriptedEntryClassNames.length + unscriptedEntryIds.length;
+
+          workOutput.sendComplete({}, []);
+        },
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: (_) -> {
+          },
+          onError: onError.bind(''),
+          onComplete: (_) ->
+          {
+            if (unscriptedEntryIds.length == 0)
+            {
+              checkComplete();
+            }
+            else
+            {
+              for (entryId in unscriptedEntryIds)
+              {
+                TaskHandler.performTask({
+                  task: performUnscriptedEntryLoad,
+                  initialState: {
+                    entryId: entryId
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(entryId),
+                    onComplete: onUnscriptedEntryLoaded.bind(entryId)
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    startScriptedEntries();
 
     return promise.future;
   }
@@ -579,6 +643,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     }
 
     entries.clear();
+    scriptedEntryIds.clear();
   }
 
   //

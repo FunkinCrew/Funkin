@@ -128,8 +128,7 @@ class HotReloadState extends MusicBeatState
         registryFuture.onProgress((loaded:Int, total:Int) ->
         {
           trace('Registry loading completed: $loaded/$total');
-
-          updateProgress(loaded, total);
+          updateProgress(1, 10);
         });
 
         registryFuture.onComplete((_) ->

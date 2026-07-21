@@ -85,9 +85,13 @@ class AssetsUtil
         return FunkinAssetType.TEXT;
       case 'css': // Cascading stylesheet
         return FunkinAssetType.TEXT;
+      case 'SRT': // SubRip Text Subtitles
+        return FunkinAssetType.TEXT;
       case 'hxs': // Haxe script
         return FunkinAssetType.SCRIPT;
       case 'hscript': // Haxe script
+        return FunkinAssetType.SCRIPT;
+      case 'hx': // Haxe script
         return FunkinAssetType.SCRIPT;
       case 'hxc': // Haxe scripted class
         return FunkinAssetType.SCRIPTED_CLASS;
