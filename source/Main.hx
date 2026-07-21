@@ -38,15 +38,6 @@ class Main extends Sprite
 
   public static function main():Void
   {
-    // Set the current working directory for Android and iOS devices
-    #if android
-    // On Android use External Files Dir.
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(extension.androidtools.content.Context.getExternalFilesDir()));
-    #elseif ios
-    // On iOS use Documents Dir.
-    Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory));
-    #end
-
     // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
     CrashHandler.initialize();
     CrashHandler.queryStatus();
