@@ -58,6 +58,11 @@ class ModMenuState extends MusicBeatState
    */
   public var gf:ModMenuCharacter;
 
+  /**
+   * The ambience in the mod menu.
+   */
+  public var ambience:ModMenuAmbience;
+
   var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
   var buttonBackToMenu:ModMenuButton = new ModMenuButton();
@@ -101,6 +106,14 @@ class ModMenuState extends MusicBeatState
   public function new()
   {
     super();
+
+    ambience = new ModMenuAmbience({
+      baseAmbiencePath: 'ui/mods/mod-menu-ambience/mod-menu-ambience',
+      randomSoundPath: 'ui/mods/sounds',
+      randomSoundWait: 7.0,
+      randomTimeRange: FlxPoint.get(6.0, 10.0),
+      fadeInTime: 4.0
+    });
   }
 
   override public function create():Void
@@ -446,6 +459,8 @@ class ModMenuState extends MusicBeatState
       allowInput = false;
     });
     #end
+
+    ambience.initialize();
   }
 
   /**
@@ -618,10 +633,13 @@ class ModMenuState extends MusicBeatState
   public override function destroy():Void
   {
     super.destroy();
+
     FlxG.autoPause = true;
     FlxG.stage.window.onDropFile.remove(onDropFile);
     FlxG.stage.window.onDropBegin.remove(startFileDropHover);
     FlxG.stage.window.onDropComplete.remove(hideFileDropHover);
+
+    ambience.destroy();
   }
 
   public function onDropFile(path:String, state:String, x:Float, y:Float):Void
