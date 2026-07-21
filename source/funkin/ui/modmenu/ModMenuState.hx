@@ -842,6 +842,55 @@ class ModMenuState extends MusicBeatState
   var oldSelection:ModMenuSelection;
   var lastInput:String = '';
 
+  function playElectrocutionSequence():Void
+  {
+    bf.setLightningPinhead();
+    bf.playAnimation(ELECTROCUTED, true);
+    gf.setLightningPinhead();
+    gf.playAnimation(ELECTROCUTED, true);
+
+    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
+    {
+      var modIds:Array<String> = grabEnabledModList();
+
+      var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+      gf.jsons = bf.jsons;
+      var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
+
+      gf.previousModId = bf.previousModId;
+
+      bf.visible = true;
+      gf.visible = true;
+
+      // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
+      if (modIds.length > 1)
+      {
+        if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
+        else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
+      }
+
+      trace('bf previous mod: ' + bf.previousModId + ', current mod: ' + bf.currentModId);
+      trace('gf previous mod: ' + gf.previousModId + ', current mod: ' + gf.currentModId);
+      if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId) bf.playAnimation(CRISPY, true);
+      else
+      {
+        bf.playAnimation(IDLE, true);
+      }
+      if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId) gf.playAnimation(CRISPY, true);
+      else
+      {
+        gf.playAnimation(IDLE, true);
+        gf.anim.pause();
+      }
+
+      crispyTimer = 0;
+      smoke.alpha = 1;
+    });
+
+    doneButtonAnimator.playAnimation('accept');
+    allowInput = false;
+  }
+
   function handleKeyboard():Void
   {
     if (hasTransitions()) return;
@@ -1087,51 +1136,7 @@ class ModMenuState extends MusicBeatState
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
-          bf.setLightningPinhead();
-          bf.playAnimation(ELECTROCUTED, true);
-          gf.setLightningPinhead();
-          gf.playAnimation(ELECTROCUTED, true);
-
-          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
-          {
-            var modIds:Array<String> = grabEnabledModList();
-
-            var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
-            gf.jsons = bf.jsons;
-            var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
-
-            gf.previousModId = bf.previousModId;
-
-            bf.visible = true;
-            gf.visible = true;
-
-            // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
-            if (modIds.length > 1)
-            {
-              if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
-              else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
-            }
-
-            trace('bf previous mod: ' + bf.previousModId + ', current mod: ' + bf.currentModId);
-            trace('gf previous mod: ' + gf.previousModId + ', current mod: ' + gf.currentModId);
-            if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId) bf.playAnimation(CRISPY, true);
-            else
-            {
-              bf.playAnimation(IDLE, true);
-            }
-            if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId) gf.playAnimation(CRISPY, true);
-            else
-            {
-              gf.playAnimation(IDLE, true);
-              gf.anim.pause();
-            }
-
-            crispyTimer = 0;
-            smoke.alpha = 1;
-          });
-
-          doneButtonAnimator.playAnimation('accept');
-          allowInput = false;
+          playElectrocutionSequence();
       }
 
       oldSelection = selection;
@@ -1308,8 +1313,7 @@ class ModMenuState extends MusicBeatState
     }
     if (TouchUtil.pressAction(buttonDone))
     {
-      doneButtonAnimator.playAnimation('accept');
-      doneButtonAnimator.onFinish = applyModlist;
+      playElectrocutionSequence();
     }
   }
   #end
