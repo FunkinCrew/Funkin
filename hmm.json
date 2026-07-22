@@ -17,8 +17,7 @@
     {
       "name": "extension-admob",
       "type": "git",
-      "dir": null,
-      "ref": "5755982af97f63f35203ecb28d7fbdcbb0161b17",
+      "ref": "e555c51232e3962a10b7348df3c70c52b0310afa",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
