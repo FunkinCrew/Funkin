@@ -501,7 +501,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       log(' WARNING '.bold().bg_yellow() + ' Could not locate song metadata $id-$variation');
       log(' WARNING '.bold().bg_yellow() + '   $e');
-      throw e;
+      // throw e;
+      return null;
     }
   }
 
@@ -535,7 +536,8 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       log(' WARNING '.bold().bg_yellow() + ' Could not locate song chart data $id-$variation');
       log(' WARNING '.bold().bg_yellow() + '   $e');
-      throw e;
+      // throw e;
+      return null;
     }
   }
 
