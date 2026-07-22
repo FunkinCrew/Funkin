@@ -107,6 +107,13 @@
       "version": "3.0.0"
     },
     {
+      "name": "haxe-concurrent",
+      "type": "git",
+      "dir": null,
+      "ref": "6c761686f4503f07525bc31140dc113ccfaaaee0",
+      "url": "https://github.com/FunkinCrew/haxe-concurrent"
+    },
+    {
       "name": "haxeui-core",
       "type": "git",
       "ref": "30019728717e641cb866ba518141696ed3b4ae0a",
