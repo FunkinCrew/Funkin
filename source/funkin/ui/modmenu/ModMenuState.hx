@@ -145,7 +145,7 @@ class ModMenuState extends MusicBeatState
     topText.y = FlxG.height * 0.035;
 
     var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Drag packs onto this window to add new stuff');
-    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, false);
+    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32);
     dragText.scale.set(1, 0.8);
     dragText.letterSpacing = 5;
     add(dragText);
