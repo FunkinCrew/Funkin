@@ -189,8 +189,7 @@
     {
       "name": "lime",
       "type": "git",
-      "dir": null,
-      "ref": "fbe2959b57f80d6a8b6d4f5604f14dcf117f68e9",
+      "ref": "b1a1f32ccfabbc822a791db3488aadcdd25d49e8",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
