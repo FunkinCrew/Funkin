@@ -40,7 +40,7 @@ class AssetsUtil
    */
   public static function guessTypeByExtension(path:String):FunkinAssetType
   {
-    var ext:String = Path.extension(path);
+    var ext:String = Path.extension(path).toLowerCase();
     switch (ext)
     {
       case 'fnfc': // Friday Night Funkin chart
@@ -67,6 +67,8 @@ class AssetsUtil
         return FunkinAssetType.VIDEO;
       case 'webm': // WebM video
         return FunkinAssetType.VIDEO;
+      case 'mkv': // WebM video
+        return FunkinAssetType.VIDEO;
       case 'json': // JavaScript Object Notation data
         return FunkinAssetType.JSON;
       case 'xml': // Extensible Markup Language data
@@ -85,7 +87,9 @@ class AssetsUtil
         return FunkinAssetType.TEXT;
       case 'css': // Cascading stylesheet
         return FunkinAssetType.TEXT;
-      case 'SRT': // SubRip Text Subtitles
+      case 'srt': // SubRip Text Subtitles
+        return FunkinAssetType.TEXT;
+      case 'fnt': // Bitmap Font data file
         return FunkinAssetType.TEXT;
       case 'hxs': // Haxe script
         return FunkinAssetType.SCRIPT;
