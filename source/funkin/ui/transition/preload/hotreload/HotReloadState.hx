@@ -69,7 +69,6 @@ class HotReloadState extends MusicBeatState
     FlxG.cameras.reset(mainCamera);
 
     // Build progress bar
-
     var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFCCCCCC);
     progressBarBack.zIndex = 100;
     progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
@@ -105,44 +104,27 @@ class HotReloadState extends MusicBeatState
     if (!hasStartedLoading)
     {
       hasStartedLoading = true;
+
       clearScripts();
 
-      // TODO: Make this async, then call loadRegistryData in onComplete
       funkin.modding.PolymodHandler.loadEnabledMods();
 
-      var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
-
-      scriptFuture.onProgress((loaded:Int, total:Int) ->
-      {
-        trace('Script loading completed: $loaded/$total');
-
-        updateProgress(loaded, total);
-      });
-
-      scriptFuture.onComplete((_result) ->
-      {
-        trace('Script loading complete');
-
-        var registryFuture = loadRegistryData();
-
-        registryFuture.onProgress((loaded:Int, total:Int) ->
-        {
-          trace('Registry loading completed: $loaded/$total');
-          updateProgress(1, 10);
-        });
-
-        registryFuture.onComplete((_) ->
-        {
-          loadAdditionalData();
-
-          initModules();
-
-          isComplete = true;
-        });
-      });
+      queueLoadScripts();
     }
 
-    // Update throbber.
+    updateThrobber(elapsed);
+
+    if (isComplete) moveToTitleState();
+  }
+
+  /**
+   * Update the visuals for the spinning throbber.
+   * The throbber indicates that work is being done in the background, and the game is not frozen.
+   *
+   * @param elapsed The time that has elapsed since the last frame.
+   */
+  function updateThrobber(elapsed:Float):Void
+  {
     totalElapsed += elapsed;
 
     var timesPerSecond:Int = 8;
@@ -150,13 +132,14 @@ class HotReloadState extends MusicBeatState
 
     var rotation:Float = Math.floor(totalElapsed * timesPerSecond) % angleSnaps;
     throbber.angle = 360 / angleSnaps * rotation;
-
-    if (isComplete)
-    {
-      moveToTitleState();
-    }
   }
 
+  /**
+   * Update the visuals for the progress bar.
+   *
+   * @param loaded The number of items that have been loaded so far.
+   * @param total The total number of items that need to be loaded.
+   */
   function updateProgress(loaded:Int, total:Int):Void
   {
     var currentProgress:Float = (loaded / total).clamp(0, 1);
@@ -179,11 +162,36 @@ class HotReloadState extends MusicBeatState
   }
 
   /**
-   * Tell the game to asynchronously load all the registry data.
-   *
-   * @return A future, which calls `onComplete()` when all the
+   * Asynchronously load scripts from base game and all enabled mods,
+   * then continue when finished.
    */
-  function loadRegistryData():Future<Array<Future<LoadEntriesResult>>>
+  function queueLoadScripts():Void
+  {
+    var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
+
+    scriptFuture.onProgress((loaded:Int, total:Int) ->
+    {
+      trace('Script loading completed: $loaded/$total');
+
+      updateProgress(0, 10);
+    });
+
+    scriptFuture.onComplete((_result) ->
+    {
+      trace('Script loading complete');
+
+      updateProgress(1, 10);
+
+      // Load registry data asynchronously.
+      queueLoadRegistryData();
+    });
+  }
+
+  /**
+   * Load registry data from base game and all enabled mods,
+   * then continue when finished.
+   */
+  function queueLoadRegistryData():Void
   {
     var futures:Array<Future<LoadEntriesResult>> = [];
 
@@ -198,22 +206,42 @@ class HotReloadState extends MusicBeatState
     futures.push(StickerRegistry.instance.loadEntriesAsync());
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
 
-    return lime.app.Promises.allSettled(futures);
+    var registryFuture = lime.app.Promises.allSettled(futures);
+
+    registryFuture.onProgress((loaded:Int, total:Int) ->
+    {
+      trace('Registry loading completed: $loaded/$total');
+      updateProgress(loaded, total);
+    });
+
+    registryFuture.onComplete((_) ->
+    {
+      updateProgress(10, 10);
+
+      loadAdditionalData();
+
+      initModules();
+
+      // Move to the title state next frame.
+      isComplete = true;
+    });
   }
 
   /**
-   * Load additional data, that needs to be loaded synchronously.
+   * Load additional data, that currently needs to be loaded synchronously.
+   * TODO: Any of these that can be made asynchronous would improve performance.
    */
   function loadAdditionalData():Void
   {
-    // Load additional data that needs to be loaded synchronously
-    // TODO: Fix these up to be async, then call them in loadRegistryData.
     SongEventRegistry.loadEventCache();
     SongRegistry.instance.loadEntries();
     CharacterDataParser.loadCharacterCache();
     NoteKindManager.initialize();
   }
 
+  /**
+   * Initialize any ScriptedModules provided by mods.
+   */
   function initModules():Void
   {
     ModuleHandler.loadModuleCache();
