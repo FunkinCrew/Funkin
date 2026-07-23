@@ -406,14 +406,11 @@ class ValidatedPaths
   static function validateAssetPath(key:String, extensions:Array<String>, currentPos:Position, verbose:Bool = false):Void
   {
     // Directory to check relative to the project root when building.
-    static final CORE_FOLDER:Null<String> =
-      #if (REDIRECT_ASSETS_FOLDER && macos)
-      'assets/'
-      #elseif REDIRECT_ASSETS_FOLDER
-      'assets/'
-      #else
-      'assets/'
-      #end;
+    #if ios
+    static final CORE_FOLDER:Null<String> = "../../../../../assets";
+    #else
+    static final CORE_FOLDER:Null<String> = "assets/";
+    #end
 
     for (ext in extensions)
     {

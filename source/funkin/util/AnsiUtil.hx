@@ -506,6 +506,13 @@ class AnsiUtil
   {
     if (codesSupported == null)
     {
+      #if macro
+      if (haxe.macro.Context.defined("message.no-color"))
+      {
+        codesSupported = false;
+      }
+      #end
+
       #if sys
       if (codesSupported == null)
       {
