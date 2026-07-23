@@ -541,11 +541,8 @@ class StoryMenuState extends MusicBeatState
    */
   function changeDifficulty(change:Int = 0):Void
   {
-    // "For now, NO erect in story mode" -Dave
+    var difficultyList:Array<String> = currentLevel.getDifficulties();
 
-    var difficultyList:Array<String> = currentLevel.getDifficulties().filter(e -> Constants.DEFAULT_DIFFICULTY_LIST.contains(e));
-    // Use this line to displays all difficulties
-    // var difficultyList:Array<String> = currentLevel.getDifficulties();
     var currentIndex:Int = difficultyList.indexOf(currentDifficultyId);
 
     currentIndex += change;

@@ -172,6 +172,8 @@ class Level implements IRegistryEntry<LevelData>
 
   /**
    * The list of difficulties the player can select from for this level.
+   * By default, this only returns difficulties on the default variation.
+   *
    * @return The difficulty IDs.
    */
   public function getDifficulties():Array<String>
@@ -187,8 +189,8 @@ class Level implements IRegistryEntry<LevelData>
 
     if (firstSong != null)
     {
-      // Don't display alternate characters in Story Mode. Only show `default` and `erect` variations.
-      for (difficulty in firstSong.listDifficulties([Constants.DEFAULT_VARIATION, 'erect'], false, false))
+      // Don't display alternate characters in Story Mode. Only show `default` variation.
+      for (difficulty in firstSong.listDifficulties(Constants.DEFAULT_VARIATION, false, false))
       {
         difficulties.push(difficulty);
       }
@@ -209,7 +211,7 @@ class Level implements IRegistryEntry<LevelData>
 
       for (difficulty in difficulties.copy())
       {
-        if (!song.hasDifficulty(difficulty, [Constants.DEFAULT_VARIATION, 'erect']))
+        if (!song.hasDifficulty(difficulty, Constants.DEFAULT_VARIATION))
         {
           difficulties.remove(difficulty);
         }
