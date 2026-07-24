@@ -3179,9 +3179,9 @@ class PlayState extends MusicBeatSubState
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
     // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
-    // Get the offset and compensate for input latency.
-    // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
+    // Use the input's song position when calculating the ms difference.
+    // Also compensate for input latency.
+    var noteDiff:Int = Std.int(input.position - note.noteData.time - inputLatencyMs);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);
