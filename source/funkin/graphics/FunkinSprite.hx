@@ -1056,8 +1056,11 @@ class FunkinSprite extends FlxAnimate
 
   override public function destroy():Void
   {
-    @:nullSafety(Off) // TODO: Remove when flixel.FlxSprite is null safed.
-    frames = null;
+    // @:nullSafety(Off)
+    // frames = null;
+    // ^ Might be useful but its like a micro enhancement in terms of optimization. Keeping it regardless -Moon
+    super.destroy();
+
     filterRenderer.destroy();
     // Cancel all tweens so they don't continue to run on a destroyed sprite.
     // This prevents crashes.
