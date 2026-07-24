@@ -105,15 +105,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function get(assetPath:String):Null<FlxGraphic>
   {
-    var result:Null<FlxGraphic> = stagedFlxGraphic.get(assetPath);
-    if (result == null) return null;
-    if (!isValid(result))
-    {
-      // throw 'Cached FlxGraphic ${assetPath} is invalid!'
-      return null;
-    }
-
-    return result;
+    return stagedFlxGraphic.get(assetPath);
   }
 
   public function exists(key:String):Bool
@@ -181,7 +173,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
       // Always clear graphics that are invalid.
-      if (!isValid(graphic)) return true;
+      if (graphic == null) return true;
       // Never
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
@@ -198,16 +190,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearExcept(filter:Array<String>):Void
   {
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
-    {
-      // Always clear graphics that are invalid.
-      if (!isValid(graphic)) return true;
-      // Don't clear graphics we know are in use right now.
-      if (graphic.useCount > 0) return false;
-      if (graphic.persist) return false;
-
-      return !filter.exists(keyword -> key.contains(keyword));
-    });
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return !filter.exists(keyword -> key.contains(keyword)));
   }
 
   /**
@@ -219,16 +202,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
    */
   public function clearOnly(filter:Array<String>):Void
   {
-    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) ->
-    {
-      // Always clear graphics that are invalid.
-      if (!isValid(graphic)) return true;
-      // Don't clear graphics we know are in use right now.
-      if (graphic.useCount > 0) return false;
-      if (graphic.persist) return false;
-
-      return filter.exists(keyword -> key.contains(keyword));
-    });
+    stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return filter.exists(keyword -> key.contains(keyword)));
   }
 
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
@@ -240,7 +214,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.clearCacheByPredicate((key, graphic) ->
     {
       // Always clear graphics that are invalid.
-      if (!isValid(graphic)) return true;
+      if (graphic == null) return true;
       // Don't clear graphics we know are in use right now.
       if (graphic.useCount > 0) return false;
       if (graphic.persist) return false;
