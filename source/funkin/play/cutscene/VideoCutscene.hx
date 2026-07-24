@@ -72,7 +72,8 @@ class VideoCutscene
    * @param assetPath The path to the video file. Use Paths.file(path) to get the correct path.
    * @param cutseneType The type of cutscene to play, determines what the game does after. Defaults to `CutsceneType.STARTING`.
    */
-  public static function play(assetPath:AssetPath, ?cutsceneType:CutsceneType = STARTING):Void
+  public static function play(assetPath:AssetPath,
+    ?cutsceneType:CutsceneType = STARTING):Void
   {
     if (PlayState.instance == null) return;
 
@@ -105,7 +106,7 @@ class VideoCutscene
 
     VideoCutscene.cutsceneType = cutsceneType;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (cutsceneType == ENDING)
     {
       PlayState.instance.togglePauseButton();

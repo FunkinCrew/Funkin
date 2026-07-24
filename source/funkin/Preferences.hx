@@ -1,7 +1,9 @@
 package funkin;
 
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.mobile.ui.FunkinHitbox;
+#end
+#if FEATURE_MOBILE_IAP
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import funkin.save.Save;
@@ -100,7 +102,8 @@ class Preferences
 
   static function get_downscroll():Bool
   {
-    return Save?.instance?.options?.downscroll #if mobile ?? true #else ?? false #end;
+    final defaultValue:Bool = #if FEATURE_TOUCH_CONTROLS true #else false #end;
+    return Save?.instance?.options?.downscroll ?? defaultValue;
   }
 
   static function set_downscroll(value:Bool):Bool
@@ -604,6 +607,25 @@ class Preferences
     return value;
   }
 
+  /**
+   * Controls Scheme for the hitbox.
+   * @default `4 Lanes`
+   */
+  public static var controlsScheme(get, set):String;
+
+  static function get_controlsScheme():String
+  {
+    return Save?.instance?.options?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
+  }
+
+  static function set_controlsScheme(value:String):String
+  {
+    var save:Save = Save.instance;
+    save.options.controlsScheme = value;
+    Save.system.flush();
+    return value;
+  }
+
   #if mobile
   /**
    * If enabled, device will be able to sleep on its own.
@@ -625,25 +647,7 @@ class Preferences
     Save.system.flush();
     return value;
   }
-
-  /**
-   * Controls Scheme for the hitbox.
-   * @default `4 Lanes`
-   */
-  public static var controlsScheme(get, set):String;
-
-  static function get_controlsScheme():String
-  {
-    return Save?.instance?.mobileOptions?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
-  }
-
-  static function set_controlsScheme(value:String):String
-  {
-    var save:Save = Save.instance;
-    save.mobileOptions.controlsScheme = value;
-    Save.system.flush();
-    return value;
-  }
+  #end
 
   #if FEATURE_MOBILE_IAP
   /**
@@ -669,6 +673,5 @@ class Preferences
     Save.system.flush();
     return value;
   }
-  #end
   #end
 }

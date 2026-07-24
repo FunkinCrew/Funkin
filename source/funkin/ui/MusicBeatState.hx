@@ -15,7 +15,7 @@ import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.input.Controls;
 import funkin.ui.FullScreenScaleMode;
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.graphics.FunkinCamera;
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.input.PreciseInputHandler;
@@ -94,7 +94,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     subStateClosed.add(onCloseSubStateComplete);
   }
 
-  #if mobile
+  #if FEATURE_TOUCH_CONTROLS
   public var hitbox:Null<FunkinHitbox>;
   public var backButton:Null<FunkinBackButton>;
   public var optionsButton:Null<FunkinOptionsButton>;
@@ -186,7 +186,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     super.destroy();
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (camControls != null) FlxG.cameras.remove(camControls);
     #end
 

@@ -13,11 +13,14 @@ import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
 import funkin.input.Controls;
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.graphics.FunkinCamera;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.ui.mainmenu.FunkinOptionsButton;
+#end
+#if FEATURE_TOUCH_CONTROLS
 import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.input.PreciseInputHandler;
-import funkin.mobile.ui.FunkinBackButton;
 import funkin.play.notes.NoteDirection;
 #end
 
@@ -48,12 +51,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   inline function get_controls():Controls return PlayerSettings.player1.controls;
 
-  #if mobile
+  #if FEATURE_TOUCH_CONTROLS
+  #if FEATURE_TOUCH_CONTROLS
   public var hitbox:Null<FunkinHitbox>;
-  public var backButton:Null<FunkinBackButton>;
-  public var camControls:Null<FunkinCamera>;
 
-  public function addHitbox(visible:Bool = true, initInput:Bool = true, ?schemeOverride:String, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
+  public function addHitbox(visible:Bool = true,
+    initInput:Bool = true,
+    ?schemeOverride:String,
+    ?directionsOverride:Array<NoteDirection>,
+    ?colorsOverride:Array<FlxColor>):Void
   {
     if (hitbox != null)
     {
@@ -76,8 +82,18 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
+  #end
 
-  public function addBackButton(?xPos:Float = 0, ?yPos:Float = 0, ?color:FlxColor = FlxColor.WHITE, ?confirmCallback:Void->Void = null, ?restOpacity:Float = 0.3, ?instant:Bool = false):Void
+  public var backButton:Null<FunkinBackButton>;
+  public var optionsButton:Null<FunkinOptionsButton>;
+  public var camControls:Null<FunkinCamera>;
+
+  public function addBackButton(?xPos:Float = 0,
+    ?yPos:Float = 0,
+    ?color:FlxColor = FlxColor.WHITE,
+    ?confirmCallback:Void->Void = null,
+    ?restOpacity:Float = 0.3,
+    ?instant:Bool = false):Void
   {
     if (backButton != null) remove(backButton);
 
@@ -124,7 +140,7 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     super.destroy();
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (camControls != null) FlxG.cameras.remove(camControls);
     #end
 

@@ -133,7 +133,7 @@ class CreditsState extends MusicBeatState
     });
     FlxG.sound.music.fadeIn(6, 0, 0.8);
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, exit, 0.7);
     #end
   }
@@ -179,7 +179,10 @@ class CreditsState extends MusicBeatState
     }
   }
 
-  function buildCreditsLine(text:String, yPos:Float, header:Bool, side:CreditsSide = CreditsSide.Center):FlxText
+  function buildCreditsLine(text:String,
+    yPos:Float,
+    header:Bool,
+    side:CreditsSide = CreditsSide.Center):FlxText
   {
     // CreditsSide.Center: Full screen width
     // CreditsSide.Left: Left half of screen
@@ -259,7 +262,7 @@ class CreditsState extends MusicBeatState
     if (!scrollPaused)
     {
       // TODO: Replace with whatever the special note button is.
-      if (FlxG.keys.pressed.ENTER || FlxG.keys.pressed.SPACE #if mobile || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
+      if (FlxG.keys.pressed.ENTER || FlxG.keys.pressed.SPACE #if FEATURE_TOUCH_CONTROLS || TouchUtil.pressed && !TouchUtil.overlaps(backButton) #end)
       {
         // Move the whole group by the base scroll speed.
         creditsGroup.y -= CREDITS_SCROLL_FAST_SPEED * elapsed;

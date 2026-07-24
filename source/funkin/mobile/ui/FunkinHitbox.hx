@@ -292,7 +292,10 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
   /**
    * Creates a new `FunkinHitbox` object.
    */
-  public function new(?schemeOverride:String, ?showGradint:Bool = true, ?directionsOverride:Array<NoteDirection>, ?colorsOverride:Array<FlxColor>):Void
+  public function new(?schemeOverride:String,
+    ?showGradint:Bool = true,
+    ?directionsOverride:Array<NoteDirection>,
+    ?colorsOverride:Array<FlxColor>):Void
   {
     super();
 
@@ -305,7 +308,7 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
       || directionsOverride.length == 0
     ) ? [NoteDirection.LEFT, NoteDirection.DOWN, NoteDirection.UP, NoteDirection.RIGHT] : directionsOverride;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     final controlsScheme:String = (schemeOverride == null || schemeOverride.length == 0) ? Preferences.controlsScheme : schemeOverride;
 
     switch (controlsScheme)
@@ -479,7 +482,14 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param color The color of the button.
    * @return A new `FunkinHint` object.
    */
-  function createHintLane(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF, label:Bool = true, gradient:Bool = true):FunkinHint
+  function createHintLane(x:Float,
+    y:Float,
+    noteDirection:NoteDirection,
+    width:Int,
+    height:Int,
+    color:FlxColor = 0xFFFFFFFF,
+    label:Bool = true,
+    gradient:Bool = true):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, label ? createHintLaneLabelGraphic(width, height, Math.floor(height * 0.035), color) : null);
     hint.loadGraphic(createHintLaneGraphic(width, height, color, gradient));
@@ -502,7 +512,13 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param color The color of the triangle button (default is white).
    * @return A new `FunkinHint` triangle object.
    */
-  function createHintTriangle(x:Float, y:Float, noteDirection:NoteDirection, width:Int, height:Int, color:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FunkinHint
+  function createHintTriangle(x:Float,
+    y:Float,
+    noteDirection:NoteDirection,
+    width:Int,
+    height:Int,
+    color:FlxColor = 0xFFFFFFFF,
+    gradient:Bool = true):FunkinHint
   {
     final hint:FunkinHint = new FunkinHint(x, y, noteDirection, null);
     hint.loadGraphic(createHintTriangleGraphic(width, height, noteDirection, color, gradient));
@@ -601,7 +617,10 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param baseColor The base color of the graphic.
    * @return A `FlxGraphic` object representing the button graphic.
    */
-  function createHintLaneGraphic(width:Int, height:Int, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
+  function createHintLaneGraphic(width:Int,
+    height:Int,
+    baseColor:FlxColor = 0xFFFFFFFF,
+    gradient:Bool = true):FlxGraphic
   {
     final shape:Shape = new Shape();
 
@@ -656,7 +675,11 @@ class FunkinHitbox extends FlxTypedSpriteGroup<FunkinHint>
    * @param baseColor The base color of the triangle graphic (default is white).
    * @return A `FlxGraphic` object representing the triangle button graphic.
    */
-  function createHintTriangleGraphic(width:Int, height:Int, facing:NoteDirection, baseColor:FlxColor = 0xFFFFFFFF, gradient:Bool = true):FlxGraphic
+  function createHintTriangleGraphic(width:Int,
+    height:Int,
+    facing:NoteDirection,
+    baseColor:FlxColor = 0xFFFFFFFF,
+    gradient:Bool = true):FlxGraphic
   {
     final shape:Shape = new Shape();
 

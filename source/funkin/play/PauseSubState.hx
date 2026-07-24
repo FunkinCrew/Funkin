@@ -213,7 +213,7 @@ class PauseSubState extends MusicBeatSubState
   // Graphics Variables
   // ===============
 
-  #if mobile
+  #if FEATURE_TOUCH_CONTROLS
   /**
    * The pause button for the game, only appears in Mobile targets. Shows up breifly to finish the pause animation.
    */
@@ -442,7 +442,7 @@ class PauseSubState extends MusicBeatSubState
     background.updateHitbox();
     add(background);
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     pauseButton = FunkinSprite.createSparrow(0, 0, 'ui/pause-button');
     pauseButton.animation.addByIndices('idle', 'pause', [0], '', 24, false);
     pauseButton.animation.addByIndices('hold', 'pause', [5], '', 24, false);
@@ -503,7 +503,7 @@ class PauseSubState extends MusicBeatSubState
 
     var metadataSong:FlxText = new FlxText(
       20,
-      #if mobile (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
+      #if FEATURE_TOUCH_CONTROLS (PlayState.instance?.isPracticeMode ?? false) ? camera.height - 185 : camera.height - 155 #else 15 #end,
       camera.width - Math.max(40, funkin.ui.FullScreenScaleMode.gameNotchSize.x),
       'Song Name'
     );
@@ -675,8 +675,10 @@ class PauseSubState extends MusicBeatSubState
       ease: FlxEase.quartOut
     });
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
+    #if FEATURE_HAPTICS
     HapticUtil.vibrate(0, 0.05, 0.5);
+    #end
 
     pauseButton.animation.play('confirm');
     pauseCircle.scale.set(0.84 * 1.4, 0.8 * 1.4);
@@ -720,7 +722,7 @@ class PauseSubState extends MusicBeatSubState
     {
       FlxTween.tween(child, {
         alpha: 1,
-        y: #if mobile child.y - 5 #else child.y + 5 #end
+        y: #if FEATURE_TOUCH_CONTROLS child.y - 5 #else child.y + 5 #end
       }, 1.8, {
         ease: FlxEase.quartOut,
         startDelay: delay
@@ -902,7 +904,7 @@ class PauseSubState extends MusicBeatSubState
       // Set the transparency.
       text.alpha = isCurrent ? 1.0 : 0.6;
 
-      #if mobile
+      #if FEATURE_TOUCH_CONTROLS
       // Set the position.
       if (isCurrent && currentEntry != prevEntry)
       {
@@ -1022,7 +1024,7 @@ class PauseSubState extends MusicBeatSubState
       else
       {
         // Handle visible entries.
-        #if mobile
+        #if FEATURE_TOUCH_CONTROLS
         // var yPos:Float = (150 * entryIndex) + 100;
 
         // var yPos:Float = (140 * entryIndex) + 150;
@@ -1080,7 +1082,7 @@ class PauseSubState extends MusicBeatSubState
   {
     metadataPractice.visible = PlayState.instance?.isPracticeMode ?? false;
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (metadata.members[0].y != camera.height - 185 && metadataPractice.visible)
     {
       for (text in metadata)

@@ -14,7 +14,7 @@ import funkin.play.components.HealthIcon;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.ui.mainmenu.MainMenuState;
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.util.DeviceUtil;
 #end
@@ -39,7 +39,8 @@ class CharacterUnlockState extends MusicBeatState
 
   var busy:Bool = false;
 
-  public function new(targetPlayableCharacter:String, ?nextState:FlxState)
+  public function new(targetPlayableCharacter:String,
+    ?nextState:FlxState)
   {
     super();
 
@@ -116,7 +117,7 @@ class CharacterUnlockState extends MusicBeatState
   {
     super.update(elapsed);
 
-    if (controls.ACCEPT_P || controls.BACK_P #if mobile || TouchUtil.pressAction() #end && !busy)
+    if (controls.ACCEPT_P || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.pressAction() #end && !busy)
     {
       busy = true;
       startClose();

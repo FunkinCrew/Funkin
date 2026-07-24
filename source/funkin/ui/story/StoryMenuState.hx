@@ -238,7 +238,7 @@ class StoryMenuState extends MusicBeatState
     });
     #end
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width - 230, FlxG.height - 170, FlxColor.WHITE, goBack, 0.7);
     #end
 
@@ -638,7 +638,7 @@ class StoryMenuState extends MusicBeatState
 
     new FlxTimer().start(1, (tmr:FlxTimer) ->
     {
-      #if mobile
+      #if FEATURE_TOUCH_CONTROLS
       FlxTween.tween(backButton, {
         alpha: 0
       }, 0.2, {

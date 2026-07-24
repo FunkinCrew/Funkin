@@ -17,7 +17,7 @@ import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
@@ -117,7 +117,10 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Downscroll', 'When enabled, notes move downwards toward the strumline at the bottom of the screen.', function(value:Bool):Void
     {
       Preferences.downscroll = value;
-    }, Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
+    }, Preferences.downscroll,
+      #if FEATURE_TOUCH_CONTROLS ControlsHandler.hasExternalInputDevice
+      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows
+      #end);
     createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void
     {
       Preferences.strumlineBackgroundOpacity = value;
@@ -333,7 +336,15 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    * @param step The value to increment/decrement by (default = 0.1)
    * @param precision Rounds decimals up to a `precision` amount of digits (ex: 4 -> 0.1234, 2 -> 0.12)
    */
-  function createPrefItemNumber(prefName:String, prefDesc:String, onChange:Float->Void, ?valueFormatter:Float->String, defaultValue:Float, min:Float, max:Float, step:Float = 0.1, precision:Int):Void
+  function createPrefItemNumber(prefName:String,
+    prefDesc:String,
+    onChange:Float->Void,
+    ?valueFormatter:Float->String,
+    defaultValue:Float,
+    min:Float,
+    max:Float,
+    step:Float = 0.1,
+    precision:Int):Void
   {
     var item = new NumberPreferenceItem(
       funkin.ui.FullScreenScaleMode.gameNotchSize.x,

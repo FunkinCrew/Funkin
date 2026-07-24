@@ -301,7 +301,7 @@ class InitState extends FlxState
       funkin.util.plugins.VolumePlugin.initialize();
       #end
       funkin.util.plugins.WatchPlugin.initialize();
-      #if mobile
+      #if FEATURE_TOUCH_CONTROLS
       funkin.util.plugins.TouchPointerPlugin.initialize();
       funkin.mobile.input.ControlsHandler.initInputTrackers();
       #end
@@ -538,7 +538,6 @@ class InitState extends FlxState
         FlxG.switchState(() -> new TitleState());
       }
       #else
-
       if (customTitleState != null)
       {
         FlxG.switchState(() -> customTitleState);

@@ -180,7 +180,7 @@ class GameOverSubState extends MusicBeatSubState
     // The conductor now represents the BPM of the game over music.
     Conductor.instance.update(0);
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack);
     #end
 
@@ -272,7 +272,8 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Restart the level when pressing the assigned key.
-    if ((controls.ACCEPT_P #if mobile || (TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput) #end) && blueballed && !mustNotExit)
+    final bfTouched:Bool = #if FEATURE_TOUCH_CONTROLS TouchUtil.pressAction() && !TouchUtil.overlaps(backButton) && canInput #else false #end;
+    if ((controls.ACCEPT_P || bfTouched) && blueballed && !mustNotExit)
     {
       blueballed = false;
       confirmDeath();

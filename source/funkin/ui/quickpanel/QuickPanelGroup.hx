@@ -347,7 +347,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panel.localY = 0;
     panel.zIndex = 10;
 
-    pullTabVisual = new QuickPanelPullTab(0, 0, #if mobile false #else true #end);
+    pullTabVisual = new QuickPanelPullTab(0, 0, #if FEATURE_TOUCH_CONTROLS false #else true #end);
     pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
     pullTabVisual.playIdle(curState);
     pullTabVisual.zIndex = 11;
@@ -403,7 +403,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
   function handleTabFade(elapsed:Float):Void
   {
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (trackDist)
     {
       tabFadeTimer = 0;
@@ -933,7 +933,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
   {
     var action:String = 'PULL';
 
-    action = #if mobile canPull ? 'PULL' : 'TAP' #else 'TAB' #end;
+    action = #if FEATURE_TOUCH_CONTROLS canPull ? 'PULL' : 'TAP' #else 'TAB' #end;
 
     if (panelOpen)
     {
@@ -1029,7 +1029,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
           return;
         }
 
-        #if mobile
+        #if FEATURE_TOUCH_CONTROLS
         if (TouchUtil.justPressed && TouchUtil.overlaps(pullTabHitbox))
         {
           touchDist = 0;
@@ -1124,7 +1124,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
           return;
         }
 
-        #if mobile
+        #if FEATURE_TOUCH_CONTROLS
         if (TouchUtil.justPressed && TouchUtil.overlaps(pullTabHitbox))
         {
           touchDist = 0;

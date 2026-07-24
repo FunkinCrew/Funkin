@@ -333,7 +333,7 @@ class QuickPanelButton extends FunkinSpriteGroup
       boilShaderText.updateBoil();
     }
 
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (TouchUtil.justPressed && TouchUtil.overlaps(this))
     {
       paFade.playAnimation('press');

@@ -539,7 +539,7 @@ class Project extends HXProject
   /**
    * `-DFEATURE_TOUCH_CONTROLS`
    * If this flag is enabled, the touch controls for the game is also enabled.
-   * Works with desktop builds I think maybe?
+   * Works with desktop builds.
    */
   static final FEATURE_TOUCH_CONTROLS:FeatureFlag = "FEATURE_TOUCH_CONTROLS";
 

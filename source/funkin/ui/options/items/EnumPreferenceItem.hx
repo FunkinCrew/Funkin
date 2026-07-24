@@ -3,7 +3,7 @@ package funkin.ui.options.items;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.AtlasText;
 import funkin.input.Controls;
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.SwipeUtil;
 #end
 
@@ -59,8 +59,8 @@ class EnumPreferenceItem<T> extends TextMenuItem
     // var fancyTextFancyColor:Color;
     if (selected)
     {
-      var shouldDecrease:Bool = controls().UI_LEFT_P #if mobile || SwipeUtil.justSwipedLeft #end;
-      var shouldIncrease:Bool = controls().UI_RIGHT_P #if mobile || SwipeUtil.justSwipedRight #end;
+      var shouldDecrease:Bool = controls().UI_LEFT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedLeft #end;
+      var shouldIncrease:Bool = controls().UI_RIGHT_P #if FEATURE_TOUCH_CONTROLS || SwipeUtil.justSwipedRight #end;
 
       if (shouldDecrease) index -= 1;
       if (shouldIncrease) index += 1;

@@ -42,7 +42,7 @@ import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
 #end
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import funkin.mobile.util.AdMobUtil;
@@ -99,10 +99,8 @@ class ResultState extends MusicBeatSubState
   var cameraEverything:FunkinCamera;
   var blackTopBar:FlxSprite = new FlxSprite();
   var busy:Bool = false;
-
   var soundSystem:FlxSprite = new FlxSprite();
   var ratingGrp:FlxTypedGroup<TallyCounter> = new FlxTypedGroup<TallyCounter>();
-
   var textChange:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
   public var isChartingMode(get, never):Bool;
@@ -696,7 +694,6 @@ class ResultState extends MusicBeatSubState
 
   var rankTextVert:FlxBackdrop = new FlxBackdrop();
   var rankTextBack:FlxBackdrop = new FlxBackdrop();
-
   var rankVertAsset:String = "";
   var rankBackAsset:String = "";
 
@@ -863,7 +860,6 @@ class ResultState extends MusicBeatSubState
 
   var movingSongStuff:Bool = false;
   var speedOfTween:FlxPoint = FlxPoint.get(-1, 1);
-
   var shouldClipSongName:Bool = true;
 
   override function draw():Void
@@ -908,7 +904,7 @@ class ResultState extends MusicBeatSubState
       }
     }
 
-    if (controls.PAUSE_P || controls.ACCEPT_P #if mobile || TouchUtil.pressAction() #end)
+    if (controls.PAUSE_P || controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.pressAction() #end)
     {
       if (busy) return;
       if (_parentState is funkin.ui.debug.results.ResultsDebugSubState)

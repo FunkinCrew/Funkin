@@ -137,6 +137,7 @@ class Save implements ConsoleClass implements ISerializable
         subtitles: true,
         hapticsMode: 'All',
         hapticsIntensityMultiplier: 1,
+        controlsScheme: FunkinHitboxControlSchemes.Arrows,
         autoPause: true,
         vsyncMode: 'Off',
         strumlineBackgroundOpacity: 0,
@@ -170,7 +171,6 @@ class Save implements ConsoleClass implements ISerializable
       mobileOptions: {
         // Reasonable defaults.
         screenTimeout: false,
-        controlsScheme: FunkinHitboxControlSchemes.Arrows,
         noAds: false
       },
       #end
@@ -1403,6 +1403,12 @@ typedef SaveDataOptions =
   var hapticsIntensityMultiplier:Float;
 
   /**
+   * Controls scheme for the hitbox.
+   * @default `Arrows`
+   */
+  var controlsScheme:String;
+
+  /**
    * If enabled, the game will automatically pause when tabbing out.
    * @default `true`
    */
@@ -1492,12 +1498,6 @@ typedef SaveDataMobileOptions =
    * @default `false`
    */
   var screenTimeout:Bool;
-
-  /**
-   * Controls scheme for the hitbox.
-   * @default `Arrows`
-   */
-  var controlsScheme:String;
 
   /**
    * If bought, the game will not show any ads.

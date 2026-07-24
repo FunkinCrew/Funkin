@@ -21,7 +21,7 @@ import funkin.input.Controls;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.NewgroundsClient;
 #end
-#if mobile
+#if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
@@ -95,7 +95,7 @@ class OptionsState extends MusicBeatState
     else
     {
       // No need to show Options page
-      #if mobile
+      #if FEATURE_TOUCH_CONTROLS
       preferences.onExit.add(exitToMainMenu);
       optionsCodex.setPage(Preferences);
       #else
@@ -105,7 +105,7 @@ class OptionsState extends MusicBeatState
     }
 
     super.create();
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     addHitbox();
     hitbox.visible = false;
     #end
@@ -147,7 +147,8 @@ class OptionsState extends MusicBeatState
     {
       var state:Dynamic = ScriptedMusicBeatState.scriptInit(backState);
       if (state != null) FlxG.switchState(state);
-      else {
+      else
+      {
         FlxG.keys.enabled = false;
         FlxG.switchState(() -> new MainMenuState());
       }
@@ -184,7 +185,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     add(items = new TextMenuList());
 
     createItem('PREFERENCES', function() codex.switchPage(Preferences));
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     if (ControlsHandler.hasExternalInputDevice)
     #end
     createItem('CONTROLS', function() codex.switchPage(Controls));
@@ -226,7 +227,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       InAppPurchasesUtil.restorePurchases();
     });
     #end
-    #if mobile
+    #if FEATURE_TOUCH_CONTROLS
     createItem('OPEN MOD MENU', function()
     {
       FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());

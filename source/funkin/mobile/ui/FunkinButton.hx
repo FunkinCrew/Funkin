@@ -169,7 +169,7 @@ class FunkinButton extends FunkinSprite implements IFlxInput
   {
     super.update(elapsed);
 
-    #if FLX_POINTER_INPUT
+    #if FEATURE_TOUCH_CONTROLS
     // Update the button, but only if touches are enabled
     if (visible)
     {
