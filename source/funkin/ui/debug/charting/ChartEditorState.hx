@@ -3990,6 +3990,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();
+
+    if (dragTargetNote != null || dragTargetEvent != null)
+    {
+      if (gridGhostEvent != null) gridGhostEvent.visible = false;
+      if (gridGhostNote != null) gridGhostNote.visible = false;
+      if (gridGhostHoldNote != null) gridGhostHoldNote.visible = false;
+    }
+
     handleCursor();
 
     if (!(isHaxeUIFocused || isCursorOverHaxeUI))
