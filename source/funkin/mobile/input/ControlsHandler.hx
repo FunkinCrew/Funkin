@@ -16,6 +16,7 @@ import funkin.external.apple.KeyboardUtil;
 import lime.ui.Gamepad as LimeGamepad;
 import openfl.events.KeyboardEvent;
 import openfl.events.TouchEvent;
+import openfl.events.MouseEvent;
 
 /**
  * Handles setting up and managing input controls for the game.
@@ -23,7 +24,7 @@ import openfl.events.TouchEvent;
 class ControlsHandler
 {
   /**
-   * Returns whether the last input was sent through touch.
+   * Returns whether the last input was sent through touch (or mouse on desktop).
    */
   public static var lastInputTouch(default, null):Bool = true;
 
@@ -44,6 +45,8 @@ class ControlsHandler
   {
     FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, (_) -> lastInputTouch = false);
     FlxG.stage.addEventListener(TouchEvent.TOUCH_BEGIN, (_) -> lastInputTouch = true);
+    FlxG.stage.addEventListener(MouseEvent.MOUSE_MOVE, (_) -> lastInputTouch = true);
+    FlxG.stage.addEventListener(MouseEvent.CLICK, (_) -> lastInputTouch = true);
 
     function doGamepad(gamepad:LimeGamepad)
     {
@@ -63,7 +66,10 @@ class ControlsHandler
    * @param state The input state to associate with the action.
    * @param cachedInput The array of FlxActionInput objects to cache the input.
    */
-  public static function addButton(action:FlxActionDigital, button:FunkinButton, state:FlxInputState, cachedInput:Array<FlxActionInput>):Void
+  public static function addButton(action:FlxActionDigital,
+    button:FunkinButton,
+    state:FlxInputState,
+    cachedInput:Array<FlxActionInput>):Void
   {
     if (action == null || button == null || cachedInput == null) return;
 
@@ -80,7 +86,9 @@ class ControlsHandler
    * @param cachedInput The array of action input objects to cache the input.
    */
   @:access(funkin.input.Controls)
-  public static function setupHitbox(controls:Controls, hitbox:FunkinHitbox, cachedInput:Array<FlxActionInput>):Void
+  public static function setupHitbox(controls:Controls,
+    hitbox:FunkinHitbox,
+    cachedInput:Array<FlxActionInput>):Void
   {
     if (controls == null || hitbox == null) return;
 
@@ -119,7 +127,8 @@ class ControlsHandler
    * @param controls The Controls instance defining game controls.
    * @param cachedInput The array of action input objects to clear cached input from.
    */
-  public static function removeCachedInput(controls:Controls, cachedInput:Array<FlxActionInput>):Void
+  public static function removeCachedInput(controls:Controls,
+    cachedInput:Array<FlxActionInput>):Void
   {
     for (action in controls.digitalActions)
     {

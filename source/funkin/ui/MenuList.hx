@@ -58,7 +58,8 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
   // Helper variable
   var _isMainMenuState:Bool = false;
 
-  public function new(navControls:NavControls = Vertical, ?wrapMode:WrapMode)
+  public function new(navControls:NavControls = Vertical,
+    ?wrapMode:WrapMode)
   {
     this.navControls = navControls;
 
@@ -146,15 +147,13 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
       touchBuddy.setPosition(TouchUtil.touch.x, TouchUtil.touch.y);
     }
 
-    if (funkin.mobile.input.ControlsHandler.usingExternalInputDevice)
+    if (newIndex != selectedIndex)
     {
-      if (newIndex != selectedIndex)
-      {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-        selectItem(newIndex);
-      }
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      selectItem(newIndex);
     }
-    else if (TouchUtil.pressed)
+
+    if (TouchUtil.pressed)
     {
       for (i in 0...members.length)
       {
