@@ -24,6 +24,7 @@ class VideoCutscene
   #end
   static var blackScreen:FlxSprite;
   static var cutsceneType:CutsceneType;
+  static var cutsceneCallback:Null<Void->Void>;
   #if html5
   static var vid:FlxVideo;
   #end
@@ -58,11 +59,11 @@ class VideoCutscene
 
   /**
    * Play a video cutscene.
-   * TODO: Currently this is hardcoded to start the countdown after the video is done.
-   * @param path The path to the video file. Use Paths.file(path) to get the correct path.
-   * @param cutseneType The type of cutscene to play, determines what the game does after. Defaults to `CutsceneType.STARTING`.
+   * @param filePath The path to the video file. Use Paths.file(path) to get the correct path.
+   * @param cutsceneType The type of cutscene to play, determines what the game does after. Defaults to `CutsceneType.STARTING`.
+   * @param onFinish Optional custom callback function to execute when the video finishes.
    */
-  public static function play(filePath:String, ?cutsceneType:CutsceneType = STARTING):Void
+  public static function play(filePath:String, ?cutsceneType:CutsceneType = STARTING, ?onFinish:Void->Void = null):Void
   {
     if (PlayState.instance == null) return;
 
@@ -76,6 +77,9 @@ class VideoCutscene
       return;
     }
     #end
+
+    // Store callback if provided.
+    VideoCutscene.cutsceneCallback = onFinish;
 
     // Trigger the cutscene. Don't play the song in the background.
     PlayState.instance.isInCutscene = true;
@@ -308,9 +312,10 @@ class VideoCutscene
   }
 
   /**
-   * Finish the active video cutscene. Done when the video is finished or when the player skips the cutscene.
-   * @param transitionTime The duration of the transition to the next state. Defaults to 0.5 seconds (this time is always used when cancelling the video).
-   * @param finishCutscene The callback to call when the transition is finished.
+   * Finish the active video cutscene.
+   * Done when the video is finished or when the player skips the cutscene.
+   * @param transitionTime The duration of the transition to the next state.
+   * Defaults to 0.5 seconds (this time is always used when cancelling the video).
    */
   public static function finishVideo(?transitionTime:Float = 0.5):Void
   {
@@ -340,7 +345,9 @@ class VideoCutscene
 
     PlayState.instance.camHUD.visible = true;
 
-    FlxTween.tween(blackScreen, {alpha: 0}, transitionTime, {
+    FlxTween.tween(blackScreen, {
+      alpha: 0
+    }, transitionTime, {
       ease: FlxEase.quadInOut,
       onComplete: function(twn:FlxTween)
       {
@@ -348,7 +355,10 @@ class VideoCutscene
         blackScreen = null;
       }
     });
-    FlxTween.tween(FlxG.camera, {zoom: PlayState.instance.stageZoom}, transitionTime, {
+
+    FlxTween.tween(FlxG.camera, {
+      zoom: PlayState.instance.stageZoom
+    }, transitionTime, {
       ease: FlxEase.quadInOut,
       onComplete: function(twn:FlxTween)
       {
@@ -359,28 +369,40 @@ class VideoCutscene
   }
 
   /**
-   * The default callback used when a cutscene is finished.
-   * You can specify your own callback when calling `VideoCutscene#play()`.
+   * Called when a cutscene is finished. Executes a custom callback if provided,
+   * otherwise falls back to the default behavior for the specified CutsceneType.
    */
   static function onCutsceneFinish(cutsceneType:CutsceneType):Void
   {
+    // Execute callback if passed into play()
+    if (cutsceneCallback != null)
+    {
+      var callback:Void->Void = cutsceneCallback;
+      cutsceneCallback = null;
+      callback();
+      return;
+    }
+
     switch (cutsceneType)
     {
       case CutsceneType.STARTING:
         PlayState.instance.startCountdown();
       case CutsceneType.ENDING:
-        PlayState.instance.endSong(true); // true = right goddamn now
+        PlayState.instance.endSong(true);
       case CutsceneType.MIDSONG:
         // Do nothing.
-        // throw "Not implemented!";
+
     }
   }
 
   /**
-   * Destroy the active cutscene, if any. Separate from finishVideo() so that it doesn't trigger onCutsceneFinish().
+   * Destroy the active cutscene, if any.
+   * Separate from finishVideo() so that it doesn't trigger onCutsceneFinish().
    */
   public static function destroyVideo()
   {
+    cutsceneCallback = null;
+
     #if html5
     if (vid != null) PlayState.instance.remove(vid);
     #end
