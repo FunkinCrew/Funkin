@@ -3552,7 +3552,7 @@ class Paths
 
       // If you can't figure out exactly what function is causing the error, uncomment this.
       // Then recomment it when you're done because it creates a lot of log spam.
-      // funkin.util.DebugUtil.printCallStack()
+      // funkin.util.DebugUtil.printCallStack();
     }
     return filePath;
   }
