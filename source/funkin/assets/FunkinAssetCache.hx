@@ -244,13 +244,15 @@ class FunkinAssetCache implements OpenFLIAssetCache
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getBitmapData($id)');
     #end
     var result:Null<BitmapData> = stagedBitmapData.get(id);
-    if (result != null)
+
+    if (validateBitmapData(result))
     {
       trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ' + id);
       return result;
     }
     else
     {
+      stagedBitmapData.remove(id);
       trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
