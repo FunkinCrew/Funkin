@@ -298,7 +298,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputPressed.dispatch({
         noteDirection: getDirectionForKey(key),
         timestamp: timestamp,
-        keyCode: keyCode
+        keyCode: keyCode,
+        position: Conductor?.instance?.songPosition ?? 0.0,
       });
       _dirPressTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -316,7 +317,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch({
         noteDirection: getDirectionForKey(key),
         timestamp: timestamp,
-        keyCode: keyCode
+        keyCode: keyCode,
+        position: Conductor?.instance?.songPosition ?? 0.0,
       });
       _dirReleaseTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -336,7 +338,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputPressed.dispatch({
         noteDirection: getDirectionForButton(gamepad, buttonId),
         timestamp: timestamp,
-        keyCode: button // implicit cast to int
+        keyCode: button, // implicit cast to int
+        position: Conductor?.instance?.songPosition ?? 0.0,
       });
       _dirPressTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -356,7 +359,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch({
         noteDirection: getDirectionForButton(gamepad, buttonId),
         timestamp: timestamp,
-        keyCode: button // implicit cast to int
+        keyCode: button, // implicit cast to int
+        position: Conductor?.instance?.songPosition ?? 0.0,
       });
       _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -475,5 +479,11 @@ typedef PreciseInputEvent =
    * The key that was used for the input.
    * Used to distinguish between multiple inputs for the same direction.
    */
-  keyCode:Int
+  keyCode:Int,
+
+  /**
+   * The current position of the Conductor for this event.
+   * Used to help calculate the note timing for the exact time.
+   */
+  position:Float,
 };
