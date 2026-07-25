@@ -1,4 +1,4 @@
-package funkin.mobile.ui.options.objects;
+package funkin.touch.ui.options.objects;
 
 import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.group.FlxSpriteGroup;
@@ -6,7 +6,7 @@ import flixel.effects.FlxFlicker;
 import flixel.util.FlxSignal;
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox;
 import funkin.audio.FunkinSound;
 import funkin.util.MathUtil;
 

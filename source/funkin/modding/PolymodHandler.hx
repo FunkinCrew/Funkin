@@ -457,6 +457,9 @@ class PolymodHandler
 
     // `FixedBitmapData` was literally just `BitmapData`.
     Polymod.addImportAlias('funkin.graphics.framebuffer.FixedBitmapData', openfl.display.BitmapData);
+
+    // 'ControlsHandler' was moved to the 'funkin.touch.input' package.
+    Polymod.addImportAlias('funkin.mobile.input.ControlsHandler', funkin.touch.input.ControlsHandler);
   }
 
   /**
@@ -515,7 +518,7 @@ class PolymodHandler
     Polymod.blacklistImport('haxe.Unserializer');
 
     // Disable access to all Mobile Utils
-    for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
+    for (cls in ClassMacro.listClassesInPackage('funkin.util.mobile'))
     {
       if (cls == null) continue;
       var className:String = Type.getClassName(cls);

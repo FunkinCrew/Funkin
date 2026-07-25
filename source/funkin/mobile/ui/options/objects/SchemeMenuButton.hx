@@ -1,4 +1,4 @@
-package funkin.mobile.ui.options.objects;
+package funkin.touch.ui.options.objects;
 
 import flixel.addons.display.shapes.FlxShapeBox;
 import flixel.effects.FlxFlicker;

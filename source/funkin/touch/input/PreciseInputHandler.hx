@@ -1,8 +1,8 @@
-package funkin.mobile.input;
+package funkin.touch.input;
 
 import flixel.input.FlxInput;
 import funkin.input.PreciseInputManager;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
 import haxe.Int64;
 

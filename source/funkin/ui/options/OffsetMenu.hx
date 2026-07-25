@@ -3,10 +3,10 @@ package funkin.ui.options;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.util.GRhythmUtil;
-import funkin.mobile.ui.FunkinBackButton;
+import funkin.touch.ui.FunkinBackButton;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import funkin.mobile.input.ControlsHandler;
 import funkin.util.TouchUtil;
 #end

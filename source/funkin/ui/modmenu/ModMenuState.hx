@@ -33,9 +33,9 @@ import lime.system.System;
 import funkin.modding.install.ModInstaller.OneClickRequest;
 #end
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.input.ControlsHandler;
-import funkin.util.MathUtil;
 import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.touch.input.ControlsHandler;
 #end
 
 /**

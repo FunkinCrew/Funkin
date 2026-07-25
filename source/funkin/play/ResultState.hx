@@ -55,10 +55,10 @@ import funkin.api.newgrounds.Medals;
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.mobile.util.AdMobUtil;
+import funkin.util.mobile.AdMobUtil;
 #end
 #if FEATURE_MOBILE_IAR
-import funkin.mobile.util.InAppReviewUtil;
+import funkin.util.mobile.InAppReviewUtil;
 #end
 #end
 import funkin.util.DeviceUtil;

@@ -75,12 +75,12 @@ import funkin.ui.debug.stageeditor.StageEditorState;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
-import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.ui.FunkinHitbox;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.input.ControlsHandler;
+import funkin.touch.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #end
 #if FEATURE_MOBILE_ADVERTISEMENTS
-import funkin.mobile.util.AdMobUtil;
+import funkin.util.mobile.AdMobUtil;
 #end
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;

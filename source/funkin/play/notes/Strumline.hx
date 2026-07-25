@@ -17,8 +17,8 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import flixel.math.FlxPoint;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.input.ControlsHandler;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 #end
 
 /**

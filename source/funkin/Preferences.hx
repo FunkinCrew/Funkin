@@ -1,7 +1,7 @@
 package funkin;
 
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinHitbox;
 #end
 #if FEATURE_MOBILE_IAP
 import funkin.mobile.util.InAppPurchasesUtil;

@@ -22,9 +22,9 @@ import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
-import funkin.mobile.ui.FunkinBackButton;
+import funkin.touch.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
-import funkin.mobile.ui.options.ControlsSchemeMenu;
+import funkin.touch.ui.options.ControlsSchemeMenu;
 #end
 #if FEATURE_MOBILE_IAP
 import funkin.mobile.util.InAppPurchasesUtil;

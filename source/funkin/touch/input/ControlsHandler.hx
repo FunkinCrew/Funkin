@@ -1,12 +1,12 @@
-package funkin.mobile.input;
+package funkin.touch.input;
 
 import flixel.input.actions.FlxAction.FlxActionDigital;
 import flixel.input.actions.FlxActionInput;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.actions.FlxActionInputDigital.FlxActionInputDigitalIFlxInput;
 import funkin.input.Controls;
-import funkin.mobile.ui.FunkinButton;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.FunkinButton;
+import funkin.touch.ui.FunkinHitbox;
 import funkin.play.notes.NoteDirection;
 #if android
 import funkin.external.android.KeyboardUtil;

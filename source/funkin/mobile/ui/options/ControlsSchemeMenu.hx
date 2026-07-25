@@ -1,4 +1,4 @@
-package funkin.mobile.ui.options;
+package funkin.touch.ui.options;
 
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
@@ -6,9 +6,9 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxG;
-import funkin.mobile.ui.options.objects.SchemeMenuButton;
-import funkin.mobile.ui.options.objects.HitboxShowcase;
-import funkin.mobile.ui.FunkinHitbox;
+import funkin.touch.ui.options.objects.SchemeMenuButton;
+import funkin.touch.ui.options.objects.HitboxShowcase;
+import funkin.touch.ui.FunkinHitbox;
 import funkin.util.TouchUtil;
 import funkin.util.MathUtil;
 import funkin.ui.options.OptionsState;

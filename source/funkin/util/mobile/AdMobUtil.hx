@@ -1,4 +1,4 @@
-package funkin.mobile.util;
+package funkin.util.mobile;
 
 #if FEATURE_MOBILE_ADVERTISEMENTS
 import extension.admob.Admob;

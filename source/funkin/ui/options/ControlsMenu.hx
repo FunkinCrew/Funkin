@@ -15,7 +15,7 @@ import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.TextMenuList;
 import funkin.ui.Page;
 #if FEATURE_TOUCH_CONTROLS
-import funkin.mobile.ui.FunkinBackButton;
+import funkin.touch.ui.FunkinBackButton;
 #end
 
 class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>

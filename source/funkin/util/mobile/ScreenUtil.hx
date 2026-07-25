@@ -1,4 +1,4 @@
-package funkin.mobile.util;
+package funkin.util.mobile;
 
 #if ios
 import funkin.external.apple.ScreenUtil as NativeScreenUtil;

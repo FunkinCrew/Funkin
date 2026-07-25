@@ -2,11 +2,14 @@ package funkin.play.notes;
 
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongNoteData;
-import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
+import funkin.data.song.SongData.SongNoteData;
+import funkin.touch.ui.FunkinHitbox.FunkinHitboxControlSchemes;
+import funkin.play.notes.notestyle.NoteStyle;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note

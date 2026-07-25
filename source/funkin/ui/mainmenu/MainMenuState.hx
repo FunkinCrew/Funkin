@@ -16,7 +16,7 @@ import funkin.api.newgrounds.Referral;
 import funkin.assets.FunkinAssetCache;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
-import funkin.mobile.ui.FunkinButton;
+import funkin.touch.ui.FunkinButton;
 import funkin.ui.AtlasMenuList.AtlasMenuItem;
 import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.MenuList.MenuTypedList;

@@ -1,4 +1,4 @@
-package funkin.mobile.ui;
+package funkin.touch.ui;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -28,8 +28,8 @@ enum abstract FunkinButtonStatus(Int) from Int to Int
 #if !display
 @:generic
 #end
-@:allow(funkin.mobile.ui.FunkinHitbox)
-@:allow(funkin.mobile.ui.FunkinButton)
+@:allow(funkin.touch.ui.FunkinHitbox)
+@:allow(funkin.touch.ui.FunkinButton)
 class FunkinButton extends FunkinSprite implements IFlxInput
 {
   /**
