@@ -1670,23 +1670,6 @@ class StageEditorState extends UIState
     loadUrlDialog.showDialog();
   }
 }
-#end
-
-/**
- * Available themes for the stage editor state.
- */
-enum abstract StageEditorTheme(String)
-{
-  /**
-   * The default theme for the stage editor.
-   */
-  var Light;
-
-  /**
-   * A theme which introduces stage colors.
-   */
-  var Dark;
-}
 
 enum StageEditorDialogType
 {
@@ -1755,4 +1738,21 @@ typedef StageEditorAssetFile =
    * The content of the file, decoded into bytes.
    */
   var data:Bytes;
+}
+#end
+
+/**
+ * Available themes for the stage editor state.
+ */
+enum abstract StageEditorTheme(String)
+{
+  /**
+   * The default theme for the stage editor.
+   */
+  var Light;
+
+  /**
+   * A theme which introduces stage colors.
+   */
+  var Dark;
 }
