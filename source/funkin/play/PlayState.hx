@@ -2824,6 +2824,9 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused) return;
 
+    // Set the current position for further calculation.
+    event.position = Conductor.instance.songPosition;
+
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -2833,6 +2836,9 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    // Set the current position for further calculation.
+    event.position = Conductor.instance.songPosition;
+
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
@@ -3173,6 +3179,7 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
+    var inputPosition:Float = input.position ?? 0.0;
     // Calculate the input latency (do this as late as possible).
     // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
@@ -3181,7 +3188,7 @@ class PlayState extends MusicBeatSubState
 
     // Use the input's song position when calculating the ms difference.
     // Also compensate for input latency.
-    var noteDiff:Int = Std.int(input.position - note.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs);
 
     var score = Scoring.scoreNote(noteDiff, PBOT1);
     var daRating = Scoring.judgeNote(noteDiff, PBOT1);

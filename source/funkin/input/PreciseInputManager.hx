@@ -298,8 +298,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputPressed.dispatch({
         noteDirection: getDirectionForKey(key),
         timestamp: timestamp,
-        keyCode: keyCode,
-        position: Conductor?.instance?.songPosition ?? 0.0,
+        keyCode: keyCode
       });
       _dirPressTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -317,8 +316,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch({
         noteDirection: getDirectionForKey(key),
         timestamp: timestamp,
-        keyCode: keyCode,
-        position: Conductor?.instance?.songPosition ?? 0.0,
+        keyCode: keyCode
       });
       _dirReleaseTimestamps.set(getDirectionForKey(key), timestamp);
     }
@@ -339,7 +337,6 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
         noteDirection: getDirectionForButton(gamepad, buttonId),
         timestamp: timestamp,
         keyCode: button, // implicit cast to int
-        position: Conductor?.instance?.songPosition ?? 0.0,
       });
       _dirPressTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -359,8 +356,7 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
       onInputReleased.dispatch({
         noteDirection: getDirectionForButton(gamepad, buttonId),
         timestamp: timestamp,
-        keyCode: button, // implicit cast to int
-        position: Conductor?.instance?.songPosition ?? 0.0,
+        keyCode: button // implicit cast to int
       });
       _dirReleaseTimestamps.set(getDirectionForButton(gamepad, buttonId), timestamp);
     }
@@ -485,5 +481,5 @@ typedef PreciseInputEvent =
    * The current position of the Conductor for this event.
    * Used to help calculate the note timing for the exact time.
    */
-  position:Float,
+  ?position:Float,
 };

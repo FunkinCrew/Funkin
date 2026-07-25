@@ -387,6 +387,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyPress(event:PreciseInputEvent):Void
   {
+    // Set the current position for further calculation.
+    event.position = localConductor.songPosition;
+
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -396,6 +399,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    // Set the current position for further calculation.
+    event.position = localConductor.songPosition;
+
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
@@ -816,11 +822,11 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
 
   function hitNote(note:NoteSprite, input:PreciseInputEvent):Void
   {
+    var inputPosition:Float = input.position ?? 0.0;
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
 
-    var noteDiff:Int = Std.int(note.noteData.time - localConductor.songPosition - inputLatencyMs);
-
+    var noteDiff:Int = Std.int(note.noteData.time - inputPosition - inputLatencyMs);
     addDifference(noteDiff);
 
     if (noteDiff == 0)
