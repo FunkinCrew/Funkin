@@ -615,7 +615,7 @@ class Preferences
 
   static function get_controlsScheme():String
   {
-    return Save?.instance?.options?.controlsScheme ?? FunkinHitboxControlSchemes.Arrows;
+    return Save?.instance?.options?.controlsScheme ?? "Arrows";
   }
 
   static function set_controlsScheme(value:String):String
