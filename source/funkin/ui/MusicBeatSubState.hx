@@ -52,8 +52,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   inline function get_controls():Controls return PlayerSettings.player1.controls;
 
   #if FEATURE_TOUCH_CONTROLS
-  #if FEATURE_TOUCH_CONTROLS
   public var hitbox:Null<FunkinHitbox>;
+  public var backButton:Null<FunkinBackButton>;
+  public var optionsButton:Null<FunkinOptionsButton>;
+  public var camControls:Null<FunkinCamera>;
 
   public function addHitbox(visible:Bool = true,
     initInput:Bool = true,
@@ -82,11 +84,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     if (initInput) PreciseInputHandler.initializeHitbox(hitbox);
   }
-  #end
-
-  public var backButton:Null<FunkinBackButton>;
-  public var optionsButton:Null<FunkinOptionsButton>;
-  public var camControls:Null<FunkinCamera>;
 
   public function addBackButton(?xPos:Float = 0,
     ?yPos:Float = 0,

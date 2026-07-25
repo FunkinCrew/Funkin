@@ -750,18 +750,7 @@ class ModMenuState extends MusicBeatState
         gf.playAnimation(IDLE, true);
       }
 
-      #if FEATURE_TOUCH_CONTROLS
-      if (ControlsHandler.usingExternalInputDevice)
-      {
-        handleKeyboard();
-      }
-      else
-      {
-        handleTouch(elapsed);
-      }
-      #end
-
-      handleKeyboard();
+      handleInput(elapsed);
     }
 
     if (!allowInput)
@@ -826,6 +815,20 @@ class ModMenuState extends MusicBeatState
   }
 
   // INPUT //
+
+  function handleInput(elapsed:Float):Void
+  {
+    #if FEATURE_TOUCH_CONTROLS
+    if (ControlsHandler.lastInputTouch)
+    {
+      handleTouch(elapsed);
+
+      return;
+    }
+    #end
+
+    handleKeyboard();
+  }
 
   function handleMouse():Void
   {
