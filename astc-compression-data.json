@@ -102,6 +102,10 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/ui/results/interface/highscore-new.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-good/spritemap1.png",
       "blocksize": "4x4"
     },
@@ -181,7 +185,7 @@
     "assets/gameplay/characters/sserafim-sakura/icon-sserafim-sakura.png",
     "assets/gameplay/characters/sserafim-yunjin/icon-sserafim-yunjin.png",
     "assets/ui/soundtray/",
-    "assets/ui/story-mode/levels",
+    "assets/ui/story-mode/levels/",
     "assets/ui/title/title-screen-text/spritemap1.png",
     "assets/ui/title/title-screen-text-mobile/spritemap1.png",
     "assets/ui/editors/",
@@ -206,6 +210,7 @@
     "assets/gameplay/characters/sserafim-yunjin/sserafim-yunjin/spritemap1.png",
     "assets/gameplay/general/health-bar.png",
     "assets/ui/results/clear-percent/",
+    "assets/ui/results/difficulty/",
     "assets/ui/results/rank-text/",
     "assets/gameplay/playable-characters/bf/results/graphics/results-excellent/spritemap1.png",
     "assets/gameplay/playable-characters/bf/results/graphics/results-good/gf.png",
