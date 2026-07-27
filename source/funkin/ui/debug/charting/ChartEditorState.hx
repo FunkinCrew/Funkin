@@ -2567,6 +2567,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override public function reloadAssets()
   {
+    performCleanup();
     // If PlayState isn't open, do a regular reload.
     if (!isPlaytesting)
     {
@@ -3962,6 +3963,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.justPressed.F4 && !criticalFailure)
     {
       quitChartEditor();
+      return;
+    }
+
+    // Hot reloading
+    if (FlxG.keys.justPressed.F5 && !criticalFailure)
+    {
+      performCleanup();
       return;
     }
 
@@ -6533,6 +6541,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
   }
 
+  function performCleanup():Void
+  {
+    FunkinAssetCache.instance.preparePurgeCache();
+
+    destroyHaxeUIComponents();
+
+    @:privateAccess
+    ChartEditorNoteSprite.noteFrameCollection = null;
+    @:privateAccess
+    ChartEditorEventSprite.eventFrames = null;
+
+    // TODO: In loading screens, you should be  caching BETWEEN these.
+    FunkinAssetCache.instance.purgeCache(true);
+
+    criticalFailure = true;
+  }
+
   @:nullSafety(Off)
   function destroyHaxeUIComponents():Void
   {
@@ -6599,23 +6624,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // TODO: PR Flixel to make onComplete nullable.
     if (audioInstTrack != null) audioInstTrack.onComplete = null;
 
-    FunkinAssetCache.instance.preparePurgeCache();
-
-    destroyHaxeUIComponents();
-
-    @:privateAccess
-    ChartEditorNoteSprite.noteFrameCollection = null;
-    @:privateAccess
-    ChartEditorEventSprite.eventFrames = null;
-
-    // TODO: In loading screens, you should be  caching BETWEEN these.
-    FunkinAssetCache.instance.purgeCache(true);
+    performCleanup();
 
     FlxG.switchState(() -> new MainMenuState());
 
     resetWindowTitle();
-
-    criticalFailure = true;
   }
 
   /**
@@ -7051,17 +7064,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (f != null) f.focus = false;
       }
 
-      FunkinAssetCache.instance.preparePurgeCache();
-
-      destroyHaxeUIComponents();
-
-      @:privateAccess
-      ChartEditorNoteSprite.noteFrameCollection = null;
-      @:privateAccess
-      ChartEditorEventSprite.eventFrames = null;
-
-      // TODO: In loading screens, you should be  caching BETWEEN these.
-      FunkinAssetCache.instance.purgeCache(true);
+      performCleanup();
 
       FlxG.switchState(() -> new CameraEditorState({
         loadFromPath: this.currentWorkingFilePath,
@@ -7069,8 +7072,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         targetSongVariation: this.selectedVariation,
         targetSongPosition: startTimestamp,
       }));
-
-      criticalFailure = true;
     }
   }
 
