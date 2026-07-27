@@ -274,6 +274,12 @@ class Project extends HXProject
    */
   static final UNLOCK_EVERYTHING:FeatureFlag = "UNLOCK_EVERYTHING";
 
+  /**
+   * `-DVERBOSE_ASSET_CACHE`
+   * If this flag is enabled, the game will print out many more log messages regarding caching and retrieving assets.
+   */
+  static final VERBOSE_ASSET_CACHE:FeatureFlag = "VERBOSE_ASSET_CACHE";
+
   //
   // FEATURE FLAGS
   // Inverse build flags are automatically populated.
@@ -926,6 +932,7 @@ class Project extends HXProject
     // Should be false unless explicitly requested.
     GITHUB_BUILD.apply(this, false);
     EXCLUDE_ARMV7.apply(this, false);
+    VERBOSE_ASSET_CACHE.apply(this, false);
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);

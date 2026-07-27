@@ -72,7 +72,9 @@ class Assets implements ConsoleClass
     if (initialized) return;
     initialized = true;
 
+    #if VERBOSE_ASSET_CACHE
     trace(' ASSETS '.bold().bg_lime() + ' Initializing asset management...');
+    #end
 
     // Enable our custom asset caches
     LimeAssets.cache = funkin.assets.FunkinAssetCache.FunkinLimeAssetCache.instance;

@@ -168,7 +168,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (prefix == null)
     {
+      #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
+      #end
       for (cache in stagedCaches) cache.clearCache();
       FunkinBitmapFrontend.instance.reset();
       assetListCaches = [];
@@ -247,16 +249,20 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     if (validateBitmapData(result))
     {
+      #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ' + id);
+      #end
       return result;
     }
     else
     {
       stagedBitmapData.remove(id);
-      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ' + id);
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Bitmap data not cached, cannot load synchronously: $id';
       #else
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ' + id);
+      #end
       var bitmapData:BitmapData = OpenFLAssets.getBitmapData(id);
       setBitmapData(id, bitmapData);
       return bitmapData;
@@ -278,7 +284,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     var result:Null<Font> = stagedFont.get(id);
     if (result != null)
     {
+      #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Font data found in cache: ' + id);
+      #end
       return result;
     }
     else
@@ -286,7 +294,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
       #if FEATURE_STRICT_ASSET_CACHING
       throw 'Font not cached, cannot load synchronously: $id';
       #else
-      // FlxG.log.warn('Font not cached, may experience stuttering! ${id}');
       var font:Font = OpenFLAssets.getFont(id);
       setFont(id, font);
       return font;
@@ -349,7 +356,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (!OpenFLAssets.exists(id))
       {
+        #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Text file does not exist: $id');
+        #end
         funkin.util.DebugUtil.printCallStack();
         throw 'Text file does not exist: $id';
       }
@@ -444,7 +453,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     if (!FunkinBitmapFrontend.instance.isValidByKey(assetPath.toString()))
     {
+      #if VERBOSE_ASSET_CACHE
       trace(' ASSETS ' + ' Removing invalid FlxGraphic "${assetPath.toString()} from cache.');
+      #end
       FunkinBitmapFrontend.instance.removeByKey(assetPath.toString());
       return false;
     }
@@ -698,7 +709,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function fetchBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
   {
+    #if VERBOSE_ASSET_CACHE
     trace(' ASSETS '.bold().bg_lime() + ' Fetching BitmapData: ${assetPath.toString()}');
+    #end
     if (hasBitmapData(assetPath.toString()))
     {
       return Future.withValue(getBitmapData(assetPath.toString()));
@@ -765,7 +778,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return OpenFLAssets.loadSound(assetPath.toString()).then((sound:Sound) ->
       {
         setSound(assetPath.toString(), sound);
+        #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
+        #end
         return Future.withValue(sound);
       });
     }
@@ -788,7 +803,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
       return OpenFLAssets.loadText(assetPath.toString()).then((text:String) ->
       {
         setText(assetPath.toString(), text);
+        #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
+        #end
         return Future.withValue(text);
       });
     }
@@ -1058,7 +1075,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (validateBitmapData(bitmapData))
       {
         var _:Int = bitmapData.width; // Trigger
+        #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached BitmapData: ${assetPath.toString()}');
+        #end
       }
 
       if (permanent)
@@ -1112,6 +1131,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
+        #end
         FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
       }
 
@@ -1152,6 +1174,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
+        #end
         stagedSound.cachePermanent(assetPath.toString(), sound);
       }
 
@@ -1191,7 +1216,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
+        #end
         stagedText.cachePermanent(assetPath.toString(), text);
       }
 
@@ -1228,8 +1255,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     fetchFont(assetPath).then((font:Font) ->
     {
       // On success, resolve the promise with true
-
+      #if VERBOSE_ASSET_CACHE
       trace(' ASSETS '.bold().bg_lime() + ' Cached Font: ${assetPath.toString()}');
+      #end
 
       // Always permanent cache fonts.
       stagedFont.cachePermanent(assetPath.toString(), font);
@@ -1269,6 +1297,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');
+        #end
         stagedBytes.cachePermanent(assetPath.toString(), bytes);
       }
 
@@ -1402,33 +1433,38 @@ class FunkinLimeAssetCache extends LimeAssetCache
 
     version = ASSET_CACHE_VERSION;
 
-    cb_audio.onGet.add((key:String) ->
-    {
+    cb_audio.onGet.add((key:String) -> {
+      #if VERBOSE_ASSET_CACHE
       trace('[LIME] Retrieved cached audio: ' + key);
+      #end
     });
 
     cb_audio.onSet.add((key:String, value:LimeAudioBuffer) -> {
       // trace('[LIME] Cached audio: ' + key);
     });
 
-    cb_font.onGet.add((key:String) ->
-    {
+    cb_font.onGet.add((key:String) -> {
+      #if VERBOSE_ASSET_CACHE
       trace('[LIME] Retrieved cached font: ' + key);
+      #end
     });
 
-    cb_font.onSet.add((key:String, value:Font) ->
-    {
+    cb_font.onSet.add((key:String, value:Font) -> {
+      #if VERBOSE_ASSET_CACHE
       trace('[LIME] Cached font: ' + key);
+      #end
     });
 
-    cb_image.onGet.add((key:String) ->
-    {
+    cb_image.onGet.add((key:String) -> {
+      #if VERBOSE_ASSET_CACHE
       trace('[LIME] Retrieved cached image: ' + key);
+      #end
     });
 
-    cb_image.onSet.add((key:String, value:LimeImage) ->
-    {
+    cb_image.onSet.add((key:String, value:LimeImage) -> {
+      #if VERBOSE_ASSET_CACHE
       trace('[LIME] Cached image: ' + key);
+      #end
     });
   }
 
