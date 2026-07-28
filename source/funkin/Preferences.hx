@@ -161,16 +161,6 @@ class Preferences
     #if NO_FEATURE_DEBUG_DISPLAY
     return DebugDisplayMode.Off;
     #else
-    #if hl
-    // Account for when debugDisplay used to be a boolean
-    var options:Null<SaveDataOptions> = Save.instance?.options;
-    if (options != null && Std.isOfType(options.debugDisplay, Bool))
-    {
-      var convertedDebugDisplay = cast(options.debugDisplay, Bool) ? DebugDisplayMode.Simple : DebugDisplayMode.Off;
-      options.debugDisplay = convertedDebugDisplay;
-      Save.system.flush();
-    }
-    #end
     return Save?.instance?.options?.debugDisplay ?? 'Off';
     #end
   }
