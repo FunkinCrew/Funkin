@@ -3,5 +3,5 @@
 	url = https://github.com/Azeouza/azeengine.assets
 [submodule "art"]
 	path = art
-	url = https://github.com/FunkinCrew/Funkin.art
+	url = https://github.com/Azeouza/azeengine.art
 	shallow = true
