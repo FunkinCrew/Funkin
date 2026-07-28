@@ -1,4 +1,4 @@
-# Compiling Friday Night Funkin'
+# Compiling Friday Night Funkin' Aze Engine
 
 0. Setup
     - Download Haxe from [Haxe.org](https://haxe.org)
