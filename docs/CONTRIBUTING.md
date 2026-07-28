@@ -1,3 +1,4 @@
+#!WARNING!-THIS GUIDE IS FOR CONTRIBUTE TO THE FUNKIN' REPOSITORY!!!
 # Contributing
 Welcome to the Contributing Guide!
 You can contribute to the Funkin' repository by opening issues or pull requests.
@@ -413,3 +414,5 @@ These PRs should only be opened in the `funkin.assets` repository.
 Thank you for reading the Contributing Guide.
 
 We look forward to seeing your contributions to the game!
+
+All credits for The Funkin' Crew Inc. and Contributors.
