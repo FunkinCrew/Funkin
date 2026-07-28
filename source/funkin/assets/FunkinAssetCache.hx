@@ -209,16 +209,30 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // TODO: Cleanup purging to work with Freeplay?
     for (cache in stagedCaches) cache.purgeCache();
 
+    purgeHaxeUIAssets();
+
     // Clear everything except:
     // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
     // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
+    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_', 'solid#']);
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
     #if (cpp || neko)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
+  }
+
+  /**
+   * Purge all image references held by HaxeUI.
+   */
+  public function purgeHaxeUIAssets():Void
+  {
+    @:privateAccess
+    {
+      haxe.ui.ToolkitAssets.instance._imageCache.clear();
+      haxe.ui.ToolkitAssets.instance._fontCache.clear();
+    }
   }
 
   /**
