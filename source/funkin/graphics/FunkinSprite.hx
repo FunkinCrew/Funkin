@@ -26,6 +26,7 @@ import openfl.display.BitmapData;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import polymod.Polymod;
+import polymod.PolymodAssets;
 
 using StringTools;
 
@@ -368,12 +369,13 @@ class FunkinSprite extends FlxAnimate
 
   /**
    * Loads an Adobe Animate texture atlas as the sprite's texture.
+   *
    * @param key The key of the texture to load.
    * @param settings Additional settings for loading the atlas.
-   * @param modId The mod ID to load the texture atlas from.
+   * @param modId You can load a texture atlas from a specific mod with this.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, ?modId:String, ?jsonsAr:Array<String>):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, modId:String = '', ?jsonsAr:Array<String>):FunkinSprite
   {
     if (key == null)
     {
@@ -389,11 +391,8 @@ class FunkinSprite extends FlxAnimate
     this.postStageMatrixApply = settings.postStageMatrixApply ?? false;
     this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    if (modId != null && modId != '' && jsonsAr != null)
+    if (modId != '' && jsonsAr != null)
     {
-      // Null-safety kinda dumb #1
-      var id:String = modId;
-
       var assetPath:String = Paths.animateAtlas(key).toString();
       var jsons:Array<String> = jsonsAr.filter((str) -> str.contains(assetPath.substring(7))).map((str) -> str.substring(0, str.length - '.json'.length));
 
@@ -404,7 +403,7 @@ class FunkinSprite extends FlxAnimate
       {
         if (json.endsWith('Animation'))
         {
-          animationJson = Polymod.assetLibrary.getTextDirectly('assets/$json.json', id);
+          animationJson = PolymodAssets.getTextFromMod('assets/$json.json', modId);
           jsons.remove(json);
           break;
         }
@@ -412,10 +411,10 @@ class FunkinSprite extends FlxAnimate
 
       for (json in jsons)
       {
-        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$json.png', id);
+        var bitmap:Null<BitmapData> = PolymodAssets.getBitmapDataFromMod('assets/$json.png', modId);
         if (bitmap == null) continue;
 
-        var jsonString:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$json.json', id);
+        var jsonString:Null<String> = PolymodAssets.getTextFromMod('assets/$json.json', modId);
         if (jsonString == null) continue;
 
         // Null-safety kinda dumb #2
@@ -428,7 +427,7 @@ class FunkinSprite extends FlxAnimate
         });
       }
 
-      if (animationJson == null) throw 'Could not find Animation.json in path "$assetPath" from mod "$id"';
+      if (animationJson == null) throw 'Could not find Animation.json in path "$assetPath" from mod "$modId"';
 
       frames = FlxAnimateFrames.fromAnimate(animationJson, spritemaps, settings.metadataJson, settings.cacheKey, settings.uniqueInCache, {
         swfMode: settings.swfMode,
@@ -436,10 +435,19 @@ class FunkinSprite extends FlxAnimate
         filterQuality: settings.filterQuality,
         onSymbolCreate: settings.onSymbolCreate
       });
+
+      if (frames == null)
+      {
+        throw 'Could not load FlxAnimateFrames from path "$assetPath", from mod "$modId"';
+      }
     }
     else
     {
       frames = Paths.getAnimateAtlas(key, settings);
+      if (frames == null)
+      {
+        throw 'Could not load FlxAnimateFrames from path "$key"';
+      }
       __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
     }
 
