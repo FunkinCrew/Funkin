@@ -1257,7 +1257,7 @@ class ModMenuState extends MusicBeatState
         grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
         grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
 
-        if (TouchUtil.justReleased)
+        if (!TouchUtil.pressed)
         {
           var targetList:ModMenuItemList = null;
 
