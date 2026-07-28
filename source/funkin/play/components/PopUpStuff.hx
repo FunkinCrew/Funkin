@@ -37,8 +37,7 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
 
     rating.zIndex = 1000;
 
-    rating.x = (FlxG.width * 0.474);
-    rating.x -= rating.width / 2;
+    rating.screenCenter(X);
     rating.y = (FlxG.camera.height * 0.45 - 60);
     rating.y -= rating.height / 2;
 
@@ -74,23 +73,29 @@ class PopUpStuff extends FlxTypedGroup<FunkinSprite>
     var seperatedScore:Array<Int> = [];
     var tempCombo:Int = combo;
 
-    while (tempCombo != 0)
+    if (tempCombo == 0)
+    return;
+
+    while (tempCombo > 0)
     {
-      seperatedScore.push(tempCombo % 10);
-      tempCombo = Std.int(tempCombo / 10);
+    seperatedScore.push(tempCombo % 10);
+    tempCombo = Std.int(tempCombo / 10);
     }
-    while (seperatedScore.length < 3)
-      seperatedScore.push(0);
 
-    // seperatedScore.reverse();
+    seperatedScore.reverse();
 
-    var daLoop:Int = 1;
+    var daLoop:Int = 0;
+
+    var totalWidth:Float = 0;
+
+    var totalWidth:Float = seperatedScore.length * 36;
+
     for (digit in seperatedScore)
     {
       var numScore:Null<FunkinSprite> = noteStyle.buildComboNumSprite(digit);
       if (numScore == null) continue;
 
-      numScore.x = (FlxG.width * 0.507) - (36 * daLoop) - 65;
+      numScore.x = (FlxG.width / 2) - (totalWidth / 2) + (daLoop * 36);
       numScore.y = (FlxG.camera.height * 0.44);
 
       numScore.x += offsets[0];

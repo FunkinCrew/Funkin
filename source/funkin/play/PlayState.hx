@@ -393,6 +393,16 @@ class PlayState extends MusicBeatSubState
   public var isBotPlayMode:Bool = false;
 
   /**
+   * Whether the player has enabled Middlescroll.
+   */
+  public var middleScroll:Bool = false;
+
+  /**
+   * Whether the player has hidden the opponent's strumline.
+   */
+  public var hideOpponentStrumline:Bool = false;
+
+  /**
    * Whether the results screen should show up before returning to the chart editor.
    */
   public var isPlaytestResults:Bool = false;
@@ -801,6 +811,8 @@ class PlayState extends MusicBeatSubState
     var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
     if (nulNoteStyle == null) nulNoteStyle = NoteStyleRegistry.instance.fetchDefault();
     noteStyle = nulNoteStyle;
+    middleScroll = Save.instance.options.middleScroll;
+    hideOpponentStrumline = Save.instance.options.hideOpponentStrums;
 
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
@@ -821,6 +833,13 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
+    // I'm ignoring the warning up here hehe...
+
+    // Hide the opponent's strumline if requested.
+    if (hideOpponentStrumline)
+    {
+      opponentStrumline.visible = false;
+    }
   }
 
   /**
@@ -972,6 +991,25 @@ class PlayState extends MusicBeatSubState
     // This step ensures z-indexes are applied properly,
     // and it's important to call it last so all elements get affected.
     refresh();
+
+    // Pixel Perfect on Week 6.
+    var songName:String = currentSong != null ? currentSong.id.toLowerCase() : '';
+
+    if (songName == 'senpai' || songName == 'roses' || songName == 'thorns')
+    {
+      // Applies the flag to the game camera.
+      FlxG.camera.pixelPerfectRender = true;
+
+      // Applies the flag to the hud camera.
+      if (camHUD != null)
+      {
+        camHUD.pixelPerfectRender = true;
+      }
+
+      // No anti-aliasing boooi.
+      FlxG.camera.antialiasing = false;
+      if (camHUD != null) camHUD.antialiasing = false;
+    }
   }
 
   public function togglePauseButton(visible:Bool = false):Void
@@ -2010,9 +2048,9 @@ class PlayState extends MusicBeatSubState
     add(healthBar);
 
     // The score text below the health bar.
-    scoreText.x = healthBarBG.x + healthBarBG.width - 190;
+    scoreText.x = healthBarBG.x + (healthBarBG.width - scoreText.width) / 2;
     scoreText.y = healthBarBG.y + 30;
-    scoreText.alignment = RIGHT;
+    scoreText.alignment = CENTER;
     scoreText.borderStyle = OUTLINE;
     scoreText.borderColor = FlxColor.BLACK;
     scoreText.letterSpacing = -1;
@@ -2248,7 +2286,7 @@ class PlayState extends MusicBeatSubState
 
     final cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2.5;
     // Position the player strumline on the right half of the screen
-    playerStrumline.x = (FlxG.width / 2 + Constants.STRUMLINE_X_OFFSET) + (cutoutSize / 2.0); // Classic style
+    playerStrumline.x = FlxG.width / 2 + 150; // Classic style
     // playerStrumline.x = FlxG.width - playerStrumline.width - Constants.STRUMLINE_X_OFFSET; // Centered style
 
     playerStrumline.y = Preferences.downscroll ? FlxG.height - playerStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
@@ -2257,11 +2295,18 @@ class PlayState extends MusicBeatSubState
     playerStrumline.cameras = [camHUD];
 
     // Position the opponent strumline on the left half of the screen
-    opponentStrumline.x = Constants.STRUMLINE_X_OFFSET + cutoutSize;
+    opponentStrumline.x = FlxG.width / 2 - opponentStrumline.width - 150;
     opponentStrumline.y = Preferences.downscroll ? FlxG.height - opponentStrumline.height - Constants.STRUMLINE_Y_OFFSET - noteStyle.getStrumlineOffsets()[1] : Constants.STRUMLINE_Y_OFFSET;
 
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
+
+    // Center the player's strumline if Middlescroll is enabled.
+    if (middleScroll)
+    {
+      opponentStrumline.visible = false;
+      playerStrumline.x = (FlxG.width - playerStrumline.width) / 2;
+    }
 
     #if mobile
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
@@ -2751,12 +2796,16 @@ class PlayState extends MusicBeatSubState
     if (isBotPlayMode)
     {
       scoreText.text = 'Bot Play Enabled';
+      scoreText.updateHitbox();
+      scoreText.x = healthBarBG.x + (healthBarBG.width - scoreText.width) / 2;
     }
     else
     {
       final SHOW_DECIMALS:Bool = false;
       final COMMA_SEPARATED:Bool = true;
       scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, SHOW_DECIMALS, COMMA_SEPARATED)}';
+      scoreText.updateHitbox();
+      scoreText.x = healthBarBG.x + (healthBarBG.width - scoreText.width) / 2;
     }
   }
 
@@ -3348,7 +3397,7 @@ class PlayState extends MusicBeatSubState
     if (isComboBreak)
     {
       // Break the combo, but don't increment tallies.misses.
-      if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
+      if (Highscore.tallies.combo >= 0) comboPopUps.displayCombo(0);
       Highscore.tallies.combo = 0;
     }
     else
@@ -3375,7 +3424,7 @@ class PlayState extends MusicBeatSubState
     if (combo == null) combo = Highscore.tallies.combo;
 
     comboPopUps.displayRating(daRating);
-    if (combo >= 10) comboPopUps.displayCombo(combo);
+    if (combo >= 0) comboPopUps.displayCombo(combo);
 
     if (vocals != null) vocals.playerVolume = playerVocalsVolume;
   }
