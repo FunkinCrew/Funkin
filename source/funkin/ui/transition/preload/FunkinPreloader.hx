@@ -433,6 +433,25 @@ class FunkinPreloader extends FlxBasePreloader
 
           final CACHE_PERMANENT:Bool = true;
 
+          // TODO : THIS IS BANDAID. BAND. AID. REMOVE IT LATER! LIKE ACTUALLY - Moon
+          // It just quickly fixes load time so we can push out mod menu quicker, I want to rewrite that menu properly hence this bandaid
+          var modsThing:Array<polymod.Polymod.ModMetadata> = funkin.modding.PolymodHandler.getAllMods();
+
+          for (mod in modsThing)
+          {
+            if (mod.icon == null) continue;
+            var openflBytes = openfl.utils.ByteArray.fromBytes(mod.icon);
+            var bitmapData = openfl.display.BitmapData.fromBytes(openflBytes);
+            @:privateAccess
+            if (mod.id != null)
+            {
+              var grap = FunkinAssetCache.instance.setFlxGraphic(mod.id, bitmapData);
+              FunkinAssetCache.instance.setBitmapData(mod.id, bitmapData);
+              FunkinAssetCache.instance.stagedBitmapData.cachePermanent(mod.id, bitmapData);
+              funkin.assets.FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(mod.id, grap);
+            }
+          }
+
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);
 
           trace('PRELOADER: Begin caching ${assetsToCache.length} graphics...');

@@ -12,14 +12,11 @@ class ModMenuItemList extends FunkinSpriteGroup
 {
   public static var ITEM_X_OFFSET:Float = 40;
   public static var ITEM_Y_OFFSET:Float = 60;
-
   public static var SCROLL_LERP:Float = 16;
-
   public static var SCROLLBAR_WIDTH:Float = 10;
   public static var SCROLLBAR_TOP_MARGIN:Float = -42;
   public static var SCROLLBAR_BOTTOM_MARGIN:Float = -60;
   public static var SCROLLBAR_MIN_THUMB:Float = 24;
-
   public static var SCROLLBAR_TRACK_COLOR:FlxColor = 0xFF3A393E;
   public static var SCROLLBAR_TRACK_ALPHA:Float = 0.6;
   public static var SCROLLBAR_THUMB_COLOR:FlxColor = 0xFF57565A;
@@ -30,12 +27,11 @@ class ModMenuItemList extends FunkinSpriteGroup
   public var pinnedTopModId:Null<String> = null;
   // Separate array specifically typed to ModMenuItem
   public var modItems:Array<ModMenuItem>;
-
   public var title(default, set):String = "Disabled";
   public var titleText:FlxText;
-
   public var scrollbarTrack:FunkinSprite;
   public var scrollbarThumb:FunkinSprite;
+
   // Cache last built bitmap heights so we only regenerate graphics when they actually change.
   var lastTrackHeight:Int = -1;
   var lastThumbHeight:Int = -1;
@@ -66,14 +62,16 @@ class ModMenuItemList extends FunkinSpriteGroup
     titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
 
     scrollbarTrack = new FunkinSprite(0, 0);
-    scrollbarTrack.makeGraphic(Std.int(SCROLLBAR_WIDTH), 1, SCROLLBAR_TRACK_COLOR);
+    scrollbarTrack.makeGraphic(1, 1, SCROLLBAR_TRACK_COLOR);
     scrollbarTrack.alpha = SCROLLBAR_TRACK_ALPHA;
     scrollbarTrack.visible = false;
+    scrollbarTrack.origin.set(0, 0);
 
     scrollbarThumb = new FunkinSprite(0, 0);
-    scrollbarThumb.makeGraphic(Std.int(SCROLLBAR_WIDTH), 1, SCROLLBAR_THUMB_COLOR);
+    scrollbarThumb.makeGraphic(1, 1, SCROLLBAR_THUMB_COLOR);
     scrollbarThumb.alpha = SCROLLBAR_THUMB_ALPHA;
     scrollbarThumb.visible = false;
+    scrollbarThumb.origin.set(0, 0);
 
     updateScrollbar();
   }
@@ -279,7 +277,8 @@ class ModMenuItemList extends FunkinSpriteGroup
   {
     if (selectedModItem != null) selectedModItem.selected = false;
 
-    if (item == null) {
+    if (item == null)
+    {
       selectedModItem = null;
       return;
     }
@@ -325,7 +324,11 @@ class ModMenuItemList extends FunkinSpriteGroup
    * Like animateItemsToLayoutForInsert, but makes room for `insertCount` items being
    * inserted starting at `insertIndex`.
    */
-  public function animateItemsToLayoutForInsertCount(insertIndex:Int, insertCount:Int, duration:Float = 0.2, ?ease:Float->Float = null, startDelay:Float = 0):Void
+  public function animateItemsToLayoutForInsertCount(insertIndex:Int,
+    insertCount:Int,
+    duration:Float = 0.2,
+    ?ease:Float->Float = null,
+    startDelay:Float = 0):Void
   {
     if (ease == null) ease = FlxEase.quadOut;
     if (insertCount < 1) insertCount = 1;
@@ -522,16 +525,14 @@ class ModMenuItemList extends FunkinSpriteGroup
     var trackH:Int = Std.int(trackHeight);
     if (trackH != lastTrackHeight)
     {
-      scrollbarTrack.makeGraphic(Std.int(SCROLLBAR_WIDTH), trackH, SCROLLBAR_TRACK_COLOR);
-      scrollbarTrack.alpha = SCROLLBAR_TRACK_ALPHA;
+      scrollbarTrack.scale.set(SCROLLBAR_WIDTH, trackH);
       lastTrackHeight = trackH;
     }
 
     var thumbH:Int = Std.int(thumbHeight);
     if (thumbH != lastThumbHeight)
     {
-      scrollbarThumb.makeGraphic(Std.int(SCROLLBAR_WIDTH), thumbH, SCROLLBAR_THUMB_COLOR);
-      scrollbarThumb.alpha = SCROLLBAR_THUMB_ALPHA;
+      scrollbarThumb.scale.set(SCROLLBAR_WIDTH, thumbH);
       lastThumbHeight = thumbH;
     }
 

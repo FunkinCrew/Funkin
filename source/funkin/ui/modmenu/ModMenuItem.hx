@@ -22,6 +22,7 @@ class ModMenuItem extends FunkinSpriteGroup
   public static final ITEM_WIDTH_PADDING:Int = 24;
   public static var BG_SLIDE_DISTANCE:Float = 14;
   public static var BG_SLIDE_LERP:Float = 20;
+  public static var iconStrings:Array<String> = [];
 
   /**
    * Whether this mod item is immutable in list operations.
@@ -234,7 +235,23 @@ class ModMenuItem extends FunkinSpriteGroup
     else if (mod != null)
     {
       trace(mod.icon);
-      if (mod.icon != null) loadModIcon(mod.icon);
+      @:privateAccess
+      if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
+      {
+        modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
+        add(modIcon);
+
+        modIcon.scrollFactor.set();
+        modIcon.antialiasing = true;
+
+        // FunkinGroup is funny
+        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+        modIcon.localScale.x = modIcon.scale.x;
+        modIcon.localScale.y = modIcon.scale.y;
+
+        modIcon.updateHitbox();
+      }
+      else if (mod.icon != null) loadModIcon(mod.icon);
       else
       {
         trace('No icon found for mod ${mod.id}, using fallback');
@@ -340,6 +357,7 @@ class ModMenuItem extends FunkinSpriteGroup
     // Stolen from Enigma Engine LMFAO -Eric
 
     // Convert a haxe byte array to the proper data structure.
+
     var future = openfl.utils.ByteArray.loadFromBytes(bytes);
 
     future.onComplete((openFlBytes:openfl.utils.ByteArray) ->
