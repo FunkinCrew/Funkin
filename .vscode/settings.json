@@ -168,6 +168,10 @@
       "args": ["-debug", "-DUNLOCK_EVERYTHING"]
     },
     {
+      "label": "Debug (Verbose Asset Cache)",
+      "args": ["-debug", "-DVERBOSE_ASSET_CACHE"]
+    },
+    {
       "label": "Debug (Tracy + Unlock Everything)",
       "args": [
         "-debug",
