@@ -4,6 +4,7 @@ import flixel.graphics.FlxGraphic;
 import funkin.util.assets.StagedCache;
 import openfl.display.BitmapData;
 import animate.FlxAnimateFrames;
+import flixel.util.FlxColor;
 
 //
 // ~PATHS~
@@ -63,7 +64,16 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
       throw 'FlxGraphic tried to add an invalid graphic!';
     }
 
-    // trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${graphic.key}');
+    #if VERBOSE_ASSET_CACHE
+    // Most assets loaded as textures use the full asset path as the key.
+    // Exceptions include:
+    // - FlxText generates assets with keys like "text236"
+    // - FunkinSprite.makeSolidColor generates assets with keys like "solid#000000"
+    // - FlxSprite.makeGraphic generates assets with keys like "solid#000000:1024x768"
+    //   - In particular, HaxeUI does this a lot to make its graphics.
+    trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${graphic.key}');
+    #end
+
     if (!stagedFlxGraphic.exists(graphic.key) || stagedFlxGraphic.get(graphic.key) == null)
     {
       stagedFlxGraphic.cache(graphic.key, graphic);
@@ -193,6 +203,13 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return !filter.exists(keyword -> key.contains(keyword)));
   }
 
+  override public function create(width:Int, height:Int, color:FlxColor, unique = false, ?key:String):FlxGraphic
+  {
+    // Make the default key for FlxSprite.makeSolidColor() more readable.
+    key ??= 'solid#${color.toHexString(true, false)}:${width}x${height}';
+    return super.create(width, height, color, unique, key);
+  }
+
   /**
    * Forcefully clears any cache within the 'previous' staged cache that includes any
    * of the specified keywords while preserving assets that don't include those keywords.
@@ -290,8 +307,9 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   function onPostPurgeFlxGraphic(assetPath:String):Void
   {
+    #if VERBOSE_ASSET_CACHE
     trace('[BITMAPFRONTEND] Purging FlxGraphic: ${assetPath}');
-
-    funkin.util.DebugUtil.printCallStack();
+    // funkin.util.DebugUtil.printCallStack();
+    #end
   }
 }
