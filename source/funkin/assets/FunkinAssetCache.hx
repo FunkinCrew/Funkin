@@ -214,7 +214,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
-    #if (cpp || neko || hl)
+    #if (cpp || neko)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
   }
