@@ -318,7 +318,9 @@ class MainMenuState extends MusicBeatState
   {
     if (leftWatermarkText == null) return;
 
-    leftWatermarkText.text = Constants.VERSION;
+    leftWatermarkText.text = "Aze Engine vTESTINGBUILDS\nFriday Night Funkin' v0.8.5";
+
+    leftWatermarkText.y -= 16;
 
     #if FEATURE_NEWGROUNDS
     if (NewgroundsClient.instance.isLoggedIn())
