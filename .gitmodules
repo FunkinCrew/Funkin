@@ -1,10 +1,7 @@
 [submodule "assets"]
 	path = assets
-	url = https://github.com/FunkinCrew/Funkin.assets
+	url = https://github.com/Azeouza/azeengine.assets
 [submodule "art"]
 	path = art
 	url = https://github.com/FunkinCrew/Funkin.art
 	shallow = true
-[submodule "azeengine.assets"]
-	path = azeengine.assets
-	url = https://github.com/Azeouza/azeengine.assets
