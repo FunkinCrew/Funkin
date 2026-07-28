@@ -1,11 +1,12 @@
-# Friday Night Funkin'
+# Friday Night Funkin' Aze Engine
 
-The Friday Night Funkin' source code is licensed under the Apache 2.0 license: (https://www.apache.org/licenses/LICENSE-2.0)
+The Friday Night Funkin' and Aze Engine source code is licensed under the Apache 2.0 license: (https://www.apache.org/licenses/LICENSE-2.0)
 
-Friday Night Funkin' Copyright 2020-2024 The Funkin' Crew Inc.
+Friday Night Funkin' Copyright 2020-2026 The Funkin' Crew Inc.
 All Rights Reserved. "Friday Night Funkin'" and the "Friday Night Funkin'" logo are trademarks of The Funkin' Crew Inc.
 
 You can view the `funkin-assets` license here: (https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md)
+You can view the `azeengine-assets` license here: (https://github.com/Azeouza/azeengine.assets/blob/main/LICENSE.md)
 
 ## Apache 2.0 License
 ```
@@ -211,3 +212,4 @@ You can view the `funkin-assets` license here: (https://github.com/FunkinCrew/fu
    See the License for the specific language governing permissions and
    limitations under the License.
 ```
+All credits for The Funkin' Crew Inc. and Contributors.
