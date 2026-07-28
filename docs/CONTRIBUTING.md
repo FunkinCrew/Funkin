@@ -1,4 +1,4 @@
-#!WARNING!-THIS GUIDE IS FOR CONTRIBUTE TO THE FUNKIN' REPOSITORY!!!
+# !WARNING!-THIS GUIDE IS FOR CONTRIBUTE TO THE FUNKIN' REPOSITORY!!!
 # Contributing
 Welcome to the Contributing Guide!
 You can contribute to the Funkin' repository by opening issues or pull requests.
