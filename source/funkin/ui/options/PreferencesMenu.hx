@@ -114,6 +114,31 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     #end
+    createPrefItemCheckbox(
+    'Middlescroll',
+    'Centers the player strumline.',
+    function(value:Bool):Void
+    {
+        Preferences.middleScroll = value;
+    },
+    Preferences.middleScroll,
+    #if mobile ControlsHandler.hasExternalInputDevice
+    || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows
+    #end
+    );
+
+    createPrefItemCheckbox(
+    'Hide Opponent Strums',
+    'Hides the opponent strumline during gameplay.',
+    function(value:Bool):Void
+    {
+        Preferences.hideOpponentStrums = value;
+    },
+    Preferences.hideOpponentStrums,
+    #if mobile ControlsHandler.hasExternalInputDevice
+    || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows
+    #end
+    );
     createPrefItemCheckbox('Downscroll', 'When enabled, notes move downwards toward the strumline at the bottom of the screen.', function(value:Bool):Void
     {
       Preferences.downscroll = value;
