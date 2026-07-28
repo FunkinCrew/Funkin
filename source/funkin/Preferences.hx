@@ -112,6 +112,44 @@ class Preferences
   }
 
   /**
+   * If enabled, the player's strumline is centered.
+   * @default `false`
+   */
+  public static var middleScroll(get, set):Bool;
+
+  static function get_middleScroll():Bool
+  {
+    return Save?.instance?.options?.middleScroll ?? false;
+  }
+
+  static function set_middleScroll(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.middleScroll = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
+   * If enabled, the opponent strumline is hidden.
+   * @default `false`
+   */
+  public static var hideOpponentStrums(get, set):Bool;
+
+  static function get_hideOpponentStrums():Bool
+  {
+    return Save?.instance?.options?.hideOpponentStrums ?? false;
+  }
+
+  static function set_hideOpponentStrums(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.hideOpponentStrums = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */
