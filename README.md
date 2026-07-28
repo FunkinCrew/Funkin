@@ -1,3 +1,18 @@
+# Friday Night Funkin' Aze Engine
+
+Aze Engine it's Azeouza's engine running on the latest version of Friday Night Funkin'!
+
+# Compiling
+
+Follow the step-by-step instructions in [COMPILING.md](/docs/COMPILING.md) (It's the same step-by-step process for compiling the original FNF').
+
+# Credits
+## Programming/Artists/Music
+ - [Azeouza](https://x.com/azeouza) - Programmer/Artist of Aze Engine
+ - [The Funkin Crew Inc.](https://x.com/FNF_Developers) - Main Group of FNF' Development
+
+# Below is the README from the FNF' repository!
+
 <div align='center'><img src="docs/readme_images/FNF_logo.png" width="800">
 
 <h2>Friday Night Funkin' is a rhythm game. Built using HaxeFlixel for <a href="https://ldjam.com/events/ludum-dare/47">Ludum Dare 47.</a></h2>
