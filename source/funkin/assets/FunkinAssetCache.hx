@@ -230,8 +230,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     @:privateAccess
     {
-      haxe.ui.ToolkitAssets.instance._imageCache.clear();
-      haxe.ui.ToolkitAssets.instance._fontCache.clear();
+      haxe.ui.ToolkitAssets.instance?._imageCache?.clear();
+      haxe.ui.ToolkitAssets.instance?._fontCache?.clear();
     }
   }
 
