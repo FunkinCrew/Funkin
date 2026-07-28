@@ -43,23 +43,23 @@ class Project extends HXProject
   /**
    * The game's name. Used as the default window title.
    */
-  static final TITLE:String = "Friday Night Funkin'";
+  static final TITLE:String = "Friday Night Funkin' Aze Engine";
 
   /**
    * The game's name on mobile. Used as the title for the game on the home screen.
    */
-  static final TITLE_MOBILE:String = "FNF";
+  static final TITLE_MOBILE:String = "FNF Aze Engine";
 
   /**
    * A package name used for identifying the app on various app stores.
    */
-  static final PACKAGE_NAME:String = "me.funkin.fnf";
+  static final PACKAGE_NAME:String = "com.azeouza.fnf-aze-engine";
 
   /**
    * The name of the generated executable file.
    * For example, `"Funkin"` will create a file called `Funkin.exe`.
    */
-  static final EXECUTABLE_NAME:String = "Funkin";
+  static final EXECUTABLE_NAME:String = "Funkin Aze Engine";
 
   /**
    * The relative location of the source code.
@@ -87,7 +87,7 @@ class Project extends HXProject
    * The company name for the game.
    * This appears in metadata in places I think.
    */
-  static final COMPANY:String = "The Funkin' Crew";
+  static final COMPANY:String = "The Funkin' Crew & Azeouza";
 
   /**
    * The app's localization languages.
@@ -607,7 +607,7 @@ class Project extends HXProject
   function flair()
   {
     // TODO: Implement this.
-    info("Friday Night Funkin' - " + VERSION);
+    info("Friday Night Funkin' Aze Engine - " + VERSION);
     info("Initializing build...");
 
     info("Git Branch:     " + getGitBranch());
