@@ -87,7 +87,7 @@ class WindowUtil
   {
     var appInfoMessage = funkin.util.logging.CrashHandler.buildSystemInfo();
 
-    trace("Friday Night Funkin': Connection to Tracy profiler successful.");
+    trace("Friday Night Funkin' Aze Engine: Connection to Tracy profiler successful.");
 
     // Post system info like Git hash
     cpp.vm.tracy.TracyProfiler.messageAppInfo(appInfoMessage);
