@@ -20,7 +20,6 @@ class ModMenuItem extends FunkinSpriteGroup
   public static final ICON_HEIGHT:Int = 96;
   public static final DESC_WIDTH:Int = 216;
   public static final ITEM_WIDTH_PADDING:Int = 24;
-
   public static var BG_SLIDE_DISTANCE:Float = 14;
   public static var BG_SLIDE_LERP:Float = 20;
 
@@ -37,7 +36,6 @@ class ModMenuItem extends FunkinSpriteGroup
   var fallbackModId:String;
   var fallbackTitle:String;
   var fallbackDescription:String;
-
   var bgOffsetX:Float = 0;
   var bgOffsetY:Float = 0;
 
@@ -68,7 +66,7 @@ class ModMenuItem extends FunkinSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    this.selected = value;
+    this.selected = (!locked) ? value : false;
     return selected;
   }
 
@@ -80,11 +78,21 @@ class ModMenuItem extends FunkinSpriteGroup
   {
     switch (dir)
     {
-      case -1: bgOffsetX = 0; bgOffsetY = -BG_SLIDE_DISTANCE; // came from up
-      case 1:  bgOffsetX = 0; bgOffsetY = BG_SLIDE_DISTANCE;
-      case -2: bgOffsetX = -BG_SLIDE_DISTANCE; bgOffsetY = 0;
-      case 2:  bgOffsetX = BG_SLIDE_DISTANCE; bgOffsetY = 0;
-      default: bgOffsetX = 0; bgOffsetY = 0;
+      case -1:
+        bgOffsetX = 0;
+        bgOffsetY = -BG_SLIDE_DISTANCE; // came from up
+      case 1:
+        bgOffsetX = 0;
+        bgOffsetY = BG_SLIDE_DISTANCE;
+      case -2:
+        bgOffsetX = -BG_SLIDE_DISTANCE;
+        bgOffsetY = 0;
+      case 2:
+        bgOffsetX = BG_SLIDE_DISTANCE;
+        bgOffsetY = 0;
+      default:
+        bgOffsetX = 0;
+        bgOffsetY = 0;
     }
     background.localX = -bgOffsetX;
     background.localY = -bgOffsetY;
@@ -184,16 +192,17 @@ class ModMenuItem extends FunkinSpriteGroup
   }
 
   var flashElapsed:Float = -1; // -1 means "not flashing"
+
   static inline final FLASH_DURATION:Float = 0.5;
   static inline final FLASH_START_ALPHA:Float = 1.0;
+
   var flashTargetAlpha:Float = 0.25;
 
-  public function new(
-      mod:Null<ModMetadata>,
-      iconAssetPath:Null<String> = null,
-      fallbackModId:String = '__unknown_mod__',
-      fallbackTitle:String = 'Unknown Mod',
-      fallbackDescription:String = '')
+  public function new(mod:Null<ModMetadata>,
+    iconAssetPath:Null<String> = null,
+    fallbackModId:String = '__unknown_mod__',
+    fallbackTitle:String = 'Unknown Mod',
+    fallbackDescription:String = '')
   {
     super();
 
@@ -247,7 +256,7 @@ class ModMenuItem extends FunkinSpriteGroup
     titleText.localX = ICON_HEIGHT + 8;
     titleText.fieldHeight = 42;
     titleText.text = getModTitle();
-    titleText.scale.set(1,0.8);
+    titleText.scale.set(1, 0.8);
     add(titleText);
 
     titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
@@ -258,7 +267,7 @@ class ModMenuItem extends FunkinSpriteGroup
     descriptionText.fieldHeight = 64;
     descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
     descriptionText.text = getModDescription();
-    descriptionText.scale.set(1,0.8);
+    descriptionText.scale.set(1, 0.8);
     descriptionText.localAlpha = 0.7;
     add(descriptionText);
 
@@ -293,7 +302,8 @@ class ModMenuItem extends FunkinSpriteGroup
     if (flashElapsed >= 0) return;
 
     if (this.selected) background.localAlpha = 0.25;
-    else background.localAlpha = 0;
+    else
+      background.localAlpha = 0;
   }
 
   /**
