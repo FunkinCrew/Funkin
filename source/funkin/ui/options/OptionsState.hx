@@ -130,17 +130,25 @@ class OptionsState extends MusicBeatState
     optionsCodex.switchPage(Options);
   }
 
+  var justExitedControls:Bool = false;
   function exitControls():Void
   {
     // Apply any changes to the controls.
     PlayerSettings.reset();
     PlayerSettings.init();
 
+    justExitedControls = true;
+
     optionsCodex.switchPage(Options);
   }
 
   function exitToMainMenu():Void
   {
+    if (justExitedControls)
+    {
+      justExitedControls = false;
+      return;
+    }
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
     if (backState != null)
