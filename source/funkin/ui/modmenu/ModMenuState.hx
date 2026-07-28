@@ -1172,6 +1172,7 @@ class ModMenuState extends MusicBeatState
 
   #if FEATURE_TOUCH_CONTROLS
   var grabbedItem:ModMenuItem = null;
+  var originalItemList:ModMenuItemList = null;
   final touchDeltaXThreshold:Int = 5;
   final touchDeltaYThreshold:Int = 10;
 
@@ -1192,6 +1193,7 @@ class ModMenuState extends MusicBeatState
         itemList.selectModItem(item, false);
 
         grabbedItem = item;
+        originalItemList = itemList;
 
         for (record in pendingTransitions)
         {
@@ -1299,6 +1301,8 @@ class ModMenuState extends MusicBeatState
 
           if (!listChanged)
           {
+            targetList = originalItemList;
+
             var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
 
             var batchFutureCount:Int = targetList.modItems.length;
@@ -1312,6 +1316,7 @@ class ModMenuState extends MusicBeatState
           targetList.deselect();
 
           grabbedItem = null;
+          originalItemList = null;
         }
       }
     }
