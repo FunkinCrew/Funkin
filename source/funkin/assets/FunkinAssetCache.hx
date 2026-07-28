@@ -15,6 +15,8 @@ import haxe.io.Bytes;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.graphics.Image as LimeImage;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxFramesCollection;
 import lime.media.AudioBuffer as LimeAudioBuffer;
 import lime.utils.AssetCache as LimeAssetCache;
 import lime.utils.AssetType as LimeAssetType;
@@ -626,6 +628,26 @@ class FunkinAssetCache implements OpenFLIAssetCache
     stagedBitmapData.cache(id, bitmapData);
   }
 
+  /**
+   * @param graphic The `FlxGraphic` to check.
+   * @return Whether the `FlxGraphic` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFlxGraphic(graphic:FlxGraphic):Bool
+  {
+    // Check if the graphic is valid before returning.
+    if (graphic == null) return false;
+
+    if (!FunkinBitmapFrontend.instance.isValid(graphic)) return false;
+
+    if (!validateBitmapData(graphic.bitmap)) return false;
+
+    return true;
+  }
+
+  /**
+   * @param bitmapData The `BitmapData` to check.
+   * @return Whether the `BitmapData` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
   public function validateBitmapData(bitmapData:BitmapData):Bool
   {
     // Check if the graphic is valid before returning.
@@ -640,6 +662,39 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
       return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * @param bitmapData The `FlxFrame` to check.
+   * @return Whether the `FlxFrame` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFrame(frame:FlxFrame):Bool
+  {
+    if (frame == null) return false;
+
+    if (!validateFlxGraphic(frame.parent)) return false;
+
+    return true;
+  }
+
+  /**
+   * @param bitmapData The `FlxFramesCollection` to check.
+   * @return Whether the `FlxFramesCollection` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFramesCollection(frames:FlxFramesCollection):Bool
+  {
+    if (frames == null) return false;
+
+    for (frame in frames.frames)
+    {
+      if (!validateFrame(frame))
+      {
+        trace('Frame "${frame.name}" is invalid, did you uncache the underlying graphic?');
+        return false;
+      }
     }
 
     return true;
