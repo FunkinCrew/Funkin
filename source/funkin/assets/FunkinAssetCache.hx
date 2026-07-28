@@ -214,7 +214,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // Clear everything except:
     // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
     // - `bg_graphic_` is used to render the background color on substates, it's 1x1 pixel so probably not a problem to just keep it.
-    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_', 'solid#']);
+    FunkinBitmapFrontend.instance.clearExcept(['stickers/', 'bg_graphic_']);
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
@@ -643,22 +643,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
-   * @param graphic The `FlxGraphic` to check.
-   * @return Whether the `FlxGraphic` is invalid (the underlying image got uncached) and needs to be reloaded.
-   */
-  public function validateFlxGraphic(graphic:FlxGraphic):Bool
-  {
-    // Check if the graphic is valid before returning.
-    if (graphic == null) return false;
-
-    if (!FunkinBitmapFrontend.instance.isValid(graphic)) return false;
-
-    if (!validateBitmapData(graphic.bitmap)) return false;
-
-    return true;
-  }
-
-  /**
    * @param bitmapData The `BitmapData` to check.
    * @return Whether the `BitmapData` is invalid (the underlying image got uncached) and needs to be reloaded.
    */
@@ -681,21 +665,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
     return true;
   }
 
+  // Should this be in FunkinBitmapFrontend I wonder..
+
   /**
-   * @param bitmapData The `FlxFrame` to check.
+   * @param frame The `FlxFrame` to check.
    * @return Whether the `FlxFrame` is invalid (the underlying image got uncached) and needs to be reloaded.
    */
   public function validateFrame(frame:FlxFrame):Bool
   {
     if (frame == null) return false;
 
-    if (!validateFlxGraphic(frame.parent)) return false;
+    if (!FunkinBitmapFrontend.instance.isValid(frame.parent)) return false;
 
     return true;
   }
 
   /**
-   * @param bitmapData The `FlxFramesCollection` to check.
+   * @param frames The `FlxFramesCollection` to check.
    * @return Whether the `FlxFramesCollection` is invalid (the underlying image got uncached) and needs to be reloaded.
    */
   public function validateFramesCollection(frames:FlxFramesCollection):Bool
@@ -1204,6 +1190,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
         trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
         #end
         FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
+        cacheBitmapData(assetPath, true, true); // We need the bitmapdata to persist too.
       }
 
       // On success, resolve the promise with true
