@@ -1105,6 +1105,23 @@ class FunkinAssetCache implements OpenFLIAssetCache
   }
 
   /**
+   * FunkinAssetCache caches the result of `Assets.list()` for improved performance,
+   * but sometimes you need to redo the cache (like when the mod list changes).
+   *
+   * @param force `true` to ignore any existing cache, `false` to only rebuild empty caches.
+   */
+  public function cacheAssetLists(force:Bool = false):Void
+  {
+    // Cache the results of Assets.list(), forcibly clearing any previous cache.
+    FunkinAssetCache.instance.list(null, force);
+    @:privateAccess
+    for (type in Assets.ASSET_TYPES)
+    {
+      FunkinAssetCache.instance.list(type, force);
+    }
+  }
+
+  /**
    * Fetch a BitmapData asynchronously and cache it.
    * If it's previously cached, it will be returned immediately.
    *

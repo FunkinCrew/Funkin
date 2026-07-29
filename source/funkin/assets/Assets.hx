@@ -91,11 +91,7 @@ class Assets implements ConsoleClass
     FlxG.assets.isLocal = flxIsLocal;
     FlxG.assets.list = flxList;
 
-    // Cache the results of Assets.list(), forcibly clearing any previous cache.
-    for (type in ASSET_TYPES)
-    {
-      FunkinAssetCache.instance.list(type, true);
-    }
+    FunkinAssetCache.instance.cacheAssetLists(true);
   }
 
   /**
@@ -1201,7 +1197,9 @@ class Assets implements ConsoleClass
 
   static function flxList(?type:FlxAssetType):Array<String>
   {
-    return list(type).map((assetPath) -> assetPath.toString());
+    var result = list(type).map((assetPath) -> assetPath.toString());
+    trace('Assets.list(): $result');
+    return result;
   }
 }
 

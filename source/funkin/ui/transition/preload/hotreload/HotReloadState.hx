@@ -1,5 +1,6 @@
 package funkin.ui.transition.preload.hotreload;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.util.typeLimit.NextState;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -108,6 +109,9 @@ class HotReloadState extends MusicBeatState
       clearScripts();
 
       funkin.modding.PolymodHandler.loadEnabledMods();
+
+      // This synchronous task needs to be done immediately after changing the modlist.
+      FunkinAssetCache.instance.cacheAssetLists(true);
 
       queueLoadScripts();
     }

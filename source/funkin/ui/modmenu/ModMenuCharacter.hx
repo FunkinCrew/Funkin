@@ -245,7 +245,7 @@ class ModMenuCharacter extends FunkinSprite
     else
     {
       @:privateAccess
-      if (!isGF) jsons = Polymod.assetLibrary.listDirectly(modId, TEXT);
+      if (!isGF) jsons = PolymodAssets.listInMod(modId, TEXT);
     }
 
     previousCharacterId = currentCharacterId;
@@ -281,7 +281,7 @@ class ModMenuCharacter extends FunkinSprite
   {
     var assetPath:String = Paths.json('ui/mods/characters/$currentCharacterId/Animation');
     @:privateAccess
-    return Polymod.assetLibrary.checkDirectly(assetPath, modId);
+    return PolymodAssets.existsInMod(assetPath, modId);
   }
 
   function loadGraphics():Void
