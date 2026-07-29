@@ -67,7 +67,7 @@ class ModMenuItem extends FunkinSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    this.selected = (!locked) ? value : false;
+    this.selected = value;
     return selected;
   }
 
