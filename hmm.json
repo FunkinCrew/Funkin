@@ -17,13 +17,13 @@
     {
       "name": "extension-admob",
       "type": "git",
-      "ref": "e555c51232e3962a10b7348df3c70c52b0310afa",
+      "ref": "68fc73c4090c5765709597b68fbe87389f3548c0",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
       "name": "extension-agesignals",
       "type": "git",
-      "ref": "bc5351fc30d8c8c0772fbaa3a291a5e48fca752b",
+      "ref": "dd3f56ccbb313a43d40cba8826fca2b1ec7c7e5d",
       "url": "https://github.com/FunkinCrew/extension-agesignals"
     },
     {
@@ -130,8 +130,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "dir": null,
-      "ref": "2e969d0154ac536c1b5a5c89d2c2b73d7126bd2e",
+      "ref": "9a86ccf33a951fc54ff2e75720eb3b62eaab523a",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -188,7 +187,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "22c12c76c97e0e7e83862f437b501e859a4e2222",
+      "ref": "ed1a8c1d309221ad9a00ed3b35da7cf7e8d2b2e8",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
