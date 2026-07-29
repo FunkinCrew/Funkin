@@ -36,23 +36,26 @@
     },
     {
       "name": "extension-haptics",
-      "type": "haxelib",
-      "version": "1.0.4"
+      "type": "git",
+      "ref": "8978b34b437f943a0d164bd6b3d8b69bd0025081",
+      "url": "https://github.com/LimeExtensions/extension-haptics"
     },
     {
       "name": "extension-iapcore",
-      "type": "haxelib",
-      "version": "1.0.4"
+      "type": "git",
+      "ref": "5fbb4a8e56ff0f4d8ffc71b561d57a367419ead8",
+      "url": "https://github.com/LimeExtensions/extension-iapcore"
     },
     {
       "name": "extension-iarcore",
-      "type": "haxelib",
-      "version": "1.0.3"
+      "type": "git",
+      "ref": "a78e49fe69feecef9abcdbcfd08ccc510ed00c6c",
+      "url": "https://github.com/LimeExtensions/extension-iarcore"
     },
     {
       "name": "extension-webviewcore",
       "type": "git",
-      "ref": "d13109450d65c40678244ca23b1aa88ac18d77e6",
+      "ref": "98c059722491b182ee932ff47c5d7b564c967165",
       "url": "https://github.com/LimeExtensions/extension-webviewcore"
     },
     {
