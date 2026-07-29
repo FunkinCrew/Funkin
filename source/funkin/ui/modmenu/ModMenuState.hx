@@ -225,8 +225,8 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.scale.set(0.7, 0.7);
     buttonBackToMenu.updateHitbox();
 
-    buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2);
-    buttonBackToMenu.x = disabledModItems.x;
+    buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2) + 3;
+    buttonBackToMenu.x = disabledModItems.x - 50;
 
     buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24, true, false, false);
     buttonBackToMenu.anim.addByFrameLabel('press', 'press hold', 24, false, false, false);
@@ -619,6 +619,7 @@ class ModMenuState extends MusicBeatState
     else
       destinationList.updateScrollbar();
   }
+
   /**
    * Starts the manual flight that carries an item from the transition layer into its
    * destination list, tracking it via `pendingTransitions` so it can be force-settled
@@ -768,7 +769,6 @@ class ModMenuState extends MusicBeatState
   var crispyTimer:Float = 0;
   var allowInput:Bool = true;
   var playedCough:Bool = false;
-
   var backTimer:Float = 0;
 
   override public function update(elapsed:Float):Void
@@ -1086,13 +1086,9 @@ class ModMenuState extends MusicBeatState
           switch (holdDirection)
           {
             case -1:
-              if (lastSelectDir == -1) selection = Done;
-              else
-                selection = OpenModsFolder;
+              if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
             case 1:
-              if (lastSelectDir == -1) selection = EnabledModList;
-              else
-                selection = DisabledModList;
+              if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
             case -2:
               // Nothing
             case 2:
