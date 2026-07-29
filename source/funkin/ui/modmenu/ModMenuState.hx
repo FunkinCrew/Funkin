@@ -220,10 +220,34 @@ class ModMenuState extends MusicBeatState
     enabledModItems.updateClipRects();
     disabledModItems.updateClipRects();
 
-    buttonBackToMenu.x = 8;
-    buttonBackToMenu.y = 32;
-    buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
-    // add(buttonBackToMenu);
+    buttonBackToMenu.loadTextureAtlas('ui/mods/back arrow');
+    add(buttonBackToMenu);
+    buttonBackToMenu.scale.set(0.7, 0.7);
+    buttonBackToMenu.updateHitbox();
+
+    buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2);
+    buttonBackToMenu.x = disabledModItems.x;
+
+    buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24, true, false, false);
+    buttonBackToMenu.anim.addByFrameLabel('press', 'press hold', 24, false, false, false);
+    buttonBackToMenu.anim.addByFrameLabel('hover', 'highlighted', 24, true, false, false);
+    buttonBackToMenu.anim.addByFrameLabel('confirm', 'confirm', 24, false, false, false);
+
+    playBackButtonAnimation('idle', true);
+    buttonBackToMenu.anim.onFinish.add((name:String) ->
+    {
+      switch (backPressStage)
+      {
+        case 1:
+          trace('Back button pressed, confirming exit...');
+          backPressStage = 2;
+          playBackButtonAnimation('confirm', true);
+        case 2:
+          trace('Back button confirm finished, returning to main menu...');
+          backPressStage = 3;
+        default:
+      }
+    });
 
     // add(bfAndGF);
 
@@ -469,6 +493,23 @@ class ModMenuState extends MusicBeatState
 
     disabledModItems.snapScroll();
     enabledModItems.snapScroll();
+  }
+
+  var backPressStage:Int = 0;
+
+  function playBackButtonAnimation(name:String, force:Bool = false):Void
+  {
+    if (buttonBackToMenu == null || buttonBackToMenu.anim == null) return;
+    if (!force && buttonBackToMenu.anim.curAnim?.name == name) return;
+    buttonBackToMenu.anim.play(name, force);
+  }
+
+  function pressBackButton():Void
+  {
+    if (exitingMenu) return;
+    exitingMenu = true;
+    backPressStage = 1;
+    playBackButtonAnimation('press', true);
   }
 
   /**
@@ -728,9 +769,17 @@ class ModMenuState extends MusicBeatState
   var allowInput:Bool = true;
   var playedCough:Bool = false;
 
+  var backTimer:Float = 0;
+
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (backPressStage == 3)
+    {
+      backTimer += elapsed;
+      if (backTimer >= 0.35) backToMainMenu();
+    }
 
     secondCounter += elapsed;
     if (secondCounter >= 0.5)
@@ -739,7 +788,7 @@ class ModMenuState extends MusicBeatState
       rescanFolder();
     }
 
-    if (allowInput)
+    if (allowInput && !exitingMenu)
     {
       blinkTimer += elapsed;
 
@@ -931,7 +980,9 @@ class ModMenuState extends MusicBeatState
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
     {
-      backToMainMenu();
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      pressBackButton();
+      return;
     }
 
     oldSelection = selection;
@@ -1032,7 +1083,21 @@ class ModMenuState extends MusicBeatState
               lastSelectDir = 2;
           }
         case BackToMenu:
-          // Do nothing
+          switch (holdDirection)
+          {
+            case -1:
+              if (lastSelectDir == -1) selection = Done;
+              else
+                selection = OpenModsFolder;
+            case 1:
+              if (lastSelectDir == -1) selection = EnabledModList;
+              else
+                selection = DisabledModList;
+            case -2:
+              // Nothing
+            case 2:
+              // Nothing
+          }
       }
     }
     if (delay > 0) delay -= FlxG.elapsed;
@@ -1059,7 +1124,7 @@ class ModMenuState extends MusicBeatState
           selection = OpenModsFolder;
           lastSelectDir = -2;
         case BackToMenu:
-          // Do nothing
+          // Nothing
       }
     }
 
@@ -1083,7 +1148,7 @@ class ModMenuState extends MusicBeatState
           selection = DisabledModList;
           lastSelectDir = 2;
         case BackToMenu:
-          // Do nothing
+          // Nothing
       }
     }
 
@@ -1095,8 +1160,8 @@ class ModMenuState extends MusicBeatState
         case DisabledModList:
           if (!disabledModItems.moveUp(false))
           {
-            selection = OpenModsFolder;
-            lastSelectDir = -1;
+            selection = BackToMenu;
+            lastSelectDir = 1;
           }
         case EnabledModList:
           if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
@@ -1104,7 +1169,7 @@ class ModMenuState extends MusicBeatState
           {
             if (!enabledModItems.moveUp(false))
             {
-              selection = Done;
+              selection = BackToMenu;
               lastSelectDir = -1;
             }
           }
@@ -1115,7 +1180,10 @@ class ModMenuState extends MusicBeatState
           selection = EnabledModList;
           lastSelectDir = -1;
         case BackToMenu:
-          // Do nothing
+          trace('lastSelectDir: ' + lastSelectDir);
+          if (lastSelectDir == -1) selection = Done;
+          else
+            selection = OpenModsFolder;
       }
     }
 
@@ -1141,13 +1209,15 @@ class ModMenuState extends MusicBeatState
             }
           }
         case OpenModsFolder:
-          selection = DisabledModList;
+          selection = BackToMenu;
           lastSelectDir = 1;
         case Done:
-          selection = EnabledModList;
-          lastSelectDir = 1;
+          selection = BackToMenu;
+          lastSelectDir = -1;
         case BackToMenu:
-          // Do nothing
+          if (lastSelectDir == -1) selection = EnabledModList;
+          else
+            selection = DisabledModList;
       }
     }
 
@@ -1163,13 +1233,13 @@ class ModMenuState extends MusicBeatState
           enableMod(disabledModItems.selectedModItem);
         case EnabledModList:
           disableMod(enabledModItems.selectedModItem);
-        case BackToMenu:
-          backToMainMenu();
         case OpenModsFolder:
           openFolderAnimator.playAnimation('accept');
           openFolderAnimator.onFinish = openModsFolder;
         case Done:
           playElectrocutionSequence();
+        case BackToMenu:
+          pressBackButton();
       }
 
       oldSelection = selection;
@@ -1364,6 +1434,7 @@ class ModMenuState extends MusicBeatState
 
   function handleSelection():Void
   {
+    if (selection != BackToMenu) playBackButtonAnimation('idle');
     disabledModItems.deselect();
     enabledModItems.deselect();
 
@@ -1387,11 +1458,11 @@ class ModMenuState extends MusicBeatState
       case Done:
         doneButtonAnimator.playAnimation('select');
       case BackToMenu:
-        // Do nothing
+        playBackButtonAnimation('hover');
     }
 
     lastInput = '';
-    lastSelectDir = 0;
+    if (selection != BackToMenu) lastSelectDir = 0;
   }
 
   // MOD LIST BUILDING //

@@ -1198,7 +1198,7 @@ class Assets implements ConsoleClass
   static function flxList(?type:FlxAssetType):Array<String>
   {
     var result = list(type).map((assetPath) -> assetPath.toString());
-    trace('Assets.list(): $result');
+    // trace('Assets.list(): $result');
     return result;
   }
 }
