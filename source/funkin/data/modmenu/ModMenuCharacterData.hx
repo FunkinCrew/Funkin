@@ -42,4 +42,29 @@ typedef ModMenuCharacterData =
    */
   @:optional @:default(0.7)
   var scale:Float;
+
+  /**
+   * Whether the character has custom wire animations.
+   * If `true`, the Mod Menu's default wires will be hidden.
+   */
+  @:optional @:default(false)
+  var hasCustomWires:Bool;
+
+  /**
+   * The offsets for the character's smoke.
+   * Used during the crispy animation.
+   */
+  @:optional @:default([0, 0])
+  var smokeOffsets:Array<Float>;
+
+  /**
+   * The scale of the character's smoke.
+   * Used during the crispy animation.
+   *
+   * NOTE: Is an array instead of a single float for better flexibility.
+   *
+   * (ex. `[0.5, 0.5]` instead of `0.5`)
+   */
+  @:optional @:default([0.5, 0.5])
+  var smokeScale:Array<Float>;
 }

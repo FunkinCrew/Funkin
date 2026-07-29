@@ -636,10 +636,21 @@ class FunkinSprite extends FlxAnimate
    */
   public function listAnimations():Array<String>
   {
-    var frameLabels:Array<String> = getFrameLabelList();
+    var frameLabels:Array<String> = __backwardsCompatibility ? getFrameLabelList() : [];
     var animationList:Array<String> = this.animation?.getNameList() ?? [];
 
     return frameLabels.concat(animationList);
+  }
+
+  /**
+   * Gets the length of an animation.
+   * @param name The name of the animation.
+   * @return The length of the animation.
+   */
+  public function getAnimationLength(name:String):Int
+  {
+    var animation:Null<flixel.animation.FlxAnimation> = this.animation.getByName(name);
+    return animation?.numFrames ?? 0;
   }
 
   /**

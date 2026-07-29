@@ -112,6 +112,8 @@ class ModMenuState extends MusicBeatState
   var carBattery:FunkinSprite;
   var fgWires:FunkinSprite;
   var shockTimer:FlxTimer = new FlxTimer();
+  var sparks:ModMenuSparks;
+  var gfWire:FunkinSprite;
 
   public function new()
   {
@@ -124,6 +126,18 @@ class ModMenuState extends MusicBeatState
       randomTimeRange: FlxPoint.get(6.0, 10.0),
       fadeInTime: 4.0
     });
+
+    // Caching the smoke since they're not drawn immediately.
+    // TODO: Remove and replace with `queryAssets()` once async loading is done.
+    var assetPaths:Array<String> = [
+      'ui/mods/mod-menu-smoke',
+      'ui/mods/smoke-cloud/spritemap1'
+    ];
+
+    for (assetPath in assetPaths)
+    {
+      funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(assetPath));
+    }
   }
 
   override public function create():Void
@@ -261,6 +275,14 @@ class ModMenuState extends MusicBeatState
     carBattery.updateHitbox();
     add(carBattery);
 
+    gfWire = new FunkinSprite(943, 53).loadSparrow('ui/mods/mod-menu-gfwire');
+    gfWire.animation.addByPrefix('idle', 'idle', 24, false);
+    gfWire.animation.addByPrefix('shock', 'shock', 24, false);
+    gfWire.animation.play('idle');
+    gfWire.scale.set(0.7, 0.7);
+    gfWire.updateHitbox();
+    add(gfWire);
+
     // This is in reverse order since BF should be above GF!
     // TODO: Rework `create()` to use `zIndex`
     add(gf);
@@ -307,6 +329,9 @@ class ModMenuState extends MusicBeatState
     smokeCloud.scale.set(0.75, 0.75);
     smokeCloud.updateHitbox();
     add(smokeCloud);
+
+    sparks = new ModMenuSparks();
+    add(sparks);
 
     buttonDone.x = FlxG.width * 0.68;
     buttonDone.y = FlxG.height * 0.89;
@@ -528,6 +553,8 @@ class ModMenuState extends MusicBeatState
       if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
       else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
     }
+
+    gfWire.visible = !gf.hasCustomWires;
 
     #if FEATURE_TOUCH_CONTROLS
     addBackButton(0, 0, FlxColor.WHITE, backToMainMenu);
@@ -971,6 +998,11 @@ class ModMenuState extends MusicBeatState
     carBattery.animation.resume();
     fgWires.animation.play('shock');
 
+    gfWire.visible = true;
+    gfWire.animation.play('shock');
+
+    sparks.startElectrocution();
+
     var bgColor:FlxColor = menuBG.color;
 
     whiteColor.colorSet = true;
@@ -999,12 +1031,17 @@ class ModMenuState extends MusicBeatState
         bf.visible = true;
         gf.visible = true;
 
+        gfWire.visible = !gf.hasCustomWires;
+        gfWire.animation.play('idle');
+
         FlxTween.color(menuBG, 14 / 24, 0xFF232327, bgColor);
 
         carBattery.animation.reset();
 
         smokeCloud.visible = true;
         smokeCloud.animation.play('wholeTimeline');
+
+        sparks.endElectrocution();
 
         FlxTween.tween(smokeCloud, {
           alpha: 0
@@ -1053,6 +1090,17 @@ class ModMenuState extends MusicBeatState
 
         if (showSmoke)
         {
+          crispySmokeBF.x += bf.smokeOffsets[0];
+          crispySmokeBF.y += bf.smokeOffsets[1];
+          crispySmokeBF.scale.set(bf.smokeScale[0], bf.smokeScale[1]);
+
+          crispySmokeGF.x += gf.smokeOffsets[0];
+          crispySmokeGF.y += gf.smokeOffsets[1];
+          crispySmokeGF.scale.set(gf.smokeScale[0], gf.smokeScale[1]);
+
+          crispySmokeBF.updateHitbox();
+          crispySmokeGF.updateHitbox();
+
           crispySmokeBF.visible = true;
           crispySmokeGF.visible = true;
 

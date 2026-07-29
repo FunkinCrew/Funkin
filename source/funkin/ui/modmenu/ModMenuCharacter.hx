@@ -19,6 +19,7 @@ enum abstract CharacterAnimation(String) to String
   public var IDLE = 'idle';
   public var ELECTROCUTED = 'electrocuted';
   public var CRISPY = 'crispy';
+  public var CRISPY_LOOP = 'crispy-loop';
 }
 
 /**
@@ -30,19 +31,14 @@ enum abstract CharacterAnimation(String) to String
 class ModMenuCharacter extends FunkinSprite
 {
   /**
-   * Layer name for the wire on Pinhead.
+   * The initial position of the character.
    */
-  static final PINHEAD_WIRE_LAYER_NAME:String = 'WIRE';
+  public var initialPosition:FlxPoint = FlxPoint.get();
 
   /**
    * The character ID for this character.
    */
   public var currentCharacterId:String = '';
-
-  /**
-   * The previous character ID for this character.
-   */
-  public var previousCharacterId:String = '';
 
   /**
    * The mod ID of the mod that owns this character.
@@ -68,6 +64,23 @@ class ModMenuCharacter extends FunkinSprite
    * Whether or not this character is on the left side.
    */
   public var isGF:Bool = false;
+
+  /**
+   * Whether the character has custom wire animations.
+   */
+  public var hasCustomWires:Bool = false;
+
+  /**
+   * The offsets for the character's smoke trail.
+   * Used during the crispy animation.
+   */
+  public var smokeOffsets:Array<Float> = [];
+
+  /**
+   * The scale of the character's smoke trail.
+   * Used during the crispy animation.
+   */
+  public var smokeScale:Array<Float> = [];
 
   /**
    * The list of modded assets for this character.
@@ -175,6 +188,8 @@ class ModMenuCharacter extends FunkinSprite
   {
     super(x, y);
 
+    this.initialPosition.set(x, y);
+
     if (characterId == '') characterId = 'pinhead';
     applyShader();
 
@@ -186,6 +201,14 @@ class ModMenuCharacter extends FunkinSprite
     loadAnimations();
 
     playAnimation(IDLE, true);
+
+    animation.onFinish.add((name:String) ->
+    {
+      if (name == CRISPY && hasAnimation(CRISPY_LOOP))
+      {
+        playAnimation(CRISPY_LOOP, true);
+      }
+    });
   }
 
   /**
@@ -207,6 +230,11 @@ class ModMenuCharacter extends FunkinSprite
       {
         name: 'crispy',
         prefix: 'crispy'
+      },
+      {
+        name: 'crispy-loop',
+        prefix: 'crispy loop',
+        looped: true
       }
     ];
   }
@@ -220,6 +248,13 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function playAnimation(name:CharacterAnimation, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
+    if (name == ELECTROCUTED)
+    {
+      setLightningPinhead();
+
+      frame = FlxG.random.int(0, getAnimationLength(name));
+    }
+
     this.animation.play(name, force, reversed, frame);
 
     // Apply the offsets if possible.
@@ -231,11 +266,6 @@ class ModMenuCharacter extends FunkinSprite
     else
     {
       currentAnimationOffset = [0, 0];
-    }
-
-    if (name == ELECTROCUTED)
-    {
-      setLightningPinhead();
     }
   }
 
@@ -304,7 +334,6 @@ class ModMenuCharacter extends FunkinSprite
       if (!isGF) jsons = PolymodAssets.listInMod(modId, TEXT);
     }
 
-    previousCharacterId = currentCharacterId;
     previousModId = currentModId;
 
     currentCharacterId = characterId;
@@ -314,12 +343,21 @@ class ModMenuCharacter extends FunkinSprite
     loadGraphics();
     loadAnimations();
 
+    hasCustomWires = data?.hasCustomWires ?? false;
+
     applyShader();
 
-    if (isPinhead)
+    if (this.applyStageMatrix)
     {
-      this.library.timeline.getLayer(PINHEAD_WIRE_LAYER_NAME).visible = isGF;
+      this.setPosition(0, 0);
     }
+    else
+    {
+      this.setPosition(initialPosition.x, initialPosition.y);
+    }
+
+    smokeOffsets = data?.smokeOffsets ?? [0, 0];
+    smokeScale = data?.smokeScale ?? [0.5, 0.5];
 
     return !isPinhead;
   }
@@ -330,16 +368,12 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function getAtlasSettings():AtlasSpriteSettings
   {
-    // Pinhead needs to be unique in the cache because of layer editing
-    var isUnique:Bool = currentCharacterId == 'pinhead';
-
     return {
       swfMode: data?.atlasSettings?.swfMode ?? false,
       cacheOnLoad: data?.atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast data?.atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
       applyStageMatrix: data?.atlasSettings?.applyStageMatrix ?? false,
-      useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false,
-      uniqueInCache: isUnique
+      useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false
     }
   }
 
@@ -427,9 +461,14 @@ class ModMenuCharacter extends FunkinSprite
     }
 
     var jsonString:String = '';
-    if (tryBase) jsonString = Assets.getText(assetPath);
+    if (tryBase)
+    {
+      jsonString = Assets.getText(assetPath);
+    }
     else
+    {
       jsonString = PolymodAssets.getTextFromMod(assetPath, modId);
+    }
 
     var parser:JsonParser<ModMenuCharacterData> = new JsonParser<ModMenuCharacterData>({
       ignoreUnknownVariables: false
