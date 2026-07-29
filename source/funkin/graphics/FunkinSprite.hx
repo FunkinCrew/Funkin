@@ -403,7 +403,7 @@ class FunkinSprite extends FlxAnimate
       {
         if (json.endsWith('Animation'))
         {
-          animationJson = PolymodAssets.getTextFromMod('assets/$json.json', modId);
+          animationJson = Polymod.assetLibrary.getTextDirectly('assets/$json.json', modId);
           jsons.remove(json);
           break;
         }
@@ -411,10 +411,10 @@ class FunkinSprite extends FlxAnimate
 
       for (json in jsons)
       {
-        var bitmap:Null<BitmapData> = PolymodAssets.getBitmapDataFromMod('assets/$json.png', modId);
+        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$json.png', modId);
         if (bitmap == null) continue;
 
-        var jsonString:Null<String> = PolymodAssets.getTextFromMod('assets/$json.json', modId);
+        var jsonString:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$json.json', modId);
         if (jsonString == null) continue;
 
         // Null-safety kinda dumb #2
