@@ -32,6 +32,8 @@ import polymod.PolymodConfig;
 import funkin.util.MathUtil;
 #if android
 import funkin.external.android.DataFolderUtil;
+#elseif ios
+import lime.system.System;
 #end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.util.TouchUtil;
@@ -2098,6 +2100,8 @@ class ModMenuState extends MusicBeatState
   {
     #if android
     DataFolderUtil.openDataFolder();
+    #elseif ios
+    System.openURL('shareddocuments://');
     #else
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
     #end
