@@ -209,7 +209,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // TODO: Cleanup purging to work with Freeplay?
     for (cache in stagedCaches) cache.purgeCache();
 
+    #if FEATURE_HAXEUI
     purgeHaxeUIAssets();
+    #end
 
     // Clear everything except:
     // - Stickers, so that graphics don't get lost during sticker transition (TODO: Fix this in LoadingState?)
@@ -223,6 +225,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #end
   }
 
+  #if FEATURE_HAXEUI
   /**
    * Purge all image references held by HaxeUI.
    */
@@ -234,6 +237,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       haxe.ui.ToolkitAssets.instance?._fontCache?.clear();
     }
   }
+  #end
 
   /**
    * Fetch a FlxGraphic from the cache synchronously.
