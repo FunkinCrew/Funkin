@@ -483,6 +483,13 @@ class ModMenuItemList extends FunkinSpriteGroup
     clampScroll();
   }
 
+  public function snapScroll():Void
+  {
+    scrollOffset = targetScrollOffset;
+    repositionItems();
+  }
+
+
   /**
    * Sizes and positions the scrollbar based on the current content and viewport.
    * Hides it entirely when everything fits.

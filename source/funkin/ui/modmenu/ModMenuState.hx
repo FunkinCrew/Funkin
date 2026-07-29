@@ -215,6 +215,11 @@ class ModMenuState extends MusicBeatState
     enabledModItems.clipRect = FlxRect.get(rightRectangle.x, rightRectangle.y + 60, rightRectangle.width, rightRectangle.height - 75);
     disabledModItems.clipRect = FlxRect.get(leftRectangle.x, leftRectangle.y + 60, leftRectangle.width, leftRectangle.height - 75);
 
+    refreshModList(false);
+
+    enabledModItems.updateClipRects();
+    disabledModItems.updateClipRects();
+
     buttonBackToMenu.x = 8;
     buttonBackToMenu.y = 32;
     buttonBackToMenu.loadTexture('ui/mods/mod-menu-back');
@@ -461,6 +466,9 @@ class ModMenuState extends MusicBeatState
     #end
 
     ambience.initialize();
+
+    disabledModItems.snapScroll();
+    enabledModItems.snapScroll();
   }
 
   /**
@@ -552,6 +560,9 @@ class ModMenuState extends MusicBeatState
   {
     if (item == null || destinationList == null || transitionLayer == null) return;
 
+    var worldX:Float = transitionLayer.x + item.localX;
+    var worldY:Float = transitionLayer.y + item.localY;
+
     transitionLayer.remove(item);
 
     var clamped:Int = index;
@@ -559,13 +570,14 @@ class ModMenuState extends MusicBeatState
     if (clamped < 0) clamped = 0;
     destinationList.addModRawWithoutLayout(item, clamped);
 
-    item.localX = ModMenuItemList.ITEM_X_OFFSET;
+    item.cancelFlight();
+    item.localX = worldX - destinationList.x;
+    item.localY = worldY - destinationList.y;
 
     if (incomingCount(destinationList) == 0) destinationList.repositionItems();
     else
       destinationList.updateScrollbar();
   }
-
   /**
    * Starts the manual flight that carries an item from the transition layer into its
    * destination list, tracking it via `pendingTransitions` so it can be force-settled
