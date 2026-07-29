@@ -1,27 +1,29 @@
 package funkin.ui.modmenu;
 
-import funkin.ui.transition.preload.hotreload.HotReloadState;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.InitState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.framebuffer.DropShadowLayer;
+import funkin.graphics.shaders.PureColor;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.save.Save;
 import funkin.ui.MusicBeatState;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.modmenu.ModMenuButton;
 import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
-import funkin.ui.title.TitleState;
+import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
 import funkin.util.WindowUtil;
@@ -29,16 +31,15 @@ import haxe.io.Path;
 import polymod.Polymod.ModDependencies;
 import polymod.Polymod.ModMetadata;
 import polymod.PolymodConfig;
-import funkin.util.MathUtil;
 #if android
 import funkin.external.android.DataFolderUtil;
 #elseif ios
 import lime.system.System;
 #end
 #if FEATURE_TOUCH_CONTROLS
-import funkin.util.TouchUtil;
-import funkin.util.SwipeUtil;
 import funkin.mobile.input.ControlsHandler;
+import funkin.util.MathUtil;
+import funkin.util.TouchUtil;
 #end
 
 /**
@@ -103,7 +104,14 @@ class ModMenuState extends MusicBeatState
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
   var dropShadowLayer:DropShadowLayer;
-  var smoke:FunkinSprite;
+  var crispySmokeBF:FunkinSprite;
+  var crispySmokeGF:FunkinSprite;
+  var smokeCloud:FunkinSprite;
+  var whiteColor:PureColor = new PureColor(FlxColor.WHITE);
+  var menuBG:FunkinSprite;
+  var carBattery:FunkinSprite;
+  var fgWires:FunkinSprite;
+  var shockTimer:FlxTimer = new FlxTimer();
 
   public function new()
   {
@@ -127,7 +135,7 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
-    var menuBG = FunkinSprite.create('ui/mods/mod-menu-bg');
+    menuBG = FunkinSprite.create('ui/mods/mod-menu-bg');
     menuBG.scale.set(0.66, 0.67);
     menuBG.updateHitbox();
     menuBG.screenCenter();
@@ -173,20 +181,14 @@ class ModMenuState extends MusicBeatState
     bgWires.updateHitbox();
     add(bgWires);
 
-    var bfAndGF:FunkinSprite = new FunkinSprite();
-    bfAndGF.x = FlxG.width * 0.55;
-    bfAndGF.y = FlxG.height * 0.055;
-    bfAndGF.scale.set(0.7, 0.7);
-    bfAndGF.loadTexture('ui/mods/mod-menu-bfgf');
-    bfAndGF.updateHitbox();
-
-    bf = new ModMenuCharacter(0, 0, 'bf');
+    bf = new ModMenuCharacter(846, 120, 'bf');
     bf.anim.onFinish.add((name:String) ->
     {
       bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
     });
     bfBlink = Math.random() + (Math.random() * 12);
-    gf = new ModMenuCharacter(0, 0, 'gf', true);
+
+    gf = new ModMenuCharacter(680, 120, 'gf', true);
     gf.anim.onFinish.add((name:String) ->
     {
       gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
@@ -251,15 +253,60 @@ class ModMenuState extends MusicBeatState
       }
     });
 
-    // add(bfAndGF);
+    carBattery = new FunkinSprite(965, 70).loadSparrow('ui/mods/mod-menu-carbattery');
+    carBattery.animation.addByPrefix('idle', 'idle', 24);
+    carBattery.animation.play('idle');
+    carBattery.animation.pause();
+    carBattery.scale.set(0.75, 0.75);
+    carBattery.updateHitbox();
+    add(carBattery);
 
     // This is in reverse order since BF should be above GF!
+    // TODO: Rework `create()` to use `zIndex`
     add(gf);
     add(bf);
 
-    smoke = FunkinSprite.create(bfAndGF.x + 40, bfAndGF.y + 40, 'ui/mods/mods-temp-smoke');
-    smoke.alpha = 0;
-    add(smoke);
+    fgWires = new FunkinSprite(702, 30).loadTextureAtlas('ui/mods/foreground-wires');
+    fgWires.anim.addByFrameLabel('idle', 'idle', 24);
+    fgWires.anim.addByFrameLabel('shock', 'shock', 24);
+    fgWires.anim.addByFrameLabel('end', 'end', 24, false);
+    fgWires.animation.play('idle');
+    fgWires.scale.set(0.7, 0.7);
+    fgWires.updateHitbox();
+    add(fgWires);
+
+    crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
+    crispySmokeBF.animation.addByPrefix('idle', 'retry_smoke', 24);
+    // BF's smoke is supposed to be offset from GF's!
+    crispySmokeBF.animation.play('idle', false, 13);
+    crispySmokeBF.scale.set(0.5, 0.5);
+    crispySmokeBF.updateHitbox();
+
+    crispySmokeGF = new FunkinSprite(gf.x + 70, gf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
+    crispySmokeGF.animation.addByPrefix('idle', 'retry_smoke', 24);
+    crispySmokeGF.animation.play('idle');
+    crispySmokeGF.scale.set(0.5, 0.5);
+    crispySmokeGF.updateHitbox();
+
+    crispySmokeBF.visible = false;
+    crispySmokeGF.visible = false;
+
+    // SIX SEVEEEEEENNNN!!!
+    // (Yes, this is really the value from the FLA)
+    crispySmokeBF.alpha = 0.67;
+    crispySmokeGF.alpha = 0.67;
+
+    add(crispySmokeBF);
+    add(crispySmokeGF);
+
+    smokeCloud = new FunkinSprite(550, -450).loadTextureAtlas('ui/mods/smoke-cloud', {
+      useRenderTexture: true
+    });
+    smokeCloud.anim.addBySymbol('wholeTimeline', smokeCloud.getDefaultSymbol(), smokeCloud.library.frameRate, false);
+    smokeCloud.visible = false;
+    smokeCloud.scale.set(0.75, 0.75);
+    smokeCloud.updateHitbox();
+    add(smokeCloud);
 
     buttonDone.x = FlxG.width * 0.68;
     buttonDone.y = FlxG.height * 0.89;
@@ -280,7 +327,6 @@ class ModMenuState extends MusicBeatState
       buttonOpenFolder.y
     ).makeSolidColor(Std.int(buttonOpenFolder.width), Std.int(buttonOpenFolder.height), FlxColor.GREEN);
     hitboxOpenFolder.updateHitbox();
-    // add(hitboxOpenFolder);
 
     buttonDone.graphicName = 'mod-menu-done';
     buttonOpenFolder.graphicName = 'mod-menu-open-folder';
@@ -459,9 +505,10 @@ class ModMenuState extends MusicBeatState
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowLayer.renderer.blacklistSprite(bfAndGF);
     dropShadowLayer.renderer.blacklistSprite(menuBG);
     dropShadowLayer.renderer.blacklistSprite(bgWires);
+    dropShadowLayer.renderer.blacklistSprite(crispySmokeBF);
+    dropShadowLayer.renderer.blacklistSprite(crispySmokeGF);
 
     var modIds:Array<String> = grabEnabledModList();
 
@@ -812,25 +859,15 @@ class ModMenuState extends MusicBeatState
 
         gf.playAnimation(IDLE, true);
       }
-
-      handleInput(elapsed);
     }
 
-    if (!allowInput)
+    handleInput(elapsed);
+
+    if (!allowInput && !shockTimer.active)
     {
       crispyTimer += elapsed;
-      smoke.alpha = FlxMath.bound(smoke.alpha, 0, 1 - (crispyTimer / 1.4));
 
       if (crispyTimer >= 0.3 && gf.anim.paused) gf.anim.resume();
-
-      if (bf.getCurrentAnimation() == CRISPY)
-      {
-        if (smoke.alpha < 0.82 && !playedCough)
-        {
-          playedCough = true;
-          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/cough').toString());
-        }
-      }
 
       if (crispyTimer >= 2.5)
       {
@@ -928,47 +965,106 @@ class ModMenuState extends MusicBeatState
 
   function playElectrocutionSequence():Void
   {
-    bf.setLightningPinhead();
     bf.playAnimation(ELECTROCUTED, true);
-    gf.setLightningPinhead();
     gf.playAnimation(ELECTROCUTED, true);
 
-    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString(), () ->
+    carBattery.animation.resume();
+    fgWires.animation.play('shock');
+
+    var bgColor:FlxColor = menuBG.color;
+
+    whiteColor.colorSet = true;
+
+    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString());
+
+    shockTimer.start(81 / 24, (_) ->
     {
-      var modIds:Array<String> = grabEnabledModList();
+      bf.shader = whiteColor;
+      gf.shader = whiteColor;
 
-      var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
-      gf.jsons = bf.jsons;
-      var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
+      menuBG.color = 0xFF232327;
 
-      gf.previousModId = bf.previousModId;
-
-      bf.visible = true;
-      gf.visible = true;
-
-      // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
-      if (modIds.length > 1)
+      FlxTimer.wait(1 / 24, () ->
       {
-        if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
-        else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
-      }
+        FlxG.camera.flash(0xFFFFFFFF, 1 / 24);
 
-      trace('bf previous mod: ' + bf.previousModId + ', current mod: ' + bf.currentModId);
-      trace('gf previous mod: ' + gf.previousModId + ', current mod: ' + gf.currentModId);
-      if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId) bf.playAnimation(CRISPY, true);
-      else
-      {
-        bf.playAnimation(IDLE, true);
-      }
-      if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId) gf.playAnimation(CRISPY, true);
-      else
-      {
-        gf.playAnimation(IDLE, true);
-        gf.anim.pause();
-      }
+        var modIds:Array<String> = grabEnabledModList();
 
-      crispyTimer = 0;
-      smoke.alpha = 1;
+        var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
+        gf.jsons = bf.jsons;
+        var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
+
+        gf.previousModId = bf.previousModId;
+
+        bf.visible = true;
+        gf.visible = true;
+
+        FlxTween.color(menuBG, 14 / 24, 0xFF232327, bgColor);
+
+        carBattery.animation.reset();
+
+        smokeCloud.visible = true;
+        smokeCloud.animation.play('wholeTimeline');
+
+        FlxTween.tween(smokeCloud, {
+          alpha: 0
+        }, 62 / 24, {
+          ease: FlxEase.linear,
+          framerate: 24
+        });
+
+        // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
+        if (modIds.length > 1)
+        {
+          if (!bfNotPinhead && gfNotPinhead)
+          {
+            bf.visible = false;
+          }
+          else if (bfNotPinhead && !gfNotPinhead)
+          {
+            gf.visible = false;
+          }
+        }
+
+        bf.applyShader();
+        gf.applyShader();
+
+        var showSmoke:Bool = false;
+
+        if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
+        {
+          showSmoke = true;
+          bf.playAnimation(CRISPY, true);
+        }
+        else
+        {
+          bf.playAnimation(IDLE, true);
+        }
+        if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId)
+        {
+          showSmoke = true;
+          gf.playAnimation(CRISPY, true);
+        }
+        else
+        {
+          gf.playAnimation(IDLE, true);
+          gf.animation.pause();
+        }
+
+        if (showSmoke)
+        {
+          crispySmokeBF.visible = true;
+          crispySmokeGF.visible = true;
+
+          fgWires.animation.play('end');
+        }
+        else
+        {
+          fgWires.animation.play('idle');
+        }
+
+        crispyTimer = 0;
+      });
     });
 
     doneButtonAnimator.playAnimation('accept');
@@ -979,275 +1075,287 @@ class ModMenuState extends MusicBeatState
   {
     if (hasTransitions()) return;
 
-    var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
-    if (controls.BACK_P)
+    if (allowInput)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-      pressBackButton();
-      return;
-    }
-
-    oldSelection = selection;
-
-    if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
-    {
-      if (holdDirection == 0)
+      var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
+      if (controls.BACK_P)
       {
         FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-        holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
-        holdTimer = 0.5; // initial delay before starting to scroll
-      }
-      else if
-        ((controls.UI_UP && holdDirection == -1)
-          || (controls.UI_DOWN && holdDirection == 1)
-          || (controls.UI_LEFT && holdDirection == -2)
-          || (controls.UI_RIGHT && holdDirection == 2)
-        )
-      {
-        holdTimer -= FlxG.elapsed;
-        if (holdTimer <= 0)
-        {
-          doHoldAction = true;
-        }
-      }
-    }
-    else
-    {
-      holdDirection = 0;
-      doHoldAction = false;
-    }
-
-    if (doHoldAction && delay <= 0)
-    {
-      delay = 0.1;
-      switch (selection)
-      {
-        case DisabledModList:
-          switch (holdDirection)
-          {
-            case -1:
-              disabledModItems.moveUp();
-            case 1:
-              disabledModItems.moveDown();
-            case -2:
-              selection = Done;
-              lastSelectDir = -2;
-            case 2:
-              selection = EnabledModList;
-              lastSelectDir = 2;
-          }
-        case EnabledModList:
-          switch (holdDirection)
-          {
-            case -1:
-              enabledModItems.moveUp();
-            case 1:
-              enabledModItems.moveDown();
-            case -2:
-              if (disabledModItems.modItems.length > 0) selection = DisabledModList;
-              else
-                selection = Done;
-              lastSelectDir = -2;
-            case 2:
-              selection = OpenModsFolder;
-              lastSelectDir = 2;
-          }
-        case OpenModsFolder:
-          switch (holdDirection)
-          {
-            case -1:
-              selection = DisabledModList;
-              lastSelectDir = -1;
-            case 1:
-              selection = DisabledModList;
-              lastSelectDir = 1;
-            case -2:
-              selection = EnabledModList;
-              lastSelectDir = -2;
-            case 2:
-              selection = Done;
-              lastSelectDir = 2;
-          }
-        case Done:
-          switch (holdDirection)
-          {
-            case -1:
-              selection = EnabledModList;
-              lastSelectDir = -1;
-            case 1:
-              selection = EnabledModList;
-              lastSelectDir = 1;
-            case -2:
-              selection = OpenModsFolder;
-              lastSelectDir = -2;
-            case 2:
-              selection = DisabledModList;
-              lastSelectDir = 2;
-          }
-        case BackToMenu:
-          switch (holdDirection)
-          {
-            case -1:
-              if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
-            case 1:
-              if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
-            case -2:
-              // Nothing
-            case 2:
-              // Nothing
-          }
-      }
-    }
-    if (delay > 0) delay -= FlxG.elapsed;
-
-    if (controls.UI_LEFT_P)
-    {
-      switch (selection)
-      {
-        case DisabledModList:
-          selection = Done;
-          lastSelectDir = -2;
-        case EnabledModList:
-          if (disabledModItems.modItems.length > 0)
-          {
-            selection = DisabledModList;
-            lastSelectDir = -2;
-          }
-          else
-            selection = OpenModsFolder;
-        case OpenModsFolder:
-          selection = EnabledModList;
-          lastSelectDir = -2;
-        case Done:
-          selection = OpenModsFolder;
-          lastSelectDir = -2;
-        case BackToMenu:
-          // Nothing
-      }
-    }
-
-    if (controls.UI_RIGHT_P)
-    {
-      switch (selection)
-      {
-        case DisabledModList:
-          if (enabledModItems.modItems.length > 0)
-          {
-            selection = EnabledModList;
-            lastSelectDir = 2;
-          }
-        case EnabledModList:
-          selection = OpenModsFolder;
-          lastSelectDir = 2;
-        case OpenModsFolder:
-          selection = Done;
-          lastSelectDir = 2;
-        case Done:
-          selection = DisabledModList;
-          lastSelectDir = 2;
-        case BackToMenu:
-          // Nothing
-      }
-    }
-
-    if (controls.UI_UP_P)
-    {
-      lastInput = 'up';
-      switch (selection)
-      {
-        case DisabledModList:
-          if (!disabledModItems.moveUp(false))
-          {
-            selection = BackToMenu;
-            lastSelectDir = 1;
-          }
-        case EnabledModList:
-          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
-          else
-          {
-            if (!enabledModItems.moveUp(false))
-            {
-              selection = BackToMenu;
-              lastSelectDir = -1;
-            }
-          }
-        case OpenModsFolder:
-          selection = DisabledModList;
-          lastSelectDir = -1;
-        case Done:
-          selection = EnabledModList;
-          lastSelectDir = -1;
-        case BackToMenu:
-          trace('lastSelectDir: ' + lastSelectDir);
-          if (lastSelectDir == -1) selection = Done;
-          else
-            selection = OpenModsFolder;
-      }
-    }
-
-    if (controls.UI_DOWN_P)
-    {
-      lastInput = 'down';
-      switch (selection)
-      {
-        case DisabledModList:
-          if (!disabledModItems.moveDown(false))
-          {
-            selection = OpenModsFolder;
-            lastSelectDir = 1;
-          }
-        case EnabledModList:
-          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
-          else
-          {
-            if (!enabledModItems.moveDown(false))
-            {
-              selection = Done;
-              lastSelectDir = 1;
-            }
-          }
-        case OpenModsFolder:
-          selection = BackToMenu;
-          lastSelectDir = 1;
-        case Done:
-          selection = BackToMenu;
-          lastSelectDir = -1;
-        case BackToMenu:
-          if (lastSelectDir == -1) selection = EnabledModList;
-          else
-            selection = DisabledModList;
-      }
-    }
-
-    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
-    {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-      enabledModItems.repositionItems();
-      disabledModItems.repositionItems();
-
-      switch (selection)
-      {
-        case DisabledModList:
-          enableMod(disabledModItems.selectedModItem);
-        case EnabledModList:
-          disableMod(enabledModItems.selectedModItem);
-        case OpenModsFolder:
-          openFolderAnimator.playAnimation('accept');
-          openFolderAnimator.onFinish = openModsFolder;
-        case Done:
-          playElectrocutionSequence();
-        case BackToMenu:
-          pressBackButton();
+        pressBackButton();
+        return;
       }
 
       oldSelection = selection;
 
-      acceptDelay = 0.02;
+      if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
+      {
+        if (holdDirection == 0)
+        {
+          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+          holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
+          holdTimer = 0.5; // initial delay before starting to scroll
+        }
+        else if
+          ((controls.UI_UP && holdDirection == -1)
+            || (controls.UI_DOWN && holdDirection == 1)
+            || (controls.UI_LEFT && holdDirection == -2)
+            || (controls.UI_RIGHT && holdDirection == 2)
+          )
+        {
+          holdTimer -= FlxG.elapsed;
+          if (holdTimer <= 0)
+          {
+            doHoldAction = true;
+          }
+        }
+      }
+      else
+      {
+        holdDirection = 0;
+        doHoldAction = false;
+      }
+
+      if (doHoldAction && delay <= 0)
+      {
+        delay = 0.1;
+        switch (selection)
+        {
+          case DisabledModList:
+            switch (holdDirection)
+            {
+              case -1:
+                disabledModItems.moveUp();
+              case 1:
+                disabledModItems.moveDown();
+              case -2:
+                selection = Done;
+                lastSelectDir = -2;
+              case 2:
+                selection = EnabledModList;
+                lastSelectDir = 2;
+            }
+          case EnabledModList:
+            switch (holdDirection)
+            {
+              case -1:
+                enabledModItems.moveUp();
+              case 1:
+                enabledModItems.moveDown();
+              case -2:
+                if (disabledModItems.modItems.length > 0) selection = DisabledModList;
+                else
+                  selection = Done;
+                lastSelectDir = -2;
+              case 2:
+                selection = OpenModsFolder;
+                lastSelectDir = 2;
+            }
+          case OpenModsFolder:
+            switch (holdDirection)
+            {
+              case -1:
+                selection = DisabledModList;
+                lastSelectDir = -1;
+              case 1:
+                selection = DisabledModList;
+                lastSelectDir = 1;
+              case -2:
+                selection = EnabledModList;
+                lastSelectDir = -2;
+              case 2:
+                selection = Done;
+                lastSelectDir = 2;
+            }
+          case Done:
+            switch (holdDirection)
+            {
+              case -1:
+                selection = EnabledModList;
+                lastSelectDir = -1;
+              case 1:
+                selection = EnabledModList;
+                lastSelectDir = 1;
+              case -2:
+                selection = OpenModsFolder;
+                lastSelectDir = -2;
+              case 2:
+                selection = DisabledModList;
+                lastSelectDir = 2;
+            }
+          case BackToMenu:
+            switch (holdDirection)
+            {
+              case -1:
+                if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
+              case 1:
+                if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
+              case -2:
+                // Nothing
+              case 2:
+                // Nothing
+            }
+        }
+      }
+      if (delay > 0) delay -= FlxG.elapsed;
+
+      if (controls.UI_LEFT_P)
+      {
+        switch (selection)
+        {
+          case DisabledModList:
+            selection = Done;
+            lastSelectDir = -2;
+          case EnabledModList:
+            if (disabledModItems.modItems.length > 0)
+            {
+              selection = DisabledModList;
+              lastSelectDir = -2;
+            }
+            else
+              selection = OpenModsFolder;
+          case OpenModsFolder:
+            selection = EnabledModList;
+            lastSelectDir = -2;
+          case Done:
+            selection = OpenModsFolder;
+            lastSelectDir = -2;
+          case BackToMenu:
+            // Nothing
+        }
+      }
+
+      if (controls.UI_RIGHT_P)
+      {
+        switch (selection)
+        {
+          case DisabledModList:
+            if (enabledModItems.modItems.length > 0)
+            {
+              selection = EnabledModList;
+              lastSelectDir = 2;
+            }
+          case EnabledModList:
+            selection = OpenModsFolder;
+            lastSelectDir = 2;
+          case OpenModsFolder:
+            selection = Done;
+            lastSelectDir = 2;
+          case Done:
+            selection = DisabledModList;
+            lastSelectDir = 2;
+          case BackToMenu:
+            // Nothing
+        }
+      }
+
+      if (controls.UI_UP_P)
+      {
+        lastInput = 'up';
+        switch (selection)
+        {
+          case DisabledModList:
+            if (!disabledModItems.moveUp(false))
+            {
+              selection = BackToMenu;
+              lastSelectDir = 1;
+            }
+          case EnabledModList:
+            if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
+            else
+            {
+              if (!enabledModItems.moveUp(false))
+              {
+                selection = BackToMenu;
+                lastSelectDir = -1;
+              }
+            }
+          case OpenModsFolder:
+            selection = DisabledModList;
+            lastSelectDir = -1;
+          case Done:
+            selection = EnabledModList;
+            lastSelectDir = -1;
+          case BackToMenu:
+            trace('lastSelectDir: ' + lastSelectDir);
+            if (lastSelectDir == -1) selection = Done;
+            else
+              selection = OpenModsFolder;
+        }
+      }
+
+      if (controls.UI_DOWN_P)
+      {
+        lastInput = 'down';
+        switch (selection)
+        {
+          case DisabledModList:
+            if (!disabledModItems.moveDown(false))
+            {
+              selection = OpenModsFolder;
+              lastSelectDir = 1;
+            }
+          case EnabledModList:
+            if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
+            else
+            {
+              if (!enabledModItems.moveDown(false))
+              {
+                selection = Done;
+                lastSelectDir = 1;
+              }
+            }
+          case OpenModsFolder:
+            selection = BackToMenu;
+            lastSelectDir = 1;
+          case Done:
+            selection = BackToMenu;
+            lastSelectDir = -1;
+          case BackToMenu:
+            if (lastSelectDir == -1) selection = EnabledModList;
+            else
+              selection = DisabledModList;
+        }
+      }
+
+      if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
+      {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+        enabledModItems.repositionItems();
+        disabledModItems.repositionItems();
+
+        switch (selection)
+        {
+          case DisabledModList:
+            enableMod(disabledModItems.selectedModItem);
+          case EnabledModList:
+            disableMod(enabledModItems.selectedModItem);
+          case OpenModsFolder:
+            openFolderAnimator.playAnimation('accept');
+            openFolderAnimator.onFinish = openModsFolder;
+          case Done:
+            playElectrocutionSequence();
+          case BackToMenu:
+            pressBackButton();
+        }
+
+        oldSelection = selection;
+
+        acceptDelay = 0.02;
+      }
+
+      if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
+
+      if (oldSelection != selection) handleSelection();
     }
-
-    if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
-
-    if (oldSelection != selection) handleSelection();
+    else
+    {
+      if (controls.ACCEPT_P && shockTimer.active)
+      {
+        @:privateAccess
+        shockTimer.onLoopFinished();
+        shockTimer.active = false;
+      }
+    }
   }
 
   #if FEATURE_TOUCH_CONTROLS

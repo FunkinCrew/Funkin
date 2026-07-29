@@ -40,6 +40,6 @@ typedef ModMenuCharacterData =
   /**
    * The scale of the character.
    */
-  @:optional @:default(1)
+  @:optional @:default(0.7)
   var scale:Float;
 }

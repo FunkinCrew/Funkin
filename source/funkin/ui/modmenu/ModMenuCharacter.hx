@@ -1,18 +1,16 @@
 package funkin.ui.modmenu;
 
 import flixel.FlxCamera;
+import flixel.addons.display.FlxRuntimeShader;
 import flixel.math.FlxPoint;
+import flixel.util.FlxColor;
 import funkin.data.animation.AnimationData;
 import funkin.data.modmenu.ModMenuCharacterData;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.assets.FlxAnimationUtil;
 import json2object.JsonParser;
-import polymod.Polymod;
 import polymod.PolymodAssets;
-import flixel.addons.display.FlxRuntimeShader;
-
-import flixel.util.FlxColor;
 
 using StringTools;
 
@@ -32,9 +30,19 @@ enum abstract CharacterAnimation(String) to String
 class ModMenuCharacter extends FunkinSprite
 {
   /**
+   * Layer name for the wire on Pinhead.
+   */
+  static final PINHEAD_WIRE_LAYER_NAME:String = 'WIRE';
+
+  /**
    * The character ID for this character.
    */
   public var currentCharacterId:String = '';
+
+  /**
+   * The previous character ID for this character.
+   */
+  public var previousCharacterId:String = '';
 
   /**
    * The mod ID of the mod that owns this character.
@@ -42,9 +50,29 @@ class ModMenuCharacter extends FunkinSprite
   public var currentModId:String = '';
 
   /**
+   * The previous mod ID for this character.
+   */
+  public var previousModId:String = '';
+
+  /**
+   * The asset path for the current character.
+   */
+  public var currentAssetPath:String = '';
+
+  /**
+   * The asset path for the previous character.
+   */
+  public var previousAssetPath:String = '';
+
+  /**
    * Whether or not this character is on the left side.
    */
   public var isGF:Bool = false;
+
+  /**
+   * The list of modded assets for this character.
+   */
+  public var jsons:Array<String> = [];
 
   /**
    * The data for this character.
@@ -63,18 +91,29 @@ class ModMenuCharacter extends FunkinSprite
   var globalOffsets:Array<Float> = [0, 0];
 
   /**
-   * The local offsets for the character.
-   */
-  var localOffsets:Array<Float> = [0, 0];
-
-  /**
    * The current animation offset for the character.
    * TODO: Move animation offsets to `FunkinSprite`
    */
   var currentAnimationOffset:Array<Float> = [0, 0];
 
+  /**
+   * Used for iterating through multiple modded assets.
+   */
+  var shortestIndex:Int = 0;
+
+  /**
+   * The shader used to replace the Pinhead colors.
+   */
   var replaceColorShader:FlxRuntimeShader = null;
 
+  /**
+   * The current color used for Pinhead.
+   */
+  var pinheadColor:Array<Float> = [];
+
+  /**
+   * @return Gets a random color for Pinhead.
+   */
   public function getRandomColor():Array<Float>
   {
     var hue:Float = Math.random() * 360;
@@ -84,19 +123,23 @@ class ModMenuCharacter extends FunkinSprite
     return [color.redFloat, color.greenFloat, color.blueFloat];
   }
 
-  var pinheadColor:Array<Float> = [];
-
+  /**
+   * Sets the color for Pinhead.
+   * @param color The color to set as an array of RGB values.
+   */
   public function setPinheadColor(color:Array<Float>):Void
   {
     pinheadColor = color;
     if (replaceColorShader != null)
     {
-      replaceColorShader.setFloatArray("uReplaceColor", pinheadColor);
+      replaceColorShader.setFloatArray('uReplaceColor', pinheadColor);
       trace(' MOD MENU '.bold().bg_orange() + ' Setting pinhead color to $pinheadColor');
     }
   }
 
-  // Pastelify pinhead
+  /**
+   * Pastel-ify the Pinhead colors for the electrocuted animation.
+   */
   public function setLightningPinhead():Void
   {
     pinheadColor[0] = Math.min(pinheadColor[0] * 1.8, 1);
@@ -104,16 +147,20 @@ class ModMenuCharacter extends FunkinSprite
     pinheadColor[2] = Math.min(pinheadColor[2] * 1.8, 1);
   }
 
-  function applyShader():Void
+  /**
+   * Applies the color shader for Pinhead.
+   */
+  public function applyShader():Void
   {
     if (currentCharacterId == 'pinhead')
     {
       if (replaceColorShader == null)
       {
-        replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag("ui/shaders/replace-color")));
-        replaceColorShader.setFloatArray("uTargetColor", [0, 1, 0.04]);
-        replaceColorShader.setFloat("uThreshold", 0.12);
+        replaceColorShader = new FlxRuntimeShader(Assets.getText(Paths.frag('ui/shaders/replace-color')));
+        replaceColorShader.setFloatArray('uTargetColor', [0, 1, 0.04]);
+        replaceColorShader.setFloat('uThreshold', 0.12);
       }
+
       setPinheadColor(getRandomColor());
       shader = replaceColorShader;
     }
@@ -171,7 +218,7 @@ class ModMenuCharacter extends FunkinSprite
    * @param reversed Whether to play the animation in reverse.
    * @param frame The frame to start the animation on.
    */
-  public function playAnimation(name:String, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
+  public function playAnimation(name:CharacterAnimation, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
     this.animation.play(name, force, reversed, frame);
 
@@ -185,19 +232,20 @@ class ModMenuCharacter extends FunkinSprite
     {
       currentAnimationOffset = [0, 0];
     }
+
+    if (name == ELECTROCUTED)
+    {
+      setLightningPinhead();
+    }
   }
-
-  static var shortestIndex:Int = 0;
-
-  public var previousCharacterId:String = '';
-  public var previousModId:String = '';
-
-  public var jsons:Array<String> = [];
 
   /**
    * Switches out the character's graphics.
    * @param characterId The new character ID to use.
    * @param modId The new mod ID to use.
+   * @param modIds The mod IDs to check for the character.
+   *
+   * @return Whether or not the new character is Pinhead...???
    */
   public function switchCharacter(?characterId:String, modIds:Array<String>):Bool
   {
@@ -210,10 +258,11 @@ class ModMenuCharacter extends FunkinSprite
 
     currentCharacterId = characterId;
 
-    var i = 0;
+    var i:Int = 0;
     for (mod in modIds)
     {
-      if (mod == ModMenuState.BASE_GAME_MOD_ID) {
+      if (mod == ModMenuState.BASE_GAME_MOD_ID)
+      {
         i++;
         continue;
       }
@@ -221,7 +270,10 @@ class ModMenuCharacter extends FunkinSprite
       {
         if (i > shortestIndex)
         {
-          if (!isGF) shortestIndex = i;
+          if (!isGF)
+          {
+            shortestIndex = i;
+          }
           else
           {
             modId = '';
@@ -235,13 +287,14 @@ class ModMenuCharacter extends FunkinSprite
     }
 
     trace(' MOD MENU '.bold().bg_orange() + ' Switching character to $characterId with mod $modId. Mods checked: $modIds');
-    if (modId == '' && modIds.length > 1) // no modded assets found, but multiple mods are loaded,  so show pinhead
+
+    if (modId == '' && modIds.length > 1) // No modded assets found, but multiple mods are loaded, so show pinhead
     {
       characterId = 'pinhead';
       modId = 'basegame';
       isPinhead = true;
     }
-    else if (modId == '' && modIds.length == 1) // no mods but base game, so show bf/gf
+    else if (modId == '' && modIds.length == 1) // No mods but base game, so show BF/GF
     {
       characterId = StringTools.replace(characterId, 'mod-', '');
     }
@@ -262,6 +315,12 @@ class ModMenuCharacter extends FunkinSprite
     loadAnimations();
 
     applyShader();
+
+    if (isPinhead)
+    {
+      this.library.timeline.getLayer(PINHEAD_WIRE_LAYER_NAME).visible = isGF;
+    }
+
     return !isPinhead;
   }
 
@@ -271,12 +330,16 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function getAtlasSettings():AtlasSpriteSettings
   {
+    // Pinhead needs to be unique in the cache because of layer editing
+    var isUnique:Bool = currentCharacterId == 'pinhead';
+
     return {
       swfMode: data?.atlasSettings?.swfMode ?? false,
       cacheOnLoad: data?.atlasSettings?.cacheOnLoad ?? false,
       filterQuality: cast data?.atlasSettings?.filterQuality ?? animate.FlxAnimateFrames.FilterQuality.MEDIUM,
       applyStageMatrix: data?.atlasSettings?.applyStageMatrix ?? false,
-      useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false
+      useRenderTexture: data?.atlasSettings?.useRenderTexture ?? false,
+      uniqueInCache: isUnique
     }
   }
 
@@ -291,8 +354,20 @@ class ModMenuCharacter extends FunkinSprite
   {
     var modId:String = currentModId;
     if (modId == 'basegame') modId = '';
+
+    previousAssetPath = currentAssetPath;
+
     var assetPath:Null<String> = 'ui/mods/characters/$currentCharacterId';
+    if (assetPath == previousAssetPath)
+    {
+      // No need to load any new assets.
+      return;
+    }
+
+    currentAssetPath = assetPath;
+
     trace(' MOD MENU '.bold().bg_orange() + ' Loading graphics for $currentCharacterId with mod $modId. Asset path: $assetPath');
+
     switch (data?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
@@ -328,10 +403,10 @@ class ModMenuCharacter extends FunkinSprite
       animationOffsetsList.set(animation.name, animation.offsets ?? [0, 0]);
     }
 
-    this.globalOffsets = data?.offsets ?? [isGF ? 680 : 846, 120];
-    this.localOffsets = data?.localOffsets ?? [0, 0];
-    trace(' MOD MENU '.bold().bg_orange() + ' Character offsets: ' + globalOffsets + ', ' + localOffsets);
+    this.globalOffsets = data?.offsets ?? [0, 0];
     this.scale.set(data?.scale ?? 0.7, data?.scale ?? 0.7);
+
+    trace(' MOD MENU '.bold().bg_orange() + ' Character offsets: ' + globalOffsets);
   }
 
   function loadCharacterData():Void
@@ -375,8 +450,9 @@ class ModMenuCharacter extends FunkinSprite
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
-    output.x -= (currentAnimationOffset[0] - (globalOffsets[0] + localOffsets[0]));
-    output.y -= (currentAnimationOffset[1] - (globalOffsets[1] + localOffsets[1]));
+
+    output.x -= currentAnimationOffset[0] - globalOffsets[0];
+    output.y -= currentAnimationOffset[1] - globalOffsets[1];
 
     // Small offset for mobile!
     output.x += FullScreenScaleMode.gameCutoutSize.x / 2;
