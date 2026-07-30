@@ -1004,16 +1004,28 @@ class ModMenuState extends MusicBeatState
 
   function handleInput(elapsed:Float):Void
   {
-    #if FEATURE_TOUCH_CONTROLS
-    if (ControlsHandler.lastInputTouch)
+    if (allowInput)
     {
-      handleTouch(elapsed);
+      #if FEATURE_TOUCH_CONTROLS
+      if (ControlsHandler.lastInputTouch)
+      {
+        handleTouch(elapsed);
 
-      return;
+        return;
+      }
+      #end
+
+      handleKeyboard();
     }
-    #end
-
-    handleKeyboard();
+    else
+    {
+      if ((controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end) && shockTimer.active)
+      {
+        @:privateAccess
+        shockTimer.onLoopFinished();
+        shockTimer.active = false;
+      }
+    }
   }
 
   function handleMouse():Void
@@ -1155,287 +1167,275 @@ class ModMenuState extends MusicBeatState
   {
     if (hasTransitions()) return;
 
-    if (allowInput)
+    var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
+    if (controls.BACK_P)
     {
-      var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
-      if (controls.BACK_P)
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      pressBackButton();
+      return;
+    }
+
+    oldSelection = selection;
+
+    if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
+    {
+      if (holdDirection == 0)
       {
         FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-        pressBackButton();
-        return;
+        holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
+        holdTimer = 0.5; // initial delay before starting to scroll
+      }
+      else if
+        ((controls.UI_UP && holdDirection == -1)
+          || (controls.UI_DOWN && holdDirection == 1)
+          || (controls.UI_LEFT && holdDirection == -2)
+          || (controls.UI_RIGHT && holdDirection == 2)
+        )
+      {
+        holdTimer -= FlxG.elapsed;
+        if (holdTimer <= 0)
+        {
+          doHoldAction = true;
+        }
+      }
+    }
+    else
+    {
+      holdDirection = 0;
+      doHoldAction = false;
+    }
+
+    if (doHoldAction && delay <= 0)
+    {
+      delay = 0.1;
+      switch (selection)
+      {
+        case DisabledModList:
+          switch (holdDirection)
+          {
+            case -1:
+              disabledModItems.moveUp();
+            case 1:
+              disabledModItems.moveDown();
+            case -2:
+              selection = Done;
+              lastSelectDir = -2;
+            case 2:
+              selection = EnabledModList;
+              lastSelectDir = 2;
+          }
+        case EnabledModList:
+          switch (holdDirection)
+          {
+            case -1:
+              enabledModItems.moveUp();
+            case 1:
+              enabledModItems.moveDown();
+            case -2:
+              if (disabledModItems.modItems.length > 0) selection = DisabledModList;
+              else
+                selection = Done;
+              lastSelectDir = -2;
+            case 2:
+              selection = OpenModsFolder;
+              lastSelectDir = 2;
+          }
+        case OpenModsFolder:
+          switch (holdDirection)
+          {
+            case -1:
+              selection = DisabledModList;
+              lastSelectDir = -1;
+            case 1:
+              selection = DisabledModList;
+              lastSelectDir = 1;
+            case -2:
+              selection = EnabledModList;
+              lastSelectDir = -2;
+            case 2:
+              selection = Done;
+              lastSelectDir = 2;
+          }
+        case Done:
+          switch (holdDirection)
+          {
+            case -1:
+              selection = EnabledModList;
+              lastSelectDir = -1;
+            case 1:
+              selection = EnabledModList;
+              lastSelectDir = 1;
+            case -2:
+              selection = OpenModsFolder;
+              lastSelectDir = -2;
+            case 2:
+              selection = DisabledModList;
+              lastSelectDir = 2;
+          }
+        case BackToMenu:
+          switch (holdDirection)
+          {
+            case -1:
+              if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
+            case 1:
+              if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
+            case -2:
+              // Nothing
+            case 2:
+              // Nothing
+          }
+      }
+    }
+    if (delay > 0) delay -= FlxG.elapsed;
+
+    if (controls.UI_LEFT_P)
+    {
+      switch (selection)
+      {
+        case DisabledModList:
+          selection = Done;
+          lastSelectDir = -2;
+        case EnabledModList:
+          if (disabledModItems.modItems.length > 0)
+          {
+            selection = DisabledModList;
+            lastSelectDir = -2;
+          }
+          else
+            selection = OpenModsFolder;
+        case OpenModsFolder:
+          selection = EnabledModList;
+          lastSelectDir = -2;
+        case Done:
+          selection = OpenModsFolder;
+          lastSelectDir = -2;
+        case BackToMenu:
+          // Nothing
+      }
+    }
+
+    if (controls.UI_RIGHT_P)
+    {
+      switch (selection)
+      {
+        case DisabledModList:
+          if (enabledModItems.modItems.length > 0)
+          {
+            selection = EnabledModList;
+            lastSelectDir = 2;
+          }
+        case EnabledModList:
+          selection = OpenModsFolder;
+          lastSelectDir = 2;
+        case OpenModsFolder:
+          selection = Done;
+          lastSelectDir = 2;
+        case Done:
+          selection = DisabledModList;
+          lastSelectDir = 2;
+        case BackToMenu:
+          // Nothing
+      }
+    }
+
+    if (controls.UI_UP_P)
+    {
+      lastInput = 'up';
+      switch (selection)
+      {
+        case DisabledModList:
+          if (!disabledModItems.moveUp(false))
+          {
+            selection = BackToMenu;
+            lastSelectDir = 1;
+          }
+        case EnabledModList:
+          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
+          else
+          {
+            if (!enabledModItems.moveUp(false))
+            {
+              selection = BackToMenu;
+              lastSelectDir = -1;
+            }
+          }
+        case OpenModsFolder:
+          selection = DisabledModList;
+          lastSelectDir = -1;
+        case Done:
+          selection = EnabledModList;
+          lastSelectDir = -1;
+        case BackToMenu:
+          trace('lastSelectDir: ' + lastSelectDir);
+          if (lastSelectDir == -1) selection = Done;
+          else
+            selection = OpenModsFolder;
+      }
+    }
+
+    if (controls.UI_DOWN_P)
+    {
+      lastInput = 'down';
+      switch (selection)
+      {
+        case DisabledModList:
+          if (!disabledModItems.moveDown(false))
+          {
+            selection = OpenModsFolder;
+            lastSelectDir = 1;
+          }
+        case EnabledModList:
+          if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
+          else
+          {
+            if (!enabledModItems.moveDown(false))
+            {
+              selection = Done;
+              lastSelectDir = 1;
+            }
+          }
+        case OpenModsFolder:
+          selection = BackToMenu;
+          lastSelectDir = 1;
+        case Done:
+          selection = BackToMenu;
+          lastSelectDir = -1;
+        case BackToMenu:
+          if (lastSelectDir == -1) selection = EnabledModList;
+          else
+            selection = DisabledModList;
+      }
+    }
+
+    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
+    {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      enabledModItems.repositionItems();
+      disabledModItems.repositionItems();
+
+      switch (selection)
+      {
+        case DisabledModList:
+          enableMod(disabledModItems.selectedModItem);
+        case EnabledModList:
+          disableMod(enabledModItems.selectedModItem);
+        case OpenModsFolder:
+          openFolderAnimator.playAnimation('accept');
+          openFolderAnimator.onFinish = openModsFolder;
+        case Done:
+          playElectrocutionSequence();
+        case BackToMenu:
+          pressBackButton();
       }
 
       oldSelection = selection;
 
-      if (controls.UI_UP || controls.UI_DOWN || controls.UI_LEFT || controls.UI_RIGHT)
-      {
-        if (holdDirection == 0)
-        {
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-          holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
-          holdTimer = 0.5; // initial delay before starting to scroll
-        }
-        else if
-          ((controls.UI_UP && holdDirection == -1)
-            || (controls.UI_DOWN && holdDirection == 1)
-            || (controls.UI_LEFT && holdDirection == -2)
-            || (controls.UI_RIGHT && holdDirection == 2)
-          )
-        {
-          holdTimer -= FlxG.elapsed;
-          if (holdTimer <= 0)
-          {
-            doHoldAction = true;
-          }
-        }
-      }
-      else
-      {
-        holdDirection = 0;
-        doHoldAction = false;
-      }
-
-      if (doHoldAction && delay <= 0)
-      {
-        delay = 0.1;
-        switch (selection)
-        {
-          case DisabledModList:
-            switch (holdDirection)
-            {
-              case -1:
-                disabledModItems.moveUp();
-              case 1:
-                disabledModItems.moveDown();
-              case -2:
-                selection = Done;
-                lastSelectDir = -2;
-              case 2:
-                selection = EnabledModList;
-                lastSelectDir = 2;
-            }
-          case EnabledModList:
-            switch (holdDirection)
-            {
-              case -1:
-                enabledModItems.moveUp();
-              case 1:
-                enabledModItems.moveDown();
-              case -2:
-                if (disabledModItems.modItems.length > 0) selection = DisabledModList;
-                else
-                  selection = Done;
-                lastSelectDir = -2;
-              case 2:
-                selection = OpenModsFolder;
-                lastSelectDir = 2;
-            }
-          case OpenModsFolder:
-            switch (holdDirection)
-            {
-              case -1:
-                selection = DisabledModList;
-                lastSelectDir = -1;
-              case 1:
-                selection = DisabledModList;
-                lastSelectDir = 1;
-              case -2:
-                selection = EnabledModList;
-                lastSelectDir = -2;
-              case 2:
-                selection = Done;
-                lastSelectDir = 2;
-            }
-          case Done:
-            switch (holdDirection)
-            {
-              case -1:
-                selection = EnabledModList;
-                lastSelectDir = -1;
-              case 1:
-                selection = EnabledModList;
-                lastSelectDir = 1;
-              case -2:
-                selection = OpenModsFolder;
-                lastSelectDir = -2;
-              case 2:
-                selection = DisabledModList;
-                lastSelectDir = 2;
-            }
-          case BackToMenu:
-            switch (holdDirection)
-            {
-              case -1:
-                if (lastSelectDir == -1) selection = Done; else selection = OpenModsFolder;
-              case 1:
-                if (lastSelectDir == -1) selection = EnabledModList; else selection = DisabledModList;
-              case -2:
-                // Nothing
-              case 2:
-                // Nothing
-            }
-        }
-      }
-      if (delay > 0) delay -= FlxG.elapsed;
-
-      if (controls.UI_LEFT_P)
-      {
-        switch (selection)
-        {
-          case DisabledModList:
-            selection = Done;
-            lastSelectDir = -2;
-          case EnabledModList:
-            if (disabledModItems.modItems.length > 0)
-            {
-              selection = DisabledModList;
-              lastSelectDir = -2;
-            }
-            else
-              selection = OpenModsFolder;
-          case OpenModsFolder:
-            selection = EnabledModList;
-            lastSelectDir = -2;
-          case Done:
-            selection = OpenModsFolder;
-            lastSelectDir = -2;
-          case BackToMenu:
-            // Nothing
-        }
-      }
-
-      if (controls.UI_RIGHT_P)
-      {
-        switch (selection)
-        {
-          case DisabledModList:
-            if (enabledModItems.modItems.length > 0)
-            {
-              selection = EnabledModList;
-              lastSelectDir = 2;
-            }
-          case EnabledModList:
-            selection = OpenModsFolder;
-            lastSelectDir = 2;
-          case OpenModsFolder:
-            selection = Done;
-            lastSelectDir = 2;
-          case Done:
-            selection = DisabledModList;
-            lastSelectDir = 2;
-          case BackToMenu:
-            // Nothing
-        }
-      }
-
-      if (controls.UI_UP_P)
-      {
-        lastInput = 'up';
-        switch (selection)
-        {
-          case DisabledModList:
-            if (!disabledModItems.moveUp(false))
-            {
-              selection = BackToMenu;
-              lastSelectDir = 1;
-            }
-          case EnabledModList:
-            if (pressingCtrl) orderMod(enabledModItems.selectedModItem, true);
-            else
-            {
-              if (!enabledModItems.moveUp(false))
-              {
-                selection = BackToMenu;
-                lastSelectDir = -1;
-              }
-            }
-          case OpenModsFolder:
-            selection = DisabledModList;
-            lastSelectDir = -1;
-          case Done:
-            selection = EnabledModList;
-            lastSelectDir = -1;
-          case BackToMenu:
-            trace('lastSelectDir: ' + lastSelectDir);
-            if (lastSelectDir == -1) selection = Done;
-            else
-              selection = OpenModsFolder;
-        }
-      }
-
-      if (controls.UI_DOWN_P)
-      {
-        lastInput = 'down';
-        switch (selection)
-        {
-          case DisabledModList:
-            if (!disabledModItems.moveDown(false))
-            {
-              selection = OpenModsFolder;
-              lastSelectDir = 1;
-            }
-          case EnabledModList:
-            if (pressingCtrl) orderMod(enabledModItems.selectedModItem, false);
-            else
-            {
-              if (!enabledModItems.moveDown(false))
-              {
-                selection = Done;
-                lastSelectDir = 1;
-              }
-            }
-          case OpenModsFolder:
-            selection = BackToMenu;
-            lastSelectDir = 1;
-          case Done:
-            selection = BackToMenu;
-            lastSelectDir = -1;
-          case BackToMenu:
-            if (lastSelectDir == -1) selection = EnabledModList;
-            else
-              selection = DisabledModList;
-        }
-      }
-
-      if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
-      {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-        enabledModItems.repositionItems();
-        disabledModItems.repositionItems();
-
-        switch (selection)
-        {
-          case DisabledModList:
-            enableMod(disabledModItems.selectedModItem);
-          case EnabledModList:
-            disableMod(enabledModItems.selectedModItem);
-          case OpenModsFolder:
-            openFolderAnimator.playAnimation('accept');
-            openFolderAnimator.onFinish = openModsFolder;
-          case Done:
-            playElectrocutionSequence();
-          case BackToMenu:
-            pressBackButton();
-        }
-
-        oldSelection = selection;
-
-        acceptDelay = 0.02;
-      }
-
-      if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
-
-      if (oldSelection != selection) handleSelection();
+      acceptDelay = 0.02;
     }
-    else
-    {
-      if (controls.ACCEPT_P && shockTimer.active)
-      {
-        @:privateAccess
-        shockTimer.onLoopFinished();
-        shockTimer.active = false;
-      }
-    }
+
+    if (acceptDelay > 0) acceptDelay -= FlxG.elapsed;
+
+    if (oldSelection != selection) handleSelection();
   }
 
   #if FEATURE_TOUCH_CONTROLS
