@@ -12,6 +12,8 @@ import polymod.Polymod;
 import polymod.PolymodAssets;
 import flixel.addons.display.FlxRuntimeShader;
 
+import flixel.util.FlxColor;
+
 using StringTools;
 
 enum abstract CharacterAnimation(String) to String
@@ -73,17 +75,18 @@ class ModMenuCharacter extends FunkinSprite
 
   var replaceColorShader:FlxRuntimeShader = null;
 
-  function getRandomColor():Array<Float>
+  public function getRandomColor():Array<Float>
   {
-    var r:Float = Math.random();
-    var g:Float = Math.random();
-    var b:Float = Math.random();
-    return [r, g, b];
+    var hue:Float = Math.random() * 360;
+    var sat:Float = (75 + Math.random() * 5) / 240;
+    var lum:Float = (80 + Math.random() * 79) / 240;
+    var color:FlxColor = FlxColor.fromHSL(hue, sat, lum);
+    return [color.redFloat, color.greenFloat, color.blueFloat];
   }
 
   var pinheadColor:Array<Float> = [];
 
-  function setPinheadColor(color:Array<Float>):Void
+  public function setPinheadColor(color:Array<Float>):Void
   {
     pinheadColor = color;
     if (replaceColorShader != null)
