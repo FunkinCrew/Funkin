@@ -1377,15 +1377,13 @@ class Project extends HXProject
   function configurePolymod()
   {
     // The file extension to use for script files.
-    setHaxedef("POLYMOD_SCRIPT_EXT", ".hscript");
-    // Which asset library to use for scripts.
-    setHaxedef("POLYMOD_SCRIPT_LIBRARY", "scripts");
-    // The base path from which scripts should be accessed.
-    setHaxedef("POLYMOD_ROOT_PATH", "scripts/");
+    setHaxedef("POLYMOD_SCRIPT_CLASS_EXT", ".hx,.hxc,.hscript");
     // Determines the subdirectory of the mod folder used for file appending.
     setHaxedef("POLYMOD_APPEND_FOLDER", "_append");
     // Determines the subdirectory of the mod folder used for file merges.
     setHaxedef("POLYMOD_MERGE_FOLDER", "_merge");
+    // The file extension to use for mod archives.
+    setHaxedef("POLYMOD_ARCHIVE_MOD_EXT", ".zip,.fnfmod");
     // Determines the file in the mod folder used for metadata.
     setHaxedef("POLYMOD_MOD_METADATA_FILE", "_polymod_meta.json");
     // Determines the file in the mod folder used for the icon.
