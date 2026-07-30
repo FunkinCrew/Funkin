@@ -47,7 +47,7 @@ import funkin.util.TouchUtil;
 class ModMenuState extends MusicBeatState
 {
   public static inline final BASE_GAME_MOD_ID:String = '__base_game__';
-  static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/mod-menu-base-icon';
+  static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/base-icon';
 
   /**
    * BF in the mod menu.
@@ -129,7 +129,7 @@ class ModMenuState extends MusicBeatState
     // Caching the smoke since they're not drawn immediately.
     // TODO: Remove and replace with `queryAssets()` once async loading is done.
     var assetPaths:Array<String> = [
-      'ui/mods/mod-menu-smoke',
+      'ui/mods/smoke',
       'ui/mods/smoke-cloud/spritemap1'
     ];
 
@@ -148,7 +148,7 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
-    menuBG = FunkinSprite.create('ui/mods/mod-menu-bg');
+    menuBG = FunkinSprite.create('ui/mods/bg');
     menuBG.scale.set(0.66, 0.67);
     menuBG.updateHitbox();
     menuBG.screenCenter();
@@ -160,7 +160,7 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.zIndex = 5;
     add(dropShadowLayer);
 
-    var topText:FunkinSprite = FunkinSprite.create('ui/mods/mod-menu-top-text');
+    var topText:FunkinSprite = FunkinSprite.create('ui/mods/top-text');
     topText.scale.set(0.66, 0.67);
     topText.updateHitbox();
     topText.screenCenter(X);
@@ -182,7 +182,7 @@ class ModMenuState extends MusicBeatState
     leftRectangle.x = FlxG.width * 0.047;
     leftRectangle.y = FlxG.height * 0.19;
     leftRectangle.scale.set(0.64, 0.67);
-    leftRectangle.loadTexture('ui/mods/mod-menu-box');
+    leftRectangle.loadTexture('ui/mods/box');
     leftRectangle.updateHitbox();
     leftRectangle.zIndex = 10;
     add(leftRectangle);
@@ -190,12 +190,12 @@ class ModMenuState extends MusicBeatState
     rightRectangle.x = leftRectangle.x + leftRectangle.width + 35;
     rightRectangle.y = leftRectangle.y;
     rightRectangle.scale.set(0.64, 0.67);
-    rightRectangle.loadTexture('ui/mods/mod-menu-box');
+    rightRectangle.loadTexture('ui/mods/box');
     rightRectangle.updateHitbox();
     rightRectangle.zIndex = 10;
     add(rightRectangle);
 
-    bgWires = new FunkinSprite().loadTexture('ui/mods/mod-menu-bgwires');
+    bgWires = new FunkinSprite().loadTexture('ui/mods/bgwires');
     bgWires.x = FlxG.width * 0.81;
     bgWires.y = FlxG.height * 0.33;
     bgWires.scale.set(0.7, 0.7);
@@ -261,7 +261,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.zIndex = 10;
     add(buttonBackToMenu);
 
-    carBattery = new FunkinSprite(965, 70).loadSparrow('ui/mods/mod-menu-carbattery');
+    carBattery = new FunkinSprite(965, 70).loadSparrow('ui/mods/carbattery');
     carBattery.animation.addByPrefix('idle', 'idle', 24);
     carBattery.animation.play('idle');
     carBattery.animation.pause();
@@ -270,7 +270,7 @@ class ModMenuState extends MusicBeatState
     carBattery.zIndex = 20;
     add(carBattery);
 
-    gfWire = new FunkinSprite(848, 52).loadSparrow('ui/mods/mod-menu-gfwire');
+    gfWire = new FunkinSprite(848, 52).loadSparrow('ui/mods/gfwire');
     gfWire.animation.addByPrefix('idle', 'idle0', 24, false);
     gfWire.animation.addByPrefix('idle-emptychair', 'idle empty chair0', 24, false);
     gfWire.animation.addByPrefix('shock', 'shock', 24, false);
@@ -311,14 +311,14 @@ class ModMenuState extends MusicBeatState
     fgWires.zIndex = 35;
     add(fgWires);
 
-    crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
+    crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/smoke');
     crispySmokeBF.animation.addByPrefix('idle', 'retry_smoke', 24);
     // BF's smoke is supposed to be offset from GF's!
     crispySmokeBF.animation.play('idle', false, 13);
     crispySmokeBF.scale.set(0.5, 0.5);
     crispySmokeBF.updateHitbox();
 
-    crispySmokeGF = new FunkinSprite(gf.x + 70, gf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
+    crispySmokeGF = new FunkinSprite(gf.x + 70, gf.y - 180).loadSparrow('ui/mods/smoke');
     crispySmokeGF.animation.addByPrefix('idle', 'retry_smoke', 24);
     crispySmokeGF.animation.play('idle');
     crispySmokeGF.scale.set(0.5, 0.5);
@@ -355,7 +355,7 @@ class ModMenuState extends MusicBeatState
     buttonDone.x = FlxG.width * 0.68;
     buttonDone.y = FlxG.height * 0.89;
     buttonDone.scale.set(0.65, 0.65);
-    buttonDone.loadTexture('ui/mods/mod-menu-done');
+    buttonDone.loadTexture('ui/mods/done');
     buttonDone.updateHitbox();
     buttonDone.zIndex = 1000;
     add(buttonDone);
@@ -363,7 +363,7 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.x = FlxG.width * 0.19;
     buttonOpenFolder.y = FlxG.height * 0.89;
     buttonOpenFolder.scale.set(0.65, 0.65);
-    buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
+    buttonOpenFolder.loadTexture('ui/mods/open-folder');
     buttonOpenFolder.updateHitbox();
     buttonOpenFolder.zIndex = 1000;
     add(buttonOpenFolder);
@@ -505,7 +505,7 @@ class ModMenuState extends MusicBeatState
     darkness.zIndex = 3000;
     add(darkness);
 
-    fileDrop = FunkinSprite.create(0, 0, 'ui/mods/mod-menu-drop-hover');
+    fileDrop = FunkinSprite.create(0, 0, 'ui/mods/drop-hover');
     fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();
@@ -581,9 +581,10 @@ class ModMenuState extends MusicBeatState
 
   function playBackButtonAnimation(name:String, force:Bool = false):Void
   {
-    if (buttonBackToMenu == null || buttonBackToMenu.anim == null) return;
-    if (!force && buttonBackToMenu.anim.curAnim?.name == name) return;
-    buttonBackToMenu.anim.play(name, force);
+    if (buttonBackToMenu == null || buttonBackToMenu.animation == null) return;
+    if (!force && buttonBackToMenu.getCurrentAnimation() == name) return;
+
+    buttonBackToMenu.animation.play(name, force);
   }
 
   function pressBackButton():Void
@@ -750,9 +751,14 @@ class ModMenuState extends MusicBeatState
     item.localX = worldX - destinationList.x;
     item.localY = worldY - destinationList.y;
 
-    if (incomingCount(destinationList) == 0) destinationList.repositionItems();
+    if (incomingCount(destinationList) == 0)
+    {
+      destinationList.repositionItems();
+    }
     else
+    {
       destinationList.updateScrollbar();
+    }
   }
 
   /**
@@ -1170,7 +1176,7 @@ class ModMenuState extends MusicBeatState
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'), 0.4);
       pressBackButton();
       return;
     }

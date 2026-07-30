@@ -192,7 +192,7 @@ class ModMenuItem extends FunkinSpriteGroup
     localY = FlxMath.lerp(flightStartY, flightTargetY, easedT);
   }
 
-  var flashElapsed:Float = -1; // -1 means "not flashing"
+  var flashElapsed:Float = -1; // -1 means 'not flashing'
 
   static inline final FLASH_DURATION:Float = 0.5;
   static inline final FLASH_START_ALPHA:Float = 1.0;
@@ -251,12 +251,15 @@ class ModMenuItem extends FunkinSpriteGroup
 
         modIcon.updateHitbox();
       }
-      else if (mod.icon != null) loadModIcon(mod.icon);
+      else if (mod.icon != null)
+      {
+        loadModIcon(mod.icon);
+      }
       else
       {
         trace('No icon found for mod ${mod.id}, using fallback');
         // Fallback icon
-        modIcon.loadGraphic(Paths.image("ui/mods/mod-menu-fallback-icon"));
+        modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
         add(modIcon);
 
         modIcon.scrollFactor.set();
