@@ -36,6 +36,23 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
   {
     super.loadEntries();
 
+    populateReverseCharMap();
+  }
+
+  override public function loadEntriesAsync():lime.app.Future<BaseRegistry.LoadEntriesResult>
+  {
+    return super.loadEntriesAsync().then((result) ->
+    {
+      populateReverseCharMap();
+      return lime.app.Future.withValue(result);
+    });
+  }
+
+  /**
+   * Create a `song => level` map for easy lookup.
+   */
+  function populateReverseCharMap():Void
+  {
     for (playerId in listEntryIds())
     {
       var player = fetchEntry(playerId);
@@ -48,7 +65,13 @@ class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerE
       }
     }
 
-    log('Loaded ${countEntries()} playable characters with ${ownedCharacterIds.size()} associations.');
+    log('Loaded ${countEntries()} playable characters with ${ownedCharacterIds.size()} associated characters.');
+  }
+
+  override function clearEntries():Void
+  {
+    super.clearEntries();
+    ownedCharacterIds.clear();
   }
 
   public function countUnlockedCharacters():Int

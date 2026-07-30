@@ -145,7 +145,12 @@ class FreeplayState extends MusicBeatSubState
 
   public var uiStateMachine:UIStateMachine = new UIStateMachine();
 
+  /**
+   * The cached list of freeplay capsule data for EVERY song in the game,
+   * including ones that are hidden or locked.
+   */
   var songs:Array<Null<FreeplaySongData>> = [];
+
   var curSelected:Int = 0;
   // curSelectedFloat is used for mobile to get "inbetween" selections for swipe/scrolling/momentum stuff
   var curSelectedFloat:Float = 0;
@@ -1002,7 +1007,7 @@ class FreeplayState extends MusicBeatSubState
       var characterVariations:Array<String> = song.data.getVariationsByCharacter(currentCharacter);
 
       // Gets all available difficulties for our character, via our available variations
-      var difficultiesAvailable:Array<String> = song.data.listDifficulties(null, characterVariations);
+      var difficultiesAvailable:Array<String> = song.data.listDifficulties(null, characterVariations, false, false);
       return difficultiesAvailable.contains(currentDifficulty);
     });
 
@@ -3608,7 +3613,8 @@ class FreeplaySongData
   }
 
   var _levelId:String;
-  final songId:String;
+
+  public final songId:String;
 
   /**
    * The start time of this song's preview in Freeplay (in range 0 - 1)

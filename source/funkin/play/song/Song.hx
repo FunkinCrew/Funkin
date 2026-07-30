@@ -487,8 +487,9 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * Given that this character is selected in the Freeplay menu,
+   * Given that this playable character is selected in the Freeplay menu,
    * which variations should be available?
+   *
    * @param char The playable character to query.
    * @return An array of available variations.
    */
@@ -521,13 +522,15 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   }
 
   /**
-   * Nearly the same thing as getVariationsByCharacter, but takes a character ID instead.
-   * @param charId
-   * @return Array<String>
+   * Nearly the same thing as getVariationsByCharacter, but takes a playable character ID.
+   *
+   * @param char The playable character to query.
+   * @return An array of available variations.
    * @see getVariationsByCharacter
    */
   public function getVariationsByCharacterId(?charId:String):Array<String>
   {
+    // Fetch the playable character by its ID.
     var charPlayer = PlayerRegistry.instance.fetchEntry(charId ?? '');
 
     return getVariationsByCharacter(charPlayer);
