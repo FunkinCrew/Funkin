@@ -66,6 +66,11 @@ class ModMenuCharacter extends FunkinSprite
   public var isGF:Bool = false;
 
   /**
+   * Whether or not this character is Pinhead.
+   */
+  public var isPinhead:Bool = false;
+
+  /**
    * Whether the character has custom wire animations.
    */
   public var hasCustomWires:Bool = false;
@@ -270,20 +275,19 @@ class ModMenuCharacter extends FunkinSprite
   }
 
   /**
-   * Switches out the character's graphics.
+   * Prepares the character for switching.
    * @param characterId The new character ID to use.
    * @param modId The new mod ID to use.
    * @param modIds The mod IDs to check for the character.
-   *
-   * @return Whether or not the new character is Pinhead...???
    */
-  public function switchCharacter(?characterId:String, modIds:Array<String>):Bool
+  public function prepareToSwitch(?characterId:String, modIds:Array<String>):Void
   {
     if (!isGF) shortestIndex = 0;
-    if (characterId == null) characterId = currentCharacterId;
-    if (characterId == currentCharacterId && modIds.contains(currentModId)) return true;
 
-    var isPinhead:Bool = false;
+    if (characterId == null) characterId = currentCharacterId;
+
+    isPinhead = false;
+
     var modId:String = '';
 
     currentCharacterId = characterId;
@@ -316,7 +320,7 @@ class ModMenuCharacter extends FunkinSprite
       i++;
     }
 
-    trace(' MOD MENU '.bold().bg_orange() + ' Switching character to $characterId with mod $modId. Mods checked: $modIds');
+    trace(' MOD MENU '.bold().bg_orange() + ' Preparing to switch to character to $characterId with mod $modId. Mods checked: $modIds');
 
     if (modId == '' && modIds.length > 1) // No modded assets found, but multiple mods are loaded, so show pinhead
     {
@@ -338,6 +342,15 @@ class ModMenuCharacter extends FunkinSprite
 
     currentCharacterId = characterId;
     currentModId = modId;
+  }
+
+  /**
+   * Switches out the character.
+   * Call this AFTER `prepareToSwitch()`
+   */
+  public function switchCharacter():Void
+  {
+    trace(' MOD MENU '.bold().bg_orange() + ' Switched to character $currentCharacterId with mod $currentModId.');
 
     loadCharacterData();
     loadGraphics();
@@ -358,8 +371,6 @@ class ModMenuCharacter extends FunkinSprite
 
     smokeOffsets = data?.smokeOffsets ?? [0, 0];
     smokeScale = data?.smokeScale ?? [0.5, 0.5];
-
-    return !isPinhead;
   }
 
   /**

@@ -7,6 +7,7 @@ import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
+import flixel.FlxState;
 
 class ModMenuItemList extends FunkinSpriteGroup
 {
@@ -74,6 +75,21 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollbarThumb.origin.set(0, 0);
 
     updateScrollbar();
+  }
+
+  /**
+   * Adds the elements to a Mod Menu instance.
+   * @param state The state to add the elements to.
+   */
+  public function addElements(state:FlxState):Void
+  {
+    titleText.zIndex = this.zIndex + 1;
+    scrollbarTrack.zIndex = titleText.zIndex + 1;
+    scrollbarThumb.zIndex = scrollbarTrack.zIndex + 1;
+
+    state.add(titleText);
+    state.add(scrollbarTrack);
+    state.add(scrollbarThumb);
   }
 
   override public function update(elapsed:Float):Void
@@ -488,7 +504,6 @@ class ModMenuItemList extends FunkinSpriteGroup
     scrollOffset = targetScrollOffset;
     repositionItems();
   }
-
 
   /**
    * Sizes and positions the scrollbar based on the current content and viewport.

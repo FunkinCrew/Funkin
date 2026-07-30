@@ -5,7 +5,6 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxAssets.FlxShader;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -154,75 +153,64 @@ class ModMenuState extends MusicBeatState
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
-    menuBG.zIndex = -1000;
+    menuBG.zIndex = 0;
     add(menuBG);
 
     dropShadowLayer = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2);
+    dropShadowLayer.zIndex = 5;
     add(dropShadowLayer);
 
     var topText:FunkinSprite = FunkinSprite.create('ui/mods/mod-menu-top-text');
     topText.scale.set(0.66, 0.67);
-    add(topText);
     topText.updateHitbox();
-
-    topText.x = FlxG.width / 2 - (topText.width / 2);
+    topText.screenCenter(X);
     topText.y = FlxG.height * 0.035;
+    topText.zIndex = 10;
+    add(topText);
 
     var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Drag packs onto this window to add new stuff');
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32);
     dragText.scale.set(1, 0.8);
     dragText.letterSpacing = 5;
+    dragText.zIndex = 10;
     add(dragText);
 
     leftRectangle.x = FlxG.width * 0.047;
     leftRectangle.y = FlxG.height * 0.19;
     leftRectangle.scale.set(0.64, 0.67);
     leftRectangle.loadTexture('ui/mods/mod-menu-box');
-    add(leftRectangle);
     leftRectangle.updateHitbox();
+    leftRectangle.zIndex = 10;
+    add(leftRectangle);
 
     rightRectangle.x = leftRectangle.x + leftRectangle.width + 35;
     rightRectangle.y = leftRectangle.y;
     rightRectangle.scale.set(0.64, 0.67);
     rightRectangle.loadTexture('ui/mods/mod-menu-box');
-    add(rightRectangle);
     rightRectangle.updateHitbox();
+    rightRectangle.zIndex = 10;
+    add(rightRectangle);
 
     bgWires = new FunkinSprite().loadTexture('ui/mods/mod-menu-bgwires');
     bgWires.x = FlxG.width * 0.81;
     bgWires.y = FlxG.height * 0.33;
     bgWires.scale.set(0.7, 0.7);
     bgWires.updateHitbox();
+    bgWires.zIndex = 10;
     add(bgWires);
-
-    bf = new ModMenuCharacter(846, 120, 'bf');
-    bf.anim.onFinish.add((name:String) ->
-    {
-      bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
-    });
-    bfBlink = Math.random() + (Math.random() * 12);
-
-    gf = new ModMenuCharacter(680, 120, 'gf', true);
-    gf.anim.onFinish.add((name:String) ->
-    {
-      gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
-    });
-    gfBlink = Math.random() + 6 + (Math.random() * 15);
 
     refreshModList(false);
 
+    enabledModItems.zIndex = 15;
+    enabledModItems.addElements(this);
     add(enabledModItems);
+
+    disabledModItems.zIndex = 15;
+    disabledModItems.addElements(this);
     add(disabledModItems);
-    add(enabledModItems.titleText);
-    add(disabledModItems.titleText);
-
-    add(enabledModItems.scrollbarTrack);
-    add(enabledModItems.scrollbarThumb);
-
-    add(disabledModItems.scrollbarTrack);
-    add(disabledModItems.scrollbarThumb);
 
     transitionLayer = new FunkinSpriteGroup();
+    transitionLayer.zIndex = 20;
     add(transitionLayer);
 
     enabledModItems.titleText.x = rightRectangle.x + (rightRectangle.width / 2) - (enabledModItems.titleText.width / 2);
@@ -238,21 +226,20 @@ class ModMenuState extends MusicBeatState
     enabledModItems.updateClipRects();
     disabledModItems.updateClipRects();
 
-    buttonBackToMenu.loadTextureAtlas('ui/mods/back arrow');
-    add(buttonBackToMenu);
+    buttonBackToMenu.loadTextureAtlas('ui/mods/back-arrow');
     buttonBackToMenu.scale.set(0.7, 0.7);
     buttonBackToMenu.updateHitbox();
 
-    buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2) + 3;
     buttonBackToMenu.x = disabledModItems.x - 50;
+    buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2) + 3;
 
-    buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24, true, false, false);
-    buttonBackToMenu.anim.addByFrameLabel('press', 'press hold', 24, false, false, false);
-    buttonBackToMenu.anim.addByFrameLabel('hover', 'highlighted', 24, true, false, false);
-    buttonBackToMenu.anim.addByFrameLabel('confirm', 'confirm', 24, false, false, false);
+    buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24);
+    buttonBackToMenu.anim.addByFrameLabel('press', 'press hold', 24, false);
+    buttonBackToMenu.anim.addByFrameLabel('hover', 'highlighted', 24);
+    buttonBackToMenu.anim.addByFrameLabel('confirm', 'confirm', 24, false);
 
     playBackButtonAnimation('idle', true);
-    buttonBackToMenu.anim.onFinish.add((name:String) ->
+    buttonBackToMenu.animation.onFinish.add((name:String) ->
     {
       switch (backPressStage)
       {
@@ -267,26 +254,47 @@ class ModMenuState extends MusicBeatState
       }
     });
 
+    buttonBackToMenu.zIndex = 10;
+    add(buttonBackToMenu);
+
     carBattery = new FunkinSprite(965, 70).loadSparrow('ui/mods/mod-menu-carbattery');
     carBattery.animation.addByPrefix('idle', 'idle', 24);
     carBattery.animation.play('idle');
     carBattery.animation.pause();
     carBattery.scale.set(0.75, 0.75);
     carBattery.updateHitbox();
+    carBattery.zIndex = 20;
     add(carBattery);
 
-    gfWire = new FunkinSprite(943, 53).loadSparrow('ui/mods/mod-menu-gfwire');
-    gfWire.animation.addByPrefix('idle', 'idle', 24, false);
+    gfWire = new FunkinSprite(848, 52).loadSparrow('ui/mods/mod-menu-gfwire');
+    gfWire.animation.addByPrefix('idle', 'idle0', 24, false);
+    gfWire.animation.addByPrefix('idle-emptychair', 'idle empty chair0', 24, false);
     gfWire.animation.addByPrefix('shock', 'shock', 24, false);
     gfWire.animation.play('idle');
     gfWire.scale.set(0.7, 0.7);
     gfWire.updateHitbox();
+    gfWire.zIndex = carBattery.zIndex + 1;
     add(gfWire);
 
-    // This is in reverse order since BF should be above GF!
-    // TODO: Rework `create()` to use `zIndex`
-    add(gf);
+    bf = new ModMenuCharacter(846, 120, 'bf');
+    bf.anim.onFinish.add((name:String) ->
+    {
+      bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
+    });
+    bfBlink = Math.random() + (Math.random() * 12);
+
+    bf.zIndex = 30;
     add(bf);
+
+    gf = new ModMenuCharacter(680, 120, 'gf', true);
+    gf.anim.onFinish.add((name:String) ->
+    {
+      gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
+    });
+    gfBlink = Math.random() + 6 + (Math.random() * 15);
+
+    gf.zIndex = 25;
+    add(gf);
 
     fgWires = new FunkinSprite(702, 30).loadTextureAtlas('ui/mods/foreground-wires');
     fgWires.anim.addByFrameLabel('idle', 'idle', 24);
@@ -295,6 +303,7 @@ class ModMenuState extends MusicBeatState
     fgWires.animation.play('idle');
     fgWires.scale.set(0.7, 0.7);
     fgWires.updateHitbox();
+    fgWires.zIndex = 100;
     add(fgWires);
 
     crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
@@ -313,6 +322,9 @@ class ModMenuState extends MusicBeatState
     crispySmokeBF.visible = false;
     crispySmokeGF.visible = false;
 
+    crispySmokeBF.zIndex = bf.zIndex + 1;
+    crispySmokeGF.zIndex = gf.zIndex + 1;
+
     // SIX SEVEEEEEENNNN!!!
     // (Yes, this is really the value from the FLA)
     crispySmokeBF.alpha = 0.67;
@@ -328,9 +340,11 @@ class ModMenuState extends MusicBeatState
     smokeCloud.visible = false;
     smokeCloud.scale.set(0.75, 0.75);
     smokeCloud.updateHitbox();
+    smokeCloud.zIndex = 100;
     add(smokeCloud);
 
     sparks = new ModMenuSparks();
+    sparks.zIndex = 35;
     add(sparks);
 
     buttonDone.x = FlxG.width * 0.68;
@@ -338,6 +352,7 @@ class ModMenuState extends MusicBeatState
     buttonDone.scale.set(0.65, 0.65);
     buttonDone.loadTexture('ui/mods/mod-menu-done');
     buttonDone.updateHitbox();
+    buttonDone.zIndex = 1000;
     add(buttonDone);
 
     buttonOpenFolder.x = FlxG.width * 0.19;
@@ -345,6 +360,7 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.scale.set(0.65, 0.65);
     buttonOpenFolder.loadTexture('ui/mods/mod-menu-open-folder');
     buttonOpenFolder.updateHitbox();
+    buttonOpenFolder.zIndex = 1000;
     add(buttonOpenFolder);
 
     hitboxOpenFolder = new FunkinSprite(
@@ -481,6 +497,7 @@ class ModMenuState extends MusicBeatState
     darkness.scrollFactor.set(0, 0);
     darkness.alpha = 0;
     darkness.visible = false;
+    darkness.zIndex = 3000;
     add(darkness);
 
     fileDrop = FunkinSprite.create(0, 0, 'ui/mods/mod-menu-drop-hover');
@@ -490,6 +507,7 @@ class ModMenuState extends MusicBeatState
     fileDrop.x = FlxG.width / 2 - (fileDrop.width / 2);
     fileDrop.y = FlxG.height / 2 - (fileDrop.height / 2);
     fileDrop.visible = false;
+    fileDrop.zIndex = darkness.zIndex + 1;
     add(fileDrop);
 
     enabledModItems.repositionItems();
@@ -535,26 +553,7 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.renderer.blacklistSprite(crispySmokeBF);
     dropShadowLayer.renderer.blacklistSprite(crispySmokeGF);
 
-    var modIds:Array<String> = grabEnabledModList();
-
-    var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
-    gf.jsons = bf.jsons;
-    var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
-
-    bf.previousModId = bf.currentModId;
-    gf.previousModId = bf.previousModId;
-
-    bf.visible = true;
-    gf.visible = true;
-
-    // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
-    if (modIds.length > 1)
-    {
-      if (!bfNotPinhead && gfNotPinhead) bf.visible = false;
-      else if (bfNotPinhead && !gfNotPinhead) gf.visible = false;
-    }
-
-    gfWire.visible = !gf.hasCustomWires;
+    changeCharacters();
 
     #if FEATURE_TOUCH_CONTROLS
     addBackButton(0, 0, FlxColor.WHITE, backToMainMenu);
@@ -569,6 +568,8 @@ class ModMenuState extends MusicBeatState
 
     disabledModItems.snapScroll();
     enabledModItems.snapScroll();
+
+    this.refresh();
   }
 
   var backPressStage:Int = 0;
@@ -586,6 +587,50 @@ class ModMenuState extends MusicBeatState
     exitingMenu = true;
     backPressStage = 1;
     playBackButtonAnimation('press', true);
+  }
+
+  function changeCharacters():Void
+  {
+    var modIds:Array<String> = grabEnabledModList();
+
+    bf.prepareToSwitch('mod-bf', modIds);
+
+    gf.previousModId = bf.previousModId;
+    gf.jsons = bf.jsons;
+
+    gf.prepareToSwitch('mod-gf', modIds);
+
+    // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
+    // An empty chair takes its place.
+    if (modIds.length > 1)
+    {
+      if (bf.isPinhead && !gf.isPinhead)
+      {
+        bf.currentCharacterId = 'empty-chair';
+      }
+      else if (!bf.isPinhead && gf.isPinhead)
+      {
+        gf.currentCharacterId = 'empty-chair';
+      }
+    }
+
+    bf.switchCharacter();
+    gf.switchCharacter();
+
+    gfWire.visible = !gf.hasCustomWires;
+
+    if (gf.currentCharacterId == 'empty-chair')
+    {
+      gfWire.zIndex = gf.zIndex + 1;
+      gfWire.animation.play('idle-emptychair');
+    }
+    else
+    {
+      gfWire.zIndex = carBattery.zIndex + 1;
+      gfWire.animation.play('idle');
+    }
+
+    this.refresh();
   }
 
   /**
@@ -1020,19 +1065,7 @@ class ModMenuState extends MusicBeatState
       {
         FlxG.camera.flash(0xFFFFFFFF, 1 / 24);
 
-        var modIds:Array<String> = grabEnabledModList();
-
-        var bfNotPinhead:Bool = bf.switchCharacter('mod-bf', modIds);
-        gf.jsons = bf.jsons;
-        var gfNotPinhead:Bool = gf.switchCharacter('mod-gf', modIds);
-
-        gf.previousModId = bf.previousModId;
-
-        bf.visible = true;
-        gf.visible = true;
-
-        gfWire.visible = !gf.hasCustomWires;
-        gfWire.animation.play('idle');
+        changeCharacters();
 
         FlxTween.color(menuBG, 14 / 24, 0xFF232327, bgColor);
 
@@ -1050,25 +1083,12 @@ class ModMenuState extends MusicBeatState
           framerate: 24
         });
 
-        // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
-        if (modIds.length > 1)
-        {
-          if (!bfNotPinhead && gfNotPinhead)
-          {
-            bf.visible = false;
-          }
-          else if (bfNotPinhead && !gfNotPinhead)
-          {
-            gf.visible = false;
-          }
-        }
-
         bf.applyShader();
         gf.applyShader();
 
         var showSmoke:Bool = false;
 
-        if (bfNotPinhead && bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
+        if (bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
         {
           showSmoke = true;
           bf.playAnimation(CRISPY, true);
@@ -1077,7 +1097,8 @@ class ModMenuState extends MusicBeatState
         {
           bf.playAnimation(IDLE, true);
         }
-        if (gfNotPinhead && gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId)
+
+        if (gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId)
         {
           showSmoke = true;
           gf.playAnimation(CRISPY, true);
@@ -1101,8 +1122,9 @@ class ModMenuState extends MusicBeatState
           crispySmokeBF.updateHitbox();
           crispySmokeGF.updateHitbox();
 
-          crispySmokeBF.visible = true;
-          crispySmokeGF.visible = true;
+          // Do not show the smoke on an empty chair... for obvious reasons.
+          crispySmokeBF.visible = bf.currentCharacterId != 'empty-chair';
+          crispySmokeGF.visible = gf.currentCharacterId != 'empty-chair';
 
           fgWires.animation.play('end');
         }
