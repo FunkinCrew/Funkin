@@ -298,12 +298,13 @@ class ModMenuState extends MusicBeatState
 
     fgWires = new FunkinSprite(702, 30).loadTextureAtlas('ui/mods/foreground-wires');
     fgWires.anim.addByFrameLabel('idle', 'idle', 24);
+    fgWires.anim.addByFrameLabel('idle-pinhead', 'idle pinhead', 24);
     fgWires.anim.addByFrameLabel('shock', 'shock', 24);
     fgWires.anim.addByFrameLabel('end', 'end', 24, false);
     fgWires.animation.play('idle');
     fgWires.scale.set(0.7, 0.7);
     fgWires.updateHitbox();
-    fgWires.zIndex = 100;
+    fgWires.zIndex = 35;
     add(fgWires);
 
     crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/mod-menu-smoke');
@@ -322,8 +323,8 @@ class ModMenuState extends MusicBeatState
     crispySmokeBF.visible = false;
     crispySmokeGF.visible = false;
 
-    crispySmokeBF.zIndex = bf.zIndex + 1;
-    crispySmokeGF.zIndex = gf.zIndex + 1;
+    crispySmokeBF.zIndex = bf.zIndex + 10;
+    crispySmokeGF.zIndex = gf.zIndex + 10;
 
     // SIX SEVEEEEEENNNN!!!
     // (Yes, this is really the value from the FLA)
@@ -344,7 +345,7 @@ class ModMenuState extends MusicBeatState
     add(smokeCloud);
 
     sparks = new ModMenuSparks();
-    sparks.zIndex = 35;
+    sparks.zIndex = smokeCloud.zIndex + 1;
     add(sparks);
 
     buttonDone.x = FlxG.width * 0.68;
@@ -628,6 +629,15 @@ class ModMenuState extends MusicBeatState
     {
       gfWire.zIndex = carBattery.zIndex + 1;
       gfWire.animation.play('idle');
+    }
+
+    if (bf.isPinhead)
+    {
+      fgWires.animation.play('idle-pinhead');
+    }
+    else
+    {
+      fgWires.animation.play('idle');
     }
 
     this.refresh();
@@ -1127,10 +1137,6 @@ class ModMenuState extends MusicBeatState
           crispySmokeGF.visible = gf.currentCharacterId != 'empty-chair';
 
           fgWires.animation.play('end');
-        }
-        else
-        {
-          fgWires.animation.play('idle');
         }
 
         crispyTimer = 0;
