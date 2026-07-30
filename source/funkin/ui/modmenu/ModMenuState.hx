@@ -636,7 +636,7 @@ class ModMenuState extends MusicBeatState
       gfWire.animation.play('idle');
     }
 
-    if (bf.isPinhead)
+    if (bf.useSmallWire)
     {
       fgWires.animation.play('idle-pinhead');
     }

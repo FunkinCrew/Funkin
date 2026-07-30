@@ -51,6 +51,16 @@ typedef ModMenuCharacterData =
   var hasCustomWires:Bool;
 
   /**
+   * The mod menu has 2 variants of the foreground wires:
+   * 1. The regular one, used for BF and GF.
+   * 2. The small one, used for Pinhead.
+   *
+   * If `true`, the small wire will be used.
+   */
+  @:optional @:default(false)
+  var useSmallWire:Bool;
+
+  /**
    * The offsets for the character's smoke.
    * Used during the crispy animation.
    */

@@ -76,6 +76,15 @@ class ModMenuCharacter extends FunkinSprite
   public var hasCustomWires:Bool = false;
 
   /**
+   * The mod menu has 2 variants of the foreground wires:
+   * 1. The regular one, used for BF and GF.
+   * 2. The small one, used for Pinhead.
+   *
+   * If `true`, the small wire will be used.
+   */
+  public var useSmallWire:Bool = false;
+
+  /**
    * The offsets for the character's smoke trail.
    * Used during the crispy animation.
    */
@@ -357,6 +366,7 @@ class ModMenuCharacter extends FunkinSprite
     loadAnimations();
 
     hasCustomWires = data?.hasCustomWires ?? false;
+    useSmallWire = data?.useSmallWire ?? false;
 
     applyShader();
 
