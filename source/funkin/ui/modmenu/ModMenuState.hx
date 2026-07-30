@@ -46,7 +46,20 @@ import funkin.util.TouchUtil;
  */
 class ModMenuState extends MusicBeatState
 {
+  /**
+   * The currently active ModMenuState.
+   * There should be only one ModMenuState in existence at a time, we can use a singleton.
+   */
+  public static var instance:Null<ModMenuState> = null;
+
+  /**
+   * The mod ID for base game.
+   */
   public static inline final BASE_GAME_MOD_ID:String = '__base_game__';
+
+  /**
+   * The base path for the base game.
+   */
   static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/base-icon';
 
   /**
@@ -64,6 +77,12 @@ class ModMenuState extends MusicBeatState
    * The ambience in the mod menu.
    */
   public var ambience:ModMenuAmbience;
+
+  /**
+   * The drop shadow layer instance for this menu.
+   * Handles a drop shadow effect for some elements.
+   */
+  public var dropShadowLayer:DropShadowLayer;
 
   var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
@@ -102,7 +121,6 @@ class ModMenuState extends MusicBeatState
   var lastSelectDir:Int = 0;
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
-  var dropShadowLayer:DropShadowLayer;
   var crispySmokeBF:FunkinSprite;
   var crispySmokeGF:FunkinSprite;
   var smokeCloud:FunkinSprite;
@@ -142,6 +160,13 @@ class ModMenuState extends MusicBeatState
   override public function create():Void
   {
     super.create();
+
+    if (instance != null)
+    {
+      FlxG.log.warn('WARNING: ModMenuState instance already exists. This should not happen.');
+    }
+
+    instance = this;
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
@@ -557,6 +582,7 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.renderer.blacklistSprite(bgWires);
     dropShadowLayer.renderer.blacklistSprite(crispySmokeBF);
     dropShadowLayer.renderer.blacklistSprite(crispySmokeGF);
+    dropShadowLayer.renderer.blacklistSprite(sparks);
 
     changeCharacters();
 
@@ -835,6 +861,8 @@ class ModMenuState extends MusicBeatState
     FlxG.stage.window.onDropComplete.remove(hideFileDropHover);
 
     ambience.destroy();
+
+    instance = null;
   }
 
   public function onDropFile(path:String, state:String, x:Float, y:Float):Void
@@ -1093,7 +1121,7 @@ class ModMenuState extends MusicBeatState
 
       menuBG.color = 0xFF232327;
 
-      FlxTimer.wait(1 / 24, () ->
+      FlxTimer.wait(2 / 24, () ->
       {
         FlxG.camera.flash(0xFFFFFFFF, 1 / 24);
 

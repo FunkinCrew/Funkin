@@ -267,6 +267,18 @@ class ModMenuCharacter extends FunkinSprite
       setLightningPinhead();
 
       frame = FlxG.random.int(0, getAnimationLength(name));
+
+      if (ModMenuState.instance != null)
+      {
+        ModMenuState.instance.dropShadowLayer.renderer.blacklistSprite(this);
+      }
+    }
+    else
+    {
+      if (ModMenuState.instance != null)
+      {
+        ModMenuState.instance.dropShadowLayer.renderer.whitelistSprite(this);
+      }
     }
 
     this.animation.play(name, force, reversed, frame);
