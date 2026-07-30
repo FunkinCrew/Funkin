@@ -168,7 +168,11 @@ class ModMenuState extends MusicBeatState
     topText.zIndex = 10;
     add(topText);
 
+    #if FEATURE_TOUCH_CONTROLS
+    var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Tap and hold on a mod to drag it');
+    #else
     var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Drag packs onto this window to add new stuff');
+    #end
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32);
     dragText.scale.set(1, 0.8);
     dragText.letterSpacing = 5;
