@@ -8064,6 +8064,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     trace('Destroying ChartEditorState...');
     super.destroy();
 
+    performCleanup();
+
     cleanupAutoSave();
 
     this.closeExistingMenu();
