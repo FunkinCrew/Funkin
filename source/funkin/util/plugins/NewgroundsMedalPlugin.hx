@@ -110,6 +110,35 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
     FlxGraphic.defaultPersist = false;
   }
 
+  function rebuildText()
+  {
+    if (pointsLabel != null) pointsLabel.destroy();
+    if (nameLabel != null) nameLabel.destroy();
+    remove(pointsLabel);
+    remove(nameLabel);
+
+    pointsLabel = new FlxText((171 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 17 + MEDAL_Y, 50, 12, false);
+    pointsLabel.fieldHeight = 18;
+    pointsLabel.systemFont = 'Arial';
+    pointsLabel.bold = true;
+    pointsLabel.italic = true;
+    pointsLabel.alignment = 'right';
+
+    pointsLabel.text = '100';
+    pointsLabel.scrollFactor.set();
+
+    nameLabel = new FlxText((73 + MEDAL_X) + (FullScreenScaleMode.gameCutoutSize.x / 2), 37 + MEDAL_Y, 0, 26);
+    nameLabel.font = funkin.assets.Paths.font('ui/fonts/Share Tech Mono');
+    nameLabel.letterSpacing = -2;
+
+    nameLabel.text = 'Ono Boners Deluxe';
+    nameLabel.clipRect = FlxRect.get(0, 0, 164, 35.2);
+    nameLabel.scrollFactor.set();
+
+    add(pointsLabel);
+    add(nameLabel);
+  }
+
   /**
    * Update the positions of the medal atlas in case the resolution changes!
    */
@@ -159,12 +188,15 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
    * @param name The name of the medal to display
    * @param graphic The FlxGraphic for the medal icon
    */
-  public static function play(points:Int = 100, name:String = 'I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM', ?graphic:FlxGraphic)
+  public static function play(points:Int = 100,
+    name:String = 'I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM',
+    ?graphic:FlxGraphic)
   {
     if (instance == null) return;
 
     var playMedal:Void->Void = function()
     {
+      instance.rebuildText();
       instance.pointsLabel.visible = false;
       instance.nameLabel.visible = false;
       instance.pointsLabel.text = Std.string(points);
@@ -175,7 +207,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.medal.animation.play('wholeTimeline');
 
       instance.medal.visible = true;
-      instance.medal.replaceSymbolGraphic('NGMEDAL', graphic);
+      if (graphic != null) instance.medal.replaceSymbolGraphic('NGMEDAL', graphic);
     }
 
     if (instance.medal.isAnimationFinished() && instance.medalQueue.length == 0) playMedal();
