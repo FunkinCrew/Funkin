@@ -846,7 +846,7 @@ class ModMenuState extends MusicBeatState
   {
     super.destroy();
 
-    FlxG.autoPause = true;
+    FlxG.autoPause = Preferences.autoPause;
     FlxG.stage.window.onDropFile.remove(onDropFile);
     FlxG.stage.window.onDropBegin.remove(startFileDropHover);
     FlxG.stage.window.onDropComplete.remove(hideFileDropHover);
