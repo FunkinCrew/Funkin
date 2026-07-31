@@ -1335,6 +1335,66 @@ class FunkinAssetCache implements OpenFLIAssetCache
     return promise.future;
   }
 
+  // Helper functions to be used in other classes so we avoid really really long lines.
+  // also useful for adding persistent objects into the game that dont need assetpaths.
+
+  /**
+   * Adds the FlxGraphic to the cache permanently.
+   * @param key The key for the cache.
+   * @param flxGraphic The FlxGraphicAsset to cache.
+   */
+  public function permaCacheFlxGraphic(key:String, flxGraphic:FlxGraphicAsset):FlxGraphic
+  {
+    var graphic:FlxGraphic = setFlxGraphic(key, flxGraphic);
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(key, graphic);
+    permaCacheBitmapData(key, graphic.bitmap);
+    return graphic;
+  }
+
+  /**
+   * Adds the bitmap to the cache permanently.
+   * @param key The key for the cache.
+   * @param bitmap The BitmapData to cache.
+   */
+  public function permaCacheBitmapData(key:String, bitmap:BitmapData):Void
+  {
+    setBitmapData(key, bitmap);
+    stagedBitmapData.cachePermanent(key, bitmap);
+  }
+
+  /**
+   * Adds the bytes to the cache permanently.
+   * @param key The key for the cache.
+   * @param bytes The Bytes to cache.
+   */
+  public function permaCacheBytes(key:String, bytes:Bytes):Void
+  {
+    setBytes(key, bytes);
+    stagedBytes.cachePermanent(key, bytes);
+  }
+
+  /**
+   * Adds the text to the cache permanently.
+   * @param key The key for the cache.
+   * @param text The text to cache.
+   */
+  public function permaCacheText(key:String, text:String):Void
+  {
+    setText(key, text);
+    stagedText.cachePermanent(key, text);
+  }
+
+  /**
+   * Adds the sound to the cache permanently.
+   * @param key The key for the cache.
+   * @param sound The Sound to cache.
+   */
+  public function permaCacheSound(key:String, sound:Sound):Void
+  {
+    setSound(key, sound);
+    stagedSound.cachePermanent(key, sound);
+  }
+
   /**
    * @param bitmapData The `BitmapData` to check.
    * @return Whether the `BitmapData` is invalid (the underlying image got uncached) and needs to be reloaded.

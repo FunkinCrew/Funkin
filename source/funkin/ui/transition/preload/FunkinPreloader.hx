@@ -443,13 +443,7 @@ class FunkinPreloader extends FlxBasePreloader
             var openflBytes = openfl.utils.ByteArray.fromBytes(mod.icon);
             var bitmapData = openfl.display.BitmapData.fromBytes(openflBytes);
             @:privateAccess
-            if (mod.id != null)
-            {
-              var grap = FunkinAssetCache.instance.setFlxGraphic(mod.id, bitmapData);
-              FunkinAssetCache.instance.setBitmapData(mod.id, bitmapData);
-              FunkinAssetCache.instance.stagedBitmapData.cachePermanent(mod.id, bitmapData);
-              funkin.assets.FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(mod.id, grap);
-            }
+            if (mod.id != null) FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, bitmapData);
           }
 
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);
