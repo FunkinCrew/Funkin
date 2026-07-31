@@ -1611,9 +1611,9 @@ class ModMenuState extends MusicBeatState
 
                 selection = EnabledModList;
 
-                enableMod(grabbedItem, true);
+                final result:Bool = enableMod(grabbedItem, true);
 
-                listChanged = true;
+                listChanged = result;
               }
 
             default:
@@ -1972,11 +1972,11 @@ class ModMenuState extends MusicBeatState
   function enableMod(item:Null<ModMenuItem>,
     ?forcedInsertIndex:Int = -1,
     ?batchFutureCount:Int = -1,
-    shouldUpdateSelection:Bool = true):Void
+    shouldUpdateSelection:Bool = true):Bool
   {
-    if (item == null) return;
-    if (!disabledModItems.modItems.contains(item)) return;
-    if (item.getModId() == BASE_GAME_MOD_ID) return;
+    if (item == null) return false;
+    if (!disabledModItems.modItems.contains(item)) return false;
+    if (item.getModId() == BASE_GAME_MOD_ID) return false;
 
     item.selected = false;
 
@@ -2029,7 +2029,8 @@ class ModMenuState extends MusicBeatState
           'Missing dependency (PLACEHOLDER)',
           'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.'
         );
-        return;
+
+        return false;
       }
     }
 
@@ -2064,7 +2065,7 @@ class ModMenuState extends MusicBeatState
     disabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
     startItemTransition(item, targetX, targetY, enabledModItems, finalIndex);
 
-    if (!shouldUpdateSelection) return;
+    if (!shouldUpdateSelection) return true;
 
     enabledModItems.selectModItem(item, false);
 
@@ -2078,6 +2079,8 @@ class ModMenuState extends MusicBeatState
     {
       selection = EnabledModList;
     }
+
+    return true;
   }
 
   function disableMod(item:Null<ModMenuItem>,
