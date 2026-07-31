@@ -1234,7 +1234,6 @@ class ModMenuState extends MusicBeatState
     {
       if (holdDirection == 0)
       {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
         holdDirection = controls.UI_UP ? -1 : controls.UI_DOWN ? 1 : controls.UI_LEFT ? -2 : 2;
         holdTimer = 0.5; // initial delay before starting to scroll
       }
@@ -1690,6 +1689,8 @@ class ModMenuState extends MusicBeatState
 
   function handleSelection():Void
   {
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
     if (selection != BackToMenu) playBackButtonAnimation('idle');
     disabledModItems.deselect();
     enabledModItems.deselect();
@@ -2020,7 +2021,7 @@ class ModMenuState extends MusicBeatState
       var dependencyItem = disabledModItems.modItems.find((it) -> it.getModId() == dependencyId);
       if (dependencyItem != null)
       {
-        enableMod(dependencyItem, nextInsertIndex, batchFutureCount, shouldUpdateSelection); // share denominator
+        enableMod(dependencyItem, nextInsertIndex, batchFutureCount, false);
         nextInsertIndex++;
       }
       else
@@ -2040,6 +2041,7 @@ class ModMenuState extends MusicBeatState
     var worldX:Float = disabledModItems.x + srcLocalX;
     var worldY:Float = disabledModItems.y + srcLocalY;
     disabledModItems.removeModWithoutLayout(item);
+    disabledModItems.clampScrollToContent();
 
     var insertIndex:Int = originalInsertIndex;
 
@@ -2067,16 +2069,17 @@ class ModMenuState extends MusicBeatState
 
     if (!shouldUpdateSelection) return true;
 
-    enabledModItems.selectModItem(item, false);
-
     if (disabledModItems.modItems.length > 0)
     {
       var newIndex:Int = Std.int(Math.min(oldIndex, disabledModItems.modItems.length - 1));
+      enabledModItems.deselectAll();
       disabledModItems.selectModItem(disabledModItems.modItems[newIndex], false);
       selection = DisabledModList;
     }
     else
     {
+      disabledModItems.deselectAll();
+      enabledModItems.selectModItem(item, false);
       selection = EnabledModList;
     }
 
@@ -2118,6 +2121,7 @@ class ModMenuState extends MusicBeatState
     var worldX:Float = enabledModItems.x + srcLocalX;
     var worldY:Float = enabledModItems.y + srcLocalY;
     enabledModItems.removeModWithoutLayout(item);
+    enabledModItems.clampScrollToContent();
 
     if (!transitionLayer.children.contains(item))
     {

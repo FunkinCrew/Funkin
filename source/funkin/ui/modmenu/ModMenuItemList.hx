@@ -487,9 +487,18 @@ class ModMenuItemList extends FunkinSpriteGroup
     if (itemTop < top) scrollOffset += (top - itemTop);
     else if (itemTop + itemHeight > bottom) scrollOffset -= (itemTop + itemHeight - bottom);
 
-    // Clamp against the FUTURE content size, since the incoming item isn't in modItems yet.
+    targetScrollOffset = scrollOffset;
     clampScroll(itemCount);
+    scrollOffset = targetScrollOffset;
+
     updateScrollbar();
+  }
+
+  public function clampScrollToContent():Void
+  {
+    targetScrollOffset = scrollOffset;
+    clampScroll();
+    scrollOffset = targetScrollOffset;
   }
 
   public function scrollBy(delta:Float):Void
