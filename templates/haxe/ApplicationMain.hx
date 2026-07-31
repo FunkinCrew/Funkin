@@ -19,17 +19,25 @@ class ApplicationIcon extends lime.graphics.Image {}
 using funkin.util.WindowUtil;
 #end
 
+@:dox(hide)
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
-@:dox(hide)
+#if (static_link || ios)
+@:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+#end
 class ApplicationMain
 {
   #if !macro
 
   public static function main():Void
   {
+    #if (static_link || ios)
+    untyped __cpp__("lime_register_prims ()");
+    ::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
+    #end
+
     #if (windows && cpp)
     // Disable the Windows "ghosting" effect that dims unresponsive windows.
     funkin.external.windows.WinAPI.disableWindowsGhosting();
