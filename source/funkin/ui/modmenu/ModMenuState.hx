@@ -1109,8 +1109,11 @@ class ModMenuState extends MusicBeatState
     sparks.startElectrocution();
 
     var bgColor:FlxColor = menuBG.color;
-
     whiteColor.colorSet = true;
+
+    dropShadowLayer.renderer.blacklistSprite(gfWire);
+    dropShadowLayer.renderer.blacklistSprite(carBattery);
+    dropShadowLayer.renderer.blacklistSprite(fgWires);
 
     FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString());
 
@@ -1121,20 +1124,35 @@ class ModMenuState extends MusicBeatState
 
       menuBG.color = 0xFF232327;
 
+      carBattery.visible = false;
+      gfWire.visible = false;
+      fgWires.visible = false;
+      bgWires.visible = false;
+
+      dropShadowLayer.visible = false;
+      dropShadowLayer.renderer.whitelistSprite(gfWire);
+      dropShadowLayer.renderer.whitelistSprite(carBattery);
+      dropShadowLayer.renderer.whitelistSprite(fgWires);
+
       FlxTimer.wait(2 / 24, () ->
       {
         FlxG.camera.flash(0xFFFFFFFF, 1 / 24);
 
         changeCharacters();
 
-        FlxTween.color(menuBG, 14 / 24, 0xFF232327, bgColor);
+        FlxTween.color(menuBG, 1, 0xFF232327, bgColor);
 
+        carBattery.visible = true;
         carBattery.animation.reset();
 
         smokeCloud.visible = true;
         smokeCloud.animation.play('wholeTimeline');
 
         sparks.endElectrocution();
+
+        fgWires.visible = true;
+        bgWires.visible = true;
+        dropShadowLayer.visible = true;
 
         FlxTween.tween(smokeCloud, {
           alpha: 0

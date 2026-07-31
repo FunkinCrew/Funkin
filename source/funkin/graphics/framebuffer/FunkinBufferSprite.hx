@@ -191,6 +191,8 @@ class FunkinBufferSprite extends FunkinSprite
 
   override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
   {
+    if (!this.visible || this.alpha <= 0) return;
+
     final willUseRenderTexture = checkRenderTexture();
     final matrix = this._matrix;
 
