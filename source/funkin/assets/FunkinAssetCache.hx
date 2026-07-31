@@ -40,6 +40,7 @@ import lime.app.Promise;
  * Call cache functions when you want to load the Asset into memory asynchronously, without necessarily needing the asset.
  * Call get functions when you want to get the Asset synchronously, this will cause stutters during the game's process.
  */
+@:allow(funkin.assets.FunkinBitmapFrontend, funkin.util.assets.StagedCache)
 class FunkinAssetCache implements OpenFLIAssetCache
 {
   // NOTE FROM MOON: In theory, this async thing could cause issues where we try and fetch assets multiple times between frames causing overhead
@@ -617,7 +618,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param id The asset id of the FlxGraphic.
    * @param flxGraphic The FlxGraphic to add to the cache.
    */
-  function setFlxGraphic(id:String, flxGraphic:FlxGraphicAsset):FlxGraphic
+  public function setFlxGraphic(id:String, flxGraphic:FlxGraphicAsset):FlxGraphic
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.setFlxGraphic($id)');
@@ -644,64 +645,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #end
     if (!validateBitmapData(bitmapData)) throw "Bitmap cache tried to add an invalid Bitmap!";
     stagedBitmapData.cache(id, bitmapData);
-  }
-
-  /**
-   * @param bitmapData The `BitmapData` to check.
-   * @return Whether the `BitmapData` is invalid (the underlying image got uncached) and needs to be reloaded.
-   */
-  public function validateBitmapData(bitmapData:BitmapData):Bool
-  {
-    // Check if the graphic is valid before returning.
-    if (bitmapData == null) return false;
-    @:privateAccess
-    if (bitmapData.image == null && bitmapData.__texture == null)
-    {
-      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
-      return false;
-    }
-    if (bitmapData.width == 0 || bitmapData.height == 0)
-    {
-      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
-      return false;
-    }
-
-    return true;
-  }
-
-  // Should this be in FunkinBitmapFrontend I wonder..
-
-  /**
-   * @param frame The `FlxFrame` to check.
-   * @return Whether the `FlxFrame` is invalid (the underlying image got uncached) and needs to be reloaded.
-   */
-  public function validateFrame(frame:FlxFrame):Bool
-  {
-    if (frame == null) return false;
-
-    if (!FunkinBitmapFrontend.instance.isValid(frame.parent)) return false;
-
-    return true;
-  }
-
-  /**
-   * @param frames The `FlxFramesCollection` to check.
-   * @return Whether the `FlxFramesCollection` is invalid (the underlying image got uncached) and needs to be reloaded.
-   */
-  public function validateFramesCollection(frames:FlxFramesCollection):Bool
-  {
-    if (frames == null) return false;
-
-    for (frame in frames.frames)
-    {
-      if (!validateFrame(frame))
-      {
-        trace('Frame "${frame.name}" is invalid, did you uncache the underlying graphic?');
-        return false;
-      }
-    }
-
-    return true;
   }
 
   /**
@@ -1390,6 +1333,64 @@ class FunkinAssetCache implements OpenFLIAssetCache
       });
 
     return promise.future;
+  }
+
+  /**
+   * @param bitmapData The `BitmapData` to check.
+   * @return Whether the `BitmapData` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateBitmapData(bitmapData:BitmapData):Bool
+  {
+    // Check if the graphic is valid before returning.
+    if (bitmapData == null) return false;
+    @:privateAccess
+    if (bitmapData.image == null && bitmapData.__texture == null)
+    {
+      // The bitmap has neither an image (yet to be uploaded) nor a __texture (already uploaded to GPU)
+      return false;
+    }
+    if (bitmapData.width == 0 || bitmapData.height == 0)
+    {
+      // The bitmap has no width or height, which means the bitmap is valid but empty, which is definitely wrong.
+      return false;
+    }
+
+    return true;
+  }
+
+  // Should this be in FunkinBitmapFrontend I wonder..
+
+  /**
+   * @param frame The `FlxFrame` to check.
+   * @return Whether the `FlxFrame` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFrame(frame:FlxFrame):Bool
+  {
+    if (frame == null) return false;
+
+    if (!FunkinBitmapFrontend.instance.isValid(frame.parent)) return false;
+
+    return true;
+  }
+
+  /**
+   * @param frames The `FlxFramesCollection` to check.
+   * @return Whether the `FlxFramesCollection` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFramesCollection(frames:FlxFramesCollection):Bool
+  {
+    if (frames == null) return false;
+
+    for (frame in frames.frames)
+    {
+      if (!validateFrame(frame))
+      {
+        trace('Frame "${frame.name}" is invalid, did you uncache the underlying graphic?');
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

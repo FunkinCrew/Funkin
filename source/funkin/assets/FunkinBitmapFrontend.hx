@@ -22,6 +22,7 @@ import flixel.util.FlxColor;
  * to provide additional logging and stricter asset caching.
  */
 @:nullSafety
+@:access(funkin.assets.FunkinAssetCache, funkin.util.assets.StagedCache)
 class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 {
   /**
@@ -85,6 +86,13 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     }
 
     return graphic;
+  }
+
+  override public function create(width:Int, height:Int, color:FlxColor, unique = false, ?key:String):FlxGraphic
+  {
+    // Make the default key for FlxSprite.makeSolidColor() more readable.
+    key ??= 'solid#${color.toHexString(true, false)}:${width}x${height}';
+    return super.create(width, height, color, unique, key);
   }
 
   /**
@@ -203,13 +211,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return !filter.exists(keyword -> key.contains(keyword)));
   }
 
-  override public function create(width:Int, height:Int, color:FlxColor, unique = false, ?key:String):FlxGraphic
-  {
-    // Make the default key for FlxSprite.makeSolidColor() more readable.
-    key ??= 'solid#${color.toHexString(true, false)}:${width}x${height}';
-    return super.create(width, height, color, unique, key);
-  }
-
   /**
    * Forcefully clears any cache within the 'previous' staged cache that includes any
    * of the specified keywords while preserving assets that don't include those keywords.
@@ -299,7 +300,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   {
     // Called before a mass purge is performed on the StagedCache.
     // This specific graphic may not necessarily be purged.
-    if (graphic != null)
+    if (graphic != null && !stagedFlxGraphic.permanent.exists(assetPath))
     {
       graphic.persist = false;
     }

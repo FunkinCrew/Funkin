@@ -6,6 +6,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
  * Represents a three-stage asset cache, which is useful for managing and tracking assets that are in use by the game.
  */
 @:nullSafety
+@:allow(funkin.assets.FunkinAssetCache, funkin.assets.FunkinBitmapFrontend)
 class StagedCache<T> implements IStagedCache
 {
   /**
@@ -112,6 +113,8 @@ class StagedCache<T> implements IStagedCache
     cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cache($key)');
     #end
     if (asset == null) return;
+    if (permanent.exists(key)) return;
+
     if (previous.exists(key))
     {
       if (previous.get(key) != asset) onRemove.dispatch(key, asset); // We only call onRemove if the asset is different.
