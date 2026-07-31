@@ -7,6 +7,7 @@ import extension.agesignals.AgeSignalsResult;
 /**
  * Provides utility functions for working with `AgeSignals`.
  */
+@:unreflective
 class AgeSignalsUtil
 {
   /**

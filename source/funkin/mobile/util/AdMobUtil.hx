@@ -12,6 +12,7 @@ import lime.media.AudioManager;
  */
 @:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
+@:unreflective
 class AdMobUtil
 {
   /**
@@ -107,7 +108,8 @@ class AdMobUtil
    * @param size The size of the banner ad, defaulting to the standard banner size.
    * @param align The alignment of the banner ad, defaulting to the bottom of the screen.
    */
-  public static inline function addBanner(size:Int = AdmobBannerSize.BANNER, align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
+  public static inline function addBanner(size:Int = AdmobBannerSize.BANNER,
+    align:Int = AdmobBannerAlign.BOTTOM_CENTER):Void
   {
     #if FEATURE_MOBILE_IAP
     if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))

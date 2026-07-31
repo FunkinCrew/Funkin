@@ -12,6 +12,7 @@ import openfl.geom.Rectangle;
 /**
  * A Utility class to get mobile screen related informations.
  */
+@:unreflective
 class ScreenUtil
 {
   /**

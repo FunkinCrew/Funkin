@@ -21,6 +21,7 @@ import extension.iapcore.ios.IAPPurchaseState;
  * Provides utility functions for working with in-app purchases.
  */
 @:nullSafety
+@:unreflective
 class InAppPurchasesUtil
 {
   /**
