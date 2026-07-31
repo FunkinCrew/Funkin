@@ -13,6 +13,7 @@ import extension.iarcore.ios.IARIOS as IAR;
  * @see https://developer.android.com/guide/playcore/in-app-review
  */
 @:nullSafety
+@:unreflective
 class InAppReviewUtil
 {
   /**
