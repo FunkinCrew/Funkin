@@ -920,6 +920,12 @@ class Assets implements ConsoleClass
           Paths.image('ui/soundtray/bars-08'),
           Paths.image('ui/soundtray/bars-09'),
           Paths.image('ui/soundtray/bars-10'),
+
+          #if mobile
+          // Kevin and Michael.
+          Paths.image('ui/cursor/mobile/michael');
+          Paths.image('ui/cursor/mobile/kevin');
+          #end
         ]);
 
         // Medal popup
