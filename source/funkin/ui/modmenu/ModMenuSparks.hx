@@ -12,9 +12,11 @@ import funkin.graphics.FunkinSprite;
 class ModMenuSparks extends FunkinSprite
 {
   /**
-   * The point in the shock sound that plays when the sparks end.
+   * The point in the shock sound in milliseconds that plays when the sparks end.
+   *
+   * 83 / 24 = The amount of frames the electrocution sequence lasts at 24 FPS.
    */
-  public static final SHOCK_SOUND_END_TIME:Float = 3300;
+  public static final SHOCK_SOUND_END_TIME:Float = (83 / 24) * 1000;
 
   var _timer:FlxTimer = new FlxTimer();
   var _previousAnimation:String = '';
