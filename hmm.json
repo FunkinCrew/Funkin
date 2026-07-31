@@ -132,7 +132,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "9a86ccf33a951fc54ff2e75720eb3b62eaab523a",
+      "ref": "0376e9b19af9a4d91f9d9afc131a358467856a10",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -189,7 +189,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "ed1a8c1d309221ad9a00ed3b35da7cf7e8d2b2e8",
+      "ref": "115ed07f2118768ad9c28d245936ad391de5d5e2",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -202,7 +202,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "640efd4b4939f07c9a47c421ead7d766cb91ba8c",
+      "ref": "c7b500b5dbac782f80304cc62e28ca998a459d1a",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
