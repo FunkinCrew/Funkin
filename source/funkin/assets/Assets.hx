@@ -923,8 +923,7 @@ class Assets implements ConsoleClass
 
           #if mobile
           // Kevin and Michael.
-          Paths.image('ui/cursor/mobile/michael');
-          Paths.image('ui/cursor/mobile/kevin');
+          Paths.image('ui/cursor/mobile/michael'), Paths.image('ui/cursor/mobile/kevin'),
           #end
         ]);
 
