@@ -44,8 +44,29 @@ class ModMenuItemList extends FunkinSpriteGroup
   }
 
   public var viewportHeight:Float = 320;
+  public var displayScrollOffset:Float = 0;
+  var scrollAnimFrom:Float = 0;
+  var scrollAnimTo:Float = 0;
+  var scrollAnimTime:Float = 0;
+  var scrollAnimDuration:Float = 0;
   public var scrollOffset:Float = 0;
   public var targetScrollOffset:Float = 0;
+
+  public function animateScrollFrom(from:Float, duration:Float = 0.28):Void
+  {
+    if (from == scrollOffset || duration <= 0)
+    {
+      scrollAnimDuration = 0;
+      displayScrollOffset = scrollOffset;
+      return;
+    }
+
+    scrollAnimFrom = from;
+    scrollAnimTo = scrollOffset;
+    scrollAnimTime = 0;
+    scrollAnimDuration = duration;
+    displayScrollOffset = from;
+  }
 
   function get_selectedItemIndex():Int
   {
@@ -96,15 +117,26 @@ class ModMenuItemList extends FunkinSpriteGroup
   {
     super.update(elapsed);
 
+    if (scrollAnimDuration > 0)
+    {
+      scrollAnimTime += elapsed;
+      var t = Math.min(1, scrollAnimTime / scrollAnimDuration);
+      displayScrollOffset = scrollAnimFrom + (scrollAnimTo - scrollAnimFrom) * FlxEase.quartOut(t);
+      if (t >= 1) scrollAnimDuration = 0;
+      updateScrollbar();
+    }
+
     if (Math.abs(targetScrollOffset - scrollOffset) > 0.1)
     {
       var t = Math.min(1, SCROLL_LERP * elapsed);
       scrollOffset += (targetScrollOffset - scrollOffset) * t;
+      if (scrollAnimDuration <= 0) displayScrollOffset = scrollOffset;
       repositionItems();
     }
     else if (scrollOffset != targetScrollOffset)
     {
       scrollOffset = targetScrollOffset;
+      if (scrollAnimDuration <= 0) displayScrollOffset = scrollOffset;
       repositionItems();
     }
   }
@@ -479,6 +511,8 @@ class ModMenuItemList extends FunkinSpriteGroup
    */
   public function revealSlot(index:Int, itemCount:Int):Void
   {
+    var previousScroll:Float = scrollOffset;
+
     var itemHeight = 96;
     var itemTop = getModItemYPosForCount(index, itemCount) + scrollOffset;
     var top = getViewportTop();
@@ -491,6 +525,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     clampScroll(itemCount);
     scrollOffset = targetScrollOffset;
 
+    animateScrollFrom(previousScroll);
     updateScrollbar();
   }
 
@@ -547,7 +582,7 @@ class ModMenuItemList extends FunkinSpriteGroup
     if (thumbHeight > trackHeight) thumbHeight = trackHeight;
 
     var minScroll:Float = Math.min(0, viewSpan - contentHeight);
-    var frac:Float = (minScroll != 0) ? (scrollOffset / minScroll) : 0;
+    var frac:Float = (minScroll != 0) ? (displayScrollOffset / minScroll) : 0;
     if (frac < 0) frac = 0;
     if (frac > 1) frac = 1;
 

@@ -303,9 +303,9 @@ class ModMenuState extends MusicBeatState
     bf = new ModMenuCharacter(carBattery.x - 119, carBattery.y + 50, 'bf');
     bf.animation.onFinish.add((name:String) ->
     {
-      bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
+      bfBlink = blinkTimer + Math.random() + (Math.random() * 5);
     });
-    bfBlink = Math.random() + (Math.random() * 12);
+    bfBlink = Math.random() + (Math.random() * 6);
 
     bf.zIndex = 30;
     add(bf);
@@ -313,9 +313,9 @@ class ModMenuState extends MusicBeatState
     gf = new ModMenuCharacter(bf.x - 166, bf.y, 'gf', true);
     gf.animation.onFinish.add((name:String) ->
     {
-      gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
+      gfBlink = blinkTimer + Math.random() + (Math.random() * 9);
     });
-    gfBlink = Math.random() + 6 + (Math.random() * 15);
+    gfBlink = Math.random() + 6 + (Math.random() * 4);
 
     gf.zIndex = 25;
     add(gf);
@@ -949,7 +949,7 @@ class ModMenuState extends MusicBeatState
       rescanFolder();
     }
 
-    if (allowInput && !exitingMenu)
+    if (!exitingMenu)
     {
       blinkTimer += elapsed;
 
@@ -960,15 +960,15 @@ class ModMenuState extends MusicBeatState
 
       if (blinkTimer >= bfBlink && bf.animation.finished)
       {
-        bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
-
+        bfBlink = blinkTimer + Math.random() + (Math.random() * 6);
+        trace('BF blink! Next blink at ' + bfBlink);
         bf.playAnimation(IDLE, true);
       }
 
       if (blinkTimer >= gfBlink && gf.animation.finished)
       {
-        gfBlink = blinkTimer + Math.random() + (Math.random() * 15);
-
+        gfBlink = blinkTimer + Math.random() + (Math.random() * 8);
+        trace('GF blink! Next blink at ' + gfBlink);
         gf.playAnimation(IDLE, true);
       }
     }
