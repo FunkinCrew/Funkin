@@ -872,7 +872,7 @@ class ModMenuState extends MusicBeatState
       catch (e:Dynamic)
       {
         trace('Failed to move file: ' + e);
-        WindowUtil.showError('Failed to move file (PLACEHOLDER)', 'Could not move zip file to mods folder. Check logs for details.');
+        WindowUtil.showError('Failed to move file', 'Could not move zip file to mods folder. Check logs for details.');
         return;
       }
 
@@ -892,7 +892,7 @@ class ModMenuState extends MusicBeatState
     {
       if (!FileUtil.pathExists(Path.join([path, PolymodConfig.modMetadataFile])))
       {
-        WindowUtil.showError('Failed to move folder (PLACEHOLDER)', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
+        WindowUtil.showError('Failed to move folder', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
         return;
       }
 
@@ -903,7 +903,7 @@ class ModMenuState extends MusicBeatState
       catch (e:Dynamic)
       {
         trace('Failed to move folder: ' + e);
-        WindowUtil.showError('Failed to move folder (PLACEHOLDER)', 'Could not move folder to mods folder. Check logs for details.');
+        WindowUtil.showError('Failed to move folder', 'Could not move folder to mods folder. Check logs for details.');
         return;
       }
 
@@ -920,7 +920,7 @@ class ModMenuState extends MusicBeatState
       handleSelection();
     }
     else
-      WindowUtil.showWarning('Invalid file type (PLACEHOLDER)', 'Only .zip files and mod folders are supported for mod installation.');
+      WindowUtil.showWarning('Invalid file type', 'Only .zip files and mod folders are supported for mod installation.');
   }
 
   var secondCounter:Float = 0;
@@ -2026,7 +2026,7 @@ class ModMenuState extends MusicBeatState
       else
       {
         WindowUtil.showError(
-          'Missing dependency (PLACEHOLDER)',
+          'Missing dependency',
           'Could not find dependency mod with ID: ' + dependencyId + '. Please make sure all required mods are installed.'
         );
 
