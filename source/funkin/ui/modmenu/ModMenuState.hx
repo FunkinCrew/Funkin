@@ -586,15 +586,6 @@ class ModMenuState extends MusicBeatState
 
     changeCharacters();
 
-    #if FEATURE_TOUCH_CONTROLS
-    addBackButton(0, 0, FlxColor.WHITE, backToMainMenu);
-
-    backButton.onConfirmStart.add(function()
-    {
-      allowInput = false;
-    });
-    #end
-
     ambience.initialize();
 
     disabledModItems.snapScroll();
@@ -1658,6 +1649,10 @@ class ModMenuState extends MusicBeatState
     {
       selection = Done;
     }
+    else if (TouchUtil.overlapsComplex(buttonBackToMenu) && selection != BackToMenu)
+    {
+      selection = BackToMenu;
+    }
 
     if (TouchUtil.pressAction(hitboxOpenFolder))
     {
@@ -1670,11 +1665,24 @@ class ModMenuState extends MusicBeatState
         openFolderAnimator.playAnimation('deselect');
       };
     }
+
     if (TouchUtil.pressAction(buttonDone))
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
       playElectrocutionSequence();
+    }
+
+    if (TouchUtil.overlapsComplex(buttonBackToMenu) && TouchUtil.justPressed)
+    {
+      playBackButtonAnimation('press', true);
+    }
+
+    if (buttonBackToMenu.animation.name == 'press' && TouchUtil.justReleased)
+    {
+      backPressStage = 2;
+
+      playBackButtonAnimation('confirm', true);
     }
   }
   #end
