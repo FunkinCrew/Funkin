@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.FlxState;
+import funkin.audio.FunkinSound;
 
 class ModMenuItemList extends FunkinSpriteGroup
 {
@@ -293,6 +294,8 @@ class ModMenuItemList extends FunkinSpriteGroup
       index = 0;
     }
 
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
     selectModItem(modItems[index], false, -1);
     scrollBy(getScrollDeltaToReveal(selectedModItem));
     return true;
@@ -309,6 +312,8 @@ class ModMenuItemList extends FunkinSpriteGroup
       if (!allowWrap) return false;
       index = modItems.length - 1;
     }
+
+    FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
     selectModItem(modItems[index], false, 1);
     scrollBy(getScrollDeltaToReveal(selectedModItem));
