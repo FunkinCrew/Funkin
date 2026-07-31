@@ -306,7 +306,7 @@ class ModMenuState extends MusicBeatState
     add(gfWire);
 
     bf = new ModMenuCharacter(846, 120, 'bf');
-    bf.anim.onFinish.add((name:String) ->
+    bf.animation.onFinish.add((name:String) ->
     {
       bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
     });
@@ -316,7 +316,7 @@ class ModMenuState extends MusicBeatState
     add(bf);
 
     gf = new ModMenuCharacter(680, 120, 'gf', true);
-    gf.anim.onFinish.add((name:String) ->
+    gf.animation.onFinish.add((name:String) ->
     {
       gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
     });
@@ -937,7 +937,7 @@ class ModMenuState extends MusicBeatState
   var gfBlink:Float = 0;
   var crispyTimer:Float = 0;
   var allowInput:Bool = true;
-  var playedCough:Bool = false;
+  var playedCrispySFX:Bool = false;
   var backTimer:Float = 0;
 
   override public function update(elapsed:Float):Void
@@ -966,14 +966,14 @@ class ModMenuState extends MusicBeatState
         blinkTimer = 0;
       }
 
-      if (blinkTimer >= bfBlink && bf.anim.finished)
+      if (blinkTimer >= bfBlink && bf.animation.finished)
       {
         bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
 
         bf.playAnimation(IDLE, true);
       }
 
-      if (blinkTimer >= gfBlink && gf.anim.finished)
+      if (blinkTimer >= gfBlink && gf.animation.finished)
       {
         gfBlink = blinkTimer + Math.random() + (Math.random() * 15);
 
@@ -987,7 +987,16 @@ class ModMenuState extends MusicBeatState
     {
       crispyTimer += elapsed;
 
-      if (crispyTimer >= 0.3 && gf.anim.paused) gf.anim.resume();
+      if (bf.getCurrentAnimation() == CRISPY && gf.getCurrentAnimation() == CRISPY)
+      {
+        if (crispyTimer >= 0.7 && !playedCrispySFX)
+        {
+          playedCrispySFX = true;
+          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/crispy').toString());
+        }
+      }
+
+      if (crispyTimer >= 0.3 && gf.animation.paused) gf.animation.resume();
 
       if (crispyTimer >= 2.5)
       {
@@ -1115,8 +1124,6 @@ class ModMenuState extends MusicBeatState
     dropShadowLayer.renderer.blacklistSprite(carBattery);
     dropShadowLayer.renderer.blacklistSprite(fgWires);
 
-    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/electrocute').toString());
-
     shockTimer.start(81 / 24, (_) ->
     {
       bf.shader = whiteColor;
@@ -1147,6 +1154,8 @@ class ModMenuState extends MusicBeatState
 
         smokeCloud.visible = true;
         smokeCloud.animation.play('wholeTimeline');
+
+        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/smoke-cloud').toString());
 
         sparks.endElectrocution();
 

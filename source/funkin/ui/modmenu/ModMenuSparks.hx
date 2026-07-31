@@ -1,7 +1,8 @@
 package funkin.ui.modmenu;
 
-import funkin.graphics.FunkinSprite;
 import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
 
 /**
  * The sparks that appear in the Mod Menu.
@@ -10,9 +11,15 @@ import flixel.util.FlxTimer;
 @:nullSafety
 class ModMenuSparks extends FunkinSprite
 {
+  /**
+   * The point in the shock sound that plays when the sparks end.
+   */
+  public static final SHOCK_SOUND_END_TIME:Float = 3300;
+
   var _timer:FlxTimer = new FlxTimer();
   var _previousAnimation:String = '';
   var _randomAnimations:Array<String> = [];
+  var shockSound:Null<FunkinSound> = null;
 
   public function new()
   {
@@ -49,6 +56,8 @@ class ModMenuSparks extends FunkinSprite
     this.visible = true;
 
     animation.play('electrocution');
+
+    shockSound = FunkinSound.playOnce(Paths.sound('ui/mods/sounds/sparks/electrocution').toString());
   }
 
   /**
@@ -57,6 +66,11 @@ class ModMenuSparks extends FunkinSprite
   public function endElectrocution():Void
   {
     animation.play('end');
+
+    if (shockSound != null)
+    {
+      shockSound.time = SHOCK_SOUND_END_TIME;
+    }
   }
 
   /**
@@ -68,6 +82,8 @@ class ModMenuSparks extends FunkinSprite
 
     this.visible = true;
     animation.play(randomAnimation);
+
+    FunkinSound.playOnce(Paths.sound('ui/mods/sounds/sparks/spark-${randomAnimation}').toString());
 
     _previousAnimation = randomAnimation;
   }
@@ -102,5 +118,13 @@ class ModMenuSparks extends FunkinSprite
 
     anim.addByFrameLabel('electrocution', 'electrocution', 24);
     anim.addByFrameLabel('end', 'end', 24, false);
+  }
+
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    if (_timer.active) _timer.cancel();
+    if (shockSound != null) shockSound.destroy();
   }
 }
