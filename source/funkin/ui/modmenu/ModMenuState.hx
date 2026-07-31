@@ -19,6 +19,7 @@ import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
 import funkin.save.Save;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.modmenu.ModMenuCharacter.CharacterAnimation;
@@ -193,18 +194,7 @@ class ModMenuState extends MusicBeatState
     topText.zIndex = 10;
     add(topText);
 
-    #if FEATURE_TOUCH_CONTROLS
-    var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Tap and hold on a mod to drag it');
-    #else
-    var dragText:FlxText = new FlxText(FlxG.width * 0.077, FlxG.height * 0.13, FlxG.width, 'Drag packs onto this window to add new stuff');
-    #end
-    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32);
-    dragText.scale.set(1, 0.8);
-    dragText.letterSpacing = 5;
-    dragText.zIndex = 10;
-    add(dragText);
-
-    leftRectangle.x = FlxG.width * 0.047;
+    leftRectangle.x = FlxG.width * 0.047 + FullScreenScaleMode.gameCutoutSize.x / 2.5;
     leftRectangle.y = FlxG.height * 0.19;
     leftRectangle.scale.set(0.64, 0.67);
     leftRectangle.loadTexture('ui/mods/box');
@@ -212,7 +202,8 @@ class ModMenuState extends MusicBeatState
     leftRectangle.zIndex = 10;
     add(leftRectangle);
 
-    rightRectangle.x = leftRectangle.x + leftRectangle.width + 35;
+    final distanceBetweenRectangles:Int = 35;
+    rightRectangle.x = leftRectangle.x + leftRectangle.width + distanceBetweenRectangles;
     rightRectangle.y = leftRectangle.y;
     rightRectangle.scale.set(0.64, 0.67);
     rightRectangle.loadTexture('ui/mods/box');
@@ -220,13 +211,16 @@ class ModMenuState extends MusicBeatState
     rightRectangle.zIndex = 10;
     add(rightRectangle);
 
-    bgWires = new FunkinSprite().loadTexture('ui/mods/bgwires');
-    bgWires.x = FlxG.width * 0.81;
-    bgWires.y = FlxG.height * 0.33;
-    bgWires.scale.set(0.7, 0.7);
-    bgWires.updateHitbox();
-    bgWires.zIndex = 10;
-    add(bgWires);
+    final dragTextWidth:Float = leftRectangle.width + rightRectangle.width + distanceBetweenRectangles;
+    var dragText:FlxText = new FlxText(leftRectangle.x, FlxG.height * 0.13, dragTextWidth, 'Drag packs onto this window to add new stuff');
+    #if FEATURE_TOUCH_CONTROLS
+    dragText.text = 'Tap and hold on a mod to drag it';
+    #end
+    dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+    dragText.scale.set(1, 0.8);
+    dragText.letterSpacing = 5;
+    dragText.zIndex = 10;
+    add(dragText);
 
     refreshModList(false);
 
@@ -259,7 +253,8 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.scale.set(0.7, 0.7);
     buttonBackToMenu.updateHitbox();
 
-    buttonBackToMenu.x = disabledModItems.x - 50;
+    buttonBackToMenu.x = disabledModItems.x - 50 - FullScreenScaleMode.gameCutoutSize.x / 10;
+    trace(FullScreenScaleMode.gameCutoutSize.x / 10);
     buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2) + 3;
 
     buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24);
@@ -286,7 +281,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.zIndex = 10;
     add(buttonBackToMenu);
 
-    carBattery = new FunkinSprite(965, 70).loadSparrow('ui/mods/carbattery');
+    carBattery = new FunkinSprite(rightRectangle.x + 475.6, FlxG.height * 0.11).loadSparrow('ui/mods/carbattery');
     carBattery.animation.addByPrefix('idle', 'idle', 24);
     carBattery.animation.play('idle');
     carBattery.animation.pause();
@@ -295,7 +290,7 @@ class ModMenuState extends MusicBeatState
     carBattery.zIndex = 20;
     add(carBattery);
 
-    gfWire = new FunkinSprite(848, 52).loadSparrow('ui/mods/gfwire');
+    gfWire = new FunkinSprite(carBattery.x - 117, carBattery.y - 18).loadSparrow('ui/mods/gfwire');
     gfWire.animation.addByPrefix('idle', 'idle0', 24, false);
     gfWire.animation.addByPrefix('idle-emptychair', 'idle empty chair0', 24, false);
     gfWire.animation.addByPrefix('shock', 'shock', 24, false);
@@ -305,7 +300,7 @@ class ModMenuState extends MusicBeatState
     gfWire.zIndex = carBattery.zIndex + 1;
     add(gfWire);
 
-    bf = new ModMenuCharacter(846, 120, 'bf');
+    bf = new ModMenuCharacter(carBattery.x - 119, carBattery.y + 50, 'bf');
     bf.animation.onFinish.add((name:String) ->
     {
       bfBlink = blinkTimer + Math.random() + (Math.random() * 12);
@@ -315,7 +310,7 @@ class ModMenuState extends MusicBeatState
     bf.zIndex = 30;
     add(bf);
 
-    gf = new ModMenuCharacter(680, 120, 'gf', true);
+    gf = new ModMenuCharacter(bf.x - 166, bf.y, 'gf', true);
     gf.animation.onFinish.add((name:String) ->
     {
       gfBlink = blinkTimer + Math.random() + 6 + (Math.random() * 15);
@@ -325,7 +320,13 @@ class ModMenuState extends MusicBeatState
     gf.zIndex = 25;
     add(gf);
 
-    fgWires = new FunkinSprite(702, 30).loadTextureAtlas('ui/mods/foreground-wires');
+    bgWires = new FunkinSprite(carBattery.x + 75, carBattery.y + 170).loadTexture('ui/mods/bgwires');
+    bgWires.scale.set(0.7, 0.7);
+    bgWires.updateHitbox();
+    bgWires.zIndex = 10;
+    add(bgWires);
+
+    fgWires = new FunkinSprite(bf.x - 144, bf.y - 90).loadTextureAtlas('ui/mods/foreground-wires');
     fgWires.anim.addByFrameLabel('idle', 'idle', 24);
     fgWires.anim.addByFrameLabel('idle-pinhead', 'idle pinhead', 24);
     fgWires.anim.addByFrameLabel('shock', 'shock', 24);
@@ -363,7 +364,7 @@ class ModMenuState extends MusicBeatState
     add(crispySmokeBF);
     add(crispySmokeGF);
 
-    smokeCloud = new FunkinSprite(550, -450).loadTextureAtlas('ui/mods/smoke-cloud', {
+    smokeCloud = new FunkinSprite(carBattery.x - 415, -450).loadTextureAtlas('ui/mods/smoke-cloud', {
       useRenderTexture: true
     });
     smokeCloud.anim.addBySymbol('wholeTimeline', smokeCloud.getDefaultSymbol(), smokeCloud.library.frameRate, false);
@@ -377,7 +378,7 @@ class ModMenuState extends MusicBeatState
     sparks.zIndex = smokeCloud.zIndex + 1;
     add(sparks);
 
-    buttonDone.x = FlxG.width * 0.68;
+    buttonDone.x = carBattery.x - 100;
     buttonDone.y = FlxG.height * 0.89;
     buttonDone.scale.set(0.65, 0.65);
     buttonDone.loadTexture('ui/mods/done');
@@ -385,7 +386,7 @@ class ModMenuState extends MusicBeatState
     buttonDone.zIndex = 1000;
     add(buttonDone);
 
-    buttonOpenFolder.x = FlxG.width * 0.19;
+    buttonOpenFolder.x = leftRectangle.x + 180;
     buttonOpenFolder.y = FlxG.height * 0.89;
     buttonOpenFolder.scale.set(0.65, 0.65);
     buttonOpenFolder.loadTexture('ui/mods/open-folder');

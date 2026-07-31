@@ -526,9 +526,6 @@ class ModMenuCharacter extends FunkinSprite
     output.x -= currentAnimationOffset[0] - globalOffsets[0];
     output.y -= currentAnimationOffset[1] - globalOffsets[1];
 
-    // Small offset for mobile!
-    output.x += FullScreenScaleMode.gameCutoutSize.x / 2;
-
     return output;
   }
 }
