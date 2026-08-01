@@ -1422,7 +1422,7 @@ class Project extends HXProject
 
     if (FEATURE_MOBILE_AGESIGNALS.isEnabled(this))
     {
-      addHaxelib('extension-agesignals'); // WebView Extension
+      addHaxelib('extension-agesignals'); // Age-Signals Extension
     }
   }
 
@@ -1442,7 +1442,7 @@ class Project extends HXProject
     {
       exclude = exclude.concat(EXCLUDE_ASSETS_CENSORED);
     }
-    else
+    else if (isMobile()) // because it *has* to be excluded on mobile due to Google Play Store compliance
     {
       exclude = exclude.concat(EXCLUDE_ASSETS_UNCENSORED);
     }
