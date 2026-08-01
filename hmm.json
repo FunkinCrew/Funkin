@@ -63,8 +63,7 @@
     {
       "name": "flixel",
       "type": "git",
-      "dir": null,
-      "ref": "a05db74b890a711d877384b4bb87b54fa519a4c6",
+      "ref": "c753329d6feea5b5cb7c52690de4aad96892becd",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
