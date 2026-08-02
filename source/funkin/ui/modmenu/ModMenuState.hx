@@ -254,7 +254,6 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.updateHitbox();
 
     buttonBackToMenu.x = disabledModItems.x - 50 - FullScreenScaleMode.gameCutoutSize.x / 10;
-    trace(FullScreenScaleMode.gameCutoutSize.x / 10);
     buttonBackToMenu.y = topText.y + (topText.height / 2) - (buttonBackToMenu.height / 2) + 3;
 
     buttonBackToMenu.anim.addByFrameLabel('idle', 'default', 24);
@@ -375,6 +374,7 @@ class ModMenuState extends MusicBeatState
     add(smokeCloud);
 
     sparks = new ModMenuSparks();
+    sparks.x = FullScreenScaleMode.gameCutoutSize.x / 2.5;
     sparks.zIndex = smokeCloud.zIndex + 1;
     add(sparks);
 
