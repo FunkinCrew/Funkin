@@ -7,16 +7,8 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
-#if cpp
-import hxgamemode.GamemodeClient;
-#end
-
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
-#end
-
-#if (windows && cpp)
-using funkin.util.WindowUtil;
 #end
 
 @:dox(hide)
@@ -55,7 +47,7 @@ class ApplicationMain
   public static function create(config):Void
   {
     #if (linux && cpp)
-    GamemodeClient.request_start();
+    hxgamemode.GamemodeClient.request_start();
     #end
 
     ::if (WIN_ORIENTATION != "auto")::
@@ -173,7 +165,7 @@ class ApplicationMain
     #end
 
     #if (linux && cpp)
-    GamemodeClient.request_end();
+    hxgamemode.GamemodeClient.request_end();
     #end
   }
 
