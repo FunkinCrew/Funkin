@@ -1171,17 +1171,27 @@ class ModMenuState extends MusicBeatState
     dropShadowCharacters.renderer.blacklistSprite(carBattery);
     dropShadowCharacters.renderer.blacklistSprite(fgWires);
 
+    var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, 0xFF232327);
+    blackFlash.zIndex = 0;
+    blackFlash.camera = camCharacters;
+    blackFlash.visible = false;
+    add(blackFlash);
+    refresh();
+
     shockTimer.start(81 / 24, (_) ->
     {
       bf.shader = whiteColor;
       gf.shader = whiteColor;
 
-      menuBG.color = 0xFF232327;
+      blackFlash.visible = true;
 
       carBattery.visible = false;
       gfWire.visible = false;
       fgWires.visible = false;
       bgWires.visible = false;
+
+      buttonDone.visible = false;
+      buttonOpenFolder.visible = false;
 
       dropShadowCharacters.visible = false;
       dropShadowCharacters.renderer.whitelistSprite(gfWire);
@@ -1190,11 +1200,18 @@ class ModMenuState extends MusicBeatState
 
       FlxTimer.wait(2 / 24, () ->
       {
-        FlxG.camera.flash(0xFFFFFFFF, 1 / 24);
+        FlxG.camera.flash(0xFFFFFFFF, 1 / 24, () ->
+        {
+          blackFlash.destroy();
+          remove(blackFlash);
+        });
 
         changeCharacters();
 
         FlxTween.color(menuBG, 1, 0xFF232327, bgColor);
+
+        buttonDone.visible = true;
+        buttonOpenFolder.visible = true;
 
         carBattery.visible = true;
         carBattery.animation.reset();
@@ -2011,13 +2028,15 @@ class ModMenuState extends MusicBeatState
 
     InitState.resetTitleState();
 
-    var blackScreen:FunkinSprite = new FunkinSprite();
-    blackScreen.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    buttonDone.visible = false;
+    buttonOpenFolder.visible = false;
+
+    var blackScreen:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     blackScreen.scrollFactor.set(0, 0);
-    blackScreen.alpha = 1;
     blackScreen.camera = camHUD;
     blackScreen.zIndex = 1000;
     add(blackScreen);
+    refresh();
 
     FlxG.switchState(() -> new HotReloadState());
 
