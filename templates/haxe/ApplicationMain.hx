@@ -80,17 +80,12 @@ class ApplicationMain
     });
     #end
 
-    #if !disable_preloader_assets
-    ManifestResources.init(config);
-    #end
-
     ::foreach windows::
     var attributes:lime.ui.WindowAttributes = {
       allowHighDPI: ::allowHighDPI::,
       alwaysOnTop: ::alwaysOnTop::,
       transparent: ::transparent::,
       borderless: ::borderless::,
-      // display: ::display::,
       element: null,
       frameRate: ::fps::,
       #if !web
@@ -138,10 +133,6 @@ class ApplicationMain
           }
         }
       }
-
-      #if sys
-      lime.system.System.__parseArguments(attributes);
-      #end
     }
 
     app.createWindow(attributes);
@@ -160,6 +151,8 @@ class ApplicationMain
     preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
 
     #if !disable_preloader_assets
+    ManifestResources.init(config);
+
     for (library in ManifestResources.preloadLibraries)
     {
       app.preloader.addLibrary(library);
@@ -323,47 +316,3 @@ class ApplicationMain
   }
   #end
 }
-
-#if !macro
-@:build(DocumentClass.build())
-@:keep @:dox(hide) class DocumentClass extends ::APP_MAIN:: {}
-#else
-class DocumentClass
-{
-  macro public static function build():Array<Field>
-  {
-    var classType = Context.getLocalClass().get();
-    var searchTypes = classType;
-
-    while (searchTypes != null)
-    {
-      if (searchTypes.module == "openfl.display.DisplayObject")
-      {
-        var fields = Context.getBuildFields();
-
-        var method = macro
-        {
-          current.addChild(this);
-          super();
-          dispatchEvent(new openfl.events.Event(openfl.events.Event.ADDED_TO_STAGE, false, false));
-        }
-
-        fields.push({ name: "new", access: [ APublic ], kind: FFun({ args: [ { name: "current", opt: false, type: macro :openfl.display.DisplayObjectContainer, value: null } ], expr: method, params: [], ret: macro :Void }), pos: Context.currentPos() });
-
-        return fields;
-      }
-
-      if (searchTypes.superClass != null)
-      {
-        searchTypes = searchTypes.superClass.t.get();
-      }
-      else
-      {
-        searchTypes = null;
-      }
-    }
-
-    return null;
-  }
-}
-#end
