@@ -97,11 +97,6 @@ class ModMenuCharacter extends FunkinSprite
   public var smokeScale:Array<Float> = [];
 
   /**
-   * The list of modded assets for this character.
-   */
-  public var jsons:Array<String> = [];
-
-  /**
    * The data for this character.
    */
   var data:Null<ModMenuCharacterData> = null;
@@ -262,6 +257,8 @@ class ModMenuCharacter extends FunkinSprite
    */
   public function playAnimation(name:CharacterAnimation, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
   {
+    if ((getCurrentAnimation() == CRISPY && name != CRISPY_LOOP) && !force) return;
+
     if (name == ELECTROCUTED)
     {
       setLightningPinhead();
@@ -353,11 +350,6 @@ class ModMenuCharacter extends FunkinSprite
     {
       characterId = StringTools.replace(characterId, 'mod-', '');
     }
-    else
-    {
-      @:privateAccess
-      if (!isGF) jsons = PolymodAssets.listInMod(modId, TEXT);
-    }
 
     previousModId = currentModId;
 
@@ -438,16 +430,13 @@ class ModMenuCharacter extends FunkinSprite
     switch (data?.renderType ?? 'animateatlas')
     {
       case 'animateatlas':
-        this.loadTextureAtlas(assetPath, getAtlasSettings(), modId, jsons);
+        this.loadTextureAtlas(assetPath, getAtlasSettings(), modId);
 
-      // BF and GF by default use animate atlases
-      // We can ignore the mod IDs for the sparrow and packer render types, since
-      // only animate atlas exports exist in base game
       case 'sparrow':
-        this.loadSparrow(assetPath);
+        this.loadSparrow(assetPath, modId);
 
       case 'packer':
-        this.loadPacker(assetPath);
+        this.loadPacker(assetPath, modId);
     }
   }
 

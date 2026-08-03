@@ -676,8 +676,6 @@ class ModMenuState extends MusicBeatState
     bf.prepareToSwitch('mod-bf', modIds);
 
     gf.previousModId = bf.previousModId;
-    gf.jsons = bf.jsons;
-
     gf.prepareToSwitch('mod-gf', modIds);
 
     // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
@@ -1017,15 +1015,13 @@ class ModMenuState extends MusicBeatState
       if (blinkTimer >= bfBlink && bf.animation.finished)
       {
         bfBlink = blinkTimer + Math.random() + (Math.random() * 6);
-        trace('BF blink! Next blink at ' + bfBlink);
-        bf.playAnimation(IDLE, true);
+        bf.playAnimation(IDLE);
       }
 
       if (blinkTimer >= gfBlink && gf.animation.finished)
       {
         gfBlink = blinkTimer + Math.random() + (Math.random() * 8);
-        trace('GF blink! Next blink at ' + gfBlink);
-        gf.playAnimation(IDLE, true);
+        gf.playAnimation(IDLE);
       }
     }
 

@@ -375,7 +375,7 @@ class FunkinSprite extends FlxAnimate
    * @param modId You can load a texture atlas from a specific mod with this.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, modId:String = '', ?jsonsAr:Array<String>):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, modId:String = ''):FunkinSprite
   {
     if (key == null)
     {
@@ -391,43 +391,35 @@ class FunkinSprite extends FlxAnimate
     this.postStageMatrixApply = settings.postStageMatrixApply ?? false;
     this.useRenderTexture = settings.useRenderTexture ?? false;
 
-    if (modId != '' && jsonsAr != null)
+    if (modId != '')
     {
-      var assetPath:String = Paths.animateAtlas(key).toString();
-      var jsons:Array<String> = jsonsAr.filter((str) -> str.contains(assetPath.substring(7))).map((str) -> str.substring(0, str.length - '.json'.length));
-
+      var spritemapCount:Int = 1;
       var spritemaps:Array<SpritemapInput> = [];
-      var animationJson:Null<String> = null;
+      var animationJson:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$key/Animation.json', modId);
 
-      for (json in jsons)
+      while (true)
       {
-        if (json.endsWith('Animation'))
-        {
-          animationJson = Polymod.assetLibrary.getTextDirectly('assets/$json.json', modId);
-          jsons.remove(json);
-          break;
-        }
-      }
+        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$key/spritemap$spritemapCount.png', modId);
+        var json:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$key/spritemap$spritemapCount.json', modId);
 
-      for (json in jsons)
-      {
-        var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly('assets/$json.png', modId);
-        if (bitmap == null) continue;
-
-        var jsonString:Null<String> = Polymod.assetLibrary.getTextDirectly('assets/$json.json', modId);
-        if (jsonString == null) continue;
+        if (json == null || bitmap == null) break;
 
         // Null-safety kinda dumb #2
         var bNotNull:BitmapData = bitmap;
-        var jNotNull:String = jsonString;
+        var jNotNull:String = json;
 
         spritemaps.push({
           source: bNotNull,
           json: jNotNull
         });
+
+        spritemapCount++;
       }
 
-      if (animationJson == null) throw 'Could not find Animation.json in path "$assetPath" from mod "$modId"';
+      if (animationJson == null)
+      {
+        throw 'Could not find Animation.json in path "$key" from mod "$modId"';
+      }
 
       frames = FlxAnimateFrames.fromAnimate(animationJson, spritemaps, settings.metadataJson, settings.cacheKey, settings.uniqueInCache, {
         swfMode: settings.swfMode,
@@ -435,21 +427,29 @@ class FunkinSprite extends FlxAnimate
         filterQuality: settings.filterQuality,
         onSymbolCreate: settings.onSymbolCreate
       });
-
-      if (frames == null)
-      {
-        throw 'Could not load FlxAnimateFrames from path "$assetPath", from mod "$modId"';
-      }
     }
     else
     {
       frames = Paths.getAnimateAtlas(key, settings);
-      if (frames == null)
-      {
-        throw 'Could not load FlxAnimateFrames from path "$key"';
-      }
-      __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
     }
+
+    if (frames == null)
+    {
+      var msg:String = 'Could not load FlxAnimateFrames from path "$key"';
+
+      if (modId != '')
+      {
+        msg += ' with mod "$modId".';
+      }
+      else
+      {
+        msg += '.';
+      }
+
+      throw msg;
+    }
+
+    __backwardsCompatibility = funkin.modding.compat.AnimateAtlas.needsBackwardsCompat(key);
 
     return this;
   }
@@ -457,9 +457,10 @@ class FunkinSprite extends FlxAnimate
   /**
    * Load an animated texture (Sparrow atlas spritesheet) as the sprite's texture.
    * @param key The key of the texture to load.
+   * @param modId The mod ID to load the texture from.
    * @return This sprite, for chaining.
    */
-  public function loadSparrow(key:String):FunkinSprite
+  public function loadSparrow(key:String, modId:String = ''):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
     if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey))
@@ -468,7 +469,7 @@ class FunkinSprite extends FlxAnimate
       FlxG.log.warn('Sparrow texture not cached, may experience stuttering! $graphicKey');
     }
 
-    this.frames = Paths.getSparrowAtlas(key);
+    this.frames = Paths.getSparrowAtlas(key, null, modId);
 
     return this;
   }
@@ -478,7 +479,7 @@ class FunkinSprite extends FlxAnimate
    * @param key The key of the texture to load.
    * @return This sprite, for chaining.
    */
-  public function loadPacker(key:String):FunkinSprite
+  public function loadPacker(key:String, modId:String = ''):FunkinSprite
   {
     var graphicKey:AssetPath = Paths.image(key);
     if (!funkin.assets.Assets.isFlxGraphicCached(graphicKey))
@@ -487,7 +488,7 @@ class FunkinSprite extends FlxAnimate
       FlxG.log.warn('Packer texture not cached, may experience stuttering! $graphicKey');
     }
 
-    this.frames = Paths.getPackerAtlas(key);
+    this.frames = Paths.getPackerAtlas(key, null, modId);
 
     return this;
   }

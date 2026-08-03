@@ -1,11 +1,13 @@
 package funkin;
 
-import flixel.graphics.frames.FlxAtlasFrames;
 import animate.FlxAnimateFrames;
+import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
-import openfl.utils.AssetType;
 import funkin.util.macro.ConsoleMacro;
 import haxe.io.Path;
+import openfl.display.BitmapData;
+import openfl.utils.AssetType;
+import polymod.Polymod;
 
 using StringTools;
 
@@ -13,6 +15,7 @@ using StringTools;
  * A utility class which handles determining asset paths.
  */
 @:nullSafety
+@:access(polymod.Polymod)
 class Paths implements ConsoleClass
 {
   @:deprecated("You don't need to call this function anymore.")
@@ -168,9 +171,27 @@ class Paths implements ConsoleClass
 
   // deprecated("Use funkin.assets.Assets.getSparrowAtlas() instead")
 
-  public static function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
+  public static function getSparrowAtlas(key:String, ?library:String, modId:String = ''):FlxAtlasFrames
   {
-    return FlxAtlasFrames.fromSparrow(Paths.image(key, library), Paths.xml(key, library));
+    var imagePath:String = image(key, library);
+    var xmlPath:String = xml(key, library);
+
+    if (modId != '')
+    {
+      var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly(imagePath, modId);
+      var xml:Null<String> = Polymod.assetLibrary.getTextDirectly(xmlPath, modId);
+
+      if (bitmap == null || xml == null)
+      {
+        throw 'Could not load FlxAtlasFrames from path "$key" with mod "$modId"';
+      }
+
+      return FlxAtlasFrames.fromSparrow(bitmap, xml);
+    }
+    else
+    {
+      return FlxAtlasFrames.fromSparrow(imagePath, xmlPath);
+    }
   }
 
   // deprecated("Use funkin.assets.Assets.getAnimateAtlas() instead")
@@ -182,11 +203,11 @@ class Paths implements ConsoleClass
 
     if (assetLibrary != '')
     {
-      graphicKey = Paths.animateAtlas(key, assetLibrary);
+      graphicKey = animateAtlas(key, assetLibrary);
     }
     else
     {
-      graphicKey = Paths.animateAtlas(key);
+      graphicKey = animateAtlas(key);
     }
 
     var validatedSettings:AtlasSpriteSettings = {
@@ -226,9 +247,27 @@ class Paths implements ConsoleClass
 
   // deprecated("Use funkin.assets.Assets.getPackerAtlas() instead")
 
-  public static function getPackerAtlas(key:String, ?library:String):FlxAtlasFrames
+  public static function getPackerAtlas(key:String, ?library:String, modId:String = ''):FlxAtlasFrames
   {
-    return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), txt(key, library));
+    var imagePath:String = image(key, library);
+    var txtPath:String = txt(key, library);
+
+    if (modId != '')
+    {
+      var bitmap:Null<BitmapData> = Polymod.assetLibrary.getBitmapDataDirectly(imagePath, modId);
+      var txt:Null<String> = Polymod.assetLibrary.getTextDirectly(txtPath, modId);
+
+      if (bitmap == null || txt == null)
+      {
+        throw 'Could not load FlxAtlasFrames from path "$key" with mod "$modId"';
+      }
+
+      return FlxAtlasFrames.fromSpriteSheetPacker(bitmap, txt);
+    }
+    else
+    {
+      return FlxAtlasFrames.fromSpriteSheetPacker(imagePath, txtPath);
+    }
   }
 }
 
