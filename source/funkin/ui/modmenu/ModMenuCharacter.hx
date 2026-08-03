@@ -270,14 +270,14 @@ class ModMenuCharacter extends FunkinSprite
 
       if (ModMenuState.instance != null)
       {
-        ModMenuState.instance.dropShadowLayer.renderer.blacklistSprite(this);
+        ModMenuState.instance.dropShadowCharacters.renderer.blacklistSprite(this);
       }
     }
     else
     {
       if (ModMenuState.instance != null)
       {
-        ModMenuState.instance.dropShadowLayer.renderer.whitelistSprite(this);
+        ModMenuState.instance.dropShadowCharacters.renderer.whitelistSprite(this);
       }
     }
 

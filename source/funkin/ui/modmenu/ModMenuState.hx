@@ -12,6 +12,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.InitState;
 import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.framebuffer.DropShadowLayer;
 import funkin.graphics.shaders.PureColor;
@@ -80,10 +81,32 @@ class ModMenuState extends MusicBeatState
   public var ambience:ModMenuAmbience;
 
   /**
-   * The drop shadow layer instance for this menu.
-   * Handles a drop shadow effect for some elements.
+   * The drop shadow layer instance for UI elements.
    */
-  public var dropShadowLayer:DropShadowLayer;
+  public var dropShadowUI:DropShadowLayer;
+
+  /**
+   * The drop shadow layer instance for characters.
+   * Slightly weaker than the UI one.
+   */
+  public var dropShadowCharacters:DropShadowLayer;
+
+  /**
+   * The camera that houses the characters in the mod menu.
+   * Required for a weaker drop shadow effect on the characters specifically.
+   */
+  public var camCharacters:FunkinCamera;
+
+  /**
+   * The camera that houses some UI elements in the mod menu.
+   * Yes, really. This is needed for layering.
+   */
+  public var camHUD:FunkinCamera;
+
+  /**
+   * The camera that houses literally everything else.
+   */
+  public var camOther:FunkinCamera;
 
   var leftRectangle:FunkinSprite = new FunkinSprite();
   var rightRectangle:FunkinSprite = new FunkinSprite();
@@ -156,12 +179,14 @@ class ModMenuState extends MusicBeatState
     {
       funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(assetPath));
     }
+
+    camCharacters = new FunkinCamera('modMenuCharacters');
+    camHUD = new FunkinCamera('modMenuHUD');
+    camOther = new FunkinCamera('modMenuOther');
   }
 
   override public function create():Void
   {
-    super.create();
-
     if (instance != null)
     {
       FlxG.log.warn('WARNING: ModMenuState instance already exists. This should not happen.');
@@ -169,8 +194,19 @@ class ModMenuState extends MusicBeatState
 
     instance = this;
 
+    camCharacters.bgColor.alpha = 0;
+    camHUD.bgColor.alpha = 0;
+    camOther.bgColor.alpha = 0;
+
+    FlxG.cameras.reset(camOther);
+    FlxG.cameras.add(camCharacters, false);
+    FlxG.cameras.add(camHUD, false);
+
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
+
+    // Needs to come AFTER the cameras are added so the transition is layered properly
+    super.create();
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
@@ -182,9 +218,14 @@ class ModMenuState extends MusicBeatState
     menuBG.zIndex = 0;
     add(menuBG);
 
-    dropShadowLayer = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2);
-    dropShadowLayer.zIndex = 5;
-    add(dropShadowLayer);
+    dropShadowUI = new DropShadowLayer(cast FlxG.camera, 0xA91E1E1E, 2, 2);
+    dropShadowUI.zIndex = 5;
+    add(dropShadowUI);
+
+    dropShadowCharacters = new DropShadowLayer(camCharacters, 0xA91E1E1E, 2, 1);
+    dropShadowCharacters.zIndex = 0;
+    dropShadowCharacters.camera = camCharacters;
+    add(dropShadowCharacters);
 
     var topText:FunkinSprite = FunkinSprite.create('ui/mods/top-text');
     topText.scale.set(0.66, 0.67);
@@ -202,7 +243,7 @@ class ModMenuState extends MusicBeatState
     leftRectangle.zIndex = 10;
     add(leftRectangle);
 
-    final distanceBetweenRectangles:Int = 35;
+    var distanceBetweenRectangles:Int = 35;
     rightRectangle.x = leftRectangle.x + leftRectangle.width + distanceBetweenRectangles;
     rightRectangle.y = leftRectangle.y;
     rightRectangle.scale.set(0.64, 0.67);
@@ -211,7 +252,7 @@ class ModMenuState extends MusicBeatState
     rightRectangle.zIndex = 10;
     add(rightRectangle);
 
-    final dragTextWidth:Float = leftRectangle.width + rightRectangle.width + distanceBetweenRectangles;
+    var dragTextWidth:Float = leftRectangle.width + rightRectangle.width + distanceBetweenRectangles;
     var dragText:FlxText = new FlxText(leftRectangle.x, FlxG.height * 0.13, dragTextWidth, 'Drag packs onto this window to add new stuff');
     #if FEATURE_TOUCH_CONTROLS
     dragText.text = 'Tap and hold on a mod to drag it';
@@ -287,6 +328,7 @@ class ModMenuState extends MusicBeatState
     carBattery.scale.set(0.75, 0.75);
     carBattery.updateHitbox();
     carBattery.zIndex = 20;
+    carBattery.camera = camCharacters;
     add(carBattery);
 
     gfWire = new FunkinSprite(carBattery.x - 117, carBattery.y - 18).loadSparrow('ui/mods/gfwire');
@@ -297,9 +339,11 @@ class ModMenuState extends MusicBeatState
     gfWire.scale.set(0.7, 0.7);
     gfWire.updateHitbox();
     gfWire.zIndex = carBattery.zIndex + 1;
+    gfWire.camera = camCharacters;
     add(gfWire);
 
     bf = new ModMenuCharacter(carBattery.x - 119, carBattery.y + 50, 'bf');
+    bf.camera = camCharacters;
     bf.animation.onFinish.add((name:String) ->
     {
       bfBlink = blinkTimer + Math.random() + (Math.random() * 5);
@@ -310,6 +354,7 @@ class ModMenuState extends MusicBeatState
     add(bf);
 
     gf = new ModMenuCharacter(bf.x - 166, bf.y, 'gf', true);
+    gf.camera = camCharacters;
     gf.animation.onFinish.add((name:String) ->
     {
       gfBlink = blinkTimer + Math.random() + (Math.random() * 9);
@@ -323,6 +368,7 @@ class ModMenuState extends MusicBeatState
     bgWires.scale.set(0.7, 0.7);
     bgWires.updateHitbox();
     bgWires.zIndex = 10;
+    bgWires.camera = camCharacters;
     add(bgWires);
 
     fgWires = new FunkinSprite(bf.x - 144, bf.y - 90).loadTextureAtlas('ui/mods/foreground-wires');
@@ -334,6 +380,7 @@ class ModMenuState extends MusicBeatState
     fgWires.scale.set(0.7, 0.7);
     fgWires.updateHitbox();
     fgWires.zIndex = 35;
+    fgWires.camera = camCharacters;
     add(fgWires);
 
     crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/smoke');
@@ -342,12 +389,14 @@ class ModMenuState extends MusicBeatState
     crispySmokeBF.animation.play('idle', false, 13);
     crispySmokeBF.scale.set(0.5, 0.5);
     crispySmokeBF.updateHitbox();
+    crispySmokeBF.camera = camCharacters;
 
     crispySmokeGF = new FunkinSprite(gf.x + 70, gf.y - 180).loadSparrow('ui/mods/smoke');
     crispySmokeGF.animation.addByPrefix('idle', 'retry_smoke', 24);
     crispySmokeGF.animation.play('idle');
     crispySmokeGF.scale.set(0.5, 0.5);
     crispySmokeGF.updateHitbox();
+    crispySmokeGF.camera = camCharacters;
 
     crispySmokeBF.visible = false;
     crispySmokeGF.visible = false;
@@ -371,11 +420,13 @@ class ModMenuState extends MusicBeatState
     smokeCloud.scale.set(0.75, 0.75);
     smokeCloud.updateHitbox();
     smokeCloud.zIndex = 100;
+    smokeCloud.camera = camCharacters;
     add(smokeCloud);
 
     sparks = new ModMenuSparks();
     sparks.x = FullScreenScaleMode.gameCutoutSize.x / 2.5;
     sparks.zIndex = smokeCloud.zIndex + 1;
+    sparks.camera = camCharacters;
     add(sparks);
 
     buttonDone.x = carBattery.x - 100;
@@ -384,6 +435,7 @@ class ModMenuState extends MusicBeatState
     buttonDone.loadTexture('ui/mods/done');
     buttonDone.updateHitbox();
     buttonDone.zIndex = 1000;
+    buttonDone.camera = camHUD;
     add(buttonDone);
 
     buttonOpenFolder.x = leftRectangle.x + 180;
@@ -392,6 +444,7 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.loadTexture('ui/mods/open-folder');
     buttonOpenFolder.updateHitbox();
     buttonOpenFolder.zIndex = 1000;
+    buttonOpenFolder.camera = camHUD;
     add(buttonOpenFolder);
 
     hitboxOpenFolder = new FunkinSprite(
@@ -399,6 +452,7 @@ class ModMenuState extends MusicBeatState
       buttonOpenFolder.y
     ).makeSolidColor(Std.int(buttonOpenFolder.width), Std.int(buttonOpenFolder.height), FlxColor.GREEN);
     hitboxOpenFolder.updateHitbox();
+    hitboxOpenFolder.camera = camHUD;
 
     buttonDone.graphicName = 'mod-menu-done';
     buttonOpenFolder.graphicName = 'mod-menu-open-folder';
@@ -529,6 +583,7 @@ class ModMenuState extends MusicBeatState
     darkness.alpha = 0;
     darkness.visible = false;
     darkness.zIndex = 3000;
+    darkness.camera = camHUD;
     add(darkness);
 
     fileDrop = FunkinSprite.create(0, 0, 'ui/mods/drop-hover');
@@ -539,6 +594,7 @@ class ModMenuState extends MusicBeatState
     fileDrop.y = FlxG.height / 2 - (fileDrop.height / 2);
     fileDrop.visible = false;
     fileDrop.zIndex = darkness.zIndex + 1;
+    fileDrop.camera = camHUD;
     add(fileDrop);
 
     enabledModItems.repositionItems();
@@ -579,11 +635,11 @@ class ModMenuState extends MusicBeatState
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowLayer.renderer.blacklistSprite(menuBG);
-    dropShadowLayer.renderer.blacklistSprite(bgWires);
-    dropShadowLayer.renderer.blacklistSprite(crispySmokeBF);
-    dropShadowLayer.renderer.blacklistSprite(crispySmokeGF);
-    dropShadowLayer.renderer.blacklistSprite(sparks);
+    dropShadowUI.renderer.blacklistSprite(menuBG);
+    dropShadowUI.renderer.blacklistSprite(bgWires);
+    dropShadowUI.renderer.blacklistSprite(crispySmokeBF);
+    dropShadowUI.renderer.blacklistSprite(crispySmokeGF);
+    dropShadowUI.renderer.blacklistSprite(sparks);
 
     changeCharacters();
 
@@ -989,7 +1045,6 @@ class ModMenuState extends MusicBeatState
       }
 
       if (crispyTimer >= 0.3 && gf.animation.paused) gf.animation.resume();
-
       if (crispyTimer >= 2.5)
       {
         applyModlist();
@@ -1112,9 +1167,9 @@ class ModMenuState extends MusicBeatState
     var bgColor:FlxColor = menuBG.color;
     whiteColor.colorSet = true;
 
-    dropShadowLayer.renderer.blacklistSprite(gfWire);
-    dropShadowLayer.renderer.blacklistSprite(carBattery);
-    dropShadowLayer.renderer.blacklistSprite(fgWires);
+    dropShadowCharacters.renderer.blacklistSprite(gfWire);
+    dropShadowCharacters.renderer.blacklistSprite(carBattery);
+    dropShadowCharacters.renderer.blacklistSprite(fgWires);
 
     shockTimer.start(81 / 24, (_) ->
     {
@@ -1128,10 +1183,10 @@ class ModMenuState extends MusicBeatState
       fgWires.visible = false;
       bgWires.visible = false;
 
-      dropShadowLayer.visible = false;
-      dropShadowLayer.renderer.whitelistSprite(gfWire);
-      dropShadowLayer.renderer.whitelistSprite(carBattery);
-      dropShadowLayer.renderer.whitelistSprite(fgWires);
+      dropShadowCharacters.visible = false;
+      dropShadowCharacters.renderer.whitelistSprite(gfWire);
+      dropShadowCharacters.renderer.whitelistSprite(carBattery);
+      dropShadowCharacters.renderer.whitelistSprite(fgWires);
 
       FlxTimer.wait(2 / 24, () ->
       {
@@ -1153,7 +1208,7 @@ class ModMenuState extends MusicBeatState
 
         fgWires.visible = true;
         bgWires.visible = true;
-        dropShadowLayer.visible = true;
+        dropShadowCharacters.visible = true;
 
         FlxTween.tween(smokeCloud, {
           alpha: 0
@@ -1956,10 +2011,12 @@ class ModMenuState extends MusicBeatState
 
     InitState.resetTitleState();
 
-    var blackScreen = new FunkinSprite();
+    var blackScreen:FunkinSprite = new FunkinSprite();
     blackScreen.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
     blackScreen.scrollFactor.set(0, 0);
     blackScreen.alpha = 1;
+    blackScreen.camera = camHUD;
+    blackScreen.zIndex = 1000;
     add(blackScreen);
 
     FlxG.switchState(() -> new HotReloadState());
