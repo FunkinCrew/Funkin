@@ -5,6 +5,7 @@ import funkin.util.assets.StagedCache;
 import openfl.display.BitmapData;
 import animate.FlxAnimateFrames;
 import flixel.util.FlxColor;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 
 //
 // ~PATHS~
@@ -96,6 +97,29 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   }
 
   /**
+   * Makes a FlxGraphic from a FlxGraphicAsset, BitmapData, or asset path string, just without caching it.
+   * Note: Alot of mods will use this to replace FlxG.bitmap.add() lol...... - Moon
+   * @param   graphic  Optional FlxGraphics object to create FlxGraphic from.
+   * @param   unique   Ensures that the bitmap data uses a new slot in the cache.
+   * @param   key      Force the cache to use a specific Key to index the bitmap.
+   * @return  The FlxGraphic we just created.
+   */
+  public function createGraphic(graphic:FlxGraphicAsset, unique = false, ?key:String):FlxGraphic
+  {
+    if ((graphic is FlxGraphic))
+    {
+      return FlxGraphic.fromGraphic(cast graphic, unique, key);
+    }
+    else if ((graphic is BitmapData))
+    {
+      return FlxGraphic.fromBitmapData(cast graphic, unique, key, false);
+    }
+
+    // String case
+    return FlxGraphic.fromAssetKey(Std.string(graphic), unique, key, false);
+  }
+
+  /**
    * Fetch a FlxGraphic from the cache synchronously.
    * @param id The asset id of the FlxGraphic.
    * @throws error If the FlxGraphic does not exist in the cache and strict asset caching is enabled.
@@ -147,6 +171,8 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     if (graphic != null)
     {
       removeKey(graphic.key);
+      // Sometimes with raw-cached assets the graphic's key is different from the asset key, so we need to remove both. To be safe
+      // TODO: Maybe we should just override add and check through the map or something to make sure but nothing gets double cached as an assetkey..? -Moon
       graphic.destroy();
     }
   }
@@ -154,6 +180,30 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   override public function removeByKey(key:String):Void
   {
     stagedFlxGraphic.remove(key);
+  }
+
+  override function removeKey(key:String):Void
+  {
+    FunkinAssetCache.instance.removeBitmapData(key);
+    stagedFlxGraphic.remove(key);
+  }
+
+  /**
+   * Queues a FlxGraphic for destruction, ensuring it is removed from the cache and destroyed properly.
+   * This is a useful method to queue global graphics for destruction once you don't need them.
+   * Instead of forcefully removing a graphic mid-runtime.
+   * @param graphic The graphic to queue for destruction.
+   * @param permanent If true, the graphic will be removed from the permanent cache as well.
+   */
+  public function queueToDestroy(graphic:FlxGraphic, permanent:Bool = false):Void
+  {
+    if (stagedFlxGraphic.exists(graphic.key)) stagedFlxGraphic.removeKey(graphic.key, true);
+    if (FunkinAssetCache.instance.stagedBitmapData.exists(graphic.key)) FunkinAssetCache.instance.stagedBitmapData.removeKey(graphic.key, true);
+
+    stagedFlxGraphic.onPrePurge.dispatch(graphic.key, graphic);
+    stagedFlxGraphic.previous.set(graphic.key, graphic);
+    FunkinAssetCache.instance.stagedBitmapData.onPrePurge.dispatch(graphic.key, graphic.bitmap);
+    FunkinAssetCache.instance.stagedBitmapData.previous.set(graphic.key, graphic.bitmap);
   }
 
   /**
@@ -240,12 +290,6 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
       return true;
     });
-  }
-
-  override function removeKey(key:String):Void
-  {
-    FunkinAssetCache.instance.removeBitmapData(key);
-    stagedFlxGraphic.remove(key);
   }
 
   override public function reset():Void

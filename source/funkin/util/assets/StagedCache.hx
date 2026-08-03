@@ -113,7 +113,11 @@ class StagedCache<T> implements IStagedCache
     cpp.vm.tracy.TracyProfiler.zoneScoped('StagedCache.cache($key)');
     #end
     if (asset == null) return;
-    if (permanent.exists(key)) return;
+    if (permanent.exists(key))
+    {
+      cachePermanent(key, asset);
+      return;
+    }
 
     if (previous.exists(key))
     {
@@ -352,6 +356,39 @@ class StagedCache<T> implements IStagedCache
 
         result = true;
       }
+    }
+
+    return result;
+  }
+
+  /**
+   * Helper function to remove a key from the cache without removing the graphic from memory.
+   * Useful to correct incorrect asset caches of unique graphics.
+   * @param key The key of the asset to purge.
+   * @param purgePermanent Whether to also purge permanently cached assets.
+   * @return Whether the asset was purged successfully.
+   */
+  public function removeKey(key:String, purgePermanent:Bool = false):Bool
+  {
+    var result:Bool = false;
+
+    if (existsPrevious(key))
+    {
+      previous.remove(key);
+      result = true;
+    }
+
+    if (existsCurrent(key))
+    {
+      current.remove(key);
+
+      result = true;
+    }
+
+    if (purgePermanent && existsPermanent(key))
+    {
+      permanent.remove(key);
+      result = true;
     }
 
     return result;
