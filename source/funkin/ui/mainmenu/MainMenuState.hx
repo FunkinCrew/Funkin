@@ -153,8 +153,12 @@ class MainMenuState extends MusicBeatState
     {
       FlxG.signals.preStateSwitch.addOnce(() ->
       {
-        funkin.memory.FunkinMemory.clearFreeplay();
         FunkinAssetCache.instance.preparePurgeCache();
+      });
+
+      FlxG.signals.postStateSwitch.addOnce(() ->
+      {
+        funkin.memory.FunkinMemory.clearFreeplay();
         // TODO: In loading screens, you should be caching BETWEEN these.
         FunkinAssetCache.instance.purgeCache(true);
       });
