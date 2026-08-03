@@ -29,7 +29,7 @@ class LevelTitle extends FlxSpriteGroup
 
   override function get_width():Float
   {
-    if (length == 0) return 0;
+    if (length == 0 || title == null) return 0;
 
     if (lock.visible)
     {
@@ -75,14 +75,20 @@ class LevelTitle extends FlxSpriteGroup
 
   function buildLevelTitle():Void
   {
-    title = level.buildTitleGraphic();
-    add(title);
+    if (level != null && level.buildTitleGraphic() != null)
+    {
+      title = level.buildTitleGraphic();
+      add(title);
+    }
   }
 
   function buildLevelLock():Void
   {
     lock = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/story-mode/lock'));
-    lock.x = title.x + title.width + LOCK_PAD;
+    if (title != null)
+    {
+      lock.x = title.x + title.width + LOCK_PAD;
+    }
     lock.visible = false;
     add(lock);
   }

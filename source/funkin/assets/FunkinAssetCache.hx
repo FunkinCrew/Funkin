@@ -501,7 +501,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     if (!validateBitmapData(stagedBitmapData.get(id)))
     {
       #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS ' + ' Removing invalid BitmapData "${assetPath.toString()} from cache.');
+      trace(' ASSETS ' + ' Removing invalid BitmapData "$id" from cache.');
       #end
       stagedBitmapData.remove(id);
       return false;

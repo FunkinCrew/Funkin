@@ -73,6 +73,10 @@ class Level implements IRegistryEntry<LevelData>
   public function buildTitleGraphic():FunkinSprite
   {
     var titleAsset:String = _data?.titleAsset ?? '';
+    if (titleAsset == '')
+    {
+      return new FunkinSprite().makeSolidColor(0, 0, FlxColor.TRANSPARENT);
+    }
     var result:FunkinSprite = new FunkinSprite().loadTexture(titleAsset);
 
     return result;
