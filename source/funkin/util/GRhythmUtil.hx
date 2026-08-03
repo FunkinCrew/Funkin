@@ -137,6 +137,6 @@ class GRhythmUtil
   public static function getNoteY(strumTime:Float, scrollSpeed:Float, downscroll:Bool = false, ?conductorInUse:Conductor):Float
   {
     if (conductorInUse == null) conductorInUse = Conductor.instance;
-    return Constants.PIXELS_PER_MS * (conductorInUse.getTimeWithDelta() - strumTime) * scrollSpeed * (downscroll ? 1 : -1);
+    return Constants.PIXELS_PER_MS * (conductorInUse.songPosition - strumTime) * scrollSpeed * (downscroll ? 1 : -1);
   }
 }
