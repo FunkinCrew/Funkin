@@ -71,4 +71,29 @@ typedef ModMenuCharacterData =
    */
   @:optional @:default([0.5, 0.5])
   var smokeScale:Array<Float>;
+
+  /**
+   * Data for the starting frame of the character's animation.
+   * Useful if your idle animation is super long.
+   */
+  @:optional
+  var startingFrame:StartFrameData;
+}
+
+/**
+ * Data for the starting frame of the character's animation.
+ */
+typedef StartFrameData =
+{
+  /**
+   * The starting frame in the BF position.
+   */
+  @:optional @:default(0)
+  var bf:Int;
+
+  /**
+   * The starting frame in the GF position.
+   */
+  @:optional @:default(0)
+  var gf:Int;
 }

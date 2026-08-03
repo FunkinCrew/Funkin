@@ -97,6 +97,12 @@ class ModMenuCharacter extends FunkinSprite
   public var smokeScale:Array<Float> = [];
 
   /**
+   * The starting frame of the character's idle animation.
+   * Used when the mod menu is first opened.
+   */
+  public var startingIdleFrame:Int = 0;
+
+  /**
    * The data for this character.
    */
   var data:Null<ModMenuCharacterData> = null;
@@ -132,6 +138,11 @@ class ModMenuCharacter extends FunkinSprite
    * The current color used for Pinhead.
    */
   var pinheadColor:Array<Float> = [];
+
+  /**
+   * Whether or not the starting idle frame has been used.
+   */
+  var playedStartingFrame:Bool = false;
 
   /**
    * @return Gets a random color for Pinhead.
@@ -259,6 +270,12 @@ class ModMenuCharacter extends FunkinSprite
   {
     if ((getCurrentAnimation() == CRISPY && name != CRISPY_LOOP) && !force) return;
 
+    if (name == IDLE && startingIdleFrame > 0 && !playedStartingFrame)
+    {
+      frame = startingIdleFrame;
+      playedStartingFrame = true;
+    }
+
     if (name == ELECTROCUTED)
     {
       setLightningPinhead();
@@ -378,6 +395,7 @@ class ModMenuCharacter extends FunkinSprite
 
     smokeOffsets = data?.smokeOffsets ?? [0, 0];
     smokeScale = data?.smokeScale ?? [0.5, 0.5];
+    startingIdleFrame = isGF ? data?.startingFrame?.gf ?? 0 : data?.startingFrame?.bf ?? 0;
   }
 
   /**
