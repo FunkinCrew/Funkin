@@ -9,8 +9,11 @@ import flixel.graphics.FlxGraphic;
 import funkin.graphics.FunkinSprite;
 import flixel.math.FlxRect;
 import funkin.api.newgrounds.Medals;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import funkin.ui.FullScreenScaleMode;
+import funkin.assets.FunkinAssetCache;
+import funkin.assets.FunkinBitmapFrontend;
 
 /**
  * Handles global display of the Newgrounds medal popup.
@@ -29,6 +32,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
   var moveText:Bool = false;
   var medalQueue:Array<Void->Void> = [];
   var textSpeed:Float = 20;
+  var medalIcon:Null<FlxGraphic>;
   final MEDAL_X = (FlxG.width - 250) * 0.5;
   final MEDAL_Y = FlxG.height - 100;
 
@@ -190,7 +194,7 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
    */
   public static function play(points:Int = 100,
     name:String = 'I LOVE CUM I LOVE CUM I LOVE CUM I LOVE CUM',
-    ?graphic:FlxGraphic)
+    ?graphic:FlxGraphicAsset)
   {
     if (instance == null) return;
 
@@ -207,7 +211,17 @@ class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements Conso
       instance.medal.animation.play('wholeTimeline');
 
       instance.medal.visible = true;
-      if (graphic != null) instance.medal.replaceSymbolGraphic('NGMEDAL', graphic);
+      if (graphic != null)
+      {
+        var cachedGraphic:Null<FlxGraphic> = FunkinAssetCache.instance.permaCacheFlxGraphic('symbol_NGMEDAL_$name', graphic);
+        if (instance.medalIcon != cachedGraphic)
+        {
+          if (instance.medalIcon != null && instance.medalIcon.key != null) FunkinBitmapFrontend.instance.queueToDestroy(instance.medalIcon, true);
+          instance.medalIcon = cachedGraphic;
+          instance.medalIcon.persist = true;
+        }
+      }
+      instance.medal.replaceSymbolGraphic('NGMEDAL', instance.medalIcon);
     }
 
     if (instance.medal.isAnimationFinished() && instance.medalQueue.length == 0) playMedal();
