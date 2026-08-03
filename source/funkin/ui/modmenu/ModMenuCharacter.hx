@@ -322,15 +322,8 @@ class ModMenuCharacter extends FunkinSprite
       {
         if (i > shortestIndex)
         {
-          if (!isGF)
-          {
-            shortestIndex = i;
-          }
-          else
-          {
-            modId = '';
-            break;
-          }
+          modId = '';
+          break;
         }
         modId = mod;
         break;
