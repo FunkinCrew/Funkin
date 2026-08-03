@@ -436,6 +436,7 @@ class ModMenuState extends MusicBeatState
     buttonDone.updateHitbox();
     buttonDone.zIndex = 1000;
     buttonDone.camera = camHUD;
+    buttonDone.graphicName = 'done';
     add(buttonDone);
 
     buttonOpenFolder.x = leftRectangle.x + 180;
@@ -445,6 +446,7 @@ class ModMenuState extends MusicBeatState
     buttonOpenFolder.updateHitbox();
     buttonOpenFolder.zIndex = 1000;
     buttonOpenFolder.camera = camHUD;
+    buttonOpenFolder.graphicName = 'open-folder';
     add(buttonOpenFolder);
 
     hitboxOpenFolder = new FunkinSprite(
@@ -453,9 +455,6 @@ class ModMenuState extends MusicBeatState
     ).makeSolidColor(Std.int(buttonOpenFolder.width), Std.int(buttonOpenFolder.height), FlxColor.GREEN);
     hitboxOpenFolder.updateHitbox();
     hitboxOpenFolder.camera = camHUD;
-
-    buttonDone.graphicName = 'mod-menu-done';
-    buttonOpenFolder.graphicName = 'mod-menu-open-folder';
 
     openFolderAnimator = new PropertyAnimator(buttonOpenFolder);
     doneButtonAnimator = new PropertyAnimator(buttonDone);
