@@ -52,6 +52,12 @@ class PolymodErrorHandler
         // A mod is missing an icon.
         trace(' WARNING '.warning() + ' A mod is missing an icon: ${error.message}');
 
+      case MOD_ARCHIVE_READ_FAILED:
+        // Polymod tries to load data from a mod ZIP, but
+        trace(' ERROR '.error() + ' Mod archive read failed: ${error.message}');
+        // Notify the user via popup.
+        funkin.util.WindowUtil.showError('Mod Archive Read Error', error.message);
+
       //
       // Mod Loading Errors
       //
