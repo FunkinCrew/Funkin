@@ -133,19 +133,27 @@ class CharacterUnlockState extends MusicBeatState
       if (DeviceUtil.iPhoneNumber > 12)
       {
         FunkinAssetCache.instance.preparePurgeCache();
-        // TODO: In loading screens, you should be caching BETWEEN these.
-        FunkinAssetCache.instance.purgeCache(true);
+        FlxG.signals.preStateSwitch.addOnce(() ->
+        {
+          FunkinAssetCache.instance.purgeCache(true);
+        });
       }
       else
       {
         FunkinAssetCache.instance.preparePurgeCache();
         // TODO: In loading screens, you should be caching BETWEEN these.
-        FunkinAssetCache.instance.purgeCache();
+        FlxG.signals.preStateSwitch.addOnce(() ->
+        {
+          FunkinAssetCache.instance.purgeCache();
+        });
       }
       #else
       FunkinAssetCache.instance.preparePurgeCache();
       // TODO: In loading screens, you should be caching BETWEEN these.
-      FunkinAssetCache.instance.purgeCache(true);
+      FlxG.signals.preStateSwitch.addOnce(() ->
+      {
+        FunkinAssetCache.instance.purgeCache(true);
+      });
       #end
       FlxG.switchState(() -> nextState);
     });
