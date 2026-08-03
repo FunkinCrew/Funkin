@@ -493,7 +493,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasBitmapData(id:String):Bool
   {
-    return stagedBitmapData.exists(id);
+    if (!stagedBitmapData.exists(id))
+    {
+      return false;
+    }
+
+    if (!validateBitmapData(stagedBitmapData.get(id)))
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS ' + ' Removing invalid BitmapData "${assetPath.toString()} from cache.');
+      #end
+      stagedBitmapData.remove(id);
+      return false;
+    }
+
+    return true;
   }
 
   /**
