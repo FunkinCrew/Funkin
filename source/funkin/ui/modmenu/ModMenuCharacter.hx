@@ -335,16 +335,15 @@ class ModMenuCharacter extends FunkinSprite
         i++;
         continue;
       }
+
       if (hasModdedAssets(mod))
       {
-        if (i > shortestIndex)
-        {
-          modId = '';
-          break;
-        }
+        shortestIndex = i;
+
         modId = mod;
         break;
       }
+
       i++;
     }
 
