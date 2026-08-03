@@ -80,7 +80,6 @@
     { "name": "html5", "enabled": true, "label": "HTML5" },
     { "name": "android", "enabled": true, "label": "Android" },
     { "name": "ios", "enabled": true, "label": "iOS" },
-    { "name": "hl", "enabled": true, "label": "HashLink" },
     // Disabled targets
     { "name": "air", "enabled": false },
     { "name": "electron", "enabled": false },

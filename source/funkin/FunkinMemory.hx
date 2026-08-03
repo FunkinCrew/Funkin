@@ -104,7 +104,7 @@ class FunkinMemory
     purgeTextureCache();
     preparePurgeSoundCache();
     purgeSoundCache();
-    #if (cpp || neko || hl)
+    #if (cpp || neko)
     if (callGarbageCollector) funkin.util.MemoryUtil.collect(true);
     #end
   }

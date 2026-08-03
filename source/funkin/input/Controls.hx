@@ -509,7 +509,6 @@ class Controls extends FlxActionSet
     if (!byName.exists(name)) throw 'Invalid name: $name';
     #end
 
-    // TODO: Revert to `.map().filter()` once HashLink doesn't complain anymore.
     var result:Array<FlxKey> = [];
     for (input in byName[name].inputs)
     {
