@@ -476,9 +476,7 @@ class InitState extends FlxState
     // Claims the handoff lock, so any later launch forwards its link here instead of booting.
     funkin.modding.install.OneClickInstallHandler.initialize();
 
-    // A link that launched the game goes straight to the mod menu, since that's the only thing
-    // the player asked for.
-    if (funkin.modding.install.OneClickInstallHandler.stashLaunchLink(params.oneClickUrl))
+    if (funkin.modding.install.OneClickInstallHandler.stashLaunchLink(params.oneClickUrl) || funkin.modding.install.OneClickInstallHandler.hasPendingLink())
     {
       FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
       return;

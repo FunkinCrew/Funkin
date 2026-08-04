@@ -39,9 +39,6 @@ class OneClickBridge
    */
   static final TEMP_ENV_VARS:Array<String> = ['TEMP', 'TMPDIR', 'TEMPDIR', 'TMP'];
 
-  // Wall clock rather than frame deltas. The game stops updating the moment it loses focus, which
-  // is exactly when somebody clicks an install link, so a delta based timer would freeze the
-  // heartbeat and every link would spawn a second copy of the game.
   static var lastHeartbeat:Float = 0.0;
   static var lastPoll:Float = 0.0;
   static var holdsLock:Bool = false;

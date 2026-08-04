@@ -54,14 +54,17 @@ static NSMutableArray<NSString *> *pendingURLs = nil;
 
 @end
 
-__attribute__((constructor)) static void Apple_URLScheme_Install()
+#endif
+
+void Apple_URLScheme_InstallHandler()
 {
+#if TARGET_OS_OSX
   [[NSAppleEventManager sharedAppleEventManager] setEventHandler:[FunkinURLSchemeListener shared]
                                                      andSelector:@selector(handleGetURLEvent:withReplyEvent:)
                                                    forEventClass:kInternetEventClass
                                                       andEventID:kAEGetURL];
-}
 #endif
+}
 
 bool Apple_URLScheme_Register(const char *scheme)
 {
@@ -131,6 +134,9 @@ bool Apple_URLScheme_IsRegistered(const char *scheme)
 void Apple_URLScheme_SetCallback(URLSchemeCallback callback)
 {
 #if TARGET_OS_OSX
+  // Install the URL scheme handler if it hasn't been installed yet
+  Apple_URLScheme_InstallHandler();
+
   urlSchemeCallback = callback;
 
   if (callback == nullptr || pendingURLs == nil)

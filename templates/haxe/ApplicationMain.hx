@@ -150,6 +150,10 @@ class ApplicationMain
     app.createWindow(attributes);
     ::end::
 
+    #if (FEATURE_ONE_CLICK_INSTALL && macos && cpp)
+    funkin.external.apple.URLSchemeExtern.installHandler();
+    #end
+
     // Set the current working directory for Android and iOS devices
     #if android
     // On Android use External Files Dir.

@@ -6,9 +6,8 @@ import funkin.util.protocol.OneClickBridge;
 import funkin.util.protocol.ProtocolRegistrar;
 
 /**
-  * Handles the one-click install feature, which lets players click a link and have the game
-  * automatically download and install the mod.
-  */
+ * Handles the one-click install feature.
+ */
 @:nullSafety
 class OneClickInstallHandler
 {
@@ -48,7 +47,8 @@ class OneClickInstallHandler
 
     FlxG.stage.addEventListener(openfl.events.Event.ENTER_FRAME, onEnterFrame);
 
-    openfl.Lib.application.onExit.add(function(_:Int):Void {
+    openfl.Lib.application.onExit.add(function(_:Int):Void
+    {
       OneClickBridge.releaseLock();
     }, 100);
 
@@ -57,8 +57,19 @@ class OneClickInstallHandler
     #end
 
     // Anything queued while we were booting.
-    for (link in OneClickBridge.drain())
-      handleLink(link);
+    for (link in OneClickBridge.drain()) handleLink(link);
+    #end
+  }
+
+  /**
+   * Whether a link is waiting for the mod menu to open.
+   */
+  public static function hasPendingLink():Bool
+  {
+    #if (FEATURE_ONE_CLICK_INSTALL && sys)
+    return pendingLink != null;
+    #else
+    return false;
     #end
   }
 
@@ -152,8 +163,7 @@ class OneClickInstallHandler
     // Moves a running download's progress and result off its thread and onto this one.
     ModInstaller.pump();
 
-    for (link in OneClickBridge.update())
-      handleLink(link);
+    for (link in OneClickBridge.update()) handleLink(link);
   }
 
   /**

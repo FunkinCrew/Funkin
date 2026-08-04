@@ -99,10 +99,6 @@ class Constants
 
   /**
    * The domains we are willing to download mod archives from.
-   * A protocol link is untrusted input, so anything not under one of these is rejected outright.
-   *
-   * Matched against the host itself and any subdomain of it. Downloads bounce through numbered
-   * cache nodes such as `filecache43.gamebanana.com`, which can't be listed out ahead of time.
    */
   public static final ONE_CLICK_ALLOWED_DOMAINS:Array<String> = ['gamebanana.com'];
 
@@ -118,7 +114,6 @@ class Constants
 
   /**
    * The User-Agent sent when resolving a one-click download.
-   * GameBanana varies its responses on this, and `haxe.Http` sends none by default.
    */
   public static final ONE_CLICK_USER_AGENT:String = 'FridayNightFunkin';
 

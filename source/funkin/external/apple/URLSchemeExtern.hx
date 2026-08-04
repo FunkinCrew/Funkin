@@ -11,6 +11,12 @@ package funkin.external.apple;
 extern class URLSchemeExtern
 {
   /**
+   * Claims the apple event that carries incoming URLs.
+   */
+  @:native('Apple_URLScheme_InstallHandler')
+  static function installHandler():Void;
+
+  /**
    * Registers this application bundle as the default handler for the given URL scheme.
    * The bundle must also declare the scheme in CFBundleURLTypes for this to stick.
    *

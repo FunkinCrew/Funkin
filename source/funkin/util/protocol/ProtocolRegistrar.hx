@@ -49,8 +49,10 @@ class ProtocolRegistrar
       final path:Null<String> = getLinuxDesktopEntryPath();
       if (path == null) return false;
       if (!FileUtil.fileExists(path)) return false;
-      // A stale entry from an older install location is worse than no entry at all.
-      return FileUtil.readStringFromPath(path).indexOf(getExecutablePath()) != -1;
+      if (FileUtil.readStringFromPath(path).indexOf(getExecutablePath()) == -1) return false;
+
+      // The desktop entry on its own does nothing, the association is what the shell reads.
+      return hasLinuxMimeAssociation();
       #end
     }
     catch (e:Dynamic)
@@ -109,6 +111,7 @@ class ProtocolRegistrar
       final path:Null<String> = getLinuxDesktopEntryPath();
       if (path == null) return false;
       if (FileUtil.fileExists(path)) FileUtil.deleteFile(path);
+      updateLinuxMimeApps(true);
       refreshLinuxDesktopDatabase();
       return true;
       #elseif macos
@@ -152,6 +155,24 @@ class ProtocolRegistrar
     return Path.join([dataHome, 'applications', LINUX_DESKTOP_FILE]);
   }
 
+  /**
+   * Where the user's mime associations live, honouring XDG_CONFIG_HOME if the user set it.
+   */
+  static function getLinuxMimeAppsPath():Null<String>
+  {
+    var configHome:Null<String> = Sys.getEnv('XDG_CONFIG_HOME');
+
+    if (configHome == null || configHome == '')
+    {
+      final home:Null<String> = Sys.getEnv('HOME');
+      if (home == null || home == '') return null;
+
+      configHome = Path.join([home, '.config']);
+    }
+
+    return Path.join([configHome, 'mimeapps.list']);
+  }
+
   static function getLinuxDataHome():Null<String>
   {
     var dataHome:Null<String> = Sys.getEnv('XDG_DATA_HOME');
@@ -190,8 +211,11 @@ class ProtocolRegistrar
 
     refreshLinuxDesktopDatabase();
 
-    // xdg-mime is what actually binds the scheme to the entry. Without it the file is inert.
+    // xdg-mime is part of xdg-utils, which is installed by default on most distros.
+    // If it is not present, the user can still manually add it I think.
     Sys.command('xdg-mime', ['default', LINUX_DESKTOP_FILE, 'x-scheme-handler/${Constants.ONE_CLICK_SCHEME}']);
+
+    updateLinuxMimeApps(false);
 
     return isRegistered();
   }
@@ -203,6 +227,72 @@ class ProtocolRegistrar
 
     // Not every distro ships desktop-file-utils, so a failure here is not fatal.
     Sys.command('update-desktop-database', [Path.join([dataHome, 'applications'])]);
+  }
+
+  /**
+   * The association line the shell looks for.
+   */
+  static function getLinuxMimeEntry():String
+  {
+    return 'x-scheme-handler/${Constants.ONE_CLICK_SCHEME}=${LINUX_DESKTOP_FILE}';
+  }
+
+  static function hasLinuxMimeAssociation():Bool
+  {
+    final path:Null<String> = getLinuxMimeAppsPath();
+    if (path == null) return false;
+    if (!FileUtil.fileExists(path)) return false;
+
+    return FileUtil.readStringFromPath(path).indexOf(getLinuxMimeEntry()) != -1;
+  }
+
+  /**
+   * Adds or removes our scheme association in mimeapps.list.
+   */
+  static function updateLinuxMimeApps(remove:Bool):Void
+  {
+    final path:Null<String> = getLinuxMimeAppsPath();
+    if (path == null) return;
+
+    final key:String = 'x-scheme-handler/${Constants.ONE_CLICK_SCHEME}=';
+    final lines:Array<String> = FileUtil.fileExists(path) ? FileUtil.readStringFromPath(path).split('\n') : [];
+
+    final kept:Array<String> = [];
+    for (line in lines)
+    {
+      if (StringTools.startsWith(StringTools.ltrim(line), key)) continue;
+
+      kept.push(line);
+    }
+
+    if (!remove)
+    {
+      insertUnderSection(kept, '[Default Applications]', getLinuxMimeEntry());
+      insertUnderSection(kept, '[Added Associations]', '${getLinuxMimeEntry()};');
+    }
+
+    FileUtil.createDirIfNotExists(Path.directory(path));
+    FileUtil.writeStringToPath(path, kept.join('\n'), Force);
+  }
+
+  /**
+   * Puts a line directly under the given section header, or creates the section if it does not exist.
+   */
+  static function insertUnderSection(lines:Array<String>, section:String, entry:String):Void
+  {
+    for (i in 0...lines.length)
+    {
+      if (StringTools.trim(lines[i]) != section) continue;
+
+      lines.insert(i + 1, entry);
+      return;
+    }
+
+    if (lines.length > 0 && StringTools.trim(lines[lines.length - 1]) != '') lines.push('');
+
+    lines.push(section);
+    lines.push(entry);
+    lines.push('');
   }
   #end
 }

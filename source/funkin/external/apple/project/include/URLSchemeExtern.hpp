@@ -8,6 +8,11 @@
 typedef void (*URLSchemeCallback)(const char *url);
 
 /**
+ * Claims the apple event that carries incoming URLs.
+ */
+void Apple_URLScheme_InstallHandler();
+
+/**
  * Registers this application bundle as the default handler for the given URL scheme.
  *
  * @param scheme The scheme name, without the trailing colon.
