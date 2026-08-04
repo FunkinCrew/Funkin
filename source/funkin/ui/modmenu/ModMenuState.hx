@@ -1110,7 +1110,31 @@ class ModMenuState extends MusicBeatState
         shockTimer.onLoopFinished();
         shockTimer.active = false;
       }
+      else if ((controls.BACK_P) && shockTimer.active)
+      {
+        shockTimer.active = false;
+        crispyTimer = 0;
+        allowInput = true;
+        resetChars();
+      }
     }
+  }
+
+  function resetChars():Void
+  {
+    bf.shader = null;
+    gf.shader = null;
+    bf.playAnimation(IDLE, true, true);
+    gf.playAnimation(IDLE, true, true);
+
+    carBattery.animation.play('idle');
+    carBattery.animation.pause();
+
+    fgWires.animation.play('idle');
+    bgWires.animation.play('idle');
+    gfWire.animation.play('idle');
+
+    sparks.endElectrocution();
   }
 
   function handleMouse():Void
