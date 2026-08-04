@@ -87,6 +87,68 @@ class Constants
   public static final URL_KICKSTARTER:String = 'https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/';
 
   /**
+   * ONE-CLICK MOD INSTALL DATA
+   */
+  // ==============================
+
+  /**
+   * The custom URL scheme the game registers itself against for one-click mod installs.
+   * A link looks like `funkin-mod:https://gamebanana.com/mmdl/1234567,Mod,567890`.
+   */
+  public static final ONE_CLICK_SCHEME:String = 'funkin-mod';
+
+  /**
+   * The domains we are willing to download mod archives from.
+   * A protocol link is untrusted input, so anything not under one of these is rejected outright.
+   *
+   * Matched against the host itself and any subdomain of it. Downloads bounce through numbered
+   * cache nodes such as `filecache43.gamebanana.com`, which can't be listed out ahead of time.
+   */
+  public static final ONE_CLICK_ALLOWED_DOMAINS:Array<String> = ['gamebanana.com'];
+
+  /**
+   * The largest file size we will download for a one-click install, in bytes.
+   */
+  public static final ONE_CLICK_MAX_FILESIZE:Int = 2000 * 1024 * 1024;
+
+  /**
+   * The largest hash size we will accept for a one-click install, in bytes.
+   */
+  public static final ONE_CLICK_MAX_HASH_SIZE:Int = 256 * 1024 * 1024;
+
+  /**
+   * The User-Agent sent when resolving a one-click download.
+   * GameBanana varies its responses on this, and `haxe.Http` sends none by default.
+   */
+  public static final ONE_CLICK_USER_AGENT:String = 'FridayNightFunkin';
+
+  /**
+   * The GameBanana API endpoint used to resolve metadata for a submission.
+   * Append the model name, the item ID, and the trailing path segment.
+   */
+  public static final ONE_CLICK_API_URL:String = 'https://gamebanana.com/apiv11/';
+
+  /**
+   * Maps the plural path segment in a GameBanana profile URL onto the API's model name.
+   */
+  public static final ONE_CLICK_MODELS:Map<String, String> = [
+    'mods' => 'Mod',
+    'tools' => 'Tool',
+    'sounds' => 'Sound',
+    'wips' => 'Wip'
+  ];
+
+  /**
+   * The GameBanana category that holds mod folders for the base game.
+   */
+  public static final ONE_CLICK_CATEGORY_ROOT:Int = 29202;
+
+  /**
+   * The GameBanana API endpoint listing the child categories of a category.
+   */
+  public static final ONE_CLICK_CATEGORIES_URL:String = 'https://gamebanana.com/apiv11/Mod/Categories?_sSort=a_to_z&_bShowEmpty=true&_idCategoryRow=';
+
+  /**
    * REPOSITORY DATA
    */
   // ==============================

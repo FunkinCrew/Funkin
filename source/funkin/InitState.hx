@@ -472,6 +472,19 @@ class InitState extends FlxState
   {
     var params:CLIParams = CLIUtil.processArgs();
 
+    #if FEATURE_ONE_CLICK_INSTALL
+    // Claims the handoff lock, so any later launch forwards its link here instead of booting.
+    funkin.modding.install.OneClickInstallHandler.initialize();
+
+    // A link that launched the game goes straight to the mod menu, since that's the only thing
+    // the player asked for.
+    if (funkin.modding.install.OneClickInstallHandler.stashLaunchLink(params.oneClickUrl))
+    {
+      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+      return;
+    }
+    #end
+
     if (params.chart.shouldLoadChart)
     {
       #if FEATURE_CHART_EDITOR

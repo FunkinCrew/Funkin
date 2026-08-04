@@ -38,6 +38,25 @@ class ApplicationMain
     funkin.external.windows.WinAPI.disableErrorReporting();
     #end
 
+    #if sys
+    // The shell launches us with its own working directory when a file is dropped on the exe or a
+    // `funkin-mod:` link is opened, which would put the mods folder somewhere random.
+    funkin.util.CLIUtil.resetWorkingDir();
+    #end
+
+    #if (FEATURE_ONE_CLICK_INSTALL && sys && !macos)
+    // A one-click mod link launches the game again with the URL as an argument. If a copy is
+    // already running, hand the URL over and get out before a second window is ever created.
+    // macOS is exempt, LaunchServices delivers the URL to the running instance itself.
+    final oneClickUrl:Null<String> = funkin.util.protocol.OneClickBridge.extractUrl(Sys.args());
+
+    if (oneClickUrl != null && funkin.util.protocol.OneClickBridge.isInstanceLive())
+    {
+      funkin.util.protocol.OneClickBridge.enqueue(oneClickUrl);
+      Sys.exit(0);
+    }
+    #end
+
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
     #if !html5

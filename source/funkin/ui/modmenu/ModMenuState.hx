@@ -37,6 +37,13 @@ import funkin.external.android.DataFolderUtil;
 #elseif ios
 import lime.system.System;
 #end
+#if FEATURE_ONE_CLICK_INSTALL
+import funkin.modding.install.ModInstaller;
+import funkin.modding.install.ModInstaller.OneClickMod;
+import funkin.modding.install.ModInstaller.OneClickRequest;
+import funkin.modding.install.ModInstaller.OneClickRequirement;
+import funkin.modding.install.OneClickInstallHandler;
+#end
 #if FEATURE_TOUCH_CONTROLS
 import funkin.mobile.input.ControlsHandler;
 import funkin.util.MathUtil;
@@ -124,6 +131,28 @@ class ModMenuState extends MusicBeatState
    * This should disable other interaction.
    */
   var exitingMenu:Bool = false;
+
+  #if FEATURE_ONE_CLICK_INSTALL
+  /**
+   * The overlay that drives a one-click install, from the confirmation prompt to the result.
+   */
+  var installPopup:ModMenuInstallPopup;
+
+  /**
+   * The mod a one-click install is waiting for the player to confirm.
+   */
+  var pendingInstall:Null<OneClickMod> = null;
+
+  /**
+   * Set once the player cancels, so a download that's already in flight gets thrown away.
+   */
+  var installCancelled:Bool = false;
+
+  /**
+   * The names of any required mods pulled in alongside the one the player asked for.
+   */
+  var installedRequirements:Array<String> = [];
+  #end
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
@@ -631,6 +660,16 @@ class ModMenuState extends MusicBeatState
     FlxG.stage.window.onDropBegin.add(startFileDropHover);
     FlxG.stage.window.onDropComplete.add(hideFileDropHover);
 
+    #if FEATURE_ONE_CLICK_INSTALL
+    installPopup = new ModMenuInstallPopup();
+    installPopup.zIndex = 1000;
+    add(installPopup);
+
+    // A link that came in while this menu was closed, or that launched the game outright.
+    final queued:Null<OneClickRequest> = OneClickInstallHandler.consumePending();
+    if (queued != null) beginOneClickInstall(queued);
+    #end
+
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
@@ -900,6 +939,14 @@ class ModMenuState extends MusicBeatState
   {
     super.destroy();
 
+    #if FEATURE_ONE_CLICK_INSTALL
+    // Stops an in-flight download's callbacks from poking at a menu that no longer exists.
+    installCancelled = true;
+    pendingInstall = null;
+    ModInstaller.cancelDownload();
+    ModInstaller.cancelInstall();
+    #end
+
     FlxG.autoPause = Preferences.autoPause;
     FlxG.stage.window.onDropFile.remove(onDropFile);
     FlxG.stage.window.onDropBegin.remove(startFileDropHover);
@@ -929,17 +976,7 @@ class ModMenuState extends MusicBeatState
         return;
       }
 
-      var newItems = refreshModList();
-      for (item in newItems)
-      {
-        if (item.mod != null)
-        {
-          item.flashBackground();
-          break;
-        }
-      }
-
-      handleSelection();
+      highlightNewMod();
     }
     else if (Path.isAbsolute(path) && FileUtil.directoryExists(path))
     {
@@ -960,21 +997,304 @@ class ModMenuState extends MusicBeatState
         return;
       }
 
-      var newItems = refreshModList();
-      for (item in newItems)
-      {
-        if (item.mod != null)
-        {
-          item.flashBackground();
-          break;
-        }
-      }
-
-      handleSelection();
+      highlightNewMod();
     }
     else
       WindowUtil.showWarning('Invalid file type', 'Only .zip files and mod folders are supported for mod installation.');
   }
+
+  /**
+   * Rebuilds the list after something landed in the mods folder, then flashes whatever showed up.
+   * Shared by drag and drop and by one-click installs.
+   */
+  function highlightNewMod():Void
+  {
+    var newItems = refreshModList();
+    for (item in newItems)
+    {
+      if (item.mod != null)
+      {
+        item.flashBackground();
+        break;
+      }
+    }
+
+    handleSelection();
+  }
+
+  #if FEATURE_ONE_CLICK_INSTALL
+  /**
+   * Kicks off a one-click install for a link that has already been parsed and host checked.
+   *
+   * Nothing is downloaded until the player confirms, and nothing is written until the archive has
+   * matched its checksum and been confirmed to actually contain a mod.
+   *
+   * @param request The parsed link.
+   */
+  public function beginOneClickInstall(request:OneClickRequest):Void
+  {
+    if (installPopup == null) return;
+
+    // One at a time. A second link while one is running would fight over the popup.
+    if (installPopup.isBlocking())
+    {
+      trace('Ignoring a one-click install, one is already in progress.');
+      return;
+    }
+
+    pendingInstall = null;
+    installCancelled = false;
+    installedRequirements = [];
+
+    installPopup.showBusy('Mod Install', 'Looking this one up on GameBanana...');
+
+    ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void {
+      if (installCancelled) return;
+
+      pendingInstall = mod;
+
+      installPopup.showConfirm(mod.name, 'by ${mod.author}\n${formatFilesize(mod.filesize)}${formatRequirements(mod)}');
+
+      ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void {
+        if (installCancelled || installPopup == null) return;
+
+        installPopup.setIcon(bitmap);
+      });
+    }, function(reason:String):Void {
+      if (installCancelled) return;
+
+      pendingInstall = null;
+      installPopup.showResult('Mod Install Failed', reason);
+    });
+  }
+
+  /**
+   * Whether a one-click install is currently on screen.
+   */
+  public function isInstalling():Bool
+  {
+    return installPopup != null && installPopup.isBlocking();
+  }
+
+  /**
+   * Starts the download the player just agreed to.
+   */
+  function confirmOneClickInstall():Void
+  {
+    final mod:Null<OneClickMod> = pendingInstall;
+    if (mod == null) return;
+
+    installPopup.showProgress(mod.name, 'Downloading...', 0);
+
+    ModInstaller.download(mod, function(ratio:Float):Void
+      {
+        if (installCancelled) return;
+
+        installPopup.showProgress(mod.name, 'Downloading... ${Math.round(ratio * 100)}%', ratio);
+      },
+      function(archivePath:String):Void
+      {
+        if (installCancelled) return;
+
+        installPopup.showBusy(mod.name, 'Installing...');
+
+        ModInstaller.install(mod, archivePath, function(paths:Array<String>):Void
+          {
+            if (installCancelled) return;
+
+            if (paths.length == 0)
+            {
+              installPopup.showResult(mod.name, 'That download isn\'t a mod this game can load.');
+              return;
+            }
+
+            installRequirements(mod, mod.requirements.copy());
+          },
+          function(reason:String):Void
+          {
+            if (installCancelled) return;
+
+            installPopup.showResult(mod.name, 'Install failed.\n${reason}');
+          }
+        );
+      },
+      function(reason:String):Void
+      {
+        if (installCancelled) return;
+
+        installPopup.showResult(mod.name, reason);
+      }
+    );
+  }
+
+  /**
+   * Handles input while the install overlay is up, and swallows everything else.
+   */
+  function handleInstallPopupInput():Void
+  {
+    switch (installPopup.state)
+    {
+      case Confirm:
+        if (controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
+        {
+          confirmOneClickInstall();
+        }
+        else if (controls.BACK_P)
+        {
+          cancelOneClickInstall();
+        }
+
+      case Downloading:
+        if (controls.BACK_P) cancelOneClickInstall();
+
+      case Result:
+        if (FlxG.keys.justPressed.ANY
+          || controls.ACCEPT_P
+          || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
+        {
+          installPopup.hide();
+        }
+
+      default:
+        // Busy and Hidden take no input.
+    }
+  }
+
+  /**
+   * Recursively downloads and installs a mod's requirements, then finishes the install.
+   *
+   * @param mod The mod that was just installed.
+   * @param remaining The requirements still to work through.
+   */
+  function installRequirements(mod:OneClickMod, remaining:Array<OneClickRequirement>):Void
+  {
+    if (installCancelled) return;
+
+    if (remaining.length == 0)
+    {
+      finishOneClickInstall(mod);
+      return;
+    }
+
+    final requirement:Null<OneClickRequirement> = remaining.shift();
+
+    if (requirement == null || requirement.model == null || requirement.itemId == null)
+    {
+      installRequirements(mod, remaining);
+      return;
+    }
+
+    installPopup.showBusy(requirement.name, 'Checking a required mod...');
+
+    ModInstaller.fetchRequirement(requirement, function(dependency:OneClickMod):Void
+      {
+        if (installCancelled) return;
+
+        // Requirements are shared between mods, so this is a normal outcome rather than a problem.
+        if (ModInstaller.isAlreadyInstalled(dependency))
+        {
+          installRequirements(mod, remaining);
+          return;
+        }
+
+        installPopup.showProgress(requirement.name, 'Downloading required mod...', 0);
+
+        ModInstaller.download(dependency, function(ratio:Float):Void
+          {
+            if (installCancelled) return;
+
+            installPopup.showProgress(requirement.name, 'Downloading required mod... ${Math.round(ratio * 100)}%', ratio);
+          },
+          function(archivePath:String):Void
+          {
+            if (installCancelled) return;
+
+            installPopup.showBusy(requirement.name, 'Installing a required mod...');
+
+            ModInstaller.install(dependency, archivePath, function(paths:Array<String>):Void
+              {
+                if (installCancelled) return;
+
+                // An empty result means the download wasn't a mod folder. Nothing was written, and
+                // it isn't worth failing the install the player actually asked for.
+                if (paths.length > 0) installedRequirements.push(dependency.name);
+
+                installRequirements(mod, remaining);
+              },
+              function(reason:String):Void
+              {
+                if (installCancelled) return;
+
+                trace('Skipping requirement "${requirement.name}": ${reason}');
+                installRequirements(mod, remaining);
+              }
+            );
+          },
+          function(reason:String):Void
+          {
+            if (installCancelled) return;
+
+            trace('Skipping requirement "${requirement.name}": ${reason}');
+            installRequirements(mod, remaining);
+          }
+        );
+      },
+      function(reason:String):Void {
+        if (installCancelled) return;
+
+        trace('Skipping requirement "${requirement.name}": ${reason}');
+        installRequirements(mod, remaining);
+      }
+    );
+  }
+
+  /**
+   * Refreshes the list and reports what landed.
+   */
+  function finishOneClickInstall(mod:OneClickMod):Void
+  {
+    highlightNewMod();
+
+    if (installedRequirements.length == 0)
+    {
+      installPopup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
+      return;
+    }
+
+    installPopup.showResult(mod.name, 'Installed, along with ${installedRequirements.join(', ')}.');
+  }
+
+  /**
+   * Renders a mod's requirements for the confirmation prompt.
+   */
+  function formatRequirements(mod:OneClickMod):String
+  {
+    if (mod.requirements.length == 0) return '';
+
+    return '\nNeeds: ${[for (requirement in mod.requirements) requirement.name].join(', ')}';
+  }
+
+  function cancelOneClickInstall():Void
+  {
+    installCancelled = true;
+    pendingInstall = null;
+    ModInstaller.cancelDownload();
+    ModInstaller.cancelInstall();
+    installPopup.hide();
+  }
+
+  /**
+   * Renders a byte count the way a download dialog would.
+   */
+  function formatFilesize(bytes:Int):String
+  {
+    if (bytes <= 0) return '';
+
+    if (bytes < 1024 * 1024) return '${Math.round(bytes / 1024)} KB';
+
+    return '${Math.round(bytes / (1024 * 1024))} MB';
+  }
+  #end
 
   var secondCounter:Float = 0;
   var blinkTimer:Float = 0;
@@ -1089,6 +1409,15 @@ class ModMenuState extends MusicBeatState
 
   function handleInput(elapsed:Float):Void
   {
+    #if FEATURE_ONE_CLICK_INSTALL
+    // The install overlay is modal, so it gets first refusal on every input.
+    if (installPopup != null && installPopup.isBlocking())
+    {
+      handleInstallPopupInput();
+      return;
+    }
+    #end
+
     if (allowInput)
     {
       #if FEATURE_TOUCH_CONTROLS

@@ -438,6 +438,13 @@ class Project extends HXProject
   static final FEATURE_NAUGHTYNESS:FeatureFlag = "FEATURE_NAUGHTYNESS";
 
   /**
+   * `-DFEATURE_ONE_CLICK_INSTALL`
+   * If this flag is enabled, the game registers itself as the handler for the `funkin-mod:` URL
+   * scheme.
+   */
+  static final FEATURE_ONE_CLICK_INSTALL:FeatureFlag = "FEATURE_ONE_CLICK_INSTALL";
+
+  /**
    * `-DFEATURE_NEWGROUNDS`
    * If this flag is enabled, the game will enable the Newgrounds library.
    * This is used to provide Medal and Leaderboard support.
@@ -971,6 +978,10 @@ class Project extends HXProject
 
     // Should be true except on mobile builds.
     FEATURE_FILE_DROP.apply(this, !isMobile());
+
+    // Should be true only on Desktop builds.
+    // Registering a URL scheme requires OS level access we don't have on web or mobile.
+    FEATURE_ONE_CLICK_INSTALL.apply(this, isDesktop());
 
     // The audio context issues which require the user to click before playing
     // only exist on web builds.

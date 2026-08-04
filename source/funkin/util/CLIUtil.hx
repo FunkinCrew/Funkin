@@ -122,7 +122,11 @@ class CLIUtil
       {
         // Make an attempt to interpret the argument.
 
-        if (arg.endsWith(Constants.EXT_CHART))
+        if (arg.toLowerCase().startsWith('${Constants.ONE_CLICK_SCHEME}:'))
+        {
+          result.oneClickUrl = arg;
+        }
+        else if (arg.endsWith(Constants.EXT_CHART))
         {
           result.chart.shouldLoadChart = true;
           result.chart.chartPath = arg;
@@ -152,6 +156,7 @@ class CLIUtil
   {
     return {
       args: [],
+      oneClickUrl: null,
 
       chart: {
         shouldLoadChart: false,
@@ -198,6 +203,12 @@ class CLIUtil
 typedef CLIParams =
 {
   var args:Array<String>;
+
+  /**
+   * A `funkin-mod:` link the shell handed us, if the game was launched by a one-click install.
+   */
+  var oneClickUrl:Null<String>;
+
   var chart:CLIChartParams;
   var camera:CLIChartParams;
   var stage:CLIStageParams;
