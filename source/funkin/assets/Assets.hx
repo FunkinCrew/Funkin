@@ -341,7 +341,11 @@ class Assets implements ConsoleClass
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.txt()?';
 
-    return FunkinAssetCache.instance.getText(assetPath.toString());
+    @:privateAccess
+    var assetLib:polymod.backends.PolymodAssetLibrary = polymod.Polymod.assetLibrary;
+    var text:String = FunkinAssetCache.instance.getText(assetPath.toString());
+    
+    return assetLib == null ? text : assetLib.mergeAndAppendText(assetPath.toString().substring(6), text);
   }
 
   /**
