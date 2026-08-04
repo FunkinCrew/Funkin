@@ -789,30 +789,10 @@ class Project extends HXProject
         error('Unknown platform type (got ${platformType})');
     }
 
-    // Print whether we are using HXCPP, HashLink, or something else.
+    // Print whether we are using HXCPP, JavaScript, or something else.
     if (isWeb())
     {
       info('Target Language: JavaScript (HTML5)');
-    }
-    else if (isHashLink())
-    {
-      info('Target Language: HashLink');
-    }
-    else if (isNeko())
-    {
-      info('Target Language: Neko');
-    }
-    else if (isJava())
-    {
-      info('Target Language: Java');
-    }
-    else if (isNodeJS())
-    {
-      info('Target Language: JavaScript (NodeJS)');
-    }
-    else if (isCSharp())
-    {
-      info('Target Language: C#');
     }
     else if (isCPP())
     {
@@ -913,7 +893,7 @@ class Project extends HXProject
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isHashLink());
+    FEATURE_VIDEO_PLAYBACK.apply(this, true);
 
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
@@ -924,7 +904,7 @@ class Project extends HXProject
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && !isHashLink());
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
     FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
 
@@ -1359,8 +1339,6 @@ class Project extends HXProject
 
     if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
-      // hxvlc doesn't function on HashLink or non-desktop platforms
-      // It's also unnecessary if video playback is disabled
       addHaxelib('hxvlc'); // Video playback
     }
 
@@ -1544,7 +1522,7 @@ class Project extends HXProject
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
-    var platform:String = isHashLink() ? 'hl' : (!isMac() ? Std.string(this.target) : 'macos');
+    var platform:String = !isMac() ? Std.string(this.target) : 'macos';
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
@@ -1773,31 +1751,6 @@ class Project extends HXProject
   public function isIOSSimulator():Bool
   {
     return this.target == Platform.IOS && this.targetFlags.exists("simulator");
-  }
-
-  public function isHashLink():Bool
-  {
-    return this.targetFlags.exists("hl");
-  }
-
-  public function isNeko():Bool
-  {
-    return this.targetFlags.exists("neko");
-  }
-
-  public function isJava():Bool
-  {
-    return this.targetFlags.exists("java");
-  }
-
-  public function isNodeJS():Bool
-  {
-    return this.targetFlags.exists("nodejs");
-  }
-
-  public function isCSharp():Bool
-  {
-    return this.targetFlags.exists("cs");
   }
 
   public function isCPP():Bool

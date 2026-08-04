@@ -16,15 +16,9 @@ class SongItemGroup extends FlxTypedGroup<SongMenuItem>
   var favIconBlurredShader:GaussianBlurShader = new GaussianBlurShader(1.2);
   var weekTextFilter:GlowFilter = new GlowFilter(0xFF1A1C24, 1, 5, 5, 3.13, 1, true, true);
 
-  #if hl
-  // What the hell is the compiler about on here?
-
-  override function recycle(?cls:Class<Dynamic>, ?factory:Void->Dynamic, force:Bool = false, revive:Bool = true):SongMenuItem
-  #else
   override function recycle(?cls:Class<SongMenuItem>, ?factory:Void->SongMenuItem, force:Bool = false, revive:Bool = true):SongMenuItem
-  #end
   {
-    var capsule:SongMenuItem = super.recycle(#if hl cast #end cls, factory, force, revive);
+    var capsule:SongMenuItem = super.recycle(cls, factory, force, revive);
 
     // Apply the same shader instance to some elements so that we can use one draw call to render multiple of them.
     capsule.fakeBlurredRanking.shader = rankBlurredShader;

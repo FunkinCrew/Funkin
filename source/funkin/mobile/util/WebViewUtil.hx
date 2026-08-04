@@ -6,6 +6,7 @@ import extension.webviewcore.WebView;
 /**
  * Provides utility functions for working with WebView.
  */
+@:unreflective
 class WebViewUtil
 {
   /**

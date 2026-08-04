@@ -340,14 +340,13 @@ class PolymodHandler
     // If you create your own library using a manifest, AssetLibrary.__fromManifest() can access blacklisted packages apparently.
     Polymod.blacklistImport('lime.utils.AssetLibrary');
 
-    // Disable access to AdMob Util
-    Polymod.blacklistImport('funkin.mobile.util.AdMobUtil');
-
-    // Disable access to In-App Purchases Util
-    Polymod.blacklistImport('funkin.mobile.util.InAppPurchasesUtil');
-
-    // Disable access to In-App Reviews Util
-    Polymod.blacklistImport('funkin.mobile.util.InAppReviewUtil');
+    // Disable access to all Mobile Utils
+    for (cls in ClassMacro.listClassesInPackage('funkin.mobile.util'))
+    {
+      if (cls == null) continue;
+      var className:String = Type.getClassName(cls);
+      Polymod.blacklistImport(className);
+    }
 
     // Disable access to all Extension in the extension package
     for (cls in ClassMacro.listClassesInPackage('extension'))
