@@ -1115,7 +1115,7 @@ class ModMenuState extends MusicBeatState
 
   function handleMouse():Void
   {
-    if (hasTransitions()) return;
+    if (hasTransitions() || exitingMenu) return;
 
     if (FlxG.mouse.justPressed)
     {
@@ -1285,7 +1285,7 @@ class ModMenuState extends MusicBeatState
 
   function handleKeyboard():Void
   {
-    if (hasTransitions()) return;
+    if (hasTransitions() || exitingMenu) return;
 
     var pressingCtrl:Bool = FlxG.keys.pressed.CONTROL;
     if (controls.BACK_P)
@@ -1526,7 +1526,7 @@ class ModMenuState extends MusicBeatState
       }
     }
 
-    if (controls.ACCEPT_P && !hasTransitions() && acceptDelay <= 0)
+    if (controls.ACCEPT_P && acceptDelay <= 0)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
       enabledModItems.repositionItems();
