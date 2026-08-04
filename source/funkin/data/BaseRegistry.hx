@@ -278,7 +278,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * @param version The entry's version (use `fetchEntryVersion(id)`).
    * @return The created entry.
    */
-  public function parseEntryDataWithMigration(id:String, version:Null<thx.semver.Version>):Null<J>
+  public function parseEntryDataWithMigration(id:String,
+    version:Null<thx.semver.Version>):Null<J>
   {
     if (version == null)
     {
@@ -330,7 +331,8 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    */
   abstract function createScriptedEntry(clsName:String):Null<T>;
 
-  function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
+  function printErrors(errors:Array<json2object.Error>,
+    id:String = ''):Void
   {
     trace(' $registryId '.bold().bg_note_down() + ' ERROR '.error() + 'Failed to parse entry data: ${id}');
 

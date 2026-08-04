@@ -140,7 +140,7 @@ class RegistryMacro
    * @param dataType The type of the data for entries in the registry.
    * @return The modified list of fields for the target class.
    */
-  static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:Dynamic):Array<Field>
+  static function buildRegistryMethods(cls:ClassType, fields:Array<Field>, entryType:ClassType, dataType:DefType):Array<Field>
   {
     var scriptedEntryClsName:String = entryType.pack.join('.') + '.Scripted' + entryType.name;
 
@@ -174,17 +174,19 @@ class RegistryMacro
           });
         }
 
-        function getScriptedClassNames()
+        function getScriptedClassNames():Array<String>
         {
           return ${Context.parse(getScriptedClassName, Context.currentPos())}.listScriptClasses();
         }
 
-        function createScriptedEntry(clsName:String)
+        override function createScriptedEntry(clsName:String)
+
         {
           return ${Context.parse(createScriptedEntry, Context.currentPos())};
         }
 
         public function parseEntryData(id:String)
+
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
           parser.ignoreUnknownVariables = false;
@@ -208,6 +210,7 @@ class RegistryMacro
         }
 
         public function parseEntryDataRaw(contents:String, ?fileName:String)
+
         {
           var parser = ${Context.parse(newJsonParser, Context.currentPos())};
           parser.ignoreUnknownVariables = false;

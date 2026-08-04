@@ -79,7 +79,7 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
     return parser.value;
   }
 
-  function createScriptedEntry(clsName:String):StickerPack
+  override function createScriptedEntry(clsName:String):Null<StickerPack>
   {
     return ScriptedStickerPack.scriptInit(clsName, 'unknown');
   }

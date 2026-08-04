@@ -306,7 +306,8 @@ class FreeplayState extends MusicBeatSubState
       var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
       for (cardClass in allScriptedCards)
       {
-        var card:BackingCard = ScriptedBackingCard.scriptInit(cardClass, 'unknown');
+        var card:Null<BackingCard> = ScriptedBackingCard.scriptInit(cardClass, 'unknown');
+        if (card == null) continue;
         if (card.currentCharacter == currentCharacterId)
         {
           backingCardPrep = card;
@@ -2815,7 +2816,8 @@ class FreeplayState extends MusicBeatSubState
           minimalMode: false,
 
           #if FEATURE_DEBUG_FUNCTIONS
-          botPlayMode: FlxG.keys.pressed.SHIFT, mirrored: FlxG.keys.pressed.CONTROL,
+          botPlayMode: FlxG.keys.pressed.SHIFT,
+          mirrored: FlxG.keys.pressed.CONTROL,
           #else
           botPlayMode: false,
           #end
@@ -2888,6 +2890,9 @@ class FreeplayState extends MusicBeatSubState
 
   function changeSelection(change:Int = 0):Void
   {
+    // Reset new rank prep flag if we're changing selection to prevent the song preview from not updating to a new one.
+    if (change != 0 && prepForNewRank) prepForNewRank = false;
+
     var prevSelected:Int = curSelected;
 
     curSelected += change;
@@ -2951,11 +2956,15 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
-      FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
-      currentCapsule.selected = true;
+      clearPreviews();
 
-      // switchBackingImage(currentCapsule.freeplayData);
+      // Create a timer to delay the song preview to prevent overlapping or cutting out.
+      var timer = new FlxTimer().start(FADE_IN_DELAY, function(tmr:FlxTimer) {
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
+        playCurSongPreview(currentCapsule);
+      });
+
+      previewTimers.push(timer);
     }
 
     // Small vibrations every selection change.
@@ -3021,18 +3030,33 @@ class FreeplayState extends MusicBeatSubState
         },
         onLoad: function()
         {
+          #if html5
+          // > Hardcode fade-in and fade-out times due to HTML5 not processing `partialParams` correctly.
+          // > 12 - 15 seconds is the average length of a preview, so fading out around the 10 second mark feels appropriate.
+          // > NOTE: Due to `partialParams` being finicky on web builds, the preview may take about 2 - 3 seconds to fade back in after the fade-out.
+          var fadeStart:Float = 10;
+          var loopEnd:Float = (FlxG.sound.music.length > 0) ? 14 : 15;  // Default the preview to 15 seconds if the length is 0.
+          var fadeDuration:Float = Math.min(3, loopEnd - fadeStart);
+          #else
+          var fadeDuration:Float = 5;
+          var loopEnd:Float = FlxG.sound.music.length / 1000;
+          var fadeStart:Float = loopEnd - fadeDuration;
+          #end
+
+          FlxG.sound.music.volume = 0;
           FlxG.sound.music.fadeIn(2, 0, previewVolume);
 
           var fadeStart:Float = (FlxG.sound.music.length / Constants.MS_PER_SEC) - 2;
+          clearPreviews();
 
           previewTimers.push(new FlxTimer().start(fadeStart, function(_)
           {
-            FlxG.sound.music.fadeOut(2, 0);
+            if (FlxG.sound.music != null) FlxG.sound.music.fadeOut(fadeDuration, 0);
           }));
 
-          previewTimers.push(new FlxTimer().start(FlxG.sound.music.length / Constants.MS_PER_SEC, function(_)
+          previewTimers.push(new FlxTimer().start(loopEnd, function(_)
           {
-            playCurSongPreview();
+            if (daSongCapsule.selected) playCurSongPreview(daSongCapsule);
           }));
         },
       });

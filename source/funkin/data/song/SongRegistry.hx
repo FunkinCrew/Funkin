@@ -56,7 +56,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
 
     for (entryCls in scriptedEntryClassNames)
     {
-      var entry:Song = createScriptedEntry(entryCls);
+      var entry:Null<Song> = createScriptedEntry(entryCls);
 
       if (entry != null)
       {
