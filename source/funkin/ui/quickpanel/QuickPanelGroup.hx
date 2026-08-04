@@ -293,6 +293,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     repositionButtons();
 
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.volume = rememberedVolume;
+    }
+
     switch (curState)
     {
       case OPEN:
