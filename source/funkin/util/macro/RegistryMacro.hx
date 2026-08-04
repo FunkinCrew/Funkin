@@ -420,15 +420,23 @@ class RegistryMacro
 
   static function listBaseGameEntryIds(dataFilePath:String):Array<Expr>
   {
-    var result:Array<Expr> = [];
+    var results:Array<Expr> = [];
+
+    // Read folder contents, non-recursively.
+    // For nested entries, this will return folder names, and for non-nested entries, it will return file names.
     var files:Array<String> = sys.FileSystem.readDirectory(dataFilePath);
 
     for (file in files)
     {
-      result.push(macro $v{file.replace('.json', '')});
+      var fileExt = haxe.io.Path.extension(file);
+      if (fileExt != '' && fileExt != 'json') continue;
+
+      var entryId = file.replace('.json', '');
+
+      results.push(macro $v{entryId});
     }
 
-    return result;
+    return results;
   }
 
   /**
