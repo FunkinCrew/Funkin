@@ -1,5 +1,6 @@
 package funkin.modding.compat;
 
+import haxe.io.Path;
 import openfl.utils.AssetType as OpenFLAssetType;
 
 /**
@@ -3693,16 +3694,17 @@ class Paths
           + 'Chill/$fileName';
 
         // Redirect for music metadata
-        var musicDataFilePath:String = (library == 'default') ? 'assets/music/$id' : 'assets/$library/music/$id';
-        var musicMetadataFilePath:String = (library == 'default') ? 'assets/music/${id.replace('.json', '-metadata.json')}' : 'assets/$library/music/${id.replace('.json', '-metadata.json')}';
+        var musPath:Path = new Path(id);
+        var file:String = musPath.file.replace('-metadata', '');
+
+        musPath.dir = (library == 'default' ? 'assets/music/' : 'assets/$library/music/') + (musPath.dir ?? '') + file;
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
         usePathIfExists(songDataFilePath);
         usePathIfExists(songFilePath);
         usePathIfExists(charSelectFilePath);
-        usePathIfExists(musicDataFilePath);
-        usePathIfExists(musicMetadataFilePath);
+        usePathIfExists(musPath.toString());
 
       case 'ogg': // Music or sound
         // Redirect for music files
