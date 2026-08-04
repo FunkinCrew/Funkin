@@ -234,7 +234,6 @@ class ModMenuItem extends FunkinSpriteGroup
     }
     else if (mod != null)
     {
-      trace(mod.icon);
       @:privateAccess
       if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
       {
