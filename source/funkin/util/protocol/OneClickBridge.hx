@@ -44,7 +44,7 @@ class OneClickBridge
   static var holdsLock:Bool = false;
 
   /**
-   * Pulls the first `funkin-mod:` URL out of a command line.
+   * Pulls the first `funkin:` URL out of a command line.
    *
    * @param args The raw arguments, usually `Sys.args()`.
    * @return The URL, or null if there isn't one.

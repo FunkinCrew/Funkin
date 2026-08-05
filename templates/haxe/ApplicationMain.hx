@@ -40,7 +40,7 @@ class ApplicationMain
 
     #if sys
     // The shell launches us with its own working directory when a file is dropped on the exe or a
-    // `funkin-mod:` link is opened, which would put the mods folder somewhere random.
+    // `funkin:` link is opened, which would put the mods folder somewhere random.
     funkin.util.CLIUtil.resetWorkingDir();
     #end
 

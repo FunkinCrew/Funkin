@@ -1,4 +1,4 @@
-"""Turns a GameBanana submission URL into a `funkin-mod:` one-click install link.
+"""Turns a GameBanana submission URL into a `funkin:` one-click install link.
 
 Usage:
   python genOneClickLink.py https://gamebanana.com/mods/700143
@@ -115,7 +115,7 @@ def main():
     megabytes = entry.get("_nFilesize", 0) / 1024 / 1024
 
     print(f'{entry.get("_sFile", "?")} ({megabytes:.1f} MB)')
-    print(f'funkin-mod:https://gamebanana.com/mmdl/{entry["_idRow"]},{model},{itemId}')
+    print(f'funkin:https://gamebanana.com/mmdl/{entry["_idRow"]},{model},{itemId}')
     print()
 
   return 0

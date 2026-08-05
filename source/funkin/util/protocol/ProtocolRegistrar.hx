@@ -4,7 +4,7 @@ import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Path;
 
 /**
- * Handles making the operating system aware that this executable owns the `funkin-mod:` URL scheme.
+ * Handles making the operating system aware that this executable owns the `funkin:` URL scheme.
  */
 @:nullSafety
 class ProtocolRegistrar

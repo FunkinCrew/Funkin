@@ -42,7 +42,7 @@
 			<string>Viewer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>funkin-mod</string>
+				<string>funkin</string>
 			</array>
 		</dict>
 	</array>

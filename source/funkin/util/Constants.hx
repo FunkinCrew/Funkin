@@ -93,9 +93,9 @@ class Constants
 
   /**
    * The custom URL scheme the game registers itself against for one-click mod installs.
-   * A link looks like `funkin-mod:https://gamebanana.com/mmdl/1234567,Mod,567890`.
+   * A link looks like `funkin:https://gamebanana.com/mmdl/1234567,Mod,567890`.
    */
-  public static final ONE_CLICK_SCHEME:String = 'funkin-mod';
+  public static final ONE_CLICK_SCHEME:String = 'funkin';
 
   /**
    * The domains we are willing to download mod archives from.

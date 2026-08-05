@@ -43,10 +43,6 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
   /**
    * Where the bar is being asked to get to, and where it's actually drawn.
-   *
-   * A small mod arrives in a couple of frames, so snapping the fill straight to the reported ratio
-   * means the bar reads as already full. Easing towards the target keeps it legible without
-   * inventing progress that hasn't happened.
    */
   var targetRatio:Float = 0;
 
@@ -187,6 +183,19 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     resultTimer = RESULT_DURATION;
 
     apply(title, detail, '', hasDownloaded, 1);
+  }
+
+  /**
+   * Draws the card on the given camera instead of the world one.
+   */
+  public function setCamera(target:flixel.FlxCamera):Void
+  {
+    camera = target;
+
+    forEach(function(child:flixel.FlxSprite):Void
+    {
+      child.camera = target;
+    });
   }
 
   /**

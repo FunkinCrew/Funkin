@@ -439,7 +439,7 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_ONE_CLICK_INSTALL`
-   * If this flag is enabled, the game registers itself as the handler for the `funkin-mod:` URL
+   * If this flag is enabled, the game registers itself as the handler for the `funkin:` URL
    * scheme.
    */
   static final FEATURE_ONE_CLICK_INSTALL:FeatureFlag = "FEATURE_ONE_CLICK_INSTALL";

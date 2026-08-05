@@ -23,9 +23,29 @@ using StringTools;
 class ModInstaller
 {
   /**
+   * The file types a mod can arrive as. A `.fnfmod` is a zip under another name.
+   */
+  static final ARCHIVE_EXTENSIONS:Array<String> = ['.zip', '.fnfmod'];
+
+  /**
+   * Whether a downloaded file's name says it's an archive we can unpack.
+   */
+  static function isArchiveName(filename:String):Bool
+  {
+    final lowered:String = filename.toLowerCase();
+
+    for (extension in ARCHIVE_EXTENSIONS)
+    {
+      if (lowered.endsWith(extension)) return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Parses a one-click link into its parts.
    *
-   * `funkin-mod:<downloadUrl>,<modelName>,<itemId>`, where
+   * `funkin:<downloadUrl>,<modelName>,<itemId>`, where
    * the download URL is an `mmdl` link whose trailing id identifies the file.
    *
    * @param link The full URL, including the scheme.
@@ -1120,7 +1140,7 @@ class ModInstaller
       return 'That\'s a "${mod.categoryName}" upload, not a mod folder for this game.';
     }
 
-    if (!mod.filename.toLowerCase().endsWith('.zip')) return 'Only ZIP archives can be installed this way.';
+    if (!isArchiveName(mod.filename)) return 'Only ${ARCHIVE_EXTENSIONS.join(" and ")} files can be installed this way.';
 
     if (mod.filesize > Constants.ONE_CLICK_MAX_FILESIZE)
     {

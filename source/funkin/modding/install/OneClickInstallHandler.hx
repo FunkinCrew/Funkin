@@ -105,7 +105,7 @@ class OneClickInstallHandler
   /**
    * Puts a link on the queue, to be installed as soon as the mod menu is open and free.
    *
-   * @param link The full `funkin-mod:` URL.
+   * @param link The full `funkin:` URL.
    */
   public static function handleLink(link:String):Void
   {

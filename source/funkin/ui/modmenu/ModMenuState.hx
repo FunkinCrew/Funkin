@@ -657,7 +657,8 @@ class ModMenuState extends MusicBeatState
 
     #if FEATURE_ONE_CLICK_INSTALL
     installPopup = new ModMenuInstallPopup();
-    installPopup.zIndex = 1000;
+    installPopup.zIndex = fileDrop.zIndex + 1;
+    installPopup.setCamera(camHUD);
     add(installPopup);
 
     #end

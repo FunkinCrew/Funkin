@@ -205,7 +205,7 @@ typedef CLIParams =
   var args:Array<String>;
 
   /**
-   * A `funkin-mod:` link the shell handed us, if the game was launched by a one-click install.
+   * A `funkin:` link the shell handed us, if the game was launched by a one-click install.
    */
   var oneClickUrl:Null<String>;
 
