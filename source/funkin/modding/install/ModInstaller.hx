@@ -29,16 +29,16 @@ class ModInstaller
    * the download URL is an `mmdl` link whose trailing id identifies the file.
    *
    * @param link The full URL, including the scheme.
-   * @return The parsed request, or null if the link is malformed or points somewhere we don't trust.
+   * @return The parsed request, or the reason the link was turned down.
    */
-  public static function parseLink(link:Null<String>):Null<OneClickRequest>
+  public static function parseLink(link:Null<String>):OneClickLink
   {
-    if (link == null) return null;
+    if (link == null) return Rejected('That install link is empty.');
 
     var body:String = link.trim();
 
     final prefix:String = '${Constants.ONE_CLICK_SCHEME}:';
-    if (!body.toLowerCase().startsWith(prefix)) return null;
+    if (!body.toLowerCase().startsWith(prefix)) return Rejected('That isn\'t a one-click install link.');
 
     body = body.substr(prefix.length);
 
@@ -47,28 +47,31 @@ class ModInstaller
 
     // Split from the right, since the download URL itself may legally contain commas.
     final lastComma:Int = body.lastIndexOf(',');
-    if (lastComma == -1) return null;
+    if (lastComma == -1) return Rejected('That install link is missing the parts that say what to fetch.');
 
     final firstComma:Int = body.lastIndexOf(',', lastComma - 1);
-    if (firstComma == -1) return null;
+    if (firstComma == -1) return Rejected('That install link is missing the parts that say what to fetch.');
 
     final downloadUrl:String = body.substring(0, firstComma).trim();
     final modelName:String = body.substring(firstComma + 1, lastComma).trim();
     final itemId:String = body.substring(lastComma + 1).trim();
 
-    if (downloadUrl == '' || itemId == '') return null;
+    if (downloadUrl == '') return Rejected('That install link doesn\'t say what to download.');
 
-    if (!~/^[0-9]+$/.match(itemId)) return null;
+    if (itemId == '') return Rejected('That install link doesn\'t say which submission it came from.');
 
-    if (!isHostAllowed(downloadUrl)) return null;
+    if (!~/^[0-9]+$/.match(itemId)) return Rejected('The submission ID in that install link isn\'t a number.');
 
-    return {
-      downloadUrl: downloadUrl,
-      modelName: modelName == '' ? 'Mod' : modelName,
-      itemId: itemId,
-      fileId: extractTrailingId(downloadUrl),
-      enforceCategory: true
-    };
+    if (!isHostAllowed(downloadUrl)) return Rejected('That install link points at a site we don\'t download from.');
+
+    return Accepted(
+      {
+        downloadUrl: downloadUrl,
+        modelName: modelName == '' ? 'Mod' : modelName,
+        itemId: itemId,
+        fileId: extractTrailingId(downloadUrl),
+        enforceCategory: true
+      });
   }
 
   /**
@@ -1567,6 +1570,22 @@ private class DownloadOutput extends haxe.io.Output
   }
 }
 #end
+
+/**
+ * What came of reading a one-click link.
+ */
+enum OneClickLink
+{
+  /**
+   * The link is one we're willing to act on.
+   */
+  Accepted(request:OneClickRequest);
+
+  /**
+   * The link is not, and this is what to tell the player.
+   */
+  Rejected(reason:String);
+}
 
 /**
  * One file inside an archive, as the archive itself describes it.

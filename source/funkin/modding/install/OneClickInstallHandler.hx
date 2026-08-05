@@ -85,17 +85,18 @@ class OneClickInstallHandler
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
     if (link == null) return false;
 
-    final request:Null<OneClickRequest> = ModInstaller.parseLink(link);
-
-    if (request == null)
+    switch (ModInstaller.parseLink(link))
     {
-      trace('Ignoring a malformed or untrusted one-click link: ${link}');
-      return false;
+      case Accepted(request):
+        queue.push(request);
+
+        return true;
+
+      case Rejected(reason):
+        trace('Ignoring the one-click link "${link}": ${reason}');
+
+        return false;
     }
-
-    queue.push(request);
-
-    return true;
     #else
     return false;
     #end
@@ -109,20 +110,19 @@ class OneClickInstallHandler
   public static function handleLink(link:String):Void
   {
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
-    final request:Null<OneClickRequest> = ModInstaller.parseLink(link);
-
-    if (request == null)
+    switch (ModInstaller.parseLink(link))
     {
-      trace('Ignoring a malformed or untrusted one-click link: ${link}');
-      funkin.util.WindowUtil.showWarning('Mod install failed', 'That install link is malformed, or points at a site we don\'t download from.');
-      return;
+      case Accepted(request):
+        focusWindow();
+
+        queue.push(request);
+
+        pumpQueue();
+
+      case Rejected(reason):
+        trace('Ignoring the one-click link "${link}": ${reason}');
+        funkin.util.WindowUtil.showWarning('Mod install failed', reason);
     }
-
-    focusWindow();
-
-    queue.push(request);
-
-    pumpQueue();
     #end
   }
 
