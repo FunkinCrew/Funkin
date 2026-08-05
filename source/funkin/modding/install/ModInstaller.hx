@@ -867,6 +867,12 @@ class ModInstaller
       final url:Null<String> = entry.length > 1 ? asString(entry[1]) : null;
       final target = parseSubmissionUrl(url);
 
+      if (target.model == null || target.itemId == null)
+      {
+        trace('Ignoring the requirement "${name}", it does not link to a GameBanana submission.');
+        continue;
+      }
+
       results.push(
         {
           name: name,

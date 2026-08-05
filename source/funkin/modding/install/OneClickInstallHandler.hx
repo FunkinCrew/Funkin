@@ -14,10 +14,11 @@ class OneClickInstallHandler
   static var initialized:Bool = false;
 
   /**
-   * A link that arrived while the player was somewhere we shouldn't yank them out of.
-   * The mod menu picks it up the next time it opens.
+   * Links waiting to be installed, oldest first.
    */
-  static var pendingLink:Null<String> = null;
+  static var queue:Array<OneClickRequest> = [];
+
+  static var awaitingMenu:Bool = false;
 
   /**
    * Whether the feature is compiled in and the platform can actually support it.
@@ -67,7 +68,7 @@ class OneClickInstallHandler
   public static function hasPendingLink():Bool
   {
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
-    return pendingLink != null;
+    return queue.length > 0;
     #else
     return false;
     #end
@@ -84,13 +85,15 @@ class OneClickInstallHandler
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
     if (link == null) return false;
 
-    if (ModInstaller.parseLink(link) == null)
+    final request:Null<OneClickRequest> = ModInstaller.parseLink(link);
+
+    if (request == null)
     {
       trace('Ignoring a malformed or untrusted one-click link: ${link}');
       return false;
     }
 
-    pendingLink = link;
+    queue.push(request);
 
     return true;
     #else
@@ -99,7 +102,7 @@ class OneClickInstallHandler
   }
 
   /**
-   * Routes a link, either straight into an open mod menu or into the pending slot.
+   * Puts a link on the queue, to be installed as soon as the mod menu is open and free.
    *
    * @param link The full `funkin-mod:` URL.
    */
@@ -117,43 +120,20 @@ class OneClickInstallHandler
 
     focusWindow();
 
-    final menu:Null<funkin.ui.modmenu.ModMenuState> = funkin.ui.modmenu.ModMenuState.instance;
+    queue.push(request);
 
-    if (menu != null)
-    {
-      menu.beginOneClickInstall(request);
-      return;
-    }
-
-    pendingLink = link;
-
-    if (canInterrupt())
-    {
-      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
-    }
-    else
-    {
-      trace('Holding a one-click install until the mod menu is opened.');
-    }
+    pumpQueue();
     #end
   }
 
   /**
-   * Hands over a link that arrived while the mod menu was closed, and clears it.
-   *
-   * @return The pending request, or null if there isn't one.
+   * Throws away everything still queued.
    */
-  public static function consumePending():Null<OneClickRequest>
+  public static function clearQueue():Void
   {
     #if (FEATURE_ONE_CLICK_INSTALL && sys)
-    if (pendingLink == null) return null;
-
-    final link:String = pendingLink;
-    pendingLink = null;
-
-    return ModInstaller.parseLink(link);
-    #else
-    return null;
+    queue = [];
+    awaitingMenu = false;
     #end
   }
 
@@ -164,6 +144,39 @@ class OneClickInstallHandler
     ModInstaller.pump();
 
     for (link in OneClickBridge.update()) handleLink(link);
+
+    pumpQueue();
+  }
+
+  /**
+   * Pumps the queue, opening the mod menu if necessary and starting the next install if possible.
+   */
+  static function pumpQueue():Void
+  {
+    if (queue.length == 0) return;
+
+    final menu:Null<funkin.ui.modmenu.ModMenuState> = funkin.ui.modmenu.ModMenuState.instance;
+
+    if (menu == null)
+    {
+      // No trace here, this runs every frame and the player may sit on a queued link for a while.
+      if (awaitingMenu || !canInterrupt()) return;
+
+      awaitingMenu = true;
+      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+      return;
+    }
+
+    awaitingMenu = false;
+
+    if (!menu.isInstalling())
+    {
+      final request:Null<OneClickRequest> = queue.shift();
+      if (request != null) menu.beginOneClickInstall(request);
+    }
+
+    // Shown on the card, so the player can tell more mods are lined up behind this one.
+    menu.setInstallQueueCount(queue.length);
   }
 
   /**

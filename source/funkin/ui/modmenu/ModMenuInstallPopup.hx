@@ -58,6 +58,16 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   var hasDownloaded:Bool = false;
 
   /**
+   * How many more mods are waiting behind this one.
+   */
+  var queueCount:Int = 0;
+
+  /**
+   * The prompt without the queue tally on it, so the tally can be swapped out on its own.
+   */
+  var lastPrompt:String = '';
+
+  /**
    * How much of the remaining distance the fill closes per second.
    */
   static inline final BAR_LERP:Float = 9.0;
@@ -196,6 +206,20 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   }
 
   /**
+   * Sets how many more mods are queued behind this one, and redraws the prompt to match.
+   */
+  public function setQueueCount(count:Int):Void
+  {
+    if (queueCount == count) return;
+
+    queueCount = count;
+
+    promptText.text = decoratePrompt(lastPrompt);
+
+    resizeCard();
+  }
+
+  /**
    * Hides the card and stops it from swallowing input.
    */
   public function hide():Void
@@ -205,6 +229,32 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     targetRatio = 0;
     displayRatio = 0;
     visible = false;
+  }
+
+  /**
+   * Adds the queue tally onto a prompt, on its own line so it doesn't crowd the keys.
+   */
+  function decoratePrompt(prompt:String):String
+  {
+    if (queueCount <= 0) return prompt;
+
+    final tally:String = queueCount == 1 ? '1 more mod queued' : '${queueCount} more mods queued';
+
+    return prompt == '' ? tally : '${prompt}\n${tally}';
+  }
+
+  /**
+   * Resizes the card to fit the prompt.
+   */
+  function resizeCard():Void
+  {
+    final lines:Int = promptText.text == '' ? 1 : promptText.text.split('\n').length;
+    final height:Int = ICON_SIZE + (PROMPT_HEIGHT * lines) + (PADDING * 2);
+
+    if (height == cardHeight) return;
+
+    cardHeight = height;
+    background.makeSolidColor(CARD_WIDTH, cardHeight, FlxColor.BLACK);
   }
 
   override public function update(elapsed:Float):Void
@@ -234,7 +284,11 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
     titleText.text = title;
     detailText.text = detail;
-    promptText.text = prompt;
+
+    lastPrompt = prompt;
+    promptText.text = decoratePrompt(prompt);
+
+    resizeCard();
 
     barBackground.localVisible = showBar;
     barFill.localVisible = showBar;

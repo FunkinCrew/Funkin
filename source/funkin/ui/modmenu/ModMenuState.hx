@@ -665,9 +665,6 @@ class ModMenuState extends MusicBeatState
     installPopup.zIndex = 1000;
     add(installPopup);
 
-    // A link that came in while this menu was closed, or that launched the game outright.
-    final queued:Null<OneClickRequest> = OneClickInstallHandler.consumePending();
-    if (queued != null) beginOneClickInstall(queued);
     #end
 
     FlxG.autoPause = false;
@@ -945,6 +942,9 @@ class ModMenuState extends MusicBeatState
     pendingInstall = null;
     ModInstaller.cancelDownload();
     ModInstaller.cancelInstall();
+
+    // Leaving the menu means the player is done installing, so nothing should drag them back in.
+    OneClickInstallHandler.clearQueue();
     #end
 
     FlxG.autoPause = Preferences.autoPause;
@@ -1074,6 +1074,16 @@ class ModMenuState extends MusicBeatState
   public function isInstalling():Bool
   {
     return installPopup != null && installPopup.isBlocking();
+  }
+
+  /**
+   * Tells the card how many more mods are lined up behind the one it's showing.
+   */
+  public function setInstallQueueCount(count:Int):Void
+  {
+    if (installPopup == null) return;
+
+    installPopup.setQueueCount(count);
   }
 
   /**
