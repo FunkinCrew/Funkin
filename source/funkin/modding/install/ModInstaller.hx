@@ -4,7 +4,6 @@ import funkin.util.Constants;
 import funkin.util.FileUtil;
 import haxe.io.Bytes;
 import haxe.io.Path;
-import haxe.zip.Entry;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -13,7 +12,6 @@ import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
-import polymod.PolymodConfig;
 
 using StringTools;
 
@@ -67,7 +65,29 @@ class ModInstaller
       downloadUrl: downloadUrl,
       modelName: modelName == '' ? 'Mod' : modelName,
       itemId: itemId,
-      fileId: extractTrailingId(downloadUrl)
+      fileId: extractTrailingId(downloadUrl),
+      enforceCategory: true
+    };
+  }
+
+  /**
+   * Turns a submission listed in another one's requirements into something the queue can install.
+   *
+   * @return The request, or null if the requirement isn't a GameBanana submission.
+   */
+  public static function requestForRequirement(requirement:OneClickRequirement):Null<OneClickRequest>
+  {
+    final model:Null<String> = requirement.model;
+    final itemId:Null<String> = requirement.itemId;
+
+    if (model == null || itemId == null) return null;
+
+    return {
+      downloadUrl: requirement.url ?? '',
+      modelName: model,
+      itemId: itemId,
+      fileId: null,
+      enforceCategory: false
     };
   }
 
@@ -80,25 +100,7 @@ class ModInstaller
    */
   public static function fetchMetadata(request:OneClickRequest, onSuccess:OneClickMod->Void, onError:String->Void):Void
   {
-    fetchProfile(request.modelName, request.itemId, request.fileId, true, onSuccess, onError);
-  }
-
-  /**
-   * Looks up a submission listed in another one's requirements.
-   *
-   * @param requirement The requirement to resolve.
-   * @param onSuccess Called with the resolved metadata.
-   * @param onError Called with a human readable reason.
-   */
-  public static function fetchRequirement(requirement:OneClickRequirement, onSuccess:OneClickMod->Void, onError:String->Void):Void
-  {
-    if (requirement.model == null || requirement.itemId == null)
-    {
-      onError('That requirement isn\'t a GameBanana submission.');
-      return;
-    }
-
-    fetchProfile(requirement.model, requirement.itemId, null, false, onSuccess, onError);
+    fetchProfile(request.modelName, request.itemId, request.fileId, request.enforceCategory, onSuccess, onError);
   }
 
   /**
@@ -633,44 +635,19 @@ class ModInstaller
   }
 
   /**
-   * Puts a verified archive in the mods folder, if it holds any mods.
+   * Puts a verified archive in the mods folder.
    *
-   * @return Every path that was written.
+   * @return Where the archive landed.
    */
   static function write(mod:OneClickMod, archivePath:String, job:InstallJob):Array<String>
   {
     #if sys
-    final entries:List<Entry> = readArchive(archivePath);
-
-    final metadata:Null<Entry> = findMetadata(entries, PolymodConfig.modMetadataFile);
-
-    if (metadata == null) return [];
-
     PolymodHandler.createModRoot();
 
     final destination:String = uniquePath(Path.join([getModFolder(), '${sanitizeName(mod.name)}.zip']));
 
-    job.report(0.5);
-
-    final patched:Null<Bytes> = buildPatchedMetadata(metadata, Path.withoutExtension(Path.withoutDirectory(destination)));
-
-    if (patched == null)
-    {
-      // Nothing to change, so the archive goes in exactly as it was downloaded.
-      sys.FileSystem.rename(archivePath, destination);
-    }
-    else
-    {
-      metadata.data = patched;
-      metadata.fileSize = patched.length;
-      metadata.dataSize = patched.length;
-      metadata.compressed = false;
-
-      // Cleared so the writer works out the checksum of what we just put in.
-      metadata.crc32 = null;
-
-      writeArchive(entries, destination);
-    }
+    // The download streamed into the mods folder already, so this stays on the one volume.
+    sys.FileSystem.rename(archivePath, destination);
 
     job.report(1);
 
@@ -679,111 +656,6 @@ class ModInstaller
     throw 'Installing mods is not supported on this platform.';
     #end
   }
-
-  #if sys
-  /**
-   * Reads every entry out of an archive, leaving the payloads compressed.
-   */
-  static function readArchive(archivePath:String):List<Entry>
-  {
-    final input:sys.io.FileInput = sys.io.File.read(archivePath, true);
-
-    try
-    {
-      final entries:List<Entry> = haxe.zip.Reader.readZip(input);
-
-      input.close();
-
-      return entries;
-    }
-    catch (e:Dynamic)
-    {
-      input.close();
-
-      trace('Failed to read the downloaded archive: ${e}');
-      throw 'That download is not a readable ZIP archive.';
-    }
-  }
-
-  /**
-   * Writes entries back out as an archive.
-   *
-   * Anything still compressed is carried across as is, so only the entry we replaced is rebuilt.
-   */
-  static function writeArchive(entries:List<Entry>, destination:String):Void
-  {
-    final output:sys.io.FileOutput = sys.io.File.write(destination, true);
-
-    try
-    {
-      new haxe.zip.Writer(output).write(entries);
-    }
-    catch (e:Dynamic)
-    {
-      output.close();
-
-      // A half written archive is worse than none, Polymod picks it up on the next scan.
-      if (FileUtil.pathExists(destination)) FileUtil.deleteFile(destination);
-
-      throw e;
-    }
-
-    output.close();
-  }
-
-  /**
-   * Finds the mod's metadata, at the archive's root or in the folder inside it.
-   */
-  static function findMetadata(entries:List<Entry>, metaFile:String):Null<Entry>
-  {
-    for (entry in entries)
-    {
-      final name:String = normalizeEntryName(entry.fileName);
-
-      if (isJunkEntry(name)) continue;
-
-      if (name == metaFile || name.endsWith('/${metaFile}')) return entry;
-    }
-
-    return null;
-  }
-
-  /**
-   * Gives the mod an ID based on the archive's name, if it didn't declare one itself.
-   *
-   * @param fileName The archive's name, without the folder or the extension.
-   * @return The rewritten metadata, or null if it already had an ID.
-   */
-  static function buildPatchedMetadata(metadata:Entry, fileName:String):Null<Bytes>
-  {
-    final raw:Null<Bytes> = metadata.compressed ? haxe.zip.Reader.unzip(metadata) : metadata.data;
-    if (raw == null) return null;
-
-    var json:Dynamic = null;
-
-    try
-    {
-      json = haxe.Json.parse(raw.toString());
-    }
-    catch (e:Dynamic)
-    {
-      // Not our problem to fix. Polymod reports it properly when it tries to load the mod.
-      trace('Could not read the downloaded mod\'s metadata: ${e}');
-      return null;
-    }
-
-    final existing:Null<String> = asString(Reflect.field(json, 'id'));
-    if (existing != null && existing.trim() != '') return null;
-
-    final id:String = sanitizeModId(fileName);
-
-    Reflect.setField(json, 'id', id);
-
-    trace('Giving the downloaded mod the ID "${id}", since it did not declare one.');
-
-    return Bytes.ofString(haxe.Json.stringify(json, null, '  '));
-  }
-  #end
 
   /**
    * Whether a mod with this name is already sitting in the mods folder.
@@ -1138,16 +1010,6 @@ class ModInstaller
     }
   }
 
-  /**
-   * Whether an archive entry is packaging noise rather than part of the mod.
-   */
-  static function isJunkEntry(name:String):Bool
-  {
-    if (name.startsWith('__MACOSX/')) return true;
-
-    return Path.withoutDirectory(name).startsWith('._');
-  }
-
   #if sys
   /**
    * The mods folder as an absolute path.
@@ -1191,19 +1053,6 @@ class ModInstaller
   #end
 
   /**
-   * Normalizes an archive entry name to forward slashes with no leading `./`.
-   */
-  static function normalizeEntryName(name:String):String
-  {
-    var result:String = name.replace('\\', '/');
-
-    while (result.startsWith('./'))
-      result = result.substr(2);
-
-    return result;
-  }
-
-  /**
    * Strips anything from a mod name that can't safely become a file name.
    */
   static function sanitizeName(name:String):String
@@ -1219,21 +1068,6 @@ class ModInstaller
     if (result.length > 64) result = result.substr(0, 64);
 
     return result == '' ? 'downloaded-mod' : result;
-  }
-
-  /**
-   * Turns a name into something usable as a Polymod mod ID.
-   */
-  static function sanitizeModId(name:String):String
-  {
-    var result:String = ~/[^A-Za-z0-9._-]/g.replace(name.replace(' ', '-'), '');
-
-    while (result.startsWith('.') || result.startsWith('-'))
-      result = result.substr(1);
-
-    if (result.length > 64) result = result.substr(0, 64);
-
-    return result.toLowerCase();
   }
 
   static function asString(value:Dynamic):Null<String>
@@ -1443,15 +1277,23 @@ private typedef DownloadSnapshot =
  */
 private class DownloadOutput extends haxe.io.Output
 {
+  /**
+   * How much is collected before going to disk.
+   */
+  static inline final BUFFER_SIZE:Int = 1024 * 1024;
+
   final file:sys.io.FileOutput;
   final job:DownloadJob;
+  final buffer:haxe.io.Bytes;
 
+  var buffered:Int = 0;
   var written:Int = 0;
   var closed:Bool = false;
 
   public function new(job:DownloadJob, path:String)
   {
     this.job = job;
+    this.buffer = haxe.io.Bytes.alloc(BUFFER_SIZE);
 
     final directory:String = haxe.io.Path.directory(path);
     if (directory != '' && !sys.FileSystem.exists(directory)) sys.FileSystem.createDirectory(directory);
@@ -1470,6 +1312,7 @@ private class DownloadOutput extends haxe.io.Output
 
       try
       {
+        flush();
         file.close();
       }
       catch (e:Dynamic)
@@ -1488,20 +1331,46 @@ private class DownloadOutput extends haxe.io.Output
 
   public override function writeByte(c:Int):Void
   {
-    file.writeByte(c);
+    if (buffered == BUFFER_SIZE) flush();
 
-    written++;
-    job.advance(1);
+    buffer.set(buffered, c);
+    buffered++;
   }
 
   public override function writeBytes(s:haxe.io.Bytes, pos:Int, len:Int):Int
   {
-    file.writeFullBytes(s, pos, len);
+    var offset:Int = 0;
 
-    written += len;
-    job.advance(len);
+    while (offset < len)
+    {
+      if (buffered == BUFFER_SIZE) flush();
+
+      final count:Int = Std.int(Math.min(len - offset, BUFFER_SIZE - buffered));
+
+      buffer.blit(buffered, s, pos + offset, count);
+
+      buffered += count;
+      offset += count;
+    }
 
     return len;
+  }
+
+  /**
+   * Flushes the buffer to disk and updates the job's progress counters.
+   */
+  public override function flush():Void
+  {
+    if (buffered == 0) return;
+
+    final count:Int = buffered;
+
+    file.writeFullBytes(buffer, 0, count);
+
+    buffered = 0;
+    written += count;
+
+    job.advance(count);
   }
 
   public override function close():Void
@@ -1558,6 +1427,11 @@ typedef OneClickRequest =
    * The id of the specific file, taken off the end of the download URL.
    */
   var fileId:Null<String>;
+
+  /**
+   * Whether the submission has to sit in a base game mod folder category.
+   */
+  var enforceCategory:Bool;
 }
 
 /**

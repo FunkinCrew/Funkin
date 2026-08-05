@@ -127,6 +127,18 @@ class OneClickInstallHandler
   }
 
   /**
+   * Lines a mod up behind whatever is already going.
+   *
+   * @param request The submission to install.
+   */
+  public static function enqueue(request:OneClickRequest):Void
+  {
+    #if (FEATURE_ONE_CLICK_INSTALL && sys)
+    queue.push(request);
+    #end
+  }
+
+  /**
    * Throws away everything still queued.
    */
   public static function clearQueue():Void

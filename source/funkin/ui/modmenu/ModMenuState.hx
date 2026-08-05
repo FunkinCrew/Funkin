@@ -41,7 +41,6 @@ import lime.system.System;
 import funkin.modding.install.ModInstaller;
 import funkin.modding.install.ModInstaller.OneClickMod;
 import funkin.modding.install.ModInstaller.OneClickRequest;
-import funkin.modding.install.ModInstaller.OneClickRequirement;
 import funkin.modding.install.OneClickInstallHandler;
 #end
 #if FEATURE_TOUCH_CONTROLS
@@ -148,10 +147,6 @@ class ModMenuState extends MusicBeatState
    */
   var installCancelled:Bool = false;
 
-  /**
-   * The names of any required mods pulled in alongside the one the player asked for.
-   */
-  var installedRequirements:Array<String> = [];
   #end
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
@@ -1024,10 +1019,7 @@ class ModMenuState extends MusicBeatState
 
   #if FEATURE_ONE_CLICK_INSTALL
   /**
-   * Kicks off a one-click install for a link that has already been parsed and host checked.
-   *
-   * Nothing is downloaded until the player confirms, and nothing is written until the archive has
-   * matched its checksum and been confirmed to actually contain a mod.
+   * Begins one click install of a mod from GameBanana. This will fetch the metadata, download the icon, and show a confirmation prompt.
    *
    * @param request The parsed link.
    */
@@ -1044,12 +1036,17 @@ class ModMenuState extends MusicBeatState
 
     pendingInstall = null;
     installCancelled = false;
-    installedRequirements = [];
 
     installPopup.showBusy('Mod Install', 'Looking this one up on GameBanana...');
 
     ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void {
       if (installCancelled) return;
+
+      if (ModInstaller.isAlreadyInstalled(mod))
+      {
+        installPopup.showResult(mod.name, 'Already installed.');
+        return;
+      }
 
       pendingInstall = mod;
 
@@ -1118,13 +1115,9 @@ class ModMenuState extends MusicBeatState
           {
             if (installCancelled) return;
 
-            if (paths.length == 0)
-            {
-              installPopup.showResult(mod.name, 'That download isn\'t a mod this game can load.');
-              return;
-            }
+            queueRequirements(mod);
 
-            installRequirements(mod, mod.requirements.copy());
+            finishOneClickInstall(mod);
           },
           function(reason:String):Void
           {
@@ -1177,97 +1170,20 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
-   * Recursively downloads and installs a mod's requirements, then finishes the install.
+   * Lines a mod's requirements up behind it, so they install the same way anything else does.
    *
    * @param mod The mod that was just installed.
-   * @param remaining The requirements still to work through.
    */
-  function installRequirements(mod:OneClickMod, remaining:Array<OneClickRequirement>):Void
+  function queueRequirements(mod:OneClickMod):Void
   {
-    if (installCancelled) return;
-
-    if (remaining.length == 0)
+    for (requirement in mod.requirements)
     {
-      finishOneClickInstall(mod);
-      return;
+      final request:Null<OneClickRequest> = ModInstaller.requestForRequirement(requirement);
+
+      if (request == null) continue;
+
+      OneClickInstallHandler.enqueue(request);
     }
-
-    final requirement:Null<OneClickRequirement> = remaining.shift();
-
-    if (requirement == null || requirement.model == null || requirement.itemId == null)
-    {
-      installRequirements(mod, remaining);
-      return;
-    }
-
-    installPopup.showBusy(requirement.name, 'Checking a required mod...');
-
-    ModInstaller.fetchRequirement(requirement, function(dependency:OneClickMod):Void
-      {
-        if (installCancelled) return;
-
-        // Requirements are shared between mods, so this is a normal outcome rather than a problem.
-        if (ModInstaller.isAlreadyInstalled(dependency))
-        {
-          installRequirements(mod, remaining);
-          return;
-        }
-
-        installPopup.showProgress(requirement.name, 'Downloading required mod...', 0);
-
-        ModInstaller.download(dependency, function(ratio:Float):Void
-          {
-            if (installCancelled) return;
-
-            installPopup.showProgress(requirement.name, 'Downloading required mod... ${Math.round(ratio * 100)}%', ratio);
-          },
-          function(archivePath:String):Void
-          {
-            if (installCancelled) return;
-
-            installPopup.showProgress(requirement.name, 'Installing a required mod...', 0);
-
-            ModInstaller.install(dependency, archivePath, function(ratio:Float):Void
-              {
-                if (installCancelled) return;
-
-                installPopup.showProgress(requirement.name, 'Installing a required mod... ${Math.round(ratio * 100)}%', ratio);
-              },
-              function(paths:Array<String>):Void
-              {
-                if (installCancelled) return;
-
-                // An empty result means the download wasn't a mod folder. Nothing was written, and
-                // it isn't worth failing the install the player actually asked for.
-                if (paths.length > 0) installedRequirements.push(dependency.name);
-
-                installRequirements(mod, remaining);
-              },
-              function(reason:String):Void
-              {
-                if (installCancelled) return;
-
-                trace('Skipping requirement "${requirement.name}": ${reason}');
-                installRequirements(mod, remaining);
-              }
-            );
-          },
-          function(reason:String):Void
-          {
-            if (installCancelled) return;
-
-            trace('Skipping requirement "${requirement.name}": ${reason}');
-            installRequirements(mod, remaining);
-          }
-        );
-      },
-      function(reason:String):Void {
-        if (installCancelled) return;
-
-        trace('Skipping requirement "${requirement.name}": ${reason}');
-        installRequirements(mod, remaining);
-      }
-    );
   }
 
   /**
@@ -1277,13 +1193,7 @@ class ModMenuState extends MusicBeatState
   {
     highlightNewMod();
 
-    if (installedRequirements.length == 0)
-    {
-      installPopup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
-      return;
-    }
-
-    installPopup.showResult(mod.name, 'Installed, along with ${installedRequirements.join(', ')}.');
+    installPopup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
   }
 
   /**
