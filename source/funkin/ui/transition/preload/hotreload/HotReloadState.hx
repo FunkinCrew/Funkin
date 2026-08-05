@@ -106,6 +106,8 @@ class HotReloadState extends MusicBeatState
     {
       hasStartedLoading = true;
 
+      purgeAllAssets();
+
       clearScripts();
 
       funkin.modding.PolymodHandler.loadEnabledMods();
@@ -154,6 +156,14 @@ class HotReloadState extends MusicBeatState
     progressBar.x = BAR_PAD;
     progressBar.setGraphicSize(targetWidth, BAR_HEIGHT);
     progressBar.updateHitbox();
+  }
+
+  /**
+   * Forcibly clear ALL assets in the FunkinAssetCache.
+   */
+  function purgeAllAssets():Void
+  {
+    FunkinAssetCache.instance.clear();
   }
 
   /**

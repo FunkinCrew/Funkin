@@ -165,6 +165,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
   /**
    * Clear assets from the asset cache.
+   * NOTE: This is a little dangerous since you're un-caching EVERYTHING.
+   * Generally only do this if you plan on reloading and pre-caching important assets afterwards.
+   *
    * @param prefix (Optional) Only asset paths starting with this prefix will be cleared.
    */
   public function clear(?prefix:String):Void
