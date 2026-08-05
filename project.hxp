@@ -1342,21 +1342,6 @@ class Project extends HXProject
   {
     // launchStoryboard = new LaunchStoryboard();
     // launchStoryboard.path = "./LaunchScreen.storyboard";
-
-    // Grab the stuff from a fake plist and then embbed it into the original to maintain a clear format!
-    final documentTypes:String = File.getContent("documentTypes.plist");
-
-    @:nullSafety(Off)
-    {
-      if (config.getArrayString('ios.info-plist-children') != null)
-      {
-        config.set('ios.info-plist-children', config.getArrayString('ios.info-plist-children').concat([documentTypes]));
-      }
-      else
-      {
-        config.set('ios.info-plist-children', [documentTypes]);
-      }
-    }
   }
 
   function configurePolymod()
