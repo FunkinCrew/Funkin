@@ -72,6 +72,16 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
    */
   static inline final BAR_LERP:Float = 9.0;
 
+  /**
+   * How long a result sits on screen before the card hides itself.
+   */
+  static inline final RESULT_DURATION:Float = 3.0;
+
+  /**
+   * What's left of that, counting down.
+   */
+  var resultTimer:Float = 0;
+
   var cardHeight:Int;
 
   public function new()
@@ -80,7 +90,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
     cardHeight = ICON_SIZE + PROMPT_HEIGHT + (PADDING * 2);
 
-    x = FlxG.width * 0.047 + FullScreenScaleMode.gameCutoutSize.x / 2.5;
+    x = FlxG.width - CARD_WIDTH - (FlxG.width * 0.047) - FullScreenScaleMode.gameCutoutSize.x / 2.5;
     y = FlxG.height * 0.035;
 
     background = new FunkinSprite(0, 0);
@@ -156,18 +166,6 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   }
 
   /**
-   * Asks the player whether to go ahead with the download.
-   */
-  public function showConfirm(title:String, detail:String):Void
-  {
-    state = Confirm;
-    hasDownloaded = false;
-    displayRatio = 0;
-
-    apply(title, detail, 'ENTER to install     ESC to cancel', false, 0);
-  }
-
-  /**
    * Shows download progress.
    *
    * @param ratio How much of the file has arrived, from 0 to 1.
@@ -181,13 +179,14 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   }
 
   /**
-   * Shows a result the player has to acknowledge, good or bad.
+   * Reports how an install went, then gets out of the way on its own so the queue can carry on.
    */
   public function showResult(title:String, detail:String):Void
   {
     state = Result;
+    resultTimer = RESULT_DURATION;
 
-    apply(title, detail, 'Press any key to continue', hasDownloaded, 1);
+    apply(title, detail, '', hasDownloaded, 1);
   }
 
   /**
@@ -228,6 +227,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     hasDownloaded = false;
     targetRatio = 0;
     displayRatio = 0;
+    resultTimer = 0;
     visible = false;
   }
 
@@ -260,6 +260,13 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    if (state == Result)
+    {
+      resultTimer -= elapsed;
+
+      if (resultTimer <= 0) hide();
+    }
 
     if (displayRatio == targetRatio) return;
 
@@ -317,11 +324,6 @@ enum ModMenuInstallState
    * Waiting on the network, the player cannot do anything yet.
    */
   Busy;
-
-  /**
-   * Waiting for the player to accept or refuse the install.
-   */
-  Confirm;
 
   /**
    * The archive is downloading.

@@ -1019,7 +1019,7 @@ class ModMenuState extends MusicBeatState
 
   #if FEATURE_ONE_CLICK_INSTALL
   /**
-   * Begins one click install of a mod from GameBanana. This will fetch the metadata, download the icon, and show a confirmation prompt.
+   * Begins one click install of a mod from GameBanana. This will fetch the metadata, download the icon, and start the download.
    *
    * @param request The parsed link.
    */
@@ -1050,7 +1050,7 @@ class ModMenuState extends MusicBeatState
 
       pendingInstall = mod;
 
-      installPopup.showConfirm(mod.name, 'by ${mod.author}\n${formatFilesize(mod.filesize)}${formatRequirements(mod)}');
+      startOneClickInstall();
 
       ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void {
         if (installCancelled || installPopup == null) return;
@@ -1084,32 +1084,34 @@ class ModMenuState extends MusicBeatState
   }
 
   /**
-   * Starts the download the player just agreed to.
+   * Starts the download.
    */
-  function confirmOneClickInstall():Void
+  function startOneClickInstall():Void
   {
     final mod:Null<OneClickMod> = pendingInstall;
     if (mod == null) return;
 
-    installPopup.showProgress(mod.name, 'Downloading...', 0);
+    final credit:String = 'by ${mod.author}  (${formatFilesize(mod.filesize)})';
+
+    installPopup.showProgress(mod.name, '${credit}\nDownloading...', 0);
 
     ModInstaller.download(mod, function(ratio:Float):Void
       {
         if (installCancelled) return;
 
-        installPopup.showProgress(mod.name, 'Downloading... ${Math.round(ratio * 100)}%', ratio);
+        installPopup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%', ratio);
       },
       function(archivePath:String):Void
       {
         if (installCancelled) return;
 
-        installPopup.showProgress(mod.name, 'Installing...', 0);
+        installPopup.showProgress(mod.name, '${credit}\nInstalling...', 0);
 
         ModInstaller.install(mod, archivePath, function(ratio:Float):Void
           {
             if (installCancelled) return;
 
-            installPopup.showProgress(mod.name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
+            installPopup.showProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
           },
           function(paths:Array<String>):Void
           {
@@ -1143,20 +1145,11 @@ class ModMenuState extends MusicBeatState
   {
     switch (installPopup.state)
     {
-      case Confirm:
-        if (controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
-        {
-          confirmOneClickInstall();
-        }
-        else if (controls.BACK_P)
-        {
-          cancelOneClickInstall();
-        }
-
       case Downloading:
         if (controls.BACK_P) cancelOneClickInstall();
 
       case Result:
+        // The card clears itself, this is only here for a player who doesn't want to wait on it.
         if (FlxG.keys.justPressed.ANY
           || controls.ACCEPT_P
           || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
@@ -1198,16 +1191,6 @@ class ModMenuState extends MusicBeatState
     highlightNewMod();
 
     installPopup.showResult(mod.name, 'Installed. Drag it over to turn it on.');
-  }
-
-  /**
-   * Renders a mod's requirements for the confirmation prompt.
-   */
-  function formatRequirements(mod:OneClickMod):String
-  {
-    if (mod.requirements.length == 0) return '';
-
-    return '\nNeeds: ${[for (requirement in mod.requirements) requirement.name].join(', ')}';
   }
 
   function cancelOneClickInstall():Void
