@@ -1106,9 +1106,15 @@ class ModMenuState extends MusicBeatState
       {
         if (installCancelled) return;
 
-        installPopup.showBusy(mod.name, 'Installing...');
+        installPopup.showProgress(mod.name, 'Installing...', 0);
 
-        ModInstaller.install(mod, archivePath, function(paths:Array<String>):Void
+        ModInstaller.install(mod, archivePath, function(ratio:Float):Void
+          {
+            if (installCancelled) return;
+
+            installPopup.showProgress(mod.name, 'Installing... ${Math.round(ratio * 100)}%', ratio);
+          },
+          function(paths:Array<String>):Void
           {
             if (installCancelled) return;
 
@@ -1219,9 +1225,15 @@ class ModMenuState extends MusicBeatState
           {
             if (installCancelled) return;
 
-            installPopup.showBusy(requirement.name, 'Installing a required mod...');
+            installPopup.showProgress(requirement.name, 'Installing a required mod...', 0);
 
-            ModInstaller.install(dependency, archivePath, function(paths:Array<String>):Void
+            ModInstaller.install(dependency, archivePath, function(ratio:Float):Void
+              {
+                if (installCancelled) return;
+
+                installPopup.showProgress(requirement.name, 'Installing a required mod... ${Math.round(ratio * 100)}%', ratio);
+              },
+              function(paths:Array<String>):Void
               {
                 if (installCancelled) return;
 

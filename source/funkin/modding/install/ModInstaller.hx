@@ -2,7 +2,6 @@ package funkin.modding.install;
 
 import funkin.util.Constants;
 import funkin.util.FileUtil;
-import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.zip.Entry;
@@ -277,6 +276,10 @@ class ModInstaller
 
   static var installOnSuccess:Null<Array<String>->Void> = null;
   static var installOnError:Null<String->Void> = null;
+  static var installOnProgress:Null<Float->Void> = null;
+
+  static var lastReportedInstallProgress:Float = -1;
+
   #end
 
   /**
@@ -300,7 +303,17 @@ class ModInstaller
     if (job == null) return;
 
     final snapshot = job.read();
-    if (!snapshot.finished) return;
+
+    if (!snapshot.finished)
+    {
+      if (snapshot.progress - lastReportedInstallProgress < 0.005) return;
+
+      lastReportedInstallProgress = snapshot.progress;
+
+      if (installOnProgress != null) installOnProgress(snapshot.progress);
+
+      return;
+    }
 
     final onSuccess:Null<Array<String>->Void> = installOnSuccess;
     final onError:Null<String->Void> = installOnError;
@@ -308,6 +321,7 @@ class ModInstaller
     activeInstall = null;
     installOnSuccess = null;
     installOnError = null;
+    installOnProgress = null;
 
     if (snapshot.error != null)
     {
@@ -567,10 +581,11 @@ class ModInstaller
    *
    * @param mod The resolved metadata.
    * @param archivePath The verified archive on disk. Consumed, so it is gone afterwards either way.
+   * @param onProgress Called with how far through the archive the worker is, from 0 to 1.
    * @param onSuccess Called with every path written. Empty if the archive held no mod at all.
    * @param onError Called with a human readable reason.
    */
-  public static function install(mod:OneClickMod, archivePath:String, onSuccess:Array<String>->Void, onError:String->Void):Void
+  public static function install(mod:OneClickMod, archivePath:String, onProgress:Float->Void, onSuccess:Array<String>->Void, onError:String->Void):Void
   {
     #if sys
     if (activeInstall != null)
@@ -584,11 +599,13 @@ class ModInstaller
     activeInstall = job;
     installOnSuccess = onSuccess;
     installOnError = onError;
+    installOnProgress = onProgress;
+    lastReportedInstallProgress = -1;
 
     sys.thread.Thread.create(function():Void {
       try
       {
-        job.succeed(write(mod, archivePath));
+        job.succeed(write(mod, archivePath, job));
       }
       catch (e:Dynamic)
       {
@@ -611,52 +628,53 @@ class ModInstaller
     activeInstall = null;
     installOnSuccess = null;
     installOnError = null;
+    installOnProgress = null;
     #end
   }
 
   /**
    * Puts a verified archive in the mods folder, if it holds any mods.
    *
-   * @return Every path that was written. Empty if the archive holds no mod metadata at all.
+   * @return Every path that was written.
    */
-  static function write(mod:OneClickMod, archivePath:String):Array<String>
+  static function write(mod:OneClickMod, archivePath:String, job:InstallJob):Array<String>
   {
     #if sys
-    final metaFile:String = PolymodConfig.modMetadataFile;
-    final baseName:String = sanitizeName(mod.name);
+    final entries:List<Entry> = readArchive(archivePath);
 
-    final layout = readLayout(archivePath, metaFile);
+    final metadata:Null<Entry> = findMetadata(entries, PolymodConfig.modMetadataFile);
+
+    if (metadata == null) return [];
 
     PolymodHandler.createModRoot();
 
-    final modFolder:String = getModFolder();
+    final destination:String = uniquePath(Path.join([getModFolder(), '${sanitizeName(mod.name)}.zip']));
 
-    if (layout.hasRootMeta)
+    job.report(0.5);
+
+    final patched:Null<Bytes> = buildPatchedMetadata(metadata, Path.withoutExtension(Path.withoutDirectory(destination)));
+
+    if (patched == null)
     {
-      final destination:String = uniquePath(Path.join([modFolder, '${baseName}.zip']));
-
+      // Nothing to change, so the archive goes in exactly as it was downloaded.
       sys.FileSystem.rename(archivePath, destination);
-
-      return [destination];
     }
-
-    if (layout.roots.length == 0) return [];
-
-    final results:Array<String> = [];
-
-    for (root in layout.roots)
+    else
     {
-      // A pack's folders keep their own names, so the player can tell them apart. A single mod
-      // takes the submission's name instead, which reads better than whatever the author zipped.
-      final folderName:String = layout.roots.length == 1 ? baseName : sanitizeName(getRootName(root));
-      final destination:String = uniquePath(Path.join([modFolder, folderName]));
+      metadata.data = patched;
+      metadata.fileSize = patched.length;
+      metadata.dataSize = patched.length;
+      metadata.compressed = false;
 
-      extractTo(archivePath, root, destination);
+      // Cleared so the writer works out the checksum of what we just put in.
+      metadata.crc32 = null;
 
-      results.push(destination);
+      writeArchive(entries, destination);
     }
 
-    return results;
+    job.report(1);
+
+    return [destination];
     #else
     throw 'Installing mods is not supported on this platform.';
     #end
@@ -664,42 +682,108 @@ class ModInstaller
 
   #if sys
   /**
-   * Works out how an archive is laid out.
+   * Reads every entry out of an archive, leaving the payloads compressed.
    */
-  static function readLayout(archivePath:String, metaFile:String):{hasRootMeta:Bool, roots:Array<String>}
+  static function readArchive(archivePath:String):List<Entry>
   {
     final input:sys.io.FileInput = sys.io.File.read(archivePath, true);
 
-    var entries:List<Entry>;
-
     try
     {
-      entries = haxe.zip.Reader.readZip(input);
+      final entries:List<Entry> = haxe.zip.Reader.readZip(input);
+
+      input.close();
+
+      return entries;
     }
     catch (e:Dynamic)
     {
       input.close();
 
       trace('Failed to read the downloaded archive: ${e}');
-      throw 'That file is not a readable ZIP archive.';
+      throw 'That download is not a readable ZIP archive.';
     }
-
-    input.close();
-
-    return {hasRootMeta: hasEntry(entries, metaFile), roots: findNestedRoots(entries, metaFile)};
   }
-  #end
 
   /**
-   * The name of the folder a mod root points at, without the trailing slash or its parents.
+   * Writes entries back out as an archive.
+   *
+   * Anything still compressed is carried across as is, so only the entry we replaced is rebuilt.
    */
-  static function getRootName(root:String):String
+  static function writeArchive(entries:List<Entry>, destination:String):Void
   {
-    final trimmed:String = root.endsWith('/') ? root.substr(0, root.length - 1) : root;
-    final slash:Int = trimmed.lastIndexOf('/');
+    final output:sys.io.FileOutput = sys.io.File.write(destination, true);
 
-    return slash == -1 ? trimmed : trimmed.substr(slash + 1);
+    try
+    {
+      new haxe.zip.Writer(output).write(entries);
+    }
+    catch (e:Dynamic)
+    {
+      output.close();
+
+      // A half written archive is worse than none, Polymod picks it up on the next scan.
+      if (FileUtil.pathExists(destination)) FileUtil.deleteFile(destination);
+
+      throw e;
+    }
+
+    output.close();
   }
+
+  /**
+   * Finds the mod's metadata, at the archive's root or in the folder inside it.
+   */
+  static function findMetadata(entries:List<Entry>, metaFile:String):Null<Entry>
+  {
+    for (entry in entries)
+    {
+      final name:String = normalizeEntryName(entry.fileName);
+
+      if (isJunkEntry(name)) continue;
+
+      if (name == metaFile || name.endsWith('/${metaFile}')) return entry;
+    }
+
+    return null;
+  }
+
+  /**
+   * Gives the mod an ID based on the archive's name, if it didn't declare one itself.
+   *
+   * @param fileName The archive's name, without the folder or the extension.
+   * @return The rewritten metadata, or null if it already had an ID.
+   */
+  static function buildPatchedMetadata(metadata:Entry, fileName:String):Null<Bytes>
+  {
+    final raw:Null<Bytes> = metadata.compressed ? haxe.zip.Reader.unzip(metadata) : metadata.data;
+    if (raw == null) return null;
+
+    var json:Dynamic = null;
+
+    try
+    {
+      json = haxe.Json.parse(raw.toString());
+    }
+    catch (e:Dynamic)
+    {
+      // Not our problem to fix. Polymod reports it properly when it tries to load the mod.
+      trace('Could not read the downloaded mod\'s metadata: ${e}');
+      return null;
+    }
+
+    final existing:Null<String> = asString(Reflect.field(json, 'id'));
+    if (existing != null && existing.trim() != '') return null;
+
+    final id:String = sanitizeModId(fileName);
+
+    Reflect.setField(json, 'id', id);
+
+    trace('Giving the downloaded mod the ID "${id}", since it did not declare one.');
+
+    return Bytes.ofString(haxe.Json.stringify(json, null, '  '));
+  }
+  #end
 
   /**
    * Whether a mod with this name is already sitting in the mods folder.
@@ -764,7 +848,7 @@ class ModInstaller
 
     for (domain in Constants.ONE_CLICK_ALLOWED_DOMAINS)
     {
-      // The leading dot matters. Without it `evilgamebanana.com` would pass.
+      // stop shit like 'evilgamebanana.com' from passing
       if (host == domain || host.endsWith('.${domain}')) return true;
     }
 
@@ -917,7 +1001,6 @@ class ModInstaller
 
     var match:Null<Dynamic> = null;
 
-    // The trailing id on an mmdl link is the row id of the file to grab.
     if (fileId != null)
     {
       for (file in files)
@@ -981,7 +1064,6 @@ class ModInstaller
       return 'That mod is too large to install from a link.';
     }
 
-    // GameBanana scans every upload. Anything that hasn't come back clean is not worth the risk.
     if (mod.avResult != null && mod.avResult != '' && mod.avResult.toLowerCase() != 'clean')
     {
       return 'GameBanana flagged that file as unsafe.';
@@ -1056,51 +1138,6 @@ class ModInstaller
     }
   }
 
-  static function hasEntry(entries:List<Entry>, name:String):Bool
-  {
-    for (entry in entries)
-    {
-      if (normalizeEntryName(entry.fileName) == name) return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Finds every mod folder inside an archive.
-   *
-   * @return Folder paths with trailing slashes. Empty if the archive holds no mod metadata.
-   */
-  static function findNestedRoots(entries:List<Entry>, metaFile:String):Array<String>
-  {
-    var results:Array<String> = [];
-    var bestDepth:Int = 0;
-
-    for (entry in entries)
-    {
-      final name:String = normalizeEntryName(entry.fileName);
-
-      if (!name.endsWith('/${metaFile}')) continue;
-
-      if (isJunkEntry(name)) continue;
-
-      final prefix:String = name.substr(0, name.length - metaFile.length);
-      final depth:Int = prefix.split('/').length;
-
-      if (results.length == 0 || depth < bestDepth)
-      {
-        results = [prefix];
-        bestDepth = depth;
-      }
-      else if (depth == bestDepth && !results.contains(prefix))
-      {
-        results.push(prefix);
-      }
-    }
-
-    return results;
-  }
-
   /**
    * Whether an archive entry is packaging noise rather than part of the mod.
    */
@@ -1108,17 +1145,12 @@ class ModInstaller
   {
     if (name.startsWith('__MACOSX/')) return true;
 
-    // AppleDouble sidecars, and the resource fork files that come with them.
     return Path.withoutDirectory(name).startsWith('._');
   }
 
   #if sys
   /**
    * The mods folder as an absolute path.
-   *
-   * `PolymodHandler.MOD_FOLDER` is relative to the working directory, and the shell hands us its
-   * own working directory when it opens a `funkin-mod:` link. Resolving it up front means an
-   * install can't end up in some random folder even if something skips `CLIUtil.resetWorkingDir`.
    */
   static function getModFolder():String
   {
@@ -1130,64 +1162,6 @@ class ModInstaller
     {
       trace('Could not resolve the mods folder to an absolute path: ${e}');
       return PolymodHandler.MOD_FOLDER;
-    }
-  }
-
-  /**
-   * Extracts an archive, stripping a leading folder, without trusting any path inside it.
-   *
-   * `FileUtil.unzipToFolder` joins entry names straight onto the destination, which is fine for
-   * archives we produced ourselves but not for one downloaded off the internet.
-   */
-  static function extractTo(archivePath:String, prefix:String, destination:String):Void
-  {
-    final input:sys.io.FileInput = sys.io.File.read(archivePath, true);
-
-    var entries:List<Entry>;
-
-    try
-    {
-      entries = haxe.zip.Reader.readZip(input);
-    }
-    catch (e:Dynamic)
-    {
-      input.close();
-      throw e;
-    }
-
-    input.close();
-
-    FileUtil.createDirIfNotExists(destination);
-
-    for (entry in entries)
-    {
-      final name:String = normalizeEntryName(entry.fileName);
-
-      if (!name.startsWith(prefix) || isJunkEntry(name)) continue;
-
-      final relative:String = name.substr(prefix.length);
-
-      // Directory entries carry no data.
-      if (relative == '' || relative.endsWith('/')) continue;
-
-      if (!isSafeRelativePath(relative))
-      {
-        trace('Refusing to extract suspicious archive entry: ${entry.fileName}');
-        continue;
-      }
-
-      if (entry.data == null) continue;
-
-      final data:Null<Bytes> = entry.compressed ? haxe.zip.Reader.unzip(entry) : entry.data;
-
-      if (data == null) continue;
-
-      final outputPath:String = Path.join([destination, relative]);
-
-      FileUtil.createDirIfNotExists(Path.directory(outputPath));
-      FileUtil.writeBytesToPath(outputPath, data, FileWriteMode.Force);
-
-      entry.data = null;
     }
   }
 
@@ -1215,24 +1189,6 @@ class ModInstaller
     throw 'Could not find a free name in the mods folder.';
   }
   #end
-
-  /**
-   * Whether a path from inside an archive is safe to join onto a destination folder.
-   */
-  static function isSafeRelativePath(path:String):Bool
-  {
-    if (path == '' || path.startsWith('/')) return false;
-
-    // A Windows drive letter or UNC path would escape the destination entirely.
-    if (path.indexOf(':') != -1) return false;
-
-    for (segment in path.split('/'))
-    {
-      if (segment == '..') return false;
-    }
-
-    return true;
-  }
 
   /**
    * Normalizes an archive entry name to forward slashes with no leading `./`.
@@ -1265,6 +1221,21 @@ class ModInstaller
     return result == '' ? 'downloaded-mod' : result;
   }
 
+  /**
+   * Turns a name into something usable as a Polymod mod ID.
+   */
+  static function sanitizeModId(name:String):String
+  {
+    var result:String = ~/[^A-Za-z0-9._-]/g.replace(name.replace(' ', '-'), '');
+
+    while (result.startsWith('.') || result.startsWith('-'))
+      result = result.substr(1);
+
+    if (result.length > 64) result = result.substr(0, 64);
+
+    return result.toLowerCase();
+  }
+
   static function asString(value:Dynamic):Null<String>
   {
     if (value == null) return null;
@@ -1294,6 +1265,11 @@ private class InstallJob
   var destinations:Array<String> = [];
   var error:Null<String> = null;
 
+  /**
+   * How far through the archive the worker has read, from 0 to 1.
+   */
+  var progress:Float = 0;
+
   public function new()
   {
     this.mutex = new sys.thread.Mutex();
@@ -1303,11 +1279,21 @@ private class InstallJob
   {
     mutex.acquire();
 
-    final snapshot:InstallSnapshot = {finished: finished, destinations: destinations, error: error};
+    final snapshot:InstallSnapshot = {finished: finished, destinations: destinations, error: error, progress: progress};
 
     mutex.release();
 
     return snapshot;
+  }
+
+  /**
+   * Called from the worker thread as it walks the archive.
+   */
+  public function report(ratio:Float):Void
+  {
+    mutex.acquire();
+    progress = Math.max(0, Math.min(1, ratio));
+    mutex.release();
   }
 
   /**
@@ -1338,6 +1324,7 @@ private typedef InstallSnapshot =
   var finished:Bool;
   var destinations:Array<String>;
   var error:Null<String>;
+  var progress:Float;
 }
 
 /**
@@ -1525,7 +1512,7 @@ private class DownloadOutput extends haxe.io.Output
 #end
 
 /**
- * Something GameBanana says has to be installed alongside a submission.
+ * Represents a single requirement listed on a GameBanana submission.
  */
 typedef OneClickRequirement =
 {
