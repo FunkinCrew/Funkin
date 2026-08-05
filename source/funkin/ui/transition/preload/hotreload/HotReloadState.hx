@@ -291,6 +291,22 @@ class HotReloadState extends MusicBeatState
     {
       updateProgress(10, 10);
 
+      queueLoadModules();
+    });
+  }
+
+  /**
+   * Initialize any ScriptedModules provided by mods.
+   */
+  function queueLoadModules():Void
+  {
+    var future:Future<LoadEntriesResult> = ModuleHandler.loadModuleCacheAsync();
+
+    future.onComplete((result:LoadEntriesResult) ->
+    {
+      // Call create() on each module when the future is complte.
+      ModuleHandler.callOnCreate();
+
       queueLoadAdditionalData();
     });
   }
@@ -311,11 +327,6 @@ class HotReloadState extends MusicBeatState
       // These don't use the registry system at all, they're synchronous but fairly quick.
       SongEventRegistry.loadEventCache();
       NoteKindManager.initialize();
-
-      // Load and initialize modules.
-      // We do this only once everything else is done.
-      ModuleHandler.loadModuleCache();
-      ModuleHandler.callOnCreate();
 
       return true;
     }).onComplete((_) ->
