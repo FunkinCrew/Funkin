@@ -1,15 +1,14 @@
 package funkin.modding.module;
 
-import hx.concurrent.collection.SynchronizedArray;
-import funkin.util.tasks.TaskHandler;
 import flixel.FlxG;
 import funkin.data.BaseRegistry.LoadEntriesResult;
-import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.modding.module.ScriptedModule;
 import funkin.util.SortUtil;
+import funkin.util.tasks.TaskHandler;
+import hx.concurrent.collection.SynchronizedArray;
 import lime.app.Future;
 
 /**
@@ -77,19 +76,22 @@ class ModuleHandler
 
     var checkAsyncProgress:Void->Void = () ->
     {
-      var completedCount = moduleCache.size() + entryErrors.length;
+      var completedCount = getModuleCount() + entryErrors.length;
       if (completedCount == moduleCount)
       {
         // Finish the promise.
         promise.complete({
-          entriesLoaded: moduleCache.size(),
+          entriesLoaded: getModuleCount(),
           entriesFailed: entryErrors.length
         });
         trace('Finished loading modules ($completedCount / $moduleCount)');
         perf.print();
+
+        reorderModuleCache();
       }
     };
 
+    // Called when an error occurs while a module was being loaded.
     var onError:(String,
       {error:Any, moduleCls:Null<String>}) -> Void = (moduleId, state) ->
       {
@@ -97,10 +99,11 @@ class ModuleHandler
           moduleId: moduleId,
           error: state.error
         });
-        trace('  Failed to load entry data (${moduleId}): ${state.error}');
+        trace('  Failed to load module (${moduleId}): ${state.error}');
         checkAsyncProgress();
       };
 
+    // Called once a module's task has been completed.
     var onModuleLoadedAsync:(String,
       {module:Module, moduleCls:String}) -> Void = (_, state) ->
       {
@@ -108,6 +111,7 @@ class ModuleHandler
         checkAsyncProgress();
       };
 
+    // Task for loading a single module.
     var loadModuleAsync:Task = (currentState:State, workOutput:WorkOutput) ->
     {
       var moduleCls:String = currentState.moduleCls;
@@ -116,7 +120,6 @@ class ModuleHandler
         var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
         if (module != null)
         {
-          // log('Successfully created scripted entry (${entryCls} = ${entry.id})');
           workOutput.sendComplete({
             moduleCls: moduleCls,
             module: module
@@ -177,15 +180,20 @@ class ModuleHandler
     return promise.future;
   }
 
+  public static function buildModuleCallbacks():Void
+  {
+    FlxG.signals.postStateSwitch.add(onStateSwitchComplete);
+  }
+
   static function onModuleLoaded(module:Module, moduleCls:String):Void
   {
     addToModuleCache(module);
     trace('   Loaded module: ${moduleCls}');
   }
 
-  public static function buildModuleCallbacks():Void
+  static function getModuleCount():Int
   {
-    FlxG.signals.postStateSwitch.add(onStateSwitchComplete);
+    return moduleCache.size();
   }
 
   static function onStateSwitchComplete():Void
