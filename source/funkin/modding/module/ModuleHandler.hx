@@ -51,6 +51,7 @@ class ModuleHandler
     trace('[MODULEHANDLER] Module cache loaded.');
   }
 
+  #if FEATURE_MULTITHREADING
   public static function loadModuleCacheAsync():lime.app.Future<LoadEntriesResult>
   {
     // Clear module cache first.
@@ -179,6 +180,7 @@ class ModuleHandler
 
     return promise.future;
   }
+  #end
 
   public static function buildModuleCallbacks():Void
   {
