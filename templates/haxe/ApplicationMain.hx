@@ -38,7 +38,7 @@ class ApplicationMain
     funkin.external.windows.WinAPI.disableErrorReporting();
     #end
 
-    #if sys
+    #if (sys && !mobile)
     // The shell launches us with its own working directory when a file is dropped on the exe or a
     // `funkin:` link is opened, which would put the mods folder somewhere random.
     funkin.util.CLIUtil.resetWorkingDir();

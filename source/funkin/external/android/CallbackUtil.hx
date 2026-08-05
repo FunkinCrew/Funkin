@@ -30,6 +30,13 @@ class CallbackUtil #if (lime >= '8.0.0') implements JNISafety #end
   public static var onFNFCOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
   /**
+   * Signal triggered when the user opens a FNFMOD url with the game in runtime.
+   *
+   * First argument is the FNFMOD url.
+   */
+  public static var onFNFMODOpen:FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
+
+  /**
    * Initializes the callback utility.
    */
   public static function init():Void

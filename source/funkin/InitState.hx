@@ -144,8 +144,8 @@ class InitState extends FlxState
       #end
 
       #if mobile
-      // Setup Mobile FNFC launcher.
-      funkin.mobile.util.FNFCProvider.init();
+      // Setup Mobile FNF Loader Provider.
+      funkin.mobile.util.FNFLoaderProvider.init();
       #end
 
       SongEventHelper.generateEaseGraphsBitmaps();
@@ -476,6 +476,15 @@ class InitState extends FlxState
     // Claims the handoff lock, so any later launch forwards its link here instead of booting.
     funkin.modding.install.OneClickInstallHandler.initialize();
 
+    #if mobile
+    final fnfModUrl:Null<String> = funkin.mobile.util.FNFLoaderProvider.queryFNFMOD();
+
+    if (fnfModUrl != null && fnfModUrl.length > 0)
+    {
+      funkin.modding.install.OneClickInstallHandler.handleLink(fnfModUrl);
+    }
+    #end
+
     if (funkin.modding.install.OneClickInstallHandler.stashLaunchLink(params.oneClickUrl) || funkin.modding.install.OneClickInstallHandler.hasPendingLink())
     {
       FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
@@ -524,7 +533,7 @@ class InitState extends FlxState
     else
     {
       #if mobile
-      funkin.mobile.util.FNFCProvider.onFNFCOpen.add(function(fnfcFile:String)
+      funkin.mobile.util.FNFLoaderProvider.onFNFCOpen.add(function(fnfcFile:String)
       {
         flixel.tweens.FlxTween.globalManager.clear();
         flixel.util.FlxTimer.globalManager.clear();
@@ -538,10 +547,12 @@ class InitState extends FlxState
         FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       });
 
-      final fnfcFile = funkin.mobile.util.FNFCProvider.queryFNFC();
+      final fnfcFile = funkin.mobile.util.FNFLoaderProvider.queryFNFC();
+
       if (fnfcFile != null)
       {
         trace('launching FNFC from $fnfcFile');
+
         FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       }
       else

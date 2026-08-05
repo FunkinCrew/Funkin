@@ -55,6 +55,8 @@ class OneClickInstallHandler
 
     #if (macos && cpp)
     funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(onAppleURL));
+    #elseif mobile
+    funkin.mobile.util.FNFLoaderProvider.onFNFMODOpen.add(handleLink);
     #end
 
     // Anything queued while we were booting.

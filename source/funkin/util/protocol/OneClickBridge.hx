@@ -267,7 +267,8 @@ class OneClickBridge
 
   static function getLockPath():Null<String>
   {
-    final root:Null<String> = getRootDir();
+    final root:Null<String> = FileUtil.getTempDir();
+
     if (root == null) return null;
 
     return Path.join([root, LOCK_FILE_NAME]);
@@ -275,33 +276,11 @@ class OneClickBridge
 
   static function getQueueDir():Null<String>
   {
-    final root:Null<String> = getRootDir();
+    final root:Null<String> = FileUtil.getTempDir();
+
     if (root == null) return null;
 
     return Path.join([root, QUEUE_DIR_NAME]);
-  }
-
-  /**
-   * Returns a directory that is safe to write to for the current user.
-   */
-  static function getRootDir():Null<String>
-  {
-    #if windows
-    var path:Null<String> = null;
-
-    for (envName in TEMP_ENV_VARS)
-    {
-      path = Sys.getEnv(envName);
-      if (path == '') path = null;
-      if (path != null) break;
-    }
-
-    if (path == null) return null;
-
-    return Path.join([path, 'funkin']);
-    #else
-    return '/tmp/funkin';
-    #end
   }
 
   static function ensureDir(dir:String):Void

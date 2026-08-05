@@ -1074,6 +1074,9 @@ class FileUtil
     #elseif android
     tempDir = Path.addTrailingSlash(extension.androidtools.content.Context.getCacheDir());
     return tempDir;
+    #elseif ios
+    tempDir = Path.addTrailingSlash(funkin.external.apple.PathsUtil.getCacheDirectory());
+    return tempDir;
     #else
     tempDir = '/tmp/funkin/';
     return tempDir;

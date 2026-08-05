@@ -116,7 +116,7 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = [
     "funkin.extensions.CallbackUtil",
-    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.FNFLoaderExtension",
     "funkin.extensions.AudioSession"
   ];
 
@@ -981,7 +981,7 @@ class Project extends HXProject
 
     // Should be true only on Desktop builds.
     // Registering a URL scheme requires OS level access we don't have on web or mobile.
-    FEATURE_ONE_CLICK_INSTALL.apply(this, isDesktop());
+    FEATURE_ONE_CLICK_INSTALL.apply(this, isDesktop() || isMobile());
 
     // The audio context issues which require the user to click before playing
     // only exist on web builds.
@@ -1252,13 +1252,13 @@ class Project extends HXProject
     modsFolderProvider.set('android:exported', 'true');
     modsFolderProvider.set('android:permission', 'android.permission.MANAGE_DOCUMENTS');
 
-    final intentFilter:Xml = Xml.createElement('intent-filter');
+    final fnfcIntentFilter:Xml = Xml.createElement('intent-filter');
 
     final action:Xml = Xml.createElement('action');
     action.set('android:name', 'android.content.action.DOCUMENTS_PROVIDER');
-    intentFilter.addChild(action);
+    fnfcIntentFilter.addChild(action);
 
-    modsFolderProvider.addChild(intentFilter);
+    modsFolderProvider.addChild(fnfcIntentFilter);
 
     @:nullSafety(Off)
     {
@@ -1272,58 +1272,94 @@ class Project extends HXProject
       }
     }
 
-    // Custom android.activity XML Children for the AndroidManifest
-    final intentFilter:Xml = Xml.createElement('intent-filter');
+    final intentFilters:Array<Xml> = [];
 
-    final action:Xml = Xml.createElement('action');
-    action.set('android:name', 'android.intent.action.VIEW');
-    intentFilter.addChild(action);
-
-    final intentFilterCategories:Array<String> = [
-      "android.intent.category.DEFAULT",
-      "android.intent.category.BROWSABLE"
-    ];
-
-    for (categoryName in intentFilterCategories)
     {
-      final category:Xml = Xml.createElement('category');
-      category.set('android:name', categoryName);
-      intentFilter.addChild(category);
+      // FNFC Intent Filter
+      final fnfcIntentFilter:Xml = Xml.createElement('intent-filter');
+
+      final action:Xml = Xml.createElement('action');
+      action.set('android:name', 'android.intent.action.VIEW');
+      fnfcIntentFilter.addChild(action);
+
+      final fnfcIntentFilterCategories:Array<String> = [
+        "android.intent.category.DEFAULT",
+        "android.intent.category.BROWSABLE"
+      ];
+
+      for (categoryName in fnfcIntentFilterCategories)
+      {
+        final category:Xml = Xml.createElement('category');
+        category.set('android:name', categoryName);
+        fnfcIntentFilter.addChild(category);
+      }
+
+      final fnfcIntentFilterDatas:Map<String, Array<String>> = [
+        "android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
+        // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
+        // "android:host"        => ["*"],
+        "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
+        "android:pathPattern" => [
+          ".*\\.fnfc",
+          ".*\\..*\\.fnfc",
+          ".*\\..*\\..*\\.fnfc",
+          ".*\\..*\\..*\\..*\\.fnfc",
+          ".*\\..*\\..*\\..*\\..*\\.fnfc"
+        ]
+      ];
+
+      for (key => values in fnfcIntentFilterDatas)
+      {
+        for (value in values)
+        {
+          final data:Xml = Xml.createElement("data");
+          data.set(key, value);
+          fnfcIntentFilter.addChild(data);
+        }
+      }
+
+      intentFilters.push(fnfcIntentFilter);
     }
 
-    final intentFilterDatas:Map<String, Array<String>> = [
-      "android:mimeType" => ["application/zip"], // When this is added, it makes the game show up only when it's a FNFC file.
-      // But it also for some reason make it not show up at all in ZArchiver no matter what the file is...
-      // "android:host"        => ["*"],
-      "android:scheme" => ["file", "content"], // I think having all these makes it so the extension check would work even when the files has dots like "epic-song-v2.0.fnfc"
-      "android:pathPattern" => [
-        ".*\\.fnfc",
-        ".*\\..*\\.fnfc",
-        ".*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\.fnfc",
-        ".*\\..*\\..*\\..*\\..*\\.fnfc"
-      ]
-    ];
-
-    for (key => values in intentFilterDatas)
     {
-      for (value in values)
+      // FNFMod URL Scheme Intent Filter
+      final fnfModUrlSchemeIntentFilter:Xml = Xml.createElement("intent-filter");
+
+      final action:Xml = Xml.createElement("action");
+      action.set("android:name", "android.intent.action.VIEW");
+      fnfModUrlSchemeIntentFilter.addChild(action);
+
+      final fnfModUrlSchemeIntentFilterCategories:Array<String> = [
+        "android.intent.category.DEFAULT",
+        "android.intent.category.BROWSABLE"
+      ];
+
+      for (categoryName in fnfModUrlSchemeIntentFilterCategories)
       {
-        final data:Xml = Xml.createElement("data");
-        data.set(key, value);
-        intentFilter.addChild(data);
+        final category:Xml = Xml.createElement("category");
+        category.set("android:name", categoryName);
+        fnfModUrlSchemeIntentFilter.addChild(category);
       }
+
+      final data:Xml = Xml.createElement("data");
+      data.set("android:scheme", "funkin");
+      fnfModUrlSchemeIntentFilter.addChild(data);
+
+      intentFilters.push(fnfModUrlSchemeIntentFilter);
     }
 
-    @:nullSafety(Off)
+    for (filter in intentFilters)
     {
-      if (config.get('android.activity').xmlChildren != null)
+      @:nullSafety(Off)
       {
-        config.get('android.activity').xmlChildren.push(Printer.print(intentFilter, true));
-      }
-      else
-      {
-        config.get('android.activity').xmlChildren = [Printer.print(intentFilter, true)];
+        if (config.get('android.activity').xmlChildren != null)
+        {
+          config.get('android.activity').xmlChildren.push(Printer.print(filter, true));
+        }
+        else
+        {
+          config.get('android.activity').xmlChildren = [Printer.print(filter, true)];
+        }
       }
     }
 
