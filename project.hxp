@@ -624,11 +624,6 @@ class Project extends HXProject
   {
     this.meta.title = isMobile() ? TITLE_MOBILE : TITLE;
 
-    // ios uses this character code instead of spaces...
-    // We don't have spaces in our title for mobile anymore
-    // But keeping incase anybody source-modding ever does add spaces
-    if (isIOS()) this.meta.title = ~/ /ig.replace(TITLE_MOBILE, "\u2002");
-
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
     this.meta.company = COMPANY;
@@ -653,17 +648,6 @@ class Project extends HXProject
 
     // Set the build number, required for publishing the game to mobile stores.
     this.meta.buildNumber = Std.string(BUILD_NUMBER);
-
-    // These values are only used by the SWF target I think.
-    // this.app.path
-    // this.app.init
-    // this.app.swfVersion
-    // this.app.url
-
-    // These values are only used by... FIREFOX MARKETPLACE WHAT?
-    // this.meta.description = "";
-    // this.meta.companyId = COMPANY;
-    // this.meta.companyUrl = COMPANY;
 
     // Configure the window.
     // Automatically configure FPS.
@@ -812,20 +796,10 @@ class Project extends HXProject
           info('Target Architecture: x86');
         case Architecture.X64:
           info('Target Architecture: x64');
-        case Architecture.ARMV5:
-          info('Target Architecture: ARMv5');
-        case Architecture.ARMV6:
-          info('Target Architecture: ARMv6');
         case Architecture.ARMV7:
           info('Target Architecture: ARMv7');
-        case Architecture.ARMV7S:
-          info('Target Architecture: ARMv7S');
         case Architecture.ARM64:
-          info('Target Architecture: ARMx64');
-        case Architecture.MIPS:
-          info('Target Architecture: MIPS');
-        case Architecture.MIPSEL:
-          info('Target Architecture: MIPSEL');
+          info('Target Architecture: ARM64');
         case null:
           if (!isWeb())
           {
