@@ -266,8 +266,7 @@ class HotReloadState extends MusicBeatState
 
     var futures:Array<Future<LoadEntriesResult>> = [];
 
-    // All of these create task which can be performed in parallel. Beautiful.
-
+    futures.push(SongRegistry.instance.loadEntriesAsync());
     futures.push(LevelRegistry.instance.loadEntriesAsync());
     futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
     futures.push(PlayerRegistry.instance.loadEntriesAsync());
@@ -305,7 +304,6 @@ class HotReloadState extends MusicBeatState
     TaskHandler.performSimpleTask(() ->
     {
       // These use the registry system (sorta) but need more work to support async loading.
-      SongRegistry.instance.loadEntries();
       CharacterDataParser.loadCharacterCache();
 
       // These don't use the registry system at all, they're synchronous but fairly quick.
