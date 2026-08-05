@@ -1754,9 +1754,20 @@ class ModMenuState extends MusicBeatState
   }
   #end
 
+  var lastModIndex:Int = 0;
   function handleSelection():Void
   {
     FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+    switch (selection)
+    {
+      case DisabledModList:
+        lastModIndex = enabledModItems.selectedItemIndex;
+      case EnabledModList:
+        lastModIndex = disabledModItems.selectedItemIndex;
+      default:
+        // nothing.
+    }
 
     if (selection != BackToMenu) playBackButtonAnimation('idle');
     disabledModItems.deselect();
@@ -1770,13 +1781,31 @@ class ModMenuState extends MusicBeatState
     switch (selection)
     {
       case DisabledModList:
-        if (oldSelection == OpenModsFolder && lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
-        else
-          disabledModItems.selectFirstItem(lastSelectDir);
+        switch(oldSelection)
+        {
+          case OpenModsFolder:
+            if(lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
+          case EnabledModList:
+            var offset = (disabledModItems.length - 1) - (enabledModItems.length - 1);
+
+            if (disabledModItems.modItems.indexOf(disabledModItems.modItems[lastModIndex + offset]) == -1) disabledModItems.selectLastItem(lastSelectDir);
+            else disabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+          default:
+            disabledModItems.selectFirstItem(lastSelectDir);
+        }
       case EnabledModList:
-        if (oldSelection == OpenModsFolder && lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
-        else
-          enabledModItems.selectFirstItem(lastSelectDir);
+        switch(oldSelection)
+        {
+          case OpenModsFolder:
+            if(lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
+          case DisabledModList:
+            var offset = (enabledModItems.length - 1) - (disabledModItems.length - 1);
+
+            if(enabledModItems.modItems.indexOf(enabledModItems.modItems[lastModIndex + offset]) == -1) enabledModItems.selectLastItem(lastSelectDir);
+            else enabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+          default:
+            enabledModItems.selectFirstItem(lastSelectDir);
+        }
       case OpenModsFolder:
         openFolderAnimator.playAnimation('select');
       case Done:
