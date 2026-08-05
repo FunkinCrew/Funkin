@@ -139,6 +139,20 @@ class OneClickInstallHandler
   }
 
   /**
+   * Puts mods at the front of the queue, keeping the order they were given in.
+   *
+   * @param requests The submissions to install next.
+   */
+  public static function enqueueNext(requests:Array<OneClickRequest>):Void
+  {
+    #if (FEATURE_ONE_CLICK_INSTALL && sys)
+    if (requests.length == 0) return;
+
+    queue = requests.concat(queue);
+    #end
+  }
+
+  /**
    * Throws away everything still queued.
    */
   public static function clearQueue():Void

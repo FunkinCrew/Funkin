@@ -1176,14 +1176,18 @@ class ModMenuState extends MusicBeatState
    */
   function queueRequirements(mod:OneClickMod):Void
   {
+    final requests:Array<OneClickRequest> = [];
+
     for (requirement in mod.requirements)
     {
       final request:Null<OneClickRequest> = ModInstaller.requestForRequirement(requirement);
 
       if (request == null) continue;
 
-      OneClickInstallHandler.enqueue(request);
+      requests.push(request);
     }
+
+    OneClickInstallHandler.enqueueNext(requests);
   }
 
   /**

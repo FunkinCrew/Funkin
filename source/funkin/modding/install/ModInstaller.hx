@@ -2,6 +2,7 @@ package funkin.modding.install;
 
 import funkin.util.Constants;
 import funkin.util.FileUtil;
+import funkin.util.FileUtil.FileWriteMode;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import openfl.events.Event;
@@ -12,13 +13,13 @@ import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+import polymod.PolymodConfig;
 
 using StringTools;
 
 /**
  * Downloads a mod archive from a one-click link and drops it into the mods folder.
  */
-@:nullSafety
 class ModInstaller
 {
   /**
@@ -401,8 +402,6 @@ class ModInstaller
     downloadOnError = null;
     lastReportedProgress = -1;
 
-    // The thread may still be writing, so this is best effort. A leftover file gets reused by name
-    // on the next attempt anyway.
     if (job != null) deleteTemp(job.tempPath);
     #end
   }
@@ -622,7 +621,7 @@ class ModInstaller
   }
 
   /**
-   * Abandons whatever is installing. The thread finishes on its own and its result is discarded.
+   * Abandons whatever is installing.
    */
   public static function cancelInstall():Void
   {
@@ -637,16 +636,26 @@ class ModInstaller
   /**
    * Puts a verified archive in the mods folder.
    *
-   * @return Where the archive landed.
+   * @return Where the mod landed.
    */
   static function write(mod:OneClickMod, archivePath:String, job:InstallJob):Array<String>
   {
     #if sys
     PolymodHandler.createModRoot();
 
+    final root:Null<String> = findNestedRoot(archivePath);
+
+    if (root != null)
+    {
+      final folder:String = uniquePath(Path.join([getModFolder(), sanitizeName(root)]));
+
+      extract(archivePath, root, folder, job);
+
+      return [folder];
+    }
+
     final destination:String = uniquePath(Path.join([getModFolder(), '${sanitizeName(mod.name)}.zip']));
 
-    // The download streamed into the mods folder already, so this stays on the one volume.
     sys.FileSystem.rename(archivePath, destination);
 
     job.report(1);
@@ -673,6 +682,185 @@ class ModInstaller
   }
 
   #if sys
+  /**
+   * Reads the table an archive keeps of everything inside it.
+   *
+   * @param handle An open archive, left wherever the read finished.
+   * @param archiveSize How big the archive is on disk.
+   * @return What the archive says it holds, in the order it was packed.
+   */
+  static function readArchiveEntries(handle:sys.io.FileInput, archiveSize:Int):Array<ArchiveEntry>
+  {
+    final tailSize:Int = Std.int(Math.min(archiveSize, 66000));
+
+    handle.seek(archiveSize - tailSize, SeekBegin);
+
+    final tail:Bytes = handle.read(tailSize);
+
+    var end:Int = tailSize - 22;
+    while (end >= 0 && tail.getInt32(end) != 0x06054B50)
+      end--;
+
+    if (end < 0) throw 'The archive does not say what is inside it.';
+
+    final count:Int = tail.getUInt16(end + 10);
+    final directorySize:Int = tail.getInt32(end + 12);
+
+    handle.seek(tail.getInt32(end + 16), SeekBegin);
+
+    final directory:Bytes = handle.read(directorySize);
+    final entries:Array<ArchiveEntry> = [];
+
+    var at:Int = 0;
+
+    for (_ in 0...count)
+    {
+      if (at + 46 > directorySize || directory.getInt32(at) != 0x02014B50) break;
+
+      final nameLength:Int = directory.getUInt16(at + 28);
+
+      entries.push(
+        {
+          name: directory.getString(at + 46, nameLength),
+          offset: directory.getInt32(at + 42),
+          packedSize: directory.getInt32(at + 20),
+          size: directory.getInt32(at + 24)
+        });
+
+      at += 46 + nameLength + directory.getUInt16(at + 30) + directory.getUInt16(at + 32);
+    }
+
+    return entries;
+  }
+
+  /**
+   * Looks inside an archive to see if the mod is nested in a folder, and what that folder is.
+   *
+   * @return The folder the metadata sits in, or `null` if it is already at the top.
+   */
+  static function findNestedRoot(archivePath:String):Null<String>
+  {
+    var input:Null<sys.io.FileInput> = null;
+
+    try
+    {
+      final handle:sys.io.FileInput = sys.io.File.read(archivePath, true);
+      input = handle;
+
+      var nested:Null<String> = null;
+
+      for (entry in readArchiveEntries(handle, FileUtil.getFileSize(archivePath)))
+      {
+        final name:String = entry.name.replace('\\', '/');
+
+        if (name == PolymodConfig.modMetadataFile)
+        {
+          nested = null;
+          break;
+        }
+
+        final separator:Int = name.indexOf('/');
+        if (separator == -1) continue;
+        if (name.substr(separator + 1) != PolymodConfig.modMetadataFile) continue;
+
+        nested = name.substr(0, separator);
+      }
+
+      handle.close();
+
+      return nested;
+    }
+    catch (e:Dynamic)
+    {
+      trace('Could not work out how the archive is laid out: ${e}');
+
+      if (input != null) input.close();
+
+      return null;
+    }
+  }
+
+  /**
+   * Unpacks one folder out of an archive and into the mods folder.
+   */
+  static function extract(archivePath:String, root:String, destination:String, job:InstallJob):Void
+  {
+    final handle:sys.io.FileInput = sys.io.File.read(archivePath, true);
+
+    try
+    {
+      final prefix:String = '${root}/';
+      final entries:Array<ArchiveEntry> = readArchiveEntries(handle, FileUtil.getFileSize(archivePath));
+      final reader:haxe.zip.Reader = new haxe.zip.Reader(handle);
+
+      var total:Float = 0;
+      for (entry in entries)
+        total += entry.size;
+
+      FileUtil.createDirIfNotExists(destination);
+
+      var done:Float = 0;
+
+      for (entry in entries)
+      {
+        final name:String = entry.name.replace('\\', '/');
+
+        if (name.endsWith('/') || !name.startsWith(prefix)) continue;
+
+        final target:Null<String> = resolveEntry(destination, name.substr(prefix.length));
+
+        if (target == null)
+        {
+          trace('Skipping "${name}", it points outside of where the mod is being written.');
+          continue;
+        }
+
+        handle.seek(entry.offset, SeekBegin);
+
+        final header:Null<haxe.zip.Entry> = reader.readEntryHeader();
+        if (header == null) continue;
+
+        header.dataSize = entry.packedSize;
+        header.fileSize = entry.size;
+        header.data = handle.read(entry.packedSize);
+
+        FileUtil.createDirIfNotExists(Path.directory(target));
+        FileUtil.writeBytesToPath(target, haxe.zip.Reader.unzip(header), Force);
+
+        done += entry.size;
+
+        if (total > 0) job.report(done / total);
+      }
+    }
+    catch (e:Dynamic)
+    {
+      handle.close();
+
+      throw e;
+    }
+
+    handle.close();
+
+    job.report(1);
+  }
+
+  /**
+   * Joins a path out of an archive onto the folder being written, refusing anything that climbs out.
+   */
+  static function resolveEntry(destination:String, relative:String):Null<String>
+  {
+    if (relative == '') return null;
+    if (relative.startsWith('/')) return null;
+    if (relative.indexOf(':') != -1) return null;
+
+    for (part in relative.split('/'))
+    {
+      if (part == '..') return null;
+    }
+
+    return Path.join([destination, relative]);
+  }
+
   /**
    * Reads a response header without caring about its capitalisation.
    */
@@ -1379,6 +1567,32 @@ private class DownloadOutput extends haxe.io.Output
   }
 }
 #end
+
+/**
+ * One file inside an archive, as the archive itself describes it.
+ */
+typedef ArchiveEntry =
+{
+  /**
+   * The path the file is filed under, relative to the top of the archive.
+   */
+  var name:String;
+
+  /**
+   * Where in the archive the file's own header starts.
+   */
+  var offset:Int;
+
+  /**
+   * How many bytes the file takes up while it is still packed.
+   */
+  var packedSize:Int;
+
+  /**
+   * How many bytes the file takes up once it is unpacked.
+   */
+  var size:Int;
+}
 
 /**
  * Represents a single requirement listed on a GameBanana submission.
