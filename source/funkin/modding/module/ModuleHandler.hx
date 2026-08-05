@@ -1,12 +1,16 @@
 package funkin.modding.module;
 
-import funkin.util.SortUtil;
+import hx.concurrent.collection.SynchronizedArray;
+import funkin.util.tasks.TaskHandler;
+import flixel.FlxG;
+import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
 import funkin.modding.module.ScriptedModule;
-import flixel.FlxG;
+import funkin.util.SortUtil;
+import lime.app.Future;
 
 /**
  * Utility functions for loading and manipulating active modules.
@@ -35,10 +39,8 @@ class ModuleHandler
       var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
       if (module != null)
       {
-        trace('   Loaded module: ${moduleCls}');
-
         // Then store it.
-        addToModuleCache(module);
+        onModuleLoaded(module, moduleCls);
       }
       else
       {
@@ -48,6 +50,137 @@ class ModuleHandler
     reorderModuleCache();
 
     trace('[MODULEHANDLER] Module cache loaded.');
+  }
+
+  public static function loadModuleCacheAsync():lime.app.Future<LoadEntriesResult>
+  {
+    // Clear module cache first.
+    clearModuleCache();
+
+    var scriptedModuleClassNames:Array<String> = ScriptedModule.listScriptClasses();
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+
+    // We don't have any modules to load so we can just immediately complete the promise.
+    if (scriptedModuleClassNames.length == 0)
+    {
+      promise.complete({
+        entriesLoaded: 0,
+        entriesFailed: 0,
+      });
+      return promise.future;
+    }
+
+    var entryErrors:SynchronizedArray<
+      {moduleId:String, error:Any, ?moduleCls:String}> = new SynchronizedArray();
+    var moduleCount:Int = scriptedModuleClassNames.length;
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadModuleCacheAsync()');
+
+    var checkAsyncProgress:Void->Void = () ->
+    {
+      var completedCount = moduleCache.size() + entryErrors.length;
+      if (completedCount == moduleCount)
+      {
+        // Finish the promise.
+        promise.complete({
+          entriesLoaded: moduleCache.size(),
+          entriesFailed: entryErrors.length
+        });
+        trace('Finished loading modules ($completedCount / $moduleCount)');
+        perf.print();
+      }
+    };
+
+    var onError:(String,
+      {error:Any, moduleCls:Null<String>}) -> Void = (moduleId, state) ->
+      {
+        entryErrors.push({
+          moduleId: moduleId,
+          error: state.error
+        });
+        trace('  Failed to load entry data (${moduleId}): ${state.error}');
+        checkAsyncProgress();
+      };
+
+    var onModuleLoadedAsync:(String,
+      {module:Module, moduleCls:String}) -> Void = (_, state) ->
+      {
+        onModuleLoaded(state.module, state.moduleCls);
+        checkAsyncProgress();
+      };
+
+    var loadModuleAsync:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var moduleCls:String = currentState.moduleCls;
+      try
+      {
+        var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
+        if (module != null)
+        {
+          // log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+          workOutput.sendComplete({
+            moduleCls: moduleCls,
+            module: module
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            moduleCls: moduleCls,
+            error: 'Failed to create module (${moduleCls})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          moduleCls: moduleCls,
+          error: e,
+        });
+      }
+    }
+
+    // Perform a task to load each module.
+    TaskHandler.performTask({
+      task: (currentState:State, workOutput:WorkOutput) ->
+      {
+        trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
+
+        workOutput.sendComplete({}, []);
+      },
+      initialState: {
+      },
+      taskCallbacks: {
+        onStart: null,
+        onError: null,
+        onComplete: (_) ->
+        {
+          // Load each module asynchronously.
+          for (moduleCls in scriptedModuleClassNames)
+          {
+            TaskHandler.performTask({
+              task: loadModuleAsync,
+              initialState: {
+                moduleCls: moduleCls
+              },
+              taskCallbacks: {
+                onStart: (_) -> {
+                },
+                onError: onError.bind(moduleCls),
+                onComplete: onModuleLoadedAsync.bind(moduleCls)
+              }
+            });
+          }
+        }
+      }
+    });
+
+    return promise.future;
+  }
+
+  static function onModuleLoaded(module:Module, moduleCls:String):Void
+  {
+    addToModuleCache(module);
+    trace('   Loaded module: ${moduleCls}');
   }
 
   public static function buildModuleCallbacks():Void
