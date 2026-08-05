@@ -273,6 +273,14 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
     stagedFlxGraphic.purgeCacheByPredicate((key, graphic) -> return filter.exists(keyword -> key.contains(keyword)));
   }
 
+  /**
+   * Forcibly clears all assets, including assets flagged as permanent.
+   */
+  public function forceClear():Void
+  {
+    stagedFlxGraphic.clearCache(true);
+  }
+
   // Idk what would be a good way to implement this, we got either A. Check for unusued graphics *everywhere*
   // or B. Check for unused graphics in the previous buffer.
   // For now this is just gonna be A as default because thats what the original BitmapFrontEnd does, but we can always change it later if we want to.
@@ -294,7 +302,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
 
   override public function reset():Void
   {
-    stagedFlxGraphic.clearCache();
+    stagedFlxGraphic.clearCache(false);
   }
 
   /**

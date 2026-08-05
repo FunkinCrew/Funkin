@@ -163,7 +163,7 @@ class HotReloadState extends MusicBeatState
    */
   function purgeAllAssets():Void
   {
-    FunkinAssetCache.instance.clear();
+    FunkinAssetCache.instance.forceClearCache();
   }
 
   /**
