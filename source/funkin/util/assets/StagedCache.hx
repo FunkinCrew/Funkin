@@ -128,7 +128,7 @@ class StagedCache<T> implements IStagedCache
   }
 
   /**
-   * Add the provided asset to the PERMANET cache.
+   * Add the provided asset to the PERMANENT cache.
    * It will not be discarded later, so be cautious with what you cache with this.
    *
    * @param key The key of the asset to cache.
