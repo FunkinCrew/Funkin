@@ -1258,14 +1258,19 @@ enum abstract AssetType(String) from String to String from LimeAssetType
   public var SCRIPTED_CLASS = 'SCRIPTED_CLASS';
 
   /**
-   * Files in (*.fnfc) format.
+   * Files in (*.fnfc) archive format.
    */
   public var CHART = 'CHART';
 
   /**
-   * Files in (*.fnfs) format.
+   * Files in (*.fnfs) archive format.
    */
   public var STAGE = 'STAGE';
+
+  /**
+   * Mods in (*.fnfmod) archive format.
+   */
+  public var MOD = 'MOD';
 
   /**
    * Files in (*.xml) format.

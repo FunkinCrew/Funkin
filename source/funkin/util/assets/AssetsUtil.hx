@@ -12,6 +12,43 @@ using StringTools;
 @:allow(funkin.assets.FunkinAssetCache)
 class AssetsUtil
 {
+  static final EXTENSIONS:Map<String, FunkinAssetType> = [
+    'astc' => FunkinAssetType.IMAGE, // Texture image utilizing Adaptive scalable texture compression
+    'bmp' => FunkinAssetType.IMAGE, // Bitmap image
+    'css' => FunkinAssetType.TEXT, // Cascading stylesheet
+    'csv' => FunkinAssetType.TEXT, // Comma-separated values file
+    'fla' => FunkinAssetType.UNKNOWN, // Flash project
+    'fnfc' => FunkinAssetType.CHART, // Friday Night Funkin chart
+    'fnfs' => FunkinAssetType.STAGE, // Friday Night Funkin chart
+    'fnfmod' => FunkinAssetType.MOD, // Friday Night Funkin chart
+    'fnt' => FunkinAssetType.TEXT, // Bitmap Font data file
+    'frag' => FunkinAssetType.TEXT, // GLSL fragment shader
+    'gif' => FunkinAssetType.IMAGE, // Graphics Interchange Format image
+    'hscript' => FunkinAssetType.SCRIPT, // Haxe script
+    'hx' => FunkinAssetType.SCRIPT, // Haxe script
+    'hxc' => FunkinAssetType.SCRIPTED_CLASS, // Haxe scripted class
+    'hxs' => FunkinAssetType.SCRIPT, // Haxe script
+    'ico' => FunkinAssetType.IMAGE, // Windows Icon file
+    'jpeg' => FunkinAssetType.IMAGE, // JPEG texture image
+    'jpg' => FunkinAssetType.IMAGE, // JPG texture image
+    'json' => FunkinAssetType.JSON, // JavaScript Object Notation data
+    'md' => FunkinAssetType.TEXT, // Markdown text file
+    'mkv' => FunkinAssetType.VIDEO, // WebM video
+    'mp3' => FunkinAssetType.SOUND, // MPEG-1 Audio Layer 3 audio
+    'mp4' => FunkinAssetType.VIDEO, // MPEG-4 video
+    'ogg' => FunkinAssetType.SOUND, // Ogg Vorbis audio
+    'otf' => FunkinAssetType.FONT, // OpenType font
+    'png' => FunkinAssetType.IMAGE, // Portable Network Graphics texture image
+    'srt' => FunkinAssetType.TEXT, // SubRip Text Subtitles
+    'tsv' => FunkinAssetType.TEXT, // Tab-separated values file
+    'ttf' => FunkinAssetType.FONT, // TrueType font
+    'txt' => FunkinAssetType.TEXT, // Text file
+    'vert' => FunkinAssetType.TEXT, // GLSL vertex shader
+    'wav' => FunkinAssetType.SOUND, // Waveform audio
+    'webm' => FunkinAssetType.VIDEO, // WebM video
+    'xml' => FunkinAssetType.XML, // Extensible Markup Language data
+  ];
+
   /**
    * Uploads the specified bitmap data to the GPU.
    * NOTE: From what I've read, this must be done from the main thread to prevent corrupted graphics.
@@ -41,73 +78,10 @@ class AssetsUtil
   public static function guessTypeByExtension(path:String):FunkinAssetType
   {
     var ext:String = Path.extension(path).toLowerCase();
-    switch (ext)
-    {
-      case 'fnfc': // Friday Night Funkin chart
-        return FunkinAssetType.CHART;
-      case 'png': // Portable Network Graphics texture image
-        return FunkinAssetType.IMAGE;
-      case 'jpg': // JPG texture image
-        return FunkinAssetType.IMAGE;
-      case 'jpeg': // JPEG texture image
-        return FunkinAssetType.IMAGE;
-      case 'gif': // Graphics Interchange Format image
-        return FunkinAssetType.IMAGE;
-      case 'bmp': // Bitmap image
-        return FunkinAssetType.IMAGE;
-      case 'astc': // Texture image utilizing Adaptive scalable texture compression
-        return FunkinAssetType.IMAGE;
-      case 'ogg': // Ogg Vorbis audio
-        return FunkinAssetType.SOUND;
-      case 'mp3': // MPEG-1 Audio Layer 3 audio
-        return FunkinAssetType.SOUND;
-      case 'wav': // Waveform audio
-        return FunkinAssetType.SOUND;
-      case 'mp4': // MPEG-4 video
-        return FunkinAssetType.VIDEO;
-      case 'webm': // WebM video
-        return FunkinAssetType.VIDEO;
-      case 'mkv': // WebM video
-        return FunkinAssetType.VIDEO;
-      case 'json': // JavaScript Object Notation data
-        return FunkinAssetType.JSON;
-      case 'xml': // Extensible Markup Language data
-        return FunkinAssetType.XML;
-      case 'txt': // Text file
-        return FunkinAssetType.TEXT;
-      case 'md': // Markdown text file
-        return FunkinAssetType.TEXT;
-      case 'tsv': // Tab-separated values file
-        return FunkinAssetType.TEXT;
-      case 'csv': // Comma-separated values file
-        return FunkinAssetType.TEXT;
-      case 'frag': // GLSL fragment shader
-        return FunkinAssetType.TEXT;
-      case 'vert': // GLSL vertex shader
-        return FunkinAssetType.TEXT;
-      case 'css': // Cascading stylesheet
-        return FunkinAssetType.TEXT;
-      case 'srt': // SubRip Text Subtitles
-        return FunkinAssetType.TEXT;
-      case 'fnt': // Bitmap Font data file
-        return FunkinAssetType.TEXT;
-      case 'hxs': // Haxe script
-        return FunkinAssetType.SCRIPT;
-      case 'hscript': // Haxe script
-        return FunkinAssetType.SCRIPT;
-      case 'hx': // Haxe script
-        return FunkinAssetType.SCRIPT;
-      case 'hxc': // Haxe scripted class
-        return FunkinAssetType.SCRIPTED_CLASS;
-      case 'ttf': // TrueType font
-        return FunkinAssetType.FONT;
-      case 'otf': // OpenType font
-        return FunkinAssetType.FONT;
-      case 'fla': // Flash project
-        return FunkinAssetType.UNKNOWN;
-      default: // Unknown
-        trace('Unknown extension for file: $path');
-        return FunkinAssetType.UNKNOWN;
-    }
+
+    if (EXTENSIONS.exists(ext)) return EXTENSIONS.get(ext);
+
+    trace('Unknown extension for file: $path ($ext)');
+    return FunkinAssetType.UNKNOWN;
   }
 }
