@@ -226,6 +226,10 @@ class HotReloadState extends MusicBeatState
 
       initModules();
 
+      #if FEATURE_MULTITHREADING
+      funkin.modding.PolymodErrorHandler.printQueuedErrors();
+      #end
+
       // Move to the title state next frame.
       isComplete = true;
     });

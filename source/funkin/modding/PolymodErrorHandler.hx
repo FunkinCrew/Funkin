@@ -5,8 +5,35 @@ import polymod.Polymod.PolymodError;
 @:nullSafety
 class PolymodErrorHandler
 {
+  #if FEATURE_MULTITHREADING
+  private static var queuedErrors:Array<PolymodError> = [];
+
+  /**
+   * There's a possibility for scripted registry entries to throw errors when they're initialized.
+   * If the registries are loaded asynchronously, error windows would overlay one another.
+   * For this reason, the errors should get added to an array and then emptied in the main thread,
+   * making the window popups appear one after another.
+   */
+  public static function printQueuedErrors():Void
+  {
+    while (queuedErrors.length > 0)
+    {
+      @:nullSafety(Off)
+      onPolymodError(queuedErrors.shift());
+    }
+  }
+  #end
+
   public static function onPolymodError(error:PolymodError):Void
   {
+    #if FEATURE_MULTITHREADING
+    if (!funkin.util.tasks.TaskHandler.isMainThread())
+    {
+      PolymodErrorHandler.queuedErrors.push(error);
+      return;
+    }
+    #end
+
     // Perform an action based on the error code.
     switch (error.code)
     {
