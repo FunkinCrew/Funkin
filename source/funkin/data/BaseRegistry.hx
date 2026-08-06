@@ -236,12 +236,11 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // A thread-safe array to store errors in.
     var entryErrors:SynchronizedArray<
       {
-        entryId:String,
+        ?entryId:String,
         error:Any,
         ?entryCls:String
       }> = new SynchronizedArray();
 
-    var startScriptedEntries:() -> Void;
     var startUnscriptedEntries:() -> Void;
 
     // Callback when one task completes
@@ -288,67 +287,64 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     };
 
     // Callback when one task completes with failure
-    var onError:(String,
-      {error:Any, entryCls:Null<String>}) -> Void = (entryId, state) ->
-      {
-        entryErrors.push({
-          entryId: entryId,
-          error: state.error
-        });
-        log('  Failed to load entry data (${entryId}): ${state.error}');
-        checkComplete();
-      };
+    var onError:({error:Any, entryCls:Null<String>, entryId:Null<String>}) -> Void = (state) ->
+    {
+      entryErrors.push({
+        entryId: state.entryId,
+        entryCls: state.entryCls,
+        error: state.error
+      });
+      log('  Failed to load entry data: ${state.entryId} (${state.entryCls}): ${state.error}');
+      checkComplete();
+    };
 
     // Callback when one task completes with success
-    var onScriptedEntryLoaded:(String,
-      {entry:T, entryCls:String}) -> Void = (_, state) ->
-      {
-        var entryId:String = state.entry.id;
-        entries.set(entryId, state.entry);
-        scriptedEntryIds.set(entryId, state.entryCls);
+    var onScriptedEntryLoaded:({entryId:String, entry:T, entryCls:String}) -> Void = (state) ->
+    {
+      entries.set(state.entryId, state.entry);
+      scriptedEntryIds.set(state.entryId, state.entryCls);
 
-        log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${entries.size()}+${entryErrors.length}/${entryCount})');
-        checkComplete();
-      };
+      log('  Loaded scripted entry: ${state.entryId} (${state.entryCls}) (${entries.size()}+${entryErrors.length}/${entryCount})');
+      checkComplete();
+    };
 
     // Callback when one task completes with success
-    var onUnscriptedEntryLoaded:(String,
-      {entry:T}) -> Void = (entryId, state) ->
+    var onUnscriptedEntryLoaded:(
+      {entryId:String, entry:T}) -> Void = (state) ->
       {
-        entries.set(entryId, state.entry);
-        log('  Loaded unscripted entry: ${entryId} (${entries.size()}+${entryErrors.length}/${entryCount})');
+        entries.set(state.entryId, state.entry);
+        log('  Loaded unscripted entry: ${state.entryId} (${entries.size()}+${entryErrors.length}/${entryCount})');
         checkComplete();
       };
 
     // Task to perform for each scripted entry
     var performScriptedEntryLoad:Task = (currentState:State, workOutput:WorkOutput) ->
     {
-      var entryCls:String = currentState.entryCls;
-
       try
       {
-        var entry:Null<T> = createScriptedEntry(entryCls);
+        var entry:Null<T> = createScriptedEntry(currentState.entryCls);
 
         if (entry != null)
         {
-          // log('Successfully created scripted entry (${entryCls} = ${entry.id})');
+          // log('Successfully created scripted entry (${currentState.entryCls} = ${entry.id})')
           workOutput.sendComplete({
-            entryCls: entryCls,
+            entryId: entry.id,
+            entryCls: currentState.entryCls,
             entry: entry
           }, []);
         }
         else
         {
           workOutput.sendError({
-            entryCls: entryCls,
-            error: 'Failed to create scripted entry (${entryCls})'
+            entryCls: currentState.entryCls,
+            error: 'Failed to create scripted entry (${currentState.entryCls})'
           });
         }
       }
       catch (e)
       {
         workOutput.sendError({
-          entryCls: entryCls,
+          entryCls: currentState.entryCls,
           error: e,
         });
       }
@@ -357,143 +353,127 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     // Task to perform for each unscripted entry
     var performUnscriptedEntryLoad:Task = (currentState:State, workOutput:WorkOutput) ->
     {
-      var entryId:String = currentState.entryId;
       try
       {
-        var entry:Null<T> = createEntry(entryId);
+        var entry:Null<T> = createEntry(currentState.entryId);
         if (entry != null)
         {
-          // log('Successfully created unscripted entry (${entry.id})');
+          // log('Successfully created unscripted entry (${entry.id})')
           workOutput.sendComplete({
+            entryId: entry.id,
             entry: entry
           }, []);
         }
         else
         {
           workOutput.sendError({
-            error: 'Failed to create entry (${entryId})'
+            entryId: currentState.entryId,
+            error: 'Failed to create entry (${currentState.entryId})'
           });
         }
       }
       catch (e)
       {
         workOutput.sendError({
-          entryId: entryId,
+          entryId: currentState.entryId,
           error: e
         });
       }
     }
 
-    // Start loading scripted entries.
-    startScriptedEntries = () ->
-    {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
-        {
-          // Asynchronously tally up the scripted entries to load,
-          // then queue the tasks on the main thread in onComplete,
-          // because you can't add tasks from another thread.
-
-          scriptedEntryClassNames = getScriptedClassNames();
-
-          log('Queuing loading for ${scriptedEntryClassNames.length} scripted entries...');
-
-          entryCount = scriptedEntryClassNames.length;
-
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: (_) -> {
-          },
-          onError: onError.bind(''),
-
-          onComplete: (_) ->
-          {
-            if (scriptedEntryClassNames.length == 0)
-            {
-              checkComplete();
-            }
-            else
-            {
-              for (entryCls in scriptedEntryClassNames)
-              {
-                TaskHandler.performTask({
-                  task: performScriptedEntryLoad,
-                  initialState: {
-                    entryCls: entryCls
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(entryCls),
-                    onComplete: onScriptedEntryLoaded.bind(entryCls)
-                  }
-                });
-              }
-            }
-          }
-        }
-      });
-    };
-
     // Start loading unscripted entries.
     startUnscriptedEntries = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
+      var tallyUnscriptedEntriesFuture = TaskHandler.performSimpleTask(() ->
+      {
+        // Asynchronously tally up the unscripted entries to load,
+        // then queue the tasks on the main thread in onComplete,
+        // because you can't add tasks from another thread.
+        var entryIdList:Array<String> = fetchEntryIdsFromFiles();
+        log('  Found ${entryIdList.length} entry files, ${entries.size()} entries already loaded...');
+        unscriptedEntryIds = entryIdList.filter((entryId) ->
         {
-          // Asynchronously tally up the unscripted entries to load,
-          // then queue the tasks on the main thread in onComplete,
-          // because you can't add tasks from another thread.
-          var entryIdList:Array<String> = fetchEntryIdsFromFiles();
-          log('  Found ${entryIdList.length} entry files, ${entries.size()} entries already loaded...');
-          unscriptedEntryIds = entryIdList.filter((entryId) ->
-          {
-            return !entries.exists(entryId);
-          });
+          return !entries.exists(entryId);
+        });
 
-          entryCount = scriptedEntryClassNames.length + unscriptedEntryIds.length;
+        entryCount = scriptedEntryClassNames.length + unscriptedEntryIds.length;
 
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: (_) -> {
-          },
-          onError: onError.bind(''),
-          onComplete: (_) ->
+        return true;
+      });
+
+      tallyUnscriptedEntriesFuture.onError(onError);
+      tallyUnscriptedEntriesFuture.onComplete((_) ->
+      {
+        if (unscriptedEntryIds.length == 0)
+        {
+          checkComplete();
+        }
+        else
+        {
+          // TODO: Is it better to make one Future that loads them one at a time,
+          // or X futures which each load one entry?
+          for (entryId in unscriptedEntryIds)
           {
-            if (unscriptedEntryIds.length == 0)
-            {
-              checkComplete();
-            }
-            else
-            {
-              for (entryId in unscriptedEntryIds)
-              {
-                TaskHandler.performTask({
-                  task: performUnscriptedEntryLoad,
-                  initialState: {
-                    entryId: entryId
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(entryId),
-                    onComplete: onUnscriptedEntryLoaded.bind(entryId)
-                  }
-                });
+            var unscriptedEntryFuture = TaskHandler.performTask({
+              task: performUnscriptedEntryLoad,
+              initialState: {
+                entryId: entryId
               }
-            }
+            }, new lime.app.Promise<
+              {entryId:String, entry:T}>());
+
+            unscriptedEntryFuture.onError(onError);
+            unscriptedEntryFuture.onComplete(onUnscriptedEntryLoaded);
           }
         }
       });
     }
 
-    startScriptedEntries();
+    // Tally up scripted entries.
+    var tallyScriptedEntriesFuture = TaskHandler.performSimpleTask(() ->
+    {
+      // Asynchronously tally up the scripted entries to load,
+      // then queue the tasks on the main thread in onComplete,
+      // because you can't add tasks from another thread.
+
+      scriptedEntryClassNames = getScriptedClassNames();
+
+      log('Queuing loading for ${scriptedEntryClassNames.length} scripted entries...');
+
+      entryCount = scriptedEntryClassNames.length;
+
+      return true;
+    });
+
+    // Queue loading of scripted entries.
+    tallyScriptedEntriesFuture.onError(onError);
+    tallyScriptedEntriesFuture.onComplete((_) ->
+    {
+      // NOTE: onComplete() is run in the main thread.
+      if (scriptedEntryClassNames.length == 0)
+      {
+        // If no scripted entries, start loading unscripted entries.
+        checkComplete();
+      }
+      else
+      {
+        // TODO: Is it better to make one Future that loads them one at a time,
+        // or X futures which each load one entry?
+        for (entryCls in scriptedEntryClassNames)
+        {
+          var scriptedEntryFuture = TaskHandler.performTask({
+            task: performScriptedEntryLoad,
+            initialState: {
+              entryCls: entryCls
+            },
+          }, new lime.app.Promise<
+            {entryId:String, entry:T, entryCls:String}>());
+
+          scriptedEntryFuture.onError(onError);
+          scriptedEntryFuture.onComplete(onScriptedEntryLoaded);
+        }
+      }
+    });
 
     return promise.future;
   }
