@@ -1,5 +1,6 @@
 package funkin.data.character;
 
+import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -16,10 +17,16 @@ import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.MultiAnimateAtlasCharacter;
 import funkin.play.character.PackerCharacter;
 import funkin.util.VersionUtil;
+import funkin.util.tasks.TaskHandler;
+import funkin.util.tasks.TaskHandler.Task;
 import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Assets.AssetType;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedArray;
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 @:nullSafety
 class CharacterDataParser
@@ -38,8 +45,16 @@ class CharacterDataParser
    */
   public static final CHARACTER_DATA_VERSION_RULE:String = '1.0.x';
 
+  #if FEATURE_MULTITHREADING
+  static final characterCache:SynchronizedMap<String, CharacterData> = SynchronizedMap.newStringMap();
+  #else
   static final characterCache:Map<String, CharacterData> = [];
+  #end
+  #if FEATURE_MULTITHREADING
+  static final characterScriptedClass:SynchronizedMap<String, String> = SynchronizedMap.newStringMap();
+  #else
   static final characterScriptedClass:Map<String, String> = [];
+  #end
   static final DEFAULT_CHAR_ID:String = 'UNKNOWN';
   static final ASSET_BLACKLIST:Array<String> = ['Animation', 'spritemap1'];
   static final DATA_FILE_PATH:String = 'gameplay/characters/';
@@ -257,6 +272,326 @@ class CharacterDataParser
     }
     log(' INFO '.info() + 'Successfully instantiated ${characterCache.size()} characters.');
   }
+
+  #if FEATURE_MULTITHREADING
+  public static function loadCharacterCacheAsync():lime.app.Future<LoadEntriesResult>
+  {
+    clearCharacterCache();
+
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadCharacterCacheAsync');
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    var entryErrors:SynchronizedArray<
+      {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
+
+    var charIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds(DATA_FILE_PATH, true);
+    var previousScriptedEntryClasses:Array<String> = [];
+    var scriptedEntryClassNames:Array<String> = [];
+    var entryCount:Int = 0;
+
+    // Used to track the state we're in while loading the characters. This can either be us loading all character data, or loading each scripted character types.
+    // For example, `data means we're loading all of the character data currently
+    // `packer` means we're currently loading the scripted classes for PackerCharacter, etc.
+    var entryLoadingState:String = 'data';
+
+    var loadCharacterDataAsync:Void->Void = () -> {
+    }
+    var loadScriptedEntriesAsync:Void->Void = () -> {
+    }
+
+    var checkAsyncProgress = () ->
+    {
+      // We're checking the progress on loading the data for all characters.
+      if (entryLoadingState == 'data')
+      {
+        var current:Int = characterCache.size() + entryErrors.length;
+        if (current == entryCount)
+        {
+          entryCount = 0; // Reset the entry count so it can be used for scripted classes now.
+          entryLoadingState = 'sparrow'; // Move to loading scripted characters.
+          loadScriptedEntriesAsync();
+          log('Finished loading data for characters (1/2)');
+        }
+      }
+      else
+      {
+        // We're checking the progress on what characters are scripted.
+        var current:Int = characterScriptedClass.size() + entryErrors.length;
+        if (current == entryCount)
+        {
+          // We've finished loading the scripted entries for a character type, use a basic state machine switching to the next one.
+          switch (entryLoadingState)
+          {
+            case 'sparrow':
+              entryLoadingState = 'packer';
+              log('Finished loading scripted sparrow characters (1/6) ($current / ${entryCount})');
+            case 'packer':
+              entryLoadingState = 'animateatlas';
+              log('Finished loading scripted packer characters (2/6) ($current / ${entryCount})');
+            case 'animateatlas':
+              entryLoadingState = 'multisparrow';
+              log('Finished loading scripted animateatlas characters (3/6) ($current / ${entryCount})');
+            case 'multisparrow':
+              entryLoadingState = 'multianimateatlas';
+              log('Finished loading scripted multi-sparrow characters (4/6) ($current / ${entryCount})');
+            case 'multianimateatlas':
+              entryLoadingState = 'base';
+              log('Finished loading scripted multi-animateatlas characters (5/6) ($current / ${entryCount})');
+            case 'base':
+              log('Finished loading scripted base characters (6/6) ($current / ${entryCount})');
+              log('Finished loading all scripted classes for characters (2/2)');
+
+              // NOTE: `entriesFailed` is the sum of errors from loading both scripted classes & data for characters
+              // Same for how `entriesLoaded` is the sum successfully loaded entries for character data & scripted classes
+              promise.complete({
+                entriesLoaded: characterCache.size() + characterScriptedClass.size(),
+                entriesFailed: entryErrors.length
+              });
+              perf.print();
+              return;
+          }
+
+          // Restart loading scripted entries.
+          loadScriptedEntriesAsync();
+        }
+      }
+    }
+
+    var onError:(String,
+      {error:Any, entryCls:Null<String>}) -> Void = (entryId, state) ->
+      {
+        entryErrors.push({
+          entryId: entryId,
+          error: state.error
+        });
+
+        // Log based on the current state.
+        switch (entryLoadingState)
+        {
+          case 'data':
+            log(' ERROR '.error() + 'Failed to load data for character entry ($entryId)');
+          case 'sparrow':
+            log(' ERROR '.error() + 'Failed to instantiate scripted Sparrow character ($entryId)');
+          case 'packer':
+            log(' ERROR '.error() + 'Failed to instantiate scripted Packer character ($entryId)');
+          case 'animateatlas':
+            log(' ERROR '.error() + 'Failed to instantiate scripted Animate Atlas character ($entryId)');
+          case 'multisparrow':
+            log(' ERROR '.error() + 'Failed to instantiate scripted Multi-Sparrow character ($entryId)');
+          case 'multianimateatlas':
+            log(' ERROR '.error() + 'Failed to instantiate scripted Multi-Animate Atlas character ($entryId)');
+          case 'base':
+            log(' ERROR '.error() + 'Failed to instantiate scripted base character ($entryId)');
+        }
+        checkAsyncProgress();
+      };
+
+    var onUnscriptedEntryLoaded:(String,
+      {entryData:CharacterData}) -> Void = (entryId, state) ->
+      {
+        characterCache.set(entryId, state.entryData);
+        log('  Loaded data for character: ${entryId} (${characterCache.size()}+${entryErrors.length} / ${charIdList.length})');
+        checkAsyncProgress();
+      };
+
+    var onScriptedEntryLoaded:(String,
+      {entry:BaseCharacter, entryCls:String}) -> Void = (_, state) ->
+      {
+        var entryId:String = state.entry.characterId;
+        characterScriptedClass.set(entryId, state.entryCls);
+
+        log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${characterScriptedClass.size()}+${entryErrors.length} / ${entryCount})');
+        checkAsyncProgress();
+      };
+
+    var performLoadUnscriptedEntryData:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var entryId:String = currentState.entryId;
+      try
+      {
+        var charData:Null<CharacterData> = parseCharacterData(entryId);
+        if (charData != null)
+        {
+          workOutput.sendComplete({
+            entryData: charData
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            error: 'Failed to load data for character entry (${entryId})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          entryId: entryId,
+          error: e
+        });
+      }
+    }
+
+    var performLoadScriptedEntry:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var entryCls:String = currentState.entryCls;
+      try
+      {
+        var character:Null<BaseCharacter> = switch (entryLoadingState)
+        {
+          case 'sparrow':
+            ScriptedSparrowCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          case 'packer':
+            ScriptedPackerCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          case 'animateatlas':
+            ScriptedAnimateAtlasCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          case 'multianimateatlas':
+            ScriptedMultiAnimateAtlasCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          case 'multisparrow':
+            ScriptedMultiSparrowCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          case 'base':
+            ScriptedBaseCharacter.scriptInit(entryCls, DEFAULT_CHAR_ID);
+          default:
+            null;
+        }
+
+        if (character != null)
+        {
+          workOutput.sendComplete({
+            entryCls: entryCls,
+            entry: character
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            entryCls: entryCls,
+            error: 'Failed to create scripted entry (${entryCls})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          entryCls: entryCls,
+          error: e,
+        });
+      }
+    }
+
+    loadCharacterDataAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          log('Loading data for ${charIdList.length} characters...');
+
+          entryCount = charIdList.length;
+
+          workOutput.sendComplete({}, []);
+        },
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            for (entryId in charIdList)
+            {
+              TaskHandler.performTask({
+                task: performLoadUnscriptedEntryData,
+                initialState: {
+                  entryId: entryId
+                },
+                taskCallbacks: {
+                  onStart: (_) -> {
+                  },
+                  onError: onError.bind(entryId),
+                  onComplete: onUnscriptedEntryLoaded.bind(entryId)
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // NOTE: Runs several times as we have to load the scripted classes for multiple different types of characters.
+    loadScriptedEntriesAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          scriptedEntryClassNames = switch (entryLoadingState)
+          {
+            case 'sparrow':
+              ScriptedSparrowCharacter.listScriptClasses();
+            case 'packer':
+              ScriptedPackerCharacter.listScriptClasses();
+            case 'animateatlas':
+              ScriptedAnimateAtlasCharacter.listScriptClasses();
+            case 'multisparrow':
+              ScriptedMultiSparrowCharacter.listScriptClasses();
+            case 'multianimateatlas':
+              ScriptedMultiAnimateAtlasCharacter.listScriptClasses();
+            case 'base':
+              var scriptedClasses:Array<String> = ScriptedBaseCharacter.listScriptClasses().filter((charCls:String) ->
+              {
+                // ONLY populate the base character classes that hasn't already been populated.
+                return !previousScriptedEntryClasses.contains(charCls);
+              });
+              scriptedClasses;
+            default:
+              [];
+          }
+
+          // We concatenate this list so we can use this when checking for ScriptedBaseCharacter entries.
+          previousScriptedEntryClasses = previousScriptedEntryClasses.concat(scriptedEntryClassNames);
+
+          log('Queuing loading for ${scriptedEntryClassNames.length} $entryLoadingState character scripted entries...');
+          entryCount += scriptedEntryClassNames.length; // Since this function is called several times, we increment the entry count for each use.
+          workOutput.sendComplete({}, []);
+        },
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            if (scriptedEntryClassNames.length == 0)
+            {
+              checkAsyncProgress();
+            }
+            else
+            {
+              for (entryCls in scriptedEntryClassNames)
+              {
+                TaskHandler.performTask({
+                  task: performLoadScriptedEntry,
+                  initialState: {
+                    entryCls: entryCls
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(entryCls),
+                    onComplete: onScriptedEntryLoaded.bind(entryCls)
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // First load the character data for all characters.
+    loadCharacterDataAsync();
+
+    return promise.future;
+  }
+  #end
 
   /**
    * Query assets needed by the REGISTRY ITSELF, usually for parsing entry data.

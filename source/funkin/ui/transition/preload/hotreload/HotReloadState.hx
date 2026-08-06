@@ -278,6 +278,7 @@ class HotReloadState extends MusicBeatState
     futures.push(StageRegistry.instance.loadEntriesAsync());
     futures.push(StickerRegistry.instance.loadEntriesAsync());
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
+    futures.push(CharacterDataParser.loadCharacterCacheAsync());
 
     var registryFuture = lime.app.Promises.allSettled(futures);
 
@@ -300,7 +301,10 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadAdditionalData():Void
   {
-    trace('Queue task: Load additional data...');
+    SongEventRegistry.loadEventCache();
+    SongRegistry.instance.loadEntries();
+    NoteKindManager.initialize();
+  }
 
     TaskHandler.performSimpleTask(() ->
     {
