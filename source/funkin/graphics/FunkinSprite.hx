@@ -292,7 +292,17 @@ class FunkinSprite extends FlxAnimate
     return this;
   }
 
-  public function loadTextureAsync(key:String, fade:Bool = false):Void
+  /**
+   * Load a static image as the sprite's texture asynchronously.
+   * If the texture is already cached, it will be loaded immediately.
+   * Otherwise, the texture will stay invisible until loading finishes.
+   *
+   * @param assetPath The path of the texture to load.
+   * @param fade If `true`, the sprite will fade in once the texture is loaded.
+   * @return A `Future` that resolves when the texture is loaded.
+   */
+  public function loadTextureAsync(assetPath:funkin.assets.Paths.AssetPath,
+    fade:Bool = false):lime.app.Future<FlxGraphic>
   {
     var fadeTween:Null<FlxTween> = null;
     if (fade)
@@ -302,13 +312,14 @@ class FunkinSprite extends FlxAnimate
       }, 0.25);
     }
 
-    trace('[ASYNC] Start loading image (${key})');
-    graphic.persist = true;
-    openfl.Assets.loadBitmapData(key).onComplete(function(bitmapData:openfl.display.BitmapData)
+    trace('[ASYNC] Start loading image (${assetPath})');
+
+    var future = funkin.assets.Assets.loadFlxGraphic(assetPath);
+
+    future.onComplete((graphic:FlxGraphic) ->
     {
       trace('[ASYNC] Finished loading image');
-      var cache:Bool = false;
-      loadBitmapData(bitmapData, cache);
+      loadGraphic(graphic);
 
       if (fadeTween != null)
       {
@@ -317,18 +328,22 @@ class FunkinSprite extends FlxAnimate
           alpha: 1.0
         }, 0.25);
       }
-    }).onError(function(error:Dynamic)
-    {
-        trace('[ASYNC] Failed to load image: ${error}');
-        if (fadeTween != null)
-        {
-          fadeTween.cancel();
-          this.alpha = 1.0;
-        }
-    }).onProgress(function(progress:Int, total:Int)
-    {
-        trace('[ASYNC] Loading image progress: ${progress}/${total}');
     });
+    future.onError((error:Dynamic) ->
+    {
+      trace('[ASYNC] Failed to load image: ${error}');
+      if (fadeTween != null)
+      {
+        fadeTween.cancel();
+        this.alpha = 1.0;
+      }
+    });
+    future.onProgress((progress:Int, total:Int) ->
+    {
+      trace('[ASYNC] Loading image progress: ${progress}/${total}');
+    });
+
+    return future;
   }
 
   /**

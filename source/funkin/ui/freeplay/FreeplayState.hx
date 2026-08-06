@@ -3341,8 +3341,10 @@ class FreeplayState extends MusicBeatSubState
   public function switchBackingImage(?freeplaySongData:FreeplaySongData):Void
   {
     // ui/freeplay/backgrounds/charId/levelId
-    var path = Paths.image('ui/freeplay/backgrounds/${currentCharacterId ?? 'bf'}/${freeplaySongData?.levelId ?? 'week1'}');
-    if (!Assets.exists(path)) path = Paths.image('ui/freeplay/backgrounds/bf/week1');
+    var path:funkin.assets.Paths.AssetPath = funkin.assets.Paths.image(
+      'ui/freeplay/backgrounds/${currentCharacterId ?? 'bf'}/${freeplaySongData?.levelId ?? 'week1'}'
+    );
+    if (!path.exists()) path = funkin.assets.Paths.image('ui/freeplay/backgrounds/bf/week1');
     backingImage.loadTextureAsync(path);
   }
 
