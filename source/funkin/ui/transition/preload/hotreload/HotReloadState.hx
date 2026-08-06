@@ -1,7 +1,7 @@
 package funkin.ui.transition.preload.hotreload;
 
-import funkin.assets.FunkinAssetCache;
 import flixel.util.typeLimit.NextState;
+import funkin.assets.FunkinAssetCache;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.data.dialogue.ConversationRegistry;
@@ -17,12 +17,11 @@ import funkin.data.stage.StageRegistry;
 import funkin.data.stickers.StickerRegistry;
 import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinSprite;
+import flixel.util.FlxDestroyUtil;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.ui.title.TitleState;
-import flixel.tweens.FlxTween;
-import funkin.graphics.FunkinCamera;
-import animate.FlxAnimateAssets;
+import funkin.util.tasks.TaskHandler;
 import lime.app.Future;
 import polymod.Polymod;
 
@@ -46,7 +45,6 @@ class HotReloadState extends MusicBeatState
   var transitioning:Bool = false;
   var totalElapsed:Float = 0;
   // Graphical elements
-  var mainCamera:FunkinCamera;
   var progressBar:FunkinSprite;
   var throbber:FunkinSprite;
 
@@ -54,46 +52,17 @@ class HotReloadState extends MusicBeatState
   {
     super();
 
-    mainCamera = new FunkinCamera('hotReload');
-
     this.targetState = targetState;
-    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD).makeSolidColor(10, 12, Constants.COLOR_PRELOADER_BAR);
+    this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD);
 
-    throbber = FunkinSprite.create(Paths.image('ui/loading/throbber'));
+    throbber = new FunkinSprite(0, 0);
   }
 
   override public function create():Void
   {
     super.create();
 
-    // Set up our own camera to ensure consistent rendering.
-    FlxG.cameras.reset(mainCamera);
-
-    // Build progress bar
-    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFCCCCCC);
-    progressBarBack.zIndex = 100;
-    progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
-    progressBarBack.updateHitbox();
-    progressBarBack.x = BAR_PAD;
-    progressBarBack.y = FlxG.height - BAR_HEIGHT - BAR_PAD;
-    add(progressBarBack);
-
-    this.progressBar.zIndex = 200;
-    add(progressBar);
-
-    updateProgress(0, 10);
-
-    throbber.setGraphicSize(64, 64);
-    throbber.updateHitbox();
-    throbber.x = FlxG.width - BAR_PAD - throbber.width;
-    throbber.y = FlxG.height - throbber.height - BAR_PAD - BAR_HEIGHT - BAR_PAD;
-    add(throbber);
-
-    // Fade the throbber in over a short period.
-    throbber.alpha = 0;
-    FlxTween.tween(throbber, {
-      alpha: 1.0
-    }, 0.2);
+    trace('Entered HotReloadState...');
   }
 
   override public function update(elapsed:Float):Void
@@ -106,21 +75,54 @@ class HotReloadState extends MusicBeatState
     {
       hasStartedLoading = true;
 
-      purgeAllAssets();
-
-      clearScripts();
-
-      funkin.modding.PolymodHandler.loadEnabledMods();
-
-      // This synchronous task needs to be done immediately after changing the modlist.
-      FunkinAssetCache.instance.cacheAssetLists(true);
-
-      queueLoadScripts();
+      queuePurgeCache();
     }
 
     updateThrobber(elapsed);
 
-    if (isComplete) moveToTitleState();
+    if (isComplete)
+    {
+      #if FEATURE_MULTITHREADING
+      funkin.modding.PolymodErrorHandler.printQueuedErrors();
+      #end
+
+      moveToTitleState();
+    }
+  }
+
+  /**
+   * Create and display the progress bar visuals.
+   * Call this only AFTER assets have been purged.
+   */
+  function buildProgressBar():Void
+  {
+    trace('Building progress bar for display...');
+
+    // Build progress bar
+    var progressBarBack = new FunkinSprite(0, 0).makeSolidColor(10, 12, 0xFFCCCCCC);
+    progressBarBack.zIndex = 100;
+    progressBarBack.setGraphicSize(FlxG.width - BAR_PAD - BAR_PAD, BAR_HEIGHT);
+    progressBarBack.updateHitbox();
+    progressBarBack.x = BAR_PAD;
+    progressBarBack.y = FlxG.height - BAR_HEIGHT - BAR_PAD;
+    add(progressBarBack);
+
+    progressBar.makeSolidColor(10, 12, Constants.COLOR_PRELOADER_BAR);
+    progressBar.zIndex = 200;
+    add(progressBar);
+
+    updateProgress(0, 10);
+
+    // You can load textures asynchronously.
+    var throbberFuture = throbber.loadTextureAsync(funkin.assets.Paths.image('ui/loading/throbber'), true);
+    throbberFuture.onComplete((_) ->
+    {
+      throbber.setGraphicSize(64, 64);
+      throbber.updateHitbox();
+      throbber.x = FlxG.width - BAR_PAD - throbber.width;
+      throbber.y = FlxG.height - throbber.height - BAR_PAD - BAR_HEIGHT - BAR_PAD;
+      add(throbber);
+    });
   }
 
   /**
@@ -159,42 +161,86 @@ class HotReloadState extends MusicBeatState
   }
 
   /**
-   * Forcibly clear ALL assets in the FunkinAssetCache.
+   * Step 1. Forcibly clear all assets in the `FunkinAssetCache`.
    */
-  function purgeAllAssets():Void
+  function queuePurgeCache():Void
   {
-    FunkinAssetCache.instance.forceClearCache();
+    TaskHandler.performSimpleTask(() ->
+    {
+      // Fix a specific bug where the game tries to render the 0-character long text,
+      // fails and shits its pants.
+      if (leftWatermarkText != null)
+      {
+        remove(leftWatermarkText);
+        leftWatermarkText = FlxDestroyUtil.destroy(leftWatermarkText);
+      }
+      if (rightWatermarkText != null)
+      {
+        remove(rightWatermarkText);
+        rightWatermarkText = FlxDestroyUtil.destroy(rightWatermarkText);
+      }
+
+      FunkinAssetCache.instance.forceClearCache();
+
+      trace('  Done!');
+
+      return true;
+    }).onComplete((_) ->
+      {
+        trace('queuePurgeCache.onComplete()');
+        // OK now that we've purged the asset cache, we can display the progress bar
+        // without the assets for it getting purged while they're in use.
+        // NOTE: onComplete() is run in the main thread.
+        buildProgressBar();
+
+        updateProgress(1, 10);
+
+        // Start the next step.
+        queueLoadEnabledMods();
+      });
   }
 
   /**
-   * Forcibly clear scripts so that we can reload them later.
+   * Step 2. Forcibly clear the script and module cache so they can be reloaded once mods are loaded.
+   * Then, initialize mods.
    */
-  function clearScripts():Void
+  function queueLoadEnabledMods():Void
   {
-    ModuleHandler.clearModuleCache();
-    Polymod.clearScripts();
+    trace('Queue task: Load enabled mods...');
+
+    TaskHandler.performSimpleTask(() ->
+    {
+      ModuleHandler.clearModuleCache();
+      Polymod.clearScripts();
+
+      funkin.modding.PolymodHandler.loadEnabledMods();
+
+      // This task needs to be done immediately after changing the modlist.
+      FunkinAssetCache.instance.cacheAssetLists(true);
+
+      return true;
+    }).onComplete((_) ->
+      {
+        updateProgress(2, 10);
+
+        queueLoadScripts();
+      });
   }
 
   /**
-   * Asynchronously load scripts from base game and all enabled mods,
-   * then continue when finished.
+   * Step 3. Asynchronously load scripts from base game and all enabled mods.
    */
   function queueLoadScripts():Void
   {
+    trace('Queue task: Async load scripts...');
+
     var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
-
-    scriptFuture.onProgress((loaded:Int, total:Int) ->
-    {
-      trace('Script loading completed: $loaded/$total');
-
-      updateProgress(0, 10);
-    });
 
     scriptFuture.onComplete((_result) ->
     {
       trace('Script loading complete');
 
-      updateProgress(1, 10);
+      updateProgress(3, 10);
 
       // Load registry data asynchronously.
       queueLoadRegistryData();
@@ -202,12 +248,15 @@ class HotReloadState extends MusicBeatState
   }
 
   /**
-   * Load registry data from base game and all enabled mods,
-   * then continue when finished.
+   * Step 4. Asynchronously load registry data from base game and all enabled mods.
    */
   function queueLoadRegistryData():Void
   {
+    trace('Queue task: Async load registry data...');
+
     var futures:Array<Future<LoadEntriesResult>> = [];
+
+    // All of these create task which can be performed in parallel. Beautiful.
 
     futures.push(LevelRegistry.instance.loadEntriesAsync());
     futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
@@ -232,38 +281,39 @@ class HotReloadState extends MusicBeatState
     {
       updateProgress(10, 10);
 
-      loadAdditionalData();
-
-      initModules();
-
-      #if FEATURE_MULTITHREADING
-      funkin.modding.PolymodErrorHandler.printQueuedErrors();
-      #end
-
-      // Move to the title state next frame.
-      isComplete = true;
+      queueLoadAdditionalData();
     });
   }
 
   /**
-   * Load additional data, that currently needs to be loaded synchronously.
-   * TODO: Any of these that can be made asynchronous would improve performance.
+   * Step 5. Load additional data that is not part of the registry system.
    */
-  function loadAdditionalData():Void
+  function queueLoadAdditionalData():Void
   {
-    SongEventRegistry.loadEventCache();
-    SongRegistry.instance.loadEntries();
-    CharacterDataParser.loadCharacterCache();
-    NoteKindManager.initialize();
-  }
+    trace('Queue task: Load additional data...');
 
-  /**
-   * Initialize any ScriptedModules provided by mods.
-   */
-  function initModules():Void
-  {
-    ModuleHandler.loadModuleCache();
-    ModuleHandler.callOnCreate();
+    TaskHandler.performSimpleTask(() ->
+    {
+      // These use the registry system (sorta) but need more work to support async loading.
+      SongRegistry.instance.loadEntries();
+      CharacterDataParser.loadCharacterCache();
+
+      // These don't use the registry system at all, they're synchronous but fairly quick.
+      SongEventRegistry.loadEventCache();
+      NoteKindManager.initialize();
+
+      // Load and initialize modules.
+      // We do this only once everything else is done.
+      ModuleHandler.loadModuleCache();
+      ModuleHandler.callOnCreate();
+
+      return true;
+    }).onComplete((_) ->
+      {
+        // We can move to the title state next frame.
+        updateProgress(10, 10);
+        isComplete = true;
+      });
   }
 
   /**
@@ -272,6 +322,8 @@ class HotReloadState extends MusicBeatState
   function moveToTitleState():Void
   {
     if (transitioning) return;
+
+    trace('Transitioning to title state...');
     transitioning = true;
 
     if (targetState != null)
