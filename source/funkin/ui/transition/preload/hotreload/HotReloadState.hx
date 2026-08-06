@@ -279,6 +279,8 @@ class HotReloadState extends MusicBeatState
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
     futures.push(SongEventRegistry.loadEventCacheAsync());
     futures.push(NoteKindManager.loadNoteKindsAsync());
+    futures.push(CharacterDataParser.loadCharacterCacheAsync());
+    futures.push(ModuleHandler.loadModuleCacheAsync());
 
     var registryFuture = lime.app.Promises.allSettled(futures);
 
@@ -290,47 +292,13 @@ class HotReloadState extends MusicBeatState
 
     registryFuture.onComplete((_) ->
     {
-      updateProgress(10, 10);
-
-      queueLoadModules();
-    });
-  }
-
-  /**
-   * Initialize any ScriptedModules provided by mods.
-   */
-  function queueLoadModules():Void
-  {
-    var future:Future<LoadEntriesResult> = ModuleHandler.loadModuleCacheAsync();
-
-    future.onComplete((result:LoadEntriesResult) ->
-    {
       // Call create() on each module when the future is complte.
       ModuleHandler.callOnCreate();
 
-      queueLoadAdditionalData();
+      updateProgress(10, 10);
+
+      isComplete = true;
     });
-  }
-
-  /**
-   * Step 5. Load additional data that is not part of the registry system.
-   */
-  function queueLoadAdditionalData():Void
-  {
-    trace('Queue task: Load additional data...');
-
-    TaskHandler.performSimpleTask(() ->
-    {
-      // These use the registry system (sorta) but need more work to support async loading.
-      CharacterDataParser.loadCharacterCache();
-
-      return true;
-    }).onComplete((_) ->
-      {
-        // We can move to the title state next frame.
-        updateProgress(10, 10);
-        isComplete = true;
-      });
   }
 
   /**
