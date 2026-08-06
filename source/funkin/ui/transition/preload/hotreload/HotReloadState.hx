@@ -62,7 +62,18 @@ class HotReloadState extends MusicBeatState
   {
     super.create();
 
-    trace('Entered HotReloadState...');
+    // Fix a specific bug where the game tries to render the 0-character long text,
+    // fails and shits its pants.
+    if (leftWatermarkText != null)
+    {
+      remove(leftWatermarkText);
+      leftWatermarkText = FlxDestroyUtil.destroy(leftWatermarkText);
+    }
+    if (rightWatermarkText != null)
+    {
+      remove(rightWatermarkText);
+      rightWatermarkText = FlxDestroyUtil.destroy(rightWatermarkText);
+    }
   }
 
   override public function update(elapsed:Float):Void
@@ -167,22 +178,7 @@ class HotReloadState extends MusicBeatState
   {
     TaskHandler.performSimpleTask(() ->
     {
-      // Fix a specific bug where the game tries to render the 0-character long text,
-      // fails and shits its pants.
-      if (leftWatermarkText != null)
-      {
-        remove(leftWatermarkText);
-        leftWatermarkText = FlxDestroyUtil.destroy(leftWatermarkText);
-      }
-      if (rightWatermarkText != null)
-      {
-        remove(rightWatermarkText);
-        rightWatermarkText = FlxDestroyUtil.destroy(rightWatermarkText);
-      }
-
       FunkinAssetCache.instance.forceClearCache();
-
-      trace('  Done!');
 
       return true;
     }).onComplete((_) ->
