@@ -1,5 +1,6 @@
 package funkin.play.notes.notekind;
 
+import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.events.ScriptEvent;
@@ -9,6 +10,12 @@ import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.notekind.ScriptedNoteKind;
 import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 import funkin.util.macro.ClassMacro;
+import funkin.util.tasks.TaskHandler;
+import funkin.util.tasks.TaskHandler.Task;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedArray;
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 class NoteKindManager
 {
@@ -16,13 +23,23 @@ class NoteKindManager
    * Every built-in note kind class must be added to this list.
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
-  static final BUILTIN_KINDS:List<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind);
+  static final BUILTIN_KINDS:List<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind).filter((cls) ->
+  {
+    ![
+      'funkin.play.notes.notekind.NoteKind',
+      'funkin.play.notes.notekind.ScriptedNoteKind'
+    ].contains(Type.getClassName(cls));
+  });
 
   /**
    * A map of all note kinds, keyed by their name.
    * This is used to retrieve note kinds by their name.
    */
-  public static var noteKinds:Map<String, NoteKind> = [];
+  #if FEATURE_MULTITHREADING
+  public static var noteKinds:SynchronizedMap<String, NoteKind> = SynchronizedMap.newStringMap();
+  #else
+  public static var noteKinds:SynchronizedMap<String, NoteKind> = [];
+  #end
 
   /**
    * Retrieve a note kind by its name.
@@ -41,7 +58,12 @@ class NoteKindManager
    */
   public static function listNoteKinds():Array<String>
   {
+    #if FEATURE_MULTITHREADING
+    // MapTools can't be used for SynchronizedMap.
+    return[for (k => v in noteKinds) k];
+    #else
     return noteKinds.keyValues();
+    #end
   }
 
   /**
@@ -51,24 +73,10 @@ class NoteKindManager
   {
     clearNoteKindCache();
 
-    //
-    // BASE GAME EVENTS
-    //
-    registerBaseNoteKinds();
-    registerScriptedNoteKinds();
-  }
-
-  /**
-   * Register the hard-coded note kinds.
-   */
-  public static function registerBaseNoteKinds():Void
-  {
     trace('Instantiating ${BUILTIN_KINDS.length} built-in note kinds...');
     for (noteKindCls in BUILTIN_KINDS)
     {
       var noteKindClsName:String = Type.getClassName(noteKindCls);
-      if (noteKindClsName == 'funkin.play.notes.notekind.NoteKind' || noteKindClsName == 'funkin.play.notes.notekind.ScriptedNoteKind') continue;
-
       var kind:NoteKind = Type.createInstance(noteKindCls, ['UNKNOWN']);
 
       if (kind != null)
@@ -81,13 +89,7 @@ class NoteKindManager
         trace(' Failed to load built-in note kind: ${noteKindClsName}');
       }
     }
-  }
 
-  /**
-   * Register the scripted note kinds provided by mods.
-   */
-  public static function registerScriptedNoteKinds():Void
-  {
     var scriptedClassName:Array<String> = ScriptedNoteKind.listScriptClasses();
     if (scriptedClassName.length > 0)
     {
@@ -108,6 +110,228 @@ class NoteKindManager
       }
     }
   }
+
+  #if FEATURE_MULTITHREADING
+  public static function loadNoteKindsAsync():lime.app.Future<LoadEntriesResult>
+  {
+    clearNoteKindCache();
+
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadNoteKindsAsync');
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    var entryErrors:SynchronizedArray<
+      {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
+    var scriptedNoteKindClasses:Array<String> = ScriptedNoteKind.listScriptClasses();
+    var entryCount:Int = 0;
+    var loadedBaseNoteKinds:Bool = false;
+
+    var loadBaseNoteKindsAsync:Void->Void = () -> {};
+    var loadScriptedNoteKindsAsync:Void->Void = () -> {};
+
+    var checkAsyncProgress = () ->
+    {
+      var current:Int = noteKinds.size() + entryErrors.length;
+      if (current == entryCount)
+      {
+        if (!loadedBaseNoteKinds)
+        {
+          loadedBaseNoteKinds = true;
+          loadScriptedNoteKindsAsync();
+          trace('Finished loading built-in note kinds (1/2) ($current / $entryCount)');
+        }
+        else
+        {
+          trace('Finished loading scripted note kinds (2/2) ($current / $entryCount)');
+          promise.complete({
+            entriesLoaded: noteKinds.size(),
+            entriesFailed: entryErrors.length
+          });
+          perf.print();
+        }
+      }
+    }
+
+    var onError:(String,
+      {error:Any, entryCls:Null<String>}) -> Void = (entryId, state) ->
+      {
+        entryErrors.push({
+          entryId: entryId,
+          error: state.error
+        });
+        trace('  Failed to load note kind (${entryId}): ${state.error}');
+        checkAsyncProgress();
+      };
+
+    var performLoadBaseNoteKind:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var noteKindClsName:String = Type.getClassName(currentState.noteKindCls);
+      var noteKindCls:Class<NoteKind> = currentState.noteKindCls;
+
+      try
+      {
+        var noteKind:Null<NoteKind> = Type.createInstance(noteKindCls, []);
+        if (noteKind != null)
+        {
+          workOutput.sendComplete({
+            kind: noteKind
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            noteKindId: noteKindClsName,
+            error: 'Failed to create built-in note kind ($noteKindClsName)'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          eventId: noteKindClsName,
+          error: e
+        });
+      }
+    }
+
+    var performLoadScriptedNoteKind:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var entryCls:String = currentState.entryCls;
+      try
+      {
+        var noteKind:Null<NoteKind> = ScriptedNoteKind.scriptInit(entryCls, 'UNKNOWN');
+        if (noteKind != null)
+        {
+          workOutput.sendComplete({
+            kind: noteKind,
+            entryCls: entryCls
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            entryCls: entryCls,
+            error: 'Failed to create scripted note kind (${entryCls})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          entryCls: entryCls,
+          error: e,
+        });
+      }
+    }
+
+    var onBaseNoteKindLoaded:(String,
+      {kind:NoteKind}) -> Void = (entryId, state) ->
+      {
+        noteKinds.set(state.kind.noteKind, state.kind);
+        trace(' Loaded built-in note kind: ${state.kind.noteKind} ($entryId)');
+        checkAsyncProgress();
+      };
+
+    var onScriptedNoteKindLoaded:(String,
+      {kind:NoteKind, entryCls:String}) -> Void = (_, state) ->
+      {
+        var entryId:String = state.kind.noteKind;
+        noteKinds.set(entryId, state.kind);
+        trace('  Loaded scripted note kind: ${entryId} (${state.entryCls}) (${noteKinds.size()}+${entryErrors.length} / ${entryCount})');
+        checkAsyncProgress();
+      };
+
+    loadBaseNoteKindsAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          entryCount = BUILTIN_KINDS.length;
+          trace('Instantiating ${BUILTIN_KINDS.length} built-in note kinds...');
+
+          workOutput.sendComplete({}, []);
+        },
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            if (BUILTIN_KINDS.length == 0)
+            {
+              checkAsyncProgress();
+            }
+            else
+            {
+              for (noteKindCls in BUILTIN_KINDS)
+              {
+                var entryClsName:String = Type.getClassName(noteKindCls);
+                TaskHandler.performTask({
+                  task: performLoadBaseNoteKind,
+                  initialState: {
+                    noteKindCls: noteKindCls
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(entryClsName),
+                    onComplete: onBaseNoteKindLoaded.bind(entryClsName)
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    loadScriptedNoteKindsAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          entryCount = noteKinds.size() + scriptedNoteKindClasses.length;
+
+          trace('Instantiating ${scriptedNoteKindClasses.length} scripted note kind(s)...');
+          workOutput.sendComplete({}, []);
+        },
+        initialState: null,
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            if (scriptedNoteKindClasses.length == 0)
+            {
+              checkAsyncProgress();
+            }
+            else
+            {
+              for (entryCls in scriptedNoteKindClasses)
+              {
+                TaskHandler.performTask({
+                  task: performLoadScriptedNoteKind,
+                  initialState: {
+                    entryCls: entryCls
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(entryCls),
+                    onComplete: onScriptedNoteKindLoaded.bind(entryCls)
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    loadBaseNoteKindsAsync();
+
+    return promise.future;
+  }
+  #end
 
   /**
    * Calls the given event for note kind scripts
