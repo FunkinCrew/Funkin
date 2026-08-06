@@ -191,6 +191,8 @@ class HotReloadState extends MusicBeatState
 
         updateProgress(1, 10);
 
+        rebuildSoundTray();
+
         // Start the next step.
         queueLoadEnabledMods();
       });
@@ -221,6 +223,18 @@ class HotReloadState extends MusicBeatState
 
         queueLoadScripts();
       });
+  }
+
+  function rebuildSoundTray():Void
+  {
+    // Since its graphics got destroyed,
+    // we have to manually reconstruct the sound tray.
+    @:privateAccess
+    {
+      FlxG.game.removeChild(FlxG.game.soundTray);
+      FlxG.game.soundTray = Type.createInstance(FlxG.game._customSoundTray, []);
+      FlxG.game.addChild(FlxG.game.soundTray);
+    }
   }
 
   /**
