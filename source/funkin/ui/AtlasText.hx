@@ -1,9 +1,15 @@
 package funkin.ui;
 
+import funkin.assets.FunkinAssetCache;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxStringUtil;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * AtlasText is an improved version of Alphabet and FlxBitmapText.
@@ -15,28 +21,52 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
   static var fonts:Map<AtlasFont, AtlasFontData> = new Map<AtlasFont, AtlasFontData>();
   static var casesAllowed:Map<AtlasFont, Case> = new Map<AtlasFont, Case>();
 
+  /**
+   * The text being displayed by this AtlasText.
+   */
   public var text(default, set):String = '';
 
   var font:AtlasFontData = new AtlasFontData(AtlasFont.DEFAULT);
 
-  public var atlas(get, never):FlxAtlasFrames;
+  /**
+   * The atlas frames used by this AtlasText.
+   */
+  public var atlas(get, never):Null<FlxAtlasFrames>;
 
-  inline function get_atlas():FlxAtlasFrames return font.atlas;
+  inline function get_atlas():Null<FlxAtlasFrames> return font.atlas;
 
+  /**
+   * The available casings that can be displayed by the current font.
+   */
   public var caseAllowed(get, never):Case;
 
   inline function get_caseAllowed():Case return font.caseAllowed;
 
+  /**
+   * The max height of the characters in this AtlasText's font.
+   */
   public var maxHeight(get, never):Float;
 
   inline function get_maxHeight():Float return font.maxHeight;
 
-  public function new(x = 0.0, y = 0.0, text:String = '', fontName:AtlasFont = AtlasFont.DEFAULT)
+  public function new(x = 0.0,
+    y = 0.0,
+    text:String = '',
+    fontName:AtlasFont = AtlasFont.DEFAULT)
   {
-    if (!fonts.exists(fontName)) fonts[fontName] = new AtlasFontData(fontName);
-    font = fonts[fontName] ?? new AtlasFontData(fontName);
-
     super(x, y);
+
+    var fontToUse = fonts[fontName];
+    if (fontToUse == null || !fontToUse.isValid())
+    {
+      fontToUse = new AtlasFontData(fontName);
+      fonts[fontName] = fontToUse;
+      this.font = fontToUse;
+    }
+    else
+    {
+      this.font = fontToUse;
+    }
 
     this.text = text;
   }
@@ -104,6 +134,8 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
    */
   function appendTextCased(str:String):Void
   {
+    if (atlas == null) return;
+
     var charCount:Int = group.countLiving();
     var xPos:Float = 0;
     var yPos:Float = 0;
@@ -151,8 +183,13 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
     }
   }
 
+  /**
+   * @return The width of this AtlasText, in pixels.
+   */
   public function getWidth():Int
   {
+    if (atlas == null) return 0;
+
     var width:Int = 0;
     for (char in this.text.split(''))
     {
@@ -183,17 +220,49 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
   }
 }
 
+/**
+ * A sprite representing a single character in an `AtlasText`.
+ */
+@:nullSafety
 class AtlasChar extends FlxSprite
 {
   /**
+   * XML animation prefixes for symbols and special characters.
+   */
+  static final CHAR_PREFIXES:Map<String, String> = [
+    '&' => '-andpersand-',
+    // TODO: Do multi-flag characters work?
+    '😠' => '-angry faic-',
+    "'" => '-apostraphie-',
+    '\\' => '-back slash-',
+    ',' => '-comma-',
+    '-' => '-dash-',
+    '↓' => '-down arrow-', // U+2193
+    '”' => '-end quote-', // U+0022
+    '!' => '-exclamation point-', // U+0021
+    '/' => '-forward slash-', // U+002F
+    '>' => '-greater than-', // U+003E
+    '♥' => '-heart-', // U+2665
+    '♡' => '-heart-',
+    '←' => '-left arrow-', // U+2190
+    '<' => '-less than-', // U+003C
+    '*' => '-multiply x-',
+    '.' => '-period-', // U+002E
+    '?' => '-question mark-',
+    '→' => '-right arrow-', // U+2192
+    '“' => '-start quote-',
+    '↑' => '-up arrow-' // U+2191
+  ];
+
+  /**
    * Which character in the font we are using
    */
-  public var char(default, set):String;
+  public var char(default, set):String = '';
 
   public function new(x = 0.0, y = 0.0, atlas:FlxAtlasFrames, char:String)
   {
     super(x, y);
-    frames = atlas;
+    this.frames = atlas;
     this.char = char;
   }
 
@@ -210,81 +279,63 @@ class AtlasChar extends FlxSprite
     return this.char;
   }
 
-  function getAnimPrefix(char:String):String
+  function getAnimPrefix(c:String):String
   {
-    return switch (char)
-    {
-      case '&':
-        return '-andpersand-';
-      case '😠':
-        '-angry faic-'; // TODO: Do multi-flag characters work?
-      case "'":
-        '-apostraphie-';
-      case '\\':
-        '-back slash-';
-      case ',':
-        '-comma-';
-      case '-':
-        '-dash-';
-      case '↓':
-        '-down arrow-'; // U+2193
-      case '”':
-        '-end quote-'; // U+0022
-      case '!':
-        '-exclamation point-'; // U+0021
-      case '/':
-        '-forward slash-'; // U+002F
-      case '>':
-        '-greater than-'; // U+003E
-      case '♥':
-        '-heart-'; // U+2665
-      case '♡':
-        '-heart-';
-      case '←':
-        '-left arrow-'; // U+2190
-      case '<':
-        '-less than-'; // U+003C
-      case '*':
-        '-multiply x-';
-      case '.':
-        '-period-'; // U+002E
-      case '?':
-        '-question mark-';
-      case '→':
-        '-right arrow-'; // U+2192
-      case '“':
-        '-start quote-';
-      case '↑':
-        '-up arrow-'; // U+2191
+    var prefix = CHAR_PREFIXES.get(c);
+    if (prefix != null) return prefix;
 
-      // Default to getting the character itself.
-      default:
-        char;
-    }
+    // Default to the character itself.
+    return c;
   }
 }
 
+/**
+ * Represents a cached AtlasText font.
+ */
 @:nullSafety
 private class AtlasFontData
 {
-  public static var upperChar = ~/^[A-Z]\d+$/;
-  public static var lowerChar = ~/^[a-z]\d+$/;
+  static final UPPER_CHAR:EReg = ~/^[A-Z]\d+$/;
+  static final LOWER_CHAR:EReg = ~/^[a-z]\d+$/;
 
-  public var atlas:FlxAtlasFrames;
+  /**
+   * The split up graphic for the art.
+   */
+  public var atlas:Null<FlxAtlasFrames>;
+
+  /**
+   * The maximum height of the characters in this font.
+   */
   public var maxHeight:Float = 0.0;
+
+  /**
+   * What casings are available for this font.
+   */
   public var caseAllowed:Case = Both;
+
+  /**
+   * The name of the font.
+   */
+  public var name:AtlasFont;
 
   public function new(name:AtlasFont)
   {
-    atlas = Paths.getSparrowAtlas('ui/fonts/${name}');
+    this.name = name;
+    build();
+  }
+
+  /**
+   * Load the font data from the assets.
+   */
+  function build():Void
+  {
+    atlas = Assets.getSparrowAtlas(Paths.image('ui/fonts/${name}'));
+
     if (atlas == null)
     {
       FlxG.log.warn('Could not find font atlas for font "${name}".');
       return;
     }
-
-    atlas.parent.destroyOnNoUse = false;
-    atlas.parent.persist = true;
 
     var containsUpper:Bool = false;
     var containsLower:Bool = false;
@@ -293,14 +344,27 @@ private class AtlasFontData
     {
       maxHeight = Math.max(maxHeight, frame.frame.height);
 
-      if (!containsUpper) containsUpper = upperChar.match(frame.name);
-      if (!containsLower) containsLower = lowerChar.match(frame.name);
+      if (!containsUpper) containsUpper = UPPER_CHAR.match(frame.name);
+      if (!containsLower) containsLower = LOWER_CHAR.match(frame.name);
     }
 
     if (containsUpper != containsLower) caseAllowed = containsUpper ? Upper : Lower;
   }
+
+  /**
+   * @return `true` if this font is still valid, and its graphics are properly cached.
+   *   `false` if the font is no longer valid and needs to be rebuilt.
+   */
+  public function isValid():Bool
+  {
+    return atlas != null && FunkinAssetCache.instance.validateFramesCollection(atlas);
+  }
 }
 
+/**
+ * The allowed casings of the font.
+ * Only upper case, only lower case, or both.
+ */
 enum Case
 {
   Both;
@@ -308,6 +372,9 @@ enum Case
   Lower;
 }
 
+/**
+ * A list of AtlasFonts available in the base game.
+ */
 enum abstract AtlasFont(String) from String to String
 {
   public var DEFAULT = 'default';
