@@ -146,7 +146,6 @@ class ModMenuState extends MusicBeatState
    * Set once the player cancels, so a download that's already in flight gets thrown away.
    */
   var installCancelled:Bool = false;
-
   #end
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
@@ -660,7 +659,6 @@ class ModMenuState extends MusicBeatState
     installPopup.zIndex = fileDrop.zIndex + 1;
     installPopup.setCamera(camHUD);
     add(installPopup);
-
     #end
 
     FlxG.autoPause = false;
@@ -1040,7 +1038,8 @@ class ModMenuState extends MusicBeatState
 
     installPopup.showBusy('Mod Install', 'Looking this one up on GameBanana...');
 
-    ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void {
+    ModInstaller.fetchMetadata(request, function(mod:OneClickMod):Void
+    {
       if (installCancelled) return;
 
       if (ModInstaller.isAlreadyInstalled(mod))
@@ -1053,12 +1052,14 @@ class ModMenuState extends MusicBeatState
 
       startOneClickInstall();
 
-      ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void {
+      ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void
+      {
         if (installCancelled || installPopup == null) return;
 
         installPopup.setIcon(bitmap);
       });
-    }, function(reason:String):Void {
+    }, function(reason:String):Void
+    {
       if (installCancelled) return;
 
       pendingInstall = null;
@@ -1097,46 +1098,40 @@ class ModMenuState extends MusicBeatState
     installPopup.showProgress(mod.name, '${credit}\nDownloading...', 0);
 
     ModInstaller.download(mod, function(ratio:Float):Void
+    {
+      if (installCancelled) return;
+
+      installPopup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%', ratio);
+    }, function(archivePath:String):Void
+    {
+      if (installCancelled) return;
+
+      installPopup.showProgress(mod.name, '${credit}\nInstalling...', 0);
+
+      ModInstaller.install(mod, archivePath, function(ratio:Float):Void
       {
         if (installCancelled) return;
 
-        installPopup.showProgress(mod.name, '${credit}\nDownloading... ${Math.round(ratio * 100)}%', ratio);
-      },
-      function(archivePath:String):Void
+        installPopup.showProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
+      }, function(paths:Array<String>):Void
       {
         if (installCancelled) return;
 
-        installPopup.showProgress(mod.name, '${credit}\nInstalling...', 0);
+        queueRequirements(mod);
 
-        ModInstaller.install(mod, archivePath, function(ratio:Float):Void
-          {
-            if (installCancelled) return;
-
-            installPopup.showProgress(mod.name, '${credit}\nInstalling... ${Math.round(ratio * 100)}%', ratio);
-          },
-          function(paths:Array<String>):Void
-          {
-            if (installCancelled) return;
-
-            queueRequirements(mod);
-
-            finishOneClickInstall(mod);
-          },
-          function(reason:String):Void
-          {
-            if (installCancelled) return;
-
-            installPopup.showResult(mod.name, 'Install failed.\n${reason}');
-          }
-        );
-      },
-      function(reason:String):Void
+        finishOneClickInstall(mod);
+      }, function(reason:String):Void
       {
         if (installCancelled) return;
 
-        installPopup.showResult(mod.name, reason);
-      }
-    );
+        installPopup.showResult(mod.name, 'Install failed.\n${reason}');
+      });
+    }, function(reason:String):Void
+    {
+      if (installCancelled) return;
+
+      installPopup.showResult(mod.name, reason);
+    });
   }
 
   /**
@@ -1151,9 +1146,7 @@ class ModMenuState extends MusicBeatState
 
       case Result:
         // The card clears itself, this is only here for a player who doesn't want to wait on it.
-        if (FlxG.keys.justPressed.ANY
-          || controls.ACCEPT_P
-          || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
+        if (FlxG.keys.justPressed.ANY || controls.ACCEPT_P || controls.BACK_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end)
         {
           installPopup.hide();
         }
@@ -2311,12 +2304,8 @@ class ModMenuState extends MusicBeatState
     add(blackScreen);
     refresh();
 
+    FlxTransitionableState.skipNextTransIn = true;
     FlxG.switchState(() -> new HotReloadState());
-
-    // transitionOut(() ->
-    // {
-    //
-    // });
   }
 
   function enableMod(item:Null<ModMenuItem>,

@@ -1,10 +1,9 @@
 package funkin.util.plugins;
 
-import funkin.ui.ScriptedMusicBeatState;
-import flixel.FlxG;
 import flixel.FlxBasic;
-import funkin.ui.MusicBeatState;
-import funkin.ui.MusicBeatSubState;
+import flixel.FlxG;
+import flixel.addons.transition.FlxTransitionableState;
+import funkin.ui.ScriptedMusicBeatState;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 
 /**
@@ -36,6 +35,8 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   @:noCompletion
   function reload():Void
   {
+    FlxTransitionableState.skipNextTransIn = true;
+
     var state:Dynamic = FlxG.state;
     var isScripted:Bool = state is ScriptedMusicBeatState;
     if (isScripted)
