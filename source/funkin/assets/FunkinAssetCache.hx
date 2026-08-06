@@ -1455,8 +1455,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
     return true;
   }
 
-  // Should this be in FunkinBitmapFrontend I wonder..
-
   /**
    * @param frame The `FlxFrame` to check.
    * @return Whether the `FlxFrame` is invalid (the underlying image got uncached) and needs to be reloaded.
@@ -1477,6 +1475,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function validateFramesCollection(frames:FlxFramesCollection):Bool
   {
     if (frames == null) return false;
+    if (frames.frames.length == 0) return false;
 
     for (frame in frames.frames)
     {

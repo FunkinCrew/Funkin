@@ -213,6 +213,7 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
   public function isValid(graphic:Null<FlxGraphic>):Bool
   {
     if (graphic == null) return false; // graphic is null
+    if (graphic.isDestroyed) return false; // graphic is destroyed
     if (graphic.bitmap == null) return false; // graphic's bitmap is null
     @:privateAccess
     if (graphic.bitmap.image == null && graphic.bitmap.__texture == null)
