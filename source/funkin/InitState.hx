@@ -179,59 +179,6 @@ class InitState extends FlxState
 
       setupFlixelDebug();
 
-      //
-      // FLIXEL TRANSITIONS
-      //
-
-      // Diamond Transition
-      var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-      diamond.persist = true;
-      diamond.destroyOnNoUse = false;
-
-      // NOTE: tileData is ignored if TransitionData.type is FADE instead of TILES.
-      var tileData:TransitionTileData = {
-        asset: diamond,
-        width: 32,
-        height: 32
-      };
-
-      FlxTransitionableState.defaultTransIn = new TransitionData(
-        FADE,
-        FlxColor.BLACK,
-        1,
-        new FlxPoint(0, -1),
-        tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
-      );
-      FlxTransitionableState.defaultTransOut = new TransitionData(
-        FADE,
-        FlxColor.BLACK,
-        0.7,
-        new FlxPoint(0, 1),
-        tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
-      );
-
-      FlxG.signals.gameResized.add(function(width:Int, height:Int)
-      {
-        FlxTransitionableState.defaultTransIn = new TransitionData(
-          FADE,
-          FlxColor.BLACK,
-          1,
-          new FlxPoint(0, -1),
-          tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
-        );
-        FlxTransitionableState.defaultTransOut = new TransitionData(
-          FADE,
-          FlxColor.BLACK,
-          0.7,
-          new FlxPoint(0, 1),
-          tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
-        );
-      });
-
       // SDL for some reason enables VSync on focus lost/gained in Android
       // Since we don't really need VSync on Android we're gonna forcefully disable it on these signals for now
       // This is fixed on SDL3 from what I've heared but that doodoo isn't working poperly for Android

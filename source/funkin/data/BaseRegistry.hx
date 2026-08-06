@@ -19,6 +19,9 @@ import funkin.assets.Paths.AssetPath;
 import funkin.assets.Paths.MusicAssetPathBuilder;
 import funkin.assets.ValidatedPaths as Paths;
 
+/**
+ * The parameters used to construct a registry.
+ */
 typedef RegistryParams =
 {
   /**
@@ -589,13 +592,13 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
    * The actual function exists and is auto-generated on each registry at build time.
    * @return Array<String>
    */
-  // public function listBaseGameEntryIds():Array<String> {}
+  // public function listBaseGameEntryIds():Array<String>
 
   /**
    * A list of all entries that are not included in the base game.
    * @return Array<String>
    */
-  // public function listModdedEntryIds():Array<String> {}
+  // public function listModdedEntryIds():Array<String>
 
   public function toString():String
   {

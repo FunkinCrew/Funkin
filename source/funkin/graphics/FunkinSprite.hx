@@ -267,6 +267,8 @@ class FunkinSprite extends FlxAnimate
 
   /**
    * Load a static image as the sprite's texture.
+   * NOTE: May cause stuttering if the graphic is not cached.
+   *
    * @param key The key of the texture to load.
    * @return This sprite, for chaining.
    */
