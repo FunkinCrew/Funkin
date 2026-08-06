@@ -168,7 +168,7 @@ class Assets implements ConsoleClass
   public static function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
-    if (!assetPath.isAssetType(IMAGE)) throw 'Input is not a path to a valid image, did you call Paths.image()?';
+    if (!assetPath.isAssetType(IMAGE)) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath.image()))

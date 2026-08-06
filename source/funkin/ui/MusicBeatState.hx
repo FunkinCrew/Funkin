@@ -225,7 +225,7 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
   }
 
-  function createWatermarkText():Void
+  function createWatermarkText()
   {
     // Both have an xPos of 0, but a width equal to the full screen.
     // The rightWatermarkText is right aligned, which puts the text in the correct spot.
@@ -234,8 +234,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     rightWatermarkText = new FlxText(-(funkin.ui.FullScreenScaleMode.gameNotchSize.x), FlxG.height - 18, FlxG.width, '', 12);
 
     // 100,000 should be good enough.
-    leftWatermarkText.zIndex = 100_000;
-    rightWatermarkText.zIndex = 100_000;
+    leftWatermarkText.zIndex = 100000;
+    rightWatermarkText.zIndex = 100000;
     leftWatermarkText.scrollFactor.set(0, 0);
     rightWatermarkText.scrollFactor.set(0, 0);
     leftWatermarkText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
