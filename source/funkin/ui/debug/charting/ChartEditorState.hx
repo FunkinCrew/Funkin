@@ -6864,7 +6864,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
 
     // B = New Comment
-    if (!pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !isHaxeUIDialogOpen)
+    if (!pressingControl() && !FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.ALT && FlxG.keys.justPressed.B && !isHaxeUIDialogOpen && !isHaxeUIFocused)
     {
       // Add a new comment at the grid playhead's position.
       var playheadPosMs:Float = scrollPositionInMs + playheadPositionInMs;
