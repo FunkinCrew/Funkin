@@ -651,7 +651,11 @@ class StageEditorState extends UIState
 
       if (FlxG.keys.justPressed.TAB) onMenuItemClick('switch mode');
       if (FlxG.keys.justPressed.DELETE) onMenuItemClick('delete object');
-      if (FlxG.keys.justPressed.ENTER) onMenuItemClick('test stage');
+      if (FlxG.keys.justPressed.ENTER)
+{
+  haxe.ui.focus.FocusManager.instance.focus = null;
+  onMenuItemClick('test stage');
+}
       if (FlxG.keys.justPressed.F1) onMenuItemClick('user guide');
 
       if (FlxG.keys.justPressed.T)
@@ -1459,9 +1463,10 @@ class StageEditorState extends UIState
         #end
 
       case 'test stage':
-        if (!allowInput) return;
+  // Force clearing focus from any text input so the button works even if a text box was selected
+  haxe.ui.focus.FocusManager.instance.focus = null;
 
-        camFollow.velocity.set();
+  camFollow.velocity.set();
 
         for (a in spriteArray)
         {
