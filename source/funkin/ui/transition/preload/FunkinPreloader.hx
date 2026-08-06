@@ -311,6 +311,7 @@ class FunkinPreloader extends FlxBasePreloader
           preloadingPlayAssetsPercent = 0.0;
 
           // This is quick enough to do synchronously.
+          funkin.util.tasks.TaskHandler.initialize();
           funkin.assets.Assets.initialize();
 
           // Couldn't think of a better spot to put this.

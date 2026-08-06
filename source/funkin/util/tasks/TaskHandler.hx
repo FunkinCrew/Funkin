@@ -1,177 +1,95 @@
 package funkin.util.tasks;
 
 import lime.system.ThreadPool;
+import lime.app.Promise;
+import lime.app.Future;
+import lime.app.Future.FutureWork;
+import lime.system.WorkOutput.ThreadMode;
+import haxe.Constraints.NotVoid;
 
 /**
  * A utility class which provides functions for performing parallel tasks in a thread-safe, cross-platform manner.
  * @see https://player03.com/openfl/threads-guide/
  */
+@:access(lime.app.Future.FutureWork)
 class TaskHandler
 {
-  static var threadPool(get, never):ThreadPool;
-  static var _threadPool:Null<ThreadPool> = null;
-
-  static function get_threadPool():ThreadPool
-  {
-    if (_threadPool == null)
-    {
-      _threadPool = buildThreadPool();
-    }
-    return _threadPool;
-  }
-
   /**
-   * A mapping between job identifiers and the callback functions for those jobs.
+   * TaskHandler has been refactored to share the same ThreadPool used by Lime to handle Futures.
    */
-  static var callbackHandlers:Map<Int, TaskCallbacks> = new Map();
-
-  static function buildThreadPool():ThreadPool
+  public static function initialize():Void
   {
-    trace('[TASK] Starting thread pool...');
+    trace('[TASK] Starting async task thread pool...');
     var minThreads = 1;
     // TODO: Determine a better value for this.
     var maxThreads = 16;
 
-    var result = new ThreadPool(minThreads, maxThreads); // , MULTI_THREADED
+    FutureWork.minThreads = 1;
+    FutureWork.maxThreads = 16;
 
-    trace('[TASK] Thread pool started...');
-
-    // In single-threaded mode, this determines the % of CPU time to spend on jobs.
-    // In multithreaded mode, this does nothing.
-    // ThreadPool.workLoad = 1 / 2;
-
-    result.onRun.add(onTaskStarted);
-    result.onComplete.add(onTaskComplete);
-    result.onError.add(onTaskError);
-    result.onProgress.add(onTaskProgress);
-
-    return result;
+    trace('[TASK] Thread pool configured...');
   }
 
   /**
    * Queue a task to be performed asynchronously.
+   * More complicated than `getSimpleTask()`, but can perform tasks over multiple iterations,
+   * and can report progress back to the main thread.
    *
+   * @param params The parameters for the task:
    * @param task A function of the form `(currentState:State, workOutput:WorkOutput)->Void`
    *   `currentState` is a dynamic object which persists between calls of the task.
-   *   `workOutput` is used for sending progress and errors to the main thread.
+   *   `workOutput` has functions `sendComplete`, `sendProgress`, `sendError` to report back to the main thread.
    * @param initialState The `State` object to pass to the task the first time it runs.
-   * @return A unique ID for the task, which lets you cancel it later or query its status.
+   * @param promise A Promise which should be resolved when the task is done.
+   *   Use `new Promise<T>()` to create one with the correct return type.
+   * @return A Future which provides completion status for the task.
+   *   You can use `onComplete()` to perform actions when the task is done,
+   *   or `onProgress()` to perform actions when the task reports partial progress.
    */
-  public static function performTask(params:PerformTaskParams):Int
+  public static function performTask<T:NotVoid>(params:PerformTaskParams, promise:Promise<T>):Future<T>
   {
-    var jobID:Int = threadPool.run(params.task, params.initialState);
+    final USE_MULTITHREADING:Bool = #if FEATURE_MULTITHREADING true #else false #end;
 
-    callbackHandlers.set(jobID, params.taskCallbacks);
+    params.initialState ??= {};
 
-    return jobID;
-  }
+    @:privateAccess
+    var jobID:Int = FutureWork.run(params.task, promise, params.initialState, USE_MULTITHREADING ? ThreadMode.MULTI_THREADED : ThreadMode.SINGLE_THREADED);
 
-  public static function cancelAllTasks()
-  {
-    threadPool.cancel("System cancelled all tasks.");
-  }
-
-  public static function countJobsInProgress():Int
-  {
-    return threadPool.activeJobs;
+    return promise.future;
   }
 
   /**
-   * Returns false if we are currently not in the main thread (i.e. we are in a worker thread).
+   * Queue a simple task to be performed asynchronously.
+   *
+   * @param task A function, with a return value, to be executed in parallel with the main thread.
+   *   Note this HAS to return something, otherwise callbacks would try (and fail) to use `Void` as an argument,
+   *   and it'll fail to build with `'void' cannot be used as a function parameter`.
+   *   Just `return true` if you don't need a return value.
+   * @return A Future, which provides completion status for the task.
+   *   You can use `onComplete((result) -> {})` to perform actions in the main thread when the task is done,
+   *   or `then((result) -> {})` to chain tasks together.
+   */
+  public static function performSimpleTask<T:NotVoid>(task:Void->T):Future<T>
+  {
+    final USE_MULTITHREADING:Bool = #if FEATURE_MULTITHREADING true #else false #end;
+    var future = new Future<T>(task, USE_MULTITHREADING);
+    return future;
+  }
+
+  /**
+   * @return The number of asynchronous tasks the thread pool is working on.
+   */
+  public static function countJobsInProgress():Int
+  {
+    return FutureWork.activeJobs;
+  }
+
+  /**
+   * @return `false` if we are currently not in the main thread (i.e. we are in a worker thread).
    */
   public static function isMainThread():Bool
   {
     return ThreadPool.isMainThread();
-  }
-
-  static function cleanCallbacks(jobID:Int):Void
-  {
-    if (callbackHandlers.exists(jobID))
-    {
-      callbackHandlers.remove(jobID);
-    }
-  }
-
-  /**
-   * Called when any task is started.
-   */
-  static function onTaskStarted(input:Dynamic):Void
-  {
-    // The job ID that just received the event.
-    // TODO: Somehow filter onTaskStarted callbacks to just the ones for the current job.
-    var jobID:Int = threadPool.activeJob.id;
-
-    if (callbackHandlers.exists(jobID))
-    {
-      var callbacks = callbackHandlers.get(jobID);
-      if (callbacks.onStart != null)
-      {
-        callbacks.onStart(input);
-      }
-    }
-  }
-
-  /**
-   * Called when any task is completed.
-   */
-  static function onTaskComplete(input:Dynamic):Void
-  {
-    // The job ID that just received the event.
-    // TODO: Somehow filter onTaskComplete callbacks to just the ones for the current job.
-    var jobID:Int = threadPool.activeJob.id;
-
-    if (callbackHandlers.exists(jobID))
-    {
-      var callbacks = callbackHandlers.get(jobID);
-      if (callbacks.onComplete != null)
-      {
-        callbacks.onComplete(input);
-      }
-    }
-
-    // Since we got a COMPLETE event, we won't be receiving more callbacks for this job.
-    cleanCallbacks(jobID);
-  }
-
-  /**
-   * Called when any task throws an error.
-   */
-  static function onTaskError(input:Dynamic):Void
-  {
-    // The job ID that just received the event.
-    // TODO: Somehow filter onTaskError callbacks to just the ones for the current job.
-    var jobID:Int = threadPool.activeJob.id;
-
-    if (callbackHandlers.exists(jobID))
-    {
-      var callbacks = callbackHandlers.get(jobID);
-      if (callbacks.onError != null)
-      {
-        callbacks.onError(input);
-      }
-    }
-
-    // Since we got an ERROR event, we won't be receiving more callbacks for this job.
-    cleanCallbacks(jobID);
-  }
-
-  /**
-   * Called when any task calls `sendProgress()`.
-   */
-  static function onTaskProgress(input:Dynamic):Void
-  {
-    // The job ID that just received the event.
-    // TODO: Somehow filter onTaskProgress callbacks to just the ones for the current job.
-    var jobID:Int = threadPool.activeJob.id;
-
-    if (callbackHandlers.exists(jobID))
-    {
-      var callbacks = callbackHandlers.get(jobID);
-      if (callbacks.onProgress != null)
-      {
-        callbacks.onProgress(input);
-      }
-    }
   }
 }
 
@@ -186,16 +104,12 @@ typedef PerformTaskParams =
    */
   var task:Task;
 
+  /**
+   * The initial state to pass to the task.
+   * Tasks that perform a small amount of work at a time before completing can modify this state
+   * to pass information to the next iteration of the task.
+   */
   var ?initialState:State;
-  var ?taskCallbacks:TaskCallbacks;
-}
-
-typedef TaskCallbacks =
-{
-  var ?onStart:Dynamic->Void;
-  var ?onComplete:Dynamic->Void;
-  var ?onError:Dynamic->Void;
-  var ?onProgress:Dynamic->Void;
 }
 
 /**
