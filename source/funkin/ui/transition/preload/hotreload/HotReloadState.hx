@@ -278,6 +278,7 @@ class HotReloadState extends MusicBeatState
     futures.push(StickerRegistry.instance.loadEntriesAsync());
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
     futures.push(SongEventRegistry.loadEventCacheAsync());
+    futures.push(NoteKindManager.loadNoteKindsAsync());
 
     var registryFuture = lime.app.Promises.allSettled(futures);
 
@@ -322,9 +323,6 @@ class HotReloadState extends MusicBeatState
     {
       // These use the registry system (sorta) but need more work to support async loading.
       CharacterDataParser.loadCharacterCache();
-
-      // These don't use the registry system at all, they're synchronous but fairly quick.
-      NoteKindManager.initialize();
 
       return true;
     }).onComplete((_) ->
