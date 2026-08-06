@@ -1,6 +1,7 @@
 package funkin.data.event;
 
 import flixel.util.FlxSort;
+import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.song.SongData.SongEventData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -8,6 +9,12 @@ import funkin.play.event.ScriptedSongEvent;
 import funkin.play.event.SongEvent;
 import funkin.util.SortUtil;
 import funkin.util.macro.ClassMacro;
+import funkin.util.tasks.TaskHandler;
+import funkin.util.tasks.TaskHandler.Task;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedArray;
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 /**
  * This class statically handles the parsing of internal and scripted song event handlers.
@@ -19,13 +26,20 @@ class SongEventRegistry
    * Every built-in event class must be added to this list.
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
-  static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent);
+  static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> ![
+    'funkin.play.event.SongEvent',
+    'funkin.play.event.ScriptedSongEvent'
+  ].contains(Type.getClassName(cls)));
 
   /**
    * Map of internal handlers for song events.
    * These may be either `ScriptedSongEvents` or built-in classes extending `SongEvent`.
    */
+  #if FEATURE_MULTITHREADING
+  static final EVENT_CACHE:SynchronizedMap<String, SongEvent> = SynchronizedMap.newStringMap();
+  #else
   static final EVENT_CACHE:Map<String, SongEvent> = new Map<String, SongEvent>();
+  #end
 
   /**
    * Instantiate the singleton instances of every song event handler class.
@@ -34,21 +48,9 @@ class SongEventRegistry
   {
     clearEventCache();
 
-    //
-    // BASE GAME EVENTS
-    //
-    registerBaseEvents();
-    registerScriptedEvents();
-  }
-
-  static function registerBaseEvents()
-  {
     trace('Instantiating ${BUILTIN_EVENTS.length} built-in song events...');
     for (eventCls in BUILTIN_EVENTS)
     {
-      var eventClsName:String = Type.getClassName(eventCls);
-      if (eventClsName == 'funkin.play.event.SongEvent' || eventClsName == 'funkin.play.event.ScriptedSongEvent') continue;
-
       var event:SongEvent = Type.createInstance(eventCls, ['UNKNOWN']);
 
       if (event != null)
@@ -61,10 +63,7 @@ class SongEventRegistry
         trace(' Failed to load built-in song event: ${Type.getClassName(eventCls)}');
       }
     }
-  }
 
-  static function registerScriptedEvents()
-  {
     var scriptedEventClassNames:Array<String> = ScriptedSongEvent.listScriptClasses();
     trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
     if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0) return;
@@ -85,6 +84,237 @@ class SongEventRegistry
     }
   }
 
+  #if FEATURE_MULTITHREADING
+  public static function loadEventCacheAsync():lime.app.Future<LoadEntriesResult>
+  {
+    clearEventCache();
+
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadEventCacheAsync');
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    var entryErrors:SynchronizedArray<
+      {eventId:String, error:Any, ?eventCls:String}> = new SynchronizedArray();
+
+    var entryCount:Int = 0;
+    var scriptedEventClassNames:Array<String> = [];
+    var loadedBaseEvents:Bool = false;
+
+    var loadBaseEventsAsync:Void->Void = () -> {};
+    var loadScriptedEventsAsync:Void->Void = () -> {};
+
+    var checkAsyncProgress:Void->Void = () ->
+    {
+      var current:Int = EVENT_CACHE.size() + entryErrors.length;
+      if (current == entryCount)
+      {
+        if (!loadedBaseEvents)
+        {
+          // Start loading scripted events now.
+          loadedBaseEvents = true;
+          loadScriptedEventsAsync();
+          trace('Finished loading built-in song events (1/2) ($current / $entryCount)');
+        }
+        else
+        {
+          trace('Finished loading scripted song events (2/2) ($current / $entryCount)');
+          promise.complete({
+            entriesLoaded: EVENT_CACHE.size(),
+            entriesFailed: entryErrors.length
+          });
+          perf.print();
+        }
+      }
+    }
+
+    // Callback when one task completes with failure
+    var onError:(String,
+      {error:Any, eventCls:Null<String>}) -> Void = (eventId, state) ->
+      {
+        entryErrors.push({
+          eventId: eventId,
+          error: state.error
+        });
+        trace('  Failed to load song event (${eventId}): ${state.error}');
+        checkAsyncProgress();
+      };
+
+    var performLoadScriptedEvent:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var eventCls:String = currentState.eventCls;
+      try
+      {
+        var event:Null<SongEvent> = ScriptedSongEvent.scriptInit(eventCls, 'UNKNOWN');
+        if (event != null)
+        {
+          workOutput.sendComplete({
+            event: event,
+            eventCls: eventCls
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            eventCls: eventCls,
+            error: 'Failed to create scripted song event (${eventCls})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          eventCls: eventCls,
+          error: e,
+        });
+      }
+    }
+
+    // Task to perform for each unscripted entry
+    var performLoadBaseEvent:Task = (currentState:State, workOutput:WorkOutput) ->
+    {
+      var eventCls:Class<SongEvent> = currentState.eventCls;
+      try
+      {
+        var event:Null<SongEvent> = Type.createInstance(eventCls, ['UNKNOWN']);
+        if (event != null)
+        {
+          workOutput.sendComplete({
+            event: event
+          }, []);
+        }
+        else
+        {
+          workOutput.sendError({
+            eventId: currentState.eventId,
+            error: 'Failed to create song event (${currentState.eventId})'
+          });
+        }
+      }
+      catch (e)
+      {
+        workOutput.sendError({
+          eventId: currentState.eventId,
+          error: e
+        });
+      }
+    }
+
+    // Callback when one task completes with success
+    var onBaseEventLoadedAsync:(String,
+      {event:SongEvent}) -> Void = (eventId, state) ->
+      {
+        EVENT_CACHE.set(state.event.id, state.event);
+        trace(' Loaded song event: ${state.event.id}');
+        checkAsyncProgress();
+      };
+
+    var onScriptedEventLoadedAsync:(String,
+      {event:SongEvent, eventCls:String}) -> Void = (_, state) ->
+      {
+        var eventId:String = state.event.id;
+        EVENT_CACHE.set(eventId, state.event);
+
+        trace('  Loaded scripted song event: ${eventId} (${state.eventCls}) (${EVENT_CACHE.size()} + ${entryErrors.length} / ${entryCount})');
+        checkAsyncProgress();
+      };
+
+    loadScriptedEventsAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          scriptedEventClassNames = ScriptedSongEvent.listScriptClasses();
+          entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
+
+          trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
+          workOutput.sendComplete({}, []);
+        },
+        initialState: null,
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            if (scriptedEventClassNames.length == 0)
+            {
+              checkAsyncProgress();
+            }
+            else
+            {
+              for (eventCls in scriptedEventClassNames)
+              {
+                TaskHandler.performTask({
+                  task: performLoadScriptedEvent,
+                  initialState: {
+                    eventCls: eventCls
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(eventCls),
+                    onComplete: onScriptedEventLoadedAsync.bind(eventCls)
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Start loading base events first.
+    loadBaseEventsAsync = () ->
+    {
+      TaskHandler.performTask({
+        task: (currentState:State, workOutput:WorkOutput) ->
+        {
+          entryCount = BUILTIN_EVENTS.length;
+          trace('Instantiating ${entryCount} built-in song events...');
+
+          workOutput.sendComplete({}, []);
+        },
+        initialState: {
+        },
+        taskCallbacks: {
+          onStart: null,
+          onError: null,
+          onComplete: (_) ->
+          {
+            if (BUILTIN_EVENTS.length == 0)
+            {
+              checkAsyncProgress();
+            }
+            else
+            {
+              for (event in BUILTIN_EVENTS)
+              {
+                var eventId:String = Type.getClassName(event);
+
+                TaskHandler.performTask({
+                  task: performLoadBaseEvent,
+                  initialState: {
+                    eventCls: event,
+                    eventId: eventId,
+                  },
+                  taskCallbacks: {
+                    onStart: (_) -> {
+                    },
+                    onError: onError.bind(eventId),
+                    onComplete: onBaseEventLoadedAsync.bind(eventId),
+                  }
+                });
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Start loading base events first.
+    loadBaseEventsAsync();
+
+    return promise.future;
+  }
+  #end
+
   /**
    * @return A list of IDs for every song event handler class.
    */
@@ -98,7 +328,12 @@ class SongEventRegistry
    */
   public static function listEvents():Array<SongEvent>
   {
+    #if FEATURE_MULTITHREADING
+    // MapTools doesn't work for SynchronizedMap shrug
+    return[for (i in EVENT_CACHE.iterator()) i];
+    #else
     return EVENT_CACHE.values();
+    #end
   }
 
   /**
