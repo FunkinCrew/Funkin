@@ -14,6 +14,11 @@ import haxe.macro.Type.ClassType;
 class ClassMacro
 {
   /**
+   * The name for the Haxe resource that stores Generation Metadata.
+   */
+  static inline final METADATA_RESOURCE_NAME:String = 'Funkin_CompiledClassList';
+
+  /**
    * Gets a list of `Class<T>` for all classes in a specified package.
    *
    * Example: `var list:Array<Class<Dynamic>> = listClassesInPackage("funkin", true);`
@@ -42,7 +47,7 @@ class ClassMacro
    *
    * Example: `var list:Array<Class<FlxSprite>> = listSubclassesOf(FlxSprite);`
    *
-   * @param targetClass The class to query for subclasses.
+   * @param targetClassExpr The class to query for subclasses.
    * @return A list of classes matching the specified criteria.
    */
   public static macro function listSubclassesOf<T>(targetClassExpr:ExprOf<Class<T>>):ExprOf<List<Class<T>>>
@@ -122,31 +127,31 @@ class ClassMacro
    */
   static function compileClassLists()
   {
-    var compiledClassList:ClassType = MacroUtil.getClassType("funkin.util.macro.CompiledClassList");
+    var compiledClassList:ClassType = MacroUtil.getClassType('funkin.util.macro.CompiledClassList');
 
-    if (compiledClassList == null) throw "Could not find CompiledClassList class.";
+    if (compiledClassList == null) throw 'Could not find CompiledClassList class.';
 
     // Reset outdated metadata.
     if (compiledClassList.meta.has('classLists')) compiledClassList.meta.remove('classLists');
 
-    var classLists:Array<Expr> = [];
+    var classLists:Array<Array<String>> = [];
     // Generate classLists.
     for (request in classListsToGenerate)
     {
       // Expression contains String, [Class<T>...]
-      var classListEntries:Array<Expr> = [macro $v{request}];
+      var classListEntries:Array<String> = [request];
       for (i in classListsRaw.get(request))
       {
         // TODO: Boost performance by making this an Array<Class<T>> instead of an Array<String>
         // How to perform perform macro reificiation to types given a name?
-        classListEntries.push(macro $v{i});
+        classListEntries.push(i);
       }
 
-      classLists.push(macro $a{classListEntries});
+      classLists.push(classListEntries);
     }
 
-    // Insert classLists into metadata.
-    compiledClassList.meta.add('classLists', classLists, Context.currentPos());
+    var classListsHXSF = haxe.Serializer.run(classLists);
+    Context.addResource(METADATA_RESOURCE_NAME, haxe.io.Bytes.ofString(classListsHXSF));
   }
 
   static function doesClassMatchRequest(classType:ClassType, request:String):Bool
