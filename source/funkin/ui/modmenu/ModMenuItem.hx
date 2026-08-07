@@ -234,39 +234,42 @@ class ModMenuItem extends FunkinSpriteGroup
     }
     else if (mod != null)
     {
-      @:privateAccess
-      if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
-      {
-        modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
-        add(modIcon);
-
-        modIcon.scrollFactor.set();
-        modIcon.antialiasing = true;
-
-        // FunkinGroup is funny
-        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
-
-        modIcon.updateHitbox();
-      }
-      else if (mod.icon != null)
+      if (mod.icon != null)
       {
         loadModIcon(mod.icon);
       }
       else
       {
-        trace('No icon found for mod ${mod.id}, using fallback');
-        // Fallback icon
-        modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
-        add(modIcon);
+        @:privateAccess
+        if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
+        {
+          modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
+          add(modIcon);
 
-        modIcon.scrollFactor.set();
-        modIcon.antialiasing = true;
-        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
-        modIcon.updateHitbox();
+          modIcon.scrollFactor.set();
+          modIcon.antialiasing = true;
+
+          // FunkinGroup is funny
+          modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+          modIcon.localScale.x = modIcon.scale.x;
+          modIcon.localScale.y = modIcon.scale.y;
+
+          modIcon.updateHitbox();
+        }
+        else
+        {
+          trace('No icon found for mod ${mod.id}, using fallback');
+          // Fallback icon
+          modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
+          add(modIcon);
+
+          modIcon.scrollFactor.set();
+          modIcon.antialiasing = true;
+          modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+          modIcon.localScale.x = modIcon.scale.x;
+          modIcon.localScale.y = modIcon.scale.y;
+          modIcon.updateHitbox();
+        }
       }
     }
 
