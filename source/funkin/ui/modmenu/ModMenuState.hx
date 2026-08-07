@@ -2717,7 +2717,11 @@ class ModMenuState extends MusicBeatState
     #elseif ios
     System.openURL('shareddocuments://');
     #else
+    #if sys
+    FileUtil.openFolder(Path.join([FileUtil.gameDirectory, PolymodHandler.MOD_FOLDER]));
+    #else
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
+    #end
     #end
     openFolderAnimator.playAnimation('select');
   }
