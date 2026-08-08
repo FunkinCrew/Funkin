@@ -1530,6 +1530,11 @@ class ChartEditorDialogHandler
     {
       labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
     };
+    inputScrollSpeed.onRightClick = _ ->
+    {
+      inputScrollSpeed.value = 1;
+      labelScrollSpeed.text = 'Scroll Speed: 1x';
+    }
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
@@ -1595,6 +1600,11 @@ class ChartEditorDialogHandler
     {
       labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
     };
+    inputScrollSpeed.onRightClick = _ ->
+    {
+      inputScrollSpeed.value = 1;
+      labelScrollSpeed.text = 'Scroll Speed: 1x';
+    }
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
