@@ -113,6 +113,11 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
       var targetVolume = offsetPlayerVolume.value * 2 / 100;
       setTrackVolume(PLAYER, targetVolume);
     };
+    offsetPlayerVolume.onRightClick = (_) ->
+    {
+      offsetPlayerVolume.value = 50;
+      setTrackVolume(INSTRUMENTAL, offsetPlayerVolume.value * 2 / 100);
+    };
     offsetPlayerMute.onClick = (_) ->
     {
       toggleMuteTrack(PLAYER);
@@ -126,6 +131,11 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
       var targetVolume = offsetOpponentVolume.value * 2 / 100;
       setTrackVolume(OPPONENT, targetVolume);
     };
+    offsetOpponentVolume.onRightClick = (_) ->
+    {
+      offsetOpponentVolume.value = 50;
+      setTrackVolume(INSTRUMENTAL, offsetOpponentVolume.value * 2 / 100);
+    };
     offsetOpponentMute.onClick = (_) ->
     {
       toggleMuteTrack(OPPONENT);
@@ -138,6 +148,11 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     {
       var targetVolume = offsetInstrumentalVolume.value * 2 / 100;
       setTrackVolume(INSTRUMENTAL, targetVolume);
+    };
+    offsetInstrumentalVolume.onRightClick = (_) ->
+    {
+      offsetInstrumentalVolume.value = 50;
+      setTrackVolume(INSTRUMENTAL, offsetInstrumentalVolume.value * 2 / 100);
     };
     offsetInstrumentalMute.onClick = (_) ->
     {
