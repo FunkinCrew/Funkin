@@ -145,6 +145,11 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     {
       setTrackVolume(freeplayPreviewVolume);
     };
+    freeplayMusicVolume.onRightClick = (_) ->
+    {
+      freeplayMusicVolume.value = 50;
+      setTrackVolume(freeplayPreviewVolume);
+    };
     freeplayMusicMute.onClick = (_) ->
     {
       toggleMuteTrack();

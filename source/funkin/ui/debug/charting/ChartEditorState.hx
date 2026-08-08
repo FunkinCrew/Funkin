@@ -3741,6 +3741,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       metronomeVolume = volume;
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeMetronome.onRightClick = _ ->
+    {
+      metronomeVolume = 1.0;
+      menubarItemVolumeMetronome.value = 0.0;
+      menubarLabelVolumeMetronome.text = 'Metronome - 0%';
+    }
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
 
@@ -3761,6 +3767,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       hitsoundVolumePlayer = volume;
       menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeHitsoundPlayer.onRightClick = _ ->
+    {
+      hitsoundVolumePlayer = 1.0;
+      menubarItemVolumeHitsoundPlayer.value = 0.0;
+      menubarLabelVolumeHitsoundPlayer.text = 'Player - 0%';
+    }
     menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
     previousAudioVolumes[1] = Std.int(hitsoundVolumePlayer * 100);
 
@@ -3770,6 +3782,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       hitsoundVolumeOpponent = volume;
       menubarLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeHitsoundOpponent.onRightClick = _ ->
+    {
+      hitsoundVolumeOpponent = 50.0;
+      menubarItemVolumeHitsoundOpponent.value = 0.0;
+      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 0%';
+    }
     menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
     previousAudioVolumes[2] = Std.int(hitsoundVolumeOpponent * 100);
 
@@ -3779,6 +3797,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeInstrumental.onRightClick = _ ->
+    {
+      if (audioInstTrack != null) audioInstTrack.volume = 1.0;
+      menubarItemVolumeInstrumental.value = 100.0;
+      menubarLabelVolumeInstrumental.text = 'Instrumental - 100%';
+    }
     previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
 
     menubarItemVolumeVocalsPlayer.onChange = event ->
@@ -3787,6 +3811,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeVocalsPlayer.onRightClick = _ ->
+    {
+      audioVocalTrackGroup.playerVolume = 1.0;
+      menubarItemVolumeVocalsPlayer.value = 100.0;
+      menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+    }
     previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
 
     menubarItemVolumeVocalsOpponent.onChange = event ->
@@ -3795,19 +3825,32 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioVocalTrackGroup.opponentVolume = volume;
       menubarLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeVocalsOpponent.onRightClick = _ ->
+    {
+      audioVocalTrackGroup.opponentVolume = 1.0;
+      menubarItemVolumeVocalsOpponent.value = 100.0;
+      menubarLabelVolumeVocalsOpponent.text = 'Enemy - 100%';
+    }
     previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
     menubarItemPlaybackSpeed.onChange = event ->
     {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      pitch = Math.round(pitch / 0.05) * 0.05; // Round to nearest 5%
-      pitch = pitch.clamp(0.05, 2.0); // Clamp to 5% to 200%
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
+    }
+    menubarItemPlaybackSpeed.onRightClick = _ ->
+    {
+      #if FLX_PITCH
+      if (audioInstTrack != null) audioInstTrack.pitch = 1;
+      audioVocalTrackGroup.pitch = 1;
+      #end
+      menubarItemPlaybackSpeed.value = 50.0;
+      menubarLabelPlaybackSpeed.text = 'Playback Speed - 1x';
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -7145,7 +7188,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playtestAudioSettings)
     {
       playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-      playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
       playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     }
 
@@ -7695,7 +7737,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
 
     var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioInstTrack != null)
@@ -7994,7 +8035,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     if (audioInstTrack != null)
     {
@@ -8047,7 +8087,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioVocalTrackGroup != null)
