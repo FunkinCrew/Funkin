@@ -160,21 +160,27 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     FlxG.watch.addQuick('musicTime', FlxG.sound.music?.time ?? 0.0);
     Conductor.watchQuick(conductorInUse);
 
-    dispatchEvent(new UpdateScriptEvent(elapsed));
+    var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
+    dispatchEvent(event);
+    event.put();
   }
 
   override function onFocus():Void
   {
     super.onFocus();
 
-    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+    var event:ScriptEvent = FocusScriptEvent.get(FOCUS_GAINED);
+    dispatchEvent(event);
+    event.put();
   }
 
   override function onFocusLost():Void
   {
     super.onFocusLost();
 
-    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
+    var event:ScriptEvent = FocusScriptEvent.get(FOCUS_LOST);
+    dispatchEvent(event);
+    event.put();
   }
 
   public function initConsoleHelpers():Void
@@ -207,9 +213,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     if (this.subState != null && !persistentUpdate) return false;
 
-    var event:ScriptEvent = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+    var event:ScriptEvent = SongTimeScriptEvent.get(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return false;
 
@@ -225,9 +232,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     if (this.subState != null && !persistentUpdate) return false;
 
-    var event:ScriptEvent = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+    var event:ScriptEvent = SongTimeScriptEvent.get(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return false;
 
@@ -270,9 +278,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
-    var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
+    var event = StateChangeScriptEvent.get(STATE_CHANGE_BEGIN, null, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled)
     {
@@ -288,9 +297,10 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   override public function openSubState(targetSubState:FlxSubState):Void
   {
-    var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
+    var event = SubStateScriptEvent.get(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return;
 
@@ -299,14 +309,17 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   function onOpenSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
+    var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_OPEN_END, targetState, true);
+    dispatchEvent(event);
+    event.put();
   }
 
   override public function closeSubState():Void
   {
-    var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
+    var event = SubStateScriptEvent.get(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return;
 
@@ -315,6 +328,8 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
   function onCloseSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
+    var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_CLOSE_END, targetState, true);
+    dispatchEvent(event);
+    event.put();
   }
 }

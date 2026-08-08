@@ -450,7 +450,11 @@ class FreeplayState extends MusicBeatSubState
 
     backingCard.instance = this;
     add(backingCard);
-    ScriptEventDispatcher.callEvent(backingCard, new ScriptEvent(CREATE, false));
+
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    ScriptEventDispatcher.callEvent(backingCard, event);
+    event.put();
+
     backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
 
     if (currentCharacter?.getFreeplayDJData() != null)
@@ -758,7 +762,9 @@ class FreeplayState extends MusicBeatSubState
     {
       if (!uiStateMachine.is(Interacting)) uiStateMachine.transition(Idle);
 
-      dispatchEvent(new FreeplayScriptEvent(FREEPLAY_INTRO));
+      var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_INTRO);
+      dispatchEvent(event);
+      event.put();
 
       // when boyfriend hits dat shiii
 
@@ -1083,7 +1089,9 @@ class FreeplayState extends MusicBeatSubState
     changeSelection();
     refreshCapsuleDisplays();
 
-    dispatchEvent(new CapsuleScriptEvent(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation));
+    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation);
+    dispatchEvent(event);
+    event.put();
   }
 
   /**
@@ -2475,7 +2483,9 @@ class FreeplayState extends MusicBeatSubState
     FlxTimer.globalManager.clear();
     dj?.onIntroDone.removeAll();
 
-    dispatchEvent(new FreeplayScriptEvent(FREEPLAY_OUTRO));
+    var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_OUTRO);
+    dispatchEvent(event);
+    event.put();
 
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
@@ -3004,7 +3014,9 @@ class FreeplayState extends MusicBeatSubState
   {
     uiStateMachine.transition(Exiting);
 
-    dispatchEvent(new CapsuleScriptEvent(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation));
+    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation);
+    dispatchEvent(event);
+    event.put();
 
     PlayStatePlaylist.isStoryMode = false;
 
@@ -3244,7 +3256,9 @@ class FreeplayState extends MusicBeatSubState
     // Small vibrations every selection change.
     if (change != 0) HapticUtil.vibrate(0, 0.01, 0.5);
 
-    dispatchEvent(new CapsuleScriptEvent(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation));
+    var event:CapsuleScriptEvent = CapsuleScriptEvent.get(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation);
+    dispatchEvent(event);
+    event.put();
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

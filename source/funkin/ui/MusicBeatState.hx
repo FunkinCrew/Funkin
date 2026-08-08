@@ -179,7 +179,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     Conductor.beatHit.add(this.beatHit);
     Conductor.stepHit.add(this.stepHit);
-    dispatchEvent(new ScriptEvent(STATE_CREATE));
+
+    var event:ScriptEvent = ScriptEvent.get(STATE_CREATE);
+    dispatchEvent(event);
+    event.put();
   }
 
   override public function destroy():Void
@@ -208,21 +211,27 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     super.update(elapsed);
 
-    dispatchEvent(new UpdateScriptEvent(elapsed));
+    var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
+    dispatchEvent(event);
+    event.put();
   }
 
   override function onFocus():Void
   {
     super.onFocus();
 
-    dispatchEvent(new FocusScriptEvent(FOCUS_GAINED));
+    var event:ScriptEvent = FocusScriptEvent.get(FOCUS_GAINED);
+    dispatchEvent(event);
+    event.put();
   }
 
   override function onFocusLost():Void
   {
     super.onFocusLost();
 
-    dispatchEvent(new FocusScriptEvent(FOCUS_LOST));
+    var event:ScriptEvent = FocusScriptEvent.get(FOCUS_LOST);
+    dispatchEvent(event);
+    event.put();
   }
 
   function createWatermarkText()
@@ -259,9 +268,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     if (this.subState != null && !persistentUpdate) return false;
 
-    var event = new SongTimeScriptEvent(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+    var event:SongTimeScriptEvent = SongTimeScriptEvent.get(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return false;
 
@@ -272,9 +282,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   {
     if (this.subState != null && !persistentUpdate) return false;
 
-    var event = new SongTimeScriptEvent(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
+    var event:SongTimeScriptEvent = SongTimeScriptEvent.get(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return false;
 
@@ -293,9 +304,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   @:nullSafety(Off)
   override function startOutro(onComplete:() -> Void):Void
   {
-    var event = new StateChangeScriptEvent(STATE_CHANGE_BEGIN, null, true);
+    var event:StateChangeScriptEvent = StateChangeScriptEvent.get(STATE_CHANGE_BEGIN, null, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled)
     {
@@ -311,9 +323,10 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override public function openSubState(targetSubState:FlxSubState):Void
   {
-    var event = new SubStateScriptEvent(SUBSTATE_OPEN_BEGIN, targetSubState, true);
+    var event = SubStateScriptEvent.get(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return;
 
@@ -322,14 +335,17 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   function onOpenSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_OPEN_END, targetState, true));
+    var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_OPEN_END, targetState, false);
+    dispatchEvent(event);
+    event.put();
   }
 
   override public function closeSubState():Void
   {
-    var event = new SubStateScriptEvent(SUBSTATE_CLOSE_BEGIN, this.subState, true);
+    var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 
     dispatchEvent(event);
+    event.put();
 
     if (event.eventCanceled) return;
 
@@ -338,6 +354,8 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   function onCloseSubStateComplete(targetState:FlxSubState):Void
   {
-    dispatchEvent(new SubStateScriptEvent(SUBSTATE_CLOSE_END, targetState, true));
+    var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_CLOSE_END, targetState, false);
+    dispatchEvent(event);
+    event.put();
   }
 }
