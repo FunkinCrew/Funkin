@@ -643,8 +643,7 @@ class GameOverSubState extends MusicBeatSubState
 
   function getDeathAudioPath(location:String):String
   {
-    final charID:String = boyfriend?.characterId ?? 'bf';
-    final playerID:String = charID.split('-')[0];
+    final playerID:String = PlayerRegistry.instance.getCharacterOwnerId(boyfriend?.characterId) ?? 'bf';
 
     final audioPath:String = 'gameplay/playable-characters/$playerID/game-over/$location';
     return audioPath;
