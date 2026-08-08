@@ -583,11 +583,12 @@ class StoryMenuState extends MusicBeatState
     // super.dispatchEvent(event) dispatches event to module scripts.
     super.dispatchEvent(event, false);
 
-    if (levelProps?.members != null && levelProps.members.length > 0)
+    if (!selectedLevel && levelProps?.members != null && levelProps.members.length > 0)
     {
       // Dispatch event to props.
       for (prop in levelProps.members)
       {
+        if (selectedLevel && prop != null && prop.hasAnimation('confirm')) continue;
         ScriptEventDispatcher.callEvent(prop, event);
       }
     }
