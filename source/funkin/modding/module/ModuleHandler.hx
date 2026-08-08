@@ -183,7 +183,9 @@ class ModuleHandler
 
   static function onStateSwitchComplete():Void
   {
-    callEvent(new StateChangeScriptEvent(STATE_CHANGE_END, FlxG.state, true));
+    var event:StateChangeScriptEvent = StateChangeScriptEvent.get(STATE_CHANGE_END, FlxG.state, true);
+    callEvent(event);
+    event.put();
   }
 
   static function addToModuleCache(module:Module):Void
@@ -251,7 +253,7 @@ class ModuleHandler
   {
     if (moduleCache != null)
     {
-      var event = new ScriptEvent(DESTROY, false);
+      var event = ScriptEvent.get(DESTROY);
 
       // Note: Ignore stopPropagation()
       for (key => value in moduleCache)
@@ -261,6 +263,7 @@ class ModuleHandler
 
       moduleCache.clear();
       modulePriorityOrder = [];
+      event.put();
     }
   }
 
@@ -287,6 +290,8 @@ class ModuleHandler
 
   public static inline function callOnCreate():Void
   {
-    callEvent(new ScriptEvent(CREATE, false));
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    callEvent(event);
+    event.put();
   }
 }

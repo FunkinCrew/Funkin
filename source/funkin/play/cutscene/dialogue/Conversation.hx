@@ -111,7 +111,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     this.state = ConversationState.Start;
 
     // Start the dialogue.
-    dispatchEvent(new DialogueScriptEvent(DIALOGUE_START, this, false));
+    startConversation();
   }
 
   function setupMusic():Void
@@ -204,7 +204,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     super.update(elapsed);
 
-    dispatchEvent(new UpdateScriptEvent(elapsed));
+    var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
+    dispatchEvent(event);
+    event.put();
   }
 
   function showCurrentSpeaker():Void
@@ -237,7 +239,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     }
     if (!nextSpeaker.alive) nextSpeaker.revive();
 
-    ScriptEventDispatcher.callEvent(nextSpeaker, new ScriptEvent(CREATE, true));
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    ScriptEventDispatcher.callEvent(nextSpeaker, event);
+    event.put();
 
     currentSpeaker = nextSpeaker;
     currentSpeaker.zIndex = 200;
@@ -277,7 +281,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     }
     if (!nextDialogueBox.alive) nextDialogueBox.revive();
 
-    ScriptEventDispatcher.callEvent(nextDialogueBox, new ScriptEvent(CREATE, true));
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
+    ScriptEventDispatcher.callEvent(nextDialogueBox, event);
+    event.put();
 
     currentDialogueBox = nextDialogueBox;
     currentDialogueBox.zIndex = 300;
@@ -312,7 +318,16 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   public function startConversation():Void
   {
-    dispatchEvent(new DialogueScriptEvent(DIALOGUE_START, this, true));
+    var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_START, this, true);
+    dispatchEvent(event);
+    event.put();
+  }
+
+  public function endConversation():Void
+  {
+    var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_END, this, true);
+    dispatchEvent(event);
+    event.put;
   }
 
   /**
@@ -324,21 +339,29 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
    */
   public function advanceConversation():Void
   {
+    var event:Null<DialogueScriptEvent> = null;
+
     switch (state)
     {
       case ConversationState.Start:
-        dispatchEvent(new DialogueScriptEvent(DIALOGUE_START, this, true));
-      case ConversationState.Opening:
-        dispatchEvent(new DialogueScriptEvent(DIALOGUE_COMPLETE_LINE, this, true));
-      case ConversationState.Speaking:
-        dispatchEvent(new DialogueScriptEvent(DIALOGUE_COMPLETE_LINE, this, true));
+        startConversation();
+        return;
+      case ConversationState.Opening | ConversationState.Speaking:
+        event = DialogueScriptEvent.get(DIALOGUE_COMPLETE_LINE, this, true);
       case ConversationState.Idle:
-        dispatchEvent(new DialogueScriptEvent(DIALOGUE_LINE, this, true));
+        event = DialogueScriptEvent.get(DIALOGUE_LINE, this, true);
       case ConversationState.Ending:
         // Skip the outro.
         endOutro();
+        return;
       default:
         // Do nothing.
+    }
+
+    if (event != null)
+    {
+      dispatchEvent(event);
+      event.put();
     }
   }
 
@@ -401,7 +424,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
    */
   public function skipConversation():Void
   {
-    dispatchEvent(new DialogueScriptEvent(DIALOGUE_SKIP, this, true));
+    var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_SKIP, this, true);
+    dispatchEvent(event);
+    event.put();
   }
 
   var outroTween:Null<FlxTween> = null;
@@ -436,7 +461,9 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
   public function endOutro():Void
   {
-    ScriptEventDispatcher.callEvent(this, new ScriptEvent(DESTROY, false));
+    var event:ScriptEvent = ScriptEvent.get(DESTROY);
+    ScriptEventDispatcher.callEvent(this, event);
+    event.put();
   }
 
   /**
@@ -475,7 +502,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
       if (currentDialogueEntry >= currentDialogueEntryCount)
       {
-        dispatchEvent(new DialogueScriptEvent(DIALOGUE_END, this, false));
+        endConversation();
       }
       else
       {
@@ -515,7 +542,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     propagateEvent(event);
     if (event.eventCanceled) return;
 
-    dispatchEvent(new DialogueScriptEvent(DIALOGUE_END, this, false));
+    endConversation();
   }
 
   public function onDialogueEnd(event:DialogueScriptEvent):Void

@@ -7822,7 +7822,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var _scriptNoteObj:NoteSprite = null;
 
-  var _noteScriptEvent:NoteScriptEvent = null;
+  var _noteScriptEvent:HitNoteScriptEvent = null;
   var _currentEvents = null;
   var _allowedEvents = null;
   var _eventTarget:Null<CharacterPlayer> = null;
@@ -7854,14 +7854,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       _scriptNoteObj.direction = _scriptNoteObj.noteData?.getDirection() ?? 0;
       _scriptNoteObj.scrollFactor.set();
 
-      _noteScriptEvent = new HitNoteScriptEvent(_scriptNoteObj, 0.0, 0, (noteData.getStrumlineIndex() == 0 ? 'perfect' : 'sick'), false, 0);
+      _noteScriptEvent = HitNoteScriptEvent.get(_scriptNoteObj, 0.0, 0, (noteData.getStrumlineIndex() == 0 ? 'perfect' : 'sick'), false, 0);
       dispatchEvent(_noteScriptEvent);
+      _noteScriptEvent.put();
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
       if (_noteScriptEvent.eventCanceled)
       {
         _scriptNoteObj = null;
-        _noteScriptEvent = null;
 
         continue;
       }
@@ -7878,10 +7878,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         }
       }
     }
-
-    // Clearing memory before next event call.
-    _scriptNoteObj = null;
-    _noteScriptEvent = null;
 
     for (data in _allowedEvents)
     {

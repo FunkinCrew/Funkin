@@ -866,7 +866,9 @@ class CharSelectSubState extends MusicBeatSubState
         mobileDeny = false;
         cursors.unconfirm();
 
-        dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, curChar));
+        var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_DESELECTED, curChar);
+        dispatchEvent(event);
+        event.put();
 
         #if FEATURE_TOUCH_CONTROLS
         if (backButton != null)
@@ -903,7 +905,9 @@ class CharSelectSubState extends MusicBeatSubState
 
         FunkinSound.playOnce(Paths.sound('ui/character-select/sounds/confirm'));
 
-        dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
+        var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, curChar);
+        dispatchEvent(event);
+        event.put();
 
         #if FEATURE_TOUCH_CONTROLS
         if (backButton != null)
