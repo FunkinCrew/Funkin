@@ -66,7 +66,8 @@ class PauseSubState extends MusicBeatSubState
     },
     {
       text: 'Change Difficulty',
-      callback: switchMode.bind(_, Difficulty)
+      callback: switchMode.bind(_, Difficulty),
+      filter: () -> (PlayState.instance?.currentSong?.listDifficulties(PlayState.instance?.currentChart?.variation ?? Constants.DEFAULT_VARIATION, true)?.length ?? 0) > 1
     },
     {
       text: 'Enable Practice Mode',
