@@ -17,7 +17,7 @@ import flixel.group.IFlxGroupable;
 typedef FunkinSpriteGroup = FunkinGroup<FlxSprite>;
 
 /**
- * FlxSpriteGroup but better. Kinda like if `FlxNestedSprite` and `FlxSpriteGroup` were merged.
+ * FlxSpriteGroup but better.
  */
 class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 {
@@ -30,6 +30,21 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
    * The children of this FunkinGroup.
    */
   public var children:Array<T>;
+
+  /**
+   * Alias of children for similarity to FlxSpriteGroup
+   */
+  public var members(get, set):Array<T>;
+
+  function get_members():Array<T>
+  {
+    return children;
+  }
+
+  function set_members(value:Array<T>):Array<T>
+  {
+    return children = value;
+  }
 
   /**
    * The size of this FunkinGroup. Read only.
@@ -194,11 +209,11 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
    * it will not (obviously).
    *
    * Useful for outside objects to modify this group's children. (Extending
-   * classes can just override updateChildren)
+   * classes can just override positionChild or positionChildren)
    *
    * `false` by default.
    */
-  public var customChildUpdate:Bool = false;
+  public var customChildPositioning:Bool = false;
 
   /**
    * Should this FunkinGroup treat itself more like one image (in scale terms).
@@ -216,17 +231,24 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   override function get_width():Float
   {
-    updateChildren();
+    var transforms = getTransformsFromAll();
 
-    if (size < 1) return 0;
+    positionChildren();
+
+    if (size < 1)
+    {
+      applyTransformsToAll(transforms);
+      return 0;
+    }
 
     var minLeft:Float = Math.POSITIVE_INFINITY;
     var maxRight:Float = Math.NEGATIVE_INFINITY;
 
     for (child in children)
     {
-      if (child == null || !child.alive || !child.localVisible) continue;
+      if (child == null || !child.alive || !child.visible) continue;
 
+      var transform = transforms[children.indexOf(child)];
       var left:Float;
       var right:Float;
 
@@ -235,12 +257,12 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         var childGroup:FunkinGroup<Dynamic> = cast child;
         var childW:Float = childGroup.width;
         if (childW <= 0) continue;
-        left = child.localX * scale.x;
+        left = transform.x * scale.x;
         right = left + childW * scale.x;
       }
       else
       {
-        left = child.localX * scale.x;
+        left = transform.x * scale.x;
         right = left + child.frameWidth * child.scale.x;
       }
 
@@ -248,23 +270,32 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       if (right > maxRight) maxRight = right;
     }
 
+    applyTransformsToAll(transforms);
+
     if (minLeft == Math.POSITIVE_INFINITY) return 0;
     return maxRight - minLeft;
   }
 
   override function get_height():Float
   {
-    updateChildren();
+    var transforms = getTransformsFromAll();
 
-    if (size < 1) return 0;
+    positionChildren();
+
+    if (size < 1)
+    {
+      applyTransformsToAll(transforms);
+      return 0;
+    }
 
     var minTop:Float = Math.POSITIVE_INFINITY;
     var maxBottom:Float = Math.NEGATIVE_INFINITY;
 
     for (child in children)
     {
-      if (child == null || !child.alive || !child.localVisible) continue;
+      if (child == null || !child.alive || !child.visible) continue;
 
+      var transform = transforms[children.indexOf(child)];
       var top:Float;
       var bottom:Float;
 
@@ -273,19 +304,20 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         var childGroup:FunkinGroup<Dynamic> = cast child;
         var childH:Float = childGroup.height;
         if (childH <= 0) continue;
-        top = child.localY;
+        top = transform.y;
         bottom = top + childH * scale.y;
       }
       else
       {
-        if (child.scale.y != scale.y * child.localScale.y) continue;
-        top = child.localY;
+        top = transform.y * scale.y;
         bottom = top + child.frameHeight * child.scale.y;
       }
 
       if (top < minTop) minTop = top;
       if (bottom > maxBottom) maxBottom = bottom;
     }
+
+    applyTransformsToAll(transforms);
 
     if (minTop == Math.POSITIVE_INFINITY) return 0;
     return maxBottom - minTop;
@@ -303,16 +335,16 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     var upwardsMostSpr:T = sort(function(order:Int, a:T, b:T):Int
     {
       if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, y + a.localY, y + b.localY);
+      return FlxSort.byValues(order, y + a.y, y + b.y);
     }, false)[0];
 
     var leftMostSpr:T = sort(function(order:Int, a:T, b:T):Int
     {
       if (a == null || b == null) return 0;
-      return FlxSort.byValues(order, x + a.localX, x + b.localX);
+      return FlxSort.byValues(order, x + a.x, x + b.x);
     }, false)[0];
 
-    origin.set(leftMostSpr.localX + width / 2, upwardsMostSpr.localY + height / 2);
+    origin.set(leftMostSpr.x + width / 2, upwardsMostSpr.y + height / 2);
   }
 
   /**
@@ -384,28 +416,41 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     super.update(elapsed);
 
-    updateChildren();
-
     for (child in children)
     {
       if (child != null && child.exists && child.active) child.update(elapsed);
+    }
+  }
+
+  override public function draw():Void
+  {
+    for (child in children)
+    {
+      if (child == null || !child.exists || !child.visible) continue;
+
+      var transforms = getTransforms(child);
+      positionChild(child);
 
       if (this.scrollFactor.x != 1 || this.scrollFactor.y != 1)
       {
         child.scrollFactor.set(child.scrollFactor.x * this.scrollFactor.x, child.scrollFactor.y * this.scrollFactor.y);
       }
-    }
 
-    updateClipRects();
+      updateClipRects();
+
+      child.draw();
+
+      applyTransforms(child, transforms);
+    }
   }
 
   /**
-   * Updates the children here. Uses the child's local variables like `localX` and `localY` to update the child's position. Like `FlxNestedSprite`!
-   * Can be overriden by outside classes with `customChildUpdate`.
+   * Positions a child according to the group's transformations here. This function should not be permanent.
+   * Can be overridden by outside classes with `customChildPositioning`.
    */
-  public function updateChildren():Void
+  public function positionChild(child:T):T
   {
-    if (customChildUpdate) return;
+    if (customChildPositioning) return child;
 
     final precise:Bool = preciseScale || preciseAngle;
 
@@ -421,37 +466,95 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     final scaleX:Float = preciseScale ? scale.x : 1;
     final scaleY:Float = preciseScale ? scale.y : 1;
 
+    if (child != null && child.exists && child.active)
+    {
+      child.angle += angle;
+      child.scale.x *= scale.x;
+      child.scale.y *= scale.y;
+
+      if (precise)
+      {
+        final halfWidth:Float = child.width / 2;
+        final halfHeight:Float = child.height / 2;
+
+        final relX:Float = child.x - origin.x + halfWidth;
+        final relY:Float = child.y - origin.y + halfHeight;
+
+        child.x = x + (origin.x - halfWidth) + (scaleX * cos * relX) - (scaleY * sin * relY);
+        child.y = y + (origin.y - halfHeight) + (scaleY * cos * relY) + (scaleX * sin * relX);
+      }
+      else
+      {
+        child.x = x + child.x;
+        child.y = y + child.y;
+      }
+
+      child.alpha = alpha * child.alpha;
+      child.visible = visible && child.visible;
+      // force child cameras to the group's cameras.
+      if (child.cameras != cameras) child.cameras = cameras;
+    }
+    return child;
+  }
+
+  /**
+   * Positions the children according to the group's transformations here. This function should not be permanent.
+   * Can be overridden by outside classes with `customChildPositioning`.
+   */
+  public function positionChildren():Void
+  {
+    if (customChildPositioning) return;
+
     for (child in children)
     {
-      if (child != null && child.exists && child.active)
-      {
-        child.angle = angle + child.localAngle;
-        child.scale.x = scale.x * child.localScale.x;
-        child.scale.y = scale.y * child.localScale.y;
-
-        if (precise)
-        {
-          final halfWidth:Float = child.width / 2;
-          final halfHeight:Float = child.height / 2;
-
-          final relX:Float = child.localX - origin.x + halfWidth;
-          final relY:Float = child.localY - origin.y + halfHeight;
-
-          child.x = x + (origin.x - halfWidth) + (scaleX * cos * relX) - (scaleY * sin * relY);
-          child.y = y + (origin.y - halfHeight) + (scaleY * cos * relY) + (scaleX * sin * relX);
-        }
-        else
-        {
-          child.x = x + child.localX;
-          child.y = y + child.localY;
-        }
-
-        child.alpha = alpha * child.localAlpha;
-        child.visible = visible && child.localVisible;
-        // force child cameras to the group's cameras.
-        if (child.cameras != cameras) child.cameras = cameras;
-      }
+      positionChild(child);
     }
+  }
+
+  /**
+   * Returns a structure of variables a child has, for saving and using later.
+   *
+   * @param child The child.
+   * @return The child's transform values.
+   */
+  public function getTransforms(child:T):Dynamic
+  {
+    return {
+      x: child.x,
+      y: child.y,
+      alpha: child.alpha,
+      angle: child.angle,
+      scale: [child.scale.x, child.scale.y],
+      scrollFactor: [child.scrollFactor.x, child.scrollFactor.y]
+    }
+  }
+
+  /**
+   * Applies a structure of transform values (gotten from getTransforms)
+   * to a child.
+   *
+   * @param child The child.
+   * @param transforms The transform values.
+   */
+  public function applyTransforms(child:T, transforms:Dynamic):Void
+  {
+    child.x = transforms.x;
+    child.y = transforms.y;
+    child.alpha = transforms.alpha;
+    child.angle = transforms.angle;
+    child.scale.set(transforms.scale[0], transforms.scale[1]);
+    child.scrollFactor.set(transforms.scrollFactor[0], transforms.scrollFactor[1]);
+  }
+
+  public function getTransformsFromAll():Array<Dynamic>
+  {
+    return[for (child in children) getTransforms(child)];
+  }
+
+  public function applyTransformsToAll(transforms:Array<Dynamic>):Void
+  {
+    if (transforms.length < children.length) return;
+    for (child in 0...children.length) applyTransforms(children[child], transforms[child]);
   }
 
   /**
@@ -514,9 +617,9 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       {
         grp.remove(child);
         add(child);
-        // update child's local position so the child stays where it was
-        child.localX = x - child.x;
-        child.localY = y - child.y;
+        // update child's position so the child stays where it was
+        child.x = x - child.x;
+        child.y = y - child.y;
       }
     }
   }
@@ -528,10 +631,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       child.destroy();
     }
 
-    children = [];
-
-    _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
-    _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);
+    children = null;
 
     super.destroy();
   }
@@ -565,17 +665,6 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
       if (child != null)
       {
         func(child);
-      }
-    }
-  }
-
-  override public function draw():Void
-  {
-    for (child in children)
-    {
-      if (child != null && child.exists && child.visible)
-      {
-        child.draw();
       }
     }
   }
