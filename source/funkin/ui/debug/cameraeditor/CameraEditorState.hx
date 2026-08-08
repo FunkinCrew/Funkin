@@ -875,8 +875,9 @@ class CameraEditorState extends UIState implements ConsoleClass
         default:
           if (doSongEvents)
           {
-            var ev:SongEventScriptEvent = new SongEventScriptEvent(eventData);
+            var ev:SongEventScriptEvent = SongEventScriptEvent.get(eventData);
             currentStage.onSongEvent(ev);
+            ev.put();
           }
           else
           {
@@ -887,6 +888,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       if (doDispatch)
       {
         dispatchEvent(eventEvent);
+        eventEvent.put();
       }
 
       cachedEventIndex = i + 1;

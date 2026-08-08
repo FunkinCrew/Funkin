@@ -548,7 +548,6 @@ class PlayState extends MusicBeatSubState
   var discordRPCAlbum:String = '';
   var discordRPCIcon:String = '';
   #end
-
   /**
    * RENDER OBJECTS
    */
@@ -1058,13 +1057,14 @@ class PlayState extends MusicBeatSubState
 
       prevScrollTargets = [];
 
-      var retryEvent = new SongRetryEvent(currentDifficulty);
+      var retryEvent = SongRetryEvent.get(currentDifficulty);
 
       previousDifficulty = currentDifficulty;
 
       currentStage?.resetStage();
 
       dispatchEvent(retryEvent);
+      retryEvent.put();
 
       resetCamera();
 
@@ -1280,8 +1280,9 @@ class PlayState extends MusicBeatSubState
         Events.logFailSong(currentSong.id, currentVariation);
         #end
 
-        var event:ScriptEvent = new ScriptEvent(GAME_OVER, true);
+        var event:ScriptEvent = ScriptEvent.get(GAME_OVER, true);
         dispatchEvent(event);
+        event.put();
 
         if (event.eventCanceled) return;
 
@@ -1372,16 +1373,18 @@ class PlayState extends MusicBeatSubState
       case Conversation:
         preparePauseUI();
 
-        final event = new PauseScriptEvent(false);
+        final event = PauseScriptEvent.get(false);
         dispatchEvent(event);
+        event.put();
 
         if (!event.eventCanceled) openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
 
-        final event = new PauseScriptEvent(false);
+        final event = PauseScriptEvent.get(false);
         dispatchEvent(event);
+        event.put();
 
         if (!event.eventCanceled) openPauseSubState(Cutscene, camPause, lostFocus, () -> VideoCutscene.pauseVideo());
 
@@ -1391,8 +1394,9 @@ class PlayState extends MusicBeatSubState
         Countdown.pauseCountdown();
         preparePauseUI();
 
-        final event = new PauseScriptEvent(FlxG.random.bool(1 / 1000 * 100));
+        final event = PauseScriptEvent.get(FlxG.random.bool(1 / 1000 * 100));
         dispatchEvent(event);
+        event.put();
 
         if (!event.eventCanceled)
         {
@@ -1516,8 +1520,9 @@ class PlayState extends MusicBeatSubState
             }
           };
 
-          var eventEvent:SongEventScriptEvent = new SongEventScriptEvent(event);
+          var eventEvent:SongEventScriptEvent = SongEventScriptEvent.get(event);
           dispatchEvent(eventEvent);
+          eventEvent.put();
 
           // Calling event.cancelEvent() skips the event. Neat!
           if (!eventEvent.eventCanceled)
@@ -1645,9 +1650,10 @@ class PlayState extends MusicBeatSubState
     if (shouldSubstatePause)
     {
       shouldSubstatePause = false;
-      var event:ScriptEvent = new ScriptEvent(RESUME, true);
+      var event:ScriptEvent = ScriptEvent.get(RESUME, true);
 
       dispatchEvent(event);
+      event.put();
 
       if (event.eventCanceled) return;
 
@@ -2075,8 +2081,9 @@ class PlayState extends MusicBeatSubState
       currentStage.revive(); // Stages are killed and props destroyed when the PlayState is destroyed to save memory.
 
       // Actually create and position the sprites.
-      var event:ScriptEvent = new ScriptEvent(CREATE, false);
+      var event:ScriptEvent = ScriptEvent.get(CREATE);
       ScriptEventDispatcher.callEvent(currentStage, event);
+      event.put();
 
       resetCameraZoom();
 
@@ -2499,8 +2506,9 @@ class PlayState extends MusicBeatSubState
 
     regenNoteData(startTimestamp);
 
-    var event:ScriptEvent = new ScriptEvent(CREATE, false);
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(currentSong, event);
+    event.put();
 
     generatedMusic = true;
   }
@@ -2520,7 +2528,7 @@ class PlayState extends MusicBeatSubState
     Highscore.tallies = new Tallies();
 
     @:nullSafety(Off)
-    var event:SongLoadScriptEvent = new SongLoadScriptEvent(
+    var event:SongLoadScriptEvent = SongLoadScriptEvent.get(
       currentChart.song.id,
       currentChart.difficulty,
       currentChart.notes.copy(),
@@ -2528,6 +2536,7 @@ class PlayState extends MusicBeatSubState
     );
 
     dispatchEvent(event);
+    event.put();
 
     var builtNoteData = event.notes;
     var builtEventData = event.events;
@@ -2573,9 +2582,10 @@ class PlayState extends MusicBeatSubState
 
   function onStrumlineNoteIncoming(noteSprite:NoteSprite):Void
   {
-    var event:NoteScriptEvent = new NoteScriptEvent(NOTE_INCOMING, noteSprite, 0, false);
+    var event:NoteScriptEvent = NoteScriptEvent.get(NOTE_INCOMING, noteSprite, 0, false);
 
     dispatchEvent(event);
+    event.put();
   }
 
   /**
@@ -2613,8 +2623,9 @@ class PlayState extends MusicBeatSubState
     add(currentConversation);
     refresh();
 
-    var event:ScriptEvent = new ScriptEvent(CREATE, false);
+    var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(currentConversation, event);
+    event.put();
   }
 
   /**
@@ -2715,7 +2726,9 @@ class PlayState extends MusicBeatSubState
       handleSkippedNotes();
     }
 
-    dispatchEvent(new ScriptEvent(SONG_START));
+    var event:ScriptEvent = ScriptEvent.get(SONG_START);
+    dispatchEvent(event);
+    event.put();
 
     #if FEATURE_NEWGROUNDS
     Events.logStartSong(currentSong.id, currentVariation);
@@ -2817,8 +2830,9 @@ class PlayState extends MusicBeatSubState
       var r = GRhythmUtil.processWindow(note, false);
       if (r.botplayHit)
       {
-        var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
+        var event:NoteScriptEvent = HitNoteScriptEvent.get(note, 0.0, 0, 'perfect', false, 0);
         dispatchEvent(event);
+        event.put();
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
@@ -2885,8 +2899,9 @@ class PlayState extends MusicBeatSubState
 
         // Call an event to allow canceling the note hit.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
+        var event:NoteScriptEvent = HitNoteScriptEvent.get(note, 0.0, 0, 'perfect', false, 0);
         dispatchEvent(event);
+        event.put();
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
@@ -2908,8 +2923,9 @@ class PlayState extends MusicBeatSubState
       {
         // Call an event to allow canceling the note miss.
         // NOTE: This is what handles the character animations!
-        var event:NoteScriptEvent = new NoteScriptEvent(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, Highscore.tallies.combo, true);
+        var event:NoteScriptEvent = NoteScriptEvent.get(NOTE_MISS, note, Constants.HEALTH_MISS_PENALTY, Highscore.tallies.combo, true);
         dispatchEvent(event);
+        event.put();
 
         // Calling event.cancelEvent() skips all the other logic! Neat!
         if (event.eventCanceled) continue;
@@ -2975,8 +2991,9 @@ class PlayState extends MusicBeatSubState
             var healthChange = healthChangeUncapped.clamp(healthChangeMax, 0);
             var scoreChange:Float = Constants.SCORE_HOLD_DROP_PENALTY_PER_SECOND * remainingLengthSec;
 
-            var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
+            var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, healthChange, scoreChange, true, Highscore.tallies.combo);
             dispatchEvent(event);
+            event.put();
 
             // Calling event.cancelEvent() skips all the other logic! Neat!
             if (event.eventCanceled) continue;
@@ -3147,7 +3164,7 @@ class PlayState extends MusicBeatSubState
     }
 
     // Send the note hit event.
-    var event:HitNoteScriptEvent = new HitNoteScriptEvent(
+    var event:HitNoteScriptEvent = HitNoteScriptEvent.get(
       note,
       healthChange,
       score,
@@ -3158,6 +3175,7 @@ class PlayState extends MusicBeatSubState
       daRating == 'sick'
     );
     dispatchEvent(event);
+    event.put();
 
     // Calling event.cancelEvent() skips all the other logic! Neat!
     if (event.eventCanceled) return;
@@ -3220,12 +3238,13 @@ class PlayState extends MusicBeatSubState
    */
   function ghostNoteMiss(direction:NoteDirection, hasPossibleNotes:Bool = true):Void
   {
-    var event:GhostMissNoteScriptEvent = new GhostMissNoteScriptEvent(direction, // Direction missed in.
+    var event:GhostMissNoteScriptEvent = GhostMissNoteScriptEvent.get(direction, // Direction missed in.
       hasPossibleNotes, // Whether there was a note you could have hit.
       Constants.HEALTH_GHOST_MISS_PENALTY, // How much health to add (negative).
       Constants.SCORE_GHOST_MISS_PENALTY // Amount of score to add (negative).
     );
     dispatchEvent(event);
+    event.put();
 
     // Calling event.cancelEvent() skips animations and penalties. Neat!
     if (event.eventCanceled) return;
@@ -3500,8 +3519,9 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Check if any events want to prevent the song from ending.
-    var event = new ScriptEvent(SONG_END, true);
+    var event = ScriptEvent.get(SONG_END, true);
     dispatchEvent(event);
+    event.put();
     if (event.eventCanceled) return;
 
     deathCounter = 0;
@@ -3769,7 +3789,9 @@ class PlayState extends MusicBeatSubState
     cancelAllCameraTweens();
 
     // Dispatch the destroy event.
-    dispatchEvent(new ScriptEvent(DESTROY, false));
+    var event:ScriptEvent = ScriptEvent.get(DESTROY, false);
+    dispatchEvent(event);
+    event.put();
 
     if (currentConversation != null)
     {

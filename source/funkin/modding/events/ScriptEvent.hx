@@ -17,6 +17,8 @@ import openfl.events.KeyboardEvent;
  * It can be used to identify the type of event called, store data, and cancel event propagation.
  */
 @:nullSafety
+@:build(funkin.util.macro.ScriptEventPoolMacro.buildPool())
+@:autoBuild(funkin.util.macro.ScriptEventPoolMacro.buildPool())
 class ScriptEvent
 {
   /**
@@ -40,6 +42,13 @@ class ScriptEvent
    * Whether the event has been canceled by one of the scripts that received it.
    */
   public var eventCanceled(default, null):Bool;
+
+  /**
+   * Whether the event has been used in the pool.
+   * In certain cases, such as when switching states in `onStateChangeBegin`, multiple of the same events would be needed,
+   * and this variable signified whether another event instance should be created.
+   */
+  public var hasBeenUsed(default, null):Bool = false;
 
   public function new(type:ScriptEventType, cancelable:Bool = false):Void
   {
@@ -76,6 +85,14 @@ class ScriptEvent
   public function stopPropagation():Void
   {
     shouldPropagate = false;
+  }
+
+  /**
+   * Make this event reusable in the pool.
+   */
+  public function put()
+  {
+    hasBeenUsed = false;
   }
 
   public function toString():String
@@ -412,17 +429,17 @@ class KeyboardInputScriptEvent extends ScriptEvent
   /**
    * The associated keyboard event.
    */
-  public var event(default, null):KeyboardEvent;
+  public var keyEvent(default, null):KeyboardEvent;
 
-  public function new(type:ScriptEventType, event:KeyboardEvent):Void
+  public function new(type:ScriptEventType, keyEvent:KeyboardEvent):Void
   {
     super(type, false);
-    this.event = event;
+    this.keyEvent = keyEvent;
   }
 
   override public function toString():String
   {
-    return 'KeyboardInputScriptEvent(type=' + type + ', event=' + event + ')';
+    return 'KeyboardInputScriptEvent(type=' + type + ', event=' + keyEvent + ')';
   }
 }
 
