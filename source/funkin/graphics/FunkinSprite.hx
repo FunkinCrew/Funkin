@@ -645,7 +645,6 @@ class FunkinSprite extends FlxAnimate
     var graphic:FlxGraphic = FlxG.bitmap.create(2, 2, color, false, 'solid#${color.toHexString(true, false)}');
     frames = graphic.imageFrame;
     scale.set(width / 2.0, height / 2.0);
-    localScale.set(scale.x, scale.y);
     updateHitbox();
 
     return this;
@@ -909,7 +908,6 @@ class FunkinSprite extends FlxAnimate
     var result = new FunkinSprite(this.x, this.y);
     result.frames = this.frames;
     result.scale.set(this.scale.x, this.scale.y);
-    result.localScale.set(this.localScale.x, this.localScale.y);
     result.updateHitbox();
 
     return result;

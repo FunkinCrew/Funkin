@@ -279,16 +279,16 @@ class QuickPanelGroup extends FunkinSpriteGroup
     screenEdge = left ? 0 : FlxG.width;
     TAB_BASE_X = left ? 467 : -467;
 
-    pullTabVisual.localX = left ? 120 - pullTabVisual.width : -120;
-    pullTabHitbox.localX = left ? 145 - pullTabHitbox.width : -145;
+    pullTabVisual.x = left ? 120 - pullTabVisual.width : -120;
+    pullTabHitbox.x = left ? 145 - pullTabHitbox.width : -145;
 
-    panel.localX = left ? -panel.width : 0;
-    pullExtra.localX = left ? -(pullExtra.width + panel.width) + 5 : panel.width - 5;
+    panel.x = left ? -panel.width : 0;
+    pullExtra.x = left ? -(pullExtra.width + panel.width) + 5 : panel.width - 5;
 
     panel.flipX = left;
     pullTabVisual.flipX = left;
 
-    pullHint.localX = left ? 135 : -135 - pullHint.width;
+    pullHint.x = left ? 135 : -135 - pullHint.width;
     pullHint.alignment = left ? LEFT : RIGHT;
 
     repositionButtons();
@@ -321,9 +321,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
     pullExtra.updateHitbox();
 
     // for some reason i have to scale both??? am i doing something wrong
-    pullExtra.localScale.x = FlxG.width;
-    pullExtra.localScale.y = FlxG.height;
-    pullExtra.localY = 0;
+    pullExtra.scale.x = FlxG.width;
+    pullExtra.scale.y = FlxG.height;
+    pullExtra.y = 0;
     add(pullExtra);
 
     panel = new FlxSprite();
@@ -349,19 +349,19 @@ class QuickPanelGroup extends FunkinSpriteGroup
     panel.animation.play('idle');
     panel.updateHitbox();
     panel.scrollFactor.set(0, 0);
-    panel.localY = 0;
+    panel.y = 0;
     panel.zIndex = 10;
 
     pullTabVisual = new QuickPanelPullTab(0, 0, #if FEATURE_TOUCH_CONTROLS false #else true #end);
-    pullTabVisual.localY = (FlxG.height / 2) - (pullTabVisual.height / 2);
+    pullTabVisual.y = (FlxG.height / 2) - (pullTabVisual.height / 2);
     pullTabVisual.playIdle(curState);
     pullTabVisual.zIndex = 11;
 
     pullHint = new FlxText(0, 0, 600, "you're not supposed to see this! if you do, i seriously messed up!", 30);
     pullHint.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinOptions', 'otf'), 38, HINT_COLOR_NORMAL, RIGHT);
-    pullHint.localY = (FlxG.height / 2) - (pullHint.height / 2);
+    pullHint.y = (FlxG.height / 2) - (pullHint.height / 2);
     pullHint.offset.y = 0;
-    pullHint.localAlpha = 0;
+    pullHint.alpha = 0;
     add(pullHint);
 
     add(pullTabVisual);
@@ -378,10 +378,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     pullTabHitbox = new FlxSprite().makeGraphic(200, 280, 0xFFFF9191);
     pullTabHitbox.scrollFactor.set(0, 0);
-    pullTabHitbox.localAlpha = 0;
+    pullTabHitbox.alpha = 0;
     pullTabHitbox.updateHitbox();
     pullTabHitbox.zIndex = 200;
-    pullTabHitbox.localY = (FlxG.height / 2) - (pullTabHitbox.height / 2);
+    pullTabHitbox.y = (FlxG.height / 2) - (pullTabHitbox.height / 2);
     add(pullTabHitbox);
 
     grpButtons = new FunkinGroup<QuickPanelButton>();
@@ -488,7 +488,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       -0
     ]);
 
-    paHint.addProperty('slideLeft', 'localAlpha', [
+    paHint.addProperty('slideLeft', 'alpha', [
       0.0,
       0.0,
       0.5,
@@ -520,7 +520,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       0
     ]);
 
-    paHint.addProperty('slideRight', 'localAlpha', [
+    paHint.addProperty('slideRight', 'alpha', [
       0.0,
       0.0,
       0.5,
@@ -537,7 +537,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     paHint.addAnimationByName('disappear', 30);
 
-    paHint.addProperty('disappear', 'localAlpha', [
+    paHint.addProperty('disappear', 'alpha', [
       1.0,
       1.0,
       0.95,
@@ -554,7 +554,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
 
     paHint.addAnimationByName('breathe', 12, true);
 
-    paHint.addProperty('breathe', 'localAlpha', [
+    paHint.addProperty('breathe', 'alpha', [
       0.6,
       0.6,
       0.65,
@@ -775,10 +775,10 @@ class QuickPanelGroup extends FunkinSpriteGroup
       var dist = Math.abs(Math.cos(targetAngle) * angleDistance);
       var baseX = left ? -panel.width + 58 : 98;
 
-      button.localX = left ? baseX + dist : baseX - dist;
-      button.localY = startOffset + ((QuickPanelButton.ITEM_HEIGHT + padding) * blah);
+      button.x = left ? baseX + dist : baseX - dist;
+      button.y = startOffset + ((QuickPanelButton.ITEM_HEIGHT + padding) * blah);
 
-      button.localAngle = left ? -targetAngle : targetAngle;
+      button.angle = left ? -targetAngle : targetAngle;
 
       blah += 1;
 

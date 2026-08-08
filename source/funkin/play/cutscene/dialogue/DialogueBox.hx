@@ -66,9 +66,7 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     originalPosition[1] = this.y;
 
     this.x = value[0] + originalPosition[0] + animOffsets[0];
-    this.localX = value[0] + originalPosition[0] + animOffsets[0];
     this.y = value[1] + originalPosition[1] + animOffsets[1];
-    this.localY = value[1] + originalPosition[1] + animOffsets[1];
 
     return globalOffsets = value;
   }
@@ -199,9 +197,7 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     if (scale == null) scale = 1.0;
 
     this.boxSprite.scale.x = scale;
-    this.boxSprite.localScale.x = scale;
     this.boxSprite.scale.y = scale;
-    this.boxSprite.localScale.y = scale;
 
     this.boxSprite.updateHitbox();
   }
@@ -308,9 +304,7 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     textDisplay.completeCallback = onTypingComplete;
 
     textDisplay.x += _data.text.offsets[0];
-    textDisplay.localX = textDisplay.x;
     textDisplay.y += _data.text.offsets[1];
-    textDisplay.localY = textDisplay.y;
 
     add(textDisplay);
   }
