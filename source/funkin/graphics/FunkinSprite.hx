@@ -386,11 +386,15 @@ class FunkinSprite extends FlxAnimate
    * Loads an Adobe Animate texture atlas as the sprite's texture.
    *
    * @param key The key of the texture to load.
+   * @param library DEPRECATED, DOES NOTHING: The library to load the texture atlas from.
    * @param settings Additional settings for loading the atlas.
    * @param modId You can load a texture atlas from a specific mod with this.
    * @return This sprite, for chaining.
    */
-  public function loadTextureAtlas(key:Null<String>, ?settings:AtlasSpriteSettings, modId:String = ''):FunkinSprite
+  public function loadTextureAtlas(key:Null<String>,
+    ?library:String,
+    settings:Null<AtlasSpriteSettings> = null,
+    modId:String = ''):FunkinSprite
   {
     if (key == null)
     {
