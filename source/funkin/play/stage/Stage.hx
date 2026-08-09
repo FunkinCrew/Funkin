@@ -190,7 +190,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
           case 'packer':
             propSprite.loadPacker(dataProp.assetPath);
           case 'animateatlas':
-            propSprite.loadTextureAtlas(dataProp.assetPath, cast dataProp.atlasSettings);
+            propSprite.loadTextureAtlas(dataProp.assetPath, null, cast dataProp.atlasSettings);
           default: // 'sparrow'
             propSprite.loadSparrow(dataProp.assetPath);
         }
