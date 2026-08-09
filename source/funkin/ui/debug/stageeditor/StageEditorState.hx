@@ -12,6 +12,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.display.FlxGridOverlay;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -51,6 +52,7 @@ import funkin.util.logging.CrashHandler;
 import funkin.graphics.shaders.Grayscale;
 import funkin.data.stage.StageRegistry;
 import funkin.graphics.FunkinCamera;
+import haxe.io.Bytes;
 
 /**
  * Da Stage Editor woo!!
@@ -77,7 +79,6 @@ class StageEditorState extends UIState
   public static final MAX_Z_INDEX:Int = 10000;
   public static final CHARACTER_COLORS:Array<FlxColor> = [FlxColor.RED, FlxColor.PURPLE, FlxColor.CYAN]; // FCUK IVE TURNED INTO AN AMERICAN
   public static final TIME_BEFORE_ANIM_STOP:Float = 3.0;
-  public static var instance:StageEditorState = null; // unused lol
 
   // the other shit:tm:
   var menubar:MenuBar;
@@ -171,6 +172,7 @@ class StageEditorState extends UIState
   public var copiedSprite:StageEditorObjectData = null;
   public var stageZoom:Float = 1.0;
   public var stageName:String = 'Unnamed';
+  public var stageFolder:String = 'shared';
   public var autoSaveTimer:FlxTimer = new FlxTimer();
   public var saved(default, set):Bool = true;
   public var currentFile(default, set):String = '';
@@ -226,7 +228,22 @@ class StageEditorState extends UIState
   public var charGroups:Map<CharacterType, FlxTypedGroup<BaseCharacter>> = [];
   public var charCamOffsets:Map<CharacterType, Array<Float>> = DEFAULT_CAMERA_OFFSETS.copy();
   public var charPos:Map<CharacterType, Array<Float>> = DEFAULT_POSITIONS.copy();
-  public var bitmaps:Map<String, BitmapData> = []; // used for optimizing the file size!!!
+
+  /**
+   * An array of files used by the sprites.
+   */
+  public var allFiles(get, never):Array<StageEditorAssetFile>;
+
+  function get_allFiles()
+  {
+    var result:Array<StageEditorAssetFile> = [];
+    for (sprite in spriteArray)
+    {
+      result = result.concat(sprite.usedFiles);
+    }
+
+    return result.distinct();
+  }
 
   var charDeselectShader:Grayscale = new Grayscale();
   var floorLines:Array<FlxSprite> = [];
@@ -279,11 +296,8 @@ class StageEditorState extends UIState
   override public function create():Void
   {
     WindowManager.instance.reset();
-    instance = this;
     FlxG.sound.music?.stop();
-    WindowUtil.setWindowTitle("Friday Night Funkin\' Stage Editor");
-
-    AssetDataHandler.init(this);
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Stage Editor');
 
     camGame = new FunkinCamera();
     camHUD = new FlxCamera();
@@ -422,7 +436,7 @@ class StageEditorState extends UIState
     {
       if (!allowInput || welcomeDialog != null) return;
 
-      var data = BitmapData.fromFile(path);
+      var data:Bytes = FileUtil.readBytesFromPath(path);
 
       if (data != null)
       {
@@ -535,20 +549,21 @@ class StageEditorState extends UIState
   {
     if (testingMode)
     {
-      if (conductorInUse.currentBeat % 2 == 0)
-      {
-        for (char in getCharacters()) char?.dance(true);
-      }
-
-      for (asset in spriteArray)
-      {
-        if (asset.danceEvery > 0 && conductorInUse.currentBeat % asset.danceEvery == 0) asset.dance(true);
-      }
-
       if (conductorInUse.currentBeat % 8 == 0 && !FlxG.keys.pressed.SHIFT) curTestChar++;
     }
 
     return super.beatHit();
+  }
+
+  override public function dispatchEvent(event:funkin.modding.events.ScriptEvent)
+  {
+    super.dispatchEvent(event);
+
+    // Dispatch the Conductor events to the stage props and characters to make them dance on beat in the testing mode.
+    if (!testingMode || !(event is funkin.modding.events.ScriptEvent.SongTimeScriptEvent)) return;
+
+    for (prop in spriteArray) ScriptEventDispatcher.callEvent(prop, event);
+    for (char in getCharacters()) ScriptEventDispatcher.callEvent(char, event);
   }
 
   override public function update(elapsed:Float):Void
@@ -574,8 +589,8 @@ class StageEditorState extends UIState
 
     super.update(elapsed);
 
-    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
-    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
+    if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));
 
     // testmode
     menubarMenuFile.disabled = menubarMenuEdit.disabled = bottomBarModeText.disabled = menubarMenuWindow.disabled = testingMode;
@@ -825,7 +840,7 @@ class StageEditorState extends UIState
   }
 
   /**
-   * Small helper for MacOS, "WINDOWS" is keycode 15, which maps to "COMMAND" on Mac, which is more often used than "CONTROL"
+   * Small helper for MacOS, 'WINDOWS' is keycode 15, which maps to 'COMMAND' on Mac, which is more often used than 'CONTROL'
    * Everywhere else, it just returns `FlxG.keys.pressed.CONTROL`
    * @return Bool
    */
@@ -849,7 +864,7 @@ class StageEditorState extends UIState
 
     if (!saved)
     {
-      trace("You haven't saved recently, so a backup will be made.");
+      trace('You haven\'t saved recently, so a backup will be made.');
       saveBackup(true);
     }
   }
@@ -860,7 +875,7 @@ class StageEditorState extends UIState
 
     if (!saved)
     {
-      trace("You haven't saved recently, so a backup will be made.");
+      trace('You haven\'t saved recently, so a backup will be made.');
       saveBackup(true);
     }
   }
@@ -997,7 +1012,7 @@ class StageEditorState extends UIState
 
   public function updateWindowTitle()
   {
-    var defaultTitle = "Friday Night Funkin\' Stage Editor";
+    var defaultTitle = 'Friday Night Funkin\' Stage Editor';
 
     if (currentFile == '') defaultTitle += ' - New File'
     else
@@ -1530,24 +1545,26 @@ class StageEditorState extends UIState
       case 'copy object':
         if (selectedSprite == null) return;
 
-        copiedSprite = selectedSprite.toData(true);
+        copiedSprite = selectedSprite.toData();
 
       case 'paste object':
         if (copiedSprite == null) return;
 
         saved = false;
-        var spr = new StageEditorObject().fromData(copiedSprite);
 
-        var objNames = [for (a in spriteArray) a.name];
-
-        if (objNames.contains(spr.name))
+        // Change the sprite name here instead of later since the texture atlas frame collections are saved by the prop name.
+        var dataCopy:Dynamic = Reflect.copy(copiedSprite);
+        var objNames:Array<String> = [for (a in spriteArray) a.name];
+        if (objNames.contains(dataCopy.name))
         {
           var i = 1;
-          while (objNames.contains(spr.name + ' (' + i + ')'))
+          while (objNames.contains(dataCopy.name + ' (' + i + ')'))
             i++;
 
-          spr.name += ' (' + i + ')';
+          dataCopy.name += ' (' + i + ')';
         }
+
+        var spr:StageEditorObject = new StageEditorObject().fromData(dataCopy);
 
         add(spr);
         selectedSprite = spr;
@@ -1620,48 +1637,33 @@ class StageEditorState extends UIState
     undoArray = [];
     redoArray = [];
     updateArray();
-    removeUnusedBitmaps();
+    allFiles.resize(0);
   }
 
-  public function removeUnusedBitmaps()
+  /**
+   * Get a stored file based on the name or the data.
+   */
+  public function getFile(?name:String, ?data:Bytes)
   {
-    var usedBitmaps:Array<String> = [];
-
-    for (asset in spriteArray)
+    for (file in allFiles)
     {
-      var data = asset.toData(false);
-      if (data.assetPath.startsWith('#')) continue; // the simple graphics
-
-      usedBitmaps.push(data.assetPath);
+      if (data != null && file.data == data) return file;
+      if (name != null && file.name == name) return file;
     }
 
-    for (name => bit in bitmaps)
-    {
-      if (usedBitmaps.contains(name)) continue;
-      bitmaps.remove(name);
-    }
+    return null;
   }
 
-  public function addBitmap(newBitmap:BitmapData, ?name:String):String
+  /**
+   * Creates a file to be used for the assets.
+   */
+  public function createFile(name:String, data:Bytes)
   {
-    // first we check for existing bitmaps so we dont like add an extra one
-    for (name => bitmap in bitmaps)
-    {
-      if (bitmap == newBitmap) return name;
-    }
-
-    if (name != null && !bitmaps.exists(name))
-    {
-      bitmaps.set(name, newBitmap);
-      return name;
-    }
-
-    var id:Int = 0;
-    while (bitmaps.exists('image' + id))
-      id++;
-
-    bitmaps.set('image' + id, newBitmap);
-    return 'image' + id;
+    if (getFile(name, data) != null) return getFile(name, data);
+    return {
+      name: name,
+      data: data
+    };
   }
 
   override function destroy():Void
@@ -1683,7 +1685,8 @@ class StageEditorState extends UIState
     });
   }
 
-  public function createURLDialog(onComplete:lime.utils.Bytes->Void = null, onFail:String->Void = null)
+  public function createURLDialog(onComplete:lime.utils.Bytes->Void = null,
+    onFail:String->Void = null)
   {
     loadUrlDialog = new LoadFromUrlDialog(onComplete, onFail);
     loadUrlDialog.onDialogClosed = function(_)
@@ -1767,3 +1770,16 @@ typedef StageEditorParams =
    */
   var ?targetDadChar:String;
 };
+
+typedef StageEditorAssetFile =
+{
+  /**
+   * The name of the file.
+   */
+  var name:String;
+
+  /**
+   * The content of the file, decoded into bytes.
+   */
+  var data:Bytes;
+}
