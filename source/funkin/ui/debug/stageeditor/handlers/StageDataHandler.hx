@@ -10,8 +10,10 @@ import funkin.play.character.BaseCharacter;
 import funkin.data.stage.StageData;
 import funkin.data.stage.StageData.StageDataCharacter;
 import funkin.data.stage.StageRegistry;
+import funkin.ui.debug.stageeditor.StageEditorState.StageEditorAssetFile;
 import openfl.utils.Assets as OpenFLAssets;
 import lime.utils.Assets as LimeAssets;
+import haxe.io.Path;
 
 using StringTools;
 
@@ -25,13 +27,12 @@ class StageDataHandler
     var endData:StageData = new StageData();
     endData.name = state.stageName;
     endData.cameraZoom = state.stageZoom;
+    endData.directory = state.stageFolder;
 
     // step 1 phase 1: object data
-    var xmlMap:Map<String, String> = [];
-
     for (obj in state.spriteArray)
     {
-      var data = obj.toData(false);
+      var data = obj.toData();
       endData.props.push({
         name: data.name,
         assetPath: data.assetPath.startsWith("#") ? data.color : data.assetPath,
@@ -49,10 +50,9 @@ class StageDataHandler
         flipY: data.flipY,
         angle: data.angle,
         blend: data.blend,
-        color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color
+        color: data.assetPath.startsWith("#") ? "#FFFFFF" : data.color,
+        atlasSettings: data.atlasSettings
       });
-
-      if (!xmlMap.exists(data.assetPath) && data.animData != "") xmlMap.set(data.assetPath, data.animData);
     }
 
     // step 1 phase 2: character data
@@ -98,45 +98,23 @@ class StageDataHandler
     // step 2: saving everything to entryList
     var entryList = new Array<Entry>();
 
-    // step 2 phase 1: images
-    state.removeUnusedBitmaps();
-    for (name => img in state.bitmaps)
+    // step 2 phase 1: assets
+    for (asset in state.allFiles)
     {
-      var bytes = img?.image?.encode(PNG);
-      if (bytes == null) continue;
-
       var entry:Entry = {
-        fileName: name + ".png",
-        fileSize: bytes.length,
+        fileName: asset.name,
+        fileSize: asset.data.length,
         fileTime: Date.now(),
         compressed: false,
-        dataSize: bytes.length,
-        data: bytes,
-        crc32: null // apparently fileutil.hx does not like crc32, idk why but i dont even know what crc32 is
-      }
-
-      entryList.push(entry);
-    }
-
-    // step 2 phase 2: xmls
-    for (path => xml in xmlMap)
-    {
-      var bytes = Bytes.ofString(xml);
-
-      var entry:Entry = {
-        fileName: path + ".xml",
-        fileSize: bytes.length,
-        fileTime: Date.now(),
-        compressed: false,
-        dataSize: bytes.length,
-        data: bytes,
+        dataSize: asset.data.length,
+        data: asset.data,
         crc32: null
       }
 
       entryList.push(entry);
     }
 
-    // step 2 phase 3: the main data
+    // step 2 phase 2: the main data
     var stageBytes = Bytes.ofString(endData.serialize());
     entryList.push({
       fileName: formatStageId(endData.name) + ".json",
@@ -155,28 +133,27 @@ class StageDataHandler
   public static function unpackShitFromZip(state:StageEditorState, zip:Bytes)
   {
     state.clearAssets();
-    state.bitmaps.clear();
 
-    var entries = FileUtil.readZIPFromBytes(zip);
-    var stageData:StageData = new StageData();
-
-    var xmls:Map<String, String> = [];
+    var entries:Array<Entry> = FileUtil.readZIPFromBytes(zip);
+    var stageData:Null<StageData> = null;
+    var allFiles:Array<StageEditorAssetFile> = [];
 
     for (stuff in entries)
     {
-      var ext = stuff.fileName.split(".")[1];
+      var ext:String = stuff.fileName.split(".")[1];
 
-      switch (ext)
+      // A json file can either be a texture atlas file or the stage data.
+      // Texture atlas files are found in a folder with other atlas assets, so the stage data doesn't have a slash in the name
+      if (ext == "json" && !stuff.fileName.contains("/"))
       {
-        case "png":
-          var data = BitmapData.fromBytes(stuff.data);
-          state.bitmaps.set(stuff.fileName.replace(".png", ""), data);
-
-        case "xml":
-          xmls.set(stuff.fileName.replace(".xml", ""), stuff.data.toString());
-
-        case "json":
-          stageData = StageRegistry.instance.parseEntryDataRaw(stuff.data.toString(), stuff.fileName);
+        stageData = StageRegistry.instance.parseEntryDataRaw(stuff.data.toString(), stuff.fileName);
+      }
+      else
+      {
+        allFiles.push({
+          name: stuff.fileName,
+          data: stuff.data
+        });
       }
     }
 
@@ -190,6 +167,7 @@ class StageDataHandler
     // actual data unpacking
     state.stageName = stageData.name;
     state.stageZoom = stageData.cameraZoom;
+    state.stageFolder = stageData.directory ?? "shared";
 
     // chars
     state.loadCharDatas(stageData);
@@ -197,12 +175,14 @@ class StageDataHandler
     // objects
     for (objData in stageData.props)
     {
-      // make the data and roll with it
+      var assets:Array<StageEditorAssetFile> = allFiles.filter((f) -> Path.withoutExtension(f.name) == objData.assetPath);
+
       var spr = new StageEditorObject();
       spr.fromData({
         name: objData.name ?? "Unnamed",
         assetPath: objData.assetPath,
         animations: objData.animations.copy(),
+        animType: objData.animType,
         scale: objData.scale,
         position: objData.position,
         alpha: objData.alpha,
@@ -216,7 +196,8 @@ class StageDataHandler
         flipX: objData.flipX,
         flipY: objData.flipY,
         startingAnimation: objData.startingAnimation,
-        animData: xmls[objData.assetPath] ?? ""
+        neededFiles: assets,
+        atlasSettings: objData.atlasSettings
       });
 
       state.add(spr);
@@ -269,7 +250,6 @@ class StageDataHandler
   public static function loadFromDataRaw(state:StageEditorState, data:StageData)
   {
     state.clearAssets();
-    state.bitmaps.clear();
 
     if (data == null)
     {
@@ -285,16 +265,36 @@ class StageDataHandler
     for (objData in data.props)
     {
       var spr = new StageEditorObject();
-      if (!objData.assetPath.startsWith("#")) state.bitmaps.set(objData.assetPath, Assets.getBitmapData(Paths.image(objData.assetPath)));
+      var neededFiles:Array<StageEditorAssetFile> = [];
 
-      var usePacker:Bool = objData.animType == "packer";
-      var animPath:String = usePacker ? Paths.txt(objData.assetPath) : Paths.xml(objData.assetPath);
-      var animText:String = Assets.exists(animPath) ? Assets.getText(animPath) : "";
+      // Add all assets related to the object to the allFiles array.
+      if (!objData.assetPath.startsWith("#"))
+      {
+        if (objData.animType == "animateatlas")
+        {
+          var checkFor:String = Paths.animateAtlas(objData.assetPath);
+          for (file in Assets.list())
+          {
+            if (!file.startsWith(checkFor)) continue;
+
+            var validName:String = objData.assetPath + file.substring(checkFor.length);
+            neededFiles.push(state.createFile(validName, Assets.getBytes(file)));
+          }
+        }
+        else
+        {
+          neededFiles.push(state.createFile('${objData.assetPath}.png', Assets.getBytes(Paths.image(objData.assetPath))));
+
+          var animFile:String = (objData.animType == 'packer' ? Paths.txt(objData.assetPath) : Paths.xml(objData.assetPath));
+          if (Assets.exists(animFile)) neededFiles.push(state.createFile(animFile, Assets.getBytes(animFile)));
+        }
+      }
 
       spr.fromData({
         name: objData.name ?? "Unnamed",
         assetPath: objData.assetPath,
         animations: objData.animations.copy(),
+        animType: objData.animType,
         scale: objData.scale,
         position: objData.position,
         alpha: objData.alpha,
@@ -308,13 +308,14 @@ class StageDataHandler
         flipX: objData.flipX,
         flipY: objData.flipY,
         startingAnimation: objData.startingAnimation,
-        animData: animText
+        neededFiles: neededFiles,
+        atlasSettings: objData.atlasSettings
       });
 
       state.add(spr);
+      state.updateArray();
     }
 
-    state.updateArray();
     state.updateMarkerPos();
   }
 
