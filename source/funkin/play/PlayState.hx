@@ -1420,14 +1420,6 @@ class PlayState extends MusicBeatSubState
           }
           else
           {
-            var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
-
-            // Prevent the game from crashing if Boyfriend isn't present.
-            if (currentStage != null && currentStage.getBoyfriend() != null)
-            {
-              boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-            }
-
             openPauseSubState(isChartingMode ? Charting : Standard, camPause, lostFocus);
           }
 
