@@ -3,6 +3,7 @@ package funkin.play.event;
 import flixel.tweens.FlxEase;
 import openfl.display.BitmapData;
 import flixel.FlxSprite;
+import funkin.assets.FunkinBitmapFrontend;
 
 class SongEventHelper
 {
@@ -204,7 +205,20 @@ class SongEventHelper
 
   public static function getOrCreateEaseDotSprites(key:String, frameCount:Int = 30, dotRadius:Int = 3, dotWidth:Int = 16):Array<FlxSprite>
   {
-    if (easeDotCache.exists(key)) return easeDotCache.get(key);
+    if (easeDotCache.exists(key))
+    {
+      var valid:Bool = true;
+      for (spr in easeDotCache.get(key))
+      {
+        if (spr == null || !FunkinBitmapFrontend.instance.isValid(spr.graphic))
+        {
+          valid = false;
+          break;
+        }
+      }
+      if (valid) return easeDotCache.get(key);
+      easeDotCache.remove(key);
+    }
     var baseBd:BitmapData = getEaseBitmap(key);
     if (baseBd == null) return null;
     var easeFunc:Dynamic = resolveEaseFuncForKey(key);
