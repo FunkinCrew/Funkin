@@ -1248,6 +1248,13 @@ class ModMenuState extends MusicBeatState
     {
       blinkTimer += elapsed;
 
+      if (blinkTimer >= 100)
+      {
+        blinkTimer = 0;
+        bfBlink = 0;
+        gfBlink = 0;
+      }
+
       if (blinkTimer >= bfBlink && bf.animation.finished)
       {
         bfBlink = blinkTimer + Math.random() + (Math.random() * 6);
