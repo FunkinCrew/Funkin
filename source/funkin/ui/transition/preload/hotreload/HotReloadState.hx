@@ -266,8 +266,7 @@ class HotReloadState extends MusicBeatState
 
     var futures:Array<Future<LoadEntriesResult>> = [];
 
-    // All of these create task which can be performed in parallel. Beautiful.
-
+    futures.push(SongRegistry.instance.loadEntriesAsync());
     futures.push(LevelRegistry.instance.loadEntriesAsync());
     futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
     futures.push(PlayerRegistry.instance.loadEntriesAsync());
@@ -278,7 +277,7 @@ class HotReloadState extends MusicBeatState
     futures.push(StageRegistry.instance.loadEntriesAsync());
     futures.push(StickerRegistry.instance.loadEntriesAsync());
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
-    futures.push(CharacterDataParser.loadCharacterCacheAsync());
+    futures.push(SongEventRegistry.loadEventCacheAsync());
 
     var registryFuture = lime.app.Promises.allSettled(futures);
 
@@ -292,6 +291,22 @@ class HotReloadState extends MusicBeatState
     {
       updateProgress(10, 10);
 
+      queueLoadModules();
+    });
+  }
+
+  /**
+   * Initialize any ScriptedModules provided by mods.
+   */
+  function queueLoadModules():Void
+  {
+    var future:Future<LoadEntriesResult> = ModuleHandler.loadModuleCacheAsync();
+
+    future.onComplete((result:LoadEntriesResult) ->
+    {
+      // Call create() on each module when the future is complte.
+      ModuleHandler.callOnCreate();
+
       queueLoadAdditionalData();
     });
   }
@@ -303,23 +318,16 @@ class HotReloadState extends MusicBeatState
   {
     SongEventRegistry.loadEventCache();
     SongRegistry.instance.loadEntries();
-    NoteKindManager.initialize();
+    CharacterDataParser.loadCharacterCache();
   }
 
     TaskHandler.performSimpleTask(() ->
     {
       // These use the registry system (sorta) but need more work to support async loading.
-      SongRegistry.instance.loadEntries();
       CharacterDataParser.loadCharacterCache();
 
       // These don't use the registry system at all, they're synchronous but fairly quick.
-      SongEventRegistry.loadEventCache();
       NoteKindManager.initialize();
-
-      // Load and initialize modules.
-      // We do this only once everything else is done.
-      ModuleHandler.loadModuleCache();
-      ModuleHandler.callOnCreate();
 
       return true;
     }).onComplete((_) ->
