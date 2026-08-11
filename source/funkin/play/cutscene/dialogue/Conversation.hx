@@ -327,7 +327,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_END, this, true);
     dispatchEvent(event);
-    event.put;
+    event.put();
   }
 
   /**
