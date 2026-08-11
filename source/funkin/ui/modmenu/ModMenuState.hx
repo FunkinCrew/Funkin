@@ -1856,6 +1856,7 @@ class ModMenuState extends MusicBeatState
 
   function handleTouch(elapsed:Float):Void
   {
+    if (hasTransitions() || exitingMenu || backPressStage > 0) return;
     if (touchScrolling)
     {
       var targetList:ModMenuItemList = null;
