@@ -316,7 +316,10 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadAdditionalData():Void
   {
-    trace('Queue task: Load additional data...');
+    SongEventRegistry.loadEventCache();
+    SongRegistry.instance.loadEntries();
+    CharacterDataParser.loadCharacterCache();
+  }
 
     TaskHandler.performSimpleTask(() ->
     {
