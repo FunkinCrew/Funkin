@@ -1326,7 +1326,6 @@ class PlayState extends MusicBeatSubState
         DiscordClient.instance.setPresence({
           details: 'Game Over - ${buildDiscordRPCDetails()}',
           state: buildDiscordRPCState(),
-
           largeImageKey: discordRPCAlbum,
           smallImageKey: discordRPCIcon
         });
@@ -1719,28 +1718,12 @@ class PlayState extends MusicBeatSubState
       Countdown.resumeCountdown();
 
       #if FEATURE_DISCORD_RPC
-      if (Conductor.instance.songPosition > 0)
-      {
-        // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
-        //   currentSongLengthMs - Conductor.instance.songPosition);
-        DiscordClient.instance.setPresence({
-          state: buildDiscordRPCState(),
-          details: buildDiscordRPCDetails(),
-
-          largeImageKey: discordRPCAlbum,
-          smallImageKey: discordRPCIcon
-        });
-      }
-      else
-      {
-        DiscordClient.instance.setPresence({
-          state: buildDiscordRPCState(),
-          details: buildDiscordRPCDetails(),
-
-          largeImageKey: discordRPCAlbum,
-          smallImageKey: discordRPCIcon
-        });
-      }
+      DiscordClient.instance.setPresence({
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
       #end
 
       justUnpaused = true;
@@ -1763,28 +1746,12 @@ class PlayState extends MusicBeatSubState
     #if FEATURE_DISCORD_RPC
     if (health > Constants.HEALTH_MIN && !isGamePaused && Preferences.autoPause)
     {
-      if (Conductor.instance.songPosition > 0.0)
-      {
-        DiscordClient.instance.setPresence({
-          state: buildDiscordRPCState(),
-          details: buildDiscordRPCDetails(),
-
-          largeImageKey: discordRPCAlbum,
-          smallImageKey: discordRPCIcon
-        });
-      }
-      else
-      {
-        DiscordClient.instance.setPresence({
-          state: buildDiscordRPCState(),
-          details: buildDiscordRPCDetails(),
-
-          largeImageKey: discordRPCAlbum,
-          smallImageKey: discordRPCIcon
-        });
-        // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true,
-        //   currentSongLengthMs - Conductor.instance.songPosition);
-      }
+      DiscordClient.instance.setPresence({
+        state: buildDiscordRPCState(),
+        details: buildDiscordRPCDetails(),
+        largeImageKey: discordRPCAlbum,
+        smallImageKey: discordRPCIcon
+      });
     }
     #end
 
@@ -1806,7 +1773,6 @@ class PlayState extends MusicBeatSubState
       DiscordClient.instance.setPresence({
         state: buildDiscordRPCState(),
         details: buildDiscordRPCDetails(),
-
         largeImageKey: discordRPCAlbum,
         smallImageKey: discordRPCIcon
       });
@@ -2443,19 +2409,6 @@ class PlayState extends MusicBeatSubState
   function initDiscord():Void
   {
     #if FEATURE_DISCORD_RPC
-    // Determine the details strings once and reuse them.
-
-    // Updating Discord Rich Presence.
-    DiscordClient.instance.setPresence({
-      state: buildDiscordRPCState(),
-      details: buildDiscordRPCDetails(),
-
-      largeImageKey: discordRPCAlbum,
-      smallImageKey: discordRPCIcon
-    });
-    #end
-
-    #if FEATURE_DISCORD_RPC
     // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence({
       state: buildDiscordRPCState(),
@@ -2748,20 +2701,17 @@ class PlayState extends MusicBeatSubState
     FlxG.sound.music.play();
 
     #if FEATURE_DISCORD_RPC
-    // Updating Discord Rich Presence (with Time Left)
+    // Updating Discord Rich Presence.
     DiscordClient.instance.setPresence({
       state: buildDiscordRPCState(),
       details: buildDiscordRPCDetails(),
-
       largeImageKey: discordRPCAlbum,
       smallImageKey: discordRPCIcon
     });
-    // DiscordClient.changePresence(detailsText, '${currentChart.songName} ($discordRPCDifficulty)', discordRPCIcon, true, currentSongLengthMs);
     #end
 
     if (startTimestamp > 0)
     {
-      // FlxG.sound.music.time = startTimestamp - Conductor.instance.combinedOffset;
       handleSkippedNotes();
     }
 
