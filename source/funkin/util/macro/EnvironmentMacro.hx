@@ -168,18 +168,19 @@ class EnvironmentMacro
     final isMobile:Bool = key.startsWith('MOBILE_') || isIos || isAndroid;
     final isWeb:Bool = key.startsWith('WEB_');
     final isDesktop:Bool = key.startsWith('DESKTOP_');
+    final isNative:Bool = key.startsWith('NATIVE_');
 
     #if web
-    return isMobile || isDesktop;
+    return isMobile || isDesktop || isNative;
     #elseif desktop
-    return isMobile || isWeb;
+    return isIos || isAndroid || isWeb;
     #elseif android
     return isIos || isWeb || isDesktop;
     #elseif ios
     return isAndroid || isWeb || isDesktop;
-    #end
-
+    #else
     return false;
+    #end
   }
 
   static function stripTargetPrefix(key:String):String
@@ -197,16 +198,16 @@ class EnvironmentMacro
     return switch (prefix)
     {
       #if android
-      case 'ANDROID', 'MOBILE':
+      case 'ANDROID', 'MOBILE', 'NATIVE':
         rest;
       #elseif ios
-      case 'IOS', 'MOBILE':
+      case 'IOS', 'MOBILE', 'NATIVE':
         rest;
       #elseif web
       case 'WEB':
         rest;
       #elseif desktop
-      case 'DESKTOP':
+      case 'DESKTOP', 'NATIVE':
         rest;
       #end
       default:

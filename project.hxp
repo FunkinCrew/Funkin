@@ -2489,8 +2489,9 @@ class Project extends HXProject
     final mobile:Bool = key.startsWith('MOBILE_') || ios || android;
     final web:Bool = key.startsWith('WEB_');
     final desktop:Bool = key.startsWith('DESKTOP_');
+    final native:Bool = key.startsWith('NATIVE_');
 
-    if (isWeb() && (mobile || desktop)) return true;
+    if (isWeb() && (mobile || desktop || native)) return true;
     if (isDesktop() && (mobile || web)) return true;
     if (isAndroid() && (ios || web || desktop)) return true;
     if (isIOS() && (android || web || desktop)) return true;
@@ -2510,11 +2511,11 @@ class Project extends HXProject
     final prefix:String = key.substr(0, index);
     final rest:String = key.substr(index + 1);
 
-    if (isAndroid() && (prefix == 'ANDROID' || prefix == 'MOBILE'))
+    if (isAndroid() && (prefix == 'ANDROID' || prefix == 'MOBILE' || prefix == 'NATIVE'))
     {
       return rest;
     }
-    else if (isIOS() && (prefix == 'IOS' || prefix == 'MOBILE'))
+    else if (isIOS() && (prefix == 'IOS' || prefix == 'MOBILE' || prefix == 'NATIVE'))
     {
       return rest;
     }
@@ -2522,7 +2523,7 @@ class Project extends HXProject
     {
       return rest;
     }
-    else if (isDesktop() && prefix == 'DESKTOP')
+    else if (isDesktop() && (prefix == 'DESKTOP' || prefix == 'NATIVE'))
     {
       return rest;
     }
