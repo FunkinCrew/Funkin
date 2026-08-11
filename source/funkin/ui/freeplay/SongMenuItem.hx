@@ -723,7 +723,7 @@ class SongMenuItem extends FlxSpriteGroup
     if (songText != null)
     {
       textAppear();
-      songText.flickerText();
+      if (Preferences.flashingLights) songText.flickerText();
     }
     if (pixelIcon != null && pixelIcon.visible)
     {
@@ -769,7 +769,16 @@ class SongMenuItem extends FlxSpriteGroup
     songText.alpha = isSelected ? 1 : 0.6;
     songText.blurredText.visible = isSelected ? true : false;
     capsule.offset.x = isSelected ? 0 : -5;
-    capsule.animation.play(isSelected ? 'selected' : 'unselected');
+    if (!Preferences.flashingLights)
+    {
+      // Show a single static frame instead of the flashing animation.
+      capsule.animation.play(isSelected ? 'selected' : 'unselected', true, false, 0);
+      capsule.animation.stop();
+    }
+    else
+    {
+      capsule.animation.play(isSelected ? 'selected' : 'unselected');
+    }
     ranking.alpha = isSelected ? 1 : 0.7;
     favIcon.alpha = isSelected ? 1 : 0.6;
     favIconBlurred.alpha = isSelected ? 1 : 0;
