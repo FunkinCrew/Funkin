@@ -794,7 +794,16 @@ class ModMenuState extends MusicBeatState
 
   function rescanFolder():Void
   {
-    var newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+    var newItems:Array<String> = [];
+    try
+    {
+      newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+    }
+    catch (e:Dynamic)
+    {
+      trace('Failed to read mods folder: ${Std.string(e)}');
+      return;
+    }
 
     if (newItems.length != itemsInFolder.length)
     {
