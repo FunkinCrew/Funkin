@@ -23,6 +23,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
    * and adding migration to the `migrateStageData()` function.
    */
   public static final SONG_METADATA_VERSION:thx.semver.Version = '2.2.8';
+
   public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = '2.2.x';
   public static final SONG_CHART_DATA_VERSION:thx.semver.Version = '2.0.0';
   public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
@@ -47,68 +48,45 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     });
   }
 
-  override public function loadEntries():Void
+  override function onScriptedEntryLoaded(clsName:String, entry:Song):Void
   {
-    clearEntries();
-
-    //
-    // SCRIPTED ENTRIES
-    //
-    var scriptedEntryClassNames:Array<String> = getScriptedClassNames();
-    log(' INFO '.info() + 'Parsing ${scriptedEntryClassNames.length} scripted entries...');
-
-    for (entryCls in scriptedEntryClassNames)
+    if (entry.variation != null)
     {
-      var entry:Null<Song> = createScriptedEntry(entryCls);
+      scriptedSongVariations.set('${entry.id}:${entry.variation}', entry);
+      log('Successfully created scripted entry (${clsName} = ${entry.id}, ${entry.variation})');
+    }
+    else
+    {
+      entries.set(entry.id, entry);
+      scriptedEntryIds.set(entry.id, clsName);
+      log('Successfully created scripted entry (${clsName} = ${entry.id})');
+    }
+  }
 
-      if (entry != null)
-      {
-        if (entry.variation != null)
-        {
-          scriptedSongVariations.set('${entry.id}:${entry.variation}', entry);
-          log('Successfully created scripted entry (${entryCls} = ${entry.id}, ${entry.variation})');
-        }
-        else
-        {
-          entries.set(entry.id, entry);
-          scriptedEntryIds.set(entry.id, entryCls);
-          log('Successfully created scripted entry (${entryCls} = ${entry.id})');
-        }
-      }
-      else
-      {
-        log('Failed to create scripted entry (${entryCls})');
-      }
+  override function countEntries():Int
+  {
+    // Account for song variations.
+    return entries.size() + scriptedSongVariations.size();
+  }
+
+  override function clearEntries():Void
+  {
+    log('Destroying ${countEntries()} entries in registry...');
+
+    for (entry in entries)
+    {
+      entry.destroy();
     }
 
-    //
-    // UNSCRIPTED ENTRIES
-    //
-    var entryIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds('gameplay/songs/', '-metadata', true);
-    var unscriptedEntryIds:Array<String> = entryIdList.filter((entryId:String) ->
+    // Override to clear song variations.
+    for (entry in scriptedSongVariations)
     {
-      return !entries.exists(entryId);
-    });
-    log('Parsing ${unscriptedEntryIds.length} unscripted entries...');
-    for (entryId in unscriptedEntryIds)
-    {
-      try
-      {
-        var entry:Null<Song> = createEntry(entryId);
-        if (entry != null)
-        {
-          log('Loaded entry data: ${entry}');
-          entries.set(entry.id, entry);
-        }
-      }
-      catch (e:Dynamic)
-      {
-        // Print the error.
-        log(' ERROR '.error() + 'Failed to load entry data: ${entryId}');
-        log(' ERROR '.error() + e);
-        continue;
-      }
+      entry.destroy();
     }
+
+    entries.clear();
+    scriptedEntryIds.clear();
+    scriptedSongVariations.clear();
   }
 
   /**
