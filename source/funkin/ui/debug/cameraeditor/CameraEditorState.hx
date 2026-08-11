@@ -1219,6 +1219,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     add(cameraRect);
     cameraRect.currentStage = currentStage;
 
+    cameraRect.cancelAllTweens();
     cameraRect.zoom = currentStage.camZoom;
     defaultStageZoom = currentStage.camZoom;
     resetScrollPosition();
