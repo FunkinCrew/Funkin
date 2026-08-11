@@ -3,6 +3,7 @@ package funkin.ui.title;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import funkin.ui.FullScreenScaleMode;
+import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -248,6 +249,11 @@ class TitleState extends MusicBeatState
 
   var transitioning:Bool = false;
 
+  static final WINDOW_MOVE_INTERVAL:Float = 1.0 / 60.0;
+
+  var windowWobblePosition:FlxPoint;
+  var windowMoveTimer:Float = 0;
+
   override function update(elapsed:Float):Void
   {
     FlxG.bitmapLog.add(FlxG.camera.buffer);
@@ -268,20 +274,31 @@ class TitleState extends MusicBeatState
 
     if (FlxG.keys.justPressed.Y)
     {
-      FlxTween.cancelTweensOf(FlxG.stage.window, ['x', 'y']);
-      FlxTween.tween(FlxG.stage.window, {
-        x: FlxG.stage.window.x + 300
-      }, 1.4, {
+      if (windowWobblePosition == null) windowWobblePosition = FlxPoint.get();
+      windowWobblePosition.set(FlxG.stage.window.x, FlxG.stage.window.y);
+      FlxTween.cancelTweensOf(windowWobblePosition);
+      windowMoveTimer = 0;
+
+      FlxTween.tween(windowWobblePosition, {x: windowWobblePosition.x + 300}, 1.4, {
         ease: FlxEase.quadInOut,
         type: PINGPONG,
         startDelay: 0.35
       });
-      FlxTween.tween(FlxG.stage.window, {
-        y: FlxG.stage.window.y + 100
-      }, 0.7, {
+      FlxTween.tween(windowWobblePosition, {y: windowWobblePosition.y + 100}, 0.7, {
         ease: FlxEase.quadInOut,
         type: PINGPONG
       });
+    }
+
+    if (windowWobblePosition != null)
+    {
+      windowMoveTimer += elapsed;
+      while (windowMoveTimer >= WINDOW_MOVE_INTERVAL)
+      {
+        windowMoveTimer -= WINDOW_MOVE_INTERVAL;
+        FlxG.stage.window.x = Std.int(windowWobblePosition.x);
+        FlxG.stage.window.y = Std.int(windowWobblePosition.y);
+      }
     }
 
     if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
