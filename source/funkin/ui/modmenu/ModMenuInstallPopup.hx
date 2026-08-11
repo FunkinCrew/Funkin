@@ -109,7 +109,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     modIcon.localY = PADDING;
     add(modIcon);
 
-    titleText = new ScrollingTextBox(TEXT_WIDTH, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
+    titleText = new ScrollingTextBox(TEXT_WIDTH - 16, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = PADDING + ICON_SIZE + PADDING;
     titleText.localY = PADDING;
     titleText.scrollFactor.set(0, 0);
