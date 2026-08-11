@@ -104,7 +104,12 @@ class FunkinFilterRenderer implements IFlxDestroyable
     parent.filtered = true;
   }
 
-  function _applyFilters(target:BitmapData, bmp:BitmapData, filters:Array<BitmapFilter>, target1:Null<BitmapData>, target2:Null<BitmapData>, bounds:FlxRect):Void
+  function _applyFilters(target:BitmapData,
+    bmp:BitmapData,
+    filters:Array<BitmapFilter>,
+    target1:Null<BitmapData>,
+    target2:Null<BitmapData>,
+    bounds:FlxRect):Void
   {
     var renderer = FilterRenderer.renderer;
 
@@ -163,7 +168,7 @@ class FunkinFilterRenderer implements IFlxDestroyable
    */
   public function destroy():Void
   {
-    for (bitmaps in bitmapPool.iterator())
+    for (bitmaps in bitmapPool.values())
     {
       for (bitmap in bitmaps)
       {

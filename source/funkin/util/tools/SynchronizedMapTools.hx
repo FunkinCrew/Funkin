@@ -18,7 +18,7 @@ class SynchronizedMapTools
     return map.length;
   }
 
-  public static inline function values()<K, V>(map : SynchronizedMap<K, V>):Array<V>
+  public static inline function values<K, V>(map:SynchronizedMap<K, V>):Array<V>
   {
     return[for (i in map.iterator()) i];
   }

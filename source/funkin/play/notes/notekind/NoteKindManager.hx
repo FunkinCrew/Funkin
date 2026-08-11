@@ -337,7 +337,7 @@ class NoteKindManager
     }
     else // call the event for all note kind scripts
     {
-      for (noteKind in noteKinds.iterator())
+      for (noteKind in noteKinds.values())
       {
         ScriptEventDispatcher.callEvent(noteKind, event);
       }

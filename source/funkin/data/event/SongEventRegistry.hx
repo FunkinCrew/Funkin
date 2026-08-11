@@ -301,12 +301,9 @@ class SongEventRegistry
    */
   public static function listEvents():Array<SongEvent>
   {
-    #if FEATURE_MULTITHREADING
     // MapTools doesn't work for SynchronizedMap shrug
-    return[for (i in EVENT_CACHE.iterator()) i];
-    #else
+    // *mercy.gif* SynchronizedMapTools
     return EVENT_CACHE.values();
-    #end
   }
 
   /**
