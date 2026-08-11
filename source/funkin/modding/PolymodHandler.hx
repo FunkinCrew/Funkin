@@ -142,7 +142,14 @@ class PolymodHandler
   {
     buildImports();
 
-    if (modFileSystem == null) modFileSystem = buildFileSystem();
+    try
+    {
+      if (modFileSystem == null) modFileSystem = buildFileSystem();
+    }
+    catch (e:Dynamic)
+    {
+      trace('Failed to build mod file system: ${Std.string(e)}');
+    }
 
     // Check if the mods to load are actually present before trying to load them.
     var allModIds:Array<String> = getAllModIds();
@@ -599,10 +606,10 @@ class PolymodHandler
   {
     trace('Scanning the mods folder...');
 
-    if (modFileSystem == null || force) modFileSystem = buildFileSystem();
     var modMetadata:Array<ModMetadata> = [];
     try
     {
+      if (modFileSystem == null || force) modFileSystem = buildFileSystem();
       modMetadata = Polymod.scan({
         modRoot: MOD_FOLDER,
         apiVersionRule: API_VERSION_RULE,
