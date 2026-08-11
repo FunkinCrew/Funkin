@@ -1568,6 +1568,8 @@ class FunkinAction extends FlxActionDigital
   var cache:Map<String,
     {timestamp:Float, value:Bool}> = [];
 
+  var lastInputUpdateTimestamp:Float = -1;
+
   public function new(?name:String = '', ?namePressed:String, ?nameReleased:String)
   {
     super(name);
@@ -1700,6 +1702,9 @@ class FunkinAction extends FlxActionDigital
       return cacheEntry.value;
     }
 
+    var shouldUpdateInputs:Bool = lastInputUpdateTimestamp != FlxG.game.ticks;
+    if (shouldUpdateInputs) lastInputUpdateTimestamp = FlxG.game.ticks;
+
     _x = null;
     _y = null;
 
@@ -1718,8 +1723,7 @@ class FunkinAction extends FlxActionDigital
         continue;
       }
 
-      // Update the input.
-      input.update();
+      if (shouldUpdateInputs) input.update();
 
       // Check whether the input is the right trigger.
       if (filterTrigger != null && input.trigger != filterTrigger)
