@@ -1,5 +1,6 @@
 package funkin.play.notes.notekind;
 
+import lime.app.Promise;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -17,6 +18,7 @@ import hx.concurrent.collection.SynchronizedArray;
 import hx.concurrent.collection.SynchronizedMap;
 #end
 
+@:nullSafety
 class NoteKindManager
 {
   /**
@@ -98,9 +100,17 @@ class NoteKindManager
       {
         try
         {
-          var script:NoteKind = ScriptedNoteKind.scriptInit(scriptedClass, 'unknown');
-          trace(' Initialized scripted note kind: ${script.noteKind}');
-          noteKinds.set(script.noteKind, script);
+          var script:Null<NoteKind> = ScriptedNoteKind.scriptInit(scriptedClass, 'unknown');
+          if (script == null)
+          {
+            trace(' ERROR '.error() + 'Failed to instantiate scripted note kind ($scriptedClass)');
+            continue;
+          }
+          else
+          {
+            trace('Instantiated scripted note kind ($scriptedClass = ${script.noteKind})');
+            noteKinds.set(script.noteKind, script);
+          }
         }
         catch (e)
         {
@@ -241,90 +251,60 @@ class NoteKindManager
 
     loadBaseNoteKindsAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
-        {
-          entryCount = BUILTIN_KINDS.length;
-          trace('Instantiating ${BUILTIN_KINDS.length} built-in note kinds...');
+      entryCount = BUILTIN_KINDS.length;
+      trace('Instantiating ${BUILTIN_KINDS.length} built-in note kinds...');
 
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            if (BUILTIN_KINDS.length == 0)
-            {
-              checkAsyncProgress();
-            }
-            else
-            {
-              for (noteKindCls in BUILTIN_KINDS)
-              {
-                var entryClsName:String = Type.getClassName(noteKindCls);
-                TaskHandler.performTask({
-                  task: performLoadBaseNoteKind,
-                  initialState: {
-                    noteKindCls: noteKindCls
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(entryClsName),
-                    onComplete: onBaseNoteKindLoaded.bind(entryClsName)
-                  }
-                });
-              }
-            }
-          }
+      if (BUILTIN_KINDS.length == 0)
+      {
+        checkAsyncProgress();
+      }
+      else
+      {
+        for (noteKindCls in BUILTIN_KINDS)
+        {
+          var entryClsName:String = Type.getClassName(noteKindCls);
+          var baseNoteKindFuture = TaskHandler.performTask({
+            task: performLoadBaseNoteKind,
+            initialState: {
+              noteKindCls: noteKindCls
+            },
+          }, new Promise<
+            {kind:NoteKind}>());
+
+          baseNoteKindFuture.onError(onError.bind(entryClsName));
+          baseNoteKindFuture.onComplete(onBaseNoteKindLoaded.bind(entryClsName));
         }
-      });
+      }
     }
 
     loadScriptedNoteKindsAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
-        {
-          entryCount = noteKinds.size() + scriptedNoteKindClasses.length;
+      entryCount = noteKinds.size() + scriptedNoteKindClasses.length;
+      trace('Instantiating ${scriptedNoteKindClasses.length} scripted note kind(s)...');
 
-          trace('Instantiating ${scriptedNoteKindClasses.length} scripted note kind(s)...');
-          workOutput.sendComplete({}, []);
-        },
-        initialState: null,
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            if (scriptedNoteKindClasses.length == 0)
-            {
-              checkAsyncProgress();
+      if (scriptedNoteKindClasses.length == 0)
+      {
+        checkAsyncProgress();
+      }
+      else
+      {
+        for (entryCls in scriptedNoteKindClasses)
+        {
+          var scriptedNoteKindFuture = TaskHandler.performTask({
+            task: performLoadScriptedNoteKind,
+            initialState: {
+              entryCls: entryCls
             }
-            else
+          }, new lime.app.Promise<
             {
-              for (entryCls in scriptedNoteKindClasses)
-              {
-                TaskHandler.performTask({
-                  task: performLoadScriptedNoteKind,
-                  initialState: {
-                    entryCls: entryCls
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(entryCls),
-                    onComplete: onScriptedNoteKindLoaded.bind(entryCls)
-                  }
-                });
-              }
-            }
-          }
+              kind:NoteKind,
+              entryCls:String
+            }>());
+
+          scriptedNoteKindFuture.onError(onError.bind(entryCls));
+          scriptedNoteKindFuture.onComplete(onScriptedNoteKindLoaded.bind(entryCls));
         }
-      });
+      }
     }
 
     loadBaseNoteKindsAsync();
@@ -345,7 +325,10 @@ class NoteKindManager
     {
       var noteEvent:NoteScriptEvent = cast(event, NoteScriptEvent);
 
-      var noteKind:NoteKind = noteKinds.get(noteEvent?.note?.kind);
+      var kind = noteEvent?.note?.kind;
+      if (kind == null) return;
+
+      var noteKind:Null<NoteKind> = noteKinds.get(kind);
 
       if (noteKind != null)
       {
@@ -390,7 +373,10 @@ class NoteKindManager
     var results:Array<NoteStyle> = [];
     for (songNoteData in songNoteDatas)
     {
-      var noteStyle:NoteStyle = getNoteStyle(songNoteData.kind, null);
+      var kind = songNoteData.kind;
+      if (kind == null) continue;
+
+      var noteStyle:Null<NoteStyle> = getNoteStyle(kind, null);
       if (noteStyle != null && !results.contains(noteStyle))
       {
         results.push(noteStyle);

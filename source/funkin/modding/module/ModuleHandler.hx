@@ -10,6 +10,7 @@ import funkin.util.SortUtil;
 import funkin.util.tasks.TaskHandler;
 import hx.concurrent.collection.SynchronizedArray;
 import lime.app.Future;
+import lime.app.Promise;
 
 /**
  * Utility functions for loading and manipulating active modules.
@@ -144,39 +145,21 @@ class ModuleHandler
     }
 
     // Perform a task to load each module.
-    TaskHandler.performTask({
-      task: (currentState:State, workOutput:WorkOutput) ->
-      {
-        trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
-
-        workOutput.sendComplete({}, []);
-      },
-      initialState: {
-      },
-      taskCallbacks: {
-        onStart: null,
-        onError: null,
-        onComplete: (_) ->
-        {
-          // Load each module asynchronously.
-          for (moduleCls in scriptedModuleClassNames)
-          {
-            TaskHandler.performTask({
-              task: loadModuleAsync,
-              initialState: {
-                moduleCls: moduleCls
-              },
-              taskCallbacks: {
-                onStart: (_) -> {
-                },
-                onError: onError.bind(moduleCls),
-                onComplete: onModuleLoadedAsync.bind(moduleCls)
-              }
-            });
-          }
+    trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
+    // Load each module asynchronously.
+    for (moduleCls in scriptedModuleClassNames)
+    {
+      var loadModuleFuture = TaskHandler.performTask({
+        task: loadModuleAsync,
+        initialState: {
+          moduleCls: moduleCls
         }
-      }
-    });
+      }, new Promise<
+        {module:Module, moduleCls:String}>());
+
+      loadModuleFuture.onError(onError.bind(moduleCls));
+      loadModuleFuture.onComplete(onModuleLoadedAsync.bind(moduleCls));
+    }
 
     return promise.future;
   }

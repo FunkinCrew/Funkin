@@ -23,6 +23,7 @@ import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
 import funkin.assets.Paths.AssetPath;
 import funkin.assets.Assets.AssetType;
+import lime.app.Promise;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedArray;
 import hx.concurrent.collection.SynchronizedMap;
@@ -480,38 +481,29 @@ class CharacterDataParser
 
     loadCharacterDataAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
+      var loadCharacterDataFuture = TaskHandler.performSimpleTask(() ->
+      {
+        log('Loading data for ${charIdList.length} characters...');
+
+        entryCount = charIdList.length;
+
+        return true;
+      });
+
+      loadCharacterDataFuture.onComplete((_) ->
+      {
+        for (entryId in charIdList)
         {
-          log('Loading data for ${charIdList.length} characters...');
-
-          entryCount = charIdList.length;
-
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            for (entryId in charIdList)
-            {
-              TaskHandler.performTask({
-                task: performLoadUnscriptedEntryData,
-                initialState: {
-                  entryId: entryId
-                },
-                taskCallbacks: {
-                  onStart: (_) -> {
-                  },
-                  onError: onError.bind(entryId),
-                  onComplete: onUnscriptedEntryLoaded.bind(entryId)
-                }
-              });
+          var loadUnscriptedEntryDataFuture = TaskHandler.performTask({
+            task: performLoadUnscriptedEntryData,
+            initialState: {
+              entryId: entryId
             }
-          }
+          }, new Promise<
+            {entryData:CharacterData}>());
+
+          loadUnscriptedEntryDataFuture.onError(onError.bind(entryId));
+          loadUnscriptedEntryDataFuture.onComplete(onUnscriptedEntryLoaded.bind(entryId));
         }
       });
     }
@@ -519,68 +511,62 @@ class CharacterDataParser
     // NOTE: Runs several times as we have to load the scripted classes for multiple different types of characters.
     loadScriptedEntriesAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
+      var loadScriptedEntriesFuture = TaskHandler.performSimpleTask(() ->
+      {
+        scriptedEntryClassNames = switch (entryLoadingState)
         {
-          scriptedEntryClassNames = switch (entryLoadingState)
-          {
-            case 'sparrow':
-              ScriptedSparrowCharacter.listScriptClasses();
-            case 'packer':
-              ScriptedPackerCharacter.listScriptClasses();
-            case 'animateatlas':
-              ScriptedAnimateAtlasCharacter.listScriptClasses();
-            case 'multisparrow':
-              ScriptedMultiSparrowCharacter.listScriptClasses();
-            case 'multianimateatlas':
-              ScriptedMultiAnimateAtlasCharacter.listScriptClasses();
-            case 'base':
-              var scriptedClasses:Array<String> = ScriptedBaseCharacter.listScriptClasses().filter((charCls:String) ->
-              {
-                // ONLY populate the base character classes that hasn't already been populated.
-                return !previousScriptedEntryClasses.contains(charCls);
-              });
-              scriptedClasses;
-            default:
-              [];
-          }
-
-          // We concatenate this list so we can use this when checking for ScriptedBaseCharacter entries.
-          previousScriptedEntryClasses = previousScriptedEntryClasses.concat(scriptedEntryClassNames);
-
-          log('Queuing loading for ${scriptedEntryClassNames.length} $entryLoadingState character scripted entries...');
-          entryCount += scriptedEntryClassNames.length; // Since this function is called several times, we increment the entry count for each use.
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            if (scriptedEntryClassNames.length == 0)
+          case 'sparrow':
+            ScriptedSparrowCharacter.listScriptClasses();
+          case 'packer':
+            ScriptedPackerCharacter.listScriptClasses();
+          case 'animateatlas':
+            ScriptedAnimateAtlasCharacter.listScriptClasses();
+          case 'multisparrow':
+            ScriptedMultiSparrowCharacter.listScriptClasses();
+          case 'multianimateatlas':
+            ScriptedMultiAnimateAtlasCharacter.listScriptClasses();
+          case 'base':
+            var scriptedClasses:Array<String> = ScriptedBaseCharacter.listScriptClasses().filter((charCls:String) ->
             {
-              checkAsyncProgress();
-            }
-            else
-            {
-              for (entryCls in scriptedEntryClassNames)
-              {
-                TaskHandler.performTask({
-                  task: performLoadScriptedEntry,
-                  initialState: {
-                    entryCls: entryCls
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(entryCls),
-                    onComplete: onScriptedEntryLoaded.bind(entryCls)
-                  }
-                });
+              // ONLY populate the base character classes that hasn't already been populated.
+              return !previousScriptedEntryClasses.contains(charCls);
+            });
+            scriptedClasses;
+          default:
+            [];
+        }
+
+        // We concatenate this list so we can use this when checking for ScriptedBaseCharacter entries.
+        previousScriptedEntryClasses = previousScriptedEntryClasses.concat(scriptedEntryClassNames);
+
+        log('Queuing loading for ${scriptedEntryClassNames.length} $entryLoadingState character scripted entries...');
+        entryCount += scriptedEntryClassNames.length; // Since this function is called several times, we increment the entry count for each use.
+
+        return true;
+      });
+
+      loadScriptedEntriesFuture.onComplete((_) ->
+      {
+        if (scriptedEntryClassNames.length == 0)
+        {
+          checkAsyncProgress();
+        }
+        else
+        {
+          for (entryCls in scriptedEntryClassNames)
+          {
+            var loadScriptedEntryFuture = TaskHandler.performTask({
+              task: performLoadScriptedEntry,
+              initialState: {
+                entryCls: entryCls
               }
-            }
+            }, new Promise<
+              {
+                entry:BaseCharacter,
+                entryCls:String
+              }>());
+            loadScriptedEntryFuture.onError(onError.bind(entryCls));
+            loadScriptedEntryFuture.onComplete(onScriptedEntryLoaded.bind(entryCls));
           }
         }
       });

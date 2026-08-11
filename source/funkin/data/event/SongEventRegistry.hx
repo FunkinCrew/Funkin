@@ -11,6 +11,7 @@ import funkin.util.SortUtil;
 import funkin.util.macro.ClassMacro;
 import funkin.util.tasks.TaskHandler;
 import funkin.util.tasks.TaskHandler.Task;
+import lime.app.Promise;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedArray;
 import hx.concurrent.collection.SynchronizedMap;
@@ -60,7 +61,7 @@ class SongEventRegistry
       }
       else
       {
-        trace(' Failed to load built-in song event: ${Type.getClassName(eventCls)}');
+        trace(' Failed to load built-in song event: ${eventCls}');
       }
     }
 
@@ -218,94 +219,66 @@ class SongEventRegistry
 
     loadScriptedEventsAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
-        {
-          scriptedEventClassNames = ScriptedSongEvent.listScriptClasses();
-          entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
+      scriptedEventClassNames = ScriptedSongEvent.listScriptClasses();
+      entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
 
-          trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
-          workOutput.sendComplete({}, []);
-        },
-        initialState: null,
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            if (scriptedEventClassNames.length == 0)
-            {
-              checkAsyncProgress();
+      trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
+
+      if (scriptedEventClassNames.length == 0)
+      {
+        checkAsyncProgress();
+      }
+      else
+      {
+        for (eventCls in scriptedEventClassNames)
+        {
+          var loadScriptedEventFuture = TaskHandler.performTask({
+            task: performLoadScriptedEvent,
+            initialState: {
+              eventCls: eventCls
             }
-            else
+          }, new Promise<
             {
-              for (eventCls in scriptedEventClassNames)
-              {
-                TaskHandler.performTask({
-                  task: performLoadScriptedEvent,
-                  initialState: {
-                    eventCls: eventCls
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(eventCls),
-                    onComplete: onScriptedEventLoadedAsync.bind(eventCls)
-                  }
-                });
-              }
-            }
-          }
+              event:SongEvent,
+              eventCls:String
+            }>());
+          loadScriptedEventFuture.onError(onError.bind(eventCls));
+          loadScriptedEventFuture.onComplete(onScriptedEventLoadedAsync.bind(eventCls));
         }
-      });
+      }
     }
 
     // Start loading base events first.
     loadBaseEventsAsync = () ->
     {
-      TaskHandler.performTask({
-        task: (currentState:State, workOutput:WorkOutput) ->
+      entryCount = BUILTIN_EVENTS.length;
+      trace('Instantiating ${entryCount} built-in song events...');
+
+      if (BUILTIN_EVENTS.length == 0)
+      {
+        checkAsyncProgress();
+      }
+      else
+      {
+        for (event in BUILTIN_EVENTS)
         {
-          entryCount = BUILTIN_EVENTS.length;
-          trace('Instantiating ${entryCount} built-in song events...');
+          var eventId:String = Type.getClassName(event);
 
-          workOutput.sendComplete({}, []);
-        },
-        initialState: {
-        },
-        taskCallbacks: {
-          onStart: null,
-          onError: null,
-          onComplete: (_) ->
-          {
-            if (BUILTIN_EVENTS.length == 0)
-            {
-              checkAsyncProgress();
+          var loadBaseEventFuture = TaskHandler.performTask({
+            task: performLoadBaseEvent,
+            initialState: {
+              eventCls: event,
+              eventId: eventId,
             }
-            else
+          }, new Promise<
             {
-              for (event in BUILTIN_EVENTS)
-              {
-                var eventId:String = Type.getClassName(event);
+              event:SongEvent
+            }>());
 
-                TaskHandler.performTask({
-                  task: performLoadBaseEvent,
-                  initialState: {
-                    eventCls: event,
-                    eventId: eventId,
-                  },
-                  taskCallbacks: {
-                    onStart: (_) -> {
-                    },
-                    onError: onError.bind(eventId),
-                    onComplete: onBaseEventLoadedAsync.bind(eventId),
-                  }
-                });
-              }
-            }
-          }
+          loadBaseEventFuture.onError(onError.bind(eventId));
+          loadBaseEventFuture.onComplete(onBaseEventLoadedAsync.bind(eventId));
         }
-      });
+      }
     }
 
     // Start loading base events first.
