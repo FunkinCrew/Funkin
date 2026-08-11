@@ -565,6 +565,8 @@ class PolymodHandler
     result.push('.git');
     result.push('.gitignore');
     result.push('.gitattributes');
+    result.push('.jj');
+    result.push('.DS_Store');
     result.push('README.md');
 
     return result;
