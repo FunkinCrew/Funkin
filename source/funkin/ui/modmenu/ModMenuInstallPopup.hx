@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.ui.FullScreenScaleMode;
+import funkin.ui.ScrollingTextBox;
 
 /**
  * The card shown in the corner while a one-click install runs.
@@ -17,6 +18,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
   static inline final CARD_WIDTH:Int = 350;
   static inline final TEXT_WIDTH:Int = 246;
+  static inline final TITLE_HEIGHT:Int = 42;
   static inline final PADDING:Int = 8;
   static inline final PROMPT_HEIGHT:Int = 30;
   static inline final BAR_HEIGHT:Int = 6;
@@ -28,7 +30,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
   var background:FunkinSprite;
   var modIcon:FunkinSprite;
-  var titleText:FlxText;
+  var titleText:ScrollingTextBox;
   var detailText:FlxText;
   var promptText:FlxText;
   var barBackground:FunkinSprite;
@@ -107,16 +109,12 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     modIcon.localY = PADDING;
     add(modIcon);
 
-    titleText = new FlxText(0, 0, TEXT_WIDTH);
-    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
-    titleText.scale.set(1, 0.8);
-    titleText.fieldHeight = 42;
+    titleText = new ScrollingTextBox(TEXT_WIDTH, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = PADDING + ICON_SIZE + PADDING;
     titleText.localY = PADDING;
     titleText.scrollFactor.set(0, 0);
+    titleText.scrolling = true;
     add(titleText);
-
-    setChildClipRect(titleText, FlxRect.get(0, 0, TEXT_WIDTH, 32));
 
     detailText = new FlxText(0, 0, TEXT_WIDTH);
     detailText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);

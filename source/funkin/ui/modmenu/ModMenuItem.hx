@@ -10,6 +10,7 @@ import flixel.math.FlxRect;
 import funkin.Paths;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
+import funkin.ui.ScrollingTextBox;
 
 /**
  * Represents an installed mod visually in the mod menu.
@@ -19,6 +20,8 @@ class ModMenuItem extends FunkinSpriteGroup
   public static final ITEM_WIDTH:Int = 350;
   public static final ICON_HEIGHT:Int = 96;
   public static final DESC_WIDTH:Int = 216;
+  public static final TITLE_HEIGHT:Int = 42;
+  public static final TITLE_SPACING:Int = 36;
   public static final ITEM_WIDTH_PADDING:Int = 24;
   public static var BG_SLIDE_DISTANCE:Float = 14;
   public static var BG_SLIDE_LERP:Float = 20;
@@ -48,7 +51,7 @@ class ModMenuItem extends FunkinSpriteGroup
   /**
    * The text displaying the title of the mod.
    */
-  var titleText:FlxText;
+  var titleText:ScrollingTextBox;
 
   /**
    * The text displaying the description of the mod.
@@ -68,6 +71,9 @@ class ModMenuItem extends FunkinSpriteGroup
   function set_selected(value:Bool):Bool
   {
     this.selected = value;
+
+    if (titleText != null) titleText.scrolling = value;
+
     return selected;
   }
 
@@ -270,27 +276,21 @@ class ModMenuItem extends FunkinSpriteGroup
       }
     }
 
-    titleText = new FlxText(0, 0, DESC_WIDTH);
-    titleText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
+    titleText = new ScrollingTextBox(DESC_WIDTH, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = ICON_HEIGHT + 8;
-    titleText.fieldHeight = 42;
     titleText.text = getModTitle();
-    titleText.scale.set(1, 0.8);
     add(titleText);
-
-    titleText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, 32);
 
     descriptionText = new FlxText(0, 0, DESC_WIDTH);
     descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE);
     descriptionText.localX = ICON_HEIGHT + 8;
     descriptionText.fieldHeight = 64;
-    descriptionText.localY = titleText.localY + Math.min(titleText.height, 32) + 4;
+    descriptionText.localY = titleText.localY + TITLE_SPACING;
     descriptionText.text = getModDescription();
-    descriptionText.scale.set(1, 0.8);
     descriptionText.localAlpha = 0.7;
     add(descriptionText);
 
-    descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - titleText.height - 4);
+    setChildClipRect(descriptionText, FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - TITLE_SPACING));
   }
 
   override public function update(elapsed:Float):Void
