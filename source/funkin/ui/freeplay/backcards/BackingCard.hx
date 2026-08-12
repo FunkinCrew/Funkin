@@ -375,6 +375,27 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   {
   }
 
+  /**
+   * Called when a capsule receives a new rank.
+   */
+  public function onCapsuleNewRank(event:CapsuleScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when the rank letter slams down on a freeplay capsule.
+   */
+  public function onRankSlam(event:CapsuleScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when the entire capsule slams down, after a new rank has been applied.
+   */
+  public function onCapsuleSlam(event:CapsuleScriptEvent):Void
+  {
+  }
+
   public function centerObjectOnCard(object:flixel.FlxObject)
   {
     if (pinkBack != null) object.x = (x + ((pinkBack.width - object.width) / 2)) * 0.74;

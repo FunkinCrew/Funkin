@@ -300,6 +300,27 @@ enum abstract ScriptEventType(String) from String to String
   public var FREEPLAY_CLOSE = 'FREEPLAY_CLOSE';
 
   /**
+   * Called when the player gets a new rank on a capsule.
+   *
+   * This event is not cancelable.
+   */
+  public var FREEPLAY_NEW_RANK = 'FREEPLAY_NEW_RANK';
+
+  /**
+   * Called when the new rank slams down on a capsule.
+   *
+   * This event is not cancelable.
+   */
+  public var FREEPLAY_RANK_SLAM = 'FREEPLAY_RANK_SLAM';
+  
+  /**
+   * Called when the entire freeplay capsule slams down.
+   *
+   * This event is not cancelable.
+   */
+  public var FREEPLAY_CAPSULE_SLAM = 'FREEPLAY_CAPSULE_SLAM';
+
+  /**
    * Called when a character is selected, but not confirmed, in Character Select.
    *
    * This event is not cancelable.
