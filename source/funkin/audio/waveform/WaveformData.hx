@@ -181,7 +181,7 @@ class WaveformData
   }
 
   /**
-   * Create a new WaveformData whose data represents the two waveforms overlayed.
+   * Create a new WaveformData whose data represents the two waveforms overlaid.
    */
   public function merge(that:WaveformData):WaveformData
   {

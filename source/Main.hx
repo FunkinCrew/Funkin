@@ -11,6 +11,8 @@ import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.save.Save;
+import funkin.FunkinMemory;
+import funkin.audio.FunkinSound;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
@@ -87,19 +89,21 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
-    #if (sys && !mobile)
+    #if (!html5 && !mobile)
     // Force-kill the game to prevent background processing.
-    Lib.current.stage.window.onClose.add(function()
+    openfl.Lib.application.onExit.add((_) ->
     {
-      trace(' EXITING '.bold().bg_red() + ' Game is exiting, cleaning up resources...');
+      // Dispose of cached audio and textures.
+      funkin.audio.FunkinSound.stopAllAudio(true, true);
+      funkin.FunkinMemory.purgeCache(true);
 
-      #if hxvlc
-      // Clean up VLC threads to prevent memory leaks.
-      hxvlc.util.Handle.dispose();
-      #end
+      // Dispose of any assets still in the OpenFL cache, just incase.
+      openfl.Assets.cache.clear();
+
+      trace(' EXITING '.bold().bg_red() + ' Resources are disposed, Game is closing now.');
 
       Sys.exit(0);
-    });
+    }, 99);
     #end
 
     // Manually crash the game when using a software renderer in order to give a nicer error message.

@@ -316,7 +316,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The length of the current instrumental, converted to steps.
-   * Dependant on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
+   * Dependent on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
    */
   var songLengthInSteps(get, set):Float;
 
@@ -334,7 +334,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The length of the current instrumental, in PIXELS.
-   * Dependant on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
+   * Dependent on BPM, because the size of a grid square does not change with BPM but the length of a beat does.
    */
   var songLengthInPixels(get, set):Int;
 
@@ -425,7 +425,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The relative scroll position in the song, converted to steps.
-   * NOT dependant on BPM, because the size of a grid square does not change with BPM.
+   * NOT dependent on BPM, because the size of a grid square does not change with BPM.
    */
   var scrollPositionInSteps(get, set):Float;
 
@@ -442,7 +442,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The relative scroll position in the song, converted to milliseconds.
-   * DEPENDANT on BPM, because the duration of a grid square changes with BPM.
+   * DEPENDENT on BPM, because the duration of a grid square changes with BPM.
    */
   var scrollPositionInMs(get, set):Float;
 
@@ -486,7 +486,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * playheadPosition, converted to steps.
-   * NOT dependant on BPM, because the size of a grid square does not change with BPM.
+   * NOT dependent on BPM, because the size of a grid square does not change with BPM.
    */
   var playheadPositionInSteps(get, set):Float;
 
@@ -503,7 +503,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * playheadPosition, converted to milliseconds.
-   * DEPENDANT on BPM, because the duration of a grid square changes with BPM.
+   * DEPENDENT on BPM, because the duration of a grid square changes with BPM.
    */
   var playheadPositionInMs(get, set):Float;
 
@@ -2775,7 +2775,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
     add(menuBG);
 
-    menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
+    menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
     menuBG.updateHitbox();
     menuBG.screenCenter();
     menuBG.scrollFactor.set(0, 0);
@@ -3792,6 +3792,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback(elapsed);
     handleNoteDisplay();
+
+    if (isHaxeUIFocused
+      && !isCursorOverHaxeUI
+      && (FlxG.mouse.justPressedRight || FlxG.mouse.deltaWheel.y != 0))
+    {
+      ChartEditorToolboxHandler.clearHaxeUIFocus();
+    }
 
     // These ones only happen if the modal dialog is not open.
     handleScrollKeybinds();

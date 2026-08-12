@@ -12,7 +12,7 @@ Check [COMPILING.md](./COMPILING.md) if you haven’t done that yet.
    setx ANDROID_HOME "C:\path\to\your\folder" /M
    ```
 3. Download [Android Studio Command-line Tools](https://developer.android.com/studio#command-line-tools-only).
-4. Extract the ZIP into your folder from step 1.
+4. Extract the ZIP into your folder from step 0.
 5. (Optional) Close and reopen the terminal if needed.
 6. Run:
    ```bash
@@ -69,10 +69,10 @@ Check [COMPILING.md](./COMPILING.md) if you haven’t done that yet.
     ```
 
 ## iOS
-Note that you can only build the game for iOS on a computer running MacOS.
+Note that you can only build the game for iOS on a computer running macOS.
 
 0. Build the game for desktop to make sure everything works. Check [COMPILING.md](./COMPILING.md).
-1. Get Xcode from the app store on your MacOS Machine.
+1. Get Xcode from the app store on your macOS Machine.
 2. Download the iPhone SDK (First thing that pops up in Xcode)
 3. Open up a terminal tab and run `lime test ios -xcode`
 4. You will need to sign your own copy in order to run the game with a real iOS device! That requires an Apple Developer account, sorry!
@@ -81,11 +81,11 @@ Note that you can only build the game for iOS on a computer running MacOS.
 ### iOS Troubleshooting
 
 - **A required plugin failed to load. Please ensure system content is up-to-date — try running 'xcodebuild -runFirstLaunch'.**
-Make sure you have the iOS SDK isntalled, see Step 2.
+Make sure you have the iOS SDK installed, see Step 2.
 
 - **error: No Accounts: Add a new account in Accounts settings. (in target 'Funkin' from project 'Funkin')**
 
-Open XCode, press CMD+, to open Settings, select Accounts, add an Apple ID.
+Open Xcode, press CMD+, to open Settings, select Accounts, add an Apple ID.
 
 - error: No Account for Team "Z7G7AVNGSH". Add a new account in Accounts settings or verify that your accounts have valid credentials.
 

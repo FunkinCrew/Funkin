@@ -819,17 +819,17 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     if (group != null) group.kill();
   }
 
-  public override function remove(Sprite:FlxSprite, Splice:Bool = false):FlxSprite
+  override public function remove(sprite:FlxSprite, splice:Bool = false):FlxSprite
   {
-    if (Sprite == null) return Sprite;
-    var sprite:FlxSprite = cast Sprite;
+    if (sprite == null || !(sprite is FlxSprite)) return sprite;
+
     sprite.x -= x;
     sprite.y -= y;
-    // alpha
     sprite.cameras = null;
 
-    if (group != null) group.remove(Sprite, Splice);
-    return Sprite;
+    if (group != null) group.remove(sprite, splice);
+
+    return sprite;
   }
 
   override function draw():Void

@@ -384,9 +384,15 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_MOBILE_WEBVIEW`
-   * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
+   * If this feature flag is enabled, the game will be able to load WebViews, mainly needed for the Newgrounds impl.
    */
   static final FEATURE_MOBILE_WEBVIEW:FeatureFlag = "FEATURE_MOBILE_WEBVIEW";
+
+  /**
+   * `-DFEATURE_MOBILE_AGESIGNALS`
+   * If this feature flag is enabled, the game will be able to use age singals.
+   */
+  static final FEATURE_MOBILE_AGESIGNALS:FeatureFlag = "FEATURE_MOBILE_AGESIGNALS";
 
   /**
    * `-DFEATURE_NAUGHTYNESS`
@@ -543,15 +549,22 @@ class Project extends HXProject
 
     flair();
 
+    displayTarget();
+
     configureApp();
 
-    displayTarget();
+    configureOutputDir();
+
+    if (isRun() || isInstall())
+    {
+      // These commands dont really need much in order to run so to improve the speed, we return here.
+      return;
+    }
 
     configureFeatureFlags();
     configureCompileDefines();
     configureIncludeMacros();
     configureCustomMacros();
-    configureOutputDir();
     configurePolymod();
     configureHaxelibs();
     configureASTCTextures();
@@ -582,7 +595,7 @@ class Project extends HXProject
       buildHxCppTools();
     }
 
-    if (!isDisplay())
+    if (!(isDisplay() || isCleanCommand()))
     {
       checkLibraries();
     }
@@ -611,11 +624,6 @@ class Project extends HXProject
   {
     this.meta.title = isMobile() ? TITLE_MOBILE : TITLE;
 
-    // ios uses this character code instead of spaces...
-    // We don't have spaces in our title for mobile anymore
-    // But keeping incase anybody source-modding ever does add spaces
-    if (isIOS()) this.meta.title = ~/ /ig.replace(TITLE_MOBILE, "\u2002");
-
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
     this.meta.company = COMPANY;
@@ -640,17 +648,6 @@ class Project extends HXProject
 
     // Set the build number, required for publishing the game to mobile stores.
     this.meta.buildNumber = Std.string(BUILD_NUMBER);
-
-    // These values are only used by the SWF target I think.
-    // this.app.path
-    // this.app.init
-    // this.app.swfVersion
-    // this.app.url
-
-    // These values are only used by... FIREFOX MARKETPLACE WHAT?
-    // this.meta.description = "";
-    // this.meta.companyId = COMPANY;
-    // this.meta.companyUrl = COMPANY;
 
     // Configure the window.
     // Automatically configure FPS.
@@ -698,6 +695,29 @@ class Project extends HXProject
 
       config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
       config.set("android.target-sdk-version", ANDROID_TARGET_SDK_VERSION);
+
+      if (isRelease())
+      {
+        if (envConfig != null)
+        {
+          keystore = new Keystore();
+          keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));
+          keystore.alias = Std.string(envConfig.get('KEYSTORE_ALIAS'));
+          keystore.password = Std.string(envConfig.get('KEYSTORE_PASSWORD'));
+        }
+
+        if (isBundle())
+        {
+          config.set("android.gradle-project-directory", "bin-bundle");
+        }
+      }
+    }
+
+    if (isIOS())
+    {
+      config.set("ios.non-exempt-encryption", "false");
+      config.set("ios.team-id", IOS_TEAM_ID);
+      config.set("ios.deployment", "16.0");
     }
   }
 
@@ -731,7 +751,6 @@ class Project extends HXProject
       // case Platform.PS3:
       // case Platform.PS4:
       // case Platform.TIZEN:
-      // case Platform.TVOS:
       // case Platform.VITA:
       // case Platform.WEBOS:
       // case Platform.WIIU:
@@ -743,41 +762,21 @@ class Project extends HXProject
     switch (this.platformType)
     {
       case PlatformType.DESKTOP:
-        info('Platform Type: Desktop');
+        info('Target Platform Type: Desktop');
       case PlatformType.MOBILE:
-        info('Platform Type: Mobile');
+        info('Target Platform Type: Mobile');
       case PlatformType.WEB:
-        info('Platform Type: Web');
+        info('Target Platform Type: Web');
       case PlatformType.CONSOLE:
-        info('Platform Type: Console');
+        info('Target Platform Type: Console');
       default:
         error('Unknown platform type (got ${platformType})');
     }
 
-    // Print whether we are using HXCPP, HashLink, or something else.
+    // Print whether we are using HXCPP, JavaScript, or something else.
     if (isWeb())
     {
       info('Target Language: JavaScript (HTML5)');
-    }
-    else if (isHashLink())
-    {
-      info('Target Language: HashLink');
-    }
-    else if (isNeko())
-    {
-      info('Target Language: Neko');
-    }
-    else if (isJava())
-    {
-      info('Target Language: Java');
-    }
-    else if (isNodeJS())
-    {
-      info('Target Language: JavaScript (NodeJS)');
-    }
-    else if (isCSharp())
-    {
-      info('Target Language: C#');
     }
     else if (isCPP())
     {
@@ -794,23 +793,13 @@ class Project extends HXProject
       switch (arch)
       {
         case Architecture.X86:
-          info('Architecture: x86');
+          info('Target Architecture: x86');
         case Architecture.X64:
-          info('Architecture: x64');
-        case Architecture.ARMV5:
-          info('Architecture: ARMv5');
-        case Architecture.ARMV6:
-          info('Architecture: ARMv6');
+          info('Target Architecture: x64');
         case Architecture.ARMV7:
-          info('Architecture: ARMv7');
-        case Architecture.ARMV7S:
-          info('Architecture: ARMv7S');
+          info('Target Architecture: ARMv7');
         case Architecture.ARM64:
-          info('Architecture: ARMx64');
-        case Architecture.MIPS:
-          info('Architecture: MIPS');
-        case Architecture.MIPSEL:
-          info('Architecture: MIPSEL');
+          info('Target Architecture: ARM64');
         case null:
           if (!isWeb())
           {
@@ -818,7 +807,7 @@ class Project extends HXProject
           }
           else
           {
-            info('Architecture: Web');
+            info('Target Architecture: Web');
           }
         default:
           error('Unsupported architecture (got ${arch})');
@@ -878,7 +867,7 @@ class Project extends HXProject
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // Video playback should be enabled on desktop, web, and mobile.
-    FEATURE_VIDEO_PLAYBACK.apply(this, !isHashLink());
+    FEATURE_VIDEO_PLAYBACK.apply(this, true);
 
     // Video subtitles only work via using hxvlc.
     FEATURE_VIDEO_SUBTITLES.apply(this, FEATURE_VIDEO_PLAYBACK.isEnabled(this) && !isWeb());
@@ -889,7 +878,7 @@ class Project extends HXProject
 
     // Should be true on desktop, non-tester builds.
     // We don't want testers to accidentally leak songs to their Discord friends!
-    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this) && !isHashLink());
+    FEATURE_DISCORD_RPC.apply(this, isDesktop() && !FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
 
     FEATURE_LOST_FOCUS_VOLUME.apply(this, isDesktop());
 
@@ -933,6 +922,7 @@ class Project extends HXProject
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease()) && envConfig != null);
     FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease());
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
+    FEATURE_MOBILE_AGESIGNALS.apply(this, isMobile() && isRelease());
 
     // The coveted ghost tapping feature.
     // Essential on mobile but delayed on desktop.
@@ -1011,6 +1001,9 @@ class Project extends HXProject
    */
   function configureCompileDefines()
   {
+    // Add Funkin's version as a compilation flag so Polymod scripts can use it.
+    setHaxedef("funkin", VERSION);
+
     // Enable OpenFL's error handler. Required for the crash logger.
     setHaxedef("openfl-enable-handle-error");
 
@@ -1023,8 +1016,6 @@ class Project extends HXProject
     setHaxedef("HXCPP_STACK_LINE");
     setHaxedef("HXCPP_STACK_TRACE");
     setHaxedef("hscriptPos");
-
-    setHaxedef("safeMode");
 
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
@@ -1161,22 +1152,6 @@ class Project extends HXProject
   {
     javaPaths.push(Path.join([SOURCE_DIR, 'funkin/external/android/java']));
 
-    if (isRelease())
-    {
-      if (envConfig != null)
-      {
-        keystore = new Keystore();
-        keystore.path = Std.string(envConfig.get('KEYSTORE_PATH'));
-        keystore.alias = Std.string(envConfig.get('KEYSTORE_ALIAS'));
-        keystore.password = Std.string(envConfig.get('KEYSTORE_PASSWORD'));
-      }
-
-      if (isBundle())
-      {
-        config.set("android.gradle-project-directory", "bin-bundle");
-      }
-    }
-
     // Custom android.application XML Children for the AndroidManifest
     final modsFolderProvider:Xml = Xml.createElement('provider');
     modsFolderProvider.set('android:authorities', '$PACKAGE_NAME.docprovider');
@@ -1263,10 +1238,6 @@ class Project extends HXProject
 
   function configureIOS()
   {
-    config.set("ios.non-exempt-encryption", "false");
-    config.set("ios.team-id", IOS_TEAM_ID);
-    config.set("ios.deployment", "16.0");
-
     // launchStoryboard = new LaunchStoryboard();
     // launchStoryboard.path = "./LaunchScreen.storyboard";
 
@@ -1342,8 +1313,6 @@ class Project extends HXProject
 
     if ((isDesktop() || isMobile()) && FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
-      // hxvlc doesn't function on HashLink or non-desktop platforms
-      // It's also unnecessary if video playback is disabled
       addHaxelib('hxvlc'); // Video playback
     }
 
@@ -1402,11 +1371,16 @@ class Project extends HXProject
     {
       addHaxelib('extension-webviewcore'); // WebView Extension
     }
+
+    if (FEATURE_MOBILE_AGESIGNALS.isEnabled(this))
+    {
+      addHaxelib('extension-agesignals'); // WebView Extension
+    }
   }
 
   function configureAssets()
   {
-    if (!isDisplay())
+    if (!(isDisplay() || isCleanCommand()))
     {
       // Delete the assets folder from the export folder before adding anything.
       clearAssets();
@@ -1522,7 +1496,7 @@ class Project extends HXProject
     var exportPath:Null<String> = app.path ?? "";
 
     // mac target uses `macos` for the export folder instead of `mac`
-    var platform:String = isHashLink() ? 'hl' : (!isMac() ? Std.string(this.target) : 'macos');
+    var platform:String = !isMac() ? Std.string(this.target) : 'macos';
     var basePath:String = Path.join([exportPath, platform, "bin"]);
     var assetsPath:String = "";
 
@@ -1644,14 +1618,10 @@ class Project extends HXProject
    */
   function configureASTCTextures()
   {
-    if (!(isDisplay() || isClean()))
+    if (!(isDisplay() && isCleanCommand()) && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
     {
       readASTCExclusion();
-
-      if (FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
-      {
-        runASTCCompressor();
-      }
+      runASTCCompressor();
     }
   }
 
@@ -1757,31 +1727,6 @@ class Project extends HXProject
     return this.target == Platform.IOS && this.targetFlags.exists("simulator");
   }
 
-  public function isHashLink():Bool
-  {
-    return this.targetFlags.exists("hl");
-  }
-
-  public function isNeko():Bool
-  {
-    return this.targetFlags.exists("neko");
-  }
-
-  public function isJava():Bool
-  {
-    return this.targetFlags.exists("java");
-  }
-
-  public function isNodeJS():Bool
-  {
-    return this.targetFlags.exists("nodejs");
-  }
-
-  public function isCSharp():Bool
-  {
-    return this.targetFlags.exists("cs");
-  }
-
   public function isCPP():Bool
   {
     return this.defines.exists("cpp");
@@ -1792,9 +1737,24 @@ class Project extends HXProject
     return this.command == "display";
   }
 
-  public function isClean():Bool
+  public function isCleanCommand():Bool
   {
     return this.command == "clean";
+  }
+
+  public function isCleanFlag():Bool
+  {
+    return this.targetFlags.exists("clean");
+  }
+
+  public function isRun():Bool
+  {
+    return this.command == "run";
+  }
+
+  public function isInstall():Bool
+  {
+    return this.command == "install";
   }
 
   public function isBuild():Bool
@@ -2325,7 +2285,7 @@ class Project extends HXProject
    */
   public function info(message:String):Void
   {
-    if (!(isDisplay() || isClean()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
     {
       Sys.println(' INFO '.bold().bg_blue() + " " + message);
     }
@@ -2336,7 +2296,7 @@ class Project extends HXProject
    */
   public function warn(message:String):Void
   {
-    if (!(isDisplay() || isClean()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
     {
       Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }
@@ -2482,7 +2442,13 @@ class Project extends HXProject
     info('Compressing ASTC textures...');
 
     var args:Array<String> = ['run', 'astc-compressor', 'compress-from-json'];
+
     args = args.concat(['-json', './astc-compression-data.json']);
+
+    if (isCleanFlag())
+    {
+      args = args.concat(['-clean']);
+    }
 
     Sys.command('haxelib', args);
 

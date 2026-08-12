@@ -11,15 +11,20 @@
       "name": "astc-compressor",
       "type": "git",
       "dir": null,
-      "ref": "b7a91b3072dc16e785a9bde847f17ba0ef15dd47",
+      "ref": "6c0fa6f46d3547ca58859b6ede87e659018a7ff5",
       "url": "https://github.com/KarimAkra/astc-compressor"
     },
     {
       "name": "extension-admob",
       "type": "git",
-      "dir": null,
-      "ref": "5755982af97f63f35203ecb28d7fbdcbb0161b17",
+      "ref": "68fc73c4090c5765709597b68fbe87389f3548c0",
       "url": "https://github.com/FunkinCrew/extension-admob"
+    },
+    {
+      "name": "extension-agesignals",
+      "type": "git",
+      "ref": "dd3f56ccbb313a43d40cba8826fca2b1ec7c7e5d",
+      "url": "https://github.com/FunkinCrew/extension-agesignals"
     },
     {
       "name": "extension-androidtools",
@@ -33,31 +38,32 @@
     },
     {
       "name": "extension-haptics",
-      "type": "haxelib",
-      "version": "1.0.4"
+      "type": "git",
+      "ref": "8978b34b437f943a0d164bd6b3d8b69bd0025081",
+      "url": "https://github.com/LimeExtensions/extension-haptics"
     },
     {
       "name": "extension-iapcore",
-      "type": "haxelib",
-      "version": "1.0.4"
+      "type": "git",
+      "ref": "5fbb4a8e56ff0f4d8ffc71b561d57a367419ead8",
+      "url": "https://github.com/LimeExtensions/extension-iapcore"
     },
     {
       "name": "extension-iarcore",
-      "type": "haxelib",
-      "version": "1.0.3"
+      "type": "git",
+      "ref": "a78e49fe69feecef9abcdbcfd08ccc510ed00c6c",
+      "url": "https://github.com/LimeExtensions/extension-iarcore"
     },
     {
       "name": "extension-webviewcore",
       "type": "git",
-      "dir": null,
-      "ref": "d13109450d65c40678244ca23b1aa88ac18d77e6",
+      "ref": "98c059722491b182ee932ff47c5d7b564c967165",
       "url": "https://github.com/LimeExtensions/extension-webviewcore"
     },
     {
       "name": "flixel",
       "type": "git",
-      "dir": null,
-      "ref": "e19af319f8f268cdd914fa135f80e1c64be2319d",
+      "ref": "141f23c400c0508c76d5a09a143f5ce6790f8122",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -125,8 +131,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "dir": null,
-      "ref": "2e969d0154ac536c1b5a5c89d2c2b73d7126bd2e",
+      "ref": "0376e9b19af9a4d91f9d9afc131a358467856a10",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -161,7 +166,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.2.6"
+      "version": "2.3.0"
     },
     {
       "name": "json2object",
@@ -183,29 +188,27 @@
     {
       "name": "lime",
       "type": "git",
-      "dir": null,
-      "ref": "00c825f7bd066092f3c417a921b618f004e4b323",
+      "ref": "ad0080e7e1df97d06060ea6cf5ce8f8088c3b872",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
       "name": "newgrounds",
       "type": "git",
       "dir": null,
-      "ref": "b2b53cd0a5f030af74efd325732951cddbea8826",
+      "ref": "60162762e6ca65da011ffee7a6617f547ea5dff9",
       "url": "https://github.com/FunkinCrew/Newgrounds"
     },
     {
       "name": "openfl",
       "type": "git",
-      "dir": null,
-      "ref": "912a486693c092eb1dc4ee1ef223d4470cab95ae",
+      "ref": "2e5fc2062fb07b40f81b45268085a2efdb2eb9ae",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
       "dir": null,
-      "ref": "95cbca4541b46459759877565e56719d18451d4c",
+      "ref": "acfdc2e26722f20339a2bc0cc8cd7dd5fe0c6b5e",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

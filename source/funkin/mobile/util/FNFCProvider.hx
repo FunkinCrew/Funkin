@@ -13,6 +13,7 @@ import flixel.util.FlxSignal;
 /**
  * A class for handling the flow of loading FNFC song packs on mobile.
  */
+@:unreflective
 class FNFCProvider
 {
   public static var onFNFCOpen:FlxTypedSignal<String->Void>;

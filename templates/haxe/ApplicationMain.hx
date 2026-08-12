@@ -7,29 +7,28 @@ import haxe.macro.Expr;
 #end
 
 #if (linux && !macro)
-#if cpp
-import hxgamemode.GamemodeClient;
-#end
-
 @:image('art/icons/iconOG.png')
 class ApplicationIcon extends lime.graphics.Image {}
 #end
 
-#if (windows && cpp)
-using funkin.util.WindowUtil;
-#end
-
+@:dox(hide)
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
 @:access(openfl.events.UncaughtErrorEvents)
-@:dox(hide)
+#if (static_link || ios)
+@:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
+#end
 class ApplicationMain
 {
   #if !macro
-
   public static function main():Void
   {
+    #if (static_link || ios)
+    untyped __cpp__("lime_register_prims ()");
+    ::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
+    #end
+
     #if (windows && cpp)
     // Disable the Windows "ghosting" effect that dims unresponsive windows.
     funkin.external.windows.WinAPI.disableWindowsGhosting();
@@ -48,7 +47,7 @@ class ApplicationMain
   public static function create(config):Void
   {
     #if (linux && cpp)
-    GamemodeClient.request_start();
+    hxgamemode.GamemodeClient.request_start();
     #end
 
     ::if (WIN_ORIENTATION != "auto")::
@@ -64,11 +63,6 @@ class ApplicationMain
     appMeta.set("packageName", "::meta.packageName::");
     appMeta.set("version", "::meta.version::");
 
-    ::if (config.hxtelemetry != null)::#if hxtelemetry
-    appMeta.set("hxtelemetry-allocations", "::config.hxtelemetry.allocations::");
-    appMeta.set("hxtelemetry-host", "::config.hxtelemetry.host::");
-    #end::end::
-
     var app = new openfl.display.Application(appMeta);
 
     #if linux
@@ -78,23 +72,19 @@ class ApplicationMain
     });
     #end
 
-    #if !disable_preloader_assets
-    ManifestResources.init(config);
-    #end
-
-    #if !flash
     ::foreach windows::
     var attributes:lime.ui.WindowAttributes = {
       allowHighDPI: ::allowHighDPI::,
       alwaysOnTop: ::alwaysOnTop::,
       transparent: ::transparent::,
       borderless: ::borderless::,
-      // display: ::display::,
       element: null,
       frameRate: ::fps::,
-      #if !web fullscreen: ::fullscreen::, #end
+      #if !web
+      fullscreen: ::fullscreen::,
+      #end
       height: ::height::,
-      hidden: #if munit true #else ::hidden:: #end,
+      hidden: ::hidden::,
       maximized: ::maximized::,
       minimized: ::minimized::,
       parameters: ::parameters::,
@@ -135,20 +125,10 @@ class ApplicationMain
           }
         }
       }
-
-      #if sys
-      lime.system.System.__parseArguments(attributes);
-      #end
     }
 
     app.createWindow(attributes);
     ::end::
-    #elseif air
-    app.window.title = "::meta.title::";
-    #else
-    app.window.context.attributes.background = ::WIN_BACKGROUND::;
-    app.window.frameRate = ::WIN_FPS::;
-    #end
 
     var preloader = getPreloader();
     app.preloader.onProgress.add (function(loaded, total)
@@ -163,6 +143,8 @@ class ApplicationMain
     preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
 
     #if !disable_preloader_assets
+    ManifestResources.init(config);
+
     for (library in ManifestResources.preloadLibraries)
     {
       app.preloader.addLibrary(library);
@@ -178,20 +160,17 @@ class ApplicationMain
 
     var result = app.exec();
 
-    #if (sys && !ios && !nodejs && !emscripten)
+    #if (sys && !ios && !nodejs)
     lime.system.System.exit(result);
     #end
 
     #if (linux && cpp)
-    GamemodeClient.request_end();
+    hxgamemode.GamemodeClient.request_end();
     #end
   }
 
   public static function start(stage:openfl.display.Stage):Void
   {
-    #if flash
-    ApplicationMain.getEntryPoint();
-    #else
     if (stage.__uncaughtErrorEvents.__enabled)
     {
       try
@@ -223,7 +202,6 @@ class ApplicationMain
         stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
       }
     }
-    #end
   }
   #end
 
@@ -330,47 +308,3 @@ class ApplicationMain
   }
   #end
 }
-
-#if !macro
-@:build(DocumentClass.build())
-@:keep @:dox(hide) class DocumentClass extends ::APP_MAIN:: {}
-#else
-class DocumentClass
-{
-  macro public static function build():Array<Field>
-  {
-    var classType = Context.getLocalClass().get();
-    var searchTypes = classType;
-
-    while (searchTypes != null)
-    {
-      if (searchTypes.module == "openfl.display.DisplayObject" || searchTypes.module == "flash.display.DisplayObject")
-      {
-        var fields = Context.getBuildFields();
-
-        var method = macro
-        {
-          current.addChild(this);
-          super();
-          dispatchEvent(new openfl.events.Event(openfl.events.Event.ADDED_TO_STAGE, false, false));
-        }
-
-        fields.push({ name: "new", access: [ APublic ], kind: FFun({ args: [ { name: "current", opt: false, type: macro :openfl.display.DisplayObjectContainer, value: null } ], expr: method, params: [], ret: macro :Void }), pos: Context.currentPos() });
-
-        return fields;
-      }
-
-      if (searchTypes.superClass != null)
-      {
-        searchTypes = searchTypes.superClass.t.get();
-      }
-      else
-      {
-        searchTypes = null;
-      }
-    }
-
-    return null;
-  }
-}
-#end

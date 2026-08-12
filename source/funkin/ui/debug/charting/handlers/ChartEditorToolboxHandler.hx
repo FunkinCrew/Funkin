@@ -8,6 +8,7 @@ import haxe.ui.components.CheckBox;
 import haxe.ui.containers.dialogs.CollapsibleDialog;
 import haxe.ui.containers.dialogs.Dialog.DialogButton;
 import haxe.ui.containers.dialogs.Dialog.DialogEvent;
+import haxe.ui.focus.FocusManager;
 import funkin.ui.debug.charting.toolboxes.ChartEditorBaseToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorMetadataToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
@@ -34,6 +35,14 @@ class ChartEditorToolboxHandler
     }
   }
 
+  public static function clearHaxeUIFocus():Void
+  {
+    @:nullSafety(Off) {
+      final f = FocusManager.instance.focus;
+      if (f != null) f.focus = false;
+    }
+  }
+
   public static function showToolbox(state:ChartEditorState, id:String):Void
   {
     var toolbox:Null<CollapsibleDialog> = state.activeToolboxes.get(id);
@@ -43,6 +52,7 @@ class ChartEditorToolboxHandler
     if (toolbox != null)
     {
       toolbox.showDialog(false);
+      clearHaxeUIFocus();
 
       state.playSound(Paths.sound('chartingSounds/openWindow'));
 
@@ -86,6 +96,7 @@ class ChartEditorToolboxHandler
 
     if (toolbox != null)
     {
+      clearHaxeUIFocus();
       toolbox.hideDialog(DialogButton.CANCEL);
 
       state.playSound(Paths.sound('chartingSounds/exitWindow'));

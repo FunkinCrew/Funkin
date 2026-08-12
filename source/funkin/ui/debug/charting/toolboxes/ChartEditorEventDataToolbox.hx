@@ -152,7 +152,8 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
 
     if (newDropdownElement == null)
     {
-      throw 'CHART EDITOR - In Event Toolbox, event kind "${chartEditorState.eventKindToPlace}" not in dropdown!';
+      trace(' WARNING '.bold().bg_yellow() + ' CHART EDITOR - Event kind "${chartEditorState.eventKindToPlace}" not found in dropdown lookup. Attempting to proceed...');
+      newDropdownElement = toolboxEventsEventKind.dataSource.get(0);
     }
     else if (toolboxEventsEventKind.value != newDropdownElement || lastEventKind != toolboxEventsEventKind.value.id)
     {
@@ -180,33 +181,34 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
       var value:Null<Dynamic> = pair.value;
 
       var field:Component = toolboxEventsDataBox.findComponent(fieldId);
-      field.pauseEvent(UIEvent.CHANGE, true);
 
-      if (field == null)
+      if (field != null)
       {
-        throw 'ChartEditorEventDataToolbox - Field "${fieldId}" does not exist in the event data form for kind ${lastEventKind}.';
-      }
-      else
-      {
-        switch (field)
+        field.pauseEvent(UIEvent.CHANGE, true);
+
+        switch (Type.getClass(field))
         {
-          case Std.isOfType(_, NumberStepper) => true:
+          case NumberStepper:
             var numberStepper:NumberStepper = cast field;
             numberStepper.value = value;
-          case Std.isOfType(_, CheckBox) => true:
+          case CheckBox:
             var checkBox:CheckBox = cast field;
             checkBox.selected = value;
-          case Std.isOfType(_, DropDown) => true:
+          case DropDown:
             var dropDown:DropDown = cast field;
             dropDown.value = value;
-          case Std.isOfType(_, TextField) => true:
+          case TextField:
             var textField:TextField = cast field;
             textField.text = value;
           default:
-            throw 'ChartEditorEventDataToolbox - Field "${fieldId}" is of unknown type "${Type.getClassName(Type.getClass(field))}".';
+            trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Field "${fieldId}" is of unknown or unsupported type.');
         }
+        field.resumeEvent(UIEvent.CHANGE, true, true);
       }
-      field.resumeEvent(UIEvent.CHANGE, true, true);
+      else
+      {
+        trace(' WARNING '.bg_yellow().bold() + ' CHART EDITOR '.bold().bg_bright_yellow() + 'Field "${fieldId}" was not found in the form.');
+      }
     }
 
     shouldTriggerOnEventKindChanged = true;

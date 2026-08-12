@@ -6,6 +6,7 @@ import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.Lib;
+import flixel.math.FlxMath;
 import flixel.system.FlxBasePreloader;
 import funkin.util.MathUtil;
 import openfl.display.Sprite;
@@ -263,10 +264,12 @@ class FunkinPreloader extends FlxBasePreloader
   }
 
   var lastElapsed:Float = 0.0;
+  var lastLoggedPercent:Int = -1;
+  var lastLoggedState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
 
   override function update(percent:Float):Void
   {
-    var elapsed:Float = (#if hl Sys.time() * Constants.MS_PER_SEC #else Date.now().getTime() #end - this._startTime) / Constants.MS_PER_SEC;
+    var elapsed:Float = (Date.now().getTime() - this._startTime) / Constants.MS_PER_SEC;
 
     vfdShader.update(elapsed * 100);
 
@@ -875,9 +878,12 @@ class FunkinPreloader extends FlxBasePreloader
     var percentage:Int = Math.floor(percent * 100);
     progressRightText.text = '$percentage%';
 
-    if (currentState.getProgressLeftText() != null)
+    // Only log when the state or percentage changes, so we don't spam the same line every frame (e.g. while pinned at 100% during fade-out).
+    if (currentState.getProgressLeftText() != null && (currentState != lastLoggedState || percentage != lastLoggedPercent))
     {
-      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, $elapsed sec)');
+      trace(' PRELOADER '.bold().bg_note_left() + ' $currentState ($percentage%, ${FlxMath.roundDecimal(elapsed, 2)} sec)');
+      lastLoggedState = currentState;
+      lastLoggedPercent = percentage;
     }
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
@@ -940,7 +946,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   /**
    * Whether or not we are in flipped landscape device rotation,
-   * generally for mobile to accomodate the device notch!
+   * generally for mobile to accommodate the device notch!
    * @return Bool
    */
   function isLandscapeFlipped():Bool

@@ -2,7 +2,6 @@ package funkin.util.macro;
 
 using funkin.util.AnsiUtil;
 
-#if !display
 @:nullSafety
 class GitCommit
 {
@@ -11,7 +10,13 @@ class GitCommit
    */
   public static macro function getGitCommitHash():haxe.macro.Expr.ExprOf<String>
   {
-    #if !display
+    if (haxe.macro.Context.defined('display'))
+    {
+      // `display` is used for code completion. In this case returning an
+      // empty string is good enough; We don't want to call git on every hint.
+      return macro '';
+    }
+
     // Get the current line number.
     var pos = haxe.macro.Context.currentPos();
 
@@ -30,12 +35,6 @@ class GitCommit
 
     // Generates a string expression
     return macro $v{commitHashSplice};
-    #else
-    // `#if display` is used for code completion. In this case returning an
-    // empty string is good enough; We don't want to call git on every hint.
-    var commitHash:String = "";
-    return macro $v{commitHashSplice};
-    #end
   }
 
   /**
@@ -43,7 +42,13 @@ class GitCommit
    */
   public static macro function getGitBranch():haxe.macro.Expr.ExprOf<String>
   {
-    #if !display
+    if (haxe.macro.Context.defined('display'))
+    {
+      // `display` is used for code completion. In this case returning an
+      // empty string is good enough; We don't want to call git on every hint.
+      return macro '';
+    }
+
     // Get the current line number.
     var pos = haxe.macro.Context.currentPos();
     var branchProcess = new sys.io.Process('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
@@ -59,12 +64,6 @@ class GitCommit
 
     // Generates a string expression
     return macro $v{branchName};
-    #else
-    // `#if display` is used for code completion. In this case returning an
-    // empty string is good enough; We don't want to call git on every hint.
-    var branchName:String = "";
-    return macro $v{branchName};
-    #end
   }
 
   /**
@@ -72,14 +71,16 @@ class GitCommit
    */
   public static macro function getGitHasLocalChanges():haxe.macro.Expr.ExprOf<Bool>
   {
-    #if !display
-    var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
+    if (!haxe.macro.Context.defined('display'))
+    {
+      var branchProcess = new sys.io.Process('git', ['diff', '--quiet']);
 
-    return macro $v{branchProcess.exitCode(true) == 1};
-    #else
-    // `#if display` is used for code completion. In this case we just assume true.
-    return macro $v{true};
-    #end
+      return macro $v{branchProcess.exitCode(true) == 1};
+    }
+    else
+    {
+      // `display` is used for code completion. In this case we just assume true.
+      return macro true;
+    }
   }
 }
-#end

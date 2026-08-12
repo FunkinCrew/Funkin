@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set basic labels
-      uses: actions/labeler@v5
+      uses: actions/labeler@v6
       with:
         sync-labels: true
   # Apply labels to pull requests based on how many lines were edited

@@ -260,7 +260,7 @@ class LoadingState extends MusicBeatSubState
       FlxG.switchState(loadStateCtor);
     }
     #else
-    // All assets preloaded, switch directly to play state (defualt on other targets).
+    // All assets preloaded, switch directly to play state (default on other targets).
     @:nullSafety(Off)
     if (shouldStopMusic && FlxG.sound.music != null)
     {

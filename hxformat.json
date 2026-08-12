@@ -159,7 +159,7 @@
   "lineEnds": {
     "lineEndCharacter": "auto",
 
-    "metadataType": "forceAfterLast",
+    "metadataType": "after",
     "metadataVar": "forceAfterLast",
     "metadataFunction": "forceAfterLast",
     "metadataOther": "none",
@@ -316,11 +316,26 @@
   "wrapping": {
     "maxLineLength": 160,
 
+    "arrayMatrixWrap": "matrixWrapWithAlign",
+
     "arrayWrap": {
       "defaultWrap": "noWrap",
       "defaultLocation": "afterLast",
       "defaultAdditionalIndent": 0,
       "rules": [
+        {
+          "type": "noWrap",
+          "conditions": [
+            {
+              "cond": "itemCount <= n",
+              "value": 1
+            },
+            {
+              "cond": "totalItemLength <= n",
+              "value": 160
+            }
+          ]
+        },
         {
           "type": "onePerLine",
           "conditions": [
@@ -396,7 +411,7 @@
           "type": "onePerLine",
           "conditions": [
             {
-              "cond": "totalItemLength >= n",
+              "cond": "lineLength >= n",
               "value": 160
             }
           ]
@@ -404,8 +419,134 @@
       ]
     },
 
+    "methodChain": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "additionalIndent": 0,
+          "location": "afterLast",
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "lineLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
+    },
+
+    "callParameter": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "additionalIndent": 0,
+          "location": "afterLast",
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "lineLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
+    },
+
+    "objectLiteral": {
+      "defaultWrap": "onePerLine",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "opBoolChain": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "beforeLast",
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "additionalIndent": 0,
+          "location": "beforeLast",
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "lineLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
+    },
+
+    "opAddSubChain": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "beforeLast",
+      "defaultAdditionalIndent": 0,
+      "rules": [
+        {
+          "additionalIndent": 0,
+          "location": "beforeLast",
+          "type": "onePerLine",
+          "conditions": [
+            {
+              "cond": "lineLength >= n",
+              "value": 160
+            }
+          ]
+        }
+      ]
+    },
+
+    "implementsExtends": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "metadataCallParameter": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "anonFunctionSignature": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "anonType": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "casePattern": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "functionSignature": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
+    "multiVar": {
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
+    },
+
     "typeParameter": {
-      "defaultWrap": "noWrap"
+      "defaultWrap": "noWrap",
+      "defaultLocation": "afterLast",
+      "defaultAdditionalIndent": 0
     }
   },
 

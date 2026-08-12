@@ -124,6 +124,11 @@ class InitState extends FlxState
       funkin.mobile.util.WebViewUtil.init();
       #end
 
+      #if FEATURE_MOBILE_AGESIGNALS
+      // Setup AgeSignals
+      funkin.mobile.util.AgeSignalsUtil.init();
+      #end
+
       #if android
       // Setup Callback util.
       funkin.external.android.CallbackUtil.init();
@@ -340,7 +345,7 @@ class InitState extends FlxState
     #end
 
     #if FEATURE_LOST_FOCUS_VOLUME
-    if (FlxG.sound.muted || FlxG.autoPause) return;
+    if (FlxG.sound.muted || FlxG.sound.volume == 0 || FlxG.autoPause) return;
     if (_lastFocusVolume != null) FlxG.sound.volume = _lastFocusVolume;
     #end
   }

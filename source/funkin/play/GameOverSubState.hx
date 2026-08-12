@@ -36,7 +36,7 @@ class GameOverSubState extends MusicBeatSubState
 {
   /**
    * The currently active GameOverSubState.
-   * There should be only one GameOverSubState in existance at a time, we can use a singleton.
+   * There should be only one GameOverSubState in existence at a time, we can use a singleton.
    */
   public static var instance:Null<GameOverSubState> = null;
 

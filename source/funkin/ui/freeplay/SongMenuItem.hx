@@ -522,11 +522,10 @@ class SongMenuItem extends FlxSpriteGroup
     {
       songText.scale.x = 0.4;
       songText.scale.y = 1.4;
-    });
-
-    new FlxTimer().start(2 / 24, function(_)
-    {
-      songText.scale.x = songText.scale.y = 1;
+      new FlxTimer().start(2 / 24, function(_)
+      {
+        songText.scale.x = songText.scale.y = 1;
+      });
     });
   }
 
@@ -536,6 +535,8 @@ class SongMenuItem extends FlxSpriteGroup
     {
       spr.visible = value;
     }
+
+    textAppear();
 
     updateSelected();
   }

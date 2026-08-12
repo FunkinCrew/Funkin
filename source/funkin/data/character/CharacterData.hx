@@ -30,7 +30,7 @@ class CharacterDataParser
    *
    * - Version 1.0.1 adds `death.cameraOffsets`
    */
-  public static final CHARACTER_DATA_VERSION:String = '1.0.1';
+  public static final CHARACTER_DATA_VERSION:String = '1.0.2';
 
   /**
    * The current version rule check for the stage data format.

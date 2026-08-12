@@ -59,16 +59,16 @@ enum abstract ScriptEventType(String) from String to String
   public var RESUME = 'RESUME';
 
   /**
-   * Called once per step in the song. This happens 4 times per measure.
+   * Called once per beat in the song. This happens 4 times per measure.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the beat hit from processing.
    */
   public var SONG_BEAT_HIT = 'SONG_BEAT_HIT';
 
   /**
    * Called once per step in the song. This happens 16 times per measure.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the step hit from processing.
    */
   public var SONG_STEP_HIT = 'SONG_STEP_HIT';
 
@@ -101,7 +101,8 @@ enum abstract ScriptEventType(String) from String to String
    * Called when a character lets go of a hold note.
    * Important information such as note data, player/opponent, etc. are all provided.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event prevents the hold from being considered dropped,
+   *   avoiding a combo break, lost health.
    */
   public var NOTE_HOLD_DROP = 'NOTE_HOLD_DROP';
 
@@ -123,16 +124,18 @@ enum abstract ScriptEventType(String) from String to String
   public var SONG_EVENT = 'SONG_EVENT';
 
   /**
-   * Called when the song starts. This occurs as the countdown ends and the instrumental and vocals begin.
+   * Called when the song starts. This occurs as the countdown ends and the instrumental begin.
    *
    * This event is not cancelable.
    */
   public var SONG_START = 'SONG_START';
 
   /**
-   * Called when the song ends. This happens as the instrumental and vocals end.
+   * Called when the song ends. This happens as the instrumental end.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the song from ending.
+   * - The song will not end until you call PlayState.instance.endSong() later.
+   * - Note that calling endSong() will trigger this event again, so be sure to add logic to ignore it.
    */
   public var SONG_END = 'SONG_END';
 
@@ -164,7 +167,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called before the game over screen triggers and the death animation plays.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the game from transitioning to the game over screen.
    */
   public var GAME_OVER = 'GAME_OVER';
 
@@ -172,7 +175,7 @@ enum abstract ScriptEventType(String) from String to String
    * Called after the player presses a key to restart the game.
    * This can happen from the pause menu or the game over screen.
    *
-   * This event IS cancelable! Canceling this event will prevent the game from restarting.
+   * This event IS cancelable! Canceling this event will prevent the song from restarting.
    */
   public var SONG_RETRY = 'SONG_RETRY';
 
@@ -201,7 +204,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called when the game is about to switch the current FlxState.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the state from changing.
    */
   public var STATE_CHANGE_BEGIN = 'STATE_CHANGE_BEGIN';
 
@@ -215,7 +218,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called when the game is about to open a new FlxSubState.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the substate from opening.
    */
   public var SUBSTATE_OPEN_BEGIN = 'SUBSTATE_OPEN_BEGIN';
 
@@ -229,7 +232,7 @@ enum abstract ScriptEventType(String) from String to String
   /**
    * Called when the game is about to close the current FlxSubState.
    *
-   * This event is not cancelable.
+   * This event IS cancelable! Canceling this event will prevent the substate from closing.
    */
   public var SUBSTATE_CLOSE_BEGIN = 'SUBSTATE_CLOSE_BEGIN';
 

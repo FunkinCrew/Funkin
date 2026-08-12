@@ -173,7 +173,7 @@ class PlayState extends MusicBeatSubState
    */
   /**
    * The currently active PlayState.
-   * There should be only one PlayState in existance at a time, we can use a singleton.
+   * There should be only one PlayState in existence at a time, we can use a singleton.
    */
   public static var instance:Null<PlayState>;
 
@@ -797,9 +797,9 @@ class PlayState extends MusicBeatSubState
     camTransition = new FunkinCamera('playStateCamTransition');
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
-    var noteStyleId:Null<String> = currentChart?.noteStyle;
-    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId ?? Constants.DEFAULT_NOTE_STYLE);
-    if (nulNoteStyle == null) throw "Failed to retrieve both note style and default note style. This shouldn't happen!";
+    var noteStyleId:String = currentChart?.noteStyle ?? '';
+    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (nulNoteStyle == null) nulNoteStyle = NoteStyleRegistry.instance.fetchDefault();
     noteStyle = nulNoteStyle;
 
     // Strumlines
@@ -1164,11 +1164,11 @@ class PlayState extends MusicBeatSubState
       }
 
       // Lime has some precision loss when getting the sound current position
-      // Since the notes scrolling is dependant on the sound time that caused it to appear "stuttery" for some people
+      // Since the notes scrolling is dependent on the sound time that caused it to appear "stuttery" for some people
       // As a workaround for that, we lerp the conductor position to the music time to fill the gap in this lost precision making the scrolling smoother
       // The previous method where it "guessed" the song position based on the elapsed time had some flaws
       // Sometimes the songPosition would exceed the music length causing issues in other places
-      // And it was frame dependant which we don't like!!
+      // And it was frame dependent which we don't like!!
       if (FlxG.sound.music.playing)
       {
         final audioDiff:Float = Math.round(Math.abs(FlxG.sound.music.time - (Conductor.instance.songPosition - Conductor.instance.combinedOffset)));
@@ -2169,7 +2169,7 @@ class PlayState extends MusicBeatSubState
       {
         var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
         var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? (currentChart?.album ?? '');
-        var icon:Null<String> = currentChart?.discordRPCImage ?? 'icon-${currentCharacterData.opponent}';
+        var icon:Null<String> = currentChart?.discordRPCImage ?? 'icon-${dad.getHealthIconId()}';
 
         discordRPCAlbum = album;
         discordRPCIcon = icon;
@@ -3045,8 +3045,6 @@ class PlayState extends MusicBeatSubState
       if (input == null) continue;
 
       // Whether this direction is already held by another key.
-      var isAlreadyHeld = playerStrumline.isKeyHeld(input.noteDirection);
-
       playerStrumline.pressKey(input.noteDirection, input.keyCode);
 
       // Don't credit or penalize inputs in Bot Play.
@@ -3055,9 +3053,9 @@ class PlayState extends MusicBeatSubState
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0 && !isAlreadyHeld)
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
       #else
-      if (notesInDirection.length == 0 && !isAlreadyHeld)
+      if (notesInDirection.length == 0)
       #end
       {
         // Pressed a wrong key with no notes nearby.
@@ -3376,17 +3374,6 @@ class PlayState extends MusicBeatSubState
     }
     if (combo == null) combo = Highscore.tallies.combo;
 
-    if (!isPracticeMode)
-    {
-      // TODO: Input splitter uses old input system, make it pull from the precise input queue directly.
-      var pressArray:Array<Bool> = [controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P];
-
-      var indices:Array<Int> = [];
-      for (i in 0...pressArray.length)
-      {
-        if (pressArray[i]) indices.push(i);
-      }
-    }
     comboPopUps.displayRating(daRating);
     if (combo >= 10) comboPopUps.displayCombo(combo);
 
@@ -3674,7 +3661,8 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId) ?? throw 'Could not find a song with ID $targetSongId';
+          var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId,
+            {variation: currentVariation}) ?? throw 'Could not find a song with ID $targetSongId';
           var targetVariation:String = currentVariation;
           if (!targetSong.hasDifficulty(PlayStatePlaylist.campaignDifficulty, currentVariation))
           {

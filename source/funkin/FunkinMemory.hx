@@ -98,6 +98,8 @@ class FunkinMemory
    */
   public static inline function purgeCache(callGarbageCollector:Bool = false):Void
   {
+    trace(' CLEARING CACHE '.bg_bright_lilac().bold() +  ' Disposing all cached textures, assets and sounds...');
+
     preparePurgeTextureCache();
     purgeTextureCache();
     preparePurgeSoundCache();
