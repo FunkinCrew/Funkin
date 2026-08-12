@@ -10,6 +10,7 @@ import funkin.play.cutscene.dialogue.Conversation;
 import funkin.play.Countdown.CountdownStep;
 import funkin.play.notes.NoteDirection;
 import funkin.ui.freeplay.SongMenuItem;
+import funkin.play.scoring.Scoring.ScoringRank;
 import openfl.events.KeyboardEvent;
 
 /**
@@ -584,12 +585,18 @@ class CapsuleScriptEvent extends ScriptEvent
    */
   public var variationId(default, null):String;
 
-  public function new(type:ScriptEventType, capsule:SongMenuItem, difficultyId:String, variationId:String):Void
+  /**
+   * The rank achieved on the selected song.
+   */
+  public var rank(default, null):ScoringRank;
+
+  public function new(type:ScriptEventType, capsule:SongMenuItem, difficultyId:String, variationId:String, ?rank:ScoringRank):Void
   {
     super(type, false);
     this.capsule = capsule;
     this.difficultyId = difficultyId;
     this.variationId = variationId;
+    this.rank = rank;
   }
 
   override public function toString():String
