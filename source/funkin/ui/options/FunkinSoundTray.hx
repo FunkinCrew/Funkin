@@ -156,6 +156,13 @@ class FunkinSoundTray extends FlxSoundTray
     for (i in 0..._bars.length) _bars[i].visible = i < globalVolume;
   }
 
+  override public function screenCenter():Void
+  {
+    scaleX = _defaultScale * (FlxG.scaleMode.scale.x > 0 ? FlxG.scaleMode.scale.x : 1);
+    scaleY = _defaultScale * (FlxG.scaleMode.scale.y > 0 ? FlxG.scaleMode.scale.y : 1);
+    x = (0.5 * (FlxG.stage.stageWidth - _bg.width * scaleX) - FlxG.game.x);
+  }
+
   function saveVolumePreferences():Void
   {
     // Actually save when the volume is changed / modified
