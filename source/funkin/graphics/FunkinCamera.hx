@@ -9,6 +9,7 @@ import flixel.graphics.tile.FlxDrawQuadsItem;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
+import flixel.graphics.tile.FlxGraphicsShader;
 import flixel.system.FlxAssets.FlxShader;
 import funkin.graphics.framebuffer.FunkinBufferRenderer;
 import funkin.graphics.shaders.RuntimeCustomBlendShader;
@@ -128,6 +129,12 @@ class FunkinCamera extends FlxCamera
   public var bufferRenderer:FunkinBufferRenderer;
 
   /**
+   * The shader to use on all objects rendering through this camera (only if the incoming objects do not define a shader).
+   * If null defaults to `FlxGraphicsShader`
+   */
+  public var defaultShader:Null<FlxGraphicsShader> = null;
+
+  /**
    * The rendered buffer texture.
    */
   public var texture(get, never):BitmapData;
@@ -186,7 +193,8 @@ class FunkinCamera extends FlxCamera
     ?smoothing:Bool = false,
     ?shader:FlxShader):Void
   {
-    var shouldUseShader:Bool = blend != null
+    var shouldUseShader:Bool =
+      blend != null
       && blend != NORMAL
       && ((!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend));
 
@@ -290,12 +298,10 @@ class FunkinCamera extends FlxCamera
     smooth:Bool = false,
     ?shader:FlxShader):FlxDrawQuadsItem
   {
+    if (shader == null) shader = defaultShader;
+
     // Can't batch complex non-coherent blends, so always force a new batch
-    if (blend != null
-      && blend != NORMAL
-      && hasKhronosExtension
-      && !(OpenGLRenderer.__coherentBlendsSupported ?? false)
-      && KHR_BLEND_MODES.contains(blend))
+    if (blend != null && blend != NORMAL && hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
     {
       var itemToReturn = null;
 
@@ -343,6 +349,25 @@ class FunkinCamera extends FlxCamera
     return super.startQuadBatch(graphic, colored, hasColorOffsets, blend, smooth, shader);
   }
 
+  public var blackListKeys:Array<String> = [];
+  public var whiteListKeys:Array<String> = [];
+  public var useWhitelist:Bool = false;
+
+  function shouldRender(graphic:FlxGraphic):Bool
+  {
+    if (blackListKeys.contains(graphic.key))
+    {
+      return false;
+    }
+
+    if (useWhitelist && !whiteListKeys.contains(graphic.key))
+    {
+      return false;
+    }
+
+    return !graphic.isDestroyed;
+  }
+
   @:allow(flixel.system.frontEnds.CameraFrontEnd)
   override function render():Void
   {
@@ -369,6 +394,26 @@ class FunkinCamera extends FlxCamera
         }
       }
 
+      var shader = null;
+      final quadItem:FlxDrawQuadsItem = cast currItem;
+      if (quadItem != null)
+      {
+        var graphics = quadItem.graphics;
+        if (graphics != null && graphics.shader != null && Type.getClass(graphics.shader) != FlxGraphicsShader) shader = graphics.shader;
+        if (shader == null) shader = quadItem.shader;
+      }
+
+      final triItem:FlxDrawTrianglesItem = cast currItem;
+      if (triItem != null && shader == null)
+      {
+        var graphics = triItem.graphics;
+        if (graphics != null && graphics.shader != null && Type.getClass(graphics.shader) != FlxGraphicsShader) shader = graphics.shader;
+        if (shader == null) shader = triItem.shader;
+      }
+
+      if (shader == null && defaultShader != null) shader = defaultShader;
+      if (shader != null) shader.sampleAttachment.value = [shouldRender(currItem.graphics)];
+
       currItem.render(this);
       currItem = currItem.next;
     }
@@ -381,6 +426,8 @@ class FunkinCamera extends FlxCamera
     ?hasColorOffsets:Bool,
     ?shader:FlxShader):FlxDrawTrianglesItem
   {
+    if (shader == null) shader = defaultShader;
+
     // Can't batch complex non-coherent blends, so always force a new batch
     if (
       blend != null

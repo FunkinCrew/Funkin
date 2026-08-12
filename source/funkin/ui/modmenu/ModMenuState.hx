@@ -664,11 +664,11 @@ class ModMenuState extends MusicBeatState
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowUI.renderer.blacklistSprite(menuBG);
-    dropShadowUI.renderer.blacklistSprite(bgWires);
-    dropShadowUI.renderer.blacklistSprite(crispySmokeBF);
-    dropShadowUI.renderer.blacklistSprite(crispySmokeGF);
-    dropShadowUI.renderer.blacklistSprite(sparks);
+    dropShadowUI.blacklistSprite(menuBG);
+    dropShadowUI.blacklistSprite(bgWires);
+    dropShadowUI.blacklistSprite(crispySmokeBF);
+    dropShadowUI.blacklistSprite(crispySmokeGF);
+    dropShadowUI.blacklistSprite(sparks);
 
     changeCharacters();
 
@@ -1415,9 +1415,9 @@ class ModMenuState extends MusicBeatState
     var bgColor:FlxColor = menuBG.color;
     whiteColor.colorSet = true;
 
-    dropShadowCharacters.renderer.blacklistSprite(gfWire);
-    dropShadowCharacters.renderer.blacklistSprite(carBattery);
-    dropShadowCharacters.renderer.blacklistSprite(fgWires);
+    dropShadowCharacters.blacklistSprite(gfWire);
+    dropShadowCharacters.blacklistSprite(carBattery);
+    dropShadowCharacters.blacklistSprite(fgWires);
 
     var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, 0xFF232327);
     blackFlash.zIndex = 0;
@@ -1442,9 +1442,9 @@ class ModMenuState extends MusicBeatState
       buttonOpenFolder.visible = false;
 
       dropShadowCharacters.visible = false;
-      dropShadowCharacters.renderer.whitelistSprite(gfWire);
-      dropShadowCharacters.renderer.whitelistSprite(carBattery);
-      dropShadowCharacters.renderer.whitelistSprite(fgWires);
+      dropShadowCharacters.whitelistSprite(gfWire);
+      dropShadowCharacters.whitelistSprite(carBattery);
+      dropShadowCharacters.whitelistSprite(fgWires);
 
       FlxTimer.wait(2 / 24, () ->
       {
