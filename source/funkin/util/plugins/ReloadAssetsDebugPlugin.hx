@@ -45,19 +45,28 @@ class ReloadAssetsDebugPlugin extends FlxBasic
       @:privateAccess
       var path:String = s._asc?.fullyQualifiedName ?? '';
       trace('Hot-reloading scripted state: ' + path);
-      FlxG.switchState(() -> new HotReloadState(() ->
-      {
-        var newState:Null<funkin.ui.MusicBeatState> = MusicBeatState.scriptInit(path);
-        if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
-        return newState;
-      }));
+
+      s.onPreHotReload();
+
+      var hotReloadParams = s.getHotReloadParams();
+
+      FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
     else
     {
-      var builder = state._constructor;
+      // Default params incase the current state is a ScriptedFlxState or anything we can't get custom params from.
+      var hotReloadParams = {
+        targetState: state._constructor
+      };
 
-      trace('Hot-reloading unscripted state: ' + state);
-      FlxG.switchState(() -> new HotReloadState(builder));
+      if (Std.isOfType(state, MusicBeatState))
+      {
+        state.onPreHotReload();
+
+        // Fetch the custom hot reload params for this state.
+        hotReloadParams = state.getHotReloadParams();
+      }
+      FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
   }
 }

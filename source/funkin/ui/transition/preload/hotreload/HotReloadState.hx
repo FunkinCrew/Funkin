@@ -1,6 +1,5 @@
 package funkin.ui.transition.preload.hotreload;
 
-import flixel.util.typeLimit.NextState;
 import funkin.assets.FunkinAssetCache;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.character.CharacterData.CharacterDataParser;
@@ -22,6 +21,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.ui.title.TitleState;
 import funkin.util.tasks.TaskHandler;
+import flixel.util.typeLimit.NextState;
 import lime.app.Future;
 import polymod.Polymod;
 
@@ -31,13 +31,27 @@ import polymod.Polymod;
  *
  * Includes a progress bar and a throbber to indicate progress and working status.
  */
+typedef HotReloadStateParams =
+{
+  /**
+   * Callback for when hotreloading finishes.
+   */
+  var ?onComplete:Void->Void;
+
+  /**
+   * The state to switch to after hot reloading is complete.
+   * If `null`, `HotReloadState` will go to the Title instead unless explicitly specified in `onComplete`
+   */
+  var ?targetState:NextState;
+}
+
 @:nullSafety
 class HotReloadState extends MusicBeatState
 {
   static final BAR_PAD:Int = 16;
   static final BAR_HEIGHT:Int = 24;
 
-  // The state to move to.
+  var onComplete:Null<Void->Void> = null;
   var targetState:Null<NextState> = null;
   // Status.
   var hasStartedLoading:Bool = false;
@@ -48,13 +62,15 @@ class HotReloadState extends MusicBeatState
   var progressBar:FunkinSprite;
   var throbber:FunkinSprite;
 
-  public function new(?targetState:NextState)
+  public function new(?params:HotReloadStateParams)
   {
     super();
-
-    this.targetState = targetState;
+    @:nullSafety(Off)
+    {
+      this.onComplete = params.onComplete ?? null;
+      this.targetState = params.targetState ?? null;
+    }
     this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD);
-
     throbber = new FunkinSprite(0, 0);
   }
 
@@ -316,18 +332,42 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
+    var postHotReloadCallback = () ->
+    {
+      if (FlxG.state is MusicBeatState)
+      {
+        var state:MusicBeatState = cast FlxG.state;
+        state.onPostHotReload();
+      }
+    }
+
+    // This'll dispatch after create() is called when the state is created.
+    FlxG.signals.postStateSwitch.addOnce(postHotReloadCallback);
 
     if (targetState != null)
     {
+      if (onComplete != null) onComplete();
+
       FlxG.switchState(targetState);
-    }
-    else if (InitState.customTitleState == null)
-    {
-      FlxG.switchState(() -> new TitleState());
     }
     else
     {
-      FlxG.switchState(() -> InitState.customTitleState);
+      if (onComplete != null)
+      {
+        // Assume `onComplete` handles switching to the next state.
+        this.onComplete();
+        return;
+      }
+
+      // Fallback to TitleState.
+      if (InitState.customTitleState == null)
+      {
+        FlxG.switchState(() -> new TitleState());
+      }
+      else
+      {
+        FlxG.switchState(() -> InitState.customTitleState);
+      }
     }
   }
 }
