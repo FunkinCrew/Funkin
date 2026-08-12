@@ -219,19 +219,19 @@ class FunkinDebugDisplay extends Sprite
     updateTaskMemGraph();
 
     var info:Array<String> = [];
-    info.push('FPS: $fps');
+    info.push(Preferences.showStatPeaks ? 'FPS: $fps / $fpsPeak' : 'FPS: $fps');
     info.push('AVG FPS: ${Math.floor(fpsGraph.average())}');
     info.push('1% LOW FPS: ${Math.floor(fpsGraph.lowest())}');
     fpsGraph.textDisplay.text = info.join('\n');
 
     if (gcMemGraph != null)
     {
-      gcMemGraph.textDisplay.text = 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}';
+      gcMemGraph.textDisplay.text = Preferences.showStatPeaks ? 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}' : 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()}';
     }
 
     if (taskMemGraph != null)
     {
-      taskMemGraph.textDisplay.text = 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}';
+      taskMemGraph.textDisplay.text = Preferences.showStatPeaks ? 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}' : 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()}';
     }
   }
 
@@ -241,16 +241,16 @@ class FunkinDebugDisplay extends Sprite
     {
       var info:Array<String> = [];
 
-      info.push('FPS: $fps');
+      info.push(Preferences.showStatPeaks ? 'FPS: $fps / $fpsPeak' : 'FPS: $fps');
 
       if (MemoryUtil.supportsGCMem())
       {
-        info.push('GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}');
+        info.push(Preferences.showStatPeaks ? 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()} / ${FlxStringUtil.formatBytes(gcMemPeak).toLowerCase()}' : 'GC MEM: ${FlxStringUtil.formatBytes(gcMem).toLowerCase()}');
       }
 
       if (MemoryUtil.supportsTaskMem())
       {
-        info.push('TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}');
+        info.push(Preferences.showStatPeaks ? 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()} / ${FlxStringUtil.formatBytes(taskMemPeak).toLowerCase()}' : 'TASK MEM: ${FlxStringUtil.formatBytes(taskMem).toLowerCase()}');
       }
 
       infoDisplay.text = info.join('\n');
