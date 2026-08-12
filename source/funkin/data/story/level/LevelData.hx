@@ -49,6 +49,14 @@ typedef LevelData =
   var visible:Bool;
 
   /**
+   * Whether this week is visible in the freeplay menu.
+   * @default `true`
+   */
+  @:default(true)
+  @:optional
+  var visibleFreeplay:Bool;
+
+  /**
    * The list of song IDs included in this level.
    */
   @:default(['bopeebo'])
