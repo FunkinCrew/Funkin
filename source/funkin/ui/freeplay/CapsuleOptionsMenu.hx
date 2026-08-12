@@ -101,7 +101,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         currentInstrumentalIndex = (currentInstrumentalIndex - 1 + instrumentalIds.length) % instrumentalIds.length;
         changedInst = true;
       }
-      if (parent.controls.ACCEPT_P
+      if ((parent.controls.ACCEPT_P || FlxG.mouse.justPressed)
         #if FEATURE_TOUCH_CONTROLS
         || ((TouchUtil.pressAction(currentInstrumental)) && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow)))
         #end)
