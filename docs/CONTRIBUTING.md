@@ -60,8 +60,8 @@ This section provides guidelines to follow when [opening an issue](https://githu
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.8.5 for Android, v0.8.4 for all other platforms)
-- without any mods
+- the latest version of the game (currently v0.8.6) or a public playtest version (v0.9 Feature Preview builds)
+- without any mods (unless the issue involves mods)
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
 ## Rejected Features
