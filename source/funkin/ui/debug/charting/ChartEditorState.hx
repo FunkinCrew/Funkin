@@ -100,11 +100,13 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
+import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
 import funkin.util.MathUtil;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
+import funkin.util.file.FNFCUtil.FNFCData;
 import funkin.util.logging.CrashHandler;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
@@ -903,6 +905,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * For example, `0.5` would be displayed as `1/32`, and `0` would show as `Exact`.
    */
   public static var stackedNoteThreshold:Float = 0;
+
+  /**
+   * Whether the user was playtesting a chart before hot reloading began.
+   */
+  static var wasPlaytesting:Bool = false;
 
   // Note Movement
 
@@ -2567,23 +2574,47 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (finish) event.finish();
   }
 
-  override public function reloadAssets()
+  override function onPreHotReload():Void
   {
     performCleanup();
-    // If PlayState isn't open, do a regular reload.
-    if (!isPlaytesting)
-    {
-      super.reloadAssets();
-      return;
-    }
+    wasPlaytesting = isPlaytesting;
+  }
 
-    funkin.modding.PolymodHandler.forceReloadAssets();
-
-    // Create a new instance of the current substate, so old data is cleared.
-    this.resetSubState();
-
+  override function getHotReloadParams():HotReloadStateParams
+  {
     @:privateAccess
-    testSongInPlayState(PlayState.lastParams.minimalMode);
+    if (wasPlaytesting)
+    {
+      return {
+        onComplete: () -> {
+          if (wasPlaytesting)
+          {
+            // Fixes a bug where hot-reloading after playtesting would close PlayState.
+            FlxTransitionableState.skipNextTransIn = true;
+          }
+        },
+        targetState: () -> new ChartEditorState({
+          loadFromPath: currentWorkingFilePath,
+          loadFromFNFCData: currentWorkingFilePath == null ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+          targetSongDifficulty: PlayState.lastParams.targetDifficulty,
+          targetSongVariation: PlayState.lastParams.targetVariation,
+          targetSongPosition: Conductor.instance.songPosition
+        })
+      }
+    }
+    else
+    {
+      return super.getHotReloadParams();
+    }
+  }
+
+  override function onPostHotReload():Void
+  {
+    if (wasPlaytesting)
+    {
+      @:privateAccess
+      testSongInPlayState(PlayState.lastParams.minimalMode);
+    }
   }
 
   override function create():Void
@@ -2676,6 +2707,30 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       catch (e)
       {
         this.error('Failure', 'Failed to load chart (${targetSongId})\n$e');
+
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog(false);
+        if (shouldShowBackupAvailableDialog)
+        {
+          this.openBackupAvailableDialog(welcomeDialog);
+        }
+      }
+    }
+    else if (params != null && params.loadFromFNFCData != null)
+    {
+      try
+      {
+        this.loadSongFromFNFCData(params.loadFromFNFCData);
+        if (params.targetSongPosition != null)
+        {
+          this.scrollPositionInMs = params.targetSongPosition;
+          moveSongToScrollPosition();
+          this.currentScrollEase = this.scrollPositionInPixels;
+        }
+      }
+      catch (e)
+      {
+        this.error('Failure', 'Failed to load FNFCData (${params.loadFromFNFCData})\n$e');
 
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog(false);
@@ -3963,13 +4018,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (FlxG.keys.justPressed.F4 && !criticalFailure)
     {
       quitChartEditor();
-      return;
-    }
-
-    // Hot reloading
-    if (FlxG.keys.justPressed.F5 && !criticalFailure)
-    {
-      performCleanup();
       return;
     }
 
@@ -6562,6 +6610,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     ChartEditorEventSprite.eventFrames = null;
 
+    activeToolboxes.clear();
+
     // TODO: In loading screens, you should be  caching BETWEEN these.
     FunkinAssetCache.instance.purgeCache(true);
 
@@ -7097,8 +7147,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     autoSave(true);
 
-    // Force pauses audio preview from OffsetsToolbox, if it exists.
-    cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+    if (!wasPlaytesting)
+    {
+      cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+    }
 
     // Stop audio playback after note preview is stopped.
     // `false` to force the welcome theme to stop too.
@@ -8271,6 +8323,11 @@ typedef ChartEditorParams =
    * If non-null, load an existing song directly from the game's assets.
    */
   var ?loadFromTemplate:String;
+
+  /**
+   * If non-null, load from existing FNFCData.
+   */
+  var ?loadFromFNFCData:FNFCData;
 
   // STARTING POSITION
 

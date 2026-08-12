@@ -60,6 +60,7 @@ import funkin.ui.MusicBeatSubState;
 import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
+import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.GRhythmUtil;
 import funkin.util.HapticUtil;
 import funkin.util.SerializerUtil;
@@ -1826,28 +1827,26 @@ class PlayState extends MusicBeatSubState
     super.onFocusLost();
   }
 
-  /**
-   * Call this by pressing F5 on a debug build.
-   */
-  override function reloadAssets():Void
+  override function onPreHotReload():Void
   {
-    criticalFailure = true;
-
     performCleanup();
+  }
 
-    // `performCleanup()` clears the static reference to this state
-    // scripts might still need it, so we set it back to `this`
-    instance = this;
-
-    funkin.modding.PolymodHandler.forceReloadAssets();
-    if (lastParams == null)
-    {
-      throw 'No lastParams to refer to';
+  override function getHotReloadParams():HotReloadStateParams
+  {
+    return {
+      onComplete: () ->
+      {
+        @:nullSafety(Off)
+        {
+          lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id, {
+            variation: currentVariation
+          });
+          LoadingState.loadPlayState(lastParams);
+        }
+      },
+      targetState: null
     }
-    lastParams.targetSong = SongRegistry.instance.fetchEntry(currentSong.id, {
-      variation: currentVariation
-    }) ?? throw "Could not load current song from ID. This shouldn't happen!";
-    LoadingState.loadPlayState(lastParams);
   }
 
   override function stepHit():Bool
