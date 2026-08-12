@@ -803,9 +803,9 @@ class PlayState extends MusicBeatSubState
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:String = currentChart?.noteStyle ?? '';
-    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    if (nulNoteStyle == null) nulNoteStyle = NoteStyleRegistry.instance.fetchDefault();
-    noteStyle = nulNoteStyle;
+    var nullNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (nullNoteStyle == null) nullNoteStyle = NoteStyleRegistry.instance.fetchDefault();
+    noteStyle = nullNoteStyle;
 
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
