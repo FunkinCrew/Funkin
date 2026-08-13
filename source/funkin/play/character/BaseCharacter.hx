@@ -636,7 +636,7 @@ class BaseCharacter extends Bopper
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
-  override public function onNoteMiss(event:NoteScriptEvent)
+  override public function onNoteMiss(event:NoteScriptEvent):Void
   {
     super.onNoteMiss(event);
 
@@ -659,7 +659,7 @@ class BaseCharacter extends Bopper
     }
   }
 
-  override public function onNoteHoldDrop(event:HoldNoteScriptEvent)
+  override public function onNoteHoldDrop(event:HoldNoteScriptEvent):Void
   {
     super.onNoteHoldDrop(event);
 

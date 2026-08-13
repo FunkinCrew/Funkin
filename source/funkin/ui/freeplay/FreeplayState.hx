@@ -453,7 +453,7 @@ class FreeplayState extends MusicBeatSubState
 
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(backingCard, event);
-    event.put();
+    event.finish();
 
     backingCard.applyExitMovers(exitMovers, exitMoversCharSel);
 
@@ -764,7 +764,6 @@ class FreeplayState extends MusicBeatSubState
 
       var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_INTRO);
       dispatchEvent(event);
-      event.put();
 
       // when boyfriend hits dat shiii
 
@@ -933,16 +932,18 @@ class FreeplayState extends MusicBeatSubState
    * Dispatches script events to all relevant scripted classes.
    * @param event
    */
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     // Dispatch to scripted modules.
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     // Dispatch to scripted backing cards, behind the DJ.
     if (backingCard != null) ScriptEventDispatcher.callEvent(backingCard, event);
 
     // Dispatch to scripted Freeplay DJs.
     if (dj != null) ScriptEventDispatcher.callEvent(dj, event);
+
+    if (finish) event.finish();
   }
 
   /**
@@ -1091,7 +1092,6 @@ class FreeplayState extends MusicBeatSubState
 
     var event:CapsuleScriptEvent = CapsuleScriptEvent.get(DIFFICULTY_SWITCH, currentCapsule, currentDifficulty, currentVariation);
     dispatchEvent(event);
-    event.put();
   }
 
   /**
@@ -2485,7 +2485,6 @@ class FreeplayState extends MusicBeatSubState
 
     var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_OUTRO);
     dispatchEvent(event);
-    event.put();
 
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
 
@@ -3016,7 +3015,6 @@ class FreeplayState extends MusicBeatSubState
 
     var event:CapsuleScriptEvent = CapsuleScriptEvent.get(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation);
     dispatchEvent(event);
-    event.put();
 
     PlayStatePlaylist.isStoryMode = false;
 
@@ -3258,7 +3256,6 @@ class FreeplayState extends MusicBeatSubState
 
     var event:CapsuleScriptEvent = CapsuleScriptEvent.get(CAPSULE_SELECTED, currentCapsule, currentDifficulty, currentVariation);
     dispatchEvent(event);
-    event.put();
   }
 
   public function playCurSongPreview(?daSongCapsule:SongMenuItem):Void

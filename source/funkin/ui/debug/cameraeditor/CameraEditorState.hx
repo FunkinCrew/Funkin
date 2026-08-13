@@ -860,8 +860,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       var doDispatch:Bool = true;
 
-      if (eventEvent.eventCanceled) continue;
-
       switch (eventData.eventKind)
       {
         case 'FocusCamera':
@@ -875,9 +873,9 @@ class CameraEditorState extends UIState implements ConsoleClass
         default:
           if (doSongEvents)
           {
-            var ev:SongEventScriptEvent = SongEventScriptEvent.get(eventData);
-            currentStage.onSongEvent(ev);
-            ev.put();
+            var eventEvent:SongEventScriptEvent = SongEventScriptEvent.get(eventData);
+            currentStage.onSongEvent(eventEvent);
+            eventEvent.finish();
           }
           else
           {
@@ -888,27 +886,30 @@ class CameraEditorState extends UIState implements ConsoleClass
       if (doDispatch)
       {
         dispatchEvent(eventEvent);
-        eventEvent.put();
       }
 
       cachedEventIndex = i + 1;
+
+      eventEvent.finish();
     }
 
     previousTime = conductorInUse.songPosition;
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
-    if (noEvents) return;
-
-    super.dispatchEvent(event);
-
-    if (currentStage != null)
+    if (!noEvents)
     {
-      ScriptEventDispatcher.callEvent(currentStage, event);
+      super.dispatchEvent(event);
 
-      currentStage.dispatchToCharacters(event);
+      if (currentStage != null)
+      {
+        ScriptEventDispatcher.callEvent(currentStage, event);
+
+        currentStage.dispatchToCharacters(event);
+      }
     }
+    if (finish) event.finish();
   }
 
   var previousNoteTime:Float = 0;

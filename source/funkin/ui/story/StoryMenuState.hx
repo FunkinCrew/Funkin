@@ -578,10 +578,10 @@ class StoryMenuState extends MusicBeatState
     refresh();
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     if (levelProps?.members != null && levelProps.members.length > 0)
     {
@@ -591,6 +591,8 @@ class StoryMenuState extends MusicBeatState
         ScriptEventDispatcher.callEvent(prop, event);
       }
     }
+
+    if (finish) event.finish();
   }
 
   function selectLevel():Void

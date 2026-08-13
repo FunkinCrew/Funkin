@@ -98,7 +98,10 @@ class ScriptEventDispatcher
         ScriptEventType.DIALOGUE_COMPLETE_LINE,
         ScriptEventType.DIALOGUE_SKIP,
         ScriptEventType.DIALOGUE_END
-      ].contains(event.type)) return;
+      ].contains(event.type))
+      {
+        return;
+      }
     }
 
     if (Std.isOfType(target, INoteScriptedClass))
@@ -207,7 +210,10 @@ class ScriptEventDispatcher
         ScriptEventType.COUNTDOWN_STEP,
         ScriptEventType.COUNTDOWN_END,
         ScriptEventType.SONG_LOADED
-      ].contains(event.type)) return;
+      ].contains(event.type))
+      {
+        return;
+      }
     }
 
     if (Std.isOfType(target, IStateChangingScriptedClass))
@@ -254,7 +260,10 @@ class ScriptEventDispatcher
         ScriptEventType.SUBSTATE_CLOSE_END,
         ScriptEventType.FOCUS_LOST,
         ScriptEventType.FOCUS_GAINED
-      ].contains(event.type)) return;
+      ].contains(event.type))
+      {
+        return;
+      }
     }
 
     if (Std.isOfType(target, IFreeplayScriptedClass))
@@ -293,7 +302,10 @@ class ScriptEventDispatcher
         ScriptEventType.FREEPLAY_INTRO,
         ScriptEventType.FREEPLAY_OUTRO,
         ScriptEventType.FREEPLAY_CLOSE
-      ].contains(event.type)) return;
+      ].contains(event.type))
+      {
+        return;
+      }
     }
 
     if (Std.isOfType(target, ICharacterSelectScriptedClass))
@@ -320,7 +332,10 @@ class ScriptEventDispatcher
         ScriptEventType.CHARACTER_SELECTED,
         ScriptEventType.CHARACTER_DESELECTED,
         ScriptEventType.CHARACTER_CONFIRMED
-      ].contains(event.type)) return;
+      ].contains(event.type))
+      {
+        return;
+      }
     }
 
     // If we reach this line, it means a script event was dispatched while not being properly handled.
@@ -328,7 +343,14 @@ class ScriptEventDispatcher
     throw 'No corresponding function called for dispatched event type: ${event.type}';
   }
 
-  public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>, event:ScriptEvent):Void
+  /**
+   * Invoke the given event hook on all given scripted classes.
+   *
+   * @param targets The target classes to call script hooks on.
+   * @param event The event, which determines the script hook to call and provides parameters for it.
+   */
+  public static function callEventOnAllTargets(targets:Iterator<IScriptedClass>,
+    event:ScriptEvent):Void
   {
     if (targets == null || event == null) return;
 

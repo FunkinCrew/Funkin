@@ -162,7 +162,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
     dispatchEvent(event);
-    event.put();
   }
 
   override function onFocus():Void
@@ -171,7 +170,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     var event:ScriptEvent = FocusScriptEvent.get(FOCUS_GAINED);
     dispatchEvent(event);
-    event.put();
   }
 
   override function onFocusLost():Void
@@ -180,7 +178,6 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     var event:ScriptEvent = FocusScriptEvent.get(FOCUS_LOST);
     dispatchEvent(event);
-    event.put();
   }
 
   public function initConsoleHelpers():Void
@@ -215,11 +212,15 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     var event:ScriptEvent = SongTimeScriptEvent.get(SONG_STEP_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
-    dispatchEvent(event);
-    event.put();
+    dispatchEvent(event, false);
 
-    if (event.eventCanceled) return false;
+    if (event.eventCanceled)
+    {
+      event.finish();
+      return false;
+    }
 
+    event.finish();
     return true;
   }
 
@@ -234,17 +235,23 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
 
     var event:ScriptEvent = SongTimeScriptEvent.get(SONG_BEAT_HIT, conductorInUse.currentBeat, conductorInUse.currentStep);
 
-    dispatchEvent(event);
-    event.put();
+    dispatchEvent(event, false);
 
-    if (event.eventCanceled) return false;
+    if (event.eventCanceled)
+    {
+      event.finish();
+      return false;
+    }
 
+    event.finish();
     return true;
   }
 
-  public function dispatchEvent(event:ScriptEvent)
+  public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     ModuleHandler.callEvent(event);
+
+    if (finish) event.finish();
   }
 
   function createWatermarkText():Void
@@ -280,56 +287,60 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   {
     var event = StateChangeScriptEvent.get(STATE_CHANGE_BEGIN, null, true);
 
-    dispatchEvent(event);
-    event.put();
+    dispatchEvent(event, false);
 
     if (event.eventCanceled)
     {
+      event.finish();
       return;
     }
-    else
-    {
-      FunkinSound.stopAllAudio();
 
-      onComplete();
-    }
+    FunkinSound.stopAllAudio();
+    onComplete();
+    event.finish();
   }
 
   override public function openSubState(targetSubState:FlxSubState):Void
   {
     var event = SubStateScriptEvent.get(SUBSTATE_OPEN_BEGIN, targetSubState, true);
 
-    dispatchEvent(event);
-    event.put();
+    dispatchEvent(event, false);
 
-    if (event.eventCanceled) return;
+    if (event.eventCanceled)
+    {
+      event.finish();
+      return;
+    }
 
     super.openSubState(targetSubState);
+    event.finish();
   }
 
   function onOpenSubStateComplete(targetState:FlxSubState):Void
   {
     var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_OPEN_END, targetState, true);
     dispatchEvent(event);
-    event.put();
   }
 
   override public function closeSubState():Void
   {
     var event = SubStateScriptEvent.get(SUBSTATE_CLOSE_BEGIN, this.subState, true);
 
-    dispatchEvent(event);
-    event.put();
+    dispatchEvent(event, false);
 
-    if (event.eventCanceled) return;
+    if (event.eventCanceled)
+    {
+      event.finish();
+      return;
+    }
 
     super.closeSubState();
+    event.finish();
   }
 
   function onCloseSubStateComplete(targetState:FlxSubState):Void
   {
     var event:SubStateScriptEvent = SubStateScriptEvent.get(SUBSTATE_CLOSE_END, targetState, true);
     dispatchEvent(event);
-    event.put();
   }
 }

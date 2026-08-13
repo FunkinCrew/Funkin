@@ -555,15 +555,18 @@ class StageEditorState extends UIState
     return super.beatHit();
   }
 
-  override public function dispatchEvent(event:funkin.modding.events.ScriptEvent)
+  override public function dispatchEvent(event:funkin.modding.events.ScriptEvent,
+    finish:Bool = true)
   {
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     // Dispatch the Conductor events to the stage props and characters to make them dance on beat in the testing mode.
     if (!testingMode || !(event is funkin.modding.events.ScriptEvent.SongTimeScriptEvent)) return;
 
     for (prop in spriteArray) ScriptEventDispatcher.callEvent(prop, event);
     for (char in getCharacters()) ScriptEventDispatcher.callEvent(char, event);
+
+    if (finish) event.finish();
   }
 
   override public function update(elapsed:Float):Void

@@ -105,7 +105,7 @@ class ScriptEventPoolMacro
 
         buildFields.push({
           name: resetFunction,
-          doc: 'An alternative way of resetting an event without calling the constructor.',
+          doc: 'Resets the event object without calling the constructor.',
           access: [APrivate],
           pos: pos,
           kind: FFun({
@@ -130,10 +130,10 @@ class ScriptEventPoolMacro
               var event = null;
               for (item in pool)
               {
-                if (!item.hasBeenUsed)
+                if (!item.isInUse)
                 {
                   event = item;
-                  event.hasBeenUsed = true;
+                  event.isInUse = true;
                   event.$resetFunction($a{argNames});
                   return event;
                 }
@@ -142,7 +142,7 @@ class ScriptEventPoolMacro
               event = Type.createInstance(Type.resolveClass($v{name}), [$a{argNames}]);
               if (event == null) throw 'Couldn\'t instantiate the event class ' + $v{name};
 
-              event.hasBeenUsed = true;
+              event.isInUse = true;
               pool.push(event);
               return event;
             }

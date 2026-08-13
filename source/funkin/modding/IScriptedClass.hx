@@ -16,12 +16,20 @@ interface IScriptedClass
 }
 
 /**
- * Defines an element which can receive script events.
- * For example, the PlayState dispatches the event to all its child elements.
+ * Defines an element which can receive script events and propagate them to its children,
+ * generally the current state.
  */
 interface IEventHandler
 {
-  public function dispatchEvent(event:ScriptEvent):Void;
+  /**
+   * Propagate a script event to this handler's children.
+   *
+   * @param event The script event to propagate.
+   * @param finish If `true`, the event will automatically be marked as not in use once dispatched to all relevant children.
+   *   Keep this `true` by default to allow event objects to be reused, optimizing memory usage.
+   *   Set to `false` if you plan to perform other operations on the event before freeing it.
+   */
+  public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void;
 }
 
 /**

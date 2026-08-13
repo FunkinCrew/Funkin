@@ -517,7 +517,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
     {
       var event:ScriptEvent = ScriptEvent.get(ADDED);
       ScriptEventDispatcher.callEvent(character, event);
-      event.put();
+      event.finish();
 
       #if FEATURE_DEBUG_FUNCTIONS
       debugIconGroup.add(debugIcon);

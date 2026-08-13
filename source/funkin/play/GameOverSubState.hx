@@ -459,11 +459,13 @@ class GameOverSubState extends MusicBeatSubState
     }
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     ScriptEventDispatcher.callEvent(boyfriend, event);
+
+    if (finish) event.finish();
   }
 
   /**

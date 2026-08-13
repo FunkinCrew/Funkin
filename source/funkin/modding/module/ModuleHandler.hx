@@ -185,7 +185,7 @@ class ModuleHandler
   {
     var event:StateChangeScriptEvent = StateChangeScriptEvent.get(STATE_CHANGE_END, FlxG.state, true);
     callEvent(event);
-    event.put();
+    event.finish();
   }
 
   static function addToModuleCache(module:Module):Void
@@ -263,7 +263,7 @@ class ModuleHandler
 
       moduleCache.clear();
       modulePriorityOrder = [];
-      event.put();
+      event.finish();
     }
   }
 
@@ -292,6 +292,6 @@ class ModuleHandler
   {
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     callEvent(event);
-    event.put();
+    event.finish();
   }
 }

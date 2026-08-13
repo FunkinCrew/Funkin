@@ -28,7 +28,7 @@ import funkin.util.EaseUtil;
  * This shit is great for modders but it's pretty elaborate for how much it'll actually be used, lolol. -Eric
  */
 @:nullSafety
-class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass implements IRegistryEntry<ConversationData>
+class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass implements IEventHandler implements IRegistryEntry<ConversationData>
 {
   /**
    * The current state of the conversation.
@@ -206,7 +206,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     var event:UpdateScriptEvent = UpdateScriptEvent.get(elapsed);
     dispatchEvent(event);
-    event.put();
   }
 
   function showCurrentSpeaker():Void
@@ -241,7 +240,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(nextSpeaker, event);
-    event.put();
+    event.finish();
 
     currentSpeaker = nextSpeaker;
     currentSpeaker.zIndex = 200;
@@ -283,7 +282,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
 
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(nextDialogueBox, event);
-    event.put();
+    event.finish();
 
     currentDialogueBox = nextDialogueBox;
     currentDialogueBox.zIndex = 300;
@@ -320,14 +319,12 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_START, this, true);
     dispatchEvent(event);
-    event.put();
   }
 
   public function endConversation():Void
   {
     var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_END, this, true);
     dispatchEvent(event);
-    event.put();
   }
 
   /**
@@ -361,14 +358,13 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     if (event != null)
     {
       dispatchEvent(event);
-      event.put();
     }
   }
 
-  public function dispatchEvent(event:ScriptEvent):Void
+  public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     var currentState:IEventHandler = cast FlxG.state;
-    currentState.dispatchEvent(event);
+    currentState.dispatchEvent(event, finish);
   }
 
   /**
@@ -426,7 +422,6 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var event:DialogueScriptEvent = DialogueScriptEvent.get(DIALOGUE_SKIP, this, true);
     dispatchEvent(event);
-    event.put();
   }
 
   var outroTween:Null<FlxTween> = null;
@@ -463,7 +458,7 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
   {
     var event:ScriptEvent = ScriptEvent.get(DESTROY);
     ScriptEventDispatcher.callEvent(this, event);
-    event.put();
+    event.finish();
   }
 
   /**

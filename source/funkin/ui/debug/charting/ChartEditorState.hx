@@ -2527,9 +2527,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.params = params;
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     // We can't use the ScriptedEventDispatcher with currentCharPlayer because we can't use the IScriptedClass interface on it.
     if (currentPlayerCharacterPlayer != null)
@@ -2563,6 +2563,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         default: // Continue
       }
     }
+
+    if (finish) event.finish();
   }
 
   override public function reloadAssets()
@@ -7822,7 +7824,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var _scriptNoteObj:NoteSprite = null;
 
-  var _noteScriptEvent:HitNoteScriptEvent = null;
   var _currentEvents = null;
   var _allowedEvents = null;
   var _eventTarget:Null<CharacterPlayer> = null;
@@ -7854,14 +7855,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       _scriptNoteObj.direction = _scriptNoteObj.noteData?.getDirection() ?? 0;
       _scriptNoteObj.scrollFactor.set();
 
-      _noteScriptEvent = HitNoteScriptEvent.get(_scriptNoteObj, 0.0, 0, (noteData.getStrumlineIndex() == 0 ? 'perfect' : 'sick'), false, 0);
-      dispatchEvent(_noteScriptEvent);
-      _noteScriptEvent.put();
+      var event = HitNoteScriptEvent.get(_scriptNoteObj, 0.0, 0, (noteData.getStrumlineIndex() == 0 ? 'perfect' : 'sick'), false, 0);
+      dispatchEvent(event, false);
 
       // Calling event.cancelEvent() skips all the other logic! Neat!
-      if (_noteScriptEvent.eventCanceled)
+      if (event.eventCanceled)
       {
         _scriptNoteObj = null;
+        event.finish();
 
         continue;
       }
@@ -7877,6 +7878,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
         }
       }
+
+      event.finish();
     }
 
     for (data in _allowedEvents)

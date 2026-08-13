@@ -48,7 +48,7 @@ class ScriptEvent
    * In certain cases, such as when switching states in `onStateChangeBegin`, multiple of the same events would be needed,
    * and this variable signified whether another event instance should be created.
    */
-  public var hasBeenUsed(default, null):Bool = false;
+  public var isInUse(default, null):Bool = false;
 
   public function new(type:ScriptEventType, cancelable:Bool = false):Void
   {
@@ -90,9 +90,9 @@ class ScriptEvent
   /**
    * Make this event reusable in the pool.
    */
-  public function put()
+  public function finish():Void
   {
-    hasBeenUsed = false;
+    isInUse = false;
   }
 
   public function toString():String
@@ -175,7 +175,14 @@ class HitNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(note:NoteSprite, healthChange:Float, score:Float, judgement:String, isComboBreak:Bool, comboCount:Int = 0, hitDiff:Float = 0, doesNotesplash:Bool = false):Void
+  public function new(note:NoteSprite,
+    healthChange:Float,
+    score:Float,
+    judgement:String,
+    isComboBreak:Bool,
+    comboCount:Int = 0,
+    hitDiff:Float = 0,
+    doesNotesplash:Bool = false):Void
   {
     super(NOTE_HIT, note, healthChange, comboCount, true);
     this.score = score;
@@ -287,7 +294,13 @@ class HoldNoteScriptEvent extends NoteScriptEvent
    */
   public var doesNotesplash:Bool = false;
 
-  public function new(type:ScriptEventType, holdNote:SustainTrail, healthChange:Float, score:Float, isComboBreak:Bool, comboCount:Int = 0, cancelable:Bool = false):Void
+  public function new(type:ScriptEventType,
+    holdNote:SustainTrail,
+    healthChange:Float,
+    score:Float,
+    isComboBreak:Bool,
+    comboCount:Int = 0,
+    cancelable:Bool = false):Void
   {
     super(type, null, healthChange, comboCount, true);
     this.holdNote = holdNote;

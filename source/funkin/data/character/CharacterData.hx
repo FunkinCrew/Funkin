@@ -678,7 +678,7 @@ class CharacterDataParser
     // Call onCreate only in the fetchCharacter() function, not at application initialization.
     var event:ScriptEvent = ScriptEvent.get(CREATE);
     ScriptEventDispatcher.callEvent(char, event);
-    event.put();
+    event.finish();
 
     return char;
   }

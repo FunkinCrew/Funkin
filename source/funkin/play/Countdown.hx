@@ -122,10 +122,13 @@ class Countdown
 
     // Modules, stages, characters.
     @:privateAccess
-    PlayState.instance.dispatchEvent(event);
-    event.put();
+    PlayState.instance.dispatchEvent(event, false);
 
-    return event.eventCanceled;
+    var shouldPropagate = event.eventCanceled;
+
+    event.finish();
+
+    return shouldPropagate;
   }
 
   /**

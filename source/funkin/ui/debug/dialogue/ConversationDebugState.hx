@@ -41,7 +41,7 @@ class ConversationDebugState extends MusicBeatState
 
     var event:ScriptEvent = ScriptEvent.get(CREATE, false);
     ScriptEventDispatcher.callEvent(conversation, event);
-    event.put();
+    event.finish();
   }
 
   function onConversationComplete():Void
@@ -50,10 +50,12 @@ class ConversationDebugState extends MusicBeatState
     conversation = null;
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     // Dispatch event to conversation script.
     ScriptEventDispatcher.callEvent(conversation, event);
+
+    if (finish) event.finish();
   }
 
   override public function update(elapsed:Float):Void
