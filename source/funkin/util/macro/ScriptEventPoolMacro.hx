@@ -33,12 +33,16 @@ class ScriptEventPoolMacro
     buildFields.push({
       name: 'pool',
       doc: 'The pool of the events to recycle events from.',
-      access: [APublic, AStatic],
+      access: [AStatic],
       pos: pos,
+      #if FEATURE_MULTITHREADING
+      kind: FVar(macro :hx.concurrent.collection.SynchronizedArray<$retType>, macro new hx.concurrent.collection.SynchronizedArray<$retType>())
+      #else
       kind: FVar(macro :Array<$retType>, {
         expr: EArrayDecl([]),
         pos: pos
       })
+      #end
     });
 
     var constructor:Null<Field> = buildFields.find((fld) -> fld.name == 'new');
