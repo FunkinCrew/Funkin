@@ -1300,7 +1300,7 @@ class StageEditorState extends UIState
         {
           saved = true;
           currentFile = path;
-        }, null, stageName + '.' + FileUtil.FILE_FILTER_FNFS.extension);
+        }, null, stageName + '.' + Constants.EXT_STAGE);
 
       case 'save stage':
         if (currentFile == '')
