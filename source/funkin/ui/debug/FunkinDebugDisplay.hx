@@ -18,6 +18,7 @@ class FunkinDebugDisplay extends Sprite
   static final INNER_RECT_DIFF:Int = 3;
   static final OUTER_RECT_DIMENSIONS:Array<Int> = [234, 201];
   static final OTHERS_OFFSET:Int = 8;
+  static final BG_CORNER_WIDTH:Int = 20;
 
   /**
    * Indicates whether the debug display is in advanced mode.
@@ -90,19 +91,21 @@ class FunkinDebugDisplay extends Sprite
 
     background = new Shape();
     background.graphics.beginFill(0x3D3F41, 1);
-    background.graphics.drawRect(
+    background.graphics.drawRoundRect(
       0,
       0,
       (OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier) + (INNER_RECT_DIFF * 2),
-      (OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier) + (INNER_RECT_DIFF * 2)
+      (OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier) + (INNER_RECT_DIFF * 2),
+      BG_CORNER_WIDTH
     );
     background.graphics.endFill();
     background.graphics.beginFill(0x2C2F30, 1);
-    background.graphics.drawRect(
+    background.graphics.drawRoundRect(
       INNER_RECT_DIFF,
       INNER_RECT_DIFF,
       OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier,
-      OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier
+      OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier,
+      BG_CORNER_WIDTH
     );
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
