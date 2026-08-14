@@ -1784,5 +1784,5 @@ typedef StageEditorAssetFile =
   /**
    * The content of the file, decoded into bytes.
    */
-  var data:Bytes;
+  var data:haxe.io.Bytes;
 }
