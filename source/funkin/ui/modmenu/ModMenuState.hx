@@ -2101,7 +2101,7 @@ class ModMenuState extends MusicBeatState
 
   function refreshModList(doFade:Bool = true):Array<ModMenuItem>
   {
-    PolymodHandler.getAllMods(true);
+    PolymodHandler.getDisabledModsIncludingIncompatible(true);
     itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
 
     tempDisabledMods = disabledModItems.modItems.map((item) -> item.mod);
@@ -2173,7 +2173,7 @@ class ModMenuState extends MusicBeatState
 
   function buildDisabledModList():Array<ModMenuItem>
   {
-    var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
+    var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledModsIncludingIncompatible();
     var newModId:Array<String> = [];
 
     var liveIds:Array<String> = disabledMods.map((m) -> m.id).concat(PolymodHandler.getEnabledMods().map((m) -> m.id));
@@ -2225,6 +2225,7 @@ class ModMenuState extends MusicBeatState
       if (disabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
 
       var item = new ModMenuItem(mod);
+      if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
       item.localAlpha = 0;
       disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
       newItems.push(item);
@@ -2235,9 +2236,9 @@ class ModMenuState extends MusicBeatState
 
   function buildEnabledModList():Void
   {
-    var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
+    var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods().filter((m) -> PolymodHandler.isModCompatible(m));
 
-    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledMods().map((m) -> m.id));
+    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledModsIncludingIncompatible().map((m) -> m.id));
 
     if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
     {
@@ -2328,6 +2329,11 @@ class ModMenuState extends MusicBeatState
     if (item == null) return false;
     if (!disabledModItems.modItems.contains(item)) return false;
     if (item.getModId() == BASE_GAME_MOD_ID) return false;
+    if (!PolymodHandler.isModCompatible(item.mod))
+    {
+      blockedIncompatible(item);
+      return false;
+    }
 
     item.selected = false;
 
@@ -2530,6 +2536,15 @@ class ModMenuState extends MusicBeatState
     {
       item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY, 0.12, FlxEase.quadOut);
     });
+  }
+
+  /**
+   * Show feedback when trying to enable an incompatible mod.
+   */
+  function blockedIncompatible(item:ModMenuItem):Void
+  {
+    FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
+    item.flashBackground();
   }
 
   function orderMod(modItem:Null<ModMenuItem>, moveUp:Bool):Void

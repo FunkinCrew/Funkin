@@ -12,6 +12,7 @@ import funkin.Paths;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import funkin.ui.ScrollingTextBox;
+import lime.app.Application;
 
 /**
  * Represents an installed mod visually in the mod menu.
@@ -422,6 +423,19 @@ class ModMenuItem extends FunkinSpriteGroup
   public function getModVersion():Dynamic
   {
     return mod != null ? mod.modVersion : null;
+  }
+
+  /**
+   * Mark this item as incompatible.
+   * Greys out the title and shows a warning in the description.
+   */
+  public function setIncompatible():Void
+  {
+    titleText.textColor = FlxColor.GRAY;
+    descriptionText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 16, 0xFFFF0000);
+    descriptionText.localAlpha = 1.0;
+    descriptionText.text = 'INCOMPATIBLE WITH v${Application.current.meta.get('version')}\nCURRENT MOD VERSION v${mod?.apiVersion.toString() ?? 'UNKNOWN'}';
+    if (modIcon != null) modIcon.localAlpha = 0.5;
   }
 
   override public function toString():String
