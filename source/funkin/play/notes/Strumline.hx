@@ -636,15 +636,15 @@ class Strumline extends FlxSpriteGroup
     }
 
     // Update rendering of notes.
+    var noteOriginY:Float = this.y - INITIAL_OFFSET;
+    var noteRate:Float = NotefieldTransform.scrollRate(scrollSpeed, isDownscroll);
+    var noteTime:Float = conductorInUse.getTimeWithDelta();
+
     for (note in notes.members)
     {
       if (note == null || !note.alive) continue;
       // Set the note's position.
-      if (!customPositionData) note.y =
-        this.y
-        - INITIAL_OFFSET
-        + GRhythmUtil.getNoteY(note.strumTime, scrollSpeed, isDownscroll, conductorInUse)
-        + note.yOffset;
+      if (!customPositionData) note.y = NotefieldTransform.noteY(noteOriginY, note.strumTime - noteTime, noteRate, note.yOffset);
 
       // If the note is miss
       var isOffscreen:Bool = isDownscroll ? note.y > FlxG.height : note.y < -note.height;
