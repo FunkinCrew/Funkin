@@ -11,6 +11,10 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import funkin.util.MathUtil;
 import funkin.graphics.FunkinCamera;
+#if android
+import extension.androidtools.os.Build;
+import extension.androidtools.Tool;
+#end
 
 class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 {
@@ -88,7 +92,13 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   /**
    * Whether fullscreen scaling is enabled.
    */
-  public static var enabled(default, set):Bool;
+  @:isVar
+  public static var enabled(get, set):Bool;
+
+  /**
+   * Whether wide fullscreen scaling is supported.
+   */
+  public static var supported(get, never):Bool;
 
   /**
    * Whether fake cutouts are added to the screen.
@@ -440,8 +450,6 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   {
     if ((cutoutSize.x > 0 || cutoutSize.y > 0) && enabled)
     {
-      wideScale.set(1, 1);
-
       if (ratioAxis == Y)
       {
         var gameHeight:Float = gameSize.y / scale.y;
@@ -478,7 +486,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         untyped FlxG.height = Math.ceil(gameHeight);
 
-        wideScale.y = FlxG.height / FlxG.initialHeight;
+        wideScale.set(1, FlxG.height / FlxG.initialHeight);
       }
       else
       {
@@ -516,7 +524,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
         untyped FlxG.width = Math.ceil(gameWidth);
 
-        wideScale.x = FlxG.width / FlxG.initialWidth;
+        wideScale.set(FlxG.width / FlxG.initialWidth, 1);
       }
     }
   }
@@ -524,18 +532,6 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   @:noCompletion
   static function set_enabled(Value:Bool):Bool
   {
-    if (ratioAxis == FlxAxes.X
-      #if android
-      && (extension.androidtools.os.Build.VERSION.SDK_INT >= extension.androidtools.os.Build.VERSION_CODES.P || extension.androidtools.Tools.isTablet())
-      #end)
-    {
-      enabled = Value;
-    }
-    else
-    {
-      enabled = false;
-    }
-
     if (instance != null)
     {
       mustAwait = false;
@@ -546,6 +542,28 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       FlxG.signals.gameResized.dispatch(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
     }
 
-    return enabled;
+    return enabled = Value;
+  }
+
+  @:noCompletion
+  static function get_enabled():Bool
+  {
+    return supported ? enabled : false;
+  }
+
+  @:noCompletion
+  static function get_supported():Bool
+  {
+    if (instance != null)
+    {
+      final gameRatio = FlxG.width / FlxG.height;
+      final screenRatio = FlxG.stage.stageWidth / FlxG.stage.stageHeight;
+      final ratioAxis = screenRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
+      return ratioAxis == FlxAxes.X #if android && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || Tools.isTablet()) #end;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
