@@ -159,6 +159,7 @@
     }
   ],
   "excludes": [
+    "assets/ui/options/",
     "assets/ui/cursor/",
     "assets/ui/fonts/",
     "assets/ui/freeplay/",
