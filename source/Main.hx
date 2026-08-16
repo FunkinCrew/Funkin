@@ -7,10 +7,8 @@ import flixel.FlxState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.PlayerSettings;
-import funkin.util.logging.CrashHandler;
 import funkin.ui.debug.FunkinDebugDisplay;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
-import funkin.save.Save;
 #if hxvlc
 import hxvlc.util.Handle;
 #end
@@ -38,24 +36,12 @@ class Main extends Sprite
 
   public static function main():Void
   {
-    // We need to make the crash handler LITERALLY FIRST so nothing EVER gets past it.
-    CrashHandler.initialize();
-    CrashHandler.queryStatus();
-
     Lib.current.addChild(new Main());
   }
 
   public function new()
   {
     super();
-
-    // Initialize custom logging.
-    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
-    funkin.util.logging.AnsiTrace.traceBF();
-
-    // Get OpenFL to stop complaining so much.
-    // You can remove this line if you want to read debug messages.
-    openfl.utils._internal.Log.level = openfl.utils._internal.Log.LogLevel.INFO;
 
     if (stage != null)
     {
@@ -117,12 +103,6 @@ class Main extends Sprite
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
     #end
-
-    // George recommends binding the save before FlxGame is created.
-    Save.load();
-
-    // Loading mods happens in the preloader now.
-    // funkin.modding.PolymodHandler.loadEnabledMods()
 
     #if hxvlc
     // Initialize hxvlc's Handle here so the videos are loading faster.
