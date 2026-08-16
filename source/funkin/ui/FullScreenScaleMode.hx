@@ -13,7 +13,7 @@ import funkin.util.MathUtil;
 import funkin.graphics.FunkinCamera;
 #if android
 import extension.androidtools.os.Build;
-import extension.androidtools.Tool;
+import extension.androidtools.Tools;
 #end
 
 class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
@@ -538,7 +538,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     final gameRatio:Float = FlxG.initialWidth / FlxG.initialHeight;
     final screenRatio:Float = Width / Height;
 
-    supported = (screenRatio >= gameRatio) #if android && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || Tools.isTablet()) #end;
+    supported = (screenRatio >= gameRatio) #if android && (VERSION.SDK_INT >= VERSION_CODES.P || Tools.isTablet()) #end;
 
     return supported;
   }
