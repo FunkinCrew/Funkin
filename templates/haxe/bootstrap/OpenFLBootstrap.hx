@@ -44,7 +44,7 @@ class OpenFLBootstrap
     return app;
   }
 
-  public static function createWindow(app:Application, config:Dynamic):Void
+  public static function createWindow(app:Application, config:Dynamic, shouldFullscreen:Bool):Void
   {
     ::foreach windows::
     var attributes:lime.ui.WindowAttributes = {
@@ -68,6 +68,14 @@ class OpenFLBootstrap
       x: ::x::,
       y: ::y::,
     };
+
+    if (!attributes.fullscreen)
+    {
+      if (shouldFullscreen)
+      {
+        attributes.fullscreen = true;
+      }
+    }
 
     attributes.context = {
       antialiasing: ::antialiasing::,

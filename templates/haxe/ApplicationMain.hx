@@ -75,7 +75,7 @@ class ApplicationMain
     funkin.save.Save.load();
 
     // Creates primary OpenFL application window.
-    bootstrap.OpenFLBootstrap.createWindow(app, config);
+    bootstrap.OpenFLBootstrap.createWindow(app, config, funkin.Preferences.autoFullscreen);
 
     #if (FEATURE_ONE_CLICK_INSTALL && macos && cpp)
     // Claim the apple event that carries incoming URLs.

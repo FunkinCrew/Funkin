@@ -31,6 +31,10 @@ class LimeBootstrap
     lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
     ::end::
 
+    #if mac
+    lime.system.System.setHint("VIDEO_MAC_FULLSCREEN_MENU_VISIBILITY", "1");
+    #end
+
     lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
     #if !html5
