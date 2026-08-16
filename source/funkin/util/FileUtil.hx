@@ -126,7 +126,15 @@ class FileUtil
       return _gameDirectory;
     }
 
+    #if mac
+    _gameDirectory = sys.FileSystem.fullPath(Path.join([
+      Path.directory(Sys.programPath()),
+      '../Resources'
+    ]));
+    #else
     _gameDirectory = sys.FileSystem.fullPath(Path.directory(Sys.programPath()));
+    #end
+
     return _gameDirectory;
   }
   #end
