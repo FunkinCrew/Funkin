@@ -6,6 +6,7 @@ import openfl.display.BitmapData;
 import animate.FlxAnimateFrames;
 import flixel.util.FlxColor;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.graphics.frames.FlxFrame;
 
 //
 // ~PATHS~
@@ -332,6 +333,19 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
         obj.onAssetsReload();
       }
     }
+  }
+
+  override function get_whitePixel():FlxFrame
+  {
+    if (_whitePixel == null)
+    {
+      var bd = new BitmapData(10, 10, true, FlxColor.WHITE);
+      var graphic:FlxGraphic = FunkinAssetCache.instance.permaCacheFlxGraphic("whitePixels", bd);
+      graphic.persist = true;
+      _whitePixel = graphic.imageFrame.frame;
+    }
+
+    return _whitePixel;
   }
 
   function onRemoveFlxGraphic(assetPath:String, graphic:FlxGraphic):Void
