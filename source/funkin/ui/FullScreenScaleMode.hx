@@ -98,7 +98,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   /**
    * Whether wide fullscreen scaling is supported.
    */
-  public static var supported(get, never):Bool;
+  public static var supported(default, null):Bool = false;
 
   /**
    * Whether fake cutouts are added to the screen.
@@ -139,7 +139,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
   override public function onMeasure(Width:Int, Height:Int):Void
   {
     #if desktop
-    if (mustAwait && enabled)
+    if (mustAwait && @:bypassAccessor enabled)
     {
       onMeasureAwait(Width, Height);
     }
@@ -201,6 +201,10 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     finishingAwait = true;
     untyped FlxG.width = FlxG.initialWidth;
     untyped FlxG.height = FlxG.initialHeight;
+
+    updateSupported(Width, Height);
+    horizontalAlign = enabled ? LEFT : CENTER;
+    verticalAlign = enabled ? TOP : CENTER;
 
     updateGameSize(Width, Height);
     updateDeviceSize(Width, Height);
@@ -395,7 +399,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxHorizontalAlign.LEFT:
         0;
       case FlxHorizontalAlign.CENTER:
-        Math.ceil((finishingAwait && enabled) ? (deviceSize.x - gameSize.x) : (deviceSize.x - (gameSize.x #if desktop * (enabled ? scale.x : 1) #end)) * 0.5);
+        Math.ceil((deviceSize.x - (gameSize.x #if desktop * (finishingAwait ? 1 : scale.x) #end)) * 0.5);
       case FlxHorizontalAlign.RIGHT:
         deviceSize.x - gameSize.x;
     }
@@ -408,7 +412,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxVerticalAlign.TOP:
         0;
       case FlxVerticalAlign.CENTER:
-        Math.ceil((finishingAwait && enabled) ? (deviceSize.y - gameSize.y) : (deviceSize.y - (gameSize.y #if desktop * (enabled ? scale.y : 1) #end)) * 0.5);
+        Math.ceil((deviceSize.y - (gameSize.y #if desktop * (finishingAwait ? 1 : scale.y) #end)) * 0.5);
       case FlxVerticalAlign.BOTTOM:
         deviceSize.y - gameSize.y;
     }
@@ -529,9 +533,21 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     }
   }
 
-  @:noCompletion
-  static function set_enabled(Value:Bool):Bool
+  function updateSupported(Width:Int, Height:Int):Bool
   {
+    final gameRatio:Float = FlxG.initialWidth / FlxG.initialHeight;
+    final screenRatio:Float = Width / Height;
+
+    supported = (screenRatio >= gameRatio) #if android && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || Tools.isTablet()) #end;
+
+    return supported;
+  }
+
+  @:noCompletion
+  static function set_enabled(v:Bool):Bool
+  {
+    enabled = v;
+
     if (instance != null)
     {
       mustAwait = false;
@@ -542,28 +558,12 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       FlxG.signals.gameResized.dispatch(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
     }
 
-    return enabled = Value;
+    return enabled;
   }
 
   @:noCompletion
   static function get_enabled():Bool
   {
     return supported ? enabled : false;
-  }
-
-  @:noCompletion
-  static function get_supported():Bool
-  {
-    if (instance != null)
-    {
-      final gameRatio = FlxG.width / FlxG.height;
-      final screenRatio = FlxG.stage.stageWidth / FlxG.stage.stageHeight;
-      final ratioAxis = screenRatio < gameRatio ? FlxAxes.Y : FlxAxes.X;
-      return ratioAxis == FlxAxes.X #if android && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || Tools.isTablet()) #end;
-    }
-    else
-    {
-      return false;
-    }
   }
 }
