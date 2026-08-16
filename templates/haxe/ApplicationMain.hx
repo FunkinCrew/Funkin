@@ -18,15 +18,6 @@ class ApplicationMain
     funkin.external.windows.WinAPI.disableErrorReporting();
     #end
 
-    // Initialize custom logging.
-    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
-
-    // Get OpenFL to stop complaining so much, you can remove this line if you want to read debug messages.
-    lime.utils.Log.level = INFO;
-
-    // Print color pixel art of BF in ANSI format.
-    funkin.util.logging.AnsiTrace.traceBF();
-
     #if (sys && !mobile)
     // The shell launches us with its own working directory when a file is dropped on the exe or a
     // `funkin:` link is opened, which would put the mods folder somewhere random.
@@ -70,6 +61,15 @@ class ApplicationMain
     // On iOS use Documents Dir.
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory));
     #end
+
+    // Initialize custom logging.
+    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
+
+    // Get OpenFL to stop complaining so much, you can remove this line if you want to read debug messages.
+    lime.utils.Log.level = INFO;
+
+    // Print color pixel art of BF in ANSI format.
+    funkin.util.logging.AnsiTrace.traceBF();
 
     // Load the game's save data from disk.
     funkin.save.Save.load();
