@@ -914,9 +914,21 @@ class PlayState extends MusicBeatSubState
 
         if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
         {
-          for (direction in Strumline.DIRECTIONS)
+          // Strum spacing in arrow mode isn't uniform, so measure the real gap to each neighbor.
+          for (i in 0...Strumline.DIRECTIONS.length)
           {
-            hitbox.getFirstHintByDirection(direction).follow(playerStrumline.getByDirection(direction));
+            final direction = Strumline.DIRECTIONS[i];
+            final strum = playerStrumline.getByDirection(direction);
+            final hint = hitbox.getFirstHintByDirection(direction);
+
+            final prevStrum = i > 0 ? playerStrumline.getByDirection(Strumline.DIRECTIONS[i - 1]) : null;
+            final nextStrum = i < Strumline.DIRECTIONS.length - 1 ? playerStrumline.getByDirection(Strumline.DIRECTIONS[i + 1]) : null;
+
+            final leftReach:Float = prevStrum == null ? strum.width : (strum.x - prevStrum.x);
+            final rightReach:Float = nextStrum == null ? strum.width : (nextStrum.x - strum.x);
+
+            hint.columnWidth = Math.max(leftReach, rightReach);
+            hint.follow(strum);
           }
         }
       }
