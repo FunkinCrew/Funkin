@@ -116,6 +116,11 @@ class SustainTrail extends FlxSprite
    */
   public var customVertexData:Bool = false;
 
+  /**
+   * Colors for each vertex, used for tinting the note.
+   */
+  public var vertexColors:Null<DrawData<Int>> = null;
+
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
@@ -149,6 +154,24 @@ class SustainTrail extends FlxSprite
    * Sets the indices for the triangles.
    * @param indices The indices to set.
    */
+  /**
+   * Sets the color of each vertex.
+   */
+  public function setVertexColors(colors:Array<Int>):Void
+  {
+    if (vertexColors != null && vertexColors.length == colors.length)
+    {
+      for (i in 0...colors.length)
+      {
+        vertexColors[i] = colors[i];
+      }
+    }
+    else
+    {
+      vertexColors = new DrawData<Int>(colors.length, false, colors);
+    }
+  }
+
   public function setIndices(indices:Array<Int>):Void
   {
     if (this.indices.length == indices.length)
@@ -421,7 +444,7 @@ class SustainTrail extends FlxSprite
       // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
       getScreenPosition(_point, camera).subtract(offset);
-      camera.drawTriangles(graphic, vertices, indices, uvtData, null, _point, blend, true, antialiasing, colorTransform, shader);
+      camera.drawTriangles(graphic, vertices, indices, uvtData, vertexColors, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
     #if FLX_DEBUG
