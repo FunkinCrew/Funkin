@@ -164,8 +164,9 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.3.0"
+      "type": "git",
+      "ref": "b740f8b6091bfb804f696852c59e973243079f7f",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -205,7 +206,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "70635f42dc154aaf285ab94ac52a23a67388c97c",
+      "ref": "32762ec2a58e48c8c78babaf711d369fcf5ecc81",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
@@ -217,7 +218,7 @@
     {
       "name": "thx.semver",
       "type": "git",
-      "ref": "b91cf5cfee6ebe43b60f8acea4257f07af176b99",
+      "ref": "9de477fa2bf6aa17528211afd61097cb113e3423",
       "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]
