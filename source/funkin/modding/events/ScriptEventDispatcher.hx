@@ -2,6 +2,7 @@ package funkin.modding.events;
 
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.IScriptedClass;
+import funkin.modding.ScriptGuard;
 import funkin.modding.module.Module;
 
 /**
@@ -18,7 +19,25 @@ class ScriptEventDispatcher
   public static function callEvent(target:Null<IScriptedClass>, event:ScriptEvent):Void
   {
     if (target == null || event == null) return;
+    if (ScriptGuard.brokenCount > 0 && ScriptGuard.isBroken(target)) return;
 
+    try
+    {
+      dispatch(target, event);
+    }
+    catch (e:UnhandledEventError)
+    {
+      // Not a script problem, the dispatcher is missing a case.
+      throw 'No corresponding function called for dispatched event type: ${e.type}';
+    }
+    catch (e:Dynamic)
+    {
+      ScriptGuard.handle(e, 'the ${event.type} event', target);
+    }
+  }
+
+  static function dispatch(target:IScriptedClass, event:ScriptEvent):Void
+  {
     target.onScriptEvent(event);
 
     // If one target says to stop propagation, stop.
@@ -352,7 +371,7 @@ class ScriptEventDispatcher
 
     // If we reach this line, it means a script event was dispatched while not being properly handled.
     // Throw an error so we know to add additional fallbacks.
-    throw 'No corresponding function called for dispatched event type: ${event.type}';
+    throw new UnhandledEventError(event.type);
   }
 
   /**
@@ -385,5 +404,18 @@ class ScriptEventDispatcher
         return;
       }
     }
+  }
+}
+
+/**
+ * Thrown when the dispatcher has no case for an event, which is a bug in the game and not in a script.
+ */
+private class UnhandledEventError
+{
+  public final type:ScriptEventType;
+
+  public function new(type:ScriptEventType)
+  {
+    this.type = type;
   }
 }

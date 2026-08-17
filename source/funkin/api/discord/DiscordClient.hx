@@ -45,9 +45,9 @@ class DiscordClient
 
     handlers = new DiscordEventHandlers();
 
-    handlers.ready = cpp.Function.fromStaticFunction(onReady);
-    handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
-    handlers.errored = cpp.Function.fromStaticFunction(onError);
+    handlers.ready = cpp.Function.fromStaticFunction(DiscordCallbacks.onReady);
+    handlers.disconnected = cpp.Function.fromStaticFunction(DiscordCallbacks.onDisconnected);
+    handlers.errored = cpp.Function.fromStaticFunction(DiscordCallbacks.onError);
   }
 
   public function init():Void
@@ -151,36 +151,6 @@ class DiscordClient
     Discord.UpdatePresence(cpp.RawConstPointer.addressOf(presence));
   }
 
-  // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
-
-  private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
-  {
-    trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
-
-    final username:String = request[0].username;
-    final globalName:String = request[0].username;
-    final discriminator:Null<Int> = Std.parseInt(request[0].discriminator);
-
-    if (discriminator != null && discriminator != 0)
-    {
-      trace(' DISCORD '.bold().bg_blue() + ' User: ${username}#${discriminator} (${globalName})');
-    }
-    else
-    {
-      trace(' DISCORD '.bold().bg_blue() + ' User: @${username} (${globalName})');
-    }
-  }
-
-  private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
-  {
-    trace(' DISCORD '.bold().bg_blue() + ' Client has disconnected! ($errorCode) "${cast (message, String)}"');
-  }
-
-  private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
-  {
-    trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
-  }
-
   // public var type(get, set):DiscordActivityType;
   // public var state(get, set):String;
   // public var details(get, set):String;
@@ -240,6 +210,39 @@ class DiscordClientSandboxed
     DiscordClient.instance.shutdown();
   }
 }
+
+@:nullSafety
+@:allow(funkin.api.discord.DiscordClient)
+private class DiscordCallbacks
+{
+  static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
+  {
+    trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
+
+    final username:String = request[0].username;
+    final globalName:String = request[0].username;
+    final discriminator:Null<Int> = Std.parseInt(request[0].discriminator);
+
+    if (discriminator != null && discriminator != 0)
+    {
+      trace(' DISCORD '.bold().bg_blue() + ' User: ${username}#${discriminator} (${globalName})');
+    }
+    else
+    {
+      trace(' DISCORD '.bold().bg_blue() + ' User: @${username} (${globalName})');
+    }
+  }
+
+  static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+  {
+    trace(' DISCORD '.bold().bg_blue() + ' Client has disconnected! ($errorCode) "${cast (message, String)}"');
+  }
+
+  static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+  {
+    trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
+  }
+}
 #else
 class DiscordClientSandboxed
 {
@@ -253,4 +256,5 @@ class DiscordClientSandboxed
     // Do nothing.
   }
 }
+
 #end
