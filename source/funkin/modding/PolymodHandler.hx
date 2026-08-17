@@ -266,6 +266,10 @@ class PolymodHandler
   public static function loadScripts(async:Bool = true):lime.app.Future<
     {success:Int, total:Int}>
   {
+    #if FEATURE_CPPIA
+    polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
+    #end
+
     if (async)
     {
       return Polymod.registerAllScriptClassesAsync().then((result) ->

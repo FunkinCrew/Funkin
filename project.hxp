@@ -493,6 +493,13 @@ class Project extends HXProject
   static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
 
   /**
+   * `-DFEATURE_CPPIA`
+   * If this flag is enabled, the game is built as a cppia host, letting mods ship compiled `.cppia` scripts.
+   * This adds `-D scriptable`.
+   */
+  static final FEATURE_CPPIA:FeatureFlag = "FEATURE_CPPIA";
+
+  /**
    * `-DFEATURE_RESULTS_DEBUG`
    * If this flag is enabled, a debug menu for Results screen will be accessible from the debug menu.
    */
@@ -654,6 +661,38 @@ class Project extends HXProject
     if (!(isDisplay() || isCleanCommand()))
     {
       checkLibraries();
+    }
+
+    if (FEATURE_CPPIA.isEnabled(this))
+    {
+      configureCppiaSdk();
+    }
+  }
+
+  /**
+   * Run SDK build scripts
+   */
+  function configureCppiaSdk()
+  {
+    if (isDisplay() || isCleanCommand()) return;
+
+    var target:Null<String> = isWindows() ? "windows" : isMac() ? "mac" : isLinux() ? "linux" : null;
+    if (target == null) return;
+
+    var config:String = isDebug() ? "debug" : "release";
+
+    var outputDir = '${app.path}$target/cppia-sdk';
+
+    var script = 'scripts/cppia/sdk/build_cppia_sdk';
+
+    if (isWindowsHost())
+    {
+      postBuildCallbacks.push(new CLICommand("powershell",
+        ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", '$script.ps1', "-Target", target, "-Config", config, ".", outputDir]));
+    }
+    else
+    {
+      postBuildCallbacks.push(new CLICommand("bash", ['$script.sh', "--target", target, "--config", config, ".", outputDir]));
     }
   }
 
@@ -922,6 +961,9 @@ class Project extends HXProject
     FEATURE_MULTITHREADING.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
 
+    // cppia hosting requires hxcpp.
+    FEATURE_CPPIA.apply(this, isCPP() && FEATURE_POLYMOD_MODS.isEnabled(this));
+
     // Video playback should be enabled on desktop, web, and mobile.
     FEATURE_VIDEO_PLAYBACK.apply(this, true);
 
@@ -1090,6 +1132,12 @@ class Project extends HXProject
     setHaxedef("HXCPP_STACK_TRACE");
 
     setHaxedef("hscriptPos");
+
+    if (FEATURE_CPPIA.isEnabled(this))
+    {
+      setHaxedef("scriptable");
+      setHaxedef("POLYMOD_CPPIA");
+    }
 
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
