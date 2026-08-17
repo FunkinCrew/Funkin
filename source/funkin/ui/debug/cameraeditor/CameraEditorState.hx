@@ -628,7 +628,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     root.height = FlxG.height;
 
     menubar.height = 35;
-    if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
 
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
@@ -979,6 +978,8 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
 
     if (criticalFailure) return;
+
+    Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
     if (autoSeek)
     {

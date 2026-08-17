@@ -26,6 +26,7 @@ import haxe.ui.containers.menus.MenuOptionBox;
 import haxe.ui.containers.menus.MenuCheckBox;
 import funkin.util.FileUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler.StageEditorObjectData;
 import funkin.ui.debug.stageeditor.handlers.StageDataHandler;
@@ -591,6 +592,8 @@ class StageEditorState extends UIState
     conductorInUse.update();
 
     super.update(elapsed);
+
+    Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
     if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-down"));
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight) FunkinSound.playOnce(Paths.sound("ui/editors/chart-editor/charting-sounds/click-up"));

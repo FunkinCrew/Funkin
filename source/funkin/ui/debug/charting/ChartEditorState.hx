@@ -3240,8 +3240,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     txtCopyNotif.zIndex = 120;
     add(txtCopyNotif);
 
-    if (Preferences.debugDisplay == DebugDisplayMode.Off) menubar.paddingLeft = null;
-
     this.setupNotifications();
 
     // Setup character dropdowns.
@@ -3979,6 +3977,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     super.update(elapsed);
 
     if (criticalFailure) return;
+
+    Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
 
     // These ones happen even if the modal dialog is open.
     handleMusicPlayback(elapsed);
