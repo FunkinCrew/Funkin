@@ -638,6 +638,7 @@ class PolymodHandler
     result.push('.jj');
     result.push('.DS_Store');
     result.push('README.md');
+    result.push('cppia-src');
 
     return result;
   }
