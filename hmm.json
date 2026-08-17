@@ -131,7 +131,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "82b5bb7913e2eb8d9e8141da0dd8cd3bdc3f16c5",
+      "ref": "1ad99173d99532aaee9e67cb7660d3768547e4f4",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -164,8 +164,9 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.3.0"
+      "type": "git",
+      "ref": "1136a43f434200b021c4a8f7c6b823d64d3dbe2a",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -205,7 +206,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "a745a7f7ceac9882a790e8607e666b5f9e607380",
+      "ref": "5f0113f4543ecf7c159f793b3452d49d1bf90308",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
