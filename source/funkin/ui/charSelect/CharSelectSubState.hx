@@ -787,32 +787,32 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.UI_UP_P)
       {
         cursorY -= 1;
-        cursors.resetDeny();
-
         holdTmrUp = 0;
-
-        selectSound.play(true);
       }
       if (controls.UI_DOWN_P)
       {
         cursorY += 1;
-        cursors.resetDeny();
         holdTmrDown = 0;
-        selectSound.play(true);
       }
       if (controls.UI_LEFT_P)
       {
         cursorX -= 1;
-        cursors.resetDeny();
-
         holdTmrLeft = 0;
-        selectSound.play(true);
       }
       if (controls.UI_RIGHT_P)
       {
         cursorX += 1;
-        cursors.resetDeny();
         holdTmrRight = 0;
+      }
+
+      if ((controls.UI_UP_P || controls.UI_DOWN_P) && !(controls.UI_UP_P && controls.UI_DOWN_P))
+      {
+        cursors.resetDeny();
+        selectSound.play(true);
+      }
+      if ((controls.UI_LEFT_P || controls.UI_RIGHT_P) && !(controls.UI_LEFT_P && controls.UI_RIGHT_P))
+      {
+        cursors.resetDeny();
         selectSound.play(true);
       }
 
@@ -1036,33 +1036,39 @@ class CharSelectSubState extends MusicBeatSubState
 
   function spamOnStep():Void
   {
-    if (spamDirections.hasAny(ANY))
+    var moveX:Int = 0;
+    var moveY:Int = 0;
+
+    if (spamDirections.has(UP))
     {
+      moveY -= 1;
+      holdTmrUp = 0;
+    }
+    if (spamDirections.has(DOWN))
+    {
+      moveY += 1;
+      holdTmrDown = 0;
+    }
+    if (spamDirections.has(LEFT))
+    {
+      moveX -= 1;
+      holdTmrLeft = 0;
+    }
+    if (spamDirections.has(RIGHT))
+    {
+      moveX += 1;
+      holdTmrRight = 0;
+    }
+
+    if (moveX != 0 || moveY != 0)
+    {
+      cursorX += moveX;
+      cursorY += moveY;
+
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
       cursors.resetDeny();
-
-      if (spamDirections.has(UP))
-      {
-        cursorY -= 1;
-        holdTmrUp = 0;
-      }
-      if (spamDirections.has(DOWN))
-      {
-        cursorY += 1;
-        holdTmrDown = 0;
-      }
-      if (spamDirections.has(LEFT))
-      {
-        cursorX -= 1;
-        holdTmrLeft = 0;
-      }
-      if (spamDirections.has(RIGHT))
-      {
-        cursorX += 1;
-        holdTmrRight = 0;
-      }
     }
   }
 
