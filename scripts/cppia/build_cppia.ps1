@@ -20,9 +20,13 @@ $ErrorActionPreference = 'Stop'
 $Sdk = $null
 $Target = 'windows'
 $Config = 'release'
+$KeepResources = $false
 $positional = @()
 for ($i = 0; $i -lt $Arguments.Count; $i++) {
-	if ($Arguments[$i] -in @('--sdk', '-sdk', '-Sdk')) {
+	if ($Arguments[$i] -in @('--keep-resources', '-keep-resources', '-KeepResources')) {
+		$KeepResources = $true
+	}
+	elseif ($Arguments[$i] -in @('--sdk', '-sdk', '-Sdk')) {
 		if ($i + 1 -ge $Arguments.Count) { Write-Error "--sdk needs a directory after it." }
 		$Sdk = $Arguments[$i + 1]
 		$i++
@@ -43,7 +47,7 @@ for ($i = 0; $i -lt $Arguments.Count; $i++) {
 }
 
 if ($positional.Count -lt 3) {
-	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] <game-root> <script-dir> <output.cppia> [Class ...]"
+	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] [--keep-resources] <game-root> <script-dir> <output.cppia> [Class ...]"
 }
 
 $GameRoot = $positional[0]
@@ -120,6 +124,10 @@ try {
 
 	$classList = ($Classes | ForEach-Object { "'$_'" }) -join ','
 	$kept += "--macro funkin.util.macro.CppiaManifestMacro.build([$classList])"
+
+	if (-not $KeepResources) {
+		$kept += "--macro funkin.util.macro.CppiaStripMacro.stripResources()"
+	}
 
 	if (-not [System.IO.Path]::IsPathRooted($Output)) {
 		$Output = Join-Path (Get-Location).Path $Output

@@ -16,8 +16,11 @@ set -euo pipefail
 SDK=""
 TARGET="windows"
 CONFIG="release"
+KEEP_RESOURCES=0
 while [ "$#" -gt 0 ]; do
-	if [ "$1" = "--sdk" ]; then
+	if [ "$1" = "--keep-resources" ]; then
+		KEEP_RESOURCES=1; shift
+	elif [ "$1" = "--sdk" ]; then
 		SDK="$2"; shift 2
 	elif [ "$1" = "--target" ]; then
 		TARGET="$2"; shift 2
@@ -29,7 +32,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [ "$#" -lt 3 ]; then
-	echo "Usage: $0 [--sdk <sdk-dir>] <game-root> <script-dir> <output.cppia> [Class ...]" >&2
+	echo "Usage: $0 [--sdk <sdk-dir>] [--keep-resources] <game-root> <script-dir> <output.cppia> [Class ...]" >&2
 	exit 1
 fi
 
@@ -123,6 +126,10 @@ fi
 		CLASS_LIST="$CLASS_LIST'$cls'"
 	done
 	echo "--macro funkin.util.macro.CppiaManifestMacro.build([$CLASS_LIST])"
+
+	if [ "$KEEP_RESOURCES" -eq 0 ]; then
+		echo "--macro funkin.util.macro.CppiaStripMacro.stripResources()"
+	fi
 
 	echo "-D dll_import=$HOST_CLASSES"
 	echo "--cppia $(towin "$OUTPUT")"
