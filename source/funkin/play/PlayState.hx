@@ -2175,7 +2175,7 @@ class PlayState extends MusicBeatSubState
       {
         var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
         var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? 'album-${(currentChart?.album ?? '')}';
-        var icon:Null<String> = currentChart?.discordRPCImage ?? 'icon-${dad.getHealthIconId()}';
+        var icon:Null<String> = currentChart?.discordRPCImage ?? dad.getDiscordRPCImage();
 
         discordRPCAlbum = album;
         discordRPCIcon = icon;
