@@ -36,7 +36,7 @@ class Perf
    * The current timestamp, in fractional seconds.
    * @return The current timestamp.
    */
-  static function current():Float
+  public static function current():Float
   {
     #if sys
     // This one is more accurate if it's available.
