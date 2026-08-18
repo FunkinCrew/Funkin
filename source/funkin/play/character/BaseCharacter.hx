@@ -374,6 +374,11 @@ class BaseCharacter extends Bopper
     return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
   }
 
+  public function getDiscordRPCImage():String
+  {
+    return _data?.discordRPCImage ?? 'icon-${getHealthIconId()}';
+  }
+
   public function initHealthIcon(isOpponent:Bool):Void
   {
     // Modders may want to use characters outside of PlayState and this still gets called, so we ignore it.

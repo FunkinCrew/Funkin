@@ -1202,6 +1202,13 @@ typedef CharacterData =
    */
   @:optional
   var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
+
+  /**
+   * An external image link for the health icon.
+   * This is used for Discord Rich Presence.
+   */
+  @:optional
+  var discordRPCImage:Null<String>;
 };
 
 /**
