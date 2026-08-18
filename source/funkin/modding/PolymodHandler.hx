@@ -638,7 +638,10 @@ class PolymodHandler
     result.push('.jj');
     result.push('.DS_Store');
     result.push('README.md');
+    // Sources and build scripts a mod ships for its compiled code. Not assets.
     result.push('cppia-src');
+    result.push('build.sh');
+    result.push('build.ps1');
 
     return result;
   }

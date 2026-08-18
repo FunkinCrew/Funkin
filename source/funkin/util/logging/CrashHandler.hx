@@ -47,6 +47,8 @@ class CrashHandler
    */
   static function onUncaughtError(error:UncaughtErrorEvent):Void
   {
+    trace('[CRASH] Uncaught error: ' + generateErrorMessage(error));
+
     try
     {
       errorSignal.dispatch(generateErrorMessage(error));
@@ -78,6 +80,9 @@ class CrashHandler
 
   static function onCriticalError(message:String):Void
   {
+    trace('[CRASH] Critical error: ' + message);
+    trace(buildCrashReport(message));
+
     try
     {
       criticalErrorSignal.dispatch(message);
