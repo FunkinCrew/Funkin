@@ -949,7 +949,8 @@ class CharacterSelectState extends MusicBeatSubState
     selectTimer.cancel();
     cursors.unconfirm();
 
-    dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, currentCharacterId));
+    var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_DESELECTED, currentCharacterId);
+    dispatchEvent(event);
 
     #if FEATURE_TOUCH_CONTROLS
     if (backButton != null)
