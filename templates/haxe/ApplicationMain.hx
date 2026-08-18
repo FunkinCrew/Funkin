@@ -4,7 +4,6 @@ package;
 class ApplicationMain
 {
   #if !macro
-
   public static function main():Void
   {
     // Registers libraries prim symbols.
@@ -90,6 +89,19 @@ class ApplicationMain
 
     // Query the status of the crash handler.
     funkin.util.logging.CrashHandler.queryStatus();
+
+    #if FEATURE_DISCORD_RPC
+    // Initialize the discord client.
+    if (funkin.Preferences.enabledDiscordRPC)
+    {
+      funkin.api.discord.DiscordClient.instance.init();
+    }
+
+    lime.app.Application.current.onExit.add(function(exitCode)
+    {
+      funkin.api.discord.DiscordClient.instance.shutdown();
+    });
+    #end
 
     // Loads the application preloader.
     bootstrap.OpenFLBootstrap.loadPreloader(app, config);
