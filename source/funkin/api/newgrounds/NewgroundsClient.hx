@@ -188,6 +188,7 @@ class NewgroundsClient
     }
 
     Save.instance.ngSessionId.value = null;
+    Save.instance.flush();
   }
 
   /**
@@ -277,6 +278,7 @@ class NewgroundsClient
 
     // Persist the session ID.
     Save.instance.ngSessionId.value = NG.core.sessionId;
+    Save.instance.flush();
 
     trace(NG.core.sessionId);
 
