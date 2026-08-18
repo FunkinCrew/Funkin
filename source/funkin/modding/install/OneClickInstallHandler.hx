@@ -48,10 +48,10 @@ class OneClickInstallHandler
 
     FlxG.stage.addEventListener(openfl.events.Event.ENTER_FRAME, onEnterFrame);
 
-    openfl.Lib.application.onExit.add(function(_:Int):Void
+    openfl.Lib.application.onExit.add(function(_):Void
     {
       OneClickBridge.releaseLock();
-    }, 100);
+    });
 
     #if (macos && cpp)
     funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(onAppleURL));

@@ -108,7 +108,7 @@ class WindowUtil
   public static function initWindowEvents():Void
   {
     // onExit is called when the game window is closed.
-    openfl.Lib.current.stage.application.onExit.add((exitCode:Int) ->
+    openfl.Lib.current.stage.application.onExit.add(function(exitCode:Int):Void
     {
       windowExit.dispatch(exitCode);
     });

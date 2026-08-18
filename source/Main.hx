@@ -74,20 +74,6 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
-    #if (!html5 && !mobile)
-    // Force-kill the game to prevent background processing.
-    openfl.Lib.application.onExit.add((_) ->
-    {
-      // Dispose of cached audio and textures.
-      funkin.audio.FunkinSound.stopAllAudio(true, true);
-      funkin.assets.FunkinAssetCache.instance.clear();
-
-      trace(' EXITING '.bold().bg_red() + ' Resources are disposed, Game is closing now.');
-
-      Sys.exit(0);
-    }, 99);
-    #end
-
     // Manually crash the game when using a software renderer in order to give a nicer error message.
     var context = stage.window.context.type;
     if (context != WEBGL && context != OPENGL && context != OPENGLES)
