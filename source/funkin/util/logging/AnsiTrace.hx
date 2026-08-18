@@ -61,10 +61,13 @@ class AnsiTrace
 
       if (!logFileClosed) logFile = File.write(logFilePath);
 
-      lime.app.Application.current.onExit.add((_) ->
+      lime.app.Application.current.onExit.add(function(_):Void
       {
-        if (logFile != null && !logFileClosed) logFile.close();
-        logFileClosed = true;
+        if (logFile != null && !logFileClosed)
+        {
+          logFile.close();
+          logFileClosed = true;
+        }
       }, true, FlxMath.MIN_VALUE_INT);
     }
     if (logFile != null && !logFileClosed) logFile.writeString(logStr);
