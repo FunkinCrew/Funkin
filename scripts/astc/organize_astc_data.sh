@@ -1,8 +1,8 @@
 #!/bin/bash
 # Organizes astc-compression-data alphabetically because i hate it when it's not organized -zack
 
-INPUT_FILE="./astc-compression-data.json"
-OUTPUT_FILE="./astc-compression-data.json"
+INPUT_FILE="../../astc-compression-data.json"
+OUTPUT_FILE="../../astc-compression-data.json"
 
 # Check jq
 if ! command -v jq &> /dev/null; then
