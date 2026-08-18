@@ -1,7 +1,7 @@
 # Organizes astc-compression-data alphabetically because i hate it when it's not organized -zack
 
-$InputFile = "./astc-compression-data.json"
-$OutputFile = "./astc-compression-data.json"
+$InputFile = "../../astc-compression-data.json"
+$OutputFile = "../../astc-compression-data.json"
 
 if (-not (Test-Path $InputFile)) {
     Write-Host "❌ File $InputFile not found"
