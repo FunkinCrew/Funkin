@@ -121,7 +121,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     {
       final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
       @:privateAccess
-      var path:String = variationSongId._asc.fullyQualifiedName;
+      var path:String = variationSongId._asc?.fullyQualifiedName ?? '';
       return path;
     }
     return super.getScriptedEntryClassName(id, params);
