@@ -43,9 +43,10 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     {
       var s:ScriptedMusicBeatState = cast FlxG.state;
       @:privateAccess
-      var path = s._asc.fullyQualifiedName;
+      var path:String = s._asc?.fullyQualifiedName ?? '';
       trace('Hot-reloading scripted state: ' + path);
-      FlxG.switchState(() -> new HotReloadState(() -> {
+      FlxG.switchState(() -> new HotReloadState(() ->
+      {
         var newState:Null<funkin.ui.MusicBeatState> = ScriptedMusicBeatState.scriptInit(path);
         if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
         return newState;
