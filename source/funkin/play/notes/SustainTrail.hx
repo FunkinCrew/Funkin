@@ -116,6 +116,16 @@ class SustainTrail extends FlxSprite
    */
   public var customVertexData:Bool = false;
 
+  public var meshMinX:Float = 0;
+
+  public var meshMinY:Float = 0;
+
+  public var meshMaxX:Float = 0;
+
+  public var meshMaxY:Float = 0;
+
+  public var trailSegments:Int = 0;
+
   /**
    * Colors for each vertex, used for tinting the note.
    */
@@ -226,6 +236,69 @@ class SustainTrail extends FlxSprite
   }
 
   /**
+   * Writes the first `count` values of `source` in as the vertices.
+   * @param source The buffer to read from, which may be longer than `count`.
+   * @param count How many values to take.
+   */
+  public function writeVertices(source:Array<Float>, count:Int):Void
+  {
+    if (vertices.length != count) vertices.length = count;
+    for (i in 0...count)
+    {
+      vertices[i] = source[i];
+    }
+  }
+
+  /**
+   * Writes the first `count` values of `source` in as the UV data.
+   * @param source The buffer to read from, which may be longer than `count`.
+   * @param count How many values to take.
+   */
+  public function writeUVTData(source:Array<Float>, count:Int):Void
+  {
+    if (uvtData.length != count) uvtData.length = count;
+    for (i in 0...count)
+    {
+      uvtData[i] = source[i];
+    }
+  }
+
+  /**
+   * Writes the first `count` values of `source` in as the vertex colors.
+   * @param source The buffer to read from, which may be longer than `count`.
+   * @param count How many values to take, zero to use none.
+   */
+  public function writeVertexColors(source:Array<Int>, count:Int):Void
+  {
+    if (count == 0)
+    {
+      vertexColors = null;
+      return;
+    }
+
+    if (vertexColors == null) vertexColors = new DrawData<Int>(count, false);
+    else if (vertexColors.length != count) vertexColors.length = count;
+
+    for (i in 0...count)
+    {
+      vertexColors[i] = source[i];
+    }
+  }
+
+  /**
+   * Puts the mesh back to the eight vertex layout `updateClipping` writes, after something else
+   * has been driving it.
+   */
+  public function restoreDefaultMesh():Void
+  {
+    vertexColors = null;
+    if (vertices.length != 16) vertices.length = 16;
+    if (uvtData.length != 16) uvtData.length = 16;
+    indices = new DrawData<Int>(TRIANGLE_VERTEX_INDICES.length, false, TRIANGLE_VERTEX_INDICES);
+    updateClipping();
+  }
+
+  /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style
    */
@@ -306,6 +379,14 @@ class SustainTrail extends FlxSprite
   function triggerRedraw()
   {
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
+
+    if (customVertexData)
+    {
+      width = graphicWidth;
+      height = graphicHeight;
+      return;
+    }
+
     updateClipping();
     updateHitbox();
   }
@@ -441,9 +522,18 @@ class SustainTrail extends FlxSprite
     for (camera in cameras)
     {
       if (!camera.visible || !camera.exists) continue;
-      // if (!isOnScreen(camera)) continue; // TODO: Update this code to make it work properly.
 
-      getScreenPosition(_point, camera).subtract(offset);
+      if (customVertexData)
+      {
+        if (meshMaxX < 0 || meshMinX > camera.width || meshMaxY < 0 || meshMinY > camera.height) continue;
+
+        _point.set(0, 0);
+      }
+      else
+      {
+        getScreenPosition(_point, camera).subtract(offset);
+      }
+
       camera.drawTriangles(graphic, vertices, indices, uvtData, vertexColors, _point, blend, true, antialiasing, colorTransform, shader);
     }
 
@@ -457,6 +547,7 @@ class SustainTrail extends FlxSprite
     super.kill();
 
     if (!((cover?.animation?.name ?? '').startsWith('holdCoverEnd'))) cover?.playEnd();
+    trailSegments = 0;
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
@@ -471,6 +562,7 @@ class SustainTrail extends FlxSprite
   {
     super.revive();
 
+    trailSegments = 0;
     strumTime = 0;
     noteDirection = 0;
     sustainLength = 0;
