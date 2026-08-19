@@ -4,8 +4,8 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import funkin.PlayerSettings;
-import funkin.Preferences;
 import funkin.ui.FullScreenScaleMode;
+import funkin.Preferences;
 import funkin.ui.debug.FunkinDebugDisplay;
 import openfl.Lib;
 import openfl.display.Sprite;
@@ -76,8 +76,6 @@ class Main extends Sprite
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
     #end
-
-    WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
     // Force a `FunkinCamera` to be the default camera.
     // This allows the blend mode shader to work everywhere.

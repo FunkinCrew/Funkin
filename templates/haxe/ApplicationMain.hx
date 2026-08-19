@@ -89,6 +89,9 @@ class ApplicationMain
     funkin.external.apple.URLSchemeExtern.installHandler();
     #end
 
+    // Set the window's vsync.
+    funkin.util.WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
+
     // Initialize the crash handler.
     funkin.util.logging.CrashHandler.initialize();
 
