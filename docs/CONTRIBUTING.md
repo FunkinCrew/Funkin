@@ -86,6 +86,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
 | Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
+| Note Hitsounds | https://github.com/FunkinCrew/Funkin/pull/4112#issuecomment-5347549977 |
 
 ## Issue Types
 Choose the issue template that best suits your needs!
