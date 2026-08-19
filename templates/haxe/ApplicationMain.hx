@@ -84,6 +84,9 @@ class ApplicationMain
     // Manually crash the game when using a software renderer in order to give a nicer error message.
     checkRenderer(app.window.context);
 
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    checkRenderer(app.window.context);
+
     #if (FEATURE_ONE_CLICK_INSTALL && macos && cpp)
     // Claim the apple event that carries incoming URLs.
     funkin.external.apple.URLSchemeExtern.installHandler();
