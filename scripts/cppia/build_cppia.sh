@@ -1,6 +1,7 @@
 # Compiles a mod's scripted classes to a single .cppia the game can load.
-# Usage: ./build_cppia.sh [--sdk <sdk-dir>] [--target <platform>] <game-root> <script-dir> <output.cppia> [Class ...]
-# 	target defaults to windows, and only picks which SDK folder is used by default
+# Usage: ./build_cppia.sh [--sdk <sdk-dir>] [--target <platform>] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]
+#		--no-debug disables error handling/crash reporting in .cppia files
+# 	helps with debugging but you might want to disable it once you release (as it increases size overhead)
 
 # SDK here contains `export_classes.info and cppia.hxml`, and you also need the game checked out (as seen by 'game root)
 # That refers to the games source code, not a compiled version of the game.
@@ -17,9 +18,12 @@ SDK=""
 TARGET="windows"
 CONFIG="release"
 KEEP_RESOURCES=0
+DEBUG=1
 while [ "$#" -gt 0 ]; do
 	if [ "$1" = "--keep-resources" ]; then
 		KEEP_RESOURCES=1; shift
+	elif [ "$1" = "--no-debug" ]; then
+		DEBUG=0; shift
 	elif [ "$1" = "--sdk" ]; then
 		SDK="$2"; shift 2
 	elif [ "$1" = "--target" ]; then
@@ -32,7 +36,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [ "$#" -lt 3 ]; then
-	echo "Usage: $0 [--sdk <sdk-dir>] [--keep-resources] <game-root> <script-dir> <output.cppia> [Class ...]" >&2
+	echo "Usage: $0 [--sdk <sdk-dir>] [--keep-resources] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]" >&2
 	exit 1
 fi
 
@@ -129,6 +133,11 @@ fi
 
 	if [ "$KEEP_RESOURCES" -eq 0 ]; then
 		echo "--macro funkin.util.macro.CppiaStripMacro.stripResources()"
+	fi
+
+	# Without this a crash inside the script reports no file and no line, only "in #0".
+	if [ "$DEBUG" -eq 1 ]; then
+		echo "-debug"
 	fi
 
 	echo "-D dll_import=$HOST_CLASSES"

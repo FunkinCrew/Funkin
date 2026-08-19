@@ -142,6 +142,9 @@ class PolymodHandler
   {
     buildImports();
 
+    // The scripts that were stopped by an error are gone now, so let the new ones run.
+    funkin.modding.ScriptGuard.clear();
+
     try
     {
       if (modFileSystem == null) modFileSystem = buildFileSystem();

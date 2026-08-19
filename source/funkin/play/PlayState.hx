@@ -1074,7 +1074,7 @@ class PlayState extends MusicBeatSubState
 
       previousDifficulty = currentDifficulty;
 
-      currentStage?.resetStage();
+      if (currentStage != null) funkin.modding.ScriptGuard.run(currentStage, 'a stage reset', currentStage.resetStage);
 
       dispatchEvent(retryEvent);
 

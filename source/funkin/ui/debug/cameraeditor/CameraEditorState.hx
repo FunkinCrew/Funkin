@@ -1251,7 +1251,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     buildChar(bf, BF);
     buildChar(dad, DAD);
 
-    currentStage.resetStage();
+    funkin.modding.ScriptGuard.run(currentStage, 'a stage reset', currentStage.resetStage);
     currentStage.refresh();
 
     if (!menubarItemFitCameraToViewport.selected)

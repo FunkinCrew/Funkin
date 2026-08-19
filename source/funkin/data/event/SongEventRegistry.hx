@@ -332,7 +332,7 @@ class SongEventRegistry
     var event:Null<SongEvent> = getEvent(id);
     if (event == null) return null;
 
-    return event.getEventSchema();
+    return funkin.modding.ScriptGuard.get(event, 'a request for the "$id" event schema', event.getEventSchema, null);
   }
 
   static function clearEventCache():Void
@@ -351,7 +351,7 @@ class SongEventRegistry
 
     if (eventHandler != null)
     {
-      eventHandler.handleEvent(data);
+      funkin.modding.ScriptGuard.run(eventHandler, 'the "${data.eventKind}" song event', () -> eventHandler.handleEvent(data));
     }
     else
     {

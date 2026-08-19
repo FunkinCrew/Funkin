@@ -1,6 +1,7 @@
 # Compiles a mod's scripted classes to a single .cppia the game can load.
-# Usage: ./build_cppia.ps1 [--sdk <sdk-dir>] [--target <platform>] [--config <debug|release>] <game-root> <script-dir> <output.cppia> [Class ...]
-# 	target defaults to windows and config to release, they only pick which SDK folder is used by default
+# Usage: ./build_cppia.ps1 [--sdk <sdk-dir>] [--target <platform>] [--config <debug|release>] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]
+#		--no-debug disables error handling/crash reporting in .cppia files
+# 	helps with debugging but you might want to disable it once you release (as it increases size overhead)
 
 # SDK here contains `export_classes.info and cppia.hxml`, and you also need the game checked out (as seen by 'game root)
 # That refers to the games source code, not a compiled version of the game.
@@ -21,10 +22,14 @@ $Sdk = $null
 $Target = 'windows'
 $Config = 'release'
 $KeepResources = $false
+$Debug = $true
 $positional = @()
 for ($i = 0; $i -lt $Arguments.Count; $i++) {
 	if ($Arguments[$i] -in @('--keep-resources', '-keep-resources', '-KeepResources')) {
 		$KeepResources = $true
+	}
+	elseif ($Arguments[$i] -in @('--no-debug', '-no-debug', '-NoDebug')) {
+		$Debug = $false
 	}
 	elseif ($Arguments[$i] -in @('--sdk', '-sdk', '-Sdk')) {
 		if ($i + 1 -ge $Arguments.Count) { Write-Error "--sdk needs a directory after it." }
@@ -47,7 +52,7 @@ for ($i = 0; $i -lt $Arguments.Count; $i++) {
 }
 
 if ($positional.Count -lt 3) {
-	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] [--keep-resources] <game-root> <script-dir> <output.cppia> [Class ...]"
+	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] [--keep-resources] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]"
 }
 
 $GameRoot = $positional[0]
@@ -127,6 +132,11 @@ try {
 
 	if (-not $KeepResources) {
 		$kept += "--macro funkin.util.macro.CppiaStripMacro.stripResources()"
+	}
+
+	# Without this a crash inside the script reports no file and no line, only "in #0".
+	if ($Debug) {
+		$kept += "-debug"
 	}
 
 	if (-not [System.IO.Path]::IsPathRooted($Output)) {

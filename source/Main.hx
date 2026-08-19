@@ -147,15 +147,7 @@ class Main extends Sprite
 
     var framerate:Int = Preferences.unlockedFramerate ? 0 : Preferences.framerate;
 
-    var game:FlxGame = new FlxGame(
-      gameWidth,
-      gameHeight,
-      initialState,
-      framerate,
-      framerate,
-      skipSplash,
-      (FlxG.stage.window.fullscreen || Preferences.autoFullscreen)
-    );
+    var game:FlxGame = new funkin.FunkinGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, FlxG.stage.window.fullscreen);
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to the stage
