@@ -5,15 +5,6 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 /**
- * A script that can be tied to a SparrowFreeplayDJ.
- * Create a scripted class that extends SparrowFreeplayDJ to use this.
- */
-@:hscriptClass
-class ScriptedSparrowFreeplayDJ extends SparrowFreeplayDJ implements polymod.hscript.HScriptedClass
-{
-}
-
-/**
  * A SparrowFreeplayDJ is a Freeplay DJ which is rendered by
  * displaying an animation derived from a SparrowV2 atlas spritesheet file.
  *

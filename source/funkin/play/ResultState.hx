@@ -37,7 +37,6 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.HapticUtil;
-import funkin.graphics.ScriptedFunkinSprite;
 import funkin.ui.debug.charting.ChartEditorState;
 #if FEATURE_NEWGROUNDS
 import funkin.api.newgrounds.Medals;
@@ -241,7 +240,7 @@ class ResultState extends MusicBeatSubState
       switch (animationData.renderType)
       {
         case 'animateatlas':
-          if (animationData.scriptClass != null) animation = ScriptedFunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
+          if (animationData.scriptClass != null) animation = FunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
           else
             animation = FunkinSprite.createTextureAtlas(xPosition, yPosition, assetPath);
 
@@ -304,7 +303,7 @@ class ResultState extends MusicBeatSubState
         case 'sparrow':
           if (animationData.scriptClass != null)
           {
-            animation = ScriptedFunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
+            animation = FunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
           }
           else
           {

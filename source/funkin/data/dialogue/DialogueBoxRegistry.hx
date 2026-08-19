@@ -2,7 +2,6 @@ package funkin.data.dialogue;
 
 import funkin.play.cutscene.dialogue.DialogueBox;
 import funkin.data.dialogue.DialogueBoxData;
-import funkin.play.cutscene.dialogue.ScriptedDialogueBox;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 

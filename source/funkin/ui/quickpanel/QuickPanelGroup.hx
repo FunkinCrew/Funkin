@@ -206,7 +206,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       {
         playMenuMusic();
         // We have to be in a scripted state, otherwise this quick panel wouldn't exist!
-        var s:ScriptedMusicBeatState = cast FlxG.state;
+        var s:MusicBeatState = cast FlxG.state;
         @:privateAccess
         var path:String = s._asc?.fullyQualifiedName ?? '';
         funkin.ui.options.OptionsState.backState = path;

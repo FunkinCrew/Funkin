@@ -8,7 +8,6 @@ import funkin.modding.events.ScriptEvent;
 import funkin.ui.debug.charting.util.ChartEditorDropdowns;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
-import funkin.play.notes.notekind.ScriptedNoteKind;
 import funkin.play.notes.notekind.NoteKind.NoteKindParam;
 import funkin.util.macro.ClassMacro;
 import funkin.util.tasks.TaskHandler;
@@ -28,8 +27,7 @@ class NoteKindManager
   static final BUILTIN_KINDS:List<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind).filter((cls) ->
   {
     ![
-      'funkin.play.notes.notekind.NoteKind',
-      'funkin.play.notes.notekind.ScriptedNoteKind'
+      'funkin.play.notes.notekind.NoteKind'
     ].contains(Type.getClassName(cls));
   });
 
@@ -92,7 +90,7 @@ class NoteKindManager
       }
     }
 
-    var scriptedClassName:Array<String> = ScriptedNoteKind.listScriptClasses();
+    var scriptedClassName:Array<String> = NoteKind.listScriptClasses();
     if (scriptedClassName.length > 0)
     {
       trace('Instantiating ${scriptedClassName.length} scripted note kind(s)...');
@@ -100,7 +98,7 @@ class NoteKindManager
       {
         try
         {
-          var script:Null<NoteKind> = ScriptedNoteKind.scriptInit(scriptedClass, 'unknown');
+          var script:Null<NoteKind> = NoteKind.scriptInit(scriptedClass, 'unknown');
           if (script == null)
           {
             trace(' ERROR '.error() + 'Failed to instantiate scripted note kind ($scriptedClass)');
@@ -130,7 +128,7 @@ class NoteKindManager
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
     var entryErrors:SynchronizedArray<
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
-    var scriptedNoteKindClasses:Array<String> = ScriptedNoteKind.listScriptClasses();
+    var scriptedNoteKindClasses:Array<String> = NoteKind.listScriptClasses();
     var entryCount:Int = 0;
     var loadedBaseNoteKinds:Bool = false;
 
@@ -207,7 +205,7 @@ class NoteKindManager
       var entryCls:String = currentState.entryCls;
       try
       {
-        var noteKind:Null<NoteKind> = ScriptedNoteKind.scriptInit(entryCls, 'UNKNOWN');
+        var noteKind:Null<NoteKind> = NoteKind.scriptInit(entryCls, 'UNKNOWN');
         if (noteKind != null)
         {
           workOutput.sendComplete({

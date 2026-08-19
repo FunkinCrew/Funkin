@@ -5,7 +5,6 @@ import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.modding.module.Module;
-import funkin.modding.module.ScriptedModule;
 import funkin.util.SortUtil;
 import funkin.util.tasks.TaskHandler;
 import hx.concurrent.collection.SynchronizedArray;
@@ -32,11 +31,11 @@ class ModuleHandler
     clearModuleCache();
     trace('[MODULEHANDLER] Loading module cache...');
 
-    var scriptedModuleClassNames:Array<String> = ScriptedModule.listScriptClasses();
+    var scriptedModuleClassNames:Array<String> = Module.listScriptClasses();
     trace(' Instantiating ${scriptedModuleClassNames.length} modules...');
     for (moduleCls in scriptedModuleClassNames)
     {
-      var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
+      var module:Null<Module> = Module.scriptInit(moduleCls, moduleCls);
       if (module != null)
       {
         // Then store it.
@@ -58,7 +57,7 @@ class ModuleHandler
     // Clear module cache first.
     clearModuleCache();
 
-    var scriptedModuleClassNames:Array<String> = ScriptedModule.listScriptClasses();
+    var scriptedModuleClassNames:Array<String> = Module.listScriptClasses();
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
 
     // We don't have any modules to load so we can just immediately complete the promise.
@@ -119,7 +118,7 @@ class ModuleHandler
       var moduleCls:String = currentState.moduleCls;
       try
       {
-        var module:Null<Module> = ScriptedModule.scriptInit(moduleCls, moduleCls);
+        var module:Null<Module> = Module.scriptInit(moduleCls, moduleCls);
         if (module != null)
         {
           workOutput.sendComplete({

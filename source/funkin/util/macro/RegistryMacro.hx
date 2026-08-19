@@ -161,9 +161,7 @@ class RegistryMacro
     var entryClsName:String = '${entryType.pack.join('.')}.${entryType.name}';
     var entryTypeExpr:Expr = Context.parse(entryClsName, cls.pos);
 
-    var scriptedEntryClsName:String = '${entryType.pack.join('.')}.Scripted${entryType.name}';
-    var scriptedEntryClsExpr:Expr = Context.parse(scriptedEntryClsName, cls.pos);
-    var createScriptedEntry:String = '${scriptedEntryClsName}.scriptInit(clsName, "unknown")';
+    var createScriptedEntry:String = '${entryClsName}.scriptInit(clsName, "unknown")';
 
     var dataTypeClassName:String = '${dataType.module}.${dataType.name}';
     var newJsonParser:String = 'new json2object.JsonParser<${dataTypeClassName}>({ignoreUnknownVariables: false})';
@@ -196,7 +194,7 @@ class RegistryMacro
 
         function getScriptedClassNames():Array<String>
         {
-          return ${Context.parse(scriptedEntryClsName, Context.currentPos())}.listScriptClasses();
+          return ${Context.parse(entryClsName, Context.currentPos())}.listScriptClasses();
         }
 
         override function createScriptedEntry(clsName:String)

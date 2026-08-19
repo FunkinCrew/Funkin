@@ -3,8 +3,8 @@ package funkin.util.plugins;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
-import funkin.ui.ScriptedMusicBeatState;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
+import funkin.ui.MusicBeatState;
 
 /**
  * A plugin which adds functionality to press `F5` to reload all game assets, then reload the current state.
@@ -38,16 +38,16 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     FlxTransitionableState.skipNextTransIn = true;
 
     var state:Dynamic = FlxG.state;
-    var isScripted:Bool = state is ScriptedMusicBeatState;
+    var isScripted:Bool = state._asc != null;
     if (isScripted)
     {
-      var s:ScriptedMusicBeatState = cast FlxG.state;
+      var s:MusicBeatState = cast FlxG.state;
       @:privateAccess
       var path:String = s._asc?.fullyQualifiedName ?? '';
       trace('Hot-reloading scripted state: ' + path);
       FlxG.switchState(() -> new HotReloadState(() ->
       {
-        var newState:Null<funkin.ui.MusicBeatState> = ScriptedMusicBeatState.scriptInit(path);
+        var newState:Null<funkin.ui.MusicBeatState> = MusicBeatState.scriptInit(path);
         if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
         return newState;
       }));

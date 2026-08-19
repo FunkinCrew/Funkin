@@ -2,7 +2,6 @@ package funkin.data.stickers;
 
 import funkin.data.stickers.StickerData;
 import funkin.ui.transition.stickers.StickerPack;
-import funkin.ui.transition.stickers.ScriptedStickerPack;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
@@ -60,12 +59,12 @@ class StickerRegistry extends BaseRegistry<StickerPack, StickerData, StickerEntr
 
   override function createScriptedEntry(clsName:String):Null<StickerPack>
   {
-    return ScriptedStickerPack.scriptInit(clsName, 'unknown');
+    return StickerPack.scriptInit(clsName, 'unknown');
   }
 
   function getScriptedClassNames():Array<String>
   {
-    return ScriptedStickerPack.listScriptClasses();
+    return StickerPack.listScriptClasses();
   }
 }
 
