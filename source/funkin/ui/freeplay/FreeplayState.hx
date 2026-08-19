@@ -2221,7 +2221,6 @@ class FreeplayState extends MusicBeatSubState
 
   function handleMouseSelectionScroll(elapsed:Float):Void
   {
-    trace(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
     final wheelAmount:Int = Math.round(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
     final framerateMultiplier:Float = (FlxG.updateFramerate / 60);
 
