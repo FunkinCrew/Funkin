@@ -7,6 +7,11 @@ on:
     types:
       - opened
 
+# Ensure only one task can execute for a given PR at a time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  queue: max
+
 
 jobs:
   # Apply `status: pending triage` to newly created pull requests
