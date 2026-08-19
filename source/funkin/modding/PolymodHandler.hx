@@ -397,7 +397,7 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.play.song.ScriptedSong', funkin.play.song.Song);
     Polymod.addImportAlias('funkin.play.stage.ScriptedBopper', funkin.play.stage.Bopper);
     Polymod.addImportAlias('funkin.play.stage.ScriptedStage', funkin.play.stage.Stage);
-    Polymod.addImportAlias('funkin.play.stage.ScriptedStageProperty', funkin.play.stage.StageProp);
+    Polymod.addImportAlias('funkin.play.stage.ScriptedStageProp', funkin.play.stage.StageProp);
     Polymod.addImportAlias('funkin.ui.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
     Polymod.addImportAlias('funkin.ui.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
     Polymod.addImportAlias('funkin.ui.freeplay.ScriptedAlbum', funkin.ui.freeplay.Album);
