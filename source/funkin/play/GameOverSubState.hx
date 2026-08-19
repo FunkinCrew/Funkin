@@ -525,10 +525,8 @@ class GameOverSubState extends MusicBeatSubState
     if (!Assets.exists(musicPath))
     {
       // wtf is this crap
-      if (starting || ending)
+      if (suffix.length > 0)
       {
-        if (suffix.length == 0) return null;
-
         var newSuffix:String = suffix.split('-').slice(0, -1).join('-');
         return resolveMusicPath(newSuffix, starting, ending);
       }
