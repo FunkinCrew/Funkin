@@ -3743,9 +3743,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeMetronome.onRightClick = _ ->
     {
-      metronomeVolume = 1.0;
-      menubarItemVolumeMetronome.value = 0.0;
-      menubarLabelVolumeMetronome.text = 'Metronome - 0%';
+      if (metronomeVolume <= 0.0)
+      {
+        metronomeVolume = 1.0;
+        menubarItemVolumeMetronome.value = 100.0;
+        menubarLabelVolumeMetronome.text = 'Metronome - 100%';
+      }
+      else
+      {
+        metronomeVolume = 0.0;
+        menubarItemVolumeMetronome.value = 0.0;
+        menubarLabelVolumeMetronome.text = 'Metronome - 0%';
+      }
     }
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
@@ -3769,9 +3778,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeHitsoundPlayer.onRightClick = _ ->
     {
-      hitsoundVolumePlayer = 1.0;
-      menubarItemVolumeHitsoundPlayer.value = 0.0;
-      menubarLabelVolumeHitsoundPlayer.text = 'Player - 0%';
+      if (hitsoundVolumePlayer <= 0.0)
+      {
+        hitsoundVolumePlayer = 1.0;
+        menubarItemVolumeHitsoundPlayer.value = 100.0;
+        menubarLabelVolumeHitsoundPlayer.text = 'Player - 100%';
+      }
+      else
+      {
+        hitsoundVolumePlayer = 0.0;
+        menubarItemVolumeHitsoundPlayer.value = 0.0;
+        menubarLabelVolumeHitsoundPlayer.text = 'Player - 0%';
+      }
     }
     menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
     previousAudioVolumes[1] = Std.int(hitsoundVolumePlayer * 100);
@@ -3784,9 +3802,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeHitsoundOpponent.onRightClick = _ ->
     {
-      hitsoundVolumeOpponent = 50.0;
-      menubarItemVolumeHitsoundOpponent.value = 0.0;
-      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 0%';
+      if (hitsoundVolumeOpponent <= 0.0)
+      {
+        hitsoundVolumeOpponent = 1.0;
+        menubarItemVolumeHitsoundOpponent.value = 100.0;
+        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 100%';
+      }
+      else
+      {
+        hitsoundVolumeOpponent = 0.0;
+        menubarItemVolumeHitsoundOpponent.value = 0.0;
+        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 0%';
+      }
     }
     menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
     previousAudioVolumes[2] = Std.int(hitsoundVolumeOpponent * 100);
@@ -3799,9 +3826,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeInstrumental.onRightClick = _ ->
     {
-      if (audioInstTrack != null) audioInstTrack.volume = 1.0;
-      menubarItemVolumeInstrumental.value = 100.0;
-      menubarLabelVolumeInstrumental.text = 'Instrumental - 100%';
+      if (menubarItemVolumeInstrumental.value <= 0.0)
+      {
+        if (audioInstTrack != null) audioInstTrack.volume = 1.0;
+        menubarItemVolumeInstrumental.value = 100.0;
+        menubarLabelVolumeInstrumental.text = 'Instrumental - 100%';
+      }
+      else
+      {
+        if (audioInstTrack != null) audioInstTrack.volume = 0.0;
+        menubarItemVolumeInstrumental.value = 0.0;
+        menubarLabelVolumeInstrumental.text = 'Instrumental - 0%';
+      }
     }
     previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
 
@@ -3813,9 +3849,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeVocalsPlayer.onRightClick = _ ->
     {
-      audioVocalTrackGroup.playerVolume = 1.0;
-      menubarItemVolumeVocalsPlayer.value = 100.0;
-      menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+      if (audioVocalTrackGroup.playerVolume <= 0.0)
+      {
+        audioVocalTrackGroup.playerVolume = 1.0;
+        menubarItemVolumeVocalsPlayer.value = 100.0;
+        menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+      }
+      else
+      {
+        audioVocalTrackGroup.playerVolume = 1.0;
+        menubarItemVolumeVocalsPlayer.value = 100.0;
+        menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+      }
     }
     previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
 
@@ -3827,9 +3872,18 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     };
     menubarItemVolumeVocalsOpponent.onRightClick = _ ->
     {
-      audioVocalTrackGroup.opponentVolume = 1.0;
-      menubarItemVolumeVocalsOpponent.value = 100.0;
-      menubarLabelVolumeVocalsOpponent.text = 'Enemy - 100%';
+      if (audioVocalTrackGroup.opponentVolume <= 0.0)
+      {
+        audioVocalTrackGroup.opponentVolume = 1.0;
+        menubarItemVolumeVocalsOpponent.value = 100.0;
+        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 100%';
+      }
+      else
+      {
+        audioVocalTrackGroup.opponentVolume = 0.0;
+        menubarItemVolumeVocalsOpponent.value = 0.0;
+        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 0%';
+      }
     }
     previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
