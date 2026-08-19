@@ -319,11 +319,11 @@ class FunkinPreloader extends FlxBasePreloader
           var future:Future<Array<Future<Bool>>> = Assets.cacheAllFonts(fontsToPreload);
           future.onProgress((loaded:Int, total:Int) ->
           {
-            trace('PRELOADER: Caching fonts... ${loaded}/${total}');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Caching fonts... ${loaded}/${total}');
           });
           future.onComplete((_result) ->
           {
-            trace('PRELOADER: Completed caching fonts.');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching fonts.');
           });
 
           preloadingPlayAssetsPercent = 1.0;
@@ -378,13 +378,13 @@ class FunkinPreloader extends FlxBasePreloader
           var future = funkin.modding.PolymodHandler.loadScripts(true);
           future.onProgress((loaded:Int, total:Int) ->
           {
-            trace('PRELOADER: PROGRESS initializing scripts (${loaded} / ${total})...');
+            trace(' PRELOADER '.bold().bg_note_left() + ' PROGRESS initializing scripts (${loaded} / ${total})...');
             initializingScriptsPercent = loaded / total;
           });
           future.onComplete((_result) ->
           {
             var classList = polymod.hscript._internal.PolymodScriptClass.listScriptClasses();
-            trace('PRELOADER: Completed initializing ${classList.length} scripts...');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed initializing ${classList.length} scripts...');
             initializingScriptsComplete = true;
           });
           return initializingScriptsPercent;
@@ -449,7 +449,7 @@ class FunkinPreloader extends FlxBasePreloader
 
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);
 
-          trace('PRELOADER: Begin caching ${assetsToCache.length} graphics...');
+          trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} graphics...');
 
           var future:Future<Array<Future<Bool>>> = Assets.cacheAllFlxGraphics(assetsToCache, CACHE_PERMANENT);
 
@@ -459,7 +459,7 @@ class FunkinPreloader extends FlxBasePreloader
           });
           future.onComplete((_result) ->
           {
-            trace('PRELOADER: Completed caching graphics.');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching graphics.');
             cachingGraphicsComplete = true;
           });
 
@@ -510,7 +510,7 @@ class FunkinPreloader extends FlxBasePreloader
 
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(SOUND);
 
-          trace('PRELOADER: Begin caching ${assetsToCache.length} sounds...');
+          trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} sounds...');
 
           var future:Future<Array<Future<Bool>>> = Assets.cacheAllSounds(assetsToCache, CACHE_PERMANENT);
 
@@ -520,7 +520,7 @@ class FunkinPreloader extends FlxBasePreloader
           });
           future.onComplete((_result) ->
           {
-            trace('PRELOADER: Completed caching audio.');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching audio.');
             cachingAudioComplete = true;
           });
 
@@ -576,7 +576,7 @@ class FunkinPreloader extends FlxBasePreloader
           assetsToCache.append(Assets.queryPreloadAssets(SCRIPT));
           assetsToCache.append(Assets.queryPreloadAssets(XML));
 
-          trace('PRELOADER: Begin caching ${assetsToCache.length} data files...');
+          trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} data files...');
 
           var future:Future<Array<Future<Bool>>> = Assets.cacheAllText(assetsToCache, CACHE_PERMANENT);
 
@@ -586,7 +586,7 @@ class FunkinPreloader extends FlxBasePreloader
           });
           future.onComplete((_result) ->
           {
-            trace('PRELOADER: Completed caching data.');
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching data.');
             cachingDataComplete = true;
           });
 
