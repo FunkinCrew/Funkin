@@ -6,7 +6,6 @@ import funkin.data.song.migrator.SongData_v2_1_0.SongMetadata_v2_1_0;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongMusicData;
-import funkin.play.song.ScriptedSong;
 import funkin.play.song.Song;
 import funkin.util.VersionUtil;
 import funkin.util.tools.ISingleton;
@@ -119,7 +118,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
     var variation:String = params?.variation ?? Constants.DEFAULT_VARIATION;
     if (variation != Constants.DEFAULT_VARIATION)
     {
-      final variationSongId:ScriptedSong = cast scriptedSongVariations.get('${id}:${variation}');
+      final variationSongId:Song = cast scriptedSongVariations.get('${id}:${variation}');
       @:privateAccess
       var path:String = variationSongId._asc?.fullyQualifiedName ?? '';
       return path;

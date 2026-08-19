@@ -5,7 +5,6 @@ import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.song.SongData.SongEventData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
-import funkin.play.event.ScriptedSongEvent;
 import funkin.play.event.SongEvent;
 import funkin.util.SortUtil;
 import funkin.util.macro.ClassMacro;
@@ -28,8 +27,7 @@ class SongEventRegistry
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
   static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> ![
-    'funkin.play.event.SongEvent',
-    'funkin.play.event.ScriptedSongEvent'
+    'funkin.play.event.SongEvent'
   ].contains(Type.getClassName(cls)));
 
   /**
@@ -65,13 +63,13 @@ class SongEventRegistry
       }
     }
 
-    var scriptedEventClassNames:Array<String> = ScriptedSongEvent.listScriptClasses();
+    var scriptedEventClassNames:Array<String> = SongEvent.listScriptClasses();
     trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
     if (scriptedEventClassNames == null || scriptedEventClassNames.length == 0) return;
 
     for (eventCls in scriptedEventClassNames)
     {
-      var event:Null<SongEvent> = ScriptedSongEvent.scriptInit(eventCls, 'UKNOWN');
+      var event:Null<SongEvent> = SongEvent.scriptInit(eventCls, 'UKNOWN');
 
       if (event != null)
       {
@@ -143,7 +141,7 @@ class SongEventRegistry
       var eventCls:String = currentState.eventCls;
       try
       {
-        var event:Null<SongEvent> = ScriptedSongEvent.scriptInit(eventCls, 'UNKNOWN');
+        var event:Null<SongEvent> = SongEvent.scriptInit(eventCls, 'UNKNOWN');
         if (event != null)
         {
           workOutput.sendComplete({
@@ -219,7 +217,7 @@ class SongEventRegistry
 
     loadScriptedEventsAsync = () ->
     {
-      scriptedEventClassNames = ScriptedSongEvent.listScriptClasses();
+      scriptedEventClassNames = SongEvent.listScriptClasses();
       entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
 
       trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');

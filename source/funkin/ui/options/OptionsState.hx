@@ -145,7 +145,7 @@ class OptionsState extends MusicBeatState
     // TODO: Animate this transition?
     if (backState != null)
     {
-      var state:Dynamic = ScriptedMusicBeatState.scriptInit(backState);
+      var state:MusicBeatState = MusicBeatState.scriptInit(backState);
       if (state != null) FlxG.switchState(state);
       else
       {

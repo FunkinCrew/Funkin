@@ -6,15 +6,6 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 /**
- * A script that can be tied to a MultiSparrowFreeplayDJ.
- * Create a scripted class that extends MultiSparrowFreeplayDJ to use this.
- */
-@:hscriptClass
-class ScriptedMultiSparrowFreeplayDJ extends MultiSparrowFreeplayDJ implements polymod.hscript.HScriptedClass
-{
-}
-
-/**
  * For some Freeplay DJs which use Sparrow atlases, the spritesheets need to be split
  * into multiple files. This Freeplay DJ renderer concatenates these together into a single sprite.
  *

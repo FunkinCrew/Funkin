@@ -352,20 +352,65 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
     Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
 
-    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.ScriptedFunkinSprite);
-    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.ScriptedMusicBeatState);
-    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.ScriptedMusicBeatSubState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
 
     Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
 
     // TODO: Does this work?
     Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
-    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.ScriptedFunkinSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxAtlasSprite', funkin.graphics.FunkinSprite);
 
     // Sandboxing for compatibility.
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
-
     Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
+
+    // Backwards compatibility for many classes that were removed.
+    // These are just wrapper scripted classes that extend the original class.
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxBasic', flixel.FlxBasic);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxObject', flixel.FlxObject);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxRuntimeShader', flixel.addons.display.FlxRuntimeShader);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxSprite', flixel.FlxSprite);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxState', flixel.FlxState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxSubState', flixel.FlxSubState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxStrip', flixel.FlxStrip);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxTransitionableState', flixel.addons.transition.FlxTransitionableState);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxSpriteGroup', flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup);
+    Polymod.addImportAlias('funkin.modding.base.ScriptedFlxTypedGroup', flixel.group.FlxGroup.FlxTypedGroup);
+    Polymod.addImportAlias('funkin.graphics.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
+    Polymod.addImportAlias('funkin.group.ScriptedFunkinGroup', funkin.group.FunkinGroup);
+    Polymod.addImportAlias('funkin.graphics.video.ScriptedFunkinVideoSprite', funkin.graphics.video.FunkinVideoSprite);
+    Polymod.addImportAlias('funkin.play.character.ScriptedBaseCharacter', funkin.play.character.BaseCharacter);
+    Polymod.addImportAlias('funkin.play.character.ScriptedSparrowCharacter', funkin.play.character.SparrowCharacter);
+    Polymod.addImportAlias('funkin.play.character.ScriptedMultiSparrowCharacter', funkin.play.character.MultiSparrowCharacter);
+    Polymod.addImportAlias('funkin.play.character.ScriptedMultiAnimateAtlasCharacter', funkin.play.character.MultiAnimateAtlasCharacter);
+    Polymod.addImportAlias('funkin.play.character.ScriptedPackerCharacter', funkin.play.character.PackerCharacter);
+    Polymod.addImportAlias('funkin.play.character.ScriptedAnimateAtlasCharacter', funkin.play.character.AnimateAtlasCharacter);
+    Polymod.addImportAlias('funkin.play.cutscene.dialogue.ScriptedConversation', funkin.play.cutscene.dialogue.Conversation);
+    Polymod.addImportAlias('funkin.play.cutscene.dialogue.ScriptedDialogueBox', funkin.play.cutscene.dialogue.DialogueBox);
+    Polymod.addImportAlias('funkin.play.cutscene.dialogue.ScriptedSpeaker', funkin.play.cutscene.dialogue.Speaker);
+    Polymod.addImportAlias('funkin.play.event.ScriptedSongEvent', funkin.play.event.SongEvent);
+    Polymod.addImportAlias('funkin.play.notes.ScriptedStrumline', funkin.play.notes.Strumline);
+    Polymod.addImportAlias('funkin.play.notes.notekind.ScriptedNoteKind', funkin.play.notes.notekind.NoteKind);
+    Polymod.addImportAlias('funkin.play.notes.notestyle.ScriptedNoteStyle', funkin.play.notes.notestyle.NoteStyle);
+    Polymod.addImportAlias('funkin.play.song.ScriptedSong', funkin.play.song.Song);
+    Polymod.addImportAlias('funkin.play.stage.ScriptedBopper', funkin.play.stage.Bopper);
+    Polymod.addImportAlias('funkin.play.stage.ScriptedStage', funkin.play.stage.Stage);
+    Polymod.addImportAlias('funkin.play.stage.ScriptedStageProperty', funkin.play.stage.StageProp);
+    Polymod.addImportAlias('funkin.ui.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
+    Polymod.addImportAlias('funkin.ui.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
+    Polymod.addImportAlias('funkin.ui.freeplay.ScriptedAlbum', funkin.ui.freeplay.Album);
+    Polymod.addImportAlias('funkin.ui.freeplay.ScriptedFreeplayStyle', funkin.ui.freeplay.FreeplayStyle);
+    Polymod.addImportAlias('funkin.ui.freeplay.backcards.ScriptedBackingCard', funkin.ui.freeplay.backcards.BackingCard);
+    Polymod.addImportAlias('funkin.ui.freeplay.charselect.ScriptedPlayableCharacter', funkin.ui.freeplay.charselect.PlayableCharacter);
+    Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedAnimateAtlasFreeplayDJ', funkin.ui.freeplay.dj.AnimateAtlasFreeplayDJ);
+    Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedBaseFreeplayDJ', funkin.ui.freeplay.dj.BaseFreeplayDJ);
+    Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedSparrowFreeplayDJ', funkin.ui.freeplay.dj.SparrowFreeplayDJ);
+    Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedMultiSparrowFreeplayDJ', funkin.ui.freeplay.dj.MultiSparrowFreeplayDJ);
+    Polymod.addImportAlias('funkin.ui.freeplay.dj.ScriptedPackerFreeplayDJ', funkin.ui.freeplay.dj.PackerFreeplayDJ);
+    Polymod.addImportAlias('funkin.ui.story.ScriptedLevel', funkin.ui.story.Level);
+    Polymod.addImportAlias('funkin.ui.transition.stickers.ScriptedStickerPack', funkin.ui.transition.stickers.StickerPack);
   }
 
   /**

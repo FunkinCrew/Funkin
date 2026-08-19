@@ -1,7 +1,6 @@
 package funkin.data.stage;
 
 import funkin.play.stage.Stage;
-import funkin.play.stage.ScriptedStage;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 

@@ -326,10 +326,10 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      var allScriptedCards:Array<String> = ScriptedBackingCard.listScriptClasses();
+      var allScriptedCards:Array<String> = BackingCard.listScriptClasses();
       for (cardClass in allScriptedCards)
       {
-        var card:Null<BackingCard> = ScriptedBackingCard.scriptInit(cardClass, 'unknown');
+        var card:Null<BackingCard> = BackingCard.scriptInit(cardClass, 'unknown');
         if (card == null) continue;
         if (card.currentCharacter == currentCharacterId)
         {
@@ -961,31 +961,31 @@ class FreeplayState extends MusicBeatSubState
   @:privateAccess
   public function createFreeplayDJ(x:Float, y:Float, characterId:String):Void
   {
-    final renderType:String = (currentCharacter?.getFreeplayDJData()?.renderType ?? 'animateatlas').trim().toLowerCase();
-    final scriptClass:String = (currentCharacter?.getFreeplayDJData()?.scriptClass ?? '').trim();
+    var renderType:String = (currentCharacter?.getFreeplayDJData()?.renderType ?? 'animateatlas').trim().toLowerCase();
+    var scriptClass:String = (currentCharacter?.getFreeplayDJData()?.scriptClass ?? '').trim();
 
     switch (renderType)
     {
       case 'animateatlas':
-        dj = (scriptClass != '') ? (ScriptedAnimateAtlasFreeplayDJ.scriptInit(
+        dj = (scriptClass != '') ? (AnimateAtlasFreeplayDJ.scriptInit(
           scriptClass,
           x,
           y,
           characterId
         )) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
       case 'sparrow':
-        dj = (scriptClass != '') ? (ScriptedSparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (SparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
       case 'multisparrow':
-        dj = (scriptClass != '') ? (ScriptedMultiSparrowFreeplayDJ.scriptInit(
+        dj = (scriptClass != '') ? (MultiSparrowFreeplayDJ.scriptInit(
           scriptClass,
           x,
           y,
           characterId
         )) : (new MultiSparrowFreeplayDJ(x, y, characterId));
       case 'packer':
-        dj = (scriptClass != '') ? (ScriptedPackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (PackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
-        dj = (scriptClass != '') ? (ScriptedBaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : {
+        dj = (scriptClass != '') ? (BaseFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : {
           // force-skip intro only in fallback, since you can specify onIntroDone.dispatch in ScriptedBaseFreeplayDJ, and this is goddamn fallback
           forceSkipIntro = true;
           new BaseFreeplayDJ(x, y, characterId);

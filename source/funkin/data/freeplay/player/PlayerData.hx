@@ -71,7 +71,7 @@ class PlayerData implements ISerializable
 
   /**
    * Whether this character is unlocked by default.
-   * Use a ScriptedPlayableCharacter to add custom logic.
+   * Extend PlayableCharacter in a script to add custom logic.
    */
   @:optional @:default(true)
   public var unlocked:Bool = true;

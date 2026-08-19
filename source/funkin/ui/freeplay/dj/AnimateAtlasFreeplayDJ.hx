@@ -4,15 +4,6 @@ import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.util.assets.FlxAnimationUtil;
 
 /**
- * A script that can be tied to a AnimateAtlasFreeplayDJ.
- * Create a scripted class that extends AnimateAtlasFreeplayDJ to use this.
- */
-@:hscriptClass
-class ScriptedAnimateAtlasFreeplayDJ extends AnimateAtlasFreeplayDJ implements polymod.hscript.HScriptedClass
-{
-}
-
-/**
  * An AnimateAtlasFreeplayDJ is a Freeplay DJ which is rendered by
  * displaying an animation derived from an Adobe Animate texture atlas spritesheet file.
  *

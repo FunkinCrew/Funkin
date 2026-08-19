@@ -5,15 +5,6 @@ import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 /**
- * A script that can be tied to a PackerFreeplayDJ.
- * Create a scripted class that extends PackerFreeplayDJ to use this.
- */
-@:hscriptClass
-class ScriptedPackerFreeplayDJ extends PackerFreeplayDJ implements polymod.hscript.HScriptedClass
-{
-}
-
-/**
  * A PackerFreeplayDJ is a Freeplay DJ which is rendered by
  * displaying an animation derived from a Packer spritesheet file.
  *

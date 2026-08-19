@@ -7,15 +7,12 @@ import openfl.ui.Keyboard;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelGroup;
 import polymod.hscript.HScriptedClass;
-
 import funkin.save.Save;
 
 class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBasic>
 {
   public static var instance(get, never):SidePanelPlugin;
-
   public static var showGrabber(default, set):Bool = false;
-
   static var shouldShowHint:Bool = false;
 
   static function set_showGrabber(value:Bool):Bool
@@ -23,7 +20,8 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
     showGrabber = value;
     if (_instance == null) return value;
     if (value) _instance.addPanel();
-    else _instance.removePanel();
+    else
+      _instance.removePanel();
     return value;
   }
 
@@ -55,7 +53,7 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
 
   static function isScriptedState():Bool
   {
-    return Std.isOfType(FlxG.state, HScriptedClass);
+    return Std.isOfType(FlxG.state, HScriptedClass) || (FlxG.state != null && FlxG.state._asc != null);
   }
 
   function addPanel():Void
@@ -74,7 +72,6 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
     panelState.destroy();
     panelState = null;
   }
-
 
   function onPostStateSwitch():Void
   {
