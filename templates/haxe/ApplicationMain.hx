@@ -49,6 +49,11 @@ class ApplicationMain
     hxgamemode.GamemodeClient.request_start();
     #end
 
+    #if hxvlc
+    // Initialize hxvlc's Handle here so the videos are loading faster.
+    hxvlc.util.Handle.init();
+    #end
+
     // Creates the primary OpenFL application instance.
     final app:openfl.display.Application = bootstrap.OpenFLBootstrap.createApplication();
 

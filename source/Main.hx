@@ -1,23 +1,15 @@
 package;
 
-import lime.system.System;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
-import funkin.ui.FullScreenScaleMode;
-import funkin.Preferences;
 import funkin.PlayerSettings;
+import funkin.Preferences;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.debug.FunkinDebugDisplay;
-import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
-#if hxvlc
-import hxvlc.util.Handle;
-#end
+import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
-import openfl.Lib;
-import openfl.media.Video;
-import openfl.net.NetStream;
-import funkin.util.WindowUtil;
 
 using funkin.util.AnsiUtil;
 
@@ -60,25 +52,6 @@ class Main extends Sprite
       removeEventListener(Event.ADDED_TO_STAGE, init);
     }
 
-    // Manually crash the game when using a software renderer in order to give a nicer error message.
-    var context = stage.window.context.type;
-    if (context != WEBGL && context != OPENGL && context != OPENGLES)
-    {
-      var tech:String = #if web 'WebGL' #elseif desktop 'OpenGL' #else 'OpenGL ES' #end;
-      var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
-      var desc:String = 'Failed to initialize the $tech rendering context!\n\n';
-      #if web
-      desc += 'Make sure your graphics card supports $requiredVersion, your graphics drivers are up to date, and hardware acceleration is enabled on your browser.';
-      #elseif desktop
-      desc += 'Make sure your graphics card supports $requiredVersion, and your graphics drivers are up to date.';
-      #else
-      desc += 'Make sure your device supports $requiredVersion.';
-      #end
-
-      WindowUtil.showError('Failed to initialize $tech', desc);
-      System.exit(1);
-    }
-
     setupGame();
   }
 
@@ -102,21 +75,6 @@ class Main extends Sprite
     #if mobile
     // Add this signal so we can reposition and resize the memory and fps counter.
     FlxG.signals.preUpdate.add(repositionCounters.bind(true));
-    #end
-
-    #if hxvlc
-    // Initialize hxvlc's Handle here so the videos are loading faster.
-    Handle.initAsync(function(success:Bool):Void
-    {
-      if (success)
-      {
-        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');
-      }
-      else
-      {
-        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance failed to initialize!');
-      }
-    });
     #end
 
     WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
