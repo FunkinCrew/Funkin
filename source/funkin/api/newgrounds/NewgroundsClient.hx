@@ -363,6 +363,7 @@ class NewgroundsClient
   public function autoSyncSavesFromNewgrounds(slotIsNull:Bool = false, slotIsEmpty:Bool = false)
   {
     if (!Preferences.autoSync) return;
+    if (!isLoggedIn()) return;
     if (slotIsNull || slotIsEmpty) return;
 
     @:privateAccess
@@ -389,6 +390,7 @@ class NewgroundsClient
   public function autoSyncSavesToNewgrounds()
   {
     if (!Preferences.autoSync) return;
+    if (!isLoggedIn()) return;
 
     Save.saveToNewgrounds(() -> trace(' NEWGROUNDS '.bold().bg_orange() + ' Synced with Newgrounds (saved!)'));
   }
