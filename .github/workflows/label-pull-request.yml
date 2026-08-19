@@ -13,6 +13,10 @@ name: "Pull Request Labeler"
 on:
 - pull_request_target
 
+# Ensure only one task can execute for a given PR at a time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  queue: max
 
 jobs:
   # Apply labels to pull requests based on which files were edited
