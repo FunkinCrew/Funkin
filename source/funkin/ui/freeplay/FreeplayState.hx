@@ -1943,6 +1943,7 @@ class FreeplayState extends MusicBeatSubState
   var _prevRoundedDragOffset:Float = 0;
   var _pressedOnSelected:Bool = false;
   var _moveLength:Float = 0;
+  var _touchpadScrolling:Bool = false;
   var _flickEnded:Bool = true;
   var _pressedOnCapsule:Bool = false;
   var draggingDifficulty:Bool = false;
@@ -1961,14 +1962,7 @@ class FreeplayState extends MusicBeatSubState
     updateFreeplayHintText();
 
     handleDirectionalInput(elapsed);
-
-    final wheelAmount:Int = Math.round(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
-
-    if (wheelAmount != 0)
-    {
-      dj?.onPlayerAction(); // dj?.resetAFKTimer();
-      changeSelection(-wheelAmount);
-    }
+    handleMouseSelectionScroll(elapsed);
 
     handleDifficultySwitch();
     handleDebugKeys();
@@ -2011,6 +2005,7 @@ class FreeplayState extends MusicBeatSubState
         {
           spamTimer = 0;
           changeSelection(upP ? -1 : 1);
+          curSelectedFloat = curSelected;
         }
       }
       else if (spamTimer >= 0.9)
@@ -2020,6 +2015,7 @@ class FreeplayState extends MusicBeatSubState
       else if (spamTimer <= 0)
       {
         changeSelection(upP ? -1 : 1);
+        curSelectedFloat = curSelected;
       }
 
       spamTimer += elapsed;
@@ -2221,6 +2217,51 @@ class FreeplayState extends MusicBeatSubState
       return;
     }
     #end
+  }
+
+  function handleMouseSelectionScroll(elapsed:Float):Void
+  {
+    trace(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
+    final wheelAmount:Int = Math.round(FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1));
+    final framerateMultiplier:Float = (FlxG.updateFramerate / 60);
+
+    if (wheelAmount != 0)
+    {
+      dj?.onPlayerAction(); // dj?.resetAFKTimer();
+    }
+
+    if ((curSelected == 0 || curSelected == grpCapsules.countLiving() - 1) && wheelAmount != 0 && !_touchpadScrolling)
+    {
+      changeSelection(-wheelAmount);
+      curSelectedFloat = curSelected;
+    }
+    else if (FlxG.mouse.deltaWheel.y != 0)
+    {
+      final delta = FlxMath.bound(FlxG.mouse.deltaWheel.y, -1, 1) * framerateMultiplier;
+      if (!Math.isFinite(delta)) return;
+      if (Math.abs(delta) >= 0.1)
+      {
+        if (wheelAmount != 0) _touchpadScrolling = true;
+        var moveLength = delta / FlxG.updateFramerate / 0.03;
+        _moveLength += Math.abs(moveLength);
+        curSelectedFloat -= moveLength;
+        updateSongsScroll();
+      }
+    }
+    else if (_moveLength > 0)
+    {
+      _moveLength = 0.0;
+      _touchpadScrolling = false;
+      changeSelection(0);
+    }
+
+    curSelectedFloat = curSelectedFloat.clamp(0, grpCapsules.countLiving() - 1);
+    curSelected = Math.round(curSelectedFloat);
+
+    for (i in 0...grpCapsules.members.length)
+    {
+      grpCapsules.members[i].selected = (i == curSelected);
+    }
   }
 
   #if FEATURE_TOUCH_CONTROLS
