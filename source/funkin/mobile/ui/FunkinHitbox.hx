@@ -82,6 +82,12 @@ class FunkinHint extends FunkinButton
   var followTargetSize:Bool = false;
 
   /**
+   * The width the hint should expand to in order to span its note column,
+   * measured from the actual on-screen strum spacing.
+   */
+  public var columnWidth:Float = 0.0;
+
+  /**
    * Creates a new `FunkinHint` object.
    *
    * @param x The x position of the button.
@@ -185,19 +191,19 @@ class FunkinHint extends FunkinButton
 
     if (followTarget != null)
     {
-      final widthMultiplier:Float = isPixel ? 1.35 : 1.35;
+      final widthMultiplier:Float = 1.35;
       final heightMultiplier:Float = 8;
 
       final xOffset:Float = isPixel ? 43.265 : 0;
       final yOffset:Float = isPixel ? 57.65 : 0;
 
-      // TODO: THIS feels off when playing on regular notes but it's fine for pixel notes? Hard to explain needs more testing
-      if (followTargetSize)
-      {
-        setSize(followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0), followTarget.height * heightMultiplier + (isPixel ? 118 : 0));
-      }
+      final baseWidth:Float = followTarget.width * widthMultiplier + (isPixel ? 93.05 : 0);
+      final baseHeight:Float = followTarget.height * heightMultiplier + (isPixel ? 118 : 0);
 
-      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset, (followTarget.y - 220) - yOffset);
+      final hintWidth:Float = Math.max(columnWidth, baseWidth);
+
+      if (followTargetSize) setSize(hintWidth, baseHeight);
+      setPosition((followTarget.x - (followTarget.width * ((widthMultiplier - 1) / 2))) - xOffset - ((hintWidth - baseWidth) / 2), (followTarget.y - 220) - yOffset);
     }
   }
 

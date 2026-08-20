@@ -280,6 +280,15 @@ class ScriptEventDispatcher
         case FREEPLAY_CLOSE:
           t.onFreeplayClose(cast event);
           return;
+        case FREEPLAY_NEW_RANK:
+          t.onCapsuleNewRank(cast event);
+          return;
+        case FREEPLAY_RANK_SLAM:
+          t.onRankSlam(cast event);
+          return;
+        case FREEPLAY_CAPSULE_SLAM:
+          t.onCapsuleSlam(cast event);
+          return;
         default: // Continue;
       }
     }
@@ -292,7 +301,10 @@ class ScriptEventDispatcher
         ScriptEventType.SONG_SELECTED,
         ScriptEventType.FREEPLAY_INTRO,
         ScriptEventType.FREEPLAY_OUTRO,
-        ScriptEventType.FREEPLAY_CLOSE
+        ScriptEventType.FREEPLAY_CLOSE,
+        ScriptEventType.FREEPLAY_NEW_RANK,
+        ScriptEventType.FREEPLAY_RANK_SLAM,
+        ScriptEventType.FREEPLAY_CAPSULE_SLAM
       ].contains(event.type)) return;
     }
 

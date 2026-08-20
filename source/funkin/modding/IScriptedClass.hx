@@ -207,6 +207,21 @@ interface IFreeplayScriptedClass extends IScriptedClass
    * Called when Freeplay is closed.
    */
   public function onFreeplayClose(event:FreeplayScriptEvent):Void;
+
+  /**
+   * Called when a capsule receives a new rank.
+   */
+  public function onCapsuleNewRank(event:CapsuleScriptEvent):Void;
+
+  /**
+   * Called when the new rank letter slams onto the current freeplay capsule.
+   */
+  public function onRankSlam(event:CapsuleScriptEvent):Void;
+
+  /**
+   * Called when the entire freeplay capsule slams down, after a new rank transition.
+   */
+  public function onCapsuleSlam(event:CapsuleScriptEvent):Void;
 }
 
 /**

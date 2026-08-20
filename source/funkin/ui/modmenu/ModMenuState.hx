@@ -794,7 +794,16 @@ class ModMenuState extends MusicBeatState
 
   function rescanFolder():Void
   {
-    var newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+    var newItems:Array<String> = [];
+    try
+    {
+      newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+    }
+    catch (e:Dynamic)
+    {
+      trace('Failed to read mods folder: ${Std.string(e)}');
+      return;
+    }
 
     if (newItems.length != itemsInFolder.length)
     {
@@ -1242,6 +1251,8 @@ class ModMenuState extends MusicBeatState
       if (blinkTimer >= 100)
       {
         blinkTimer = 0;
+        bfBlink = 0;
+        gfBlink = 0;
       }
 
       if (blinkTimer >= bfBlink && bf.animation.finished)
@@ -1845,6 +1856,7 @@ class ModMenuState extends MusicBeatState
 
   function handleTouch(elapsed:Float):Void
   {
+    if (hasTransitions() || exitingMenu || backPressStage > 0) return;
     if (touchScrolling)
     {
       var targetList:ModMenuItemList = null;

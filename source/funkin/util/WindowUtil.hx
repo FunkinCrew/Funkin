@@ -161,7 +161,7 @@ class WindowUtil
    */
   public static function showError(name:String, desc:String):Void
   {
-    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.ERROR, desc, name);
+    alert(lime.ui.MessageBoxType.ERROR, desc, name);
   }
 
   /**
@@ -171,7 +171,7 @@ class WindowUtil
    */
   public static function showWarning(name:String, desc:String):Void
   {
-    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.WARNING, desc, name);
+    alert(lime.ui.MessageBoxType.WARNING, desc, name);
   }
 
   /**
@@ -181,7 +181,22 @@ class WindowUtil
    */
   public static function showInformation(name:String, desc:String):Void
   {
-    lime.app.Application.current.window.alert(lime.ui.MessageBoxType.INFORMATION, desc, name);
+    alert(lime.ui.MessageBoxType.INFORMATION, desc, name);
+  }
+
+  /**
+   * Displays a native system alert dialog.
+   * @param type The type/severity icon of the message box (e.g. ERROR, WARNING, INFORMATION). Defaults to INFORMATION.
+   * @param message The main body content/description of the alert dialog.
+   * @param title The title text displayed in the window header.
+   * @param buttons Optional list of custom button labels for the dialog.
+   */
+  public static function alert(type:lime.ui.MessageBoxType = INFORMATION, ?message:String, ?title:String, ?buttons:Array<String>) {
+    @:privateAccess
+    FlxG.sound?.onFocusLost();
+    lime.app.Application.current.window.alert(type, message, title, buttons);
+    @:privateAccess
+    FlxG.sound?.onFocus();
   }
 
   /**

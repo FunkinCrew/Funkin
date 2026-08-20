@@ -4,13 +4,26 @@ import flixel.util.FlxTimer;
 import flixel.FlxCamera;
 import openfl.filters.ColorMatrixFilter;
 
+/**
+ * A class that is used for creating a retro-styled fading effect.
+ * This effect is used primarily in Week 6.
+ */
 @:nullSafety
 class RetroCameraFade
 {
+  /**
+   * The currently running fade timer.
+   * Can be `null`!
+   */
   static var fadeTimer:Null<FlxTimer>;
 
-  // im lazy, but we only use this for week 6
-  // and also sorta yoinked for djflixel, lol !
+  /**
+   * Fades the camera to white.
+   *
+   * @param	camera		The target camera that the effect should happen on.
+   * @param camSteps		The amount of steps it should take before finishing the effect.
+   * @param	time		The duration it takes for the fade to finish.
+   */
   public static function fadeWhite(camera:FlxCamera, camSteps:Int = 5, time:Float = 1):Void
   {
     var steps:Int = 0;
@@ -48,6 +61,13 @@ class RetroCameraFade
     }, stepsTotal + 1);
   }
 
+  /**
+   * Fades the camera from white.
+   *
+   * @param	camera		The target camera that the effect should happen on.
+   * @param camSteps		The amount of steps it should take before finishing the effect.
+   * @param	time		The duration it takes for the fade to finish.
+   */
   public static function fadeFromWhite(camera:FlxCamera, camSteps:Int = 5, time:Float = 1):Void
   {
     var steps:Int = camSteps;
@@ -91,6 +111,13 @@ class RetroCameraFade
     }, camSteps);
   }
 
+  /**
+   * Fades the camera to black.
+   *
+   * @param	camera		The target camera that the effect should happen on.
+   * @param camSteps		The amount of steps it should take before finishing the effect.
+   * @param	time		The duration it takes for the fade to finish.
+   */
   public static function fadeToBlack(camera:FlxCamera, camSteps:Int = 5, time:Float = 1):Void
   {
     var steps:Int = 0;
@@ -128,6 +155,13 @@ class RetroCameraFade
     }, camSteps);
   }
 
+  /**
+   * Fades the camera black.
+   *
+   * @param	camera		The target camera that the effect should happen on.
+   * @param camSteps		The amount of steps it should take before finishing the effect.
+   * @param	time		The duration it takes for the fade to finish.
+   */
   public static function fadeBlack(camera:FlxCamera, camSteps:Int = 5, time:Float = 1):Void
   {
     var steps:Int = camSteps;

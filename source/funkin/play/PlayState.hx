@@ -802,9 +802,9 @@ class PlayState extends MusicBeatSubState
 
     var currentChart = currentSong.getDifficulty(currentDifficulty, currentVariation);
     var noteStyleId:String = currentChart?.noteStyle ?? '';
-    var nulNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
-    if (nulNoteStyle == null) nulNoteStyle = NoteStyleRegistry.instance.fetchDefault();
-    noteStyle = nulNoteStyle;
+    var nullNoteStyle:Null<NoteStyle> = NoteStyleRegistry.instance.fetchEntry(noteStyleId);
+    if (nullNoteStyle == null) nullNoteStyle = NoteStyleRegistry.instance.fetchDefault();
+    noteStyle = nullNoteStyle;
 
     // Strumlines
     playerStrumline = new Strumline(noteStyle, !isBotPlayMode, currentChart?.scrollSpeed);
@@ -914,9 +914,21 @@ class PlayState extends MusicBeatSubState
 
         if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows)
         {
-          for (direction in Strumline.DIRECTIONS)
+          // Strum spacing in arrow mode isn't uniform, so measure the real gap to each neighbor.
+          for (i in 0...Strumline.DIRECTIONS.length)
           {
-            hitbox.getFirstHintByDirection(direction).follow(playerStrumline.getByDirection(direction));
+            final direction = Strumline.DIRECTIONS[i];
+            final strum = playerStrumline.getByDirection(direction);
+            final hint = hitbox.getFirstHintByDirection(direction);
+
+            final prevStrum = i > 0 ? playerStrumline.getByDirection(Strumline.DIRECTIONS[i - 1]) : null;
+            final nextStrum = i < Strumline.DIRECTIONS.length - 1 ? playerStrumline.getByDirection(Strumline.DIRECTIONS[i + 1]) : null;
+
+            final leftReach:Float = prevStrum == null ? strum.width : (strum.x - prevStrum.x);
+            final rightReach:Float = nextStrum == null ? strum.width : (nextStrum.x - strum.x);
+
+            hint.columnWidth = Math.max(leftReach, rightReach);
+            hint.follow(strum);
           }
         }
       }
@@ -1244,9 +1256,10 @@ class PlayState extends MusicBeatSubState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.pow(decayRate, dt));
     }
 
-    if (currentStage != null && currentStage.getBoyfriend() != null)
+    var bf:Null<BaseCharacter> = currentStage?.getBoyfriend();
+    if (bf != null)
     {
-      FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
+      FlxG.watch.addQuick('bfAnim', bf.getCurrentAnimation());
     }
     FlxG.watch.addQuick('health', health);
     FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
@@ -1410,14 +1423,6 @@ class PlayState extends MusicBeatSubState
           }
           else
           {
-            var boyfriendPos:FlxPoint = new FlxPoint(0, 0);
-
-            // Prevent the game from crashing if Boyfriend isn't present.
-            if (currentStage != null && currentStage.getBoyfriend() != null)
-            {
-              boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
-            }
-
             openPauseSubState(isChartingMode ? Charting : Standard, camPause, lostFocus);
           }
 
@@ -1851,8 +1856,8 @@ class PlayState extends MusicBeatSubState
       && (Conductor.instance.currentStep + cameraZoomRateOffset * Constants.STEPS_PER_BEAT) % (cameraZoomRate * Constants.STEPS_PER_BEAT) == 0
     )
     {
-      // Set zoom multiplier for camera bop.
-      cameraBopMultiplier = cameraBopIntensity;
+      // Add zoom multiplier to camera bop.
+      cameraBopMultiplier += cameraBopIntensity - 1;
       // HUD camera zoom still uses old system. To change. (+3%)
       camHUD.zoom += hudCameraZoomIntensity * defaultHUDCameraZoom;
     }
@@ -2867,9 +2872,10 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Make sure the opponent keeps singing while the note is held.
-        if (currentStage != null && currentStage.getDad() != null && currentStage.getDad().isSinging())
+        var dad:Null<BaseCharacter> = currentStage?.getDad();
+        if (dad != null && dad.isSinging())
         {
-          currentStage.getDad().holdTimer = 0;
+          dad.holdTimer = 0;
         }
       }
 
@@ -2882,7 +2888,7 @@ class PlayState extends MusicBeatSubState
         {
           // We dropped a hold note.
           // Play miss animation, but don't penalize.
-          if (currentStage != null) currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+          currentStage?.getOpponent()?.playSingAnimation(holdNote.noteData.getDirection(), true);
         }
       }
     }
@@ -2960,9 +2966,10 @@ class PlayState extends MusicBeatSubState
         }
 
         // Make sure the player keeps singing while the note is held by the bot.
-        if (isBotPlayMode && currentStage != null && currentStage.getBoyfriend() != null && currentStage.getBoyfriend().isSinging())
+        var bf:Null<BaseCharacter> = currentStage?.getBoyfriend();
+        if (isBotPlayMode && bf != null && bf.isSinging())
         {
-          currentStage.getBoyfriend().holdTimer = 0;
+          bf.holdTimer = 0;
         }
       }
 

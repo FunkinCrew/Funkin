@@ -347,6 +347,27 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * Called when a capsule receives a new rank.
+   */
+  public function onCapsuleNewRank(event:CapsuleScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when the rank letter slams down on a freeplay capsule.
+   */
+  public function onRankSlam(event:CapsuleScriptEvent):Void
+  {
+  }
+
+  /**
+   * Called when the entire capsule slams down, after a new rank has been applied.
+   */
+  public function onCapsuleSlam(event:CapsuleScriptEvent):Void
+  {
+  }
+
+  /**
    * Called when a character is selected.
    */
   public function onCharacterSelect(event:CharacterSelectScriptEvent):Void

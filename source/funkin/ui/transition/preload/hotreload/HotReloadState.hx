@@ -62,6 +62,8 @@ class HotReloadState extends MusicBeatState
   {
     super.create();
 
+    FlxG.keys.enabled = false;
+
     // Fix a specific bug where the game tries to render the 0-character long text,
     // fails and shits its pants.
     if (leftWatermarkText != null)
@@ -310,6 +312,8 @@ class HotReloadState extends MusicBeatState
 
     trace('Transitioning to title state...');
     transitioning = true;
+
+    FlxG.keys.enabled = true;
 
     if (targetState != null)
     {
