@@ -670,6 +670,28 @@ class Project extends HXProject
   }
 
   /**
+   * Some classes are unable to be extended in CPPIA
+   */
+  function excludeFromScripting()
+  {
+    // These bind to native libraries that use RawPointer somehow.
+    var nativePackages:Array<String> = [
+      'hxvlc',
+      'hxdiscord_rpc',
+      'hxdiscord_social_sdk',
+      'grig.audio.cpp',
+      'extension',
+      'funkin.api.discord',
+      'funkin.external',
+      'funkin.mobile.util',
+      'funkin.modding.install'
+    ];
+
+    for (pack in nativePackages)
+      addHaxeMacro('haxe.macro.Compiler.addGlobalMetadata("$pack", "@:hscriptBaseCreated", true, true, false)');
+  }
+
+  /**
    * Run SDK build scripts
    */
   function configureCppiaSdk()
@@ -1137,6 +1159,8 @@ class Project extends HXProject
     {
       setHaxedef("scriptable");
       setHaxedef("POLYMOD_CPPIA");
+
+      excludeFromScripting();
     }
 
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
