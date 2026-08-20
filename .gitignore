@@ -12,6 +12,7 @@ shitAudio/
 .build_time
 .swp
 NewgroundsCredentials.hx
+export_classes.info
 
 # Exclude IntelliJ IDEA stuff
 .idea/
