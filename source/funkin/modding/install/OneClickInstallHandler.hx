@@ -54,7 +54,7 @@ class OneClickInstallHandler
     });
 
     #if (macos && cpp)
-    funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(onAppleURL));
+    funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(AppleURLCallbacks.onAppleURL));
     #elseif mobile
     funkin.mobile.util.FNFLoaderProvider.onFNFMODOpen.add(handleLink);
     #end
@@ -230,8 +230,16 @@ class OneClickInstallHandler
     }
   }
   #end
+}
 
-  #if (macos && cpp)
+#if (macos && cpp)
+/**
+ * Receives the URL from the Apple Event handler and passes it to the OneClickInstallHandler.
+ */
+@:nullSafety
+@:allow(funkin.modding.install.OneClickInstallHandler)
+private class AppleURLCallbacks
+{
   /**
    * Called from the Apple Event handler. Has to be a plain static function to be callable from C++.
    */
@@ -240,7 +248,7 @@ class OneClickInstallHandler
     final link:Null<String> = url == null ? null : Std.string(url);
     if (link == null || link == '') return;
 
-    handleLink(link);
+    OneClickInstallHandler.handleLink(link);
   }
-  #end
 }
+#end
