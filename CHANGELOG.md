@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added the ability to toggle Discord RPC statuses and hide song info.
-- (Linux) Added support for Wayland, which the game now defaults to. (Thanks Starexify!)
+- [LINUX] Added support for Wayland, which the game now defaults to. (Thanks Starexify!)
 - Added the game version as a compilation flag for modders to access. ([e51ae10](https://github.com/FunkinCrew/Funkin/commit/e51ae1098a9392c7ec3a903543f3aa4fc4220da1)) - by @zxcksharks in [#7659](https://github.com/FunkinCrew/Funkin/pull/7659)
 - Added a shouldBop property to HealthIconData to allow animated icons to bop. ([cc91faa](https://github.com/FunkinCrew/Funkin/commit/cc91faaccc63d2050270723bd49477f8b518ab6f)) - by @Starexify in [#6901](https://github.com/FunkinCrew/Funkin/pull/6901)
 - Added album and sticker pack fields to the Chart Editor Metadata window. ([790e3fb](https://github.com/FunkinCrew/Funkin/commit/790e3fb097b7054e7cf4010d6b588264414d283a)) - by @Starexify in [#6266](https://github.com/FunkinCrew/Funkin/pull/6266)
 
 ### Changed
 
-- (HTML5) The “Touch To Play” sprite now smoothly scales when hovered.
+- [HTML5] The “Touch To Play” sprite now smoothly scales when hovered.
 - Made some improvements to width/height and cliprect functionality for FunkinGroup.
 - The Chart Editor now consistently exports chart data in the same order. (Thanks TechnikTil!)
 - Discord RPC images can now be configured in the album and song data files.
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Preprocessors that span the entire file no longer throw an error. (Thanks KoloInDaCrib!)
   - Scripted class extending no longer breaks with multiple scripted layers. (Thanks TechnikTil!)
   - Imports with module names (ex. `funkin.play.character.BaseCharacter.CharacterType​​`) no longer throw an import error. (Thanks NotHyper-474!)
-- (iOS) Connecting a keyboard no longer freezes the game.
+- [iOS] Connecting a keyboard no longer freezes the game.
 - The Darken blend mode no longer renders with black boxes, fixing the Boyfriend Freeplay DJ Dad animation.
 - The Open File dialog now opens from the latest directory, not the root directory.
 - The Chart Editor now exports charts with correct suffixes for vocal tracks.
