@@ -5130,15 +5130,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var cursorX:Float = FlxG.mouse.viewX - gridTiledSprite.x;
     var cursorY:Float = FlxG.mouse.viewY - gridTiledSprite.y;
 
-    var overlapsSelectionBorder:Bool =
-      overlapsGrid
-      && ((cursorX % 40
-      ) < (GRID_SELECTION_BORDER_WIDTH / 2)
-        || (cursorX % 40
-        ) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2))
-          || (cursorY % 40) < (GRID_SELECTION_BORDER_WIDTH / 2) || (cursorY % 40) > (40 - (GRID_SELECTION_BORDER_WIDTH / 2))
-      );
-
     var overlapsSelection:Bool = false;
 
     var highlightedSelectionSquare:Null<ChartEditorSelectionSquareSprite> = null;
@@ -5709,7 +5700,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (FlxG.mouse.justPressed && !FlxG.keys.pressed.SHIFT)
       {
         // Just clicked to place a note.
-        if (!isCursorOverHaxeUI && overlapsGrid && !overlapsSelectionBorder)
+        if (!isCursorOverHaxeUI && overlapsGrid)
         {
           // We clicked on the grid without moving the mouse.
 
@@ -5918,7 +5909,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         || overlapsRenderedHoldNotes
         || overlapsRenderedEvents;
       // Handle grid cursor.
-      if (!isCursorOverHaxeUI && overlapsGrid && !isOrWillSelect && !overlapsSelectionBorder && !gridPlayheadScrollAreaPressed)
+      if (!isCursorOverHaxeUI && overlapsGrid && !isOrWillSelect && !gridPlayheadScrollAreaPressed)
       {
         // Indicate that we can place a note here.
 
@@ -5990,10 +5981,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         {
           targetCursorMode = Grabbing;
         }
-        if (overlapsSelectionBorder)
-        {
-          targetCursorMode = Crosshair;
-        }
       }
       else
       {
@@ -6010,10 +5997,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else if (overlapsSelection)
           {
             targetCursorMode = Pointer;
-          }
-          else if (overlapsSelectionBorder)
-          {
-            targetCursorMode = Crosshair;
           }
           else if (overlapsRenderedNotes)
           {
