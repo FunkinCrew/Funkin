@@ -4,6 +4,16 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.7] - 2026-08-23
+
+### Fixed
+
+- [ANDROID] Fixed a crash when opening an FNFC chart file.
+- [ANDROID] Fixed errors and crashes related to the lime backend.
+- [ANDROID] Fixed a shader not displaying correctly in some places.
+
+
+
 ## [0.8.6] - 2026-08-12
 
 ### Added
