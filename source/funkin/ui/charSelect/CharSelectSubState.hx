@@ -868,7 +868,6 @@ class CharSelectSubState extends MusicBeatSubState
 
         var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_DESELECTED, curChar);
         dispatchEvent(event);
-        event.put();
 
         #if FEATURE_TOUCH_CONTROLS
         if (backButton != null)
@@ -907,7 +906,6 @@ class CharSelectSubState extends MusicBeatSubState
 
         var event:CharacterSelectScriptEvent = CharacterSelectScriptEvent.get(CHARACTER_CONFIRMED, curChar);
         dispatchEvent(event);
-        event.put();
 
         #if FEATURE_TOUCH_CONTROLS
         if (backButton != null)
@@ -1024,14 +1022,15 @@ class CharSelectSubState extends MusicBeatSubState
     }
   }
 
-  override public function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     // super.dispatchEvent(event) dispatches event to module scripts.
-    super.dispatchEvent(event);
+    super.dispatchEvent(event, false);
 
     // Dispatch events (like onBeatHit) to props
     ScriptEventDispatcher.callEvent(playerChill, event);
     ScriptEventDispatcher.callEvent(gfChill, event);
+    if (finish) event.finish();
   }
 
   function spamOnStep():Void
