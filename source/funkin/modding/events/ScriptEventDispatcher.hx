@@ -32,7 +32,8 @@ class ScriptEventDispatcher
     }
     catch (e:Dynamic)
     {
-      ScriptGuard.handle(e, 'the ${event.type} event', target);
+      // Not a compiled script, so let hscript and the crash handler report it the way they always did.
+      if (!ScriptGuard.handle(e, 'the ${event.type} event', target)) throw e;
     }
   }
 

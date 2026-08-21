@@ -12,10 +12,6 @@ class ScriptGuard
   static final brokenObjects:haxe.ds.ObjectMap<Dynamic, Bool> = new haxe.ds.ObjectMap<Dynamic, Bool>();
   public static var brokenCount(default, null):Int = 0;
 
-  public static var lastStack(default, null):String = '';
-
-  static final NEW_LINE:String = String.fromCharCode(10);
-
   /**
    * Every frame with the class it belongs to, which the usual stack string leaves out.
    */
@@ -69,7 +65,7 @@ class ScriptGuard
     }
     catch (e:Dynamic)
     {
-      handle(e, context, target);
+      if (!handle(e, context, target)) throw e;
     }
   }
 
@@ -83,7 +79,7 @@ class ScriptGuard
     }
     catch (e:Dynamic)
     {
-      handle(e, context, target);
+      if (!handle(e, context, target)) throw e;
       return fallback;
     }
   }
@@ -98,18 +94,18 @@ class ScriptGuard
     }
     catch (_:Dynamic) {}
 
-    lastStack = describe(stack);
-
+    // Only compiled scripts are guarded. Everything else keeps the reporting it already had,
+    // which for hscript means the error polymod reports with the script's own position.
     var frame:Null<ScriptFrame> = findScriptFrame(stack);
-    var culprit:Null<String> = frame != null ? frame.cls : classNameOf(target);
+    if (frame == null) return false;
+
+    var culprit:String = frame.cls;
 
     if (target != null && !brokenObjects.exists(target))
     {
       brokenObjects.set(target, true);
       brokenCount++;
     }
-
-    if (culprit == null) return false;
 
     if (brokenClasses.exists(culprit)) return true;
 
@@ -180,19 +176,6 @@ class ScriptGuard
       }, true);
     }
     catch (_:Dynamic) {}
-  }
-
-  public static function reportUnknown(error:Dynamic, context:String):Void
-  {
-    var message:String = 'Something threw during $context and no loaded script could be blamed for it. '
-      + 'The frame was dropped, so the game may misbehave from here.'
-      + NEW_LINE
-      + NEW_LINE
-      + '$error'
-      + NEW_LINE
-      + lastStack;
-
-    polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
   }
 
   static function report(culprit:String, frame:Null<ScriptFrame>, context:String, error:Dynamic, stack:Array<StackItem>):Void
