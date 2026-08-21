@@ -135,6 +135,9 @@ class NotefieldTransform
   // The color to blend the sprite towards, in 0xRRGGBB format. The sprite's own color is multiplied by this.
   public final tintColor:Array<Int>;
 
+  // The color to apply to the sprite's vertices, in 0xRRGGBB format. A vertex is multiplied by this.
+  public final vertexColor:Array<Int>;
+
   // The amount to blend the sprite towards its tint color, 0 for none and 1 for full. The sprite's own color is multiplied by 1 minus this.
   public final tintAmount:Array<Float>;
 
@@ -189,6 +192,7 @@ class NotefieldTransform
   var rowAlpha:Array<Float>;
   var rowScale:Array<Float>;
   var rowAngle:Array<Float>;
+  var rowColor:Array<Int>;
 
   var vertexBuffer:Array<Float>;
   var uvBuffer:Array<Float>;
@@ -222,6 +226,7 @@ class NotefieldTransform
     alpha = [];
     tintColor = [];
     tintAmount = [];
+    vertexColor = [];
     scaleX = [];
     skewX = [];
     skewY = [];
@@ -248,6 +253,10 @@ class NotefieldTransform
     rowAlpha = filled(HOLD_ROWS, 0);
     rowScale = filled(HOLD_ROWS, 1);
     rowAngle = filled(HOLD_ROWS, 0);
+
+    rowColor = [];
+    for (i in 0...HOLD_ROWS)
+      rowColor.push(0xFFFFFF);
 
     vertexBuffer = filled(HOLD_ROWS * 4, 0);
     uvBuffer = filled(HOLD_ROWS * 4, 0);
@@ -305,6 +314,7 @@ class NotefieldTransform
       alpha[at] = 1;
       tintColor[at] = 0xFFFFFF;
       tintAmount[at] = 0;
+      vertexColor[at] = 0xFFFFFF;
       scaleX[at] = 1;
       scaleY[at] = 1;
       skewX[at] = 0;
@@ -322,6 +332,7 @@ class NotefieldTransform
       alpha.push(1);
       tintColor.push(0xFFFFFF);
       tintAmount.push(0);
+      vertexColor.push(0xFFFFFF);
       scaleX.push(1);
       scaleY.push(1);
       skewX.push(0);
@@ -733,13 +744,15 @@ class NotefieldTransform
       var to:Int = from + holdBodyRows[h] + 2;
       var low:Float = 1;
       var high:Float = 0;
+      var colored:Bool = false;
       for (at in from...to)
       {
         var a:Float = alpha[at];
         if (a < low) low = a;
         if (a > high) high = a;
+        if (vertexColor[at] != 0xFFFFFF) colored = true;
       }
-      if (high - low >= 1 / 255)
+      if (colored || high - low >= 1 / 255)
       {
         gradient = true;
         break;
@@ -840,6 +853,7 @@ class NotefieldTransform
         rowAlpha[row] = alpha[at];
         rowScale[row] = scaleX[at];
         rowAngle[row] = angle[at];
+        rowColor[row] = vertexColor[at];
       }
       return;
     }
@@ -881,6 +895,14 @@ class NotefieldTransform
       var ds:Float = scaleX[i2] - s1;
       var g1:Float = angle[i1];
       var dg:Float = angle[i2] - g1;
+      var c1:Int = vertexColor[i1];
+      var c2:Int = vertexColor[i2];
+      var cr:Float = (c1 >> 16) & 0xFF;
+      var cg:Float = (c1 >> 8) & 0xFF;
+      var cb:Float = c1 & 0xFF;
+      var dcr:Float = ((c2 >> 16) & 0xFF) - cr;
+      var dcg:Float = ((c2 >> 8) & 0xFF) - cg;
+      var dcb:Float = (c2 & 0xFF) - cb;
 
       for (j in 0...sub)
       {
@@ -893,6 +915,8 @@ class NotefieldTransform
         rowAlpha[out] = a1 + da * t;
         rowScale[out] = s1 + ds * t;
         rowAngle[out] = g1 + dg * t;
+        // optimization for white
+        rowColor[out] = (c1 == c2) ? c1 : (Std.int(cr + dcr * t) << 16) | (Std.int(cg + dcg * t) << 8) | Std.int(cb + dcb * t);
         out++;
       }
     }
@@ -903,6 +927,7 @@ class NotefieldTransform
     rowAlpha[out] = alpha[end];
     rowScale[out] = scaleX[end];
     rowAngle[out] = angle[end];
+    rowColor[out] = vertexColor[end];
   }
 
   /**
@@ -1001,14 +1026,14 @@ class NotefieldTransform
     if (opacity < 0) opacity = 0;
     else if (opacity > 1) opacity = 1;
 
-    var packed:Int = (Std.int(opacity * 255) << 24) | 0xFFFFFF;
+    var packed:Int = (Std.int(opacity * 255) << 24) | (rowColor[row] & 0xFFFFFF);
     var k:Int = row * 2;
     colorBuffer[k] = packed;
     colorBuffer[k + 1] = packed;
   }
 
   /**
-   * Moves the two vertices of a trail row outwards by halfWidth, along the normal to the line between the previous and next row.
+   * Writes one control row's opacity and color into both of its vertices.
    */
   function colorRow(row:Int, at:Int):Void
   {
@@ -1016,7 +1041,7 @@ class NotefieldTransform
     if (opacity < 0) opacity = 0;
     else if (opacity > 1) opacity = 1;
 
-    var packed:Int = (Std.int(opacity * 255) << 24) | 0xFFFFFF;
+    var packed:Int = (Std.int(opacity * 255) << 24) | (vertexColor[at] & 0xFFFFFF);
     var k:Int = row * 2;
     colorBuffer[k] = packed;
     colorBuffer[k + 1] = packed;
