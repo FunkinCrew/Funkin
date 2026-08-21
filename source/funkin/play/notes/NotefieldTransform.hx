@@ -149,11 +149,11 @@ class NotefieldTransform
 
   public final skewY:Array<Float>;
 
-  var baseNoteScaleX:Float = 1;
-  var baseNoteScaleY:Float = 1;
+  public var baseNoteScaleX:Float = 1;
+  public var baseNoteScaleY:Float = 1;
   var baseReceptorScaleX:Float = 1;
   var baseReceptorScaleY:Float = 1;
-  var readNoteScale:Bool = false;
+  public var readNoteScale:Bool = false;
   var readReceptorScale:Bool = false;
 
   var baseHoldOffsetX:Float = 0;
@@ -167,10 +167,9 @@ class NotefieldTransform
   var receptors:Array<StrumlineNote>;
   var holds:Array<SustainTrail>;
 
-  // Per trail, alongside `holds`.
-  var holdFirstRow:Array<Int>;
+  public var holdFirstRow:Array<Int>;
 
-  var holdBodyRows:Array<Int>;
+  public var holdBodyRows:Array<Int>;
   var holdDrawRows:Array<Int>;
   var holdColumn:Array<Int>;
   var holdHalfWidth:Array<Float>;
@@ -658,7 +657,7 @@ class NotefieldTransform
       }
 
       var sign:Float = (speed < 0) ? -1 : 1;
-      var headY:Float = noteY(laneHoldOriginY[at], startTime - songTime, speed, 0);
+      var headY:Float = noteY(laneHoldOriginY[at], startTime - songTime, speed, hold.yOffset * laneYOffsetScale[at]);
 
       var trailLength:Float = shown + capTail;
       var tailY:Float = headY + trailLength * sign;
@@ -1147,7 +1146,7 @@ class NotefieldTransform
 
       receptor.angle = 0;
       receptor.alpha = 1;
-      receptor.scale.set(baseReceptorScaleX, baseReceptorScaleY);
+      if (readReceptorScale) receptor.scale.set(baseReceptorScaleX, baseReceptorScaleY);
       clearTint(receptor);
     }
 
@@ -1160,7 +1159,7 @@ class NotefieldTransform
       note.visible = true;
       note.alpha = 1;
       note.angle = 0;
-      note.scale.set(baseNoteScaleX, baseNoteScaleY);
+      if (readNoteScale) note.scale.set(baseNoteScaleX, baseNoteScaleY);
       clearTint(note);
     }
 
