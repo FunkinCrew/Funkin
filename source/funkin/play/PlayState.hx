@@ -1284,6 +1284,9 @@ class PlayState extends MusicBeatSubState
 
       if (health <= Constants.HEALTH_MIN && !isPracticeMode && !isPlayerDying)
       {
+        // Stops the countdown at the current step so that the countdown voices don't leak into the death state.
+        Countdown.stopCountdown();
+
         vocals?.pause();
 
         if (FlxG.sound.music != null) FlxG.sound.music.pause();
