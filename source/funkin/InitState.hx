@@ -432,7 +432,7 @@ class InitState extends FlxState
     funkin.modding.install.OneClickInstallHandler.initialize();
 
     #if mobile
-    final fnfModUrl:Null<String> = funkin.mobile.util.FNFLoaderProvider.queryFNFMOD();
+    final fnfModUrl:Null<String> = funkin.util.mobile.FNFLoaderProvider.queryFNFMOD();
 
     if (fnfModUrl != null && fnfModUrl.length > 0)
     {

@@ -1,4 +1,4 @@
-package funkin.mobile.util;
+package funkin.util.mobile;
 
 import flixel.util.FlxSignal;
 
