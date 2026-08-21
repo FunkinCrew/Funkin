@@ -101,7 +101,7 @@ class ScriptGuard
     lastStack = describe(stack);
 
     var frame:Null<ScriptFrame> = findScriptFrame(stack);
-    var culprit:Null<String> = frame != null ? frame.cls : classNameOf(target);
+    var culprit:Null<String> = frame != null ? frame.cls : scriptNameOf(target) ?? classNameOf(target);
 
     if (target != null && !brokenObjects.exists(target))
     {
@@ -117,7 +117,7 @@ class ScriptGuard
     brokenCount++;
 
     freezeInstances(culprit);
-    report(culprit, frame, context, error, stack);
+    report(culprit, frame, context, error, stack, target);
 
     return true;
   }
@@ -157,6 +157,75 @@ class ScriptGuard
     #end
   }
 
+  /**
+   * The hscript class that generated the object, if any.
+   */
+  static function scriptedBy(target:Dynamic):Null<polymod.hscript._internal.PolymodScriptClass>
+  {
+    if (target == null) return null;
+
+    var asc:Dynamic = null;
+
+    try
+    {
+      asc = Reflect.field(target, '_asc');
+    }
+    catch (_:Dynamic) {}
+
+    return Std.isOfType(asc, polymod.hscript._internal.PolymodScriptClass) ? cast asc : null;
+  }
+
+  static function scriptNameOf(target:Dynamic):Null<String>
+  {
+    var cls:Null<polymod.hscript._internal.PolymodScriptClass> = scriptedBy(target);
+    return cls == null ? null : cls.fullyQualifiedName;
+  }
+
+  /**
+   * Returns a stack trace of the script classes that generated the object, if any.
+   */
+  static function scriptTrace(target:Dynamic):Null<String>
+  {
+    var cls:Null<polymod.hscript._internal.PolymodScriptClass> = scriptedBy(target);
+    if (cls == null) return null;
+
+    var lines:Array<String> = [];
+    var current:Dynamic = cls;
+
+    while (Std.isOfType(current, polymod.hscript._internal.PolymodScriptClass))
+    {
+      var script:polymod.hscript._internal.PolymodScriptClass = cast current;
+
+      try
+      {
+        var pos:haxe.PosInfos = @:privateAccess script._interp.posInfos();
+        lines.push('  ${script.fullyQualifiedName} at ${pos.fileName}#${pos.lineNumber}');
+      }
+      catch (_:Dynamic)
+      {
+        lines.push('  ${script.fullyQualifiedName}');
+      }
+
+      current = script.superClass;
+    }
+
+    return lines.length == 0 ? null : lines.join(NEW_LINE);
+  }
+
+  /**
+   * hscript errors know the script and line they came from, so say that instead of the raw throw.
+   */
+  static function describeError(error:Dynamic):String
+  {
+    if (Std.isOfType(error, polymod.hscript._internal.Expr.Error))
+    {
+      var err:polymod.hscript._internal.Expr.Error = cast error;
+      return polymod.hscript._internal.Printer.errorToString(err, true);
+    }
+
+    return Std.string(error);
+  }
+
   static function classNameOf(target:Dynamic):Null<String>
   {
     if (target == null) return null;
@@ -188,14 +257,14 @@ class ScriptGuard
       + 'The frame was dropped, so the game may misbehave from here.'
       + NEW_LINE
       + NEW_LINE
-      + '$error'
+      + describeError(error)
       + NEW_LINE
       + lastStack;
 
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
   }
 
-  static function report(culprit:String, frame:Null<ScriptFrame>, context:String, error:Dynamic, stack:Array<StackItem>):Void
+  static function report(culprit:String, frame:Null<ScriptFrame>, context:String, error:Dynamic, stack:Array<StackItem>, ?target:Dynamic):Void
   {
     var where:String = context;
 
@@ -206,15 +275,21 @@ class ScriptGuard
       where += ', during $context';
     }
 
-    var stackText:String = '';
+    var stackText:Null<String> = scriptTrace(target);
 
-    try
+    if (stackText == null)
     {
-      stackText = CallStack.toString(stack);
+      try
+      {
+        stackText = CallStack.toString(stack);
+      }
+      catch (_:Dynamic)
+      {
+        stackText = '';
+      }
     }
-    catch (_:Dynamic) {}
 
-    var message:String = 'Script "$culprit" threw at $where, so it has been stopped.\n\n$error$stackText';
+    var message:String = 'Script "$culprit" threw at $where, so it has been stopped.\n\n${describeError(error)}\n$stackText';
 
     polymod.Polymod.error(SCRIPT_RUNTIME_EXCEPTION, message, SCRIPT_RUNTIME);
   }
