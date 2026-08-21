@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="_polymod_icon.png">
+	<!-- Created with Adobe Animate version 22.0.8.217 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="iconloop0000" x="0" y="0" width="140" height="137"/>
+	<SubTexture name="iconloop0001" x="0" y="0" width="140" height="137"/>
+	<SubTexture name="iconloop0002" x="140" y="0" width="140" height="137"/>
+	<SubTexture name="iconloop0003" x="140" y="0" width="140" height="137"/>
+</TextureAtlas>

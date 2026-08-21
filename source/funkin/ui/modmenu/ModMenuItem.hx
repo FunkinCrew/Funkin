@@ -11,6 +11,7 @@ import funkin.Paths;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import funkin.ui.ScrollingTextBox;
+import flixel.graphics.frames.FlxAtlasFrames;
 
 /**
  * Represents an installed mod visually in the mod menu.
@@ -226,55 +227,40 @@ class ModMenuItem extends FunkinSpriteGroup
     add(background);
 
     modIcon = new FunkinSprite(0, 0);
-    if (iconAssetPath != null)
+    if (iconAssetPath != null)// Specific icon
     {
       modIcon.loadGraphic(Paths.image(iconAssetPath));
-      add(modIcon);
-
-      modIcon.scrollFactor.set();
-      modIcon.antialiasing = true;
-      modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-      modIcon.localScale.x = modIcon.scale.x;
-      modIcon.localScale.y = modIcon.scale.y;
-      modIcon.updateHitbox();
     }
     else if (mod != null)
     {
-      @:privateAccess
-      if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
+      if (funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id)) // Image icon
       {
-        modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
-        add(modIcon);
-
-        modIcon.scrollFactor.set();
-        modIcon.antialiasing = true;
-
-        // FunkinGroup is funny
-        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
-
-        modIcon.updateHitbox();
+        var graphic = funkin.assets.FunkinBitmapFrontend.instance.get(mod.id);
+        if (funkin.assets.FunkinAssetCache.instance.hasText(mod.id)){
+          modIcon.frames = FlxAtlasFrames.fromSparrow(graphic,funkin.assets.FunkinAssetCache.instance.getText(mod.id));
+          modIcon.animation.addByPrefix('icon', '', 24, true);
+          modIcon.animation.play('icon');
+        }
+        else
+          modIcon.loadGraphic(graphic);
       }
-      else if (mod.icon != null)
+      else if (mod.icon != null) // Byte array icon
       {
-        loadModIcon(mod.icon);
+        loadModIcon(mod.icon,mod.iconData);
       }
-      else
+      else // Fallback icon
       {
         trace('No icon found for mod ${mod.id}, using fallback');
-        // Fallback icon
         modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
-        add(modIcon);
-
-        modIcon.scrollFactor.set();
-        modIcon.antialiasing = true;
-        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-        modIcon.localScale.x = modIcon.scale.x;
-        modIcon.localScale.y = modIcon.scale.y;
-        modIcon.updateHitbox();
       }
     }
+    modIcon.scrollFactor.set();
+    modIcon.antialiasing = true;
+    modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+    modIcon.localScale.x = modIcon.scale.x;
+    modIcon.localScale.y = modIcon.scale.y;
+    modIcon.updateHitbox();
+    add(modIcon);
 
     titleText = new ScrollingTextBox(DESC_WIDTH, TITLE_HEIGHT, funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 30, FlxColor.WHITE);
     titleText.localX = ICON_HEIGHT + 8;
@@ -354,13 +340,13 @@ class ModMenuItem extends FunkinSpriteGroup
     background.localAlpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
   }
 
-  function loadModIcon(bytes:haxe.io.Bytes):Void
+  function loadModIcon(imageBytes:haxe.io.Bytes,xmlBytes:Null<haxe.io.Bytes>):Void
   {
     // Stolen from Enigma Engine LMFAO -Eric
 
     // Convert a haxe byte array to the proper data structure.
 
-    var future = openfl.utils.ByteArray.loadFromBytes(bytes);
+    var future = openfl.utils.ByteArray.loadFromBytes(imageBytes);
 
     future.onComplete((openFlBytes:openfl.utils.ByteArray) ->
     {
@@ -368,18 +354,16 @@ class ModMenuItem extends FunkinSpriteGroup
       // Convert the bytes into bitmap data.
       var bitmapData = openfl.display.BitmapData.fromBytes(openFlBytes);
       // Tie the bitmap data to a sprite.
-      modIcon.loadGraphic(bitmapData);
-      add(modIcon);
 
-      modIcon.scrollFactor.set();
-      modIcon.antialiasing = true;
-
-      // FunkinGroup is funny
-      modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-      modIcon.localScale.x = modIcon.scale.x;
-      modIcon.localScale.y = modIcon.scale.y;
-
-      modIcon.updateHitbox();
+      if(xmlBytes != null)
+      {
+        var xmlData:String = xmlBytes.toString();
+        modIcon.frames = FlxAtlasFrames.fromSparrow(bitmapData,xmlData);
+        modIcon.animation.addByPrefix('icon','',24,true);
+        modIcon.animation.play('icon');
+      }
+      else
+        modIcon.loadGraphic(bitmapData);
     });
     future.onError((error) ->
     {

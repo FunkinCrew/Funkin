@@ -566,6 +566,19 @@ class FunkinPreloader extends FlxBasePreloader
           cachingDataPercent = 0.0;
           cachingDataStartTime = elapsed;
 
+          // yeah what moon said up there about this being a bandaid fix but COOLER
+          // im gonna use what they used tho because im not about to rework how the cache works
+          var modsThing:Array<polymod.Polymod.ModMetadata> = funkin.modding.PolymodHandler.getAllMods();
+
+          for (mod in modsThing)
+          {
+            if (mod.iconData == null) continue;
+            var xmlBytes:haxe.io.Bytes = mod.iconData;
+            var xmlData:String = xmlBytes.toString();
+            @:privateAccess
+            if (mod.id != null) FunkinAssetCache.instance.permaCacheText(mod.id, xmlData);
+          }
+
           final CACHE_PERMANENT:Bool = true;
 
           var assetsToCache:Array<AssetPath> = [];
