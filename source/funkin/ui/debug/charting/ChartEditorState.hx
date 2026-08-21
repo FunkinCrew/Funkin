@@ -593,7 +593,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_noteSnapQuant():Int
   {
-    return Std.int(SNAP_QUANTS[noteSnapQuantIndex] * (pressingControl() ? 2 : 1));
+    if (pressingControl()) {
+      final result:Int = Std.int(SNAP_QUANTS[noteSnapQuantIndex] * 2);
+      if (SNAP_QUANTS.contains(result)) return result;
+    }
+
+    return SNAP_QUANTS[noteSnapQuantIndex];
   }
 
   /**
@@ -5765,7 +5770,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             // TODO: Figure out configuring event data.
             var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
 
-            performCommand(new AddEventsCommand([newEventData], pressingControl()));
+            performCommand(new AddEventsCommand([newEventData], pressingControl() && FlxG.keys.pressed.ALT));
           }
           else
           {
@@ -5778,7 +5783,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
               ChartEditorState.cloneNoteParams(noteParamsToPlace)
             );
 
-            performCommand(new AddNotesCommand([newNoteData], pressingControl()));
+            performCommand(new AddNotesCommand([newNoteData], pressingControl() && FlxG.keys.pressed.ALT));
 
             currentPlaceNoteData = newNoteData;
           }
