@@ -119,6 +119,8 @@ class Assets implements ConsoleClass
       var pathNoPrefix:String = textPath.substring(queryPath.length, textPath.length - suffix.length);
       var id:String = nested ? pathNoPrefix.split('/')[0] : pathNoPrefix;
 
+      if (nested && !StringTools.endsWith(textPath, '$id$suffix')) continue;
+
       if (blacklist != null && blacklist.contains(id)) continue;
 
       results.pushUnique(id);
