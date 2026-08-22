@@ -442,7 +442,7 @@ class DropShadowShader extends FlxShader
 
       vec4 createDropShadowEx(vec2 uv, vec2 ratio, vec2 size)
       {
-        vec4 color4 = texture2D(bitmap, uv);
+        vec4 color4 = getTexRGBA(uv);
 
         #ifdef HAS_DERIVATIVES
           // Increase the pixel distance if the screen is smaller than the sprite!
@@ -480,7 +480,7 @@ class DropShadowShader extends FlxShader
 
         color3 += dropColor * rim;
 
-        return vec4(color3 * color4.a, color4.a);
+        return vec4(color3 * color4.a * openfl_Alphav, color4.a * openfl_Alphav);
       }
 
       void main()
