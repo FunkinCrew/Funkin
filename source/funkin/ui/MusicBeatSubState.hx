@@ -12,6 +12,7 @@ import funkin.modding.PolymodHandler;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import flixel.util.FlxSort;
+import flixel.util.typeLimit.NextState;
 import funkin.input.Controls;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 #if FEATURE_TOUCH_CONTROLS
@@ -193,8 +194,22 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
   public function getHotReloadParams():HotReloadStateParams
   {
     return {
-      targetState: _constructor
+      targetState: getConstructor()
     };
+  }
+
+  function getConstructor():NextState
+  {
+    var scriptedNextState:NextState = () ->
+    {
+      var path:String = _asc?.fullyQualifiedName ?? '';
+      var newState:Null<MusicBeatSubState> = MusicBeatSubState.scriptInit(path);
+      if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
+      return newState;
+    }
+    var nextState:NextState = _asc != null ? scriptedNextState : _constructor;
+
+    return nextState;
   }
 
   /**
