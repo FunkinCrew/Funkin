@@ -62,7 +62,8 @@ class HotReloadState extends MusicBeatState
   {
     super.create();
 
-    FlxG.keys.enabled = false;
+    FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = false;
+    FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = false;
 
     // Fix a specific bug where the game tries to render the 0-character long text,
     // fails and shits its pants.
@@ -313,7 +314,8 @@ class HotReloadState extends MusicBeatState
     trace('Transitioning to title state...');
     transitioning = true;
 
-    FlxG.keys.enabled = true;
+    FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
+    FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
 
     if (targetState != null)
     {
