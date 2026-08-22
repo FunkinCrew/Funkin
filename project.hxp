@@ -1160,6 +1160,8 @@ class Project extends HXProject
       setHaxedef("scriptable");
       setHaxedef("POLYMOD_CPPIA");
 
+      if (isIOS()) setenv("CPPIA_NO_JIT", "1");
+
       excludeFromScripting();
     }
 
