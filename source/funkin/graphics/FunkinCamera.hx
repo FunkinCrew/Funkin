@@ -10,7 +10,6 @@ import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxShader;
-import funkin.graphics.framebuffer.FixedBitmapData;
 import funkin.graphics.framebuffer.FunkinBufferRenderer;
 import funkin.graphics.shaders.RuntimeCustomBlendShader;
 import openfl.Lib;
@@ -125,9 +124,9 @@ class FunkinCamera extends FlxCamera
   /**
    * The rendered buffer texture.
    */
-  public var texture(get, never):FixedBitmapData;
+  public var texture(get, never):BitmapData;
 
-  function get_texture():FixedBitmapData
+  function get_texture():BitmapData
   {
     return bufferRenderer.texture;
   }
@@ -136,7 +135,7 @@ class FunkinCamera extends FlxCamera
   var _blendBackgroundFrame:FlxFrame;
   var _foregroundRenderTexture:RenderTexture;
   var _blendedRenderTexture:RenderTexture;
-  var _cameraTexture:FixedBitmapData;
+  var _cameraTexture:BitmapData;
   var _cameraMatrix:FlxMatrix;
 
   @:nullSafety(Off)
@@ -156,7 +155,7 @@ class FunkinCamera extends FlxCamera
 
     _cameraMatrix = new FlxMatrix();
 
-    _cameraTexture = FixedBitmapData.create(this.width, this.height);
+    _cameraTexture = new BitmapData(this.width, this.height, true, 0).toGPU();
 
     crossCameraBlending = false;
 

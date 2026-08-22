@@ -29,6 +29,8 @@ import openfl.utils.IAssetCache as OpenFLIAssetCache;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import lime.app.Promise;
 
+using funkin.graphics.framebuffer.BitmapDataUtil;
+
 // @:nullSafety
 
 /**
@@ -762,7 +764,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
         // Upload to the GPU only if the feature is enabled and the asset doesn't require pixel data in memory.
         if (uploadToGPU && !assetPath.needsPixelData)
         {
-          bitmapData = AssetsUtil.uploadBitmapDataToGPU(bitmapData);
+          bitmapData.toGPU();
         }
         setBitmapData(assetPath.toString(), bitmapData);
         return Future.withValue(bitmapData);

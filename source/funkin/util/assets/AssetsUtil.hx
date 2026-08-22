@@ -50,27 +50,6 @@ class AssetsUtil
   ];
 
   /**
-   * Uploads the specified bitmap data to the GPU.
-   * NOTE: From what I've read, this must be done from the main thread to prevent corrupted graphics.
-   *
-   * @param bitmapData The BitmapData to upload.
-   * @return The bitmap data
-   */
-  public static function uploadBitmapDataToGPU(bitmapData:BitmapData):BitmapData
-  {
-    #if FEATURE_GPU_TEXTURES
-    trace('Uploading bitmap data to GPU... ${bitmapData?.image?.premultiplied}');
-
-    // `disposeImage()` sets `readable` to false
-    // calling `getTexture()` afterwards disposes the image from the CPU
-    bitmapData.disposeImage();
-    bitmapData.getTexture(FlxG.stage.context3D);
-    #end
-
-    return bitmapData;
-  }
-
-  /**
    * Returns the `FunkinAssetType` for a given path, if it has a known extension.
    * @param path The path to query.
    * @return The corresponding `FunkinAssetType`, or `FunkinAssetType.UNKNOWN`.

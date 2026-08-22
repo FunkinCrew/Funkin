@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.util.FlxSignal;
 import funkin.graphics.FunkinCamera;
+import openfl.display.BitmapData;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
@@ -17,7 +18,7 @@ class FunkinBufferRenderer
   /**
    * The rendered texture.
    */
-  public var texture:FixedBitmapData;
+  public var texture:BitmapData;
 
   /**
    * A signal that fires before the buffer is about to be rendered.
@@ -64,7 +65,7 @@ class FunkinBufferRenderer
   public function new(camera:FunkinCamera)
   {
     this._camera = camera;
-    texture = FixedBitmapData.create(camera.width, camera.height);
+    texture = new BitmapData(camera.width, camera.height, true, 0).toGPU();
   }
 
   /**
@@ -79,7 +80,7 @@ class FunkinBufferRenderer
       texture.dispose();
     }
 
-    texture = FixedBitmapData.create(width, height);
+    texture = new BitmapData(width, height, true, 0).toGPU();
   }
 
   /**

@@ -1,13 +1,14 @@
 package funkin.graphics.framebuffer;
 
-import funkin.graphics.framebuffer.FixedBitmapData;
-import openfl.display.BitmapData;
-import flixel.math.FlxRect;
-import flixel.graphics.FlxGraphic;
-import flixel.util.FlxDestroyUtil;
-import funkin.graphics.FunkinSprite;
-import openfl.filters.BitmapFilter;
 import animate.internal.FilterRenderer;
+import flixel.graphics.FlxGraphic;
+import flixel.math.FlxRect;
+import flixel.util.FlxDestroyUtil.IFlxDestroyable;
+import funkin.graphics.FunkinSprite;
+import openfl.display.BitmapData;
+import openfl.filters.BitmapFilter;
+
+using funkin.graphics.framebuffer.BitmapDataUtil;
 
 /**
  * A helper for rendering filters on `FunkinSprite` instances.
@@ -145,7 +146,7 @@ class FunkinFilterRenderer implements IFlxDestroyable
     var bitmaps:Array<BitmapData> = bitmapPool.get(id) ?? [];
     if (bitmaps.length < 1)
     {
-      var bitmap:BitmapData = FixedBitmapData.create(width, height);
+      var bitmap:BitmapData = new BitmapData(width, height, true, 0).toGPU();
       bitmaps.push(bitmap);
     }
     var bitmap:Null<BitmapData> = bitmaps.shift();

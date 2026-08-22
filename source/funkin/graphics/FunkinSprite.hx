@@ -19,7 +19,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.assets.Assets;
 import funkin.assets.Paths;
-import funkin.graphics.framebuffer.FixedBitmapData;
 import funkin.graphics.framebuffer.FunkinFilterRenderer;
 import haxe.io.Path;
 import openfl.display.BitmapData;
@@ -372,7 +371,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function loadTextureBase(input:TextureBase):Null<FunkinSprite>
   {
-    var inputBitmap:Null<FixedBitmapData> = FixedBitmapData.fromTexture(input);
+    var inputBitmap:Null<BitmapData> = BitmapData.fromTexture(input);
     if (inputBitmap == null)
     {
       FlxG.log.warn('loadTextureBase - input resulted in null bitmap! $input');

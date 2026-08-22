@@ -142,6 +142,19 @@ class BitmapDataUtil
   }
 
   /**
+   * Convers a `BitmapData` to a GPU texture.
+   * @param bitmap The `BitmapData` to convert.
+   * @return The converted `BitmapData`.
+   */
+  public static function toGPU(bitmap:BitmapData):BitmapData
+  {
+    bitmap.disposeImage();
+    bitmap.getTexture(FlxG.stage.context3D);
+
+    return bitmap;
+  }
+
+  /**
    * Resizes the bitmap.
    * @param bitmap The `BitmapData` to resize.
    * @param width The new width.
