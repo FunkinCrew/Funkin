@@ -203,7 +203,9 @@ class MusicBeatSubState extends FlxSubState implements IEventHandler
     var scriptedNextState:NextState = () ->
     {
       var path:String = _asc?.fullyQualifiedName ?? '';
-      var newState:Null<MusicBeatSubState> = MusicBeatSubState.scriptInit(path);
+      var constructorArgs:Array<Dynamic> = _asc?.getConstructorArgs() ?? [];
+
+      var newState:Null<MusicBeatSubState> = MusicBeatSubState.scriptInit(path, ...constructorArgs);
       if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
       return newState;
     }
