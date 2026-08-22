@@ -56,6 +56,8 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     {
       @:privateAccess
       var path:String = state._asc?.fullyQualifiedName ?? '';
+      var constructorArgs:Array<Dynamic> = state._asc?.getConstructorArgs() ?? [];
+
       trace('Hot-reloading scripted state: ' + path);
 
       if (Std.isOfType(state, MusicBeatState) || Std.isOfType(state, MusicBeatSubState))
@@ -73,11 +75,11 @@ class ReloadAssetsDebugPlugin extends FlxBasic
         {
           if (Std.isOfType(state, FlxState))
           {
-            newState = FlxState.scriptInit(path);
+            newState = FlxState.scriptInit(path, ...constructorArgs);
           }
           else if (Std.isOfType(state, FlxSubState))
           {
-            newState = FlxSubState.scriptInit(path);
+            newState = FlxSubState.scriptInit(path, ...constructorArgs);
           }
           if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
           return newState;

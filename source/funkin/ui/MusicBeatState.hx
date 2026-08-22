@@ -276,7 +276,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     var scriptedNextState:NextState = () ->
     {
       var path:String = _asc?.fullyQualifiedName ?? '';
-      var newState:Null<MusicBeatState> = MusicBeatState.scriptInit(path);
+      var constructorArgs:Array<Dynamic> = _asc?.getConstructorArgs() ?? [];
+
+      var newState:Null<MusicBeatState> = MusicBeatState.scriptInit(path, ...constructorArgs);
       if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
       return newState;
     }
