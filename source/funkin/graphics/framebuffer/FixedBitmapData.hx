@@ -16,14 +16,16 @@ import openfl.Lib;
 @:access(openfl.display.OpenGLRenderer)
 class FixedBitmapData extends BitmapData
 {
-  override function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
+  override function __drawGL(source:IBitmapDrawable,
+    renderer:OpenGLRenderer,
+    enableDepthAndStencil:Bool = true):Void
   {
     if (Std.isOfType(source, DisplayObject))
     {
       final object:DisplayObjectContainer = cast source;
       renderer.__stage = object.stage;
     }
-    super.__drawGL(source, renderer);
+    super.__drawGL(source, renderer, enableDepthAndStencil);
   }
 
   /**
