@@ -8,6 +8,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import flixel.util.FlxSort;
+import flixel.util.typeLimit.NextState;
 import funkin.modding.PolymodHandler;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ModuleHandler;
@@ -266,8 +267,22 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
   public function getHotReloadParams():HotReloadStateParams
   {
     return {
-      targetState: _constructor
+      targetState: getConstructor()
     };
+  }
+
+  function getConstructor():NextState
+  {
+    var scriptedNextState:NextState = () ->
+    {
+      var path:String = _asc?.fullyQualifiedName ?? '';
+      var newState:Null<funkin.ui.MusicBeatState> = MusicBeatState.scriptInit(path);
+      if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
+      return newState;
+    }
+    var nextState:NextState = _asc != null ? scriptedNextState : _constructor;
+
+    return nextState;
   }
 
   /**

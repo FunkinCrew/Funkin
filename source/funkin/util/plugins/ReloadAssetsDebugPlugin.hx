@@ -1,9 +1,12 @@
 package funkin.util.plugins;
 
+import flixel.util.typeLimit.NextState;
 import flixel.FlxBasic;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
+import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.ui.MusicBeatState;
 
 /**
@@ -37,34 +40,55 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   {
     FlxTransitionableState.skipNextTransIn = true;
 
-    var state:Dynamic = FlxG.state;
-    var isScripted:Bool = state._asc != null;
+    var isScripted:Bool = FlxG.state._asc != null;
+
+    var hotReloadParams:HotReloadStateParams = {};
     if (isScripted)
     {
-      var s:MusicBeatState = cast FlxG.state;
       @:privateAccess
-      var path:String = s._asc?.fullyQualifiedName ?? '';
+      var path:String = FlxG.state._asc?.fullyQualifiedName ?? '';
+
       trace('Hot-reloading scripted state: ' + path);
 
-      s.onPreHotReload();
+      // FlxState is a scripted state, give it a different constructor
+      if (FlxG.state is MusicBeatState)
+      {
+        var s:MusicBeatState = cast FlxG.state;
+        s.onPreHotReload();
 
-      var hotReloadParams = s.getHotReloadParams();
+        hotReloadParams = s.getHotReloadParams();
+      }
+      else
+      {
+        // Just load the scripted FlxState instead.
+        var scriptedNextState:NextState = () ->
+        {
+          var newState:Null<FlxState> = FlxState.scriptInit(path);
+          if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
+          return newState;
+        }
 
+        hotReloadParams = {
+          targetState: scriptedNextState
+        }
+      }
       FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
     else
     {
-      // Default params incase the current state is a ScriptedFlxState or anything we can't get custom params from.
-      var hotReloadParams = {
-        targetState: state._constructor
+      // Fallback to using default params.
+      @:privateAccess
+      hotReloadParams = {
+        targetState: FlxG.state._constructor
       };
 
-      if (Std.isOfType(state, MusicBeatState))
+      if (Std.isOfType(FlxG.state, MusicBeatState))
       {
-        state.onPreHotReload();
+        var s:MusicBeatState = cast FlxG.state;
+        s.onPreHotReload();
 
         // Fetch the custom hot reload params for this state.
-        hotReloadParams = state.getHotReloadParams();
+        hotReloadParams = s.getHotReloadParams();
       }
       FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }
