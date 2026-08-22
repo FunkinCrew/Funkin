@@ -4,10 +4,12 @@ import flixel.util.typeLimit.NextState;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.transition.preload.hotreload.HotReloadState;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.ui.MusicBeatState;
+import funkin.ui.MusicBeatSubState;
 
 /**
  * A plugin which adds functionality to press `F5` to reload all game assets, then reload the current state.
@@ -40,30 +42,37 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   {
     FlxTransitionableState.skipNextTransIn = true;
 
-    var isScripted:Bool = FlxG.state._asc != null;
+    var state:Dynamic = cast FlxG.state;
+    var isScripted:Bool = state._asc != null;
 
     var hotReloadParams:HotReloadStateParams = {};
     if (isScripted)
     {
       @:privateAccess
-      var path:String = FlxG.state._asc?.fullyQualifiedName ?? '';
-
+      var path:String = state._asc?.fullyQualifiedName ?? '';
       trace('Hot-reloading scripted state: ' + path);
 
-      // FlxState is a scripted state, give it a different constructor
-      if (FlxG.state is MusicBeatState)
+      if (Std.isOfType(state, MusicBeatState) || Std.isOfType(state, MusicBeatSubState))
       {
-        var s:MusicBeatState = cast FlxG.state;
-        s.onPreHotReload();
+        state.onPreHotReload();
 
-        hotReloadParams = s.getHotReloadParams();
+        hotReloadParams = state.getHotReloadParams();
       }
       else
       {
+        var newState:Null<FlxState> = null;
+
         // Just load the scripted FlxState instead.
         var scriptedNextState:NextState = () ->
         {
-          var newState:Null<FlxState> = FlxState.scriptInit(path);
+          if (Std.isOfType(state, FlxState))
+          {
+            newState = FlxState.scriptInit(path);
+          }
+          else if (Std.isOfType(state, FlxSubState))
+          {
+            newState = FlxSubState.scriptInit(path);
+          }
           if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
           return newState;
         }
@@ -77,18 +86,16 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     else
     {
       // Fallback to using default params.
-      @:privateAccess
       hotReloadParams = {
-        targetState: FlxG.state._constructor
+        targetState: state._constructor
       };
 
-      if (Std.isOfType(FlxG.state, MusicBeatState))
+      if (Std.isOfType(state, MusicBeatState) || Std.isOfType(state, MusicBeatSubState))
       {
-        var s:MusicBeatState = cast FlxG.state;
-        s.onPreHotReload();
+        state.onPreHotReload();
 
         // Fetch the custom hot reload params for this state.
-        hotReloadParams = s.getHotReloadParams();
+        hotReloadParams = state.getHotReloadParams();
       }
       FlxG.switchState(() -> new HotReloadState(hotReloadParams));
     }

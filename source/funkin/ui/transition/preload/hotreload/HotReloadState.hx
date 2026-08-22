@@ -334,9 +334,9 @@ class HotReloadState extends MusicBeatState
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
     var postHotReloadCallback = () ->
     {
-      if (FlxG.state is MusicBeatState)
+      var state:Dynamic = cast FlxG.state;
+      if (state is MusicBeatState || state is MusicBeatSubState)
       {
-        var state:MusicBeatState = cast FlxG.state;
         state.onPostHotReload();
       }
     }
