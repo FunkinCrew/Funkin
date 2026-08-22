@@ -476,7 +476,7 @@ class DropShadowShader extends FlxShader
           shadowAlpha = texture2D(bitmap, checked).a;
         }
 
-        float rim = (1.0 - (shadowAlpha * str)) * intensity;
+        float rim = (str - (shadowAlpha * str)) * intensity;
 
         color3 += dropColor * rim;
 
