@@ -1041,7 +1041,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (value)
     {
       // Start the auto-save timer.
-      autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      if (Save.instance.chartEditorAutoSave.value) autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
     }
     else
     {
@@ -1947,6 +1947,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemSaveChartAs:MenuItem;
 
   /**
+   * The `File -> Auto Save` menu item.
+   */
+  var menubarItemAutoSave:MenuCheckBox;
+
+  /**
    * The `File -> Preferences` menu item.
    */
   var menubarItemPreferences:MenuItem;
@@ -2624,6 +2629,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
     shouldPlayWelcomeMusic = save.chartEditorThemeMusic.value;
 
+    menubarItemAutoSave.selected = save.chartEditorAutoSave.value;
     menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
     menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
     menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
@@ -3308,6 +3314,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // CTRL + SHIFT + S Cancelled
     });
+    
+    menubarItemAutoSave.onClick = function(event){
+      Save.instance.chartEditorAutoSave.value = menubarItemAutoSave.selected;
+      if (menubarItemAutoSave.selected)
+      {
+        // Start the auto-save timer.
+        autoSaveTimer = new FlxTimer().start(Constants.AUTOSAVE_TIMER_DELAY_SEC, (_) -> autoSave());
+      }
+      else
+      {
+        if (autoSaveTimer != null)
+        {
+          // Stop the auto-save timer.
+          autoSaveTimer.cancel();
+          autoSaveTimer.destroy();
+          autoSaveTimer = null;
+        }
+      }
+    }
+
     menubarItemExit.onClick = _ -> quitChartEditor(true);
 
     // Edit
