@@ -6530,12 +6530,22 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ====================
 
+  @:access(haxe.ui.backend.ComponentBase)
+  function hideMenubarDropdowns():Void
+  {
+    if (menubar == null) return;
+    var events:Dynamic = menubar._internalEvents;
+    if (events != null) events.hideCurrentMenu(true);
+  }
+
   /**
    * Transitions to the Play State to test the song
    */
   function testSongInPlayState(minimal:Bool = false):Void
   {
     autoSave(true);
+
+    hideMenubarDropdowns();
 
     // Force pauses audio preview from OffsetsToolbox, if it exists.
     cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
