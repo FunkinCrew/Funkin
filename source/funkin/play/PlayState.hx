@@ -2263,6 +2263,9 @@ class PlayState extends MusicBeatSubState
     opponentStrumline.zIndex = 1000;
     opponentStrumline.cameras = [camHUD];
 
+    playerStrumline.initBackground(this);
+    opponentStrumline.initBackground(this);
+
     #if mobile
     if (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !ControlsHandler.hasExternalInputDevice)
     {

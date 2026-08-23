@@ -4,6 +4,7 @@ import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
 import funkin.play.notes.NoteVibrationsHandler.NoteStatus;
 import funkin.play.notes.notestyle.NoteStyle;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
@@ -15,7 +16,10 @@ import funkin.util.SortUtil;
 import funkin.util.GRhythmUtil;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
+import flixel.FlxCamera;
 import flixel.math.FlxPoint;
+import flixel.util.FlxDestroyUtil;
+import openfl.display.BlendMode;
 #if mobile
 import funkin.mobile.input.ControlsHandler;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
@@ -237,23 +241,6 @@ class Strumline extends FlxSpriteGroup
     this.noteSplashes.zIndex = 50;
     this.add(this.noteSplashes);
 
-    var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
-    #if mobile
-    if (inArrowControlSchemeMode && isPlayer)
-    {
-      backgroundWidth = backgroundWidth * 1.84;
-    }
-    #end
-    this.background = new FunkinSprite(0, 0).makeSolidColor(Std.int(backgroundWidth), FlxG.height, 0xFF000000);
-    // Convert the percent to a number between 0 and 1.
-    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
-    this.background.scrollFactor.set(0, 0);
-    this.background.x = -BACKGROUND_PAD;
-    #if mobile
-    if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
-    #end
-    this.add(this.background);
-
     strumlineScale = new FlxCallbackPoint(strumlineScaleCallback);
 
     this.refresh();
@@ -283,6 +270,45 @@ class Strumline extends FlxSpriteGroup
     this.active = true;
   }
 
+  public function initBackground(state:FlxGroup):Void
+  {
+    #if mobile
+    // We do not want to initialize the background for the opponent if no external devices are used
+    if (inArrowControlSchemeMode && !isPlayer) return;
+    #end
+    var backgroundWidth:Float = KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2;
+    #if mobile
+    if (inArrowControlSchemeMode && isPlayer)
+    {
+      backgroundWidth = backgroundWidth * 1.84;
+    }
+    #end
+    this.background = new FunkinSprite(this.x - BACKGROUND_PAD, this.y).makeSolidColor(Std.int(backgroundWidth), FlxG.height, 0xFF000000);
+    // Convert the percent to a number between 0 and 1.
+    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0;
+    this.background.scrollFactor.set(0, 0);
+    this.background.camera = this.camera;
+    this.background.x += noteStyle.getStrumlineOffsets()[0];
+    #if mobile
+    if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
+    #end
+    state.add(this.background);
+  }
+
+  override function set_x(value:Float):Float
+  {
+    super.set_x(value);
+
+    if (this.background != null)  {
+      this.background.x = this.x - BACKGROUND_PAD;
+      #if mobile
+      if (inArrowControlSchemeMode && isPlayer) this.background.x -= 100;
+      #end
+      this.background.x += noteStyle.getStrumlineOffsets()[0];
+    }
+    return value;
+  }
+
   override function set_y(value:Float):Float
   {
     super.set_y(value);
@@ -293,11 +319,47 @@ class Strumline extends FlxSpriteGroup
     return value;
   }
 
+  override function set_blend(value:BlendMode):BlendMode
+  {
+    super.set_blend(value);
+
+    if (this.background != null) this.background.blend = value;
+
+    return value;
+  }
+
+  override function set_cameras(value:Array<FlxCamera>):Array<FlxCamera>
+  {
+    super.set_cameras(value);
+
+    if (this.background != null) this.background.cameras = value;
+
+    return value;
+  }
+
+  override function set_visible(value:Bool):Bool
+  {
+    super.set_visible(value);
+
+    if (this.background != null) this.background.visible = value;
+
+    return value;
+  }
+
+  override function set_camera(value:FlxCamera):FlxCamera
+  {
+    super.set_camera(value);
+
+    if (this.background != null) this.background.camera = value;
+
+    return value;
+  }
+
   override function set_alpha(value:Float):Float
   {
     super.set_alpha(value);
 
-    this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0 * alpha;
+    if (this.background != null) this.background.alpha = Preferences.strumlineBackgroundOpacity / 100.0 * alpha;
 
     return value;
   }
@@ -1494,5 +1556,11 @@ class Strumline extends FlxSpriteGroup
       if (maxY > value) value = maxY;
     }
     return value;
+  }
+
+  override public function destroy():Void
+  {
+    if (this.background != null) FlxDestroyUtil.destroy(this.background);
+    super.destroy();
   }
 }

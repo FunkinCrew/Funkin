@@ -189,9 +189,9 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     testStrumline.setPosition(FlxG.width / 2, FlxG.height / 2);
     testStrumline.x -= testStrumline.width / 2;
     testStrumline.scrollFactor.set(0, 0);
-    add(testStrumline);
-
     testStrumline.cameras = [menuCamera];
+    testStrumline.initBackground(this);
+    add(testStrumline);
 
     testStrumline.conductorInUse = localConductor;
     testStrumline.zIndex = 1001;
