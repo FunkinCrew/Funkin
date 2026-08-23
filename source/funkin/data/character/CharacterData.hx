@@ -365,6 +365,10 @@ class CharacterDataParser
         return null;
       }
 
+      // Remove frameX/Y from the frame offsets, as they align the Chart and Stage Editor character selectors icons off-centered
+      idleFrame.offset.set(0, 0);
+      idleFrame.sourceSize.set(idleFrame.frame.width, idleFrame.frame.height);
+
       // so, haxe.ui.backend.AssetsImpl uses the parent width and height, which makes the image go crazy when rendered
       // so this is a work around so that it uses the actual width and height
       var imageGraphic = flixel.graphics.FlxGraphic.fromFrame(idleFrame);
