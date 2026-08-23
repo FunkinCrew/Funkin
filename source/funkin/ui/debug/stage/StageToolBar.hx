@@ -3,7 +3,7 @@ package funkin.ui.debug.stage;
 #if FEATURE_STAGE_EDITOR
 import flixel.group.FlxGroup;
 
-class StagetoolBar extends FlxGroup
+class StageToolBar extends FlxGroup
 {
   var icons:Array<StageBuilderState.TOOLS> = [SELECT, MOVE, GRAB, BOYFRIEND];
   var iconSprs:Array<String> = ['cursorSelect', 'cursorGrab', 'cursorMove', 'toolbarBF'];
