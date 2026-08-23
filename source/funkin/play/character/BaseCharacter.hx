@@ -360,6 +360,10 @@ class BaseCharacter extends Bopper
     return _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
   }
 
+  /**
+   * Sets up the health icon for the character
+   * @param isOpponent
+   */
   public function initHealthIcon(isOpponent:Bool):Void
   {
     // Modders may want to use characters outside of PlayState and this still gets called, so we ignore it.
@@ -372,8 +376,19 @@ class BaseCharacter extends Bopper
         log(' WARNING '.warning() + ' Player 1 ($characterId) health icon not found!');
         return;
       }
+      var wasOriginalIconFlipped = PlayState.instance.iconP1.cached.wasOriginalIconFlipped;
       PlayState.instance.iconP1.configure(_data?.healthIcon);
-      PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
+      if (PlayState.instance.iconP1.characterId != 'bf-old')
+      {
+        PlayState.instance.iconP1.flipX = !PlayState.instance.iconP1.flipX; // BF is looking the other way.
+        // Cache the initial flipX data
+        PlayState.instance.iconP1.cached.wasFlipped = PlayState.instance.iconP1.flipX;
+        PlayState.instance.iconP1.cached.wasOriginalIconFlipped = PlayState.instance.iconP1.flipX;
+      }
+      else
+      {
+        PlayState.instance.iconP1.cached.wasFlipped = wasOriginalIconFlipped;
+      }
     }
     else
     {

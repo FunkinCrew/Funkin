@@ -31,7 +31,7 @@ import funkin.util.MathUtil;
 class HealthIcon extends FunkinSprite
 {
   /**
-   * The character this icon is representing.
+   * The character this icon will represent and display.
    * Setting this variable will automatically update the graphic.
    */
   public var characterId(default, set):String = Constants.DEFAULT_HEALTH_ICON;
@@ -84,6 +84,30 @@ class HealthIcon extends FunkinSprite
    * Whether this icon should bop or not.
    */
   var shouldBop:Bool = true;
+
+  /**
+   * This stores the cached icon data
+   * This is used during toggleOldIcon
+   */
+  public var cached:
+    {
+      var characterId:String;
+      var offsets:Array<Float>;
+      var scale:Float;
+      var wasPixel:Bool;
+      var wasFlipped:Bool;
+      var wasOriginalIconFlipped:Bool;
+      var wasBoppable:Bool;
+    } =
+      {
+        characterId: Constants.DEFAULT_HEALTH_ICON,
+        offsets: [0.0, 0.0],
+        scale: 1.0,
+        wasPixel: false,
+        wasFlipped: false,
+        wasOriginalIconFlipped: false,
+        wasBoppable: true
+      };
 
   /**
    * At this amount of health, play the Winning animation instead of the idle.
@@ -149,6 +173,8 @@ class HealthIcon extends FunkinSprite
     if (value == characterId) return value;
 
     characterId = value ?? Constants.DEFAULT_HEALTH_ICON;
+    loadCharacter(characterId);
+    updatePosition();
     return characterId;
   }
 
@@ -169,14 +195,21 @@ class HealthIcon extends FunkinSprite
     if (playState == null || playState.currentStage == null) return;
     if (characterId == 'bf-old')
     {
-      isPixel = playState.currentStage.getBoyfriend()?.isPixel ?? false;
-      playState.currentStage.getBoyfriend()?.initHealthIcon(false);
+      isPixel = cached.wasPixel;
+      iconOffset.set(cached.offsets[0], cached.offsets[1]);
+      size.set(cached.scale, cached.scale);
+      flipX = cached.wasFlipped;
+      characterId = cached.characterId;
+      shouldBop = cached.wasBoppable;
     }
     else
     {
-      characterId = 'bf-old';
       isPixel = false;
-      loadCharacter(characterId);
+      iconOffset.set(0, 0);
+      size.set(1.0, 1.0);
+      flipX = true;
+      characterId = 'bf-old';
+      shouldBop = true;
     }
 
     snapToTargetSize();
@@ -190,36 +223,40 @@ class HealthIcon extends FunkinSprite
   {
     if (data == null)
     {
-      this.characterId = Constants.DEFAULT_HEALTH_ICON;
       this.isPixel = false;
-
-      loadCharacter(characterId);
-
       this.size.set(1.0, 1.0);
       this.iconOffset.set();
       this.flipX = false;
-      this.updatePosition();
+
+      this.characterId = Constants.DEFAULT_HEALTH_ICON;
     }
     else
     {
-      this.characterId = data.id;
-      this.isPixel = data.isPixel ?? false;
-      this.shouldBop = data.shouldBop ?? true;
+      this.cached.characterId = data.id ?? Constants.DEFAULT_HEALTH_ICON;
+      this.cached.wasPixel = data.isPixel ?? false;
+      this.cached.offsets = data.offsets ?? [0, 0];
+      this.cached.scale = data.scale ?? 1.0;
+      this.cached.wasFlipped = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
+      this.cached.wasBoppable = data.shouldBop ?? true;
 
-      loadCharacter(characterId);
-
-      this.size.set(data.scale ?? 1.0, data.scale ?? 1.0);
-      if (data.offsets != null && data.offsets.length == 2)
+      if (this.characterId != 'bf-old')
       {
-        this.iconOffset.set(data.offsets[0], data.offsets[1]);
-      }
-      else
-      {
-        this.iconOffset.set(0, 0);
-      }
+        this.isPixel = this.cached.wasPixel;
 
-      this.flipX = data.flipX ?? false; // Face the OTHER way by default, since that is more common.
-      this.updatePosition();
+        if (data.offsets != null && data.offsets.length == 2)
+        {
+          this.iconOffset.set(data.offsets[0], data.offsets[1]);
+        }
+        else
+        {
+          this.iconOffset.set(0, 0);
+        }
+
+        this.size.set(this.cached.scale, this.cached.scale);
+        this.flipX = this.cached.wasFlipped;
+        this.characterId = this.cached.characterId;
+        this.shouldBop = this.cached.wasBoppable;
+      }
     }
   }
 
