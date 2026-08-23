@@ -13,11 +13,21 @@ import flixel.FlxSubState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.data.story.level.LevelRegistry;
+import funkin.play.scoring.Scoring;
+import funkin.play.scoring.Scoring.ScoringRank;
+import funkin.play.song.Song;
+import funkin.save.Save;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.story.Level;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.HSVShader;
 import funkin.input.Controls;
 #if FEATURE_NEWGROUNDS
+import funkin.api.newgrounds.Events;
+import funkin.api.newgrounds.Leaderboards;
+import funkin.api.newgrounds.Medals;
 import funkin.api.newgrounds.NewgroundsClient;
 #end
 #if mobile
@@ -244,10 +254,10 @@ class OptionsMenu extends Page<OptionsMenuPageName>
           // This means the logout option will be displayed.
           // NOTE: If the user presses login and opens the browser,
           // then navigates the UI
-          FlxG.resetState();
+          promptRegisterScore();
         }, function()
         {
-          FlxG.log.warn('Newgrounds login failed!');
+          FlxG.log.warn("Newgrounds login failed!");
         });
       });
     }
@@ -345,6 +355,105 @@ class OptionsMenu extends Page<OptionsMenuPageName>
   {
     return items.length > 2;
   }
+
+  var prompt:Prompt;
+
+  function promptRegisterScore():Void
+  {
+    if (prompt != null) return;
+
+    prompt = new Prompt("Would you like to submit
+      \nall of your current
+      \nscore and ranks?
+    ", Yes_No);
+
+    prompt.create();
+    prompt.createBgFromMargin(100, 0xFFFAFD6D);
+    prompt.back.scrollFactor.set(0, 0);
+    add(prompt);
+
+    function defaultBehavior()
+    {
+      prompt.close();
+      prompt.destroy();
+      prompt = null;
+
+      FlxG.resetState();
+    }
+
+    prompt.onYes = function()
+    {
+      #if FEATURE_NEWGROUNDS
+      registerAllProgress();
+      #end
+
+      defaultBehavior();
+    }
+
+    prompt.onNo = defaultBehavior;
+  }
+
+  #if FEATURE_NEWGROUNDS
+  function registerAllProgress()
+  {
+    // Register the scores and medals for all base game songs.
+    var allSongs:Array<String> = SongRegistry.instance.listBaseGameSongIds();
+
+    for (songID in allSongs)
+    {
+      var song:Song = SongRegistry.instance.fetchEntry(songID);
+      if (song == null) continue;
+
+      for (variation in song.variations)
+      {
+        for (diff in song.listDifficulties(variation, null, true, true))
+        {
+          var scoreData:Null<SaveScoreData> = Save.instance.getSongScore(songID, diff, variation);
+          if (scoreData == null) continue;
+
+          var suffixedDifficulty:String = (variation != Constants.DEFAULT_VARIATION && variation != 'erect') ? '$diff-${variation}' : diff;
+
+          // Apply score.
+          Leaderboards.submitSongScore(songID, suffixedDifficulty, scoreData.score);
+          Events.logCompleteSong(songID, variation);
+
+          var rank:Null<ScoringRank> = Save.instance.getSongRank(songID, diff, variation);
+          if (rank == null) continue;
+
+          // Apply medals.
+          if (rank == ScoringRank.SHIT) Medals.award(LossRating);
+          if (rank >= ScoringRank.PERFECT && diff == 'hard') Medals.award(PerfectRatingHard);
+          if (rank == ScoringRank.PERFECT_GOLD && diff == 'hard') Medals.award(GoldPerfectRatingHard);
+          if (Constants.DEFAULT_DIFFICULTY_LIST_ERECT.contains(diff)) Medals.award(ErectDifficulty);
+          if (rank == ScoringRank.PERFECT_GOLD && diff == 'nightmare') Medals.award(GoldPerfectRatingNightmare);
+          if (variation == 'pico' && songID == 'stress') Medals.award(FreeplayStressPico);
+
+          // There is no way to check if a pico mix song has been played with story mode enabled through here, so that medal is omitted from this check.
+        }
+      }
+    }
+
+    // Register the scores and medals for all base game weeks.
+    var allLevels:Array<String> = LevelRegistry.instance.listBaseGameLevelIds();
+
+    for (levelID in allLevels)
+    {
+      var level:Level = LevelRegistry.instance.fetchEntry(levelID);
+      if (level == null) continue;
+
+      for (diff in level.getDifficulties())
+      {
+        var scoreData:Null<SaveScoreData> = Save.instance.getLevelScore(levelID, diff);
+        if (scoreData == null) continue;
+
+        // Apply score.
+        Medals.awardStoryLevel(levelID);
+        Leaderboards.submitLevelScore(levelID, diff, scoreData.score);
+        Events.logCompleteLevel(levelID);
+      }
+    }
+  }
+  #end
 }
 
 enum abstract OptionsMenuPageName(String) to PageName
