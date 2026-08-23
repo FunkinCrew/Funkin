@@ -5,6 +5,7 @@ import funkin.mobile.ui.FunkinHitbox;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import funkin.save.Save;
+import funkin.util.ColorblindFilter;
 import funkin.util.WindowUtil;
 import funkin.util.HapticUtil.HapticsMode;
 import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
@@ -257,6 +258,52 @@ class Preferences
     var save:Save = Save.instance;
     save.options.hapticsIntensityMultiplier = value;
     Save.system.flush();
+    return value;
+  }
+
+  /**
+   * Color assist filter applied over the game display.
+   * @default `Off`
+   */
+  public static var colorblindMode(get, set):funkin.util.ColorblindFilter.ColorblindMode;
+
+  static function get_colorblindMode():funkin.util.ColorblindFilter.ColorblindMode
+  {
+    return ColorblindFilter.normalizeMode(Save?.instance?.options?.colorblindMode);
+  }
+
+  static function set_colorblindMode(value:funkin.util.ColorblindFilter.ColorblindMode):funkin.util.ColorblindFilter.ColorblindMode
+  {
+    value = ColorblindFilter.normalizeMode(value);
+    var save:Save = Save.instance;
+    save.options.colorblindMode = value;
+    Save.system.flush();
+    funkin.util.ColorblindFilter.apply();
+    return value;
+  }
+
+  /**
+   * How strongly the color assist correction is applied, 1 (light) to 10 (full).
+   * @default `10`
+   */
+  public static var colorblindStrength(get, set):Int;
+
+  static function get_colorblindStrength():Int
+  {
+    var value:Int = Save?.instance?.options?.colorblindStrength ?? 10;
+    if (value < ColorblindFilter.STRENGTH_MIN) value = ColorblindFilter.STRENGTH_MIN;
+    if (value > ColorblindFilter.STRENGTH_MAX) value = ColorblindFilter.STRENGTH_MAX;
+    return value;
+  }
+
+  static function set_colorblindStrength(value:Int):Int
+  {
+    if (value < ColorblindFilter.STRENGTH_MIN) value = ColorblindFilter.STRENGTH_MIN;
+    if (value > ColorblindFilter.STRENGTH_MAX) value = ColorblindFilter.STRENGTH_MAX;
+    var save:Save = Save.instance;
+    save.options.colorblindStrength = value;
+    Save.system.flush();
+    funkin.util.ColorblindFilter.apply();
     return value;
   }
 

@@ -187,6 +187,8 @@ class Main extends Sprite
 
     addChild(game);
 
+    funkin.util.ColorblindFilter.attach();
+
     #if FEATURE_DEBUG_FUNCTIONS
     #if !FLX_NO_DEBUG game.debugger.interaction.addTool(new funkin.util.TrackerToolButtonUtil()); #end
     funkin.util.macro.ConsoleMacro.init();

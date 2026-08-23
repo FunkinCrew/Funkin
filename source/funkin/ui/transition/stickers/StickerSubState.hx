@@ -16,6 +16,7 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.transition.stickers.StickerPack;
 import funkin.FunkinMemory;
+import funkin.util.ColorblindFilter;
 import funkin.util.DeviceUtil;
 import funkin.Preferences;
 
@@ -298,6 +299,7 @@ class StickerTransitionSprite extends openfl.display.Sprite
 
     grpStickers?.draw();
 
+    ColorblindFilter.applyToCamera(stickersCamera);
     stickersCamera.render();
   }
 
