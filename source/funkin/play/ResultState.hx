@@ -613,7 +613,8 @@ class ResultState extends MusicBeatSubState
         clearPercentCounter.curNumber = clearPercentTarget;
 
         #if FEATURE_NEWGROUNDS
-        var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false);
+        var isChartValid:Bool = funkin.util.macro.SongDataValidator.isChartValid(params?.songId ?? "", params?.variationId ?? Constants.DEFAULT_VARIATION);
+        var isScoreValid = !(params?.isPracticeMode ?? false) && !(params?.isBotPlayMode ?? false) && isChartValid;
         // This is the easiest spot to do the medal calculation lol.
         if (isScoreValid && clearPercentTarget == 69) Medals.award(Nice);
         #end

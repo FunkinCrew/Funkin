@@ -1123,6 +1123,9 @@ class Project extends HXProject
     // These macros allow additions of new functionality to existing Flixel. -->
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
     addHaxeMacro("addMetadata('@:build(funkin.util.macro.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')");
+
+    // This macro will go over every song in the assets folder and store them in an array to check for cheated scores.
+    addHaxeMacro("funkin.util.macro.SongDataValidator.loadSongData()");
   }
 
   function configureOutputDir()

@@ -3468,8 +3468,9 @@ class PlayState extends MusicBeatSubState
 
     var isNewHighscore = false;
     var prevScoreData:Null<SaveScoreData> = Save.instance.getSongScore(currentSong.id, suffixedDifficulty);
+    var isChartValid:Bool = funkin.util.macro.SongDataValidator.isChartValid(currentSong.id, currentVariation);
 
-    if (currentSong != null && currentSong.validScore)
+    if (currentSong != null && currentSong.validScore && isChartValid)
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
       var data = {
