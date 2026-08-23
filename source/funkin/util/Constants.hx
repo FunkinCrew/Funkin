@@ -466,6 +466,11 @@ class Constants
   public static final HEALTH_MIN:Float = 0.0;
 
   /**
+   * The smoothness of the health bar value during lerping.
+   */
+  public static final HEALTH_BAR_HALF_LIFE:Float = 0.03;
+
+  /**
    * The amount of health the player gains when hitting a note with the KILLER rating.
    */
   public static final HEALTH_KILLER_BONUS:Float = 2.0 / 100.0 * HEALTH_MAX; // +2.0%
