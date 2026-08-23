@@ -17,6 +17,9 @@ import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
+#if lime_vorbis
+import lime.media.vorbis.VorbisFile;
+#end
 
 /**
  * A FlxSound which adds additional functionality:
@@ -344,8 +347,40 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (shouldLoadPartial)
     {
-      var music = FunkinSound.loadPartial(pathToUse, params.partialParams?.start ?? 0.0, params.partialParams?.end ?? 1.0, params?.startingVolume ?? 1.0,
-        params.loop ?? true, false, false, params.onComplete);
+      var start:Float = params.partialParams?.start ?? 0.0;
+      var end:Float = params.partialParams?.end ?? 1.0;
+
+      // If partial, attempt to load from vorbis first.
+      #if lime_vorbis
+      var vorbisFile:Null<VorbisFile> = VorbisFile.fromFile(Paths.stripLibrary(pathToUse));
+      if (vorbisFile != null)
+      {
+        var vorbisSound:Null<Sound> = Sound.fromAudioBuffer(lime.media.AudioBuffer.fromVorbisFile(vorbisFile));
+
+        if (vorbisSound != null)
+        {
+          var sound:Null<FunkinSound> = FunkinSound.load(vorbisSound, params?.startingVolume ?? 1.0, params.loop ?? true, false, true, false,
+            params.onComplete);
+          if (sound != null)
+          {
+            sound._label = pathToUse;
+
+            FlxG.sound.music = sound;
+            FlxG.sound.list.remove(FlxG.sound.music);
+
+            // Apply the partial limits for the sound.
+            sound.loopTime = sound.length * start;
+            sound.endTime = sound.length * end;
+
+            if (FlxG.sound.music != null && params.onLoad != null) params.onLoad();
+
+            return true;
+          }
+        }
+      }
+      #end
+
+      var music = FunkinSound.loadPartial(pathToUse, start, end, params?.startingVolume ?? 1.0, params.loop ?? true, false, false, params.onComplete);
 
       if (music != null)
       {
