@@ -311,6 +311,16 @@ class PlayState extends MusicBeatSubState
   public var currentCameraZoom:Float = FlxCamera.defaultZoom;
 
   /**
+   * The ratio between the current camera zoom and the target zoom,
+   */
+  public var cameraZoomLerp:Float = 0.0;
+
+  /**
+   * The target zoom the camera should lerp to, if at all.
+   */
+  public var targetCameraZoom:Float = 0.0;
+
+  /**
    * Multiplier for currentCameraZoom for camera bops.
    * Lerped back to 1.0x every frame.
    */
@@ -1036,6 +1046,8 @@ class PlayState extends MusicBeatSubState
 
     updateHealthBar();
     updateScoreText();
+
+    updateZoomLerp(elapsed);
 
     // Handle restarting the song when needed (player death or pressing Retry)
     if (needsReset)
@@ -2104,6 +2116,27 @@ class PlayState extends MusicBeatSubState
 
     // Reset bop multiplier.
     cameraBopMultiplier = 1.0;
+
+    // Reset the lerp.
+    targetCameraZoom = 0.0;
+    cameraZoomLerp = 0.0;
+  }
+
+  public function updateZoomLerp(elapsed:Float)
+  {
+    // Do not lerp if the target zoom is impossible for a camera to have or the lerp is 0.
+    if (targetCameraZoom <= 0 || cameraZoomLerp == 0) return;
+
+    if (cameraZoomLerp >= 1)
+    {
+      currentCameraZoom = targetCameraZoom;
+      return;
+    }
+
+    // Adjust lerp based on the current frame rate so lerp is less framerate dependant
+    final adjustedLerp:Float = 1.0 - Math.pow(1.0 - cameraZoomLerp, elapsed * 60);
+
+    currentCameraZoom = FlxMath.lerp(currentCameraZoom, targetCameraZoom, adjustedLerp);
   }
 
   /**
@@ -4001,6 +4034,9 @@ class PlayState extends MusicBeatSubState
     // Cancel the current tween if it's active.
     cancelCameraZoomTween();
 
+    // Disable the zoom lerp for the duration of the tween.
+    cameraZoomLerp = 0.0;
+
     // Direct mode: Set zoom directly.
     // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
     var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
@@ -4030,6 +4066,17 @@ class PlayState extends MusicBeatSubState
     {
       cameraZoomTween.cancel();
     }
+  }
+
+  /**
+     * Start the camera zoom lerp to the desired value.
+     */
+  public function lerpCameraZoom(zoom:Float = 1, direct:Bool = false)
+  {
+    var targetZoom:Float = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
+
+    cameraZoomLerp = Constants.DEFAULT_CAMERA_FOLLOW_RATE;
+    targetCameraZoom = targetZoom;
   }
 
   /**

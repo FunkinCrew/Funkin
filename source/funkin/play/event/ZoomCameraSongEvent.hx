@@ -64,6 +64,9 @@ class ZoomCameraSongEvent extends SongEvent
     {
       case 'INSTANT':
         PlayState.instance.tweenCameraZoom(scaledZoom, 0, isDirectMode);
+      case 'CLASSIC': // The zoom that tries to mimic the classic camera lerp behavior, but with camera zooming instead!
+        PlayState.instance.cancelCameraZoomTween();
+        PlayState.instance.lerpCameraZoom(scaledZoom, isDirectMode);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / Constants.MS_PER_SEC;
         var easeFunctionName = '$ease$easeDir';
@@ -128,6 +131,7 @@ class ZoomCameraSongEvent extends SongEvent
         keys: [
           'Linear' => 'linear',
           'Instant (Ignores duration)' => 'INSTANT',
+          'Classic (Ignores duration)' => 'CLASSIC',
           'Sine' => 'sine',
           'Quad' => 'quad',
           'Cube' => 'cube',
