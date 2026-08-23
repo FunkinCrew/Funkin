@@ -1,5 +1,6 @@
 package funkin.play.notes;
 
+import lime.app.Application;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxG;
 import funkin.play.notes.NoteVibrationsHandler.NoteStatus;
@@ -281,6 +282,8 @@ class Strumline extends FlxSpriteGroup
 
     // This MUST be true for children to update!
     this.active = true;
+
+    if (isPlayer) Application.current.window.onRender.add(fakeUpdate);
   }
 
   override function set_y(value:Float):Float
@@ -319,12 +322,37 @@ class Strumline extends FlxSpriteGroup
 
   override public function update(elapsed:Float):Void
   {
-    super.update(elapsed);
+    if (isPlayer)
+    {
+      if (shouldUpdate) super.update(elapsed);
+    }
+    else
+    {
+      super.update(elapsed);
+
+      updateNotes();
+
+      #if FEATURE_GHOST_TAPPING
+      updateGhostTapTimer(elapsed);
+      #end
+    }
+  }
+
+  var shouldUpdate:Bool = false;
+
+  public function fakeUpdate(ctx:Dynamic):Void
+  {
+    if (!isPlayer) return;
+    if (@:privateAccess PlayState?.instance?.isGamePaused) return;
+
+    shouldUpdate = true;
+    update(FlxG.elapsed);
+    shouldUpdate = false;
 
     updateNotes();
 
     #if FEATURE_GHOST_TAPPING
-    updateGhostTapTimer(elapsed);
+    updateGhostTapTimer(FlxG.elapsed);
     #end
   }
 
@@ -868,6 +896,13 @@ class Strumline extends FlxSpriteGroup
   public function isKeyHeld(dir:NoteDirection):Bool
   {
     return heldKeys[dir].length > 0;
+  }
+
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    if (isPlayer) Application.current.window.onRender.remove(fakeUpdate);
   }
 
   /**
