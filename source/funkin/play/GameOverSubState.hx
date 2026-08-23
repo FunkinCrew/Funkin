@@ -63,6 +63,8 @@ class GameOverSubState extends MusicBeatSubState
 
   static var blueballed:Bool = false;
 
+  var bg:FunkinSprite;
+
   /**
    * The boyfriend character.
    */
@@ -146,7 +148,7 @@ class GameOverSubState extends MusicBeatSubState
     //
 
     // Add a black background to the screen.
-    var bg:FunkinSprite = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+    bg = new FunkinSprite().makeSolidColor(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
     // We make this transparent so that we can see the stage underneath during debugging,
     // but it's normally opaque.
     bg.alpha = transparent ? 0.25 : 1.0;

@@ -63,6 +63,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
   var popup:Prompt;
   var camFollow:FlxObject;
   var labels:FlxTypedGroup<AtlasText>;
+  var headers:FlxTypedGroup<AtlasText>;
   var currentDevice:Device = Keys;
   var deviceListSelected:Bool = false;
   var actionPrevented:Bool = false;
@@ -81,7 +82,7 @@ class ControlsMenu extends Page<OptionsState.OptionsMenuPageName>
     camera = menuCamera;
 
     labels = new FlxTypedGroup<AtlasText>();
-    var headers:FlxTypedGroup<AtlasText> = new FlxTypedGroup<AtlasText>();
+    headers = new FlxTypedGroup<AtlasText>();
     controlGrid = new MenuTypedList(Columns(COLUMNS), Vertical);
 
     add(labels);
