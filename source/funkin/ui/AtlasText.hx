@@ -83,6 +83,8 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 
   /**
    * Converts all characters to fit the font's `allowedCase`.
+   * Uses ASCII-only conversion so Turkish (and other) locales don't substitute
+   * dotted/dotless `İ`/`ı` for `I`/`i` and break atlas glyph lookups.
    * @param str
    */
   function restrictCase(str:String):String
@@ -92,10 +94,34 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
       case Both:
         str;
       case Upper:
-        str.toUpperCase();
+        asciiUpperCase(str);
       case Lower:
-        str.toLowerCase();
+        asciiLowerCase(str);
     }
+  }
+
+  static function asciiUpperCase(str:String):String
+  {
+    var buf = new StringBuf();
+    for (i in 0...str.length)
+    {
+      var c = str.charCodeAt(i);
+      if (c != null && c >= 0x61 && c <= 0x7A) buf.addChar(c - 0x20);
+      else if (c != null) buf.addChar(c);
+    }
+    return buf.toString();
+  }
+
+  static function asciiLowerCase(str:String):String
+  {
+    var buf = new StringBuf();
+    for (i in 0...str.length)
+    {
+      var c = str.charCodeAt(i);
+      if (c != null && c >= 0x41 && c <= 0x5A) buf.addChar(c + 0x20);
+      else if (c != null) buf.addChar(c);
+    }
+    return buf.toString();
   }
 
   /**
