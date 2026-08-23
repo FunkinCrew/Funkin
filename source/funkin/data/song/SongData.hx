@@ -544,9 +544,6 @@ class SongCharacterData implements ICloneable<SongCharacterData>
     this.altInstrumentals = altInstrumentals ?? [];
     this.opponentVocals = opponentVocals;
     this.playerVocals = playerVocals;
-
-    if (opponentVocals == null) this.opponentVocals = [opponent];
-    if (playerVocals == null) this.playerVocals = [player];
   }
 
   public function clone():SongCharacterData
