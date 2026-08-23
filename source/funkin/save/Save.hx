@@ -115,6 +115,8 @@ class Save implements ConsoleClass
         audioVisualOffset: 0,
         unlockedFramerate: false,
         enabledDiscordRPC: true,
+        audioDevice: 'Default',
+        streamedMusic: true,
         screenshot: {
           shouldHideMouse: true,
           fancyPreview: true,
@@ -1212,6 +1214,18 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var enabledDiscordRPC:Bool;
+
+  /**
+   * What audio device should it playback sounds to.
+   * @default 'Default'
+   */
+  var audioDevice:String;
+
+  /**
+   * Should the musics be loaded as streamable instead of static.
+   * @default 'true'
+   */
+  var streamedMusic:Bool;
 
   /**
    * Screenshot options
