@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxBasic;
 import funkin.ui.MusicBeatState;
 import funkin.ui.MusicBeatSubState;
+import funkin.modding.PolymodHandler;
 #if android
 import funkin.external.android.CallbackUtil;
 #end
@@ -35,9 +36,9 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     super.update(elapsed);
 
     #if html5
-    if (FlxG.keys.justPressed.FIVE && FlxG.keys.pressed.SHIFT)
+    if ((FlxG.keys.justPressed.FIVE && FlxG.keys.pressed.SHIFT) || PolymodHandler.shouldReload)
     #else
-    if (FlxG.keys.justPressed.F5)
+    if (FlxG.keys.justPressed.F5 || PolymodHandler.shouldReload)
     #end
     {
       reload();
@@ -74,7 +75,7 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     if ((state is MusicBeatState || state is MusicBeatSubState) && !isScripted) state.reloadAssets();
     else
     {
-      funkin.modding.PolymodHandler.forceReloadAssets();
+      PolymodHandler.forceReloadAssets();
 
       trace('Reloaded assets, checking for scripted state. Scripted: ' + isScripted + ', Path: ' + path);
       if (isScripted)

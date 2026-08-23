@@ -79,6 +79,16 @@ class PolymodHandler
    */
   public static var loadedModIds:Array<String> = [];
 
+  /**
+   * Used by WindowUtil to tell the ReloadAssetsDebugPlugin to force reload.
+   */
+  public static var shouldReload:Bool = false;
+
+  /**
+   * This is true when you're currently in a force reload. For use in scripts
+   */
+  public static var inForceReload(default, null):Bool = false;
+
   // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
   static var modFileSystem:Null<ZipFileSystem> = null;
 
@@ -331,7 +341,7 @@ class PolymodHandler
     // `haxe.Http`
     // An alias for `sys.Http`, which is also a blacklisted package.
     Polymod.blacklistImport('haxe.Http');
-    
+
     // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
@@ -592,6 +602,9 @@ class PolymodHandler
    */
   public static function forceReloadAssets():Void
   {
+    inForceReload = true;
+    shouldReload = false; // In case we came here from showPolymodError().
+
     // Forcibly clear scripts so that scripts can be edited.
     ModuleHandler.clearModuleCache();
     Polymod.clearScripts();
@@ -626,5 +639,7 @@ class PolymodHandler
     NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
+
+    inForceReload = false;
   }
 }
