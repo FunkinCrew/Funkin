@@ -6404,7 +6404,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (!isHaxeUIDialogOpen && !isHaxeUIFocused && FlxG.keys.justPressed.ENTER)
     {
       var minimal = FlxG.keys.pressed.SHIFT;
-      this.hideAllToolboxes();
       testSongInPlayState(minimal);
     }
   }
@@ -6536,6 +6535,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function testSongInPlayState(minimal:Bool = false):Void
   {
     autoSave(true);
+
+    this.hideAllToolboxes();
 
     // Force pauses audio preview from OffsetsToolbox, if it exists.
     cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();

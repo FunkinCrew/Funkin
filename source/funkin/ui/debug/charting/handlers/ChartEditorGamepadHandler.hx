@@ -44,7 +44,6 @@ class ChartEditorGamepadHandler
       if (gamepad.justPressed.START)
       {
         var minimal = gamepad.pressed.LEFT_SHOULDER;
-        chartEditorState.hideAllToolboxes();
         trace('Gamepad: Start pressed, opening playtest (minimal: ${minimal})');
         chartEditorState.testSongInPlayState(minimal);
       }
