@@ -9,6 +9,7 @@ import flixel.group.FlxSpriteGroup;
 import funkin.util.TouchUtil;
 import funkin.ui.credits.CreditsData.CreditsDataRole;
 import funkin.ui.credits.CreditsData.CreditsDataMember;
+import flixel.FlxState;
 
 /**
  * The state used to display the credits scroll.
@@ -76,6 +77,8 @@ class CreditsState extends MusicBeatState
    * The speed the credits scroll at while the pause keybind is held, in pixels per second.
    */
   static final CREDITS_SCROLL_PAUSE_SPEED = 0.0;
+
+  public var exitState:()->FlxState = exitCallback;
 
   /**
    * The actual sprites and text used to display the credits.
@@ -293,8 +296,13 @@ class CreditsState extends MusicBeatState
 
   function exit():Void
   {
+    FlxG.switchState(exitState);
+  }
+
+  static function exitCallback():FlxState
+  {
     FlxG.keys.enabled = false;
-    FlxG.switchState(() -> new MainMenuState());
+    return new MainMenuState();
   }
 
   override public function destroy():Void
