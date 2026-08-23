@@ -257,4 +257,15 @@ class Level implements IRegistryEntry<LevelData>
 
     return props;
   }
+
+  public function toString():String
+  {
+    return 'Level(' +
+    'id: $id | ' +
+    'title: ${getTitle()} | ' +
+    'songs: ${getSongs()} | ' +
+    'visible: ${isVisible()} | ' +
+    'unlocked: ${isUnlocked()}' +
+    ')';
+  }
 }

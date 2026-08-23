@@ -658,6 +658,12 @@ class Conversation extends FlxSpriteGroup implements IDialogueScriptedClass impl
       outroTween = null;
     }
   }
+
+  public override function toString():String
+  {
+    var flxDebug:String = super.toString();
+    return 'Conversation(id: $id | debug: $flxDebug)';
+  }
 }
 
 // Managing things with a single enum is a lot easier than a multitude of flags.

@@ -749,6 +749,11 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return VARIATION_REGEX.match(variation);
   }
 
+  public function toString():String
+  {
+    return 'Song(id: $id | name: $songName)';
+  }
+
   static function log(message:String):Void
   {
     trace(' SONG '.bold().bg_note_down() + ' $message');

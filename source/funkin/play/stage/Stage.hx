@@ -938,6 +938,12 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
   }
 
+  public override function toString():String
+  {
+    var flxDebug:String = super.toString();
+    return 'Stage(id: $id | name: $stageName | debug: $flxDebug)';
+  }
+
   static function log(message:String):Void
   {
     trace(' STAGE '.bold().bg_red() + ' $message');

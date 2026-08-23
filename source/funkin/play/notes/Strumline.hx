@@ -1495,4 +1495,10 @@ class Strumline extends FlxSpriteGroup
     }
     return value;
   }
+
+  public override function toString():String
+  {
+    var flxDebug:String = super.toString();
+    return 'Strumline(isPlayer: $isPlayer | isDownscroll: $isDownscroll | scrollSpeed: $scrollSpeed | debug: $flxDebug)';
+  }
 }

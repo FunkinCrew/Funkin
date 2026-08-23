@@ -475,6 +475,19 @@ class HealthIcon extends FunkinSprite
 
     // If we don't have an animation, we're done.
   }
+
+  public override function toString():String
+  {
+    var flxDebug:String = super.toString();
+    return 'HealthIcon(' +
+    'characterId: $characterId | ' +
+    'autoUpdate: $autoUpdate | ' +
+    'playerId: $playerId | ' +
+    'isPixel: $isPixel | ' +
+    'isLegacy: $isLegacyStyle | ' +
+    'debug: $flxDebug' +
+    ')';
+  }
 }
 
 /**

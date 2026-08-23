@@ -57,7 +57,14 @@ class NoteKind implements INoteScriptedClass
 
   public function toString():String
   {
-    return noteKind;
+    return 'NoteKind(' +
+    'id: $noteKind | ' +
+    'description: "$description"' +
+    '${noteStyleId != null ? " | noteStyleId: " + noteStyleId : ""}' +
+    '${params.length > 0 ? " | params: " + params : ""}' +
+    ' | noanim: $noanim' +
+    '${suffix != "" ? " | suffix: " + suffix : ""}' +
+    ')';
   }
 
   /**
