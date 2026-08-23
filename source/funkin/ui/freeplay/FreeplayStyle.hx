@@ -88,6 +88,15 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
   }
 
   /**
+   * Return the selected song for the random audio
+   * @return The random song
+   */
+  public function getRandomOst():String
+  {
+    return _data?.randomSong ?? "freeplayRandom";
+  }
+
+  /**
    * Return the song selection transition delay.
    * @return The start delay
    */

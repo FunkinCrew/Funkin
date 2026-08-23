@@ -2977,7 +2977,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected == 0)
     {
-      FunkinSound.playMusic('freeplayRandom', {
+      FunkinSound.playMusic(styleData?.getRandomOst() ?? "freeplayRandom", {
         startingVolume: 0.0,
         overrideExisting: true,
         restartTrack: false
