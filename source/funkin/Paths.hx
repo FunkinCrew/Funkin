@@ -77,34 +77,34 @@ class Paths implements ConsoleClass
     return getPath(file, type, library);
   }
 
-  public static function animateAtlas(path:String, ?library:String):String
+  public static function animateAtlas(path:String, ?library:String, ?directory:String = "images/"):String
   {
-    return getLibraryPath('images/$path', library);
+    return getLibraryPath('$directory$path', library);
   }
 
-  public static function txt(key:String, ?library:String):String
+  public static function txt(key:String, ?library:String, ?directory:String = "data/"):String
   {
-    return getPath('data/$key.txt', TEXT, library);
+    return getPath('$directory$key.txt', TEXT, library);
   }
 
-  public static function frag(key:String, ?library:String):String
+  public static function frag(key:String, ?library:String, ?directory:String = "shaders/"):String
   {
-    return getPath('shaders/$key.frag', TEXT, library);
+    return getPath('$directory$key.frag', TEXT, library);
   }
 
-  public static function vert(key:String, ?library:String):String
+  public static function vert(key:String, ?library:String, ?directory:String = "shaders/"):String
   {
-    return getPath('shaders/$key.vert', TEXT, library);
+    return getPath('$directory$key.vert', TEXT, library);
   }
 
-  public static function xml(key:String, ?library:String):String
+  public static function xml(key:String, ?library:String, ?directory:String = "data/"):String
   {
-    return getPath('data/$key.xml', TEXT, library);
+    return getPath('$directory$key.xml', TEXT, library);
   }
 
-  public static function json(key:String, ?library:String):String
+  public static function json(key:String, ?library:String, ?directory:String = "data/"):String
   {
-    return getPath('data/$key.json', TEXT, library);
+    return getPath('$directory$key.json', TEXT, library);
   }
 
   public static function srt(key:String, ?library:String, ?directory:String = 'data/'):String
@@ -112,9 +112,9 @@ class Paths implements ConsoleClass
     return getPath('$directory$key.srt', TEXT, library);
   }
 
-  public static function sound(key:String, ?library:String):String
+  public static function sound(key:String, ?library:String, ?directory:String = "sounds/"):String
   {
-    return getPath('sounds/$key.${Constants.EXT_SOUND}', SOUND, library);
+    return getPath('$directory$key.${Constants.EXT_SOUND}', SOUND, library);
   }
 
   public static function soundRandom(key:String, min:Int, max:Int, ?library:String):String
@@ -122,21 +122,21 @@ class Paths implements ConsoleClass
     return sound(key + FlxG.random.int(min, max), library);
   }
 
-  public static function music(key:String, ?library:String):String
+  public static function music(key:String, ?library:String, ?directory:String = "music/"):String
   {
-    return getPath('music/$key.${Constants.EXT_SOUND}', MUSIC, library);
+    return getPath('$directory$key.${Constants.EXT_SOUND}', MUSIC, library);
   }
 
-  public static function videos(key:String, ?library:String):String
+  public static function videos(key:String, ?library:String, ?directory:String = "videos/"):String
   {
     final path:Path = new Path(key);
 
     if (path.ext != null)
     {
-      return getPath('videos/${path.file}.${path.ext}', BINARY, library ?? 'videos');
+      return getPath('$directory${path.file}.${path.ext}', BINARY, library ?? 'videos');
     }
 
-    return getPath('videos/$key.${Constants.EXT_VIDEO}', BINARY, library ?? 'videos');
+    return getPath('$directory$key.${Constants.EXT_VIDEO}', BINARY, library ?? 'videos');
   }
 
   public static function voices(song:String, ?suffix:String = ''):String
@@ -159,24 +159,24 @@ class Paths implements ConsoleClass
     return 'songs:assets/songs/${song.toLowerCase()}/Inst$suffix$ext';
   }
 
-  public static function image(key:String, ?library:String):String
+  public static function image(key:String, ?library:String, ?directory:String = "images/"):String
   {
-    return getPath('images/$key.png', IMAGE, library);
+    return getPath('$directory$key.png', IMAGE, library);
   }
 
-  public static function font(key:String):String
+  public static function font(key:String, ?directory:String = "fonts/"):String
   {
-    return 'assets/fonts/$key';
+    return 'assets/$directory$key';
   }
 
-  public static function ui(key:String, ?library:String):String
+  public static function ui(key:String, ?library:String, ?directory:String = "ui/"):String
   {
-    return xml('ui/$key', library);
+    return xml('$directory$key', library);
   }
 
-  public static function getSparrowAtlas(key:String, ?library:String):FlxAtlasFrames
+  public static function getSparrowAtlas(key:String, ?library:String, ?directory:String = "images/"):FlxAtlasFrames
   {
-    return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+    return FlxAtlasFrames.fromSparrow(image(key, library), file('$directory$key.xml', library));
   }
 
   public static function getAnimateAtlas(key:String, ?library:String, settings:AtlasSpriteSettings):FlxAnimateFrames
@@ -221,9 +221,9 @@ class Paths implements ConsoleClass
       });
   }
 
-  public static function getPackerAtlas(key:String, ?library:String):FlxAtlasFrames
+  public static function getPackerAtlas(key:String, ?library:String, ?directory:String = "images/"):FlxAtlasFrames
   {
-    return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
+    return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('$directory$key.txt', library));
   }
 }
 
