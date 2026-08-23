@@ -679,8 +679,7 @@ class Strumline extends FlxSpriteGroup
           holdNote.cover.kill();
         }
 
-        holdNote.visible = false;
-        holdNote.kill();
+        holdNote.endedNote = true;
       }
       else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
       {

@@ -630,7 +630,7 @@ class BaseCharacter extends Bopper
     super.onNoteHoldDrop(event);
 
     // If another script cancelled the event, don't do anything.
-    if (event.eventCanceled) return;
+    if (event.eventCanceled || !event.isComboBreak) return;
 
     if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
     {
