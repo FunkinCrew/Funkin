@@ -215,6 +215,12 @@ class ChartEditorEventSprite extends FlxSprite
     ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
   }
 
+  override public function destroy()
+  {
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    super.destroy();
+  }
+
   /**
    * Return whether this event is currently visible.
    */

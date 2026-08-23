@@ -264,6 +264,12 @@ class ChartEditorNoteSprite extends FlxSprite
     ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
   }
 
+  override public function destroy()
+  {
+    ToolTipManager.instance.unregisterTooltipRegion(this.tooltip);
+    super.destroy();
+  }
+
   function get_noteStyle():Null<String>
   {
     if (this.noteStyle == null)
