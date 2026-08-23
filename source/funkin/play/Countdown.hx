@@ -39,6 +39,12 @@ class Countdown
   static var countdownTimer:FlxTimer = null;
 
   /**
+   * Secondary timers used when the Global Offset is set.
+   * Sometimes the offset is larger than the beat crochet. In this case, timers are necessary.
+   */
+  static var countdownOffsetTimers:Array<FlxTimer> = [];
+
+  /**
    * Performs the countdown.
    * Pauses the song, plays the countdown graphics/sound, and then starts the song.
    * This will automatically stop and restart the countdown if it is already running.
@@ -73,6 +79,13 @@ class Countdown
         return;
       }
 
+      var offsetTimer:FlxTimer = null;
+      if (Conductor.instance.globalOffset != 0)
+      {
+        offsetTimer = new FlxTimer();
+        countdownOffsetTimers.push(offsetTimer);
+      }
+
       countdownStep = decrement(countdownStep);
 
       // onBeatHit events are now properly dispatched by the Conductor even at negative timestamps,
@@ -80,10 +93,30 @@ class Countdown
       // PlayState.instance.dispatchEvent(new SongTimeScriptEvent(SONG_BEAT_HIT, 0, 0));
 
       // Countdown graphic.
-      showCountdownGraphic(countdownStep);
+      if (Conductor.instance.globalOffset >= 0) showCountdownGraphic(countdownStep);
+      else
+        offsetTimer.start(-Conductor.instance.globalOffset / Constants.MS_PER_SEC, (tmr) ->
+        {
+          showCountdownGraphic(countdownStep);
+          countdownOffsetTimers.remove(tmr);
+
+          tmr.cancel();
+          tmr.destroy();
+          tmr = null;
+        });
 
       // Countdown sound.
-      playCountdownSound(countdownStep);
+      if (Conductor.instance.globalOffset <= 0) playCountdownSound(countdownStep);
+      else
+        offsetTimer.start(Conductor.instance.globalOffset / Constants.MS_PER_SEC, (tmr) ->
+        {
+          playCountdownSound(countdownStep);
+          countdownOffsetTimers.remove(tmr);
+
+          tmr.cancel();
+          tmr.destroy();
+          tmr = null;
+        });
 
       // Event handling bullshit.
       var cancelled:Bool = propagateCountdownEvent(countdownStep);
