@@ -306,6 +306,11 @@ class Module implements IPlayStateScriptedClass implements IStateChangingScripte
   }
 
   /**
+   * Called when any sub state is created.
+   */
+  public function onSubStateCreate(event:ScriptEvent) {}
+
+  /**
    * Called when a capsule is selected.
    */
   public function onCapsuleSelected(event:CapsuleScriptEvent):Void
