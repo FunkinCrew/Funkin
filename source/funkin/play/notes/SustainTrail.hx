@@ -5,6 +5,7 @@ import funkin.data.song.SongData.SongNoteData;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
+import flixel.graphics.frames.FlxFramesCollection;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
 
@@ -39,7 +40,7 @@ class SustainTrail extends FlxSprite
   ];
 
   public var strumTime:Float = 0; // millis
-  public var noteDirection:NoteDirection = 0;
+  public var noteDirection(default, set):NoteDirection = 0;
   public var sustainLength(default, set):Float = 0; // millis
   public var fullSustainLength:Float = 0;
   public var parentStrumline:Strumline;
@@ -118,6 +119,13 @@ class SustainTrail extends FlxSprite
 
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
+
+  /**
+   * A separate sprite for "rendering" the sustain tail.
+   * Since we need to update two animations at once and a `FlxAnimationController` requires a parent sprite, using the same sprite with two controllers
+   * may cause some rendering issues and/or inaccuracies.
+   */
+  public var holdEnd:FlxSprite = new FlxSprite();
 
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
@@ -208,7 +216,10 @@ class SustainTrail extends FlxSprite
    */
   public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    loadGraphic(noteStyle.getHoldNoteAssetPath());
+    noteStyle.buildHoldNoteSprite(this);
+
+    this.animation.onFrameChange.add((_, _, _) -> triggerRedraw());
+    holdEnd.animation.onFrameChange.add((_, _, _) -> triggerRedraw());
 
     antialiasing = true;
 
@@ -228,7 +239,6 @@ class SustainTrail extends FlxSprite
     zoom *= noteStyle.fetchHoldNoteScale();
 
     // CALCULATE SIZE
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
@@ -260,6 +270,14 @@ class SustainTrail extends FlxSprite
     previousScrollSpeed = parentStrumline?.scrollSpeed ?? 1.0;
   }
 
+  override function updateAnimation(elapsed:Float)
+  {
+    super.updateAnimation(elapsed);
+
+    @:privateAccess
+    holdEnd.updateAnimation(elapsed);
+  }
+
   /**
    * Calculates height of a sustain note for a given length (milliseconds) and scroll speed.
    * @param	susLength	The length of the sustain note in milliseconds.
@@ -279,8 +297,25 @@ class SustainTrail extends FlxSprite
     return this.sustainLength;
   }
 
+  function set_noteDirection(dir:NoteDirection):NoteDirection
+  {
+    this.noteDirection = dir;
+
+    this.animation.play(dir.name, true);
+    holdEnd.animation.play(dir.name, true);
+
+    return this.noteDirection;
+  }
+
+  override function set_frames(frames:FlxFramesCollection):FlxFramesCollection
+  {
+    holdEnd.frames = frames;
+    return super.set_frames(frames);
+  }
+
   function triggerRedraw()
   {
+    graphicWidth = frame.frame.width * zoom;
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     updateClipping();
     updateHitbox();
@@ -317,7 +352,7 @@ class SustainTrail extends FlxSprite
       visible = true;
     }
 
-    var bottomHeight:Float = graphic.height * zoom * endOffset;
+    var bottomHeight:Float = frame.frame.height * zoom * endOffset;
     var partHeight:Float = clipHeight - bottomHeight;
 
     // ===HOLD VERTICES==
@@ -351,17 +386,17 @@ class SustainTrail extends FlxSprite
     // UV coordinates are normalized, so they range from 0 to 1.
     // We are expecting an image containing 8 horizontal segments, each representing a different colored hold note followed by its end cap.
 
-    uvtData[0 * 2] = 1 / 4 * (noteDirection % 4); // 0%/25%/50%/75% of the way through the image
-    uvtData[0 * 2 + 1] = (-partHeight) / graphic.height / zoom; // top bound
+    uvtData[0 * 2] = frame.uv.left; // 0%/25%/50%/75% of the way through the image
+    uvtData[0 * 2 + 1] = frame.uv.top; // top bound
     // Top left
 
     // Top right
-    uvtData[1 * 2] = uvtData[0 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
+    uvtData[1 * 2] = frame.uv.right; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
     uvtData[1 * 2 + 1] = uvtData[0 * 2 + 1]; // top bound
 
     // Bottom left
     uvtData[2 * 2] = uvtData[0 * 2]; // 0%/25%/50%/75% of the way through the image
-    uvtData[2 * 2 + 1] = 0.0; // bottom bound
+    uvtData[2 * 2 + 1] = frame.uv.bottom; // bottom bound
 
     // Bottom right
     uvtData[3 * 2] = uvtData[1 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left)
@@ -378,7 +413,8 @@ class SustainTrail extends FlxSprite
 
     // Bottom left
     vertices[6 * 2] = vertices[2 * 2]; // Inline with left side
-    vertices[6 * 2 + 1] = flipY ? (graphic.height * (-bottomClip + endOffset) * zoom) : (graphicHeight + graphic.height * (bottomClip - endOffset) * zoom);
+    vertices[6 * 2 + 1] = flipY ? (frame.frame.height * (-bottomClip + endOffset) * zoom) : (graphicHeight
+      + frame.frame.height * (bottomClip - endOffset) * zoom);
 
     // Bottom right
     vertices[7 * 2] = vertices[3 * 2]; // Inline with right side
@@ -386,23 +422,16 @@ class SustainTrail extends FlxSprite
 
     // === END CAP UVs ===
     // Top left
-    uvtData[4 * 2] = uvtData[2 * 2] + 1 / 8; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[4 * 2 + 1] = if (partHeight > 0)
-    {
-      0;
-    }
-    else
-    {
-      (bottomHeight - clipHeight) / zoom / graphic.height;
-    };
+    uvtData[4 * 2] = holdEnd.frame.uv.left; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
+    uvtData[4 * 2 + 1] = holdEnd.frame.uv.top;
 
     // Top right
-    uvtData[5 * 2] = uvtData[4 * 2] + 1 / 8; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
+    uvtData[5 * 2] = holdEnd.frame.uv.right; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
     uvtData[5 * 2 + 1] = uvtData[4 * 2 + 1]; // top bound
 
     // Bottom left
     uvtData[6 * 2] = uvtData[4 * 2]; // 12.5%/37.5%/62.5%/87.5% of the way through the image (1/8th past the top left of hold)
-    uvtData[6 * 2 + 1] = bottomClip; // bottom bound
+    uvtData[6 * 2 + 1] = holdEnd.frame.uv.bottom; // bottom bound
 
     // Bottom right
     uvtData[7 * 2] = uvtData[5 * 2]; // 25%/50%/75%/100% of the way through the image (1/8th past the top left of cap)
@@ -431,6 +460,7 @@ class SustainTrail extends FlxSprite
   override public function kill():Void
   {
     super.kill();
+    holdEnd.kill();
 
     if (!((cover?.animation?.name ?? '').startsWith('holdCoverEnd'))) cover?.playEnd();
     strumTime = 0;
@@ -446,6 +476,7 @@ class SustainTrail extends FlxSprite
   override public function revive():Void
   {
     super.revive();
+    holdEnd.revive();
 
     strumTime = 0;
     noteDirection = 0;
@@ -464,6 +495,7 @@ class SustainTrail extends FlxSprite
     indices = null;
     uvtData = null;
 
+    holdEnd.destroy();
     super.destroy();
   }
 }

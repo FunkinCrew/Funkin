@@ -207,6 +207,22 @@ typedef NoteStyleData_Countdown =
 
 typedef NoteStyleData_HoldNote =
 {
+  @:optional
+  var left:UnnamedAnimationData;
+  @:optional
+  var leftEnd:UnnamedAnimationData;
+  @:optional
+  var down:UnnamedAnimationData;
+  @:optional
+  var downEnd:UnnamedAnimationData;
+  @:optional
+  var up:UnnamedAnimationData;
+  @:optional
+  var upEnd:UnnamedAnimationData;
+  @:optional
+  var right:UnnamedAnimationData;
+  @:optional
+  var rightEnd:UnnamedAnimationData;
 }
 
 typedef NoteStyleData_Judgement =
