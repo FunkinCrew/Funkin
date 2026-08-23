@@ -149,6 +149,9 @@ class InitState extends FlxState
       // This ain't a pixel art game! (most of the time)
       FlxSprite.defaultAntialiasing = true;
 
+      // Avoid immediately destroying graphics that will be re-used later most of the time
+      FlxGraphic.defaultDestroyOnNoUse = false;
+
       // Disable default keybinds for volume (we manually control volume in MusicBeatState with custom binds)
       FlxG.sound.volumeUpKeys = [];
       FlxG.sound.volumeDownKeys = [];
