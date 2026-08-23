@@ -18,6 +18,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.save.Save;
 import funkin.util.FileUtil;
+import funkin.util.assets.DataAssets;
 import funkin.util.macro.ClassMacro;
 import polymod.backends.PolymodAssets.PolymodAssetType;
 import polymod.format.ParseRules.TextFileFormat;
@@ -610,6 +611,7 @@ class PolymodHandler
     // to ensure build macros work properly.
     SongEventRegistry.loadEventCache();
 
+    DataAssets.clearTextAssetsCache();
     SongRegistry.instance.loadEntries();
     LevelRegistry.instance.loadEntries();
     NoteStyleRegistry.instance.loadEntries();
