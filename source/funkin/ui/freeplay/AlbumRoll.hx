@@ -251,7 +251,7 @@ class AlbumRoll extends FlxSpriteGroup
     {
       return ostOverride;
     }
-    else if (albumId == null || AlbumRegistry.instance.listBaseGameEntryIds().contains(albumId))
+    else if (albumId != null && AlbumRegistry.instance.listBaseGameEntryIds().contains(albumId))
     {
       return Constants.DEFAULT_OST_NAME;
     }
