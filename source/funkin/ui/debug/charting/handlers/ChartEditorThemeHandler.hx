@@ -77,6 +77,7 @@ class ChartEditorThemeHandler
   {
     updateBackground(state);
     updateGridBitmap(state);
+    state.eventStack?.updateBackground();
     updateOffsetTicks(state);
     updateSelectionSquare(state);
     updateNotePreview(state);
