@@ -721,7 +721,7 @@ class Strumline extends FlxSpriteGroup
       else if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote)
       {
         // Hold note is currently being hit, clip it off.
-        holdConfirm(holdNote.noteDirection);
+        holdConfirm(holdNote.noteDirection, holdNote.fullSustainLength);
         holdNote.visible = true;
 
         holdNote.sustainLength = (holdNote.strumTime + holdNote.fullSustainLength) - conductorInUse.songPosition;
@@ -1052,9 +1052,9 @@ class Strumline extends FlxSpriteGroup
    * Play a confirm animation for a hold note.
    * @param direction The direction of the note to play the confirm animation for.
    */
-  public function holdConfirm(direction:NoteDirection):Void
+  public function holdConfirm(direction:NoteDirection, ?length:Float = 0):Void
   {
-    getByDirection(direction).holdConfirm();
+    getByDirection(direction).holdConfirm(length / 1000);
 
     if (isPlayer) noteVibrations.noteStatuses[direction] = NoteStatus.holdConfirm;
   }
