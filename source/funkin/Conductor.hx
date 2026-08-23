@@ -289,7 +289,7 @@ class Conductor
 
   function get_combinedOffset():Float
   {
-    return instrumentalOffset + formatOffset + globalOffset;
+    return instrumentalOffset + formatOffset - globalOffset;
   }
 
   /**
