@@ -368,6 +368,7 @@ class CharacterDataParser
       // so, haxe.ui.backend.AssetsImpl uses the parent width and height, which makes the image go crazy when rendered
       // so this is a work around so that it uses the actual width and height
       var imageGraphic = flixel.graphics.FlxGraphic.fromFrame(idleFrame);
+      imageGraphic.destroyOnNoUse = false;
 
       var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(imageGraphic);
       frame = imageFrame.frame;
