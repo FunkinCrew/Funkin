@@ -236,12 +236,27 @@ interface ICharacterSelectScriptedClass extends IScriptedClass
 interface IDialogueScriptedClass extends IScriptedClass
 {
   /**
-   * Called as the dialogue starts, and before the first dialogue text is displayed.
+   * Called when the dialogue starts, and before the first dialogue text is displayed.
    */
   public function onDialogueStart(event:DialogueScriptEvent):Void;
 
+  /**
+   * Called when the dialogue line is completed.
+   */
   public function onDialogueCompleteLine(event:DialogueScriptEvent):Void;
+
+  /**
+   * Called when the next dialogue line starts.
+   */
   public function onDialogueLine(event:DialogueScriptEvent):Void;
+
+  /**
+   * Called when the dialogue is skipped.
+   */
   public function onDialogueSkip(event:DialogueScriptEvent):Void;
+
+  /**
+   * Called when the dialogue is finished.
+   */
   public function onDialogueEnd(event:DialogueScriptEvent):Void;
 }
