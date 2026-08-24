@@ -767,7 +767,7 @@ class SongMenuItem extends FlxSpriteGroup
 
     grayscaleShader.setAmount(isSelected ? 0 : 0.8);
     songText.alpha = isSelected ? 1 : 0.6;
-    songText.blurredText.visible = isSelected ? true : false;
+    songText.blurredText.visible = isSelected && songText.clipWidth >= 290;
     capsule.offset.x = isSelected ? 0 : -5;
     if (!Preferences.flashingLights)
     {

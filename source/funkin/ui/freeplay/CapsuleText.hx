@@ -22,6 +22,8 @@ class CapsuleText extends FlxSpriteGroup
   public var clipWidth(default, set):Int = 255;
   public var tooLong:Bool = false;
 
+  static inline var BLUR_OVERSHOOT:Int = 10;
+
   var glowColor:FlxColor = 0xFF00ccff;
 
   // 255, 27 normal
@@ -88,19 +90,14 @@ class CapsuleText extends FlxSpriteGroup
     if (whiteText.width > wid)
     {
       tooLong = true;
-
-      blurredText.clipRect = new FlxRect(0, 0, wid, blurredText.height);
-      whiteText.clipRect = new FlxRect(0, 0, wid, whiteText.height);
     }
     else
     {
       tooLong = false;
-
-      @:nullSafety(Off)
-      blurredText.clipRect = null;
-      @:nullSafety(Off)
-      whiteText.clipRect = null;
     }
+
+    blurredText.clipRect = new FlxRect(0, 0, wid - BLUR_OVERSHOOT, blurredText.height);
+    whiteText.clipRect = new FlxRect(0, 0, wid, whiteText.height);
   }
 
   function set_text(value:String):String
@@ -149,7 +146,7 @@ class CapsuleText extends FlxSpriteGroup
       {
         whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
         blurredText.offset = whiteText.offset;
-        blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+        blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth - BLUR_OVERSHOOT, blurredText.height);
       },
       onComplete: function(_)
       {
@@ -171,7 +168,7 @@ class CapsuleText extends FlxSpriteGroup
       {
         whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
         blurredText.offset = whiteText.offset;
-        blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, blurredText.height);
+        blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth - BLUR_OVERSHOOT, blurredText.height);
       },
       onComplete: function(_)
       {
@@ -192,7 +189,7 @@ class CapsuleText extends FlxSpriteGroup
     if (moveTimer != null) moveTimer.cancel();
     whiteText.offset.x = 0;
     whiteText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
-    blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth, whiteText.height);
+    blurredText.clipRect = new FlxRect(whiteText.offset.x, 0, clipWidth - BLUR_OVERSHOOT, whiteText.height);
   }
 
   var flickerState:Bool = false;
