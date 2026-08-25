@@ -18,6 +18,8 @@ import funkin.ui.MusicBeatSubState;
 @:nullSafety
 class ReloadAssetsDebugPlugin extends FlxBasic
 {
+  public static var hotReloadInProgress:Bool = false;
+
   public static function initialize():Void
   {
     FlxG.plugins.addPlugin(new ReloadAssetsDebugPlugin());
@@ -27,19 +29,23 @@ class ReloadAssetsDebugPlugin extends FlxBasic
   {
     super.update(elapsed);
 
-    #if html5
-    if (FlxG.keys.justPressed.FIVE && FlxG.keys.pressed.SHIFT)
-    #else
-    if (FlxG.keys.justPressed.F5)
-    #end
+    if (!hotReloadInProgress)
     {
-      reload();
+      #if html5
+      if (FlxG.keys.justPressed.FIVE && FlxG.keys.pressed.SHIFT)
+      #else
+      if (FlxG.keys.justPressed.F5)
+      #end
+      {
+        reload();
+      }
     }
   }
 
   @:noCompletion
   function reload():Void
   {
+    hotReloadInProgress = true;
     FlxTransitionableState.skipNextTransIn = true;
 
     var state:Dynamic = cast FlxG.state;

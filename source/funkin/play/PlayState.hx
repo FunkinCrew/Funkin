@@ -1829,6 +1829,7 @@ class PlayState extends MusicBeatSubState
 
   override function onPreHotReload():Void
   {
+    criticalFailure = true;
     performCleanup();
   }
 
