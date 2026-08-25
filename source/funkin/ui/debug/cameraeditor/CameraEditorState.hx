@@ -76,12 +76,14 @@ import funkin.ui.haxeui.components.editors.timeline.TimelineEvent;
 import funkin.ui.haxeui.components.editors.timeline.TimelineLayerData;
 import funkin.ui.haxeui.components.editors.timeline.TimelineUtil;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.FileUtil;
 import funkin.util.InputUtil;
 import funkin.util.MouseUtil;
 import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.util.assets.SoundUtil;
+import funkin.util.file.FNFCUtil.FNFCData;
 import funkin.util.logging.CrashHandler;
 import funkin.util.macro.ConsoleMacro;
 import haxe.io.Bytes;
@@ -731,6 +733,28 @@ class CameraEditorState extends UIState implements ConsoleClass
         return;
       }
     }
+    else if (params != null && params.loadFromFNFCData != null)
+    {
+      try
+      {
+        CameraEditorImportExportHandler.loadSongFromFNFCData(this, params.loadFromFNFCData);
+        if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
+        if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
+        if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
+      }
+      catch (e)
+      {
+        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        // Song failed to load, open the Welcome dialog so we aren't in a broken state.
+        var welcomeDialog = this.openWelcomeDialog();
+        if (shouldShowBackupAvailableDialog)
+        {
+          openBackupAvailableDialog(welcomeDialog);
+        }
+        return;
+      }
+
+    }
     else
     {
       var welcomeDialog = this.openWelcomeDialog();
@@ -753,6 +777,24 @@ class CameraEditorState extends UIState implements ConsoleClass
         root.removeClass(":down", false, true);
       }
     });
+  }
+
+  override function onPreHotReload():Void
+  {
+    performCleanup();
+  }
+
+  override function getHotReloadParams():HotReloadStateParams
+  {
+    return {
+      targetState: () -> new CameraEditorState({
+        loadFromPath: currentWorkingFilePath,
+        loadFromFNFCData: (currentWorkingFilePath == null && chart.songMetadatas.size() > 0) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        targetSongDifficulty: this.currentDifficulty,
+        targetSongVariation: this.currentVariation,
+        targetSongPosition: Conductor.instance.songPosition
+      })
+    }
   }
 
   var goToPoint:FlxPoint = new FlxPoint();
@@ -2335,7 +2377,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     Screen.instance.unregisterEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
 
     Cursor.hide();
-    FlxG.sound.music.stop();
+    FlxG?.sound?.music?.stop();
 
     chart.savedChanged.remove(onChartSavedChanged);
     chart.workingFileChanged.remove(onChartWorkingFileChanged);
@@ -2768,6 +2810,11 @@ typedef CameraEditorParams =
    * If non-null, load an existing song directly from the game's assets.
    */
   var ?loadFromTemplate:String;
+
+/**
+   * If non-null, load from existing FNFCData.
+   */
+  var ?loadFromFNFCData:FNFCData;
 
   // STARTING POSITION
 
