@@ -2297,11 +2297,6 @@ class CameraEditorState extends UIState implements ConsoleClass
     CameraEditorCommandHandler.redoLastCommand(this);
   }
 
-  override function onPreHotReload():Void
-  {
-    performCleanup();
-  }
-
   @:nullSafety(Off)
   function destroyHaxeUIComponents():Void
   {

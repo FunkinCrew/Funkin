@@ -2576,7 +2576,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override function onPreHotReload():Void
   {
-    performCleanup();
     wasPlaytesting = isPlaytesting;
   }
 
