@@ -332,6 +332,7 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
+    funkin.util.plugins.ReloadAssetsDebugPlugin.hotReloadInProgress = false;
     var postHotReloadCallback = () ->
     {
       var state:Dynamic = cast FlxG.state;
