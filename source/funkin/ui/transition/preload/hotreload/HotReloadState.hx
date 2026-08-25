@@ -67,8 +67,8 @@ class HotReloadState extends MusicBeatState
     super();
     @:nullSafety(Off)
     {
-      this.onComplete = params.onComplete ?? null;
-      this.targetState = params.targetState ?? null;
+      this.onComplete = params?.onComplete ?? null;
+      this.targetState = params?.targetState ?? null;
     }
     this.progressBar = new FunkinSprite(BAR_PAD, FlxG.height - BAR_HEIGHT - BAR_PAD);
     throbber = new FunkinSprite(0, 0);
