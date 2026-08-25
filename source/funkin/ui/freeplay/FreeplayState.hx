@@ -3368,7 +3368,7 @@ class FreeplayState extends MusicBeatSubState
    */
   public static function build(?params:FreeplayStateParams, ?stickers:StickerSubState):MusicBeatState
   {
-    // Since CUTOUT_WIDTH is static it might retain some old inccrect values so we update it before loading freeplay
+    // Since CUTOUT_WIDTH is static it might retain some old incorrect values so we update it before loading freeplay
     CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
     var result:MainMenuState;
     result = new MainMenuState(true);
