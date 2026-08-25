@@ -2585,7 +2585,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     var nextState = () -> new ChartEditorState({
       loadFromPath: currentWorkingFilePath,
-      loadFromFNFCData: currentWorkingFilePath == null ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+      loadFromFNFCData: (currentWorkingFilePath == null && saveDataDirty) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
       targetSongPosition: Conductor.instance.songPosition
