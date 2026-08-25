@@ -152,7 +152,7 @@ class CameraEditorImportExportHandler
     return funkin.ui.debug.charting.handlers.ChartEditorImportExportHandler.getLatestBackupInfo('camera-editor-');
   }
 
-  static function buildFNFCDataFromCurrentChart(state:CameraEditorState):FNFCData
+  public static function buildFNFCDataFromCurrentChart(state:CameraEditorState):FNFCData
   {
     return {
       songMetadatas: state.songMetadatas,
