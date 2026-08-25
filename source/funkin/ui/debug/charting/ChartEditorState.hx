@@ -2583,28 +2583,24 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   override function getHotReloadParams():HotReloadStateParams
   {
     @:privateAccess
-    if (wasPlaytesting)
-    {
-      return {
-        onComplete: () -> {
-          if (wasPlaytesting)
-          {
-            // Fixes a bug where hot-reloading after playtesting would close PlayState.
-            FlxTransitionableState.skipNextTransIn = true;
-          }
-        },
-        targetState: () -> new ChartEditorState({
-          loadFromPath: currentWorkingFilePath,
-          loadFromFNFCData: currentWorkingFilePath == null ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
-          targetSongDifficulty: PlayState.lastParams.targetDifficulty,
-          targetSongVariation: PlayState.lastParams.targetVariation,
-          targetSongPosition: Conductor.instance.songPosition
-        })
-      }
-    }
-    else
-    {
-      return super.getHotReloadParams();
+    var nextState = () -> new ChartEditorState({
+      loadFromPath: currentWorkingFilePath,
+      loadFromFNFCData: currentWorkingFilePath == null ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+      targetSongDifficulty: this.selectedDifficulty,
+      targetSongVariation: this.selectedVariation,
+      targetSongPosition: Conductor.instance.songPosition
+    });
+
+    return {
+      onComplete: () ->
+      {
+        if (wasPlaytesting)
+        {
+          // Fixes a bug where hot-reloading after playtesting would close PlayState.
+          FlxTransitionableState.skipNextTransIn = true;
+        }
+      },
+      targetState: nextState
     }
   }
 
@@ -2697,6 +2693,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       try
       {
         this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
+        if (targetSongVariation != null) this.selectedVariation = targetSongVariation;
+        if (targetSongDifficulty != null) this.selectedDifficulty = targetSongDifficulty;
         if (params.targetSongPosition != null)
         {
           this.scrollPositionInMs = params.targetSongPosition;
@@ -2721,6 +2719,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       try
       {
         this.loadSongFromFNFCData(params.loadFromFNFCData);
+        if (params.targetSongVariation != null) this.selectedVariation = params.targetSongVariation;
+        if (params.targetSongDifficulty != null) this.selectedDifficulty = params.targetSongDifficulty;
         if (params.targetSongPosition != null)
         {
           this.scrollPositionInMs = params.targetSongPosition;
