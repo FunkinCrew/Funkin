@@ -114,6 +114,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'scroll',
         title: 'Target Value',
+        tooltip: 'The rate of speed.',
         defaultValue: DEFAULT_SCROLL,
         min: 0.1,
         step: 0.1,
@@ -123,6 +124,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
+        tooltip: 'Duration in steps.',
         defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
@@ -132,6 +134,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
+        tooltip: 'The easing type to use.',
         defaultValue: SongEvent.DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -154,6 +157,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
+        tooltip: 'Rate of change of parameter over time.',
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -165,12 +169,14 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'advanced',
         title: 'Advanced',
+        tooltip: '',
         type: SongEventFieldType.FRAME,
         collapsible: true,
         children: [
           {
             name: 'strumline',
             title: 'Target Strumline',
+            tooltip: 'The target strumline to change.',
             defaultValue: DEFAULT_STRUMLINE,
             type: SongEventFieldType.ENUM,
             keys: [
@@ -182,6 +188,7 @@ class ScrollSpeedEvent extends SongEvent
           {
             name: 'absolute',
             title: 'Absolute',
+            tooltip: 'Wheter to set the rate or multiply the current one.',
             defaultValue: DEFAULT_ABSOLUTE,
             type: SongEventFieldType.BOOL,
           }
