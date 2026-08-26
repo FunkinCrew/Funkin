@@ -6965,7 +6965,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleAudioKeybinds():Void
   {
     // Metronome volume toggle
-    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M && !pressingControl())
     {
       // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
       var oldValue = previousAudioVolumes[0];
