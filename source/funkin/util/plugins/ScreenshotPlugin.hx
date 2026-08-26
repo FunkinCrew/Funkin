@@ -259,8 +259,10 @@ class ScreenshotPlugin extends FlxBasic
    */
   public function capture():Void
   {
+    #if FEATURE_HAXEUI
     if (haxe.ui.focus.FocusManager.instance.focus != null) return;
-    
+    #end
+
     onPreScreenshot.dispatch();
 
     var shot:Bitmap = new Bitmap(BitmapData.fromImage(FlxG.stage.window.readPixels()));
