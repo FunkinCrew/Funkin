@@ -1210,7 +1210,7 @@ class Strumline extends FlxSpriteGroup
 
       noteSprite.graphic.destroyOnNoUse = false;
 
-      if (noteKind != null) noteSprite.scoreable = noteKind.scoreable;
+      noteSprite.scoreable = noteKind?.scoreable ?? true;
     }
 
     return noteSprite;
@@ -1253,7 +1253,7 @@ class Strumline extends FlxSpriteGroup
 
       holdNoteSprite.graphic.destroyOnNoUse = false;
 
-      if (noteKind != null) holdNoteSprite.scoreable = noteKind.scoreable;
+      holdNoteSprite.scoreable = noteKind?.scoreable ?? true;
     }
 
     return holdNoteSprite;
