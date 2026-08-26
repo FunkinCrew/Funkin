@@ -819,7 +819,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The audio volume before it was toggled to zero.
-   * Metronome, hitsounds (player and enemy), instrumental, vocals (player and enemy)
+   * Metronome, hitsounds (player and opponent), instrumental, vocals (player and opponent)
    */
   var previousAudioVolumes:Array<Float> = [
     1.0,
@@ -2236,7 +2236,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarLabelVolumeHitsoundPlayer:Label;
 
   /**
-   * The `Audio -> Enemy Hitsound Volume` label.
+   * The `Audio -> Opponent Hitsound Volume` label.
    */
   var menubarLabelVolumeHitsoundOpponent:Label;
 
@@ -2246,7 +2246,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeHitsoundPlayer:Slider;
 
   /**
-   * The `Audio -> Enemy Hitsound Volume` slider.
+   * The `Audio -> Opponent Hitsound Volume` slider.
    */
   var menubarItemVolumeHitsoundOpponent:Slider;
 
@@ -2266,7 +2266,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarLabelVolumeVocalsPlayer:Label;
 
   /**
-   * The `Audio -> Enemy Volume` label.
+   * The `Audio -> Opponent Volume` label.
    */
   var menubarLabelVolumeVocalsOpponent:Label;
 
@@ -2276,7 +2276,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeVocalsPlayer:Slider;
 
   /**
-   * The `Audio -> Enemy Volume` slider.
+   * The `Audio -> Opponent Volume` slider.
    */
   var menubarItemVolumeVocalsOpponent:Slider;
 
@@ -3768,7 +3768,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolumeOpponent = volume;
-      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+      menubarLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
     menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
     previousAudioVolumes[2] = Std.int(hitsoundVolumeOpponent * 100);
@@ -3793,7 +3793,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.opponentVolume = volume;
-      menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+      menubarLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
     previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
@@ -7950,7 +7950,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             case 'boyfriend' | 'bf' | 'player':
               _eventTarget = currentPlayerCharacterPlayer;
-            case 'dad' | 'opponent' | 'enemy':
+            case 'dad' | 'opponent':
               _eventTarget = currentOpponentCharacterPlayer;
             default:
           }
