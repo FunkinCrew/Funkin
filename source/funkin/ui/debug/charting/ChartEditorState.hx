@@ -8249,44 +8249,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     return params;
   }
 }
-#end
-
-/**
- * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
- */
-enum abstract ChartEditorLiveInputStyle(String)
-{
-  /**
-   * No hotkeys to place notes at the playbar.
-   */
-  public var None;
-
-  /**
-   * 1/2/3/4 to place notes on opponent's side, 5/6/7/8 to place notes on player's side.
-   */
-  public var NumberKeys;
-
-  /**
-   * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
-   */
-  public var WASDKeys;
-}
-
-/**
- * Available waveform positions for the chart editor state.
- */
-enum abstract ChartEditorWaveformPos(String)
-{
-  /**
-   * Waveforms are shown adjacent to the charting grid.
-   */
-  public var Adjacent;
-
-  /**
-   * Waveforms are shown overlapping the charting grid.
-   */
-  public var Overlay;
-}
 
 /**
  * Parameters to initialize the Chart Editor with.
@@ -8329,6 +8291,45 @@ typedef ChartEditorParams =
    */
   var ?targetSongPosition:Float;
 };
+
+#end
+
+/**
+ * Available input modes for the chart editor state. Numbers/arrows/WASD available for other keybinds.
+ */
+enum abstract ChartEditorLiveInputStyle(String)
+{
+  /**
+   * No hotkeys to place notes at the playbar.
+   */
+  public var None;
+
+  /**
+   * 1/2/3/4 to place notes on opponent's side, 5/6/7/8 to place notes on player's side.
+   */
+  public var NumberKeys;
+
+  /**
+   * WASD to place notes on opponent's side, Arrow keys to place notes on player's side.
+   */
+  public var WASDKeys;
+}
+
+/**
+ * Available waveform positions for the chart editor state.
+ */
+enum abstract ChartEditorWaveformPos(String)
+{
+  /**
+   * Waveforms are shown adjacent to the charting grid.
+   */
+  public var Adjacent;
+
+  /**
+   * Waveforms are shown overlapping the charting grid.
+   */
+  public var Overlay;
+}
 
 /**
  * Available themes for the chart editor state.
