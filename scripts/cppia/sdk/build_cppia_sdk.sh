@@ -44,12 +44,9 @@ mkdir -p "$OUT_DIR"
 
 if command -v cygpath >/dev/null 2>&1; then
 	ROOT_FWD="$(cygpath -m "$ROOT")"
-	ROOT_BACK="$(cygpath -w "$ROOT")"
 else
 	ROOT_FWD="$ROOT"
-	ROOT_BACK="$ROOT"
 fi
-ROOT_BACK_ESCAPED="${ROOT_BACK//\\/\\\\}"
 
 (cd "$ROOT" && haxelib run lime display "$TARGET" "-$CONFIG") \
 	| grep -v '^-main ' \
@@ -57,8 +54,9 @@ ROOT_BACK_ESCAPED="${ROOT_BACK//\\/\\\\}"
 	| grep -v '^--no-output$' \
 	| grep -v '^-D scriptable$' \
 	| grep -v '^--macro keep(' \
-	| sed -e "s|$ROOT_FWD|\${FUNKIN_ROOT}|g" -e "s|$ROOT_BACK_ESCAPED|\${FUNKIN_ROOT}|g" \
-	| sed -E "s|^-cp ([^\$/][^:]*)$|-cp \${FUNKIN_ROOT}/\1|" \
+	| tr '\\' '/' \
+	| sed -e "s|$ROOT_FWD/||g" -e "s|$ROOT_FWD|.|g" \
+	| grep -vE '^-D [A-Za-z0-9_.]+=([A-Za-z]:/|/)' \
 	> "$OUT_DIR/cppia.hxml"
 
 cp "$HOST_CLASSES" "$OUT_DIR/export_classes.info"

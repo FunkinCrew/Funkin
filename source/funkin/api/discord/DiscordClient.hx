@@ -226,6 +226,12 @@ typedef DiscordClientPresenceParams =
    * A small, inset image to the bottom right of `largeImageKey`.
    */
   var ?smallImageKey:String;
+
+  /**
+   * How much of the song is left, in milliseconds.
+   * Carried over from the old rich presence and not shown yet, `setPresence` sets no timestamps.
+  **/
+  var ?timeRemaining:Float;
 }
 
 class DiscordClientSandboxed

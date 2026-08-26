@@ -6,7 +6,6 @@ import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import funkin.ui.quickpanel.QuickPanelState;
 import funkin.ui.quickpanel.QuickPanelGroup;
-import polymod.hscript.HScriptedClass;
 import funkin.save.Save;
 
 class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBasic>
@@ -53,7 +52,7 @@ class SidePanelPlugin extends flixel.group.FlxContainer.FlxTypedContainer<FlxBas
 
   static function isScriptedState():Bool
   {
-    return Std.isOfType(FlxG.state, HScriptedClass) || (FlxG.state != null && FlxG.state._asc != null);
+    return polymod.Polymod.isScriptedClass(FlxG.state);
   }
 
   function addPanel():Void

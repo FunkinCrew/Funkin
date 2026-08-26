@@ -117,6 +117,12 @@ class FunkinCamera extends FlxCamera
   public var renderBuffer:Bool = false;
 
   /**
+   * If `true`, and `renderBuffer` is on, the camera only draws into its buffer and never onto the
+   * screen.
+   */
+  public var bufferOnly:Bool = false;
+
+  /**
    * The renderer used to render the buffer.
    */
   public var bufferRenderer:FunkinBufferRenderer;
@@ -322,6 +328,10 @@ class FunkinCamera extends FlxCamera
   @:allow(flixel.system.frontEnds.CameraFrontEnd)
   override function render():Void
   {
+    // The pass that would go to the screen, on a camera that only exists to fill its buffer. The
+    // buffer's own pass is the one with `dirty` set, and it is left alone.
+    if (renderBuffer && bufferOnly && !bufferRenderer.dirty) return;
+
     @:nullSafety(Off)
     flashSprite.filters = filtersEnabled ? filters : null;
 

@@ -50,11 +50,11 @@ if (-not (Test-Path $hostClasses)) {
 
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
-$rootBack = $root.TrimEnd('\', '/')
-$rootFwd = $rootBack -replace '\\', '/'
+$rootFwd = $root.TrimEnd('\', '/') -replace '\\', '/'
 
 Push-Location $root
 try { $lines = haxelib run lime display $Target "-$Config" } finally { Pop-Location }
+
 $kept = $lines | Where-Object {
 	($_ -notmatch '^-main ') -and
 	($_ -notmatch '^-cpp ') -and
@@ -62,13 +62,17 @@ $kept = $lines | Where-Object {
 	($_ -notmatch '^-D scriptable$') -and
 	($_ -notmatch '^--macro keep\(')
 } | ForEach-Object {
-	$line = ($_ -replace [regex]::Escape($rootBack), '${FUNKIN_ROOT}') -replace [regex]::Escape($rootFwd), '${FUNKIN_ROOT}'
+	$line = $_ -replace '\\', '/'
+	$line = $line -replace ('(?i)' + [regex]::Escape($rootFwd + '/')), ''
+	$line -replace ('(?i)' + [regex]::Escape($rootFwd)), '.'
+}
 
-	if ($line -match '^-cp (.+)$' -and $Matches[1] -notmatch '^\$\{FUNKIN_ROOT\}' -and -not [System.IO.Path]::IsPathRooted($Matches[1])) {
-		$line = '-cp ${FUNKIN_ROOT}/' + $Matches[1]
-	}
+$outside = '^-D [A-Za-z0-9_.]+=([A-Za-z]:/|/)'
+$dropped = @($kept | Where-Object { $_ -match $outside })
+$kept = @($kept | Where-Object { $_ -notmatch $outside })
 
-	$line
+foreach ($line in $dropped) {
+	Write-Host "	dropped $line"
 }
 
 [System.IO.File]::WriteAllLines((Join-Path $OutDir 'cppia.hxml'), $kept, (New-Object System.Text.UTF8Encoding($false)))
