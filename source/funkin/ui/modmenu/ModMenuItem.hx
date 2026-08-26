@@ -2,6 +2,7 @@ package funkin.ui.modmenu;
 
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinAnimationDecoder;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import polymod.Polymod.ModMetadata;
@@ -15,6 +16,7 @@ import funkin.ui.ScrollingTextBox;
 /**
  * Represents an installed mod visually in the mod menu.
  */
+@:access(lime.graphics.Image)
 class ModMenuItem extends FunkinSpriteGroup
 {
   public static final ITEM_WIDTH:Int = 350;
@@ -42,6 +44,11 @@ class ModMenuItem extends FunkinSpriteGroup
   var fallbackDescription:String;
   var bgOffsetX:Float = 0;
   var bgOffsetY:Float = 0;
+
+  /**
+   * The decoder for the mod's animated icon.
+   */
+  var modIconDecoder:Null<FunkinAnimationDecoder>;
 
   /**
    * The icon for the mod's thumbnail.
@@ -229,14 +236,13 @@ class ModMenuItem extends FunkinSpriteGroup
     if (iconAssetPath != null)
     {
       modIcon.loadGraphic(Paths.image(iconAssetPath));
-      add(modIcon);
-
       modIcon.scrollFactor.set();
       modIcon.antialiasing = true;
       modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
       modIcon.localScale.x = modIcon.scale.x;
       modIcon.localScale.y = modIcon.scale.y;
       modIcon.updateHitbox();
+      add(modIcon);
     }
     else if (mod != null)
     {
@@ -244,35 +250,53 @@ class ModMenuItem extends FunkinSpriteGroup
       if (mod.id != null && funkin.assets.FunkinBitmapFrontend.instance.exists(mod.id))
       {
         modIcon.loadGraphic(funkin.assets.FunkinBitmapFrontend.instance.get(mod.id));
-        add(modIcon);
-
         modIcon.scrollFactor.set();
         modIcon.antialiasing = true;
-
-        // FunkinGroup is funny
         modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
         modIcon.localScale.x = modIcon.scale.x;
         modIcon.localScale.y = modIcon.scale.y;
-
         modIcon.updateHitbox();
+        add(modIcon);
       }
       else if (mod.icon != null)
       {
-        loadModIcon(mod.icon);
+        if (lime.graphics.Image.__isGIF(mod.icon))
+        {
+          modIconDecoder = new FunkinAnimationDecoder(mod.icon, GIF);
+
+          modIcon.loadGraphic(modIconDecoder.bitmapData);
+        }
+        else if (lime.graphics.Image.__isWebP(mod.icon))
+        {
+          modIconDecoder = new FunkinAnimationDecoder(mod.icon, WEBP);
+
+          modIcon.loadGraphic(modIconDecoder.bitmapData);
+        }
+        else
+        {
+          modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(mod.icon));
+        }
+
+        modIcon.scrollFactor.set();
+        modIcon.antialiasing = true;
+        modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
+        modIcon.localScale.x = modIcon.scale.x;
+        modIcon.localScale.y = modIcon.scale.y;
+        modIcon.updateHitbox();
+        add(modIcon);
       }
       else
       {
         trace('No icon found for mod ${mod.id}, using fallback');
-        // Fallback icon
-        modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
-        add(modIcon);
 
+        modIcon.loadGraphic(Paths.image('ui/mods/fallback-icon'));
         modIcon.scrollFactor.set();
         modIcon.antialiasing = true;
         modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
         modIcon.localScale.x = modIcon.scale.x;
         modIcon.localScale.y = modIcon.scale.y;
         modIcon.updateHitbox();
+        add(modIcon);
       }
     }
 
@@ -295,6 +319,11 @@ class ModMenuItem extends FunkinSpriteGroup
 
   override public function update(elapsed:Float):Void
   {
+    if (modIconDecoder != null)
+    {
+      modIconDecoder.update(elapsed);
+    }
+
     super.update(elapsed);
 
     updateFlight(elapsed);
@@ -312,6 +341,17 @@ class ModMenuItem extends FunkinSpriteGroup
 
       background.localX = -bgOffsetX;
       background.localY = -bgOffsetY;
+    }
+  }
+
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    if (modIconDecoder != null)
+    {
+      modIconDecoder.destroy();
+      modIconDecoder = null;
     }
   }
 
@@ -352,39 +392,6 @@ class ModMenuItem extends FunkinSpriteGroup
 
     var easedT:Float = FlxEase.quintOut(t);
     background.localAlpha = FlxMath.lerp(FLASH_START_ALPHA, flashTargetAlpha, easedT);
-  }
-
-  function loadModIcon(bytes:haxe.io.Bytes):Void
-  {
-    // Stolen from Enigma Engine LMFAO -Eric
-
-    // Convert a haxe byte array to the proper data structure.
-
-    var future = openfl.utils.ByteArray.loadFromBytes(bytes);
-
-    future.onComplete((openFlBytes:openfl.utils.ByteArray) ->
-    {
-      trace('Loaded icon bytes!');
-      // Convert the bytes into bitmap data.
-      var bitmapData = openfl.display.BitmapData.fromBytes(openFlBytes);
-      // Tie the bitmap data to a sprite.
-      modIcon.loadGraphic(bitmapData);
-      add(modIcon);
-
-      modIcon.scrollFactor.set();
-      modIcon.antialiasing = true;
-
-      // FunkinGroup is funny
-      modIcon.setGraphicSize(ICON_HEIGHT, ICON_HEIGHT);
-      modIcon.localScale.x = modIcon.scale.x;
-      modIcon.localScale.y = modIcon.scale.y;
-
-      modIcon.updateHitbox();
-    });
-    future.onError((error) ->
-    {
-      trace(error);
-    });
   }
 
   public function getModId():String

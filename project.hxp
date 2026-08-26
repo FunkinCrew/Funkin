@@ -1386,7 +1386,7 @@ class Project extends HXProject
     // Determines the file in the mod folder used for metadata.
     setHaxedef("POLYMOD_MOD_METADATA_FILE", "_polymod_meta.json");
     // Determines the file in the mod folder used for the icon.
-    setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png");
+    setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png,_polymod_icon.jpg,_polymod_icon.gif,_polymod_icon.webp");
 
     if (isDebug())
     {

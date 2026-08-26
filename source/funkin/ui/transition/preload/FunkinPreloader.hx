@@ -32,6 +32,7 @@ class TouchHereToPlayImage extends BitmapData
 /**
  * This preloader displays a VFD-esque display while the game downloads assets.
  */
+@:access(lime.graphics.Image)
 class FunkinPreloader extends FlxBasePreloader
 {
   /**
@@ -440,11 +441,15 @@ class FunkinPreloader extends FlxBasePreloader
 
           for (mod in modsThing)
           {
-            if (mod.icon == null) continue;
-            var openflBytes = openfl.utils.ByteArray.fromBytes(mod.icon);
-            var bitmapData = openfl.display.BitmapData.fromBytes(openflBytes);
-            @:privateAccess
-            if (mod.id != null) FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, bitmapData);
+            if (mod.id == null || mod.id.length == 0) continue;
+
+            if (mod.icon == null || mod.icon.length == 0) continue;
+
+            if (lime.graphics.Image.__isGIF(mod.icon)) continue;
+
+            if (lime.graphics.Image.__isWebP(mod.icon)) continue;
+
+            FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, openfl.display.BitmapData.fromImage(lime.graphics.Image.fromBytes(mod.icon)));
           }
 
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);

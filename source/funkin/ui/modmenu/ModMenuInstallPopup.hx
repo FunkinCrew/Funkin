@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import funkin.graphics.FunkinAnimationDecoder;
 import funkin.graphics.FunkinSprite;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.ui.FullScreenScaleMode;
@@ -12,6 +13,7 @@ import funkin.ui.ScrollingTextBox;
 /**
  * The card shown in the corner while a one-click install runs.
  */
+@:access(lime.graphics.Image)
 class ModMenuInstallPopup extends FunkinSpriteGroup
 {
   static inline final ICON_SIZE:Int = 96;
@@ -29,6 +31,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   public var state(default, null):ModMenuInstallState = Hidden;
 
   var background:FunkinSprite;
+  var modIconDecoder:Null<FunkinAnimationDecoder>;
   var modIcon:FunkinSprite;
   var titleText:ScrollingTextBox;
   var detailText:FlxText;
@@ -199,9 +202,27 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   /**
    * Swaps in the mod's preview image once it has been fetched.
    */
-  public function setIcon(bitmap:openfl.display.BitmapData):Void
+  public function setIcon(bytes:openfl.utils.ByteArray):Void
   {
-    modIcon.loadGraphic(bitmap);
+    modIconDecoder?.destroy();
+
+    if (lime.graphics.Image.__isGIF(bytes))
+    {
+      modIconDecoder = new FunkinAnimationDecoder(bytes, GIF);
+
+      modIcon.loadGraphic(modIconDecoder.bitmapData);
+    }
+    else if (lime.graphics.Image.__isWebP(bytes))
+    {
+      modIconDecoder = new FunkinAnimationDecoder(bytes, WEBP);
+
+      modIcon.loadGraphic(modIconDecoder.bitmapData);
+    }
+    else
+    {
+      modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(bytes));
+    }
+
     modIcon.antialiasing = true;
     modIcon.setGraphicSize(ICON_SIZE, ICON_SIZE);
     modIcon.localScale.x = modIcon.scale.x;
@@ -266,6 +287,11 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
 
   override public function update(elapsed:Float):Void
   {
+    if (modIconDecoder != null)
+    {
+      modIconDecoder.update(elapsed);
+    }
+
     super.update(elapsed);
 
     if (state == Result)
@@ -282,6 +308,17 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     if (Math.abs(targetRatio - displayRatio) < 0.001) displayRatio = targetRatio;
 
     barClip.width = ICON_SIZE * displayRatio;
+  }
+
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    if (modIconDecoder != null)
+    {
+      modIconDecoder.destroy();
+      modIconDecoder = null;
+    }
   }
 
   /**

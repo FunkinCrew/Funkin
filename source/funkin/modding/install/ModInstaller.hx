@@ -579,7 +579,7 @@ class ModInstaller
    * @param mod The resolved metadata.
    * @param onSuccess Called with the decoded image.
    */
-  public static function downloadIcon(mod:OneClickMod, onSuccess:openfl.display.BitmapData->Void):Void
+  public static function downloadIcon(mod:OneClickMod, onSuccess:ByteArray->Void):Void
   {
     final url:Null<String> = mod.iconUrl;
     if (url == null || !isHostAllowed(url)) return;
@@ -587,9 +587,7 @@ class ModInstaller
     loadUrl(url, URLLoaderDataFormat.BINARY, null, function(data:Dynamic):Void {
       try
       {
-        final bitmap:Null<openfl.display.BitmapData> = openfl.display.BitmapData.fromBytes(cast(data, ByteArray));
-
-        if (bitmap != null) onSuccess(bitmap);
+        onSuccess(cast(data, ByteArray));
       }
       catch (e:Dynamic)
       {

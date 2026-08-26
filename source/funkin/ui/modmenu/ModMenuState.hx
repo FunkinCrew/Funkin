@@ -1061,11 +1061,11 @@ class ModMenuState extends MusicBeatState
 
       startOneClickInstall();
 
-      ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void
+      ModInstaller.downloadIcon(mod, function(bytes:openfl.utils.ByteArray):Void
       {
         if (installCancelled || installPopup == null) return;
 
-        installPopup.setIcon(bitmap);
+        installPopup.setIcon(bytes);
       });
     }, function(reason:String):Void
     {
