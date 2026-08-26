@@ -174,7 +174,7 @@ class Constants
   // ==============================
 
   /**
-   * The color used by the enemy health bar.
+   * The color used by the opponent health bar.
    */
   public static final COLOR_HEALTH_BAR_RED:FlxColor = 0xFFFF0000;
 
