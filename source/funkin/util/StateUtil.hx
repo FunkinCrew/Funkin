@@ -10,14 +10,21 @@ class StateUtil
 {
   /**
    * @return Gets the topmost substate for a state.
-   * @param state The state to check
+   * @param state The state to check.
+   * @param filter An optional filter to apply.
    */
-  public static function getTopSubState(state:Null<FlxState>):Null<FlxState>
+  public static function getTopSubState(state:Null<FlxState>, ?filter:Null<FlxState>->Bool):Null<FlxState>
   {
     var currentState:Null<FlxState> = state;
-    while (currentState?.subState != null)
+    while (currentState != null)
     {
-      currentState = currentState?.subState;
+      var nextState:Null<FlxState> = currentState?.subState;
+      if (nextState == null || (filter != null && !filter(nextState)))
+      {
+        break;
+      }
+
+      currentState = nextState;
     }
 
     return currentState;
@@ -26,15 +33,19 @@ class StateUtil
   /**
    * @return Returns all current states.
    * @param state The base state to start from.
+   * @param filter An optional filter to apply.
    */
-  public static function getAllStates(state:Null<FlxState>):Array<FlxState>
+  public static function getAllStates(state:Null<FlxState>, ?filter:Null<FlxState>->Bool):Array<FlxState>
   {
     var allStates:Array<FlxState> = [];
     var currentState:Null<FlxState> = state;
-
     while (currentState != null)
     {
-      allStates.push(currentState);
+      if (filter == null || filter(currentState))
+      {
+        allStates.push(currentState);
+      }
+
       currentState = currentState.subState;
     }
 

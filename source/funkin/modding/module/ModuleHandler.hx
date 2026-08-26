@@ -306,13 +306,7 @@ class ModuleHandler
   {
     if (stateToFind == null) return true;
 
-    var state:Null<flixel.FlxState> = FlxG.state;
-    while (state != null && !Std.isOfType(state, stateToFind))
-    {
-      state = state?.subState;
-    }
-
-    return state != null;
+    return FlxG.state != null;
   }
 
   public static inline function callOnCreate():Void
