@@ -36,6 +36,16 @@ class AdMobUtil
   static final ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE:Int = 5;
 
   /**
+   * The AdMob Rewarded Preload ID used for loading rewarded ads.
+   */
+  static final ADMOB_REWARDED_PRELOAD_ID:String = "FNF_REWARDED_PRELOAD_ID";
+
+  /**
+   * The number of rewarded ads to preload and keep in buffer for AdMob.
+   */
+  static final ADMOB_REWARDED_PRELOAD_BUFFER_SIZE:Int = 5;
+
+  /**
    * AdMob publisher ID used for the application.
    */
   #if NO_TESTING_ADS
@@ -68,6 +78,17 @@ class AdMobUtil
   #else
   static final ADMOB_INTERSTITIAL_AD_UNIT_ID:Null<String> = #if android '1033173712' #elseif ios '4411468910' #else null #end;
   #end
+  /**
+   * Ad unit ID for displaying rewarded ads.
+   */
+  #if NO_TESTING_ADS
+  @:envField({
+    mandatoryIfDefined: "FEATURE_MOBILE_ADVERTISEMENTS"
+  })
+  static final ADMOB_REWARDED_AD_UNIT_ID:Null<String>;
+  #else
+  static final ADMOB_REWARDED_AD_UNIT_ID:Null<String> = #if android "5224354917" #elseif ios "6978759866" #else null #end;
+  #end
 
   /**
    * Initializes the AdMob SDK and sets up event listeners for interstitial and rewarded ads.
@@ -89,6 +110,16 @@ class AdMobUtil
             ].join('/');
 
             Admob.startInterstitialPreloader(AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_INTERSTITIAL_PRELOAD_BUFFER_SIZE);
+          }
+
+          if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_REWARDED_AD_UNIT_ID != null)
+          {
+            final adUnitID:String = [
+              AdMobUtil.ADMOB_PUBLISHER,
+              AdMobUtil.ADMOB_REWARDED_AD_UNIT_ID
+            ].join('/');
+
+            Admob.startRewardedPreloader(AdMobUtil.ADMOB_REWARDED_PRELOAD_ID, adUnitID, AdMobUtil.ADMOB_REWARDED_PRELOAD_BUFFER_SIZE);
           }
         case AdmobEvent.INTERSTITIAL_SHOWED:
           AudioManager.suspend();
@@ -195,6 +226,68 @@ class AdMobUtil
         Admob.loadInterstitial([
           AdMobUtil.ADMOB_PUBLISHER,
           AdMobUtil.ADMOB_INTERSTITIAL_AD_UNIT_ID
+        ].join('/'));
+      }
+    }
+    else
+    {
+      if (onAdDismissed != null)
+      {
+        onAdDismissed();
+      }
+    }
+  }
+
+  /**
+   * Loads an rewarded ad using AdMob.
+   *
+   * @param onRewardEarned Callback function to be called when the user has earned the reward from the rewarded ad. This gets called while the ad is still displayed, so wait until `onAdDismissed` is dispatched before continuing.
+   * @param onAdDismissed Callback function to be called when the ad is dismissed. This can get called if the ad failed to load, so check if the `onRewardEarned` callback was dispatched before continuing.
+   */
+  public static function loadRewarded(onRewardedEarned:Null<String>->Null<Int>->Void,
+    onAdDismissed:Null<String>->Null<Int>->Void):Void
+  {
+    if (AdMobUtil.ADMOB_PUBLISHER != null && AdMobUtil.ADMOB_REWARDED_AD_UNIT_ID != null)
+    {
+      function rewardedEvent(event:AdmobEvent):Void
+      {
+        if (event.name == AdmobEvent.REWARDED_LOADED)
+        {
+          Admob.showRewarded();
+        }
+        else if (event.name == AdmobEvent.REWARDED_EARNED)
+        {
+          if (onRewardedEarned != null)
+          {
+            onRewardedEarned(event.rewardType, event.rewardAmount);
+          }
+        }
+        else if (
+          event.name == AdmobEvent.REWARDED_DISMISSED
+          || event.name == AdmobEvent.REWARDED_FAILED_TO_LOAD
+          || event.name == AdmobEvent.REWARDED_FAILED_TO_SHOW
+        )
+        {
+          if (onAdDismissed != null)
+          {
+            onAdDismissed();
+          }
+
+          Admob.onEvent.remove(rewardedEvent);
+        }
+      }
+
+      Admob.onEvent.add(rewardedEvent);
+
+      if (Admob.isRewardedAdAvailable(AdMobUtil.ADMOB_REWARDED_PRELOAD_ID))
+      {
+        Admob.loadRewardedFromPreloader(AdMobUtil.ADMOB_REWARDED_PRELOAD_ID);
+      }
+      else
+      {
+        Admob.loadRewarded([
+          AdMobUtil.ADMOB_PUBLISHER,
+          AdMobUtil.ADMOB_REWARDED_AD_UNIT_ID
         ].join('/'));
       }
     }
