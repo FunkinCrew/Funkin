@@ -205,7 +205,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "582ef40262c187a5e4d38f221df2a75b7565d09d",
+      "ref": "0669e945f90a11c969fe0c1d16d1e929633051a4",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
@@ -217,7 +217,7 @@
     {
       "name": "thx.semver",
       "type": "git",
-      "ref": "7714c5ed3547cc996c9ee318aa360abbd7f85f74",
+      "ref": "9de477fa2bf6aa17528211afd61097cb113e3423",
       "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]

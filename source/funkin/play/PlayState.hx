@@ -3185,8 +3185,8 @@ class PlayState extends MusicBeatSubState
     // Round inward (trim remainder) for consistency.
     var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
 
-    var score = Scoring.scoreNote(noteDiff, PBOT1);
-    var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+    var score = Scoring.scoreNote(noteDiff);
+    var daRating = Scoring.judgeNote(noteDiff);
 
     var healthChange = 0.0;
     var isComboBreak = false;
