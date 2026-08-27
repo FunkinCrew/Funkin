@@ -95,6 +95,13 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     this.onDialogClosed = onClose;
   }
 
+  override function onReady():Void
+  {
+    refreshAudioPreview();
+    refresh();
+    refreshTicks();
+  }
+
   function onClose(event:UIEvent)
   {
     stopAudioPreview(); // Pause it instead, maybe?
@@ -233,13 +240,6 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     waveformInstrumental.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragWaveform(INSTRUMENTAL));
 
     offsetTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragPlayhead());
-  }
-
-  override function onReady():Void
-  {
-    refreshAudioPreview();
-    refresh();
-    refreshTicks();
   }
 
   function hideWaveform(e:UIEvent):Void
