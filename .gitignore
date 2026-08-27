@@ -36,3 +36,5 @@ package.json
 package-lock.json
 .aider*
 export_classes.info
+
+sdk/

@@ -703,7 +703,7 @@ class Project extends HXProject
 
     var config:String = isDebug() ? "debug" : "release";
 
-    var outputDir = '${app.path}$target/cppia-sdk';
+    var outputDir = 'sdk/$target/$config';
 
     var script = 'scripts/cppia/sdk/build_cppia_sdk';
 

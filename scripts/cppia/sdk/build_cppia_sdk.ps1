@@ -1,7 +1,7 @@
 # Usage: ./build_cppia_sdk.ps1 [--target <platform>] [--config <debug|release>] <game-root> [output-dir]
 # 	target defaults to windows
 # 	config defaults to release
-# 	output-dir defaults to <game-root>/export/<config>/<target>/cppia-sdk
+# 	output-dir defaults to <game-root>/sdk/<target>/<config>
 
 # This creates the 'export_classes.info' file for CPPIA exports. Typically, you do not need to run this script. haha
 
@@ -41,7 +41,7 @@ if (-not (Test-Path (Join-Path $GameRoot 'project.hxp'))) {
 	Write-Error "$GameRoot does not look like the game checkout, no project.hxp there."
 }
 $root = (Resolve-Path $GameRoot).Path.TrimEnd('\', '/')
-if (-not $OutDir) { $OutDir = Join-Path $root "export\$Config\$Target\cppia-sdk" }
+if (-not $OutDir) { $OutDir = Join-Path $root "sdk\$Target\$Config" }
 
 $hostClasses = Join-Path $root 'export_classes.info'
 if (-not (Test-Path $hostClasses)) {
@@ -75,9 +75,12 @@ foreach ($line in $dropped) {
 	Write-Host "	dropped $line"
 }
 
-[System.IO.File]::WriteAllLines((Join-Path $OutDir 'cppia.hxml'), $kept, (New-Object System.Text.UTF8Encoding($false)))
+$utf8 = New-Object System.Text.UTF8Encoding($false)
 
-Copy-Item $hostClasses (Join-Path $OutDir 'export_classes.info') -Force
+[System.IO.File]::WriteAllText((Join-Path $OutDir 'cppia.hxml'), ($kept -join "`n") + "`n", $utf8)
+
+$info = Get-Content $hostClasses | Where-Object { $_ -notmatch '^file ' }
+[System.IO.File]::WriteAllText((Join-Path $OutDir 'export_classes.info'), ($info -join "`n") + "`n", $utf8)
 Remove-Item $hostClasses -Force
 
 $classCount = (Select-String -Path (Join-Path $OutDir 'export_classes.info') -Pattern '^(class|interface|enum) ').Count

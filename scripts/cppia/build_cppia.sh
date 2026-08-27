@@ -9,9 +9,6 @@
 # A full example of it might be:
 # ./build_cppia.sh --sdk ./funkin-cppia-sdk ./Funkin ./my-mod/scripts/cppia-src/ MyMod.cppia
 
-# You are also able (as seen by 'Class ...') to write specific classes you want to compile.
-# IE: [MyModule YourModule OurModule]
-
 set -euo pipefail
 
 SDK=""
@@ -62,8 +59,8 @@ if [ "${OUTPUT#/}" = "$OUTPUT" ] && [ "${OUTPUT#[A-Za-z]:}" = "$OUTPUT" ]; then
 	OUTPUT="$(pwd)/$OUTPUT"
 fi
 
-if [ -z "$SDK" ] && [ -f "$ROOT/export/$CONFIG/$TARGET/cppia-sdk/cppia.hxml" ]; then
-	SDK="$ROOT/export/$CONFIG/$TARGET/cppia-sdk"
+if [ -z "$SDK" ] && [ -f "$ROOT/sdk/$TARGET/$CONFIG/cppia.hxml" ]; then
+	SDK="$ROOT/sdk/$TARGET/$CONFIG"
 fi
 
 towin() {
@@ -86,7 +83,7 @@ if [ -n "$SDK" ]; then
 	echo "Using SDK $SDK_ABS"
 else
 	if [ ! -f "$ROOT/export_classes.info" ]; then
-		echo "No SDK found at $ROOT/export/$CONFIG/$TARGET/cppia-sdk, and no $ROOT/export_classes.info to fall back on." >&2
+		echo "No SDK found at $ROOT/sdk/$TARGET/$CONFIG, and no $ROOT/export_classes.info to fall back on." >&2
 		echo "Build the game once for this target and config, or pass --sdk <dir>." >&2
 		exit 1
 	fi

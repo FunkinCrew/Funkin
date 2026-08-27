@@ -1,7 +1,7 @@
 # Usage: ./build_cppia_sdk.sh [--target <platform>] [--config <debug|release>] <game-root> [output-dir]
 # 	target defaults to windows
 # 	config defaults to release
-# 	output-dir defaults to <game-root>/export/<config>/<target>/cppia-sdk
+# 	output-dir defaults to <game-root>/sdk/<target>/<config>
 
 # This creates the 'export_classes.info' file for CPPIA exports. Typically, you do not need to run this script. haha
 
@@ -31,7 +31,7 @@ if [ ! -f "$ROOT/project.hxp" ]; then
 fi
 ROOT="$(cd "$ROOT" && pwd)" || exit 1
 
-OUT_DIR="${2:-$ROOT/export/$CONFIG/$TARGET/cppia-sdk}"
+OUT_DIR="${2:-$ROOT/sdk/$TARGET/$CONFIG}"
 
 HOST_CLASSES="$ROOT/export_classes.info"
 if [ ! -f "$HOST_CLASSES" ]; then
@@ -59,7 +59,7 @@ fi
 	| grep -vE '^-D [A-Za-z0-9_.]+=([A-Za-z]:/|/)' \
 	> "$OUT_DIR/cppia.hxml"
 
-cp "$HOST_CLASSES" "$OUT_DIR/export_classes.info"
+grep -v '^file ' "$HOST_CLASSES" > "$OUT_DIR/export_classes.info"
 rm -f "$HOST_CLASSES"
 
 echo "Wrote $TARGET $CONFIG cppia SDK to $OUT_DIR"

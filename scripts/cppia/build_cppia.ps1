@@ -9,9 +9,6 @@
 # A full example of it might be:
 # ./build_cppia.ps1 --sdk ./funkin-cppia-sdk ./Funkin ./my-mod/scripts/cppia-src/ MyMod.cppia
 
-# You are also able (as seen by 'Class ...') to write specific classes you want to compile.
-# IE: [MyModule YourModule OurModule]
-
 param(
 	[Parameter(ValueFromRemainingArguments = $true)][string[]]$Arguments
 )
@@ -67,7 +64,7 @@ if (-not (Test-Path (Join-Path $GameRoot 'project.hxp'))) {
 $root = (Resolve-Path $GameRoot).Path.TrimEnd('\', '/')
 
 if (-not $Sdk) {
-	$default = Join-Path $root "export\$Config\$Target\cppia-sdk"
+	$default = Join-Path $root "sdk\$Target\$Config"
 	if (Test-Path (Join-Path $default 'cppia.hxml')) { $Sdk = $default }
 }
 
@@ -94,7 +91,7 @@ try {
 	else {
 		$hostClasses = Join-Path $root 'export_classes.info'
 		if (-not (Test-Path $hostClasses)) {
-			Write-Error "No SDK found at $root\export\$Config\$Target\cppia-sdk, and no $hostClasses to fall back on. Build the game once for this target and config, or pass --sdk <dir>."
+			Write-Error "No SDK found at $root\sdk\$Target\$Config, and no $hostClasses to fall back on. Build the game once for this target and config, or pass --sdk <dir>."
 		}
 
 		Push-Location $root
