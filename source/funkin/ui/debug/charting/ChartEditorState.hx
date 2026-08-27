@@ -3857,9 +3857,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else
       {
-        audioVocalTrackGroup.playerVolume = 1.0;
-        menubarItemVolumeVocalsPlayer.value = 100.0;
-        menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+        audioVocalTrackGroup.playerVolume = 0.0;
+        menubarItemVolumeVocalsPlayer.value = 0.0;
+        menubarLabelVolumeVocalsPlayer.text = 'Player - 0%';
       }
     }
     previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
