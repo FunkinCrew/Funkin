@@ -145,16 +145,16 @@ class AdMobUtil
   /**
    * Loads an interstitial ad using AdMob.
    *
-   * @param onInterstitialFinish Callback function to be called when the rewarded ad has been completed by the user.
+   * @param onAdDismissed Callback function to be called when the ad is dismissed. This can get called if the ad failed to load.
    */
-  public static function loadInterstitial(onInterstitialFinish:Void->Void):Void
+  public static function loadInterstitial(onAdDismissed:Void->Void):Void
   {
     #if FEATURE_MOBILE_IAP
     if (InAppPurchasesUtil.isPurchased(InAppPurchasesUtil.UPGRADE_PRODUCT_ID))
     {
-      if (onInterstitialFinish != null)
+      if (onAdDismissed != null)
       {
-        onInterstitialFinish();
+        onAdDismissed();
       }
 
       return;
@@ -175,9 +175,9 @@ class AdMobUtil
           || event.name == AdmobEvent.INTERSTITIAL_FAILED_TO_SHOW
         )
         {
-          if (onInterstitialFinish != null)
+          if (onAdDismissed != null)
           {
-            onInterstitialFinish();
+            onAdDismissed();
           }
 
           Admob.onEvent.remove(interstitialEvent);
@@ -200,9 +200,9 @@ class AdMobUtil
     }
     else
     {
-      if (onInterstitialFinish != null)
+      if (onAdDismissed != null)
       {
-        onInterstitialFinish();
+        onAdDismissed();
       }
     }
   }
