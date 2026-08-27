@@ -210,8 +210,6 @@ class HotReloadState extends MusicBeatState
 
         updateProgress(1, 10);
 
-        rebuildSoundTray();
-
         // Start the next step.
         queueLoadEnabledMods();
       });
@@ -239,6 +237,8 @@ class HotReloadState extends MusicBeatState
     }).onComplete((_) ->
       {
         updateProgress(2, 10);
+
+        rebuildSoundTray();
 
         queueLoadScripts();
       });

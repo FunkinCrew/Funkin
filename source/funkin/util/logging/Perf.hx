@@ -38,12 +38,8 @@ class Perf
    */
   public static function current():Float
   {
-    #if sys
-    // This one is more accurate if it's available.
-    return Sys.time();
-    #else
-    return haxe.Timer.stamp();
-    #end
+    // This one is nanosecond accurate.
+    return lime.system.System.getTimer();
   }
 
   /**

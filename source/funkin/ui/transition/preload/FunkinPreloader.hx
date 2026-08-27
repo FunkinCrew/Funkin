@@ -3,6 +3,7 @@ package funkin.ui.transition.preload;
 import funkin.assets.FunkinAssetCache;
 import lime.app.Future;
 import funkin.mobile.util.ScreenUtil;
+import funkin.data.BaseRegistry.LoadEntriesResult;
 import openfl.events.MouseEvent;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
@@ -57,36 +58,27 @@ class FunkinPreloader extends FlxBasePreloader
   // Ratio between window size and BASE_WIDTH
   var ratio:Float = 0;
   var currentState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
-  // private var downloadingAssetsStartTime:Float = -1;
   var downloadingAssetsPercent:Float = -1;
+  // var downloadingAssetsStartTime:Float = -1;
   var downloadingAssetsComplete:Bool = false;
   var initializingScriptsPercent:Float = -1;
   var initializingScriptsStartTime:Float = -1;
   var initializingScriptsComplete:Bool = false;
-  var preloadingPlayAssetsPercent:Float = -1;
-  var preloadingPlayAssetsStartTime:Float = -1;
-  var preloadingPlayAssetsComplete:Bool = false;
+  var parsingGameDataPercent:Float = -1;
+  var parsingGameDataStartTime:Float = -1;
+  var parsingGameDataComplete:Bool = false;
   var cachingGraphicsPercent:Float = -1;
   var cachingGraphicsStartTime:Float = -1;
   var cachingGraphicsComplete:Bool = false;
+  var cachingFontsPercent:Float = -1;
+  var cachingFontsStartTime:Float = -1;
+  var cachingFontsComplete:Bool = false;
   var cachingAudioPercent:Float = -1;
   var cachingAudioStartTime:Float = -1;
   var cachingAudioComplete:Bool = false;
   var cachingDataPercent:Float = -1;
   var cachingDataStartTime:Float = -1;
   var cachingDataComplete:Bool = false;
-  var parsingSpritesheetsPercent:Float = -1;
-  var parsingSpritesheetsStartTime:Float = -1;
-  var parsingSpritesheetsComplete:Bool = false;
-  var parsingStagesPercent:Float = -1;
-  var parsingStagesStartTime:Float = -1;
-  var parsingStagesComplete:Bool = false;
-  var parsingCharactersPercent:Float = -1;
-  var parsingCharactersStartTime:Float = -1;
-  var parsingCharactersComplete:Bool = false;
-  var parsingSongsPercent:Float = -1;
-  var parsingSongsStartTime:Float = -1;
-  var parsingSongsComplete:Bool = false;
 
   /**
    * The timestamp when the other steps completed and the `Finishing up` step started.
@@ -272,7 +264,7 @@ class FunkinPreloader extends FlxBasePreloader
 
   var lastElapsed:Float = 0.0;
   var lastLoggedPercent:Int = -1;
-  var lastLoggedState:FunkinPreloaderState = FunkinPreloaderState.NotStarted;
+  var lastLoggedState:FunkinPreloaderState = NotStarted;
 
   override function update(percent:Float):Void
   {
@@ -291,89 +283,40 @@ class FunkinPreloader extends FlxBasePreloader
   {
     switch (currentState)
     {
-      case FunkinPreloaderState.NotStarted:
-        if (downloadingAssetsPercent > 0.0) currentState = FunkinPreloaderState.DownloadingAssets;
+      case NotStarted:
+        if (downloadingAssetsPercent > 0.0)
+        {
+          currentState = DownloadingAssets;
+        }
 
         return percent;
 
-      case FunkinPreloaderState.DownloadingAssets:
+      case DownloadingAssets:
         // Sometimes percent doesn't go to 100%, it's a floating point error.
         if (downloadingAssetsPercent >= 1.0 || (elapsed > Constants.PRELOADER_MIN_STAGE_TIME && downloadingAssetsComplete))
         {
-          currentState = FunkinPreloaderState.PreloadingPlayAssets;
+          currentState = InitializingScripts;
         }
 
         return percent;
 
-      case FunkinPreloaderState.PreloadingPlayAssets:
-        if (preloadingPlayAssetsPercent < 0.0)
-        {
-          preloadingPlayAssetsStartTime = elapsed;
-          preloadingPlayAssetsPercent = 0.0;
-
-          // This is quick enough to do synchronously.
-          funkin.util.tasks.TaskHandler.initialize();
-          funkin.assets.Assets.initialize();
-
-          // Couldn't think of a better spot to put this.
-          var fontsToPreload = Assets.queryPreloadAssets(FONT);
-          var future:Future<Array<Future<Bool>>> = Assets.cacheAllFonts(fontsToPreload);
-          future.onProgress((loaded:Int, total:Int) ->
-          {
-            trace(' PRELOADER '.bold().bg_note_left() + ' Caching fonts... ${loaded}/${total}');
-          });
-          future.onComplete((_result) ->
-          {
-            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching fonts.');
-          });
-
-          preloadingPlayAssetsPercent = 1.0;
-          preloadingPlayAssetsComplete = true;
-          return 0.0;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedPreloadingPlayAssets:Float = elapsed - preloadingPlayAssetsStartTime;
-          if (preloadingPlayAssetsComplete && elapsedPreloadingPlayAssets >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = FunkinPreloaderState.InitializingScripts;
-            return 0.0;
-          }
-          else
-          {
-            // We need to return SIMULATED progress here.
-            if (preloadingPlayAssetsPercent < (elapsedPreloadingPlayAssets / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              return preloadingPlayAssetsPercent;
-            }
-            else
-            {
-              return elapsedPreloadingPlayAssets / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (preloadingPlayAssetsComplete) currentState = FunkinPreloaderState.InitializingScripts;
-        }
-
-        return preloadingPlayAssetsPercent;
-
-      case FunkinPreloaderState.InitializingScripts:
+      case InitializingScripts:
         if (initializingScriptsPercent < 0.0)
         {
           initializingScriptsPercent = 0.0;
           initializingScriptsStartTime = elapsed;
 
+          // Do some tasks that need to be done before we start caching assets.
+          // These are quick enough to do synchronously.
+          funkin.util.tasks.TaskHandler.initialize(); // Initialize the thread pool.
+          funkin.assets.Assets.initialize(); // Initialize the FunkinAssetCache.
+
           // Load mods to override assets BEFORE we cache them.
+          // This is done synchronously.
           funkin.modding.PolymodHandler.loadEnabledMods();
 
           // Cache the results of Assets.list(), forcibly clearing any previous cache.
-          @:privateAccess
-          for (type in Assets.ASSET_TYPES)
-          {
-            FunkinAssetCache.instance.list(type, true);
-          }
+          FunkinAssetCache.instance.cacheAssetLists(true);
 
           // Then, initialize scripts.
           var future = funkin.modding.PolymodHandler.loadScripts(true);
@@ -389,22 +332,13 @@ class FunkinPreloader extends FlxBasePreloader
             initializingScriptsComplete = true;
           });
           return initializingScriptsPercent;
-
-          /*
-            // Synchronous script loading.
-            polymod.Polymod.registerAllScriptClasses();
-            var classList = polymod.hscript._internal.PolymodScriptClass.listScriptClasses();
-            trace('POLYMOD: Parsed and registered ${classList.length} scripted classes.');
-            initializingScriptsComplete = true;
-            return 1.0;
-           */
         }
         else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
         {
           var elapsedInitializingScripts:Float = elapsed - initializingScriptsStartTime;
           if (initializingScriptsComplete && elapsedInitializingScripts >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = FunkinPreloaderState.CachingGraphics;
+            currentState = ParsingGameData;
             return 0.0;
           }
           else
@@ -422,10 +356,88 @@ class FunkinPreloader extends FlxBasePreloader
         }
         else
         {
-          if (initializingScriptsComplete) currentState = FunkinPreloaderState.InitializingScripts;
+          if (initializingScriptsComplete)
+          {
+            currentState = ParsingGameData;
+          }
         }
 
         return initializingScriptsPercent;
+
+      case ParsingGameData:
+        if (parsingGameDataPercent < 0)
+        {
+          parsingGameDataPercent = 0.0;
+          parsingGameDataStartTime = elapsed;
+
+          // Load ALL registry data asynchronously.
+          // We can queue multiple futures in order to do all of these in parallel.
+
+          var futures:Array<Future<LoadEntriesResult>> = [];
+
+          futures.push(funkin.data.song.SongRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.story.level.LevelRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.notestyle.NoteStyleRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.freeplay.player.PlayerRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.dialogue.ConversationRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.dialogue.DialogueBoxRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.dialogue.SpeakerRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.freeplay.album.AlbumRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.stage.StageRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.stickers.StickerRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.freeplay.style.FreeplayStyleRegistry.instance.loadEntriesAsync());
+          futures.push(funkin.data.event.SongEventRegistry.loadEventCacheAsync());
+          futures.push(funkin.play.notes.notekind.NoteKindManager.loadNoteKindsAsync());
+          futures.push(funkin.data.character.CharacterData.CharacterDataParser.loadCharacterCacheAsync());
+          futures.push(funkin.modding.module.ModuleHandler.loadModuleCacheAsync());
+
+          var registryFuture = lime.app.Promises.allSettled(futures);
+
+          registryFuture.onProgress((loaded:Int, total:Int) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Parsing game data... ${loaded}/${total}');
+            parsingGameDataPercent = loaded / total;
+          });
+          registryFuture.onComplete((_result) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed parsing game data.');
+            parsingGameDataComplete = true;
+          });
+
+          return parsingGameDataPercent;
+        }
+        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
+        {
+          var elapsedParsingGameData:Float = elapsed - cachingGraphicsStartTime;
+          if (parsingGameDataComplete && elapsedParsingGameData >= Constants.PRELOADER_MIN_STAGE_TIME)
+          {
+            currentState = CachingGraphics;
+            return 0.0;
+          }
+          else
+          {
+            if (parsingGameDataPercent < (elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME))
+            {
+              // Return real progress if it's lower.
+              return parsingGameDataPercent;
+            }
+            else
+            {
+              // Return simulated progress if it's higher.
+              return elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME;
+            }
+          }
+        }
+        else
+        {
+          if (parsingGameDataComplete)
+          {
+            currentState = CachingGraphics;
+            return 0.0;
+          }
+        }
+
+        return parsingGameDataPercent;
 
       case CachingGraphics:
         if (cachingGraphicsPercent < 0)
@@ -475,7 +487,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedCachingGraphics:Float = elapsed - cachingGraphicsStartTime;
           if (cachingGraphicsComplete && elapsedCachingGraphics >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = FunkinPreloaderState.CachingAudio;
+            currentState = CachingFonts;
             return 0.0;
           }
           else
@@ -496,14 +508,66 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (cachingGraphicsComplete)
           {
-            currentState = FunkinPreloaderState.CachingAudio;
+            currentState = CachingFonts;
+            return 0.0;
+          }
+        }
+
+        return cachingGraphicsPercent;
+
+      case CachingFonts:
+        if (cachingFontsPercent < 0.0)
+        {
+          cachingFontsStartTime = elapsed;
+          cachingFontsPercent = 0.0;
+
+          // Load and store font data for later use by the game.
+          var fontsToPreload = Assets.queryPreloadAssets(FONT);
+
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAllFonts(fontsToPreload);
+          future.onProgress((loaded:Int, total:Int) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Caching fonts... ${loaded}/${total}');
+            cachingFontsPercent = loaded / total;
+          });
+          future.onComplete((_result) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed caching fonts.');
+            cachingFontsComplete = true;
+          });
+
+          return cachingFontsPercent;
+        }
+        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
+        {
+          var elapsedCachingFonts:Float = elapsed - cachingFontsStartTime;
+          if (cachingFontsComplete && elapsedCachingFonts >= Constants.PRELOADER_MIN_STAGE_TIME)
+          {
+            currentState = CachingAudio;
             return 0.0;
           }
           else
           {
-            return cachingGraphicsPercent;
+            // We need to return SIMULATED progress here.
+            if (cachingFontsPercent < (elapsedCachingFonts / Constants.PRELOADER_MIN_STAGE_TIME))
+            {
+              return cachingFontsPercent;
+            }
+            else
+            {
+              return elapsedCachingFonts / Constants.PRELOADER_MIN_STAGE_TIME;
+            }
           }
         }
+        else
+        {
+          if (cachingFontsComplete)
+          {
+            currentState = CachingAudio;
+          }
+        }
+
+        return cachingFontsPercent;
 
       case CachingAudio:
         if (cachingAudioPercent < 0)
@@ -536,7 +600,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedCachingAudio:Float = elapsed - cachingAudioStartTime;
           if (cachingAudioComplete && elapsedCachingAudio >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = FunkinPreloaderState.CachingData;
+            currentState = CachingData;
             return 0.0;
           }
           else
@@ -556,14 +620,11 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (cachingAudioComplete)
           {
-            currentState = FunkinPreloaderState.CachingData;
+            currentState = CachingData;
             return 0.0;
           }
-          else
-          {
-            return cachingAudioPercent;
-          }
         }
+        return cachingAudioPercent;
 
       case CachingData:
         if (cachingDataPercent < 0)
@@ -581,9 +642,11 @@ class FunkinPreloader extends FlxBasePreloader
           assetsToCache.append(Assets.queryPreloadAssets(SCRIPT));
           assetsToCache.append(Assets.queryPreloadAssets(XML));
 
-          trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} data files...');
+          assetsToCache.append(Assets.queryPreloadAssets(UNKNOWN));
 
-          var future:Future<Array<Future<Bool>>> = Assets.cacheAllText(assetsToCache, CACHE_PERMANENT);
+          trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} additional data files...');
+
+          var future:Future<Array<Future<Bool>>> = Assets.cacheAll(assetsToCache, CACHE_PERMANENT);
 
           future.onProgress((loaded:Int, total:Int) ->
           {
@@ -602,7 +665,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedCachingData:Float = elapsed - cachingDataStartTime;
           if (cachingDataComplete && elapsedCachingData >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = FunkinPreloaderState.ParsingSpritesheets;
+            currentState = Complete;
             return 0.0;
           }
           else
@@ -622,237 +685,14 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (cachingDataComplete)
           {
-            currentState = FunkinPreloaderState.ParsingSpritesheets;
+            currentState = Complete;
             return 0.0;
           }
         }
 
         return cachingDataPercent;
 
-      case ParsingSpritesheets:
-        if (parsingSpritesheetsPercent < 0)
-        {
-          parsingSpritesheetsPercent = 0.0;
-          parsingSpritesheetsStartTime = elapsed;
-
-          // Core spritesheets
-          var sparrowFramesToCache = []; // Assets.listXML('core').map((xml:String) -> xml.replace('.xml', '').replace('core:assets/core/', ''));
-          // We're not caching gameplay spritesheets here because they're fetched on demand.
-
-          /*
-            var future:Future<Array<String>> = []; // Assets.cacheSparrowFrames(sparrowFramesToCache, true);
-            future.onProgress((loaded:Int, total:Int) -> {
-              parsingSpritesheetsPercent = loaded / total;
-            });
-            future.onComplete((_result) -> {
-              trace('Completed parsing spritesheets.');
-            });
-           */
-          parsingSpritesheetsPercent = 1.0;
-          parsingSpritesheetsComplete = true;
-          return 0.0;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedParsingSpritesheets:Float = elapsed - parsingSpritesheetsStartTime;
-          if (parsingSpritesheetsComplete && elapsedParsingSpritesheets >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = FunkinPreloaderState.ParsingStages;
-            return 0.0;
-          }
-          else
-          {
-            // We need to return SIMULATED progress here.
-            if (parsingSpritesheetsPercent < (elapsedParsingSpritesheets / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              return parsingSpritesheetsPercent;
-            }
-            else
-            {
-              return elapsedParsingSpritesheets / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (parsingSpritesheetsComplete)
-          {
-            currentState = FunkinPreloaderState.ParsingStages;
-            return 0.0;
-          }
-        }
-
-        return parsingSpritesheetsPercent;
-
-      case ParsingStages:
-        if (parsingStagesPercent < 0)
-        {
-          parsingStagesPercent = 0.0;
-          parsingStagesStartTime = elapsed;
-
-          /*
-            // TODO: Reimplement this.
-            var future:Future<Array<String>> = []; // StageDataParser.loadStageCacheAsync();
-
-            future.onProgress((loaded:Int, total:Int) -> {
-              parsingStagesPercent = loaded / total;
-            });
-
-            future.onComplete((_result) -> {
-              trace('Completed parsing stages.');
-            });
-           */
-
-          parsingStagesPercent = 1.0;
-          parsingStagesComplete = true;
-          return 0.0;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedParsingStages:Float = elapsed - parsingStagesStartTime;
-          if (parsingStagesComplete && elapsedParsingStages >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = FunkinPreloaderState.ParsingCharacters;
-            return 0.0;
-          }
-          else
-          {
-            // We need to return SIMULATED progress here.
-            if (parsingStagesPercent < (elapsedParsingStages / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              return parsingStagesPercent;
-            }
-            else
-            {
-              return elapsedParsingStages / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (parsingStagesComplete)
-          {
-            currentState = FunkinPreloaderState.ParsingCharacters;
-            return 0.0;
-          }
-        }
-
-        return parsingStagesPercent;
-
-      case ParsingCharacters:
-        if (parsingCharactersPercent < 0)
-        {
-          parsingCharactersPercent = 0.0;
-          parsingCharactersStartTime = elapsed;
-
-          /*
-            // TODO: Reimplement this.
-            var future:Future<Array<String>> = []; // CharacterDataParser.loadCharacterCacheAsync();
-
-            future.onProgress((loaded:Int, total:Int) -> {
-              parsingCharactersPercent = loaded / total;
-            });
-
-            future.onComplete((_result) -> {
-              trace('Completed parsing characters.');
-            });
-           */
-
-          parsingCharactersPercent = 1.0;
-          parsingCharactersComplete = true;
-          return 0.0;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedParsingCharacters:Float = elapsed - parsingCharactersStartTime;
-          if (parsingCharactersComplete && elapsedParsingCharacters >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = FunkinPreloaderState.ParsingSongs;
-            return 0.0;
-          }
-          else
-          {
-            // We need to return SIMULATED progress here.
-            if (parsingCharactersPercent < (elapsedParsingCharacters / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              return parsingCharactersPercent;
-            }
-            else
-            {
-              return elapsedParsingCharacters / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (parsingStagesComplete)
-          {
-            currentState = FunkinPreloaderState.ParsingSongs;
-            return 0.0;
-          }
-        }
-
-        return parsingCharactersPercent;
-
-      case ParsingSongs:
-        if (parsingSongsPercent < 0)
-        {
-          parsingSongsPercent = 0.0;
-          parsingSongsStartTime = elapsed;
-
-          /*
-            // TODO: Reimplement this.
-            var future:Future<Array<String>> = ;
-            // SongDataParser.loadSongCacheAsync();
-
-            future.onProgress((loaded:Int, total:Int) -> {
-              parsingSongsPercent = loaded / total;
-            });
-
-            future.onComplete((_result) -> {
-              trace('Completed parsing songs.');
-            });
-           */
-
-          parsingSongsPercent = 1.0;
-          parsingSongsComplete = true;
-
-          return 0.0;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedParsingSongs:Float = elapsed - parsingSongsStartTime;
-          if (parsingSongsComplete && elapsedParsingSongs >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = FunkinPreloaderState.Complete;
-            return 0.0;
-          }
-          else
-          {
-            // We need to return SIMULATED progress here.
-            if (parsingSongsPercent < (elapsedParsingSongs / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              return parsingSongsPercent;
-            }
-            else
-            {
-              return elapsedParsingSongs / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (parsingSongsComplete)
-          {
-            currentState = FunkinPreloaderState.Complete;
-            return 0.0;
-          }
-          else
-          {
-            return parsingSongsPercent;
-          }
-        }
-      case FunkinPreloaderState.Complete:
+      case Complete:
         if (completeTime <= 0)
         {
           completeTime = elapsed;
@@ -860,7 +700,7 @@ class FunkinPreloader extends FlxBasePreloader
 
         return 1.0;
       #if FEATURE_TOUCH_HERE_TO_PLAY
-      case FunkinPreloaderState.TouchHereToPlay:
+      case TouchHereToPlay:
         if (completeTime < 0)
         {
           completeTime = elapsed;
@@ -911,7 +751,7 @@ class FunkinPreloader extends FlxBasePreloader
   }
   #end
 
-  public static final TOTAL_STEPS:Int = 11;
+  public static final TOTAL_STEPS:Int = 8;
   static final ELLIPSIS_TIME:Float = 0.5;
 
   function updateGraphics(percent:Float, elapsed:Float):Void
@@ -925,7 +765,7 @@ class FunkinPreloader extends FlxBasePreloader
         #if FEATURE_TOUCH_HERE_TO_PLAY
         // The display has faded out, but we're not quite done yet.
         // In order to prevent autoplay issues, we need the user to click after the loading finishes.
-        currentState = FunkinPreloaderState.TouchHereToPlay;
+        currentState = TouchHereToPlay;
         #else
         immediatelyStartGame();
         #end
@@ -961,7 +801,7 @@ class FunkinPreloader extends FlxBasePreloader
 
     #if FEATURE_TOUCH_HERE_TO_PLAY
     // Handle the size of the `touchHereToPlay` sprite.
-    if (currentState == FunkinPreloaderState.TouchHereToPlay)
+    if (currentState == TouchHereToPlay)
     {
       // Normal size based on screen ratio.
       var targetScale:Float = ratio * 0.5;
@@ -1075,7 +915,7 @@ enum abstract FunkinPreloaderState(String) to String
 {
   /**
    * The state before downloading has begun.
-   * Moves to either `DownloadingAssets` or `CachingGraphics` based on platform.
+   * Moves to `DownloadingAssets` immediately.
    */
   public var NotStarted;
 
@@ -1087,52 +927,34 @@ enum abstract FunkinPreloaderState(String) to String
   public var DownloadingAssets;
 
   /**
-   * Preloading play assets.
-   * Loads the `manifest.json` for the `gameplay` library.
-   * If we make the base preloader do this, it will download all the assets as well,
-   * so we have to do it ourselves.
-   */
-  public var PreloadingPlayAssets;
-
-  /**
-   * Loading FireTongue, loading Polymod, parsing and instantiating module scripts.
+   * Loading Polymod, enabling mods, and parsing and instantiating gameplay scripts.
    */
   public var InitializingScripts;
 
   /**
-   * Loading all graphics from the `core` library to the cache.
+   * Loading and parsing game data into registries, including loading JSONS for characters, stages, etc.
+   */
+  public var ParsingGameData;
+
+  /**
+   * Loading all graphics into the cache that we need to preload before the game starts.
    */
   public var CachingGraphics;
 
   /**
-   * Loading all audio from the `core` library to the cache.
+   * Loading all fonts into the cache that we need to preload before the game starts.
+   */
+  public var CachingFonts;
+
+  /**
+   * Loading all audio into the cache that we need to preload before the game starts.
    */
   public var CachingAudio;
 
   /**
-   * Loading all data files from the `core` library to the cache.
+   * Loading all data into the cache that we need to preload before the game starts.
    */
   public var CachingData;
-
-  /**
-   * Parsing all XML files from the `core` library into FlxFramesCollections and caching them.
-   */
-  public var ParsingSpritesheets;
-
-  /**
-   * Parsing stage data and scripts.
-   */
-  public var ParsingStages;
-
-  /**
-   * Parsing character data and scripts.
-   */
-  public var ParsingCharacters;
-
-  /**
-   * Parsing song data and scripts.
-   */
-  public var ParsingSongs;
 
   /**
    * Finishing up.
@@ -1143,7 +965,7 @@ enum abstract FunkinPreloaderState(String) to String
   /**
    * Touch Here to Play is displayed.
    */
-  var TouchHereToPlay;
+  public var TouchHereToPlay;
   #end
 
   /**
@@ -1162,24 +984,18 @@ enum abstract FunkinPreloaderState(String) to String
         return 'Loading \n0/$steps $suffix';
       case DownloadingAssets:
         return 'Downloading assets \n1/$steps $suffix';
-      case PreloadingPlayAssets:
-        return 'Preloading assets \n2/$steps $suffix';
       case InitializingScripts:
-        return 'Initializing scripts \n3/$steps $suffix';
+        return 'Initializing scripts \n2/$steps $suffix';
+      case ParsingGameData:
+        return 'Parsing game data \n3/$steps $suffix';
       case CachingGraphics:
         return 'Caching graphics \n4/$steps $suffix';
+      case CachingFonts:
+        return 'Caching fonts \n5/$steps $suffix';
       case CachingAudio:
-        return 'Caching audio \n5/$steps $suffix';
+        return 'Caching audio \n6/$steps $suffix';
       case CachingData:
-        return 'Caching data \n6/$steps $suffix';
-      case ParsingSpritesheets:
-        return 'Parsing spritesheets \n7/$steps $suffix';
-      case ParsingStages:
-        return 'Parsing stages \n8/$steps $suffix';
-      case ParsingCharacters:
-        return 'Parsing characters \n9/$steps $suffix';
-      case ParsingSongs:
-        return 'Parsing songs \n10/$steps $suffix';
+        return 'Caching additional data \n7/$steps $suffix';
       case Complete:
         return 'Finishing up \n$steps/$steps $suffix';
       #if FEATURE_TOUCH_HERE_TO_PLAY

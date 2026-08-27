@@ -1098,6 +1098,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function cacheAssetLists(force:Bool = false):Void
   {
+    var perf = new funkin.util.logging.Perf('cacheAssetLists(${force})');
     // Cache the results of Assets.list(), forcibly clearing any previous cache.
     FunkinAssetCache.instance.list(null, force);
     @:privateAccess
@@ -1105,6 +1106,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       FunkinAssetCache.instance.list(type, force);
     }
+    perf.print();
   }
 
   /**
@@ -1354,7 +1356,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // On success, resolve the promise with true
 
-      if (permanent)
+      if (bytes != null && permanent)
       {
         #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');

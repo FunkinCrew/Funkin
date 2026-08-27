@@ -932,9 +932,6 @@ class Assets implements ConsoleClass
           #end
         ]);
 
-        // Medal popup
-        results.appendUnique(Paths.animateAtlas('ui/medals/medal-popup').image());
-
       case SOUND:
         results.appendUnique([
           // Built-in
