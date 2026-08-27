@@ -222,27 +222,33 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
     initializeTicks();
 
+    // Immediately hide the waveforms when they're ready
+    // We need to wait for the whole menu to be built before showing to prevent them clipping.
+    waveformPlayer.registerEvent(UIEvent.INITIALIZE, hideWaveform);
+    waveformOpponent.registerEvent(UIEvent.INITIALIZE, hideWaveform);
+    waveformInstrumental.registerEvent(UIEvent.INITIALIZE, hideWaveform);
+
+    waveformPlayer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragWaveform(PLAYER));
+    waveformOpponent.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragWaveform(OPPONENT));
+    waveformInstrumental.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragWaveform(INSTRUMENTAL));
+
+    offsetTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragPlayhead());
+  }
+
+  override function onReady():Void
+  {
     refreshAudioPreview();
     refresh();
     refreshTicks();
+  }
 
-    waveformPlayer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragWaveform(PLAYER);
-    });
-    waveformOpponent.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragWaveform(OPPONENT);
-    });
-    waveformInstrumental.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragWaveform(INSTRUMENTAL);
-    });
+  function hideWaveform(e:UIEvent):Void
+  {
+    var player = cast(e.target, WaveformPlayer);
+    player.waveform.duration = 0;
 
-    offsetTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragPlayhead();
-    });
+    // Unregister the event to make sure this function isn't called again.
+    player.unregisterEvent(UIEvent.INITIALIZE, hideWaveform);
   }
 
   function initializeTicks():Void
