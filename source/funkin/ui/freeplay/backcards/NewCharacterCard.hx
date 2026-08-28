@@ -162,7 +162,7 @@ class NewCharacterCard extends BackingCard
     newUnlock3 = new BGScrollingText(0, 458, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
 
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back')),
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back'), true, false),
       FreeplayState.CUTOUT_WIDTH
     );
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
@@ -192,7 +192,7 @@ class NewCharacterCard extends BackingCard
     newUnlock3.speed = 2;
     add(newUnlock3);
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar')),
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar'), true, false),
       FreeplayState.CUTOUT_WIDTH
     );
     multiplyBar = new FlxSprite(-10, 440).loadGraphic(bitmap);
@@ -205,7 +205,10 @@ class NewCharacterCard extends BackingCard
     ).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
     lightLayer.blend = BlendMode.ADD;
     add(lightLayer);
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/red')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/red'), true, false),
+      FreeplayState.CUTOUT_WIDTH
+    );
     multiply1 = new FlxSprite(-15, -125).loadGraphic(bitmap);
     multiply1.blend = BlendMode.MULTIPLY;
     add(multiply1);
@@ -222,7 +225,7 @@ class NewCharacterCard extends BackingCard
     add(lightLayer2);
 
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg')),
+      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg'), true, false),
       FreeplayState.CUTOUT_WIDTH
     );
     yellow = new FlxSprite(0, 0).loadGraphic(bitmap);

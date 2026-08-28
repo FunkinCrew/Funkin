@@ -44,7 +44,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
 
     this.currentCharacter = currentCharacter;
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow'), true, false), FreeplayState.CUTOUT_WIDTH);
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
     confirmGlow = new FlxSprite(
@@ -56,7 +56,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
       115
     ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back'), true, false), FreeplayState.CUTOUT_WIDTH);
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 

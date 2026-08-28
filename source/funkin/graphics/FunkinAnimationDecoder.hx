@@ -127,14 +127,7 @@ class FunkinAnimationDecoder
 
     if (bitmapData != null) bitmapData.dispose();
 
-    bitmapData = new BitmapData(0, 0, true, 0);
-    bitmapData.rect.setTo(0, 0, w, h);
-    bitmapData.__texture = Lib.current.stage.context3D.createTexture(w, h, BGRA, true);
-    bitmapData.__texture.__internalFormat = bitmapData.__texture.__context.gl.RGBA;
-    bitmapData.__texture.__format = bitmapData.__texture.__context.gl.RGBA;
-    bitmapData.__textureContext = bitmapData.__texture.__textureContext;
-    bitmapData.__resize(w, h);
-    bitmapData.__isValid = true;
+    bitmapData = BitmapData.fromTexture(Lib.current.stage.context3D.createTexture(w, h, RGBA, true), false);
   }
 
   function uploadFrameTexture(frame:AnimationDecoderFrame):Void
