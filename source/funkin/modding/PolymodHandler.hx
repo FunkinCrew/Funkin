@@ -624,6 +624,19 @@ class PolymodHandler
 
     // Blacklists accessing the interp for polymod hscript
     Polymod.blacklistInstanceFields(polymod.hscript._internal.PolymodScriptClass.PolymodScriptClass, ['_interp']);
+
+    Polymod.blacklistDynamicFieldNames([
+      'resolveFlixelClasses',
+      'classTypes',
+      'unserialize',
+      'getLibrary',
+      'readObject',
+      'clearData',
+      'setLevelScore',
+      'setSongScore',
+      'applySongRank',
+      '_interp'
+    ]);
   }
 
   /**
