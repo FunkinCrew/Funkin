@@ -1,7 +1,9 @@
 # Compiles a mod's scripted classes to a single .cppia the game can load.
-# Usage: ./build_cppia.ps1 [--sdk <sdk-dir>] [--target <platform>] [--config <debug|release>] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]
-#		--no-debug disables error handling/crash reporting in .cppia files
-# 	helps with debugging but you might want to disable it once you release (as it increases size overhead)
+# Usage: ./build_cppia.ps1 [--sdk <sdk-dir>] [--target <platform>] [--config <debug|release>] <game-root> <script-dir> <output.cppia> [Class ...]
+
+# Always built with -debug. That is what keeps haxe emitting the text cppia container rather than the
+# binary one, and the game refuses the binary form because its bytecode cannot be walked to check it
+# against the mod blacklist. It also means a crash inside a script reports a file and a line.
 
 # SDK here contains `export_classes.info and cppia.hxml`, and you also need the game checked out (as seen by 'game root)
 # That refers to the games source code, not a compiled version of the game.
@@ -19,14 +21,10 @@ $Sdk = $null
 $Target = 'windows'
 $Config = 'release'
 $KeepResources = $false
-$Debug = $true
 $positional = @()
 for ($i = 0; $i -lt $Arguments.Count; $i++) {
 	if ($Arguments[$i] -in @('--keep-resources', '-keep-resources', '-KeepResources')) {
 		$KeepResources = $true
-	}
-	elseif ($Arguments[$i] -in @('--no-debug', '-no-debug', '-NoDebug')) {
-		$Debug = $false
 	}
 	elseif ($Arguments[$i] -in @('--sdk', '-sdk', '-Sdk')) {
 		if ($i + 1 -ge $Arguments.Count) { Write-Error "--sdk needs a directory after it." }
@@ -49,7 +47,7 @@ for ($i = 0; $i -lt $Arguments.Count; $i++) {
 }
 
 if ($positional.Count -lt 3) {
-	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] [--keep-resources] [--no-debug] <game-root> <script-dir> <output.cppia> [Class ...]"
+	Write-Error "Usage: build_cppia.ps1 [--sdk <sdk-dir>] [--keep-resources] <game-root> <script-dir> <output.cppia> [Class ...]"
 }
 
 $GameRoot = $positional[0]
@@ -131,10 +129,8 @@ try {
 		$kept += "--macro funkin.util.macro.CppiaStripMacro.stripResources()"
 	}
 
-	# Without this a crash inside the script reports no file and no line, only "in #0".
-	if ($Debug) {
-		$kept += "-debug"
-	}
+	# can only be CPPIA
+	$kept += "-debug"
 
 	if (-not [System.IO.Path]::IsPathRooted($Output)) {
 		$Output = Join-Path (Get-Location).Path $Output
@@ -153,6 +149,14 @@ try {
 	if ($LASTEXITCODE -ne 0) { Write-Error "haxe failed with exit code $LASTEXITCODE" }
 
 	if (-not (Test-Path $Output)) { Write-Error "haxe reported success but produced no $Output" }
+
+	$magicBytes = New-Object byte[] 5
+	$stream = [System.IO.File]::OpenRead($Output)
+	try { $null = $stream.Read($magicBytes, 0, 5) } finally { $stream.Close() }
+	$magic = [System.Text.Encoding]::ASCII.GetString($magicBytes)
+	if ($magic -ne 'CPPIA') {
+		Write-Error "$Output starts with `"$magic`" rather than CPPIA, so it is not a text cppia. The game refuses the binary form, since its bytecode cannot be checked against the mod blacklist."
+	}
 
 	Write-Host "Wrote $Output ($((Get-Item $Output).Length) bytes)"
 }
