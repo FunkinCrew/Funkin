@@ -96,7 +96,6 @@ class ModInstaller
 
   /**
    * Turns a submission listed in another one's requirements into something the queue can install.
-   *
    * @return The request, or null if the requirement isn't a GameBanana submission.
    */
   public static function requestForRequirement(requirement:OneClickRequirement):Null<OneClickRequest>
@@ -117,7 +116,6 @@ class ModInstaller
 
   /**
    * Looks up the submission a one-click link points at.
-   *
    * @param request The parsed link.
    * @param onSuccess Called with the resolved metadata.
    * @param onError Called with a human readable reason.
@@ -129,7 +127,6 @@ class ModInstaller
 
   /**
    * Fetches and interprets a submission's profile.
-   *
    * @param model The GameBanana model name, such as `Mod` or `Tool`.
    * @param itemId The submission ID.
    * @param fileId The specific file to pick, or null to take the only one.
@@ -194,7 +191,6 @@ class ModInstaller
 
   /**
    * Loads the mod folder category list, then hands it over.
-   *
    * @param onReady Called with the allowed category IDs, or null if they couldn't be fetched.
    */
   static function fetchModFolderCategories(onReady:Null<Array<Int>>->Void):Void
@@ -239,7 +235,6 @@ class ModInstaller
 
   /**
    * Downloads the archive described by the resolved metadata.
-   *
    * @param mod The resolved metadata.
    * @param onProgress Called with a 0-1 ratio as the download runs.
    * @param onSuccess Called with the path of the downloaded archive, which the caller owns.
@@ -263,8 +258,6 @@ class ModInstaller
     // The download streams into the mods folder, so it has to exist before the transfer starts.
     PolymodHandler.createModRoot();
 
-    // GameBanana already told us how big the file is, which covers the case where the CDN answers
-    // with a chunked response and never sends a Content-Length for `sys.Http` to work from.
     final job:DownloadJob = new DownloadJob(mod.downloadUrl, mod.md5, mod.filesize, getTempPath());
 
     activeDownload = job;
@@ -540,7 +533,6 @@ class ModInstaller
 
   /**
    * Checks a finished download against what GameBanana said it should be.
-   *
    * @return A human readable reason, or null if the file looks right.
    */
   static function verify(job:DownloadJob, written:Int):Null<String>
@@ -575,7 +567,6 @@ class ModInstaller
 
   /**
    * Fetches the submission's preview image, so the prompt has something to show.
-   *
    * @param mod The resolved metadata.
    * @param onSuccess Called with the decoded image.
    */
@@ -600,7 +591,6 @@ class ModInstaller
 
   /**
    * Writes a verified archive into the mods folder, on a background thread.
-   *
    * @param mod The resolved metadata.
    * @param archivePath The verified archive on disk. Consumed, so it is gone afterwards either way.
    * @param onProgress Called with how far through the archive the worker is, from 0 to 1.
@@ -705,7 +695,6 @@ class ModInstaller
   #if sys
   /**
    * Reads the table an archive keeps of everything inside it.
-   *
    * @param handle An open archive, left wherever the read finished.
    * @param archiveSize How big the archive is on disk.
    * @return What the archive says it holds, in the order it was packed.
@@ -756,7 +745,6 @@ class ModInstaller
 
   /**
    * Looks inside an archive to see if the mod is nested in a folder, and what that folder is.
-   *
    * @return The folder the metadata sits in, or `null` if it is already at the top.
    */
   static function findNestedRoot(archivePath:String):Null<String>
@@ -938,7 +926,6 @@ class ModInstaller
 
   /**
    * Pulls the host out of an absolute HTTPS URL.
-   *
    * @return The lowercased host, or null if the URL isn't absolute HTTPS.
    */
   static function getHost(url:String):Null<String>
@@ -1052,7 +1039,6 @@ class ModInstaller
 
   /**
    * Pulls the model and submission ID out of a GameBanana profile URL.
-   *
    * @return The parsed pair, both null if the URL isn't a GameBanana submission.
    */
   static function parseSubmissionUrl(url:Null<String>):{model:Null<String>, itemId:Null<String>}
@@ -1121,10 +1107,8 @@ class ModInstaller
 
   /**
    * Rejects anything we shouldn't be downloading.
-   *
    * @param mod The resolved metadata.
-   * @param allowedCategories The categories that count as a base game mod folder, or null if we
-   * couldn't look them up.
+   * @param allowedCategories The categories that count as a base game mod folder, null if none.
    * @return A human readable reason, or null if the file is fine.
    */
   static function validate(mod:OneClickMod, allowedCategories:Null<Array<Int>>):Null<String>

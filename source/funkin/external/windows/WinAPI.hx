@@ -22,7 +22,6 @@ extern class WinAPI
 
   /**
    * Retrieves the current working set size (in bytes) of the process.
-   *
    * @return The size of the working set memory used by the process.
    */
   @:native('WINAPI_GetProcessMemoryWorkingSetSize')
@@ -31,7 +30,6 @@ extern class WinAPI
   /**
    * Registers a custom URL scheme for the current user, so links using it launch this executable.
    * Writes to HKCU, so no administrator rights are needed.
-   *
    * @param scheme The scheme name, without the trailing colon.
    * @param description The human readable name shown by the shell.
    * @param exePath The absolute path of the executable that should handle the scheme.
@@ -42,7 +40,6 @@ extern class WinAPI
 
   /**
    * Checks whether the given scheme already points at the given executable for this user.
-   *
    * @param scheme The scheme name, without the trailing colon.
    * @param exePath The absolute path of the executable we expect to be registered.
    * @return Whether the scheme is registered to that executable.
@@ -52,7 +49,6 @@ extern class WinAPI
 
   /**
    * Removes a previously registered custom URL scheme for the current user.
-   *
    * @param scheme The scheme name, without the trailing colon.
    * @return Whether the scheme is gone once the call returns.
    */

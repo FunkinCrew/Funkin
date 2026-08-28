@@ -78,7 +78,6 @@ class OneClickInstallHandler
 
   /**
    * Holds onto the link that launched the game, for the mod menu to pick up once it opens.
-   *
    * @param link The link from the command line, if there was one.
    * @return Whether the link was valid enough to be worth opening the mod menu for.
    */
@@ -106,7 +105,6 @@ class OneClickInstallHandler
 
   /**
    * Puts a link on the queue, to be installed as soon as the mod menu is open and free.
-   *
    * @param link The full `funkin:` URL.
    */
   public static function handleLink(link:String):Void
@@ -142,7 +140,6 @@ class OneClickInstallHandler
 
   /**
    * Puts mods at the front of the queue, keeping the order they were given in.
-   *
    * @param requests The submissions to install next.
    */
   public static function enqueueNext(requests:Array<OneClickRequest>):Void
