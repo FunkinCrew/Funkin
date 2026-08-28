@@ -200,19 +200,27 @@ class HotReloadState extends MusicBeatState
       FunkinAssetCache.instance.forceClearCache();
 
       return true;
-    }).onComplete((_) ->
+    }).onComplete((_) -> afterPurgeCache()).onError((error) ->
       {
-        trace('queuePurgeCache.onComplete()');
-        // OK now that we've purged the asset cache, we can display the progress bar
-        // without the assets for it getting purged while they're in use.
-        // NOTE: onComplete() is run in the main thread.
-        buildProgressBar();
-
-        updateProgress(1, 10);
-
-        // Start the next step.
-        queueLoadEnabledMods();
+        reportStepFailed('purge cache', error);
+        afterPurgeCache();
       });
+  }
+
+  function afterPurgeCache():Void
+  {
+    trace('queuePurgeCache.onComplete()');
+    // OK now that we've purged the asset cache, we can display the progress bar
+    // without the assets for it getting purged while they're in use.
+    // NOTE: onComplete() is run in the main thread.
+    buildProgressBar();
+
+    updateProgress(1, 10);
+
+    rebuildSoundTray();
+
+    // Start the next step.
+    queueLoadEnabledMods();
   }
 
   /**
@@ -234,14 +242,18 @@ class HotReloadState extends MusicBeatState
       FunkinAssetCache.instance.cacheAssetLists(true);
 
       return true;
-    }).onComplete((_) ->
+    }).onComplete((_) -> afterLoadEnabledMods()).onError((error) ->
       {
-        updateProgress(2, 10);
-
-        rebuildSoundTray();
-
-        queueLoadScripts();
+        reportStepFailed('load enabled mods', error);
+        afterLoadEnabledMods();
       });
+  }
+
+  function afterLoadEnabledMods():Void
+  {
+    updateProgress(2, 10);
+
+    queueLoadScripts();
   }
 
   function rebuildSoundTray():Void
@@ -265,15 +277,21 @@ class HotReloadState extends MusicBeatState
 
     var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
 
-    scriptFuture.onComplete((_result) ->
+    scriptFuture.onComplete((_result) -> afterLoadScripts()).onError((error) ->
     {
-      trace('Script loading complete');
-
-      updateProgress(3, 10);
-
-      // Load registry data asynchronously.
-      queueLoadRegistryData();
+      reportStepFailed('load scripts', error);
+      afterLoadScripts();
     });
+  }
+
+  function afterLoadScripts():Void
+  {
+    trace('Script loading complete');
+
+    updateProgress(3, 10);
+
+    // Load registry data asynchronously.
+    queueLoadRegistryData();
   }
 
   /**
@@ -309,15 +327,36 @@ class HotReloadState extends MusicBeatState
       updateProgress(loaded, total);
     });
 
-    registryFuture.onComplete((_) ->
+    registryFuture.onComplete((_) -> afterLoadRegistryData()).onError((error) ->
     {
-      // Call create() on each module when the future is complte.
-      ModuleHandler.callOnCreate();
-
-      updateProgress(10, 10);
-
-      isComplete = true;
+      reportStepFailed('load registry data', error);
+      afterLoadRegistryData();
     });
+  }
+
+  function afterLoadRegistryData():Void
+  {
+    // Call create() on each module when the future is complte.
+    try
+    {
+      ModuleHandler.callOnCreate();
+    }
+    catch (error:Dynamic)
+    {
+      reportStepFailed('module create', error);
+    }
+
+    updateProgress(10, 10);
+
+    isComplete = true;
+  }
+
+  function reportStepFailed(step:String, error:Dynamic):Void
+  {
+    var message:String = 'Hot reload step "$step" failed: $error';
+
+    trace(message);
+    FlxG.log.error(message);
   }
 
   /**
