@@ -18,6 +18,23 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import funkin.assets.Assets;
 import funkin.assets.Paths.AssetPath;
+import funkin.data.dialogue.ConversationRegistry;
+import funkin.data.dialogue.DialogueBoxRegistry;
+import funkin.data.dialogue.SpeakerRegistry;
+import funkin.data.freeplay.album.AlbumRegistry;
+import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.data.freeplay.style.FreeplayStyleRegistry;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.data.song.SongRegistry;
+import funkin.data.stickers.StickerRegistry;
+import funkin.util.plugins.SidePanelPlugin;
+import funkin.play.event.SongEventHelper;
+import funkin.data.event.SongEventRegistry;
+import funkin.data.stage.StageRegistry;
+import funkin.data.story.level.LevelRegistry;
+import funkin.modding.module.ModuleHandler;
+import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.play.notes.notekind.NoteKindManager;
 
 using StringTools;
 
@@ -375,21 +392,21 @@ class FunkinPreloader extends FlxBasePreloader
 
           var futures:Array<Future<LoadEntriesResult>> = [];
 
-          futures.push(funkin.data.song.SongRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.story.level.LevelRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.notestyle.NoteStyleRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.freeplay.player.PlayerRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.dialogue.ConversationRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.dialogue.DialogueBoxRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.dialogue.SpeakerRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.freeplay.album.AlbumRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.stage.StageRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.stickers.StickerRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.freeplay.style.FreeplayStyleRegistry.instance.loadEntriesAsync());
-          futures.push(funkin.data.event.SongEventRegistry.loadEventCacheAsync());
-          futures.push(funkin.play.notes.notekind.NoteKindManager.loadNoteKindsAsync());
-          futures.push(funkin.data.character.CharacterData.CharacterDataParser.loadCharacterCacheAsync());
-          futures.push(funkin.modding.module.ModuleHandler.loadModuleCacheAsync());
+          futures.push(SongRegistry.instance.loadEntriesAsync());
+          futures.push(LevelRegistry.instance.loadEntriesAsync());
+          futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
+          futures.push(PlayerRegistry.instance.loadEntriesAsync());
+          futures.push(ConversationRegistry.instance.loadEntriesAsync());
+          futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
+          futures.push(SpeakerRegistry.instance.loadEntriesAsync());
+          futures.push(AlbumRegistry.instance.loadEntriesAsync());
+          futures.push(StageRegistry.instance.loadEntriesAsync());
+          futures.push(StickerRegistry.instance.loadEntriesAsync());
+          futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
+          futures.push(SongEventRegistry.loadEventCacheAsync());
+          futures.push(NoteKindManager.loadNoteKindsAsync());
+          futures.push(CharacterDataParser.loadCharacterCacheAsync());
+          futures.push(ModuleHandler.loadModuleCacheAsync());
 
           var registryFuture = lime.app.Promises.allSettled(futures);
 
