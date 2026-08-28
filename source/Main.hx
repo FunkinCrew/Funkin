@@ -247,7 +247,7 @@ class Main extends Sprite
           debugDisplay.x = FlxG.game.x + thypos;
         }
 
-        debugDisplay.y = FlxG.game.y + (3 * scale);
+        debugDisplay.y = FlxG.game.y + (10 * scale);
       }
     }
   }
