@@ -117,9 +117,10 @@ class Assets implements ConsoleClass
    */
   public static function getBitmapData(path:String,
     useCache:Bool = true,
-    allowCompressedTextures:Bool = true):openfl.display.BitmapData
+    allowCompressedTextures:Bool = true,
+    allowHardwareTextures:Bool = true):openfl.display.BitmapData
   {
-    return openfl.utils.Assets.getBitmapData(path, useCache, allowCompressedTextures);
+    return openfl.utils.Assets.getBitmapData(path, useCache, allowCompressedTextures, allowHardwareTextures);
   }
 
   /**
@@ -129,9 +130,10 @@ class Assets implements ConsoleClass
    */
   public static function loadBitmapData(path:String,
     useCache:Null<Bool> = true,
-    allowCompressedTextures:Bool = true):Future<openfl.display.BitmapData>
+    allowCompressedTextures:Bool = true,
+    allowHardwareTextures:Bool = true):Future<openfl.display.BitmapData>
   {
-    return openfl.utils.Assets.loadBitmapData(path, useCache, allowCompressedTextures);
+    return openfl.utils.Assets.loadBitmapData(path, useCache, allowCompressedTextures, allowHardwareTextures);
   }
 
   /**

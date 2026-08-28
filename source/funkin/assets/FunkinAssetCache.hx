@@ -759,16 +759,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(assetPath.toString(), false).then((bitmapData:BitmapData) ->
-      {
-        // Upload to the GPU only if the feature is enabled and the asset doesn't require pixel data in memory.
-        if (uploadToGPU && !assetPath.needsPixelData)
+      var future:Future<BitmapData> = OpenFLAssets
+        .loadBitmapData(assetPath.toString(), false, !assetPath.needsPixelData, !assetPath.needsPixelData)
+        .then((bitmapData:BitmapData) ->
         {
-          bitmapData.toGPU();
-        }
-        setBitmapData(assetPath.toString(), bitmapData);
-        return Future.withValue(bitmapData);
-      });
+          if (uploadToGPU)
+          {
+            bitmapData.toGPU(false);
+          }
+          setBitmapData(assetPath.toString(), bitmapData);
+          return Future.withValue(bitmapData);
+        });
       return future;
     }
   }
