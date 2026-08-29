@@ -115,6 +115,27 @@ class Preferences
   }
 
   /**
+   * If enabled, any notes going toward the strumline have a blur effect placed on them, which makes their movements appear smoother.
+   *
+   * WARNING: This can cause eye strain and/or motion sickness!
+   * @default `true`
+   */
+  public static var motionBlur(get, set):Bool;
+
+  static function get_motionBlur():Bool
+  {
+    return Save?.instance?.options?.motionBlur ?? true;
+  }
+
+  static function set_motionBlur(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.motionBlur = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.
    * @default `true`
    */

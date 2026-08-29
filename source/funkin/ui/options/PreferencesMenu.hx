@@ -121,6 +121,12 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       #if FEATURE_TOUCH_CONTROLS ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows
       #end);
+    createPrefItemCheckbox('Motion Blur',
+    'If enabled, notes have motion blur.\nWARNING: This can cause eye strain and/or motion sickness!',
+    function(value:Bool):Void
+    {
+      Preferences.motionBlur = value;
+    }, Preferences.motionBlur);
     createPrefItemPercentage('Strumline Background', 'Show a semi-transparent background behind the strumline.', function(value:Int):Void
     {
       Preferences.strumlineBackgroundOpacity = value;
