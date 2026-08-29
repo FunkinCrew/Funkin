@@ -2745,11 +2745,6 @@ class PlayState extends MusicBeatSubState
     });
     #end
 
-    if (startTimestamp > 0)
-    {
-      handleSkippedNotes();
-    }
-
     var event:ScriptEvent = ScriptEvent.get(SONG_START);
     dispatchEvent(event);
 
