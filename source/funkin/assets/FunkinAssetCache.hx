@@ -1180,13 +1180,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       if (FunkinBitmapFrontend.instance.isValid(flxGraphic))
       {
-        // warm up the dang graphic you dang old janky old dang stupid white idfk
-        // Taken from old funkin memory.
-        var sprite = new flixel.FlxSprite();
-        sprite.loadGraphic(flxGraphic);
-        sprite.draw(); // Draw sprite and load it into game's memory.
-        flxGraphic.bitmap?.getTexture(FlxG.stage.context3D); // Just in case that didn't work...
-        sprite.destroy();
+        flxGraphic.bitmap?.getTexture(FlxG.stage.context3D);
       }
 
       if (permanent)
