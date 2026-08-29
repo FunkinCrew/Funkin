@@ -164,8 +164,10 @@ class SustainTrail extends FunkinSprite
     this.active = true; // This NEEDS to be true for the note to be drawn!
 
     if (antialiasing && Preferences.motionBlur) {
-      blurFilter = new BlurFilter(1, 2.5, BitmapFilterQuality.LOW);
-      this.filters = [blurFilter];
+      blurFilter = new BlurFilter(1, 2.25, BitmapFilterQuality.LOW);
+
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
     }
   }
 
@@ -586,7 +588,10 @@ class SustainTrail extends FunkinSprite
     handledMiss = false;
 
     if (antialiasing && Preferences.motionBlur)
-      this.filters = [blurFilter];
+    {
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   override public function destroy():Void

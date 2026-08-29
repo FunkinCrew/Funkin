@@ -179,8 +179,10 @@ class NoteSprite extends FunkinSprite
     if (noteStyle != null) setupNoteGraphic(noteStyle);
 
     if (antialiasing && Preferences.motionBlur) {
-      blurFilter = new BlurFilter(1, 2.5, BitmapFilterQuality.LOW);
-      this.filters = [blurFilter];
+      blurFilter = new BlurFilter(1, 2.25, BitmapFilterQuality.LOW);
+
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
     }
   }
 
@@ -274,7 +276,10 @@ class NoteSprite extends FunkinSprite
     this.hsvShader.value = 1.0;
 
     if (antialiasing && Preferences.motionBlur)
-      this.filters = [blurFilter];
+    {
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   override public function kill():Void
