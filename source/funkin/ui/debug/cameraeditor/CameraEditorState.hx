@@ -1062,7 +1062,12 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
     }
 
-    if (timeline != null && timeline.viewport != null) timeline.viewport.tickEdgeAutoScroll(elapsed);
+    if (timeline != null && timeline.viewport != null)
+    {
+      timeline.viewport.tickEdgeAutoScroll(elapsed);
+      timeline.viewport.handleTrackpadScroll();
+    }
+    if (mainView != null) mainView.handleTrackpadScroll();
 
     super.update(elapsed);
 
@@ -2633,15 +2638,26 @@ class CameraEditorState extends UIState implements ConsoleClass
     performAutoSortLayersByType();
   }
 
-  // TODO: make this wheel zoom sensitivity configurable
-
   function onViewportZoom(e:CameraViewportEvent):Void
   {
+    var scaledDelta:Float = e.zoomDelta * 10.0;
+    var rawScale:Float = Math.exp(scaledDelta / 100.0);
+    rawScale = Math.min(1.25, Math.max(0.75, rawScale));
+
     pivotZoomOnViewport(() ->
     {
-      if (isCameraRelative) relativeZoom += MouseUtil.mouseWheelZoomData(0.08, e.zoomDelta);
+      if (isCameraRelative)
+      {
+        relativeZoom *= rawScale;
+        if (relativeZoom < 0.1) relativeZoom = 0.1;
+        if (relativeZoom > 10.0) relativeZoom = 10.0;
+      }
       else
-        MouseUtil.mouseWheelZoom(0.08, e.zoomDelta);
+      {
+        FlxG.camera.zoom *= rawScale;
+        if (FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
+        if (FlxG.camera.zoom > 10.0) FlxG.camera.zoom = 10.0;
+      }
     });
   }
 

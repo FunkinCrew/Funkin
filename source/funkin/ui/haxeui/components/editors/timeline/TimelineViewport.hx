@@ -35,6 +35,9 @@ class TimelineViewport extends Box
   public static inline var EDGE_AUTOSCROLL_ZONE_PX:Float = 40.0;
   public static inline var EDGE_AUTOSCROLL_MAX_PX_PER_SEC:Float = 1500.0;
   public static inline var EDGE_AUTOSCROLL_MAX_OVERDRAG_FACTOR:Float = 3.0;
+  public static inline var TRACKPAD_WHEEL_THRESHOLD:Float = 1.0;
+  public static inline var TRACKPAD_TIME_SCROLL_MULT:Float = 100.0;
+  public static inline var TRACKPAD_LAYER_SCROLL_MULT:Float = 48.0;
 
   @:clonable @:behaviour(DataBehaviour, 0.0)
   public var scrollOffsetMs:Float;
@@ -157,6 +160,44 @@ class TimelineViewport extends Box
   public function tickEdgeAutoScroll(elapsed:Float):Void
   {
     _eventsInstance.tickEdgeAutoScroll(elapsed);
+  }
+
+  public function handleTrackpadScroll():Void
+  {
+    var dx:Float = FlxG.mouse.deltaWheel.x;
+    var dy:Float = FlxG.mouse.deltaWheel.y;
+    if (dx == 0 && dy == 0) return;
+    if (FlxG.keys.pressed.SHIFT) return;
+    if (FlxG.mouse.gameX < screenLeft || FlxG.mouse.gameX > screenLeft + width
+      || FlxG.mouse.gameY < screenTop || FlxG.mouse.gameY > screenTop + height) return;
+
+    var isTrackpad:Bool = dx != 0 || Math.abs(dy) < TRACKPAD_WHEEL_THRESHOLD;
+    if (!isTrackpad) return;
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      scrollVertical((dy * TRACKPAD_LAYER_SCROLL_MULT) / LAYER_HEIGHT);
+    }
+    else
+    {
+      if (dx != 0)
+      {
+        var pxPerMs:Float = pixelsPerMs * zoomLevel;
+        var scrollMs:Float = pxPerMs > 0 ? (dx * TRACKPAD_TIME_SCROLL_MULT) / pxPerMs : 0;
+        scrollOffsetMs = scrollOffsetMs + scrollMs;
+        if (scrollOffsetMs < 0) scrollOffsetMs = 0;
+      }
+
+      if (dy != 0)
+      {
+        scrollVertical((dy * TRACKPAD_LAYER_SCROLL_MULT) / LAYER_HEIGHT);
+      }
+    }
+
+    refreshLayout();
+
+    var zoomEvent = new TimelineEvent(TimelineEvent.ZOOM_CHANGED);
+    dispatch(zoomEvent);
   }
 
   // Caller is responsible for `refreshLayout()` afterwards.
@@ -1102,6 +1143,9 @@ private class TimelineViewportEvents extends haxe.ui.events.Events
 
   function _onMouseWheel(e:MouseEvent):Void
   {
+    // Skip trackpad input, handled by handleTrackpadScroll().
+    if (FlxG.mouse.deltaWheel.x != 0 || Math.abs(FlxG.mouse.deltaWheel.y) < TimelineViewport.TRACKPAD_WHEEL_THRESHOLD) return;
+
     if (e.shiftKey)
     {
       var localX = e.screenX - _viewport.screenLeft;
