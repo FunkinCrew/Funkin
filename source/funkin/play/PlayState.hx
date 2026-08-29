@@ -2188,23 +2188,6 @@ class PlayState extends MusicBeatSubState
       iconP2.zIndex = 850;
       add(iconP2);
       iconP2.cameras = [camHUD];
-
-      #if FEATURE_DISCORD_RPC
-      if (currentSong.isDiscordRPCAnonymous())
-      {
-        discordRPCAlbum = 'album-volume1';
-        discordRPCIcon = 'icon-face';
-      }
-      else
-      {
-        var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
-        var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? 'album-${(currentChart?.album ?? '')}';
-        var icon:Null<String> = currentChart?.discordRPCImage ?? dad.getDiscordRPCImage();
-
-        discordRPCAlbum = album;
-        discordRPCIcon = icon;
-      }
-      #end
     }
 
     //
@@ -2260,6 +2243,24 @@ class PlayState extends MusicBeatSubState
         FlxG.console.registerObject('dad', dad);
         #end
       }
+
+      // SET DISCORD-RPC ALBUM AND ICON
+      #if FEATURE_DISCORD_RPC
+      if (currentSong.isDiscordRPCAnonymous())
+      {
+        discordRPCAlbum = 'album-volume1';
+        discordRPCIcon = 'icon-face';
+      }
+      else
+      {
+        var albumEntry:Null<funkin.ui.freeplay.Album> = funkin.data.freeplay.album.AlbumRegistry.instance.fetchEntry(currentChart?.album ?? '');
+        var album:Null<String> = albumEntry?.getDiscordRPCImage() ?? 'album-${(currentChart?.album ?? '')}';
+        var icon:Null<String> = currentChart?.discordRPCImage ?? dad?.getDiscordRPCImage() ?? "";
+
+        discordRPCAlbum = album;
+        discordRPCIcon = icon;
+      }
+      #end
 
       // Rearrange by z-indexes.
       currentStage.refresh();
