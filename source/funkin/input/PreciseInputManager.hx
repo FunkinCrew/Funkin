@@ -38,6 +38,8 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
   public var onInputPressed:FlxTypedSignal<PreciseInputEvent->Void>;
   public var onInputReleased:FlxTypedSignal<PreciseInputEvent->Void>;
 
+  public var currentFrameTimestamp:Int64 = 0;
+
   /**
    * The list of keys that are bound to game inputs (up/down/left/right).
    */
@@ -106,6 +108,13 @@ class PreciseInputManager extends FlxKeyManager<FlxKey, PreciseInputList>
 
     onInputPressed = new FlxTypedSignal<PreciseInputEvent->Void>();
     onInputReleased = new FlxTypedSignal<PreciseInputEvent->Void>();
+
+    updateFrameTimestamp();
+  }
+
+  public function updateFrameTimestamp()
+  {
+    currentFrameTimestamp = getCurrentTimestamp();
   }
 
   public static function getKeysForDirection(controls:Controls, noteDirection:NoteDirection)
