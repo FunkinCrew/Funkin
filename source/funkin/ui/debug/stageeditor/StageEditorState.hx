@@ -645,11 +645,7 @@ class StageEditorState extends UIState
     camGame.follow(camFollow);
     // camera movement
 
-    if ((FlxG.mouse.deltaWheel.y > 0 || (FlxG.mouse.deltaWheel.y < 0 && camGame.zoom > 0.11)) && !isCursorOverHaxeUI) // include the floating poing error thing
-    {
-      camGame.zoom += FlxG.mouse.deltaWheel.y / 10;
-      updateBGSize();
-    }
+    if (!isCursorOverHaxeUI) handleTrackpadScroll();
 
     // key shortcuts and inputs
     if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick('exit');
@@ -1057,6 +1053,31 @@ class StageEditorState extends UIState
     bg.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom);
     bg.updateHitbox();
     bg.screenCenter();
+  }
+
+  static final TRACKPAD_PAN_SCALE:Float = 25.0;
+
+  function handleTrackpadScroll():Void
+  {
+    var dx:Float = FlxG.mouse.deltaWheel.x;
+    var dy:Float = FlxG.mouse.deltaWheel.y;
+    if (dx == 0 && dy == 0) return;
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      if (dy == 0) return;
+      var scaledDelta:Float = dy * 10.0;
+      var rawScale:Float = Math.exp(scaledDelta / 100.0);
+      rawScale = Math.min(1.25, Math.max(0.75, rawScale));
+      camGame.zoom *= rawScale;
+      if (camGame.zoom < 0.11) camGame.zoom = 0.11;
+      if (camGame.zoom > 10.0) camGame.zoom = 10.0;
+      updateBGSize();
+      return;
+    }
+
+    camFollow.x += (dx * TRACKPAD_PAN_SCALE) / camGame.zoom;
+    camFollow.y -= (dy * TRACKPAD_PAN_SCALE) / camGame.zoom;
   }
 
   var sprDependant:Array<MenuItem> = [];

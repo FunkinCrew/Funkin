@@ -1,5 +1,6 @@
 package funkin.ui.haxeui.components.editors.camera;
 
+import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Screen;
@@ -15,6 +16,31 @@ import funkin.util.HaxeUIUtil;
 @:composite(CameraViewportEvents)
 class CameraViewport extends Box
 {
+  public static inline var TRACKPAD_PAN_SCALE:Float = 25.0;
+
+  public function handleTrackpadScroll():Void
+  {
+    var dx:Float = FlxG.mouse.deltaWheel.x;
+    var dy:Float = FlxG.mouse.deltaWheel.y;
+    if (dx == 0 && dy == 0) return;
+    if (FlxG.keys.pressed.SHIFT) return;
+    if (FlxG.mouse.gameX < screenLeft || FlxG.mouse.gameX > screenLeft + width
+      || FlxG.mouse.gameY < screenTop || FlxG.mouse.gameY > screenTop + height) return;
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      if (dy == 0) return;
+      var zoomEvent:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.ZOOM);
+      zoomEvent.zoomDelta = dy;
+      dispatch(zoomEvent);
+      return;
+    }
+
+    var panEvent:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.GESTURE_PAN);
+    panEvent.panDeltaX = -dx * TRACKPAD_PAN_SCALE;
+    panEvent.panDeltaY = dy * TRACKPAD_PAN_SCALE;
+    dispatch(panEvent);
+  }
 }
 
 private enum PanSource
@@ -47,7 +73,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   override public function register():Void
   {
-    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
     if (!hasEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown)) registerEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
     if (!hasEvent(MouseEvent.MOUSE_OVER, _onMouseOver)) registerEvent(MouseEvent.MOUSE_OVER, _onMouseOver);
     if (!hasEvent(MouseEvent.MOUSE_OUT, _onMouseOut)) registerEvent(MouseEvent.MOUSE_OUT, _onMouseOut);
@@ -71,7 +96,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   override public function unregister():Void
   {
-    unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
     unregisterEvent(MouseEvent.MIDDLE_MOUSE_DOWN, _onMiddleMouseDown);
     unregisterEvent(MouseEvent.MOUSE_OVER, _onMouseOver);
     unregisterEvent(MouseEvent.MOUSE_OUT, _onMouseOut);
@@ -87,13 +111,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
       gesture = null;
     }
     #end
-  }
-
-  function _onMouseWheel(e:MouseEvent):Void
-  {
-    var event:CameraViewportEvent = new CameraViewportEvent(CameraViewportEvent.ZOOM);
-    event.zoomDelta = e.delta;
-    _viewport.dispatch(event);
   }
 
   function _onMouseOver(_:MouseEvent):Void
@@ -176,8 +193,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function onGestureStart(g:Gesture):Void
   {
-    if (hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) unregisterEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
-
     if (g.type == SCROLL)
     {
       _viewport.dispatch(new CameraViewportEvent(CameraViewportEvent.PAN_START));
@@ -186,8 +201,6 @@ private class CameraViewportEvents extends haxe.ui.events.Events
 
   function onGestureEnd(g:Gesture):Void
   {
-    if (!hasEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel)) registerEvent(MouseEvent.MOUSE_WHEEL, _onMouseWheel);
-
     if (g.type == SCROLL)
     {
       _viewport.dispatch(new CameraViewportEvent(CameraViewportEvent.PAN_END));
