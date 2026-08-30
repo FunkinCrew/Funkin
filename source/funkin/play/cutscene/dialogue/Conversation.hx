@@ -628,6 +628,11 @@ class Conversation extends FunkinSpriteGroup implements IDialogueScriptedClass i
     if (completeCallback != null) completeCallback();
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+    propagateEvent(event);
+  }
+
   public function onScriptEvent(event:ScriptEvent):Void
   {
     propagateEvent(event);
