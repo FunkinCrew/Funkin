@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Compiles a mod's scripted classes to a single .cppia the game can load.
 # Usage: ./build_cppia.sh [--sdk <sdk-dir>] [--target <platform>] <game-root> <script-dir> <output.cppia> [Class ...]
 
@@ -66,7 +68,7 @@ towin() {
 	if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else echo "$1"; fi
 }
 
-GENERATED="$(mktemp -t cppia-XXXXXX.hxml)"
+GENERATED="$(mktemp "${TMPDIR:-/tmp}/cppia-XXXXXX.hxml")"
 trap 'rm -f "$GENERATED"' EXIT
 
 if [ -n "$SDK" ]; then
