@@ -215,6 +215,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
     }
     waveformScrollview.onScroll = (_) ->
     {
+      if (audioPreviewTracks == null || audioPreviewTracks.members == null) return;
       if (!audioPreviewTracks.playing)
       {
         // Move the playhead if it would go out of view.
@@ -740,6 +741,7 @@ class ChartEditorOffsetsToolbox extends ChartEditorBaseToolbox
 
   override public function update(elapsed:Float)
   {
+    if (audioPreviewTracks == null || audioPreviewTracks.members == null) return;
     super.update(elapsed);
 
     if (audioPreviewTracks.playing)
