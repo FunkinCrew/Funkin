@@ -2587,7 +2587,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       loadFromFNFCData: (currentWorkingFilePath == null && hasInstrumentalData) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
-      targetSongPosition: Conductor.instance.songPosition
+      targetSongPosition: scrollPositionInMs + playheadPositionInMs
     });
 
     return {
