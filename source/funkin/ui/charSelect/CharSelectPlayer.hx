@@ -133,4 +133,8 @@ class CharSelectPlayer extends FunkinSprite implements IBPMSyncedScriptedClass
   public function onUpdate(event:UpdateScriptEvent):Void
   {
   };
+
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  };
 }

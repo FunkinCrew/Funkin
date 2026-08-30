@@ -452,6 +452,10 @@ class DialogueBox extends FunkinSpriteGroup implements IDialogueScriptedClass im
     this.kill();
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onScriptEvent(event:ScriptEvent):Void
   {
   }

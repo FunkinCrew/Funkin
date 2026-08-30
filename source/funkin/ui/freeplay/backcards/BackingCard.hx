@@ -79,7 +79,8 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    * Apply exit movers for the pieces of the backing card.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
@@ -290,6 +291,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   }
 
   public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  }
+
+  public function onCustom(event:CustomScriptEvent):Void
   {
   }
 
