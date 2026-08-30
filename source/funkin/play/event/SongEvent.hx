@@ -203,6 +203,10 @@ class SongEvent implements IPlayStateScriptedClass
   {
   }
 
+  public function onNoteHoldHit(event:HoldNoteScriptEvent)
+  {
+  }
+
   public function onNoteHoldDrop(event:HoldNoteScriptEvent)
   {
   }

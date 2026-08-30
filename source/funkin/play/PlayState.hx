@@ -2895,11 +2895,12 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Dispatch the event, which should make the opponent keep singing while the note is held.
-        var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
-        dispatchEvent(event);
+        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
+        dispatchEvent(event, false);
 
         // Drop the held note if the event is cancelled.
         if (event.eventCanceled) holdNote.missedNote = true;
+        event.finish();
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
@@ -2911,7 +2912,7 @@ class PlayState extends MusicBeatSubState
         {
           // We dropped a hold note.
           // Play miss animation, but don't penalize.
-          var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, 0, 0, true, 0);
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, true, 0);
           dispatchEvent(event);
         }
       }
@@ -2992,10 +2993,10 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-        var scoreChange:Int = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+        var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
 
-        var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
-        dispatchEvent(event);
+        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
+        dispatchEvent(event, false);
 
         // Grant the player health.
         if (!isBotPlayMode && holdNote.scoreable)
@@ -3006,6 +3007,7 @@ class PlayState extends MusicBeatSubState
 
         // Drop the held note if the event is cancelled.
         if (event.eventCanceled) holdNote.missedNote = true;
+        event.finish();
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
