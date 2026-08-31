@@ -1147,13 +1147,8 @@ class Project extends HXProject
     // Forcibly include all Funkin' classes in builds.
     // This prevents classes that are unused by the base game from being unavailable to HScript.
     addHaxeMacro(
-      "include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])"
+      "include('funkin', true, ['funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])"
     );
-
-    if (isMobile())
-    {
-      addHaxeMacro("include('funkin.mobile')");
-    }
 
     if (FEATURE_HAXEUI.isEnabled(this))
     {
