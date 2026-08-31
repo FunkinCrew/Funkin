@@ -1,6 +1,7 @@
 package funkin.ui.debug.charting.components;
 
 #if FEATURE_CHART_EDITOR
+import funkin.play.notes.NoteQuantColors;
 import funkin.play.notes.Strumline;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.play.notes.notestyle.NoteStyle;
@@ -283,6 +284,8 @@ class ChartEditorHoldNoteSprite extends SustainTrail
 
     // Account for expanded clickable hitbox.
     this.x += this.offset.x;
+
+    NoteQuantColors.apply(this, Preferences.noteQuantColors, stepTime, true);
   }
 }
 #end
