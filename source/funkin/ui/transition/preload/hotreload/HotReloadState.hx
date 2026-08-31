@@ -195,6 +195,8 @@ class HotReloadState extends MusicBeatState
    */
   function queuePurgeCache():Void
   {
+    beginStep('purge cache');
+
     TaskHandler.performSimpleTask(() ->
     {
       FunkinAssetCache.instance.forceClearCache();
@@ -229,7 +231,7 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadEnabledMods():Void
   {
-    trace('Queue task: Load enabled mods...');
+    beginStep('load enabled mods');
 
     TaskHandler.performSimpleTask(() ->
     {
@@ -273,7 +275,7 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadScripts():Void
   {
-    trace('Queue task: Async load scripts...');
+    beginStep('load scripts');
 
     var scriptFuture = funkin.modding.PolymodHandler.loadScripts(true);
 
@@ -299,7 +301,7 @@ class HotReloadState extends MusicBeatState
    */
   function queueLoadRegistryData():Void
   {
-    trace('Queue task: Async load registry data...');
+    beginStep('load registry data');
 
     var futures:Array<Future<LoadEntriesResult>> = [];
 
@@ -332,6 +334,39 @@ class HotReloadState extends MusicBeatState
       reportStepFailed('load registry data', error);
       afterLoadRegistryData();
     });
+  }
+
+  function afterLoadRegistryData():Void
+  {
+    beginStep('module create');
+
+    // Call create() on each module when the future is complte.
+    try
+    {
+      ModuleHandler.callOnCreate();
+
+      updateProgress(10, 10);
+    }
+    catch (e:Dynamic)
+    {
+      reportStepFailed('module create', e);
+    }
+    isComplete = true;
+  }
+
+  function beginStep(step:String):Void
+  {
+    trace('Queue task: $step...');
+
+    funkin.util.logging.CrashHandler.setContext('hot reload: $step');
+  }
+
+  function reportStepFailed(step:String, error:Dynamic):Void
+  {
+    var message:String = 'Hot reload step "$step" failed: $error';
+
+    trace(message);
+    FlxG.log.error(message);
   }
 
   function afterLoadRegistryData():Void

@@ -1305,6 +1305,13 @@ class Project extends HXProject
     buildDir += "/";
 
     app.path = buildDir;
+
+    if (isWindows() && isCPP())
+    {
+      var pdbPath:String = Path.join([buildDir, 'windows', 'obj', 'Funkin.pdb']);
+
+      setenv("HXCPP_PDB_FILE", sys.FileSystem.absolutePath(pdbPath));
+    }
   }
 
   function configureAndroid()

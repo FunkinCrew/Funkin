@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+  <pragma once="true" />
+  <files id="haxe">
+    <compilerflag value="-I${this_dir}/include" />
+  </files>
+  <files id="__main__">
+    <compilerflag value="-I${this_dir}/include" />
+  </files>
+  <files id="external-crash">
+    <compilerflag value="-I${this_dir}/include" />
+    <file name="${this_dir}/src/nativecrash.cpp" />
+  </files>
+  <target id="haxe">
+    <section if="windows">
+      <section if="mingw">
+        <lib name="-ldbghelp" />
+        <lib name="-luser32" />
+      </section>
+      <section unless="mingw">
+        <lib name="dbghelp.lib" />
+        <lib name="user32.lib" />
+      </section>
+    </section>
+    <section if="macos">
+      <vflag name="-framework" value="CoreFoundation" />
+    </section>
+    <section if="linux">
+      <lib name="-ldl" />
+    </section>
+    <files id="external-crash" />
+  </target>
+</xml>

@@ -44,6 +44,8 @@ class ApplicationMain
     funkin.util.CLIUtil.resetWorkingDir();
     #end
 
+    funkin.util.logging.CrashHandler.installNativeHandler();
+
     #if (FEATURE_ONE_CLICK_INSTALL && sys && !macos)
     // A one-click mod link launches the game again with the URL as an argument. If a copy is
     // already running, hand the URL over and get out before a second window is ever created.

@@ -26,6 +26,24 @@ class CrashHandler
    */
   public static var criticalErrorSignal(default, null):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
+  public static function installNativeHandler():Void
+  {
+    #if cpp
+    funkin.external.crash.NativeCrash.install(LOG_FOLDER, 'Funkin');
+    #end
+  }
+
+  /**
+   * Set something to be shown inside of the crash log
+   * @param info The something that is shown
+   */
+  public static function setContext(info:String):Void
+  {
+    #if cpp
+    funkin.external.crash.NativeCrash.setContext(info);
+    #end
+  }
+
   /**
    * The stack of an error that was caught and rethrown elsewhere.
    */
@@ -36,6 +54,9 @@ class CrashHandler
    */
   public static function initialize():Void
   {
+    // In case it was not installed earlier in startup.
+    installNativeHandler();
+
     trace('[LOG] Enabling standard uncaught error handler...');
     Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
 
@@ -76,20 +97,17 @@ class CrashHandler
       trace('Error while handling crash: ' + e);
     }
 
-    #if sys
-    Sys.sleep(1); // wait a few moments of margin to process.
-    // Exit the game. Since it threw an error, we use a non-zero exit code.
-    openfl.Lib.application.window.close();
-    #end
+    exitAfterCrash();
   }
 
   static function onCriticalError(message:String):Void
   {
     trace('[CRASH] Critical error: ' + message);
-    trace(buildCrashReport(message));
 
     try
     {
+      trace(buildCrashReport(message));
+
       criticalErrorSignal.dispatch(message);
 
       #if sys
@@ -105,10 +123,24 @@ class CrashHandler
       trace('Message: $message');
     }
 
+    exitAfterCrash();
+  }
+  static function exitAfterCrash():Void
+  {
     #if sys
-    Sys.sleep(1); // wait a few moments of margin to process.
-    // Exit the game. Since it threw an error, we use a non-zero exit code.
-    openfl.Lib.application.window.close();
+    Sys.sleep(1);
+
+    try
+    {
+      var window:Null<lime.ui.Window> = openfl.Lib.application?.window;
+      if (window != null) window.close();
+    }
+    catch (e:Dynamic)
+    {
+      trace('Error while closing the window: $e');
+    }
+
+    Sys.exit(1);
     #end
   }
 

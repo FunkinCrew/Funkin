@@ -26,6 +26,8 @@ class PolymodErrorHandler
 
   public static function onPolymodError(error:PolymodError):Void
   {
+    funkin.util.logging.CrashHandler.setContext('${error.code}: ${error.message}');
+
     #if FEATURE_MULTITHREADING
     if (!funkin.util.tasks.TaskHandler.isMainThread())
     {
