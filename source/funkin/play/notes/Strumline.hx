@@ -89,7 +89,19 @@ class Strumline extends FlxSpriteGroup
   public var conductorInUse(get, set):Conductor;
 
   // Used in-game to control the scroll speed within a song
-  public var scrollSpeed:Float = 1.0;
+  public var scrollSpeed(default, set):Float = 1.0;
+
+  function set_scrollSpeed(val:Float):Float
+  {
+    scrollSpeed = val;
+
+    holdNotes.forEachAlive(holdNote ->
+    {
+      @:privateAccess holdNote?.triggerRedraw();
+    });
+
+    return scrollSpeed;
+  }
 
   /**
    * Reset the scroll speed to the current chart's scroll speed.
