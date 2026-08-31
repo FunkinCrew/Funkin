@@ -45,7 +45,7 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     this.currentCharacter = currentCharacter;
 
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow'), true, false, false),
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/card-glow').withPixelData()),
       FreeplayState.CUTOUT_WIDTH
     );
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
@@ -59,7 +59,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
       115
     ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back'), true, false, false), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/back').withPixelData()),
+      FreeplayState.CUTOUT_WIDTH
+    );
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 
@@ -82,7 +85,8 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    * Apply exit movers for the pieces of the backing card.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
