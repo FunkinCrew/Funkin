@@ -55,7 +55,7 @@ Full credits can be found in-game, or in the `credits.json` file which is locate
 - [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Moawling](https://twitter.com/moawko) - Week 6 Pixel Art
 - [IvanAlmighty](https://twitter.com/IvanA1mighty) - Misc UI Design
-
+<h1>pls money </h1>  
 ## Music
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
 - [BassetFilms](https://twitter.com/Bassetfilms) - Music for "Monster", Additional Character Design
