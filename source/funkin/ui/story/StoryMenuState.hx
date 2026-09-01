@@ -658,10 +658,9 @@ class StoryMenuState extends MusicBeatState
       {
         // Null safety kinda stupid......
         if (targetSong == null) throw 'Bwuh?';
-        var targetSongNotNull:Song = targetSong;
 
         LoadingState.loadPlayState({
-          targetSong: targetSongNotNull,
+          targetSong: cast targetSong,
           targetDifficulty: PlayStatePlaylist.campaignDifficulty,
           targetVariation: targetVariation
         }, true);
