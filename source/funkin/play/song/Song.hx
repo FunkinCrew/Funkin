@@ -761,8 +761,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return meta;
   }
 
-  static final VARIATION_REGEX = ~/^[a-z][a-z0-9]+$/;
-
   /**
    * Validate that the variation ID is valid.
    * Auto-accept if it's one of the base game default variations.
@@ -772,7 +770,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
 
-    return VARIATION_REGEX.match(variation);
+    return (~/^[a-z][a-z0-9]+$/).match(variation);
   }
 
   static function log(message:String):Void
