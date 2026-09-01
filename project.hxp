@@ -623,7 +623,7 @@ class Project extends HXProject
     configureCustomMacros();
     configurePolymod();
     configureHaxelibs();
-    configureASTCTextures();
+    configureCompressedTextures();
     configureAssets();
 
     if (!isLinux())
@@ -1708,14 +1708,21 @@ class Project extends HXProject
   }
 
   /**
-   * Configure the astc textures.
+   * Configure the compressed textures.
    */
-  function configureASTCTextures()
+  function configureCompressedTextures()
   {
     if (!(isDisplay() && isCleanCommand()) && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
     {
-      readASTCExclusion();
-      runASTCCompressor();
+      if (isDesktop())
+      {
+        // Nothing for now
+      }
+      else
+      {
+        readASTCExclusion();
+        runASTCCompressor();
+      }
     }
   }
 
@@ -1947,12 +1954,27 @@ class Project extends HXProject
     // path, rename, type, embed, setDefaults
     if (Path.extension(path) == 'png' && FEATURE_COMPRESSED_TEXTURES.isEnabled(this))
     {
-      final astcPath:String = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
-      if (!isASTCExcluded(path) && FileSystem.exists(astcPath))
+      if (isDesktop())
       {
-        path = astcPath;
+        final ddsPath:String = "dds-textures/" + path.substr(0, path.length - 3) + "dds";
 
-        if (rename != null) rename = rename.substr(0, rename.length - 3) + "astc";
+        if (FileSystem.exists(ddsPath))
+        {
+          path = ddsPath;
+
+          if (rename != null) rename = rename.substr(0, rename.length - 3) + "dds";
+        }
+      }
+      else
+      {
+        final astcPath:String = "astc-textures/" + path.substr(0, path.length - 3) + "astc";
+
+        if (!isASTCExcluded(path) && FileSystem.exists(astcPath))
+        {
+          path = astcPath;
+
+          if (rename != null) rename = rename.substr(0, rename.length - 3) + "astc";
+        }
       }
     }
 

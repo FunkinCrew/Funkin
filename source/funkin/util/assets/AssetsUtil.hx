@@ -14,6 +14,7 @@ class AssetsUtil
 {
   static final EXTENSIONS:Map<String, FunkinAssetType> = [
     'astc' => FunkinAssetType.IMAGE, // Texture image utilizing Adaptive scalable texture compression
+    'dds' => FunkinAssetType.IMAGE, // Texture image utilizing Adaptive scalable texture compression
     'bmp' => FunkinAssetType.IMAGE, // Bitmap image
     'css' => FunkinAssetType.TEXT, // Cascading stylesheet
     'csv' => FunkinAssetType.TEXT, // Comma-separated values file
