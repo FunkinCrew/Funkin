@@ -279,8 +279,8 @@ class CharacterDataParser
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
 
     var charIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds(DATA_FILE_PATH, true);
-    var previousScriptedEntryClasses:Array<String> = [];
-    var scriptedEntryClassNames:Array<String> = [];
+    var previousScriptedEntryClasses:SynchronizedArray<String> = new SynchronizedArray<String>();
+    var scriptedEntryClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
     var entryCount:Int = 0;
 
     // Used to track the state we're in while loading the characters. This can either be us loading all character data, or loading each scripted character types.
@@ -507,7 +507,7 @@ class CharacterDataParser
     {
       var loadScriptedEntriesFuture = TaskHandler.performSimpleTask(() ->
       {
-        scriptedEntryClassNames = switch (entryLoadingState)
+        var scriptedClsNames:Array<String> = switch (entryLoadingState)
         {
           case 'sparrow':
             SparrowCharacter.listScriptClasses();
@@ -529,12 +529,14 @@ class CharacterDataParser
           default:
             [];
         }
+        scriptedEntryClassNames.clear();
+        scriptedEntryClassNames.addAll(scriptedClsNames);
 
         // We concatenate this list so we can use this when checking for BaseCharacter entries.
-        previousScriptedEntryClasses = previousScriptedEntryClasses.concat(scriptedEntryClassNames);
+        previousScriptedEntryClasses.addAll(scriptedClsNames);
 
-        log('Queuing loading for ${scriptedEntryClassNames.length} $entryLoadingState character scripted entries...');
-        entryCount += scriptedEntryClassNames.length; // Since this function is called several times, we increment the entry count for each use.
+        log('Queuing loading for ${scriptedClsNames.length} $entryLoadingState character scripted entries...');
+        entryCount += scriptedClsNames.length; // Since this function is called several times, we increment the entry count for each use.
 
         return true;
       });

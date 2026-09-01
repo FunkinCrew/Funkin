@@ -10,6 +10,9 @@ import funkin.play.song.Song;
 import funkin.util.VersionUtil;
 import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 using funkin.data.song.migrator.SongDataMigrator;
 
@@ -22,6 +25,7 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
    * and adding migration to the `migrateStageData()` function.
    */
   public static final SONG_METADATA_VERSION:thx.semver.Version = '2.2.8';
+
   public static final SONG_METADATA_VERSION_RULE:thx.semver.VersionRule = '2.2.x';
   public static final SONG_CHART_DATA_VERSION:thx.semver.Version = '2.0.0';
   public static final SONG_CHART_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
@@ -29,7 +33,11 @@ class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> imp
   public static final SONG_MUSIC_DATA_VERSION_RULE:thx.semver.VersionRule = '2.0.x';
   public static var DEFAULT_GENERATEDBY(get, never):String;
 
+  #if FEATURE_MULTITHREADING
+  public var scriptedSongVariations:SynchronizedMap<String, Song> = SynchronizedMap.newStringMap(); // Use a thread safe map when needed.
+  #else
   public var scriptedSongVariations:Map<String, Song> = new Map<String, Song>();
+  #end
 
   static function get_DEFAULT_GENERATEDBY():String
   {

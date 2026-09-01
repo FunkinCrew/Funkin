@@ -1,6 +1,9 @@
 package funkin.util.assets;
 
 import flixel.util.FlxSignal.FlxTypedSignal;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 /**
  * Represents a three-stage asset cache, which is useful for managing and tracking assets that are in use by the game.
@@ -12,17 +15,27 @@ class StagedCache<T> implements IStagedCache
   /**
    * The permanent cache, containing assets which always stay in memory and are never purged.
    */
+  #if FEATURE_MULTITHREADING
+  final permanent:SynchronizedMap<String, T>;
+  #else
   final permanent:Map<String, T>;
-
+  #end
   /**
    * The currently cached assets. Won't be purged until the next purge cycle.
    */
+  #if FEATURE_MULTITHREADING
+  final current:SynchronizedMap<String, T>;
+  #else
   final current:Map<String, T>;
-
+  #end
   /**
    * The assets that were previously cached. May be re-cached, but if not, they will be purged.
    */
+  #if FEATURE_MULTITHREADING
+  final previous:SynchronizedMap<String, T>;
+  #else
   final previous:Map<String, T>;
+  #end
 
   /**
    * An FlxSignal which is dispatched when an asset is removed. Typically used for cleanup of assets that need to be manually destroyed (e.g. FlxGraphics).
@@ -48,9 +61,15 @@ class StagedCache<T> implements IStagedCache
   {
     // The cache maps are final to prevent them from being overridden,
     // but they are still mutable.
+    #if FEATURE_MULTITHREADING
+    permanent = SynchronizedMap.newStringMap();
+    current = SynchronizedMap.newStringMap();
+    previous = SynchronizedMap.newStringMap();
+    #else
     permanent = [];
     current = [];
     previous = [];
+    #end
   }
 
   /**
@@ -188,9 +207,16 @@ class StagedCache<T> implements IStagedCache
   public function keys():Array<String>
   {
     var keys:Array<String> = [];
+    #if FEATURE_MULTITHREADING
+    // MapTools can't be used for SynchronizedMap.
+    keys.appendUnique([for (k => v in permanent) k]);
+    keys.appendUnique([for (k => v in current) k]);
+    keys.appendUnique([for (k => v in previous) k]);
+    #else
     keys.appendUnique(permanent.keyValues());
     keys.appendUnique(current.keyValues());
     keys.appendUnique(previous.keyValues());
+    #end
     return keys;
   }
 
