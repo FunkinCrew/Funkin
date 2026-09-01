@@ -105,7 +105,7 @@ class FunkinDebugDisplay extends Sprite
       INNER_RECT_DIFF,
       OUTER_RECT_DIMENSIONS[0] * bgWidthMultiplier,
       OUTER_RECT_DIMENSIONS[1] * bgHeightMultiplier,
-      BG_CORNER_WIDTH
+      BG_CORNER_WIDTH - (INNER_RECT_DIFF * 2)
     );
     background.graphics.endFill();
     background.alpha = backgroundOpacity;
