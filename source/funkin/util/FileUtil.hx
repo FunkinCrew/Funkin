@@ -106,11 +106,6 @@ class FileUtil
     return PROTECTED;
   }
 
-  /**
-   * Regex for invalid filesystem characters.
-   */
-  public static final INVALID_CHARS:EReg = ~/[:*?"<>|\n\r\t]/g;
-
   #if sys
   private static var _gameDirectory:Null<String> = null;
 
@@ -1182,7 +1177,7 @@ class FileUtil
    *
    * @param zipData The Bytes object containing the ZIP data to unzip.
    * @param targetFolder The path to the folder to unzip to. Will be created if it doesn't exist.
-   **/
+  **/
   public static function unzipToFolder(zipData:Bytes, targetFolder:String):Void
   {
     var entries = readZIPFromBytes(zipData);
@@ -1384,7 +1379,8 @@ class FileUtilSandboxed
       path = path.replace('//', '/');
     }
 
-    var parts:Array<String> = FileUtil.INVALID_CHARS.replace(path, '').split('/');
+    final INVALID_CHARS:EReg = ~/[:*?"<>|\n\r\t]/g;
+    var parts:Array<String> = INVALID_CHARS.replace(path, '').split('/');
     var sanitized:Array<String> = [];
     for (part in parts)
     {
