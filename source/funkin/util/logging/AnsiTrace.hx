@@ -89,6 +89,14 @@ class AnsiTrace
    */
   static function formatOutput(v:Dynamic, ?infos:haxe.PosInfos):String
   {
+    // EReg isn't thread-safe, so we default to the normal function if we're loading asynchronously.
+    if (funkin.util.plugins.ReloadAssetsDebugPlugin.hotReloadInProgress)
+    {
+      if (infos == null) return Std.string(v);
+
+      return haxe.Log.formatOutput(v, infos);
+    }
+
     var str:String = Std.string(v);
     if (infos == null) return str;
 
