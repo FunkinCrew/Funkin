@@ -134,8 +134,19 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
       return result;
     }
 
+    // No FlxGraphic exists, but the BitmapData might.
+    var bitmapData:Null<BitmapData> = FunkinAssetCache.instance.getBitmapData(id);
+
+    if (bitmapData == null)
+    {
+      // Fetch the BitmapData from disc synchronously.
+      // NOTE: This ignores whether the original asset call had `needsPixelData`
+      // Fix this by caching the asset asynchronously, or calling `getBitmapData` with the original asset path.
+      bitmapData = funkin.assets.Assets.getBitmapData(Paths.raw(id));
+    }
+
     // Try to build an FlxGraphic from BitmapData.
-    var graphic:FlxGraphic = FlxGraphic.fromBitmapData(FunkinAssetCache.instance.getBitmapData(id), false, id);
+    var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData, false, id);
     return addGraphic(graphic);
   }
 

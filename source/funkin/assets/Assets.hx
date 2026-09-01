@@ -149,7 +149,7 @@ class Assets implements ConsoleClass
     {
       var result:Null<BitmapData> = FunkinAssetCache.instance.getBitmapData(assetPath.toString());
 
-      if (FunkinAssetCache.instance.validateBitmapData(result))
+      if (result != null && FunkinAssetCache.instance.validateBitmapData(result))
       {
         #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ${assetPath.toString()}');
@@ -451,10 +451,8 @@ class Assets implements ConsoleClass
     #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
 
-    if (FunkinAssetCache.instance.hasBytes(assetPath.toString()))
-    {
-      return FunkinAssetCache.instance.getBytes(assetPath.toString());
-    }
+    var bytes = FunkinAssetCache.instance.getBytes(assetPath.toString());
+    if (bytes != null) return bytes;
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Bytes not cached, cannot load synchronously: ${assetPath.toString()}';
@@ -490,10 +488,8 @@ class Assets implements ConsoleClass
     #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.txt()?';
 
-    if (FunkinAssetCache.instance.hasText(assetPath.toString()))
-    {
-      return FunkinAssetCache.instance.getText(assetPath.toString());
-    }
+    var text = FunkinAssetCache.instance.getText(assetPath.toString());
+    if (text != null) return text;
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Text not cached, cannot load synchronously: ${assetPath.toString()}';
@@ -529,10 +525,8 @@ class Assets implements ConsoleClass
     #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
-    if (FunkinAssetCache.instance.hasSound(assetPath.toString()))
-    {
-      return FunkinAssetCache.instance.getSound(assetPath.toString());
-    }
+    var sound = FunkinAssetCache.instance.getSound(assetPath.toString());
+    if (sound != null) return sound;
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Sound not cached, cannot load synchronously: $id';
@@ -566,10 +560,8 @@ class Assets implements ConsoleClass
     cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getFont($id)');
     #end
 
-    if (FunkinAssetCache.instance.hasFont(id))
-    {
-      return FunkinAssetCache.instance.getFont(id);
-    }
+    var font = FunkinAssetCache.instance.getFont(id);
+    if (font != null) return font;
 
     #if FEATURE_STRICT_ASSET_CACHING
     throw 'Font not cached, cannot load synchronously: $id';
@@ -1430,6 +1422,7 @@ class Assets implements ConsoleClass
  * Similar to Lime's AssetType system, but with MUSIC and SOUND consolidated into one value,
  * and with TEXT split into several values including JSON and XML.
  */
+@:nullSafety
 enum abstract AssetType(String) from String to String from LimeAssetType
 {
   /**
@@ -1512,7 +1505,7 @@ enum abstract AssetType(String) from String to String from LimeAssetType
    * @return Funkin AssetType
    */
   @:from
-  public static function fromLimeAssetType(?value:LimeAssetType):AssetType
+  public static function fromLimeAssetType(?value:LimeAssetType):Null<AssetType>
   {
     if (value == null) return null;
 
@@ -1544,7 +1537,7 @@ enum abstract AssetType(String) from String to String from LimeAssetType
    * @return Funkin AssetType
    */
   @:from
-  public static function fromOpenFLAssetType(?value:OpenFLAssetType):AssetType
+  public static function fromOpenFLAssetType(?value:OpenFLAssetType):Null<AssetType>
   {
     if (value == null) return null;
 
@@ -1575,7 +1568,7 @@ enum abstract AssetType(String) from String to String from LimeAssetType
    * @return Funkin AssetType
    */
   @:from
-  public static function fromFlxAssetType(?value:FlxAssetType):AssetType
+  public static function fromFlxAssetType(?value:FlxAssetType):Null<AssetType>
   {
     if (value == null) return null;
 

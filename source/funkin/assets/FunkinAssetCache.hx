@@ -31,8 +31,6 @@ import lime.app.Promise;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
-// @:nullSafety
-
 /**
  * An override for the OpenFL AssetCache class to override the internal cache with our own.
  * This allows us to be more specific about when assets are cached, and when they are purged.
@@ -42,6 +40,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
  * Call cache functions when you want to load the Asset into memory asynchronously, without necessarily needing the asset.
  * Call get functions when you want to get the Asset synchronously, this will cause stutters during the game's process.
  */
+@:nullSafety
 @:allow(funkin.assets.FunkinBitmapFrontend, funkin.util.assets.StagedCache)
 class FunkinAssetCache implements OpenFLIAssetCache
 {
@@ -126,20 +125,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // Is there a proper method to destroy fonts?
       FunkinLimeAssetCache.instance.removeFont(key);
-      asset = null;
+      // asset = null;
     });
 
     stagedSound = new StagedCache<Sound>();
     stagedSound.onRemove.add((key:String, asset:Sound) ->
     {
       FunkinLimeAssetCache.instance.removeAudio(key);
-      asset = null;
+      // asset = null;
     });
 
     stagedText = new StagedCache<String>();
-    stagedText.onRemove.add((_:String, asset:String) ->
-    {
-      asset = null;
+    stagedText.onRemove.add((_:String, asset:String) -> {
+      // asset = null;
     });
 
     stagedBytes = new StagedCache<openfl.utils.ByteArray>();
@@ -147,7 +145,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // clear() explicitly frees up the memory used by the ByteArray.
       asset.clear();
-      asset = null;
+      // asset = null;
     });
 
     stagedCaches = [
@@ -268,8 +266,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Fetch a FlxGraphic from the cache synchronously.
    * @param id The asset id of the FlxGraphic.
-   * @throws error If the FlxGraphic does not exist in the cache and strict asset caching is enabled.
-   * @return The FlxGraphic, if available.
+   * @return The FlxGraphic, if available in the cache, or `null` otherwise.
    */
   public function getFlxGraphic(id:String):FlxGraphic
   {
@@ -279,10 +276,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Get a BitmapData, if it exists in the cache.
    * @param id The asset id of the BitmapData.
-   * @throws error If the BitmapData does not exist in the cache and strict asset caching is enabled.
-   * @return The BitmapData, if available.
+   * @return The BitmapData, if available in the cache, or `null` otherwise.
    */
-  public function getBitmapData(id:String):BitmapData
+  public function getBitmapData(id:String):Null<BitmapData>
   {
     return stagedBitmapData.get(id);
   }
@@ -290,10 +286,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Get a Font, if it exists in the cache.
    * @param id The asset id of the Font.
-   * @throws error If the Font does not exist in the cache and strict asset caching is enabled.
-   * @return The Font, if available.
+   * @return The Font, if available in the cache, or `null` otherwise.
    */
-  public function getFont(id:String):Font
+  public function getFont(id:String):Null<Font>
   {
     return stagedFont.get(id);
   }
@@ -301,10 +296,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   /**
    * Get a Sound, if it exists in the cache.
    * @param id The asset id of the Sound.
-   * @throws error If the Sound does not exist in the cache and strict asset caching is enabled.
-   * @return The Sound, if available.
+   * @return The Sound, if available in the cache, or `null` otherwise.
    */
-  public function getSound(id:String):Sound
+  public function getSound(id:String):Null<Sound>
   {
     return stagedSound.get(id);
   }
@@ -313,9 +307,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * Gets text from a file from the cache.
    *
    * @param id The asset id of the text.
-   * @return The text, if found in the cache, or `null` otherwise.
+   * @return The text, if available in the cache, or `null` otherwise.
    */
-  public function getText(id:String):String
+  public function getText(id:String):Null<String>
   {
     return stagedText.get(id);
   }
@@ -326,7 +320,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param id The asset id of the bytes.
    * @return The bytes, if found in the cache, or `null` otherwise.
    */
-  public function getBytes(id:String):openfl.utils.ByteArray
+  public function getBytes(id:String):Null<openfl.utils.ByteArray>
   {
     return stagedBytes.get(id);
   }
@@ -364,12 +358,11 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function hasBitmapData(id:String):Bool
   {
-    if (!stagedBitmapData.exists(id))
-    {
-      return false;
-    }
+    var bitmapData:Null<BitmapData> = stagedBitmapData.get(id);
+    // NOTE: You can't use `if (stagedBitmapData.exists(id))` for null safety because null safety a lil dummmmmmmm
+    if (bitmapData == null) return false;
 
-    if (!validateBitmapData(stagedBitmapData.get(id)))
+    if (!validateBitmapData(bitmapData))
     {
       #if VERBOSE_ASSET_CACHE
       trace(' ASSETS ' + ' Removing invalid BitmapData "$id" from cache.');
@@ -600,7 +593,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
     #end
     if (hasBitmapData(assetPath.toString()))
     {
-      return Future.withValue(getBitmapData(assetPath.toString()));
+      var bitmapData:Null<BitmapData> = getBitmapData(assetPath.toString());
+      if (bitmapData == null) return cast Future.withError('BitmapData does not exist: ${assetPath.toString()}');
+      return Future.withValue(cast bitmapData);
     }
     else
     {
@@ -654,7 +649,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (hasSound(assetPath.toString()))
     {
-      return Future.withValue(getSound(assetPath.toString()));
+      var sound = getSound(assetPath.toString());
+      if (sound == null) return cast Future.withError('Sound does not exist: ${assetPath.toString()}');
+      return Future.withValue(cast sound);
     }
     else
     {
@@ -679,7 +676,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (hasText(assetPath.toString()))
     {
-      return Future.withValue(getText(assetPath.toString()));
+      var text:Null<String> = getText(assetPath.toString());
+      if (text == null) return cast Future.withError('Text does not exist: ${assetPath.toString()}');
+      return Future.withValue(cast text);
     }
     else
     {
@@ -704,7 +703,10 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (hasText(assetPath.toString()))
     {
-      return Future.withValue(getFont(assetPath.toString()));
+      var font:Null<Font> = getFont(assetPath.toString());
+      if (font == null) return cast Future.withError('Font does not exist: ${assetPath.toString()}');
+
+      return Future.withValue(cast font);
     }
     else
     {
@@ -726,7 +728,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     if (hasBytes(assetPath.toString()))
     {
-      return Future.withValue(getBytes(assetPath.toString()));
+      var bytes:Null<ByteArray> = getBytes(assetPath.toString());
+      if (bytes == null) return cast Future.withError('Bytes do not exist: ${assetPath.toString()}');
+      return Future.withValue(cast bytes);
     }
     else
     {
