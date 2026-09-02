@@ -217,7 +217,7 @@
     {
       "name": "thx.semver",
       "type": "git",
-      "ref": "9de477fa2bf6aa17528211afd61097cb113e3423",
+      "ref": "b91cf5cfee6ebe43b60f8acea4257f07af176b99",
       "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]
