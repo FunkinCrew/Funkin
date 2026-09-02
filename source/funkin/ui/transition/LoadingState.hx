@@ -328,7 +328,7 @@ class LoadingState extends MusicBeatSubState
           if (assetPath.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || assetPath.toString().endsWith('spritemap1.astc') #end)
           {
             trace('Preloading FlxAnimate asset: ${assetPath}');
-            funkin.assets.Assets.getBitmapData(assetPath, true);
+            funkin.assets.Assets.getBitmapData(assetPath);
           }
         }
 

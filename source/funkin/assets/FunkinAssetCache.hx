@@ -273,10 +273,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFlxGraphic(id:String):FlxGraphic
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getFlxGraphic($id)');
-    #end
-    getBitmapData(id);
     return FunkinBitmapFrontend.instance.getSafe(id);
   }
 
@@ -288,32 +284,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getBitmapData(id:String):BitmapData
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getBitmapData($id)');
-    #end
-    var result:Null<BitmapData> = stagedBitmapData.get(id);
-
-    if (validateBitmapData(result))
-    {
-      #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ' + id);
-      #end
-      return result;
-    }
-    else
-    {
-      stagedBitmapData.remove(id);
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Bitmap data not cached, cannot load synchronously: $id';
-      #else
-      #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ' + id);
-      #end
-      var bitmapData:BitmapData = OpenFLAssets.getBitmapData(id);
-      setBitmapData(id, bitmapData);
-      return bitmapData;
-      #end
-    }
+    return stagedBitmapData.get(id);
   }
 
   /**
@@ -324,27 +295,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getFont(id:String):Font
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getFont($id)');
-    #end
-    var result:Null<Font> = stagedFont.get(id);
-    if (result != null)
-    {
-      #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS '.bold().bg_lime() + ' Font data found in cache: ' + id);
-      #end
-      return result;
-    }
-    else
-    {
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Font not cached, cannot load synchronously: $id';
-      #else
-      var font:Font = OpenFLAssets.getFont(id);
-      setFont(id, font);
-      return font;
-      #end
-    }
+    return stagedFont.get(id);
   }
 
   /**
@@ -355,134 +306,29 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function getSound(id:String):Sound
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getSound($id)');
-    #end
-    var result:Null<Sound> = stagedSound.get(id);
-    if (result != null)
-    {
-      return result;
-    }
-    else
-    {
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Sound not cached, cannot load synchronously: $id';
-      #else
-      // FlxG.log.warn('Sound not cached, may experience stuttering! ${id}');
-      var sound:Sound = OpenFLAssets.getSound(id);
-      setSound(id, sound);
-      return sound;
-      #end
-    }
+    return stagedSound.get(id);
   }
 
   /**
-   * Gets text from a file.
+   * Gets text from a file from the cache.
+   *
    * @param id The asset id of the text.
-   * @throws error If the text does not exist in the cache and strict asset caching is enabled.
-   * @return The text, if available.
+   * @return The text, if found in the cache, or `null` otherwise.
    */
   public function getText(id:String):String
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getText($id)');
-    #end
-    var result:Null<String> = stagedText.get(id);
-    if (result != null)
-    {
-      return result;
-    }
-    else
-    {
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Text not cached, cannot load synchronously: $id';
-      #else
-      // Why is FlxG.log.warn so fucking expensive?
-      // FlxG.log.warn('Text not cached, may experience stuttering! ${id}');
-
-      if (!OpenFLAssets.exists(id))
-      {
-        #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Text file does not exist: $id');
-        #end
-        funkin.util.DebugUtil.printCallStack();
-        throw 'Text file does not exist: $id';
-      }
-
-      var text:String = OpenFLAssets.getText(id);
-      setText(id, text);
-      return text;
-      #end
-    }
+    return stagedText.get(id);
   }
 
   /**
-   * Gets bytes from a file.
+   * Gets bytes from a file from the cache.
+   *
    * @param id The asset id of the bytes.
-   * @throws error If the bytes do not exist in the cache and strict asset caching is enabled.
-   * @return The bytes, if available.
+   * @return The bytes, if found in the cache, or `null` otherwise.
    */
   public function getBytes(id:String):openfl.utils.ByteArray
   {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getBytes($id)');
-    #end
-    var result:Null<openfl.utils.ByteArray> = stagedBytes.get(id);
-    if (result != null)
-    {
-      return result;
-    }
-    else
-    {
-      #if FEATURE_STRICT_ASSET_CACHING
-      throw 'Bytes not cached, cannot load synchronously: $id';
-      #else
-      // FlxG.log.warn('Bytes not cached, may experience stuttering! ${id}');
-      var bytes:openfl.utils.ByteArray = OpenFLAssets.getBytes(id);
-      setBytes(id, bytes);
-      return bytes;
-      #end
-    }
-  }
-
-  /**
-   * Get a Sparrow Atlas, if its graphic exists in the cache.
-   *
-   * @param assetPath The path to the image, created with `Paths.image`.
-   *   We automatically assume the XML is next to it.
-   * @throws error If the graphic does not exist in the cache and strict asset caching is enabled.
-   * @return The atlas frames, if available.pixel/
-   */
-  public function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
-  {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getSparrowAtlas(${assetPath.toString()})');
-    #end
-    var xmlAssetPath = assetPath.withAssetType(XML);
-
-    var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
-    var data:String = getText(xmlAssetPath.toString());
-    return FlxAtlasFrames.fromSparrow(graphic, data);
-  }
-
-  /**
-   * Get a Packer Atlas, if its graphic exists in the cache.
-   *
-   * @param assetPath The path to the image, created with `Paths.image`.
-   *   We automatically assume the TXT is next to it.
-   * @throws error If the graphic does not exist in the cache and strict asset caching is enabled.
-   * @return The atlas frames, if available.
-   */
-  public function getPackerAtlas(assetPath:AssetPath):FlxAtlasFrames
-  {
-    #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getPackerAtlas(${assetPath.toString()})');
-    #end
-    var txtAssetPath = assetPath.withAssetType(TEXT);
-
-    var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
-    var data:String = getText(txtAssetPath.toString());
-    return FlxAtlasFrames.fromSpriteSheetPacker(graphic, data);
+    return stagedBytes.get(id);
   }
 
   /**
@@ -490,19 +336,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * @param assetPath The asset path of the FlxGraphic.
    * @return `true` if the FlxGraphic exists in the cache, `false` otherwise.
    */
-  public function hasFlxGraphic(assetPath:AssetPath):Bool
+  public function hasFlxGraphic(id:String):Bool
   {
-    if (!FunkinBitmapFrontend.instance.exists(assetPath.toString()))
+    if (!FunkinBitmapFrontend.instance.exists(id))
     {
       return false;
     }
 
-    if (!FunkinBitmapFrontend.instance.isValidByKey(assetPath.toString()))
+    if (!FunkinBitmapFrontend.instance.isValidByKey(id))
     {
       #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS ' + ' Removing invalid FlxGraphic "${assetPath.toString()} from cache.');
+      trace(' ASSETS ' + ' Removing invalid FlxGraphic "${id} from cache.');
       #end
-      FunkinBitmapFrontend.instance.removeByKey(assetPath.toString());
+      FunkinBitmapFrontend.instance.removeByKey(id);
       return false;
     }
 
@@ -745,10 +591,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * If it's not in the cache, it will be loaded and cached, then returned.
    *
    * @param assetPath The path of the asset to fetch.
-   * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return The BitmapData, if fetched.
    */
-  public function fetchBitmapData(assetPath:AssetPath, uploadToGPU:Bool = true):Future<BitmapData>
+  public function fetchBitmapData(assetPath:AssetPath):Future<BitmapData>
   {
     #if VERBOSE_ASSET_CACHE
     trace(' ASSETS '.bold().bg_lime() + ' Fetching BitmapData: ${assetPath.toString()}');
@@ -759,16 +604,14 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(assetPath.toString(), false).then((bitmapData:BitmapData) ->
-      {
-        // Upload to the GPU only if the feature is enabled and the asset doesn't require pixel data in memory.
-        if (uploadToGPU && !assetPath.needsPixelData)
+      var future:Future<BitmapData> = OpenFLAssets
+        .loadBitmapData(assetPath.toString(), false, !assetPath.needsPixelData, !assetPath.needsPixelData)
+        .then((bitmapData:BitmapData) ->
         {
-          bitmapData.toGPU();
-        }
-        setBitmapData(assetPath.toString(), bitmapData);
-        return Future.withValue(bitmapData);
-      });
+          bitmapData.toGPU(false);
+          setBitmapData(assetPath.toString(), bitmapData);
+          return Future.withValue(bitmapData);
+        });
       return future;
     }
   }
@@ -779,18 +622,17 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * If it's not in the cache, it will be loaded and cached, then returned.
    *
    * @param assetPath The path of the asset to fetch.
-   * @param uploadToGPU Whether or not to upload the underlying BitmapData to the GPU before caching.
    * @return The FlxGraphic, if fetched.
    */
-  public function fetchFlxGraphic(assetPath:AssetPath, ?uploadToGPU:Bool):Future<FlxGraphic>
+  public function fetchFlxGraphic(assetPath:AssetPath):Future<FlxGraphic>
   {
-    if (hasFlxGraphic(assetPath))
+    if (hasFlxGraphic(assetPath.toString()))
     {
       return Future.withValue(getFlxGraphic(assetPath.toString()));
     }
     else
     {
-      var future:Future<FlxGraphic> = fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
+      var future:Future<FlxGraphic> = fetchBitmapData(assetPath).then((bitmapData:BitmapData) ->
       {
         // Create an FlxGraphic from the BitmapData.
         var graphic:FlxGraphic = setFlxGraphic(assetPath.toString(), bitmapData);
@@ -1115,11 +957,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    *
    * @param assetPath The path of the asset to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether or not to upload the BitmapData to the GPU, and delete the original image.
-   *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
-  public function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
+  public function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheBitmapData(${assetPath.toString()})');
@@ -1129,7 +969,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     var promise = new Promise<Bool>();
 
-    fetchBitmapData(assetPath, uploadToGPU).then((bitmapData:BitmapData) ->
+    fetchBitmapData(assetPath).then((bitmapData:BitmapData) ->
     {
       // On success, resolve the promise with true
       if (validateBitmapData(bitmapData))
@@ -1162,11 +1002,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
    *
    * @param assetPath The path of the asset to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether or not to upload the FlxGraphic to the GPU, and delete the original image.
-   *   This saves memory but breaks some functions that require accessing or drawing on the original image.
    * @return A future that returns whether or not the BitmapData has been succesfully cached.
    */
-  public function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
+  public function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     #if FEATURE_DEBUG_TRACY
     cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.cacheFlxGraphic(${assetPath.toString()})');
@@ -1176,20 +1014,15 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
     var promise = new Promise<Bool>();
 
-    fetchFlxGraphic(assetPath, uploadToGPU).then((flxGraphic:FlxGraphic) ->
+    fetchFlxGraphic(assetPath).then((flxGraphic:FlxGraphic) ->
     {
-      if (FunkinBitmapFrontend.instance.isValid(flxGraphic))
-      {
-        flxGraphic.bitmap?.getTexture(FlxG.stage.context3D);
-      }
-
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
         trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
         #end
         FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
-        cacheBitmapData(assetPath, true, true); // We need the bitmapdata to persist too.
+        cacheBitmapData(assetPath, true); // We need the bitmapdata to persist too.
       }
 
       // On success, resolve the promise with true
@@ -1428,6 +1261,15 @@ class FunkinAssetCache implements OpenFLIAssetCache
   {
     setSound(key, sound);
     stagedSound.cachePermanent(key, sound);
+  }
+
+  /**
+   * @param flxGraphic The `FlxGraphic` to check.
+   * @return Whether the `FlxGraphic` is invalid (the underlying image got uncached) and needs to be reloaded.
+   */
+  public function validateFlxGraphic(flxGraphic:FlxGraphic):Bool
+  {
+    return FunkinBitmapFrontend.instance.isValid(flxGraphic);
   }
 
   /**

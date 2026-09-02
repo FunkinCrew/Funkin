@@ -10,6 +10,10 @@ import funkin.util.tasks.TaskHandler;
 import hx.concurrent.collection.SynchronizedArray;
 import lime.app.Future;
 import lime.app.Promise;
+#if FEATURE_MULTITHREADING
+import hx.concurrent.collection.SynchronizedArray;
+import hx.concurrent.collection.SynchronizedMap;
+#end
 
 /**
  * Utility functions for loading and manipulating active modules.
@@ -17,8 +21,13 @@ import lime.app.Promise;
 @:nullSafety
 class ModuleHandler
 {
+  #if FEATURE_MULTITHREADING
+  static final moduleCache:SynchronizedMap<String, Module> = SynchronizedMap.newStringMap();
+  static var modulePriorityOrder:SynchronizedArray<String> = new SynchronizedArray<String>();
+  #else
   static final moduleCache:Map<String, Module> = new Map<String, Module>();
   static var modulePriorityOrder:Array<String> = [];
+  #end
 
   /**
    * Parses and preloads the game's stage data and scripts when the game starts.
@@ -57,7 +66,7 @@ class ModuleHandler
     // Clear module cache first.
     clearModuleCache();
 
-    var scriptedModuleClassNames:Array<String> = Module.listScriptClasses();
+    var scriptedModuleClassNames:SynchronizedArray<String> = new SynchronizedArray(Module.listScriptClasses());
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
 
     // We don't have any modules to load so we can just immediately complete the promise.
@@ -194,9 +203,14 @@ class ModuleHandler
 
   static function reorderModuleCache():Void
   {
+    #if FEATURE_MULTITHREADING
+    var sortedArray:Array<String> = moduleCache.keys().array();
+    sortedArray.sort(sortByPriority);
+    modulePriorityOrder = new SynchronizedArray(sortedArray);
+    #else
     modulePriorityOrder = moduleCache.keys().array();
-
     modulePriorityOrder.sort(sortByPriority);
+    #end
   }
 
   /**
@@ -259,9 +273,12 @@ class ModuleHandler
       {
         ScriptEventDispatcher.callEvent(value, event);
       }
-
       moduleCache.clear();
+      #if FEATURE_MULTITHREADING
+      modulePriorityOrder.clear();
+      #else
       modulePriorityOrder = [];
+      #end
       event.finish();
     }
   }

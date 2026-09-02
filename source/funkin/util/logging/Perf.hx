@@ -58,7 +58,7 @@ class Perf
   public function durationClean():Float
   {
     var round:Float = 100;
-    return Math.floor(duration() * Constants.MS_PER_SEC * round) / round;
+    return Math.floor(duration() * round) / round;
   }
 
   /**

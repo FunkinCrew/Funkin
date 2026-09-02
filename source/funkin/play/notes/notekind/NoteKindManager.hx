@@ -24,13 +24,17 @@ class NoteKindManager
    * Every built-in note kind class must be added to this list.
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
-  static final BUILTIN_KINDS:List<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind).filter((cls) ->
+  #if FEATURE_MULTITHREADING
+  static final BUILTIN_KINDS:SynchronizedArray<Class<NoteKind>> = new SynchronizedArray<Class<NoteKind>>(ClassMacro.listSubclassesOf(NoteKind).filter((cls) ->
   {
-    ![
-      'funkin.play.notes.notekind.NoteKind'
-    ].contains(Type.getClassName(cls));
+    !['funkin.play.notes.notekind.NoteKind'].contains(Type.getClassName(cls));
+  }));
+  #else
+  static final BUILTIN_KINDS:Array<Class<NoteKind>> = ClassMacro.listSubclassesOf(NoteKind).filter((cls) ->
+  {
+    !['funkin.play.notes.notekind.NoteKind'].contains(Type.getClassName(cls));
   });
-
+  #end
   /**
    * A map of all note kinds, keyed by their name.
    * This is used to retrieve note kinds by their name.

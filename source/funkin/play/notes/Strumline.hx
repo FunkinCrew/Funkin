@@ -749,7 +749,7 @@ class Strumline extends FlxSpriteGroup
           holdNote.cover.kill();
         }
       }
-      else if (conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote)
+      else if (holdNote.hitNote)
       {
         // Hold note is currently being hit, clip it off.
         holdConfirm(holdNote.noteDirection);
@@ -761,18 +761,7 @@ class Strumline extends FlxSpriteGroup
         {
           holdNote.visible = false;
         }
-
-        if (!customPositionData)
-        {
-          if (isDownscroll)
-          {
-            holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
-          }
-          else
-          {
-            holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
-          }
-        }
+        updateClippedHoldNote(holdNote);
       }
       else
       {
@@ -987,6 +976,18 @@ class Strumline extends FlxSpriteGroup
     playConfirm(note.direction);
     note.hasBeenHit = true;
 
+    // We update the hold note before killing the note to prevent it being clipped from the hold cover.
+    if (note.holdNoteSprite != null)
+    {
+      note.holdNoteSprite.sustainLength = Math.min(
+        note.holdNoteSprite.fullSustainLength,
+        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition
+      );
+
+      // Re-position it so it's correct.
+      updateClippedHoldNote(note.holdNoteSprite);
+    }
+
     if (removeNote)
     {
       killNote(note);
@@ -1001,11 +1002,6 @@ class Strumline extends FlxSpriteGroup
     {
       note.holdNoteSprite.hitNote = true;
       note.holdNoteSprite.missedNote = false;
-
-      note.holdNoteSprite.sustainLength = Math.min(
-        note.holdNoteSprite.fullSustainLength,
-        (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition
-      );
     }
 
     #if FEATURE_GHOST_TAPPING
@@ -1027,6 +1023,21 @@ class Strumline extends FlxSpriteGroup
     {
       note.holdNoteSprite.missedNote = true;
       note.holdNoteSprite.visible = false;
+    }
+  }
+
+  function updateClippedHoldNote(holdNote:SustainTrail):Void
+  {
+    if (!customPositionData)
+    {
+      if (isDownscroll)
+      {
+        holdNote.y = this.y - INITIAL_OFFSET - holdNote.height + STRUMLINE_SIZE / 2;
+      }
+      else
+      {
+        holdNote.y = this.y - INITIAL_OFFSET + STRUMLINE_SIZE / 2;
+      }
     }
   }
 

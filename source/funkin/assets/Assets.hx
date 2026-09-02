@@ -25,6 +25,7 @@ import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
 import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import lime.app.Future;
 import lime.app.Promises;
+import lime.text.Font;
 import lime.utils.AssetType as LimeAssetType;
 import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
@@ -37,6 +38,7 @@ import openfl.utils.Assets as OpenFLAssets;
 import funkin.assets.ValidatedPaths as Paths;
 
 using StringTools;
+using funkin.graphics.framebuffer.BitmapDataUtil;
 
 /**
  * A wrapper around `openfl.utils.Assets` which disallows access to the harmful functions,
@@ -81,9 +83,9 @@ class Assets implements ConsoleClass
     OpenFLAssets.cache = funkin.assets.FunkinAssetCache.FunkinAssetCache.instance;
     untyped FlxG.bitmap = funkin.assets.FunkinBitmapFrontend.instance;
 
-    animate.FlxAnimateAssets.getText = (path) -> FunkinAssetCache.instance.getText(path);
-    animate.FlxAnimateAssets.getBytes = (path) -> FunkinAssetCache.instance.getBytes(path);
-    animate.FlxAnimateAssets.getBitmapData = (path) -> FunkinAssetCache.instance.getBitmapData(path);
+    animate.FlxAnimateAssets.getText = (path) -> Assets.getText(Paths.raw(path));
+    animate.FlxAnimateAssets.getBytes = (path) -> Assets.getBytes(Paths.raw(path));
+    animate.FlxAnimateAssets.getBitmapData = (path) -> Assets.getBitmapData(Paths.raw(path));
 
     FlxG.assets.getAssetUnsafe = flxGetAssetUnsafe;
     FlxG.assets.loadAsset = flxLoadAsset;
@@ -134,14 +136,57 @@ class Assets implements ConsoleClass
    * May cause stutters or throw an error if the asset is not cached.
    *
    * @param assetPath The path of the asset to retrieve.
-   * @param useCache Dummy argument to match `openfl.utils.Assets.getBitmapData()`.
    * @return The BitmapData for the asset.
    */
-  public static function getBitmapData(assetPath:AssetPath, useCache:Bool = true):BitmapData
+  public static function getBitmapData(assetPath:AssetPath):BitmapData
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getBitmapData(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.getBitmapData(assetPath.toString());
+    if (FunkinAssetCache.instance.hasBitmapData(assetPath.toString()))
+    {
+      var result:Null<BitmapData> = FunkinAssetCache.instance.getBitmapData(assetPath.toString());
+
+      if (FunkinAssetCache.instance.validateBitmapData(result))
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Bitmap data found in cache: ${assetPath.toString()}');
+        #end
+        return result;
+      }
+      else
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' INVALID bitmap data found in cache, purging and re-fetching: ${assetPath.toString()}');
+        #end
+        FunkinAssetCache.instance.removeBitmapData(assetPath.toString());
+      }
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'Bitmap data not cached, cannot load synchronously: ${assetPath.toString()}';
+    #else
+    #if VERBOSE_ASSET_CACHE
+    trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ${assetPath.toString()}');
+    #end
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Bitmap file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Bitmap file does not exist: ${assetPath.toString()}';
+    }
+    // Fetch the asset synchronously.
+    // NOTE: This WILL cause stutters! Try to use `cacheBitmapData()` so we don't end up here.
+    var bitmapData:BitmapData = OpenFLAssets.getBitmapData(assetPath.toString(), false, !assetPath.needsPixelData, !assetPath.needsPixelData);
+    // Upload the texture to the GPU immediately so we don't have to do it later.
+    bitmapData.toGPU(false);
+    FunkinAssetCache.instance.setBitmapData(assetPath.toString(), bitmapData);
+    return bitmapData;
+    #end
   }
 
   /**
@@ -156,7 +201,53 @@ class Assets implements ConsoleClass
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.getFlxGraphic(assetPath.toString());
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getFlxGraphic(${assetPath.toString()})');
+    #end
+    if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
+
+    if (FunkinAssetCache.instance.hasFlxGraphic(assetPath.toString()) || FunkinAssetCache.instance.hasBitmapData(assetPath.toString()))
+    {
+      var result:Null<FlxGraphic> = FunkinAssetCache.instance.getFlxGraphic(assetPath.toString());
+
+      if (FunkinAssetCache.instance.validateFlxGraphic(result))
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' FlxGraphic found in cache: ${assetPath.toString()}');
+        #end
+        return result;
+      }
+      else
+      {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' INVALID FlxGraphic found in cache, purging and re-fetching: ${assetPath.toString()}');
+        #end
+        FunkinAssetCache.instance.removeFlxGraphic(assetPath.toString());
+      }
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'FlxGraphic not cached, cannot load synchronously: ${assetPath.toString()}';
+    #else
+    #if VERBOSE_ASSET_CACHE
+    trace(' ASSETS '.bold().bg_lime() + ' Bitmap data not found in cache: ${assetPath.toString()}');
+    #end
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Bitmap file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Bitmap file does not exist: ${assetPath.toString()}';
+    }
+    // Fetch the asset synchronously.
+    // NOTE: This WILL cause stutters! Try to use `cacheBitmapData()` so we don't end up here.
+    var bitmapData:BitmapData = OpenFLAssets.getBitmapData(assetPath.toString(), false, !assetPath.needsPixelData, !assetPath.needsPixelData);
+    // Upload the texture to the GPU immediately so we don't have to do it later.
+    bitmapData.toGPU(false);
+    FunkinAssetCache.instance.setBitmapData(assetPath.toString(), bitmapData);
+    return FunkinAssetCache.instance.setFlxGraphic(assetPath.toString(), bitmapData);
+    #end
   }
 
   /**
@@ -169,20 +260,34 @@ class Assets implements ConsoleClass
    */
   public static function getSparrowAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getSparrowAtlas(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
     if (!assetPath.isAssetType(IMAGE)) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath.image()))
     {
-      return FunkinAssetCache.instance.getSparrowAtlas(assetPath);
+      var xmlAssetPath = assetPath.withAssetType(XML);
+
+      var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+      // We don't really mind reading the text synchronously I guess.
+      var data:String = getText(xmlAssetPath.toString());
+      return FlxAtlasFrames.fromSparrow(graphic, data);
     }
     else
     {
       throw 'Asset not cached, cannot load synchronously: ${assetPath.image()}';
     }
     #else
-    return FunkinAssetCache.instance.getSparrowAtlas(assetPath);
+    var xmlAssetPath = assetPath.withAssetType(XML);
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var graphic:FlxGraphic = getFlxGraphic(assetPath);
+    var data:String = getText(xmlAssetPath);
+    return FlxAtlasFrames.fromSparrow(graphic, data);
     #end
   }
 
@@ -196,19 +301,33 @@ class Assets implements ConsoleClass
    */
   public static function getPackerAtlas(assetPath:AssetPath):FlxAtlasFrames
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('FunkinAssetCache.getPackerAtlas(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
     #if FEATURE_STRICT_ASSET_CACHING
     if (isFlxGraphicCached(assetPath.image()))
     {
-      return FunkinAssetCache.instance.getPackerAtlas(assetPath);
+      var txtAssetPath = assetPath.withAssetType(TEXT);
+
+      var graphic:FlxGraphic = getFlxGraphic(assetPath.toString());
+      // We don't really mind reading the text synchronously I guess.
+      var data:String = getText(txtAssetPath.toString());
+      return FlxAtlasFrames.fromSpriteSheetPacker(graphic, data);
     }
     else
     {
       throw 'Asset not cached, cannot load synchronously: ${assetPath.image()}';
     }
     #else
-    return FunkinAssetCache.instance.getPackerAtlas(assetPath);
+    var txtAssetPath = assetPath.withAssetType(TEXT);
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var graphic:FlxGraphic = getFlxGraphic(assetPath);
+    var data:String = getText(txtAssetPath);
+    return FlxAtlasFrames.fromSpriteSheetPacker(graphic, data);
     #end
   }
 
@@ -327,9 +446,34 @@ class Assets implements ConsoleClass
    */
   public static function getBytes(assetPath:AssetPath):haxe.io.Bytes
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Asset.getBytes(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.file()?';
 
-    return FunkinAssetCache.instance.getBytes(assetPath.toString());
+    if (FunkinAssetCache.instance.hasBytes(assetPath.toString()))
+    {
+      return FunkinAssetCache.instance.getBytes(assetPath.toString());
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'Bytes not cached, cannot load synchronously: ${assetPath.toString()}';
+    #else
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Bytes file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Bytes file does not exist: ${assetPath.toString()}';
+    }
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var bytes:openfl.utils.ByteArray = OpenFLAssets.getBytes(assetPath.toString());
+    FunkinAssetCache.instance.setBytes(assetPath.toString(), bytes);
+    return bytes;
+    #end
   }
 
   /**
@@ -341,9 +485,34 @@ class Assets implements ConsoleClass
    */
   public static function getText(assetPath:AssetPath):String
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getText(${assetPath.toString()})');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.txt()?';
 
-    return FunkinAssetCache.instance.getText(assetPath.toString());
+    if (FunkinAssetCache.instance.hasText(assetPath.toString()))
+    {
+      return FunkinAssetCache.instance.getText(assetPath.toString());
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'Text not cached, cannot load synchronously: ${assetPath.toString()}';
+    #else
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Text file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Text file does not exist: ${assetPath.toString()}';
+    }
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var text:String = OpenFLAssets.getText(assetPath.toString());
+    FunkinAssetCache.instance.setText(assetPath.toString(), text);
+    return text;
+    #end
   }
 
   /**
@@ -355,9 +524,72 @@ class Assets implements ConsoleClass
    */
   public static function getSound(assetPath:AssetPath):openfl.media.Sound
   {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getSound($id)');
+    #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
-    return FunkinAssetCache.instance.getSound(assetPath.toString());
+    if (FunkinAssetCache.instance.hasSound(assetPath.toString()))
+    {
+      return FunkinAssetCache.instance.getSound(assetPath.toString());
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'Sound not cached, cannot load synchronously: $id';
+    #else
+    if (!assetPath.exists())
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Sound file does not exist: ${assetPath.toString()}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Sound file does not exist: ${assetPath.toString()}';
+    }
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var sound:Sound = OpenFLAssets.getSound(assetPath.toString());
+    FunkinAssetCache.instance.setSound(assetPath.toString(), sound);
+    return sound;
+    #end
+  }
+
+  /**
+   * Get a Font, if it exists in the cache.
+   * @param id The asset id of the Font.
+   * @throws error If the Font does not exist in the cache and strict asset caching is enabled.
+   * @return The Font, if available.
+   */
+  public function getFont(id:String):Font
+  {
+    #if FEATURE_DEBUG_TRACY
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getFont($id)');
+    #end
+
+    if (FunkinAssetCache.instance.hasFont(id))
+    {
+      return FunkinAssetCache.instance.getFont(id);
+    }
+
+    #if FEATURE_STRICT_ASSET_CACHING
+    throw 'Font not cached, cannot load synchronously: $id';
+    #else
+    // Fetch the font synchronously. This will cause the game to stutter.
+    if (!OpenFLAssets.exists(id))
+    {
+      #if VERBOSE_ASSET_CACHE
+      trace(' ASSETS '.bold().bg_lime() + ' Font file does not exist: ${id}');
+      funkin.util.DebugUtil.printCallStack();
+      #end
+      throw 'Font file does not exist: ${id}';
+    }
+
+    // Fetch the asset synchronously.
+    // NOTE: This may cause stutters.
+    var font:openfl.text.Font = OpenFLAssets.getFont(id);
+    FunkinAssetCache.instance.setFont(id, font);
+    return font;
+    #end
   }
 
   /**
@@ -498,14 +730,13 @@ class Assets implements ConsoleClass
    *
    * @param assetPath The path of the asset to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the BitmapData for the asset.
    */
-  public static function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
+  public static function cacheBitmapData(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.cacheBitmapData(assetPath, permanent, uploadToGPU);
+    return FunkinAssetCache.instance.cacheBitmapData(assetPath, permanent);
   }
 
   /**
@@ -513,14 +744,13 @@ class Assets implements ConsoleClass
    *
    * @param assetPath The path of the asset to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether or not to upload the BitmapData to the GPU before caching.
    * @return A future for the FlxGraphic for the asset.
    */
-  public static function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false, uploadToGPU:Bool = true):Future<Bool>
+  public static function cacheFlxGraphic(assetPath:AssetPath, permanent:Bool = false):Future<Bool>
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.cacheFlxGraphic(assetPath, permanent, uploadToGPU);
+    return FunkinAssetCache.instance.cacheFlxGraphic(assetPath, permanent);
   }
 
   /**
@@ -618,10 +848,9 @@ class Assets implements ConsoleClass
    *
    * @param assetPaths The paths of the assets to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether to upload the bitmap datas to the GPU, saving memory.
    * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllBitmapData(assetPaths:Array<AssetPath>, permanent:Bool = false, uploadToGPU:Bool = true):Future<Array<Future<Bool>>>
+  public static function cacheAllBitmapData(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
@@ -632,7 +861,7 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheBitmapData(assetPath, permanent, uploadToGPU));
+      futures.push(cacheBitmapData(assetPath, permanent));
     }
 
     return Promises.allSettled(futures);
@@ -643,10 +872,9 @@ class Assets implements ConsoleClass
    *
    * @param assetPaths The paths of the assets to cache.
    * @param permanent If `true`, cache the asset permanently, persisting between state switches.
-   * @param uploadToGPU Whether to use GPU caching for this graphic.
    * @return A future, which provides progress updates for each cached asset, and an array of results when completed.
    */
-  public static function cacheAllFlxGraphics(assetPaths:Array<AssetPath>, permanent:Bool = false, uploadToGPU:Bool = true):Future<Array<Future<Bool>>>
+  public static function cacheAllFlxGraphics(assetPaths:Array<AssetPath>, permanent:Bool = false):Future<Array<Future<Bool>>>
   {
     // Exclude null values, and ensure each path is only loaded once.
     assetPaths = (assetPaths ?? []).filterNull().distinct(AssetPath.equals);
@@ -657,7 +885,7 @@ class Assets implements ConsoleClass
 
     for (assetPath in assetPaths)
     {
-      futures.push(cacheFlxGraphic(assetPath, permanent, uploadToGPU));
+      futures.push(cacheFlxGraphic(assetPath, permanent));
     }
 
     return Promises.allSettled(futures);
@@ -793,7 +1021,7 @@ class Assets implements ConsoleClass
   {
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.image()?';
 
-    return FunkinAssetCache.instance.hasFlxGraphic(assetPath);
+    return FunkinAssetCache.instance.hasFlxGraphic(assetPath.toString());
   }
 
   /**
@@ -992,21 +1220,9 @@ class Assets implements ConsoleClass
     // Start with the assets we use in every state.
     results.appendUnique(queryPersistentAssets(type));
 
-    // Fetch assets required by each registry at startup.
-    // This is mainly used to fetch JSON data to register entries in each registry.
-    // These will get uncached after the game starts but we don't need them anymore at that point.
-    results.appendUnique(SongRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(LevelRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(NoteStyleRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(PlayerRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(ConversationRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(DialogueBoxRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(SpeakerRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(FreeplayStyleRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(AlbumRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(StickerRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(StageRegistry.instance.queryRegistryAssets(type).filterNull());
-    results.appendUnique(CharacterDataParser.queryRegistryAssets(type).filterNull());
+    // Registry JSON data doesn't need to be included here.
+    // This is because the registry entries are loaded asynchronously,
+    // and there's no stutter from loading the JSON data in those threads.
 
     // We need the assets used to render the first state.
     // results.appendUnique(funkin.ui.title.TitleState.queryAssets(type));

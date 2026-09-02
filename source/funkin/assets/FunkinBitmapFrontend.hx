@@ -134,13 +134,9 @@ class FunkinBitmapFrontend extends flixel.system.frontEnds.BitmapFrontEnd
       return result;
     }
 
-    #if FEATURE_STRICT_ASSET_CACHING
-    throw 'Flixel graphic not cached, cannot load synchronously: $id';
-    #else
-    FlxG.log.warn('BitmapFrontend says not cached, may experience stuttering! ${id}');
+    // Try to build an FlxGraphic from BitmapData.
     var graphic:FlxGraphic = FlxGraphic.fromBitmapData(FunkinAssetCache.instance.getBitmapData(id), false, id);
     return addGraphic(graphic);
-    #end
   }
 
   // This is wildly different from the original approach of FunkinAssetCache where we recache the asset if it exists. But we need this internally for the other bitmapfrontend

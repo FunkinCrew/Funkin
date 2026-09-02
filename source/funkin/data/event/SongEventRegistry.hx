@@ -26,10 +26,15 @@ class SongEventRegistry
    * Every built-in event class must be added to this list.
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
-  static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> ![
-    'funkin.play.event.SongEvent'
-  ].contains(Type.getClassName(cls)));
-
+  #if FEATURE_MULTITHREADING
+  static final BUILTIN_EVENTS:SynchronizedArray<Class<SongEvent>> = new SynchronizedArray<Class<SongEvent>>(
+    ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> !['funkin.play.event.SongEvent'].contains(Type.getClassName(cls)))
+  );
+  #else
+  static final BUILTIN_EVENTS:Array<Class<SongEvent>> = ClassMacro
+    .listSubclassesOf(SongEvent)
+    .filter((cls:Class<SongEvent>) -> !['funkin.play.event.SongEvent'].contains(Type.getClassName(cls)));
+  #end
   /**
    * Map of internal handlers for song events.
    * These may be either `ScriptedSongEvents` or built-in classes extending `SongEvent`.
@@ -94,7 +99,7 @@ class SongEventRegistry
       {eventId:String, error:Any, ?eventCls:String}> = new SynchronizedArray();
 
     var entryCount:Int = 0;
-    var scriptedEventClassNames:Array<String> = [];
+    var scriptedEventClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
     var loadedBaseEvents:Bool = false;
 
     var loadBaseEventsAsync:Void->Void = () -> {};
@@ -217,7 +222,7 @@ class SongEventRegistry
 
     loadScriptedEventsAsync = () ->
     {
-      scriptedEventClassNames = SongEvent.listScriptClasses();
+      scriptedEventClassNames = new SynchronizedArray<String>(SongEvent.listScriptClasses());
       entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
 
       trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
