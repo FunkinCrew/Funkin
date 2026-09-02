@@ -385,6 +385,14 @@ class Project extends HXProject
   static final FEATURE_DEBUG_FILE_LOGGING:FeatureFlag = "FEATURE_DEBUG_FILE_LOGGING";
 
   /**
+   * `-DFEATURE_NATIVE_CRASH_HANDLER`
+   * If this flag is enabled, a native crash handler is installed that catches segfaults and other
+   * native faults, writes a report with a stack trace to the log folder, and shows a dialog.
+   * Only available on C++ targets.
+   */
+  static final FEATURE_NATIVE_CRASH_HANDLER:FeatureFlag = "FEATURE_NATIVE_CRASH_HANDLER";
+
+  /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
    * If this flag is enabled, Google AdMob will be enabled.
    * Banner and interstitial ads will sometimes appear.
@@ -977,6 +985,7 @@ class Project extends HXProject
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
     FEATURE_DEBUG_FILE_LOGGING.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_NATIVE_CRASH_HANDLER.apply(this, isCPP());
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
@@ -1306,8 +1315,9 @@ class Project extends HXProject
 
     app.path = buildDir;
 
-    if (isWindows() && isCPP())
+    if (isWindows() && isCPP() && FEATURE_NATIVE_CRASH_HANDLER.isEnabled(this))
     {
+      // The native crash handler symbolizes stack traces with the PDB.
       var pdbPath:String = Path.join([buildDir, 'windows', 'obj', 'Funkin.pdb']);
 
       setenv("HXCPP_PDB_FILE", sys.FileSystem.absolutePath(pdbPath));

@@ -1,6 +1,6 @@
 package funkin.external.crash;
 
-#if cpp
+#if FEATURE_NATIVE_CRASH_HANDLER
 @:build(funkin.util.macro.LinkerMacro.xml('project/Build.xml'))
 @:include('nativecrash.hpp')
 extern class NativeCrash

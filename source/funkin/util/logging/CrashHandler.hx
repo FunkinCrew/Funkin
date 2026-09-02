@@ -28,7 +28,7 @@ class CrashHandler
 
   public static function installNativeHandler():Void
   {
-    #if cpp
+    #if FEATURE_NATIVE_CRASH_HANDLER
     funkin.external.crash.NativeCrash.install(LOG_FOLDER, 'Funkin');
     #end
   }
@@ -39,7 +39,7 @@ class CrashHandler
    */
   public static function setContext(info:String):Void
   {
-    #if cpp
+    #if FEATURE_NATIVE_CRASH_HANDLER
     funkin.external.crash.NativeCrash.setContext(info);
     #end
   }
