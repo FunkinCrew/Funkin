@@ -19,5 +19,11 @@ extern class NativeCrash
    */
   @:native('NATIVECRASH_SetContext')
   static function setContext(info:cpp.ConstCharStar):Void;
+
+  /**
+   * Writes through a null pointer to trigger a real segfault, for testing the handler.
+   */
+  @:native('NATIVECRASH_ForceCrash')
+  static function forceCrash():Void;
 }
 #end
