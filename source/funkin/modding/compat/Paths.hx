@@ -7,6 +7,7 @@ import openfl.utils.AssetType as OpenFLAssetType;
  * A utility class which evaluates asset paths,
  * checking known previous paths for backwards compatibility.
  */
+@:nullSafety
 class Paths
 {
   /**
@@ -3530,10 +3531,11 @@ class Paths
     // If the path doesn't exist, it might be a mod backwards compatibility issue.
 
     // Check the list of known paths.
-    if (PATHS.exists(filePath))
+    var compatPath = PATHS[filePath];
+    if (compatPath != null)
     {
       // trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}')
-      return PATHS[filePath];
+      return compatPath;
     }
 
     // Somehow if the file path starts with `assets/assets/`...
@@ -3584,7 +3586,8 @@ class Paths
 
       if (PATHS.exists(path))
       {
-        if (funkin.assets.Assets.exists(PATHS[path])) result = PATHS[path];
+        var compatPath = PATHS[path];
+        if (compatPath != null && funkin.assets.Assets.exists(compatPath)) result = compatPath;
       }
     }
 
