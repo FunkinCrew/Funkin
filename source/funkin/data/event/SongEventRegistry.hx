@@ -146,7 +146,7 @@ class SongEventRegistry
       var eventCls:String = currentState.eventCls;
       try
       {
-        var event:Null<SongEvent> = SongEvent.scriptInit(eventCls, 'UNKNOWN');
+        var event:Null<SongEvent> = funkin.util.tasks.ScriptLock.run(() -> SongEvent.scriptInit(eventCls, 'UNKNOWN'));
         if (event != null)
         {
           workOutput.sendComplete({

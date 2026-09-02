@@ -127,7 +127,7 @@ class ModuleHandler
       var moduleCls:String = currentState.moduleCls;
       try
       {
-        var module:Null<Module> = Module.scriptInit(moduleCls, moduleCls);
+        var module:Null<Module> = funkin.util.tasks.ScriptLock.run(() -> Module.scriptInit(moduleCls, moduleCls));
         if (module != null)
         {
           workOutput.sendComplete({

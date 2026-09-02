@@ -336,7 +336,7 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     {
       try
       {
-        var entry:Null<T> = createScriptedEntry(currentState.entryCls);
+        var entry:Null<T> = funkin.util.tasks.ScriptLock.run(() -> createScriptedEntry(currentState.entryCls));
 
         if (entry != null)
         {

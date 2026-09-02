@@ -209,7 +209,7 @@ class NoteKindManager
       var entryCls:String = currentState.entryCls;
       try
       {
-        var noteKind:Null<NoteKind> = NoteKind.scriptInit(entryCls, 'UNKNOWN');
+        var noteKind:Null<NoteKind> = funkin.util.tasks.ScriptLock.run(() -> NoteKind.scriptInit(entryCls, 'UNKNOWN'));
         if (noteKind != null)
         {
           workOutput.sendComplete({
