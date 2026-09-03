@@ -336,24 +336,6 @@ class HotReloadState extends MusicBeatState
     });
   }
 
-  function afterLoadRegistryData():Void
-  {
-    beginStep('module create');
-
-    // Call create() on each module when the future is complte.
-    try
-    {
-      ModuleHandler.callOnCreate();
-
-      updateProgress(10, 10);
-    }
-    catch (e:Dynamic)
-    {
-      reportStepFailed('module create', e);
-    }
-    isComplete = true;
-  }
-
   function beginStep(step:String):Void
   {
     trace('Queue task: $step...');
@@ -384,14 +366,6 @@ class HotReloadState extends MusicBeatState
     updateProgress(10, 10);
 
     isComplete = true;
-  }
-
-  function reportStepFailed(step:String, error:Dynamic):Void
-  {
-    var message:String = 'Hot reload step "$step" failed: $error';
-
-    trace(message);
-    FlxG.log.error(message);
   }
 
   /**
