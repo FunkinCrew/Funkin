@@ -992,6 +992,10 @@ class Strumline extends FlxSpriteGroup
     // We update the hold note before killing the note to prevent it being clipped from the hold cover.
     if (note.holdNoteSprite != null)
     {
+      // Mark it as hit first, so killing the note doesn't treat it as a drop.
+      note.holdNoteSprite.hitNote = true;
+      note.holdNoteSprite.missedNote = false;
+
       note.holdNoteSprite.sustainLength = Math.min(
         note.holdNoteSprite.fullSustainLength,
         (note.holdNoteSprite.strumTime + note.holdNoteSprite.fullSustainLength) - conductorInUse.songPosition
@@ -1011,12 +1015,6 @@ class Strumline extends FlxSpriteGroup
       note.desaturate();
     }
 
-    if (note.holdNoteSprite != null)
-    {
-      note.holdNoteSprite.hitNote = true;
-      note.holdNoteSprite.missedNote = false;
-    }
-
     #if FEATURE_GHOST_TAPPING
     ghostTapTimer = Constants.GHOST_TAP_DELAY;
     #end
@@ -1032,7 +1030,8 @@ class Strumline extends FlxSpriteGroup
     note.visible = false;
     note.kill();
 
-    if (note.holdNoteSprite != null)
+    // Don't drop a hold that was just hit.
+    if (note.holdNoteSprite != null && !note.holdNoteSprite.hitNote)
     {
       note.holdNoteSprite.missedNote = true;
       note.holdNoteSprite.visible = false;
