@@ -27,6 +27,11 @@ class CrashHandler
   public static var criticalErrorSignal(default, null):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
   /**
+   * The stack of an error that was caught and rethrown elsewhere.
+   */
+  public static var pendingStack:Null<Array<haxe.CallStack.StackItem>> = null;
+
+  /**
    * Initializes
    */
   public static function initialize():Void
@@ -231,7 +236,8 @@ class CrashHandler
   static function generateErrorMessage(error:UncaughtErrorEvent):String
   {
     var errorMessage:String = "";
-    var callStack:Array<haxe.CallStack.StackItem> = haxe.CallStack.exceptionStack(true);
+    var callStack:Array<haxe.CallStack.StackItem> = pendingStack ?? haxe.CallStack.exceptionStack(true);
+    pendingStack = null;
 
     errorMessage += '${error.error}\n';
 
