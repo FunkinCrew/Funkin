@@ -188,21 +188,31 @@ class TimelineShader extends FlxShader
     }\n" + "float printInt(vec2 u, int num_i, int shift)
     {
       if (u.x < 0.0 || abs(u.y - 0.03) > 0.03) return 0.0;
-      float num = float(num_i); int x = int(u.x * 16.0 * FONT_SPACING);
+      int x = int(u.x * 16.0 * FONT_SPACING);
       int neg = 0;
-      if (num < 0.0) {
+      if (num_i < 0) {
         if (x == 0) return print_char(45, x, u);
-        num = abs(num);
+        num_i = abs(num_i);
         neg = 1;
       }
-      int pre = neg + int(max(1.0, float(digitCount(num))));
-      int s2 = pre;
-      if (x >= s2) return 0.0;
-      float d = float(pre - x);
-      if (d == 0.0) return print_char(10, x, u);
-      if (d < 0.0) d += 1.0;
-      d = pow(10.0, d);
-      return print_char(shift + int(10.0 * fract(num / 0.999999 / d)), x, u);
+      int temp = num_i;
+      int digits = 0;
+      if (temp == 0) digits = 1;
+      for (int i = 0; i < 10; i++) {
+        if (temp == 0) break;
+        digits++;
+        temp /= 10;
+      }
+      int pre = neg + digits;
+      if (x >= pre) return 0.0;
+      int target_digit_idx = pre - 1 - x;
+      int divisor = 1;
+      for (int i = 0; i < 10; i++) {
+        if (i >= target_digit_idx) break;
+        divisor *= 10;
+      }
+      int current_digit = (num_i / divisor) % 10;
+      return print_char(shift + current_digit, x, u);
     }\n" + "uniform float areaWidth;
     uniform float areaHeight;
     uniform vec2 beatSize;
