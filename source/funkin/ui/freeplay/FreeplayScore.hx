@@ -19,6 +19,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (dumbNumb > 0)
     {
+      group.members[loopNum].leadingZero = false;
       group.members[loopNum].digit = dumbNumb % 10;
 
       dumbNumb = Math.floor(dumbNumb / 10);
@@ -27,6 +28,7 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 
     while (loopNum >= 0)
     {
+      group.members[loopNum].leadingZero = true;
       group.members[loopNum].digit = 0;
       loopNum--;
     }
@@ -68,12 +70,14 @@ class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 class ScoreNum extends FlxSprite
 {
   public var digit(default, set):Int = 0;
+  public var leadingZero:Bool = false;
 
   function set_digit(val):Int
   {
-    if (animation.curAnim != null && animation.curAnim.name != numToString[val])
+    var animName = leadingZero ? 'dim_${numToString[val]}' : numToString[val];
+    if (animation.curAnim != null && animation.curAnim.name != animName)
     {
-      animation.play(numToString[val], true, false, 0);
+      animation.play(animName, true, false, 0);
       updateHitbox();
 
       switch (val)
@@ -114,7 +118,8 @@ class ScoreNum extends FlxSprite
 
     for (i in 0...10)
     {
-      animation.addByPrefix(getIntToString(i), '${getIntToString(i)} DIGITAL', 24, false);
+      animation.addByIndices(getIntToString(i), '${getIntToString(i)} DIGITAL', [1], '', 24, false);
+      animation.addByIndices('dim_${getIntToString(i)}', '${getIntToString(i)} DIGITAL', [15], '', 24, false);
     }
 
     this.digit = initDigit ?? 0;
