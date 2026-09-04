@@ -9,6 +9,7 @@ import haxe.ui.core.Screen;
 import haxe.ui.events.UIEvent;
 import funkin.data.song.SongData.SongEventData;
 import funkin.ui.debug.charting.commands.MoveEventsCommand;
+import funkin.ui.debug.charting.commands.SnapEventsCommand;
 import funkin.ui.debug.charting.commands.RemoveEventsCommand;
 
 @:access(funkin.ui.debug.charting.ChartEditorState)
@@ -19,6 +20,7 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
   var contextmenuPosition:NumberStepper;
   var contextmenuUnit:DropDown;
   var contextmenuEdit:MenuItem;
+  var contextmenuSnap:MenuItem;
   var contextmenuDelete:MenuItem;
 
   public var selectedUnit:Int;
@@ -138,6 +140,11 @@ class ChartEditorEventContextMenu extends ChartEditorBaseContextMenu
     contextmenuEdit.onClick = function(_)
     {
       chartEditorState.showToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+    }
+
+    contextmenuSnap.onClick = function(_)
+    {
+      chartEditorState.performCommand(new SnapEventsCommand([data], chartEditorState.noteSnapRatio));
     }
 
     contextmenuDelete.onClick = function(_)
