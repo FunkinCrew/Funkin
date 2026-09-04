@@ -157,7 +157,7 @@ class SustainTrail extends FlxSprite
 
     setIndices(TRIANGLE_VERTEX_INDICES);
 
-    this.active = true; // This NEEDS to be true for the note to be drawn!
+    this.active = false;
   }
 
   /**
