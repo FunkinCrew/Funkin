@@ -598,6 +598,25 @@ class Preferences
   }
 
   /**
+   * If enabled, save files uploaded to NG will sync automatically with the local ones if outdated.
+   * @default `false`
+   */
+  public static var autoSync(get, set):Bool;
+
+  static function get_autoSync():Bool
+  {
+    return Save?.instance?.options?.autoSync ?? false;
+  }
+
+  static function set_autoSync(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.autoSync = value;
+    Save.system.flush();
+    return value;
+  }
+
+  /**
    * Controls Scheme for the hitbox.
    * @default `4 Lanes`
    */

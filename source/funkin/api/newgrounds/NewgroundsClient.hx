@@ -1,6 +1,7 @@
 package funkin.api.newgrounds;
 
 import funkin.save.Save;
+import funkin.save.migrator.SaveDataMigrator;
 import funkin.api.newgrounds.Medals.Medal;
 #if FEATURE_NEWGROUNDS
 import io.newgrounds.Call.CallError;
@@ -358,7 +359,42 @@ class NewgroundsClient
   {
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Fetched save slots!');
 
-    NGSaveSlot.instance.checkSlot();
+    NGSaveSlot.instance.checkSlot(autoSyncSavesFromNewgrounds);
+  }
+
+  public function autoSyncSavesFromNewgrounds(slotIsNull:Bool = false, slotIsEmpty:Bool = false)
+  {
+    if (!Preferences.autoSync) return;
+    if (!isLoggedIn()) return;
+    if (slotIsNull || slotIsEmpty) return;
+
+    @:privateAccess
+    var rawSaveData:RawSaveData = Save.instance.data;
+
+    NGSaveSlot.instance.load((data:RawSaveData) ->
+    {
+      var gameSave = SaveDataMigrator.migrate(data);
+      @:privateAccess
+      if (thx.Dynamics.equals(rawSaveData, gameSave.data))
+      {
+        trace(' NEWGROUNDS '.bold().bg_orange() +  'Save files are already synced');
+
+      }
+      else
+      {
+        Save.loadFromNewgrounds(() -> {
+          trace(' NEWGROUNDS '.bold().bg_orange() + ' Synced with Newgrounds (loaded!)');
+        });
+      }
+    });
+  }
+
+  public function autoSyncSavesToNewgrounds()
+  {
+    if (!Preferences.autoSync) return;
+    if (!isLoggedIn()) return;
+
+    Save.saveToNewgrounds(() -> trace(' NEWGROUNDS '.bold().bg_orange() + ' Synced with Newgrounds (saved!)'));
   }
 
   function get_user():Null<User>
