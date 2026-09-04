@@ -45,9 +45,9 @@ class DiscordClient
 
     handlers = new DiscordEventHandlers();
 
-    handlers.ready = cpp.Function.fromStaticFunction(onReady);
-    handlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
-    handlers.errored = cpp.Function.fromStaticFunction(onError);
+    handlers.ready = cpp.Function.fromStaticFunction(DiscordClientCallbacks.onReady);
+    handlers.disconnected = cpp.Function.fromStaticFunction(DiscordClientCallbacks.onDisconnected);
+    handlers.errored = cpp.Function.fromStaticFunction(DiscordClientCallbacks.onError);
   }
 
   public function init():Void
@@ -150,10 +150,15 @@ class DiscordClient
 
     Discord.UpdatePresence(cpp.RawConstPointer.addressOf(presence));
   }
+}
 
+@:access(funkin.api.discord.DiscordClient)
+@:unreflective
+private class DiscordClientCallbacks
+{
   // TODO: WHAT THE FUCK get this pointer bullfuckery out of here
-
-  private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
+  @:noCompletion @:noDebug @:unreflective
+  public static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
   {
     trace(' DISCORD '.bold().bg_blue() + ' Client has connected!');
 
@@ -171,12 +176,14 @@ class DiscordClient
     }
   }
 
-  private static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
+  @:noCompletion @:noDebug @:unreflective
+  public static function onDisconnected(errorCode:Int, message:cpp.ConstCharStar):Void
   {
     trace(' DISCORD '.bold().bg_blue() + ' Client has disconnected! ($errorCode) "${cast (message, String)}"');
   }
 
-  private static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
+  @:noCompletion @:noDebug @:unreflective
+  public static function onError(errorCode:Int, message:cpp.ConstCharStar):Void
   {
     trace(' DISCORD '.bold().bg_blue() + ' Client has received an error! ($errorCode) "${cast (message, String)}"');
   }
