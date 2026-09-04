@@ -41,8 +41,13 @@ class DropShadowShader extends FlxShader
   public var angleOffset(default, set):Float;
 
   /**
-   * The distance or size of the drop shadow, in pixels,
-   * relative to the texture itself... NOT the camera.
+   * The base normalization factor used to keep drop shadow scale be consistent across different sprite sheet sizes.
+   */
+  public var normalizedSize(default, set):Float;
+
+  /**
+   * The distance or size of the drop shadow
+   * relative to the normalizedSize above.
    */
   public var distance(default, set):Float;
 
@@ -244,6 +249,13 @@ class DropShadowShader extends FlxShader
     return val;
   }
 
+  function set_normalizedSize(val:Float):Float
+  {
+    normalizedSize = val;
+    uNormalizedSize.value = [val];
+    return val;
+  }
+
   function set_distance(val:Float):Float
   {
     distance = val;
@@ -303,6 +315,11 @@ class DropShadowShader extends FlxShader
    */
   public function updateFrameInfo(frame:FlxFrame):Void
   {
+    if (attachedSprite != null)
+    {
+      uSpriteSize.value = [attachedSprite.frameWidth, attachedSprite.frameHeight];
+    }
+
     // NOTE: uv.right is actually the right pos and uv.bottom is the bottom pos
     uFrameBounds.value = [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom];
 
@@ -330,6 +347,25 @@ class DropShadowShader extends FlxShader
     useMask.value = [val];
     return val;
   }
+
+  @:glVertexSource('
+      #pragma header
+
+      uniform vec2 uSpriteSize;
+      uniform float uNormalizedSize;
+
+      varying vec2 vNormalizedScale;
+
+      void main()
+      {
+        gl_Position = openfl_Matrix * openfl_Position;
+        openfl_TextureCoordv = openfl_TextureCoord;
+
+        vec2 normalizedSize = vec2(uSpriteSize.x / uSpriteSize.y, 1.0) * uNormalizedSize;
+
+        vNormalizedScale = uSpriteSize / normalizedSize;
+      }
+    ')
 
   @:glFragmentSource('
       #pragma header
@@ -371,6 +407,8 @@ class DropShadowShader extends FlxShader
       uniform float contrast;
       uniform mat3 saturationMatrix;
       uniform float brightness;
+
+      varying vec2 vNormalizedScale;
 
       const vec3 lumaValue = vec3(0.2126, 0.7152, 0.0722);
 
@@ -463,10 +501,8 @@ class DropShadowShader extends FlxShader
         vec3 color3_no_effect = color4.a > 0.0 ? color4.rgb / color4.a : color4.rgb;
         vec3 color3 = applyHSBCEffect(color3_no_effect);
 
-        vec2 checked = vec2(
-          uv.x + (dist * angCos * ratio.x),
-          uv.y - (dist * angSin * ratio.y)
-        );
+        vec2 checkedOffset = vec2(dist * angCos, -dist * angSin);
+        vec2 checked = uv + checkedOffset * vNormalizedScale * ratio;
 
         if (checked.x > uFrameBounds.x &&
             checked.y > uFrameBounds.y &&
@@ -495,6 +531,7 @@ class DropShadowShader extends FlxShader
     angle = 0;
     angleOffset = 0;
     strength = 1;
+    normalizedSize = 550;
     distance = 15;
     threshold = 0.1;
 
