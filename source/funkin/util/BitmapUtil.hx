@@ -1,11 +1,21 @@
 package funkin.util;
 
 import flixel.FlxG;
+import haxe.io.Bytes;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.ImageFileFormat;
+import lime.graphics.WebGL2RenderContext;
+import lime.utils.UInt8Array;
 import openfl.display.BitmapData;
+import openfl.display3D.Context3D;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+@:access(openfl.display3D.textures.TextureBase)
+@:access(openfl.display.BitmapData)
+@:access(openfl.display3D.Context3D)
 class BitmapUtil
 {
   public static function createResultsBar():BitmapData
@@ -75,5 +85,55 @@ class BitmapUtil
     finalBitmap.copyPixels(bitmap, rect, new Point(scaledPartWidth, 0));
 
     return finalBitmap;
+  }
+
+  public static function encode(bitmap:BitmapData, format:ImageFileFormat = null, quality:Int = 90):Bytes
+  {
+    if (bitmap != null)
+    {
+      if (bitmap.image != null)
+      {
+        return bitmap.image.encode(format, quality);
+      }
+      else if (bitmap.__texture != null)
+      {
+        // TODO: Perhaps this could be made a function of its own to transform hardware bitmapdatas into CPU based.
+        final context:Context3D = FlxG.stage.context3D;
+
+        final gl:WebGL2RenderContext = context.gl;
+
+        final image:Image = new Image(
+          new ImageBuffer(new UInt8Array(bitmap.width * bitmap.height * 4), bitmap.width, bitmap.height, 32),
+          0,
+          0,
+          bitmap.width,
+          bitmap.height
+        );
+
+        var cacheRTT = context.__state.renderToTexture;
+        var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+        var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+        var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+        context.setRenderToTexture(bitmap.__texture);
+        context.__flushGLFramebuffer();
+        context.__flushGLViewport();
+
+        gl.readPixels(0, 0, bitmap.width, bitmap.height, bitmap.__texture.__format, gl.UNSIGNED_BYTE, image.buffer.data);
+
+        if (cacheRTT != null)
+        {
+          context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+        }
+        else
+        {
+          context.setRenderToBackBuffer();
+        }
+
+        return image.encode(format, quality);
+      }
+    }
+
+    return null;
   }
 }

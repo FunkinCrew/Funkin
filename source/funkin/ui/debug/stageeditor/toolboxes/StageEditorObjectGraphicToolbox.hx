@@ -5,6 +5,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.ui.debug.stageeditor.handlers.AssetDataHandler;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorAssetFile;
 import funkin.ui.debug.stageeditor.components.TextureAtlasSettingsDialog;
+import funkin.util.BitmapUtil;
 import funkin.util.FileUtil;
 import haxe.io.Bytes;
 import haxe.io.Path;
@@ -169,7 +170,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
     {
       if (linkedObj == null) return;
 
-      var file:StageEditorAssetFile = state.createFile('${linkedObj.name}.png', linkedObj.pixels.image.encode());
+      var file:StageEditorAssetFile = state.createFile('${linkedObj.name}.png', BitmapUtil.encode(linkedObj.pixels));
       linkedObj.loadGraphic(linkedObj.graphic, true, Std.int(objImageWidth.pos), Std.int(objImageHeight.pos));
       linkedObj.updateHitbox();
 
@@ -227,7 +228,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
   {
     if (linkedObj == null || objFrameTxt.text == null || objFrameTxt.text.length == 0) return;
 
-    var file:StageEditorAssetFile = stageEditorState.createFile('${linkedObj.name}.png', linkedObj.pixels.image.encode());
+    var file:StageEditorAssetFile = stageEditorState.createFile('${linkedObj.name}.png', BitmapUtil.encode(linkedObj.pixels));
 
     try
     {
