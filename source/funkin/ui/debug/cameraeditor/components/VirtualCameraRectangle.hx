@@ -837,35 +837,48 @@ class VirtualCameraRectangle extends FlxSpriteGroup
     lineLSmall.setPosition(leftExt.x, leftExt.y + (leftExt.height / 2) - lineLSmall.height / 2);
 
     lineRSmall.setPosition(rightExt.x + rightExt.width - lineRSmall.width, rightExt.y + (rightExt.height / 2) - lineLSmall.height / 2);
+  }
 
+  function updatePassepartout():Void
+  {
     if (!showPassepartout) return;
 
-    var scaleAmt:Float = ((Math.abs(FlxG.camera.scroll.x - vcamPoint.x) * 2) + FlxG.width) / FlxG.camera.zoom;
-    var extraSize:Float = showExtendedBounds ? pieceSize / zoom : 0;
+    var extraSize:Float = showExtendedBounds ? (isRelative ? pieceSize : pieceSize / zoom) : 0;
 
-    if (isRelative)
-    {
-      var safeRelativeZoom:Float = (relativeZoom != 0) ? relativeZoom : 1.0;
-      var zoomFactor:Float = FlxG.camera.zoom / safeRelativeZoom;
-      var compensatedScrollX:Float = FlxG.camera.scroll.x * zoomFactor;
+    var cam:FlxCamera = getDefaultCamera();
+    if (cam == null || cam.zoom <= 0) return;
 
-      scaleAmt = ((Math.abs(compensatedScrollX - vcamPoint.x) * 2) + FlxG.width) / safeRelativeZoom;
-      extraSize = showExtendedBounds ? pieceSize : 0;
-    }
+    var pad:Float = 2 / cam.zoom;
+    var viewLeft:Float = cam.scroll.x + vcamPoint.x + cam.viewMarginX - pad;
+    var viewTop:Float = cam.scroll.y + vcamPoint.y + cam.viewMarginY - pad;
+    var viewRight:Float = viewLeft + cam.viewWidth + pad * 2;
+    var viewBottom:Float = viewTop + cam.viewHeight + pad * 2;
 
-    passeT.setGraphicSize(scaleAmt, scaleAmt);
-    passeB.setGraphicSize(scaleAmt, scaleAmt);
-    passeL.setGraphicSize(scaleAmt, mainView.height);
-    passeR.setGraphicSize(scaleAmt, mainView.height);
+    var frameLeft:Float = mainView.x - extraSize;
+    var frameRight:Float = mainView.x + mainView.width + extraSize;
+    var frameTop:Float = mainView.y;
+    var frameBottom:Float = mainView.y + mainView.height;
 
-    passeT.updateHitbox();
-    passeB.updateHitbox();
-    passeL.updateHitbox();
-    passeR.updateHitbox();
+    resizePassepartoutPiece(passeT, viewRight - viewLeft, Math.max(frameTop - viewTop, 0));
+    resizePassepartoutPiece(passeB, viewRight - viewLeft, Math.max(viewBottom - frameBottom, 0));
+    resizePassepartoutPiece(passeL, Math.max(frameLeft - viewLeft, 0), mainView.height);
+    resizePassepartoutPiece(passeR, Math.max(viewRight - frameRight, 0), mainView.height);
 
-    passeT.setPosition(mainView.x + (mainView.width / 2) - passeT.width / 2, mainView.y - passeT.height);
-    passeB.setPosition(mainView.x + (mainView.width / 2) - passeT.width / 2, mainView.y + mainView.height);
-    passeL.setPosition((mainView.x - passeL.width) - extraSize, mainView.y + (mainView.height / 2) - passeL.height / 2);
-    passeR.setPosition(mainView.x + mainView.width + extraSize, mainView.y + (mainView.height / 2) - passeL.height / 2);
+    passeT.setPosition(viewLeft, viewTop);
+    passeB.setPosition(viewLeft, frameBottom);
+    passeL.setPosition(viewLeft, frameTop);
+    passeR.setPosition(frameRight, frameTop);
+  }
+
+  function resizePassepartoutPiece(piece:FunkinSprite, width:Float, height:Float):Void
+  {
+    piece.scale.set(width / piece.frameWidth, height / piece.frameHeight);
+    piece.updateHitbox();
+  }
+
+  override public function draw():Void
+  {
+    updatePassepartout();
+    super.draw();
   }
 }
