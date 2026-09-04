@@ -65,6 +65,9 @@ class ScriptEventDispatcher
       case UPDATE:
         target.onUpdate(cast event);
         return;
+      case CUSTOM:
+        target.onCustom(cast event);
+        return;
       default: // Continue;
     }
 

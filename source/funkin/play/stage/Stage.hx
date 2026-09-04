@@ -834,6 +834,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   override public function kill()
   {
     _skipTransformChildren = true;

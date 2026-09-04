@@ -312,7 +312,7 @@ enum abstract ScriptEventType(String) from String to String
    * This event is not cancelable.
    */
   public var FREEPLAY_RANK_SLAM = 'FREEPLAY_RANK_SLAM';
-  
+
   /**
    * Called when the entire freeplay capsule slams down.
    *
@@ -377,6 +377,13 @@ enum abstract ScriptEventType(String) from String to String
    * This event is not cancelable.
    */
   public var DIALOGUE_END = 'DIALOGUE_END';
+
+  /**
+   * Can be called at any time by modders.
+   *
+   * This event may be cancelable.
+   */
+  public var CUSTOM = 'CUSTOM';
 
   /**
    * Allow for comparing `ScriptEventType` to `String`.

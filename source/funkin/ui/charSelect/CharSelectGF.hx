@@ -107,7 +107,9 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
       this.visible = true;
 
       var path:String = currentGFPath;
-      var texture:Null<animate.FlxAnimateFrames> = CharSelectAtlasHandler.loadAtlas(path, {swfMode: true});
+      var texture:Null<animate.FlxAnimateFrames> = CharSelectAtlasHandler.loadAtlas(path, {
+        swfMode: true
+      });
       if (texture != null)
       {
         frames = texture;
@@ -166,6 +168,10 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
   };
 
   public function onUpdate(event:UpdateScriptEvent):Void
+  {
+  };
+
+  public function onCustom(event:CustomScriptEvent):Void
   {
   };
 }
