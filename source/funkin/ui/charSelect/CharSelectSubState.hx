@@ -784,35 +784,36 @@ class CharSelectSubState extends MusicBeatSubState
       }
       #end
 
+      var directionPressed:Bool = false;
+
       if (controls.UI_UP_P)
       {
         cursorY -= 1;
-        cursors.resetDeny();
-
         holdTmrUp = 0;
-
-        selectSound.play(true);
+        directionPressed = true;
       }
       if (controls.UI_DOWN_P)
       {
         cursorY += 1;
-        cursors.resetDeny();
         holdTmrDown = 0;
-        selectSound.play(true);
+        directionPressed = true;
       }
       if (controls.UI_LEFT_P)
       {
         cursorX -= 1;
-        cursors.resetDeny();
-
         holdTmrLeft = 0;
-        selectSound.play(true);
+        directionPressed = true;
       }
       if (controls.UI_RIGHT_P)
       {
         cursorX += 1;
-        cursors.resetDeny();
         holdTmrRight = 0;
+        directionPressed = true;
+      }
+
+      if (directionPressed)
+      {
+        cursors.resetDeny();
         selectSound.play(true);
       }
 
@@ -1037,30 +1038,39 @@ class CharSelectSubState extends MusicBeatSubState
   {
     if (spamDirections.hasAny(ANY))
     {
-      if (selectSound.pitch > 5) selectSound.pitch = 5;
-      selectSound.play(true);
-
-      cursors.resetDeny();
+      var moveX:Int = 0;
+      var moveY:Int = 0;
 
       if (spamDirections.has(UP))
       {
-        cursorY -= 1;
+        moveY -= 1;
         holdTmrUp = 0;
       }
       if (spamDirections.has(DOWN))
       {
-        cursorY += 1;
+        moveY += 1;
         holdTmrDown = 0;
       }
       if (spamDirections.has(LEFT))
       {
-        cursorX -= 1;
+        moveX -= 1;
         holdTmrLeft = 0;
       }
       if (spamDirections.has(RIGHT))
       {
-        cursorX += 1;
+        moveX += 1;
         holdTmrRight = 0;
+      }
+
+      if (moveX != 0 || moveY != 0)
+      {
+        if (selectSound.pitch > 5) selectSound.pitch = 5;
+        selectSound.play(true);
+
+        cursors.resetDeny();
+
+        cursorX += moveX;
+        cursorY += moveY;
       }
     }
   }
