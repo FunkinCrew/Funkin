@@ -32,13 +32,13 @@ class Project extends HXProject
    * REMEMBER TO CHANGE THIS WHEN THE GAME UPDATES!
    * You only have to change it here, the rest of the game will query this value.
    */
-  static final VERSION:String = "0.8.6";
+  static final VERSION:String = "0.8.7";
 
   /**
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 100;
+  static final BUILD_NUMBER:Int = 102;
 
   /**
    * The game's name. Used as the default window title.
@@ -105,16 +105,13 @@ class Project extends HXProject
   //
 
   /**
-   * The app's minimal Android SDK version.
+   * The app's lime Android java extensions.
    */
-  static final ANDROID_MINIMUM_SDK_VERSION:Int = 28;
-
-  /**
-   * The app's target Android SDK version.
-   */
-  static final ANDROID_TARGET_SDK_VERSION:Int = 35;
-
-  static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil", "funkin.extensions.FNFCExtension", "funkin.extensions.AudioSession"];
+  static final ANDROID_EXTENSIONS:Array<String> = [
+    "funkin.extensions.CallbackUtil",
+    "funkin.extensions.FNFCExtension",
+    "funkin.extensions.AudioSession"
+  ];
 
   /**
    * The team ID to use for the iOS app. Configured in XCode.
@@ -692,9 +689,6 @@ class Project extends HXProject
       {
         this.excludeArchitectures.push(Architecture.ARMV7);
       }
-
-      config.set("android.minimum-sdk-version", ANDROID_MINIMUM_SDK_VERSION);
-      config.set("android.target-sdk-version", ANDROID_TARGET_SDK_VERSION);
 
       if (isRelease())
       {

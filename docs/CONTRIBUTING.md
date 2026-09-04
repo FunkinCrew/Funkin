@@ -60,7 +60,7 @@ This section provides guidelines to follow when [opening an issue](https://githu
 
 ## Requirements
 Make sure you're playing:
-- the latest version of the game (currently v0.8.6) or a public playtest version (v0.9 Feature Preview builds)
+- the latest version of the game (currently v0.8.6, or v0.8.7 for Android) or a public playtest version (v0.9 Feature Preview builds)
 - without any mods (unless the issue involves mods)
 - on [Newgrounds](https://www.newgrounds.com/portal/view/770371) or downloaded from [itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -86,6 +86,7 @@ Here's a list of commonly suggested features and the reasons why they won't be a
 | Importing Charts from Psych Engine (and other mod content) | https://github.com/FunkinCrew/Funkin/issues/2586#issuecomment-2125733327 |
 | Backwards Compatibility for Modding | https://github.com/FunkinCrew/Funkin/issues/3949#issuecomment-2608391329 |
 | Lua Support | https://github.com/FunkinCrew/Funkin/issues/2643#issuecomment-2143718093 |
+| Note Hitsounds | https://github.com/FunkinCrew/Funkin/pull/4112#issuecomment-5347549977 |
 
 ## Issue Types
 Choose the issue template that best suits your needs!

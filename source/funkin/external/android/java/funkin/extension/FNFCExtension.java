@@ -2,22 +2,25 @@ package funkin.extensions;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
+import android.os.Build;
+import android.os.FileUtils;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Base64;
 
 import funkin.extensions.CallbackUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import org.haxe.extension.Extension;
-
-import org.haxe.lime.HaxeObject;
 
 public class FNFCExtension extends Extension
 {
@@ -69,61 +72,74 @@ public class FNFCExtension extends Extension
   }
 
   public static String copyFNFCToCache(Uri uri) throws IOException
-	{
-		if (uri != null)
+  {
+    if (uri == null) return null;
+
+    File output = null;
+
+    try
     {
-			String fileName = new File(uri.getPath()).getName();
-
-      // Clean some Uri leftovers
-			if (fileName.contains(":"))
-				fileName = fileName.split(":")[1];
-
       File cacheFNFC = new File(mainContext.getCacheDir(), "fnfc");
-      File output = new File(cacheFNFC, fileName);
+      if (!cacheFNFC.exists() && !cacheFNFC.mkdirs())
+        throw new IOException("Failed to create FNFC cache dir at: " + cacheFNFC.getAbsolutePath());
 
-      if (!cacheFNFC.exists())
-        cacheFNFC.mkdir();
+      output = new File(cacheFNFC, fnfcCacheName(uri));
 
-			if (output.exists())
-				output.delete();
-
-    	ParcelFileDescriptor parcelFileDescriptor = null;
-		  FileInputStream fileInputStream = null;
-			OutputStream out = null;
+      InputStream in = null;
+      OutputStream out = null;
 
       try
       {
-	    	parcelFileDescriptor = mainContext.getContentResolver().openFileDescriptor(uri, "r");
-				fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
+        in = mainContext.getContentResolver().openInputStream(uri);
+        if (in == null)
+          throw new IOException("Failed to get input stream for Uri: " + uri.toString());
 
-				byte[] fileBytes = new byte[(int) parcelFileDescriptor.getStatSize()];
-	    	fileInputStream.read(fileBytes);
+        out = new FileOutputStream(output);
 
-				out = new FileOutputStream(output);
-				out.write(fileBytes);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+          FileUtils.copy(in, out);
+        }
+        else
+        {
+          Files.copy(in, output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        if (output.exists())
-          output.deleteOnExit(); // makes the file get deleted when the app closes ig?
+        out.flush();
       }
-      catch (IOException e)
+      finally
       {
-       	Log.e(LOG_TAG, e.getMessage());
+        if (in != null)
+          in.close();
+        if (out != null)
+          out.close();
       }
-			finally
-			{
-	    	if (fileInputStream != null)
-    		  fileInputStream.close();
 
-    	  if (parcelFileDescriptor != null)
-    	   	parcelFileDescriptor.close();
+      if (output.length() <= 0)
+        throw new IOException("The copied Uri file (" + uri.toString() + ") ended empty at: " + output.getAbsolutePath());
 
-				if (out != null)
-					out.close();
-    	}
+      return output.getAbsolutePath();
+    }
+    catch (Throwable t)
+    {
+      Log.e("trace", "Failed to copy FNFC from " + uri.toString() + ". Error message: " + t.getMessage());
+      if (output != null) output.delete();
+      return null;
+    }
+  }
 
-    	return output.getAbsolutePath();
-		}
-
-		return null;
-	}
+  private static String fnfcCacheName(Uri uri)
+  {
+    try
+    {
+      byte[] digest = MessageDigest.getInstance("SHA-256")
+          .digest(uri.toString().getBytes(StandardCharsets.UTF_8));
+      return Base64.encodeToString(digest,
+          Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING) + ".fnfc";
+    }
+    catch (Exception e)
+    {
+      return Integer.toHexString(uri.toString().hashCode()) + ".fnfc";
+    }
+  }
 }

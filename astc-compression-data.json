@@ -10,6 +10,10 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/characters/darnell/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/preload/images/NOTE_hold_assets.png",
       "blocksize": "4x4"
     },
