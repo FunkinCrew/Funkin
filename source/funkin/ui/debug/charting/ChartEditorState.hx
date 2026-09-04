@@ -3311,7 +3311,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           this.openCharacterDropdown(CharacterType.DAD, true);
         }
       }
-    });
+    }, false, true, false);
 
     FlxMouseEvent.add(healthIconBF, function(_)
     {
@@ -3327,7 +3327,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           this.openCharacterDropdown(CharacterType.BF, true);
         }
       }
-    });
+    }, false, true, false);
 
     buttonSelectOpponent = new Button();
     buttonSelectOpponent.allowFocus = false;

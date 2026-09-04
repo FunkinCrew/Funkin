@@ -23,7 +23,7 @@ class SprStage extends FlxSprite
     }, function(spr:SprStage)
     {
       alpha = 1;
-    }, false, true, true);
+    }, false, true, false);
   }
 
   public function isSelected():Bool

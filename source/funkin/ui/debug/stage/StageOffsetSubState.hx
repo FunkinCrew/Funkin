@@ -120,7 +120,7 @@ class StageOffsetSubState extends HaxeUISubState
           spr.ID = 0;
           spr.alpha = 1;
         }
-      });
+      }, false, true, false);
     }
   }
 
