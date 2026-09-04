@@ -178,6 +178,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'char',
         title: 'Target',
+        tooltip: 'The character to focus the camera on.',
         defaultValue: DEFAULT_TARGET,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -190,6 +191,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'x',
         title: 'X Position',
+        tooltip: 'The X offset of the camera.',
         defaultValue: DEFAULT_X_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
@@ -198,6 +200,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'y',
         title: 'Y Position',
+        tooltip: 'The Y offset of the camera.',
         defaultValue: DEFAULT_Y_POSITION,
         step: 10.0,
         type: SongEventFieldType.FLOAT,
@@ -206,6 +209,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
+        tooltip: 'The duration in steps the event will take.',
         defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
@@ -215,6 +219,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
+        tooltip: 'The easing type to use',
         defaultValue: DEFAULT_CAMERA_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -238,6 +243,7 @@ class FocusCameraSongEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
+        tooltip: 'Rate of change of parameter over time.'
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: [

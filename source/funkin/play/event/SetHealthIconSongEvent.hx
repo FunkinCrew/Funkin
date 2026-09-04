@@ -94,25 +94,32 @@ class SetHealthIconSongEvent extends SongEvent
       {
         name: 'char',
         title: 'Character',
+        tooltip: 'The name of the character to change the icon to.',
         defaultValue: DEFAULT_CHAR,
         type: SongEventFieldType.ENUM,
-        keys: ['Player' => 0, 'Opponent' => 1],
+        keys: [
+          'Player' => 0,
+          'Opponent' => 1
+        ],
       },
       {
         name: 'id',
         title: 'Health Icon ID',
+        tooltip: 'The ID of the new health icon.',
         defaultValue: Constants.DEFAULT_HEALTH_ICON,
         type: SongEventFieldType.STRING,
       },
       {
         name: 'shouldBop',
         title: 'Should Bop?',
+        tooltip: 'Wheter the icon should bop.',
         defaultValue: DEFAULT_SHOULDBOP,
         type: SongEventFieldType.BOOL,
       },
       {
         name: 'scale',
         title: 'Scale',
+        tooltip: 'The scale of the icon.',
         defaultValue: DEFAULT_SCALE,
         min: 0,
         type: SongEventFieldType.FLOAT,
@@ -120,30 +127,35 @@ class SetHealthIconSongEvent extends SongEvent
       {
         name: 'flipX',
         title: 'Flip X?',
+        tooltip: 'Wheter to flip the icon horizontally.',
         defaultValue: DEFAULT_FLIPX,
         type: SongEventFieldType.BOOL,
       },
       {
         name: 'advanced',
         title: 'Advanced',
+        tooltip: '',
         type: SongEventFieldType.FRAME,
         collapsible: true,
         children: [
           {
             name: 'isPixel',
             title: 'Is Pixel?',
+            tooltip: 'Wheter the icon is pixel or not.',
             defaultValue: DEFAULT_ISPIXEL,
             type: SongEventFieldType.BOOL,
           },
           {
             name: 'offsetX',
             title: 'X Offset',
+            tooltip: 'The X offset.',
             defaultValue: DEFAULT_X_OFFSET,
             type: SongEventFieldType.FLOAT,
           },
           {
             name: 'offsetY',
             title: 'Y Offset',
+            tooltip: 'The Y offset.',
             defaultValue: DEFAULT_Y_OFFSET,
             type: SongEventFieldType.FLOAT,
           }
