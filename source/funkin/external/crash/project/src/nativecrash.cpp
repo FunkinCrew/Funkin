@@ -576,10 +576,3 @@ void NATIVECRASH_SetContext(const char *info)
 	gContext[sizeof(gContext) - 1] = 0;
 	gContextTime = time(NULL);
 }
-
-void NATIVECRASH_ForceCrash()
-{
-	// Volatile so the compiler cannot prove this is undefined behaviour and drop it.
-	volatile int *pointer = NULL;
-	*pointer = 0xDEAD;
-}

@@ -29,14 +29,6 @@ class ForceCrashPlugin extends FlxBasic
       // TODO: Make this message 87% funnier.
       throw 'DEBUG: Crashing the game via debug keybind!';
     }
-
-    #if FEATURE_NATIVE_CRASH_HANDLER
-    // Ctrl + Alt + Shift + N = Force a native crash to test the native crash handler
-    if (InputUtil.allPressedWithDebounce([CONTROL, ALT, SHIFT, N]))
-    {
-      funkin.external.crash.NativeCrash.forceCrash();
-    }
-    #end
   }
 
   override public function destroy():Void
