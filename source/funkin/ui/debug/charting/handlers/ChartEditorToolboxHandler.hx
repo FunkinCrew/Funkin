@@ -55,7 +55,7 @@ class ChartEditorToolboxHandler
       toolbox.showDialog(false);
       clearHaxeUIFocus();
 
-      state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'));
+      state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'), 1.0, 1.0, 0.1);
 
       switch (id)
       {
@@ -100,7 +100,7 @@ class ChartEditorToolboxHandler
       clearHaxeUIFocus();
       toolbox.hideDialog(DialogButton.CANCEL);
 
-      state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit'));
+      state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit'), 1.0, 1.0, 0.1);
 
       switch (id)
       {
