@@ -2,6 +2,7 @@ package funkin.ui.haxeui.components.editors.timeline;
 
 #if FEATURE_CAMERA_EDITOR
 import funkin.ui.haxeui.components.IconButton;
+import funkin.util.ClipboardUtil;
 import haxe.ui.components.TextField;
 import haxe.ui.containers.Box;
 import haxe.ui.containers.HBox;
@@ -41,6 +42,14 @@ class TimelineLayerPanel extends VBox
   var _editingLayer:TimelineLayerData = null;
   var _editingHandles:LayerRowHandles = null;
   var _screenMouseDownBound:MouseEvent->Void;
+  var _savedClipboard:Null<String> = null;
+
+  public var isEditing(get, never):Bool;
+
+  function get_isEditing():Bool
+  {
+    return _editingLayer != null;
+  }
 
   public function setScrollOffset(offsetPx:Float):Void
   {
@@ -77,6 +86,24 @@ class TimelineLayerPanel extends VBox
     _editingHandles.cancelling = false;
     _editingHandles = null;
     _editingLayer = null;
+    _restoreSavedClipboard();
+  }
+
+  function _stashClipboardIfSongData():Void
+  {
+    var clip:String = ClipboardUtil.getClipboard();
+    if (clip != null && _looksLikeSongClipboard(clip))
+    {
+      _savedClipboard = clip;
+      ClipboardUtil.setClipboard('');
+    }
+  }
+
+  function _restoreSavedClipboard():Void
+  {
+    if (_savedClipboard == null) return;
+    if (ClipboardUtil.getClipboard() == '') ClipboardUtil.setClipboard(_savedClipboard);
+    _savedClipboard = null;
   }
 
   public function insertLayerRow(layer:TimelineLayerData, index:Int):Void
@@ -230,6 +257,8 @@ class TimelineLayerPanel extends VBox
     handles.field.disabled = false;
     handles.field.focus = true;
 
+    _stashClipboardIfSongData();
+
     _screenMouseDownBound = _onScreenMouseDown;
     Screen.instance.registerEvent(MouseEvent.MOUSE_DOWN, _screenMouseDownBound);
   }
@@ -319,6 +348,7 @@ class TimelineLayerPanel extends VBox
     handles.editOriginal = null;
     _editingLayer = null;
     _editingHandles = null;
+    _restoreSavedClipboard();
 
     if (handles.cancelling)
     {
@@ -351,6 +381,14 @@ class TimelineLayerPanel extends VBox
     ev.newLayerName = trimmed;
     ev.bubble = true;
     dispatch(ev);
+  }
+
+  static function _looksLikeSongClipboard(text:String):Bool
+  {
+    var trimmed:String = StringTools.trim(text);
+    return trimmed.length > 0
+      && trimmed.charAt(0) == '{'
+      && (trimmed.indexOf('"events"') != -1 || trimmed.indexOf('"notes"') != -1);
   }
 }
 
