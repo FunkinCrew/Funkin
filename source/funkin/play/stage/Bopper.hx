@@ -31,7 +31,26 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
    *
    * You can manually set this value, or you can leave it as `null` to determine it automatically.
    */
-  public var shouldAlternate:Null<Bool> = null;
+  @:deprecated('Use danceType instead')
+  public var shouldAlternate(get, set):Bool;
+
+  function get_shouldAlternate():Bool
+  {
+    return this.danceType == ALTERNATE;
+  }
+
+  function set_shouldAlternate(value:Bool):Bool
+  {
+    // Only do IDLE and ALTERNATE since it wouldn't have accounted for the COUNT type
+    if (value) this.danceType = ALTERNATE;
+    else this.danceType = IDLE;
+    return value;
+  }
+
+  /**
+   * The type of dance the bopper will play while idling
+   */
+  public var danceType:Null<DanceType> = null;
 
   /**
    * Offset the character's sprite by this much when playing each animation.
@@ -65,6 +84,7 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   function set_idleSuffix(value:String):String
   {
     this.idleSuffix = value;
+    if (danceType == COUNT && !hasAnimation('dance$danceCount$value')) danceCount = 1;
     this.dance();
     return value;
   }
@@ -97,9 +117,15 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
 
   /**
    * Whether to play `danceRight` next iteration.
-   * Only used when `shouldAlternate` is true.
+   * Only used when the `danceType` is `ALTERNATE`.
    */
   var hasDanced:Bool = false;
+
+  /**
+   * What dance count animation to play on the next iteration.
+   * Only used when the `danceType` is `COUNT`.
+   */
+  var danceCount:Int = 1;
 
   public function new(danceEvery:Float = 0.0)
   {
@@ -153,9 +179,17 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
     this.y = originalPosition.y;
   }
 
+  @:deprecated('Use update_danceType() instead')
   function update_shouldAlternate():Void
   {
-    this.shouldAlternate = hasAnimation('danceLeft');
+    update_danceType();
+  }
+  
+  function update_danceType():Void
+  {
+    if (hasAnimation('danceLeft')) this.danceType = ALTERNATE;
+    else if (hasAnimation('dance1')) this.danceType = COUNT;
+    else this.danceType = IDLE;
   }
 
   /**
@@ -183,26 +217,29 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
       return;
     }
 
-    if (shouldAlternate == null)
+    if (danceType == null)
     {
-      update_shouldAlternate();
+      update_danceType();
     }
 
-    if (shouldAlternate)
+    switch (danceType)
     {
-      if (hasDanced)
-      {
-        playAnimation('danceRight$idleSuffix', forceRestart);
-      }
-      else
-      {
-        playAnimation('danceLeft$idleSuffix', forceRestart);
-      }
-      hasDanced = !hasDanced;
-    }
-    else
-    {
-      playAnimation('idle$idleSuffix', forceRestart);
+      case IDLE:
+        playAnimation('idle$idleSuffix', forceRestart);
+      case ALTERNATE:
+        if (hasDanced)
+        {
+          playAnimation('danceRight$idleSuffix', forceRestart);
+        }
+        else
+        {
+          playAnimation('danceLeft$idleSuffix', forceRestart);
+        }
+        hasDanced = !hasDanced;
+      case COUNT:
+        playAnimation('dance$danceCount$idleSuffix', forceRestart);
+        danceCount++;
+        if (!hasAnimation('dance$danceCount$idleSuffix')) danceCount = 1;
     }
   }
 
@@ -408,4 +445,30 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   {
     return 'Bopper($name, pos=[$x, $y])';
   }
+}
+
+/**
+ * The dance type of a bopper. Defines its default behaviors.
+ */
+enum DanceType
+{
+  /**
+   * The IDLE dance type has the following behaviors.
+   * - At idle, dances with `idle`
+   * - Most common type
+   */
+  IDLE;
+
+  /**
+   * The ALTERNATE dance type has the following behaviors.
+   * - At idle, dances with `danceLeft` and `danceRight`.
+   */
+  ALTERNATE;
+
+  /**
+   * The COUNT dance type has the following behaviors.
+   * - At idle, dances with `dance###` when a certain dance count is reached
+   *   - For example, `dance5` will play the fifth dance animation
+   */
+  COUNT;
 }
