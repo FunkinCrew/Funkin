@@ -65,7 +65,7 @@ class TextureAtlasSettingsDialog extends Dialog
 
       @:privateAccess
       var spritemaps:Array<SpritemapInput> = [for (i in 0...Std.int(spritemapFiles.length / 2)) {
-        source: BitmapData.fromBytes(spritemapFiles[i * 2].data),
+        source: BitmapData.fromBytes(spritemapFiles[i * 2].data, true),
         json: SerializerUtil.sanitizeJSON(spritemapFiles[i * 2 + 1].data.toString())
       }];
 

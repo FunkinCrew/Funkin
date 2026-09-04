@@ -57,7 +57,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
           objImage.resource = imageInfo.data;
 
           var file:StageEditorAssetFile = state.createFile(selectedFile.name, selectedFile.bytes);
-          linkedObj.loadGraphic(BitmapData.fromBytes(file.data));
+          linkedObj.loadGraphic(BitmapData.fromBytes(file.data, true));
           linkedObj.updateHitbox();
 
           linkedObj.usedFiles.push(file);
@@ -79,7 +79,7 @@ class StageEditorObjectGraphicToolbox extends StageEditorDefaultToolbox
       state.createURLDialog(function(bytes:lime.utils.Bytes)
       {
         var file:StageEditorAssetFile = state.createFile('${linkedObj.name}.png', bytes);
-        linkedObj.loadGraphic(BitmapData.fromBytes(file.data));
+        linkedObj.loadGraphic(BitmapData.fromBytes(file.data, true));
         linkedObj.updateHitbox();
 
         linkedObj.usedFiles.push(file);

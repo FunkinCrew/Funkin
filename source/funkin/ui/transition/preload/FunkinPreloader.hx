@@ -478,7 +478,7 @@ class FunkinPreloader extends FlxBasePreloader
 
             if (lime.graphics.Image.__isWebP(mod.icon)) continue;
 
-            FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, openfl.display.BitmapData.fromImage(lime.graphics.Image.fromBytes(mod.icon)));
+            FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, openfl.display.BitmapData.fromBytes(mod.icon, true));
           }
 
           var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);

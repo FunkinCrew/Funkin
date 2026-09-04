@@ -94,7 +94,7 @@ class AssetDataHandler
 
           if (spritesheet != null && frameData != null)
           {
-            object.frames = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(spritesheet.data), frameData.data.toString());
+            object.frames = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(spritesheet.data, true), frameData.data.toString());
           }
 
         case 'packer':
@@ -103,7 +103,7 @@ class AssetDataHandler
 
           if (spritesheet != null && frameData != null)
           {
-            object.frames = FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromBytes(spritesheet.data), frameData.data.toString());
+            object.frames = FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromBytes(spritesheet.data, true), frameData.data.toString());
           }
 
         case 'animateatlas':
@@ -115,7 +115,7 @@ class AssetDataHandler
           {
             var name:String = '/spritemap${i + 1}';
             spritemaps.push({
-              source: BitmapData.fromBytes(data.neededFiles.find(f -> f.name.endsWith('$name.png'))?.data),
+              source: BitmapData.fromBytes(data.neededFiles.find(f -> f.name.endsWith('$name.png'))?.data, true),
               json: data.neededFiles.find(f -> f.name.endsWith('$name.json'))?.data?.toString() ?? ''
             });
           }
@@ -143,7 +143,7 @@ class AssetDataHandler
       object.color = FlxColor.fromString(data.assetPath);
     }
     else
-      object.loadGraphic(BitmapData.fromBytes(data.neededFiles[0].data));
+      object.loadGraphic(BitmapData.fromBytes(data.neededFiles[0].data, true));
 
     object.usedFiles = data.neededFiles;
 
