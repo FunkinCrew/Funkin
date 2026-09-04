@@ -36,7 +36,7 @@ class SetItemSelectionCommand implements ChartEditorCommand
     state.currentNoteSelection = notes;
     state.currentEventSelection = events;
 
-    // If we just selected one or more events (and no notes), then we should make the event data toolbox display the event data for the selected event.
+    // If we just selected one event (and no notes), then we should make the event data toolbox display the event data for the selected event.
     if (this.notes.length == 0 && this.events.length == 1)
     {
       var eventSelected = this.events[0];
@@ -59,11 +59,9 @@ class SetItemSelectionCommand implements ChartEditorCommand
       {
         state.eventDataToPlace = eventDataClone;
       }
-
-      state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
     }
 
-    // IF we just selected one or more notes (and no events), then we should make the note data toolbox display the note data for the selected note.
+    // IF we just selected one note (and no events), then we should make the note data toolbox display the note data for the selected note.
     if (this.events.length == 0 && this.notes.length == 1)
     {
       var noteSelected = this.notes[0];
@@ -72,6 +70,8 @@ class SetItemSelectionCommand implements ChartEditorCommand
 
       state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT);
     }
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.editButtonsDirty = true;
@@ -86,6 +86,8 @@ class SetItemSelectionCommand implements ChartEditorCommand
   {
     state.currentNoteSelection = previousNoteSelection;
     state.currentEventSelection = previousEventSelection;
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.noteDisplayDirty = true;
     state.editButtonsDirty = true;
