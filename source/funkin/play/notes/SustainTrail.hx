@@ -3,10 +3,12 @@ package funkin.play.notes;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.mobile.ui.FunkinHitbox.FunkinHitboxControlSchemes;
-import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.math.FlxMath;
+import openfl.filters.BlurFilter;
+import openfl.filters.BitmapFilterQuality;
 
 /**
  * This is based heavily on the `FlxStrip` class. It uses `drawTriangles()` to clip a sustain note
@@ -16,7 +18,7 @@ import flixel.math.FlxMath;
  *
  * @author MtH
  */
-class SustainTrail extends FlxSprite
+class SustainTrail extends FunkinSprite
 {
   /**
    * The triangles corresponding to the hold, followed by the endcap.
@@ -134,6 +136,8 @@ class SustainTrail extends FlxSprite
   public var isPixel:Bool;
   public var noteStyleOffsets:Array<Float>;
 
+  var blurFilter:BlurFilter;
+
   var graphicWidth:Float = 0;
   var graphicHeight:Float = 0;
 
@@ -158,6 +162,13 @@ class SustainTrail extends FlxSprite
     setIndices(TRIANGLE_VERTEX_INDICES);
 
     this.active = true; // This NEEDS to be true for the note to be drawn!
+
+    if (antialiasing && Preferences.motionBlur) {
+      blurFilter = new BlurFilter(1, 2.25, BitmapFilterQuality.LOW);
+
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   /**
@@ -556,6 +567,9 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+
+    if (antialiasing && Preferences.motionBlur)
+      filters = [];
   }
 
   override public function revive():Void
@@ -572,6 +586,12 @@ class SustainTrail extends FlxSprite
     hitNote = false;
     missedNote = false;
     handledMiss = false;
+
+    if (antialiasing && Preferences.motionBlur)
+    {
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   override public function destroy():Void

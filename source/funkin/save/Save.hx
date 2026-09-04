@@ -129,6 +129,7 @@ class Save implements ConsoleClass implements ISerializable
         // Reasonable defaults.
         framerate: #if mobile refreshRate #else 60 #end,
         naughtyness: true,
+        motionBlur: false,
         downscroll: false,
         flashingLights: true,
         zoomCamera: true,
@@ -1353,6 +1354,14 @@ typedef SaveDataOptions =
    * @default `true`
    */
   var naughtyness:Bool;
+
+  /**
+   * If enabled, any notes going toward the strumline have a blur effect placed on them, which makes their movements appear smoother.
+   *
+   * WARNING: This can cause eye strain and/or motion sickness!
+   * @default `false`
+   */
+  var motionBlur:Bool;
 
   /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.

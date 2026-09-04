@@ -5,6 +5,8 @@ import funkin.data.song.SongData.NoteParamData;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
+import openfl.filters.BlurFilter;
+import openfl.filters.BitmapFilterQuality;
 
 class NoteSprite extends FunkinSprite
 {
@@ -16,6 +18,7 @@ class NoteSprite extends FunkinSprite
   public var holdNoteSprite:SustainTrail;
 
   var hsvShader:HSVShader;
+  var blurFilter:BlurFilter;
 
   /**
    * The strum time at which the note should be hit, in milliseconds.
@@ -174,6 +177,13 @@ class NoteSprite extends FunkinSprite
 
     this.alpha = 1;
     if (noteStyle != null) setupNoteGraphic(noteStyle);
+
+    if (antialiasing && Preferences.motionBlur) {
+      blurFilter = new BlurFilter(1, 2.25, BitmapFilterQuality.LOW);
+
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   /**
@@ -264,11 +274,20 @@ class NoteSprite extends FunkinSprite
     this.hsvShader.hue = 1.0;
     this.hsvShader.saturation = 1.0;
     this.hsvShader.value = 1.0;
+
+    if (antialiasing && Preferences.motionBlur)
+    {
+      filters ??= [];
+      filters = filters.concat([blurFilter]);
+    }
   }
 
   override public function kill():Void
   {
     super.kill();
+
+    if (antialiasing && Preferences.motionBlur)
+      this.filters = [];
   }
 
   override public function destroy():Void
