@@ -502,7 +502,7 @@ class StageEditorState extends UIState
         var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          while (!files[files.length - 1].endsWith(FileUtil.FILE_FILTER_FNFS.extension) || !files[files.length - 1].startsWith('stage-editor-'))
+          while (!files[files.length - 1].endsWith('.fnfs') || !files[files.length - 1].startsWith('stage-editor-'))
           {
             if (files.length == 0) break;
             files.pop();
@@ -1637,7 +1637,7 @@ class StageEditorState extends UIState
     var data = this.packShitToZip();
     var path = haxe.io.Path.join([
       BACKUPS_PATH,
-      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_FILTER_FNFS.extension}'
+      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.fnfs'
     ]);
 
     FileUtil.writeBytesToPath(path, data);
