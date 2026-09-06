@@ -14,6 +14,7 @@ import funkin.util.VersionUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.util.tasks.TaskHandler.Task;
 import haxe.Json;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import funkin.assets.Paths;
 import funkin.assets.Assets;
@@ -739,7 +740,22 @@ class CharacterDataParser
 
     if (isAnimated)
     {
-      var frames = Assets.getSparrowAtlas(assetPath);
+      var frames:Null<FlxAtlasFrames> = null;
+      try
+      {
+        frames = Assets.getSparrowAtlas(assetPath);
+      }
+      catch (e)
+      {
+        trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
+        return null;
+      }
+
+      if (frames == null || frames.frames == null)
+      {
+        trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon (atlas returned null).');
+        return null;
+      }
 
       var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool
       {
