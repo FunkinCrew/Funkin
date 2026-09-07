@@ -412,8 +412,8 @@ class Paths
     'assets/data/ui/chart-editor/dialogs/upload-inst.xml' => 'assets/ui/editors/chart-editor/dialogs/upload-inst.xml',
     'assets/data/ui/chart-editor/dialogs/user-guide.xml' => 'assets/ui/editors/chart-editor/dialogs/user-guide.xml',
     'assets/data/ui/chart-editor/toolbox/iconselector.xml' => 'assets/ui/editors/chart-editor/toolbox/icon-selector.xml',
-    'assets/data/ui/chart-editor/toolbox/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
-    'assets/data/ui/chart-editor/toolbox/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
     'assets/data/ui/chart-editor/toolbox/playtest-properties.xml' => 'assets/ui/editors/chart-editor/toolbox/playtest-properties.xml',
     'assets/data/ui/chart-editor/toolbox/tools.xml' => 'assets/ui/editors/chart-editor/toolbox/tools.xml',
     'assets/data/ui/stage-editor/components/layers.xml' => 'assets/ui/editors/stage-editor/components/layers.xml',
@@ -3521,9 +3521,10 @@ class Paths
 
     // Filter out stuff like double slashes or backslashes.
     filePath = haxe.io.Path.normalize(filePath);
+    var excludeFilePath:String = filePath.replace('assets/', 'assets/exclude/');
 
     // If the path just exists, return it. This is the most common case.
-    if (funkin.assets.Assets.exists(filePath))
+    if (funkin.assets.Assets.exists(filePath) || funkin.assets.Assets.exists(excludeFilePath))
     {
       return filePath;
     }
