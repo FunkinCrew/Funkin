@@ -35,7 +35,7 @@ class StageOffsetSubState extends HaxeUISubState
   var uiStuff:Component;
   var outlineShader:StrokeShader;
 
-  static final STAGE_EDITOR_LAYOUT = Paths.ui('editors/stage-editor/stage-editor-view');
+  static final STAGE_EDITOR_LAYOUT = funkin.assets.ValidatedPaths.xml('ui/editors/stage-editor/stage-editor-view').toString();
 
   public function new()
   {
