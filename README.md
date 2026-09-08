@@ -32,7 +32,7 @@ Check out our [Contributing Guide](/docs/CONTRIBUTING.md) to learn how you can a
 
 # Modding
 
-Feel free to start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
+Feel free to dig out a big hole in your backyard and start learning to mod the game by reading our [documentation](https://funkincrew.github.io/funkin-modding-docs/) and guide to modding.
 
 # Credits and Special Thanks
 
