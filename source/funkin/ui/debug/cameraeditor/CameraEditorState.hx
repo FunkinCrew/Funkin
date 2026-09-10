@@ -631,6 +631,8 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     menubar.height = 35;
 
+    haxe.ui.Toolkit.callLater(applySavedUIPreferences);
+
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
@@ -1479,6 +1481,37 @@ class CameraEditorState extends UIState implements ConsoleClass
     }
   }
 
+  public function applySavedUIPreferences():Void
+  {
+    var save:Save = Save.instance;
+
+    var relView = save.cameraEditorRelativeView.value;
+    var extBounds = save.cameraEditorExtendedBounds.value;
+    var passe = save.cameraEditorPassepartout.value;
+    var passeAlpha = save.cameraEditorPassepartoutTransparency.value;
+    var bop = save.cameraEditorBopping.value;
+
+    if (menubarItemRelativeView != null) menubarItemRelativeView.selected = relView;
+    if (menubarItemExtendedBounds != null) menubarItemExtendedBounds.selected = extBounds;
+    if (menubarItemPassepartout != null) menubarItemPassepartout.selected = passe;
+    if (menubarSliderPassepartoutTransparency != null) menubarSliderPassepartoutTransparency.pos = passeAlpha;
+    if (menubarItemDoBopping != null) menubarItemDoBopping.selected = bop;
+    if (menubarItemFitCameraToViewport != null) menubarItemFitCameraToViewport.selected = save.cameraEditorFitCameraToViewport.value;
+
+    isCameraRelative = relView;
+    showCameraExtendedBounds = extBounds;
+    showCameraPassepartout = passe;
+    cameraPassepartoutTransparency = passeAlpha;
+    doBopping = bop;
+
+    if (timeline?.toolbar != null)
+    {
+      timeline.toolbar.ddAutoScroll.selectedIndex = save.cameraEditorAutoScrollMode.value;
+      timeline.toolbar.chkSnap.selected = save.cameraEditorSnapEnabled.value;
+      timeline.toolbar.zoomSlider.pos = save.cameraEditorZoomLevel.value;
+    }
+  }
+
   /**
    * Write preferences for the Camera Editor to the user's save data.
    *
@@ -1497,6 +1530,20 @@ class CameraEditorState extends UIState implements ConsoleClass
     if (hasBackup) trace('Queuing backup prompt for next time!');
     save.cameraEditorHasBackup.value = hasBackup;
     trace(save.cameraEditorHasBackup.value);
+
+    save.cameraEditorRelativeView.value = isCameraRelative;
+    save.cameraEditorExtendedBounds.value = showCameraExtendedBounds;
+    save.cameraEditorPassepartout.value = showCameraPassepartout;
+    save.cameraEditorPassepartoutTransparency.value = cameraPassepartoutTransparency;
+    save.cameraEditorBopping.value = doBopping;
+    if (menubarItemFitCameraToViewport != null) save.cameraEditorFitCameraToViewport.value = menubarItemFitCameraToViewport.selected;
+
+    if (timeline?.toolbar != null)
+    {
+      save.cameraEditorAutoScrollMode.value = timeline.toolbar.ddAutoScroll.selectedIndex;
+      save.cameraEditorSnapEnabled.value = timeline.toolbar.chkSnap.selected;
+      save.cameraEditorZoomLevel.value = timeline.toolbar.zoomSlider.pos;
+    }
 
     // save.cameraEditorTheme.value = currentTheme;
   }
