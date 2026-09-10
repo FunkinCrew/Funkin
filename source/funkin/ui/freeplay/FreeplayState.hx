@@ -3237,11 +3237,16 @@ class FreeplayState extends MusicBeatSubState
 
     if (grpCapsules.countLiving() > 0 && !prepForNewRank && uiStateMachine.canInteract())
     {
-      FlxG.sound.music?.pause();
-      FlxTimer.wait(FADE_IN_DELAY, playCurSongPreview.bind(currentCapsule));
-      currentCapsule.selected = true;
+      clearPreviews();
 
-      // switchBackingImage(currentCapsule.freeplayData);
+      // Create a timer to delay the song preview to prevent overlapping or cutting out.
+      var previewTransition = new FlxTimer().start(FADE_IN_DELAY, function(_)
+      {
+        if (FlxG.sound.music != null) FlxG.sound.music.stop();
+        playCurSongPreview(currentCapsule);
+      });
+
+      previewTimers.push(previewTransition);
     }
 
     // Small vibrations every selection change.
