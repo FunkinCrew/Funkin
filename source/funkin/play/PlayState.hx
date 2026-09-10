@@ -1927,14 +1927,7 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      if (
-        !startingSong
-        && (
-          Math.abs(FlxG.sound.music.time - correctSync) > RESYNC_THRESHOLD
-          || Math.abs(playerVoicesError) > RESYNC_THRESHOLD
-          || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD
-        )
-      )
+      if (!startingSong && (Math.abs(playerVoicesError) > RESYNC_THRESHOLD || Math.abs(opponentVoicesError) > RESYNC_THRESHOLD))
       {
         trace('VOCALS NEED RESYNC');
         if (vocals != null)
@@ -2766,16 +2759,12 @@ class PlayState extends MusicBeatSubState
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
     var timeToPlayAt:Float = Math.min(
-      FlxG.sound.music.length - 1,
+      FlxG.sound.music.length,
       Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset
     );
     trace('Resyncing vocals to ${timeToPlayAt}');
 
-    FlxG.sound.music.pause();
     vocals.pause();
-
-    FlxG.sound.music.time = timeToPlayAt;
-    FlxG.sound.music.play(false, timeToPlayAt);
 
     vocals.time = timeToPlayAt;
     vocals.play(false, timeToPlayAt);
@@ -4255,7 +4244,7 @@ class PlayState extends MusicBeatSubState
     var targetTimeMs:Float = Conductor.instance.getStepTimeInMs(targetTimeSteps);
 
     // Don't go back in time to before the song started.
-    targetTimeMs = Math.max(0, targetTimeMs);
+    targetTimeMs = Math.min(FlxG.sound.music?.length ?? 0, Math.max(0, targetTimeMs));
 
     if (FlxG.sound.music != null)
     {
