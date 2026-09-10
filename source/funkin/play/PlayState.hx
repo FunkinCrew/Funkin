@@ -2994,8 +2994,10 @@ class PlayState extends MusicBeatSubState
         // Grant the player health.
         if (!isBotPlayMode && holdNote.scoreable)
         {
-          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-          songScore += Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+          var holdElapsed = Math.min(elapsed, holdNote.sustainLength / Constants.MS_PER_SEC);
+
+          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * holdElapsed;
+          songScore += Constants.SCORE_HOLD_BONUS_PER_SECOND * holdElapsed;
         }
 
         // Make sure the player keeps singing while the note is held by the bot.
