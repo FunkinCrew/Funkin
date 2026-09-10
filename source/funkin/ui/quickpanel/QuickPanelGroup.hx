@@ -887,6 +887,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
       FlxG.sound.music.volume = rememberedVolume * 0.2;
     }
 
+    FlxTimer.globalManager.forEach(function(timers:FlxTimer)
+    {
+      timers.active = false;
+    });
+
     if (moveTween != null) moveTween.cancel();
 
     if (instant)
@@ -919,6 +924,11 @@ class QuickPanelGroup extends FunkinSpriteGroup
     {
       FlxG.sound.music.volume = rememberedVolume;
     }
+
+    FlxTimer.globalManager.forEach(function(timers:FlxTimer)
+    {
+      timers.active = true;
+    });
 
     if (moveTween != null) moveTween.cancel();
 
