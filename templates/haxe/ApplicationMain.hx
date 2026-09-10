@@ -114,6 +114,11 @@ class ApplicationMain
     });
     #end
 
+    #if FEATURE_HAXEUI
+    // Initialize HaxeUI.
+    initHaxeUI();
+    #end
+
     // Loads the application preloader.
     bootstrap.OpenFLBootstrap.loadPreloader(app, config);
 
@@ -125,6 +130,26 @@ class ApplicationMain
     hxgamemode.GamemodeClient.request_end();
     #end
   }
+
+  #if FEATURE_HAXEUI
+  @:noCompletion
+  private static function initHaxeUI():Void
+  {
+    // This has to come before Toolkit.init since locales get initialized there
+    haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
+    // Calling this before any HaxeUI components get used is important:
+    // - It initializes the theme styles.
+    // - It scans the class path and registers any HaxeUI components.
+    haxe.ui.Toolkit.init();
+    haxe.ui.Toolkit.theme = 'funkin-dark'; // don't be cringe
+    // haxe.ui.Toolkit.theme = 'light'; // embrace cringe
+    haxe.ui.Toolkit.autoScale = false;
+    // Don't focus on UI elements when they first appear.
+    haxe.ui.focus.FocusManager.instance.autoFocus = false;
+    funkin.input.Cursor.setupHaxeUICursors();
+    haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
+  }
+  #end
 
   @:noCompletion
   private static function checkRenderer(context:lime.graphics.RenderContext):Void
