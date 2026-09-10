@@ -12,13 +12,15 @@ class SwitchDifficultyCommand implements ChartEditorCommand
   var newDifficulty:String;
   var prevVariation:String;
   var newVariation:String;
+  var resetMetadataToolbox:Bool;
 
-  public function new(prevDifficulty:String, newDifficulty:String, prevVariation:String, newVariation:String)
+  public function new(prevDifficulty:String, newDifficulty:String, prevVariation:String, newVariation:String, resetMetadataToolbox:Bool = true)
   {
     this.prevDifficulty = prevDifficulty;
     this.newDifficulty = newDifficulty;
     this.prevVariation = prevVariation;
     this.newVariation = newVariation;
+    this.resetMetadataToolbox = resetMetadataToolbox;
   }
 
   /**
@@ -33,7 +35,7 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     trace('Done switching variation.');
     state.selectedDifficulty = newDifficulty != null ? newDifficulty : prevDifficulty;
 
-    markDirty(state);
+    if (resetMetadataToolbox) markDirty(state);
   }
 
   /**
@@ -46,14 +48,12 @@ class SwitchDifficultyCommand implements ChartEditorCommand
     state.selectedVariation = prevVariation != null ? prevVariation : newVariation;
     state.selectedDifficulty = prevDifficulty != null ? prevDifficulty : newDifficulty;
 
-    markDirty(state);
+    if (resetMetadataToolbox) markDirty(state);
   }
 
   function markDirty(state:ChartEditorState):Void
   {
     state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
-    state.noteDisplayDirty = true;
-    state.notePreviewDirty = true;
   }
 
   /**
