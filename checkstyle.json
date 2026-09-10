@@ -135,7 +135,6 @@
       "comment": "Specifies the format for doc-style comments ().",
       "props": {
         "startStyle": "twostars",
-        "endStyle": "onestar",
         "lineStyle": "onestar",
 
         "severity": "INFO"
