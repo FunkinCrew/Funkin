@@ -6555,6 +6555,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     }
 
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
+
     var targetSong:Song;
     try
     {
