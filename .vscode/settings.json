@@ -47,6 +47,12 @@
   "xml.format.maxLineWidth": 0,
   "xml.format.grammarAwareFormatting": true,
 
+  // CodeDox documentation formatting
+  "codedox":{
+    "commentend": " **/",
+    "headerend": " **/"
+  },
+
   // General formatting
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": false,
@@ -191,5 +197,5 @@
   "vscord.app.privacyMode.enable": true,
   "json.schemas": [
     { "fileMatch": ["/hmm.json"], "url": "./.vscode/schema/hmm.json" }
-  ]
+  ],
 }
