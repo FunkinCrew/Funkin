@@ -119,6 +119,9 @@ class ApplicationMain
     initHaxeUI();
     #end
 
+    // Initialize the FunkinGame instance.
+    funkin.FunkinGame.init();
+
     // Loads the application preloader.
     bootstrap.OpenFLBootstrap.loadPreloader(app, config);
 

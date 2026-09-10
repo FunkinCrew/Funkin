@@ -18,14 +18,6 @@ using funkin.util.AnsiUtil;
  */
 class Main extends Sprite
 {
-  var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
-  var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-  var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
-  var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
-  var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-
-  // You can pretty much ignore everything from here on - your code should go in your states.
-
   public static function main():Void
   {
     Lib.current.addChild(new Main());
@@ -77,9 +69,15 @@ class Main extends Sprite
     // This allows the blend mode shader to work everywhere.
     untyped FlxG.cameras = new funkin.graphics.FunkinCameraFrontEnd();
 
-    var framerate:Int = Preferences.unlockedFramerate ? 0 : Preferences.framerate;
+    // Use the existent instance of the game,
+    // if it doesnt exist just create it as before,
+    // should NEVER be the case to create it again though.
+    final game:FlxGame = FlxG.game != null ? FlxG.game : funkin.FunkinGame.init();
 
-    var game:FlxGame = new funkin.FunkinGame(gameWidth, gameHeight, initialState, framerate, framerate, skipSplash, FlxG.stage.window.fullscreen);
+    #if desktop
+    @:privateAccess
+    game._startFullscreen = FlxG.stage.window.fullscreen;
+    #end
 
     // FlxG.game._customSoundTray wants just the class, it calls new from
     // create() in there, which gets called when it's added to the stage
