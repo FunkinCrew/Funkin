@@ -1058,6 +1058,8 @@ class PlayState extends MusicBeatSubState
   {
     if (criticalFailure) return;
 
+    PreciseInputManager.instance.updateFrameTimestamp();
+
     super.update(elapsed);
 
     updateHealthBar();
@@ -3178,14 +3180,14 @@ class PlayState extends MusicBeatSubState
   {
     var inputPosition:Float = input.position ?? 0.0;
     // Calculate the input latency (do this as late as possible).
-    // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
-    var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
+    // trace('Compare: ${PreciseInputManager.instance.currentFrameTimestamp} - ${input.timestamp}');
+    var inputLatencyNs:Int64 = PreciseInputManager.instance.currentFrameTimestamp - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
     // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
     // Use the input's song position when calculating the ms difference.
     // Also compensate for input latency.
-    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs);
+    var noteDiff:Int = Std.int(inputPosition - inputLatencyMs - note.noteData.time);
 
     var score = Scoring.scoreNote(noteDiff);
     var daRating = Scoring.judgeNote(noteDiff);
