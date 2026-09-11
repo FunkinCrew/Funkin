@@ -7,7 +7,6 @@ import funkin.data.BaseRegistry.LoadEntriesResult;
 import funkin.data.DefaultRegistryImpl;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterRenderType;
-import funkin.data.animation.AnimationData;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
 import flixel.graphics.frames.FlxFrame;
@@ -17,13 +16,9 @@ import funkin.play.character.SparrowCharacter;
 import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.MultiAnimateAtlasCharacter;
 import funkin.play.character.PackerCharacter;
-import funkin.ui.story.Level;
-import funkin.util.SortUtil;
-import funkin.util.VersionUtil;
 import funkin.util.tasks.TaskHandler;
 import funkin.util.tasks.TaskHandler.Task;
 import funkin.util.tools.ISingleton;
-import haxe.Json;
 import lime.app.Promise;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedArray;
@@ -750,7 +745,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
   public override function isScriptedEntry(id:String, ?params:CharacterEntryParams):Bool
   {
-    return scriptedEntryIds.exists(id);
+    return characterScriptedClass.exists(id);
   }
 
   public override function getScriptedEntryClassName(id:String, ?params:CharacterEntryParams):Null<String>
