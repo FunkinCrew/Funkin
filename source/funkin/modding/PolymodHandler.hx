@@ -1,6 +1,6 @@
 package funkin.modding;
 
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -356,14 +356,12 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.data.dialogue.conversation.ConversationRegistry', funkin.data.dialogue.ConversationRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.dialoguebox.DialogueBoxRegistry', funkin.data.dialogue.DialogueBoxRegistry);
     Polymod.addImportAlias('funkin.data.dialogue.speaker.SpeakerRegistry', funkin.data.dialogue.SpeakerRegistry);
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
-    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
+    Polymod.addImportAlias('funkin.play.character.CharacterData.CharacterDataParser', funkin.data.character.CharacterData);
 
     Polymod.addImportAlias('funkin.modding.base.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatState', funkin.ui.MusicBeatState);
     Polymod.addImportAlias('funkin.modding.base.ScriptedMusicBeatSubState', funkin.ui.MusicBeatSubState);
-
-    Polymod.addImportAlias('funkin.play.character.CharacterDataParser', funkin.data.character.CharacterData.CharacterDataParser);
 
     // TODO: Does this work?
     Polymod.addImportAlias('funkin.graphics.adobeanimate.FlxAtlasSprite', funkin.graphics.FunkinSprite);
@@ -371,6 +369,7 @@ class PolymodHandler
 
     // Sandboxing for compatibility.
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
+    Polymod.addImportAlias('funkin.data.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
     Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
 
     // Backwards compatibility for many classes that were removed.
@@ -910,7 +909,7 @@ class PolymodHandler
     StickerRegistry.instance.loadEntries();
     FreeplayStyleRegistry.instance.loadEntries();
 
-    CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+    CharacterRegistry.instance.loadEntries();
     NoteKindManager.initialize();
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
