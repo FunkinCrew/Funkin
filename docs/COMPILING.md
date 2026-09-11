@@ -8,11 +8,12 @@
 1. Run `cd the\directory\you\want\the\source\code\in` to specify which folder the command prompt is working in.
     - For example, `cd C:\Users\YOURNAME\Documents` would instruct the command prompt to perform the next steps in your Documents folder.
 2. Run `git clone https://github.com/FunkinCrew/funkin.git` to clone the base repository.
-3. Run `cd funkin` to enter the cloned repository's directory.
-4. Run `git submodule update --init --recursive` to download the game's assets.
+    - or, run `git clone -b <branch-name> https://github.com/FunkinCrew/Funkin` to clone a specific branch.
+4. Run `cd funkin` to enter the cloned repository's directory.
+5. Run `git submodule update --init --recursive` to download the game's assets.
     - NOTE: By performing this operation, you are downloading Content which is proprietary and protected by national and international copyright and trademark laws. See [the LICENSE.md file for the Funkin.assets](https://github.com/FunkinCrew/funkin.assets/blob/main/LICENSE.md) repo for more information.
-5. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
-6. Run `hmm install` to install all haxelibs of the current branch
+6. Run `haxelib --global install hmm` and then `haxelib --global run hmm setup` to install hmm.json
+7. Run `hmm install` to install all haxelibs of the current branch
     - If you have issues installing Lime, try utilizing Funkin's patched libraries for hmm and haxelib: `haxelib --global git haxelib https://github.com/FunkinCrew/haxelib.git` and `haxelib --global git hmm  https://github.com/FunkinCrew/hmm.git`
 8. Run `haxelib run lime setup` to set up Lime
 9. Perform additional platform setup
