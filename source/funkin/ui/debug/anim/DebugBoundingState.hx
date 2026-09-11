@@ -14,7 +14,7 @@ import flixel.util.FlxColor;
 import funkin.input.Cursor;
 import funkin.play.character.BaseCharacter;
 import funkin.data.character.CharacterData;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.MouseUtil;
 import funkin.util.SerializerUtil;
@@ -208,7 +208,7 @@ class DebugBoundingState extends FlxState
     txtOffsetShit.y = FlxG.height - 20 - txtOffsetShit.height;
     offsetView.add(txtOffsetShit);
 
-    var characters:Array<String> = CharacterDataParser.listCharacterIds();
+    var characters:Array<String> = CharacterRegistry.instance.listEntryIds();
     characters.sort(SortUtil.alphabetically);
 
     var charDropdown:DropDown = offsetEditorDialog.findComponent('characterDropdown', DropDown);
@@ -540,15 +540,15 @@ class DebugBoundingState extends FlxState
   {
     var charData:CharacterData = Reflect.copy(swagChar._data);
 
-    if (charData.renderType == CharacterDataParser.DEFAULT_RENDERTYPE) Reflect.deleteField(charData, "renderType");
-    if (charData.offsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData, "offsets");
-    if (charData.cameraOffsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData, "cameraOffsets");
+    if (charData.renderType == CharacterData.DEFAULT_RENDERTYPE) Reflect.deleteField(charData, "renderType");
+    if (charData.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "offsets");
+    if (charData.cameraOffsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData, "cameraOffsets");
 
     if (charData.healthIcon.id == swagChar.characterId) Reflect.deleteField(charData.healthIcon, "id");
-    if (charData.healthIcon.scale == CharacterDataParser.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
-    if (charData.healthIcon.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
-    if (charData.healthIcon.isPixel == CharacterDataParser.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
-    if (charData.healthIcon.offsets == CharacterDataParser.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
+    if (charData.healthIcon.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData.healthIcon, "scale");
+    if (charData.healthIcon.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData.healthIcon, "flipX");
+    if (charData.healthIcon.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData.healthIcon, "isPixel");
+    if (charData.healthIcon.offsets == CharacterData.DEFAULT_OFFSETS) Reflect.deleteField(charData.healthIcon, "offsets");
 
     if (
       charData.healthIcon.id == null
@@ -561,26 +561,26 @@ class DebugBoundingState extends FlxState
       Reflect.deleteField(charData, "healthIcon");
     }
 
-    if (charData.startingAnimation == CharacterDataParser.DEFAULT_STARTINGANIM) Reflect.deleteField(charData, "startingAnimation");
-    if (charData.scale == CharacterDataParser.DEFAULT_SCALE) Reflect.deleteField(charData, "scale");
-    if (charData.isPixel == CharacterDataParser.DEFAULT_ISPIXEL) Reflect.deleteField(charData, "isPixel");
-    if (charData.danceEvery == CharacterDataParser.DEFAULT_DANCEEVERY) Reflect.deleteField(charData, "danceEvery");
-    if (charData.singTime == CharacterDataParser.DEFAULT_SINGTIME) Reflect.deleteField(charData, "singTime");
-    if (charData.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charData, "flipX");
-    if (charData.applyStageMatrix == CharacterDataParser.DEFAULT_APPLYSTAGEMATRIX) Reflect.deleteField(charData, "applyStageMatrix");
-    if (charData.atlasSettings == CharacterDataParser.DEFAULT_ATLASSETTINGS) Reflect.deleteField(charData, "atlasSettings");
+    if (charData.startingAnimation == CharacterData.DEFAULT_STARTINGANIM) Reflect.deleteField(charData, "startingAnimation");
+    if (charData.scale == CharacterData.DEFAULT_SCALE) Reflect.deleteField(charData, "scale");
+    if (charData.isPixel == CharacterData.DEFAULT_ISPIXEL) Reflect.deleteField(charData, "isPixel");
+    if (charData.danceEvery == CharacterData.DEFAULT_DANCEEVERY) Reflect.deleteField(charData, "danceEvery");
+    if (charData.singTime == CharacterData.DEFAULT_SINGTIME) Reflect.deleteField(charData, "singTime");
+    if (charData.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charData, "flipX");
+    if (charData.applyStageMatrix == CharacterData.DEFAULT_APPLYSTAGEMATRIX) Reflect.deleteField(charData, "applyStageMatrix");
+    if (charData.atlasSettings == CharacterData.DEFAULT_ATLASSETTINGS) Reflect.deleteField(charData, "atlasSettings");
 
     for (charDataAnim in charData.animations)
     {
       var animName:String = charDataAnim.name;
       charDataAnim.offsets = swagChar.animationOffsets.get(animName);
 
-      if (charDataAnim.animType == CharacterDataParser.DEFAULT_ANIMTYPE) Reflect.deleteField(charDataAnim, "animType");
-      if (charDataAnim.frameRate == CharacterDataParser.DEFAULT_FRAMERATE) Reflect.deleteField(charDataAnim, "frameRate");
+      if (charDataAnim.animType == CharacterData.DEFAULT_ANIMTYPE) Reflect.deleteField(charDataAnim, "animType");
+      if (charDataAnim.frameRate == CharacterData.DEFAULT_FRAMERATE) Reflect.deleteField(charDataAnim, "frameRate");
       if (charDataAnim.offsets[0] == 0 && charDataAnim.offsets[1] == 0) Reflect.deleteField(charDataAnim, "offsets");
-      if (charDataAnim.looped == CharacterDataParser.DEFAULT_LOOP) Reflect.deleteField(charDataAnim, "looped");
-      if (charDataAnim.flipX == CharacterDataParser.DEFAULT_FLIPX) Reflect.deleteField(charDataAnim, "flipX");
-      if (charDataAnim.flipY == CharacterDataParser.DEFAULT_FLIPY) Reflect.deleteField(charDataAnim, "flipY");
+      if (charDataAnim.looped == CharacterData.DEFAULT_LOOP) Reflect.deleteField(charDataAnim, "looped");
+      if (charDataAnim.flipX == CharacterData.DEFAULT_FLIPX) Reflect.deleteField(charDataAnim, "flipX");
+      if (charDataAnim.flipY == CharacterData.DEFAULT_FLIPY) Reflect.deleteField(charDataAnim, "flipY");
     }
 
     return SerializerUtil.toJSON(charData, true);
@@ -605,11 +605,15 @@ class DebugBoundingState extends FlxState
       onionSkinChar.destroy();
     }
 
-    swagChar = CharacterDataParser.fetchCharacter(char, true);
+    swagChar = CharacterRegistry.instance.fetchEntry(char, {
+      debug: true
+    });
     swagChar.x = 100;
     swagChar.y = 100;
 
-    onionSkinChar = CharacterDataParser.fetchCharacter(char, true);
+    onionSkinChar = CharacterRegistry.instance.fetchEntry(char, {
+      debug: true
+    });
     onionSkinChar.x = swagChar.x;
     onionSkinChar.y = swagChar.y;
 
