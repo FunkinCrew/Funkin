@@ -71,7 +71,7 @@ class CharacterDataParser
   {
     try
     {
-      var charData:CharacterData = CharacterRegistry.instance.parseEntryDataRaw(charId);
+      var charData:CharacterData = CharacterRegistry.instance.parseEntryDataRaw(rawJson);
       return charData;
     }
     catch (e)
