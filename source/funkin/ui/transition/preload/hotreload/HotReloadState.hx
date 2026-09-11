@@ -2,7 +2,7 @@ package funkin.ui.transition.preload.hotreload;
 
 import funkin.assets.FunkinAssetCache;
 import funkin.data.BaseRegistry.LoadEntriesResult;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -318,7 +318,7 @@ class HotReloadState extends MusicBeatState
     futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
     futures.push(SongEventRegistry.loadEventCacheAsync());
     futures.push(NoteKindManager.loadNoteKindsAsync());
-    futures.push(CharacterDataParser.loadCharacterCacheAsync());
+    futures.push(CharacterRegistry.instance.loadEntriesAsync());
     futures.push(ModuleHandler.loadModuleCacheAsync());
 
     var registryFuture = lime.app.Promises.allSettled(futures);

@@ -7,7 +7,7 @@ import funkin.modding.events.ScriptEvent.HitNoteScriptEvent;
 import funkin.modding.events.ScriptEvent.SongTimeScriptEvent;
 import funkin.modding.events.ScriptEvent.UpdateScriptEvent;
 import funkin.play.character.BaseCharacter;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.events.AnimationEvent;
@@ -87,7 +87,9 @@ class CharacterPlayer extends Box
     }
 
     // Prevent script issues by fetching with debug=true.
-    var newCharacter:BaseCharacter = CharacterDataParser.fetchCharacter(id, true);
+    var newCharacter:BaseCharacter = CharacterRegistry.instance.fetchEntry(id, {
+      debug: true
+    });
     if (newCharacter == null)
     {
       character = null;
