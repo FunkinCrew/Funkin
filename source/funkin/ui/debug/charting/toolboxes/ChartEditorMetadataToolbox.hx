@@ -3,6 +3,7 @@ package funkin.ui.debug.charting.toolboxes;
 #if FEATURE_CHART_EDITOR
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.data.song.importer.ChartManifestData;
 import funkin.data.stage.StageRegistry;
@@ -458,10 +459,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
 
     var LIMIT = 6;
 
-    var charDataOpponent:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.opponent);
+    var charDataOpponent:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(
+      chartEditorState.currentSongMetadata.playData.characters.opponent
+    );
     if (charDataOpponent != null)
     {
-      var opponentIcon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent);
+      var opponentIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.opponent);
       buttonCharacterOpponent.icon = opponentIcon != null ? haxe.ui.util.Variant.fromImageData(opponentIcon) : null;
       buttonCharacterOpponent.text = charDataOpponent.name.length > LIMIT ? '${charDataOpponent.name.substr(0, LIMIT)}.' : '${charDataOpponent.name}';
     }
@@ -471,10 +474,12 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterOpponent.text = 'None';
     }
 
-    var charDataGirlfriend:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+    var charDataGirlfriend:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(
+      chartEditorState.currentSongMetadata.playData.characters.girlfriend
+    );
     if (charDataGirlfriend != null)
     {
-      var girlfriendIcon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
+      var girlfriendIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.girlfriend);
       buttonCharacterGirlfriend.icon = girlfriendIcon != null ? haxe.ui.util.Variant.fromImageData(girlfriendIcon) : null;
       buttonCharacterGirlfriend.text = charDataGirlfriend.name.length > LIMIT ? '${charDataGirlfriend.name.substr(0, LIMIT)}.' : '${charDataGirlfriend.name}';
     }
@@ -484,10 +489,10 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       buttonCharacterGirlfriend.text = 'None';
     }
 
-    var charDataPlayer:Null<CharacterData> = CharacterDataParser.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
+    var charDataPlayer:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(chartEditorState.currentSongMetadata.playData.characters.player);
     if (charDataPlayer != null)
     {
-      var playerIcon = CharacterDataParser.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player);
+      var playerIcon = CharacterRegistry.getCharPixelIconAsset(chartEditorState.currentSongMetadata.playData.characters.player);
       buttonCharacterPlayer.icon = playerIcon != null ? haxe.ui.util.Variant.fromImageData(playerIcon) : null;
       buttonCharacterPlayer.text = charDataPlayer.name.length > LIMIT ? '${charDataPlayer.name.substr(0, LIMIT)}.' : '${charDataPlayer.name}';
     }

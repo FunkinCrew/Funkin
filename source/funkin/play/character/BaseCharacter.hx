@@ -2,8 +2,9 @@ package funkin.play.character;
 
 import flixel.math.FlxPoint;
 import funkin.modding.events.ScriptEvent;
+import funkin.data.IRegistryEntry;
 import funkin.data.character.CharacterData;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.play.stage.Bopper;
 import funkin.play.notes.NoteDirection;
@@ -18,10 +19,18 @@ import funkin.graphics.FunkinAnimationController;
  *
  * Remember: The character's origin is at its FEET. (horizontal center, vertical bottom)
  */
-class BaseCharacter extends Bopper
+class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
 {
   // Metadata about a character.
-  public var characterId(default, null):String;
+  public final id:String;
+  public var characterId(get, never):String;
+
+  function get_characterId():String
+  {
+    // Backwards compatibility from before characters were moved to a registry.
+    return id;
+  }
+
   public var characterName(default, null):String;
 
   /**
@@ -75,7 +84,7 @@ class BaseCharacter extends Bopper
   public var dropNoteCounts(default, null):Array<Int>;
 
   @:allow(funkin.ui.debug.anim.DebugBoundingState)
-  final _data:CharacterData;
+  public final _data:CharacterData;
 
   /**
    * The amount of time, in seconds, that the character's singing animations should last for.
@@ -176,22 +185,22 @@ class BaseCharacter extends Bopper
    */
   public var renderType(default, null):CharacterRenderType;
 
-  public function new(id:String, renderType:CharacterRenderType)
+  public function new(id:String, ?params:Dynamic)
   {
-    super(CharacterDataParser.DEFAULT_DANCEEVERY);
+    super(CharacterData.DEFAULT_DANCEEVERY);
 
-    this.characterId = id;
+    this.id = id;
 
     ignoreExclusionPref = ['sing'];
 
-    _data = CharacterDataParser.fetchCharacterData(this.characterId);
+    _data = CharacterRegistry.instance.fetchCharacterData(this.id);
     if (_data == null)
     {
-      throw 'Could not find character data for characterId: $characterId';
+      throw 'Could not find character data for characterId: $id';
     }
-    else if (_data.renderType != renderType)
+    else if (_data.renderType != (params?.renderType ?? _data.renderType))
     {
-      throw 'Render type mismatch for character ($characterId): expected ${renderType}, got ${_data.renderType}';
+      throw 'Render type mismatch for character ($id): expected ${renderType}, got ${_data.renderType}';
     }
     else
     {
@@ -201,7 +210,7 @@ class BaseCharacter extends Bopper
       this.singTimeSteps = _data.singTime;
       this.globalOffsets = _data.offsets;
       this.flipX = _data.flipX;
-      this.renderType = renderType;
+      this.renderType = params?.renderType ?? _data.renderType;
     }
 
     if (PlayState.instance != null) currentStage = PlayState.instance.currentStage;
@@ -326,8 +335,8 @@ class BaseCharacter extends Bopper
     // so we can query which ones are available.
     this.comboNoteCounts = findCountAnimations('combo'); // ex. combo50
     this.dropNoteCounts = findCountAnimations('drop'); // ex. drop50
-    if (comboNoteCounts.length > 0) log('Character $characterId plays Combo animation at ${this.comboNoteCounts.join(', ')}');
-    if (dropNoteCounts.length > 0) log('Character $characterId plays Drop animation at ${this.dropNoteCounts.join(', ')}');
+    if (comboNoteCounts.length > 0) log('Character $id plays Combo animation at ${this.comboNoteCounts.join(', ')}');
+    if (dropNoteCounts.length > 0) log('Character $id plays Drop animation at ${this.dropNoteCounts.join(', ')}');
 
     super.onCreate(event);
   }
