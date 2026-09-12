@@ -98,18 +98,21 @@ class PlayAnimationSongEvent extends SongEvent
       {
         name: 'target',
         title: 'Target',
+        tooltip: 'The name of character or prop to point to.',
         type: SongEventFieldType.STRING,
         defaultValue: DEFAULT_TARGET,
       },
       {
         name: 'anim',
         title: 'Animation',
+        tooltip: 'Name of animation to play.',
         type: SongEventFieldType.STRING,
         defaultValue: DEFAULT_ANIM,
       },
       {
         name: 'force',
         title: 'Force',
+        tooltip: 'Wheter to force the animation to play.',
         type: SongEventFieldType.BOOL,
         defaultValue: DEFAULT_FORCE
       }
