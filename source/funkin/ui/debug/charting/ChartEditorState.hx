@@ -595,6 +595,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_noteSnapQuant():Int
   {
+    if (pressingControl()) {
+      final result:Int = Std.int(SNAP_QUANTS[noteSnapQuantIndex] * 2);
+      if (SNAP_QUANTS.contains(result)) return result;
+    }
+
     return SNAP_QUANTS[noteSnapQuantIndex];
   }
 
@@ -5794,6 +5799,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     }
     else
     {
+      var canPlaceNotes:Bool = false;
+
       if (FlxG.mouse.justPressed && !FlxG.keys.pressed.SHIFT)
       {
         // Just clicked to place a note.
@@ -5839,75 +5846,82 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
             }
             else
             {
-              // Do nothing when control clicking nothing.
+              // Control + click
+              canPlaceNotes = true;
             }
           }
           else
           {
-            if (highlightedNote != null && highlightedNote.noteData != null)
-            {
-              if (isNoteSelected(highlightedNote.noteData))
-              {
-                // Clicked a selected event, start dragging.
-                dragTargetNote = highlightedNote;
-              }
-              else
-              {
-                // If you click an unselected note, and aren't holding Control, deselect everything else.
-                performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
-              }
-            }
-            else if (highlightedEvent != null && highlightedEvent.eventData != null)
-            {
-              if (isEventSelected(highlightedEvent.eventData))
-              {
-                // Clicked a selected event, start dragging.
-                dragTargetEvent = highlightedEvent;
-              }
-              else
-              {
-                // If you click an unselected event, and aren't holding Control, deselect everything else.
-                performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
-              }
-            }
-            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-            {
-              // Clicked a hold note, start dragging TO EXTEND NOTE LENGTH.
-              currentPlaceNoteData = highlightedHoldNote.noteData;
-            }
-            else
-            {
-              // Click a blank space to place a note and select it.
-
-              if (cursorGridPos == eventColumn)
-              {
-                // Create an event and place it in the chart.
-                // TODO: Figure out configuring event data.
-                var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
-
-                performCommand(new AddEventsCommand([newEventData], pressingControl()));
-              }
-              else
-              {
-                // Create a note and place it in the chart.
-                var newNoteData:SongNoteData = new SongNoteData(
-                  cursorSnappedMs,
-                  cursorColumn,
-                  0,
-                  noteKindToPlace,
-                  ChartEditorState.cloneNoteParams(noteParamsToPlace)
-                );
-
-                performCommand(new AddNotesCommand([newNoteData], pressingControl()));
-
-                currentPlaceNoteData = newNoteData;
-              }
-            }
+            // Regular click
+            canPlaceNotes = true;
           }
         }
         else
         {
           // If we clicked and released outside the grid (or on HaxeUI), do nothing.
+        }
+      }
+
+      if (canPlaceNotes)
+      {
+        if (highlightedNote != null && highlightedNote.noteData != null)
+        {
+          if (isNoteSelected(highlightedNote.noteData))
+          {
+            // Clicked a selected event, start dragging.
+            dragTargetNote = highlightedNote;
+          }
+          else
+          {
+            // If you click an unselected note, and aren't holding Control, deselect everything else.
+            performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
+          }
+        }
+        else if (highlightedEvent != null && highlightedEvent.eventData != null)
+        {
+          if (isEventSelected(highlightedEvent.eventData))
+          {
+            // Clicked a selected event, start dragging.
+            dragTargetEvent = highlightedEvent;
+          }
+          else
+          {
+            // If you click an unselected event, and aren't holding Control, deselect everything else.
+            performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+          }
+        }
+        else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+        {
+          // Clicked a hold note, start dragging TO EXTEND NOTE LENGTH.
+          currentPlaceNoteData = highlightedHoldNote.noteData;
+        }
+        else
+        {
+          // Click a blank space to place a note and select it.
+
+          if (cursorGridPos == eventColumn)
+          {
+            // Create an event and place it in the chart.
+            // TODO: Figure out configuring event data.
+            var newEventData:SongEventData = new SongEventData(cursorSnappedMs, eventKindToPlace, eventDataToPlace.copy());
+
+            performCommand(new AddEventsCommand([newEventData], pressingControl() && FlxG.keys.pressed.ALT));
+          }
+          else
+          {
+            // Create a note and place it in the chart.
+            var newNoteData:SongNoteData = new SongNoteData(
+              cursorSnappedMs,
+              cursorColumn,
+              0,
+              noteKindToPlace,
+              ChartEditorState.cloneNoteParams(noteParamsToPlace)
+            );
+
+            performCommand(new AddNotesCommand([newNoteData], pressingControl() && FlxG.keys.pressed.ALT));
+
+            currentPlaceNoteData = newNoteData;
+          }
         }
       }
 
