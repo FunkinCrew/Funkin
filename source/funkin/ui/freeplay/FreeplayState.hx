@@ -1639,13 +1639,13 @@ class FreeplayState extends MusicBeatSubState
     else
     {
       trace('Not enough characters unlocked to open character select!');
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
       return;
     }
 
     uiStateMachine.transition(Exiting);
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+    FunkinSound.playOnce(Paths.sound(styleData?.getConfirmMenuSoundAssetKey() ?? 'ui/main-menu/confirm-menu'));
 
     dj?.toCharSelect();
 
@@ -2064,7 +2064,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+          FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2076,7 +2076,7 @@ class FreeplayState extends MusicBeatSubState
         targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
       }
       // Play the confirm animation so the user knows they actually did something.
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+      FunkinSound.playOnce(Paths.sound(styleData?.getConfirmMenuSoundAssetKey() ?? 'ui/main-menu/confirm-menu'));
       // if (dj != null) dj.confirm();
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
@@ -2113,7 +2113,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+          FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2125,7 +2125,7 @@ class FreeplayState extends MusicBeatSubState
         targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
       }
       // Play the confirm animation so the user knows they actually did something.
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+      FunkinSound.playOnce(Paths.sound(styleData?.getConfirmMenuSoundAssetKey() ?? 'ui/main-menu/confirm-menu'));
       // if (dj != null) dj.confirm();
       dj?.onConfirm();
       new FlxTimer().start(styleData?.getStartDelay(), function(tmr:FlxTimer)
@@ -2164,7 +2164,7 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+          FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
           return;
         }
 
@@ -2228,7 +2228,7 @@ class FreeplayState extends MusicBeatSubState
         {
           curSelected = i;
           changeSelection(0);
-          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+          FunkinSound.playOnce(Paths.sound(styleData?.getScrollMenuSoundAssetKey() ?? 'ui/main-menu/scroll-menu'), 0.4);
           HapticUtil.vibrate(0, 0.01, 0.5);
         }
         break;
@@ -2477,7 +2477,7 @@ class FreeplayState extends MusicBeatSubState
     var event:FreeplayScriptEvent = FreeplayScriptEvent.get(FREEPLAY_OUTRO);
     dispatchEvent(event);
 
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+    FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
 
     var longestTimer:Float = 0;
 
@@ -2650,7 +2650,7 @@ class FreeplayState extends MusicBeatSubState
     if (change != 0)
     {
       HapticUtil.vibrate(0, 0.01, 0.5, 0.1);
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playOnce(Paths.sound(styleData?.getScrollMenuSoundAssetKey() ?? 'ui/main-menu/scroll-menu'), 0.4);
     }
 
     var previousVariation:String = currentVariation;
@@ -2840,7 +2840,7 @@ class FreeplayState extends MusicBeatSubState
       trace('No songs available!');
       uiStateMachine.transition(Idle);
 
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
+      FunkinSound.playOnce(Paths.sound(styleData?.getCancelMenuSoundAssetKey() ?? 'ui/main-menu/cancel-menu'));
       return;
     }
 
@@ -3042,7 +3042,7 @@ class FreeplayState extends MusicBeatSubState
     }
 
     // Visual and audio effects.
-    FunkinSound.playOnce(Paths.sound('ui/main-menu/confirm-menu'));
+    FunkinSound.playOnce(Paths.sound(styleData?.getConfirmMenuSoundAssetKey() ?? 'ui/main-menu/confirm-menu'));
     dj?.onConfirm();
 
     currentCapsule.forcePosition();
@@ -3165,7 +3165,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected != prevSelected)
     {
-      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+      FunkinSound.playOnce(Paths.sound(styleData?.getScrollMenuSoundAssetKey() ?? 'ui/main-menu/scroll-menu'), 0.4);
       HapticUtil.vibrate(0, 0.01, 0.5);
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       _pressedOnSelected = false;
@@ -3201,7 +3201,7 @@ class FreeplayState extends MusicBeatSubState
     // Reset `prepForNewRank` flag on change to prevent song previews from not updating.
     if (change != 0 && prepForNewRank) prepForNewRank = false;
 
-    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    if (!prepForNewRank && curSelected != prevSelected) FunkinSound.playOnce(Paths.sound(styleData?.getScrollMenuSoundAssetKey() ?? 'ui/main-menu/scroll-menu'), 0.4);
 
     var songScore:Null<SaveScoreData> = Save.instance.getSongScore(currentCapsule.freeplayData?.data.id ?? '', currentDifficulty, currentVariation);
     intendedScore = songScore?.score ?? 0;
@@ -3264,7 +3264,7 @@ class FreeplayState extends MusicBeatSubState
 
     if (curSelected == 0)
     {
-      FunkinSound.playMusic('ui/freeplay/freeplay-random/freeplay-random', {
+      FunkinSound.playMusic(styleData?.getFreeplayRandomMusicAssetKey() ?? 'ui/freeplay/freeplay-random/freeplay-random', {
         startingVolume: 0.0,
         overrideExisting: true,
         restartTrack: false
@@ -3381,7 +3381,7 @@ class FreeplayState extends MusicBeatSubState
         selectedCapsule.favIconBlurred.visible = true;
         selectedCapsule.favIcon.animation.play('fav');
         selectedCapsule.favIconBlurred.animation.play('fav');
-        FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/favorite'), 1);
+        FunkinSound.playOnce(Paths.sound(styleData?.getFavoriteSoundAssetKey() ?? 'ui/freeplay/sounds/favorite'), 1);
         selectedCapsule.checkClip();
         selectedCapsule.selected = true; // set selected again, so it can run its getter function to initialize movement
         selectedCapsule.updateSelected();
@@ -3410,7 +3410,7 @@ class FreeplayState extends MusicBeatSubState
       {
         selectedCapsule.favIcon.animation.play('fav', true, true, 9);
         selectedCapsule.favIconBlurred.animation.play('fav', true, true, 9);
-        FunkinSound.playOnce(Paths.sound('ui/freeplay/sounds/unfavorite'), 1);
+        FunkinSound.playOnce(Paths.sound(styleData?.getUnfavoriteSoundAssetKey() ?? 'ui/freeplay/sounds/unfavorite'), 1);
         new FlxTimer().start(0.2, _ ->
         {
           selectedCapsule.favIcon.visible = false;
