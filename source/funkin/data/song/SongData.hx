@@ -6,7 +6,9 @@ import funkin.ui.debug.charting.ChartEditorState;
 import funkin.data.event.SongEventRegistry;
 import funkin.play.event.SongEvent;
 import funkin.data.event.SongEventSchema;
+import funkin.data.note.SongNoteSchema;
 import funkin.data.song.SongRegistry;
+import funkin.play.notes.notekind.NoteKindManager;
 import thx.semver.Version;
 import funkin.util.tools.ICloneable;
 import funkin.play.notes.notekind.NoteKind;
@@ -1304,16 +1306,17 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
    * The parameters for the note.
    * Used for custom behavior on custom note kinds. Defaults to an empty array.
    */
-  @:alias("p") @:default([]) @:optional
-  public var params:Array<NoteParamData>;
+  @:alias("p")
+  @:optional
+  public var params:Dynamic = null;
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
-    this.params = params ?? [];
+    this.params = params;
   }
 
   /**
@@ -1431,26 +1434,12 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   }
 
   /**
-   * Clone the `params` data for this node, creating a new independent instance.
-   * @return A new array of cloned `NoteParamData` instances.
-   */
-  public function cloneParams():Array<NoteParamData>
-  {
-    var newParams:Array<NoteParamData> = [];
-    for (param in this.params)
-    {
-      newParams.push(param.clone());
-    }
-    return newParams;
-  }
-
-  /**
    * Clone this song note data, creating a new independent instance with identical data.
    * @return The newly created song note data.
    */
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, this.params);
   }
 
   public function toString():String
@@ -1462,6 +1451,137 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
       + (this.kind != '' ? ' [kind: ${this.kind}])' : ')');
   }
 
+  public function paramsAsStruct(?defaultKey:String = "key"):Dynamic
+  {
+    if (this.params == null) return {};
+
+    if (Reflect.isObject(this.params))
+    {
+      // We enter this case if the params are a struct.
+      return cast this.params;
+    }
+    else
+    {
+      var result:haxe.DynamicAccess<Dynamic> = {};
+      result.set(defaultKey, this.params);
+      return cast result;
+    }
+  }
+
+  /**
+   * Retrieve the NoteKind handler class for this bote.
+   * @return The handler class, or `null` if not found.
+   */
+  public function getHandler():Null<NoteKind>
+  {
+    return NoteKindManager.getNoteKind(this.kind);
+  }
+
+  public function getSchema():Null<SongNoteSchema>
+  {
+    return NoteKindManager.getNoteSchema(this.kind);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as a `Dynamic` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getDynamic(key:String):Null<Dynamic>
+  {
+    return this.params == null ? null : Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as a `Bool` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getBool(key:String):Null<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Int` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getInt(key:String):Null<Int>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Int)) return result;
+    if (Std.isOfType(result, String)) return Std.parseInt(cast result);
+    return cast result;
+  }
+
+  /**
+   * Retrieve a field from this event's data, as a `Float` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getFloat(key:String):Null<Float>
+  {
+    if (this.params == null) return null;
+    var result = Reflect.field(this.params, key);
+    if (result == null) return null;
+    if (Std.isOfType(result, Float)) return result;
+    if (Std.isOfType(result, String)) return Std.parseFloat(cast result);
+    return cast result;
+  }
+
+  /**
+   * Retrieve a field from this event's data, as a `String` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getString(key:String):String
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Array<Dynamic>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getArray(key:String):Array<Dynamic>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Array<Bool>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getBoolArray(key:String):Array<Bool>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Array<Float>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getFloatArray(key:String):Array<Float>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
+  /**
+   * Retrieve a field from this event's data, as an `Array<String>` value.
+   * @param key The name of the field to retrieve.
+   * @return The field value, or `null` if not provided.
+   */
+  public function getStringArray(key:String):Array<Float>
+  {
+    return this.params == null ? null : cast Reflect.field(this.params, key);
+  }
+
   /**
    * Build a tooltip string for this note, as seen when hovering in the Chart Editor.
    * @return The tooltip string to display.
@@ -1470,17 +1590,28 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   {
     if ((this.kind?.length ?? 0) == 0) return '';
 
-    var noteKind:Null<NoteKind> = NoteKindManager.getNoteKind(this.kind);
-    var noteKindDesc:String = noteKind?.description ?? this.kind;
+    var noteHandler = getHandler();
+    var noteSchema = getSchema();
 
+    var noteKindDesc:String = noteHandler?.getDescription() ?? this.kind;
     var result:String = 'Kind: $noteKindDesc';
-    if (this.params.length == 0) return result;
 
-    result += '\nParams:';
+    if (noteSchema == null) return result;
 
-    for (param in params)
+    var defaultKey = noteSchema.getFirstField()?.name;
+    var paramsStruct:haxe.DynamicAccess<Dynamic> = paramsAsStruct(defaultKey);
+
+    for (pair in paramsStruct.keyValueIterator())
     {
-      result += '\n- ${param.name}: ${param.value}';
+      var key = pair.key;
+      var value = pair.value;
+
+      var title = noteSchema.getByName(key)?.title ?? 'UnknownField';
+
+      // if (noteSchema.stringifyFieldValue(key, value) != null) trace(noteSchema.stringifyFieldValue(key, value));
+      var valueStr = noteSchema.stringifyFieldValue(key, value) ?? 'UnknownValue';
+
+      result += '\n- ${title}: ${valueStr}';
     }
 
     return result;
@@ -1493,7 +1624,7 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Dynamic)
   {
     this = new SongNoteDataRaw(time, data, length, kind, params);
   }
