@@ -166,7 +166,9 @@ class CharSelectSubState extends MusicBeatSubState
   override public function create():Void
   {
     super.create();
-
+    #if android
+    FlxG.android.enabled = false;
+    #end
     loadAvailableCharacters();
 
     bopInfo = FramesJSFLParser.parse(Paths.file('ui/character-select/interface/icon-bop/info.txt'));
@@ -451,6 +453,9 @@ class CharSelectSubState extends MusicBeatSubState
 
   override public function destroy():Void
   {
+    #if android
+    FlxG.android.enabled = true;
+    #end
     CharSelectAtlasHandler.clearAtlasCache();
     super.destroy();
   }
