@@ -7099,6 +7099,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       // menubarItemVolumeHitsoundPlayer.value = (menubarItemVolumeHitsoundPlayer.value == 0) ? (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100 : 0;
       // menubarItemVolumeHitsoundOpponent.value = (menubarItemVolumeHitsoundOpponent.value == 0) ? (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100 : 0;
     }
+    // Dad Hitsound Toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.T)
+    {
+      var oldDadValue = previousAudioVolumes[2];
+      previousAudioVolumes[2] = menubarItemVolumeHitsoundOpponent.value;
+      menubarItemVolumeHitsoundOpponent.value = (menubarItemVolumeHitsoundOpponent.value == 0) ? (oldDadValue > menubarItemVolumeHitsoundOpponent.value) ? oldDadValue : 100 : 0;
+    }
+    // Boyfriend Hitsound Toggle
+    if (!isHaxeUIFocused && FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.R)
+    {
+      var oldBFValue = previousAudioVolumes[1];
+      previousAudioVolumes[1] = menubarItemVolumeHitsoundPlayer.value;
+      menubarItemVolumeHitsoundPlayer.value = (menubarItemVolumeHitsoundPlayer.value == 0) ? (oldBFValue > menubarItemVolumeHitsoundPlayer.value) ? oldBFValue : 100 : 0;
+    }
     // Instrumental volume toggle
     if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.I)
     {
