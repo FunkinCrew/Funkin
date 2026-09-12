@@ -26,69 +26,34 @@ import openfl.media.SoundMixer;
 @:nullSafety
 class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 {
-  static final MAX_VOLUME:Float = 1.0;
-
-  /**
-   * An FlxSignal which is dispatched when the volume changes.
-   */
-  public static var onVolumeChanged(get, never):FlxTypedSignal<Float->Void>;
-
-  static var _onVolumeChanged:Null<FlxTypedSignal<Float->Void>> = null;
-
-  static function get_onVolumeChanged():FlxTypedSignal<Float->Void>
-  {
-    if (_onVolumeChanged == null)
-    {
-      _onVolumeChanged = new FlxTypedSignal<Float->Void>();
-      FlxG.sound.onVolumeChange.add(function(volume:Float)
-      {
-        _onVolumeChanged.dispatch(volume);
-      });
-    }
-    return _onVolumeChanged;
-  }
-
   /**
    * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
    */
   static var pool(default, null):FlxTypedGroup<FunkinSound> = new FlxTypedGroup<FunkinSound>();
 
   /**
-   * Calculate the current time of the sound.
-   * NOTE: You need to `add()` the sound to the scene for `update()` to increment the time.
+   * All audio currently in the process of loading with `loadPartialSound()`.
+   * Use `emptyPartialQueue()` to cancel currently loading partial sounds.
    */
-  //
+  static var partialQueue:Array<Promise<Null<FunkinSound>>> = [];
+
+  /**
+   * Set this to `true` to mute this sound,
+   * making it inaudible without overriding the sound's volume.
+   */
   public var muted(default, set):Bool = false;
 
-  function set_muted(value:Bool):Bool
-  {
-    if (value == muted) return value;
-    muted = value;
-    updateTransform();
-    return value;
-  }
-
-  override function set_volume(value:Float):Float
-  {
-    // Uncap the volume.
-    _volume = value.clamp(0.0, MAX_VOLUME);
-    updateTransform();
-    return _volume;
-  }
-
+  /**
+   * Set this to `true` to mute this sound,
+   * making it inaudible without overriding the sound's volume.
+   */
   public var paused(get, never):Bool;
 
-  function get_paused():Bool
-  {
-    return this._paused;
-  }
-
+  /**
+   * Whether this sound is currently playing.
+   * Returns `true` even if the current timestamp is negative (i.e. the sound is waiting to play).
+   */
   public var isPlaying(get, never):Bool;
-
-  function get_isPlaying():Bool
-  {
-    return this.playing || this._shouldPlay;
-  }
 
   /**
    * Waveform data for this sound.
@@ -97,165 +62,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
   public var waveformData(get, never):WaveformData;
 
   var _waveformData:Null<WaveformData> = null;
-
-  function get_waveformData():WaveformData
-  {
-    if (_waveformData == null)
-    {
-      _waveformData = WaveformDataParser.interpretFlxSound(this);
-      if (_waveformData == null) throw 'Could not interpret waveform data!';
-    }
-    return _waveformData;
-  }
-
-  /**
-   * If true, the game will forcefully add this sound's channel to the list of playing sounds.
-   */
-  public var important:Bool = false;
-
-  /**
-   * Are we in a state where the song should play but time is negative?
-   */
-  var _shouldPlay:Bool = false;
-
-  /**
-   * For debug purposes.
-   */
   var _label:String = 'unknown';
-
-  public function new()
-  {
-    super();
-  }
-
-  override public function update(elapsedSec:Float)
-  {
-    if (!playing && !_shouldPlay) return;
-
-    if (_time < 0)
-    {
-      var elapsedMs = elapsedSec * Constants.MS_PER_SEC;
-      _time += elapsedMs;
-      if (_time >= 0)
-      {
-        super.play();
-        _shouldPlay = false;
-      }
-    }
-    else
-    {
-      super.update(elapsedSec);
-
-      @:privateAccess
-      {
-        if (important && _channel != null && !SoundMixer.__soundChannels.contains(_channel))
-        {
-          SoundMixer.__soundChannels.push(_channel);
-        }
-      }
-    }
-  }
-
-  public function togglePlayback():FunkinSound
-  {
-    if (playing)
-    {
-      pause();
-    }
-    else
-    {
-      resume();
-    }
-    return this;
-  }
-
-  override public function play(forceRestart:Bool = false, startTime:Float = 0, ?endTime:Float):FunkinSound
-  {
-    if (!exists) return this;
-
-    if (forceRestart)
-    {
-      cleanup(false, true);
-    }
-    else if (playing)
-    {
-      return this;
-    }
-
-    if (startTime < 0)
-    {
-      this.active = true;
-      this._shouldPlay = true;
-      this._time = startTime;
-      this.endTime = endTime;
-      return this;
-    }
-    else
-    {
-      if (_paused)
-      {
-        resume();
-      }
-      else
-      {
-        startSound(startTime);
-      }
-
-      this.endTime = endTime;
-      return this;
-    }
-  }
-
-  override public function pause():FunkinSound
-  {
-    if (_shouldPlay)
-    {
-      // This sound will eventually play, but is still at a negative timestamp.
-      // Manually set the paused flag to ensure proper focus/unfocus behavior.
-      _shouldPlay = false;
-      _paused = true;
-      active = false;
-    }
-    else
-    {
-      super.pause();
-    }
-    return this;
-  }
-
-  override public function resume():FunkinSound
-  {
-    if (this._time < 0)
-    {
-      // Sound with negative timestamp, restart the timer.
-      _shouldPlay = true;
-      _paused = false;
-      active = true;
-    }
-    else
-    {
-      super.resume();
-    }
-    return this;
-  }
-
-  /**
-   * Call after adjusting the volume to update the sound channel's settings.
-   */
-  @:allow(flixel.sound.FlxSoundGroup)
-  override function updateTransform():Void
-  {
-    if (_transform != null)
-    {
-      _transform.volume = #if FLX_SOUND_SYSTEM ((FlxG.sound.muted || this.muted) ? 0 : 1) * FlxG.sound.volume * #end
-        (group != null ? group.volume : 1) * _volume * _volumeAdjust;
-    }
-
-    if (_channel != null)
-    {
-      _channel.soundTransform = _transform;
-    }
-  }
 
   public function clone():FunkinSound
   {
@@ -274,6 +81,24 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound._waveformData = this._waveformData;
 
     return sound;
+  }
+
+  @:nullSafety(Off)
+  override public function destroy():Void
+  {
+    super.destroy();
+
+    FlxTween.cancelTweensOf(this);
+    this._label = 'unknown';
+    this._waveformData = null;
+  }
+
+  /**
+   * Produces a string representation suitable for debugging.
+   */
+  override public function toString():String
+  {
+    return 'FunkinSound(${this._label})';
   }
 
   /**
@@ -407,17 +232,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.list.remove(FlxG.sound.music);
   }
 
-  public static function emptyPartialQueue():Void
-  {
-    while (partialQueue.length > 0)
-    {
-      @:nullSafety(Off)
-      partialQueue.pop().error('Cancel loading partial sound');
-    }
-  }
-
-  static var partialQueue:Array<Promise<Null<FunkinSound>>> = [];
-
   /**
    * Creates a new `FunkinSound` object synchronously.
    *
@@ -431,7 +245,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param persist         Whether to keep this `FunkinSound` between states, or destroy it.
    * @param onComplete      Called when the sound finished playing.
    * @param onLoad          Called when the sound finished loading.  Called immediately for successfully loaded embedded sounds.
-   * @param important       If `true`, the sound channel will forcefully be added onto the channel array, even if full. Use sparingly!
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
   public static function load(embeddedSound:FlxSoundAsset,
@@ -441,17 +254,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     autoPlay:Bool = false,
     persist:Bool = false,
     ?onComplete:Void->Void,
-    ?onLoad:Void->Void,
-    important:Bool = false):Null<FunkinSound>
+    ?onLoad:Void->Void):Null<FunkinSound>
   {
-    @:privateAccess
-    if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS && !important)
-    {
-      FlxG.log.error('FunkinSound could not play sound, channels exhausted! Found ${SoundMixer.__soundChannels.length} active sound channels.');
-      return null;
-    }
-
-    var sound:FunkinSound = pool.recycle(construct);
+    var sound:FunkinSound = FunkinSound.recycle();
 
     if (Std.isOfType(embeddedSound, String))
     {
@@ -485,7 +290,6 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     sound.volume = volume;
     FlxG.sound.defaultSoundGroup.add(sound);
     sound.persist = persist;
-    sound.important = important;
 
     // Make sure to add the sound to the list.
     // If it's already in, it won't get re-added.
@@ -553,51 +357,16 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     return promise;
   }
 
-  @:nullSafety(Off)
-  override public function destroy():Void
+  /**
+   * Cancel loading of all partial sounds that are currently being processed.
+   */
+  public static function emptyPartialQueue():Void
   {
-    super.destroy();
-    if (fadeTween != null)
+    while (partialQueue.length > 0)
     {
-      fadeTween.cancel();
-      fadeTween = null;
+      @:nullSafety(Off)
+      partialQueue.pop().error('Cancel loading partial sound');
     }
-    FlxTween.cancelTweensOf(this);
-    this._label = 'unknown';
-    this._waveformData = null;
-  }
-
-  @:access(openfl.media.Sound) @:access(openfl.media.SoundChannel) @:access(openfl.media.SoundMixer)
-  override function startSound(startTime:Float)
-  {
-    if (!important)
-    {
-      super.startSound(startTime);
-      return;
-    }
-
-    _time = startTime;
-    _paused = false;
-
-    if (_sound == null) return;
-
-    // Create a channel manually if the sound is considered important.
-    var pan:Float = (SoundMixer.__soundTransform.pan + _transform.pan).clamp(-1, 1);
-    var volume:Float = (SoundMixer.__soundTransform.volume * _transform.volume).clamp(0, MAX_VOLUME);
-
-    var audioSource:AudioSource = new AudioSource(_sound.__buffer);
-    audioSource.offset = Std.int(startTime);
-    audioSource.gain = volume;
-
-    var position:lime.math.Vector4 = audioSource.position;
-    position.x = pan;
-    position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-    audioSource.position = position;
-
-    _channel = new SoundChannel(_sound, audioSource, _transform);
-    _channel.addEventListener(Event.SOUND_COMPLETE, stopped);
-    pitch = _pitch;
-    active = true;
   }
 
   /**
@@ -606,9 +375,9 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
    * @param volume
    * @return A `FunkinSound` object, or `null` if the sound could not be loaded.
    */
-  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void, important:Bool = false):Null<FunkinSound>
+  public static function playOnce(key:String, volume:Float = 1.0, ?onComplete:Void->Void, ?onLoad:Void->Void):Null<FunkinSound>
   {
-    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad, important);
+    var result:Null<FunkinSound> = FunkinSound.load(key, volume, false, true, true, false, onComplete, onLoad);
     return result;
   }
 
@@ -626,22 +395,49 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
   }
 
-  static function construct():FunkinSound
+  /**
+   * Reuse an existing FunkinSound object from the pool, or create a new one if none are available.
+   *
+   * @return The recycled/new `FunkinSound` object.
+   */
+  static function recycle():FunkinSound
   {
-    var sound:FunkinSound = new FunkinSound();
-
-    pool.add(sound);
-    FlxG.sound.list.add(sound);
-
-    return sound;
+    return pool.recycle(() ->
+    {
+      // Construct a new sound
+      var sound:FunkinSound = new FunkinSound();
+      pool.add(sound);
+      FlxG.sound.list.add(sound);
+      return sound;
+    });
   }
 
-  /**
-   * Produces a string representation suitable for debugging.
-   */
-  override public function toString():String
+  function set_muted(value:Bool):Bool
   {
-    return 'FunkinSound(${this._label})';
+    if (value == muted) return value;
+    muted = value;
+    updateTransform();
+    return value;
+  }
+
+  function get_paused():Bool
+  {
+    return this._paused;
+  }
+
+  function get_isPlaying():Bool
+  {
+    return this.playing;
+  }
+
+  function get_waveformData():WaveformData
+  {
+    if (_waveformData == null)
+    {
+      _waveformData = WaveformDataParser.interpretFlxSound(this);
+      if (_waveformData == null) throw 'Could not interpret waveform data!';
+    }
+    return _waveformData;
   }
 }
 
