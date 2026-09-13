@@ -1571,6 +1571,8 @@ private class DownloadOutput extends haxe.io.Output
     close2();
   }
 }
+#else
+class InstallJob {}
 #end
 
 /**
