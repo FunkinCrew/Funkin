@@ -138,6 +138,12 @@ class ApplicationMain
   @:noCompletion
   private static function initHaxeUI():Void
   {
+    // Since by the time we try to initialize the cursors theres no asset library,
+    // use `BitmapData.fromFile` to load the cursor graphics.
+    haxe.ui.backend.flixel.CursorHelper.mouseLoadFunction = function(path:String):openfl.display.BitmapData
+    {
+      return openfl.display.BitmapData.fromFile(path);
+    };
     // This has to come before Toolkit.init since locales get initialized there
     haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
     // Calling this before any HaxeUI components get used is important:
