@@ -830,11 +830,20 @@ class Strumline extends FlxSpriteGroup
     });
   }
 
+  function hasNotesOnScreen():Bool
+  {
+    for (note in notes.members)
+    {
+      if (note != null && note.alive && !note.hasBeenHit) return true;
+    }
+    return false;
+  }
+
   #if FEATURE_GHOST_TAPPING
   function updateGhostTapTimer(elapsed:Float):Void
   {
     // If it's still our turn, don't update the ghost tap timer.
-    if (getNotesOnScreen().length > 0) return;
+    if (hasNotesOnScreen()) return;
 
     ghostTapTimer -= elapsed;
 
@@ -1207,19 +1216,18 @@ class Strumline extends FlxSpriteGroup
 
       noteSprite.setupNoteGraphic(noteKindStyle);
 
-      var trueScale = new FlxPoint(strumlineScale.x, strumlineScale.y);
+      var trueScaleX:Float = strumlineScale.x;
+      var trueScaleY:Float = strumlineScale.y;
       #if FEATURE_TOUCH_CONTROLS
       if (inArrowControlSchemeMode)
       {
         final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-        trueScale.set(
-          strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification,
-          strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification
-        );
+        trueScaleX = strumlineScale.x - ((FlxG.height / FlxG.width) * 0.2) * amplification;
+        trueScaleY = strumlineScale.y - ((FlxG.height / FlxG.width) * 0.2) * amplification;
       }
       #end
 
-      noteSprite.scale.scale(trueScale.x, trueScale.y);
+      noteSprite.scale.scale(trueScaleX, trueScaleY);
       noteSprite.updateHitbox();
 
       noteSprite.direction = note.getDirection();
