@@ -151,7 +151,12 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
       throw 'Could not load spritesheet for note style: $id';
     }
 
-    target.frames = atlas;
+    var needsRebuild:Bool = target.frames != atlas || target.builtNoteStyleId != id;
+
+    if (needsRebuild)
+    {
+      target.frames = atlas;
+    }
 
     target.antialiasing = !(_data.assets?.note?.isPixel ?? false);
 
@@ -159,7 +164,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     target.offset.set(noteOffsets[0], noteOffsets[1]);
 
     // Apply the animations.
-    buildNoteAnimations(target);
+    if (needsRebuild)
+    {
+      buildNoteAnimations(target);
+      target.builtNoteStyleId = id;
+    }
 
     // Set the scale.
     var scale = getNoteScale();

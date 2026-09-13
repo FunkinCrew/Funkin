@@ -176,6 +176,8 @@ class NoteSprite extends FunkinSprite
     if (noteStyle != null) setupNoteGraphic(noteStyle);
   }
 
+  public var builtNoteStyleId:Null<String> = null;
+
   /**
    * Creates frames and animations
    * @param noteStyle The `NoteStyle` instance
