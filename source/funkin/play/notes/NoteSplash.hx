@@ -25,7 +25,11 @@ class NoteSplash extends FlxSprite
    */
   function setupSplashGraphic(noteStyle:NoteStyle):Void
   {
-    if (frames == null) noteStyle.buildSplashSprite(this);
+    if (frames == null)
+    {
+      noteStyle.buildSplashSprite(this);
+      _variantCounts = [-1, -1, -1, -1];
+    }
 
     if (this.animation.getAnimationList().length < 8)
     {
@@ -42,10 +46,7 @@ class NoteSplash extends FlxSprite
   {
     if (variant == null)
     {
-      var animationAmount:Int =
-        this.animation.getAnimationList().filter(function(anim) return anim.name.startsWith('splash${direction.nameUpper}')).length
-        - 1;
-      variant = FlxG.random.int(0, animationAmount);
+      variant = FlxG.random.int(0, getVariantCount(direction) - 1);
     }
 
     // splashUP0, splashUP1, splashRIGHT0, etc.
@@ -59,6 +60,25 @@ class NoteSplash extends FlxSprite
 
     // Center the animation on the note splash.
     offset.set(width * 0.3, height * 0.3);
+  }
+
+  var _variantCounts:Array<Int> = [-1, -1, -1, -1];
+
+  function getVariantCount(direction:NoteDirection):Int
+  {
+    var index:Int = direction % 4;
+    var cached:Int = _variantCounts[index];
+    if (cached >= 0) return cached;
+
+    var prefix:String = 'splash${direction.nameUpper}';
+    var count:Int = 0;
+    for (anim in this.animation.getAnimationList())
+    {
+      if (anim.name.startsWith(prefix)) count++;
+    }
+
+    _variantCounts[index] = count;
+    return count;
   }
 
   public function onAnimationFinished(animationName:String):Void
