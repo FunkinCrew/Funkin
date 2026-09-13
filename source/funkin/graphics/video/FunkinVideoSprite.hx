@@ -29,6 +29,4 @@ class FunkinVideoSprite extends FlxVideoSprite
     }
   }
 }
-#else
-class FunkinVideoSprite extends flixel.FlxSprite {}
 #end
