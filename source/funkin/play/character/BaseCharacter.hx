@@ -583,7 +583,7 @@ class BaseCharacter extends Bopper
    */
   public function playNoteSingAnimation(noteData:SongNoteData, judgement:Null<String> = null, comboCount:Int = 0):Void
   {
-     curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
+    curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
     // Let the character naturally transition back to their idle/dance animation
     // if the notekind is set to noanim.
     if (curNoteKind != null && curNoteKind.noanim) return;
@@ -656,8 +656,8 @@ class BaseCharacter extends Bopper
   {
     super.onNoteHoldDrop(event);
 
-    // If another script cancelled the event, don't do anything.
-    if (event.eventCanceled) return;
+    // If another script cancelled the event or if it wasn't a combo break, don't do anything.
+    if (event.eventCanceled || !event.isComboBreak) return;
 
     if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
     {
