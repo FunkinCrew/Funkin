@@ -49,12 +49,14 @@ class Strumline extends FlxSpriteGroup
 
   // The number of pixels a note moves per millisecond at a scroll speed of 1.
   // Supports backwards scrolling.
+
   public static function scrollRate(scrollSpeed:Float, downscroll:Bool = false):Float
   {
     return Constants.PIXELS_PER_MS * scrollSpeed * (downscroll ? -1 : 1);
   }
 
   // The Y coordinate of a note, given its origin, distance from the strumline and scroll rate.
+
   public static function noteY(originY:Float, distance:Float, rate:Float, yOffset:Float):Float
   {
     return originY + distance * rate + yOffset;
@@ -721,8 +723,7 @@ class Strumline extends FlxSpriteGroup
           holdNote.cover.kill();
         }
 
-        holdNote.visible = false;
-        holdNote.kill();
+        holdNote.endedNote = true;
       }
       else if (holdNote.missedNote && (holdNote.fullSustainLength > holdNote.sustainLength))
       {
