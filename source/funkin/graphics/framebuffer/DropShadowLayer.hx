@@ -1,5 +1,7 @@
 package funkin.graphics.framebuffer;
 
+import flixel.FlxCamera;
+import flixel.graphics.frames.FlxFrame;
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.shaders.BlurShaderDown;
@@ -16,7 +18,7 @@ class DropShadowLayer extends FunkinBufferSprite
   {
     super(0, 0, camera, {
       baseZoom: 1,
-      bufferDelay: 0.0010, // Ever so slight delay to improve performance just a bit.
+      bufferDelay: 0.0010,
       resolutionScale: 0.35 // Buffer sprite is downscaled to prevent the game from applying a shader to a massive texture lmao
     });
 
@@ -38,5 +40,12 @@ class DropShadowLayer extends FunkinBufferSprite
 
     var finalFilter:ShaderFilter = new ShaderFilter(new BlurShaderShadow(_color, distX, distY));
     filters.push(finalFilter);
+  }
+
+  override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
+  {
+    if (filters == null || filters.length == 0) return;
+
+    super.drawFrameComplex(frame, camera);
   }
 }
