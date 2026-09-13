@@ -275,7 +275,11 @@ class ModMenuItem extends FunkinSpriteGroup
         }
         else
         {
+          #if html5
+          modIcon.loadGraphic(openfl.display.BitmapData.fromImage(lime.graphics.Image.fromBytes(mod.icon)));
+          #else
           modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(mod.icon, true));
+          #end
         }
 
         modIcon.scrollFactor.set();
