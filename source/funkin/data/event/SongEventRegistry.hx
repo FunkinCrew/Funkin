@@ -392,11 +392,13 @@ class SongEventRegistry
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float, ?startIndex:Int):Array<SongEventData>
   {
     startIndex ??= nextEventIndex;
+    if (startIndex < 0) startIndex = 0;
 
-    var result:Array<SongEventData> = [];
+    var result:Null<Array<SongEventData>> = null;
 
-    for (index => event in events)
+    for (index in startIndex...events.length)
     {
+      var event:SongEventData = events[index];
       if (event.activated) continue;
 
       var activationTime:Float = event.getActivationTime();
@@ -404,14 +406,18 @@ class SongEventRegistry
       if (activationTime > currentTime)
       {
         nextEventIndex = index;
-        return result;
+        return result ?? EMPTY_RESULT;
       }
 
+      if (result == null) result = [];
       result.push(event);
     }
 
-    return result;
+    nextEventIndex = events.length;
+    return result ?? EMPTY_RESULT;
   }
+
+  static final EMPTY_RESULT:Array<SongEventData> = [];
 
   /**
    * The currentTime has jumped far ahead or back.
@@ -423,7 +429,9 @@ class SongEventRegistry
    */
   public static function handleSkippedEvents(events:Array<SongEventData>, currentTime:Float):Void
   {
-    for (event in events)
+    var newNextIndex:Int = events.length;
+
+    for (index => event in events)
     {
       var activationTime:Float = event.getActivationTime();
 
@@ -438,7 +446,11 @@ class SongEventRegistry
       {
         event.activated = true;
       }
+
+      if (activationTime >= currentTime && index < newNextIndex) newNextIndex = index;
     }
+
+    nextEventIndex = newNextIndex;
   }
 
   /**
