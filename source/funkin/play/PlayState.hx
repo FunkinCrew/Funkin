@@ -3010,11 +3010,12 @@ class PlayState extends MusicBeatSubState
         if (isBotPlayMode)
         {
           // Dispatch the event, which should make the bot keep singing while the note is held.
-          var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
           dispatchEvent(event);
 
           // Drop the held note if the event is cancelled.
           if (event.eventCanceled) holdNote.missedNote = true;
+          event.finish();
         }
         else
         {
@@ -3033,8 +3034,9 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
           dispatchEvent(event);
+          event.finish();
         }
 
         holdNote.visible = false;
@@ -3058,8 +3060,9 @@ class PlayState extends MusicBeatSubState
         }
         else
         {
-          var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
           dispatchEvent(event);
+          event.finish();
         }
       }
 
@@ -3258,7 +3261,7 @@ class PlayState extends MusicBeatSubState
     var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
     var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
 
-    var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
+    var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
     dispatchEvent(event);
 
     // Drop the held note if the event is cancelled.
@@ -3273,13 +3276,15 @@ class PlayState extends MusicBeatSubState
       health += healthChange;
       holdNote.appliedScore += scoreChange;
     }
+
+    event.finish();
   }
 
   function goodNoteHoldRelease(holdNote:SustainTrail, ?input:PreciseInputEvent = null):Void
   {
     // Remove all the applied score, we're adding the real score now!
     holdNote.appliedScore = 0;
-    var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
+    var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0.0, 0.0, false, Highscore.tallies.combo, 0.0);
 
     if (!holdNote.scoreable)
     {
@@ -3303,6 +3308,7 @@ class PlayState extends MusicBeatSubState
       }
 
       applyScore(event.score, '', event.healthChange, event.isComboBreak);
+      event.finish();
     }
     else if (input == null)
     {
@@ -3318,6 +3324,7 @@ class PlayState extends MusicBeatSubState
       }
 
       applyScore(event.score, '', event.healthChange, event.isComboBreak);
+      event.finish();
     }
     else
     {
@@ -3372,6 +3379,8 @@ class PlayState extends MusicBeatSubState
           }
           FunkinSound.playOnce(Paths.soundRandom('gameplay/general/sounds/miss-note-', 1, 3), FlxG.random.float(0.5, 0.6));
         }
+
+        event.finish();
       }
       else
       {
