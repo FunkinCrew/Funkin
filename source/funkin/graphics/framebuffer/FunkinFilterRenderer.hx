@@ -32,7 +32,7 @@ class FunkinFilterRenderer implements IFlxDestroyable
    */
   public var graphic(default, null):Null<FlxGraphic>;
 
-  var bitmapPool:Map<String, Array<BitmapData>> = [];
+  var bitmapPool:Map<Int, Array<BitmapData>> = [];
   var parent:FunkinSprite;
 
   public function new(parent:FunkinSprite)
@@ -53,7 +53,8 @@ class FunkinFilterRenderer implements IFlxDestroyable
 
     var bounds:FlxRect = FlxRect.get().copyFromFlash(textureBitmap.rect);
     FilterRenderer.expandFilterBounds(bounds, parent.filters);
-    parent.filterOffsets = [bounds.x * parent.scale.x, bounds.y * parent.scale.x];
+    parent.filterOffsets[0] = bounds.x;
+    parent.filterOffsets[1] = bounds.y;
 
     var ceilWidth:Int = Math.ceil(bounds.width);
     var ceilHeight:Int = Math.ceil(bounds.height);
@@ -96,7 +97,15 @@ class FunkinFilterRenderer implements IFlxDestroyable
     if (needsSecondBitmap) filterBmp1 = getBitmap(graphic.width, graphic.height);
     if (needsPreserveObject) filterBmp2 = getBitmap(filterBmp1?.width ?? 1, filterBmp1?.height ?? 1);
 
-    _applyFilters(graphic.bitmap, textureBitmap, parent.filters, filterBmp1, filterBmp2, bounds);
+    var result:BitmapData = _applyFilters(graphic.bitmap, textureBitmap, parent.filters, filterBmp1, filterBmp2, bounds);
+
+    if (result != graphic.bitmap)
+    {
+      var previous:BitmapData = graphic.bitmap;
+      graphic.bitmap = result;
+      if (previous != null) putBitmap(previous);
+      if (filterBmp1 == result) filterBmp1 = null;
+    }
 
     if (filterBmp1 != null) putBitmap(filterBmp1);
     if (filterBmp2 != null) putBitmap(filterBmp2);
@@ -105,12 +114,13 @@ class FunkinFilterRenderer implements IFlxDestroyable
     parent.filtered = true;
   }
 
+  @:nullSafety(Off)
   function _applyFilters(target:BitmapData,
     bmp:BitmapData,
     filters:Array<BitmapFilter>,
     target1:Null<BitmapData>,
     target2:Null<BitmapData>,
-    bounds:FlxRect):Void
+    bounds:FlxRect):BitmapData
   {
     var renderer = FilterRenderer.renderer;
 
@@ -133,35 +143,69 @@ class FunkinFilterRenderer implements IFlxDestroyable
     renderer.__setRenderTarget(bitmap);
     renderer.__scissorRect(null);
     renderer.__renderFilterPass(bmp, renderer.__defaultDisplayShader, true);
+
+    var swapTarg:Bool = target1 != null;
+
     for (filter in filters)
     {
       if (filter == null) continue;
-      bitmap = FilterRenderer.__renderGpuFilter(filter, bitmap, bitmap2, bitmap3);
+
+      if (swapTarg && !filter.__preserveObject && filter.__numShaderPasses == 1)
+      {
+        var shader = filter.__initShader(renderer, 0, null);
+        renderer.__setBlendMode(filter.__shaderBlendMode);
+        renderer.__setRenderTarget(bitmap2);
+        renderer.__renderFilterPass(bitmap, shader, filter.__smooth);
+        filter.__renderDirty = false;
+
+        var swap:BitmapData = bitmap;
+        bitmap = bitmap2;
+        bitmap2 = swap;
+      }
+      else
+      {
+        bitmap = FilterRenderer.__renderGpuFilter(filter, bitmap, bitmap2, bitmap3);
+      }
     }
+
+    renderer.__setBlendMode(NORMAL);
+
+    return bitmap;
+  }
+
+  /**
+   * Pool key packed into an Int so per-frame lookups do not build strings.
+   */
+  static inline function poolKey(width:Int, height:Int):Int
+  {
+    return (width << 16) | (height & 0xFFFF);
   }
 
   function getBitmap(width:Int, height:Int):BitmapData
   {
-    final id:String = Std.string(width) + 'x' + Std.string(height);
-    var bitmaps:Array<BitmapData> = bitmapPool.get(id) ?? [];
-    if (bitmaps.length < 1)
+    final id:Int = poolKey(width, height);
+    var bitmaps:Null<Array<BitmapData>> = bitmapPool.get(id);
+    if (bitmaps == null)
     {
-      var bitmap:BitmapData = new BitmapData(width, height, true, 0).toGPU();
-      bitmaps.push(bitmap);
+      bitmaps = [];
+      bitmapPool.set(id, bitmaps);
     }
-    var bitmap:Null<BitmapData> = bitmaps.shift();
-    if (bitmap == null) throw 'The bitmap is null???? :whattheshit:';
+    var pooled:Null<BitmapData> = bitmaps.pop();
+    var bitmap:BitmapData = pooled ?? new BitmapData(width, height, true, 0).toGPU();
     bitmap.__fillRect(bitmap.rect, 0, true);
-    bitmapPool.set(id, bitmaps);
     return bitmap;
   }
 
   function putBitmap(bitmap:BitmapData):Void
   {
-    final id:String = Std.string(bitmap.width) + 'x' + Std.string(bitmap.height);
-    var bitmaps:Array<BitmapData> = bitmapPool.get(id) ?? [];
+    final id:Int = poolKey(bitmap.width, bitmap.height);
+    var bitmaps:Null<Array<BitmapData>> = bitmapPool.get(id);
+    if (bitmaps == null)
+    {
+      bitmaps = [];
+      bitmapPool.set(id, bitmaps);
+    }
     if (!bitmaps.contains(bitmap)) bitmaps.push(bitmap);
-    bitmapPool.set(id, bitmaps);
   }
 
   /**
