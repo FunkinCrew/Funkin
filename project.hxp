@@ -810,6 +810,7 @@ class Project extends HXProject
 
     this.window.hardware = true;
     this.window.vsync = false;
+    this.window.depthBuffer = false;
     // force / allow high DPI
     this.window.allowHighDPI = FEATURE_HIGH_DPI.isEnabled(this);
 
