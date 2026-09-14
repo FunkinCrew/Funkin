@@ -521,7 +521,7 @@ class Assets implements ConsoleClass
   public static function getSound(assetPath:AssetPath):openfl.media.Sound
   {
     #if FEATURE_DEBUG_TRACY
-    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getSound($id)');
+    cpp.vm.tracy.TracyProfiler.zoneScoped('Assets.getSound(${assetPath.toString()})');
     #end
     if (assetPath == null) throw 'Input is not a valid AssetPath, did you call Paths.sound()?';
 
@@ -529,7 +529,7 @@ class Assets implements ConsoleClass
     if (sound != null) return sound;
 
     #if FEATURE_STRICT_ASSET_CACHING
-    throw 'Sound not cached, cannot load synchronously: $id';
+    throw 'Sound not cached, cannot load synchronously: ${assetPath.toString()}';
     #else
     if (!assetPath.exists())
     {
