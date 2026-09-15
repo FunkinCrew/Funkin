@@ -67,7 +67,7 @@
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
+      "ref": "334822cbd6cffbda6d847656b25aeb9ab79e06e0",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -199,7 +199,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "670698fb96a837d92449664a957bc1572f0bbd82",
+      "ref": "338edaa62dad20aa4980bb8533befb6c1a36bedd",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
