@@ -6,6 +6,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.ImageFileFormat;
 import lime.graphics.WebGL2RenderContext;
+import lime.graphics.BGFXRenderContext;
 import lime.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
@@ -101,6 +102,7 @@ class BitmapUtil
         final context:Context3D = FlxG.stage.context3D;
 
         final gl:WebGL2RenderContext = context.gl;
+        final bgfx:BGFXRenderContext = context.bgfx;
 
         final image:Image = new Image(
           new ImageBuffer(new UInt8Array(bitmap.width * bitmap.height * 4), bitmap.width, bitmap.height, 32),
@@ -116,10 +118,22 @@ class BitmapUtil
         var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
 
         context.setRenderToTexture(bitmap.__texture);
-        context.__flushGLFramebuffer();
-        context.__flushGLViewport();
+        context.__flushFramebuffer();
+        context.__flushViewport();
 
-        gl.readPixels(0, 0, bitmap.width, bitmap.height, bitmap.__texture.__format, gl.UNSIGNED_BYTE, image.buffer.data);
+        if (context.isBGFX)
+        {
+          // actually no clue if this will work just a shot in the dark...
+          var i = bgfx.readTexture(bitmap.__texture.__textureID, image.buffer.data);
+          // bgfx.readTexture is async and only returns after some frames
+          // so try getting in place by forcing some frames
+          while (bgfx.frame(0) < i)
+            Sys.sleep(0.05);
+        }
+        else if (context.isOpenGL)
+        {
+          gl.readPixels(0, 0, bitmap.width, bitmap.height, bitmap.__texture.__format, gl.UNSIGNED_BYTE, image.buffer.data);
+        }
 
         if (cacheRTT != null)
         {
