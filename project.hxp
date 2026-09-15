@@ -702,8 +702,7 @@ class Project extends HXProject
       'funkin.modding.install'
     ];
 
-    for (pack in nativePackages)
-      addHaxeMacro('haxe.macro.Compiler.addGlobalMetadata("$pack", "@:hscriptBaseCreated", true, true, false)');
+    for (pack in nativePackages) addHaxeMacro('haxe.macro.Compiler.addGlobalMetadata("$pack", "@:hscriptBaseCreated", true, true, false)');
   }
 
   /**
@@ -724,12 +723,31 @@ class Project extends HXProject
 
     if (isWindowsHost())
     {
-      postBuildCallbacks.push(new CLICommand("powershell",
-        ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", '$script.ps1', "-Target", target, "-Config", config, ".", outputDir]));
+      postBuildCallbacks.push(new CLICommand("powershell", [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        '$script.ps1',
+        "-Target",
+        target,
+        "-Config",
+        config,
+        ".",
+        outputDir
+      ]));
     }
     else
     {
-      postBuildCallbacks.push(new CLICommand("bash", ['$script.sh', "--target", target, "--config", config, ".", outputDir]));
+      postBuildCallbacks.push(new CLICommand("bash", [
+        '$script.sh',
+        "--target",
+        target,
+        "--config",
+        config,
+        ".",
+        outputDir
+      ]));
     }
   }
 
@@ -1229,9 +1247,10 @@ class Project extends HXProject
       setHaxedef("absolute-paths"); // Fix source locations so Tracy can see them
     }
 
-    if (FEATURE_MULTITHREADING.isEnabled(this)) {
-			setHaxedef("lime_threads");
-		}
+    if (FEATURE_MULTITHREADING.isEnabled(this))
+    {
+      setHaxedef("lime_threads");
+    }
   }
 
   /**
@@ -1552,9 +1571,10 @@ class Project extends HXProject
       addHaxelib('hxdiscord_rpc'); // Discord API
     }
 
-		if (FEATURE_MULTITHREADING.isEnabled(this)) {
-			addHaxelib('haxe-concurrent'); // Multithreading
-		}
+    if (FEATURE_MULTITHREADING.isEnabled(this))
+    {
+      addHaxelib('haxe-concurrent'); // Multithreading
+    }
 
     if (FEATURE_NEWGROUNDS.isEnabled(this))
     {
