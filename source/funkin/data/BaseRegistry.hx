@@ -125,13 +125,6 @@ abstract class BaseRegistry<T:(IRegistryEntry<J> & Constructible<EntryConstructo
     this.entries = [];
     this.scriptedEntryIds = [];
     #end
-
-    // Lazy initialization of singletons should let this get called,
-    // but we have this check just in case.
-    if (FlxG.game != null)
-    {
-      FlxG.console.registerObject('registry$registryId', this);
-    }
   }
 
   /**
