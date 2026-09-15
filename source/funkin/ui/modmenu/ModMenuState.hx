@@ -831,8 +831,8 @@ class ModMenuState extends MusicBeatState
     item.clipRect = null;
     transitionLayer.add(item);
     item.cancelFlight();
-    item.localX = worldX - transitionLayer.x;
-    item.localY = worldY - transitionLayer.y;
+    item.x = worldX - transitionLayer.x;
+    item.y = worldY - transitionLayer.y;
   }
 
   /**
@@ -847,8 +847,8 @@ class ModMenuState extends MusicBeatState
   {
     if (item == null || destinationList == null || transitionLayer == null) return;
 
-    var worldX:Float = transitionLayer.x + item.localX;
-    var worldY:Float = transitionLayer.y + item.localY;
+    var worldX:Float = transitionLayer.x + item.x;
+    var worldY:Float = transitionLayer.y + item.y;
 
     transitionLayer.remove(item);
 
@@ -858,8 +858,8 @@ class ModMenuState extends MusicBeatState
     destinationList.addModRawWithoutLayout(item, clamped);
 
     item.cancelFlight();
-    item.localX = worldX - destinationList.x;
-    item.localY = worldY - destinationList.y;
+    item.x = worldX - destinationList.x;
+    item.y = worldY - destinationList.y;
 
     if (incomingCount(destinationList) == 0)
     {
@@ -1296,7 +1296,7 @@ class ModMenuState extends MusicBeatState
       {
         fade.elapsed += elapsed;
         var t = Math.min(1, fade.elapsed / fade.duration);
-        fade.item.localAlpha = FlxEase.quadOut(t);
+        fade.item.alpha = FlxEase.quadOut(t);
         if (t >= 1) fadingItems.remove(fade);
       }
     }
@@ -1897,8 +1897,8 @@ class ModMenuState extends MusicBeatState
         final targetX:Float = TouchUtil.touch?.x - grabbedItem.width / 2;
         final targetY:Float = TouchUtil.touch?.y - grabbedItem.height / 2;
 
-        grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
-        grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
+        grabbedItem.x = MathUtil.smoothLerpPrecision(grabbedItem.x, targetX, elapsed, 0.5);
+        grabbedItem.y = MathUtil.smoothLerpPrecision(grabbedItem.y, targetY, elapsed, 0.5);
 
         if (!TouchUtil.pressed)
         {
@@ -2009,6 +2009,7 @@ class ModMenuState extends MusicBeatState
   #end
 
   var lastModIndex:Int = 0;
+
   function handleSelection():Void
   {
     FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
@@ -2035,28 +2036,30 @@ class ModMenuState extends MusicBeatState
     switch (selection)
     {
       case DisabledModList:
-        switch(oldSelection)
+        switch (oldSelection)
         {
           case OpenModsFolder:
-            if(lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
+            if (lastInput == 'up') disabledModItems.selectLastItem(lastSelectDir);
           case EnabledModList:
             var offset = (disabledModItems.length - 1) - (enabledModItems.length - 1);
 
-            if (disabledModItems.modItems.indexOf(disabledModItems.modItems[lastModIndex + offset]) == -1) disabledModItems.selectLastItem(lastSelectDir);
-            else disabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            if (disabledModItems.modItems.indexOf(
+              disabledModItems.modItems[lastModIndex + offset]
+            ) == -1) disabledModItems.selectLastItem(lastSelectDir); else disabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
           default:
             disabledModItems.selectFirstItem(lastSelectDir);
         }
       case EnabledModList:
-        switch(oldSelection)
+        switch (oldSelection)
         {
           case OpenModsFolder:
-            if(lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
+            if (lastInput == 'up') enabledModItems.selectLastItem(lastSelectDir);
           case DisabledModList:
             var offset = (enabledModItems.length - 1) - (disabledModItems.length - 1);
 
-            if(enabledModItems.modItems.indexOf(enabledModItems.modItems[lastModIndex + offset]) == -1) enabledModItems.selectLastItem(lastSelectDir);
-            else enabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
+            if (enabledModItems.modItems.indexOf(
+              enabledModItems.modItems[lastModIndex + offset]
+            ) == -1) enabledModItems.selectLastItem(lastSelectDir); else enabledModItems.selectItem(lastModIndex + offset, lastSelectDir);
           default:
             enabledModItems.selectFirstItem(lastSelectDir);
         }
@@ -2091,7 +2094,7 @@ class ModMenuState extends MusicBeatState
 
   function fadeItemIn(item:ModMenuItem, duration:Float = 0.5):Void
   {
-    item.localAlpha = 0;
+    item.alpha = 0;
     fadingItems.push({
       item: item,
       elapsed: 0,
@@ -2164,8 +2167,8 @@ class ModMenuState extends MusicBeatState
 
     if (!doFade)
     {
-      for (item in newDisabledItems) item.localAlpha = 1;
-      for (item in newEnabledItems) item.localAlpha = 1;
+      for (item in newDisabledItems) item.alpha = 1;
+      for (item in newEnabledItems) item.alpha = 1;
     }
 
     return newDisabledItems;
@@ -2226,7 +2229,7 @@ class ModMenuState extends MusicBeatState
 
       var item = new ModMenuItem(mod);
       if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
-      item.localAlpha = 0;
+      item.alpha = 0;
       disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
       newItems.push(item);
     }
@@ -2271,7 +2274,7 @@ class ModMenuState extends MusicBeatState
       if (enabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
 
       var item = new ModMenuItem(mod);
-      item.localAlpha = 0;
+      item.alpha = 0;
       enabledModItems.addModRawWithoutLayout(item, enabledModItems.modItems.length);
       newEnabledItems.push(item);
     }
@@ -2528,8 +2531,8 @@ class ModMenuState extends MusicBeatState
     var restY:Float = enabledModItems.getModItemYPos(index) + enabledModItems.scrollOffset;
 
     item.cancelFlight();
-    item.localX = ModMenuItemList.ITEM_X_OFFSET;
-    item.localY = restY;
+    item.x = ModMenuItemList.ITEM_X_OFFSET;
+    item.y = restY;
 
     var dir:Float = moveUp ? -1 : 1;
     item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY + dir * 14, 0.07, FlxEase.quadOut, () ->
