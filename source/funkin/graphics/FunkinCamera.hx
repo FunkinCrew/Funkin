@@ -61,8 +61,15 @@ class FunkinCamera extends FlxCamera
     #if FORCE_BLEND_SHADER
     return false;
     #else
-    @:privateAccess
-    return Context3DRenderer.__complexBlendsSupported ?? false;
+    if (FlxG.stage.context3D.isBGFX)
+    {
+      return true;
+    }
+    else
+    {
+      @:privateAccess
+      return Context3DRenderer.__complexBlendsSupported ?? false;
+    }
     #end
   }
 
@@ -176,7 +183,10 @@ class FunkinCamera extends FlxCamera
     ?smoothing:Bool = false,
     ?shader:FlxShader):Void
   {
-    var shouldUseShader:Bool = (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend);
+    var shouldUseShader:Bool =
+      (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend))
+        || SHADER_REQUIRED_BLEND_MODES.contains(blend)
+        && !FlxG.stage.context3D.isBGFX;
 
     // Fallback to the shader implementation if the device doesn't support `KHR_blend_equation_advanced`, or if
     // the specified blend mode requires the shader.
