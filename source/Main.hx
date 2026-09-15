@@ -76,7 +76,7 @@ class Main extends Sprite
 
     // Manually crash the game when using a software renderer in order to give a nicer error message.
     var context = stage.window.context.type;
-    if (context != WEBGL && context != OPENGL && context != OPENGLES)
+    if (context != WEBGL && context != OPENGL && context != OPENGLES && context != BGFX)
     {
       var tech:String = #if web 'WebGL' #elseif desktop 'OpenGL' #else 'OpenGL ES' #end;
       var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
@@ -207,9 +207,15 @@ class Main extends Sprite
     {
       case DebugDisplayMode.Off:
         nextMode = DebugDisplayMode.Simple;
+        lime.graphics.bgfx.BGFX.setDebug(0);
       case DebugDisplayMode.Simple:
+        lime.graphics.bgfx.BGFX.setDebug(0);
         nextMode = DebugDisplayMode.Advanced;
       case DebugDisplayMode.Advanced:
+        lime.graphics.bgfx.BGFX.setDebug(lime.graphics.bgfx.BGFX.DEBUG_STATS);
+        // trace('Render Texture memory: ' + lime.graphics.bgfx.BGFX.getStats().rtMemoryUsed);
+        // trace('texture memory: ' + lime.graphics.bgfx.BGFX.getStats().textureMemoryUsed);
+        // trace('GPU memory: ' + lime.graphics.bgfx.BGFX.getStats().gpuMemoryUsed);
         nextMode = DebugDisplayMode.Off;
     }
 

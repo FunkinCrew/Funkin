@@ -376,9 +376,9 @@ class DropShadowShader extends FlxShader
 
       vec3 applyHSBCEffect(vec3 color)
       {
-        vec3 bh = (brightness + color) * hueMatrix;
+        vec3 bh = mul((brightness + color), hueMatrix);
         vec3 c = (bh - 0.25) * contrast + 0.25;
-        vec3 s = c * saturationMatrix;
+        vec3 s = mul(c, saturationMatrix);
 
         return s;
       }
