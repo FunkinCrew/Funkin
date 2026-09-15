@@ -1763,7 +1763,7 @@ class ChartEditorDialogHandler
 
   static final EPSILON:Float = 0.01;
 
-  static function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  static function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
     // a VERY short timer to wait for the mouse position to update
     new FlxTimer().start(EPSILON, function(_)
@@ -1772,7 +1772,7 @@ class ChartEditorDialogHandler
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
-          handler.handler(path);
+          handler.handler(file.path);
           return;
         }
       }

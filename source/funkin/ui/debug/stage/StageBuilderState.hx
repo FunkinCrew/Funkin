@@ -92,11 +92,11 @@ class StageBuilderState extends MusicBeatState
     hudGrp.add(saveSceneBtn);
 
     #if desktop
-    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float)
+    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float)
     {
-      trace("DROPPED FILE FROM: " + Std.string(path));
+      trace("DROPPED FILE FROM: " + Std.string(file.path));
 
-      var fileName:String = path.split('\\').pop();
+      var fileName:String = file.path.split('\\').pop();
       var fileNameNoExt:String = fileName.split('.')[0];
 
       var newPath = './' + Paths.image('assets/ui/editors/stage-editor/' + fileNameNoExt);
@@ -104,11 +104,11 @@ class StageBuilderState extends MusicBeatState
       // trace(sys.io.File.getBytes(Std.string(path)).toString());
 
       // FlxG.bitmap.add('assets/preload/images/stageBuild/eltonJohn.png');
-      sys.io.File.copy(path, './' + Paths.image('assets/ui/editors/stage-editor/stage-temp-img'));
+      sys.io.File.copy(file.path, './' + Paths.image('assets/ui/editors/stage-editor/stage-temp-img'));
 
       var fo = sys.io.File.write(newPath);
 
-      fo.write(sys.io.File.getBytes(path));
+      fo.write(sys.io.File.getBytes(file.path));
 
       new FlxTimer().start(0.2, function(tmr)
       {

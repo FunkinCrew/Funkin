@@ -17,7 +17,7 @@ class FNFLoaderProvider
     onFNFMODOpen = new FlxTypedSignal<String->Void>();
 
     #if ios
-    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float):Void
+    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
     {
       final fileURL:Null<String> = lime.system.System.getHint('IOS_UIApplicationLaunchOptionsURLKey');
 

@@ -960,17 +960,19 @@ class ModMenuState extends MusicBeatState
     instance = null;
   }
 
-  public function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  public function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
-    if (StringTools.endsWith(path, '.zip'))
+    if (!allowInput) return;
+
+    if (StringTools.endsWith(file.path, '.zip'))
     {
-      var fileClean = StringTools.replace(path, '\\', '/');
-      var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
+      var fileClean = StringTools.replace(file.path, '\\', '/');
+      var fileName = StringTools.replace(file.path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
       var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
 
       try
       {
-        FileUtil.moveFile(path, destPath);
+        FileUtil.moveFile(file.path, destPath);
       }
       catch (e:Dynamic)
       {
@@ -981,9 +983,9 @@ class ModMenuState extends MusicBeatState
 
       highlightNewMod();
     }
-    else if (Path.isAbsolute(path) && FileUtil.directoryExists(path))
+    else if (Path.isAbsolute(file.path) && FileUtil.directoryExists(file.path))
     {
-      if (!FileUtil.pathExists(Path.join([path, PolymodConfig.modMetadataFile])))
+      if (!FileUtil.pathExists(Path.join([file.path, PolymodConfig.modMetadataFile])))
       {
         WindowUtil.showError('Failed to move folder', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
         return;
@@ -991,7 +993,10 @@ class ModMenuState extends MusicBeatState
 
       try
       {
-        FileUtil.copyDirectory(path, Path.join([PolymodHandler.MOD_FOLDER, Path.withoutDirectory(path)]));
+        FileUtil.copyDirectory(file.path, Path.join([
+          PolymodHandler.MOD_FOLDER,
+          Path.withoutDirectory(file.path)
+        ]));
       }
       catch (e:Dynamic)
       {

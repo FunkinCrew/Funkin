@@ -433,16 +433,16 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? '' : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float):Void
+    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
     {
       if (!allowInput || welcomeDialog != null) return;
 
-      var data:Bytes = FileUtil.readBytesFromPath(path);
+      var data:Bytes = FileUtil.readBytesFromPath(file.path);
 
       if (data != null)
       {
         objNameDialog = new NewObjDialog(this, data);
-        objNameDialog.bitmapName = new haxe.io.Path(path).file;
+        objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
         objNameDialog.showDialog();
 
         objNameDialog.onDialogClosed = function(_)
