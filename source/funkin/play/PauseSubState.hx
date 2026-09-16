@@ -849,7 +849,7 @@ class PauseSubState extends MusicBeatSubState
     }
     else if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.DELETE)
     {
-      // Reset the offset back to 0 quickly
+      // Reset the offset back to 0
 
       offset = 0;
 
