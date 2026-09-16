@@ -109,7 +109,7 @@ class BoilShader extends FlxGraphicsShader
       uv /= ratio;
       uv = vec2(_mod(uv.x, 1.0), _mod(uv.y, 1.0));
 
-      return texture2D_bilinear(tex, uv);;
+      return texture2D_bilinear(tex, uv);
     }
 
     void main()

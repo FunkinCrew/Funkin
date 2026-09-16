@@ -187,7 +187,11 @@ class WindowUtil
    * @param title The title text displayed in the window header.
    * @param buttons Optional list of custom button labels for the dialog.
    */
-  public static function alert(type:lime.ui.MessageBoxType = INFORMATION, ?message:String, ?title:String, ?buttons:Array<String>) {
+  public static function alert(type:lime.ui.MessageBoxType = INFORMATION,
+    ?message:String,
+    ?title:String,
+    ?buttons:Array<String>)
+  {
     @:privateAccess
     FlxG.sound?.onFocusLost();
 
@@ -210,14 +214,22 @@ class WindowUtil
    */
   public static function setVSyncMode(value:lime.ui.WindowVSyncMode):Void
   {
-    var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
+    if (value == OFF)
+    {
+      lime.graphics.bgfx.BGFX.reset(FlxG.stage.window.width, FlxG.stage.window.height, lime.graphics.bgfx.BGFX.RESET_NONE);
+    }
+    else
+    {
+      lime.graphics.bgfx.BGFX.reset(FlxG.stage.window.width, FlxG.stage.window.height, lime.graphics.bgfx.BGFX.RESET_VSYNC);
+    }
+    // var res:Bool = FlxG.stage.application.window.setVSyncMode(value);
 
     // SDL_GL_SetSwapInterval returns the value we assigned on success, https://wiki.libsdl.org/SDL2/SDL_GL_GetSwapInterval#return-value.
     // In lime, we can compare this to the original value to get a boolean.
-    if (!res)
-    {
-      trace('Failed to set VSync mode to ' + value);
-      FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
-    }
+    // if (!res)
+    // {
+    //   trace('Failed to set VSync mode to ' + value);
+    //   FlxG.stage.application.window.setVSyncMode(lime.ui.WindowVSyncMode.OFF);
+    // }
   }
 }

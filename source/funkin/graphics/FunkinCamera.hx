@@ -15,7 +15,7 @@ import funkin.graphics.shaders.RuntimeCustomBlendShader;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 
 using funkin.graphics.framebuffer.BitmapDataUtil;
 
@@ -45,7 +45,7 @@ using funkin.graphics.framebuffer.BitmapDataUtil;
 @:access(openfl.display3D.textures.TextureBase)
 @:access(flixel.graphics.FlxGraphic)
 @:access(flixel.graphics.frames.FlxFrame)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(openfl.geom.ColorTransform)
 @:access(funkin.graphics.framebuffer.FunkinBufferRenderer)
 class FunkinCamera extends FlxCamera
@@ -61,8 +61,15 @@ class FunkinCamera extends FlxCamera
     #if FORCE_BLEND_SHADER
     return false;
     #else
-    @:privateAccess
-    return OpenGLRenderer.__complexBlendsSupported ?? false;
+    if (FlxG.stage.context3D.isBGFX)
+    {
+      return true;
+    }
+    else
+    {
+      @:privateAccess
+      return Context3DRenderer.__complexBlendsSupported ?? false;
+    }
     #end
   }
 
@@ -176,7 +183,10 @@ class FunkinCamera extends FlxCamera
     ?smoothing:Bool = false,
     ?shader:FlxShader):Void
   {
-    var shouldUseShader:Bool = (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend);
+    var shouldUseShader:Bool =
+      (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend))
+        || SHADER_REQUIRED_BLEND_MODES.contains(blend)
+        && !FlxG.stage.context3D.isBGFX;
 
     // Fallback to the shader implementation if the device doesn't support `KHR_blend_equation_advanced`, or if
     // the specified blend mode requires the shader.
@@ -277,7 +287,7 @@ class FunkinCamera extends FlxCamera
     ?shader:FlxShader):FlxDrawQuadsItem
   {
     // Can't batch complex non-coherent blends, so always force a new batch
-    if (hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
+    if (hasKhronosExtension && !(Context3DRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
     {
       var itemToReturn = null;
 
@@ -367,7 +377,7 @@ class FunkinCamera extends FlxCamera
     // Can't batch complex non-coherent blends, so always force a new batch
     if (
       hasKhronosExtension
-      && !(OpenGLRenderer.__coherentBlendsSupported ?? false)
+      && !(Context3DRenderer.__coherentBlendsSupported ?? false)
       && KHR_BLEND_MODES.contains(blend)
     ) return getNewDrawTrianglesItem(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
 

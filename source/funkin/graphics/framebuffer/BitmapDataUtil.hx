@@ -6,7 +6,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
 import animate.internal.FilterRenderer;
 import flixel.math.FlxMatrix;
-import openfl.display.OpenGLRenderer;
+import openfl.display.Context3DRenderer;
 import flixel.FlxCamera;
 import openfl.Lib;
 import openfl.geom.Matrix;
@@ -17,23 +17,25 @@ import openfl.geom.ColorTransform;
  */
 @:nullSafety
 @:access(openfl.display.BitmapData)
+@:access(openfl.display3D.backends.bgfx.textures.TextureBase)
+@:access(openfl.display3D.backends.bgfx.Context3D)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
-@:access(openfl.display.OpenGLRenderer)
+@:access(openfl.display.Context3DRenderer)
 @:access(flixel.FlxCamera)
 @:access(openfl.display.Sprite)
 @:access(openfl.geom.ColorTransform)
 class BitmapDataUtil
 {
-  static var renderer(get, never):OpenGLRenderer;
-  static var _renderer:Null<OpenGLRenderer>;
+  static var renderer(get, never):Context3DRenderer;
+  static var _renderer:Null<Context3DRenderer>;
   static var _renderMatrix:FlxMatrix = new FlxMatrix();
 
-  static inline function get_renderer():OpenGLRenderer
+  static inline function get_renderer():Context3DRenderer
   {
     if (_renderer == null)
     {
-      _renderer = new OpenGLRenderer(FlxG.stage.context3D);
+      _renderer = new Context3DRenderer(FlxG.stage.context3D);
       _renderer.__worldTransform = new Matrix();
       _renderer.__worldColorTransform = new ColorTransform();
     }

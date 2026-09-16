@@ -61,19 +61,19 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "ba8e83422f85617514b8ad471c27b071dcafc382",
+      "ref": "f523796f80127a7f174965c3320e7fa009b29dd1",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
+      "ref": "334822cbd6cffbda6d847656b25aeb9ab79e06e0",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "baaced6c229810354e9573737efccc1c01eaea77",
+      "ref": "b9951a903d8eb71b0be82ddb786898bdc5d34cb9",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {
@@ -163,8 +163,9 @@
     },
     {
       "name": "hxvlc",
-      "type": "haxelib",
-      "version": "2.3.1"
+      "type": "git",
+      "ref": "999697d64746065f0472cc39fb3cfb8014f6531c",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
       "name": "json2object",
@@ -186,7 +187,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "965995aa47e81320229643668db0b184bcc2bf7c",
+      "ref": "0e12678a731942306f479a4f3ff92c57d13bb814",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -198,7 +199,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "5645bbbb0ccaab17015d8da80a07eec1d6a587f3",
+      "ref": "338edaa62dad20aa4980bb8533befb6c1a36bedd",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
