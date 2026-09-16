@@ -847,6 +847,18 @@ class PauseSubState extends MusicBeatSubState
 
       return true;
     }
+    else if (FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.DELETE)
+    {
+      // Reset the offset back to 0 quickly
+
+      offset = 0;
+
+      offsetText.text = 'Global Offset: ${Std.int(offset)}ms';
+
+      Preferences.globalOffset = Std.int(offset);
+
+      return true;
+    }
     else
     {
       // Reset the fast offset if the user is not holding SHIFT.
