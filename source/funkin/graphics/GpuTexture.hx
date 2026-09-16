@@ -16,7 +16,7 @@ class GpuTexture
   }
 
   /**
-   * Makes the renderer stop trusting what it remembers about the card.
+   * Makes the renderer stop trusting what it remembers about the card's buffers and textures.
    */
   public static function forgetBindings(context:Context3D):Void
   {
@@ -34,6 +34,31 @@ class GpuTexture
       state.__currentGLTextureCubeMap = null;
       state.program = null;
       state.shader = null;
+    }
+  }
+
+  /**
+   * Makes the renderer stop trusting what it remembers about the card's blend, cull, and depth test states.
+   */
+  public static function forgetState(context:Context3D, blendOn:Bool, cullOn:Bool, depthTestOn:Bool):Void
+  {
+    if (context == null) return;
+
+    @:privateAccess
+    {
+      var state = context.__contextState;
+      if (state == null) return;
+
+      state.blendSourceRGBFactor = cast null;
+      state.blendDestinationRGBFactor = cast null;
+      state.blendSourceAlphaFactor = cast null;
+      state.blendDestinationAlphaFactor = cast null;
+      state.culling = cast null;
+      state.depthCompareMode = cast null;
+      state.depthMask = true;
+      state.__enableGLBlend = blendOn;
+      state.__enableGLCullFace = cullOn;
+      state.__enableGLDepthTest = depthTestOn;
     }
   }
 }
