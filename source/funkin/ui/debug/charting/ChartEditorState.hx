@@ -4186,6 +4186,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectionBoxStartPos != null)
     {
       if (selectionBoxSprite != null) selectionBoxSprite.visible = false;
+      selectionBoxStartPos.put();
       selectionBoxStartPos = null;
     }
 
@@ -4882,7 +4883,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
     {
-      var currentScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+      var currentScreenPos = FlxPoint.weak(FlxG.mouse.x, FlxG.mouse.y);
       var distance = currentScreenPos - scrollAnchorScreenPos;
 
       var verticalDistance = distance.y;
@@ -5248,11 +5249,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (scrollAnchorScreenPos == null)
       {
-        scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+        scrollAnchorScreenPos = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
         selectionBoxStartPos = null;
       }
       else
       {
+        scrollAnchorScreenPos.put();
         scrollAnchorScreenPos = null;
       }
     }
@@ -5280,6 +5282,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (scrollAnchorScreenPos != null)
       {
+        scrollAnchorScreenPos.put();
         scrollAnchorScreenPos = null;
       }
       else
@@ -5300,13 +5303,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
           {
             // Clicked note preview
-            notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+            notePreviewScrollAreaStartPos = FlxPoint.get(FlxG.mouse.viewX, FlxG.mouse.viewY);
           }
         }
         else if (!isCursorOverHaxeUI && FlxG.keys.pressed.SHIFT)
         {
           trace('Started selection box at (${FlxG.mouse.viewX}, ${FlxG.mouse.viewY})');
-          selectionBoxStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          selectionBoxStartPos = FlxPoint.get(FlxG.mouse.viewX, FlxG.mouse.viewY);
           // Drawing selection box.
           targetCursorMode = Crosshair;
         }
@@ -5326,6 +5329,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (notePreviewScrollAreaStartPos != null && FlxG.mouse.released)
     {
+      notePreviewScrollAreaStartPos.put();
       notePreviewScrollAreaStartPos = null;
       notePreviewPlayHeadDragging = false;
 
@@ -5458,6 +5462,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
 
           // Clear the selection box.
+          selectionBoxStartPos.put();
           selectionBoxStartPos = null;
           setSelectionBoxBounds();
         }
@@ -5493,6 +5498,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else if (FlxG.mouse.justReleased)
       {
         // Clear the selection box.
+        selectionBoxStartPos.put();
         selectionBoxStartPos = null;
         setSelectionBoxBounds();
 

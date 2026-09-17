@@ -532,7 +532,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getGirlfriendPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.gf.position[0], _data.characters.gf.position[1]);
+    return FlxPoint.weak(_data.characters.gf.position[0], _data.characters.gf.position[1]);
   }
 
   /**
@@ -541,7 +541,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getBoyfriendPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.bf.position[0], _data.characters.bf.position[1]);
+    return FlxPoint.weak(_data.characters.bf.position[0], _data.characters.bf.position[1]);
   }
 
   /**
@@ -550,7 +550,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getDadPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.dad.position[0], _data.characters.dad.position[1]);
+    return FlxPoint.weak(_data.characters.dad.position[0], _data.characters.dad.position[1]);
   }
 
   /**

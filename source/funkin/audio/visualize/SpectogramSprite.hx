@@ -23,7 +23,10 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
   public var daHeight:Float = FlxG.height;
   public var vis:VisShit;
 
-  public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?amnt:Int = 500)
+  public function new(daSound:FlxSound,
+    ?col:FlxColor = FlxColor.WHITE,
+    ?height:Float = 720,
+    ?amnt:Int = 500)
   {
     super();
 
@@ -88,7 +91,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
       var samplesToGen:Int = Std.int(sampleRate * seconds);
       var startingSample:Int = Std.int(FlxMath.remapToRange(start, 0, vis.snd.length, 0, numSamples));
 
-      var prevLine:FlxPoint = new FlxPoint();
+      var prevX:Float = 0;
+      var prevY:Float = 0;
 
       for (i in 0...group.members.length)
       {
@@ -97,16 +101,19 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
         var swagheight:Int = 200;
 
-        group.members[i].x = prevLine.x;
-        group.members[i].y = prevLine.y;
+        group.members[i].x = prevX;
+        group.members[i].y = prevY;
 
-        prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
-        prevLine.y = (i / group.members.length * daHeight) + y;
+        prevX = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
+        prevY = (i / group.members.length * daHeight) + y;
 
-        var line = FlxPoint.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+        var dx:Float = prevX - group.members[i].x;
+        var dy:Float = prevY - group.members[i].y;
 
-        group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
-        group.members[i].angle = line.degrees;
+        var length:Float = Math.sqrt(dx * dx + dy * dy);
+
+        group.members[i].setGraphicSize(Std.int(Math.max(length, 1)), 1);
+        group.members[i].angle = Math.atan2(dy, dx) * 180 / Math.PI;
       }
 
       wavOptimiz = 1; // hard set wavOptimiz to 1 so its a pure thing
@@ -168,8 +175,9 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
         }
 
         var freqShit = vis.funnyFFT(fftSamples);
-        var prevLine:FlxPoint = new FlxPoint();
         var swagheight:Int = 200;
+        var prevX:Float = 0;
+        var prevY:Float = 0;
 
         for (i in 0...group.members.length)
         {
@@ -185,8 +193,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           var remappedFreq:Int = Std.int(FlxMath.remapToRange(hzPicker, 0, 10000, 0, freqShit[0].length - 1));
 
-          group.members[i].x = prevLine.x;
-          group.members[i].y = prevLine.y;
+          group.members[i].x = prevX;
+          group.members[i].y = prevY;
 
           var freqPower:Float = 0;
 
@@ -195,10 +203,10 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
           freqPower /= freqShit.length;
           var freqIDK:Float = FlxMath.remapToRange(freqPower, 0, 0.000005, 0, 50);
 
-          prevLine.x = (freqIDK * swagheight / 2 + swagheight / 2) + x;
-          prevLine.y = (i / group.members.length * daHeight) + y;
+          prevX = (freqIDK * swagheight / 2 + swagheight / 2) + x;
+          prevY = (i / group.members.length * daHeight) + y;
 
-          var line = FlxPoint.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+          var line = FlxPoint.get(prevX - group.members[i].x, prevY - group.members[i].y);
 
           // dont draw a line until i figure out a nicer way to view da spikes and shit idk lol!
         }
@@ -235,8 +243,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
         wavOptimiz = 8;
 
         var i = remappedShit;
-        var prevLine:FlxPoint = new FlxPoint();
-
+        var prevX:Float = 0;
+        var prevY:Float = 0;
         var swagheight:Int = 200;
 
         for (sample in remappedShit...remappedShit + lengthOfShit)
@@ -247,12 +255,12 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
           var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
 
-          group.members[Std.int(remappedSample)].x = prevLine.x;
-          group.members[Std.int(remappedSample)].y = prevLine.y;
-          prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
-          prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
+          group.members[Std.int(remappedSample)].x = prevX;
+          group.members[Std.int(remappedSample)].y = prevY;
+          prevX = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
+          prevY = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
 
-          var line = FlxPoint.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
+          var line = FlxPoint.get(prevX - group.members[Std.int(remappedSample)].x, prevY - group.members[Std.int(remappedSample)].y);
 
           group.members[Std.int(remappedSample)].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
           group.members[Std.int(remappedSample)].angle = line.degrees;

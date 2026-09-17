@@ -97,7 +97,7 @@ class BaseCharacter extends Bopper
   {
     var xPos = (width / 2); // Horizontal center
     var yPos = (height); // Vertical bottom
-    return new FlxPoint(xPos, yPos);
+    return FlxPoint.weak(xPos, yPos);
   }
 
   /**
@@ -108,7 +108,7 @@ class BaseCharacter extends Bopper
 
   function get_cornerPosition():FlxPoint
   {
-    return new FlxPoint(x, y);
+    return FlxPoint.weak(x, y);
   }
 
   function set_cornerPosition(value:FlxPoint):FlxPoint
@@ -132,7 +132,7 @@ class BaseCharacter extends Bopper
 
   function get_feetPosition():FlxPoint
   {
-    return new FlxPoint(x + characterOrigin.x, y + characterOrigin.y);
+    return FlxPoint.weak(x + characterOrigin.x, y + characterOrigin.y);
   }
 
   /**
@@ -141,7 +141,7 @@ class BaseCharacter extends Bopper
    *
    * Set the position of this rather than reassigning it, so that anything referencing it will not be affected.
    */
-  public var cameraFocusPoint(default, null):FlxPoint = new FlxPoint(0, 0);
+  public var cameraFocusPoint(default, null):FlxPoint = FlxPoint.get(0, 0);
 
   /**
    * If the x position changes, other than via changing the animation offset,
@@ -366,7 +366,8 @@ class BaseCharacter extends Bopper
     // Calculate the camera focus point
     var charCenterX = this.originalPosition.x + this.width / 2;
     var charCenterY = this.originalPosition.y + this.height / 2;
-    this.cameraFocusPoint = new FlxPoint(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
+    if (this.cameraFocusPoint == null) this.cameraFocusPoint = FlxPoint.get();
+    this.cameraFocusPoint.set(charCenterX + _data.cameraOffsets[0], charCenterY + _data.cameraOffsets[1]);
   }
 
   public function getHealthIconId():String
@@ -583,7 +584,7 @@ class BaseCharacter extends Bopper
    */
   public function playNoteSingAnimation(noteData:SongNoteData, judgement:Null<String> = null, comboCount:Int = 0):Void
   {
-     curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
+    curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
     // Let the character naturally transition back to their idle/dance animation
     // if the notekind is set to noanim.
     if (curNoteKind != null && curNoteKind.noanim) return;
@@ -792,6 +793,12 @@ class BaseCharacter extends Bopper
   public function getDeathQuote():Null<String>
   {
     return null;
+  }
+
+  override function destroy():Void
+  {
+    cameraFocusPoint.put();
+    super.destroy();
   }
 
   static function log(message:String):Void

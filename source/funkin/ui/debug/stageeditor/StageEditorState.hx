@@ -752,7 +752,7 @@ class StageEditorState extends UIState
           ];
         }
 
-        var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
+        var posBros = FlxPoint.weak(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
         selectedSprite.x = (Math.floor(posBros.x) - Math.floor(posBros.x) % moveStep);
         selectedSprite.y = (Math.floor(posBros.y) - Math.floor(posBros.y) % moveStep);
       }
