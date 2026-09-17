@@ -3133,7 +3133,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function calculateNotePreviewViewportBounds():FlxRect
   {
-    var bounds:FlxRect = new FlxRect();
+    var bounds:FlxRect = FlxRect.weak();
 
     // Return 0, 0, 0, 0 if the note preview doesn't exist for some reason.
     if (notePreview == null) return bounds;
@@ -5485,7 +5485,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
 
           // Render the selection box, and keep the rendered graphic clamped to the size of the screen
-          var selectionRect:FlxRect = new FlxRect();
+          var selectionRect:FlxRect = FlxRect.weak();
           selectionRect.x = Math.min(FlxG.mouse.viewX, selectionBoxStartPos.x);
           selectionRect.y = Math.min(Math.max(0, selectionBoxStartPos.y), FlxG.mouse.viewY);
           selectionRect.width = Math.abs(FlxG.mouse.viewX - selectionBoxStartPos.x);
