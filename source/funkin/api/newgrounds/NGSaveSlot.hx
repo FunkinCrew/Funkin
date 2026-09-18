@@ -52,7 +52,7 @@ class NGSaveSlot
    * Saves `data` to the newgrounds save slot.
    * @param data The raw save data.
    */
-  public function save(data:RawSaveData):Void
+  public function save(data:RawSaveData, ?onSuccess:Void->Void, ?onError:Void->Void):Void
   {
     var encodedData:String = haxe.Serializer.run(data);
 
@@ -64,9 +64,12 @@ class NGSaveSlot
         {
           case SUCCESS:
             trace(' NEWGROUNDS '.bold().bg_orange() + ' Successfully saved save data to save slot!');
+            if (onSuccess != null) onSuccess();
           case FAIL(error):
             trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to save data to save slot!');
             trace(error);
+
+            if (onError != null) onError();
         }
       });
     }
@@ -74,6 +77,8 @@ class NGSaveSlot
     {
       trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to save data to save slot!');
       trace(error);
+      
+      if (onError != null) onError();
     }
   }
 
@@ -146,12 +151,16 @@ class NGSaveSlot
     }
   }
 
-  public function checkSlot():Void
+  public function checkSlot(onFinish:(isNull:Bool, isEmpty:Bool)->Void):Void
   {
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Checking save slot with the ID of ${ngSaveSlot?.id}...');
 
-    trace(' Is null? ${ngSaveSlot == null}');
-    trace(' Is empty? ${ngSaveSlot?.isEmpty() ?? false}');
+    var isNull:Bool = ngSaveSlot == null;
+    var isEmpty:Bool = ngSaveSlot?.isEmpty() ?? false;
+    trace(' Is null? $isNull');
+    trace(' Is empty? $isEmpty');
+
+    if (onFinish != null) onFinish(isNull, isEmpty);
   }
 }
 #end
