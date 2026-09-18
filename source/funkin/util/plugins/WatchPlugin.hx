@@ -26,6 +26,7 @@ class WatchPlugin extends FlxBasic
   {
     super.update(elapsed);
 
+    #if FLX_DEBUG
     var stateClassName = Type.getClassName(Type.getClass(FlxG.state));
     FlxG.watch.addQuick('currentState', stateClassName);
     var subStateClassNames = [];
@@ -49,6 +50,7 @@ class WatchPlugin extends FlxBasic
     FlxG.watch.addQuick('currentMeasureTime', Conductor.instance.currentMeasureTime);
     FlxG.watch.addQuick('currentBeatTime', Conductor.instance.currentBeatTime);
     FlxG.watch.addQuick('currentStepTime', Conductor.instance.currentStepTime);
+    #end
   }
 
   override public function destroy():Void
