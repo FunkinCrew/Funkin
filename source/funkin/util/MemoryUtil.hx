@@ -132,6 +132,18 @@ class MemoryUtil
   }
 
   /**
+   * @return Bytes handed out by the collector since its last collection.
+   */
+  public static function getGCAllocatedSinceCollect():Float
+  {
+    #if cpp
+    return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_CURRENT);
+    #else
+    return 0;
+    #end
+  }
+
+  /**
    * Enable garbage collection if it was previously disabled.
    */
   public static function enable():Void

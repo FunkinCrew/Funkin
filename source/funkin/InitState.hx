@@ -300,7 +300,9 @@ class InitState extends FlxState
       #if !mobile
       funkin.util.plugins.VolumePlugin.initialize();
       #end
+      #if FLX_DEBUG
       funkin.util.plugins.WatchPlugin.initialize();
+      #end
       #if FEATURE_TOUCH_CONTROLS
       funkin.util.plugins.TouchPointerPlugin.initialize();
       funkin.mobile.input.ControlsHandler.initInputTrackers();
