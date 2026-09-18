@@ -1860,6 +1860,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     // Default to the character ID if the array is null, but NOT if the array is empty.
     buildVocal(currentCharactersData.playerVocals ?? [currentCharactersData.player]);
     buildVocal(currentCharactersData.opponentVocals ?? [currentCharactersData.opponent]);
+    if (currentVocals.length == 0) // Try to load legacy vocals if none are loaded
+    {
+      buildVocal(['']);
+    }
 
     trace('    Instrumental:' + (currentInstrumental != null ? ' Loaded' : ' Missing'));
     trace('    Vocals: ' + currentVocals.length + ' loaded');
