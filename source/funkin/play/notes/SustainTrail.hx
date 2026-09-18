@@ -59,6 +59,12 @@ class SustainTrail extends FlxSprite
   public var scoreable:Bool = true;
 
   /**
+   * Used by PlayState to track how much display score the held note has given.
+   * Does not influence the actual score; only the score shown while holding the note.
+   */
+  public var appliedScore:Float = 0;
+
+  /**
    * The Y Offset of the note.
    */
   public var yOffset:Float = 0.0;
@@ -79,6 +85,16 @@ class SustainTrail extends FlxSprite
    * Set to `true` after handling additional logic for missing notes.
    */
   public var handledMiss:Bool = false;
+
+  /**
+   * Set to `true` when the user successfully exhausts the hold, or if they let go too early.
+   */
+  public var endedNote:Bool = false;
+
+  /**
+   * Set to `true` after handling additional logic for completing/dropping holds.
+   */
+  public var handledEnding:Bool = false;
 
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
@@ -556,10 +572,12 @@ class SustainTrail extends FlxSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;
     missedNote = false;
+    endedNote = false;
   }
 
   override public function revive():Void
@@ -571,11 +589,14 @@ class SustainTrail extends FlxSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;
     missedNote = false;
     handledMiss = false;
+    endedNote = false;
+    handledEnding = false;
   }
 
   override public function destroy():Void
