@@ -192,7 +192,7 @@ class TimelineShader extends FlxShader
       int neg = 0;
       if (num_i < 0) {
         if (x == 0) return print_char(45, x, u);
-        num_i = abs(num_i);
+        num_i = -num_i;
         neg = 1;
       }
       int temp = num_i;
@@ -211,7 +211,7 @@ class TimelineShader extends FlxShader
         if (i >= target_digit_idx) break;
         divisor *= 10;
       }
-      int current_digit = (num_i / divisor) % 10;
+      int current_digit = (num_i / divisor) - (num_i / (divisor * 10)) * 10;
       return print_char(shift + current_digit, x, u);
     }\n" + "uniform float areaWidth;
     uniform float areaHeight;
