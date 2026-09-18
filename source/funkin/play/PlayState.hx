@@ -316,6 +316,18 @@ class PlayState extends MusicBeatSubState
   public var currentCameraZoom:Float = FlxCamera.defaultZoom;
 
   /**
+   * The target camera zoom level.
+   */
+  public var requiredZoom:Float = FlxCamera.defaultZoom;
+
+  /**
+   * Decay rate used when interpolating currentCameraZoom toward requiredZoom
+   * Lower values = faster interpolation.
+   * Higher values = slower interpolation.
+   */
+  public var cameraZoomDecayRate:Float = 0.95;
+
+  /**
    * Multiplier for currentCameraZoom for camera bops.
    * Lerped back to 1.0x every frame.
    */
@@ -1243,8 +1255,19 @@ class PlayState extends MusicBeatSubState
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
+    if (requiredZoom != currentCameraZoom && (cameraZoomTween == null || !cameraZoomTween.active))
+    {
+      final zoomDt:Float = elapsed * 60.0;
+
+      currentCameraZoom = FlxMath.lerp(requiredZoom, currentCameraZoom, Math.pow(cameraZoomDecayRate, zoomDt));
+    }
+    else
+    {
+      requiredZoom = currentCameraZoom;
+    }
+
     var decayRate:Float = 0.95;
-    var dt:Float = elapsed * 60; //
+    var dt:Float = elapsed * 60;
 
     if (subState == null && cameraZoomRate > 0.0)
     {
@@ -2130,6 +2153,7 @@ class PlayState extends MusicBeatSubState
     if (isMinimalMode) return;
     // Apply camera zoom level from stage data.
     currentCameraZoom = stageZoom;
+    requiredZoom = currentCameraZoom;
     FlxG.camera.zoom = currentCameraZoom;
 
     // Reset bop multiplier.
@@ -4134,6 +4158,7 @@ class PlayState extends MusicBeatSubState
     // Direct mode: Set zoom directly.
     // Stage mode: Set zoom as a multiplier of the current stage's default zoom.
     var targetZoom = zoom * (direct ? FlxCamera.defaultZoom : stageZoom);
+    requiredZoom = targetZoom;
 
     if (duration == 0)
     {
