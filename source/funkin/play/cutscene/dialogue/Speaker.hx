@@ -306,6 +306,10 @@ class Speaker extends FunkinSprite implements IDialogueScriptedClass implements 
     this.kill();
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onScriptEvent(event:ScriptEvent):Void
   {
   }
