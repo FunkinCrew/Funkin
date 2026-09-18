@@ -39,7 +39,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     this.parent = parent;
     this.instrumentalIds = instIds;
 
-    capsuleMenuBG = FunkinSprite.createSparrow(0, 0, 'ui/freeplay/interface/freeplay-capsule/box-inst');
+    capsuleMenuBG = new FunkinSprite().loadSparrow('ui/freeplay/interface/freeplay-capsule/box-inst');
 
     capsuleMenuBG.animation.addByPrefix('open', 'open0', 24, false);
     capsuleMenuBG.animation.addByPrefix('idle', 'idle0', 24, true);

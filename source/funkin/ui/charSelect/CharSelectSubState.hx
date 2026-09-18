@@ -160,7 +160,10 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     // Mr. Static also needs some caching...
-    CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/locked', {filterQuality: LOW, cacheOnLoad: true});
+    CharSelectAtlasHandler.loadAtlas('ui/character-select/characters/locked', {
+      filterQuality: LOW,
+      cacheOnLoad: true
+    });
   }
 
   override public function create():Void
@@ -180,7 +183,7 @@ class CharSelectSubState extends MusicBeatSubState
     bg.scrollFactor.set(0.1, 0.1);
     add(bg);
 
-    var crowd:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize, 0, 'ui/character-select/interface/crowd', {
+    var crowd:FunkinSprite = new FunkinSprite(cutoutSize, 0).loadTextureAtlas('ui/character-select/interface/crowd', {
       applyStageMatrix: true
     });
     crowd.anim.addBySymbol('wholeTimeline', crowd.getDefaultSymbol(), crowd.library.frameRate);
@@ -188,7 +191,7 @@ class CharSelectSubState extends MusicBeatSubState
     crowd.scrollFactor.set(0.3, 0.3);
     add(crowd);
 
-    var stageSpr:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 2, 1, 'ui/character-select/interface/char-select-stage', {
+    var stageSpr:FunkinSprite = new FunkinSprite(cutoutSize - 2, 1).loadTextureAtlas('ui/character-select/interface/char-select-stage', {
       applyStageMatrix: true
     });
     stageSpr.anim.addBySymbol('wholeTimeline', stageSpr.getDefaultSymbol(), stageSpr.library.frameRate);
@@ -211,7 +214,11 @@ class CharSelectSubState extends MusicBeatSubState
     add(barthing);
 
     barthing.y += 80;
-    FlxTween.tween(barthing, {y: barthing.y - 80}, 1.3, {ease: FlxEase.expoOut});
+    FlxTween.tween(barthing, {
+      y: barthing.y - 80
+    }, 1.3, {
+      ease: FlxEase.expoOut
+    });
 
     var charLight:FunkinSprite = new FunkinSprite(cutoutSize + 800, 250);
     charLight.loadGraphic(Paths.image('ui/character-select/interface/char-light'));
@@ -255,7 +262,7 @@ class CharSelectSubState extends MusicBeatSubState
       setCursorPosition(DEFAULT_CURSOR_INDEX, true);
     }
 
-    var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, 'ui/character-select/interface/speakers', {
+    var speakers:FunkinSprite = new FunkinSprite(cutoutSize - 10, 0).loadTextureAtlas('ui/character-select/interface/speakers', {
       applyStageMatrix: true
     });
     speakers.anim.addBySymbol('wholeTimeline', speakers.getDefaultSymbol(), speakers.library.frameRate);
@@ -282,16 +289,28 @@ class CharSelectSubState extends MusicBeatSubState
     add(dipshitBacking);
 
     dipshitBacking.y += 210;
-    FlxTween.tween(dipshitBacking, {y: dipshitBacking.y - 210}, 1.1, {ease: FlxEase.expoOut});
+    FlxTween.tween(dipshitBacking, {
+      y: dipshitBacking.y - 210
+    }, 1.1, {
+      ease: FlxEase.expoOut
+    });
 
     chooseDipshit.loadGraphic(Paths.image('ui/character-select/interface/choose-your-dipshit'));
     add(chooseDipshit);
 
     chooseDipshit.y += 200;
-    FlxTween.tween(chooseDipshit, {y: chooseDipshit.y - 200}, 1, {ease: FlxEase.expoOut});
+    FlxTween.tween(chooseDipshit, {
+      y: chooseDipshit.y - 200
+    }, 1, {
+      ease: FlxEase.expoOut
+    });
 
     dipshitBlur.y += 220;
-    FlxTween.tween(dipshitBlur, {y: dipshitBlur.y - 220}, 1.2, {ease: FlxEase.expoOut});
+    FlxTween.tween(dipshitBlur, {
+      y: dipshitBlur.y - 220
+    }, 1.2, {
+      ease: FlxEase.expoOut
+    });
 
     chooseDipshit.scrollFactor.set();
     dipshitBacking.scrollFactor.set();
@@ -302,7 +321,11 @@ class CharSelectSubState extends MusicBeatSubState
 
     final initialMidpointY:Float = nametag.midpoint.y;
     nametag.midpoint.y += 200;
-    FlxTween.tween(nametag.midpoint, {y: initialMidpointY}, 1, {ease: FlxEase.expoOut});
+    FlxTween.tween(nametag.midpoint, {
+      y: initialMidpointY
+    }, 1, {
+      ease: FlxEase.expoOut
+    });
 
     nametag.scrollFactor.set();
 
@@ -359,7 +382,11 @@ class CharSelectSubState extends MusicBeatSubState
     for (index => member in grpIcons.members)
     {
       member.y += 300;
-      FlxTween.tween(member, {y: member.y - 300}, 1, {ease: FlxEase.expoOut});
+      FlxTween.tween(member, {
+        y: member.y - 300
+      }, 1, {
+        ease: FlxEase.expoOut
+      });
     }
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(CharSelectSubState, ['curChar', 'grpXSpread', 'grpYSpread']));
@@ -384,7 +411,9 @@ class CharSelectSubState extends MusicBeatSubState
       backButton.cameras = [FlxG.camera];
     }
 
-    FlxTween.tween(backButton, {x: FlxG.width - 230}, 0.5, {
+    FlxTween.tween(backButton, {
+      x: FlxG.width - 230
+    }, 0.5, {
       ease: FlxEase.expoOut,
       onComplete: (_) ->
       {
@@ -397,7 +426,11 @@ class CharSelectSubState extends MusicBeatSubState
     transitionGradient.scale.set(1280, 1);
     transitionGradient.flipY = true;
     transitionGradient.updateHitbox();
-    FlxTween.tween(transitionGradient, {y: -720}, 1, {ease: FlxEase.expoOut});
+    FlxTween.tween(transitionGradient, {
+      y: -720
+    }, 1, {
+      ease: FlxEase.expoOut
+    });
     add(transitionGradient);
 
     camFollow.screenCenter();
@@ -410,7 +443,9 @@ class CharSelectSubState extends MusicBeatSubState
         FlxG.camera.filtersEnabled = false;
       }
     });
-    FlxTween.tween(camFollow, {y: camFollow.y + 150}, 1.5, {
+    FlxTween.tween(camFollow, {
+      y: camFollow.y + 150
+    }, 1.5, {
       ease: FlxEase.expoOut,
       onComplete: function(_)
       {
@@ -693,20 +728,50 @@ class CharSelectSubState extends MusicBeatSubState
     #if FEATURE_TOUCH_CONTROLS
     if (backButton != null)
     {
-      FlxTween.tween(backButton, {alpha: 0}, 0.2);
+      FlxTween.tween(backButton, {
+        alpha: 0
+      }, 0.2);
     }
     #end
 
-    FlxTween.tween(cursors, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    FlxTween.tween(cursors, {
+      alpha: 0
+    }, 0.8, {
+      ease: FlxEase.expoOut
+    });
 
-    FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
-    FlxTween.tween(nametag.midpoint, {y: nametag.midpoint.y + 80}, 0.8, {ease: FlxEase.backIn});
-    FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
-    FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
-    FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
+    FlxTween.tween(barthing, {
+      y: barthing.y + 80
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
+    FlxTween.tween(nametag.midpoint, {
+      y: nametag.midpoint.y + 80
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
+    FlxTween.tween(dipshitBacking, {
+      y: dipshitBacking.y + 210
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
+    FlxTween.tween(chooseDipshit, {
+      y: chooseDipshit.y + 200
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
+    FlxTween.tween(dipshitBlur, {
+      y: dipshitBlur.y + 220
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
     for (index => member in grpIcons.members)
     {
-      FlxTween.tween(member, {y: member.y + 300}, 0.8, {ease: FlxEase.backIn});
+      FlxTween.tween(member, {
+        y: member.y + 300
+      }, 0.8, {
+        ease: FlxEase.backIn
+      });
     }
     FlxG.camera.follow(camFollow, LOCKON);
     // going to freeplay so fast makes the fade effects and the camera to bug, that's why we cancel the tweens
@@ -714,10 +779,18 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.cancelTweensOf(fadeShader);
     FlxTween.cancelTweensOf(camFollow);
 
-    FlxTween.tween(transitionGradient, {y: -150}, 0.8, {ease: FlxEase.backIn});
+    FlxTween.tween(transitionGradient, {
+      y: -150
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
     FlxG.camera.filtersEnabled = true;
-    fadeShader.fade(1.0, 0, 0.8, {ease: FlxEase.quadIn});
-    FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8, {
+    fadeShader.fade(1.0, 0, 0.8, {
+      ease: FlxEase.quadIn
+    });
+    FlxTween.tween(camFollow, {
+      y: camFollow.y - 150
+    }, 0.8, {
       ease: FlxEase.backIn,
       onComplete: function(_)
       {
@@ -877,11 +950,18 @@ class CharSelectSubState extends MusicBeatSubState
         #end
 
         FlxTween.globalManager.cancelTweensOf(FlxG.sound.music);
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0, volume: 1.0}, 1, {ease: FlxEase.quartInOut});
+        FlxTween.tween(FlxG.sound.music, {
+          pitch: 1.0,
+          volume: 1.0
+        }, 1, {
+          ease: FlxEase.quartInOut
+        });
         playerChill.animation.play('deselect');
         gfChill.animation.play('deselect');
         pressedSelect = false;
-        FlxTween.tween(FlxG.sound.music, {pitch: 1.0}, 1, {
+        FlxTween.tween(FlxG.sound.music, {
+          pitch: 1.0
+        }, 1, {
           ease: FlxEase.quartInOut,
           onComplete: (_) ->
           {
@@ -914,8 +994,16 @@ class CharSelectSubState extends MusicBeatSubState
         }
         #end
 
-        FlxTween.tween(FlxG.sound.music, {pitch: 0.1}, 1, {ease: FlxEase.quadInOut});
-        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 1.5, {ease: FlxEase.quadInOut});
+        FlxTween.tween(FlxG.sound.music, {
+          pitch: 0.1
+        }, 1, {
+          ease: FlxEase.quadInOut
+        });
+        FlxTween.tween(FlxG.sound.music, {
+          volume: 0.0
+        }, 1.5, {
+          ease: FlxEase.quadInOut
+        });
 
         playerChill.animation.play('select');
         gfChill.animation.play('confirm', true);
@@ -980,7 +1068,11 @@ class CharSelectSubState extends MusicBeatSubState
 
     wentBackToFreeplay = true;
     FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
-    FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+    FlxTween.tween(FlxG.sound.music, {
+      volume: 0.0
+    }, 0.7, {
+      ease: FlxEase.quadInOut
+    });
     goToFreeplay();
   }
 

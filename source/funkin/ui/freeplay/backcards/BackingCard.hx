@@ -70,11 +70,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
 
-    backingTextYeah = FunkinSprite.createTextureAtlas(
+    backingTextYeah = new FunkinSprite(
       (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320,
-      120,
-      'ui/freeplay/styles/bf/backing-card'
-    );
+      120
+    ).loadTextureAtlas('ui/freeplay/styles/bf/backing-card');
     backingTextYeah.anim.addBySymbol('wholeTimeline', backingTextYeah.getDefaultSymbol(), backingTextYeah.library.frameRate, false);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!

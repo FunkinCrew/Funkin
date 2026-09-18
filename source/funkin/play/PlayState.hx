@@ -821,8 +821,8 @@ class PlayState extends MusicBeatSubState
 
     // Pause sprites
     #if FEATURE_TOUCH_CONTROLS
-    pauseButton = FunkinSprite.createSparrow(0, 0, 'ui/pause-button');
-    pauseCircle = FunkinSprite.create(0, 0, 'ui/pause-circle');
+    pauseButton = new FunkinSprite().loadSparrow('ui/pause-button');
+    pauseCircle = new FunkinSprite().loadTexture('ui/pause-circle');
     #end
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
@@ -2081,7 +2081,7 @@ class PlayState extends MusicBeatSubState
   function initMinimalMode():Void
   {
     // Create the green background.
-    var menuBG = FunkinSprite.create('ui/main-menu/menu-desat');
+    var menuBG = new FunkinSprite().loadTexture('ui/main-menu/menu-desat');
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();

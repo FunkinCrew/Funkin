@@ -54,7 +54,7 @@ class DifficultyStars extends FlxSpriteGroup
 
     flames = new FreeplayFlames(0, 0);
 
-    stars = FunkinSprite.createTextureAtlas(0, 0, 'ui/freeplay/difficulty/freeplay-stars');
+    stars = new FunkinSprite().loadTextureAtlas('ui/freeplay/difficulty/freeplay-stars');
     stars.anim.addBySymbol('STARS_ANIM', 'diff stars', 24, false);
     stars.animation.play('STARS_ANIM');
 

@@ -361,11 +361,10 @@ class FreeplayState extends MusicBeatSubState
 
     // ui/freeplay/backgrounds/charId/levelId
 
-    backingImage = FunkinSprite.create(
+    backingImage = new FunkinSprite(
       backingCard.pinkBack.width * 0.74,
-      0,
-      styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey()
-    );
+      0
+    ).loadTexture(styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey());
 
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData, uiStateMachine);

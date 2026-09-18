@@ -575,29 +575,29 @@ class VirtualCameraRectangle extends FlxSpriteGroup
 
     add(camSlice);
 
-    middle = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_center');
+    middle = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_center');
     middle.vcamPoint = vcamPoint;
     middle.zIndex = 6002;
     add(middle);
 
-    cornerTR = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner');
-    cornerBR = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner');
-    cornerTL = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner');
-    cornerBL = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner');
+    cornerTR = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner');
+    cornerBR = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner');
+    cornerTL = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner');
+    cornerBL = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner');
 
-    cornerTRSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner_small');
-    cornerBRSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner_small');
-    cornerTLSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner_small');
-    cornerBLSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_corner_small');
+    cornerTRSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner_small');
+    cornerBRSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner_small');
+    cornerTLSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner_small');
+    cornerBLSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_corner_small');
 
-    lineT = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_horizontal');
-    lineB = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_horizontal');
+    lineT = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_horizontal');
+    lineB = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_horizontal');
 
-    lineL = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_vertical');
-    lineR = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_vertical');
+    lineL = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_vertical');
+    lineR = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_vertical');
 
-    lineLSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_small');
-    lineRSmall = FunkinSprite.create(0, 0, 'ui/editors/camera-editor/vcam/vcam_line_small');
+    lineLSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_small');
+    lineRSmall = new FunkinSprite().loadTexture('ui/editors/camera-editor/vcam/vcam_line_small');
 
     // no fucking way im doing this manually
     for (obj in [

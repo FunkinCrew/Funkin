@@ -45,7 +45,7 @@ class LoadingState extends MusicBeatSubState
     this.stopMusic = stopMusic;
 
     this.loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
-    this.funkay = FunkinSprite.create('ui/loading/funkay');
+    this.funkay = new FunkinSprite().loadTexture('ui/loading/funkay');
   }
 
   override function create():Void
@@ -497,7 +497,7 @@ class MultiCallback
     transitionTex:String = "shaderTransitionStuff/coolDots",
     time:Float = 2)
   {
-    var screenShit:FunkinSprite = FunkinSprite.create('shaderTransitionStuff/coolDots');
+    var screenShit:FunkinSprite = new FunkinSprite().loadTexture('shaderTransitionStuff/coolDots');
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;

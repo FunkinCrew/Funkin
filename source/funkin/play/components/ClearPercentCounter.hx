@@ -35,7 +35,7 @@ class ClearPercentCounter extends FlxTypedSpriteGroup<FlxSprite>
 
     this.small = small;
 
-    var clearPercentText:FunkinSprite = FunkinSprite.create(0, 0, 'ui/results/clear-percent/percent${small ? '-small' : ''}');
+    var clearPercentText:FunkinSprite = new FunkinSprite().loadTexture('ui/results/clear-percent/percent${small ? '-small' : ''}');
     clearPercentText.x = small ? 40 : 0;
     add(clearPercentText);
 

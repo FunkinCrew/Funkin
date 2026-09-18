@@ -44,7 +44,7 @@ class AlbumRoll extends FlxSpriteGroup
   {
     super();
 
-    newAlbumArt = FunkinSprite.createTextureAtlas((FlxG.width + -360) - FullScreenScaleMode.gameNotchSize.x, 220, 'ui/freeplay/interface/freeplay-album');
+    newAlbumArt = new FunkinSprite((FlxG.width + -360) - FullScreenScaleMode.gameNotchSize.x, 220).loadTextureAtlas('ui/freeplay/interface/freeplay-album');
     newAlbumArt.anim.addByFrameLabel('intro', 'intro', 24, false);
     newAlbumArt.anim.addByFrameLabel('idle', 'idle', 24);
     newAlbumArt.anim.addByFrameLabel('switch', 'switch', 24, false);
@@ -197,7 +197,7 @@ class AlbumRoll extends FlxSpriteGroup
       titleOffsets = [0, 0];
     }
 
-    albumTitle = FunkinSprite.createSparrow((FlxG.width - 355) - FullScreenScaleMode.gameNotchSize.x, 500, assetKey);
+    albumTitle = new FunkinSprite((FlxG.width - 355) - FullScreenScaleMode.gameNotchSize.x, 500).loadSparrow(assetKey);
     albumTitle.visible = this.visible && (albumTitle.frames != null && newAlbumArt.visible) && difficultyStars.visible;
     albumTitle.animation.addByPrefix('idle', 'idle0', 24, true);
     albumTitle.animation.addByPrefix('switch', 'switch0', 24, false);

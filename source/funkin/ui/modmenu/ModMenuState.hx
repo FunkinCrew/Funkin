@@ -233,7 +233,7 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
-    menuBG = FunkinSprite.create('ui/mods/bg');
+    menuBG = new FunkinSprite().loadTexture('ui/mods/bg');
     menuBG.scale.set(0.66, 0.67);
     menuBG.updateHitbox();
     menuBG.screenCenter();
@@ -250,7 +250,7 @@ class ModMenuState extends MusicBeatState
     dropShadowCharacters.camera = camCharacters;
     add(dropShadowCharacters);
 
-    var topText:FunkinSprite = FunkinSprite.create('ui/mods/top-text');
+    var topText:FunkinSprite = new FunkinSprite().loadTexture('ui/mods/top-text');
     topText.scale.set(0.66, 0.67);
     topText.updateHitbox();
     topText.screenCenter(X);
@@ -608,7 +608,7 @@ class ModMenuState extends MusicBeatState
     darkness.camera = camHUD;
     add(darkness);
 
-    fileDrop = FunkinSprite.create(0, 0, 'ui/mods/drop-hover');
+    fileDrop = new FunkinSprite().loadTexture('ui/mods/drop-hover');
     fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();

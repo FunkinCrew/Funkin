@@ -135,7 +135,10 @@ class TitleState extends MusicBeatState
     var titleTextPath:String = 'ui/title/title-screen-text' #if mobile + '-mobile' #end;
 
     // On mobile, the text is shifted more to the left to center it properly.
-    titleText = FunkinSprite.createTextureAtlas(#if mobile 50 #else 100 #end + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8, titleTextPath, {
+    titleText = new FunkinSprite(
+      #if mobile 50 #else 100 #end + (FullScreenScaleMode.gameCutoutSize.x / 2),
+      FlxG.height * 0.8
+    ).loadTextureAtlas(titleTextPath, {
       cacheOnLoad: true
     });
     titleText.anim.addByFrameLabel('idle', "Idle", 24);

@@ -148,11 +148,11 @@ class ResultState extends MusicBeatSubState
 
     bgFlash = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [0xFFFFF1A6, 0xFFFFF1BE], 90);
 
-    resultsAnim = FunkinSprite.createSparrow(FlxG.width - (1480 + (FullScreenScaleMode.gameCutoutSize.x / 2)), -10, "ui/results/interface/results");
+    resultsAnim = new FunkinSprite(FlxG.width - (1480 + (FullScreenScaleMode.gameCutoutSize.x / 2)), -10).loadSparrow("ui/results/interface/results");
 
-    ratingsPopin = FunkinSprite.createSparrow(-135 + FullScreenScaleMode.gameNotchSize.x, 135, "ui/results/interface/ratings-popin");
+    ratingsPopin = new FunkinSprite(-135 + FullScreenScaleMode.gameNotchSize.x, 135).loadSparrow("ui/results/interface/ratings-popin");
 
-    scorePopin = FunkinSprite.createSparrow(-180 + FullScreenScaleMode.gameNotchSize.x, 515, "ui/results/interface/score-popin");
+    scorePopin = new FunkinSprite(-180 + FullScreenScaleMode.gameNotchSize.x, 515).loadSparrow("ui/results/interface/score-popin");
 
     highscoreNew = new FlxSprite(44 + FullScreenScaleMode.gameNotchSize.x, 557);
 
@@ -195,7 +195,7 @@ class ResultState extends MusicBeatSubState
     add(bgFlash);
 
     // The sound system which falls into place behind the score text. Plays every time!
-    soundSystem = FunkinSprite.createSparrow(-15 + FullScreenScaleMode.gameNotchSize.x, -180, 'ui/results/interface/sound-system');
+    soundSystem = new FunkinSprite(-15 + FullScreenScaleMode.gameNotchSize.x, -180).loadSparrow('ui/results/interface/sound-system');
     soundSystem.animation.addByPrefix("idle", "sound system", 24, false);
     soundSystem.visible = false;
     new FlxTimer().start(8 / 24, _ ->
@@ -242,7 +242,7 @@ class ResultState extends MusicBeatSubState
         case 'animateatlas':
           if (animationData.scriptClass != null) animation = FunkinSprite.scriptInit(animationData.scriptClass, xPosition, yPosition);
           else
-            animation = FunkinSprite.createTextureAtlas(xPosition, yPosition, assetPath);
+            animation = new FunkinSprite(xPosition, yPosition).loadTextureAtlas(assetPath);
 
           if (animation == null) continue;
 
@@ -307,7 +307,7 @@ class ResultState extends MusicBeatSubState
           }
           else
           {
-            animation = FunkinSprite.createSparrow(xPosition, yPosition, assetPath);
+            animation = new FunkinSprite(xPosition, yPosition).loadSparrow(assetPath);
           }
 
           if (animation == null) continue;
