@@ -419,6 +419,12 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
+   * If true, the player is allowed to pause the game.
+   * Disabled during the ending of a song.
+   */
+  public var mayPauseGame:Bool = true;
+
+  /**
    * Whether the inputs should be disabled for whatever reason...
    * Used after the song ends, and in the Stage Editor.
    */
@@ -484,12 +490,6 @@ class PlayState extends MusicBeatSubState
    * The `update()` function regularly shifts these out to trigger events.
    */
   var songEvents:Array<SongEventData> = [];
-
-  /**
-   * If true, the player is allowed to pause the game.
-   * Disabled during the ending of a song.
-   */
-  var mayPauseGame:Bool = true;
 
   /**
    * The displayed value of the player's health.
