@@ -407,6 +407,20 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     if (customChildUpdate) return;
 
+    final precise:Bool = preciseScale || preciseAngle;
+
+    var cos:Float = 1;
+    var sin:Float = 0;
+    if (preciseAngle && angle != 0)
+    {
+      final radians:Float = angle * (Math.PI / 180);
+      cos = Math.cos(radians);
+      sin = Math.sin(radians);
+    }
+
+    final scaleX:Float = preciseScale ? scale.x : 1;
+    final scaleY:Float = preciseScale ? scale.y : 1;
+
     for (child in children)
     {
       if (child != null && child.exists && child.active)
@@ -415,50 +429,22 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         child.scale.x = scale.x * child.localScale.x;
         child.scale.y = scale.y * child.localScale.y;
 
-        var displace:FlxPoint = FlxPoint.weak(child.localX, child.localY);
-
-        var dx:Float = 0;
-        var dy:Float = 0;
-
-        dx = origin.x - child.width / 2;
-        dy = origin.y - child.height / 2;
-
-        if (preciseScale && !preciseAngle)
+        if (precise)
         {
-          dx += scale.x * (child.localX - origin.x + child.width / 2);
-          dy += scale.y * (child.localY - origin.y + child.height / 2);
+          final halfWidth:Float = child.width / 2;
+          final halfHeight:Float = child.height / 2;
+
+          final relX:Float = child.localX - origin.x + halfWidth;
+          final relY:Float = child.localY - origin.y + halfHeight;
+
+          child.x = x + (origin.x - halfWidth) + (scaleX * cos * relX) - (scaleY * sin * relY);
+          child.y = y + (origin.y - halfHeight) + (scaleY * cos * relY) + (scaleX * sin * relX);
         }
-        else if (preciseAngle && !preciseScale)
+        else
         {
-          var radians:Float = angle * (Math.PI / 180);
-          var cos:Float = Math.cos(radians);
-          var sin:Float = Math.sin(radians);
-
-          dx += cos * (child.localX - origin.x + child.width / 2);
-          dx -= sin * (child.localY - origin.y + child.height / 2);
-
-          dy += cos * (child.localY - origin.y + child.height / 2);
-          dy += sin * (child.localX - origin.x + child.width / 2);
+          child.x = x + child.localX;
+          child.y = y + child.localY;
         }
-        else if (preciseAngle && preciseScale)
-        {
-          var radians:Float = angle * (Math.PI / 180);
-          var cos:Float = Math.cos(radians);
-          var sin:Float = Math.sin(radians);
-
-          dx += scale.x * cos * (child.localX - origin.x + child.width / 2);
-          dx -= scale.y * sin * (child.localY - origin.y + child.height / 2);
-
-          dy += scale.y * cos * (child.localY - origin.y + child.height / 2);
-          dy += scale.x * sin * (child.localX - origin.x + child.width / 2);
-        }
-
-        if (preciseScale || preciseAngle) displace.set(dx, dy);
-
-        child.x = x + displace.x;
-        child.y = y + displace.y;
-
-        displace.put();
 
         child.alpha = alpha * child.localAlpha;
         child.visible = visible && child.localVisible;
