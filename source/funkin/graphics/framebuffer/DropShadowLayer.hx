@@ -89,8 +89,6 @@ class DropShadowLayer extends FlxSprite
     }
 
     camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, bufferDelay);
-
-    updateColorTransform();
   }
 
   override function draw():Void
@@ -225,15 +223,6 @@ class DropShadowLayer extends FlxSprite
 
     funkinCamera.blackListKeys = _blackList.copy();
     funkinCamera.whiteListKeys = _whiteList.copy();
-  }
-
-  @:haxe.warning("-WDeprecated")
-  override function updateColorTransform():Void
-  {
-    colorTransform.setMultipliers(color.redFloat, color.greenFloat, color.blueFloat, alpha / 2);
-    useColorTransform = hasColorTransformRaw();
-
-    dirty = true;
   }
 
   function set_useWhitelist(v:Bool):Bool
