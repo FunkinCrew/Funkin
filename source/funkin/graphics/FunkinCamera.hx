@@ -412,7 +412,12 @@ class FunkinCamera extends FlxCamera
       }
 
       if (shader == null && defaultShader != null) shader = defaultShader;
-      if (shader != null) shader.sampleAttachment.value = [shouldRender(currItem.graphics)];
+      if (shader != null)
+      {
+        shader.sampleAttachment.value = [shouldRender(currItem.graphics)];
+
+        if (currItem.type == flixel.graphics.tile.FlxDrawBaseItem.FlxDrawItemType.TILES) shader.bitmap.wrap = openfl.display3D.Context3DWrapMode.CLAMP;
+      }
 
       currItem.render(this);
       currItem = currItem.next;
