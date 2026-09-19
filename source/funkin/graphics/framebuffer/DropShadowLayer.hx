@@ -253,11 +253,4 @@ class DropShadowLayer extends FlxSprite
     camera.canvas.graphics.setBufferFilters(_bufferID, _filters, resolutionScale, v);
     return bufferDelay = v;
   }
-
-  override function drawFrameComplex(frame:FlxFrame, camera:FlxCamera):Void
-  {
-    if (filters == null || filters.length == 0) return;
-
-    super.drawFrameComplex(frame, camera);
-  }
 }
