@@ -77,7 +77,7 @@ class MoveItemsCommand implements ChartEditorCommand
     state.currentNoteSelection = movedNotes;
     state.currentEventSelection = movedEvents;
 
-    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+    state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'), 1.0, 1.0, 0.1);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
