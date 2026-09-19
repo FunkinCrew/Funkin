@@ -2496,7 +2496,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
         CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
-      case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
+      case [FlxKey.V, true, false, false, _] if (hasClipboardEvent && !timeline.layerPanel.isEditing): // ctrl + v -> paste at playhead
         var pasteMs = Conductor.instance.songPosition;
 
         if (pasteMs < 0) pasteMs = 0;
