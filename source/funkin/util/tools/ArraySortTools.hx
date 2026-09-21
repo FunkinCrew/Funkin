@@ -55,12 +55,12 @@ class ArraySortTools
       // overhead just isn't worth it below ~16 elements.
       if (high - low < 16)
       {
-        insertionSort(input, low, high, compare);
+        insertionSortRange(input, low, high, compare);
         return;
       }
-  
+
       var pivot:Int = quickSortPartition(input, low, high, compare);
-  
+
       if (pivot - low <= high - (pivot + 1))
       {
         quickSortInner(input, low, pivot, compare);
@@ -84,26 +84,47 @@ class ArraySortTools
     // We sort these three elements in place as a side effect, which
     // also puts sentinels at the boundaries and lets us skip a bounds check.
     var mid:Int = low + ((high - low) >> 1);
-    if (compare(input[mid], input[low]) < 0) { var t:T = input[mid]; input[mid] = input[low]; input[low] = t; }
-    if (compare(input[high], input[low]) < 0) { var t:T = input[high]; input[high] = input[low]; input[low] = t; }
-    if (compare(input[mid], input[high]) < 0) { var t:T = input[mid]; input[mid] = input[high]; input[high] = t; }
+    if (compare(input[mid], input[low]) < 0)
+    {
+      var t:T = input[mid];
+      input[mid] = input[low];
+      input[low] = t;
+    }
+    if (compare(input[high], input[low]) < 0)
+    {
+      var t:T = input[high];
+      input[high] = input[low];
+      input[low] = t;
+    }
+    if (compare(input[mid], input[high]) < 0)
+    {
+      var t:T = input[mid];
+      input[mid] = input[high];
+      input[high] = t;
+    }
     var pivot:T = input[high];
-  
+
     var i:Int = low - 1;
     var j:Int = high + 1;
-  
+
     while (true)
     {
-      do { i++; } while (compare(input[i], pivot) < 0);
-      do { j--; } while (compare(input[j], pivot) > 0);
-  
+      do
+      {
+        i++;
+      } while (compare(input[i], pivot) < 0);
+      do
+      {
+        j--;
+      } while (compare(input[j], pivot) > 0);
+
       if (i >= j) return j;
-  
+
       var temp:T = input[i];
       input[i] = input[j];
       input[j] = temp;
     }
-  
+
     return -1; // Unreachable.
   }
 
@@ -120,8 +141,23 @@ class ArraySortTools
     if (input == null || input.length <= 1) return;
     if (compare == null) throw 'No comparison function provided.';
 
+    // The existing recursive boundaries should be good enough to use for arrays too.
+    insertionSortRange(input, 0, input.length - 1, compare);
+  }
+
+  /**
+   * Sorts a specific range of the array using insertion sort.
+   * Both low and high indices are inclusive.
+   *
+   * @param input The array to sort in-place.
+   * @param low The starting index.
+   * @param high The ending index.
+   * @param compare The comparison function to use.
+   */
+  static function insertionSortRange<T>(input:Array<T>, low:Int, high:Int, compare:CompareFunction<T>):Void
+  {
     // Iterate through the array, starting at the second element.
-    for (i in 1...input.length)
+    for (i in (low + 1)...(high + 1))
     {
       // Store the current element.
       var current:T = input[i];
@@ -130,7 +166,7 @@ class ArraySortTools
 
       // While the previous element is greater than the current element,
       // move the previous element to the right and move the index to the left.
-      while (j >= 0 && compare(input[j], current) > 0)
+      while (j >= low && compare(input[j], current) > 0)
       {
         input[j + 1] = input[j];
         j--;
