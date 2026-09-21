@@ -121,8 +121,8 @@ class DropShadowLayer extends FlxSprite
     {
       x = camera.scroll.x;
       y = camera.scroll.y;
-      scale.x = 1 / (camera.totalScaleX * resolutionScale);
-      scale.y = 1 / (camera.totalScaleY * resolutionScale);
+      scale.x = camera.width / bufferBitmap.width;
+      scale.y = camera.height / bufferBitmap.height;
     }
 
     if (bufferBitmap != null && (graphic == null || (graphic != null && graphic.bitmap != bufferBitmap)))
