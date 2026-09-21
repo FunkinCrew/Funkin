@@ -105,6 +105,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'zoom',
         title: 'Zoom Level',
+        tooltip: 'The new zoom level.',
         defaultValue: DEFAULT_ZOOM,
         min: 0,
         step: 0.05,
@@ -114,6 +115,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
+        tooltip: 'The duration of the event in steps.',
         defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
@@ -123,6 +125,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
+        tooltip: 'The easing type to use.',
         defaultValue: SongEvent.DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -145,6 +148,7 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
+        tooltip: 'Rate of change of parameter over time.',
         defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: [
@@ -156,19 +160,25 @@ class ZoomCameraSongEvent extends SongEvent
       {
         name: 'advanced',
         title: 'Advanced',
+        tooltip: '',
         type: SongEventFieldType.FRAME,
         collapsible: true,
         children: [
           {
             name: 'mode',
             title: 'Mode',
+            tooltip: 'Wheter to change the stage zoom or the absolute zoom of the screen.',
             defaultValue: DEFAULT_MODE,
             type: SongEventFieldType.ENUM,
-            keys: ['Stage zoom' => 'stage', 'Absolute zoom' => 'direct']
+            keys: [
+              'Stage zoom' => 'stage',
+              'Absolute zoom' => 'direct'
+            ]
           },
           {
             name: 'widescreenScaleX',
             title: 'Widescreen Scale X',
+            tooltip: 'The widescreen X scale.',
             defaultValue: DEFAULT_WIDESCREEN_SCALE,
             min: 0,
             max: 1,
@@ -178,6 +188,7 @@ class ZoomCameraSongEvent extends SongEvent
           {
             name: 'widescreenScaleY',
             title: 'Widescreen Scale Y',
+            tooltip: 'The widescreen Y scale.',
             defaultValue: DEFAULT_WIDESCREEN_SCALE,
             min: 0,
             max: 1,
