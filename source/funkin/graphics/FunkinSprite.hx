@@ -850,8 +850,8 @@ class FunkinSprite extends FlxAnimate
     var symbolInstance:SymbolInstance = element.parentFrame.convertToSymbol(0, 1);
     var transformPoint:FlxPoint = symbolInstance.transformationPoint;
 
-    elementMatrix.a += scale;
-    elementMatrix.d += scale;
+    elementMatrix.a *= scale;
+    elementMatrix.d *= scale;
 
     elementMatrix.tx -= transformPoint.x * scale;
     elementMatrix.ty -= transformPoint.y * scale;
