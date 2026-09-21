@@ -2559,15 +2559,19 @@ class PlayState extends MusicBeatSubState
       currentChart.getEvents()
     );
 
+    var hadSongEvents:Bool = songEvents != null && songEvents.length > 0;
+
     dispatchEvent(event, false);
 
     var builtNoteData = event.notes;
     var builtEventData = event.events;
 
-    event.finish();
-
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
+
+    if (!hadSongEvents) SongEventRegistry.callEvent(event);
+
+    event.finish();
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
@@ -3064,7 +3068,7 @@ class PlayState extends MusicBeatSubState
   {
     for (note in playerStrumline.notes.members)
     {
-      if (note == null || note.hasBeenHit) continue;
+      if (note == null || !note.alive || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
       if (Conductor.instance.songPosition > hitWindowEnd)
