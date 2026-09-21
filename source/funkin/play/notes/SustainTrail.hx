@@ -298,32 +298,48 @@ class SustainTrail extends FlxSprite
   }
 
   /**
+   * The id of the note style this trail's graphic was built for, so that recycling a trail for the
+   * same style can skip reloading the graphic.
+   */
+  public var builtHoldNoteStyleId:Null<String> = null;
+
+  /**
    * Creates hold note graphic and applies correct zooming
    * @param noteStyle The note style
    */
   public function setupHoldNoteGraphic(noteStyle:NoteStyle):Void
   {
-    loadGraphic(noteStyle.getHoldNoteAssetPath());
-
-    antialiasing = true;
-
-    this.isPixel = noteStyle.isHoldNotePixel();
-    if (isPixel)
+    // Everything in here depends only on the style, so it is wasted work when a recycled trail is
+    // already built for that same style.
+    if (builtHoldNoteStyleId != noteStyle.id)
     {
-      endOffset = bottomClip = 1;
-      antialiasing = false;
-    }
-    else
-    {
-      endOffset = 0.5;
-      bottomClip = 0.9;
+      builtHoldNoteStyleId = noteStyle.id;
+
+      loadGraphic(noteStyle.getHoldNoteAssetPath());
+
+      antialiasing = true;
+
+      this.isPixel = noteStyle.isHoldNotePixel();
+      if (isPixel)
+      {
+        endOffset = bottomClip = 1;
+        antialiasing = false;
+      }
+      else
+      {
+        endOffset = 0.5;
+        bottomClip = 0.9;
+      }
+
+      zoom = 1.0;
+      zoom *= noteStyle.fetchHoldNoteScale();
+
+      // CALCULATE SIZE
+      graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
+
+      noteStyleOffsets = noteStyle.getHoldNoteOffsets();
     }
 
-    zoom = 1.0;
-    zoom *= noteStyle.fetchHoldNoteScale();
-
-    // CALCULATE SIZE
-    graphicWidth = graphic.width / 8 * zoom; // amount of notes * 2
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
@@ -337,7 +353,6 @@ class SustainTrail extends FlxSprite
     updateColorTransform();
 
     updateClipping();
-    noteStyleOffsets = noteStyle.getHoldNoteOffsets();
     updateHitbox();
   }
 

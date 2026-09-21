@@ -287,6 +287,14 @@ class LoadingState extends MusicBeatSubState
           if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
           spritesToCache.append(noteStyle.queryAssets(IMAGE));
           soundsToCache.append(noteStyle.queryAssets(SOUND));
+
+          // also cache all other note styles used in the song, so that we don't have to load them mid-song
+          for (kindStyle in funkin.play.notes.notekind.NoteKindManager.listNoteStylesByNoteData(songDifficulty.notes))
+          {
+            if (kindStyle == null || kindStyle == noteStyle) continue;
+            spritesToCache.append(kindStyle.queryAssets(IMAGE));
+            soundsToCache.append(kindStyle.queryAssets(SOUND));
+          }
         }
 
         // TODO: This sucks lol.

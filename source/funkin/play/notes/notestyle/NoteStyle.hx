@@ -285,9 +285,11 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     return _data.assets?.note?.scale ?? fallback?.getNoteScale() ?? 1.0;
   }
 
+  static final ZERO_OFFSETS:Array<Float> = [0.0, 0.0];
+
   public function getNoteOffsets():Array<Float>
   {
-    return _data?.assets?.note?.offsets ?? fallback?.getNoteOffsets() ?? [0.0, 0.0];
+    return _data?.assets?.note?.offsets ?? fallback?.getNoteOffsets() ?? ZERO_OFFSETS;
   }
 
   function fetchNoteAnimationData(dir:NoteDirection):Null<AnimationData>
@@ -334,7 +336,7 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
 
   public function getHoldNoteOffsets():Array<Float>
   {
-    return _data?.assets?.holdNote?.offsets ?? fallback?.getHoldNoteOffsets() ?? [0.0, 0.0];
+    return _data?.assets?.holdNote?.offsets ?? fallback?.getHoldNoteOffsets() ?? ZERO_OFFSETS;
   }
 
   public function applyStrumlineFrames(target:StrumlineNote):Void

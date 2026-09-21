@@ -474,9 +474,10 @@ class Strumline extends FlxSpriteGroup
         ease: FlxEase.expoIn,
         onComplete: function(twn)
         {
+          // return to pool
           note.kill();
           notesVwoosh.remove(note, true);
-          note.destroy();
+          notes.add(note);
         }
       });
     }
@@ -499,7 +500,7 @@ class Strumline extends FlxSpriteGroup
         {
           holdNote.kill();
           holdNotesVwoosh.remove(holdNote, true);
-          holdNote.destroy();
+          holdNotes.add(holdNote);
         }
       });
     }
@@ -870,11 +871,21 @@ class Strumline extends FlxSpriteGroup
    */
   public function onBeatHit():Void
   {
-    // why are we doing this every beat? >:(
-    if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
+    if (notesDirty)
+    {
+      notesDirty = false;
+      if (notes.members.length > 1) notes.members.insertionSort(compareNoteSprites.bind(FlxSort.ASCENDING));
+    }
 
-    if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
+    if (holdNotesDirty)
+    {
+      holdNotesDirty = false;
+      if (holdNotes.members.length > 1) holdNotes.members.insertionSort(compareHoldNoteSprites.bind(FlxSort.ASCENDING));
+    }
   }
+
+  var notesDirty:Bool = false;
+  var holdNotesDirty:Bool = false;
 
   /**
    * Called when a key is pressed.
@@ -972,6 +983,137 @@ class Strumline extends FlxSpriteGroup
 
     // Sort the notes by strumtime.
     this.noteData.insertionSort(compareNoteData.bind(FlxSort.ASCENDING));
+
+    warmPools();
+  }
+
+  /**
+   * Preload note sprites and hold notes into the pools, so they don't have to be created during gameplay.
+   */
+  public function warmPools():Void
+  {
+    final window:Float = renderDistanceMs + Constants.HIT_WINDOW_MS;
+
+    var styleIdByKind:Map<String, String> = [];
+    var styleById:Map<String, NoteStyle> = [];
+
+    var resolveStyle = function(kind:Null<String>):NoteStyle {
+      var key:String = kind ?? '';
+      var knownId:Null<String> = styleIdByKind.get(key);
+      if (knownId != null) return styleById.get(knownId) ?? this.noteStyle;
+
+      var style:Null<NoteStyle> = NoteKindManager.getNoteStyle(kind, this.noteStyle.id);
+      if (style == null) style = NoteKindManager.getNoteStyle(kind, null);
+      if (style == null) style = this.noteStyle;
+
+      styleIdByKind.set(key, style.id);
+      styleById.set(style.id, style);
+      return style;
+    };
+
+    var liveNotes:Map<String, Int> = [];
+    var peakNotes:Map<String, Int> = [];
+    var liveHolds:Int = 0;
+    var peakHolds:Int = 0;
+
+    var noteStart:Int = 0;
+    var holdEnds:Array<Float> = [];
+
+    for (i in 0...noteData.length)
+    {
+      var note:Null<SongNoteData> = noteData[i];
+      if (note == null) continue;
+
+      // Retire notes whose window closed before this one opened.
+      while (noteStart < i)
+      {
+        var old:Null<SongNoteData> = noteData[noteStart];
+        if (old != null)
+        {
+          if (old.time + window >= note.time) break;
+
+          var oldId:String = styleIdByKind.get(old.kind ?? '') ?? this.noteStyle.id;
+          liveNotes.set(oldId, (liveNotes.get(oldId) ?? 1) - 1);
+        }
+        noteStart++;
+      }
+
+      var style:NoteStyle = resolveStyle(note.kind);
+      var live:Int = (liveNotes.get(style.id) ?? 0) + 1;
+      liveNotes.set(style.id, live);
+      if (live > (peakNotes.get(style.id) ?? 0)) peakNotes.set(style.id, live);
+
+      if (note.length > 0)
+      {
+        var h:Int = holdEnds.length;
+        while (h-- > 0)
+        {
+          if (holdEnds[h] < note.time)
+          {
+            holdEnds.splice(h, 1);
+            liveHolds--;
+          }
+        }
+
+        holdEnds.push(note.time + note.length + window);
+        liveHolds++;
+        if (liveHolds > peakHolds) peakHolds = liveHolds;
+      }
+    }
+
+    for (styleId => peak in peakNotes)
+    {
+      var style:NoteStyle = styleById.get(styleId) ?? this.noteStyle;
+
+      var existing:Int = 0;
+      for (note in notes.members)
+      {
+        if (note != null && note.builtNoteStyleId == styleId) existing++;
+      }
+
+      var target:Int = Math.ceil(peak * 1.25) + 1;
+      for (_ in existing...target)
+      {
+        var warm:NoteSprite = new NoteSprite(style);
+        if (warm.graphic != null) warm.graphic.destroyOnNoUse = false;
+        notes.add(warm);
+        warm.kill();
+        warm.visible = false;
+      }
+    }
+
+    if (peakHolds > 0)
+    {
+      var existing:Int = 0;
+      for (holdNote in holdNotes.members)
+      {
+        if (holdNote != null) existing++;
+      }
+
+      var target:Int = Math.ceil(peakHolds * 1.25) + 1;
+      for (_ in existing...target)
+      {
+        var warm:SustainTrail = new SustainTrail(0, 0, this.noteStyle);
+        if (warm.graphic != null) warm.graphic.destroyOnNoUse = false;
+        holdNotes.add(warm);
+        warm.kill();
+        warm.visible = false;
+      }
+    }
+
+    for (_ in noteSplashes.members.length...noteSplashes.maxSize)
+    {
+      var warm:NoteSplash = new NoteSplash(noteStyle);
+      noteSplashes.add(warm);
+      warm.kill();
+    }
+
+    for (_ in noteHoldCovers.members.length...KEY_COUNT)
+    {
+      var warm:NoteHoldCover = new NoteHoldCover(noteStyle);
+      noteHoldCovers.add(warm);
+      warm.kill();
+    }
   }
 
   /**
@@ -1205,14 +1347,16 @@ class Strumline extends FlxSpriteGroup
    */
   public function buildNoteSprite(note:SongNoteData):NoteSprite
   {
-    var noteSprite:NoteSprite = constructNoteSprite();
+    var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
+    var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
+    if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
+    if (noteKindStyle == null) noteKindStyle = this.noteStyle;
+
+    var noteSprite:NoteSprite = constructNoteSprite(noteKindStyle);
 
     if (noteSprite != null)
     {
-      var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
-      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
-      if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
-      if (noteKindStyle == null) noteKindStyle = this.noteStyle;
+      notesDirty = true;
 
       noteSprite.setupNoteGraphic(noteKindStyle);
 
@@ -1254,14 +1398,16 @@ class Strumline extends FlxSpriteGroup
    */
   public function buildHoldNoteSprite(note:SongNoteData):SustainTrail
   {
-    var holdNoteSprite:SustainTrail = constructHoldNoteSprite();
+    var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
+    var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
+    if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
+    if (noteKindStyle == null) noteKindStyle = this.noteStyle;
+
+    var holdNoteSprite:SustainTrail = constructHoldNoteSprite(noteKindStyle);
 
     if (holdNoteSprite != null)
     {
-      var noteKind:NoteKind = NoteKindManager.getNoteKind(note.kind);
-      var noteKindStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, this.noteStyle.id);
-      if (noteKindStyle == null) noteKindStyle = NoteKindManager.getNoteStyle(note.kind, null);
-      if (noteKindStyle == null) noteKindStyle = this.noteStyle;
+      holdNotesDirty = true;
 
       holdNoteSprite.setupHoldNoteGraphic(noteKindStyle);
 
@@ -1349,12 +1495,9 @@ class Strumline extends FlxSpriteGroup
   /**
    * Custom recycling behavior for note sprites.
    */
-  function constructNoteSprite():NoteSprite
+  function constructNoteSprite(?targetStyle:NoteStyle):NoteSprite
   {
-    var result:NoteSprite = null;
-
-    // Else, find a note which is inactive so we can revive it.
-    result = this.notes.getFirstAvailable();
+    var result:Null<NoteSprite> = findAvailableNote(targetStyle?.id);
 
     if (result != null)
     {
@@ -1365,7 +1508,7 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new NoteSprite(noteStyle);
+      result = new NoteSprite(targetStyle ?? noteStyle);
       this.notes.add(result);
     }
 
@@ -1373,14 +1516,33 @@ class Strumline extends FlxSpriteGroup
   }
 
   /**
+   * Find a dead note sprite to recycle, preferring one already built for `styleId` so that
+   * `setupNoteGraphic` can skip reloading the graphic.
+   * @param styleId The note style the caller is about to apply, or `null` for no preference.
+   * @return A dead note sprite, or `null` when the pool has none.
+   */
+  function findAvailableNote(styleId:Null<String>):Null<NoteSprite>
+  {
+    var mismatched:Null<NoteSprite> = null;
+
+    for (note in notes.members)
+    {
+      if (note == null || note.exists) continue;
+
+      if (styleId == null || note.builtNoteStyleId == styleId) return note;
+
+      if (mismatched == null) mismatched = note;
+    }
+
+    return mismatched;
+  }
+
+  /**
    * Custom recycling behavior for hold note sprites.
    */
-  function constructHoldNoteSprite():SustainTrail
+  function constructHoldNoteSprite(?targetStyle:NoteStyle):SustainTrail
   {
-    var result:SustainTrail = null;
-
-    // Else, find a note which is inactive so we can revive it.
-    result = this.holdNotes.getFirstAvailable();
+    var result:Null<SustainTrail> = findAvailableHoldNote(targetStyle?.id);
 
     if (result != null)
     {
@@ -1391,11 +1553,33 @@ class Strumline extends FlxSpriteGroup
     {
       // The note sprite pool is full and all note splashes are active.
       // We have to create a new note.
-      result = new SustainTrail(0, 0, noteStyle);
+      result = new SustainTrail(0, 0, targetStyle ?? noteStyle);
       this.holdNotes.add(result);
     }
 
     return result;
+  }
+
+  /**
+   * Find a dead hold note trail to recycle, preferring one already built for `styleId` so that
+   * `setupHoldNoteGraphic` can skip reloading the graphic.
+   * @param styleId The note style the caller is about to apply, or `null` for no preference.
+   * @return A dead trail, or `null` when the pool has none.
+   */
+  function findAvailableHoldNote(styleId:Null<String>):Null<SustainTrail>
+  {
+    var mismatched:Null<SustainTrail> = null;
+
+    for (holdNote in holdNotes.members)
+    {
+      if (holdNote == null || holdNote.exists) continue;
+
+      if (styleId == null || holdNote.builtHoldNoteStyleId == styleId) return holdNote;
+
+      if (mismatched == null) mismatched = holdNote;
+    }
+
+    return mismatched;
   }
 
   function getXPos(direction:NoteDirection):Float

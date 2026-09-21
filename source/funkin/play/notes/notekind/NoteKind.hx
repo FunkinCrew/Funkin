@@ -70,7 +70,7 @@ class NoteKind implements INoteScriptedClass
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite)
     {
-      return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
+      return note != null && note.noteData != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
@@ -84,7 +84,7 @@ class NoteKind implements INoteScriptedClass
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite)
     {
-      return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
+      return note != null && note.noteData != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
