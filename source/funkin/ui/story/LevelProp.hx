@@ -48,7 +48,7 @@ class LevelProp extends Bopper
     }
 
     // Reset animation state.
-    this.shouldAlternate = null;
+    this.danceType = null;
 
     var isAnimated:Bool = propData.animations.length > 0;
     if (isAnimated)
