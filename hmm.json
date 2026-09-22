@@ -61,19 +61,19 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "c88165fbfa4a46a05bfd796c4e39f0527cd7dc81",
+      "ref": "03cf1787978ab7a9de59e8950426c02d823f4008",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "7628435364c4a45440d1e5db656741b66a8cd2ec",
+      "ref": "e038c227c0b48bd23a3ffa0f554e59b9c4c4bf2f",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "8c1014d9362c24538fb083706418d2ee5edf1d82",
+      "ref": "5d8c335457e69a154bcd06392990a377b9c6f806",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {
@@ -198,7 +198,7 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "f5fe8374b38d45f0dd5f4d2854cb5a993ecf6903",
+      "ref": "a12084e941f56fbf2e39cea4318b9696d22f9124",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {

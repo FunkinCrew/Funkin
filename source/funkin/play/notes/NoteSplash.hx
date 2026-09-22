@@ -3,10 +3,9 @@ package funkin.play.notes;
 import funkin.play.notes.notestyle.NoteStyle;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import funkin.play.PlayState;
 
-class NoteSplash extends FlxSprite
+class NoteSplash extends funkin.graphics.FunkinSprite
 {
   public var splashFramerate:Int = 24;
   public var splashFramerateVariance:Int = 2;
