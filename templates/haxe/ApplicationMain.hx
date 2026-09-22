@@ -128,6 +128,11 @@ class ApplicationMain
     // Executes the main application loop.
     bootstrap.LimeBootstrap.exec(app);
 
+    #if hxvlc
+    // Dispose hxvlc's Handle upon exit.
+    hxvlc.util.Handle.dispose();
+    #end
+
     #if (linux && cpp)
     // Stops Gamemode optimization upon exit.
     hxgamemode.GamemodeClient.request_end();
