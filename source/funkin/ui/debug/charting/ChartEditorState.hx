@@ -1,5 +1,7 @@
 package funkin.ui.debug.charting;
 
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 #if FEATURE_CHART_EDITOR
 import funkin.ui.debug.charting.components.ChartEditorCommandPalette;
 import flixel.FlxBasic;
@@ -23,6 +25,9 @@ import funkin.assets.FunkinAssetCache;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import funkin.util.FlxStateUtil;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.waveform.WaveformSprite;
@@ -100,7 +105,6 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorFreeplayToolbox;
 import funkin.ui.debug.charting.toolboxes.ChartEditorOffsetsToolbox;
 import funkin.ui.haxeui.components.CharacterPlayer;
 import funkin.ui.mainmenu.MainMenuState;
-import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;
 import funkin.util.Constants;
 import funkin.util.FileUtil;
@@ -132,6 +136,9 @@ import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.FocusManager;
 import openfl.display.BitmapData;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 using Lambda;
 
@@ -153,17 +160,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/difficulty').toString();
+  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/difficulty').toString();
 
-  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
-  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
-  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/metadata').toString();
-  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/offsets').toString();
-  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/note-data').toString();
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/event-data').toString();
-  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/freeplay').toString();
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
-
+  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/metadata').toString();
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/offsets').toString();
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/note-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/event-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.xml('exclude/ui/editors/chart-editor/toolboxes/freeplay').toString();
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
   // Layout
@@ -2544,6 +2550,82 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var renderedPins:FlxTypedSpriteGroup<ChartEditorCommentPinSprite> = new FlxTypedSpriteGroup<ChartEditorCommentPinSprite>();
 
+  // ==============================
+
+  /**
+   * ASSET LOADING FUNCTIONS
+   */
+  // ==============================
+
+  public static function queryAssets(type:AssetType, ?params:ChartEditorParams):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = []; // Get assets for ALL note styles the user might select.
+
+    var noteStyleIds:Array<String> = NoteStyleRegistry.instance.listEntryIds();
+
+    for (noteStyleId in noteStyleIds)
+    {
+      results.appendUnique(NoteStyleRegistry.instance.queryAssets(type, noteStyleId));
+    }
+
+    // Song event icons.
+    // results.appendUnique(ChartEditorEventSprite.queryAssets(type));
+
+    switch (type)
+    {
+      case IMAGE: // Character freeplay icons
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/freeplay/characters', IMAGE));
+        // Character health icons
+        for (characterId in CharacterRegistry.instance.listEntryIds())
+        {
+          results.push(funkin.assets.Paths.image('gameplay/characters/$characterId/icon-$characterId'));
+        }
+
+        results.appendUnique([ // Overall background
+          funkin.assets.Paths.image('ui/main-menu/menu-desat'),]);
+      case XML: // Character freeplay icons
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/freeplay/characters', XML));
+        // Character health icons
+        for (characterId in CharacterRegistry.instance.listEntryIds())
+        {
+          results.push(funkin.assets.Paths.xml('gameplay/characters/$characterId/icon-$characterId').orNull());
+        }
+      case SOUND:
+        results.appendUnique([
+          funkin.assets.Paths.music('ui/editors/chart-editor/artistic-expression').audio(),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/metronome-1'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/metronome-2'),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-1'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-2'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/note-erase'),
+
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/window-open'),
+          funkin.assets.Paths.sound('ui/editors/chart-editor/charting-sounds/window-exit')
+        ]);
+
+      case JSON:
+        results.appendUnique([funkin.assets.Paths.music('ui/editors/chart-editor/artistic-expression').metadata()]);
+
+      case SHADER:
+        results.push(funkin.assets.Paths.frag('ui/shaders/hsv'));
+      default:
+        // Nothing
+    }
+
+    return results.filterNull();
+  }
+
   /**
    * LIFE CYCLE FUNCTIONS
    */
@@ -2610,7 +2692,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     @:privateAccess
     var nextState = () -> new ChartEditorState({
       loadFromPath: currentWorkingFilePath,
-      loadFromFNFCData: (currentWorkingFilePath == null && hasInstrumentalData) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+      loadFromFNFCData: (
+        currentWorkingFilePath == null
+        && hasInstrumentalData
+      ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
       targetSongPosition: scrollPositionInMs + playheadPositionInMs
@@ -2807,7 +2892,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function setupWelcomeMusic()
   {
-    this.welcomeMusic.loadEmbedded(Paths.music('ui/editors/chart-editor/artistic-expression/artistic-expression'));
+    this.welcomeMusic.loadEmbedded(Paths.music('ui/editors/chart-editor/artistic-expression').audio().toFlxSoundAsset());
     FlxG.sound.list.add(this.welcomeMusic);
     this.welcomeMusic.looped = true;
   }
@@ -2994,7 +3079,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function buildBackground():Void
   {
-    menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-desat'));
+    menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-desat').toFlxGraphicAsset());
     add(menuBG);
 
     menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
@@ -3404,7 +3489,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     buttonSelectEvent = new Button();
     buttonSelectEvent.allowFocus = false;
-    buttonSelectEvent.icon = Paths.image('ui/editors/chart-editor/events/Default');
+    buttonSelectEvent.icon = Paths.image('ui/editors/chart-editor/events/Default').toFlxGraphicAsset();
     buttonSelectEvent.iconPosition = 'top';
     buttonSelectEvent.x = buttonSelectPlayer.x + buttonSelectPlayer.width;
     buttonSelectEvent.y = buttonSelectPlayer.y;
@@ -4129,13 +4214,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   override public function update(elapsed:Float):Void
   {
-    // Override F4 behavior to include the autosave.
-    if (FlxG.keys.justPressed.F4 && !criticalFailure)
-    {
-      quitChartEditor();
-      return;
-    }
-
     // dispatchEvent gets called here.
     super.update(elapsed);
 
@@ -5215,8 +5293,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (gridGhostEvent != null) gridGhostEvent.visible = false;
 
     // Mouse sounds
-    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down'));
-    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
+    if (FlxG.mouse.justPressed) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-down').toString());
+    if (FlxG.mouse.justReleased) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up').toString());
 
     // Note: If a menu is open in HaxeUI, don't handle cursor behavior.
     var shouldHandleCursor:Bool =
@@ -5826,7 +5904,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if ((dragTargetCurrentColumn != dragDistanceColumns && overlapsGrid) || dragTargetCurrentStep != dragDistanceSteps)
         {
           // Play a sound as we drag.
-          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
+          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place').toString());
 
           dragTargetCurrentStep = dragDistanceSteps;
           dragTargetCurrentColumn = dragDistanceColumns;
@@ -5875,7 +5953,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         if (dragLengthSteps > 0)
         {
-          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+          this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap').toString());
           // Apply the new length.
           performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, dragLengthMs));
         }
@@ -5884,7 +5962,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // Apply the new (zero) length if we are changing the length.
           if (currentPlaceNoteData.length > 0)
           {
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap').toString());
             performCommand(new ExtendNoteLengthCommand(currentPlaceNoteData, 0));
           }
         }
@@ -6119,7 +6197,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else
           {
             // Right click removes hold from the note.
-            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+            this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap').toString());
             performCommand(new ExtendNoteLengthCommand(highlightedHoldNote.noteData, 0));
           }
         }
@@ -6592,7 +6670,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       // Extend the note to the playhead position.
       trace('Extending note. ${column}');
-      this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap'));
+      this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/stretch-snap').toString());
       performCommand(new ExtendNoteLengthCommand(currentLiveInputPlaceNoteData[column], newNoteLength));
       currentLiveInputPlaceNoteData[column] = null;
       gridPlayheadGhostHoldNotes[column].noteData = null;
@@ -6609,7 +6687,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (healthIconsDirty)
     {
-      _charIconData = currentPlayerCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(currentSongMetadata.playData.characters.player);
+      _charIconData = currentPlayerCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(
+        currentSongMetadata.playData.characters.player
+      );
 
       if (healthIconBF != null)
       {
@@ -6624,7 +6704,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         buttonSelectPlayer.text = _charIconData?.name ?? 'Player';
       }
 
-      _charIconData = currentOpponentCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
+      _charIconData = currentOpponentCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(
+        currentSongMetadata.playData.characters.opponent
+      );
 
       if (healthIconDad != null)
       {
@@ -6873,19 +6955,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       return;
     }
 
-    autoSave();
-
-    this.hideAllToolboxes();
-
-    stopWelcomeMusic();
-    // TODO: PR Flixel to make onComplete nullable.
-    if (audioInstTrack != null) audioInstTrack.onComplete = null;
-
-    performCleanup();
-
-    FlxG.switchState(() -> new MainMenuState());
-
-    resetWindowTitle();
+    funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+      assetQuery: MainMenuState.queryAssets,
+      transition: BlackScreen(None, None)
+    });
   }
 
   /**
@@ -7394,9 +7467,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     subStateClosed.add(reviveUICamera);
     subStateClosed.add(resetConductorAfterTest);
 
-    FlxTransitionableState.skipNextTransIn = false;
-    FlxTransitionableState.skipNextTransOut = false;
-
     var targetStateParams = {
       targetSong: targetSong,
       targetDifficulty: selectedDifficulty,
@@ -7426,19 +7496,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     Cursor.hide();
 
-    LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
-    {
-      if (playbarHeadDragging) playbarHeadDragging = false;
-      // Apply volume settings.
-      if (playtestAudioSettings)
+    funkin.ui.transition.Transition.openPlayState(targetStateParams, {
+      transition: Throbber,
+      shouldStopMusic: false,
+      onConstruct: (targetState) ->
       {
-        targetState.instrumentalVolume = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
-        targetState.playerVocalsVolume = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
-        targetState.opponentVocalsVolume = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
-      }
+        if (playbarHeadDragging) playbarHeadDragging = false;
+        // Apply volume settings.
+        final playState = cast(targetState, funkin.play.PlayState);
+        if (playtestAudioSettings)
+        {
+          playState.instrumentalVolume = (menubarItemVolumeInstrumental.value / 100.0) ?? 1.0;
+          playState.playerVocalsVolume = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
+          playState.opponentVocalsVolume = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
+        }
 
-      targetState.vocals = audioVocalTrackGroup;
-    });
+        playState.vocals = audioVocalTrackGroup;
+      }
+    }, true);
+
+    /*LoadingState.loadPlayState(targetStateParams, false, true, function(targetState)
+      {
+
+    });*/
   }
 
   /**
@@ -7531,8 +7611,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Revive the UI camera and re-establish it as the main camera so UI elements depending on it don't explode.
    */
-  function reviveUICamera(?_:FlxSubState):Void
+  function reviveUICamera(?closedSubState:FlxSubState):Void
   {
+    if (closedSubState != null && (FlxStateUtil.isTransition(closedSubState) || FlxStateUtil.isLoadingState(closedSubState)))
+    {
+      // The state that closed was a loading screen for the substate we're opening,
+      // so we shouldn't do any cleanup.
+      return;
+    }
+
     uiCamera.revive();
     FlxG.cameras.reset(uiCamera);
     uiCamera.onResize();
@@ -7565,7 +7652,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   function playMetronomeTick(high:Bool = false):Void
   {
-    this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/metronome-${high ? '1' : '2'}'), metronomeVolume);
+    this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/metronome-${high ? '1' : '2'}').toString(), metronomeVolume);
   }
 
   function switchToCurrentInstrumental():Void
@@ -7893,8 +7980,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    * Fix the current scroll position after exiting the PlayState used when testing.
    */
   @:nullSafety(Off)
-  function resetConductorAfterTest(?_:FlxSubState):Void
+  function resetConductorAfterTest(?closedSubState:FlxSubState):Void
   {
+    if (closedSubState != null && (FlxStateUtil.isTransition(closedSubState) || FlxStateUtil.isLoadingState(closedSubState)))
+    {
+      // The state that closed was a loading screen for the substate we're opening,
+      // so we shouldn't do any cleanup.
+      return;
+    }
+
     this.persistentUpdate = true;
     this.persistentDraw = true;
 
@@ -8145,9 +8239,15 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         switch (noteData.getStrumlineIndex())
         {
           case 0: // Player
-            if (hitsoundVolumePlayer > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player'), hitsoundVolumePlayer);
+            if (hitsoundVolumePlayer > 0) this.playSound(
+              Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-player').toString(),
+              hitsoundVolumePlayer
+            );
           case 1: // Opponent
-            if (hitsoundVolumeOpponent > 0) this.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent'), hitsoundVolumeOpponent);
+            if (hitsoundVolumeOpponent > 0) this.playSound(
+              Paths.sound('ui/editors/chart-editor/charting-sounds/hitsound-opponent').toString(),
+              hitsoundVolumeOpponent
+            );
         }
       }
 

@@ -123,11 +123,19 @@ class ChartEditorNoteSprite extends FlxSprite
   {
     var prefix:String = noteStyle.id.toTitleCase();
 
-    var frameCollection:FlxAtlasFrames = Paths.getSparrowAtlas(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary());
+    var framePath = noteStyle.getNoteAssetPath();
+    if (framePath == null)
+    {
+      trace('Could not retrieve frame collection for ${noteStyle}: Null Path');
+      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: Null Path');
+      return;
+    }
+
+    var frameCollection:FlxAtlasFrames = funkin.assets.Assets.getSparrowAtlas(framePath);
     if (frameCollection == null)
     {
-      trace('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
-      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: ${Paths.image(noteStyle.getNoteAssetPath(), noteStyle.getNoteAssetLibrary())}');
+      trace('Could not retrieve frame collection for ${noteStyle}: ${framePath.toString()}');
+      FlxG.log.error('Could not retrieve frame collection for ${noteStyle}: ${framePath.toString()}');
       return;
     }
     for (frame in frameCollection.frames)

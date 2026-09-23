@@ -1,7 +1,7 @@
 package funkin.ui.debug.charting.handlers;
 
-import funkin.data.song.importer.ChartManifestData;
 #if FEATURE_CHART_EDITOR
+import funkin.data.song.importer.ChartManifestData;
 import flixel.util.FlxTimer;
 import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
@@ -44,6 +44,9 @@ import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
 import haxe.ui.RuntimeComponentBuilder;
 import thx.semver.Version;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
 
 using Lambda;
 
@@ -55,29 +58,17 @@ using Lambda;
 class ChartEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
-  static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/upload-inst').toString();
-  static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/song-metadata').toString();
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/open-chart-parts')
-    .toString();
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/open-chart-parts-entry')
-    .toString();
-  static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/import-chart').toString();
-  static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/user-guide').toString();
-  static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/add-variation').toString();
-  static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/add-difficulty')
-    .toString();
-  static final CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/clone-difficulty')
-    .toString();
-  static final CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/move-difficulty')
-    .toString();
-  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = funkin.assets.ValidatedPaths
-    .xml('ui/editors/chart-editor/dialogs/backup-available')
-    .toString();
+  static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/upload-inst').toString();
+  static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/song-metadata').toString();
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/open-chart-parts').toString();
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/open-chart-parts-entry').toString();
+  static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/import-chart').toString();
+  static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/user-guide').toString();
+  static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/add-variation').toString();
+  static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/add-difficulty').toString();
+  static final CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/clone-difficulty').toString();
+  static final CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/move-difficulty').toString();
+  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = Paths.xml('ui/editors/chart-editor/dialogs/backup-available').toString();
 
   /**
    * Builds and opens a dialog giving brief credits for the chart editor.
@@ -557,33 +548,50 @@ class ChartEditorDialogHandler
       });
     }
 
-    var onDropFile:String->Void = function(pathStr:String)
+    var onDropFile:lime.utils.DroppedFile->Void = function(file:lime.utils.DroppedFile)
     {
-      var path:Path = new Path(pathStr);
+      var path:Path = new Path(file.path);
       trace('Dropped file (${path})');
-      if (state.loadInstFromPath(path, instId))
-      {
-        // Tell the user the load was successful.
-        state.success('Loaded Instrumental', 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})');
 
-        state.switchToCurrentInstrumental();
-        dialog.hideDialog(DialogButton.APPLY);
-        state.removeDropHandler(dropHandler);
-      }
-      else
+      file.readFile().onComplete(function(bytes:haxe.io.Bytes)
       {
-        var message:String = if (!ChartEditorState.SUPPORTED_MUSIC_FORMATS.contains(path.ext ?? ''))
+        if (bytes == null)
         {
-          'File format (${path.ext}) not supported for instrumental track (${path.file}.${path.ext})';
+          state.error(
+            'Failed to Load Instrumental',
+            'Could not read instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})'
+          );
+          return;
+        }
+
+        if (state.loadInstFromBytes(bytes, instId))
+        {
+          state.success('Loaded Instrumental', 'Loaded instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})');
+
+          state.switchToCurrentInstrumental();
+          dialog.hideDialog(DialogButton.APPLY);
+          state.removeDropHandler(dropHandler);
         }
         else
         {
-          'Failed to load instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})';
-        }
+          var message:String = if (!ChartEditorState.SUPPORTED_MUSIC_FORMATS.contains(path.ext ?? ''))
+          {
+            'File format (${path.ext}) not supported for instrumental track (${path.file}.${path.ext})';
+          }
+          else
+          {
+            'Failed to load instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})';
+          }
 
-        // Tell the user the load was successful.
-        state.error('Failed to Load Instrumental', message);
-      }
+          state.error('Failed to Load Instrumental', message);
+        }
+      }).onError(function(error:Dynamic)
+      {
+          state.error(
+            'Failed to Load Instrumental',
+            'Could not read instrumental track (${path.file}.${path.ext}) for variation (${state.selectedVariation})\n$error'
+          );
+      });
     };
 
     dropHandler.handler = onDropFile;
@@ -857,9 +865,9 @@ class ChartEditorDialogHandler
       dialog.hideDialog(DialogButton.APPLY);
     }
 
-    var onDropFileMetadataVariation:String->Label->String->Void;
+    var onDropFileMetadataVariation:String->Label->lime.utils.DroppedFile->Void;
     var onClickMetadataVariation:String->Label->UIEvent->Void;
-    var onDropFileChartDataVariation:String->Label->String->Void;
+    var onDropFileChartDataVariation:String->Label->lime.utils.DroppedFile->Void;
     var onClickChartDataVariation:String->Label->UIEvent->Void;
 
     var constructVariationEntries:Array<String>->Void = function(variations:Array<String>)
@@ -949,46 +957,53 @@ class ChartEditorDialogHandler
       }
     }
 
-    onDropFileMetadataVariation = function(variation:String, label:Label, pathStr:String)
+    onDropFileMetadataVariation = function(variation:String, label:Label, file:lime.utils.DroppedFile)
     {
-      var path:Path = new Path(pathStr);
+      var path:Path = new Path(file.path);
       trace('Dropped JSON file (${path})');
 
-      var songMetadataTxt:String = FileUtil.readStringFromPath(path.toString());
-
-      var songMetadataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songMetadataTxt);
-      if (songMetadataVersion == null)
+      file.readFile().onComplete(function(bytes:haxe.io.Bytes)
       {
-        // Tell the user the load was not successful.
-        state.error('Failure', 'Could not parse metadata file version (${path.file}.${path.ext})');
-        return;
-      }
+        if (bytes == null)
+        {
+          state.error('Failure', 'Could not read metadata file (${path.file}.${path.ext})');
+          return;
+        }
 
-      var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(
-        songMetadataTxt,
-        path.toString(),
-        songMetadataVersion
-      );
+        var songMetadataTxt:String = bytes.toString();
+        var songMetadataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songMetadataTxt);
+        if (songMetadataVersion == null)
+        {
+          state.error('Failure', 'Could not parse metadata file version (${path.file}.${path.ext})');
+          return;
+        }
 
-      if (songMetadataVariation == null)
+        var songMetadataVariation:Null<SongMetadata> = SongRegistry.instance.parseEntryMetadataRawWithMigration(
+          songMetadataTxt,
+          path.toString(),
+          songMetadataVersion
+        );
+
+        if (songMetadataVariation == null)
+        {
+          state.error('Failure', 'Could not load metadata file (${path.file}.${path.ext})');
+          return;
+        }
+
+        songMetadata.set(variation, songMetadataVariation);
+        state.success('Loaded Metadata', 'Loaded metadata file (${path.file}.${path.ext})');
+
+        #if FEATURE_FILE_DROP
+        label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+        #else
+        label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
+        #end
+
+        if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
+      }).onError(function(error:Dynamic)
       {
-        // Tell the user the load was not successful.
-        state.error('Failure', 'Could not load metadata file (${path.file}.${path.ext})');
-        return;
-      }
-
-      songMetadata.set(variation, songMetadataVariation);
-
-      // Tell the user the load was successful.
-      state.success('Loaded Metadata', 'Loaded metadata file (${path.file}.${path.ext})');
-
-      #if FEATURE_FILE_DROP
-      label.text = 'Metadata file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
-      #else
-      label.text = 'Metadata file (click to browse)\n${path.file}.${path.ext}';
-      #end
-
-      if (variation == Constants.DEFAULT_VARIATION) constructVariationEntries(songMetadataVariation.playData.songVariations);
+          state.error('Failure', 'Failed to read metadata file (${path.file}.${path.ext})\n$error');
+      });
     };
 
     onClickMetadataVariation = function(variation:String, label:Label, _:UIEvent)
@@ -1039,48 +1054,56 @@ class ChartEditorDialogHandler
       });
     }
 
-    onDropFileChartDataVariation = function(variation:String, label:Label, pathStr:String)
+    onDropFileChartDataVariation = function(variation:String, label:Label, file:lime.utils.DroppedFile)
     {
-      var path:Path = new Path(pathStr);
+      var path:Path = new Path(file.path);
       trace('Dropped JSON file (${path})');
 
-      var songChartDataTxt:String = FileUtil.readStringFromPath(path.toString());
-
-      var songChartDataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songChartDataTxt);
-      if (songChartDataVersion == null)
+      file.readFile().onComplete(function(bytes:haxe.io.Bytes)
       {
-        // Tell the user the load was not successful.
-        state.error('Failure', 'Could not parse chart data file version (${path.file}.${path.ext})');
-        return;
-      }
+        if (bytes == null)
+        {
+          state.error('Failure', 'Could not read chart data file (${path.file}.${path.ext})');
+          return;
+        }
 
-      var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(
-        songChartDataTxt,
-        path.toString(),
-        songChartDataVersion
-      );
+        var songChartDataTxt:String = bytes.toString();
+        var songChartDataVersion:Null<Version> = VersionUtil.getVersionFromJSON(songChartDataTxt);
+        if (songChartDataVersion == null)
+        {
+          state.error('Failure', 'Could not parse chart data file version (${path.file}.${path.ext})');
+          return;
+        }
 
-      if (songChartDataVariation != null)
+        var songChartDataVariation:Null<SongChartData> = SongRegistry.instance.parseEntryChartDataRawWithMigration(
+          songChartDataTxt,
+          path.toString(),
+          songChartDataVersion
+        );
+
+        if (songChartDataVariation != null)
+        {
+          songChartData.set(variation, songChartDataVariation);
+          state.notePreviewDirty = true;
+          state.notePreviewViewportBoundsDirty = true;
+          state.noteDisplayDirty = true;
+
+          state.success('Loaded Chart Data', 'Loaded chart data file (${path.file}.${path.ext})');
+
+          #if FEATURE_FILE_DROP
+          label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
+          #else
+          label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
+          #end
+        }
+        else
+        {
+          state.error('Failure', 'Failed to load chart data file (${path.file}.${path.ext})');
+        }
+      }).onError(function(error:Dynamic)
       {
-        songChartData.set(variation, songChartDataVariation);
-        state.notePreviewDirty = true;
-        state.notePreviewViewportBoundsDirty = true;
-        state.noteDisplayDirty = true;
-
-        // Tell the user the load was successful.
-        state.success('Loaded Chart Data', 'Loaded chart data file (${path.file}.${path.ext})');
-
-        #if FEATURE_FILE_DROP
-        label.text = 'Chart data file (drag and drop, or click to browse)\nSelected file: ${path.file}.${path.ext}';
-        #else
-        label.text = 'Chart data file (click to browse)\n${path.file}.${path.ext}';
-        #end
-      }
-      else
-      {
-        // Tell the user the load was unsuccessful.
-        state.error('Failure', 'Failed to load chart data file (${path.file}.${path.ext})');
-      }
+          state.error('Failure', 'Failed to read chart data file (${path.file}.${path.ext})\n$error');
+      });
     };
 
     onClickChartDataVariation = function(variation:String, label:Label, _:UIEvent)
@@ -1241,7 +1264,7 @@ class ChartEditorDialogHandler
       Cursor.cursorMode = Default;
     }
 
-    var onDropFile:String->Void;
+    var onDropFile:lime.utils.DroppedFile->Void;
 
     var onFileSelected:String->String->Void = (pathStr:String, content:String) ->
     {
@@ -1347,10 +1370,21 @@ class ChartEditorDialogHandler
       });
     }
 
-    onDropFile = function(pathStr:String)
+    onDropFile = function(file:lime.utils.DroppedFile)
     {
-      var selectedFileText:String = FileUtil.readStringFromPath(pathStr);
-      onFileSelected(pathStr, selectedFileText);
+      file.readFile().onComplete(function(bytes:haxe.io.Bytes)
+      {
+        if (bytes == null)
+        {
+          state.error('Failure', 'Could not read dropped file (${new Path(file.path)})');
+          return;
+        }
+
+        onFileSelected(file.path, bytes.toString());
+      }).onError(function(error:Dynamic)
+      {
+          state.error('Failure', 'Failed to read dropped file (${new Path(file.path)})\n$error');
+      });
     };
 
     state.addDropHandler({
@@ -1730,7 +1764,7 @@ class ChartEditorDialogHandler
    */
   public static function addDropHandler(state:ChartEditorState, dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     if (!FlxG.stage.window.onDropFile.has(onDropFile)) FlxG.stage.window.onDropFile.add(onDropFile);
 
     dropHandlers.push(dropTarget);
@@ -1744,7 +1778,7 @@ class ChartEditorDialogHandler
    */
   public static function removeDropHandler(state:ChartEditorState, dropTarget:DialogDropTarget):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     dropHandlers.remove(dropTarget);
     #end
   }
@@ -1755,7 +1789,7 @@ class ChartEditorDialogHandler
    */
   public static function clearDropHandlers(state:ChartEditorState):Void
   {
-    #if desktop
+    #if (desktop || (js && html5))
     dropHandlers = [];
     FlxG.stage.window.onDropFile.remove(onDropFile);
     #end
@@ -1772,7 +1806,7 @@ class ChartEditorDialogHandler
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
-          handler.handler(file.path);
+          handler.handler(file);
           return;
         }
       }

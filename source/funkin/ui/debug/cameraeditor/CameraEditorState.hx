@@ -554,7 +554,6 @@ class CameraEditorState extends UIState implements ConsoleClass
   public var exitConfirmDialog:Dialog;
 
   var userGuideDialog:UserGuideDialog;
-
   var deleteLayerConfirmDialog:Dialog;
   var autoSortLayersDialog:Dialog;
 
@@ -843,7 +842,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         loadFromFNFCData: (
           currentWorkingFilePath == null
           && chart.songMetadatas.size() > 0
-        ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        ) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: Conductor.instance.songPosition
@@ -1067,14 +1066,6 @@ class CameraEditorState extends UIState implements ConsoleClass
 
   override public function update(elapsed:Float):Void
   {
-    // Save the stage if exiting through the F4 keybind.
-    // Soon the EvacuateDebugPlugin will move us to the new state.
-    if (FlxG.keys.justPressed.F4)
-    {
-      performCleanup();
-      return;
-    }
-
     if (criticalFailure) return;
 
     Preferences.debugDisplay == DebugDisplayMode.Off ? menubar.paddingLeft = null : menubar.paddingLeft = 256;
@@ -2358,8 +2349,10 @@ class CameraEditorState extends UIState implements ConsoleClass
               // Write a backup, and remember we have one for next time.
               saveBackup();
 
-              performCleanup();
-              FlxG.switchState(() -> new MainMenuState());
+              funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+                assetQuery: MainMenuState.queryAssets,
+                transition: BlackScreen(None, None)
+              });
             }
           }
         );
@@ -2370,8 +2363,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     else
     {
       // No need to show confirmation, just exit immediately.
-      performCleanup();
-      FlxG.switchState(() -> new MainMenuState());
+      funkin.ui.transition.Transition.switchState(() -> new MainMenuState(), {
+        assetQuery: MainMenuState.queryAssets,
+        transition: BlackScreen(None, None)
+      });
     }
   }
 
@@ -2391,6 +2386,12 @@ class CameraEditorState extends UIState implements ConsoleClass
   function destroyHaxeUIComponents():Void
   {
     this.clearNotifications();
+  }
+
+  override public function destroy():Void
+  {
+    performCleanup();
+    super.destroy();
   }
 
   /**
@@ -2859,8 +2860,6 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
 
       var startTimestamp:Float = timeline.songPosition;
-
-      performCleanup();
 
       @:nullSafety(Off)
       {

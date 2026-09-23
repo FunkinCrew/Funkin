@@ -84,7 +84,7 @@ class ChartEditorHoldNoteSprite extends SustainTrail
   {
     var graphicPath = noteStyle.getHoldNoteAssetPath();
     if (graphicPath == null) return;
-    loadGraphic(graphicPath);
+    loadGraphic(graphicPath.toFlxGraphicAsset());
 
     antialiasing = true;
 
