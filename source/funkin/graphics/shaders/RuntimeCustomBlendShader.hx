@@ -2,6 +2,8 @@ package funkin.graphics.shaders;
 
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
 
 class RuntimeCustomBlendShader extends RuntimePostEffectShader
 {
@@ -32,6 +34,6 @@ class RuntimeCustomBlendShader extends RuntimePostEffectShader
 
   public function new()
   {
-    super(Assets.getText('assets/ui/shaders/custom-blend.frag'));
+    super(Assets.getText(Paths.frag('ui/shaders/custom-blend')));
   }
 }

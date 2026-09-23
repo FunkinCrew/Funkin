@@ -2,6 +2,8 @@ package funkin.graphics.shaders;
 
 import flixel.addons.display.FlxRuntimeShader;
 import flixel.math.FlxAngle;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * This shader is a recreation of Adobe Animate/Flash's "Adjust Color" filter.

@@ -2,26 +2,16 @@ package funkin.graphics.shaders;
 
 import flixel.graphics.tile.FlxGraphicsShader;
 
+// It's not used anywhere, but i'll just leave it.
 class MultiBufferShader extends FlxGraphicsShader
 {
   @:glFragmentSource('
-		#pragma header
+    #pragma header
 
-		void main()
-		{
-			vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-
-      if (sampleAttachment)
-      {
-        gl_FragData[1] = color;
-      }
-      else
-      {
-        gl_FragData[1] = vec4(0.0, 0.0, 0.0, 0.0);
-      }
-
-      gl_FragData[0] = color;
-		}')
+    void main()
+    {
+      gl_FragColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
+    }')
   public function new()
   {
     super();
