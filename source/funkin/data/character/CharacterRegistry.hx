@@ -59,6 +59,85 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
   }
 
   /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * @param type The type of asset to query
+   * @param entryId The ID of the character to check.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    if (entryId == null || entryId.trim() == '') return [];
+
+    // This is 2026, character scripts can have static functions now.
+
+    var charData:Null<CharacterData> = fetchCharacterData(entryId);
+    if (charData == null)
+    {
+      trace('Failed to query character assets, data not found for "${entryId}"');
+      return [];
+    }
+
+    var renderType:Null<String> = charData.renderType;
+    var charScriptClass:Null<String> = characterScriptedClass.get(entryId);
+
+    if (charScriptClass != null)
+    {
+      switch (renderType)
+      {
+        case CharacterRenderType.AnimateAtlas:
+          if (AnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return AnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+        case CharacterRenderType.MultiSparrow:
+          if (MultiSparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return MultiSparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+        case CharacterRenderType.Sparrow:
+          if (SparrowCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return SparrowCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+        case CharacterRenderType.Packer:
+          if (PackerCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return PackerCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+        case CharacterRenderType.MultiAnimateAtlas:
+          if (MultiAnimateAtlasCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return MultiAnimateAtlasCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+        default:
+          if (BaseCharacter.scriptStaticHas(charScriptClass, 'queryAssets'))
+          {
+            return BaseCharacter.scriptStaticCall(charScriptClass, 'queryAssets', [type, entryId]);
+          }
+      }
+    }
+
+    // Else, use the default function to query assets.
+
+    switch (renderType)
+    {
+      case CharacterRenderType.AnimateAtlas:
+        return AnimateAtlasCharacter.queryAssets(type, entryId);
+      case CharacterRenderType.MultiSparrow:
+        return MultiSparrowCharacter.queryAssets(type, entryId);
+      case CharacterRenderType.Sparrow:
+        return SparrowCharacter.queryAssets(type, entryId);
+      case CharacterRenderType.Packer:
+        return PackerCharacter.queryAssets(type, entryId);
+      case CharacterRenderType.MultiAnimateAtlas:
+        return MultiAnimateAtlasCharacter.queryAssets(type, entryId);
+      default:
+        return BaseCharacter.queryAssets(type, entryId);
+    }
+  }
+
+  /**
    * Returns the idle frame of a character.
    * TODO: Too similar to the other function in PixellatedIcon and really needs a damn rewrite.
    */
@@ -314,21 +393,29 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     log(' INFO '.info() + 'Successfully instantiated ${characterCache.size()} characters.');
   }
 
-  #if FEATURE_MULTITHREADING
   public override function loadEntriesAsync():lime.app.Future<LoadEntriesResult>
   {
     clearEntries();
 
     var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadCharacterCacheAsync');
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    var charIdList:Array<String> = fetchEntryIdsFromFiles();
+
+    #if FEATURE_MULTITHREADING
     var entryDataErrors:SynchronizedArray<
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
     var entryScriptErrors:SynchronizedArray<
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
-
-    var charIdList:Array<String> = fetchEntryIdsFromFiles();
     var previousScriptedEntryClasses:SynchronizedArray<String> = new SynchronizedArray<String>();
     var scriptedEntryClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
+    #else
+    var entryDataErrors:Array<
+      {entryId:String, error:Any, ?entryCls:String}> = [];
+    var entryScriptErrors:Array<
+      {entryId:String, error:Any, ?entryCls:String}> = [];
+    var previousScriptedEntryClasses:Array<String> = [];
+    var scriptedEntryClassNames:Array<String> = [];
+    #end
     var entryCount:Int = 0;
 
     // Used to track the state we're in while loading the characters. This can either be us loading all character data, or loading each scripted character types.
@@ -546,16 +633,31 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       {
         for (entryId in charIdList)
         {
-          var loadUnscriptedEntryDataFuture = TaskHandler.performTask({
-            task: performLoadUnscriptedEntryData,
-            initialState: {
-              entryId: entryId
-            }
-          }, new Promise<
-            {entryData:CharacterData}>());
+          var characterJsonPath = Paths.json('gameplay/characters/${entryId}/${entryId}', false);
+          var preloadCharacterDataFuture = Assets.cacheText(characterJsonPath);
 
-          loadUnscriptedEntryDataFuture.onError(onError.bind(entryId));
-          loadUnscriptedEntryDataFuture.onComplete(onUnscriptedEntryLoaded.bind(entryId));
+          preloadCharacterDataFuture.onError((error) ->
+          {
+            log(' ERROR '.error() + 'Failed to preload character data for ${entryId}: $error');
+            onError(entryId, {
+              error: error,
+              entryCls: null
+            });
+          });
+
+          preloadCharacterDataFuture.onComplete((_) ->
+          {
+            var loadUnscriptedEntryDataFuture = TaskHandler.performTask({
+              task: performLoadUnscriptedEntryData,
+              initialState: {
+                entryId: entryId
+              }
+            }, new Promise<
+              {entryData:CharacterData}>());
+
+            loadUnscriptedEntryDataFuture.onError(onError.bind(entryId));
+            loadUnscriptedEntryDataFuture.onComplete(onUnscriptedEntryLoaded.bind(entryId));
+          });
         }
       });
     }
@@ -588,10 +690,15 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
             [];
         }
         scriptedEntryClassNames.clear();
-        scriptedEntryClassNames.addAll(scriptedClsNames);
 
         // We concatenate this list so we can use this when checking for BaseCharacter entries.
+        #if FEATURE_MULTITHREADING
+        scriptedEntryClassNames.addAll(scriptedClsNames);
         previousScriptedEntryClasses.addAll(scriptedClsNames);
+        #else
+        scriptedEntryClassNames.append(scriptedClsNames);
+        previousScriptedEntryClasses.append(scriptedClsNames);
+        #end
 
         log('Queuing loading for ${scriptedClsNames.length} $entryLoadingState character scripted entries...');
         entryCount += scriptedClsNames.length; // Since this function is called several times, we increment the entry count for each use.
@@ -631,7 +738,6 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
     return promise.future;
   }
-  #end
 
   /**
    * Retrieves a character from the given id and additional parameters.
@@ -787,6 +893,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     }
 
     // Validate character data after parsing.
+    trace(id, parser.value);
     return CharacterData.validateCharacterData(id, parser.value);
   }
 
