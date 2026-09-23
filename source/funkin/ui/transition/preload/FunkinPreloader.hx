@@ -265,6 +265,16 @@ class FunkinPreloader extends FlxBasePreloader
     touchHereSprite.addChild(touchHereToPlay);
     addChild(touchHereSprite);
     #end
+
+    Lib.current.stage.addEventListener(openfl.events.Event.RESIZE, onResize);
+    onResize(null);
+  }
+
+  @:allow(flixel.FlxG)
+  function onResize(_):Void
+  {
+    scaleX = lime.app.Application.current.window.width / this._width;
+    scaleY = lime.app.Application.current.window.height / this._height;
   }
 
   function makeText(txtX:Float, txtY:Float, txt:String, color:Int):TextField
@@ -355,7 +365,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedInitializingScripts:Float = elapsed - initializingScriptsStartTime;
           if (initializingScriptsComplete && elapsedInitializingScripts >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = ParsingGameData;
+            currentState = CachingGraphics;
             return 0.0;
           }
           else
@@ -375,86 +385,11 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (initializingScriptsComplete)
           {
-            currentState = ParsingGameData;
+            currentState = CachingGraphics;
           }
         }
 
         return initializingScriptsPercent;
-
-      case ParsingGameData:
-        if (parsingGameDataPercent < 0)
-        {
-          parsingGameDataPercent = 0.0;
-          parsingGameDataStartTime = elapsed;
-
-          // Load ALL registry data asynchronously.
-          // We can queue multiple futures in order to do all of these in parallel.
-
-          var futures:Array<Future<LoadEntriesResult>> = [];
-
-          futures.push(SongRegistry.instance.loadEntriesAsync());
-          futures.push(LevelRegistry.instance.loadEntriesAsync());
-          futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
-          futures.push(PlayerRegistry.instance.loadEntriesAsync());
-          futures.push(ConversationRegistry.instance.loadEntriesAsync());
-          futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
-          futures.push(SpeakerRegistry.instance.loadEntriesAsync());
-          futures.push(AlbumRegistry.instance.loadEntriesAsync());
-          futures.push(StageRegistry.instance.loadEntriesAsync());
-          futures.push(StickerRegistry.instance.loadEntriesAsync());
-          futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
-          futures.push(SongEventRegistry.loadEventCacheAsync());
-          futures.push(NoteKindManager.loadNoteKindsAsync());
-          futures.push(CharacterRegistry.instance.loadEntriesAsync());
-          futures.push(ModuleHandler.loadModuleCacheAsync());
-
-          var registryFuture = lime.app.Promises.allSettled(futures);
-
-          registryFuture.onProgress((loaded:Int, total:Int) ->
-          {
-            trace(' PRELOADER '.bold().bg_note_left() + ' Parsing game data... ${loaded}/${total}');
-            parsingGameDataPercent = loaded / total;
-          });
-          registryFuture.onComplete((_result) ->
-          {
-            trace(' PRELOADER '.bold().bg_note_left() + ' Completed parsing game data.');
-            parsingGameDataComplete = true;
-          });
-
-          return parsingGameDataPercent;
-        }
-        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
-        {
-          var elapsedParsingGameData:Float = elapsed - cachingGraphicsStartTime;
-          if (parsingGameDataComplete && elapsedParsingGameData >= Constants.PRELOADER_MIN_STAGE_TIME)
-          {
-            currentState = CachingGraphics;
-            return 0.0;
-          }
-          else
-          {
-            if (parsingGameDataPercent < (elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME))
-            {
-              // Return real progress if it's lower.
-              return parsingGameDataPercent;
-            }
-            else
-            {
-              // Return simulated progress if it's higher.
-              return elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME;
-            }
-          }
-        }
-        else
-        {
-          if (parsingGameDataComplete)
-          {
-            currentState = CachingGraphics;
-            return 0.0;
-          }
-        }
-
-        return parsingGameDataPercent;
 
       case CachingGraphics:
         if (cachingGraphicsPercent < 0)
@@ -478,10 +413,17 @@ class FunkinPreloader extends FlxBasePreloader
 
             if (lime.graphics.Image.__isWebP(mod.icon)) continue;
 
+            #if sys
             FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, openfl.display.BitmapData.fromBytes(mod.icon, true));
+            #else
+            openfl.display.BitmapData.loadFromBytes(mod.icon).onComplete((bitmap) ->
+            {
+              FunkinAssetCache.instance.permaCacheFlxGraphic(mod.id, bitmap);
+            });
+            #end
           }
 
-          var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(IMAGE);
+          var assetsToCache:Array<AssetPath> = Assets.queryPersistentAssets(IMAGE);
 
           trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} graphics...');
 
@@ -539,7 +481,7 @@ class FunkinPreloader extends FlxBasePreloader
           cachingFontsPercent = 0.0;
 
           // Load and store font data for later use by the game.
-          var fontsToPreload = Assets.queryPreloadAssets(FONT);
+          var fontsToPreload = Assets.queryPersistentAssets(FONT);
 
           var future:Future<Array<Future<Bool>>> = Assets.cacheAllFonts(fontsToPreload);
           future.onProgress((loaded:Int, total:Int) ->
@@ -594,7 +536,7 @@ class FunkinPreloader extends FlxBasePreloader
 
           final CACHE_PERMANENT:Bool = true;
 
-          var assetsToCache:Array<AssetPath> = Assets.queryPreloadAssets(SOUND);
+          var assetsToCache:Array<AssetPath> = Assets.queryPersistentAssets(SOUND);
 
           trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} sounds...');
 
@@ -653,13 +595,14 @@ class FunkinPreloader extends FlxBasePreloader
 
           var assetsToCache:Array<AssetPath> = [];
 
-          assetsToCache.append(Assets.queryPreloadAssets(TEXT));
-          assetsToCache.append(Assets.queryPreloadAssets(JSON));
-          assetsToCache.append(Assets.queryPreloadAssets(SHADER));
-          assetsToCache.append(Assets.queryPreloadAssets(SCRIPT));
-          assetsToCache.append(Assets.queryPreloadAssets(XML));
+          assetsToCache.append(Assets.queryPersistentAssets(TEXT));
+          assetsToCache.append(Assets.queryPersistentAssets(JSON));
+          assetsToCache.append(Assets.queryPersistentAssets(SHADER));
+          assetsToCache.append(Assets.queryPersistentAssets(SCRIPTED_CLASS));
+          assetsToCache.append(Assets.queryPersistentAssets(SCRIPT));
+          assetsToCache.append(Assets.queryPersistentAssets(XML));
 
-          assetsToCache.append(Assets.queryPreloadAssets(UNKNOWN));
+          assetsToCache.append(Assets.queryPersistentAssets(UNKNOWN));
 
           trace(' PRELOADER '.bold().bg_note_left() + ' Begin caching ${assetsToCache.length} additional data files...');
 
@@ -682,7 +625,7 @@ class FunkinPreloader extends FlxBasePreloader
           var elapsedCachingData:Float = elapsed - cachingDataStartTime;
           if (cachingDataComplete && elapsedCachingData >= Constants.PRELOADER_MIN_STAGE_TIME)
           {
-            currentState = Complete;
+            currentState = ParsingGameData;
             return 0.0;
           }
           else
@@ -702,12 +645,87 @@ class FunkinPreloader extends FlxBasePreloader
         {
           if (cachingDataComplete)
           {
-            currentState = Complete;
+            currentState = ParsingGameData;
             return 0.0;
           }
         }
 
         return cachingDataPercent;
+
+      case ParsingGameData:
+        if (parsingGameDataPercent < 0)
+        {
+          parsingGameDataPercent = 0.0;
+          parsingGameDataStartTime = elapsed;
+
+          // Load ALL registry data asynchronously.
+          // We can queue multiple futures in order to do all of these in parallel.
+
+          var futures:Array<Future<LoadEntriesResult>> = [];
+
+          futures.push(SongRegistry.instance.loadEntriesAsync());
+          futures.push(LevelRegistry.instance.loadEntriesAsync());
+          futures.push(NoteStyleRegistry.instance.loadEntriesAsync());
+          futures.push(PlayerRegistry.instance.loadEntriesAsync());
+          futures.push(ConversationRegistry.instance.loadEntriesAsync());
+          futures.push(DialogueBoxRegistry.instance.loadEntriesAsync());
+          futures.push(SpeakerRegistry.instance.loadEntriesAsync());
+          futures.push(AlbumRegistry.instance.loadEntriesAsync());
+          futures.push(StageRegistry.instance.loadEntriesAsync());
+          futures.push(StickerRegistry.instance.loadEntriesAsync());
+          futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
+          futures.push(SongEventRegistry.loadEventCacheAsync());
+          futures.push(NoteKindManager.loadNoteKindsAsync());
+          futures.push(CharacterRegistry.instance.loadEntriesAsync());
+          futures.push(ModuleHandler.loadModuleCacheAsync());
+
+          var registryFuture = lime.app.Promises.allSettled(futures);
+
+          registryFuture.onProgress((loaded:Int, total:Int) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Parsing game data... ${loaded}/${total}');
+            parsingGameDataPercent = loaded / total;
+          });
+          registryFuture.onComplete((_result) ->
+          {
+            trace(' PRELOADER '.bold().bg_note_left() + ' Completed parsing game data.');
+            parsingGameDataComplete = true;
+          });
+
+          return parsingGameDataPercent;
+        }
+        else if (Constants.PRELOADER_MIN_STAGE_TIME > 0)
+        {
+          var elapsedParsingGameData:Float = elapsed - cachingGraphicsStartTime;
+          if (parsingGameDataComplete && elapsedParsingGameData >= Constants.PRELOADER_MIN_STAGE_TIME)
+          {
+            currentState = Complete;
+            return 0.0;
+          }
+          else
+          {
+            if (parsingGameDataPercent < (elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME))
+            {
+              // Return real progress if it's lower.
+              return parsingGameDataPercent;
+            }
+            else
+            {
+              // Return simulated progress if it's higher.
+              return elapsedParsingGameData / Constants.PRELOADER_MIN_STAGE_TIME;
+            }
+          }
+        }
+        else
+        {
+          if (parsingGameDataComplete)
+          {
+            currentState = Complete;
+            return 0.0;
+          }
+        }
+
+        return parsingGameDataPercent;
 
       case Complete:
         if (completeTime <= 0)
@@ -914,6 +932,7 @@ class FunkinPreloader extends FlxBasePreloader
   override function destroy():Void
   {
     // Ensure the graphics are properly destroyed and GC'd.
+    Lib.current.stage.removeEventListener(openfl.events.Event.RESIZE, onResize);
     super.destroy();
   }
 
@@ -949,11 +968,6 @@ enum abstract FunkinPreloaderState(String) to String
   public var InitializingScripts;
 
   /**
-   * Loading and parsing game data into registries, including loading JSONS for characters, stages, etc.
-   */
-  public var ParsingGameData;
-
-  /**
    * Loading all graphics into the cache that we need to preload before the game starts.
    */
   public var CachingGraphics;
@@ -972,6 +986,11 @@ enum abstract FunkinPreloaderState(String) to String
    * Loading all data into the cache that we need to preload before the game starts.
    */
   public var CachingData;
+
+  /**
+   * Loading and parsing game data into registries, including loading JSONS for characters, stages, etc.
+   */
+  public var ParsingGameData;
 
   /**
    * Finishing up.
@@ -1003,16 +1022,16 @@ enum abstract FunkinPreloaderState(String) to String
         return 'Downloading assets \n1/$steps $suffix';
       case InitializingScripts:
         return 'Initializing scripts \n2/$steps $suffix';
-      case ParsingGameData:
-        return 'Parsing game data \n3/$steps $suffix';
       case CachingGraphics:
-        return 'Caching graphics \n4/$steps $suffix';
+        return 'Caching graphics \n3/$steps $suffix';
       case CachingFonts:
-        return 'Caching fonts \n5/$steps $suffix';
+        return 'Caching fonts \n4/$steps $suffix';
       case CachingAudio:
-        return 'Caching audio \n6/$steps $suffix';
+        return 'Caching audio \n5/$steps $suffix';
       case CachingData:
-        return 'Caching additional data \n7/$steps $suffix';
+        return 'Caching additional data \n6/$steps $suffix';
+      case ParsingGameData:
+        return 'Parsing game data \n7/$steps $suffix';
       case Complete:
         return 'Finishing up \n$steps/$steps $suffix';
       #if FEATURE_TOUCH_HERE_TO_PLAY

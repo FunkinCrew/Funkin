@@ -102,9 +102,7 @@ class HotReloadState extends MusicBeatState
 
     if (isComplete)
     {
-      #if FEATURE_MULTITHREADING
       funkin.modding.PolymodErrorHandler.printQueuedErrors();
-      #end
 
       moveToTitleState();
     }
@@ -281,7 +279,6 @@ class HotReloadState extends MusicBeatState
   {
     var message:String = 'Hot reload step "$step" failed: $error';
 
-    trace(message);
     FlxG.log.error(message);
   }
 
@@ -314,7 +311,9 @@ class HotReloadState extends MusicBeatState
     {
       if (onComplete != null) onComplete();
 
-      FlxG.switchState(targetState);
+      funkin.ui.transition.Transition.switchState(targetState, {
+        transition: LoadingScreen(Fade(North), Fade(South)),
+      });
     }
     else
     {
@@ -326,14 +325,19 @@ class HotReloadState extends MusicBeatState
       }
 
       // Fallback to TitleState.
-      if (InitState.customTitleState == null)
+      if (InitState.customTitleState != null)
       {
-        FlxG.switchState(() -> new TitleState());
+        funkin.ui.transition.Transition.switchState(InitState.customTitleState, {
+          assetQuery: InitState.customTitleStateAssetsQuery,
+          transition: LoadingScreen(Fade(North), Fade(South)),
+        });
+        return;
       }
-      else
-      {
-        FlxG.switchState(() -> InitState.customTitleState);
-      }
+
+      funkin.ui.transition.Transition.switchState(() -> new TitleState(), {
+        assetQuery: TitleState.queryAssets,
+        transition: LoadingScreen(Fade(North), Fade(South)),
+      });
     }
   }
 }

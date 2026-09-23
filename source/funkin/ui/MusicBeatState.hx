@@ -1,5 +1,6 @@
 package funkin.ui;
 
+import funkin.util.FlxStateUtil;
 import funkin.modding.IScriptedClass.IEventHandler;
 import funkin.ui.mainmenu.MainMenuState;
 import flixel.FlxSubState;
@@ -201,16 +202,6 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
     Conductor.stepHit.remove(this.stepHit);
   }
 
-  function handleFunctionControls():Void
-  {
-    // Emergency exit button.
-    if (FlxG.keys.justPressed.F4)
-    {
-      FlxG.switchState(() -> new MainMenuState());
-      WindowUtil.setWindowTitle('Friday Night Funkin\'');
-    }
-  }
-
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
@@ -375,6 +366,42 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
     if (event.eventCanceled)
     {
+      event.finish();
+      return;
+    }
+
+    if (FlxStateUtil.cancelTransitionAtTop(this))
+    {
+      FlxTransitionableState.skipNextTransIn = false;
+      FlxTransitionableState.skipNextTransOut = false;
+    }
+
+    // Make sure that the game opens substates at the top of the stack.
+    // Events will be dispatched by the substate.
+    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
+    if (hasSubState)
+    {
+      FlxStateUtil.openSubStateAtTop(targetSubState, this);
+      event.finish();
+      return;
+    }
+
+    // Make sure that the game opens substates at the top of the stack.
+    // Events will be dispatched by the substate.
+    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
+    if (hasSubState)
+    {
+      FlxStateUtil.openSubStateAtTop(targetSubState, this);
+      event.finish();
+      return;
+    }
+
+    // Make sure that the game opens substates at the top of the stack.
+    // Events will be dispatched by the substate.
+    var hasSubState:Bool = this._requestedSubState != null || (this.subState != null && !this._requestSubStateReset);
+    if (hasSubState)
+    {
+      FlxStateUtil.openSubStateAtTop(targetSubState, this);
       event.finish();
       return;
     }
