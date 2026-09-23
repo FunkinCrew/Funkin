@@ -2,7 +2,6 @@ package funkin.util.file;
 
 #if sys
 import funkin.data.song.SongData.SongChartData;
-import funkin.ui.transition.LoadingState;
 import funkin.audio.FunkinSound;
 import funkin.util.assets.SoundUtil;
 import funkin.data.song.importer.ChartManifestData;
@@ -83,8 +82,7 @@ class FNFCUtil
       audioVocalTrackGroup.legacyVoiceUsesPlayer = audioVocalTrackGroup.getPlayerVoice(0) != null;
     }
 
-    // Transition to the play state.
-    LoadingState.loadPlayState({
+    funkin.ui.transition.Transition.openPlayState({
       targetSong: targetSong,
       targetDifficulty: difficulty,
       targetVariation: variation,
@@ -94,14 +92,18 @@ class FNFCUtil
       startTimestamp: 0,
       playbackRate: 1,
       overrideMusic: true,
-    }, false, true, function(targetState)
-    {
-      // Apply the instrumental and the vocals manually after the state loads.
-      // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
-      @:nullSafety(Off)
-      FlxG.sound.music = audioInstTrack;
-      targetState.vocals = audioVocalTrackGroup;
-    });
+    }, {
+      transition: LoadingScreen(Fade(North), Fade(South)),
+      shouldStopMusic: false,
+      onConstruct: function(targetState)
+      {
+        // Apply the instrumental and the vocals manually after the state loads.
+        // overrideMusic ensures that the game doesn't attempt to load music from the game's assets folder.
+        @:nullSafety(Off)
+        FlxG.sound.music = audioInstTrack;
+        cast(targetState, funkin.play.PlayState).vocals = audioVocalTrackGroup;
+      }
+    }, true);
   }
 
   /**

@@ -581,11 +581,16 @@ class AnsiUtil
   @:noCompletion
   static function stripCodes(output:String):String
   {
+    var stripCodesFunc = () -> isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, '');
+    #if FEATURE_MULTITHREADING
     // Regex.replace() isn't thread safe and this function is commonly accessed in a multi-threaded environment.
     // We use an RLock here to prevent crashes and race conditions.
     static final SYNC = new hx.concurrent.lock.RLock();
 
     // The body of SYNC.execute() can only be called by one thread at a time.
-    return SYNC.execute(() -> isColorCodesSupported() ? output : REGEX_ANSI_CODES.replace(output, ''));
+    return SYNC.execute(stripCodesFunc);
+    #else
+    return stripCodesFunc();
+    #end
   }
 }

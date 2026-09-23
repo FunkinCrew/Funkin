@@ -517,7 +517,7 @@ class FileUtil
    *
    * @param callback The callback to execute once we have a file reference.
    */
-  public static function browseFileReference(callback:(FileReference) -> Void):Void
+  public static function browseFileReference(callback:(FileReference) -> Void, ?typeFilter:Array<FileFilter>):Void
   {
     var file = new FileReference();
     file.addEventListener(Event.SELECT, (e) ->
@@ -536,7 +536,7 @@ class FileUtil
       selectedFileRef.load();
     });
 
-    file.browse();
+    file.browse(typeFilter);
   }
 
   /**
@@ -1593,9 +1593,9 @@ class FileUtilSandboxed
     return FileUtil.readBytesFromPath(sanitizePath(path));
   }
 
-  public static function browseFileReference(callback:(FileReference) -> Void):Void
+  public static function browseFileReference(callback:(FileReference) -> Void, ?typeFilter:Array<FileFilter>):Void
   {
-    FileUtil.browseFileReference(callback);
+    FileUtil.browseFileReference(callback, typeFilter);
   }
 
   public static function writeFileReference(path:String, data:String, callback:String->Void):Void

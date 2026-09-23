@@ -20,6 +20,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import lime.media.AudioBuffer as LimeAudioBuffer;
 import lime.utils.AssetCache as LimeAssetCache;
 import lime.utils.AssetType as LimeAssetType;
+import lime.utils.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
@@ -205,11 +206,32 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       cache.clearCache(clearPermanent);
     }
+
     FunkinBitmapFrontend.instance.forceClear();
     stagedBitmapData.clearCache(clearPermanent);
 
     assetListCaches = [];
     assetListBaseCache = null;
+  }
+
+  public function forceUnloadModAssets(modId:String, assetPaths:Array<String>):Void
+  {
+    forceUnloadAsset(modId);
+    for (path in assetPaths) forceUnloadAsset(path);
+  }
+
+  function forceUnloadAsset(id:String):Void
+  {
+    FunkinBitmapFrontend.instance.stagedFlxGraphic.remove(id, true);
+    stagedBitmapData.remove(id, true);
+    stagedFont.remove(id, true);
+    stagedSound.remove(id, true);
+    stagedText.remove(id, true);
+    stagedBytes.remove(id, true);
+
+    FunkinLimeAssetCache.instance.removeImage(id);
+    FunkinLimeAssetCache.instance.removeFont(id);
+    FunkinLimeAssetCache.instance.removeAudio(id);
   }
 
   /**
@@ -273,7 +295,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     // ^ Clear everything but freeplay as that has its own process, may or may not still be here depending on the future loading changes.
 
     // Perform garbage collection here, after we deleted a bunch of stuff, to free the memory we're no longer using.
-    #if (cpp || neko)
+    #if (cpp || neko || js)
     if (garbageCollect) funkin.util.MemoryUtil.collect(true);
     #end
   }
@@ -1675,37 +1697,27 @@ class FunkinLimeAssetCache extends LimeAssetCache
    */
   override public function clear(?prefix:String):Void
   {
-    if (prefix == null)
+    for (key in cb_audio.keys())
     {
-      // Clear maps without overriding them, to preserve callbacks.
-      cb_audio.clear();
-      cb_font.clear();
-      cb_image.clear();
+      if (prefix == null || StringTools.startsWith(key, prefix))
+      {
+        removeAudio(key);
+      }
     }
-    else
+
+    for (key in cb_font.keys())
     {
-      for (key in cb_audio.keys())
+      if (prefix == null || StringTools.startsWith(key, prefix))
       {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_audio.remove(key);
-        }
+        removeFont(key);
       }
+    }
 
-      for (key in cb_font.keys())
+    for (key in cb_image.keys())
+    {
+      if (prefix == null || StringTools.startsWith(key, prefix))
       {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_font.remove(key);
-        }
-      }
-
-      for (key in cb_image.keys())
-      {
-        if (StringTools.startsWith(key, prefix))
-        {
-          cb_image.remove(key);
-        }
+        removeImage(key);
       }
     }
   }
@@ -1764,7 +1776,11 @@ class FunkinLimeAssetCache extends LimeAssetCache
    */
   public function removeAudio(id:String):Void
   {
+    final audio = cb_audio.get(id);
     cb_audio.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.SOUND);
+    if (audio != null) audio.dispose();
   }
 
   /**
@@ -1774,6 +1790,8 @@ class FunkinLimeAssetCache extends LimeAssetCache
   public function removeFont(id:String):Void
   {
     cb_font.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.FONT);
   }
 
   /**
@@ -1783,6 +1801,8 @@ class FunkinLimeAssetCache extends LimeAssetCache
   public function removeImage(id:String):Void
   {
     cb_image.remove(id);
+
+    LimeAssets.unload(id, LimeAssetType.IMAGE);
   }
 
   public function toString():String

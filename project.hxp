@@ -1009,7 +1009,6 @@ class Project extends HXProject
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
-    FEATURE_MULTITHREADING.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
 
     // cppia hosting requires hxcpp.
@@ -1053,6 +1052,10 @@ class Project extends HXProject
 
     // Should be true except on web builds (some asset stuff breaks it)
     FEATURE_LAG_ADJUSTMENT.apply(this, !isWeb());
+
+    // Multithreaded task parallelization is supported on all platforms but web.
+    // NOTE: Async stuff still works on web, just not multithreading specifically.
+    FEATURE_MULTITHREADING.apply(this, !isWeb());
 
     // Should be true only on Desktop builds.
     // Mobile has its own screenshot methods.
@@ -1252,6 +1255,12 @@ class Project extends HXProject
     if (FEATURE_MULTITHREADING.isEnabled(this))
     {
       setHaxedef("lime_threads");
+		}
+
+    if (isWeb())
+    {
+      // Disables the native JSON implemention for haxe.Json because scripts cant use it if its native
+      setHaxedef("haxeJSON");
     }
   }
 
@@ -1267,7 +1276,7 @@ class Project extends HXProject
     // Forcibly include all Funkin' classes in builds.
     // This prevents classes that are unused by the base game from being unavailable to HScript.
     addHaxeMacro(
-      "include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stage.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])"
+      "include('funkin', true, ['funkin.mobile.*', 'funkin.ui.debug.anim.*', 'funkin.ui.debug.charting.*', 'funkin.ui.debug.stageeditor.*', 'funkin.ui.haxeui.*'])"
     );
 
     if (isMobile())
@@ -1516,6 +1525,9 @@ class Project extends HXProject
     // Determines the file in the mod folder used for the icon.
     setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png,_polymod_icon.jpg,_polymod_icon.gif,_polymod_icon.webp");
 
+  // Prevents Polymod from loading all assets on load so we can let preloader do it
+    setHaxedef("POLYMOD_DISABLE_WEB_PRELOAD");
+
     if (isDebug())
     {
       // Turns on additional debug logging.
@@ -1662,8 +1674,6 @@ class Project extends HXProject
     if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/animation-editor', "default");
 
     if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/chart-editor', "default");
-
-    if (!FEATURE_STAGE_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/stage-editor', "default");
 
     // if (!FEATURE_CAMERA_EDITOR.isEnabled(this)) removeAssetPath('assets/ui/editors/camera-editor', "default");
 

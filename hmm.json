@@ -3,7 +3,7 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "ref": "0eb7e2c28f304e2c2e6d65353d8f9d42590d5951",
+      "ref": "cf4d3d37e309c4594813d7cc06aec5a800cdb090",
       "url": "https://github.com/FunkinCrew/FlxPartialSound"
     },
     {
@@ -61,13 +61,13 @@
     {
       "name": "flixel",
       "type": "git",
-      "ref": "d634dd45aedde32564b514ad097368bca6040610",
+      "ref": "5129a6b7f27e11bb2b2c5c78bc510d95d5fa2142",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
       "name": "flixel-addons",
       "type": "git",
-      "ref": "e038c227c0b48bd23a3ffa0f554e59b9c4c4bf2f",
+      "ref": "7df068dbecefa40328d60a1849126a8318b3c80e",
       "url": "https://github.com/FunkinCrew/flixel-addons"
     },
     {
@@ -187,7 +187,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "8f7ea3648d417264e330186323a0bfda74a07023",
+      "ref": "59bd9ed91401cd5cf0198e5305e14f935e2dc0bd",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -205,7 +205,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "4740cb234311582c31f7bc7adb4dff47bb48bbee",
+      "ref": "391d9867ac0db7d4fb03e345eed0dfc38b2149bd",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {

@@ -183,6 +183,15 @@ class PolymodHandler
 
     for (modId in toRemove) modIds.remove(modId);
 
+    for (previousModId in loadedModIds)
+    {
+      if (!modIds.contains(previousModId))
+      {
+        var previousModAssets = listAllModAssetPaths(previousModId).filter((path) -> isAssetOwnedByMod(previousModId, path));
+        funkin.assets.FunkinAssetCache.instance.forceUnloadModAssets(previousModId, previousModAssets);
+      }
+    }
+
     var loadedModList:Array<ModMetadata> = polymod.Polymod.init({
       // Root directory for all mods.
       modRoot: MOD_FOLDER,
@@ -1086,6 +1095,46 @@ class PolymodHandler
   }
 
   static final PERSIST_ALL_ASSETS_VERSION_RULE:thx.semver.VersionRule = '<0.9.x';
+
+  static function isAssetOwnedByMod(modId:String, assetPath:String):Bool
+  {
+    final modIndex = loadedModIds.indexOf(modId);
+    if (modIndex < 0 || modIndex >= loadedModDirs.length) return false;
+
+    final modDir = loadedModDirs[modIndex];
+    if (modDir == null || modDir.length == 0) return false;
+
+    final resolvedPath = PolymodAssets.getPath(assetPath);
+    if (resolvedPath == null || resolvedPath.length == 0) return false;
+
+    final normalizedModDir = modDir.replace('\\', '/');
+    final normalizedResolvedPath = resolvedPath.replace('\\', '/');
+
+    return normalizedResolvedPath == normalizedModDir || StringTools.startsWith(normalizedResolvedPath, normalizedModDir + '/');
+  }
+
+  /**
+   * List every asset path that a specific mod provides.
+   */
+  static function listAllModAssetPaths(modId:String):Array<String>
+  {
+    final result:Array<String> = [];
+
+    @:privateAccess
+    {
+      result.append(PolymodAssets.listInMod(modId, BYTES));
+      result.append(PolymodAssets.listInMod(modId, IMAGE));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_GENERIC));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_MUSIC));
+      result.append(PolymodAssets.listInMod(modId, AUDIO_SOUND));
+      result.append(PolymodAssets.listInMod(modId, VIDEO));
+      result.append(PolymodAssets.listInMod(modId, TEXT));
+      result.append(PolymodAssets.listInMod(modId, FONT));
+      result.append(PolymodAssets.listInMod(modId, UNKNOWN));
+    }
+
+    return result;
+  }
 
   /**
    * Get a list of assets which should be always loaded in cache.
