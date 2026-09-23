@@ -3,6 +3,15 @@ package funkin.play.event;
 import funkin.data.event.SongEventSchema;
 import funkin.data.character.CharacterData.HealthIconData;
 import funkin.data.song.SongData.SongEventData;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 /**
  * This class handles song events which change the player's health icon, or the opponent's health icon.
@@ -32,6 +41,31 @@ class SetHealthIconSongEvent extends SongEvent
     super('SetHealthIcon', {
       processOldEvents: true
     });
+  }
+
+  /**
+   * Provides a list of the additional assets that a song containing this specific song event will need.
+   * @param type The type of asset to query.
+   * @param data The chart data for this specific instance of the song event.
+   * @return A list of assets to process in the loading screen.
+   */
+  override public function queryAssets(type:AssetType, data:SongEventData):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = super.queryAssets(type, data);
+
+    var characterId:String = data.value.id ?? Constants.DEFAULT_HEALTH_ICON;
+    switch (type)
+    {
+      case IMAGE:
+        results.push(Paths.image('gameplay/characters/$characterId/icon-$characterId'));
+      case XML:
+        // Icon may not have an XML, so return null if it doesn't rather than complaining.
+        results.push(Paths.xml('gameplay/characters/$characterId/icon-$characterId').orNull());
+      default:
+        // Nothing.
+    }
+
+    return results;
   }
 
   static final DEFAULT_CHAR:Int = 0;

@@ -42,7 +42,7 @@ class NoteKindManager
   #if FEATURE_MULTITHREADING
   public static var noteKinds:SynchronizedMap<String, NoteKind> = SynchronizedMap.newStringMap();
   #else
-  public static var noteKinds:SynchronizedMap<String, NoteKind> = [];
+  public static var noteKinds:Map<String, NoteKind> = [];
   #end
 
   static var dispatchList:Null<Array<NoteKind>> = null;
@@ -64,12 +64,9 @@ class NoteKindManager
    */
   public static function listNoteKinds():Array<String>
   {
-    #if FEATURE_MULTITHREADING
-    // MapTools can't be used for SynchronizedMap.
-    return[for (k => v in noteKinds) k];
-    #else
-    return noteKinds.keyValues();
-    #end
+    var result:Array<String> = [];
+    for (key => _ in noteKinds) result.push(key);
+    return result;
   }
 
   /**
@@ -127,15 +124,19 @@ class NoteKindManager
     }
   }
 
-  #if FEATURE_MULTITHREADING
   public static function loadNoteKindsAsync():lime.app.Future<LoadEntriesResult>
   {
     clearNoteKindCache();
 
-    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadNoteKindsAsync');
-    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
+    #if FEATURE_MULTITHREADING
     var entryErrors:SynchronizedArray<
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
+    #else
+    var entryErrors:Array<
+      {entryId:String, error:Any, ?entryCls:String}> = [];
+    #end
+    var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadNoteKindsAsync');
+    var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
     var scriptedNoteKindClasses:Array<String> = NoteKind.listScriptClasses();
     var entryCount:Int = 0;
     var loadedBaseNoteKinds:Bool = false;
@@ -319,7 +320,6 @@ class NoteKindManager
 
     return promise.future;
   }
-  #end
 
   /**
    * Calls the given event for note kind scripts

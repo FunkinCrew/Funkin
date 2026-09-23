@@ -4,6 +4,15 @@ import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.data.character.CharacterData;
+import funkin.data.character.CharacterRegistry;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * A SparrowCharacter is a Character which is rendered by
@@ -14,9 +23,43 @@ import funkin.data.character.CharacterData.CharacterRenderType;
  */
 class SparrowCharacter extends BaseCharacter
 {
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param charId The character ID, used to look up the specific assets.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, charId:String):Array<AssetPath>
+  {
+    trace('ASSETS: Querying assets for Sparrow character "${charId}"');
+    // Specific implementations handle figuring out which assets to load.
+    var result:Array<AssetPath> = BaseCharacter.queryAssets(type, charId);
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(charId);
+    if (_data == null) return result; // No assets if data couldn't be parsed.
+
+    switch (type)
+    {
+      case IMAGE:
+        result.push(Paths.image(_data.assetPath));
+      case XML:
+        result.push(Paths.xml(_data.assetPath));
+      default:
+        // Nothing
+    }
+
+    return result;
+  }
+
   public function new(id:String)
   {
-    super(id, CharacterRenderType.Sparrow);
+    super(id, {
+      renderType: CharacterRenderType.Sparrow
+    });
   }
 
   override function onCreate(event:ScriptEvent):Void

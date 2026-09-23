@@ -82,10 +82,10 @@ class CharacterUnlockState extends MusicBeatState
     // HealthIcon handles getting the right frames for us,
     // but it has a bunch of overhead in it that makes it gross to work with outside the health bar.
     var healthIconCharacterId = targetCharacterData?.getOwnedCharacterIds()[0];
-    var baseCharacter = CharacterRegistry.instance.fetchEntry(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
+    var baseCharacterData:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
     var healthIcon:HealthIcon = new HealthIcon(healthIconCharacterId);
     @:privateAccess
-    healthIcon.configure(baseCharacter?._data.healthIcon);
+    healthIcon.configure(baseCharacterData?.healthIcon);
     healthIcon.autoUpdate = false;
     healthIcon.bopEvery = 0; // You can increase this number later once the animation is done.
     healthIcon.size.set(0.5, 0.5);

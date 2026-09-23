@@ -13,6 +13,12 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.stage.Stage;
 import funkin.graphics.FunkinAnimationController;
+//
+// ~PATHS~
+//
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Assets.AssetType;
 
 /**
  * A Character is a stage prop which bops to the music as well as controlled by the strumlines.
@@ -178,6 +184,42 @@ class BaseCharacter extends Bopper implements IRegistryEntry<CharacterData>
     this.cameraFocusPoint.y += yDiff;
 
     return super.set_y(value);
+  }
+
+  /**
+   * Retrieve a list of all the asset paths required to load the character.
+   *
+   * If you have a scripted class which initializes sprites, or plays sounds or something,
+   * make sure you extend this function and add them here so they get cached in the loading screen.
+   *
+   * @param type The type of asset to query
+   * @param id The character ID to query.
+   * @return An array of asset paths, or empty if no assets of that type are required.
+   */
+  public static function queryAssets(type:AssetType, entryId:String, ?params:CharacterEntryParams):Array<AssetPath>
+  {
+    // Specific implementations handle figuring out which assets to load.
+
+    var _data:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(entryId);
+    if (_data == null) return []; // No assets if data couldn't be parsed.
+
+    // Get the character's health icon path.
+    var healthIconId:String = _data?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+    var healthIconPath:AssetPath = Paths.image('gameplay/characters/$healthIconId/icon-$healthIconId');
+
+    var results:Array<AssetPath> = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(healthIconPath);
+      case XML:
+        results.push(healthIconPath.withAssetType(XML).orNull());
+      default:
+        // Nothing
+    }
+
+    return results.filterNull();
   }
 
   /**

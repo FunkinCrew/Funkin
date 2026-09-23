@@ -1,5 +1,6 @@
 package funkin.play;
 
+import flixel.util.typeLimit.NextState;
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import flixel.FlxState;
 import funkin.data.freeplay.player.PlayerRegistry;
@@ -10,6 +11,9 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 import funkin.audio.FunkinSound;
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.ScriptEventDispatcher;
@@ -18,6 +22,7 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.MusicBeatSubState;
 import funkin.ui.story.StoryMenuState;
 import funkin.util.MathUtil;
+import flixel.util.typeLimit.NextState;
 import funkin.effects.RetroCameraFade;
 import flixel.math.FlxPoint;
 import funkin.util.TouchUtil;
@@ -60,6 +65,23 @@ class GameOverSubState extends MusicBeatSubState
    * Which alternate "blue ball" sound effect to use.
    */
   public static var blueBallSuffix:String = '';
+
+  public static function queryAssets(type:AssetType, playerCharacterId:String):Array<AssetPath>
+  {
+    final prefix:String = 'gameplay/playable-characters/${playerCharacterId}/game-over/';
+    final results:Array<AssetPath> = [];
+
+    for (asset in Assets.listInPath(prefix, type))
+    {
+      final fileName:String = asset.fileBareName;
+      if (fileName.startsWith('game-over') || fileName.startsWith('loss-sfx'))
+      {
+        results.pushUnique(asset);
+      }
+    }
+
+    return results;
+  }
 
   static var blueballed:Bool = false;
 
@@ -106,12 +128,38 @@ class GameOverSubState extends MusicBeatSubState
 
   static final CAMERA_ZOOM_DURATION:Float = 0.5;
 
+  /**
+   * Returns true when a game-over suffix contains `pixel` as a complete suffix token.
+   */
+  static function hasPixelSuffix(suffix:String):Bool
+  {
+    if (suffix == null || suffix.length == 0) return false;
+
+    var normalized:String = suffix.toLowerCase();
+    var parts:Array<String> = normalized.split('-');
+    return parts.indexOf('pixel') >= 0;
+  }
+
+  /**
+   * Whether this game-over should use RetroCameraFade for its restart transition.
+   */
+  inline function usesPixelGameOverTransition():Bool
+  {
+    return hasPixelSuffix(musicSuffix) || hasPixelSuffix(animationSuffix);
+  }
+
   var targetCameraZoom:Float = 1.0;
   var canInput:Bool = false;
 
   public function new(params:GameOverParams)
   {
     super();
+
+    @:nullSafety(Off) // oh for real
+    {
+      transIn = null;
+      transOut = null;
+    }
 
     this.isChartingMode = params?.isChartingMode ?? false;
     transparent = params.transparent;
@@ -344,7 +392,7 @@ class GameOverSubState extends MusicBeatSubState
       confirmDeath();
     }
 
-    if (controls.BACK) goBack();
+    if (controls.BACK_P) goBack();
   }
 
   var deathQuoteSound:Null<FunkinSound> = null;
@@ -412,7 +460,7 @@ class GameOverSubState extends MusicBeatSubState
       confirmTimer.start(FADE_TIMER, function(tmr:FlxTimer)
       {
         // ...fade out the graphics.
-        if (musicSuffix == '-pixel')
+        if (usesPixelGameOverTransition())
         {
           RetroCameraFade.fadeToBlack(FlxG.camera, 10, 2);
         }
@@ -424,13 +472,13 @@ class GameOverSubState extends MusicBeatSubState
         confirmTimer.start(2, _ ->
         {
           FlxG.camera.filters = [];
-          resetPlaying(musicSuffix == '-pixel');
+          resetPlaying(usesPixelGameOverTransition());
         });
       });
     }
     else
     {
-      resetPlaying(musicSuffix == '-pixel');
+      resetPlaying(usesPixelGameOverTransition());
 
       if (confirmTimer != null)
       {
@@ -552,7 +600,9 @@ class GameOverSubState extends MusicBeatSubState
         return resolveMusicPath(newSuffix, starting, ending);
       }
 
-      FlxG.log.error('[GAMEOVER] Could not find game over music (expected path "${Paths.music(basePath)}" based on suffix "$musicSuffix")!');
+      FlxG.log.error(
+        '[GAMEOVER] Could not find game over music (expected path "${funkin.assets.Paths.music(basePath, null, false)}" based on suffix "$musicSuffix")!'
+      );
       return null;
     }
     trace('Resolved music path: ' + musicPath);
@@ -643,32 +693,30 @@ class GameOverSubState extends MusicBeatSubState
     }
     else
     {
-      var targetState:funkin.ui.transition.stickers.StickerSubState->FlxState = (PlayStatePlaylist.isStoryMode) ? (sticker) -> new StoryMenuState(
-        sticker
-      ) : (sticker) -> FreeplayState.build(sticker);
+      var wasStoryMode:Bool = PlayStatePlaylist.isStoryMode;
+      var freeplayParams:FreeplayStateParams = {
+        forceSkipIntro: true
+      };
+      var targetState:NextState = (PlayStatePlaylist.isStoryMode) ? () -> new StoryMenuState() : () -> FreeplayState.build(freeplayParams);
+      var assetQuery = (PlayStatePlaylist.isStoryMode) ? StoryMenuState.queryAssets : FreeplayState.queryAssets.bind(
+        _,
+        freeplayParams,
+        FreeplayState.rememberedCharacterId
+      );
 
       if (PlayStatePlaylist.isStoryMode)
       {
         PlayStatePlaylist.reset();
       }
 
-      var stickerPackId:Null<String> = parentPlayState?.currentChart?.stickerPack;
+      var stickerPackId:String = parentPlayState?.resolveStickerPackId() ?? Constants.DEFAULT_STICKER_PACK;
 
-      if (stickerPackId == null)
-      {
-        var playerCharacterId:Null<String> = PlayerRegistry.instance.getCharacterOwnerId(parentPlayState?.currentChart?.characters.player);
-        var playerCharacter:Null<PlayableCharacter> = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? Constants.DEFAULT_CHARACTER);
-
-        if (playerCharacter != null)
-        {
-          stickerPackId = playerCharacter.getStickerPackID();
-        }
-      }
-
-      openSubState(new funkin.ui.transition.stickers.StickerSubState({
-        targetState: targetState,
-        stickerPack: stickerPackId
-      }));
+      funkin.ui.transition.Transition.switchState(targetState, {
+        assetQuery: assetQuery,
+        transition: Sticker(stickerPackId),
+        shouldStopMusic: true,
+        shouldPurgeCache: wasStoryMode
+      });
     }
   }
 

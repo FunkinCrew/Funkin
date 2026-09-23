@@ -4,6 +4,8 @@ import funkin.data.song.SongData.SongEventData;
 import funkin.data.event.SongEventSchema;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * Parameters used to initialize a song event.
@@ -80,6 +82,19 @@ class SongEvent implements IPlayStateScriptedClass
     this.processOldEvents = params?.processOldEvents ?? false;
     this.activationOffsetMs = params?.activationOffsetMs ?? 0.0;
     this.activationOffsetSteps = params?.activationOffsetSteps ?? 0.0;
+  }
+
+  /**
+   * Provides a list of all the additional assets that a song containing this specific song event will need.
+   * For example, a health icon song event will need the image for the new health icon.
+   *
+   * @param type The type of asset to query.
+   * @param data The chart data for this specific instance of the song event.
+   * @return A list of assets to process in the loading screen.
+   */
+  public function queryAssets(type:AssetType, data:SongEventData):Array<AssetPath>
+  {
+    return [];
   }
 
   /**
