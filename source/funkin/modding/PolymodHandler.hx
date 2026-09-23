@@ -1,6 +1,8 @@
 package funkin.modding;
 
 import funkin.data.character.CharacterRegistry;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AssetPath;
 import funkin.data.dialogue.ConversationRegistry;
 import funkin.data.dialogue.DialogueBoxRegistry;
 import funkin.data.dialogue.SpeakerRegistry;
@@ -18,11 +20,19 @@ import funkin.play.notes.notekind.NoteKindManager;
 import funkin.save.Save;
 import funkin.util.FileUtil;
 import funkin.util.SortUtil;
+import funkin.util.VersionUtil;
 import funkin.util.macro.ClassMacro;
 import polymod.Polymod;
 import polymod.PolymodAssets.PolymodAssetType;
+import polymod.PolymodAssets;
+import polymod.PolymodConfig;
 import polymod.format.ParseRules.TextFileFormat;
-import polymod.fs.ZipFileSystem;
+import thx.semver.VersionRule;
+#if sys
+import polymod.fs.ZipFileSystem as PolymodFileSystem;
+#else
+import polymod.fs.MemoryZipFileSystem as PolymodFileSystem;
+#end
 
 /**
  * A class for interacting with Polymod, the atomic modding framework for Haxe.
@@ -47,7 +57,7 @@ class PolymodHandler
    * Using more complex rules allows mods from older compatible versions to stay functioning,
    * while preventing mods made for future versions from being installed.
    */
-  public static final API_VERSION_RULE:String = '>=0.8.0 <0.10.0';
+  public static final API_VERSION_RULE:VersionRule = '>=0.8.0 <0.10.0';
 
   /**
    * Where relative to the game executable that mods are located.
@@ -89,7 +99,7 @@ class PolymodHandler
   public static var loadedModIds:Array<String> = [];
 
   // Use SysZipFileSystem on native and MemoryZipFilesystem on web.
-  static var modFileSystem:Null<ZipFileSystem> = null;
+  static var modFileSystem:Null<PolymodFileSystem> = null;
 
   /**
    * If the mods folder doesn't exist, create it.
@@ -316,12 +326,12 @@ class PolymodHandler
    * Replace the file system used for scanning.
    * NOTE: Won't replace the file system used for actual mods until you rerun `Polymod.init()`.
    *
-   * @return polymod.fs.ZipFileSystem
+   * @return polymod.fs.ZipFileSystem or polymod.fs.MemoryZipFileSystem
    */
-  static function buildFileSystem():polymod.fs.ZipFileSystem
+  static function buildFileSystem():PolymodFileSystem
   {
     polymod.Polymod.onError = PolymodErrorHandler.onPolymodError;
-    return new ZipFileSystem({
+    return new PolymodFileSystem({
       modRoot: MOD_FOLDER,
       autoScan: true
     });
@@ -384,6 +394,9 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.play.cutscene.VideoCutscene', funkin.modding.compat.VideoCutscene);
     Polymod.addImportAlias('funkin.data.character.CharacterDataParser', funkin.modding.compat.CharacterDataParser);
     Polymod.addImportAlias('funkin.FunkinMemory', funkin.memory.FunkinMemory);
+    #if html5
+    Polymod.addImportAlias('funkin.graphics.video.FunkinVideoSprite', funkin.modding.compat.HTML5Video);
+    #end
 
     // Backwards compatibility for many classes that were removed.
     // These are just wrapper scripted classes that extend the original class.
@@ -399,7 +412,9 @@ class PolymodHandler
     Polymod.addImportAlias('funkin.modding.base.ScriptedFlxTypedGroup', flixel.group.FlxGroup.FlxTypedGroup);
     Polymod.addImportAlias('funkin.graphics.ScriptedFunkinSprite', funkin.graphics.FunkinSprite);
     Polymod.addImportAlias('funkin.group.ScriptedFunkinGroup', funkin.group.FunkinGroup);
+    #if hxvlc
     Polymod.addImportAlias('funkin.graphics.video.ScriptedFunkinVideoSprite', funkin.graphics.video.FunkinVideoSprite);
+    #end
     Polymod.addImportAlias('funkin.play.character.ScriptedBaseCharacter', funkin.play.character.BaseCharacter);
     Polymod.addImportAlias('funkin.play.character.ScriptedSparrowCharacter', funkin.play.character.SparrowCharacter);
     Polymod.addImportAlias('funkin.play.character.ScriptedMultiSparrowCharacter', funkin.play.character.MultiSparrowCharacter);
@@ -730,7 +745,7 @@ class PolymodHandler
     var modMetadata:Array<ModMetadata> = [];
     try
     {
-      if (modFileSystem == null || force) modFileSystem = buildFileSystem();
+      if (modFileSystem == null #if sys || force #end) modFileSystem = buildFileSystem();
 
       var scanParams:Dynamic = {
         modRoot: MOD_FOLDER,
@@ -953,5 +968,194 @@ class PolymodHandler
     #end
 
     return value;
+  }
+
+  #if js
+  public static function addModByBytes(modPath:String, modBytes:haxe.io.Bytes)
+  {
+    if (modFileSystem == null)
+    {
+      modFileSystem = buildFileSystem();
+    }
+
+    modFileSystem.addZipFile(modPath, modBytes);
+  }
+
+  @:nullSafety(Off)
+  public static function loadModFromFileDialog(?onComplete:Void->Void):Void
+  {
+    var input:js.html.InputElement = cast js.Browser.document.createElement('input');
+    input.type = 'file';
+    input.accept = (PolymodConfig.archiveModExt ?? ['.zip']).join(',');
+    input.multiple = true;
+    input.style.display = 'none';
+    js.Browser.document.body.appendChild(input);
+
+    input.onchange = function(e)
+    {
+      var files:Array<js.html.File> = cast input.files;
+      if (files.length == 0)
+      {
+        return;
+      }
+
+      var archiveExtensions:Array<String> = [
+        for (extension in (PolymodConfig.archiveModExt ?? ['.zip'])) extension
+          .toLowerCase()
+          .startsWith('.') ? extension.toLowerCase()
+          .substr(1) : extension.toLowerCase()
+      ];
+
+      var total = 0;
+      var loaded = 0;
+      var zipData:Array<
+        {name:String, bytes:haxe.io.Bytes}> = [];
+
+      for (file in files)
+      {
+        if (!archiveExtensions.contains(haxe.io.Path.extension(file.name).toLowerCase()))
+        {
+          continue;
+        }
+
+        total++;
+
+        var reader = new js.html.FileReader();
+        reader.onload = function(_)
+        {
+          var arrayBuffer:js.lib.ArrayBuffer = reader.result;
+          var bytes = haxe.io.Bytes.ofData(arrayBuffer);
+          zipData.push({
+            name: file.name,
+            bytes: bytes
+          });
+          loaded++;
+
+          if (loaded == total)
+          {
+            if (zipData.length == 0)
+            {
+              return;
+            }
+
+            for (item in zipData)
+            {
+              addModByBytes(item.name, item.bytes);
+            }
+
+            if (onComplete != null) onComplete();
+          }
+        };
+
+        reader.onerror = function(_)
+        {
+          trace('Error reading file: ' + file.name);
+          loaded++;
+        };
+
+        reader.readAsArrayBuffer(file);
+      }
+
+      if (total == 0)
+      {
+        return;
+      }
+    };
+
+    input.click();
+  }
+  #end
+
+  public static function readModDirectory():Array<String>
+  {
+    #if sys
+    var newItems = [];
+    try
+    {
+      newItems = FileUtil.readDir(MOD_FOLDER);
+    }
+    catch (e:Dynamic)
+    {
+      trace('Failed to read mods folder: ${Std.string(e)}');
+      return [];
+    }
+    return newItems;
+    #else
+    return getAllModIds();
+    #end
+  }
+
+  static final PERSIST_ALL_ASSETS_VERSION_RULE:thx.semver.VersionRule = '<0.9.x';
+
+  /**
+   * Get a list of assets which should be always loaded in cache.
+   *
+   * @param type The type of assets to load.
+   * @return A list of asset paths.
+   */
+  public static function queryPersistentAssets(type:AssetType):Array<AssetPath>
+  {
+    #if !html5
+    // We don't need this outside HTML5, since desktop/mobile can load assets synchronously.
+    return [];
+    #else
+    if (loadedModIds.length == 0) return [];
+
+    var results:Array<AssetPath> = [];
+
+    var availableMods:Array<ModMetadata> = getAllModsIncludingIncompatible();
+    var modMetadatas:Map<String, ModMetadata> = [];
+    // This step is kinda dumb.
+    for (modId in loadedModIds)
+    {
+      for (mod in availableMods)
+      {
+        if (mod.id == modId)
+        {
+          modMetadatas[modId] = mod;
+          break;
+        }
+      }
+    }
+
+    for (modId in loadedModIds)
+    {
+      var mod = modMetadatas[modId];
+      if (mod == null) continue;
+
+      if (!VersionUtil.validateVersionStr(mod.apiVersion, PERSIST_ALL_ASSETS_VERSION_RULE)) continue;
+
+      // If we are here, the mod is older than 0.9.0, so it won't have fully implemented queryAssets() properly.
+      // We will need to persistently load all assets from the mod.
+      @:privateAccess
+      switch (type)
+      {
+        case IMAGE:
+          results.append(PolymodAssets.listInMod(modId, IMAGE).map((path) -> funkin.assets.Paths.raw(path)));
+        case SOUND:
+          results.append(PolymodAssets.listInMod(modId, AUDIO_GENERIC).map((path) -> funkin.assets.Paths.raw(path)));
+        case VIDEO:
+          results.append(PolymodAssets.listInMod(modId, VIDEO).map((path) -> funkin.assets.Paths.raw(path)));
+        case TEXT:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case JSON:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SHADER:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SCRIPT:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case SCRIPTED_CLASS:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case XML:
+          results.append(PolymodAssets.listInMod(modId, TEXT).map((path) -> funkin.assets.Paths.raw(path)));
+        case FONT:
+          results.append(PolymodAssets.listInMod(modId, FONT).map((path) -> funkin.assets.Paths.raw(path)));
+        default:
+          results.append(PolymodAssets.listInMod(modId, UNKNOWN).map((path) -> funkin.assets.Paths.raw(path)));
+      }
+    }
+
+    return results;
+    #end
   }
 }
