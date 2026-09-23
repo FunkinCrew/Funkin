@@ -16,6 +16,8 @@ import flixel.math.FlxPoint;
 import flixel.FlxCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 class LetterSort extends FlxSpriteGroup
 {
@@ -35,6 +37,26 @@ class LetterSort extends FlxSpriteGroup
 
   var swipeBounds:FlxObject;
 
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    results.appendUnique(FreeplayLetter.queryAssets(type));
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          Paths.image('ui/freeplay/interface/mini-arrow'),
+          Paths.image('ui/freeplay/interface/separator')
+        ]);
+      default:
+        // Nothing
+    }
+
+    return results;
+  }
+
   public function new(x, y)
   {
     super(x, y);
@@ -42,12 +64,12 @@ class LetterSort extends FlxSpriteGroup
     grpSeperators = new FlxSpriteGroup();
     add(grpSeperators);
 
-    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow'));
+    leftArrow = new FlxSprite(-20, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow').toFlxGraphicAsset());
     // leftArrow.animation.play('arrow');
     leftArrow.flipX = true;
     add(leftArrow);
 
-    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow'));
+    rightArrow = new FlxSprite(380, 15).loadGraphic(Paths.image('ui/freeplay/interface/mini-arrow').toFlxGraphicAsset());
     // rightArrow.animation.play('arrow');
     add(rightArrow);
 
@@ -75,7 +97,7 @@ class LetterSort extends FlxSpriteGroup
       // don't put the last separator
       if (i == 4) continue;
 
-      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image('ui/freeplay/interface/separator'));
+      var sep:FlxSprite = new FlxSprite((i * 80) + 60, 20).loadGraphic(Paths.image('ui/freeplay/interface/separator').toFlxGraphicAsset());
       // sep.animation.play('separator');
       sep.color = letter.color.getDarkened(darkness);
       grpSeperators.add(sep);
@@ -163,7 +185,7 @@ class LetterSort extends FlxSpriteGroup
     {
       arrowToMove.offset.x = 0;
     });
-    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    if (playSound && diff != 0) FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu').toFlxSoundAsset(), 0.4);
   }
 
   /**
@@ -269,6 +291,19 @@ class FreeplayLetter extends FunkinSprite
    * The current letter in the regexLetters array this FreeplayLetter is on
    */
   public var curLetter:Int = 0;
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    switch (type)
+    {
+      case IMAGE:
+        return Paths.animateAtlas('ui/freeplay/interface/sorted-letters').image();
+      case JSON:
+        return Paths.animateAtlas('ui/freeplay/interface/sorted-letters').json();
+      default:
+        return [];
+    }
+  }
 
   public function new(x:Float, y:Float, ?letterInd:Int, curSelected:Int = 0)
   {

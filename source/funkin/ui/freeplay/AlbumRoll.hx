@@ -7,6 +7,8 @@ import flixel.util.FlxTimer;
 import funkin.data.freeplay.album.AlbumRegistry;
 import funkin.graphics.FunkinSprite;
 import funkin.util.SortUtil;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 
 /**
  * The graphic for the album roll in the FreeplayState.
@@ -39,6 +41,33 @@ class AlbumRoll extends FlxSpriteGroup
   var _exitMovers:Null<FreeplayState.ExitMoverData>;
   var _exitMoversCharSel:Null<FreeplayState.ExitMoverData>;
   var albumData:Null<Album> = null;
+
+  /**
+   * Return a list of all AssetPaths that this UI element depends on to load.
+   * NOTE: You don't need to include assets which get fetched asynchronously.
+   * @param type The type of AssetPath to return a list of paths for
+   * @return The list of assets
+   */
+  public static function queryAssets(type:AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    results.append(AlbumRegistry.instance.queryAllAssets(type));
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append(Paths.animateAtlas('ui/freeplay/interface/freeplay-album').image());
+
+      case JSON:
+        results.append(Paths.animateAtlas('ui/freeplay/interface/freeplay-album').json());
+
+      default:
+        // Do nothing.
+    }
+
+    return results;
+  }
 
   public function new()
   {
@@ -95,7 +124,7 @@ class AlbumRoll extends FlxSpriteGroup
     };
 
     // Update the album art.
-    var albumGraphic:String = Paths.image(albumData.getAlbumArtAssetKey());
+    var albumGraphic:String = Paths.image(albumData.getAlbumArtAssetKey()).toFlxGraphicAsset();
     newAlbumArt.replaceSymbolGraphic(ALBUM_ART_SYMBOL, albumGraphic);
 
     buildAlbumTitle(albumData.getAlbumTitleAssetKey(), albumData.getAlbumTitleOffsets());
@@ -112,7 +141,8 @@ class AlbumRoll extends FlxSpriteGroup
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
@@ -184,7 +214,8 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumTitle != null && albumTitle.frames != null) albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
+  public function buildAlbumTitle(assetKey:String,
+    ?titleOffsets:Null<Array<Float>>):Void
   {
     if (albumTitle != null)
     {

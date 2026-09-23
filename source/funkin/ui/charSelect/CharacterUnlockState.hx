@@ -1,5 +1,7 @@
 package funkin.ui.charSelect;
 
+import flixel.util.typeLimit.NextState;
+import funkin.ui.transition.NextSubState;
 import funkin.assets.FunkinAssetCache;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -18,6 +20,15 @@ import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.TouchUtil;
 import funkin.util.DeviceUtil;
 #end
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths.AnimateAtlasAssetPathBuilder;
+import funkin.assets.Paths.AssetPath;
+import funkin.assets.Paths.MusicAssetPathBuilder;
+import funkin.assets.ValidatedPaths as Paths;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -31,7 +42,8 @@ class CharacterUnlockState extends MusicBeatState
   public var targetCharacterId:String = "";
   public var targetCharacterData:Null<PlayableCharacter>;
 
-  var nextState:FlxState;
+  var nextState:NextState;
+  var nextQueryAssetsFunc:(AssetType) -> Array<AssetPath>;
 
   static final DIALOG_BG_COLOR:FlxColor = 0xFF000000; // Iconic
   static final DIALOG_COLOR:FlxColor = 0xFF4344F6; // Iconic
@@ -39,14 +51,47 @@ class CharacterUnlockState extends MusicBeatState
 
   var busy:Bool = false;
 
+  /**
+   * Determine the AssetPaths that this state depends on to load.
+   *
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param characterID The character ID for unlocking.
+   * @return The list of AssetPaths.
+   */
+  public static function queryAssets(type:AssetType, characterID:String):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    var baseCharacterData = CharacterRegistry.instance.fetchCharacterData(characterID ?? Constants.DEFAULT_CHARACTER);
+    var charId = baseCharacterData?.healthIcon?.id ?? Constants.DEFAULT_HEALTH_ICON;
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([funkin.assets.Paths.image('gameplay/characters/$charId/icon-$charId')]);
+
+      case XML:
+        @:privateAccess
+        if (HealthIcon.isNewSpritesheet(charId))
+        {
+          results.appendUnique([funkin.assets.Paths.xml('gameplay/characters/$charId/icon-$charId')]);
+        }
+
+      default:
+    }
+    return results;
+  }
+
   public function new(targetPlayableCharacter:String,
-    ?nextState:FlxState)
+    ?nextState:NextState,
+    ?nextQueryAssetsFunc:(AssetType) -> Array<AssetPath>)
   {
     super();
 
     this.targetCharacterId = targetPlayableCharacter;
     this.targetCharacterData = PlayerRegistry.instance.fetchEntry(targetCharacterId);
-    this.nextState = nextState == null ? new MainMenuState() : nextState;
+    this.nextState = nextState == null ? () -> new MainMenuState() : nextState;
+    this.nextQueryAssetsFunc = nextQueryAssetsFunc == null ? MainMenuState.queryAssets : nextQueryAssetsFunc;
   }
 
   override function create():Void
@@ -82,7 +127,7 @@ class CharacterUnlockState extends MusicBeatState
     // HealthIcon handles getting the right frames for us,
     // but it has a bunch of overhead in it that makes it gross to work with outside the health bar.
     var healthIconCharacterId = targetCharacterData?.getOwnedCharacterIds()[0];
-    var baseCharacterData:Null<CharacterData> = CharacterRegistry.instance.fetchCharacterData(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
+    var baseCharacterData = CharacterRegistry.instance.fetchCharacterData(healthIconCharacterId ?? Constants.DEFAULT_CHARACTER);
     var healthIcon:HealthIcon = new HealthIcon(healthIconCharacterId);
     @:privateAccess
     healthIcon.configure(baseCharacterData?.healthIcon);
@@ -110,7 +155,7 @@ class CharacterUnlockState extends MusicBeatState
   function handleMusic():Void
   {
     FlxG.sound.music?.stop();
-    FlxG.sound.play(Paths.sound('ui/main-menu/confirm-menu'));
+    FlxG.sound.play(Paths.sound('ui/main-menu/confirm-menu').toFlxSoundAsset());
   }
 
   override function update(elapsed:Float):Void
@@ -155,7 +200,10 @@ class CharacterUnlockState extends MusicBeatState
         FunkinAssetCache.instance.purgeCache(true);
       });
       #end
-      FlxG.switchState(() -> nextState);
+      funkin.ui.transition.Transition.switchState(nextState, {
+        assetQuery: nextQueryAssetsFunc,
+        transition: BlackScreen(None, Fade(South)),
+      });
     });
   }
 }

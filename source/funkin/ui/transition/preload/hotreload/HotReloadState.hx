@@ -68,6 +68,8 @@ class HotReloadState extends MusicBeatState
   {
     super.create();
 
+    FlxG.keys.enabled = false;
+
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = false;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = false;
 
@@ -187,6 +189,7 @@ class HotReloadState extends MusicBeatState
 
     TaskHandler.performSimpleTask(() ->
     {
+      // Clears PERMANENT assets, you should know.
       FunkinAssetCache.instance.forceClearCache();
 
       return true;
@@ -244,9 +247,11 @@ class HotReloadState extends MusicBeatState
 
   function afterRebuildAssetLists():Void
   {
-    updateProgress(10, 10);
-
-    isComplete = true;
+    ModReloader.cachePersistentAssets(updateProgress, () ->
+    {
+      updateProgress(10, 10);
+      isComplete = true;
+    });
   }
 
   /**
@@ -294,6 +299,7 @@ class HotReloadState extends MusicBeatState
 
     FlxG.plugins.get(funkin.util.plugins.EvacuateDebugPlugin).active = true;
     FlxG.plugins.get(funkin.util.plugins.ReloadAssetsDebugPlugin).active = true;
+    FlxG.keys.enabled = true;
     funkin.util.plugins.ReloadAssetsDebugPlugin.hotReloadInProgress = false;
     var postHotReloadCallback = () ->
     {

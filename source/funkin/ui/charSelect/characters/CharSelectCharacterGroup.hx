@@ -202,20 +202,14 @@ class CharSelectCharacterGroup extends FunkinGroup<CharSelectCharacter>
       if (playerCSData == null) continue;
 
       var playerParams:PlayerCharSelectCharacterData = {
-        assetPath: (playerCSData.characterData?.assetPath ?? playerCSData.assetPath) ?? 'ui/character-select/characters/${newId}',
-        renderType: playerCSData.characterData?.renderType ?? 'animateatlas',
+        assetPath: playerCSData.getAnimateAtlasAssetPath(newId),
+        renderType: playerCSData.getAssetType(),
         scriptClass: playerCSData.characterData?.scriptClass,
         animations: playerCSData.characterData?.animations,
         atlasSettings: playerCSData.characterData?.atlasSettings,
         danceEvery: playerCSData.characterData?.danceEvery,
         offsets: playerCSData.characterData?.offsets ?? [0, 0]
       };
-
-      // Additional check for if the asset path is blank... somehow.
-      if (playerParams.assetPath.isBlank())
-      {
-        playerParams.assetPath = 'ui/character-select/characters/${newId}';
-      }
 
       var playerCharacter:CharSelectCharacter = createCharacter(newId, PLAYER, playerParams);
 

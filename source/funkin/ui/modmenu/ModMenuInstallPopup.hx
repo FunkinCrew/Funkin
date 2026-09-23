@@ -205,30 +205,45 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
   {
     modIconDecoder?.destroy();
 
+    var onIconLoaded = () ->
+    {
+      modIcon.setGraphicSize(ICON_SIZE, ICON_SIZE);
+      modIcon.localScale.x = modIcon.scale.x;
+      modIcon.localScale.y = modIcon.scale.y;
+      modIcon.updateHitbox();
+      modIcon.localX = PADDING;
+      modIcon.localY = PADDING;
+    };
+
     if (lime.graphics.Image.__isGIF(bytes))
     {
       modIconDecoder = new FunkinAnimationDecoder(bytes, GIF);
 
       modIcon.loadGraphic(modIconDecoder.bitmapData);
+      onIconLoaded();
     }
     else if (lime.graphics.Image.__isWebP(bytes))
     {
       modIconDecoder = new FunkinAnimationDecoder(bytes, WEBP);
 
       modIcon.loadGraphic(modIconDecoder.bitmapData);
+      onIconLoaded();
     }
     else
     {
+      #if sys
       modIcon.loadGraphic(openfl.display.BitmapData.fromBytes(bytes, true));
+      onIconLoaded();
+      #else
+      openfl.display.BitmapData.loadFromBytes(bytes).onComplete((bitmap) ->
+      {
+        modIcon.loadGraphic(bitmap);
+        onIconLoaded();
+      });
+      #end
     }
 
     modIcon.antialiasing = true;
-    modIcon.setGraphicSize(ICON_SIZE, ICON_SIZE);
-    modIcon.localScale.x = modIcon.scale.x;
-    modIcon.localScale.y = modIcon.scale.y;
-    modIcon.updateHitbox();
-    modIcon.localX = PADDING;
-    modIcon.localY = PADDING;
   }
 
   /**

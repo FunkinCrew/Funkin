@@ -24,6 +24,12 @@ import funkin.ui.quickpanel.CircleWipeShader;
 import funkin.graphics.shaders.BoilShader;
 import funkin.util.PropertyAnimator;
 import funkin.ui.quickpanel.QuickPanelGroup;
+//
+// ~PATHS~
+//
+import funkin.assets.Assets;
+import funkin.assets.ValidatedPaths as Paths;
+import funkin.assets.Paths.AssetPath;
 
 class QuickPanelState extends MusicBeatSubState
 {
@@ -37,7 +43,9 @@ class QuickPanelState extends MusicBeatSubState
   var circleWipe:CircleWipeShader;
   var descriptionText:FlxText;
   var descriptionPanel:FunkinSprite;
+
   public var panel:QuickPanelGroup;
+
   var DESCRIPTION_PANEL_Y:Float = 0;
   var DESCRIPTION_TEXT_Y:Float = 0;
   var DESCRIPTION_OFFSET:Float = 100;
@@ -76,6 +84,9 @@ class QuickPanelState extends MusicBeatSubState
 
   override function create()
   {
+    transIn = null;
+    transOut = null;
+
     super.create();
 
     bg = new FunkinSprite(0, 0);
@@ -123,7 +134,7 @@ class QuickPanelState extends MusicBeatSubState
     add(selectedIcon);
 
     selectedSplash = new FunkinSprite(0, 0);
-    selectedSplash.frames = Paths.getSparrowAtlas('ui/quick-panel/splash');
+    selectedSplash.frames = Assets.getSparrowAtlas(Paths.image('ui/quick-panel/splash'));
     selectedSplash.animation.addByPrefix('splash', 'splash0', 24, false);
     selectedSplash.screenCenter();
     selectedSplash.visible = false;
@@ -142,7 +153,6 @@ class QuickPanelState extends MusicBeatSubState
 
     repositionSide(left);
   }
-
 
   public function fadeScreen(out:Bool = false)
   {
@@ -243,7 +253,7 @@ class QuickPanelState extends MusicBeatSubState
 
   public function startTransition(data:QuickPanelButtonData)
   {
-    selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}'));
+    selectedIcon.loadGraphic(Paths.image('ui/quick-panel/icons/${data.icon}').toFlxGraphicAsset());
     selectedIcon.scale.set(1.4, 1.4);
     selectedIcon.antialiasing = true;
     selectedIcon.updateHitbox();
@@ -301,5 +311,65 @@ class QuickPanelState extends MusicBeatSubState
     super.destroy();
     // remove and destroy panel camera
     FlxG.cameras.remove(panelCam);
+  }
+
+  /**
+   * Return a list of all AssetPaths that this state depends on to load.
+   * @param type The type of assets to retrieve.
+   * @return A list of asset paths.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results = [];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.append([
+          Paths.image('ui/boil_texture'),
+          Paths.image('ui/quick-panel/splash'),
+          Paths.image('ui/quick-panel/panel-bg')
+        ]);
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').image());
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').image());
+        for (qpButtonData in QuickPanelGroup.defaultButtonData)
+        {
+          results.appendUnique([Paths.image('ui/quick-panel/icons/${qpButtonData.icon}'),]);
+        }
+
+      case XML:
+        results.append([
+          Paths.xml('ui/quick-panel/splash'),
+          Paths.xml('ui/quick-panel/panel-bg')
+        ]);
+
+      case SOUND:
+        results.append([
+          Paths.music('ui/main-menu/freaky-menu').audio(),
+          Paths.sound('ui/quick-panel/sounds/tab-pull'),
+          Paths.sound('ui/quick-panel/sounds/open-tab-click'),
+          #if FEATURE_TOUCH_CONTROLS
+          Paths.sound('ui/quick-panel/sounds/tab-press'), Paths.sound('ui/quick-panel/sounds/tab-release-pull'),
+          #end
+          Paths.sound('ui/quick-panel/sounds/open-tab-soft'),
+          Paths.sound('ui/quick-panel/sounds/close-tab-soft'),
+          Paths.sound('ui/quick-panel/sounds/close-tab-click'),
+          Paths.sound('ui/quick-panel/sounds/menu-scroll'),
+          Paths.sound('ui/quick-panel/sounds/menu-deny'),
+          Paths.sound('ui/main-menu/confirm-menu')
+        ]);
+
+      case JSON:
+        results.append([Paths.music('ui/main-menu/freaky-menu').metadata()]);
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquare').json());
+        results.append(Paths.animateAtlas('ui/quick-panel/tabSquareKeyboard').json());
+
+      case TEXT:
+        results.append([Paths.txt('ui/title/intro-text')]);
+
+      default:
+    }
+
+    return results;
   }
 }

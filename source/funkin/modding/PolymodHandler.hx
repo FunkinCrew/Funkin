@@ -1076,7 +1076,7 @@ class PolymodHandler
     }
     catch (e:Dynamic)
     {
-      trace('Failed to read mods folder: ${Std.string(e)}');
+      trace(' MOD MENU '.bold().bg_orange() + ' Failed to read mods folder: ${Std.string(e)}');
       return [];
     }
     return newItems;

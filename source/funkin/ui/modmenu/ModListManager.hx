@@ -9,7 +9,6 @@ import funkin.modding.PolymodHandler;
 import funkin.save.Save;
 import funkin.ui.modmenu.ModMenuState.ModMenuSelection;
 import funkin.ui.transition.preload.hotreload.ModReloader;
-import funkin.util.FileUtil;
 import funkin.util.WindowUtil;
 import polymod.Polymod.ModDependencies;
 import polymod.Polymod.ModMetadata;
@@ -365,17 +364,7 @@ class ModListManager
    */
   public function hasFolderChanged():Bool
   {
-    var newItems:Array<String> = [];
-    try
-    {
-      newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
-    }
-    catch (e:Dynamic)
-    {
-      trace(' MOD MENU '.bold().bg_orange() + ' Failed to read mods folder: ${Std.string(e)}');
-      return false;
-    }
-
+    var newItems:Array<String> = PolymodHandler.readModDirectory();
     return newItems.length != itemsInFolder.length;
   }
 
@@ -386,7 +375,7 @@ class ModListManager
     {newDisabled:Array<ModMenuItem>, newEnabled:Array<ModMenuItem>}
   {
     PolymodHandler.getDisabledModsIncludingIncompatible(true);
-    itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
+    itemsInFolder = PolymodHandler.readModDirectory();
 
     carriedDisabledMods = disabledList.modItems.map((item) -> item.mod);
     carriedEnabledMods = enabledList.modItems.map((item) -> item.mod).filter((m) -> m != null && m.id != ModMenuState.BASE_GAME_MOD_ID);

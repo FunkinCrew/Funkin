@@ -109,6 +109,29 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   var inputReleaseQueue:Array<PreciseInputEvent> = [];
 
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+    results.appendUnique(NoteStyle.queryAssets(type, Constants.DEFAULT_NOTE_STYLE));
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique([
+          funkin.assets.Paths.image('ui/input-offsets/arrow'),
+          funkin.assets.Paths.image('ui/input-offsets/receptor')
+        ]);
+      case SOUND:
+        results.appendUnique([
+          funkin.assets.Paths.sound('ui/main-menu/scroll-menu'),
+          funkin.assets.Paths.sound('ui/main-menu/confirm-menu')
+        ]);
+      default:
+    }
+
+    return results;
+  }
+
   /**
    * Creates an arrow at the specified beat.
    * @param beat The beat to create the arrow at.

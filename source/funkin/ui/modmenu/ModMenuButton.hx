@@ -114,4 +114,21 @@ class ModMenuButton extends FunkinSprite
 
     return val;
   }
+
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    graphicName:String):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    var states = ['', '-highlighted', '-inverted'];
+
+    switch (type)
+    {
+      case IMAGE:
+        results.appendUnique(states.map((v) -> funkin.assets.Paths.image('ui/mods/${graphicName}${v}')));
+
+      default:
+    }
+    return results;
+  }
 }

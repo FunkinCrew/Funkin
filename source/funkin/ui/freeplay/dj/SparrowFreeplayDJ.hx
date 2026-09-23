@@ -3,6 +3,9 @@ package funkin.ui.freeplay.dj;
 import flixel.graphics.frames.FlxFramesCollection;
 import funkin.util.assets.FlxAnimationUtil;
 import funkin.data.freeplay.player.PlayerRegistry;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
+import funkin.data.freeplay.player.PlayerData;
 
 /**
  * A SparrowFreeplayDJ is a Freeplay DJ which is rendered by
@@ -13,6 +16,31 @@ import funkin.data.freeplay.player.PlayerRegistry;
  */
 class SparrowFreeplayDJ extends BaseFreeplayDJ
 {
+  public static function queryAssets(type:funkin.assets.Assets.AssetType,
+    characterId:String):Array<funkin.assets.Paths.AssetPath>
+  {
+    var playableChar = PlayerRegistry.instance.fetchEntry(characterId);
+    if (playableChar == null) return [];
+    var playableCharData:Null<PlayerFreeplayDJData> = playableChar.getFreeplayDJData();
+
+    if (playableCharData == null)
+    {
+      return [];
+    }
+
+    var results:Array<AssetPath> = [];
+    switch (type)
+    {
+      case IMAGE:
+        results.pushUnique(Paths.image(playableCharData.getAtlasPath()));
+      case XML:
+        results.pushUnique(Paths.xml(playableCharData.getAtlasPath()));
+      default:
+        // Nothing
+    }
+    return results;
+  }
+
   public function new(x:Float, y:Float, characterId:String)
   {
     super(x, y, characterId);

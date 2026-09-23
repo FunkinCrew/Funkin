@@ -76,7 +76,7 @@ class StickerTransition extends FlxTransition
     var packId:String = stickerPackId ?? Constants.DEFAULT_STICKER_PACK;
 
     var existing:Null<Future<Array<Future<Bool>>>> = cachedPacks.get(packId);
-    if (existing != null) return existing;
+    if (existing != null && !existing.isComplete) return existing;
 
     var assets:Array<AssetPath> = [];
     assets.append(queryAssets(IMAGE, packId));

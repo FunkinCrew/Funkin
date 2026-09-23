@@ -1159,6 +1159,8 @@ class Assets implements ConsoleClass
         ]);
 
       case SOUND:
+        results.appendUnique(funkin.ui.transition.StickerTransition.queryAssets(SOUND));
+
         results.appendUnique([
           // Built-in
           Paths.sound('flixel/sounds/beep', false),

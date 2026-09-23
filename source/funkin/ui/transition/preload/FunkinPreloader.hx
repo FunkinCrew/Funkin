@@ -5,6 +5,7 @@ import lime.app.Future;
 import funkin.mobile.util.ScreenUtil;
 import funkin.data.BaseRegistry.LoadEntriesResult;
 import openfl.events.MouseEvent;
+import openfl.ui.Mouse;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.Sprite;
@@ -741,6 +742,8 @@ class FunkinPreloader extends FlxBasePreloader
           completeTime = elapsed;
         }
 
+        Mouse.show();
+
         if (touchHereToPlay.alpha < 1.0)
         {
           touchHereSprite.buttonMode = true;
@@ -904,6 +907,10 @@ class FunkinPreloader extends FlxBasePreloader
 
   function immediatelyStartGame():Void
   {
+    #if FEATURE_TOUCH_HERE_TO_PLAY
+    Mouse.hide();
+    #end
+
     _loaded = true;
   }
 

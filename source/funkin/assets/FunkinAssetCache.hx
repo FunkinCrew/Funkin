@@ -195,19 +195,19 @@ class FunkinAssetCache implements OpenFLIAssetCache
    * NOTE: This is a little dangerous since you're un-caching EVERYTHING, even stuff set to cache permanently.
    * Generally only do this if you plan on reloading and pre-caching important assets afterwards.
    */
-  public function forceClearCache():Void
+  public function forceClearCache(?clearPermanent:Bool = true):Void
   {
-    final CLEAR_PERMANENT:Bool = true;
-
     #if VERBOSE_ASSET_CACHE
     trace(' ASSETS '.bold().bg_lime() + ' Force clearing asset cache...');
     #end
 
     for (cache in stagedCaches)
     {
-      cache.clearCache(CLEAR_PERMANENT);
+      cache.clearCache(clearPermanent);
     }
     FunkinBitmapFrontend.instance.forceClear();
+    stagedBitmapData.clearCache(clearPermanent);
+
     assetListCaches = [];
     assetListBaseCache = null;
   }

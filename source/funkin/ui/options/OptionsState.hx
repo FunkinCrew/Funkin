@@ -1,7 +1,6 @@
 package funkin.ui.options;
 
 import funkin.ui.Page.PageName;
-import funkin.ui.transition.LoadingState;
 import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.math.FlxPoint;
@@ -31,6 +30,8 @@ import funkin.mobile.ui.options.ControlsSchemeMenu;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import flixel.util.FlxColor;
+import funkin.assets.Assets;
+import funkin.assets.Paths;
 
 /**
  * The main options menu
@@ -57,9 +58,11 @@ class OptionsState extends MusicBeatState
 
     persistentUpdate = true;
 
-    drumsBG = FunkinSound.load(Paths.music('ui/input-offsets/drums-loop/drums-loop'), 0, true, false, false, false);
+    #if FEATURE_LAG_ADJUSTMENT
+    drumsBG = FunkinSound.load(Paths.music('ui/input-offsets/drums-loop').audio().toFlxSoundAsset(), 0, true, false, false, false);
+    #end
 
-    var menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-bg'));
+    var menuBG = new FlxSprite().loadGraphic(Paths.image('ui/main-menu/menu-bg').toFlxGraphicAsset());
     var hsv = new HSVShader(-0.6, 0.9, 3.6);
     menuBG.shader = hsv;
     menuBG.setGraphicSize(Std.int(FlxG.width * 1.1));
@@ -142,7 +145,16 @@ class OptionsState extends MusicBeatState
   function exitToMainMenu():Void
   {
     optionsCodex.currentPage.enabled = false;
-    // TODO: Animate this transition?
+
+    var goToState = function(state:flixel.util.typeLimit.NextState, ?assetQuery:(funkin.assets.Assets.AssetType) -> Array<funkin.assets.Paths.AssetPath>)
+    {
+      funkin.ui.transition.Transition.switchState(state, {
+        transition: BlackScreen(Fade(North), Fade(South)),
+        assetQuery: assetQuery ?? funkin.ui.transition.Transition.NO_ASSETS,
+        shouldPurgeCache: false,
+      });
+    }
+
     var targetState:Null<String> = backState;
     backState = null;
     if (targetState != null)
@@ -150,18 +162,71 @@ class OptionsState extends MusicBeatState
       funkin.ui.quickpanel.QuickPanelGroup.stopMusic();
       var isCompiled:Bool = funkin.modding.CppiaScripts.exists(targetState);
       var state:MusicBeatState = isCompiled ? cast funkin.modding.CppiaScripts.create(targetState) : MusicBeatState.scriptInit(targetState);
-      if (state != null) FlxG.switchState(state);
+      var queryAssetsFunc = MusicBeatState.scriptStaticHasFunc(
+        targetState,
+        "queryAssets"
+      ) ? (assetType) -> MusicBeatState.scriptStaticCall(targetState, "queryAssets", [assetType]) : null;
+      if (state != null) goToState(() -> state, queryAssetsFunc);
       else
       {
         FlxG.keys.enabled = false;
-        FlxG.switchState(() -> new MainMenuState());
+        goToState(() -> new MainMenuState(), MainMenuState.queryAssets);
       }
     }
     else
     {
       FlxG.keys.enabled = false;
-      FlxG.switchState(() -> new MainMenuState());
+      goToState(() -> new MainMenuState(), MainMenuState.queryAssets);
     }
+  }
+
+  /**
+   * Return a list of all AssetPaths that this state depends on to load.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param params The parameters to use when constructing the Options State.
+   * @return The assets that the loading screen should cache.
+   */
+  public static function queryAssets(type:AssetType):Array<AssetPath>
+  {
+    var results:Array<AssetPath> = [];
+
+    results.appendUnique(funkin.ui.options.items.CheckboxPreferenceItem.queryAssets(type));
+
+    #if FEATURE_LAG_ADJUSTMENT
+    results.appendUnique(OffsetMenu.queryAssets(type));
+    #end
+
+    switch (type)
+    {
+      case JSON:
+        results.appendUnique([Paths.music('ui/main-menu/freaky-menu').metadata()]);
+
+        #if FEATURE_LAG_ADJUSTMENT
+        results.appendUnique([
+          Paths.music('ui/input-offsets/offsets-loop').metadata(),
+          Paths.music('ui/input-offsets/drums-loop').metadata()
+        ]);
+        #end
+
+      case IMAGE:
+        results.appendUnique([Paths.image('ui/main-menu/menu-bg')]);
+
+      case SOUND:
+        results.appendUnique([Paths.music('ui/main-menu/freaky-menu').audio()]);
+
+        #if FEATURE_LAG_ADJUSTMENT
+        results.appendUnique([
+          Paths.music('ui/input-offsets/offsets-loop').audio(),
+          Paths.music('ui/input-offsets/drums-loop').audio()
+        ]);
+        #end
+
+      case SHADER:
+        return [Paths.frag('ui/shaders/hsv')];
+
+      default:
+    }
+    return results;
   }
 }
 
@@ -231,10 +296,13 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       InAppPurchasesUtil.restorePurchases();
     });
     #end
-    #if FEATURE_TOUCH_CONTROLS
+    #if (FEATURE_TOUCH_CONTROLS || web)
     createItem('OPEN MOD MENU', function()
     {
-      FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
+      funkin.ui.transition.Transition.switchState(() -> new funkin.ui.modmenu.ModMenuState(), {
+        assetQuery: funkin.ui.modmenu.ModMenuState.queryAssets,
+        transition: Throbber
+      });
     });
     #end
     #if FEATURE_NEWGROUNDS

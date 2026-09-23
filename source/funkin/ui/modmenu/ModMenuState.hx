@@ -196,6 +196,74 @@ class ModMenuState extends MusicBeatState
   var lastSelectDir:Null<FlxDirection> = null;
   var menuBG:FunkinSprite;
 
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    results.appendUnique(ModMenuButton.queryAssets(type, 'done'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'open-folder'));
+    results.appendUnique(ModMenuButton.queryAssets(type, 'import-folder'));
+
+    switch (type)
+    {
+      case JSON:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').metadata()]);
+
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').json());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').json());
+
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/characters', JSON));
+
+      case IMAGE:
+        results.appendUnique([
+          funkin.assets.Paths.image('ui/mods/smoke'),
+          funkin.assets.Paths.image('ui/mods/bg'),
+          funkin.assets.Paths.image('ui/mods/top-text'),
+          funkin.assets.Paths.image('ui/mods/carbattery'),
+          funkin.assets.Paths.image('ui/mods/gfwire'),
+          funkin.assets.Paths.image('ui/mods/box'),
+          funkin.assets.Paths.image('ui/mods/base-icon'),
+          funkin.assets.Paths.image('ui/mods/fallback-icon'),
+          funkin.assets.Paths.image('ui/mods/bgwires'),
+          funkin.assets.Paths.image('ui/mods/drop-hover')
+        ]);
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/smoke-cloud').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/back-arrow').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/foreground-wires').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/sparks').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/bf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/gf').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/empty-chair').image());
+        results.appendUnique(funkin.assets.Paths.animateAtlas('ui/mods/characters/pinhead').image());
+
+      case XML:
+        results.appendUnique([
+          funkin.assets.Paths.xml('ui/mods/smoke'),
+          funkin.assets.Paths.xml('ui/mods/carbattery'),
+          funkin.assets.Paths.xml('ui/mods/gfwire')
+        ]);
+
+      case SOUND:
+        results.appendUnique([funkin.assets.Paths.music('ui/mods/mod-menu-ambience').audio()]);
+        results.appendUnique(funkin.assets.Assets.listInPath('ui/mods/sounds', SOUND));
+
+      case FONT:
+        results.appendUnique([funkin.assets.Paths.file('ui/fonts/FunkinLingLong', 'otf')]);
+
+      case SHADER:
+        results.appendUnique([funkin.assets.Paths.frag('ui/shaders/replace-color')]);
+
+      default:
+    }
+    return results;
+  }
+
   public function new()
   {
     super();
@@ -367,14 +435,15 @@ class ModMenuState extends MusicBeatState
     buttonDone.graphicName = 'done';
     add(buttonDone);
 
+    var openFolderGraphic = #if sys 'open-folder' #else 'import-folder' #end;
     buttonOpenFolder.x = leftRectangle.x + 180;
     buttonOpenFolder.y = FlxG.height * 0.89;
     buttonOpenFolder.scale.set(0.65, 0.65);
-    buttonOpenFolder.loadTexture('ui/mods/open-folder');
+    buttonOpenFolder.loadTexture('ui/mods/$openFolderGraphic');
     buttonOpenFolder.updateHitbox();
     buttonOpenFolder.zIndex = 1000;
     buttonOpenFolder.camera = camHUD;
-    buttonOpenFolder.graphicName = 'open-folder';
+    buttonOpenFolder.graphicName = openFolderGraphic;
     add(buttonOpenFolder);
 
     hitboxOpenFolder = new FunkinSprite(
@@ -1474,12 +1543,12 @@ class ModMenuState extends MusicBeatState
     DataFolderUtil.openDataFolder();
     #elseif ios
     System.openURL('shareddocuments://');
-    #else
-    #if sys
+    #elseif js
+    PolymodHandler.loadModFromFileDialog(() -> highlightNewMod());
+    #elseif sys
     FileUtil.openFolder(Path.join([FileUtil.gameDirectory, PolymodHandler.MOD_FOLDER]));
     #else
     FileUtil.openFolder(PolymodHandler.MOD_FOLDER);
-    #end
     #end
     openFolderAnimator.playAnimation('select');
   }

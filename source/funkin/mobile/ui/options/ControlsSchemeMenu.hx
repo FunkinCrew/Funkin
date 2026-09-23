@@ -92,6 +92,34 @@ class ControlsSchemeMenu extends MusicBeatSubState
    */
   var hsv:HSVShader = new HSVShader();
 
+  /**
+   * Return a list of all AssetPaths that this substate depends on to load.
+   * This gets called AFTER the chart gets loaded manually.
+   * @param type The type of AssetPath to return a list of paths for.
+   * @param params The parameters to use when constructing the Controls Scheme Menu.
+   * @return The assets that the loading screen should cache.
+   */
+  public static function queryAssets(type:funkin.assets.Assets.AssetType):Array<funkin.assets.Paths.AssetPath>
+  {
+    var results:Array<funkin.assets.Paths.AssetPath> = [];
+
+    results.appendUnique(funkin.play.notes.notestyle.NoteStyle.queryAssets(type, Constants.DEFAULT_NOTE_STYLE));
+
+    switch (type)
+    {
+      case IMAGE:
+        results.push(funkin.assets.Paths.image('ui/main-menu/menu-bg'));
+      case SOUND:
+        results.push(funkin.assets.Paths.sound('ui/main-menu/scroll-menu'));
+        results.push(funkin.assets.Paths.sound('ui/main-menu/confirm-menu'));
+      case SHADER:
+        results.push(funkin.assets.Paths.frag('ui/shaders/hsv'));
+      default:
+    }
+
+    return results;
+  }
+
   override public function create():Void
   {
     super.create();
