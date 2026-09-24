@@ -2654,6 +2654,7 @@ class FreeplayState extends MusicBeatSubState
 
     var previousVariation:String = currentVariation;
     var daSong:Null<FreeplaySongData> = currentCapsule.freeplayData;
+    currentCapsule.forceHighlight = false;
     currentCapsule.selected = false;
 
     // Available variations for current character. We get this since bf is usually `default` variation, and `pico` is `pico`
