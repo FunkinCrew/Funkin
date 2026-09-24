@@ -10,6 +10,7 @@ import flixel.math.FlxPoint;
 import flixel.FlxCamera;
 import flixel.util.FlxDestroyUtil;
 import flixel.group.IFlxGroupable;
+import funkin.graphics.FunkinRenderTexture;
 
 /**
  * A FunkinGroup of FlxSprites.
@@ -46,6 +47,25 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
    * The size of this FunkinGroup. Read only.
    */
   public var size(get, never):Int;
+
+  /**
+   * If enabled, the group will render as one texture instead of rendering multiple limbs.
+   * This is useful for stuff like changing alpha, and shaders that require the whole group.
+   * Only enable this if your group either:
+   * - Changes alpha to something other than 1.0
+   * - Has a shader or blend mode
+   */
+  public var useRenderTexture(default, set):Bool = false;
+
+  function set_useRenderTexture(value:Bool):Bool
+  {
+    if (!value) _renderTexture = FlxDestroyUtil.destroy(_renderTexture);
+
+    return useRenderTexture = value;
+  }
+
+  var _renderTexture:Null<FunkinRenderTexture> = null;
+  var _renderTextureRect:FlxRect = FlxRect.get();
 
   /**
    * Screen-space clip rect inherited from a parent FunkinGroup, if any.
@@ -339,6 +359,9 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     super(x, y);
 
+    @:nullSafety(Off)
+    blendTarget = null;
+
     children = [];
 
     this.maxSize = maxSize ?? 0;
@@ -536,6 +559,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     clear();
 
+    _renderTexture = FlxDestroyUtil.destroy(_renderTexture);
+    _renderTextureRect = FlxDestroyUtil.put(_renderTextureRect);
     _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
     _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);
 
@@ -577,6 +602,8 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   override public function draw():Void
   {
+    if (useRenderTexture && drawRenderTexture()) return;
+
     for (child in children)
     {
       if (child != null && child.exists && child.visible)
@@ -584,6 +611,104 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         child.draw();
       }
     }
+  }
+
+  function drawRenderTexture():Bool
+  {
+    if (!updateRenderTextureSize()) return false;
+
+    _renderTexture.init(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height));
+
+    final left:Float = x + _renderTextureRect.x;
+    final top:Float = y + _renderTextureRect.y;
+
+    // Apply rect offset
+    for (child in children)
+    {
+      if (child == null) continue;
+
+      child.x -= left;
+      child.y -= top;
+    }
+
+    _renderTexture.drawToCamera((textureCamera, _) ->
+    {
+      for (child in children)
+      {
+        if (child == null || !child.exists || !child.visible) continue;
+
+        final cacheCameras = child.cameras;
+        child.cameras = [textureCamera];
+        child.draw();
+        child.cameras = cacheCameras;
+      }
+    });
+
+    _renderTexture.render();
+
+    // Restore original pos
+    for (child in children)
+    {
+      if (child == null) continue;
+
+      child.x += left;
+      child.y += top;
+    }
+
+    for (camera in cameras)
+    {
+      if (!camera.visible || !camera.exists) continue;
+
+      _matrix.identity();
+      _matrix.translate(left - camera.scroll.x * scrollFactor.x, top - camera.scroll.y * scrollFactor.y);
+
+      camera.drawPixels(_renderTexture.graphic.imageFrame.frame, null, _matrix, colorTransform, blend, antialiasing, shader, blendTarget);
+    }
+
+    return true;
+  }
+
+  function updateRenderTextureSize():Bool
+  {
+    var minLeft:Float = 0;
+    var minTop:Float = 0;
+    var maxRight:Float = 0;
+    var maxBottom:Float = 0;
+    var isValid:Bool = false;
+
+    for (child in children)
+    {
+      if (child == null || !child.exists || !child.visible) continue;
+
+      final left:Float = child.x - x;
+      final top:Float = child.y - y;
+      final right:Float = left + child.frameWidth * Math.abs(child.scale.x);
+      final bottom:Float = top + child.frameHeight * Math.abs(child.scale.y);
+
+      if (left < minLeft) minLeft = left;
+      if (top < minTop) minTop = top;
+      if (right > maxRight) maxRight = right;
+      if (bottom > maxBottom) maxBottom = bottom;
+
+      isValid = true;
+    }
+
+    if (!isValid) return false;
+
+    if (minLeft < _renderTextureRect.x) _renderTextureRect.x = minLeft;
+    if (minTop < _renderTextureRect.y) _renderTextureRect.y = minTop;
+
+    final width:Float = Math.ceil(maxRight - _renderTextureRect.x);
+    final height:Float = Math.ceil(maxBottom - _renderTextureRect.y);
+
+    if (width > _renderTextureRect.width) _renderTextureRect.width = width;
+    if (height > _renderTextureRect.height) _renderTextureRect.height = height;
+
+    if (_renderTextureRect.width <= 0 || _renderTextureRect.height <= 0) return false;
+
+    if (_renderTexture == null) _renderTexture = new FunkinRenderTexture(Std.int(_renderTextureRect.width), Std.int(_renderTextureRect.height));
+
+    return true;
   }
 
   /**
