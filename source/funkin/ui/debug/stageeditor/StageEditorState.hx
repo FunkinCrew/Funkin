@@ -646,6 +646,7 @@ class StageEditorState extends UIState
     // camera movement
 
     if (!isCursorOverHaxeUI) handleTrackpadScroll();
+    if (!isCursorOverHaxeUI) handleMiddleMousePan();
 
     // key shortcuts and inputs
     if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick('exit');
@@ -1078,6 +1079,30 @@ class StageEditorState extends UIState
 
     camFollow.x += (dx * TRACKPAD_PAN_SCALE) / camGame.zoom;
     camFollow.y -= (dy * TRACKPAD_PAN_SCALE) / camGame.zoom;
+  }
+
+  var middleMousePanOffset:FlxPoint = null;
+
+  function handleMiddleMousePan():Void
+  {
+    if (FlxG.mouse.justPressedMiddle)
+    {
+      // captures once so it don't drift
+      middleMousePanOffset = FlxPoint.get(
+        camFollow.x + FlxG.mouse.viewX / camGame.zoom,
+        camFollow.y + FlxG.mouse.viewY / camGame.zoom
+      );
+    }
+    else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
+    {
+      camFollow.x = middleMousePanOffset.x - FlxG.mouse.viewX / camGame.zoom;
+      camFollow.y = middleMousePanOffset.y - FlxG.mouse.viewY / camGame.zoom;
+    }
+    else if (FlxG.mouse.justReleasedMiddle && middleMousePanOffset != null)
+    {
+      middleMousePanOffset.put();
+      middleMousePanOffset = null;
+    }
   }
 
   var sprDependant:Array<MenuItem> = [];
