@@ -420,7 +420,7 @@ typedef HealthIconData =
    * The ID to use for the health icon.
    * @default The character's ID
    */
-  var id:Null<String>;
+  var ?id:Null<String>;
 
   /**
    * Whether the health icon should bop or not.
