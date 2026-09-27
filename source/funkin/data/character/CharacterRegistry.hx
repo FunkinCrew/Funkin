@@ -330,7 +330,9 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
 
     var perf:funkin.util.logging.Perf = new funkin.util.logging.Perf('loadCharacterCacheAsync');
     var promise:lime.app.Promise<LoadEntriesResult> = new lime.app.Promise<LoadEntriesResult>();
-    var entryErrors:SynchronizedArray<
+    var entryDataErrors:SynchronizedArray<
+      {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
+    var entryScriptErrors:SynchronizedArray<
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
 
     var charIdList:Array<String> = fetchEntryIdsFromFiles();
@@ -353,7 +355,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       // We're checking the progress on loading the data for all characters.
       if (entryLoadingState == 'data')
       {
-        var current:Int = characterCache.size() + entryErrors.length;
+        var current:Int = characterCache.size() + entryDataErrors.length;
         if (current == entryCount)
         {
           entryCount = 0; // Reset the entry count so it can be used for scripted classes now.
@@ -365,7 +367,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       else
       {
         // We're checking the progress on what characters are scripted.
-        var current:Int = characterScriptedClass.size() + entryErrors.length;
+        var current:Int = characterScriptedClass.size() + entryScriptErrors.length;
         if (current == entryCount)
         {
           // We've finished loading the scripted entries for a character type, use a basic state machine switching to the next one.
@@ -394,7 +396,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
               // Same for how `entriesLoaded` is the sum successfully loaded entries for character data & scripted classes
               promise.complete({
                 entriesLoaded: characterCache.size() + characterScriptedClass.size(),
-                entriesFailed: entryErrors.length
+                entriesFailed: (entryDataErrors.length + entryScriptErrors.length)
               });
               perf.print();
               return;
@@ -409,28 +411,38 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
     var onError:(String,
       {error:Any, entryCls:Null<String>}) -> Void = (entryId, state) ->
       {
-        entryErrors.push({
-          entryId: entryId,
-          error: state.error
-        });
+        if (entryLoadingState == 'data')
+        {
+          entryDataErrors.push({
+            entryId: entryId,
+            error: state.error
+          });
+        }
+        else
+        {
+          entryScriptErrors.push({
+            entryId: entryId,
+            error: state.error
+          });
+        }
 
         // Log based on the current state.
         switch (entryLoadingState)
         {
           case 'data':
-            log(' ERROR '.error() + 'Failed to load data for character entry ($entryId)');
+            log(' ERROR '.error() + ' Failed to load data for character entry ($entryId)');
           case 'sparrow':
-            log(' ERROR '.error() + 'Failed to instantiate scripted Sparrow character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted Sparrow character ($entryId)');
           case 'packer':
-            log(' ERROR '.error() + 'Failed to instantiate scripted Packer character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted Packer character ($entryId)');
           case 'animateatlas':
-            log(' ERROR '.error() + 'Failed to instantiate scripted Animate Atlas character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted Animate Atlas character ($entryId)');
           case 'multisparrow':
-            log(' ERROR '.error() + 'Failed to instantiate scripted Multi-Sparrow character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted Multi-Sparrow character ($entryId)');
           case 'multianimateatlas':
-            log(' ERROR '.error() + 'Failed to instantiate scripted Multi-Animate Atlas character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted Multi-Animate Atlas character ($entryId)');
           case 'base':
-            log(' ERROR '.error() + 'Failed to instantiate scripted base character ($entryId)');
+            log(' ERROR '.error() + ' Failed to instantiate scripted base character ($entryId)');
         }
         checkAsyncProgress();
       };
@@ -439,7 +451,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
       {entryData:CharacterData}) -> Void = (entryId, state) ->
       {
         characterCache.set(entryId, state.entryData);
-        log('  Loaded data for character: ${entryId} (${characterCache.size()}+${entryErrors.length} / ${charIdList.length})');
+        log('  Loaded data for character: ${entryId} (${characterCache.size()}+${entryDataErrors.length} / ${charIdList.length})');
         checkAsyncProgress();
       };
 
@@ -449,7 +461,7 @@ class CharacterRegistry extends BaseRegistry<BaseCharacter, CharacterData, Chara
         var entryId:String = state.entry.characterId;
         characterScriptedClass.set(entryId, state.entryCls);
 
-        log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${characterScriptedClass.size()}+${entryErrors.length} / ${entryCount})');
+        log('  Loaded scripted entry: ${entryId} (${state.entryCls}) (${characterScriptedClass.size()}+${entryScriptErrors.length} / ${entryCount})');
         checkAsyncProgress();
       };
 
