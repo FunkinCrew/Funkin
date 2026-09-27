@@ -26,7 +26,7 @@ import funkin.audio.FunkinSound;
 import funkin.audio.VoicesGroup;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.waveform.WaveformSprite;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongData.SongChartData;
@@ -6496,7 +6496,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (healthIconsDirty)
     {
-      _charIconData = currentPlayerCharacterPlayer?.character?._data ?? CharacterDataParser.fetchCharacterData(currentSongMetadata.playData.characters.player);
+      _charIconData = currentPlayerCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(currentSongMetadata.playData.characters.player);
 
       if (healthIconBF != null)
       {
@@ -6511,9 +6511,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         buttonSelectPlayer.text = _charIconData?.name ?? 'Player';
       }
 
-      _charIconData = currentOpponentCharacterPlayer?.character?._data ?? CharacterDataParser.fetchCharacterData(
-        currentSongMetadata.playData.characters.opponent
-      );
+      _charIconData = currentOpponentCharacterPlayer?.character?._data ?? CharacterRegistry.instance.fetchCharacterData(currentSongMetadata.playData.characters.opponent);
 
       if (healthIconDad != null)
       {

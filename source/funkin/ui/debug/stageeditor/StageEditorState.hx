@@ -15,7 +15,7 @@ import flixel.addons.display.FlxGridOverlay;
 import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.BaseCharacter.CharacterType;
-import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.character.CharacterRegistry;
 import funkin.save.Save;
 import funkin.input.Cursor;
 import haxe.ui.backend.flixel.UIState;
@@ -327,11 +327,17 @@ class StageEditorState extends UIState
     Screen.instance.addComponent(root);
 
     // Characters setup.
-    var gf = CharacterDataParser.fetchCharacter(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, true);
+    var gf = CharacterRegistry.instance.fetchEntry(params?.targetGfChar ?? Save.instance.stageGirlfriendChar, {
+      debug: true
+    });
     if (gf != null) gf.characterType = CharacterType.GF;
-    var dad = CharacterDataParser.fetchCharacter(params?.targetDadChar ?? Save.instance.stageDadChar, true);
+    var dad = CharacterRegistry.instance.fetchEntry(params?.targetDadChar ?? Save.instance.stageDadChar, {
+      debug: true
+    });
     if (dad != null) dad.characterType = CharacterType.DAD;
-    var bf = CharacterDataParser.fetchCharacter(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, true);
+    var bf = CharacterRegistry.instance.fetchEntry(params?.targetBfChar ?? Save.instance.stageBoyfriendChar, {
+      debug: true
+    });
     if (bf != null) bf.characterType = CharacterType.BF;
 
     if (bf != null) bf.flipX = !bf.getDataFlipX();
