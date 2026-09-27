@@ -46,10 +46,12 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public var viewportHeight:Float = 320;
   public var displayScrollOffset:Float = 0;
+
   var scrollAnimFrom:Float = 0;
   var scrollAnimTo:Float = 0;
   var scrollAnimTime:Float = 0;
   var scrollAnimDuration:Float = 0;
+
   public var scrollOffset:Float = 0;
   public var targetScrollOffset:Float = 0;
 
@@ -158,8 +160,8 @@ class ModMenuItemList extends FunkinSpriteGroup
       modItems = [pinnedItem];
       children = children.filter((c) -> (Std.isOfType(c, ModMenuItem) && c == pinnedItem));
       pinnedItem.cancelFlight();
-      pinnedItem.localX = ITEM_X_OFFSET;
-      pinnedItem.localY = getModItemYPos(0) + scrollOffset;
+      pinnedItem.x = ITEM_X_OFFSET;
+      pinnedItem.y = getModItemYPos(0) + scrollOffset;
       selectedModItem = pinnedItem;
     }
     else
@@ -214,8 +216,8 @@ class ModMenuItemList extends FunkinSpriteGroup
 
     var index = modItems.indexOf(item);
     item.cancelFlight();
-    item.localX = ITEM_X_OFFSET;
-    item.localY = getModItemYPos(index) + scrollOffset;
+    item.x = ITEM_X_OFFSET;
+    item.y = getModItemYPos(index) + scrollOffset;
 
     updateScrollbar();
   }
@@ -349,8 +351,8 @@ class ModMenuItemList extends FunkinSpriteGroup
     for (index => modMenuItem in modItems)
     {
       modMenuItem.cancelFlight();
-      modMenuItem.localY = getModItemYPos(index) + scrollOffset;
-      modMenuItem.localX = ITEM_X_OFFSET;
+      modMenuItem.y = getModItemYPos(index) + scrollOffset;
+      modMenuItem.x = ITEM_X_OFFSET;
     }
 
     updateScrollbar();
@@ -427,7 +429,7 @@ class ModMenuItemList extends FunkinSpriteGroup
         continue;
       }
 
-      if (item.localY + 96 > top) return index;
+      if (item.y + 96 > top) return index;
 
       index--;
     }
@@ -607,15 +609,13 @@ class ModMenuItemList extends FunkinSpriteGroup
       lastThumbHeight = thumbH;
     }
 
-    scrollbarTrack.localX = trackX;
-    scrollbarTrack.localY = trackTop;
+    scrollbarTrack.x = trackX;
+    scrollbarTrack.y = trackTop;
 
-    scrollbarThumb.localX = trackX;
-    scrollbarThumb.localY = thumbY;
+    scrollbarThumb.x = trackX;
+    scrollbarThumb.y = thumbY;
 
-    scrollbarTrack.x = x + scrollbarTrack.localX;
-    scrollbarTrack.y = y + scrollbarTrack.localY;
-    scrollbarThumb.x = x + scrollbarThumb.localX;
-    scrollbarThumb.y = y + scrollbarThumb.localY;
+    scrollbarTrack.x = x + scrollbarTrack.x;
+    scrollbarTrack.y = y + scrollbarTrack.y;
   }
 }

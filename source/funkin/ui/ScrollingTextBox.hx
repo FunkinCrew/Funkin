@@ -67,6 +67,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
   var fontPath:String;
   var fontSize:Int;
+
   public var textColor(default, set):FlxColor = FlxColor.WHITE;
 
   function set_textColor(value:FlxColor):FlxColor
@@ -98,7 +99,11 @@ class ScrollingTextBox extends FunkinSpriteGroup
    */
   var holdTimer:Float = 0;
 
-  public function new(boxWidth:Float, boxHeight:Float, fontPath:String, fontSize:Int, textColor:FlxColor = FlxColor.WHITE)
+  public function new(boxWidth:Float,
+    boxHeight:Float,
+    fontPath:String,
+    fontSize:Int,
+    textColor:FlxColor = FlxColor.WHITE)
   {
     super();
 
@@ -222,7 +227,7 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
     if (lineRepeat == null || repeatClip == null) return;
 
-    if (line.frameWidth <= boxWidth) lineRepeat.localVisible = false;
+    if (line.frameWidth <= boxWidth) lineRepeat.visible = false;
     else
       layoutCopy(lineRepeat, repeatClip, -scrollOffset + line.frameWidth + loopGap);
   }
@@ -235,14 +240,14 @@ class ScrollingTextBox extends FunkinSpriteGroup
     var left:Float = Math.max(0, position);
     var right:Float = Math.min(boxWidth, position + copy.frameWidth);
 
-    copy.localX = position;
+    copy.x = position;
 
     clip.x = Math.min(left - position, Math.max(0, copy.frameWidth - 1));
     clip.y = 0;
     clip.width = right - left;
     clip.height = Math.min(boxHeight, copy.frameHeight);
 
-    copy.localVisible = clip.width >= 1 && clip.height >= 1;
+    copy.visible = clip.width >= 1 && clip.height >= 1;
 
     if (clip.width < 1) clip.width = 1;
     if (clip.height < 1) clip.height = 1;
