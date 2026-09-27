@@ -27,6 +27,12 @@ class CharSelectGF extends FunkinSprite implements IBPMSyncedScriptedClass
     loadAnimations();
   }
 
+  override public function destroy():Void
+  {
+    analyzer?.cleanup();
+    super.destroy();
+  }
+
   public function onStepHit(event:SongTimeScriptEvent):Void
   {
   }

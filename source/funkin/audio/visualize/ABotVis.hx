@@ -94,9 +94,18 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
     }
   }
 
+  override public function destroy():Void
+  {
+    analyzer?.cleanup();
+    super.destroy();
+  }
+
   public function initAnalyzer():Void
   {
     if (snd == null) return;
+
+    // cleanup previous instance
+    analyzer?.cleanup();
 
     @:privateAccess
     analyzer = new SpectralAnalyzer(snd._channel.__audioSource, BAR_COUNT, 0.1, 40);
@@ -120,6 +129,8 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
   public function dumpSound():Void
   {
     snd = null;
+
+    analyzer?.cleanup();
     analyzer = null;
   }
 
