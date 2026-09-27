@@ -53,8 +53,7 @@ class FunkinFilterRenderer implements IFlxDestroyable
 
     var bounds:FlxRect = FlxRect.get().copyFromFlash(textureBitmap.rect);
     FilterRenderer.expandFilterBounds(bounds, parent.filters);
-    parent.filterOffsets[0] = bounds.x;
-    parent.filterOffsets[1] = bounds.y;
+    parent.filterOffsets = [bounds.x, bounds.y];
 
     var ceilWidth:Int = Math.ceil(bounds.width);
     var ceilHeight:Int = Math.ceil(bounds.height);
