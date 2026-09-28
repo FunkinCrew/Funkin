@@ -14,6 +14,10 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/gameplay/stages/limoRide/henchmen.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/gameplay/playable-characters/pico/results/graphics/results-good/spritemap1.png",
       "blocksize": "4x4"
     },
