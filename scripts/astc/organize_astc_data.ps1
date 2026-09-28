@@ -4,7 +4,7 @@ $InputFile = "../../astc-compression-data.json"
 $OutputFile = "../../astc-compression-data.json"
 
 if (-not (Test-Path $InputFile)) {
-    Write-Host "❌ File $InputFile not found"
+    Write-Host "ERROR: File $InputFile not found"
     exit 1
 }
 
@@ -19,4 +19,4 @@ jq '.
   | .excludes = ( .excludes | sort )
 ' $InputFile | Out-File -Encoding utf8 $OutputFile
 
-Write-Host "✅ Sorted JSON written to $OutputFile WOOHOOO !!"
+Write-Host "SUCCESS: Sorted JSON written to $OutputFile WOOHOOO !!"
