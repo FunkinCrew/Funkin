@@ -156,7 +156,7 @@ class ResultState extends MusicBeatSubState
 
     highscoreNew = new FlxSprite(44 + FullScreenScaleMode.gameNotchSize.x, 557);
 
-    score = new ResultScore(35 + FullScreenScaleMode.gameNotchSize.x, 305, 10, params.scoreData.score);
+    score = new ResultScore(35 + FullScreenScaleMode.gameNotchSize.x #if mobile - 10 #end, 305, 10, params.scoreData.score);
 
     rankBg = new FunkinSprite(0, 0);
   }
