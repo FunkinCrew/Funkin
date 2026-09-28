@@ -5469,6 +5469,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         else
         {
           // Clicking and dragging.
+          scrollMouseToGrid();
 
           // Scroll the screen if the mouse is above or below the grid.
           if (FlxG.mouse.viewY < MENU_BAR_HEIGHT)
@@ -5680,19 +5681,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Player is clicking and holding on a selected note or event to move the selection around.
         targetCursorMode = Grabbing;
 
-        // Scroll the screen if the mouse is above or below the grid.
-        if (FlxG.mouse.viewY < MENU_BAR_HEIGHT)
-        {
-          // Scroll up.
-          var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
-          currentScrollEase -= (diff * 0.5);
-        }
-        else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
-        {
-          // Scroll down.
-          var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
-          currentScrollEase += (diff * 0.5);
-        }
+        scrollMouseToGrid();
 
         // Calculate distance between the position dragged to and the original position.
         var stepTime:Float = 0;
@@ -5790,6 +5779,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
       else
       {
+        scrollMouseToGrid(0.2);
+
         // Cursor should be a grabby hand.
         if (targetCursorMode == null) targetCursorMode = Grabbing;
       }
@@ -8092,6 +8083,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (playbarHeadDragging || gridPlayheadScrollAreaPressed || notePreviewPlayHeadDragging) return;
       // Play
       startAudioPlayback();
+    }
+  }
+
+  function scrollMouseToGrid(?speed:Float = 0.5):Void
+  {
+    // Scroll the screen if the mouse is above or below the grid.
+    if (FlxG.mouse.viewY < MENU_BAR_HEIGHT)
+    {
+      // Scroll up.
+      var diff:Float = MENU_BAR_HEIGHT - FlxG.mouse.viewY;
+      currentScrollEase -= diff * speed; // Too fast!
+    }
+    else if (FlxG.mouse.viewY > (playbarHeadLayout?.y ?? 0.0))
+    {
+      // Scroll down.
+      var diff:Float = FlxG.mouse.viewY - (playbarHeadLayout?.y ?? 0.0);
+      currentScrollEase += (diff * speed); // Too fast!
     }
   }
 
