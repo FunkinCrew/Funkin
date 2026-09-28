@@ -1,8 +1,9 @@
 package funkin.play.character;
 
+import flixel.graphics.frames.FlxFramesCollection;
 import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
-import flixel.graphics.frames.FlxFramesCollection;
+import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterRegistry;
@@ -79,12 +80,13 @@ class SparrowCharacter extends BaseCharacter
   {
     trace('Loading assets for Sparrow character "${characterId}"');
 
-    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+    var dataAssetPath:String = getAssetPath();
+    var assetPath:String = funkin.assets.Paths.formatRelative(dataAssetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
 
     var tex:FlxFramesCollection = Paths.getSparrowAtlas(assetPath);
     if (tex == null)
     {
-      trace('Could not load Sparrow sprite: ${_data.assetPath}');
+      trace('Could not load Sparrow sprite: ${dataAssetPath}');
       return;
     }
 
@@ -101,16 +103,18 @@ class SparrowCharacter extends BaseCharacter
       this.antialiasing = true;
     }
 
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    trace('[SPARROWCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    var dataAnimations:Array<AnimationData> = getCharacterAnimations();
 
-    FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
+    trace('[SPARROWCHAR] Loading ${dataAnimations.length} animations for ${characterId}');
 
-    for (anim in _data.animations)
+    FlxAnimationUtil.addAtlasAnimations(this, dataAnimations);
+
+    for (anim in dataAnimations)
     {
       if (anim.offsets == null)
       {
