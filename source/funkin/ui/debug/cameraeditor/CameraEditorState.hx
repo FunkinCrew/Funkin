@@ -306,7 +306,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   function set_selectedSongEvents(value:Array<SongEventData>):Array<SongEventData>
   {
     selectedSongEvents = value ?? [];
-    CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+    this.loadSelectedSongEvent();
     if (timeline != null && timeline.viewport != null) timeline.viewport.setSelectedEvents(selectedSongEvents);
     return selectedSongEvents;
   }
@@ -686,7 +686,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     WindowManager.instance.container = root;
     Screen.instance.addComponent(root);
 
-    CameraEditorNotificationHandler.setupNotifications(this);
+    this.setupNotifications();
     applyCanQuickSave();
 
     WindowUtil.windowExit.add(windowClose);
@@ -715,7 +715,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       raw.time = timeline.snapMs(raw.time);
 
       var cmd = new AddEventCommand(eventData);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
       selectedSongEvent = eventData;
     });
 
@@ -730,7 +730,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     mainView.registerEvent(CameraViewportEvent.GESTURE_PAN, onViewportGesturePan);
 
     CameraEditorPropertiesPanelHandler.initialize();
-    CameraEditorPropertiesPanelHandler.initializePropertiesPanel(this);
+    this.initializePropertiesPanel();
 
     Screen.instance.registerEvent(KeyboardEvent.KEY_DOWN, onScreenKeyDown);
 
@@ -745,14 +745,14 @@ class CameraEditorState extends UIState implements ConsoleClass
       try
       {
         // Camera editor was opened from the command line. Open the FNFC file now!
-        CameraEditorImportExportHandler.loadSongFromFNFCPath(this, params.loadFromPath);
+        this.loadSongFromFNFCPath(params.loadFromPath);
         if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
         if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
         if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Chart', '$e');
+        this.failure('Failed to Load Chart', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -769,11 +769,11 @@ class CameraEditorState extends UIState implements ConsoleClass
 
       try
       {
-        CameraEditorImportExportHandler.loadSongFromTemplate(this, targetSongId, targetSongDifficulty, targetSongVariation);
+        this.loadSongFromTemplate(targetSongId, targetSongDifficulty, targetSongVariation);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        this.failure('Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -787,14 +787,14 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       try
       {
-        CameraEditorImportExportHandler.loadSongFromFNFCData(this, params.loadFromFNFCData);
+        this.loadSongFromFNFCData(params.loadFromFNFCData);
         if (params.targetSongVariation != null) switchVariation(params.targetSongVariation);
         if (params.targetSongDifficulty != null) currentDifficulty = params.targetSongDifficulty;
         if (params.targetSongPosition != null) setTimePosition(params.targetSongPosition);
       }
       catch (e)
       {
-        CameraEditorNotificationHandler.failure(this, 'Failed to Load Song', '$e');
+        this.failure('Failed to Load Song', '$e');
         // Song failed to load, open the Welcome dialog so we aren't in a broken state.
         var welcomeDialog = this.openWelcomeDialog();
         if (shouldShowBackupAvailableDialog)
@@ -838,7 +838,10 @@ class CameraEditorState extends UIState implements ConsoleClass
     return {
       targetState: () -> new CameraEditorState({
         loadFromPath: currentWorkingFilePath,
-        loadFromFNFCData: (currentWorkingFilePath == null && chart.songMetadatas.size() > 0) ? CameraEditorImportExportHandler.buildFNFCDataFromCurrentChart(this) : null, // We want to reload the FNFCData so the user doesn't lose progress.
+        loadFromFNFCData: (
+          currentWorkingFilePath == null
+          && chart.songMetadatas.size() > 0
+        ) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
         targetSongDifficulty: this.currentDifficulty,
         targetSongVariation: this.currentVariation,
         targetSongPosition: Conductor.instance.songPosition
@@ -1505,7 +1508,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, null, function(path:String)
+    this.exportCurrentChartToFNFC(true, null, function(path:String)
     {
       notifyChange('Auto-Save', 'A Backup of this Chart has been made.');
     }, function()
@@ -1656,7 +1659,7 @@ class CameraEditorState extends UIState implements ConsoleClass
    */
   function performAutoSortLayersByType():Void
   {
-    CameraEditorCommandHandler.performCommand(this, new AutoSortLayersCommand());
+    this.performCommand(new AutoSortLayersCommand());
   }
 
   /**
@@ -1740,7 +1743,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         finalSelection.push(d.event);
       }
 
-      CameraEditorCommandHandler.performCommand(this, new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
+      this.performCommand(new CompoundCommand(children, 'Move ${children.length} Events', finalSelection));
 
       songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
@@ -1749,10 +1752,10 @@ class CameraEditorState extends UIState implements ConsoleClass
 
     timeline.viewport.registerEvent(TimelineEvent.EVENT_RESIZED, function(e:TimelineEvent)
     {
-      CameraEditorPropertiesPanelHandler.loadSelectedSongEvent(this);
+      this.loadSelectedSongEvent();
       var layerName:String = e.eventData.editorLayer ?? 'Default';
       var cmd = new MoveResizeEventCommand(e.eventData, e.oldTime, e.oldDuration, layerName, e.newTime, e.newDuration, layerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
 
       songEvents.sort(SortUtil.eventDataByTime.bind(FlxSort.ASCENDING));
       cachedEventIndex = 0;
@@ -1784,7 +1787,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     timeline.registerEvent(TimelineEvent.LAYER_ADDED, function(e:TimelineEvent)
     {
       var cmd = new AddLayerCommand(e.layerData, e.layerIndex);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_REMOVED, function(e:TimelineEvent)
@@ -1806,11 +1809,11 @@ class CameraEditorState extends UIState implements ConsoleClass
           var dialog = new DeleteLayerConfirmDialog(layerName, eventCount, () ->
           {
             var cmd = new FlattenLayerCommand(e.layerData, e.layerIndex);
-            CameraEditorCommandHandler.performCommand(this, cmd);
+            this.performCommand(cmd);
           }, () ->
             {
               var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-              CameraEditorCommandHandler.performCommand(this, cmd);
+              this.performCommand(cmd);
             });
           dialog.showDialog(true);
           deleteLayerConfirmDialog = dialog;
@@ -1820,25 +1823,22 @@ class CameraEditorState extends UIState implements ConsoleClass
       else
       {
         var cmd = new RemoveLayerCommand(e.layerData, e.layerIndex);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
       }
     });
 
     timeline.registerEvent(TimelineEvent.LAYER_RENAMED, function(e:TimelineEvent)
     {
       var cmd:RenameLayerCommand = new RenameLayerCommand(e.layerData, e.oldLayerName, e.newLayerName);
-      CameraEditorCommandHandler.performCommand(this, cmd);
+      this.performCommand(cmd);
     });
 
     timeline.registerEvent(
       TimelineEvent.DEFAULT_LAYER_PROTECTED,
-      (_:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Default Layer', 'Default layer cannot be renamed or removed')
+      (_:TimelineEvent) -> this.warning('Default Layer', 'Default layer cannot be renamed or removed')
     );
 
-    timeline.registerEvent(
-      TimelineEvent.LAYER_NAME_INVALID,
-      (e:TimelineEvent) -> CameraEditorNotificationHandler.warning(this, 'Invalid Layer Name', e.message ?? 'Layer name is invalid.')
-    );
+    timeline.registerEvent(TimelineEvent.LAYER_NAME_INVALID, (e:TimelineEvent) -> this.warning('Invalid Layer Name', e.message ?? 'Layer name is invalid.'));
   }
 
   var shouldResetScroll:Bool = false;
@@ -2285,11 +2285,11 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     try
     {
-      CameraEditorImportExportHandler.loadSongFromFNFCPath(this, chartPath);
+      this.loadSongFromFNFCPath(chartPath);
     }
     catch (e)
     {
-      CameraEditorNotificationHandler.error(this, 'Failure', 'Failed to load chart (${chartPath})');
+      this.error('Failure', 'Failed to load chart (${chartPath})');
     }
   }
 
@@ -2298,7 +2298,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   {
     if (currentWorkingFilePath != null)
     {
-      CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+      this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
       {
         notifyChange('Chart Save', 'This chart has been saved to ${path}');
       }, function()
@@ -2315,7 +2315,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemSaveAs, MouseEvent.CLICK)
   function onMenubarSaveAs(_)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+    this.exportCurrentChartToFNFC(false, null, function(path:String)
     {
       notifyChange('Chart Save', 'This chart has been saved to ${path}');
       currentWorkingFilePath = path;
@@ -2328,7 +2328,7 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemExportChartAsFolder, MouseEvent.CLICK)
   function onMenubarExportChartAsFolder(_)
   {
-    CameraEditorImportExportHandler.exportCurrentChartToFolder(this, (path:String) ->
+    this.exportCurrentChartToFolder((path:String) ->
     {
       notifyChange('Exported Chart', 'Chart exported successfully to ${path}');
     }, () -> {
@@ -2376,19 +2376,19 @@ class CameraEditorState extends UIState implements ConsoleClass
   @:bind(menubarItemUndo, MouseEvent.CLICK)
   function onMenubarUndo(_)
   {
-    CameraEditorCommandHandler.undoLastCommand(this);
+    this.undoLastCommand();
   }
 
   @:bind(menubarItemRedo, MouseEvent.CLICK)
   function onMenubarRedo(_)
   {
-    CameraEditorCommandHandler.redoLastCommand(this);
+    this.redoLastCommand();
   }
 
   @:nullSafety(Off)
   function destroyHaxeUIComponents():Void
   {
-    CameraEditorNotificationHandler.clearNotifications(this);
+    this.clearNotifications();
   }
 
   /**
@@ -2495,7 +2495,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       case [FlxKey.PERIOD, false, false, false, _]:
@@ -2504,14 +2504,14 @@ class CameraEditorState extends UIState implements ConsoleClass
         eventData.time = timeline.snapMs(Conductor.instance.songPosition);
 
         var cmd = new AddEventCommand(eventData);
-        CameraEditorCommandHandler.performCommand(this, cmd);
+        this.performCommand(cmd);
         selectedSongEvent = eventData;
 
       // Edit menu
       case [FlxKey.Z, true, false, false, _]: // ctrl + z -> undo
-        CameraEditorCommandHandler.undoLastCommand(this);
+        this.undoLastCommand();
       case [FlxKey.Y, true, false, false, _] | [FlxKey.Z, true, false, true, _]: // ctrl + y or ctrl + shift + z -> redo
-        CameraEditorCommandHandler.redoLastCommand(this);
+        this.redoLastCommand();
 
       case [FlxKey.A, true, false, false, _]: // ctrl + a -> select all timeline events
         selectedSongEvents = currentSongChartData.events.filter(e -> e.eventKind == 'FocusCamera'
@@ -2526,7 +2526,7 @@ class CameraEditorState extends UIState implements ConsoleClass
         hasClipboardEvent = true;
 
         var plural = selectedSongEvents.length != 1 ? 'events' : 'event';
-        CameraEditorNotificationHandler.success(this, 'Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
+        this.success('Copy Successful', 'Copied ${selectedSongEvents.length} $plural to clipboard.');
       case [FlxKey.X, true, false, false, true]: // ctrl + x -> cut
         SongDataUtils.writeItemsToClipboard({
           notes: [],
@@ -2534,15 +2534,15 @@ class CameraEditorState extends UIState implements ConsoleClass
         });
         hasClipboardEvent = true;
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Cut ${removeCmds.length} Events', []));
       case [FlxKey.V, true, false, false, _] if (hasClipboardEvent): // ctrl + v -> paste at playhead
-        CameraEditorCommandHandler.performCommand(this, new PasteEventsCommand(pastePositionMs()));
+        this.performCommand(new PasteEventsCommand(pastePositionMs()));
       case [FlxKey.D, true, false, false, true]: // ctrl + d -> duplicate selection at playhead
         duplicateSelection();
 
       case [FlxKey.DELETE, _, _, _, true] | [FlxKey.BACKSPACE, _, _, _, true]: // delete/backspace (with a note selected) -> delete selected notes
         var removeCmds:Array<CameraEditorCommand> = [for (ev in selectedSongEvents) new RemoveEventCommand(ev)];
-        CameraEditorCommandHandler.performCommand(this, new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
+        this.performCommand(new CompoundCommand(removeCmds, 'Delete ${removeCmds.length} Events', []));
 
       // Timeline
       case [FlxKey.LBRACKET, false, false, false, _]: // [ -> decrease grid size
@@ -2822,7 +2822,7 @@ class CameraEditorState extends UIState implements ConsoleClass
     {
       if (currentWorkingFilePath != null)
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, true, currentWorkingFilePath, function(path:String)
+        this.exportCurrentChartToFNFC(true, currentWorkingFilePath, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           tryMoveToChartEditor(true);
@@ -2834,7 +2834,7 @@ class CameraEditorState extends UIState implements ConsoleClass
       }
       else
       {
-        CameraEditorImportExportHandler.exportCurrentChartToFNFC(this, false, null, function(path:String)
+        this.exportCurrentChartToFNFC(false, null, function(path:String)
         {
           notifyChange('Chart Save', 'This chart has been saved to ${path}');
           currentWorkingFilePath = path;
