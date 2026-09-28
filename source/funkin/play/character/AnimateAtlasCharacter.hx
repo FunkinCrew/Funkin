@@ -1,10 +1,10 @@
 package funkin.play.character;
 
-import funkin.graphics.FunkinSprite;
-import funkin.util.assets.FlxAnimationUtil;
-import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.util.assets.FlxAnimationUtil;
 
 /**
  * An AnimateAtlasCharacter is a Character which is rendered by
@@ -31,14 +31,14 @@ class AnimateAtlasCharacter extends BaseCharacter
     loadAtlas();
     loadAnimations();
 
-    log('Successfully loaded texture atlas for ${characterId} with ${_data.animations.length} animations.');
+    log('Successfully loaded texture atlas for ${characterId} with ${getCharacterAnimations().length} animations.');
     super.onCreate(event);
   }
 
   function loadAtlas():Void
   {
     log('Loading sprite atlas for ${characterId}.');
-    var assetPath:String = Paths.stripLibrary(_data.assetPath);
+    var assetPath:String = Paths.stripLibrary(getAssetPath());
 
     loadTextureAtlas(assetPath, getAtlasSettings());
 
@@ -53,16 +53,18 @@ class AnimateAtlasCharacter extends BaseCharacter
       this.antialiasing = true;
     }
 
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    log('Loading ${_data.animations.length} animations for ${characterId}');
+    var animationList:Array<AnimationData> = getCharacterAnimations();
 
-    FlxAnimationUtil.addTextureAtlasAnimations(this, _data.animations);
+    log('Loading ${animationList.length} animations for ${characterId}');
 
-    for (anim in _data.animations)
+    FlxAnimationUtil.addTextureAtlasAnimations(this, animationList);
+
+    for (anim in animationList)
     {
       if (anim.offsets == null)
       {

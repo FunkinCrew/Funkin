@@ -1,8 +1,9 @@
 package funkin.play.character;
 
 import flixel.graphics.frames.FlxFramesCollection;
-import funkin.modding.events.ScriptEvent;
+import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
+import funkin.modding.events.ScriptEvent;
 import funkin.util.assets.FlxAnimationUtil;
 
 /**
@@ -33,10 +34,11 @@ class PackerCharacter extends BaseCharacter
   {
     trace('Loading assets for Packer character "${characterId}"');
 
-    var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath);
+    var dataAssetPath:String = getAssetPath();
+    var tex:FlxFramesCollection = Paths.getPackerAtlas(dataAssetPath);
     if (tex == null)
     {
-      trace('Could not load Packer sprite: ${_data.assetPath}');
+      trace('Could not load Packer sprite: ${dataAssetPath}');
       return;
     }
 
@@ -55,16 +57,18 @@ class PackerCharacter extends BaseCharacter
       this.antialiasing = true;
     }
 
-    this.setScale(_data.scale);
+    this.setScale(getBaseScale());
   }
 
   function loadAnimations():Void
   {
-    trace('[PACKERCHAR] Loading ${_data.animations.length} animations for ${characterId}');
+    var dataAnimations:Array<AnimationData> = getCharacterAnimations();
 
-    FlxAnimationUtil.addAtlasAnimations(this, _data.animations);
+    trace('[PACKERCHAR] Loading ${dataAnimations.length} animations for ${characterId}');
 
-    for (anim in _data.animations)
+    FlxAnimationUtil.addAtlasAnimations(this, dataAnimations);
+
+    for (anim in dataAnimations)
     {
       if (anim.offsets == null)
       {
