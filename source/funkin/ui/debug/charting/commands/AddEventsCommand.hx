@@ -47,6 +47,8 @@ class AddEventsCommand implements ChartEditorCommand
 
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/note-place'));
 
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
+
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
     state.notePreviewDirty = true;
@@ -67,6 +69,8 @@ class AddEventsCommand implements ChartEditorCommand
     state.currentNoteSelection = [];
     state.currentEventSelection = [];
     state.playSound(Paths.sound('ui/editors/chart-editor/charting-sounds/undo'));
+
+    state.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT);
 
     state.saveDataDirty = true;
     state.noteDisplayDirty = true;
