@@ -11,6 +11,7 @@ import flixel.graphics.frames.FlxFrame;
 import funkin.data.animation.AnimationData;
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.play.notes.NoteQuantColors;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.play.notes.NoteDirection;
 import haxe.ui.tooltips.ToolTipRegionOptions;
@@ -212,6 +213,7 @@ class ChartEditorNoteSprite extends FlxSprite
       this.y += origin.y;
     }
 
+    NoteQuantColors.apply(this, Preferences.noteQuantColors, stepTime);
     this.updateTooltipPosition();
   }
 
