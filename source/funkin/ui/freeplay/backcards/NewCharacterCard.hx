@@ -28,7 +28,8 @@ class NewCharacterCard extends BackingCard
   public var friendFoe2:BGScrollingText;
   public var newUnlock3:BGScrollingText;
 
-  override public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  override public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     super.applyExitMovers(exitMovers, exitMoversCharSel);
     if (exitMovers == null || exitMoversCharSel == null) return;
@@ -162,7 +163,7 @@ class NewCharacterCard extends BackingCard
     newUnlock3 = new BGScrollingText(0, 458, 'NEW UNLOCK!', FlxG.width / 2, true, 80);
 
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back')),
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/styles/unlock/backing-card/dark-back').withPixelData()),
       FreeplayState.CUTOUT_WIDTH
     );
     darkBg = new FlxSprite(0, 0).loadGraphic(bitmap);
@@ -192,7 +193,7 @@ class NewCharacterCard extends BackingCard
     newUnlock3.speed = 2;
     add(newUnlock3);
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar')),
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/styles/unlock/backing-card/multiply-bar').withPixelData()),
       FreeplayState.CUTOUT_WIDTH
     );
     multiplyBar = new FlxSprite(-10, 440).loadGraphic(bitmap);
@@ -205,7 +206,10 @@ class NewCharacterCard extends BackingCard
     ).loadGraphic(Paths.image('ui/freeplay/styles/unlock/backing-card/orange-gradient'));
     lightLayer.blend = BlendMode.ADD;
     add(lightLayer);
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/red')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/styles/unlock/backing-card/red').withPixelData()),
+      FreeplayState.CUTOUT_WIDTH
+    );
     multiply1 = new FlxSprite(-15, -125).loadGraphic(bitmap);
     multiply1.blend = BlendMode.MULTIPLY;
     add(multiply1);
@@ -222,7 +226,7 @@ class NewCharacterCard extends BackingCard
     add(lightLayer2);
 
     var bitmap = BitmapUtil.scalePartByWidth(
-      Assets.getBitmapData(Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg')),
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/styles/unlock/backing-card/yellow-bg').withPixelData()),
       FreeplayState.CUTOUT_WIDTH
     );
     yellow = new FlxSprite(0, 0).loadGraphic(bitmap);

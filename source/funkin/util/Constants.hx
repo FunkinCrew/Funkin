@@ -174,7 +174,7 @@ class Constants
   // ==============================
 
   /**
-   * The color used by the enemy health bar.
+   * The color used by the opponent health bar.
    */
   public static final COLOR_HEALTH_BAR_RED:FlxColor = 0xFFFF0000;
 
@@ -501,7 +501,7 @@ class Constants
    *
    * 0 = The preloader immediately moves to the next step when it's ready.
    * 1 = The preloader waits for 1 second before moving to the next step.
-   *     The progress bare is automatically rescaled to match.
+   *     The progress bar is automatically rescaled to match.
    */
   public static final PRELOADER_MIN_STAGE_TIME:Float = 0.1;
 

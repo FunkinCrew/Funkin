@@ -3,8 +3,8 @@
     {
       "name": "FlxPartialSound",
       "type": "git",
-      "ref": "0acb16612f51bd241fb5261be829fff3e6039b92",
-      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+      "ref": "8287bfc1d08b41cb762c4c7089a079530d699de6",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound"
     },
     {
       "name": "astc-compressor",
@@ -15,13 +15,13 @@
     {
       "name": "extension-admob",
       "type": "git",
-      "ref": "68fc73c4090c5765709597b68fbe87389f3548c0",
+      "ref": "c3fea546634c0e799195e6c45d1666e1683ee59d",
       "url": "https://github.com/FunkinCrew/extension-admob"
     },
     {
       "name": "extension-agesignals",
       "type": "git",
-      "ref": "dd3f56ccbb313a43d40cba8826fca2b1ec7c7e5d",
+      "ref": "26a95f90c39db95d9fab59244f22e612b2295957",
       "url": "https://github.com/FunkinCrew/extension-agesignals"
     },
     {
@@ -43,7 +43,7 @@
     {
       "name": "extension-iapcore",
       "type": "git",
-      "ref": "5fbb4a8e56ff0f4d8ffc71b561d57a367419ead8",
+      "ref": "fd22c391be8bb59ded6c0b3f5fcc5f6358dd8897",
       "url": "https://github.com/LimeExtensions/extension-iapcore"
     },
     {
@@ -55,13 +55,13 @@
     {
       "name": "extension-webviewcore",
       "type": "git",
-      "ref": "98c059722491b182ee932ff47c5d7b564c967165",
+      "ref": "82f84ca88261dbdeca9a5276c594dac5209886ca",
       "url": "https://github.com/LimeExtensions/extension-webviewcore"
     },
     {
       "name": "flixel",
       "type": "git",
-      "ref": "ba8e83422f85617514b8ad471c27b071dcafc382",
+      "ref": "c88165fbfa4a46a05bfd796c4e39f0527cd7dc81",
       "url": "https://github.com/FunkinCrew/flixel"
     },
     {
@@ -73,7 +73,7 @@
     {
       "name": "flixel-animate",
       "type": "git",
-      "ref": "baaced6c229810354e9573737efccc1c01eaea77",
+      "ref": "8c1014d9362c24538fb083706418d2ee5edf1d82",
       "url": "https://github.com/FunkinCrew/flixel-animate"
     },
     {
@@ -89,13 +89,12 @@
     {
       "name": "funkin.vis",
       "type": "git",
-      "ref": "02bada154b474c2554709b9d12aef0cbf0da3ec9",
+      "ref": "f99adae2e1aa18ef1b987ca97e49d1b3c6ee9b9f",
       "url": "https://github.com/FunkinCrew/funkVis"
     },
     {
       "name": "grig.audio",
       "type": "git",
-      "dir": "src",
       "ref": "6409f3c6d1b4c52176813d3ede86c0d34e8af2c1",
       "url": "https://github.com/FunkinCrew/grig.audio"
     },
@@ -131,7 +130,7 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "ref": "82b5bb7913e2eb8d9e8141da0dd8cd3bdc3f16c5",
+      "ref": "1f4661402afe66ae7bf6a94161148f5285da5c93",
       "url": "https://github.com/FunkinCrew/hxcpp"
     },
     {
@@ -150,7 +149,7 @@
       "name": "hxjsonast",
       "type": "git",
       "ref": "20e72cc68c823496359775ac1f06500e67f189d5",
-      "url": "https://github.com/nadako/hxjsonast/"
+      "url": "https://github.com/nadako/hxjsonast"
     },
     {
       "name": "hxgamemode",
@@ -165,7 +164,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": "2.3.0"
+      "version": "2.3.1"
     },
     {
       "name": "json2object",
@@ -187,7 +186,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "ca1ccddee816d5ea8f6481ff7eb3c8930c98d909",
+      "ref": "1ce7b81be885760c6fc76e3703c3f7985e57e4b9",
       "url": "https://github.com/FunkinCrew/lime"
     },
     {
@@ -199,13 +198,13 @@
     {
       "name": "openfl",
       "type": "git",
-      "ref": "7722b7971f3a66c9dd94d6c2d95c8b60c8d8a010",
+      "ref": "ca9b27ca61ab672424134d97e3fc9017b0ee2436",
       "url": "https://github.com/FunkinCrew/openfl"
     },
     {
       "name": "polymod",
       "type": "git",
-      "ref": "af4d8ab44a76551a9fcc20f26ee191699ef8c7ff",
+      "ref": "c06ddba5de6eeabcee3daa7f80867a110407ff43",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
@@ -217,7 +216,7 @@
     {
       "name": "thx.semver",
       "type": "git",
-      "ref": "7714c5ed3547cc996c9ee318aa360abbd7f85f74",
+      "ref": "d7ed6011c506130702ef4953a9ec8ecc86b32210",
       "url": "https://github.com/FunkinCrew/thx.semver"
     }
   ]

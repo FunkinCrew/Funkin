@@ -185,8 +185,6 @@ class InputUtil
     }
   }
 
-  static var dirReg:EReg = ~/^(l|r).?-(left|right|down|up)$/;
-
   /**
    * Get the shortened name of a button for a gamepad.
    *
@@ -207,6 +205,7 @@ class InputUtil
 
   static function shortenButtonName(name:Null<String>):String
   {
+    var dirReg:EReg = ~/^(l|r).?-(left|right|down|up)$/;
     return switch (name == null ? '' : name.toLowerCase())
     {
       case '':

@@ -7,6 +7,7 @@ import openfl.utils.AssetType as OpenFLAssetType;
  * A utility class which evaluates asset paths,
  * checking known previous paths for backwards compatibility.
  */
+@:nullSafety
 class Paths
 {
   /**
@@ -411,8 +412,8 @@ class Paths
     'assets/data/ui/chart-editor/dialogs/upload-inst.xml' => 'assets/ui/editors/chart-editor/dialogs/upload-inst.xml',
     'assets/data/ui/chart-editor/dialogs/user-guide.xml' => 'assets/ui/editors/chart-editor/dialogs/user-guide.xml',
     'assets/data/ui/chart-editor/toolbox/iconselector.xml' => 'assets/ui/editors/chart-editor/toolbox/icon-selector.xml',
-    'assets/data/ui/chart-editor/toolbox/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
-    'assets/data/ui/chart-editor/toolbox/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/opponent-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/opponent-preview.xml',
+    'assets/data/ui/chart-editor/toolboxes/player-preview.xml' => 'assets/ui/editors/chart-editor/toolbox/player-preview.xml',
     'assets/data/ui/chart-editor/toolbox/playtest-properties.xml' => 'assets/ui/editors/chart-editor/toolbox/playtest-properties.xml',
     'assets/data/ui/chart-editor/toolbox/tools.xml' => 'assets/ui/editors/chart-editor/toolbox/tools.xml',
     'assets/data/ui/stage-editor/components/layers.xml' => 'assets/ui/editors/stage-editor/components/layers.xml',
@@ -3520,9 +3521,10 @@ class Paths
 
     // Filter out stuff like double slashes or backslashes.
     filePath = haxe.io.Path.normalize(filePath);
+    var excludeFilePath:String = filePath.replace('assets/', 'assets/exclude/');
 
     // If the path just exists, return it. This is the most common case.
-    if (funkin.assets.Assets.exists(filePath))
+    if (funkin.assets.Assets.exists(filePath) || funkin.assets.Assets.exists(excludeFilePath))
     {
       return filePath;
     }
@@ -3530,10 +3532,11 @@ class Paths
     // If the path doesn't exist, it might be a mod backwards compatibility issue.
 
     // Check the list of known paths.
-    if (PATHS.exists(filePath))
+    var compatPath = PATHS[filePath];
+    if (compatPath != null)
     {
       // trace(' WARNING '.warning() + ' Converting legacy asset path $filePath to ${PATHS[filePath]}')
-      return PATHS[filePath];
+      return compatPath;
     }
 
     // Somehow if the file path starts with `assets/assets/`...
@@ -3584,7 +3587,8 @@ class Paths
 
       if (PATHS.exists(path))
       {
-        if (funkin.assets.Assets.exists(PATHS[path])) result = PATHS[path];
+        var compatPath = PATHS[path];
+        if (compatPath != null && funkin.assets.Assets.exists(compatPath)) result = compatPath;
       }
     }
 

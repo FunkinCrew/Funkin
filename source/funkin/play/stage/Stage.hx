@@ -532,7 +532,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getGirlfriendPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.gf.position[0], _data.characters.gf.position[1]);
+    return FlxPoint.weak(_data.characters.gf.position[0], _data.characters.gf.position[1]);
   }
 
   /**
@@ -541,7 +541,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getBoyfriendPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.bf.position[0], _data.characters.bf.position[1]);
+    return FlxPoint.weak(_data.characters.bf.position[0], _data.characters.bf.position[1]);
   }
 
   /**
@@ -550,7 +550,7 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public inline function getDadPosition():FlxPoint
   {
-    return new FlxPoint(_data.characters.dad.position[0], _data.characters.dad.position[1]);
+    return FlxPoint.weak(_data.characters.dad.position[0], _data.characters.dad.position[1]);
   }
 
   /**
@@ -704,31 +704,13 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
    */
   public function dispatchToCharacters(event:ScriptEvent):Void
   {
-    var charList = this.characters.keys().array();
+    if (characters.exists('dad')) dispatchToCharacter('dad', event);
+    if (characters.exists('bf')) dispatchToCharacter('bf', event);
+    if (characters.exists('gf')) dispatchToCharacter('gf', event);
 
-    // Dad, then BF, then GF, in that order.
-
-    if (charList.contains('dad'))
+    for (characterId in characters.keys())
     {
-      dispatchToCharacter('dad', event);
-      charList.remove('dad');
-    }
-
-    if (charList.contains('bf'))
-    {
-      dispatchToCharacter('bf', event);
-      charList.remove('bf');
-    }
-
-    if (charList.contains('gf'))
-    {
-      dispatchToCharacter('gf', event);
-      charList.remove('gf');
-    }
-
-    // Then the rest of the characters, if any.
-    for (characterId in charList)
-    {
+      if (characterId == 'dad' || characterId == 'bf' || characterId == 'gf') continue;
       dispatchToCharacter(characterId, event);
     }
   }
@@ -912,6 +894,10 @@ class Stage extends FlxSpriteGroup implements IPlayStateScriptedClass implements
   }
 
   public function onNoteMiss(event:NoteScriptEvent)
+  {
+  }
+
+  public function onNoteHoldHit(event:HoldNoteScriptEvent)
   {
   }
 

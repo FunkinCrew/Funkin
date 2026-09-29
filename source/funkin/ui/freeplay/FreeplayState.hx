@@ -281,8 +281,6 @@ class FreeplayState extends MusicBeatSubState
   var fromCharSelect:Bool = false;
   var forceSkipIntro:Bool = false;
 
-  public var freeplayArrow:Null<FlxText>;
-
   public function new(?params:FreeplayStateParams, ?stickers:StickerSubState)
   {
     var fetchPlayableCharacter = function():PlayableCharacter
@@ -363,11 +361,10 @@ class FreeplayState extends MusicBeatSubState
 
     // ui/freeplay/backgrounds/charId/levelId
 
-    backingImage = FunkinSprite.create(
+    backingImage = new FunkinSprite(
       backingCard.pinkBack.width * 0.74,
-      0,
-      styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey()
-    );
+      0
+    ).loadTexture(styleData == null ? 'ui/freeplay/backgrounds/bf/week1' : styleData.getBgAssetKey());
 
     // TODO: refactor DifficultySelector to *not* use `this` as input? Handle it's animations and style data in different manner
     diffSelLeft = new DifficultySelector((CUTOUT_WIDTH * DJ_POS_MULTI) + 20, grpDifficulties.y - 10, false, controls, styleData, uiStateMachine);
@@ -401,7 +398,7 @@ class FreeplayState extends MusicBeatSubState
         // Set rememberedSongId to last played song if accessed from the RANDOM option
         rememberedSongId = fromResultsParams.songId;
       }
-    
+
       @:privateAccess
       this._parentState._constructor = () ->
       {
@@ -586,15 +583,6 @@ class FreeplayState extends MusicBeatSubState
     topLeftCornerText.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     topLeftCornerText.visible = false;
 
-    var freeplayTxtBg:FlxSprite = new FlxSprite()
-      .makeGraphic(Math.round(topLeftCornerText.width + 16), Math.round(topLeftCornerText.height + 16), FlxColor.BLACK);
-    freeplayTxtBg.x = topLeftCornerText.x - 8;
-    freeplayTxtBg.visible = false;
-
-    freeplayArrow = new FlxText(Math.max(FullScreenScaleMode.gameNotchSize.x, 8), 8, 0, '<---');
-    freeplayArrow.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
-    freeplayArrow.visible = false;
-
     ostName.setFormat(funkin.assets.Paths.font('ui/fonts/VCR OSD Mono'), 48);
     ostName.alignment = RIGHT;
     ostName.visible = false;
@@ -615,28 +603,14 @@ class FreeplayState extends MusicBeatSubState
       });
     }
 
-    exitMovers.set([
-      overhangStuff,
-      topLeftCornerText,
-      ostName,
-      charSelectHint,
-      freeplayTxtBg,
-      freeplayArrow
-    ], {
+    exitMovers.set([overhangStuff, topLeftCornerText, ostName, charSelectHint], {
       y: -overhangStuff.height,
       x: 0,
       speed: 0.2,
       wait: 0
     });
 
-    exitMoversCharSel.set([
-      overhangStuff,
-      topLeftCornerText,
-      ostName,
-      charSelectHint,
-      freeplayTxtBg,
-      freeplayArrow
-    ], {
+    exitMoversCharSel.set([overhangStuff, topLeftCornerText, ostName, charSelectHint], {
       y: -300,
       speed: 0.8,
       wait: 0.1
@@ -644,7 +618,6 @@ class FreeplayState extends MusicBeatSubState
 
     var sillyStroke:StrokeShader = new StrokeShader(0xFFFFFFFF, 2, 2);
     topLeftCornerText.shader = sillyStroke;
-    freeplayArrow.shader = sillyStroke;
 
     var fnfHighscoreSpr:FlxSprite = new FlxSprite(FlxG.width - (FullScreenScaleMode.gameNotchSize.x + 420), 70);
     fnfHighscoreSpr.frames = Paths.getSparrowAtlas('ui/freeplay/interface/highscore');
@@ -752,8 +725,6 @@ class FreeplayState extends MusicBeatSubState
 
     // putting these here to fix the layering
     add(overhangStuff);
-    add(freeplayArrow);
-    add(freeplayTxtBg);
     add(topLeftCornerText);
     add(ostName);
 
@@ -832,8 +803,6 @@ class FreeplayState extends MusicBeatSubState
       {
         fnfHighscoreSpr.visible = true;
         topLeftCornerText.visible = true;
-        freeplayTxtBg.visible = true;
-        if (freeplayArrow != null) freeplayArrow.visible = true;
         ostName.visible = true;
         updateOSTName(true);
         fpScoreDisplay.visible = true;
@@ -967,21 +936,11 @@ class FreeplayState extends MusicBeatSubState
     switch (renderType)
     {
       case 'animateatlas':
-        dj = (scriptClass != '') ? (AnimateAtlasFreeplayDJ.scriptInit(
-          scriptClass,
-          x,
-          y,
-          characterId
-        )) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (AnimateAtlasFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new AnimateAtlasFreeplayDJ(x, y, characterId));
       case 'sparrow':
         dj = (scriptClass != '') ? (SparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new SparrowFreeplayDJ(x, y, characterId));
       case 'multisparrow':
-        dj = (scriptClass != '') ? (MultiSparrowFreeplayDJ.scriptInit(
-          scriptClass,
-          x,
-          y,
-          characterId
-        )) : (new MultiSparrowFreeplayDJ(x, y, characterId));
+        dj = (scriptClass != '') ? (MultiSparrowFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new MultiSparrowFreeplayDJ(x, y, characterId));
       case 'packer':
         dj = (scriptClass != '') ? (PackerFreeplayDJ.scriptInit(scriptClass, x, y, characterId)) : (new PackerFreeplayDJ(x, y, characterId));
       case 'custom':
@@ -1247,7 +1206,8 @@ class FreeplayState extends MusicBeatSubState
     });
   }
 
-  function rankDisplayNew(fromResults:Null<FromResultsParams>, capsuleToRank:SongMenuItem):Void
+  function rankDisplayNew(fromResults:Null<FromResultsParams>,
+    capsuleToRank:SongMenuItem):Void
   {
     dispatchEvent(new CapsuleScriptEvent(FREEPLAY_RANK_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResults?.newRank));
 
@@ -1397,7 +1357,7 @@ class FreeplayState extends MusicBeatSubState
     new FlxTimer().start(0.5, _ ->
     {
       dispatchEvent(new CapsuleScriptEvent(FREEPLAY_CAPSULE_SLAM, currentCapsule, currentDifficulty, currentVariation, fromResultsParams?.newRank));
-      
+
       // Capsule slam vibration.
       HapticUtil.vibrate(Constants.DEFAULT_VIBRATION_PERIOD, Constants.DEFAULT_VIBRATION_DURATION, Constants.MAX_VIBRATION_AMPLITUDE);
 
@@ -1730,7 +1690,7 @@ class FreeplayState extends MusicBeatSubState
       {
         funkin.assets.FunkinAssetCache.instance.purgeCache();
       });
-      FlxG.switchState(() -> new funkin.ui.charSelect.CharSelectSubState({
+      FlxG.switchState(() -> new funkin.ui.charSelect.CharacterSelectState({
         character: currentCharacterId
       }));
     });

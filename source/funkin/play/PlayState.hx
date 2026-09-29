@@ -419,6 +419,12 @@ class PlayState extends MusicBeatSubState
   public var isInCutscene:Bool = false;
 
   /**
+   * If true, the player is allowed to pause the game.
+   * Disabled during the ending of a song.
+   */
+  public var mayPauseGame:Bool = true;
+
+  /**
    * Whether the inputs should be disabled for whatever reason...
    * Used after the song ends, and in the Stage Editor.
    */
@@ -484,12 +490,6 @@ class PlayState extends MusicBeatSubState
    * The `update()` function regularly shifts these out to trigger events.
    */
   var songEvents:Array<SongEventData> = [];
-
-  /**
-   * If true, the player is allowed to pause the game.
-   * Disabled during the ending of a song.
-   */
-  var mayPauseGame:Bool = true;
 
   /**
    * The displayed value of the player's health.
@@ -821,8 +821,8 @@ class PlayState extends MusicBeatSubState
 
     // Pause sprites
     #if FEATURE_TOUCH_CONTROLS
-    pauseButton = FunkinSprite.createSparrow(0, 0, 'ui/pause-button');
-    pauseCircle = FunkinSprite.create(0, 0, 'ui/pause-circle');
+    pauseButton = new FunkinSprite().loadSparrow('ui/pause-button');
+    pauseCircle = new FunkinSprite().loadTexture('ui/pause-circle');
     #end
 
     // Don't do anything else here! Wait until create() when we attach to the camera.
@@ -1074,7 +1074,7 @@ class PlayState extends MusicBeatSubState
 
       previousDifficulty = currentDifficulty;
 
-      currentStage?.resetStage();
+      if (currentStage != null) funkin.modding.ScriptGuard.run(currentStage, 'a stage reset', currentStage.resetStage);
 
       dispatchEvent(retryEvent);
 
@@ -2081,7 +2081,7 @@ class PlayState extends MusicBeatSubState
   function initMinimalMode():Void
   {
     // Create the green background.
-    var menuBG = FunkinSprite.create('ui/main-menu/menu-desat');
+    var menuBG = new FunkinSprite().loadTexture('ui/main-menu/menu-desat');
     menuBG.color = 0xFF4CAF50;
     menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
     menuBG.updateHitbox();
@@ -2559,15 +2559,19 @@ class PlayState extends MusicBeatSubState
       currentChart.getEvents()
     );
 
+    var hadSongEvents:Bool = songEvents != null && songEvents.length > 0;
+
     dispatchEvent(event, false);
 
     var builtNoteData = event.notes;
     var builtEventData = event.events;
 
-    event.finish();
-
     songEvents = builtEventData;
     SongEventRegistry.resetEvents(songEvents);
+
+    if (!hadSongEvents) SongEventRegistry.callEvent(event);
+
+    event.finish();
 
     // Reset the notes on each strumline.
     var playerNoteData:Array<SongNoteData> = [];
@@ -2745,11 +2749,6 @@ class PlayState extends MusicBeatSubState
     });
     #end
 
-    if (startTimestamp > 0)
-    {
-      handleSkippedNotes();
-    }
-
     var event:ScriptEvent = ScriptEvent.get(SONG_START);
     dispatchEvent(event);
 
@@ -2770,20 +2769,15 @@ class PlayState extends MusicBeatSubState
     // Skip this if the music is paused (GameOver, Pause menu, start-of-song offset, etc.)
     if (!(FlxG.sound.music?.playing ?? false)) return;
 
-    var timeToPlayAt:Float = Math.min(
-      FlxG.sound.music.length - 1,
-      Math.max(Math.min(Conductor.instance.combinedOffset, 0), Conductor.instance.songPosition) - Conductor.instance.combinedOffset
-    );
+    var timeToPlayAt:Float = FlxG.sound.music.time;
+
+    if (timeToPlayAt >= FlxG.sound.music.length - 1) return;
+
     trace('Resyncing vocals to ${timeToPlayAt}');
 
-    FlxG.sound.music.pause();
     vocals.pause();
-
-    FlxG.sound.music.time = timeToPlayAt;
-    FlxG.sound.music.play(false, timeToPlayAt);
-
     vocals.time = timeToPlayAt;
-    vocals.play(false, timeToPlayAt);
+    vocals.play(true, timeToPlayAt);
   }
 
   /**
@@ -2826,6 +2820,9 @@ class PlayState extends MusicBeatSubState
   {
     if (isGamePaused) return;
 
+    // Set the current position for further calculation.
+    event.position = Conductor.instance.songPosition;
+
     // Do the minimal possible work here.
     inputPressQueue.push(event);
   }
@@ -2835,6 +2832,9 @@ class PlayState extends MusicBeatSubState
    */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    // Set the current position for further calculation.
+    event.position = Conductor.instance.songPosition;
+
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }
@@ -2894,12 +2894,13 @@ class PlayState extends MusicBeatSubState
       // While the hold note is being hit, and there is length on the hold note...
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
-        // Make sure the opponent keeps singing while the note is held.
-        var dad:Null<BaseCharacter> = currentStage?.getDad();
-        if (dad != null && dad.isSinging())
-        {
-          dad.holdTimer = 0;
-        }
+        // Dispatch the event, which should make the opponent keep singing while the note is held.
+        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, 0, 0, false, 0);
+        dispatchEvent(event, false);
+
+        // Drop the held note if the event is cancelled.
+        if (event.eventCanceled) holdNote.missedNote = true;
+        event.finish();
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
@@ -2911,7 +2912,8 @@ class PlayState extends MusicBeatSubState
         {
           // We dropped a hold note.
           // Play miss animation, but don't penalize.
-          currentStage?.getOpponent()?.playSingAnimation(holdNote.noteData.getDirection(), true);
+          var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_DROP, holdNote, 0, 0, true, 0);
+          dispatchEvent(event);
         }
       }
     }
@@ -2990,19 +2992,22 @@ class PlayState extends MusicBeatSubState
       // While the hold note is being hit, and there is length on the hold note...
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
+        var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
+        var scoreChange:Float = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+
+        var event:HoldNoteScriptEvent = HoldNoteScriptEvent.get(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
+        dispatchEvent(event, false);
+
         // Grant the player health.
         if (!isBotPlayMode && holdNote.scoreable)
         {
-          health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-          songScore += Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+          health += event.healthChange;
+          songScore += event.score;
         }
 
-        // Make sure the player keeps singing while the note is held by the bot.
-        var bf:Null<BaseCharacter> = currentStage?.getBoyfriend();
-        if (isBotPlayMode && bf != null && bf.isSinging())
-        {
-          bf.holdTimer = 0;
-        }
+        // Drop the held note if the event is cancelled.
+        if (event.eventCanceled) holdNote.missedNote = true;
+        event.finish();
       }
 
       if (holdNote.missedNote && !holdNote.handledMiss)
@@ -3068,7 +3073,7 @@ class PlayState extends MusicBeatSubState
   {
     for (note in playerStrumline.notes.members)
     {
-      if (note == null || note.hasBeenHit) continue;
+      if (note == null || !note.alive || note.hasBeenHit) continue;
       var hitWindowEnd = note.strumTime + Constants.HIT_WINDOW_MS;
 
       if (Conductor.instance.songPosition > hitWindowEnd)
@@ -3175,18 +3180,19 @@ class PlayState extends MusicBeatSubState
 
   function goodNoteHit(note:NoteSprite, input:PreciseInputEvent):Void
   {
+    var inputPosition:Float = input.position ?? 0.0;
     // Calculate the input latency (do this as late as possible).
     // trace('Compare: ${PreciseInputManager.getCurrentTimestamp()} - ${input.timestamp}');
     var inputLatencyNs:Int64 = PreciseInputManager.getCurrentTimestamp() - input.timestamp;
     var inputLatencyMs:Float = inputLatencyNs.toFloat() / Constants.NS_PER_MS;
     // trace('Input: ${daNote.noteData.getDirectionName()} pressed ${inputLatencyMs}ms ago!');
 
-    // Get the offset and compensate for input latency.
-    // Round inward (trim remainder) for consistency.
-    var noteDiff:Int = Std.int(Conductor.instance.songPosition - note.noteData.time - inputLatencyMs);
+    // Use the input's song position when calculating the ms difference.
+    // Also compensate for input latency.
+    var noteDiff:Int = Std.int(inputPosition - note.noteData.time - inputLatencyMs);
 
-    var score = Scoring.scoreNote(noteDiff, PBOT1);
-    var daRating = Scoring.judgeNote(noteDiff, PBOT1);
+    var score = Scoring.scoreNote(noteDiff);
+    var daRating = Scoring.judgeNote(noteDiff);
 
     var healthChange = 0.0;
     var isComboBreak = false;

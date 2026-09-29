@@ -333,6 +333,13 @@ class ChartEditorMetadataToolbox extends ChartEditorBaseToolbox
       labelScrollSpeed.text = 'Scroll Speed: ${chartEditorState.currentSongChartScrollSpeed}x';
     };
 
+    inputScrollSpeed.onRightClick = _ ->
+    {
+      chartEditorState.currentSongChartScrollSpeed = 1.0;
+      inputScrollSpeed.value = 1;
+      labelScrollSpeed.text = 'Scroll Speed: 1x';
+    }
+
     inputDifficultyRating.onChange = function(event:UIEvent)
     {
       chartEditorState.currentSongChartDifficultyRating = event.target.value;

@@ -222,7 +222,12 @@ class FunkinBufferSprite extends FunkinSprite
 
     if (this.filters != null && this.filters.length > 0)
     {
-      filterRenderer.applyFilters(renderer.texture);
+      if (renderer.justRendered || _renderTextureDirty || !filtered)
+      {
+        filterRenderer.applyFilters(renderer.texture);
+        renderer.justRendered = false;
+        _renderTextureDirty = false;
+      }
 
       if (filtered)
       {

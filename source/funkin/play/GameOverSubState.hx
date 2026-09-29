@@ -486,6 +486,26 @@ class GameOverSubState extends MusicBeatSubState
     close();
   }
 
+  override public function onFocusLost():Void
+  {
+    super.onFocusLost();
+    if (Preferences.autoPause)
+    {
+      gameOverMusic?.pause();
+      confirmTimer.active = false;
+    }
+  }
+
+  override public function onFocus():Void
+  {
+    super.onFocus();
+    if (Preferences.autoPause)
+    {
+      gameOverMusic?.resume();
+      confirmTimer.active = true;
+    }
+  }
+
   override public function dispatchEvent(event:ScriptEvent, finish:Bool = true):Void
   {
     super.dispatchEvent(event, false);

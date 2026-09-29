@@ -122,6 +122,13 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     this.onDialogClosed = onClose;
   }
 
+  override function onReady():Void
+  {
+    refreshAudioPreview();
+    refresh();
+    refreshTicks();
+  }
+
   function onClose(event:UIEvent)
   {
     chartEditorState.menubarItemToggleToolboxFreeplay.selected = false;
@@ -136,6 +143,11 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
 
     freeplayMusicVolume.onChange = (_) ->
     {
+      setTrackVolume(freeplayPreviewVolume);
+    };
+    freeplayMusicVolume.onRightClick = (_) ->
+    {
+      freeplayMusicVolume.value = 50;
       setTrackVolume(freeplayPreviewVolume);
     };
     freeplayMusicMute.onClick = (_) ->
@@ -222,15 +234,21 @@ class ChartEditorFreeplayToolbox extends ChartEditorBaseToolbox
     refresh();
     refreshTicks();
 
-    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragWaveform();
-    });
+    waveformMusic.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragWaveform());
+    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) -> onStartDragPlayhead());
 
-    freeplayTicksContainer.registerEvent(MouseEvent.MOUSE_DOWN, (_) ->
-    {
-      onStartDragPlayhead();
-    });
+    // Immediately hide the waveforms when they're ready
+    // We need to wait for the whole menu to be built before showing to prevent them clipping.
+    waveformMusic.registerEvent(UIEvent.INITIALIZE, hideWaveform);
+  }
+
+  function hideWaveform(e:UIEvent):Void
+  {
+    var player = cast(e.target, WaveformPlayer);
+    player.waveform.duration = 0;
+
+    // Unregister the event to make sure this function isn't called again.
+    player.unregisterEvent(UIEvent.INITIALIZE, hideWaveform);
   }
 
   function initializeTicks():Void

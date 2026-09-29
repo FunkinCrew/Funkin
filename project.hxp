@@ -316,6 +316,12 @@ class Project extends HXProject
   static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
 
   /**
+   * `-DNO_FEATURE_STACK_TRACE`
+   * If this flag is disabled, the build leaves out HXCPP_STACK_LINE and HXCPP_STACK_TRACE.
+   */
+  static final FEATURE_STACK_TRACE:FeatureFlag = "FEATURE_STACK_TRACE";
+
+  /**
    * `-DFEATURE_DISCORD_RPC`
    * If this flag is enabled, the game will enable the Discord Remote Procedure Call library.
    * This is used to provide Discord Rich Presence support.
@@ -371,6 +377,12 @@ class Project extends HXProject
   static final FEATURE_LAG_ADJUSTMENT:FeatureFlag = "FEATURE_LAG_ADJUSTMENT";
 
   /**
+   * `-DFEATURE_HIGH_DPI`
+   * If this flag is enabled, the game will use high dpi which improves the quality by alot.
+   */
+  static final FEATURE_HIGH_DPI:FeatureFlag = "FEATURE_HIGH_DPI";
+
+  /**
    * `-DFEATURE_LOG_TRACE`
    * If this flag is enabled, the game will print debug traces to the console.
    * Disable to improve performance a bunch.
@@ -383,6 +395,14 @@ class Project extends HXProject
    * Disable to improve performance a bunch.
    */
   static final FEATURE_DEBUG_FILE_LOGGING:FeatureFlag = "FEATURE_DEBUG_FILE_LOGGING";
+
+  /**
+   * `-DFEATURE_NATIVE_CRASH_HANDLER`
+   * If this flag is enabled, a native crash handler is installed that catches segfaults and other
+   * native faults, writes a report with a stack trace to the log folder, and shows a dialog.
+   * Only available on C++ targets.
+   */
+  static final FEATURE_NATIVE_CRASH_HANDLER:FeatureFlag = "FEATURE_NATIVE_CRASH_HANDLER";
 
   /**
    * `-DFEATURE_MOBILE_ADVERTISEMENTS`
@@ -491,6 +511,13 @@ class Project extends HXProject
    * If this flag is disabled, no mods will be loaded.
    */
   static final FEATURE_POLYMOD_MODS:FeatureFlag = "FEATURE_POLYMOD_MODS";
+
+  /**
+   * `-DFEATURE_CPPIA`
+   * If this flag is enabled, the game is built as a cppia host, letting mods ship compiled `.cppia` scripts.
+   * This adds `-D scriptable`.
+   */
+  static final FEATURE_CPPIA:FeatureFlag = "FEATURE_CPPIA";
 
   /**
    * `-DFEATURE_RESULTS_DEBUG`
@@ -607,17 +634,18 @@ class Project extends HXProject
 
     displayTarget();
 
+    configureFeatureFlags();
+
     configureApp();
 
     configureOutputDir();
 
-    if (isRun() || isInstall())
+    if (isRun() || isInstall() || isUninstall())
     {
       // These commands dont really need much in order to run so to improve the speed, we return here.
       return;
     }
 
-    configureFeatureFlags();
     configureCompileDefines();
     configureIncludeMacros();
     configureCustomMacros();
@@ -654,6 +682,78 @@ class Project extends HXProject
     if (!(isDisplay() || isCleanCommand()))
     {
       checkLibraries();
+    }
+
+    if (FEATURE_CPPIA.isEnabled(this))
+    {
+      configureCppiaSdk();
+    }
+  }
+
+  /**
+   * Some classes are unable to be extended in CPPIA
+   */
+  function excludeFromScripting()
+  {
+    // These bind to native libraries that use RawPointer somehow.
+    var nativePackages:Array<String> = [
+      'hxvlc',
+      'hxdiscord_rpc',
+      'hxdiscord_social_sdk',
+      'grig.audio.cpp',
+      'extension',
+      'funkin.api.discord',
+      'funkin.external',
+      'funkin.mobile.util',
+      'funkin.modding.install'
+    ];
+
+    for (pack in nativePackages) addHaxeMacro('haxe.macro.Compiler.addGlobalMetadata("$pack", "@:hscriptBaseCreated", true, true, false)');
+  }
+
+  /**
+   * Run SDK build scripts
+   */
+  function configureCppiaSdk()
+  {
+    if (isDisplay() || isCleanCommand()) return;
+
+    var target:Null<String> = isWindows() ? "windows" : isMac() ? "mac" : isLinux() ? "linux" : null;
+    if (target == null) return;
+
+    var config:String = isDebug() ? "debug" : "release";
+
+    var outputDir = 'sdk/$target/$config';
+
+    var script = 'scripts/cppia/sdk/build_cppia_sdk';
+
+    if (isWindowsHost())
+    {
+      postBuildCallbacks.push(new CLICommand("powershell", [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        '$script.ps1',
+        "-Target",
+        target,
+        "-Config",
+        config,
+        ".",
+        outputDir
+      ]));
+    }
+    else
+    {
+      postBuildCallbacks.push(new CLICommand("bash", [
+        '$script.sh',
+        "--target",
+        target,
+        "--config",
+        config,
+        ".",
+        outputDir
+      ]));
     }
   }
 
@@ -716,8 +816,9 @@ class Project extends HXProject
 
     this.window.hardware = true;
     this.window.vsync = false;
+    this.window.depthBuffer = false;
     // force / allow high DPI
-    this.window.allowHighDPI = !isMac();
+    this.window.allowHighDPI = FEATURE_HIGH_DPI.isEnabled(this);
 
     if (isWeb())
     {
@@ -916,11 +1017,15 @@ class Project extends HXProject
     FEATURE_FUNKVIS.apply(this, true);
     FEATURE_LOG_TRACE.apply(this, true);
     FEATURE_DEBUG_FILE_LOGGING.apply(this, FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+    FEATURE_NATIVE_CRASH_HANDLER.apply(this, isDesktop() && isCPP());
     FEATURE_NAUGHTYNESS.apply(this, true);
     FEATURE_OPEN_URL.apply(this, true);
     FEATURE_PARTIAL_SOUNDS.apply(this, true);
     FEATURE_MULTITHREADING.apply(this, true);
     FEATURE_POLYMOD_MODS.apply(this, true);
+
+    // cppia hosting requires hxcpp.
+    FEATURE_CPPIA.apply(this, isCPP() && FEATURE_POLYMOD_MODS.isEnabled(this));
 
     // Video playback should be enabled on desktop, web, and mobile.
     FEATURE_VIDEO_PLAYBACK.apply(this, true);
@@ -988,6 +1093,9 @@ class Project extends HXProject
     FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
     FEATURE_MOBILE_AGESIGNALS.apply(this, isMobile() && isRelease());
 
+    // Should be true for everything expect on mac since it reduces performance by alot.
+    FEATURE_HIGH_DPI.apply(this, !isMac());
+
     // Should be true only on mac builds.
     FEATURE_MACOS_GESTURES.apply(this, isMac());
 
@@ -1007,6 +1115,12 @@ class Project extends HXProject
     // Turns the debug display off if you are on a non debug mobile build
     // Desktop (Native and Web) always has it | Used for mobile debugging purposes
     FEATURE_DEBUG_DISPLAY.apply(this, !isMobile() || FEATURE_DEBUG_FUNCTIONS.isEnabled(this));
+
+    if (isRun() || isInstall() || isUninstall())
+    {
+      // These commands dont really need much in order to run so to improve the speed, we return here.
+      return;
+    }
 
     renderFlagsTable();
   }
@@ -1084,12 +1198,25 @@ class Project extends HXProject
     // This doesn't seem to be of any use and it causes lime.utils.AssetCache to be re-compiled on every build.
     setHaxedef("lime_disable_assets_version");
 
-    // Enable stack trace tracking. Good for debugging but has a (minor) performance impact.
     setHaxedef("HXCPP_CHECK_POINTER");
-    setHaxedef("HXCPP_STACK_LINE");
-    setHaxedef("HXCPP_STACK_TRACE");
+
+    if (!FEATURE_STACK_TRACE.isDisabled(this))
+    {
+      setHaxedef("HXCPP_STACK_LINE");
+      setHaxedef("HXCPP_STACK_TRACE");
+    }
 
     setHaxedef("hscriptPos");
+
+    if (FEATURE_CPPIA.isEnabled(this))
+    {
+      setHaxedef("scriptable");
+      setHaxedef("POLYMOD_CPPIA");
+
+      if (isIOS()) setenv("CPPIA_NO_JIT", "1");
+
+      excludeFromScripting();
+    }
 
     if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
     {
@@ -1130,9 +1257,10 @@ class Project extends HXProject
       setHaxedef("absolute-paths"); // Fix source locations so Tracy can see them
     }
 
-    if (FEATURE_MULTITHREADING.isEnabled(this)) {
-			setHaxedef("lime_threads");
-		}
+    if (FEATURE_MULTITHREADING.isEnabled(this))
+    {
+      setHaxedef("lime_threads");
+    }
   }
 
   /**
@@ -1231,6 +1359,14 @@ class Project extends HXProject
     buildDir += "/";
 
     app.path = buildDir;
+
+    if (isWindows() && isCPP() && FEATURE_NATIVE_CRASH_HANDLER.isEnabled(this))
+    {
+      // The native crash handler symbolizes stack traces with the PDB.
+      var pdbPath:String = Path.join([buildDir, 'windows', 'obj', 'Funkin.pdb']);
+
+      setenv("HXCPP_PDB_FILE", sys.FileSystem.absolutePath(pdbPath));
+    }
   }
 
   function configureAndroid()
@@ -1386,7 +1522,7 @@ class Project extends HXProject
     // Determines the file in the mod folder used for metadata.
     setHaxedef("POLYMOD_MOD_METADATA_FILE", "_polymod_meta.json");
     // Determines the file in the mod folder used for the icon.
-    setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png");
+    setHaxedef("POLYMOD_MOD_ICON_FILE", "_polymod_icon.png,_polymod_icon.jpg,_polymod_icon.gif,_polymod_icon.webp");
 
     if (isDebug())
     {
@@ -1445,9 +1581,10 @@ class Project extends HXProject
       addHaxelib('hxdiscord_rpc'); // Discord API
     }
 
-		if (FEATURE_MULTITHREADING.isEnabled(this)) {
-			addHaxelib('haxe-concurrent'); // Multithreading
-		}
+    if (FEATURE_MULTITHREADING.isEnabled(this))
+    {
+      addHaxelib('haxe-concurrent'); // Multithreading
+    }
 
     if (FEATURE_NEWGROUNDS.isEnabled(this))
     {
@@ -1849,6 +1986,11 @@ class Project extends HXProject
   public function isInstall():Bool
   {
     return this.command == "install";
+  }
+
+  public function isUninstall():Bool
+  {
+    return this.command == "uninstall";
   }
 
   public function isBuild():Bool
@@ -2404,7 +2546,7 @@ class Project extends HXProject
    */
   public function info(message:String):Void
   {
-    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall() || isUninstall()))
     {
       Sys.println(' INFO '.bold().bg_blue() + " " + message);
     }
@@ -2415,7 +2557,7 @@ class Project extends HXProject
    */
   public function warn(message:String):Void
   {
-    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall()))
+    if (!(isDisplay() || isCleanCommand() || isRun() || isInstall() || isUninstall()))
     {
       Sys.println(' WARNING '.bold().bg_yellow() + " " + message);
     }

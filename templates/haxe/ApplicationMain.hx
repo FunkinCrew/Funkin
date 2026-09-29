@@ -1,34 +1,13 @@
 package;
 
-#if macro
-import haxe.macro.Compiler;
-import haxe.macro.Context;
-import haxe.macro.Expr;
-#end
-
-#if (linux && !macro)
-@:image('art/icons/iconOG.png')
-class ApplicationIcon extends lime.graphics.Image {}
-#end
-
 @:dox(hide)
-@:access(lime.app.Application)
-@:access(lime.system.System)
-@:access(openfl.display.Stage)
-@:access(openfl.events.UncaughtErrorEvents)
-#if (static_link || ios)
-@:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
-#end
 class ApplicationMain
 {
   #if !macro
-
   public static function main():Void
   {
-    #if (static_link || ios)
-    untyped __cpp__("lime_register_prims ()");
-    ::foreach ndlls::::if (registerStatics)::untyped __cpp__("::nameSafe::_register_prims ()");::end::::end::
-    #end
+    // Registers libraries prim symbols.
+    bootstrap.LimeBootstrap.registerPrims();
 
     #if (windows && cpp)
     // Disable the Windows "ghosting" effect that dims unresponsive windows.
@@ -44,6 +23,8 @@ class ApplicationMain
     funkin.util.CLIUtil.resetWorkingDir();
     #end
 
+    funkin.util.logging.CrashHandler.installNativeHandler();
+
     #if (FEATURE_ONE_CLICK_INSTALL && sys && !macos)
     // A one-click mod link launches the game again with the URL as an argument. If a copy is
     // already running, hand the URL over and get out before a second window is ever created.
@@ -57,102 +38,24 @@ class ApplicationMain
     }
     #end
 
-    lime.system.System.__registerEntryPoint("::APP_FILE::", create);
-
-    #if !html5
-    create(null);
-    #end
+    // Registers the application entry point.
+    bootstrap.LimeBootstrap.registerEntryPoint(create);
   }
 
-  public static function create(config):Void
+  public static function create(config:Dynamic):Void
   {
     #if (linux && cpp)
+    // Requests Gamemode optimization for Linux systems.
     hxgamemode.GamemodeClient.request_start();
     #end
 
-    ::if (WIN_ORIENTATION != "auto")::
-    lime.system.System.setHint("ORIENTATIONS", ::if (WIN_ORIENTATION == "portrait")::"Portrait PortraitUpsideDown"::else::"LandscapeLeft LandscapeRight"::end::);
-    ::end::
-
-    final appMeta:Map<String, String> = [];
-
-    appMeta.set("build", "::meta.buildNumber::");
-    appMeta.set("company", "::meta.company::");
-    appMeta.set("file", "::APP_FILE::");
-    appMeta.set("name", "::meta.title::");
-    appMeta.set("packageName", "::meta.packageName::");
-    appMeta.set("version", "::meta.version::");
-
-    var app = new openfl.display.Application(appMeta);
-
-    #if linux
-    app.onCreateWindow.add(function(window:lime.ui.Window):Void
-    {
-      window.setIcon(new ApplicationIcon());
-    });
+    #if hxvlc
+    // Initialize hxvlc's Handle here so the videos are loading faster.
+    hxvlc.util.Handle.init();
     #end
 
-    ::foreach windows::
-    var attributes:lime.ui.WindowAttributes = {
-      allowHighDPI: ::allowHighDPI::,
-      alwaysOnTop: ::alwaysOnTop::,
-      transparent: ::transparent::,
-      borderless: ::borderless::,
-      element: null,
-      frameRate: ::fps::,
-      #if !web
-      fullscreen: ::fullscreen::,
-      #end
-      height: ::height::,
-      hidden: ::hidden::,
-      maximized: ::maximized::,
-      minimized: ::minimized::,
-      parameters: ::parameters::,
-      resizable: ::resizable::,
-      title: "::title::",
-      width: ::width::,
-      x: ::x::,
-      y: ::y::,
-    };
-
-    attributes.context = {
-      antialiasing: ::antialiasing::,
-      background: ::background::,
-      colorDepth: ::colorDepth::,
-      depth: ::depthBuffer::,
-      hardware: ::hardware::,
-      #if (html5 && FEATURE_SCREENSHOTS)
-      preserveDrawingBuffer: true,
-      #end
-      stencil: ::stencilBuffer::,
-      type: null,
-      vsync: ::vsync::
-    };
-
-    if (app.window == null)
-    {
-      if (config != null)
-      {
-        for (field in Reflect.fields(config))
-        {
-          if (Reflect.hasField(attributes, field))
-          {
-            Reflect.setField(attributes, field, Reflect.field(config, field));
-          }
-          else if (Reflect.hasField(attributes.context, field))
-          {
-            Reflect.setField(attributes.context, field, Reflect.field(config, field));
-          }
-        }
-      }
-    }
-
-    app.createWindow(attributes);
-    ::end::
-
-    #if (FEATURE_ONE_CLICK_INSTALL && macos && cpp)
-    funkin.external.apple.URLSchemeExtern.installHandler();
-    #end
+    // Creates the primary OpenFL application instance.
+    final app:openfl.display.Application = bootstrap.OpenFLBootstrap.createApplication();
 
     // Set the current working directory for Android and iOS devices
     #if android
@@ -163,181 +66,128 @@ class ApplicationMain
     Sys.setCwd(haxe.io.Path.addTrailingSlash(lime.system.System.documentsDirectory));
     #end
 
-    var preloader = getPreloader();
-    app.preloader.onProgress.add (function(loaded, total)
-    {
-      @:privateAccess preloader.update(loaded, total);
-    });
-    app.preloader.onComplete.add(function()
-    {
-      @:privateAccess preloader.start();
-    });
+    // Initialize custom logging.
+    haxe.Log.trace = funkin.util.logging.AnsiTrace.trace;
 
-    preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
+    // Get OpenFL to stop complaining so much, you can remove this line if you want to read debug messages.
+    lime.utils.Log.level = INFO;
 
-    #if !disable_preloader_assets
-    ManifestResources.init(config);
+    // Print color pixel art of BF in ANSI format.
+    funkin.util.logging.AnsiTrace.traceBF();
 
-    for (library in ManifestResources.preloadLibraries)
-    {
-      app.preloader.addLibrary(library);
-    }
+    // Load the game's save data from disk.
+    funkin.save.Save.load();
 
-    for (name in ManifestResources.preloadLibraryNames)
-    {
-      app.preloader.addLibraryName(name);
-    }
+    // Creates primary OpenFL application window.
+    bootstrap.OpenFLBootstrap.createWindow(app, config, funkin.Preferences.autoFullscreen);
+
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    checkRenderer(app.window.context);
+
+    // Manually crash the game when using a software renderer in order to give a nicer error message.
+    checkRenderer(app.window.context);
+
+    #if (FEATURE_ONE_CLICK_INSTALL && macos && cpp)
+    // Claim the apple event that carries incoming URLs.
+    funkin.external.apple.URLSchemeExtern.installHandler();
     #end
 
-    app.preloader.load();
+    // Set the window's vsync.
+    funkin.util.WindowUtil.setVSyncMode(funkin.Preferences.vsyncMode);
 
-    var result = app.exec();
+    // Initialize the crash handler.
+    funkin.util.logging.CrashHandler.initialize();
 
-    #if (sys && !ios && !nodejs)
-    lime.system.System.exit(result);
+    // Query the status of the crash handler.
+    funkin.util.logging.CrashHandler.queryStatus();
+
+    #if FEATURE_DISCORD_RPC
+    // Initialize the discord client.
+    if (funkin.Preferences.enabledDiscordRPC)
+    {
+      funkin.api.discord.DiscordClient.instance.init();
+    }
+
+    lime.app.Application.current.onExit.add(function(exitCode)
+    {
+      funkin.api.discord.DiscordClient.instance.shutdown();
+    });
+    #end
+
+    #if FEATURE_HAXEUI
+    // Initialize HaxeUI.
+    initHaxeUI();
+    #end
+
+    // Initialize the FunkinGame instance.
+    funkin.FunkinGame.init();
+
+    // Loads the application preloader.
+    bootstrap.OpenFLBootstrap.loadPreloader(app, config);
+
+    // Executes the main application loop.
+    bootstrap.LimeBootstrap.exec(app);
+
+    #if hxvlc
+    // Dispose hxvlc's Handle upon exit.
+    hxvlc.util.Handle.dispose();
     #end
 
     #if (linux && cpp)
+    // Stops Gamemode optimization upon exit.
     hxgamemode.GamemodeClient.request_end();
     #end
   }
 
-  public static function start(stage:openfl.display.Stage):Void
+  #if FEATURE_HAXEUI
+  @:noCompletion
+  private static function initHaxeUI():Void
   {
-    if (stage.__uncaughtErrorEvents.__enabled)
+    // Since by the time we try to initialize the cursors theres no asset library,
+    // use `BitmapData.fromFile` to load the cursor graphics.
+    haxe.ui.backend.flixel.CursorHelper.mouseLoadFunction = function(path:String):openfl.display.BitmapData
     {
-      try
-      {
-        ApplicationMain.getEntryPoint();
-
-        stage.dispatchEvent(new openfl.events.Event(openfl.events.Event.RESIZE, false, false));
-
-        if (stage.window.fullscreen)
-        {
-          stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
-        }
-      }
-      catch (e:Dynamic)
-      {
-        #if !display
-        stage.__handleError(e);
-        #end
-      }
-    }
-    else
-    {
-      ApplicationMain.getEntryPoint();
-
-      stage.dispatchEvent(new openfl.events.Event(openfl.events.Event.RESIZE, false, false));
-
-      if (stage.window.fullscreen)
-      {
-        stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
-      }
-    }
+      return openfl.display.BitmapData.fromFile(path);
+    };
+    // This has to come before Toolkit.init since locales get initialized there
+    haxe.ui.locale.LocaleManager.instance.autoSetLocale = false;
+    // Calling this before any HaxeUI components get used is important:
+    // - It initializes the theme styles.
+    // - It scans the class path and registers any HaxeUI components.
+    haxe.ui.Toolkit.init();
+    haxe.ui.Toolkit.theme = 'funkin-dark'; // don't be cringe
+    // haxe.ui.Toolkit.theme = 'light'; // embrace cringe
+    haxe.ui.Toolkit.autoScale = false;
+    // Don't focus on UI elements when they first appear.
+    haxe.ui.focus.FocusManager.instance.autoFocus = false;
+    funkin.input.Cursor.setupHaxeUICursors();
+    haxe.ui.tooltips.ToolTipManager.defaultDelay = 200;
   }
   #end
 
-  macro public static function getEntryPoint()
+  @:noCompletion
+  private static function checkRenderer(context:lime.graphics.RenderContext):Void
   {
-    var hasMain = false;
-
-    switch (Context.follow(Context.getType("::APP_MAIN::")))
+    if (context.type != WEBGL && context.type != OPENGL && context.type != OPENGLES)
     {
-      case TInst(t, params):
+      var tech:String = #if web 'WebGL' #elseif desktop 'OpenGL' #else 'OpenGL ES' #end;
 
-        var type = t.get();
-        for (method in type.statics.get())
-        {
-          if (method.name == "main")
-          {
-            hasMain = true;
-            break;
-          }
-        }
+      var requiredVersion:String = #if web '$tech 1.0 or newer' #elseif desktop '$tech 3.0 or newer' #else '$tech 2.0 or newer' #end;
 
-        if (hasMain)
-        {
-          return Context.parse("@:privateAccess ::APP_MAIN::.main()", Context.currentPos());
-        }
-        else if (type.constructor != null)
-        {
-          return macro
-          {
-            var current = stage.getChildAt (0);
+      var desc:String = 'Failed to initialize the $tech rendering context!\n\n';
 
-            if (current == null || !(current is openfl.display.DisplayObjectContainer))
-            {
-              current = new openfl.display.MovieClip();
-              stage.addChild(current);
-            }
+      #if web
+      desc += 'Make sure your graphics card supports $requiredVersion, your graphics drivers are up to date, and hardware acceleration is enabled on your browser.';
+      #elseif desktop
+      desc += 'Make sure your graphics card supports $requiredVersion, and your graphics drivers are up to date.';
+      #else
+      desc += 'Make sure your device supports $requiredVersion.';
+      #end
 
-            new DocumentClass(cast current);
-          };
-        }
-        else
-        {
-          Context.fatalError("Main class \"::APP_MAIN::\" has neither a static main nor a constructor.", Context.currentPos());
-        }
+      funkin.util.WindowUtil.showError('Failed to initialize $tech', desc);
 
-      default:
-
-        Context.fatalError("Main class \"::APP_MAIN::\" isn't a class.", Context.currentPos());
+      lime.system.System.exit(1);
     }
-
-    return null;
-  }
-
-  macro public static function getPreloader()
-  {
-    ::if (PRELOADER_NAME != "")::
-    var type = Context.getType("::PRELOADER_NAME::");
-
-    switch (type)
-    {
-      case TInst(classType, _):
-
-        var searchTypes = classType.get();
-
-        while (searchTypes != null)
-        {
-          if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader")
-          {
-            return macro
-            {
-              new ::PRELOADER_NAME::();
-            };
-          }
-
-          if (searchTypes.superClass != null)
-          {
-            searchTypes = searchTypes.superClass.t.get();
-          }
-          else
-          {
-            searchTypes = null;
-          }
-        }
-
-      default:
-    }
-
-    return macro
-    {
-      new openfl.display.Preloader(new ::PRELOADER_NAME::());
-    }
-    ::else::
-    return macro
-    {
-      new openfl.display.Preloader(new openfl.display.Preloader.DefaultPreloader());
-    };
-    ::end::
-  }
-
-  #if !macro
-  @:noCompletion @:dox(hide) public static function __init__()
-  {
-    var init = lime.app.Application;
   }
   #end
 }

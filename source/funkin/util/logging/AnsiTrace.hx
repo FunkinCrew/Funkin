@@ -18,7 +18,6 @@ using StringTools;
 @:nullSafety
 class AnsiTrace
 {
-  private static final HEADER_REGEX = ~/^\s*\[(.*?)\]\s*(.*)$/;
   #if (sys && FEATURE_DEBUG_FILE_LOGGING)
   private static final logFilePath:String = 'logs/log-${DateUtil.generateTimestamp()}.txt';
   private static var logFile:Null<FileOutput> = null;
@@ -107,6 +106,7 @@ class AnsiTrace
     var header:String = "";
     var body:String = str;
 
+    final HEADER_REGEX = ~/^\s*\[(.*?)\]\s*(.*)$/;
     if (HEADER_REGEX.match(str))
     {
       header = ' ${HEADER_REGEX.matched(1)} ';

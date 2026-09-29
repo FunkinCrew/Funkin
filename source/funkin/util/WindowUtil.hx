@@ -11,11 +11,6 @@ using StringTools;
 class WindowUtil
 {
   /**
-   * A regex to match valid URLs.
-   */
-  public static final URL_REGEX:EReg = ~/^https?:\/?\/?(?:www\.)?[-a-zA-Z0-9@:%_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
-
-  /**
    * Sanitizes a URL via a regex.
    *
    * @param targetUrl The URL to sanitize.
@@ -35,6 +30,7 @@ class WindowUtil
       targetUrl = 'http://' + targetUrl;
     }
 
+    final URL_REGEX:EReg = ~/^https?:\/?\/?(?:www\.)?[-a-zA-Z0-9@:%_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
     if (URL_REGEX.match(targetUrl))
     {
       return URL_REGEX.matched(0);
@@ -194,7 +190,16 @@ class WindowUtil
   public static function alert(type:lime.ui.MessageBoxType = INFORMATION, ?message:String, ?title:String, ?buttons:Array<String>) {
     @:privateAccess
     FlxG.sound?.onFocusLost();
-    lime.app.Application.current.window.alert(type, message, title, buttons);
+
+    if (lime.app.Application.current.window != null)
+    {
+      lime.app.Application.current.window.alert(type, message, title, buttons);
+    }
+    else
+    {
+      lime.app.Application.current.alert(type, message, title, buttons);
+    }
+
     @:privateAccess
     FlxG.sound?.onFocus();
   }

@@ -54,7 +54,7 @@ class OneClickInstallHandler
     });
 
     #if (macos && cpp)
-    funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(onAppleURL));
+    funkin.external.apple.URLSchemeExtern.setCallback(cpp.Callable.fromStaticFunction(AppleURLCallbacks.onAppleURL));
     #elseif mobile
     funkin.mobile.util.FNFLoaderProvider.onFNFMODOpen.add(handleLink);
     #end
@@ -78,7 +78,6 @@ class OneClickInstallHandler
 
   /**
    * Holds onto the link that launched the game, for the mod menu to pick up once it opens.
-   *
    * @param link The link from the command line, if there was one.
    * @return Whether the link was valid enough to be worth opening the mod menu for.
    */
@@ -106,7 +105,6 @@ class OneClickInstallHandler
 
   /**
    * Puts a link on the queue, to be installed as soon as the mod menu is open and free.
-   *
    * @param link The full `funkin:` URL.
    */
   public static function handleLink(link:String):Void
@@ -142,7 +140,6 @@ class OneClickInstallHandler
 
   /**
    * Puts mods at the front of the queue, keeping the order they were given in.
-   *
    * @param requests The submissions to install next.
    */
   public static function enqueueNext(requests:Array<OneClickRequest>):Void
@@ -230,8 +227,16 @@ class OneClickInstallHandler
     }
   }
   #end
+}
 
-  #if (macos && cpp)
+#if (macos && cpp)
+/**
+ * Receives the URL from the Apple Event handler and passes it to the OneClickInstallHandler.
+ */
+@:nullSafety
+@:allow(funkin.modding.install.OneClickInstallHandler)
+private class AppleURLCallbacks
+{
   /**
    * Called from the Apple Event handler. Has to be a plain static function to be callable from C++.
    */
@@ -240,7 +245,7 @@ class OneClickInstallHandler
     final link:Null<String> = url == null ? null : Std.string(url);
     if (link == null || link == '') return;
 
-    handleLink(link);
+    OneClickInstallHandler.handleLink(link);
   }
-  #end
 }
+#end

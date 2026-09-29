@@ -26,10 +26,15 @@ class SongEventRegistry
    * Every built-in event class must be added to this list.
    * Thankfully, with the power of `ClassMacro`, this is done automatically.
    */
-  static final BUILTIN_EVENTS:List<Class<SongEvent>> = ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> ![
-    'funkin.play.event.SongEvent'
-  ].contains(Type.getClassName(cls)));
-
+  #if FEATURE_MULTITHREADING
+  static final BUILTIN_EVENTS:SynchronizedArray<Class<SongEvent>> = new SynchronizedArray<Class<SongEvent>>(
+    ClassMacro.listSubclassesOf(SongEvent).filter((cls:Class<SongEvent>) -> !['funkin.play.event.SongEvent'].contains(Type.getClassName(cls)))
+  );
+  #else
+  static final BUILTIN_EVENTS:Array<Class<SongEvent>> = ClassMacro
+    .listSubclassesOf(SongEvent)
+    .filter((cls:Class<SongEvent>) -> !['funkin.play.event.SongEvent'].contains(Type.getClassName(cls)));
+  #end
   /**
    * Map of internal handlers for song events.
    * These may be either `ScriptedSongEvents` or built-in classes extending `SongEvent`.
@@ -94,7 +99,7 @@ class SongEventRegistry
       {eventId:String, error:Any, ?eventCls:String}> = new SynchronizedArray();
 
     var entryCount:Int = 0;
-    var scriptedEventClassNames:Array<String> = [];
+    var scriptedEventClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
     var loadedBaseEvents:Bool = false;
 
     var loadBaseEventsAsync:Void->Void = () -> {};
@@ -141,7 +146,7 @@ class SongEventRegistry
       var eventCls:String = currentState.eventCls;
       try
       {
-        var event:Null<SongEvent> = SongEvent.scriptInit(eventCls, 'UNKNOWN');
+        var event:Null<SongEvent> = funkin.util.tasks.ScriptLock.run(() -> SongEvent.scriptInit(eventCls, 'UNKNOWN'));
         if (event != null)
         {
           workOutput.sendComplete({
@@ -217,7 +222,7 @@ class SongEventRegistry
 
     loadScriptedEventsAsync = () ->
     {
-      scriptedEventClassNames = SongEvent.listScriptClasses();
+      scriptedEventClassNames = new SynchronizedArray<String>(SongEvent.listScriptClasses());
       entryCount = EVENT_CACHE.size() + scriptedEventClassNames.length;
 
       trace('Instantiating ${scriptedEventClassNames.length} scripted song events...');
@@ -327,7 +332,7 @@ class SongEventRegistry
     var event:Null<SongEvent> = getEvent(id);
     if (event == null) return null;
 
-    return event.getEventSchema();
+    return funkin.modding.ScriptGuard.get(event, 'a request for the "$id" event schema', event.getEventSchema, null);
   }
 
   static function clearEventCache():Void
@@ -346,7 +351,7 @@ class SongEventRegistry
 
     if (eventHandler != null)
     {
-      eventHandler.handleEvent(data);
+      funkin.modding.ScriptGuard.run(eventHandler, 'the "${data.eventKind}" song event', () -> eventHandler.handleEvent(data));
     }
     else
     {
@@ -387,11 +392,13 @@ class SongEventRegistry
   public static function queryEvents(events:Array<SongEventData>, currentTime:Float, ?startIndex:Int):Array<SongEventData>
   {
     startIndex ??= nextEventIndex;
+    if (startIndex < 0) startIndex = 0;
 
-    var result:Array<SongEventData> = [];
+    var result:Null<Array<SongEventData>> = null;
 
-    for (index => event in events)
+    for (index in startIndex...events.length)
     {
+      var event:SongEventData = events[index];
       if (event.activated) continue;
 
       var activationTime:Float = event.getActivationTime();
@@ -399,14 +406,18 @@ class SongEventRegistry
       if (activationTime > currentTime)
       {
         nextEventIndex = index;
-        return result;
+        return result ?? EMPTY_RESULT;
       }
 
+      if (result == null) result = [];
       result.push(event);
     }
 
-    return result;
+    nextEventIndex = events.length;
+    return result ?? EMPTY_RESULT;
   }
+
+  static final EMPTY_RESULT:Array<SongEventData> = [];
 
   /**
    * The currentTime has jumped far ahead or back.
@@ -418,7 +429,9 @@ class SongEventRegistry
    */
   public static function handleSkippedEvents(events:Array<SongEventData>, currentTime:Float):Void
   {
-    for (event in events)
+    var newNextIndex:Int = events.length;
+
+    for (index => event in events)
     {
       var activationTime:Float = event.getActivationTime();
 
@@ -433,7 +446,11 @@ class SongEventRegistry
       {
         event.activated = true;
       }
+
+      if (activationTime >= currentTime && index < newNextIndex) newNextIndex = index;
     }
+
+    nextEventIndex = newNextIndex;
   }
 
   /**

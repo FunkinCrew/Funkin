@@ -1,16 +1,22 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.characters;
 
 import flixel.FlxCamera;
-import flixel.FlxSprite;
-import funkin.graphics.shaders.MosaicEffect;
-import flixel.util.FlxTimer;
-import funkin.util.TimerUtil.Sequence;
 import flixel.math.FlxPoint;
+import flixel.util.FlxTimer;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.shaders.MosaicEffect;
+import funkin.util.TimerUtil.Sequence;
 
+/**
+ * The nametag that appears at the top right of the Character Select screen.
+ */
 @:nullSafety
-class Nametag extends FlxSprite
+class Nametag extends FunkinSprite
 {
-  public var midpoint:FlxPoint = FlxPoint.get(1008, 100);
+  /**
+   * The target position of the nametag.
+   */
+  public var targetPosition:FlxPoint = FlxPoint.get(1008, 100);
 
   var mosaicShader:MosaicEffect;
   var currentMosaicSequence:Null<Sequence>;
@@ -22,23 +28,20 @@ class Nametag extends FlxSprite
     mosaicShader = new MosaicEffect();
     shader = mosaicShader;
 
-    // So that's why there was that cursed sight (originally defaulted to bf)
-    // Made it not play the shader effect to prevent its being stuck, can't see it anyway.
-    final targetCharacter = (character != null) ? character : Constants.DEFAULT_CHARACTER;
-    switchChar(targetCharacter, false);
+    loadCharacter(character, false);
   }
 
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
-    var pos:FlxPoint = super.getScreenPosition(result, camera);
+    var position:FlxPoint = super.getScreenPosition(result, camera);
     var originalMidpoint:FlxPoint = getMidpoint();
-    var offset:FlxPoint = originalMidpoint - midpoint;
+    var offset:FlxPoint = originalMidpoint - targetPosition;
 
     originalMidpoint.put();
-    pos -= offset;
+    position -= offset;
     offset.put();
 
-    return pos;
+    return position;
   }
 
   function resetMosaicEffect():Void
@@ -53,11 +56,17 @@ class Nametag extends FlxSprite
     mosaicShader.setBlockSize(1, 1);
   }
 
-  public function switchChar(str:String, playMosaicSequence:Bool = true):Void
+  /**
+   * Loads a new nametag graphic based on the given character ID.
+   * @param characterId The character ID to load.
+   * @param playMosaicSequence Whether to play the mosaic sequence.
+   */
+  public function loadCharacter(characterId:String, playMosaicSequence:Bool = true):Void
   {
-    loadGraphic(Paths.image('ui/character-select/characters/nametag-$str'));
+    loadGraphic(Paths.image('ui/character-select/characters/nametag-$characterId'));
     updateHitbox();
     scale.set(0.77, 0.77);
+    scrollFactor.set();
 
     resetMosaicEffect();
 
@@ -92,7 +101,10 @@ class Nametag extends FlxSprite
           time: 2 / 30,
           callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
         },
-        {time: 3 / 30, callback: () -> mosaicShader.setBlockSize(1, 1)},
+        {
+          time: 3 / 30,
+          callback: () -> mosaicShader.setBlockSize(1, 1)
+        },
       ]);
     }
     else
@@ -106,7 +118,10 @@ class Nametag extends FlxSprite
           time: 1 / 30,
           callback: () -> mosaicShader.setBlockSize(width / 73, height / 6)
         },
-        {time: 2 / 30, callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)},
+        {
+          time: 2 / 30,
+          callback: () -> mosaicShader.setBlockSize(width / 10, height / 10)
+        },
       ]);
     }
   }

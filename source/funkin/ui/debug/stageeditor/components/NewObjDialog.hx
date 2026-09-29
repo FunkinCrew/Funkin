@@ -60,7 +60,7 @@ class NewObjDialog extends Dialog
         if (data != null)
         {
           var file:StageEditorAssetFile = stageEditorState.createFile(bitmapName, data);
-          spr.loadGraphic(BitmapData.fromBytes(file.data));
+          spr.loadGraphic(BitmapData.fromBytes(file.data, true));
 
           spr.usedFiles.push(file);
         }

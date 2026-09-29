@@ -433,16 +433,16 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? '' : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(path:String, state:String, x:Float, y:Float):Void
+    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
     {
       if (!allowInput || welcomeDialog != null) return;
 
-      var data:Bytes = FileUtil.readBytesFromPath(path);
+      var data:Bytes = FileUtil.readBytesFromPath(file.path);
 
       if (data != null)
       {
         objNameDialog = new NewObjDialog(this, data);
-        objNameDialog.bitmapName = new haxe.io.Path(path).file;
+        objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
         objNameDialog.showDialog();
 
         objNameDialog.onDialogClosed = function(_)
@@ -502,7 +502,7 @@ class StageEditorState extends UIState
         var filestats:Array<sys.FileStat> = [];
         if (files.length > 0)
         {
-          while (!files[files.length - 1].endsWith(FileUtil.FILE_FILTER_FNFS.extension) || !files[files.length - 1].startsWith('stage-editor-'))
+          while (!files[files.length - 1].endsWith('.fnfs') || !files[files.length - 1].startsWith('stage-editor-'))
           {
             if (files.length == 0) break;
             files.pop();
@@ -645,11 +645,8 @@ class StageEditorState extends UIState
     camGame.follow(camFollow);
     // camera movement
 
-    if ((FlxG.mouse.deltaWheel.y > 0 || (FlxG.mouse.deltaWheel.y < 0 && camGame.zoom > 0.11)) && !isCursorOverHaxeUI) // include the floating poing error thing
-    {
-      camGame.zoom += FlxG.mouse.deltaWheel.y / 10;
-      updateBGSize();
-    }
+    if (!isCursorOverHaxeUI) handleTrackpadScroll();
+    if (!isCursorOverHaxeUI) handleMiddleMousePan();
 
     // key shortcuts and inputs
     if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick('exit');
@@ -756,7 +753,7 @@ class StageEditorState extends UIState
           ];
         }
 
-        var posBros = new FlxPoint(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
+        var posBros = FlxPoint.weak(FlxG.mouse.getWorldPosition().x - moveOffset[0], FlxG.mouse.getWorldPosition().y - moveOffset[1]);
         selectedSprite.x = (Math.floor(posBros.x) - Math.floor(posBros.x) % moveStep);
         selectedSprite.y = (Math.floor(posBros.y) - Math.floor(posBros.y) % moveStep);
       }
@@ -1057,6 +1054,55 @@ class StageEditorState extends UIState
     bg.scale.set(1 / FlxG.camera.zoom, 1 / FlxG.camera.zoom);
     bg.updateHitbox();
     bg.screenCenter();
+  }
+
+  static final TRACKPAD_PAN_SCALE:Float = 25.0;
+
+  function handleTrackpadScroll():Void
+  {
+    var dx:Float = FlxG.mouse.deltaWheel.x;
+    var dy:Float = FlxG.mouse.deltaWheel.y;
+    if (dx == 0 && dy == 0) return;
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      if (dy == 0) return;
+      var scaledDelta:Float = dy * 10.0;
+      var rawScale:Float = Math.exp(scaledDelta / 100.0);
+      rawScale = Math.min(1.25, Math.max(0.75, rawScale));
+      camGame.zoom *= rawScale;
+      if (camGame.zoom < 0.11) camGame.zoom = 0.11;
+      if (camGame.zoom > 10.0) camGame.zoom = 10.0;
+      updateBGSize();
+      return;
+    }
+
+    camFollow.x += (dx * TRACKPAD_PAN_SCALE) / camGame.zoom;
+    camFollow.y -= (dy * TRACKPAD_PAN_SCALE) / camGame.zoom;
+  }
+
+  var middleMousePanOffset:FlxPoint = null;
+
+  function handleMiddleMousePan():Void
+  {
+    if (FlxG.mouse.justPressedMiddle)
+    {
+      // captures once so it don't drift
+      middleMousePanOffset = FlxPoint.get(
+        camFollow.x + FlxG.mouse.viewX / camGame.zoom,
+        camFollow.y + FlxG.mouse.viewY / camGame.zoom
+      );
+    }
+    else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
+    {
+      camFollow.x = middleMousePanOffset.x - FlxG.mouse.viewX / camGame.zoom;
+      camFollow.y = middleMousePanOffset.y - FlxG.mouse.viewY / camGame.zoom;
+    }
+    else if (FlxG.mouse.justReleasedMiddle && middleMousePanOffset != null)
+    {
+      middleMousePanOffset.put();
+      middleMousePanOffset = null;
+    }
   }
 
   var sprDependant:Array<MenuItem> = [];
@@ -1616,7 +1662,7 @@ class StageEditorState extends UIState
     var data = this.packShitToZip();
     var path = haxe.io.Path.join([
       BACKUPS_PATH,
-      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.${FileUtil.FILE_FILTER_FNFS.extension}'
+      'stage-editor-${stageName}-${funkin.util.DateUtil.generateTimestamp()}.fnfs'
     ]);
 
     FileUtil.writeBytesToPath(path, data);

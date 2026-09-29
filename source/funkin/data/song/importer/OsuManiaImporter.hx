@@ -110,7 +110,7 @@ class OsuManiaImporter
       {
         var bpmPoint:TimingPoint = bpmPoints[i];
 
-        result.push(new SongTimeChange(bpmPoint.time, bpmPoint.bpm ?? Constants.DEFAULT_BPM));
+        result.push(new SongTimeChange(bpmPoint.time, bpmPoint.bpm ?? Constants.DEFAULT_BPM, bpmPoint.meter ?? 4));
       }
     }
 

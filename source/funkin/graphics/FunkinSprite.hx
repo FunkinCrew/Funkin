@@ -985,10 +985,13 @@ class FunkinSprite extends FlxAnimate
 
   override public function draw():Void
   {
-    for (filter in filters ?? [])
+    if (filters != null)
     {
-      @:privateAccess
-      if (filter.__renderDirty) _renderTextureDirty = true;
+      for (filter in filters)
+      {
+        @:privateAccess
+        if (filter.__renderDirty) _renderTextureDirty = true;
+      }
     }
 
     super.draw();
@@ -1023,7 +1026,7 @@ class FunkinSprite extends FlxAnimate
 
       if (filtered)
       {
-        matrix.translate(filterOffsets[0], filterOffsets[1]);
+        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
         camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
       }
       else
@@ -1041,13 +1044,12 @@ class FunkinSprite extends FlxAnimate
   {
     final willUseRenderTexture = checkRenderTexture();
     final matrix = _matrix;
-    matrix.identity();
 
     @:privateAccess
     var bounds = timeline._bounds;
-    if (!willUseRenderTexture) matrix.translate(-bounds.x, -bounds.y);
 
-    prepareAnimateMatrix(matrix, camera, bounds);
+    // Reuses the matrix built by the cull pass when possible.
+    prepareAnimateDrawMatrix(matrix, camera, bounds, willUseRenderTexture);
 
     if (renderStage) drawStage(camera);
 
@@ -1077,7 +1079,7 @@ class FunkinSprite extends FlxAnimate
 
       if (filtered)
       {
-        matrix.translate(filterOffsets[0], filterOffsets[1]);
+        matrix.translate(filterOffsets[0] * matrix.a + filterOffsets[1] * matrix.c, filterOffsets[1] * matrix.d + filterOffsets[0] * matrix.b);
         camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
       }
       else

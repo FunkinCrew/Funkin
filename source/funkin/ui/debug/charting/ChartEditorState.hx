@@ -150,16 +150,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   // ==============================
   // Layouts
-  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/difficulty');
+  public static final CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/difficulty').toString();
 
-  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/player-preview');
-  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/opponent-preview');
-  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/metadata');
-  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/offsets');
-  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/note-data');
-  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/event-data');
-  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/freeplay');
-  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = Paths.ui('editors/chart-editor/toolbox/playtest-properties');
+  public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
+  public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/metadata').toString();
+  public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/offsets').toString();
+  public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/note-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/event-data').toString();
+  public static final CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/freeplay').toString();
+  public static final CHART_EDITOR_TOOLBOX_PLAYTEST_PROPERTIES_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/playtest-properties').toString();
+
   // Validation
   public static final SUPPORTED_MUSIC_FORMATS:Array<String> = ['ogg'];
   // Layout
@@ -819,7 +820,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   /**
    * The audio volume before it was toggled to zero.
-   * Metronome, hitsounds (player and enemy), instrumental, vocals (player and enemy)
+   * Metronome, hitsounds (player and opponent), instrumental, vocals (player and opponent)
    */
   var previousAudioVolumes:Array<Float> = [
     1.0,
@@ -2236,7 +2237,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarLabelVolumeHitsoundPlayer:Label;
 
   /**
-   * The `Audio -> Enemy Hitsound Volume` label.
+   * The `Audio -> Opponent Hitsound Volume` label.
    */
   var menubarLabelVolumeHitsoundOpponent:Label;
 
@@ -2246,7 +2247,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeHitsoundPlayer:Slider;
 
   /**
-   * The `Audio -> Enemy Hitsound Volume` slider.
+   * The `Audio -> Opponent Hitsound Volume` slider.
    */
   var menubarItemVolumeHitsoundOpponent:Slider;
 
@@ -2266,7 +2267,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarLabelVolumeVocalsPlayer:Label;
 
   /**
-   * The `Audio -> Enemy Volume` label.
+   * The `Audio -> Opponent Volume` label.
    */
   var menubarLabelVolumeVocalsOpponent:Label;
 
@@ -2276,7 +2277,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemVolumeVocalsPlayer:Slider;
 
   /**
-   * The `Audio -> Enemy Volume` slider.
+   * The `Audio -> Opponent Volume` slider.
    */
   var menubarItemVolumeVocalsOpponent:Slider;
 
@@ -2587,7 +2588,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       loadFromFNFCData: (currentWorkingFilePath == null && hasInstrumentalData) ? this.buildFNFCDataFromCurrentChart() : null, // We want to reload the FNFCData so the user doesn't lose progress.
       targetSongDifficulty: this.selectedDifficulty,
       targetSongVariation: this.selectedVariation,
-      targetSongPosition: Conductor.instance.songPosition
+      targetSongPosition: scrollPositionInMs + playheadPositionInMs
     });
 
     return {
@@ -3132,7 +3133,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function calculateNotePreviewViewportBounds():FlxRect
   {
-    var bounds:FlxRect = new FlxRect();
+    var bounds:FlxRect = FlxRect.weak();
 
     // Return 0, 0, 0, 0 if the note preview doesn't exist for some reason.
     if (notePreview == null) return bounds;
@@ -3311,7 +3312,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           this.openCharacterDropdown(CharacterType.DAD, true);
         }
       }
-    });
+    }, false, true, false);
 
     FlxMouseEvent.add(healthIconBF, function(_)
     {
@@ -3327,7 +3328,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           this.openCharacterDropdown(CharacterType.BF, true);
         }
       }
-    });
+    }, false, true, false);
 
     buttonSelectOpponent = new Button();
     buttonSelectOpponent.allowFocus = false;
@@ -3741,6 +3742,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       metronomeVolume = volume;
       menubarLabelVolumeMetronome.text = 'Metronome - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeMetronome.onRightClick = _ ->
+    {
+      if (metronomeVolume <= 0.0)
+      {
+        metronomeVolume = 1.0;
+        menubarItemVolumeMetronome.value = 100.0;
+        menubarLabelVolumeMetronome.text = 'Metronome - 100%';
+      }
+      else
+      {
+        metronomeVolume = 0.0;
+        menubarItemVolumeMetronome.value = 0.0;
+        menubarLabelVolumeMetronome.text = 'Metronome - 0%';
+      }
+    }
     menubarItemVolumeMetronome.value = Std.int(metronomeVolume * 100);
     previousAudioVolumes[0] = Std.int(metronomeVolume * 100);
 
@@ -3761,6 +3777,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       hitsoundVolumePlayer = volume;
       menubarLabelVolumeHitsoundPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeHitsoundPlayer.onRightClick = _ ->
+    {
+      if (hitsoundVolumePlayer <= 0.0)
+      {
+        hitsoundVolumePlayer = 1.0;
+        menubarItemVolumeHitsoundPlayer.value = 100.0;
+        menubarLabelVolumeHitsoundPlayer.text = 'Player - 100%';
+      }
+      else
+      {
+        hitsoundVolumePlayer = 0.0;
+        menubarItemVolumeHitsoundPlayer.value = 0.0;
+        menubarLabelVolumeHitsoundPlayer.text = 'Player - 0%';
+      }
+    }
     menubarItemVolumeHitsoundPlayer.value = Std.int(hitsoundVolumePlayer * 100);
     previousAudioVolumes[1] = Std.int(hitsoundVolumePlayer * 100);
 
@@ -3768,8 +3799,23 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       var volume:Float = event.value.toFloat() / 100.0;
       hitsoundVolumeOpponent = volume;
-      menubarLabelVolumeHitsoundOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+      menubarLabelVolumeHitsoundOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeHitsoundOpponent.onRightClick = _ ->
+    {
+      if (hitsoundVolumeOpponent <= 0.0)
+      {
+        hitsoundVolumeOpponent = 1.0;
+        menubarItemVolumeHitsoundOpponent.value = 100.0;
+        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 100%';
+      }
+      else
+      {
+        hitsoundVolumeOpponent = 0.0;
+        menubarItemVolumeHitsoundOpponent.value = 0.0;
+        menubarLabelVolumeHitsoundOpponent.text = 'Enemy - 0%';
+      }
+    }
     menubarItemVolumeHitsoundOpponent.value = Std.int(hitsoundVolumeOpponent * 100);
     previousAudioVolumes[2] = Std.int(hitsoundVolumeOpponent * 100);
 
@@ -3779,6 +3825,21 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (audioInstTrack != null) audioInstTrack.volume = volume;
       menubarLabelVolumeInstrumental.text = 'Instrumental - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeInstrumental.onRightClick = _ ->
+    {
+      if (menubarItemVolumeInstrumental.value <= 0.0)
+      {
+        if (audioInstTrack != null) audioInstTrack.volume = 1.0;
+        menubarItemVolumeInstrumental.value = 100.0;
+        menubarLabelVolumeInstrumental.text = 'Instrumental - 100%';
+      }
+      else
+      {
+        if (audioInstTrack != null) audioInstTrack.volume = 0.0;
+        menubarItemVolumeInstrumental.value = 0.0;
+        menubarLabelVolumeInstrumental.text = 'Instrumental - 0%';
+      }
+    }
     previousAudioVolumes[3] = menubarItemVolumeInstrumental.value;
 
     menubarItemVolumeVocalsPlayer.onChange = event ->
@@ -3787,27 +3848,64 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       audioVocalTrackGroup.playerVolume = volume;
       menubarLabelVolumeVocalsPlayer.text = 'Player - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeVocalsPlayer.onRightClick = _ ->
+    {
+      if (audioVocalTrackGroup.playerVolume <= 0.0)
+      {
+        audioVocalTrackGroup.playerVolume = 1.0;
+        menubarItemVolumeVocalsPlayer.value = 100.0;
+        menubarLabelVolumeVocalsPlayer.text = 'Player - 100%';
+      }
+      else
+      {
+        audioVocalTrackGroup.playerVolume = 0.0;
+        menubarItemVolumeVocalsPlayer.value = 0.0;
+        menubarLabelVolumeVocalsPlayer.text = 'Player - 0%';
+      }
+    }
     previousAudioVolumes[4] = menubarItemVolumeVocalsPlayer.value;
 
     menubarItemVolumeVocalsOpponent.onChange = event ->
     {
       var volume:Float = event.value.toFloat() / 100.0;
       audioVocalTrackGroup.opponentVolume = volume;
-      menubarLabelVolumeVocalsOpponent.text = 'Enemy - ${Std.int(event.value)}%';
+      menubarLabelVolumeVocalsOpponent.text = 'Opponent - ${Std.int(event.value)}%';
     };
+    menubarItemVolumeVocalsOpponent.onRightClick = _ ->
+    {
+      if (audioVocalTrackGroup.opponentVolume <= 0.0)
+      {
+        audioVocalTrackGroup.opponentVolume = 1.0;
+        menubarItemVolumeVocalsOpponent.value = 100.0;
+        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 100%';
+      }
+      else
+      {
+        audioVocalTrackGroup.opponentVolume = 0.0;
+        menubarItemVolumeVocalsOpponent.value = 0.0;
+        menubarLabelVolumeVocalsOpponent.text = 'Enemy - 0%';
+      }
+    }
     previousAudioVolumes[5] = menubarItemVolumeVocalsOpponent.value;
 
     menubarItemPlaybackSpeed.onChange = event ->
     {
       var pitch:Float = (event.value.toFloat() * 2.0) / 100.0;
-      pitch = Math.round(pitch / 0.05) * 0.05; // Round to nearest 5%
-      pitch = pitch.clamp(0.05, 2.0); // Clamp to 5% to 200%
       #if FLX_PITCH
       if (audioInstTrack != null) audioInstTrack.pitch = pitch;
       audioVocalTrackGroup.pitch = pitch;
       #end
       var pitchDisplay:Float = Std.int(pitch * 100) / 100; // Round to 2 decimal places.
       menubarLabelPlaybackSpeed.text = 'Playback Speed - ${pitchDisplay}x';
+    }
+    menubarItemPlaybackSpeed.onRightClick = _ ->
+    {
+      #if FLX_PITCH
+      if (audioInstTrack != null) audioInstTrack.pitch = 1;
+      audioVocalTrackGroup.pitch = 1;
+      #end
+      menubarItemPlaybackSpeed.value = 50.0;
+      menubarLabelPlaybackSpeed.text = 'Playback Speed - 1x';
     }
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
@@ -4088,6 +4186,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (selectionBoxStartPos != null)
     {
       if (selectionBoxSprite != null) selectionBoxSprite.visible = false;
+      selectionBoxStartPos.put();
       selectionBoxStartPos = null;
     }
 
@@ -4784,7 +4883,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Handle scroll anchor
     if (scrollAnchorScreenPos != null)
     {
-      var currentScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+      var currentScreenPos = FlxPoint.weak(FlxG.mouse.x, FlxG.mouse.y);
       var distance = currentScreenPos - scrollAnchorScreenPos;
 
       var verticalDistance = distance.y;
@@ -5150,11 +5249,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (scrollAnchorScreenPos == null)
       {
-        scrollAnchorScreenPos = new FlxPoint(FlxG.mouse.x, FlxG.mouse.y);
+        scrollAnchorScreenPos = FlxPoint.get(FlxG.mouse.x, FlxG.mouse.y);
         selectionBoxStartPos = null;
       }
       else
       {
+        scrollAnchorScreenPos.put();
         scrollAnchorScreenPos = null;
       }
     }
@@ -5182,6 +5282,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     {
       if (scrollAnchorScreenPos != null)
       {
+        scrollAnchorScreenPos.put();
         scrollAnchorScreenPos = null;
       }
       else
@@ -5202,13 +5303,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           else if (notePreview != null && FlxG.mouse.overlaps(notePreview) && !isCursorOverHaxeUI)
           {
             // Clicked note preview
-            notePreviewScrollAreaStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+            notePreviewScrollAreaStartPos = FlxPoint.get(FlxG.mouse.viewX, FlxG.mouse.viewY);
           }
         }
         else if (!isCursorOverHaxeUI && FlxG.keys.pressed.SHIFT)
         {
           trace('Started selection box at (${FlxG.mouse.viewX}, ${FlxG.mouse.viewY})');
-          selectionBoxStartPos = new FlxPoint(FlxG.mouse.viewX, FlxG.mouse.viewY);
+          selectionBoxStartPos = FlxPoint.get(FlxG.mouse.viewX, FlxG.mouse.viewY);
           // Drawing selection box.
           targetCursorMode = Crosshair;
         }
@@ -5228,6 +5329,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (notePreviewScrollAreaStartPos != null && FlxG.mouse.released)
     {
+      notePreviewScrollAreaStartPos.put();
       notePreviewScrollAreaStartPos = null;
       notePreviewPlayHeadDragging = false;
 
@@ -5360,6 +5462,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
 
           // Clear the selection box.
+          selectionBoxStartPos.put();
           selectionBoxStartPos = null;
           setSelectionBoxBounds();
         }
@@ -5382,7 +5485,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           }
 
           // Render the selection box, and keep the rendered graphic clamped to the size of the screen
-          var selectionRect:FlxRect = new FlxRect();
+          var selectionRect:FlxRect = FlxRect.weak();
           selectionRect.x = Math.min(FlxG.mouse.viewX, selectionBoxStartPos.x);
           selectionRect.y = Math.min(Math.max(0, selectionBoxStartPos.y), FlxG.mouse.viewY);
           selectionRect.width = Math.abs(FlxG.mouse.viewX - selectionBoxStartPos.x);
@@ -5395,6 +5498,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       else if (FlxG.mouse.justReleased)
       {
         // Clear the selection box.
+        selectionBoxStartPos.put();
         selectionBoxStartPos = null;
         setSelectionBoxBounds();
 
@@ -6965,7 +7069,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   function handleAudioKeybinds():Void
   {
     // Metronome volume toggle
-    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M)
+    if (!isHaxeUIFocused && FlxG.keys.pressed.SHIFT && FlxG.keys.justPressed.M && !pressingControl())
     {
       // Changing values of the audio slider directly because it'll update the audio anyway and makes this code much cleaner, though more verbose.
       var oldValue = previousAudioVolumes[0];
@@ -7106,6 +7210,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         if (f != null) f.focus = false;
       }
 
+      writePreferences(false);
       performCleanup();
 
       FlxG.switchState(() -> new CameraEditorState({
@@ -7145,9 +7250,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (playtestAudioSettings)
     {
       playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-      playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
       playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     }
+
+    funkin.play.GameOverSubState.reset();
+    funkin.play.PauseSubState.reset();
 
     var targetSong:Song;
     try
@@ -7695,7 +7802,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
 
     var playbackRate = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioInstTrack != null)
@@ -7933,7 +8039,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           {
             case 'boyfriend' | 'bf' | 'player':
               _eventTarget = currentPlayerCharacterPlayer;
-            case 'dad' | 'opponent' | 'enemy':
+            case 'dad' | 'opponent':
               _eventTarget = currentOpponentCharacterPlayer;
             default:
           }
@@ -7994,7 +8100,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Reapply the volume and playback rate.
     var instTargetVolume:Float = ((menubarItemVolumeInstrumental.value / 100) ?? 1.0);
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
     if (audioInstTrack != null)
     {
@@ -8047,7 +8152,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var vocalPlayerTargetVolume:Float = (menubarItemVolumeVocalsPlayer.value / 100.0) ?? 1.0;
     var vocalOpponentTargetVolume:Float = (menubarItemVolumeVocalsOpponent.value / 100.0) ?? 1.0;
     var playbackRate:Float = ((menubarItemPlaybackSpeed.value / 100.0) ?? 0.5) * 2.0;
-    playbackRate = Math.round(playbackRate / 0.05) * 0.05; // Round to nearest 5%
     playbackRate = playbackRate.clamp(0.05, 2.0); // Clamp to 5% to 200%
 
     if (audioVocalTrackGroup != null)

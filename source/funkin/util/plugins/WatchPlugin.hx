@@ -1,6 +1,7 @@
 package funkin.util.plugins;
 
 import flixel.FlxBasic;
+import flixel.addons.transition.FlxTransitionableState;
 
 /**
  * A plugin which adds functionality to display several universally important values
@@ -25,6 +26,7 @@ class WatchPlugin extends FlxBasic
   {
     super.update(elapsed);
 
+    #if FLX_DEBUG
     var stateClassName = Type.getClassName(Type.getClass(FlxG.state));
     FlxG.watch.addQuick('currentState', stateClassName);
     var subStateClassNames = [];
@@ -35,6 +37,8 @@ class WatchPlugin extends FlxBasic
       subState = subState.subState;
     }
     FlxG.watch.addQuick('currentSubStates', subStateClassNames.join(', '));
+    FlxG.watch.addQuick('skipNextTransIn', FlxTransitionableState.skipNextTransIn);
+    FlxG.watch.addQuick('skipNextTransOut', FlxTransitionableState.skipNextTransOut);
 
     FlxG.watch.addQuick('songPosition', Conductor.instance.songPosition);
     FlxG.watch.addQuick('songPositionNoOffset', Conductor.instance.songPosition + Conductor.instance.instrumentalOffset);
@@ -46,6 +50,7 @@ class WatchPlugin extends FlxBasic
     FlxG.watch.addQuick('currentMeasureTime', Conductor.instance.currentMeasureTime);
     FlxG.watch.addQuick('currentBeatTime', Conductor.instance.currentBeatTime);
     FlxG.watch.addQuick('currentStepTime', Conductor.instance.currentStepTime);
+    #end
   }
 
   override public function destroy():Void

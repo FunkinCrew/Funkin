@@ -199,17 +199,17 @@ class InitState extends FlxState
         FADE,
         FlxColor.BLACK,
         1,
-        new FlxPoint(0, -1),
+        FlxPoint.weak(0, -1),
         tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+        FlxRect.weak(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
       );
       FlxTransitionableState.defaultTransOut = new TransitionData(
         FADE,
         FlxColor.BLACK,
         0.7,
-        new FlxPoint(0, 1),
+        FlxPoint.weak(0, 1),
         tileData,
-        new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+        FlxRect.weak(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
       );
 
       FlxG.signals.gameResized.add(function(width:Int, height:Int)
@@ -218,17 +218,17 @@ class InitState extends FlxState
           FADE,
           FlxColor.BLACK,
           1,
-          new FlxPoint(0, -1),
+          FlxPoint.weak(0, -1),
           tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+          FlxRect.weak(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
         );
         FlxTransitionableState.defaultTransOut = new TransitionData(
           FADE,
           FlxColor.BLACK,
           0.7,
-          new FlxPoint(0, 1),
+          FlxPoint.weak(0, 1),
           tileData,
-          new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
+          FlxRect.weak(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4)
         );
       });
 
@@ -300,7 +300,9 @@ class InitState extends FlxState
       #if !mobile
       funkin.util.plugins.VolumePlugin.initialize();
       #end
+      #if FLX_DEBUG
       funkin.util.plugins.WatchPlugin.initialize();
+      #end
       #if FEATURE_TOUCH_CONTROLS
       funkin.util.plugins.TouchPointerPlugin.initialize();
       funkin.mobile.input.ControlsHandler.initInputTrackers();
@@ -314,27 +316,7 @@ class InitState extends FlxState
     // GAME DATA PARSING
     //
 
-    // NOTE: Registries must be imported and not referenced with fully qualified names,
-    // to ensure build macros work properly.
-    trace('Parsing game data...');
-    SongEventRegistry.loadEventCache(); // SongEventRegistry is structured differently so it's not a BaseRegistry.
-    SongRegistry.instance.loadEntries();
-    LevelRegistry.instance.loadEntries();
-    NoteStyleRegistry.instance.loadEntries();
-    PlayerRegistry.instance.loadEntries();
-    ConversationRegistry.instance.loadEntries();
-    DialogueBoxRegistry.instance.loadEntries();
-    SpeakerRegistry.instance.loadEntries();
-    FreeplayStyleRegistry.instance.loadEntries();
-    AlbumRegistry.instance.loadEntries();
-    StageRegistry.instance.loadEntries();
-    StickerRegistry.instance.loadEntries();
-
-    // TODO: CharacterDataParser doesn't use json2object, so it's way slower than the other parsers and more prone to syntax errors.
-    // Move it to use a BaseRegistry.
-    CharacterDataParser.loadCharacterCache();
-
-    NoteKindManager.initialize();
+    // If you're looking for registry initialization, it moved to the preloader :)
 
     ModuleHandler.buildModuleCallbacks();
     ModuleHandler.loadModuleCache();

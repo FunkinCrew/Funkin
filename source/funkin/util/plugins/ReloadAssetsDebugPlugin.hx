@@ -93,6 +93,22 @@ class ReloadAssetsDebugPlugin extends FlxBasic
     }
     else
     {
+      var clsName:String = Type.getClassName(Type.getClass(state));
+      if (funkin.modding.CppiaScripts.exists(clsName))
+      {
+        trace('Hot-reloading compiled state: ' + clsName);
+        if (Std.isOfType(state, MusicBeatState) || Std.isOfType(state, MusicBeatSubState)) state.onPreHotReload();
+        hotReloadParams = {
+          targetState: () ->
+          {
+            var newState:Null<FlxState> = funkin.modding.CppiaScripts.exists(clsName) ? cast funkin.modding.CppiaScripts.create(clsName) : null;
+            if (newState == null) return new funkin.ui.mainmenu.MainMenuState();
+            return newState;
+          }
+        };
+        FlxG.switchState(() -> new HotReloadState(hotReloadParams));
+        return;
+      }
       // Fallback to using default params.
       hotReloadParams = {
         targetState: state._constructor

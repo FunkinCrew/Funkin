@@ -175,6 +175,8 @@ class SongDataUtils
    */
   public static function mirrorNotes(notes:Array<SongNoteData>, strumlineSize:Int = 4, flip:Bool = false, mirrorX:Bool = true, mirrorY:Bool = true):Array<SongNoteData>
   {
+    if (notes.length == 0) return notes;
+
     var minTime = notes[0].time;
     var maxTime = notes[0].time;
     var minStrumline = notes[0].data;

@@ -101,7 +101,8 @@ class Paths implements ConsoleClass
    * @param id The asset path to convert.
    * @return AssetPath
    */
-  public static function raw(id:String, validate:Bool = true):AssetPath
+  @:allow(funkin.assets.Assets) @:allow(funkin.assets.FunkinBitmapFrontend)
+  private static function raw(id:String, validate:Bool = true):AssetPath
   {
     var ext:String = haxe.io.Path.extension(id);
     var idWithoutExt:String = haxe.io.Path.withoutExtension(id);

@@ -1,28 +1,42 @@
-package funkin.ui.charSelect;
+package funkin.ui.charSelect.icons;
 
 import flixel.util.FlxColor;
 import funkin.graphics.FunkinSprite;
-import flixel.FlxCamera;
-import flixel.math.FlxPoint;
 
+/**
+ * The lock icon that takes the place of a locked character in the Character Select screen.
+ */
 @:nullSafety
 class Lock extends FunkinSprite
 {
-  var colors:Array<FlxColor> = [
+  /**
+   * All of the colors that the lock icon can be.
+   */
+  public static final AVAILABLE_COLORS:Array<FlxColor> = [
     0xFF31F2A5, 0xFF20ECCD, 0xFF24D9E8,
     0xFF20ECCD, 0xFF20C8D4, 0xFF209BDD,
     0xFF209BDD, 0xFF2362C9, 0xFF243FB9
   ];
 
-  public function new(x:Float = 0, y:Float = 0, index:Int, settings:AtlasSpriteSettings)
+  public function new(x:Float = 0, y:Float = 0, index:Int)
   {
-    var tint:FlxColor = colors[index];
+    var cycle:Int = AVAILABLE_COLORS.length * 2;
+    var wrapped:Int = index % cycle;
+    var colorIndex:Int = wrapped;
+
+    if (wrapped >= AVAILABLE_COLORS.length)
+    {
+      colorIndex = cycle - wrapped - 1;
+    }
+
+    var tint:FlxColor = AVAILABLE_COLORS[colorIndex];
 
     super(x, y);
 
     loadTextureAtlas('ui/character-select/interface/lock', {
-      swfMode: settings.swfMode,
-      uniqueInCache: settings.uniqueInCache,
+      swfMode: true,
+      useRenderTexture: true,
+      cacheKey: 'char-select-lock-${tint.toHexString()}',
       onSymbolCreate: (symbol) ->
       {
         if (symbol.timeline.getLayer('color') != null)

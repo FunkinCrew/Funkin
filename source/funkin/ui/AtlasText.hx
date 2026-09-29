@@ -295,9 +295,6 @@ class AtlasChar extends FlxSprite
 @:nullSafety
 private class AtlasFontData
 {
-  static final UPPER_CHAR:EReg = ~/^[A-Z]\d+$/;
-  static final LOWER_CHAR:EReg = ~/^[a-z]\d+$/;
-
   /**
    * The split up graphic for the art.
    */
@@ -339,6 +336,9 @@ private class AtlasFontData
 
     var containsUpper:Bool = false;
     var containsLower:Bool = false;
+
+    final UPPER_CHAR:EReg = ~/^[A-Z]\d+$/;
+    final LOWER_CHAR:EReg = ~/^[a-z]\d+$/;
 
     for (frame in atlas.frames)
     {

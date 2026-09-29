@@ -115,9 +115,12 @@ class Assets implements ConsoleClass
    * @param path The asset path to load from
    * @return The loaded Bitmap image
    */
-  public static function getBitmapData(path:String, useCache:Bool = true):openfl.display.BitmapData
+  public static function getBitmapData(path:String,
+    useCache:Bool = true,
+    allowCompressedTextures:Bool = true,
+    allowHardwareTextures:Bool = true):openfl.display.BitmapData
   {
-    return openfl.utils.Assets.getBitmapData(path, useCache);
+    return openfl.utils.Assets.getBitmapData(path, useCache, allowCompressedTextures, allowHardwareTextures);
   }
 
   /**
@@ -125,9 +128,12 @@ class Assets implements ConsoleClass
    * @param path The asset path to load from
    * @return The future which promises to return the loaded Bitmap image
    */
-  public static function loadBitmapData(path:String):Future<openfl.display.BitmapData>
+  public static function loadBitmapData(path:String,
+    useCache:Null<Bool> = true,
+    allowCompressedTextures:Bool = true,
+    allowHardwareTextures:Bool = true):Future<openfl.display.BitmapData>
   {
-    return openfl.utils.Assets.loadBitmapData(path);
+    return openfl.utils.Assets.loadBitmapData(path, useCache, allowCompressedTextures, allowHardwareTextures);
   }
 
   /**

@@ -70,61 +70,46 @@ class GRhythmUtil
   {
     if (inUseConductor == null) inUseConductor = Conductor.instance;
 
-    var window:HitWindow = getHitWindow(note);
+    final windowCenter:Float = note.strumTime;
+    final windowStart:Float = windowCenter - Constants.HIT_WINDOW_MS;
+    final windowEnd:Float = windowCenter + Constants.HIT_WINDOW_MS;
+    final songPosition:Float = inUseConductor.songPosition;
 
-    var windowStart:Float = window.start;
-    var windowCenter:Float = window.center;
-    var windowEnd:Float = window.end;
-
-    if (note.hasMissed || note.hasBeenHit)
-    {
-      return {
-        botplayHit: false,
-        cont: false
-      };
-    }
+    if (note.hasMissed || note.hasBeenHit) return RES_STOP;
 
     // Treat notes as not in window if they are greater or less than the hit window
-    if (inUseConductor.songPosition > windowEnd)
+    if (songPosition > windowEnd)
     {
       note.tooEarly = false;
       note.hasMissed = true;
       note.mayHit = false;
       if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = true;
-      return {
-        botplayHit: false,
-        cont: true
-      };
+      return RES_CONTINUE;
     }
 
     // Check if we're not being controlled (ie, botplay/opponent)
-    if (!isControlled && inUseConductor.songPosition >= windowCenter) return {
-      botplayHit: true,
-      cont: true
-    };
+    if (!isControlled && songPosition >= windowCenter) return RES_BOTPLAY_HIT;
 
     if (note.holdNoteSprite != null) note.holdNoteSprite.missedNote = false;
 
-    if (inUseConductor.songPosition >= windowStart)
+    if (songPosition >= windowStart)
     {
       note.tooEarly = false;
       note.hasMissed = false;
       note.mayHit = true;
-      return {
-        botplayHit: false,
-        cont: true
-      };
+      return RES_CONTINUE;
     }
 
     note.tooEarly = true;
     note.mayHit = false;
     note.hasMissed = false;
 
-    return {
-      botplayHit: false,
-      cont: true
-    };
+    return RES_CONTINUE;
   }
+
+  static final RES_STOP:HitWindowRes = {botplayHit: false, cont: false};
+  static final RES_CONTINUE:HitWindowRes = {botplayHit: false, cont: true};
+  static final RES_BOTPLAY_HIT:HitWindowRes = {botplayHit: true, cont: true};
 
   /**
    * Get the y-position of a note based on its strum time.

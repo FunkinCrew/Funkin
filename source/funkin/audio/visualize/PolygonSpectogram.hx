@@ -26,7 +26,10 @@ class PolygonSpectogram extends MeshRender
   public var thickness:Float = 2;
   public var waveAmplitude:Int = 100;
 
-  public function new(?daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?detail:Float = 1)
+  public function new(?daSound:FlxSound,
+    ?col:FlxColor = FlxColor.WHITE,
+    ?height:Float = 720,
+    ?detail:Float = 1)
   {
     super(0, 0, col);
 
@@ -84,7 +87,7 @@ class PolygonSpectogram extends MeshRender
       if (startSample < 0 || startSample >= numSamples) return;
       if (samplesToGen <= 0 || startSample + samplesToGen > numSamples) samplesToGen = numSamples - startSample;
 
-      var prevPoint:FlxPoint = new FlxPoint();
+      var prevPoint:FlxPoint = FlxPoint.weak();
 
       var funnyPixels:Int = Std.int(daHeight * detail); // sorta redundant but just need it for different var...
 
@@ -97,7 +100,7 @@ class PolygonSpectogram extends MeshRender
         var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, funnyPixels, startSample, startSample + samplesToGen));
         var curAud:CurAudioInfo = VisShit.getCurAud(audioData, sampleApprox);
 
-        var coolPoint:FlxPoint = new FlxPoint();
+        var coolPoint:FlxPoint = FlxPoint.weak();
         coolPoint.x = (curAud.balanced * waveAmplitude);
         coolPoint.y = (i / funnyPixels * daHeight);
 

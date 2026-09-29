@@ -55,17 +55,29 @@ using Lambda;
 class ChartEditorDialogHandler
 {
   // Paths to HaxeUI layout files for each dialog.
-  static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/upload-inst');
-  static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/song-metadata');
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/open-chart-parts');
-  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/open-chart-parts-entry');
-  static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/import-chart');
-  static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/user-guide');
-  static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/add-variation');
-  static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/add-difficulty');
-  static final CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/clone-difficulty');
-  static final CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/move-difficulty');
-  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = Paths.ui('editors/chart-editor/dialogs/backup-available');
+  static final CHART_EDITOR_DIALOG_UPLOAD_INST_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/upload-inst').toString();
+  static final CHART_EDITOR_DIALOG_SONG_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/song-metadata').toString();
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/open-chart-parts')
+    .toString();
+  static final CHART_EDITOR_DIALOG_OPEN_CHART_PARTS_ENTRY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/open-chart-parts-entry')
+    .toString();
+  static final CHART_EDITOR_DIALOG_IMPORT_CHART_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/import-chart').toString();
+  static final CHART_EDITOR_DIALOG_USER_GUIDE_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/user-guide').toString();
+  static final CHART_EDITOR_DIALOG_ADD_VARIATION_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/dialogs/add-variation').toString();
+  static final CHART_EDITOR_DIALOG_ADD_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/add-difficulty')
+    .toString();
+  static final CHART_EDITOR_DIALOG_CLONE_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/clone-difficulty')
+    .toString();
+  static final CHART_EDITOR_DIALOG_MOVE_DIFFICULTY_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/move-difficulty')
+    .toString();
+  static final CHART_EDITOR_DIALOG_BACKUP_AVAILABLE_LAYOUT:String = funkin.assets.ValidatedPaths
+    .xml('ui/editors/chart-editor/dialogs/backup-available')
+    .toString();
 
   /**
    * Builds and opens a dialog giving brief credits for the chart editor.
@@ -1530,6 +1542,11 @@ class ChartEditorDialogHandler
     {
       labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
     };
+    inputScrollSpeed.onRightClick = _ ->
+    {
+      inputScrollSpeed.value = 1;
+      labelScrollSpeed.text = 'Scroll Speed: 1x';
+    }
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
@@ -1595,6 +1612,11 @@ class ChartEditorDialogHandler
     {
       labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
     };
+    inputScrollSpeed.onRightClick = _ ->
+    {
+      inputScrollSpeed.value = 1;
+      labelScrollSpeed.text = 'Scroll Speed: 1x';
+    }
     inputScrollSpeed.value = state.currentSongChartScrollSpeed;
     labelScrollSpeed.text = 'Scroll Speed: ${inputScrollSpeed.value}x';
 
@@ -1741,7 +1763,7 @@ class ChartEditorDialogHandler
 
   static final EPSILON:Float = 0.01;
 
-  static function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  static function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
     // a VERY short timer to wait for the mouse position to update
     new FlxTimer().start(EPSILON, function(_)
@@ -1750,7 +1772,7 @@ class ChartEditorDialogHandler
       {
         if (handler.component.hitTest(FlxG.mouse.viewX, FlxG.mouse.viewY))
         {
-          handler.handler(path);
+          handler.handler(file.path);
           return;
         }
       }

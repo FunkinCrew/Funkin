@@ -19,7 +19,7 @@ class ModMenuAmbience extends FunkinSoundscape
   /**
    * The path to the PhantomArcade easter egg sound.
    */
-  public static final EASTER_EGG_PATH:String = Paths.sound('ui/mods/sounds/phantomarcade-trapped');
+  public static final EASTER_EGG_PATH:String = funkin.assets.ValidatedPaths.sound('ui/mods/sounds/phantomarcade-trapped').toString();
 
   var _easterEgg:Null<FunkinSound> = null;
 

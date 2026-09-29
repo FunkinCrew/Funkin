@@ -45,7 +45,7 @@ class LoadingState extends MusicBeatSubState
     this.stopMusic = stopMusic;
 
     this.loadBar = new FunkinSprite(0, FlxG.height - 20).makeSolidColor(0, 10, 0xFFff16d2);
-    this.funkay = FunkinSprite.create('ui/loading/funkay');
+    this.funkay = new FunkinSprite().loadTexture('ui/loading/funkay');
   }
 
   override function create():Void
@@ -287,6 +287,14 @@ class LoadingState extends MusicBeatSubState
           if (noteStyle == null) noteStyle = NoteStyleRegistry.instance.fetchDefault();
           spritesToCache.append(noteStyle.queryAssets(IMAGE));
           soundsToCache.append(noteStyle.queryAssets(SOUND));
+
+          // also cache all other note styles used in the song, so that we don't have to load them mid-song
+          for (kindStyle in funkin.play.notes.notekind.NoteKindManager.listNoteStylesByNoteData(songDifficulty.notes))
+          {
+            if (kindStyle == null || kindStyle == noteStyle) continue;
+            spritesToCache.append(kindStyle.queryAssets(IMAGE));
+            soundsToCache.append(kindStyle.queryAssets(SOUND));
+          }
         }
 
         // TODO: This sucks lol.
@@ -328,7 +336,7 @@ class LoadingState extends MusicBeatSubState
           if (assetPath.toString().endsWith('spritemap1.png') #if FEATURE_COMPRESSED_TEXTURES || assetPath.toString().endsWith('spritemap1.astc') #end)
           {
             trace('Preloading FlxAnimate asset: ${assetPath}');
-            funkin.assets.Assets.getBitmapData(assetPath, true);
+            funkin.assets.Assets.getBitmapData(assetPath);
           }
         }
 
@@ -489,7 +497,7 @@ class MultiCallback
     transitionTex:String = "shaderTransitionStuff/coolDots",
     time:Float = 2)
   {
-    var screenShit:FunkinSprite = FunkinSprite.create('shaderTransitionStuff/coolDots');
+    var screenShit:FunkinSprite = new FunkinSprite().loadTexture('shaderTransitionStuff/coolDots');
     var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
 
     screenWipeShit.funnyShit.input = screenShit.pixels;

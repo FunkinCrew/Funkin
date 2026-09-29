@@ -32,6 +32,17 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   public var children:Array<T>;
 
   /**
+   * Alias for `this.children`.
+   */
+  @:deprecated("Use `this.children` instead.")
+  public var members(get, never):Array<T>;
+
+  function get_members():Array<T>
+  {
+    return children;
+  }
+
+  /**
    * The size of this FunkinGroup. Read only.
    */
   public var size(get, never):Int;
@@ -407,6 +418,20 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   {
     if (customChildUpdate) return;
 
+    final precise:Bool = preciseScale || preciseAngle;
+
+    var cos:Float = 1;
+    var sin:Float = 0;
+    if (preciseAngle && angle != 0)
+    {
+      final radians:Float = angle * (Math.PI / 180);
+      cos = Math.cos(radians);
+      sin = Math.sin(radians);
+    }
+
+    final scaleX:Float = preciseScale ? scale.x : 1;
+    final scaleY:Float = preciseScale ? scale.y : 1;
+
     for (child in children)
     {
       if (child != null && child.exists && child.active)
@@ -415,50 +440,22 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
         child.scale.x = scale.x * child.localScale.x;
         child.scale.y = scale.y * child.localScale.y;
 
-        var displace:FlxPoint = FlxPoint.weak(child.localX, child.localY);
-
-        var dx:Float = 0;
-        var dy:Float = 0;
-
-        dx = origin.x - child.width / 2;
-        dy = origin.y - child.height / 2;
-
-        if (preciseScale && !preciseAngle)
+        if (precise)
         {
-          dx += scale.x * (child.localX - origin.x + child.width / 2);
-          dy += scale.y * (child.localY - origin.y + child.height / 2);
+          final halfWidth:Float = child.width / 2;
+          final halfHeight:Float = child.height / 2;
+
+          final relX:Float = child.localX - origin.x + halfWidth;
+          final relY:Float = child.localY - origin.y + halfHeight;
+
+          child.x = x + (origin.x - halfWidth) + (scaleX * cos * relX) - (scaleY * sin * relY);
+          child.y = y + (origin.y - halfHeight) + (scaleY * cos * relY) + (scaleX * sin * relX);
         }
-        else if (preciseAngle && !preciseScale)
+        else
         {
-          var radians:Float = angle * (Math.PI / 180);
-          var cos:Float = Math.cos(radians);
-          var sin:Float = Math.sin(radians);
-
-          dx += cos * (child.localX - origin.x + child.width / 2);
-          dx -= sin * (child.localY - origin.y + child.height / 2);
-
-          dy += cos * (child.localY - origin.y + child.height / 2);
-          dy += sin * (child.localX - origin.x + child.width / 2);
+          child.x = x + child.localX;
+          child.y = y + child.localY;
         }
-        else if (preciseAngle && preciseScale)
-        {
-          var radians:Float = angle * (Math.PI / 180);
-          var cos:Float = Math.cos(radians);
-          var sin:Float = Math.sin(radians);
-
-          dx += scale.x * cos * (child.localX - origin.x + child.width / 2);
-          dx -= scale.y * sin * (child.localY - origin.y + child.height / 2);
-
-          dy += scale.y * cos * (child.localY - origin.y + child.height / 2);
-          dy += scale.x * sin * (child.localX - origin.x + child.width / 2);
-        }
-
-        if (preciseScale || preciseAngle) displace.set(dx, dy);
-
-        child.x = x + displace.x;
-        child.y = y + displace.y;
-
-        displace.put();
 
         child.alpha = alpha * child.localAlpha;
         child.visible = visible && child.localVisible;
@@ -537,12 +534,7 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
 
   override public function destroy():Void
   {
-    for (child in children)
-    {
-      child.destroy();
-    }
-
-    children = [];
+    clear();
 
     _inheritedClipRect = FlxDestroyUtil.put(_inheritedClipRect);
     _effectiveClipRect = FlxDestroyUtil.put(_effectiveClipRect);
@@ -631,6 +623,22 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
   }
 
   /**
+   * Gets the first child under this FunkinGroup that matches a specific filter.
+   * @param filter The filter to use.
+   *
+   * @return The child that matches the filter or null.
+   */
+  public function getFirst(filter:T->Bool):Null<T>
+  {
+    for (child in children)
+    {
+      if (filter(child)) return child;
+    }
+
+    return null;
+  }
+
+  /**
    * Get's the first alive child under this FunkinGroup. Returns null if it can't
    * find squat.
    *
@@ -644,6 +652,14 @@ class FunkinGroup<T:FlxSprite> extends FlxSprite implements IFlxGroupable<T>
     }
 
     return null;
+  }
+
+  /**
+   * @return Whether or not this FunkinGroup is empty.
+   */
+  public inline function isEmpty():Bool
+  {
+    return size == 0;
   }
 
   /**

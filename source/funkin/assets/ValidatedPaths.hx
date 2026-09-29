@@ -409,14 +409,15 @@ class ValidatedPaths
     #if ios
     static final CORE_FOLDER:Null<String> = "../../../../../assets";
     #else
-    static final CORE_FOLDER:Null<String> = "assets/";
+    static final CORE_FOLDER:Null<String> = "assets";
     #end
 
     for (ext in extensions)
     {
       var path:String = '$CORE_FOLDER/$key.$ext';
+      var excludePath:String = '$CORE_FOLDER/exclude/$key.$ext';
 
-      var fileExists:Bool = sys.FileSystem.exists(path);
+      var fileExists:Bool = sys.FileSystem.exists(path) || sys.FileSystem.exists(excludePath);
 
       if (fileExists)
       {

@@ -335,7 +335,7 @@ class DebugBoundingState extends FlxState
     if (FlxG.mouse.justReleased || FlxG.mouse.justReleasedMiddle) FunkinSound.playOnce(Paths.sound('ui/editors/chart-editor/charting-sounds/click-up'));
 
     MouseUtil.mouseCamDrag();
-    if (!haxeUIFocused) MouseUtil.mouseWheelZoom();
+    if (!haxeUIFocused) handleTrackpadScroll();
 
     // bg.scale.x = FlxG.camera.zoom;
     // bg.scale.y = FlxG.camera.zoom;
@@ -343,6 +343,30 @@ class DebugBoundingState extends FlxState
     bg.setGraphicSize(Std.int(bg.width / FlxG.camera.zoom));
 
     super.update(elapsed);
+  }
+
+  static final TRACKPAD_PAN_SCALE:Float = 25.0;
+
+  function handleTrackpadScroll():Void
+  {
+    var dx:Float = FlxG.mouse.deltaWheel.x;
+    var dy:Float = FlxG.mouse.deltaWheel.y;
+    if (dx == 0 && dy == 0) return;
+
+    if (FlxG.keys.pressed.CONTROL)
+    {
+      if (dy == 0) return;
+      var scaledDelta:Float = dy * 10.0;
+      var rawScale:Float = Math.exp(scaledDelta / 100.0);
+      rawScale = Math.min(1.25, Math.max(0.75, rawScale));
+      FlxG.camera.zoom *= rawScale;
+      if (FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
+      if (FlxG.camera.zoom > 10.0) FlxG.camera.zoom = 10.0;
+      return;
+    }
+
+    FlxG.camera.scroll.x -= (-dx * TRACKPAD_PAN_SCALE) / FlxG.camera.zoom;
+    FlxG.camera.scroll.y -= (dy * TRACKPAD_PAN_SCALE) / FlxG.camera.zoom;
   }
 
   function resetWindowTitle():Void

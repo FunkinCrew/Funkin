@@ -157,13 +157,22 @@ class QuickPanelGroup extends FunkinSpriteGroup
     });
   }
 
+  public static function stopMusic():Void
+  {
+    if (FlxG.sound.music != null)
+    {
+      FlxG.sound.music.destroy();
+      FlxG.sound.music = null;
+    }
+  }
+
   // maybe this could not be hardcoded one day? but it also lowkey doesnt matter at all
   var defaultButtonData:Array<QuickPanelButtonData> = [
     {
       text: 'Exit Mod',
       callback: () ->
       {
-        playMenuMusic();
+        stopMusic();
         FlxG.switchState(() -> new funkin.ui.title.TitleState());
       },
       icon: 'back',
@@ -174,7 +183,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Mods',
       callback: () ->
       {
-        playMenuMusic();
+        stopMusic();
         FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
       },
       icon: 'mods',
@@ -185,7 +194,8 @@ class QuickPanelGroup extends FunkinSpriteGroup
       text: 'Freeplay',
       callback: () ->
       {
-        FlxG.switchState(() -> new funkin.ui.freeplay.FreeplayState());
+        flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
+        FlxG.switchState(() -> funkin.ui.freeplay.FreeplayState.build({fromCharSelect: true}));
       },
       icon: 'freeplay',
       description: "Choose and play any song you've previously unlocked.",
@@ -208,7 +218,7 @@ class QuickPanelGroup extends FunkinSpriteGroup
         // We have to be in a scripted state, otherwise this quick panel wouldn't exist!
         var s:MusicBeatState = cast FlxG.state;
         @:privateAccess
-        var path:String = s._asc?.fullyQualifiedName ?? '';
+        var path:String = s._asc?.fullyQualifiedName ?? Type.getClassName(Type.getClass(FlxG.state));
         funkin.ui.options.OptionsState.backState = path;
         FlxG.switchState(() -> new funkin.ui.options.OptionsState());
       },

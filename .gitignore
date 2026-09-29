@@ -35,3 +35,7 @@ node_modules/
 package.json
 package-lock.json
 .aider*
+
+# Cppia stuff
+sdk/
+export_classes.info

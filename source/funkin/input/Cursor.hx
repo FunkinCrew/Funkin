@@ -309,7 +309,8 @@ class Cursor
       return;
     }
 
-    if (data.cache != null)
+    @:privateAccess
+    if (data.cache != null && !(data.cache.image == null && data.cache.__texture == null))
     {
       applyGraphic(data.cache, data.params);
       return;

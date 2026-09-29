@@ -67,7 +67,15 @@ class ScrollingTextBox extends FunkinSpriteGroup
 
   var fontPath:String;
   var fontSize:Int;
-  var textColor:FlxColor;
+  public var textColor(default, set):FlxColor = FlxColor.WHITE;
+
+  function set_textColor(value:FlxColor):FlxColor
+  {
+    if (textColor == value) return textColor;
+    textColor = value;
+    rebuild();
+    return textColor;
+  }
 
   var line:Null<FlxText> = null;
   var lineClip:Null<FlxRect> = null;

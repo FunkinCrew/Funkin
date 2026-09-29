@@ -44,7 +44,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
 
     this.currentCharacter = currentCharacter;
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/card-glow')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/card-glow').withPixelData()),
+      FreeplayState.CUTOUT_WIDTH
+    );
     cardGlow = new FlxSprite(-30, -30).loadGraphic(bitmap);
 
     confirmGlow = new FlxSprite(
@@ -56,7 +59,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
       115
     ).loadGraphic(Paths.image('ui/freeplay/interface/glowing-text'));
 
-    var bitmap = BitmapUtil.scalePartByWidth(Assets.getBitmapData(Paths.image('ui/freeplay/interface/back')), FreeplayState.CUTOUT_WIDTH);
+    var bitmap = BitmapUtil.scalePartByWidth(
+      funkin.assets.Assets.getBitmapData(funkin.assets.Paths.image('ui/freeplay/interface/back').withPixelData()),
+      FreeplayState.CUTOUT_WIDTH
+    );
     pinkBack = new FunkinSprite();
     pinkBack.loadGraphic(bitmap);
 
@@ -64,11 +70,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
     alsoOrangeLOL = new FunkinSprite(0, orangeBackShit.y).makeSolidColor(100, Std.int(orangeBackShit.height), 0xFFFFD400);
     confirmGlow2 = new FlxSprite(confirmGlow.x, confirmGlow.y).loadGraphic(Paths.image('ui/freeplay/interface/confirm-glow-2'));
 
-    backingTextYeah = FunkinSprite.createTextureAtlas(
+    backingTextYeah = new FunkinSprite(
       (FreeplayState.CUTOUT_WIDTH * FreeplayState.DJ_POS_MULTI) + -320,
-      120,
-      'ui/freeplay/styles/bf/backing-card'
-    );
+      120
+    ).loadTextureAtlas('ui/freeplay/styles/bf/backing-card');
     backingTextYeah.anim.addBySymbol('wholeTimeline', backingTextYeah.getDefaultSymbol(), backingTextYeah.library.frameRate, false);
 
     pinkBack.color = 0xFFFFD4E9; // sets it to pink!
@@ -79,7 +84,8 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
    * Apply exit movers for the pieces of the backing card.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {

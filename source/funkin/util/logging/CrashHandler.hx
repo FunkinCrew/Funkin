@@ -26,11 +26,26 @@ class CrashHandler
    */
   public static var criticalErrorSignal(default, null):FlxTypedSignal<String->Void> = new FlxTypedSignal<String->Void>();
 
+  public static function installNativeHandler():Void
+  {
+    #if FEATURE_NATIVE_CRASH_HANDLER
+    funkin.external.crash.NativeCrash.install(LOG_FOLDER, 'Funkin');
+    #end
+  }
+
+  /**
+   * The stack of an error that was caught and rethrown elsewhere.
+   */
+  public static var pendingStack:Null<Array<haxe.CallStack.StackItem>> = null;
+
   /**
    * Initializes
    */
   public static function initialize():Void
   {
+    // In case it was not installed earlier in startup.
+    installNativeHandler();
+
     trace('[LOG] Enabling standard uncaught error handler...');
     Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
 
@@ -47,6 +62,8 @@ class CrashHandler
    */
   static function onUncaughtError(error:UncaughtErrorEvent):Void
   {
+    trace('[CRASH] Uncaught error: ' + generateErrorMessage(error));
+
     try
     {
       errorSignal.dispatch(generateErrorMessage(error));
@@ -69,17 +86,17 @@ class CrashHandler
       trace('Error while handling crash: ' + e);
     }
 
-    #if sys
-    Sys.sleep(1); // wait a few moments of margin to process.
-    // Exit the game. Since it threw an error, we use a non-zero exit code.
-    openfl.Lib.application.window.close();
-    #end
+    exitAfterCrash();
   }
 
   static function onCriticalError(message:String):Void
   {
+    trace('[CRASH] Critical error: ' + message);
+
     try
     {
+      trace(buildCrashReport(message));
+
       criticalErrorSignal.dispatch(message);
 
       #if sys
@@ -95,10 +112,24 @@ class CrashHandler
       trace('Message: $message');
     }
 
+    exitAfterCrash();
+  }
+  static function exitAfterCrash():Void
+  {
     #if sys
-    Sys.sleep(1); // wait a few moments of margin to process.
-    // Exit the game. Since it threw an error, we use a non-zero exit code.
-    openfl.Lib.application.window.close();
+    Sys.sleep(1);
+
+    try
+    {
+      var window:Null<lime.ui.Window> = openfl.Lib.application?.window;
+      if (window != null) window.close();
+    }
+    catch (e:Dynamic)
+    {
+      trace('Error while closing the window: $e');
+    }
+
+    Sys.exit(1);
     #end
   }
 
@@ -226,7 +257,8 @@ class CrashHandler
   static function generateErrorMessage(error:UncaughtErrorEvent):String
   {
     var errorMessage:String = "";
-    var callStack:Array<haxe.CallStack.StackItem> = haxe.CallStack.exceptionStack(true);
+    var callStack:Array<haxe.CallStack.StackItem> = pendingStack ?? haxe.CallStack.exceptionStack(true);
+    pendingStack = null;
 
     errorMessage += '${error.error}\n';
 

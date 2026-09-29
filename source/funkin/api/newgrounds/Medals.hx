@@ -93,9 +93,7 @@ class Medals
         // Web builds support parsing the bitmap data from the URL directly.
         BitmapData.loadFromFile("https:" + medalData.icon).onComplete(function(bmp:BitmapData)
         {
-          var medalGraphic = FlxGraphic.fromBitmapData(bmp);
-          medalGraphic.persist = true;
-          NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
+          NewgroundsMedalPlugin.play(medalData.value, medalData.name, bmp);
         });
         #else
         if ((medalJSON?.length ?? 0) == 0) loadMedalJSON();
@@ -115,16 +113,9 @@ class Medals
 
         var str:String = localMedalData.icon;
         // Lime/OpenFL parses it without the included prefix stuff, so we remove it.
-        str = str.replace("data:image/png;base64,", "").trim();
-        var bitmapData = BitmapData.fromBase64(str, "image/png");
-        var medalGraphic:Null<FlxGraphic> = null;
-        if (str != null)
-        {
-          medalGraphic = FlxGraphic.fromBitmapData(bitmapData);
-          medalGraphic.persist = true;
-        }
-
-        NewgroundsMedalPlugin.play(medalData.value, medalData.name, medalGraphic);
+        str = str.replace('data:image/png;base64,', '').trim();
+        var bitmapData = BitmapData.fromBase64(str, 'image/png');
+        NewgroundsMedalPlugin.play(medalData.value, medalData.name, (str != null) ? bitmapData : null);
         #end
       }
       else

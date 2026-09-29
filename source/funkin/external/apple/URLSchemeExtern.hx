@@ -19,7 +19,6 @@ extern class URLSchemeExtern
   /**
    * Registers this application bundle as the default handler for the given URL scheme.
    * The bundle must also declare the scheme in CFBundleURLTypes for this to stick.
-   *
    * @param scheme The scheme name, without the trailing colon.
    * @return Whether this bundle owns the scheme once the call returns.
    */
@@ -28,7 +27,6 @@ extern class URLSchemeExtern
 
   /**
    * Checks whether this application bundle is already the default handler for the given scheme.
-   *
    * @param scheme The scheme name, without the trailing colon.
    * @return Whether this bundle currently owns the scheme.
    */
@@ -38,7 +36,6 @@ extern class URLSchemeExtern
   /**
    * Installs the callback that receives URLs opened through a registered scheme.
    * URLs that arrived before this call are buffered and replayed immediately.
-   *
    * @param callback The function to invoke for each incoming URL.
    */
   @:native('Apple_URLScheme_SetCallback')

@@ -176,9 +176,9 @@ class OneClickBridge
   public static function update():Array<String>
   {
     #if sys
-    if (!holdsLock) return [];
+    if (!holdsLock) return NONE;
 
-    final now:Float = Date.now().getTime();
+    final now:Float = Sys.time() * 1000.0;
 
     if (now - lastHeartbeat >= HEARTBEAT_INTERVAL) writeHeartbeat();
 
@@ -189,8 +189,10 @@ class OneClickBridge
     }
     #end
 
-    return [];
+    return NONE;
   }
+
+  static final NONE:Array<String> = [];
 
   /**
    * Reads and clears the queue.

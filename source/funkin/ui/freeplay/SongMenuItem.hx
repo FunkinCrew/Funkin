@@ -52,7 +52,7 @@ class SongMenuItem extends FlxSpriteGroup
   public var blurredRanking:FreeplayRank;
   public var fakeRanking:FreeplayRank;
   public var fakeBlurredRanking:FreeplayRank;
-  public var targetPos:FlxPoint = new FlxPoint();
+  public var targetPos:FlxPoint = FlxPoint.get();
   public var doLerp:Bool = false;
   public var doJumpIn:Bool = false;
   public var doJumpOut:Bool = false;
@@ -798,6 +798,15 @@ class SongMenuItem extends FlxSpriteGroup
     doLerp = false;
     doJumpIn = false;
     doJumpOut = false;
+  }
+
+  override function destroy():Void
+  {
+    targetPos.put();
+    targetPos = null;
+    difficultyNumbers = [];
+    bpmNumbers = [];
+    super.destroy();
   }
 }
 

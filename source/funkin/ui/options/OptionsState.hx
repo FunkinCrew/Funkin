@@ -143,9 +143,13 @@ class OptionsState extends MusicBeatState
   {
     optionsCodex.currentPage.enabled = false;
     // TODO: Animate this transition?
-    if (backState != null)
+    var targetState:Null<String> = backState;
+    backState = null;
+    if (targetState != null)
     {
-      var state:MusicBeatState = MusicBeatState.scriptInit(backState);
+      funkin.ui.quickpanel.QuickPanelGroup.stopMusic();
+      var isCompiled:Bool = funkin.modding.CppiaScripts.exists(targetState);
+      var state:MusicBeatState = isCompiled ? cast funkin.modding.CppiaScripts.create(targetState) : MusicBeatState.scriptInit(targetState);
       if (state != null) FlxG.switchState(state);
       else
       {

@@ -15,8 +15,8 @@ import funkin.util.tasks.TaskHandler;
 import funkin.util.tasks.TaskHandler.Task;
 import haxe.Json;
 import flixel.graphics.frames.FlxFrame;
-import funkin.assets.Paths.AssetPath;
-import funkin.assets.Assets.AssetType;
+import funkin.assets.Paths;
+import funkin.assets.Assets;
 import lime.app.Promise;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedArray;
@@ -279,8 +279,8 @@ class CharacterDataParser
       {entryId:String, error:Any, ?entryCls:String}> = new SynchronizedArray();
 
     var charIdList:Array<String> = funkin.modding.compat.RegistryData.listEntryIds(DATA_FILE_PATH, true);
-    var previousScriptedEntryClasses:Array<String> = [];
-    var scriptedEntryClassNames:Array<String> = [];
+    var previousScriptedEntryClasses:SynchronizedArray<String> = new SynchronizedArray<String>();
+    var scriptedEntryClassNames:SynchronizedArray<String> = new SynchronizedArray<String>();
     var entryCount:Int = 0;
 
     // Used to track the state we're in while loading the characters. This can either be us loading all character data, or loading each scripted character types.
@@ -507,7 +507,7 @@ class CharacterDataParser
     {
       var loadScriptedEntriesFuture = TaskHandler.performSimpleTask(() ->
       {
-        scriptedEntryClassNames = switch (entryLoadingState)
+        var scriptedClsNames:Array<String> = switch (entryLoadingState)
         {
           case 'sparrow':
             SparrowCharacter.listScriptClasses();
@@ -529,12 +529,14 @@ class CharacterDataParser
           default:
             [];
         }
+        scriptedEntryClassNames.clear();
+        scriptedEntryClassNames.addAll(scriptedClsNames);
 
         // We concatenate this list so we can use this when checking for BaseCharacter entries.
-        previousScriptedEntryClasses = previousScriptedEntryClasses.concat(scriptedEntryClassNames);
+        previousScriptedEntryClasses.addAll(scriptedClsNames);
 
-        log('Queuing loading for ${scriptedEntryClassNames.length} $entryLoadingState character scripted entries...');
-        entryCount += scriptedEntryClassNames.length; // Since this function is called several times, we increment the entry count for each use.
+        log('Queuing loading for ${scriptedClsNames.length} $entryLoadingState character scripted entries...');
+        entryCount += scriptedClsNames.length; // Since this function is called several times, we increment the entry count for each use.
 
         return true;
       });
@@ -713,7 +715,7 @@ class CharacterDataParser
     {
       iconName += charIDParts[i];
 
-      if (funkin.assets.Paths.image(charPath + '${iconName}').exists())
+      if (Paths.image(charPath + '${iconName}', false).exists())
       {
         lastValidIconName = iconName;
       }
@@ -723,18 +725,21 @@ class CharacterDataParser
 
     charPath += '${lastValidIconName}';
 
-    if (!Assets.exists(Paths.image(charPath)))
+    var assetPath:AssetPath = Paths.image(charPath, false).withPixelData();
+
+    if (!assetPath.exists())
     {
       trace(' WARNING '.warning() + ' Character ${char} has no freeplay icon.');
       return null;
     }
 
-    var isAnimated = Assets.exists(Paths.xml(charPath));
+    var isAnimated = assetPath.withAssetType(XML).exists();
+
     var frame:Null<FlxFrame> = null;
 
     if (isAnimated)
     {
-      var frames = Paths.getSparrowAtlas(charPath);
+      var frames = Assets.getSparrowAtlas(assetPath);
 
       var idleFrame:Null<FlxFrame> = frames.frames.find(function(frame:FlxFrame):Bool
       {
@@ -756,7 +761,7 @@ class CharacterDataParser
     }
     else
     {
-      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(Paths.image(charPath));
+      var imageFrame = flixel.graphics.frames.FlxImageFrame.fromImage(assetPath.toFlxGraphicAsset());
       frame = imageFrame.frame;
     }
 

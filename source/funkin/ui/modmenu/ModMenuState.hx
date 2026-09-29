@@ -233,7 +233,7 @@ class ModMenuState extends MusicBeatState
 
     enabledModItems.pinnedTopModId = BASE_GAME_MOD_ID;
 
-    menuBG = FunkinSprite.create('ui/mods/bg');
+    menuBG = new FunkinSprite().loadTexture('ui/mods/bg');
     menuBG.scale.set(0.66, 0.67);
     menuBG.updateHitbox();
     menuBG.screenCenter();
@@ -250,7 +250,7 @@ class ModMenuState extends MusicBeatState
     dropShadowCharacters.camera = camCharacters;
     add(dropShadowCharacters);
 
-    var topText:FunkinSprite = FunkinSprite.create('ui/mods/top-text');
+    var topText:FunkinSprite = new FunkinSprite().loadTexture('ui/mods/top-text');
     topText.scale.set(0.66, 0.67);
     topText.updateHitbox();
     topText.screenCenter(X);
@@ -608,7 +608,7 @@ class ModMenuState extends MusicBeatState
     darkness.camera = camHUD;
     add(darkness);
 
-    fileDrop = FunkinSprite.create(0, 0, 'ui/mods/drop-hover');
+    fileDrop = new FunkinSprite().loadTexture('ui/mods/drop-hover');
     fileDrop.setGraphicSize(FlxG.width * 0.95, FlxG.height * 0.9);
     fileDrop.scrollFactor.set(0, 0);
     fileDrop.updateHitbox();
@@ -664,11 +664,11 @@ class ModMenuState extends MusicBeatState
     FlxG.autoPause = false;
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
-    dropShadowUI.renderer.blacklistSprite(menuBG);
-    dropShadowUI.renderer.blacklistSprite(bgWires);
-    dropShadowUI.renderer.blacklistSprite(crispySmokeBF);
-    dropShadowUI.renderer.blacklistSprite(crispySmokeGF);
-    dropShadowUI.renderer.blacklistSprite(sparks);
+    dropShadowUI.blacklistSprite(menuBG);
+    dropShadowUI.blacklistSprite(bgWires);
+    dropShadowUI.blacklistSprite(crispySmokeBF);
+    dropShadowUI.blacklistSprite(crispySmokeGF);
+    dropShadowUI.blacklistSprite(sparks);
 
     changeCharacters();
 
@@ -960,17 +960,19 @@ class ModMenuState extends MusicBeatState
     instance = null;
   }
 
-  public function onDropFile(path:String, state:String, x:Float, y:Float):Void
+  public function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
   {
-    if (StringTools.endsWith(path, '.zip'))
+    if (!allowInput) return;
+
+    if (StringTools.endsWith(file.path, '.zip'))
     {
-      var fileClean = StringTools.replace(path, '\\', '/');
-      var fileName = StringTools.replace(path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
+      var fileClean = StringTools.replace(file.path, '\\', '/');
+      var fileName = StringTools.replace(file.path.substring(fileClean.lastIndexOf('/') + 1), '.zip', '');
       var destPath = PolymodHandler.MOD_FOLDER + '/' + fileName + '.zip';
 
       try
       {
-        FileUtil.moveFile(path, destPath);
+        FileUtil.moveFile(file.path, destPath);
       }
       catch (e:Dynamic)
       {
@@ -981,9 +983,9 @@ class ModMenuState extends MusicBeatState
 
       highlightNewMod();
     }
-    else if (Path.isAbsolute(path) && FileUtil.directoryExists(path))
+    else if (Path.isAbsolute(file.path) && FileUtil.directoryExists(file.path))
     {
-      if (!FileUtil.pathExists(Path.join([path, PolymodConfig.modMetadataFile])))
+      if (!FileUtil.pathExists(Path.join([file.path, PolymodConfig.modMetadataFile])))
       {
         WindowUtil.showError('Failed to move folder', 'Could not find polymod metadata inside the folder, are you sure this is a mod pack?');
         return;
@@ -991,7 +993,10 @@ class ModMenuState extends MusicBeatState
 
       try
       {
-        FileUtil.copyDirectory(path, Path.join([PolymodHandler.MOD_FOLDER, Path.withoutDirectory(path)]));
+        FileUtil.copyDirectory(file.path, Path.join([
+          PolymodHandler.MOD_FOLDER,
+          Path.withoutDirectory(file.path)
+        ]));
       }
       catch (e:Dynamic)
       {
@@ -1061,11 +1066,11 @@ class ModMenuState extends MusicBeatState
 
       startOneClickInstall();
 
-      ModInstaller.downloadIcon(mod, function(bitmap:openfl.display.BitmapData):Void
+      ModInstaller.downloadIcon(mod, function(bytes:openfl.utils.ByteArray):Void
       {
         if (installCancelled || installPopup == null) return;
 
-        installPopup.setIcon(bitmap);
+        installPopup.setIcon(bytes);
       });
     }, function(reason:String):Void
     {
@@ -1415,9 +1420,9 @@ class ModMenuState extends MusicBeatState
     var bgColor:FlxColor = menuBG.color;
     whiteColor.colorSet = true;
 
-    dropShadowCharacters.renderer.blacklistSprite(gfWire);
-    dropShadowCharacters.renderer.blacklistSprite(carBattery);
-    dropShadowCharacters.renderer.blacklistSprite(fgWires);
+    dropShadowCharacters.blacklistSprite(gfWire);
+    dropShadowCharacters.blacklistSprite(carBattery);
+    dropShadowCharacters.blacklistSprite(fgWires);
 
     var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, 0xFF232327);
     blackFlash.zIndex = 0;
@@ -1442,9 +1447,9 @@ class ModMenuState extends MusicBeatState
       buttonOpenFolder.visible = false;
 
       dropShadowCharacters.visible = false;
-      dropShadowCharacters.renderer.whitelistSprite(gfWire);
-      dropShadowCharacters.renderer.whitelistSprite(carBattery);
-      dropShadowCharacters.renderer.whitelistSprite(fgWires);
+      dropShadowCharacters.whitelistSprite(gfWire);
+      dropShadowCharacters.whitelistSprite(carBattery);
+      dropShadowCharacters.whitelistSprite(fgWires);
 
       FlxTimer.wait(2 / 24, () ->
       {
@@ -2101,7 +2106,7 @@ class ModMenuState extends MusicBeatState
 
   function refreshModList(doFade:Bool = true):Array<ModMenuItem>
   {
-    PolymodHandler.getAllMods(true);
+    PolymodHandler.getDisabledModsIncludingIncompatible(true);
     itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
 
     tempDisabledMods = disabledModItems.modItems.map((item) -> item.mod);
@@ -2173,7 +2178,7 @@ class ModMenuState extends MusicBeatState
 
   function buildDisabledModList():Array<ModMenuItem>
   {
-    var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledMods();
+    var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledModsIncludingIncompatible();
     var newModId:Array<String> = [];
 
     var liveIds:Array<String> = disabledMods.map((m) -> m.id).concat(PolymodHandler.getEnabledMods().map((m) -> m.id));
@@ -2225,6 +2230,7 @@ class ModMenuState extends MusicBeatState
       if (disabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
 
       var item = new ModMenuItem(mod);
+      if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
       item.localAlpha = 0;
       disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
       newItems.push(item);
@@ -2235,9 +2241,9 @@ class ModMenuState extends MusicBeatState
 
   function buildEnabledModList():Void
   {
-    var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods();
+    var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods().filter((m) -> PolymodHandler.isModCompatible(m));
 
-    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledMods().map((m) -> m.id));
+    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledModsIncludingIncompatible().map((m) -> m.id));
 
     if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
     {
@@ -2328,6 +2334,11 @@ class ModMenuState extends MusicBeatState
     if (item == null) return false;
     if (!disabledModItems.modItems.contains(item)) return false;
     if (item.getModId() == BASE_GAME_MOD_ID) return false;
+    if (!PolymodHandler.isModCompatible(item.mod))
+    {
+      blockedIncompatible(item);
+      return false;
+    }
 
     item.selected = false;
 
@@ -2530,6 +2541,15 @@ class ModMenuState extends MusicBeatState
     {
       item.startFlight(ModMenuItemList.ITEM_X_OFFSET, restY, 0.12, FlxEase.quadOut);
     });
+  }
+
+  /**
+   * Show feedback when trying to enable an incompatible mod.
+   */
+  function blockedIncompatible(item:ModMenuItem):Void
+  {
+    FunkinSound.playOnce(Paths.sound('ui/quick-panel/sounds/menu-deny'), 0.7);
+    item.flashBackground();
   }
 
   function orderMod(modItem:Null<ModMenuItem>, moveUp:Bool):Void

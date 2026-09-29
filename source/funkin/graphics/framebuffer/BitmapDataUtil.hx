@@ -144,11 +144,15 @@ class BitmapDataUtil
   /**
    * Convers a `BitmapData` to a GPU texture.
    * @param bitmap The `BitmapData` to convert.
+   * @param disposeImage Whether to dispose bitmap's image or not by defaults its `true`.
    * @return The converted `BitmapData`.
    */
-  public static function toGPU(bitmap:BitmapData):BitmapData
+  public static function toGPU(bitmap:BitmapData, disposeImage:Bool = true):BitmapData
   {
-    bitmap.disposeImage();
+    if (disposeImage)
+    {
+      bitmap.disposeImage();
+    }
     bitmap.getTexture(FlxG.stage.context3D);
 
     return bitmap;

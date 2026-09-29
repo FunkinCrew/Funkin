@@ -2,6 +2,7 @@ package funkin.data.freeplay.player;
 
 import funkin.data.animation.AnimationData;
 import funkin.util.tools.ISerializable;
+import funkin.ui.charSelect.characters.CharSelectCharacter;
 
 /**
  * The data for a playable character.
@@ -288,12 +289,18 @@ class PlayerFreeplayDJData
 class PlayerCharSelectData
 {
   /**
-   * The asset path to use for this character (the one on the right).
-   * This should point to an Animate atlas folder. TODO: Allow sparrow atlases one day.
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
    * @default `ui/character-select/characters/$charId`,
    */
   @:optional @:default('')
   public var assetPath:String;
+
+  /**
+   * Optional data about the character.
+   */
+  @:optional
+  public var characterData:PlayerCharSelectCharacterData;
 
   /**
    * A zero-indexed number for the character's preferred position in the grid.
@@ -305,43 +312,192 @@ class PlayerCharSelectData
   public var position:Null<Int>;
 
   /**
-   * The GF name to assign for this character.
+   * Optional data about the accompanying GF character.
    */
   @:optional
   public var gf:PlayerCharSelectGFData;
 
   /**
-   * The render type of this player's character.
-   * @return `animateatlas` for Animate Atlas, `sparrow` for Sparrow Atlas
+   * Optional offsets for the pixel icon.
    */
-  public function getAssetType():String
-  {
-    return 'animateatlas';
-  }
+  @:optional @:default([0, 0])
+  public var pixelIconOffsets:Array<Float>;
 
   /**
-   * @param charId The player ID of this character.
-   * @return The path to the Animate Atlas folder for this character.
+   * The default animations for the GF character.
    */
-  public function getAnimateAtlasAssetPath(charId:String):String
-  {
-    if (assetPath.isBlank())
+  @:jignored
+  static var DEFAULT_ANIMATIONS_GF:Array<AnimationData> = [
     {
-      return 'ui/character-select/characters/${charId}';
+      name: 'idle',
+      prefix: 'idle'
+    },
+    {
+      name: 'select',
+      prefix: 'confirm',
+      looped: true
+    },
+    {
+      name: 'deselect',
+      prefix: 'deselect'
     }
+  ];
 
-    return assetPath;
+  /**
+   * The default animations for the player character.
+   */
+  @:jignored
+  static var DEFAULT_ANIMATIONS_PLAYER:Array<AnimationData> = [
+    {
+      name: 'idle',
+      prefix: 'idle'
+    },
+    {
+      name: 'unlock',
+      prefix: 'unlock'
+    },
+    {
+      name: 'select',
+      prefix: 'select'
+    },
+    {
+      name: 'deselect',
+      prefix: 'deselect'
+    },
+    {
+      name: 'deselect-hold',
+      prefix: 'deselect loop start'
+    },
+    {
+      name: 'slideOut',
+      prefix: 'slideout'
+    },
+    {
+      name: 'slideIn',
+      prefix: 'slidein'
+    },
+    {
+      name: 'slideInPoint',
+      prefix: 'slidein idle point'
+    }
+  ];
+
+  /**
+   * The default animations for the locked character.
+   */
+  @:jignored
+  static var DEFAULT_ANIMATIONS_LOCKED:Array<AnimationData> = [
+    {
+      name: 'idle',
+      prefix: 'idle',
+      looped: true
+    },
+    {
+      name: 'unlock',
+      prefix: 'unlock'
+    },
+    {
+      name: 'locked',
+      prefix: 'cannot select'
+    },
+    {
+      name: 'slideOut',
+      prefix: 'slideout'
+    },
+    {
+      name: 'slideIn',
+      prefix: 'slidein'
+    }
+  ];
+
+  /**
+   * Return the array of default animations for the player character.
+   * Used for backwards compatibility with older versions.
+   *
+   * @param characterType The type of character.
+   * @return The array of default animations.
+   */
+  public static function getDefaultAnimations(characterType:CharacterSelectType):Array<AnimationData>
+  {
+    switch (characterType)
+    {
+      case PLAYER:
+        return DEFAULT_ANIMATIONS_PLAYER;
+      case GF:
+        return DEFAULT_ANIMATIONS_GF;
+      case LOCKED_PLAYER:
+        return DEFAULT_ANIMATIONS_LOCKED;
+    }
   }
 }
 
 typedef PlayerCharSelectGFData =
 {
-  @:optional
+  /**
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
+   * @default `ui/character-select/characters/$charId`,
+   */
+  @:optional @:default('')
   public var assetPath:String;
+
+  /**
+   * Optional data about the character.
+   */
   @:optional
+  public var characterData:PlayerCharSelectCharacterData;
+
+  @:optional @:deprecated('This is no longer used.')
   public var animInfoPath:String;
   @:optional @:default(false)
   public var visualizer:Bool;
+}
+
+typedef PlayerCharSelectCharacterData =
+{
+  /**
+   * The asset path to use for this character.
+   * This should point to a valid asset path.
+   * @default `ui/character-select/characters/$charId`,
+   */
+  @:optional @:default('')
+  public var assetPath:String;
+
+  /**
+   * Optional render type for the character. Defaults to using texture atlases.
+   */
+  @:optional @:default('animateatlas')
+  public var renderType:String;
+
+  /**
+   * Optional script class to use for the character, allowing for custom behavior.
+   */
+  @:optional
+  public var scriptClass:String;
+
+  /**
+   * Optional list of animations for the character.
+   */
+  @:optional
+  public var animations:Array<AnimationData>;
+
+  /**
+   * Optional settings for the character's texture atlas, if it is one.
+   */
+  @:optional
+  public var atlasSettings:funkin.data.stage.StageData.TextureAtlasData;
+
+  /**
+   * The number of beats to wait before playing the idle animation.
+   */
+  @:optional @:default(1.0)
+  public var danceEvery:Float;
+
+  /**
+   * The global offsets for the character's position.
+   */
+  @:optional @:default([0, 0])
+  public var offsets:Array<Float>;
 }
 
 typedef PlayerResultsData =

@@ -694,6 +694,10 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
   };
 
+  public function onNoteHoldHit(event:HoldNoteScriptEvent)
+  {
+  }
+
   public function onNoteMiss(event:NoteScriptEvent):Void
   {
   };
@@ -761,8 +765,6 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
     return meta;
   }
 
-  static final VARIATION_REGEX = ~/^[a-z][a-z0-9]+$/;
-
   /**
    * Validate that the variation ID is valid.
    * Auto-accept if it's one of the base game default variations.
@@ -772,7 +774,7 @@ class Song implements IPlayStateScriptedClass implements IRegistryEntry<SongMeta
   {
     if (Constants.DEFAULT_VARIATION_LIST.contains(variation)) return true;
 
-    return VARIATION_REGEX.match(variation);
+    return (~/^[a-z][a-z0-9]+$/).match(variation);
   }
 
   static function log(message:String):Void
@@ -891,7 +893,7 @@ class SongDifficulty
     var path:String = Paths.inst(this.song.id, suffix);
     trace(' SONG '.bold().bg_note_down() + ' Playing instrumental track "$path" for song "${song.id}"');
 
-    FlxG.sound.music = FunkinSound.load(path, volume, looped, false, true, false, null, null, true);
+    FlxG.sound.music = FunkinSound.load(path, volume, looped, false, true, false, null, null);
 
     // Workaround for a bug where FlxG.sound.music.update() was being called twice.
     FlxG.sound.list.remove(FlxG.sound.music);
@@ -1049,14 +1051,14 @@ class SongDifficulty
     for (playerVoice in playerVoiceList)
     {
       if (!funkin.assets.Assets.exists(playerVoice.toString())) continue;
-      result.addPlayerVoice(FunkinSound.load(playerVoice.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
+      result.addPlayerVoice(FunkinSound.load(playerVoice.toFlxSoundAsset(), 1.0));
     }
 
     // Add opponent vocals.
     for (opponentVoice in opponentVoiceList)
     {
       if (!funkin.assets.Assets.exists(opponentVoice.toString())) continue;
-      result.addOpponentVoice(FunkinSound.load(opponentVoice.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
+      result.addOpponentVoice(FunkinSound.load(opponentVoice.toFlxSoundAsset(), 1.0));
     }
 
     if (result.members.length == 0)
@@ -1066,7 +1068,7 @@ class SongDifficulty
       var legacyPath = funkin.assets.Paths.voices(this.song.id, '$suffix');
       if (funkin.assets.Assets.exists(legacyPath.toString()))
       {
-        result.addPlayerVoice(FunkinSound.load(legacyPath.toFlxSoundAsset(), 1.0, false, false, false, false, null, null, true));
+        result.addPlayerVoice(FunkinSound.load(legacyPath.toFlxSoundAsset(), 1.0));
       }
     }
 
@@ -1075,9 +1077,6 @@ class SongDifficulty
       result.legacyVoiceSystem = true;
       result.legacyVoiceUsesPlayer = result.getPlayerVoice(0) != null;
     }
-
-    // Sometimes the sounds don't set their important value to true, so we have to do this manually.
-    result.forEach((snd:FunkinSound) -> snd.important = true);
 
     result.playerVoicesOffset = offsets.getVocalOffset(characters.player, instId);
     result.opponentVoicesOffset = offsets.getVocalOffset(characters.opponent, instId);

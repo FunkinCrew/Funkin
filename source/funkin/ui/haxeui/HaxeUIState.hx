@@ -39,9 +39,7 @@ class HaxeUIState extends MusicBeatState
     }
     catch (e)
     {
-      Application.current.window.alert('Error building component "$assetPath": $e', 'HaxeUI Parsing Error');
-      // trace('[ERROR] Failed to build component from asset: ' + assetPath);
-      // trace(e);
+      funkin.util.WindowUtil.showError('HaxeUI Parsing Error', 'Error building component "$assetPath": $e');
 
       return null;
     }

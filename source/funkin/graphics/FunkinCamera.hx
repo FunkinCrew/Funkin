@@ -9,6 +9,7 @@ import flixel.graphics.tile.FlxDrawQuadsItem;
 import flixel.graphics.tile.FlxDrawTrianglesItem;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxRect;
+import flixel.graphics.tile.FlxGraphicsShader;
 import flixel.system.FlxAssets.FlxShader;
 import funkin.graphics.framebuffer.FunkinBufferRenderer;
 import funkin.graphics.shaders.RuntimeCustomBlendShader;
@@ -117,9 +118,21 @@ class FunkinCamera extends FlxCamera
   public var renderBuffer:Bool = false;
 
   /**
+   * If `true`, and `renderBuffer` is on, the camera only draws into its buffer and never onto the
+   * screen.
+   */
+  public var bufferOnly:Bool = false;
+
+  /**
    * The renderer used to render the buffer.
    */
   public var bufferRenderer:FunkinBufferRenderer;
+
+  /**
+   * The shader to use on all objects rendering through this camera (only if the incoming objects do not define a shader).
+   * If null defaults to `FlxGraphicsShader`
+   */
+  public var defaultShader:Null<FlxGraphicsShader> = null;
 
   /**
    * The rendered buffer texture.
@@ -131,12 +144,12 @@ class FunkinCamera extends FlxCamera
     return bufferRenderer.texture;
   }
 
-  var _blendShader:RuntimeCustomBlendShader;
-  var _blendBackgroundFrame:FlxFrame;
-  var _foregroundRenderTexture:RenderTexture;
-  var _blendedRenderTexture:RenderTexture;
-  var _cameraTexture:BitmapData;
-  var _cameraMatrix:FlxMatrix;
+  var _blendShader:Null<RuntimeCustomBlendShader>;
+  var _blendBackgroundFrame:Null<FlxFrame>;
+  var _foregroundRenderTexture:Null<RenderTexture>;
+  var _blendedRenderTexture:Null<RenderTexture>;
+  var _cameraTexture:Null<BitmapData>;
+  var _cameraMatrix:Null<FlxMatrix>;
 
   @:nullSafety(Off)
   public function new(id:String = 'unknown', x:Int = 0, y:Int = 0, width:Int = 0, height:Int = 0, zoom:Float = 0)
@@ -144,6 +157,19 @@ class FunkinCamera extends FlxCamera
     super(x, y, width, height, zoom);
 
     this.id = id;
+
+    crossCameraBlending = false;
+
+    bufferRenderer = new FunkinBufferRenderer(this);
+  }
+
+  /**
+   * Allocates the render textures and shader used by the shader blend fallback.
+   */
+  @:nullSafety(Off)
+  function initBlendResources():Void
+  {
+    if (_blendShader != null) return;
 
     _blendShader = new RuntimeCustomBlendShader();
 
@@ -156,12 +182,9 @@ class FunkinCamera extends FlxCamera
     _cameraMatrix = new FlxMatrix();
 
     _cameraTexture = new BitmapData(this.width, this.height, true, 0).toGPU();
-
-    crossCameraBlending = false;
-
-    bufferRenderer = new FunkinBufferRenderer(this);
   }
 
+  @:nullSafety(Off)
   override function drawPixels(?frame:FlxFrame,
     ?pixels:BitmapData,
     matrix:FlxMatrix,
@@ -170,12 +193,17 @@ class FunkinCamera extends FlxCamera
     ?smoothing:Bool = false,
     ?shader:FlxShader):Void
   {
-    var shouldUseShader:Bool = (!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend);
+    var shouldUseShader:Bool =
+      blend != null
+      && blend != NORMAL
+      && ((!hasKhronosExtension && KHR_BLEND_MODES.contains(blend)) || SHADER_REQUIRED_BLEND_MODES.contains(blend));
 
     // Fallback to the shader implementation if the device doesn't support `KHR_blend_equation_advanced`, or if
     // the specified blend mode requires the shader.
     if (shouldUseShader)
     {
+      initBlendResources();
+
       bufferRenderer.active = false;
 
       if (crossCameraBlending)
@@ -270,8 +298,10 @@ class FunkinCamera extends FlxCamera
     smooth:Bool = false,
     ?shader:FlxShader):FlxDrawQuadsItem
   {
+    if (shader == null) shader = defaultShader;
+
     // Can't batch complex non-coherent blends, so always force a new batch
-    if (hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
+    if (blend != null && blend != NORMAL && hasKhronosExtension && !(OpenGLRenderer.__coherentBlendsSupported ?? false) && KHR_BLEND_MODES.contains(blend))
     {
       var itemToReturn = null;
 
@@ -319,15 +349,37 @@ class FunkinCamera extends FlxCamera
     return super.startQuadBatch(graphic, colored, hasColorOffsets, blend, smooth, shader);
   }
 
+  public var blackListKeys:Array<String> = [];
+  public var whiteListKeys:Array<String> = [];
+  public var useWhitelist:Bool = false;
+
+  function shouldRender(graphic:FlxGraphic):Bool
+  {
+    if (blackListKeys.contains(graphic.key))
+    {
+      return false;
+    }
+
+    if (useWhitelist && !whiteListKeys.contains(graphic.key))
+    {
+      return false;
+    }
+
+    return !graphic.isDestroyed;
+  }
+
   @:allow(flixel.system.frontEnds.CameraFrontEnd)
   override function render():Void
   {
-    @:nullSafety(Off)
-    flashSprite.filters = filtersEnabled ? filters : null;
+    // The pass that would go to the screen, on a camera that only exists to fill its buffer. The
+    // buffer's own pass is the one with `dirty` set, and it is left alone.
+    if (renderBuffer && bufferOnly && !bufferRenderer.dirty) return;
+
+    __applyFlashSpriteFilters();
 
     if (FlxG.renderTile)
     {
-      canvas.transform.matrix = __get__rotated__matrix();
+      __apply__rotated__matrix();
     }
 
     var currItem:flixel.graphics.tile.FlxDrawBaseItem<Dynamic> = _headOfDrawStack;
@@ -342,6 +394,31 @@ class FunkinCamera extends FlxCamera
         }
       }
 
+      var shader = null;
+      final quadItem:FlxDrawQuadsItem = cast currItem;
+      if (quadItem != null)
+      {
+        var graphics = quadItem.graphics;
+        if (graphics != null && graphics.shader != null && Type.getClass(graphics.shader) != FlxGraphicsShader) shader = graphics.shader;
+        if (shader == null) shader = quadItem.shader;
+      }
+
+      final triItem:FlxDrawTrianglesItem = cast currItem;
+      if (triItem != null && shader == null)
+      {
+        var graphics = triItem.graphics;
+        if (graphics != null && graphics.shader != null && Type.getClass(graphics.shader) != FlxGraphicsShader) shader = graphics.shader;
+        if (shader == null) shader = triItem.shader;
+      }
+
+      if (shader == null && defaultShader != null) shader = defaultShader;
+      if (shader != null)
+      {
+        shader.sampleAttachment.value = [shouldRender(currItem.graphics)];
+
+        if (currItem.type == flixel.graphics.tile.FlxDrawBaseItem.FlxDrawItemType.TILES) shader.bitmap.wrap = openfl.display3D.Context3DWrapMode.CLAMP;
+      }
+
       currItem.render(this);
       currItem = currItem.next;
     }
@@ -354,9 +431,13 @@ class FunkinCamera extends FlxCamera
     ?hasColorOffsets:Bool,
     ?shader:FlxShader):FlxDrawTrianglesItem
   {
+    if (shader == null) shader = defaultShader;
+
     // Can't batch complex non-coherent blends, so always force a new batch
     if (
-      hasKhronosExtension
+      blend != null
+      && blend != NORMAL
+      && hasKhronosExtension
       && !(OpenGLRenderer.__coherentBlendsSupported ?? false)
       && KHR_BLEND_MODES.contains(blend)
     ) return getNewDrawTrianglesItem(graphic, smoothing, isColored, blend, hasColorOffsets, shader);
@@ -380,10 +461,17 @@ class FunkinCamera extends FlxCamera
 
     super.destroy();
 
-    _foregroundRenderTexture.destroy();
-    _blendedRenderTexture.destroy();
+    _foregroundRenderTexture?.destroy();
+    _blendedRenderTexture?.destroy();
 
-    _cameraTexture.dispose();
+    _cameraTexture?.dispose();
+
+    _foregroundRenderTexture = null;
+    _blendedRenderTexture = null;
+    _cameraTexture = null;
+    _blendShader = null;
+    _blendBackgroundFrame = null;
+    _cameraMatrix = null;
 
     bufferRenderer.destroy();
   }

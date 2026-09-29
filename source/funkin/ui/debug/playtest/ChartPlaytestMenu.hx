@@ -97,7 +97,7 @@ class ChartPlaytestMenu extends MusicBeatState
       }
       catch (e)
       {
-        lime.app.Application.current.window.alert('$e', 'Could Not Playtest Chart');
+        funkin.util.WindowUtil.showError('Could Not Playtest Chart', '$e');
       }
     });
     playtestButton.screenCenter(X);
