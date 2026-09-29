@@ -240,7 +240,8 @@ class ChartEditorCommandPaletteCommands
     }),
   ];
 
-  static function playheadTimeMs(palette:ChartEditorCommandPalette, snapped:Bool):Float
+  static function playheadTimeMs(palette:ChartEditorCommandPalette,
+    snapped:Bool):Float
   {
     var state = palette.chartEditorState;
     var targetMs:Float = state.scrollPositionInMs + state.playheadPositionInMs;
@@ -271,7 +272,9 @@ class ChartEditorCommandPaletteCommands
     }
   }
 
-  static function mirrorNotes(palette:ChartEditorCommandPalette, mirrorX:Bool, mirrorY:Bool):Void
+  static function mirrorNotes(palette:ChartEditorCommandPalette,
+    mirrorX:Bool,
+    mirrorY:Bool):Void
   {
     var state = palette.chartEditorState;
     state.performCommand(
@@ -285,7 +288,8 @@ class ChartEditorCommandPaletteCommands
     );
   }
 
-  static function openToolbox(palette:ChartEditorCommandPalette, id:String):Void
+  static function openToolbox(palette:ChartEditorCommandPalette,
+    id:String):Void
   {
     var state = palette.chartEditorState;
 
@@ -326,7 +330,11 @@ class ChartEditorCommandPaletteCommands
    * @param closeAfterExecute Whether the palette should close after the command runs.
    * @return The constructed PaletteCommand.
    */
-  static inline function command(title:String, subtitle:String = '', shortcut:String = '', execute:(ChartEditorCommandPalette) -> Void, closeAfterExecute:Bool = true):PaletteCommand
+  static inline function command(title:String,
+    subtitle:String = '',
+    shortcut:String = '',
+    execute:(ChartEditorCommandPalette) -> Void,
+    closeAfterExecute:Bool = true):PaletteCommand
   {
     return {
       title: title,

@@ -34,7 +34,8 @@ class ChartEditorColorPicker extends ChartEditorBaseDialog
     return this.paletteColors;
   }
 
-  public function new(chartEditorState2:ChartEditorState, params2:DialogParams)
+  public function new(chartEditorState2:ChartEditorState,
+    params2:DialogParams)
   {
     super(chartEditorState2, params2);
 
@@ -115,7 +116,9 @@ class ChartEditorColorPicker extends ChartEditorBaseDialog
    * @param modal Whether the dialog covers stuff behind it.
    * @return ChartEditorColorPicker
    */
-  public static function build(chartEditorState:ChartEditorState, closable:Bool = true, modal:Bool = true):ChartEditorColorPicker
+  public static function build(chartEditorState:ChartEditorState,
+    closable:Bool = true,
+    modal:Bool = true):ChartEditorColorPicker
   {
     var dialog = new ChartEditorColorPicker(chartEditorState, {
       closable: closable,

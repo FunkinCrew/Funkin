@@ -157,7 +157,8 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 ')
 class StageEditorCharacterMenu extends Menu // copied from chart editor
 {
-  override public function new(state:StageEditorState, parent:StageEditorCharacterToolbox)
+  override public function new(state:StageEditorState,
+    parent:StageEditorCharacterToolbox)
   {
     super();
 

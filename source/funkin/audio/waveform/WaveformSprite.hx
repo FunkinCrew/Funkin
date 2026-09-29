@@ -150,7 +150,10 @@ class WaveformSprite extends MeshRender
    */
   public var amplitude:Float;
 
-  public function new(?waveformData:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float)
+  public function new(?waveformData:WaveformData,
+    ?orientation:WaveformOrientation,
+    ?color:FlxColor,
+    ?duration:Float)
   {
     super(DEFAULT_X, DEFAULT_Y, DEFAULT_COLOR);
     this.waveformColor = color ?? DEFAULT_COLOR;
@@ -493,7 +496,10 @@ class WaveformSprite extends MeshRender
    *
    * @return The resulting WaveformSprite.
    */
-  public static function buildFromWaveformData(data:WaveformData, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float):WaveformSprite
+  public static function buildFromWaveformData(data:WaveformData,
+    ?orientation:WaveformOrientation,
+    ?color:FlxColor,
+    ?duration:Float):WaveformSprite
   {
     return new WaveformSprite(data, orientation, color, duration);
   }
@@ -507,7 +513,10 @@ class WaveformSprite extends MeshRender
    *
    * @return The resulting WaveformSprite.
    */
-  public static function buildFromFunkinSound(sound:FunkinSound, ?orientation:WaveformOrientation, ?color:FlxColor, ?duration:Float):WaveformSprite
+  public static function buildFromFunkinSound(sound:FunkinSound,
+    ?orientation:WaveformOrientation,
+    ?color:FlxColor,
+    ?duration:Float):WaveformSprite
   {
     var data = WaveformDataParser.interpretFlxSound(sound);
 

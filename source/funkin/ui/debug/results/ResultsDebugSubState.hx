@@ -80,7 +80,7 @@ class ResultsDebugSubState extends MusicBeatSubState
     {
       resultsParams.scoreData.tallies = DebugTallies.getTallyForRank(result);
     });
-    createToggleListItem("New Highscore", ["True", "False"], function(result:String) 
+    createToggleListItem("New Highscore", ["True", "False"], function(result:String)
     {
       var highscoreEnabled:Bool = true;
       if (result == "False") highscoreEnabled = false;

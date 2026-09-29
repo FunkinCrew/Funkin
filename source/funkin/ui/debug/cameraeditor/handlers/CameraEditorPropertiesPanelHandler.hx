@@ -66,7 +66,8 @@ class CameraEditorPropertiesPanelHandler
    * @param eventKind The event kind to register.
    * @param containerClass The container class to register.
    */
-  public static function registerContainer(eventKind:String, containerClass:Class<EditorContainer>):Void
+  public static function registerContainer(eventKind:String,
+    containerClass:Class<EditorContainer>):Void
   {
     containers.set(eventKind, containerClass);
   }
@@ -171,7 +172,9 @@ class CameraEditorPropertiesPanelHandler
   /**
    * Mount a properties container into the panel.
    */
-  static function useContainer(state:CameraEditorState, containerClass:Class<EditorContainer>, eventKind:String):Void
+  static function useContainer(state:CameraEditorState,
+    containerClass:Class<EditorContainer>,
+    eventKind:String):Void
   {
     state.propertiesPanel.hidden = false;
     state.removePropertiesContainer();

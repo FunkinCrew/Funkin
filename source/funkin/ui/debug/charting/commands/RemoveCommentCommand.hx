@@ -8,7 +8,8 @@ import funkin.data.song.SongData.CommentData;
 /**
  * Represents a reversible action to remove a comment.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class RemoveCommentCommand implements ChartEditorCommand
 {
   var comment:CommentData;

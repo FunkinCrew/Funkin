@@ -165,7 +165,9 @@ class IconGroup extends FunkinGroup<FunkinSprite>
    * @param characterList The list of available characters.
    * @param locksToUnlock The list of locks to unlock.
    */
-  public function loadCharacters(slotCount:Int, characterList:Map<Int, String>, locksToUnlock:Array<Int>):Void
+  public function loadCharacters(slotCount:Int,
+    characterList:Map<Int, String>,
+    locksToUnlock:Array<Int>):Void
   {
     for (i in 0...slotCount)
     {
@@ -257,7 +259,11 @@ class IconGroup extends FunkinGroup<FunkinSprite>
 
     this.y = targetY + 300;
 
-    introTween = FlxTween.tween(this, {y: targetY}, 1, {ease: FlxEase.expoOut});
+    introTween = FlxTween.tween(this, {
+      y: targetY
+    }, 1, {
+      ease: FlxEase.expoOut
+    });
     introTween.start();
   }
 
@@ -268,7 +274,11 @@ class IconGroup extends FunkinGroup<FunkinSprite>
   {
     if (exitTween != null) exitTween.cancel();
 
-    exitTween = FlxTween.tween(this, {y: this.y + 300}, 0.8, {ease: FlxEase.backIn});
+    exitTween = FlxTween.tween(this, {
+      y: this.y + 300
+    }, 0.8, {
+      ease: FlxEase.backIn
+    });
     exitTween.start();
   }
 
@@ -478,8 +488,7 @@ class IconGroup extends FunkinGroup<FunkinSprite>
     {
       var memberPage:Int = Math.floor(index / CharacterSelectState.SLOTS_PER_PAGE);
       var isNext3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) < 3 && memberPage == currentPage + 1;
-      var isLast3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) >= (CharacterSelectState.SLOTS_PER_PAGE - 3)
-        && memberPage == currentPage - 1;
+      var isLast3:Bool = (index % CharacterSelectState.SLOTS_PER_PAGE) >= (CharacterSelectState.SLOTS_PER_PAGE - 3) && memberPage == currentPage - 1;
 
       var shouldClip:Bool = isNext3 || isLast3;
 

@@ -140,7 +140,8 @@ class CreditsDataHandler
     #end
   }
 
-  static function printErrors(errors:Array<json2object.Error>, id:String = ''):Void
+  static function printErrors(errors:Array<json2object.Error>,
+    id:String = ''):Void
   {
     trace('[CREDITS] Failed to parse credits data: ${id}');
 

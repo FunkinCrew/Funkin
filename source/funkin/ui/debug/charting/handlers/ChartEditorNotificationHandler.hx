@@ -111,7 +111,10 @@ class ChartEditorNotificationHandler
    * @param actions The actions to add to the notification.
    * @return The notification that was sent.
    */
-  public static function infoWithActions(state:ChartEditorState, title:String, body:String, actions:Array<NotificationActionData>):Notification
+  public static function infoWithActions(state:ChartEditorState,
+    title:String,
+    body:String,
+    actions:Array<NotificationActionData>):Notification
   {
     return sendNotification(state, title, body, NotificationType.Info, actions);
   }
@@ -135,7 +138,11 @@ class ChartEditorNotificationHandler
     NotificationManager.instance.removeNotification(notif);
   }
 
-  static function sendNotification(state:ChartEditorState, title:String, body:String, ?type:NotificationType, ?actions:Array<NotificationActionData>):Notification
+  static function sendNotification(state:ChartEditorState,
+    title:String,
+    body:String,
+    ?type:NotificationType,
+    ?actions:Array<NotificationActionData>):Notification
   {
     logNotification(title, body, type);
 

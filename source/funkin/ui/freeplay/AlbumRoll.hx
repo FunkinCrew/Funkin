@@ -112,7 +112,8 @@ class AlbumRoll extends FlxSpriteGroup
    * Apply exit movers for the album roll.
    * @param exitMovers The exit movers to apply.
    */
-  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData, ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
+  public function applyExitMovers(?exitMovers:FreeplayState.ExitMoverData,
+    ?exitMoversCharSel:FreeplayState.ExitMoverData):Void
   {
     if (exitMovers == null)
     {
@@ -184,7 +185,8 @@ class AlbumRoll extends FlxSpriteGroup
     if (albumTitle != null && albumTitle.frames != null) albumTitle.visible = true;
   }
 
-  public function buildAlbumTitle(assetKey:String, ?titleOffsets:Null<Array<Float>>):Void
+  public function buildAlbumTitle(assetKey:String,
+    ?titleOffsets:Null<Array<Float>>):Void
   {
     if (albumTitle != null)
     {
