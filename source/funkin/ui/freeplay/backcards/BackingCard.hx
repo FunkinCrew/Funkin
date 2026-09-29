@@ -299,6 +299,10 @@ class BackingCard extends FlxSpriteGroup implements IBPMSyncedScriptedClass impl
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onStepHit(event:SongTimeScriptEvent):Void
   {
   }

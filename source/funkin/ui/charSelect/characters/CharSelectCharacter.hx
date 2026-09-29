@@ -324,6 +324,10 @@ class CharSelectCharacter extends FunkinSprite implements IBPMSyncedScriptedClas
   {
   }
 
+  public function onCustom(event:CustomScriptEvent):Void
+  {
+  }
+
   public function onCharacterSelect(event:CharacterSelectScriptEvent):Void
   {
   }
