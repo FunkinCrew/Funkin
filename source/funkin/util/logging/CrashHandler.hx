@@ -114,6 +114,7 @@ class CrashHandler
 
     exitAfterCrash();
   }
+
   static function exitAfterCrash():Void
   {
     #if sys

@@ -24,8 +24,12 @@ class CameraViewport extends Box
     var dy:Float = FlxG.mouse.deltaWheel.y;
     if (dx == 0 && dy == 0) return;
     if (FlxG.keys.pressed.SHIFT) return;
-    if (FlxG.mouse.gameX < screenLeft || FlxG.mouse.gameX > screenLeft + width
-      || FlxG.mouse.gameY < screenTop || FlxG.mouse.gameY > screenTop + height) return;
+    if (
+      FlxG.mouse.gameX < screenLeft
+      || FlxG.mouse.gameX > screenLeft + width
+      || FlxG.mouse.gameY < screenTop
+      || FlxG.mouse.gameY > screenTop + height
+    ) return;
 
     if (FlxG.keys.pressed.CONTROL)
     {

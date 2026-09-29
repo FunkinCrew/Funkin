@@ -497,7 +497,9 @@ class Controls extends FlxActionSet
     super.update();
   }
 
-  public function check(name:Action, trigger:FlxInputState = JUST_PRESSED, gamepadOnly:Bool = false):Bool
+  public function check(name:Action,
+    trigger:FlxInputState = JUST_PRESSED,
+    gamepadOnly:Bool = false):Bool
   {
     #if FEATURE_DEBUG_FUNCTIONS
     if (!byName.exists(name)) throw 'Invalid name: $name';
@@ -683,7 +685,8 @@ class Controls extends FlxActionSet
    * @param control
    * @param func
    */
-  function forEachBound(control:Control, func:FunkinAction->FlxInputState->Void):Void
+  function forEachBound(control:Control,
+    func:FunkinAction->FlxInputState->Void):Void
   {
     switch (control)
     {
@@ -1251,7 +1254,8 @@ class Controls extends FlxActionSet
     fromSaveData(padData, Gamepad(id));
   }
 
-  inline function addGamepadLiteral(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
+  inline function addGamepadLiteral(id:Int,
+    ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
   {
     gamepadsAdded.push(id);
 
@@ -1403,7 +1407,10 @@ class Controls extends FlxActionSet
     forEachBound(control, function(action, _) removeButtons(action, gamepadID, buttons));
   }
 
-  static inline function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id:Int):Void
+  static inline function addButtons(action:FlxActionDigital,
+    buttons:Array<FlxGamepadInputID>,
+    state,
+    id:Int):Void
   {
     for (button in buttons)
     {
@@ -1412,7 +1419,9 @@ class Controls extends FlxActionSet
     }
   }
 
-  static function removeButtons(action:FlxActionDigital, gamepadID:Int, buttons:Array<FlxGamepadInputID>):Void
+  static function removeButtons(action:FlxActionDigital,
+    gamepadID:Int,
+    buttons:Array<FlxGamepadInputID>):Void
   {
     var i = action.inputs.length;
     while (i-- > 0)
@@ -1567,7 +1576,6 @@ class FunkinAction extends FlxActionDigital
 
   var cache:Map<String,
     {timestamp:Float, value:Bool}> = [];
-
   var lastInputUpdateTimestamp:Float = -1;
 
   public function new(?name:String = '', ?namePressed:String, ?nameReleased:String)
@@ -1655,7 +1663,8 @@ class FunkinAction extends FlxActionDigital
     return checkFiltered(JUST_RELEASED, GAMEPAD);
   }
 
-  public function checkMultiFiltered(?filterTriggers:Array<FlxInputState>, ?filterDevices:Array<FlxInputDevice>):Bool
+  public function checkMultiFiltered(?filterTriggers:Array<FlxInputState>,
+    ?filterDevices:Array<FlxInputDevice>):Bool
   {
     filterTriggers ??= [PRESSED, JUST_PRESSED];
     filterDevices ??= [];

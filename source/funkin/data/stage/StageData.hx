@@ -82,7 +82,8 @@ class StageData implements ISerializable
    * @param pretty Whether to output JSON with clean spacing/formatting.
    * @return A JSON string containing this object's data.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();

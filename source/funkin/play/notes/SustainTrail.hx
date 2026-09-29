@@ -117,13 +117,9 @@ class SustainTrail extends FlxSprite
   public var customVertexData:Bool = false;
 
   public var meshMinX:Float = 0;
-
   public var meshMinY:Float = 0;
-
   public var meshMaxX:Float = 0;
-
   public var meshMaxY:Float = 0;
-
   public var trailSegments:Int = 0;
 
   /**
@@ -343,10 +339,10 @@ class SustainTrail extends FlxSprite
     graphicHeight = sustainHeight(sustainLength, parentStrumline?.scrollSpeed ?? 1.0);
     // instead of scrollSpeed, PlayState.SONG.speed
 
-    flipY = Preferences.downscroll
-    #if FEATURE_TOUCH_CONTROLS
-    || (Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice)
-    #end;
+    flipY = Preferences.downscroll #if FEATURE_TOUCH_CONTROLS || (
+      Preferences.controlsScheme == FunkinHitboxControlSchemes.Arrows
+      && !funkin.mobile.input.ControlsHandler.hasExternalInputDevice
+    ) #end;
 
     // alpha = 0.6;
     alpha = 1.0;

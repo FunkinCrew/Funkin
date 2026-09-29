@@ -46,10 +46,12 @@ class ModMenuItemList extends FunkinSpriteGroup
 
   public var viewportHeight:Float = 320;
   public var displayScrollOffset:Float = 0;
+
   var scrollAnimFrom:Float = 0;
   var scrollAnimTo:Float = 0;
   var scrollAnimTime:Float = 0;
   var scrollAnimDuration:Float = 0;
+
   public var scrollOffset:Float = 0;
   public var targetScrollOffset:Float = 0;
 

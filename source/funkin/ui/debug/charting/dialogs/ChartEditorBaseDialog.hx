@@ -15,7 +15,8 @@ class ChartEditorBaseDialog extends Dialog
   var params:DialogParams;
   var locked:Bool = false;
 
-  public function new(chartEditorState:ChartEditorState, params:DialogParams)
+  public function new(chartEditorState:ChartEditorState,
+    params:DialogParams)
   {
     super();
 

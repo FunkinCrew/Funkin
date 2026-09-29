@@ -214,7 +214,8 @@ class OneClickBridge
       final entries:Array<String> = sys.FileSystem.readDirectory(queueDir);
 
       // File names lead with a millisecond timestamp, so this puts the oldest request first.
-      entries.sort(function(a:String, b:String):Int {
+      entries.sort(function(a:String, b:String):Int
+      {
         return a < b ? -1 : (a > b ? 1 : 0);
       });
 

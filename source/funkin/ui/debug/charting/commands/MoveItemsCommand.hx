@@ -20,7 +20,12 @@ class MoveItemsCommand implements ChartEditorCommand
   var offset:Float;
   var columns:Int;
 
-  public function new(notes:Array<SongNoteData>, events:Array<SongEventData>, offset:Float, columns:Int, offsetInSteps:Bool = false, roundStepTimeToNearestStep:Bool = false)
+  public function new(notes:Array<SongNoteData>,
+    events:Array<SongEventData>,
+    offset:Float,
+    columns:Int,
+    offsetInSteps:Bool = false,
+    roundStepTimeToNearestStep:Bool = false)
   {
     // Clone the notes to prevent editing from affecting the history.
     this.notes = notes.clone();

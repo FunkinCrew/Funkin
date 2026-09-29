@@ -187,7 +187,11 @@ class WindowUtil
    * @param title The title text displayed in the window header.
    * @param buttons Optional list of custom button labels for the dialog.
    */
-  public static function alert(type:lime.ui.MessageBoxType = INFORMATION, ?message:String, ?title:String, ?buttons:Array<String>) {
+  public static function alert(type:lime.ui.MessageBoxType = INFORMATION,
+    ?message:String,
+    ?title:String,
+    ?buttons:Array<String>)
+  {
     @:privateAccess
     FlxG.sound?.onFocusLost();
 

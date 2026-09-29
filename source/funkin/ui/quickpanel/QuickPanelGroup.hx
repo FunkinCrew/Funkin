@@ -195,7 +195,9 @@ class QuickPanelGroup extends FunkinSpriteGroup
       callback: () ->
       {
         flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
-        FlxG.switchState(() -> funkin.ui.freeplay.FreeplayState.build({fromCharSelect: true}));
+        FlxG.switchState(() -> funkin.ui.freeplay.FreeplayState.build({
+          fromCharSelect: true
+        }));
       },
       icon: 'freeplay',
       description: "Choose and play any song you've previously unlocked.",
