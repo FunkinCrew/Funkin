@@ -170,9 +170,13 @@ class CharSelectInputHandler
 
   function spamOnStep():Void
   {
+    @:privateAccess
+    var controls:funkin.input.Controls = CharacterSelectState.instance.controls;
+
     for (direction in [UP, DOWN, LEFT, RIGHT])
     {
       if (!currentSpamDirection.has(direction)) continue;
+      if (oppositeInputs(direction, controls)) continue;
 
       var isVertical:Bool = direction == UP || direction == DOWN;
       var movement:Float = (direction == UP || direction == LEFT ? -1 : 1) * (isVertical ? SLOTS_PER_ROW : 1);
@@ -184,5 +188,15 @@ class CharSelectInputHandler
 
       directionSpamTimers[direction] = 0;
     }
+  }
+
+  function oppositeInputs(direction:FlxDirectionFlags, controls:funkin.input.Controls):Bool
+  {
+    if (direction == UP || direction == DOWN)
+    {
+      return controls.UI_UP && controls.UI_DOWN;
+    }
+
+    return controls.UI_LEFT && controls.UI_RIGHT;
   }
 }
