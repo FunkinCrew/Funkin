@@ -678,6 +678,13 @@ class ModMenuState extends MusicBeatState
     enabledModItems.snapScroll();
 
     this.refresh();
+
+    #if FEATURE_DISCORD_RPC
+    funkin.api.discord.DiscordClient.instance.setPresence({
+      state: null,
+      details: 'In the Mod Menu'
+    });
+    #end
   }
 
   var backPressStage:Int = 0;
