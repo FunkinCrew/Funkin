@@ -2314,9 +2314,24 @@ class Project extends HXProject
           case 'haxelib':
             differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.version, 'haxelib']);
           case 'git':
-            if (libraryCurrentCommitHash != library.ref)
+            var hasMatchingRemote:Bool = false;
+            for (remoteName in readLibraryRemoteNames(libraryName))
             {
-              differentLibraries.set(libraryName, [libraryDev, libraryCurrentCommitHash, library.ref, 'git']);
+              if (getGitURLBase(readLibraryRemoteURL(libraryName, remoteName)) == getGitURLBase(library.url))
+              {
+                hasMatchingRemote = true;
+                break;
+              }
+            }
+            if (libraryCurrentCommitHash != library.ref || !hasMatchingRemote)
+            {
+              differentLibraries.set(libraryName, [
+                libraryDev,
+                libraryCurrentCommitHash,
+                library.ref,
+                'git',
+                library.url
+              ]);
             }
         }
       }
@@ -2330,9 +2345,24 @@ class Project extends HXProject
               differentLibraries.set(libraryName, ['', libraryCurrentVersion, library.version, 'haxelib']);
             }
           case 'git':
-            if (libraryCurrentCommitHash != library.ref)
+            var hasMatchingRemote:Bool = false;
+            for (remoteName in readLibraryRemoteNames(libraryName))
             {
-              differentLibraries.set(libraryName, ['', libraryCurrentCommitHash, library.ref, 'git']);
+              if (getGitURLBase(readLibraryRemoteURL(libraryName, remoteName)) == getGitURLBase(library.url))
+              {
+                hasMatchingRemote = true;
+                break;
+              }
+            }
+            if (libraryCurrentCommitHash != library.ref || !hasMatchingRemote)
+            {
+              differentLibraries.set(libraryName, [
+                '',
+                libraryCurrentCommitHash,
+                library.ref,
+                'git',
+                library.url
+              ]);
             }
         }
       }
@@ -2346,6 +2376,16 @@ class Project extends HXProject
 
       Sys.println('');
 
+      var reportLines:Array<String> = [];
+      var maxLineLen:Int = 0;
+
+      function pushLine(line:String):Void
+      {
+        reportLines.push(line);
+        final lineLen:Int = line.stripCodes(true).length;
+        if (lineLen > maxLineLen) maxLineLen = lineLen;
+      }
+
       for (libraryName in differentLibraries.keys())
       {
         var infos:Null<Array<String>> = differentLibraries.get(libraryName);
@@ -2356,23 +2396,67 @@ class Project extends HXProject
         var currentVersion:String = infos[1];
         var expectedVersion:String = infos[2];
         var libType:String = infos[3];
+        var libURL:String = infos.length > 4 ? infos[4] : '';
 
-        if (haxe.io.Path.isAbsolute(devPath))
+        var displayName:String = libraryName.replace(",", ".");
+        var libPath:String = libType == 'git' ? getLibraryGitPath(libraryName) : getLibraryCurrentFolder(libraryName);
+        var linkedName:String = displayName.link(toFileURL(libPath));
+
+        if (Path.isAbsolute(devPath))
         {
-          Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".bright_cyan());
-          Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).bright_blue());
+          pushLine("┌─ " + linkedName.bold().bright_white() + " (Development Build)".bright_cyan());
+          pushLine("│" + ("  Path:  ".bold() + Path.removeTrailingSlashes(devPath)).bright_blue());
         }
         else
         {
-          Sys.println("- " + libraryName.replace(",", "."));
+          pushLine("┌─ " + linkedName.bold().bright_white());
         }
 
-        Sys.println(("   Current:  " + currentVersion).red());
-        Sys.println(("   Expected: " + expectedVersion).green());
+        if (currentVersion != expectedVersion)
+        {
+          pushLine(messageWithHeader(" • Current:  ", currentVersion, true, AnsiUtil.bright_red));
+          pushLine(messageWithHeader(" • Expected: ", expectedVersion, true, AnsiUtil.bright_green));
+        }
+
+        if (libType == 'git')
+        {
+          final libBaseURL = getGitURLBase(libURL);
+          final defaultRemote = readLibraryDefaultRemoteName(libraryName);
+          final currentURL = readLibraryRemoteURL(libraryName, defaultRemote);
+
+          if (getGitURLBase(currentURL) != libBaseURL)
+          {
+            if (currentVersion != expectedVersion) pushLine("│");
+            final displayURL = currentURL.length > 0 ? currentURL : "(no remote is set)";
+            pushLine(messageWithHeader(" • Current Remote URL:  ", displayURL, true, AnsiUtil.bright_red));
+            pushLine(messageWithHeader(" • Expected Remote URL: ", libURL, true, AnsiUtil.bright_green));
+          }
+        }
+
+        pushLine("│");
       }
 
-      Sys.println('');
+      for (line in reportLines) Sys.println(line);
+
+      Sys.println("".rpad("-", maxLineLen > 0 ? maxLineLen : 75));
     }
+  }
+
+  function messageWithHeader(header:String, message:String, sideline:Bool = true, ?ansiColor:String->String, ?ansiHeaderStyle:String->String,
+      ?ansiMessageStyle:String->String):String
+  {
+    if (ansiColor == null) ansiColor = AnsiUtil.white;
+    if (ansiHeaderStyle == null) ansiHeaderStyle = AnsiUtil.bold;
+    if (ansiMessageStyle == null) ansiMessageStyle = AnsiUtil.underline;
+
+    var str = '';
+
+    if (sideline) str += '├─ ';
+
+    str += ansiColor(ansiHeaderStyle(header));
+    str += ansiColor(ansiMessageStyle(message));
+
+    return str;
   }
 
   static function readLibraryCurrentVersion(libraryName:String):String
@@ -2395,31 +2479,92 @@ class Project extends HXProject
 
   static function readLibraryGitCommitHash(libraryName:String):String
   {
-    var commit:String = '';
+    return execGitOnLibrary(libraryName, ["rev-parse", "HEAD"]);
+  }
 
-    var gitProccess = new sys.io.Process("git", [
-      "-C",
-      getLibraryGitPath(libraryName),
-      "rev-parse",
-      "HEAD"
-    ]);
-    gitProccess.exitCode(true);
-    commit = gitProccess.stdout.readAll().toString().trim();
-
-    if (commit.length <= 0)
+  static function execGitOnLibrary(libraryName:String, args:Array<String>):String
+  {
+    function _execGit(path:String):String
     {
-      gitProccess = new sys.io.Process("git", ["-C", readLibraryDev(libraryName), "rev-parse", "HEAD"]);
+      if (path == null || path.length <= 0 || !FileSystem.exists(Path.join([path, '.git']))) return '';
+
+      var gitProccess = new sys.io.Process("git", ["-C", path].concat(args));
       gitProccess.exitCode(true);
-      commit = gitProccess.stdout.readAll().toString().trim();
+      return gitProccess.stdout.readAll().toString().trim();
     }
 
-    return commit;
+    var out:String = _execGit(getLibraryGitPath(libraryName));
+
+    if (out.length <= 0)
+    {
+      var devLib:String = readLibraryDev(libraryName);
+      if (devLib.length > 0) out = _execGit(devLib);
+    }
+
+    return out;
+  }
+
+  static function readLibraryRemoteNames(libraryName:String):Array<String>
+  {
+    var output:String = execGitOnLibrary(libraryName, ["remote"]);
+
+    if (output.length <= 0) return [];
+
+    return output.split('\n').map(s -> s.trim()).filter(s -> s.length > 0);
+  }
+
+  static function readLibraryDefaultRemoteName(libraryName:String):String
+  {
+    var remote:String = execGitOnLibrary(libraryName, ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"]);
+
+    final i:Int = remote.indexOf("/");
+    if (i > 0) return remote.substr(0, i);
+
+    final remotes = readLibraryRemoteNames(libraryName);
+    if (remotes.contains("origin")) return "origin";
+    if (remotes.length > 0) return remotes[0];
+
+    return "";
+  }
+
+  static function readLibraryRemoteURL(libraryName:String, ?remote:String):String
+  {
+    if (remote == null || remote.length <= 0) remote = readLibraryDefaultRemoteName(libraryName);
+
+    if (remote.length <= 0) return "";
+
+    return execGitOnLibrary(libraryName, ["remote", "get-url", remote]);
+  }
+
+  static function getGitURLBase(url:String):String
+  {
+    // Sometimes we might be using SSH instead of HTTPS locally.
+    // If both have the same "base" then we don't flag them as different repos.
+    // For example, https://github.com/FunkinCrew/Funkin (HTTPS) and git@github.com:FunkinCrew/Funkin (SSH)
+    // would have a base that's FunkinCrew/Funkin which is the same!
+    if (url == null || url.length <= 0) return "";
+
+    if (url.startsWith("git@"))
+    {
+      url = url.split(":")[1];
+    }
+    else if (url.startsWith("http"))
+    {
+      final len = url.startsWith("https") ? 8 : 7;
+      url = url.substr(len, url.length - len);
+      final i = url.indexOf("/") + 1;
+      url = url.substr(i, url.length - i);
+    }
+
+    if (url.endsWith(".git")) url = url.substr(0, url.length - 4);
+
+    return Path.addTrailingSlash(url.toLowerCase());
   }
 
   static function getLibraryCurrentFile(libraryName:String):String
   {
-    return haxe.io.Path.join([
-      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
+    return Path.join([
+      Path.addTrailingSlash(Sys.getCwd()),
       '.haxelib',
       libraryName,
       '.current'
@@ -2428,22 +2573,50 @@ class Project extends HXProject
 
   static function getLibraryDevFile(libraryName:String):String
   {
-    return haxe.io.Path.join([
-      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
+    return Path.join([
+      Path.addTrailingSlash(Sys.getCwd()),
       '.haxelib',
       libraryName,
       '.dev'
     ]);
   }
 
+  static function getLibraryCurrentFolder(libraryName:String):String
+  {
+    var libFolder:String = Path.join([Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName]);
+    var currentFile:String = Path.join([libFolder, '.current']);
+
+    if (!FileSystem.exists(currentFile)) return libFolder;
+
+    return Path.join([libFolder, File.getContent(currentFile).trim().replace(".", ",")]);
+  }
+
   static function getLibraryGitPath(libraryName:String):String
   {
-    return haxe.io.Path.join([
-      haxe.io.Path.addTrailingSlash(Sys.getCwd()),
-      '.haxelib',
-      libraryName,
-      'git'
-    ]);
+    var currentFolder:String = getLibraryCurrentFolder(libraryName);
+    if (FileSystem.exists(Path.join([currentFolder, '.git']))) return currentFolder;
+
+    var libFolder:String = Path.join([Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName]);
+    var gitFolder:String = Path.join([libFolder, 'git']);
+    if (FileSystem.exists(Path.join([gitFolder, '.git']))) return gitFolder;
+
+    if (FileSystem.exists(libFolder))
+    {
+      for (entry in FileSystem.readDirectory(libFolder))
+      {
+        var entryPath:String = Path.join([libFolder, entry]);
+        if (FileSystem.isDirectory(entryPath) && FileSystem.exists(Path.join([entryPath, '.git']))) return entryPath;
+      }
+    }
+
+    return currentFolder;
+  }
+
+  static function toFileURL(path:String):String
+  {
+    var normalized:String = StringTools.replace(path, "\\", "/");
+    if (!normalized.startsWith("/")) normalized = "/" + normalized;
+    return "file://" + normalized;
   }
 
   static function isLibraryLocalGitDev(libraryName:String):Bool
@@ -2462,7 +2635,6 @@ class Project extends HXProject
   static function getLibraryPath(libraryName:String):String
   {
     var process = new sys.io.Process('haxelib', ['libpath', libraryName]);
-    @:privateAccess
     return process.stdout.readLine();
   }
 
@@ -2494,8 +2666,8 @@ class Project extends HXProject
   public function buildHxCppTools():Void
   {
     var path:String = getLibraryPath("hxcpp");
-    var dotNPath:String = haxe.io.Path.join([path, 'hxcpp.n']);
-    var toolsPath:String = haxe.io.Path.join([path, 'tools/hxcpp']);
+    var dotNPath:String = Path.join([path, 'hxcpp.n']);
+    var toolsPath:String = Path.join([path, 'tools/hxcpp']);
 
     // The output can be an error message if the library doesn't exist.
     if (path.toLowerCase().startsWith("error") || !sys.FileSystem.exists(path)) error('HXCPP could not be found while on C++ target.');
