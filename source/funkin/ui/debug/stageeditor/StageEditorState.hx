@@ -646,7 +646,7 @@ class StageEditorState extends UIState
     // camera movement
 
     if (!isCursorOverHaxeUI) handleTrackpadScroll();
-    if (!isCursorOverHaxeUI) handleMiddleMousePan();
+    handleMiddleMousePan();
 
     // key shortcuts and inputs
     if (pressingControl() && FlxG.keys.justPressed.Q) onMenuItemClick('exit');
@@ -1087,18 +1087,20 @@ class StageEditorState extends UIState
   {
     if (FlxG.mouse.justPressedMiddle)
     {
+      if (isCursorOverHaxeUI) return;
+
       // captures once so it don't drift
       middleMousePanOffset = FlxPoint.get(
-        camFollow.x + FlxG.mouse.viewX / camGame.zoom,
-        camFollow.y + FlxG.mouse.viewY / camGame.zoom
+        camFollow.x + FlxG.mouse.viewX,
+        camFollow.y + FlxG.mouse.viewY
       );
     }
     else if (FlxG.mouse.pressedMiddle && middleMousePanOffset != null)
     {
-      camFollow.x = middleMousePanOffset.x - FlxG.mouse.viewX / camGame.zoom;
-      camFollow.y = middleMousePanOffset.y - FlxG.mouse.viewY / camGame.zoom;
+      camFollow.x = middleMousePanOffset.x - FlxG.mouse.viewX;
+      camFollow.y = middleMousePanOffset.y - FlxG.mouse.viewY;
     }
-    else if (FlxG.mouse.justReleasedMiddle && middleMousePanOffset != null)
+    else if (middleMousePanOffset != null)
     {
       middleMousePanOffset.put();
       middleMousePanOffset = null;
@@ -1726,6 +1728,12 @@ class StageEditorState extends UIState
   override function destroy():Void
   {
     super.destroy();
+
+    if (middleMousePanOffset != null)
+    {
+      middleMousePanOffset.put();
+      middleMousePanOffset = null;
+    }
 
     // Reset the sounds used by some playables.
     funkin.play.GameOverSubState.reset();
