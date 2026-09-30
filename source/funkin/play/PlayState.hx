@@ -57,7 +57,6 @@ import funkin.play.stage.Stage;
 import funkin.save.Save;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatSubState;
-import funkin.ui.debug.stage.StageOffsetSubState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.transition.LoadingState;
 import funkin.ui.transition.preload.hotreload.HotReloadState.HotReloadStateParams;

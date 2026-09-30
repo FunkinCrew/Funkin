@@ -3,7 +3,6 @@ package funkin;
 import animate.FlxAnimateFrames;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.graphics.FunkinSprite.AtlasSpriteSettings;
-import funkin.util.macro.ConsoleMacro;
 import haxe.io.Path;
 import openfl.display.BitmapData;
 import openfl.utils.AssetType;
@@ -16,7 +15,7 @@ using StringTools;
  */
 @:nullSafety
 @:access(polymod.Polymod)
-class Paths implements ConsoleClass
+class Paths
 {
   @:deprecated("You don't need to call this function anymore.")
   public static function setCurrentLevel(level:String):Void

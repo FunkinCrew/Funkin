@@ -8,7 +8,6 @@ import funkin.data.song.SongData.SongMetadata;
 import funkin.data.song.SongData.SongMusicData;
 import funkin.play.song.Song;
 import funkin.util.VersionUtil;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 #if FEATURE_MULTITHREADING
 import hx.concurrent.collection.SynchronizedMap;
@@ -17,8 +16,21 @@ import hx.concurrent.collection.SynchronizedMap;
 using funkin.data.song.migrator.SongDataMigrator;
 
 @:nullSafety
-class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements ISingleton implements DefaultRegistryImpl
+class SongRegistry extends BaseRegistry<Song, SongMetadata, SongEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<SongRegistry>;
+
+  public static var instance(get, never):SongRegistry;
+
+  static function get_instance():SongRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new SongRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value

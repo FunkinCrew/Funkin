@@ -10,7 +10,6 @@ import funkin.graphics.FunkinSprite;
 import flixel.math.FlxRect;
 import funkin.api.newgrounds.Medals;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import funkin.util.macro.ConsoleMacro.ConsoleClass;
 import funkin.ui.FullScreenScaleMode;
 import funkin.assets.FunkinAssetCache;
 import funkin.assets.FunkinBitmapFrontend;
@@ -19,7 +18,7 @@ import funkin.assets.FunkinBitmapFrontend;
  * Handles global display of the Newgrounds medal popup.
  */
 @:nullSafety
-class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic> implements ConsoleClass
+class NewgroundsMedalPlugin extends FlxTypedContainer<FlxBasic>
 {
   /**
    * The current instance of the Medal plugin singleton.
