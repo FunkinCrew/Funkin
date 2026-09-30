@@ -2,12 +2,24 @@ package funkin.data.freeplay.player;
 
 import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.save.Save;
-import funkin.util.tools.ISingleton;
 import funkin.data.DefaultRegistryImpl;
 
 @:nullSafety
-class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams> implements ISingleton implements DefaultRegistryImpl
+class PlayerRegistry extends BaseRegistry<PlayableCharacter, PlayerData, PlayerEntryParams> implements DefaultRegistryImpl
 {
+  static var _instance:Null<PlayerRegistry>;
+
+  public static var instance(get, never):PlayerRegistry;
+
+  static function get_instance():PlayerRegistry
+  {
+    if (_instance == null)
+    {
+      _instance = new PlayerRegistry();
+    }
+    return _instance;
+  }
+
   /**
    * The current version string for the stage data format.
    * Handle breaking changes by incrementing this value
