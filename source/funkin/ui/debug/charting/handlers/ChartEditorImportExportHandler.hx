@@ -5,6 +5,7 @@ import funkin.data.song.SongNoteDataUtils;
 import funkin.util.VersionUtil;
 import funkin.util.DateUtil;
 import haxe.io.Path;
+import funkin.util.SRTUtil.SRTParser;
 import funkin.util.SortUtil;
 import funkin.util.FileUtil;
 import funkin.util.FileUtil.FileWriteMode;
@@ -42,6 +43,7 @@ class ChartEditorImportExportHandler
     // Apply metadata and chart data.
     state.songMetadata = data.songMetadatas;
     state.songChartData = data.songChartDatas;
+    state.songSubtitlesData = data.songSubtitleDatas;
     state.songManifestData = data.manifest;
 
     // Select the default variation if the currently selected one doesn't exist in the new song.
@@ -293,6 +295,7 @@ class ChartEditorImportExportHandler
     return {
       songMetadatas: state.songMetadata,
       songChartDatas: state.songChartData,
+      songSubtitleDatas: state.songSubtitlesData,
       manifest: state.songManifestData,
       instrumentals: state.audioInstTrackData,
       vocals: state.audioVocalTrackData

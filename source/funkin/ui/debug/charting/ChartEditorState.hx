@@ -27,6 +27,7 @@ import funkin.audio.VoicesGroup;
 import funkin.audio.visualize.PolygonSpectogram;
 import funkin.audio.waveform.WaveformSprite;
 import funkin.data.character.CharacterData.CharacterDataParser;
+import funkin.data.subtitles.SubtitlesData;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.data.song.SongData.NoteParamData;
 import funkin.data.song.SongData.SongChartData;
@@ -108,6 +109,7 @@ import funkin.util.SortUtil;
 import funkin.util.WindowUtil;
 import funkin.util.file.FNFCUtil.FNFCData;
 import funkin.util.logging.CrashHandler;
+import funkin.util.SRTUtil;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.Path;
@@ -155,6 +157,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public static final CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/player-preview').toString();
   public static final CHART_EDITOR_TOOLBOX_OPPONENT_PREVIEW_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolbox/opponent-preview').toString();
   public static final CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/metadata').toString();
+  public static final CHART_EDITOR_TOOLBOX_SUBTITLES_LAYOUT:String = funkin.assets.ValidatedPaths.xml('editors/chart-editor/toolbox/subtitles').toString();
   public static final CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/offsets').toString();
   public static final CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/note-data').toString();
   public static final CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT:String = funkin.assets.ValidatedPaths.xml('ui/editors/chart-editor/toolboxes/event-data').toString();
@@ -2492,6 +2495,50 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var subtitles:Null<Subtitles> = null;
 
   /**
+   * The song subtitles data.
+   * - Keys are the variation IDs. At least one (`default`) must exist.
+   * - Values are the relevant subtitle data, ready to be serialized to SRT.
+   */
+  var songSubtitlesData:Map<String, SubtitlesData> = [];
+
+  /**
+   * Convenience property to get the subtitles for the current variation.
+   */
+  var currentSongSubtitles(get, set):SubtitlesData;
+
+  function get_currentSongSubtitles():SubtitlesData
+  {
+    var result:Null<SubtitlesData> = songSubtitlesData.get(selectedVariation);
+    if (result == null)
+    {
+      // Attempt to load the subtitles file for the existing song before creating an empty subtitles data for the variation.
+      var subtitlesFile:String = 'gameplay/songs/${currentSongId}/subtitles/song-lyrics';
+      if (selectedVariation != Constants.DEFAULT_VARIATION)
+      {
+        subtitlesFile += '-${selectedVariation}';
+      }
+
+      if (!Assets.exists(Paths.srt(subtitlesFile)))
+      {
+        result = new SubtitlesData([new SubtitleEntry(0, 0, 0, '')]);
+        return result;
+      }
+      else
+      {
+        result = new SubtitlesData(SRTParser.parseFromFile(subtitlesFile));
+        songSubtitlesData.set(selectedVariation, result);
+      }
+    }
+    return result;
+  }
+
+  function set_currentSongSubtitles(value:SubtitlesData):SubtitlesData
+  {
+    songSubtitlesData.set(selectedVariation, value);
+    return value;
+  }
+
+  /**
    * The sprite group containing the note graphics.
    * Only displays a subset of the data from `currentSongChartNoteData`,
    * and kills notes that are off-screen to be recycled later.
@@ -2962,6 +3009,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Initialize the song chart data.
     songChartData = new Map<String, SongChartData>();
+    // Initialize the subtitles data.
+    songSubtitlesData = new Map<String, SubtitlesData>();
   }
 
   /**
@@ -3910,6 +3959,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemToggleToolboxDifficulty.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT, event.value);
     menubarItemToggleToolboxMetadata.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT, event.value);
+    menubarItemToggleToolboxSubtitles.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_SUBTITLES_LAYOUT, event.value);
     menubarItemToggleToolboxOffsets.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT, event.value);
     menubarItemToggleToolboxNoteData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_NOTE_DATA_LAYOUT, event.value);
     menubarItemToggleToolboxEventData.onChange = event -> this.setToolboxState(CHART_EDITOR_TOOLBOX_EVENT_DATA_LAYOUT, event.value);
@@ -8136,14 +8186,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     opponentPreviewDirty = true;
   }
 
-  public function loadSubtitles():Void
+  public function loadSubtitles(subtitlesData:Null<SubtitlesData>, refreshToolbox:Bool = false):Void
   {
-    var subtitlesFile:String = 'gameplay/songs/${currentSongId}/subtitles/song-lyrics';
-    if (selectedVariation != Constants.DEFAULT_VARIATION)
-    {
-      subtitlesFile += '-${selectedVariation}';
-    }
-    subtitles.assignSubtitles(subtitlesFile, audioInstTrack);
+    if (subtitlesData != null) subtitles.assignSubtitlesData(subtitlesData, audioInstTrack);
+    if (refreshToolbox) this.refreshToolbox(CHART_EDITOR_TOOLBOX_SUBTITLES_LAYOUT);
   }
 
   public function postLoadVocals():Void
