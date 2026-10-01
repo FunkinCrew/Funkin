@@ -729,7 +729,7 @@ class Project extends HXProject
 
     if (isWindowsHost())
     {
-      postBuildCallbacks.push(new CLICommand("powershell", [
+      postBuildCallbacks.unshift(new CLICommand("powershell", [
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
@@ -745,7 +745,7 @@ class Project extends HXProject
     }
     else
     {
-      postBuildCallbacks.push(new CLICommand("bash", [
+      postBuildCallbacks.unshift(new CLICommand("bash", [
         '$script.sh',
         "--target",
         target,
