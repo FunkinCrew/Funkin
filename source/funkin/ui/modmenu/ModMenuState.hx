@@ -9,13 +9,11 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxTimer;
 import funkin.InitState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.framebuffer.DropShadowLayer;
-import funkin.graphics.shaders.PureColor;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
@@ -71,15 +69,23 @@ class ModMenuState extends MusicBeatState
   static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/base-icon';
 
   /**
+   * The full mod menu scene with bf gf and such.
+   */
+  public var scene:ModMenuScene;
+
+  /**
    * BF in the mod menu.
    */
-  public var bf:ModMenuCharacter;
+  public var bf(get, never):ModMenuCharacter;
+
+  inline function get_bf():ModMenuCharacter return scene.bf;
 
   /**
    * GF in the mod menu.
-   * TODO: Implement.
    */
-  public var gf:ModMenuCharacter;
+  public var gf(get, never):ModMenuCharacter;
+
+  inline function get_gf():ModMenuCharacter return scene.gf;
 
   /**
    * The ambience in the mod menu.
@@ -160,7 +166,6 @@ class ModMenuState extends MusicBeatState
    */
   var pendingTransitions:Array<TransitionRecord> = [];
 
-  var bgWires:FunkinSprite;
   var darkness:FunkinSprite;
   var fileDrop:FunkinSprite;
   var openFolderAnimator:PropertyAnimator;
@@ -168,17 +173,7 @@ class ModMenuState extends MusicBeatState
   var lastSelectDir:Int = 0;
   var newEnabledItems:Array<ModMenuItem> = [];
   var itemsInFolder:Array<String> = [];
-  var crispySmokeBF:FunkinSprite;
-  var crispySmokeGF:FunkinSprite;
-  var smokeCloud:FunkinSprite;
-  var whiteColor:PureColor = new PureColor(FlxColor.WHITE);
   var menuBG:FunkinSprite;
-  var carBattery:FunkinSprite;
-  var fgWiresBottom:FunkinSprite;
-  var fgWiresTop:FunkinSprite;
-  var shockTimer:FlxTimer = new FlxTimer();
-  var sparks:ModMenuSparks;
-  var gfWire:FunkinSprite;
 
   public function new()
   {
@@ -192,17 +187,7 @@ class ModMenuState extends MusicBeatState
       fadeInTime: 4.0
     });
 
-    // Caching the smoke since they're not drawn immediately.
-    // TODO: Remove and replace with `queryAssets()` once async loading is done.
-    var assetPaths:Array<String> = [
-      'ui/mods/smoke',
-      'ui/mods/smoke-cloud/spritemap1'
-    ];
-
-    for (assetPath in assetPaths)
-    {
-      funkin.assets.Assets.cacheFlxGraphic(funkin.assets.Paths.image(assetPath));
-    }
+    ModMenuScene.cacheAssets();
 
     camCharacters = new FunkinCamera('modMenuCharacters');
     camHUD = new FunkinCamera('modMenuHUD');
@@ -342,126 +327,10 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.zIndex = 10;
     add(buttonBackToMenu);
 
-    carBattery = new FunkinSprite(rightRectangle.x + 475.6, FlxG.height * 0.11).loadSparrow('ui/mods/carbattery');
-    carBattery.animation.addByPrefix('idle', 'idle', 24);
-    carBattery.animation.play('idle');
-    carBattery.animation.pause();
-    carBattery.scale.set(0.75, 0.75);
-    carBattery.updateHitbox();
-    carBattery.zIndex = 20;
-    carBattery.camera = camCharacters;
-    add(carBattery);
+    scene = new ModMenuScene(instance, camCharacters, dropShadowCharacters, grabEnabledModList);
+    scene.build(rightRectangle.x);
 
-    gfWire = new FunkinSprite(carBattery.x - 117, carBattery.y - 18).loadSparrow('ui/mods/gfwire');
-    gfWire.animation.addByPrefix('idle', 'idle0', 24, false);
-    gfWire.animation.addByPrefix('idle-emptychair', 'idle empty chair0', 24, false);
-    gfWire.animation.addByPrefix('shock', 'shock', 24, false);
-    gfWire.animation.play('idle');
-    gfWire.scale.set(0.7, 0.7);
-    gfWire.updateHitbox();
-    gfWire.zIndex = carBattery.zIndex + 1;
-    gfWire.camera = camCharacters;
-    add(gfWire);
-
-    bf = new ModMenuCharacter(carBattery.x - 119, carBattery.y + 50, 'bf');
-    bf.camera = camCharacters;
-    bf.animation.onFinish.add((name:String) ->
-    {
-      bfBlink = blinkTimer + Math.random() + (Math.random() * 5);
-    });
-    bfBlink = Math.random() + (Math.random() * 6);
-
-    bf.zIndex = 30;
-    add(bf);
-
-    gf = new ModMenuCharacter(bf.x - 166, bf.y, 'gf', true);
-    gf.camera = camCharacters;
-    gf.animation.onFinish.add((name:String) ->
-    {
-      gfBlink = blinkTimer + Math.random() + (Math.random() * 9);
-    });
-    gfBlink = Math.random() + 6 + (Math.random() * 4);
-
-    gf.zIndex = 25;
-    add(gf);
-
-    bgWires = new FunkinSprite(carBattery.x + 75, carBattery.y + 170).loadTexture('ui/mods/bgwires');
-    bgWires.scale.set(0.7, 0.7);
-    bgWires.updateHitbox();
-    bgWires.zIndex = 10;
-    bgWires.camera = camCharacters;
-    add(bgWires);
-
-    fgWiresBottom = new FunkinSprite(bf.x - 144, bf.y + 446.5).loadTextureAtlas('ui/mods/foreground-wires-bottom');
-    fgWiresBottom.anim.addByFrameLabel('idle', 'idle', 24);
-    fgWiresBottom.anim.addByFrameLabel('idle-pinhead', 'idle pinhead', 24);
-    fgWiresBottom.anim.addByFrameLabel('shock', 'shock', 24);
-    fgWiresBottom.anim.addByFrameLabel('end', 'end', 24, false);
-    fgWiresBottom.animation.play('idle');
-    fgWiresBottom.scale.set(0.7, 0.7);
-    fgWiresBottom.updateHitbox();
-    fgWiresBottom.zIndex = 35;
-    fgWiresBottom.camera = camCharacters;
-    add(fgWiresBottom);
-
-    fgWiresTop = new FunkinSprite(bf.x + 257.5, bf.y - 90).loadTextureAtlas('ui/mods/foreground-wires-top');
-    fgWiresTop.anim.addByFrameLabel('idle', 'idle', 24);
-    fgWiresTop.anim.addByFrameLabel('shock', 'shock', 24);
-    fgWiresTop.anim.addByFrameLabel('end', 'end', 24, false);
-    fgWiresTop.animation.play('idle');
-    fgWiresTop.scale.set(0.7, 0.7);
-    fgWiresTop.updateHitbox();
-    fgWiresTop.zIndex = 35;
-    fgWiresTop.camera = camCharacters;
-    add(fgWiresTop);
-
-    crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/smoke');
-    crispySmokeBF.animation.addByPrefix('idle', 'retry_smoke', 24);
-    // BF's smoke is supposed to be offset from GF's!
-    crispySmokeBF.animation.play('idle', false, 13);
-    crispySmokeBF.scale.set(0.5, 0.5);
-    crispySmokeBF.updateHitbox();
-    crispySmokeBF.camera = camCharacters;
-
-    crispySmokeGF = new FunkinSprite(gf.x + 70, gf.y - 180).loadSparrow('ui/mods/smoke');
-    crispySmokeGF.animation.addByPrefix('idle', 'retry_smoke', 24);
-    crispySmokeGF.animation.play('idle');
-    crispySmokeGF.scale.set(0.5, 0.5);
-    crispySmokeGF.updateHitbox();
-    crispySmokeGF.camera = camCharacters;
-
-    crispySmokeBF.visible = false;
-    crispySmokeGF.visible = false;
-
-    crispySmokeBF.zIndex = bf.zIndex + 10;
-    crispySmokeGF.zIndex = gf.zIndex + 10;
-
-    // SIX SEVEEEEEENNNN!!!
-    // (Yes, this is really the value from the FLA)
-    crispySmokeBF.alpha = 0.67;
-    crispySmokeGF.alpha = 0.67;
-
-    add(crispySmokeBF);
-    add(crispySmokeGF);
-
-    smokeCloud = new FunkinSprite(carBattery.x - 415, -450).loadTextureAtlas('ui/mods/smoke-cloud', {
-      useRenderTexture: true
-    });
-    smokeCloud.anim.addBySymbol('wholeTimeline', smokeCloud.getDefaultSymbol(), smokeCloud.library.frameRate, false);
-    smokeCloud.visible = false;
-    smokeCloud.scale.set(0.75, 0.75);
-    smokeCloud.updateHitbox();
-    smokeCloud.zIndex = 100;
-    smokeCloud.camera = camCharacters;
-    add(smokeCloud);
-
-    sparks = new ModMenuSparks();
-    sparks.x = FullScreenScaleMode.gameCutoutSize.x / 2.5;
-    sparks.zIndex = smokeCloud.zIndex + 1;
-    sparks.camera = camCharacters;
-    add(sparks);
-
-    buttonDone.x = carBattery.x - 100;
+    buttonDone.x = scene.carBattery.x - 100;
     buttonDone.y = FlxG.height * 0.89;
     buttonDone.scale.set(0.65, 0.65);
     buttonDone.loadTexture('ui/mods/done');
@@ -488,125 +357,8 @@ class ModMenuState extends MusicBeatState
     hitboxOpenFolder.updateHitbox();
     hitboxOpenFolder.camera = camHUD;
 
-    openFolderAnimator = new PropertyAnimator(buttonOpenFolder);
-    doneButtonAnimator = new PropertyAnimator(buttonDone);
-
-    openFolderAnimator.addAnimationByName('select', 24);
-
-    openFolderAnimator.addProperty('select', 'scale.x', [0.72]);
-    openFolderAnimator.addProperty('select', 'scale.y', [0.72]);
-    openFolderAnimator.addProperty('select', 'selected', [true]);
-    openFolderAnimator.addProperty('select', 'invert', [false]);
-
-    openFolderAnimator.addAnimationByName('deselect', 24);
-    openFolderAnimator.addProperty('deselect', 'scale.x', [0.65]);
-    openFolderAnimator.addProperty('deselect', 'scale.y', [0.65]);
-    openFolderAnimator.addProperty('deselect', 'selected', [false]);
-    openFolderAnimator.addProperty('deselect', 'invert', [false]);
-
-    openFolderAnimator.addAnimationByName('accept', 24);
-    openFolderAnimator.addProperty('accept', 'scale.x', [
-      0.65 - 0.04,
-      0.65 - 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65,
-      0.65,
-      0.65,
-      0.65
-    ]);
-    openFolderAnimator.addProperty('accept', 'scale.y', [
-      0.65 - 0.04,
-      0.65 - 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65,
-      0.65,
-      0.65,
-      0.65
-    ]);
-    openFolderAnimator.addProperty('accept', 'invert', [
-      true,
-      true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false
-    ]);
-    openFolderAnimator.addProperty('accept', 'selected', [
-      false,
-      false,
-      true,
-      true,
-      true,
-      false,
-      false,
-      false,
-      false
-    ]);
-
-    doneButtonAnimator.addAnimationByName('select', 24);
-    doneButtonAnimator.addProperty('select', 'scale.x', [0.72]);
-    doneButtonAnimator.addProperty('select', 'scale.y', [0.72]);
-    doneButtonAnimator.addProperty('select', 'selected', [true]);
-    doneButtonAnimator.addProperty('select', 'invert', [false]);
-
-    doneButtonAnimator.addAnimationByName('deselect', 24);
-    doneButtonAnimator.addProperty('deselect', 'scale.x', [0.65]);
-    doneButtonAnimator.addProperty('deselect', 'scale.y', [0.65]);
-    doneButtonAnimator.addProperty('deselect', 'selected', [false]);
-    doneButtonAnimator.addProperty('deselect', 'invert', [false]);
-
-    doneButtonAnimator.addAnimationByName('accept', 24);
-    doneButtonAnimator.addProperty('accept', 'scale.x', [
-      0.65 - 0.04,
-      0.65 - 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65,
-      0.65,
-      0.65,
-      0.65
-    ]);
-    doneButtonAnimator.addProperty('accept', 'scale.y', [
-      0.65 - 0.04,
-      0.65 - 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65 + 0.04,
-      0.65,
-      0.65,
-      0.65,
-      0.65
-    ]);
-    doneButtonAnimator.addProperty('accept', 'invert', [
-      true,
-      true,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false
-    ]);
-    doneButtonAnimator.addProperty('accept', 'selected', [
-      false,
-      false,
-      true,
-      true,
-      true,
-      false,
-      false,
-      false,
-      false
-    ]);
+    openFolderAnimator = buttonOpenFolder.createPressAnimator(0.65, 0.72);
+    doneButtonAnimator = buttonDone.createPressAnimator(0.65, 0.72);
 
     darkness = new FunkinSprite();
     darkness.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -674,12 +426,9 @@ class ModMenuState extends MusicBeatState
 
     // Adding the dropshadow blacklist here since everything is initialized by this point
     dropShadowUI.blacklistSprite(menuBG);
-    dropShadowUI.blacklistSprite(bgWires);
-    dropShadowUI.blacklistSprite(crispySmokeBF);
-    dropShadowUI.blacklistSprite(crispySmokeGF);
-    dropShadowUI.blacklistSprite(sparks);
+    scene.blacklistFromShadow(dropShadowUI);
 
-    changeCharacters();
+    scene.changeCharacters();
 
     ambience.initialize();
 
@@ -705,58 +454,6 @@ class ModMenuState extends MusicBeatState
     exitingMenu = true;
     backPressStage = 1;
     playBackButtonAnimation('press', true);
-  }
-
-  function changeCharacters():Void
-  {
-    var modIds:Array<String> = grabEnabledModList();
-
-    bf.prepareToSwitch('mod-bf', modIds);
-
-    gf.previousModId = bf.previousModId;
-    gf.prepareToSwitch('mod-gf', modIds);
-
-    // If one character can't be found, but the other one *was* found then we hide the one that can't be found.
-    // An empty chair takes its place.
-    if (modIds.length > 1)
-    {
-      if (bf.isPinhead && !gf.isPinhead)
-      {
-        bf.currentCharacterId = 'empty-chair';
-      }
-      else if (!bf.isPinhead && gf.isPinhead)
-      {
-        gf.currentCharacterId = 'empty-chair';
-      }
-    }
-
-    bf.switchCharacter();
-    gf.switchCharacter();
-
-    gfWire.visible = !gf.hasCustomWires;
-    fgWiresTop.visible = !bf.hasCustomWires;
-
-    if (gf.currentCharacterId == 'empty-chair')
-    {
-      gfWire.zIndex = gf.zIndex + 1;
-      gfWire.animation.play('idle-emptychair');
-    }
-    else
-    {
-      gfWire.zIndex = carBattery.zIndex + 1;
-      gfWire.animation.play('idle');
-    }
-
-    if (bf.useSmallWire)
-    {
-      fgWiresBottom.animation.play('idle-pinhead');
-    }
-    else
-    {
-      fgWiresBottom.animation.play('idle');
-    }
-
-    this.refresh();
   }
 
   /**
@@ -1234,12 +931,7 @@ class ModMenuState extends MusicBeatState
   #end
 
   var secondCounter:Float = 0;
-  var blinkTimer:Float = 0;
-  var bfBlink:Float = 0;
-  var gfBlink:Float = 0;
-  var crispyTimer:Float = 0;
   var allowInput:Bool = true;
-  var playedCrispySFX:Bool = false;
   var backTimer:Float = 0;
 
   override public function update(elapsed:Float):Void
@@ -1261,48 +953,14 @@ class ModMenuState extends MusicBeatState
 
     if (!exitingMenu)
     {
-      blinkTimer += elapsed;
-
-      if (blinkTimer >= 100)
-      {
-        blinkTimer = 0;
-        bfBlink = 0;
-        gfBlink = 0;
-      }
-
-      if (blinkTimer >= bfBlink && bf.animation.finished)
-      {
-        bfBlink = blinkTimer + Math.random() + (Math.random() * 6);
-        bf.playAnimation(IDLE);
-      }
-
-      if (blinkTimer >= gfBlink && gf.animation.finished)
-      {
-        gfBlink = blinkTimer + Math.random() + (Math.random() * 8);
-        gf.playAnimation(IDLE);
-      }
+      scene.updateBlink(elapsed);
     }
 
     handleInput(elapsed);
 
-    if (!allowInput && !shockTimer.active)
+    if (!allowInput && !scene.isShocking)
     {
-      crispyTimer += elapsed;
-
-      if (bf.getCurrentAnimation() == CRISPY && gf.getCurrentAnimation() == CRISPY)
-      {
-        if (crispyTimer >= 0.7 && !playedCrispySFX)
-        {
-          playedCrispySFX = true;
-          FunkinSound.playOnce(Paths.sound('ui/mods/sounds/crispy').toString());
-        }
-      }
-
-      if (crispyTimer >= 0.3 && gf.animation.paused) gf.animation.resume();
-      if (crispyTimer >= 2.5)
-      {
-        applyModlist();
-      }
+      if (scene.updateAftermath(elapsed)) applyModlist();
     }
 
     if (fadingItems.length > 0)
@@ -1372,11 +1030,9 @@ class ModMenuState extends MusicBeatState
     }
     else
     {
-      if ((controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end) && shockTimer.active)
+      if ((controls.ACCEPT_P #if FEATURE_TOUCH_CONTROLS || TouchUtil.justPressed #end) && scene.isShocking)
       {
-        @:privateAccess
-        shockTimer.onLoopFinished();
-        shockTimer.active = false;
+        scene.skipShock();
       }
     }
   }
@@ -1414,143 +1070,24 @@ class ModMenuState extends MusicBeatState
   var oldSelection:ModMenuSelection;
   var lastInput:String = '';
 
+  /**
+   * Starts the electrocution sequence.
+   */
   function playElectrocutionSequence():Void
   {
-    bf.playAnimation(ELECTROCUTED, true);
-    gf.playAnimation(ELECTROCUTED, true);
-
-    carBattery.animation.resume();
-    fgWiresBottom.animation.play('shock');
-
-    gfWire.visible = true;
-    gfWire.animation.play('shock');
-
-    fgWiresTop.visible = true;
-    fgWiresTop.animation.play('shock');
-
-    sparks.startElectrocution();
-
     var bgColor:FlxColor = menuBG.color;
-    whiteColor.colorSet = true;
 
-    dropShadowCharacters.blacklistSprite(gfWire);
-    dropShadowCharacters.blacklistSprite(carBattery);
-    dropShadowCharacters.blacklistSprite(fgWiresBottom);
-    dropShadowCharacters.blacklistSprite(fgWiresTop);
-
-    var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, 0xFF232327);
-    blackFlash.zIndex = 0;
-    blackFlash.camera = camCharacters;
-    blackFlash.visible = false;
-    add(blackFlash);
-    refresh();
-
-    shockTimer.start(81 / 24, (_) ->
+    scene.playElectrocutionSequence(() ->
     {
-      bf.shader = whiteColor;
-      gf.shader = whiteColor;
-
-      blackFlash.visible = true;
-
-      carBattery.visible = false;
-      gfWire.visible = false;
-      fgWiresBottom.visible = false;
-      fgWiresTop.visible = false;
-      bgWires.visible = false;
-
       buttonDone.visible = false;
       buttonOpenFolder.visible = false;
-
-      dropShadowCharacters.visible = false;
-      dropShadowCharacters.whitelistSprite(gfWire);
-      dropShadowCharacters.whitelistSprite(carBattery);
-      dropShadowCharacters.whitelistSprite(fgWiresBottom);
-
-      FlxTimer.wait(2 / 24, () ->
+    }, () ->
       {
-        FlxG.camera.flash(0xFFFFFFFF, 1 / 24, () ->
-        {
-          blackFlash.destroy();
-          remove(blackFlash);
-        });
-
-        changeCharacters();
-
         FlxTween.color(menuBG, 1, 0xFF232327, bgColor);
 
         buttonDone.visible = true;
         buttonOpenFolder.visible = true;
-
-        carBattery.visible = true;
-        carBattery.animation.reset();
-
-        smokeCloud.visible = true;
-        smokeCloud.animation.play('wholeTimeline');
-
-        FunkinSound.playOnce(Paths.sound('ui/mods/sounds/smoke-cloud').toString());
-
-        sparks.endElectrocution();
-
-        fgWiresBottom.visible = true;
-        bgWires.visible = true;
-        dropShadowCharacters.visible = true;
-
-        FlxTween.tween(smokeCloud, {
-          alpha: 0
-        }, 62 / 24, {
-          ease: FlxEase.linear,
-          framerate: 24
-        });
-
-        bf.applyShader();
-        gf.applyShader();
-
-        var showSmoke:Bool = false;
-
-        if (bf.hasAnimation(CRISPY) && bf.previousModId == bf.currentModId)
-        {
-          showSmoke = true;
-          bf.playAnimation(CRISPY, true);
-        }
-        else
-        {
-          bf.playAnimation(IDLE, true);
-        }
-
-        if (gf.hasAnimation(CRISPY) && gf.previousModId == gf.currentModId)
-        {
-          showSmoke = true;
-          gf.playAnimation(CRISPY, true);
-        }
-        else
-        {
-          gf.playAnimation(IDLE, true);
-          gf.animation.pause();
-        }
-
-        if (showSmoke)
-        {
-          crispySmokeBF.x += bf.smokeOffsets[0];
-          crispySmokeBF.y += bf.smokeOffsets[1];
-          crispySmokeBF.scale.set(bf.smokeScale[0], bf.smokeScale[1]);
-
-          crispySmokeGF.x += gf.smokeOffsets[0];
-          crispySmokeGF.y += gf.smokeOffsets[1];
-          crispySmokeGF.scale.set(gf.smokeScale[0], gf.smokeScale[1]);
-
-          crispySmokeBF.updateHitbox();
-          crispySmokeGF.updateHitbox();
-
-          // Do not show the smoke on an empty chair... for obvious reasons.
-          crispySmokeBF.visible = bf.currentCharacterId != 'empty-chair';
-          crispySmokeGF.visible = gf.currentCharacterId != 'empty-chair';
-
-          fgWiresBottom.animation.play('end');
-        }
-
-        crispyTimer = 0;
       });
-    });
 
     doneButtonAnimator.playAnimation('accept');
     allowInput = false;
