@@ -251,6 +251,11 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     FlxG.sound.list.remove(FlxG.sound.music);
   }
 
+  public static function cleanupSoundPath(path:String):String
+  {
+    return funkin.Paths.stripLibrary(path);
+  }
+
   /**
    * Creates a new `FunkinSound` object synchronously.
    *
@@ -279,7 +284,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     if (Std.isOfType(embeddedSound, String))
     {
-      embeddedSound = funkin.modding.compat.Sound.cleanupSoundPath(embeddedSound);
+      embeddedSound = cleanupSoundPath(embeddedSound);
 
       var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.sound(embeddedSound);
       var soundAsset:openfl.media.Sound = funkin.assets.Assets.getSound(assetPath);
