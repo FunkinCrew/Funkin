@@ -101,7 +101,7 @@ class FunkinCamera extends FlxCamera
     return super.startQuadBatch(graphic, colored, hasColorOffsets, blend, smooth, shader, getBlendTarget(blendTarget, blend));
   }
 
-  var _backBufferTarget:Null<Context3DBlendTarget> = null;
+  var _blendTargetCache:Null<Context3DBlendTarget> = null;
 
   function getBlendTarget(blendTarget:Null<Context3DBlendTarget>,
     ?blend:BlendMode):Context3DBlendTarget
@@ -109,9 +109,9 @@ class FunkinCamera extends FlxCamera
     if (blendTarget != null) return blendTarget;
     if (!canvas.cacheAsBitmap || blend == null || blend == NORMAL) return Context3DBlendTarget.BlendRenderTarget;
 
-    if (_backBufferTarget == null) _backBufferTarget = Context3DBlendTarget.BlendMergedTarget(viewportRect);
+    if (_blendTargetCache == null) _blendTargetCache = Context3DBlendTarget.BlendMergedTarget(viewportRect);
 
-    return _backBufferTarget;
+    return _blendTargetCache;
   }
 
   public var blackListKeys:Array<String> = [];
