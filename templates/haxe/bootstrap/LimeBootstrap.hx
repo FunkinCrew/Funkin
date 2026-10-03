@@ -8,11 +8,6 @@ import lime.app.Application;
 #if (static_link || ios)
 @:cppFileCode("\nextern \"C\" int lime_register_prims ();\n::foreach ndlls::::if (registerStatics)::extern \"C\" int ::nameSafe::_register_prims ();::end::::end::")
 #end
-#if windows
-@:cppFileCode('#if defined(_MSC_VER)
-#pragma comment(linker, "\\"/manifestdependency:type=\'win32\' name=\'Microsoft.Windows.Common-Controls\' version=\'6.0.0.0\'  processorArchitecture=\'*\' publicKeyToken=\'6595b64144ccf1df\' language=\'*\'\\"")
-#endif')
-#end
 class LimeBootstrap
 {
   @:noCompletion
