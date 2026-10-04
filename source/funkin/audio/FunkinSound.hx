@@ -45,6 +45,7 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     }
     return _onVolumeChanged;
   }
+
   /**
    * Using `FunkinSound.load` will override a dead instance from here rather than creating a new one, if possible!
    */
@@ -139,16 +140,17 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
 
     var pathsFunction = params.pathsFunction ?? MUSIC;
     var suffix = params.suffix ?? '';
+    var cleanKey:String = haxe.io.Path.withoutExtension(key);
+
     var pathToUse = switch (pathsFunction)
     {
       case MUSIC:
-        Paths.music('$key');
+        Paths.music('$cleanKey');
       case INST:
-        Paths.inst('$key', suffix);
+        Paths.inst('$cleanKey', suffix);
       default:
-        Paths.music('$key');
-    }
-
+        Paths.music('$cleanKey');
+    };
     if (!(params.restartTrack ?? false) && FlxG.sound.music?.playing)
     {
       if (FlxG.sound.music != null && Std.isOfType(FlxG.sound.music, FunkinSound))
@@ -354,17 +356,21 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
     // split the path and get only after first :
     // we are bypassing the openfl/lime asset library fuss on web only
     #if web
-    path = Paths.stripLibrary(path);
+    var partialPath:String = Paths.stripLibrary(path);
+    #else
+    var partialPath:String = path;
     #end
 
-    var soundRequest = FlxPartialSound.partialLoadFromFile(path, start, end);
+    function startPartialLoad():Void
+    {
+      var soundRequest = FlxPartialSound.partialLoadFromFile(partialPath, start, end);
 
-    if (soundRequest == null)
-    {
-      promise.complete(null);
-    }
-    else
-    {
+      if (soundRequest == null)
+      {
+        promise.complete(null);
+        return;
+      }
+
       promise.future.onError(function(e)
       {
         soundRequest.error('Sound loading was errored or cancelled');
@@ -377,6 +383,38 @@ class FunkinSound extends FlxSound implements ICloneable<FunkinSound>
         promise.complete(snd);
       });
     }
+
+    #if web
+    var parsedPath:haxe.io.Path = new haxe.io.Path(partialPath);
+    var extension:String = parsedPath.ext ?? '';
+    var fileWithoutExtension:String = partialPath;
+
+    if (extension.length > 0)
+    {
+      fileWithoutExtension = partialPath.substr(0, partialPath.length - extension.length - 1);
+    }
+
+    var assetLibrary:String = Paths.getLibrary(path);
+    var assetPath:funkin.assets.Paths.AssetPath = funkin.assets.Paths.file(fileWithoutExtension, extension, false, assetLibrary);
+
+    funkin.assets.Assets.cacheBytes(assetPath).onComplete(function(_)
+    {
+      var bytes:Null<openfl.utils.ByteArray> = funkin.assets.FunkinAssetCache.instance.getBytes(assetPath.toString());
+      if (bytes == null)
+      {
+        promise.complete(null);
+        return;
+      }
+
+      funkin.assets.FunkinAssetCache.instance.setBytes(partialPath, bytes);
+      startPartialLoad();
+    }).onError(function(_)
+    {
+        promise.complete(null);
+    });
+    #else
+    startPartialLoad();
+    #end
 
     return promise;
   }

@@ -116,10 +116,18 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   {
     forEachAlive(function(sound:FunkinSound)
     {
+      // On HTML5/WebAudio, length can be 0 until the underlying AudioBuffer has finished decoding.
+      #if web
+      if (sound.length > 0 && sound.length < startTime)
+      {
+        return;
+      }
+      #else
       if (sound.length < startTime)
       {
         return;
       }
+      #end
       sound.play(forceRestart, startTime);
     });
   }
@@ -269,7 +277,7 @@ class SoundGroup extends FlxTypedGroup<FunkinSound>
   {
     if (getFirstAlive() != null) return getFirstAlive().pitch;
     else
-    return 1;
+      return 1;
   }
 
   function set_pitch(val:Float):Float

@@ -258,6 +258,8 @@ class FunkinAssetCache implements OpenFLIAssetCache
   public function purgeCache(garbageCollect:Bool = false):Void
   {
     // TODO: Cleanup purging to work with Freeplay?
+    // IMPORTANT: purgeCache() must only be called after the outgoing state has been destroyed. LoadingState defers this until postStateSwitch so that
+    // FlxSprite/FlxFrame/animation objects from the old state cannot reference disposed FlxGraphics or BitmapData.
     for (cache in stagedCaches) cache.purgeCache();
 
     #if FEATURE_HAXEUI
@@ -770,7 +772,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function fetchFont(assetPath:AssetPath):Future<Font>
   {
-    if (hasText(assetPath.toString()))
+    if (hasFont(assetPath.toString()))
     {
       var font:Null<Font> = getFont(assetPath.toString());
       if (font == null) return cast Future.withError('Font does not exist: ${assetPath.toString()}');
@@ -779,8 +781,21 @@ class FunkinAssetCache implements OpenFLIAssetCache
     }
     else
     {
-      return OpenFLAssets.loadFont(assetPath.toString()).then((font:Font) ->
+      return Font.loadFromFile(assetPath.toString()).then((font:Font) ->
       {
+        if (font == null) return cast Future.withError('Font did not load: ${assetPath.toString()}');
+
+        try
+        {
+          openfl.text.Font.registerFont(font);
+        }
+        catch (e:Dynamic)
+        {
+          #if VERBOSE_ASSET_CACHE
+          trace(' ASSETS '.bold().bg_lime() + ' Could not register Font globally (${assetPath.toString()}): $e');
+          #end
+        }
+
         setFont(assetPath.toString(), font);
         return Future.withValue(font);
       });
@@ -964,20 +979,6 @@ class FunkinAssetCache implements OpenFLIAssetCache
         var ext:String = path.ext ?? '';
         var library:String = 'default';
 
-        // A bunch of hard-coded asset detections.
-
-        if (dir.startsWith('flixel/'))
-        {
-          dir = dir.substring('flixel/'.length);
-          library = 'flixel';
-        }
-
-        if (dir.startsWith('haxeui-flixel/'))
-        {
-          dir = dir.substring('haxeui-flixel/'.length);
-          library = 'haxeui-flixel';
-        }
-
         if (dir == 'assets') dir = 'assets/';
 
         if (dir.startsWith('assets/')) dir = dir.substring('assets/'.length);
@@ -1055,6 +1056,9 @@ class FunkinAssetCache implements OpenFLIAssetCache
 
       if (permanent)
       {
+        #if VERBOSE_ASSET_CACHE
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached BitmapData: ${assetPath.toString()}');
+        #end
         stagedBitmapData.cachePermanent(assetPath.toString(), bitmapData);
       }
       promise.complete(validateBitmapData(bitmapData));
@@ -1092,7 +1096,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached FlxGraphic: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached FlxGraphic: ${assetPath.toString()}');
         #end
         FunkinBitmapFrontend.instance.stagedFlxGraphic.cachePermanent(assetPath.toString(), flxGraphic);
         cacheBitmapData(assetPath, true); // We need the bitmapdata to persist too.
@@ -1136,7 +1140,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Sound: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Sound: ${assetPath.toString()}');
         #end
         stagedSound.cachePermanent(assetPath.toString(), sound);
       }
@@ -1178,7 +1182,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Text: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Text: ${assetPath.toString()}');
         #end
         stagedText.cachePermanent(assetPath.toString(), text);
       }
@@ -1217,7 +1221,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
     {
       // On success, resolve the promise with true
       #if VERBOSE_ASSET_CACHE
-      trace(' ASSETS '.bold().bg_lime() + ' Cached Font: ${assetPath.toString()}');
+      trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Font: ${assetPath.toString()}');
       #end
 
       // Always permanent cache fonts.
@@ -1259,7 +1263,7 @@ class FunkinAssetCache implements OpenFLIAssetCache
       if (bytes != null && permanent)
       {
         #if VERBOSE_ASSET_CACHE
-        trace(' ASSETS '.bold().bg_lime() + ' Cached Bytes: ${assetPath.toString()}');
+        trace(' ASSETS '.bold().bg_lime() + ' Permanently Cached Bytes: ${assetPath.toString()}');
         #end
         stagedBytes.cachePermanent(assetPath.toString(), bytes);
       }
@@ -1407,53 +1411,115 @@ class FunkinAssetCache implements OpenFLIAssetCache
    */
   public function debug_listCachedAssets():Void
   {
-    trace(' ASSETS '.bold().bg_lime() + ' Cached assets:');
-    trace(' ASSETS '.bold().bg_lime() + ' BITMAP DATA:');
+    trace(' ASSETS '.bold().bg_lime() + ' ==CACHED ASSETS==');
     var keys:Array<String> = stagedBitmapData.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' BITMAP DATA:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      for (key in keys)
+      {
+        var bitmapData = stagedBitmapData.get(key);
+        if (bitmapData == null) continue;
+
+        var output:String = ' - $key';
+        if (stagedBitmapData.existsPermanent(key)) output += ' [P]';
+        if (!bitmapData.readable) output += ' [GPU]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' FLX GRAPHIC:');
     var keys:Array<String> = FunkinBitmapFrontend.instance.stagedFlxGraphic.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' FLXGRAPHIC:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var flxGraphic = FunkinBitmapFrontend.instance.stagedFlxGraphic.get(key);
+        if (flxGraphic == null) continue;
+
+        var output:String = ' - $key';
+        if (FunkinBitmapFrontend.instance.stagedFlxGraphic.existsPermanent(key)) output += ' [P]';
+        if (!flxGraphic.bitmap.readable) output += ' [GPU]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' FONT:');
     var keys:Array<String> = stagedFont.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' FONT:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedFont.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' SOUND:');
     var keys:Array<String> = stagedSound.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' SOUND:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + '- $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedSound.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + ' TEXT:');
     var keys:Array<String> = stagedText.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + ' TEXT:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedText.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
 
-    trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
     var keys:Array<String> = stagedBytes.keys();
     keys.sort(SortUtil.alphabetically);
-    for (key in keys)
+    trace(' ASSETS '.bold().bg_lime() + 'BYTES:');
+    if (keys.length > 0)
     {
-      trace(' ASSETS '.bold().bg_lime() + ' - $key');
+      for (key in keys)
+      {
+        var output:String = '- $key';
+        if (stagedBytes.existsPermanent(key)) output += ' [P]';
+        trace(' ASSETS '.bold().bg_lime() + output);
+      }
+    }
+    else
+    {
+      trace(' ASSETS '.bold().bg_lime() + ' - [none]');
     }
   }
 
