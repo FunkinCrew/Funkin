@@ -217,13 +217,6 @@ class Project extends HXProject
   static final EXCLUDE_ARMV7:FeatureFlag = "EXCLUDE_ARMV7";
 
   /**
-   * `-DFORCE_BLEND_SHADER`
-   * If this flag is enabled, the game will force the use of shaders to render
-   * certain blend modes, even if the device supports the needed OpenGL extensions.
-   */
-  static final FORCE_BLEND_SHADER:FeatureFlag = "FORCE_BLEND_SHADER";
-
-  /**
    * `-DGITHUB_BUILD`
    * If this flag is enabled, the game will use the configuration used by GitHub Actions
    * to generate playtest builds to be pushed to the launcher.
@@ -1003,11 +996,6 @@ class Project extends HXProject
 
     // Should be true on mobile builds.
     CENSOR_EXPLETIVES.apply(this, isMobile());
-
-    // Should be true on Android.
-    // Some Android devices support native blends, but it causes issues
-    // with other shaders, so we'll disable it for now.
-    FORCE_BLEND_SHADER.apply(this, isAndroid());
 
     //
     // FEATURE FLAGS
