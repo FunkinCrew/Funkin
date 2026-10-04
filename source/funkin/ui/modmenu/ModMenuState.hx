@@ -9,7 +9,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import funkin.InitState;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
@@ -17,7 +16,6 @@ import funkin.graphics.framebuffer.DropShadowLayer;
 import funkin.group.FunkinGroup.FunkinSpriteGroup;
 import funkin.input.Cursor;
 import funkin.modding.PolymodHandler;
-import funkin.save.Save;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
 import funkin.ui.mainmenu.MainMenuState;
@@ -27,8 +25,6 @@ import funkin.util.FileUtil;
 import funkin.util.PropertyAnimator;
 import funkin.util.WindowUtil;
 import haxe.io.Path;
-import polymod.Polymod.ModDependencies;
-import polymod.Polymod.ModMetadata;
 import polymod.PolymodConfig;
 #if android
 import funkin.external.android.DataFolderUtil;
@@ -66,7 +62,7 @@ class ModMenuState extends MusicBeatState
   /**
    * The base path for the base game.
    */
-  static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/base-icon';
+  public static inline final BASE_GAME_MOD_ICON_PATH:String = 'ui/mods/base-icon';
 
   /**
    * The full mod menu scene with bf gf and such.
@@ -156,6 +152,7 @@ class ModMenuState extends MusicBeatState
 
   var disabledModItems:ModMenuItemList = new ModMenuItemList();
   var enabledModItems:ModMenuItemList = new ModMenuItemList();
+  var listController:ModListController;
   var selection:ModMenuSelection = DisabledModList;
   var transitionLayer:FunkinSpriteGroup;
 
@@ -171,8 +168,6 @@ class ModMenuState extends MusicBeatState
   var openFolderAnimator:PropertyAnimator;
   var doneButtonAnimator:PropertyAnimator;
   var lastSelectDir:Int = 0;
-  var newEnabledItems:Array<ModMenuItem> = [];
-  var itemsInFolder:Array<String> = [];
   var menuBG:FunkinSprite;
 
   public function new()
@@ -192,6 +187,7 @@ class ModMenuState extends MusicBeatState
     camCharacters = new FunkinCamera('modMenuCharacters');
     camHUD = new FunkinCamera('modMenuHUD');
     camOther = new FunkinCamera('modMenuOther');
+    listController = new ModListController(disabledModItems, enabledModItems);
   }
 
   override public function create():Void
@@ -327,7 +323,7 @@ class ModMenuState extends MusicBeatState
     buttonBackToMenu.zIndex = 10;
     add(buttonBackToMenu);
 
-    scene = new ModMenuScene(instance, camCharacters, dropShadowCharacters, grabEnabledModList);
+    scene = new ModMenuScene(instance, camCharacters, dropShadowCharacters, listController.getEnabledModIdsWithBaseGame);
     scene.build(rightRectangle.x);
 
     buttonDone.x = scene.carBattery.x - 100;
@@ -456,22 +452,6 @@ class ModMenuState extends MusicBeatState
     playBackButtonAnimation('press', true);
   }
 
-  /**
-   * Grabs the list of mod IDs that are currently enabled in the menu.
-   */
-  function grabEnabledModList():Array<String>
-  {
-    var modIds:Array<String> = [];
-
-    for (item in enabledModItems.modItems)
-    {
-      if (item.mod != null) modIds.push(item.getModId());
-    }
-    modIds.push(BASE_GAME_MOD_ID);
-
-    return modIds;
-  }
-
   var fileDropTimer:Float = 0;
   var fileElapsed:Float = 0;
   var isHoveringFile:Bool = false;
@@ -501,18 +481,7 @@ class ModMenuState extends MusicBeatState
 
   function rescanFolder():Void
   {
-    var newItems:Array<String> = [];
-    try
-    {
-      newItems = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
-    }
-    catch (e:Dynamic)
-    {
-      trace('Failed to read mods folder: ${Std.string(e)}');
-      return;
-    }
-
-    if (newItems.length != itemsInFolder.length)
+    if (listController.hasFolderChanged())
     {
       trace("Mod folder changed, refreshing list.");
       refreshModList();
@@ -1638,8 +1607,6 @@ class ModMenuState extends MusicBeatState
   }
 
   // MOD LIST BUILDING //
-  var tempDisabledMods:Array<ModMetadata> = [];
-  var tempEnabledMods:Array<ModMetadata> = [];
 
   function animateNewItemsIn(list:ModMenuItemList, newItems:Array<ModMenuItem>):Void
   {
@@ -1666,22 +1633,21 @@ class ModMenuState extends MusicBeatState
 
   function refreshModList(doFade:Bool = true):Array<ModMenuItem>
   {
-    PolymodHandler.getDisabledModsIncludingIncompatible(true);
-    itemsInFolder = FileUtil.readDir(PolymodHandler.MOD_FOLDER);
-
-    tempDisabledMods = disabledModItems.modItems.map((item) -> item.mod);
-    tempEnabledMods = enabledModItems.modItems.map((item) -> item.mod).filter((m) -> m != null && m.id != BASE_GAME_MOD_ID);
-
     var oldSelectedId:Null<String> = null;
     if (selection == DisabledModList && disabledModItems.selectedModItem != null) oldSelectedId = disabledModItems.selectedModItem.getModId();
     else if (selection == EnabledModList && enabledModItems.selectedModItem != null) oldSelectedId = enabledModItems.selectedModItem.getModId();
 
-    newEnabledItems = [];
-    var newDisabledItems = buildDisabledModList();
-    buildEnabledModList();
+    disabledModItems.title = 'DISABLED';
+    disabledModItems.x = leftRectangle.x;
+    disabledModItems.y = leftRectangle.y;
 
-    tempDisabledMods = [];
-    tempEnabledMods = [];
+    enabledModItems.title = 'ENABLED';
+    enabledModItems.x = rightRectangle.x;
+    enabledModItems.y = rightRectangle.y;
+
+    var synced = listController.syncWithDisk();
+    var newDisabledItems:Array<ModMenuItem> = synced.newDisabled;
+    var newEnabledItems:Array<ModMenuItem> = synced.newEnabled;
 
     var usingTouch:Bool = false;
 
@@ -1736,141 +1702,9 @@ class ModMenuState extends MusicBeatState
     return newDisabledItems;
   }
 
-  function buildDisabledModList():Array<ModMenuItem>
-  {
-    var disabledMods:Array<ModMetadata> = PolymodHandler.getDisabledModsIncludingIncompatible();
-    var newModId:Array<String> = [];
-
-    var liveIds:Array<String> = disabledMods.map((m) -> m.id).concat(PolymodHandler.getEnabledMods().map((m) -> m.id));
-
-    if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
-    {
-      var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
-
-      // Drop carried-over mods that no longer exist on disk at all.
-      var reconciled:Array<ModMetadata> = tempDisabledMods.filter((m) -> liveIds.contains(m.id));
-
-      for (mod in disabledMods)
-      {
-        if (!allKnownIds.contains(mod.id))
-        {
-          reconciled.push(mod);
-          newModId.push(mod.id);
-        }
-      }
-
-      for (mod in PolymodHandler.getEnabledMods())
-      {
-        if (mod.id == BASE_GAME_MOD_ID) continue;
-        if (!allKnownIds.contains(mod.id))
-        {
-          reconciled.push(mod);
-          newModId.push(mod.id);
-        }
-      }
-
-      disabledMods = reconciled;
-    }
-
-    disabledModItems.title = 'DISABLED';
-    disabledModItems.x = leftRectangle.x;
-    disabledModItems.y = leftRectangle.y;
-
-    var keepIds:Array<String> = disabledMods.map((m) -> m.id);
-    for (item in disabledModItems.modItems.copy())
-    {
-      if (item.mod == null) continue;
-      if (!keepIds.contains(item.getModId())) disabledModItems.removeMod(item);
-    }
-
-    var newItems:Array<ModMenuItem> = [];
-    for (mod in disabledMods)
-    {
-      if (mod.id == BASE_GAME_MOD_ID) continue;
-      if (disabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
-
-      var item = new ModMenuItem(mod);
-      if (!PolymodHandler.isModCompatible(mod)) item.setIncompatible();
-      item.localAlpha = 0;
-      disabledModItems.addModRawWithoutLayout(item, disabledModItems.modItems.length);
-      newItems.push(item);
-    }
-
-    return newItems;
-  }
-
-  function buildEnabledModList():Void
-  {
-    var enabledMods:Array<ModMetadata> = PolymodHandler.getEnabledMods().filter((m) -> PolymodHandler.isModCompatible(m));
-
-    var liveIds:Array<String> = enabledMods.map((m) -> m.id).concat(PolymodHandler.getDisabledModsIncludingIncompatible().map((m) -> m.id));
-
-    if (tempDisabledMods.length > 0 || tempEnabledMods.length > 0)
-    {
-      var allKnownIds:Array<String> = tempDisabledMods.concat(tempEnabledMods).map((m) -> m.id);
-      var reconciled:Array<ModMetadata> = tempEnabledMods.filter((m) -> liveIds.contains(m.id));
-
-      for (mod in enabledMods)
-      {
-        if (mod.id == BASE_GAME_MOD_ID) continue;
-        if (!allKnownIds.contains(mod.id)) reconciled.push(mod);
-      }
-
-      enabledMods = reconciled;
-    }
-
-    enabledModItems.title = 'ENABLED';
-    enabledModItems.x = rightRectangle.x;
-    enabledModItems.y = rightRectangle.y;
-
-    var keepIds:Array<String> = enabledMods.map((m) -> m.id);
-    for (item in enabledModItems.modItems.copy())
-    {
-      if (item.getModId() == BASE_GAME_MOD_ID) continue;
-      if (!keepIds.contains(item.getModId())) enabledModItems.removeMod(item);
-    }
-
-    for (mod in enabledMods)
-    {
-      if (mod.id == BASE_GAME_MOD_ID) continue;
-      if (enabledModItems.modItems.exists((it) -> it.getModId() == mod.id)) continue;
-
-      var item = new ModMenuItem(mod);
-      item.localAlpha = 0;
-      enabledModItems.addModRawWithoutLayout(item, enabledModItems.modItems.length);
-      newEnabledItems.push(item);
-    }
-
-    if (!enabledModItems.modItems.exists((item) -> item.getModId() == BASE_GAME_MOD_ID))
-    {
-      var baseGameItem = new ModMenuItem(null, BASE_GAME_MOD_ICON_PATH, BASE_GAME_MOD_ID, 'Base Game', 'Default game content');
-      baseGameItem.locked = true;
-      enabledModItems.addModRawWithoutLayout(baseGameItem, 0);
-    }
-  }
-
   function applyModlist():Void
   {
-    // Backup the user's save data before switching mods.
-    var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
-    trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
-
-    // set enabled mods
-    var enabledModIds:Array<String> = [];
-    for (modItem in enabledModItems.modItems)
-    {
-      var modId = modItem.getModId();
-      if (modId == BASE_GAME_MOD_ID) continue;
-      enabledModIds.push(modId);
-    }
-
-    PolymodHandler.disableAllMods();
-    for (modId in enabledModIds)
-    {
-      PolymodHandler.enableMod(modId);
-    }
-
-    InitState.resetTitleState();
+    listController.applyToPolymod();
 
     buttonDone.visible = false;
     buttonOpenFolder.visible = false;
@@ -1902,39 +1736,17 @@ class ModMenuState extends MusicBeatState
 
     item.selected = false;
 
-    var dependenciesToEnable:Array<String> = checkDependencies(item.mod);
+    var dependenciesToEnable:Array<String> = listController.getMissingDependencies(item.mod);
     trace('Dependencies to enable for ${item.getModTitle()}: ${dependenciesToEnable}');
 
     if (batchFutureCount == -1)
     {
-      batchFutureCount = enabledModItems.modItems.length + countEnableBatch(item, []);
+      batchFutureCount = enabledModItems.modItems.length + listController.countEnableBatch(item, []);
     }
 
     var originalInsertIndex:Int = forcedInsertIndex;
 
-    if (originalInsertIndex == -1)
-    {
-      originalInsertIndex = enabledModItems.modItems.length;
-      for (enabledMod in enabledModItems.modItems)
-      {
-        if (enabledMod.mod == null) continue;
-        var optionalDependencies:ModDependencies = enabledMod.getOptionalDependencies();
-        if (optionalDependencies != null)
-        {
-          var b:Bool = false;
-          for (optionalDependencyId => version in optionalDependencies)
-          {
-            if (optionalDependencyId == item.getModId() && version.isSatisfiedBy(item.getModVersion()))
-            {
-              originalInsertIndex = enabledModItems.modItems.indexOf(enabledMod);
-              b = true;
-              break;
-            }
-          }
-          if (b) break;
-        }
-      }
-    }
+    if (originalInsertIndex == -1) originalInsertIndex = listController.findEnableInsertIndex(item);
 
     var nextInsertIndex = originalInsertIndex;
     for (dependencyId in dependenciesToEnable)
@@ -2020,11 +1832,11 @@ class ModMenuState extends MusicBeatState
 
     if (batchFutureCount == -1)
     {
-      batchFutureCount = disabledModItems.modItems.length + countDisableBatch(item, []);
+      batchFutureCount = disabledModItems.modItems.length + listController.countDisableBatch(item, []);
     }
 
     // Disable any mods that depend on this mod as well.
-    var brokenDependencies = validateDependencies(item.mod);
+    var brokenDependencies = listController.getEnabledDependents(item.mod);
     trace('Broken dependencies for ${item.getModTitle()}: ${brokenDependencies}');
     for (dependencyTitle in brokenDependencies)
     {
@@ -2138,43 +1950,7 @@ class ModMenuState extends MusicBeatState
 
     var otherModItem = modList[newIndex];
 
-    var blocked:Bool = false;
-    if (moveUp)
-    {
-      for (depId => version in otherModItem.getDependencies()) if (modItem.getModId() == depId)
-      {
-        blocked = true;
-        break;
-      }
-
-      if (!blocked)
-      {
-        var myOpt = modItem.getOptionalDependencies();
-        if (myOpt != null) for (depId => version in myOpt) if (otherModItem.getModId() == depId && version.isSatisfiedBy(otherModItem.getModVersion()))
-        {
-          blocked = true;
-          break;
-        }
-      }
-    }
-    else
-    {
-      for (depId => version in modItem.getDependencies()) if (otherModItem.getModId() == depId)
-      {
-        blocked = true;
-        break;
-      }
-
-      if (!blocked)
-      {
-        var otherOpt = otherModItem.getOptionalDependencies();
-        if (otherOpt != null) for (depId => version in otherOpt) if (modItem.getModId() == depId && version.isSatisfiedBy(modItem.getModVersion()))
-        {
-          blocked = true;
-          break;
-        }
-      }
-    }
+    var blocked:Bool = listController.isReorderBlocked(modItem, otherModItem, moveUp);
 
     if (blocked)
     {
@@ -2193,93 +1969,7 @@ class ModMenuState extends MusicBeatState
     enabledModItems.animateItemsToLayout(0.28, FlxEase.quartOut);
   }
 
-  // return an array of mod IDs that depend on the given mod that are currently enabled, which would be broken by disabling this mod
-
-  function validateDependencies(mod:ModMetadata):Array<String>
-  {
-    var brokenDependencies:Array<String> = [];
-
-    for (enabledModItem in enabledModItems.modItems)
-    {
-      var enabledMod = enabledModItem.mod;
-      if (enabledMod == null) continue;
-
-      var dependencies:ModDependencies = enabledMod.dependencies;
-      for (dependencyId => version in dependencies)
-      {
-        if (dependencyId == mod.id) brokenDependencies.push(enabledMod.title);
-      }
-    }
-
-    return brokenDependencies;
-  }
-
-  // return an array of mod IDs that the given mod depends on that are currently disabled.
-
-  function checkDependencies(mod:ModMetadata):Array<String>
-  {
-    var toEnable:Array<String> = [];
-
-    var dependencies:ModDependencies = mod.dependencies;
-    for (dependencyId => version in dependencies)
-    {
-      if (
-        !toEnable.contains(dependencyId)
-        && !enabledModItems.modItems.exists((item) -> item.getModId() == dependencyId && version.isSatisfiedBy(item.getModVersion()))
-      )
-      {
-        toEnable.push(dependencyId);
-      }
-    }
-
-    return toEnable;
-  }
-
   // HELPERS //
-
-  /**
-   * Recursively counts how many mods would be enabled if we enable this mod, including itself and all dependencies.
-   * @param item
-   * @param seen
-   * @return Int
-   */
-  function countEnableBatch(item:ModMenuItem, seen:Array<String>):Int
-  {
-    if (item == null) return 0;
-    var id = item.getModId();
-    if (seen.contains(id)) return 0;
-    seen.push(id);
-
-    var total:Int = 1;
-    for (depId in checkDependencies(item.mod))
-    {
-      var depItem = disabledModItems.modItems.find((it) -> it.getModId() == depId);
-      if (depItem != null) total += countEnableBatch(depItem, seen);
-    }
-    return total;
-  }
-
-  /**
-   * Recursively counts how many mods would be disabled if we disable this mod, including itself and all dependents.
-   * @param item
-   * @param seen
-   * @return Int
-   */
-  function countDisableBatch(item:ModMenuItem, seen:Array<String>):Int
-  {
-    if (item == null || item.mod == null) return 0;
-    var id = item.getModId();
-    if (seen.contains(id)) return 0;
-    seen.push(id);
-
-    var total:Int = 1; // this item
-    for (depTitle in validateDependencies(item.mod))
-    {
-      var depItem = enabledModItems.modItems.find((it) -> it.getModTitle() == depTitle);
-      if (depItem != null) total += countDisableBatch(depItem, seen);
-    }
-    return total;
-  }
 
   function distanceToPoint(point1:FlxPoint, point2:FlxPoint):Float
   {
