@@ -1187,6 +1187,7 @@ class Project extends HXProject
     setHaxedef("lime_disable_assets_version");
 
     setHaxedef("HXCPP_CHECK_POINTER");
+    if (!FEATURE_DEBUG_TRACY.isEnabled(this)) setHaxedef("HXCPP_GC_GENERATIONAL");
 
     if (!FEATURE_STACK_TRACE.isDisabled(this))
     {
