@@ -278,7 +278,7 @@ class ModMenuState extends MusicBeatState
     var dragTextWidth:Float = leftRectangle.width + rightRectangle.width + distanceBetweenRectangles;
     var dragText:FlxText = new FlxText(leftRectangle.x, FlxG.height * 0.13, dragTextWidth, 'Drag packs onto this window to add new stuff');
     #if FEATURE_TOUCH_CONTROLS
-    dragText.text = 'Tap and hold on a mod to drag it';
+    dragText.text = 'Tap a mod to move it';
     #end
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     dragText.scale.set(1, 0.8);
@@ -1816,155 +1816,96 @@ class ModMenuState extends MusicBeatState
   }
 
   #if FEATURE_TOUCH_CONTROLS
-  var grabbedItem:ModMenuItem = null;
-  var originalItemList:ModMenuItemList = null;
-  final touchDeltaXThreshold:Int = 5;
-  final touchDeltaYThreshold:Int = 10;
+  final touchScrollThreshold:Float = 10;
+  var touchList:ModMenuItemList = null;
+  var touchItem:ModMenuItem = null;
+  var touchStartY:Float = 0;
+  var touchLastY:Float = 0;
+  var touchScrolling:Bool = false;
 
-  function checkItemGrab(itemList:ModMenuItemList,
-    targetSelection:ModMenuSelection):Void
+  function getTouchedItem(itemList:ModMenuItemList, box:FunkinSprite):Null<ModMenuItem>
   {
-    if (grabbedItem == null)
-    {
-      itemList.deselect();
-    }
+    // Items scrolled outside of the box are clipped, so they can't be tapped.
+    final touchPos = TouchUtil.touch.getWorldPosition(box.cameras[0]);
+    final inView:Bool = touchPos.y >= box.y + 60 && touchPos.y <= box.y + box.height - 15;
+    touchPos.put();
+
+    if (!inView) return null;
 
     for (item in itemList.modItems)
     {
-      if (!item.locked && TouchUtil.overlapsComplex(item) && TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewX) >= touchDeltaXThreshold)
-      {
-        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
-
-        itemList.selectModItem(item, false);
-
-        grabbedItem = item;
-        originalItemList = itemList;
-
-        for (record in pendingTransitions)
-        {
-          if (record.item == grabbedItem)
-          {
-            completeTransition(record);
-
-            break;
-          }
-        }
-
-        putItemInTransitionLayer(item, grabbedItem.x, grabbedItem.y);
-
-        selection = targetSelection;
-      }
+      if (TouchUtil.overlapsComplex(item)) return item;
     }
+
+    return null;
   }
 
-  var touchScrolling:Bool = false;
+  function resetTouch():Void
+  {
+    touchList = null;
+    touchItem = null;
+    touchScrolling = false;
+  }
 
   function handleTouch(elapsed:Float):Void
   {
-    if (hasTransitions() || exitingMenu || backPressStage > 0) return;
-    if (touchScrolling)
+    if (hasTransitions() || exitingMenu || backPressStage > 0 || TouchUtil.touch == null)
     {
-      var targetList:ModMenuItemList = null;
-
-      switch (selection)
-      {
-        case EnabledModList:
-          targetList = enabledModItems;
-
-        case DisabledModList:
-          targetList = disabledModItems;
-
-        default:
-          // nothing.
-      }
-
-      targetList?.scrollBy(TouchUtil.touch?.deltaViewY);
-
-      if (TouchUtil.justReleased)
-      {
-        touchScrolling = false;
-      }
+      resetTouch();
+      return;
     }
-    else
+
+    if (TouchUtil.justPressed)
     {
-      if (grabbedItem == null)
+      resetTouch();
+
+      if (TouchUtil.overlapsComplex(leftRectangle))
       {
-        checkItemGrab(enabledModItems, EnabledModList);
-        checkItemGrab(disabledModItems, DisabledModList);
-
-        if (TouchUtil.pressed && Math.abs(TouchUtil.touch?.deltaViewY) >= touchDeltaYThreshold)
-        {
-          touchScrolling = true;
-        }
+        touchList = disabledModItems;
+        touchItem = getTouchedItem(disabledModItems, leftRectangle);
       }
-      else
+      else if (TouchUtil.overlapsComplex(rightRectangle))
       {
-        final targetX:Float = TouchUtil.touch?.x - grabbedItem.width / 2;
-        final targetY:Float = TouchUtil.touch?.y - grabbedItem.height / 2;
-
-        grabbedItem.localX = MathUtil.smoothLerpPrecision(grabbedItem.localX, targetX, elapsed, 0.5);
-        grabbedItem.localY = MathUtil.smoothLerpPrecision(grabbedItem.localY, targetY, elapsed, 0.5);
-
-        if (!TouchUtil.pressed)
-        {
-          var targetList:ModMenuItemList = null;
-
-          var listChanged:Bool = false;
-
-          switch (selection)
-          {
-            case EnabledModList:
-              targetList = enabledModItems;
-
-              if (TouchUtil.overlapsComplex(leftRectangle))
-              {
-                targetList = disabledModItems;
-
-                selection = DisabledModList;
-
-                disableMod(grabbedItem, true);
-
-                listChanged = true;
-              }
-
-            case DisabledModList:
-              targetList = disabledModItems;
-
-              if (TouchUtil.overlapsComplex(rightRectangle))
-              {
-                targetList = enabledModItems;
-
-                selection = EnabledModList;
-
-                final result:Bool = enableMod(grabbedItem, true);
-
-                listChanged = result;
-              }
-
-            default:
-              // Isnt supposed to happen.
-          }
-
-          if (!listChanged)
-          {
-            targetList = originalItemList;
-
-            var finalIndex:Int = targetList.modItems.indexOf(grabbedItem);
-
-            var batchFutureCount:Int = targetList.modItems.length;
-
-            var targetTransitionX:Float = targetList.x + ModMenuItemList.ITEM_X_OFFSET;
-            var targetTransitionY:Float = targetList.y + targetList.getModItemYPosForCount(finalIndex, batchFutureCount) + targetList.scrollOffset;
-
-            startItemTransition(grabbedItem, targetTransitionX, targetTransitionY, targetList, finalIndex);
-          }
-
-          targetList.deselect();
-
-          grabbedItem = null;
-          originalItemList = null;
-        }
+        touchList = enabledModItems;
+        touchItem = getTouchedItem(enabledModItems, rightRectangle);
       }
+
+      touchStartY = TouchUtil.touch.viewY;
+      touchLastY = touchStartY;
+    }
+    else if (touchList != null && TouchUtil.pressed)
+    {
+      final touchY:Float = TouchUtil.touch.viewY;
+
+      if (!touchScrolling && Math.abs(touchY - touchStartY) >= touchScrollThreshold)
+      {
+        touchScrolling = true;
+        touchLastY = touchY;
+      }
+
+      if (touchScrolling) touchList.scrollBy(touchY - touchLastY);
+
+      touchLastY = touchY;
+    }
+    else if (touchList != null)
+    {
+      if (!touchScrolling && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
+      {
+        FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+        if (touchList == disabledModItems)
+        {
+          enableMod(touchItem, false);
+        }
+        else
+        {
+          disableMod(touchItem, false);
+        }
+
+        selection = (touchList == disabledModItems) ? DisabledModList : EnabledModList;
+      }
+
+      resetTouch();
     }
 
     if (TouchUtil.overlapsComplex(hitboxOpenFolder) && selection != OpenModsFolder)
@@ -2004,11 +1945,19 @@ class ModMenuState extends MusicBeatState
       playBackButtonAnimation('press', true);
     }
 
-    if (buttonBackToMenu.animation.name == 'press' && TouchUtil.justReleased)
+    if (buttonBackToMenu.animation.name == 'press' && !TouchUtil.pressed)
     {
-      backPressStage = 2;
+      if (TouchUtil.justReleased && TouchUtil.overlapsComplex(buttonBackToMenu))
+      {
+        exitingMenu = true;
+        backPressStage = 2;
 
-      playBackButtonAnimation('confirm', true);
+        playBackButtonAnimation('confirm', true);
+      }
+      else
+      {
+        playBackButtonAnimation('idle', true);
+      }
     }
   }
   #end
