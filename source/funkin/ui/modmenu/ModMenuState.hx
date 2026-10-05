@@ -278,7 +278,7 @@ class ModMenuState extends MusicBeatState
     var dragTextWidth:Float = leftRectangle.width + rightRectangle.width + distanceBetweenRectangles;
     var dragText:FlxText = new FlxText(leftRectangle.x, FlxG.height * 0.13, dragTextWidth, 'Drag packs onto this window to add new stuff');
     #if FEATURE_TOUCH_CONTROLS
-    dragText.text = 'Tap a mod to move it';
+    dragText.text = 'Tap a mod to move it, hold and drag to reorder';
     #end
     dragText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 32, FlxColor.WHITE, FlxTextAlign.CENTER);
     dragText.scale.set(1, 0.8);
@@ -1822,6 +1822,41 @@ class ModMenuState extends MusicBeatState
   var touchStartY:Float = 0;
   var touchLastY:Float = 0;
   var touchScrolling:Bool = false;
+  final touchReorderHoldTime:Float = 0.1;
+  var touchHoldTimer:Float = 0;
+  var touchReordering:Bool = false;
+  var touchReorderSlot:Int = -1;
+
+  function handleTouchReorder():Void
+  {
+    final itemCount:Int = enabledModItems.modItems.length;
+    final touchPos = TouchUtil.touch.getWorldPosition(rightRectangle.cameras[0]);
+    final localY:Float = touchPos.y - enabledModItems.y - enabledModItems.scrollOffset - ModMenuItemList.ITEM_Y_OFFSET + 8;
+    touchPos.put();
+
+    var slot:Int = itemCount - 1 - Math.floor(localY / 112);
+    if (slot < 0) slot = 0;
+    if (slot > itemCount - 1) slot = itemCount - 1;
+
+    if (slot == touchReorderSlot) return;
+
+    final index:Int = enabledModItems.modItems.indexOf(touchItem);
+
+    if (slot == index)
+    {
+      touchReorderSlot = slot;
+      return;
+    }
+
+    orderMod(touchItem, slot > index);
+
+    if (enabledModItems.modItems.indexOf(touchItem) == index)
+      touchReorderSlot = slot;
+    else
+    {
+      FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+    }
+  }
 
   function getTouchedItem(itemList:ModMenuItemList, box:FunkinSprite):Null<ModMenuItem>
   {
@@ -1842,6 +1877,11 @@ class ModMenuState extends MusicBeatState
 
   function resetTouch():Void
   {
+    if (touchReordering) enabledModItems.deselect();
+
+    touchReordering = false;
+    touchReorderSlot = -1;
+    touchHoldTimer = 0;
     touchList = null;
     touchItem = null;
     touchScrolling = false;
@@ -1873,9 +1913,33 @@ class ModMenuState extends MusicBeatState
       touchStartY = TouchUtil.touch.viewY;
       touchLastY = touchStartY;
     }
+    else if (touchReordering && TouchUtil.pressed)
+    {
+      handleTouchReorder();
+    }
     else if (touchList != null && TouchUtil.pressed)
     {
       final touchY:Float = TouchUtil.touch.viewY;
+
+      if (!touchScrolling
+        && touchList == enabledModItems
+        && touchItem != null
+        && !touchItem.locked
+        && !enabledModItems.isPinnedItem(touchItem))
+      {
+        touchHoldTimer += elapsed;
+
+        if (touchHoldTimer >= touchReorderHoldTime)
+        {
+          FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
+
+          touchReordering = true;
+          touchReorderSlot = enabledModItems.modItems.indexOf(touchItem);
+          enabledModItems.selectModItem(touchItem, false);
+
+          return;
+        }
+      }
 
       if (!touchScrolling && Math.abs(touchY - touchStartY) >= touchScrollThreshold)
       {
@@ -1889,7 +1953,7 @@ class ModMenuState extends MusicBeatState
     }
     else if (touchList != null)
     {
-      if (!touchScrolling && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
+      if (!touchScrolling && !touchReordering && touchItem != null && !touchItem.locked && TouchUtil.justReleased && TouchUtil.overlapsComplex(touchItem))
       {
         FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
 
