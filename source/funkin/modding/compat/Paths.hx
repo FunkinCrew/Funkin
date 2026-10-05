@@ -3661,6 +3661,8 @@ class Paths
       case 'xml': // Data or image text
         var dataFilePath:String = (library == 'default') ? 'assets/data/$id' : 'assets/$library/data/$id';
         var imageFilePath:String = (library == 'default') ? 'assets/images/$id' : 'assets/$library/images/$id';
+        // Specific redirect for health icons
+        var iconFilePath:String = (library == 'default') ? 'assets/images/icons/$fileName' : 'assets/$library/images/icons/$fileName';
         // Specific redirect for freeplay icon paths
         var freeplayIconFilePath:String = filePath
           .replace('ui/freeplay/characters/', (library == 'default') ? 'images/freeplay/icons/' : '$library/images/freeplay/icons/')
@@ -3680,6 +3682,7 @@ class Paths
 
         usePathIfExists(dataFilePath);
         usePathIfExists(imageFilePath);
+        usePathIfExists(iconFilePath);
         usePathIfExists(freeplayIconFilePath);
         usePathIfExists(freeplayDifficultyFilePath);
         usePathIfExists(storyDifficultyFilePath);
