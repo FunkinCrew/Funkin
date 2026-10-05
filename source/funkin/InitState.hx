@@ -537,6 +537,10 @@ class InitState extends FlxState
 
         FlxG.switchState(() -> new ChartPlaytestMenu(fnfcFile));
       }
+      else if (customTitleState != null)
+      {
+        FlxG.switchState(() -> customTitleState);
+      }
       else
       {
         FlxG.switchState(() -> new TitleState());

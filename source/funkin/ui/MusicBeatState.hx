@@ -57,13 +57,13 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function transitionIn():Void
   {
-    default_trans_isTransitioning = true;
+    default_trans_isTransitioning = hasTransIn;
     super.transitionIn();
   }
 
   override function transitionOut(?onComplete:Void->Void):Void
   {
-    default_trans_isTransitioning = true;
+    default_trans_isTransitioning = hasTransOut;
     super.transitionOut(onComplete);
   }
 
@@ -175,6 +175,9 @@ class MusicBeatState extends FlxTransitionableState implements IEventHandler
 
   override function create():Void
   {
+    if (transIn == null) transIn = FlxTransitionableState.defaultTransIn;
+    if (transOut == null) transOut = FlxTransitionableState.defaultTransOut;
+
     super.create();
 
     createWatermarkText();
