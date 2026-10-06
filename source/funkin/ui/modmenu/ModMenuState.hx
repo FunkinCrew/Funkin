@@ -174,7 +174,8 @@ class ModMenuState extends MusicBeatState
   var whiteColor:PureColor = new PureColor(FlxColor.WHITE);
   var menuBG:FunkinSprite;
   var carBattery:FunkinSprite;
-  var fgWires:FunkinSprite;
+  var fgWiresBottom:FunkinSprite;
+  var fgWiresTop:FunkinSprite;
   var shockTimer:FlxTimer = new FlxTimer();
   var sparks:ModMenuSparks;
   var gfWire:FunkinSprite;
@@ -394,17 +395,28 @@ class ModMenuState extends MusicBeatState
     bgWires.camera = camCharacters;
     add(bgWires);
 
-    fgWires = new FunkinSprite(bf.x - 144, bf.y - 90).loadTextureAtlas('ui/mods/foreground-wires');
-    fgWires.anim.addByFrameLabel('idle', 'idle', 24);
-    fgWires.anim.addByFrameLabel('idle-pinhead', 'idle pinhead', 24);
-    fgWires.anim.addByFrameLabel('shock', 'shock', 24);
-    fgWires.anim.addByFrameLabel('end', 'end', 24, false);
-    fgWires.animation.play('idle');
-    fgWires.scale.set(0.7, 0.7);
-    fgWires.updateHitbox();
-    fgWires.zIndex = 35;
-    fgWires.camera = camCharacters;
-    add(fgWires);
+    fgWiresBottom = new FunkinSprite(bf.x - 144, bf.y + 446.5).loadTextureAtlas('ui/mods/foreground-wires-bottom');
+    fgWiresBottom.anim.addByFrameLabel('idle', 'idle', 24);
+    fgWiresBottom.anim.addByFrameLabel('idle-pinhead', 'idle pinhead', 24);
+    fgWiresBottom.anim.addByFrameLabel('shock', 'shock', 24);
+    fgWiresBottom.anim.addByFrameLabel('end', 'end', 24, false);
+    fgWiresBottom.animation.play('idle');
+    fgWiresBottom.scale.set(0.7, 0.7);
+    fgWiresBottom.updateHitbox();
+    fgWiresBottom.zIndex = 35;
+    fgWiresBottom.camera = camCharacters;
+    add(fgWiresBottom);
+
+    fgWiresTop = new FunkinSprite(bf.x + 257.5, bf.y - 90).loadTextureAtlas('ui/mods/foreground-wires-top');
+    fgWiresTop.anim.addByFrameLabel('idle', 'idle', 24);
+    fgWiresTop.anim.addByFrameLabel('shock', 'shock', 24);
+    fgWiresTop.anim.addByFrameLabel('end', 'end', 24, false);
+    fgWiresTop.animation.play('idle');
+    fgWiresTop.scale.set(0.7, 0.7);
+    fgWiresTop.updateHitbox();
+    fgWiresTop.zIndex = 35;
+    fgWiresTop.camera = camCharacters;
+    add(fgWiresTop);
 
     crispySmokeBF = new FunkinSprite(bf.x + 70, bf.y - 180).loadSparrow('ui/mods/smoke');
     crispySmokeBF.animation.addByPrefix('idle', 'retry_smoke', 24);
@@ -725,6 +737,7 @@ class ModMenuState extends MusicBeatState
     gf.switchCharacter();
 
     gfWire.visible = !gf.hasCustomWires;
+    fgWiresTop.visible = !bf.hasCustomWires;
 
     if (gf.currentCharacterId == 'empty-chair')
     {
@@ -739,11 +752,11 @@ class ModMenuState extends MusicBeatState
 
     if (bf.useSmallWire)
     {
-      fgWires.animation.play('idle-pinhead');
+      fgWiresBottom.animation.play('idle-pinhead');
     }
     else
     {
-      fgWires.animation.play('idle');
+      fgWiresBottom.animation.play('idle');
     }
 
     this.refresh();
@@ -1410,10 +1423,13 @@ class ModMenuState extends MusicBeatState
     gf.playAnimation(ELECTROCUTED, true);
 
     carBattery.animation.resume();
-    fgWires.animation.play('shock');
+    fgWiresBottom.animation.play('shock');
 
     gfWire.visible = true;
     gfWire.animation.play('shock');
+
+    fgWiresTop.visible = true;
+    fgWiresTop.animation.play('shock');
 
     sparks.startElectrocution();
 
@@ -1422,7 +1438,8 @@ class ModMenuState extends MusicBeatState
 
     dropShadowCharacters.blacklistSprite(gfWire);
     dropShadowCharacters.blacklistSprite(carBattery);
-    dropShadowCharacters.blacklistSprite(fgWires);
+    dropShadowCharacters.blacklistSprite(fgWiresBottom);
+    dropShadowCharacters.blacklistSprite(fgWiresTop);
 
     var blackFlash:FunkinSprite = new FunkinSprite(0, 0).makeSolidColor(FlxG.width, FlxG.height, 0xFF232327);
     blackFlash.zIndex = 0;
@@ -1440,7 +1457,8 @@ class ModMenuState extends MusicBeatState
 
       carBattery.visible = false;
       gfWire.visible = false;
-      fgWires.visible = false;
+      fgWiresBottom.visible = false;
+      fgWiresTop.visible = false;
       bgWires.visible = false;
 
       buttonDone.visible = false;
@@ -1449,7 +1467,7 @@ class ModMenuState extends MusicBeatState
       dropShadowCharacters.visible = false;
       dropShadowCharacters.whitelistSprite(gfWire);
       dropShadowCharacters.whitelistSprite(carBattery);
-      dropShadowCharacters.whitelistSprite(fgWires);
+      dropShadowCharacters.whitelistSprite(fgWiresBottom);
 
       FlxTimer.wait(2 / 24, () ->
       {
@@ -1476,7 +1494,7 @@ class ModMenuState extends MusicBeatState
 
         sparks.endElectrocution();
 
-        fgWires.visible = true;
+        fgWiresBottom.visible = true;
         bgWires.visible = true;
         dropShadowCharacters.visible = true;
 
@@ -1530,7 +1548,7 @@ class ModMenuState extends MusicBeatState
           crispySmokeBF.visible = bf.currentCharacterId != 'empty-chair';
           crispySmokeGF.visible = gf.currentCharacterId != 'empty-chair';
 
-          fgWires.animation.play('end');
+          fgWiresBottom.animation.play('end');
         }
 
         crispyTimer = 0;
@@ -1850,8 +1868,7 @@ class ModMenuState extends MusicBeatState
 
     orderMod(touchItem, slot > index);
 
-    if (enabledModItems.modItems.indexOf(touchItem) == index)
-      touchReorderSlot = slot;
+    if (enabledModItems.modItems.indexOf(touchItem) == index) touchReorderSlot = slot;
     else
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/scroll-menu'), 0.4);
@@ -1921,11 +1938,7 @@ class ModMenuState extends MusicBeatState
     {
       final touchY:Float = TouchUtil.touch.viewY;
 
-      if (!touchScrolling
-        && touchList == enabledModItems
-        && touchItem != null
-        && !touchItem.locked
-        && !enabledModItems.isPinnedItem(touchItem))
+      if (!touchScrolling && touchList == enabledModItems && touchItem != null && !touchItem.locked && !enabledModItems.isPinnedItem(touchItem))
       {
         touchHoldTimer += elapsed;
 
