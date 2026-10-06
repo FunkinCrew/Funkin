@@ -212,6 +212,9 @@ class HotReloadState extends MusicBeatState
   function afterPurgeCache():Void
   {
     trace('queuePurgeCache.onComplete()');
+
+    funkin.modding.PolymodHandler.clearCoreAssetCache();
+
     // OK now that we've purged the asset cache, we can display the progress bar
     // without the assets for it getting purged while they're in use.
     // NOTE: onComplete() is run in the main thread.
