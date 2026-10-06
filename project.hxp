@@ -1195,7 +1195,7 @@ class Project extends HXProject
       setHaxedef("HXCPP_STACK_TRACE");
     }
 
-    if (isDebug()) setHaxedef("hscriptPos");
+    setHaxedef("hscriptPos");
 
     if (FEATURE_CPPIA.isEnabled(this))
     {
