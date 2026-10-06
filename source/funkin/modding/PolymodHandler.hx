@@ -273,7 +273,7 @@ class PolymodHandler
     polymod.hscript._internal.PolymodCppiaClassReference.expectedVersion = lime.app.Application.current.meta.get('version');
     #end
 
-    clearCoreAssetCache();
+    funkin.assets.FunkinAssetCache.instance.clearCoreAssetCache();
 
     if (async)
     {
@@ -305,29 +305,6 @@ class PolymodHandler
         total: total
       });
     }
-  }
-
-  public static function clearCoreAssetCache():Void
-  {
-    #if sys
-    @:privateAccess
-    for (library in lime.utils.Assets.libraries)
-    {
-      var current:Null<lime.utils.AssetLibrary> = library;
-      var depth:Int = 0;
-      while (current != null && depth < 8)
-      {
-        current.cachedText.clear();
-        current.cachedBytes.clear();
-        current.cachedImages.clear();
-        current.cachedAudioBuffers.clear();
-
-        var next:Dynamic = Reflect.field(current, 'fallback');
-        current = Std.isOfType(next, lime.utils.AssetLibrary) ? cast next : null;
-        depth++;
-      }
-    }
-    #end
   }
 
   /**
