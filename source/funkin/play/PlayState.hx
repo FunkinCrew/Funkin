@@ -3474,8 +3474,9 @@ class PlayState extends MusicBeatSubState
       if (Highscore.tallies.combo >= 10) comboPopUps.displayCombo(0);
       Highscore.tallies.combo = 0;
     }
-    else
+    else if (daRating != '')
     {
+      // Hold note scoring passes an empty rating... lol
       Highscore.tallies.combo++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
