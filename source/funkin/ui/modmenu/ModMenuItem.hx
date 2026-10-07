@@ -313,9 +313,8 @@ class ModMenuItem extends FunkinSpriteGroup
     descriptionText.localY = titleText.localY + TITLE_SPACING;
     descriptionText.text = getModDescription();
     descriptionText.localAlpha = 0.7;
+    descriptionText.clipRect = FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - TITLE_SPACING);
     add(descriptionText);
-
-    setChildClipRect(descriptionText, FlxRect.get(0, 0, DESC_WIDTH, ICON_HEIGHT - TITLE_SPACING));
   }
 
   override public function update(elapsed:Float):Void

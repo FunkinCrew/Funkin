@@ -17,7 +17,6 @@ import funkin.ui.ScrollingTextBox;
 class ModMenuInstallPopup extends FunkinSpriteGroup
 {
   static inline final ICON_SIZE:Int = 96;
-
   static inline final CARD_WIDTH:Int = 350;
   static inline final TEXT_WIDTH:Int = 246;
   static inline final TITLE_HEIGHT:Int = 42;
@@ -143,7 +142,7 @@ class ModMenuInstallPopup extends FunkinSpriteGroup
     add(barFill);
 
     barClip = FlxRect.get(0, 0, 0, BAR_HEIGHT);
-    setChildClipRect(barFill, barClip);
+    barFill.clipRect = barClip;
 
     promptText = new FlxText(0, 0, CARD_WIDTH - (PADDING * 2));
     promptText.setFormat(funkin.assets.Paths.font('ui/fonts/FunkinLingLong', 'otf'), 20, FlxColor.WHITE, FlxTextAlign.CENTER);
