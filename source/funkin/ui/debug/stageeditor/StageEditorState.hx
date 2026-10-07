@@ -436,26 +436,7 @@ class StageEditorState extends UIState
     // Some callbacks.
     findObjDialog = new FindObjDialog(this, selectedSprite == null ? '' : selectedSprite.name);
 
-    FlxG.stage.window.onDropFile.add(function(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
-    {
-      if (!allowInput || welcomeDialog != null) return;
-
-      var data:Bytes = FileUtil.readBytesFromPath(file.path);
-
-      if (data != null)
-      {
-        objNameDialog = new NewObjDialog(this, data);
-        objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
-        objNameDialog.showDialog();
-
-        objNameDialog.onDialogClosed = function(_)
-        {
-          objNameDialog = null;
-        }
-
-        return;
-      }
-    });
+    FlxG.stage.window.onDropFile.add(onDropFile);
 
     if (params?.targetStageId != null && StageRegistry.instance.hasEntry(params?.targetStageId))
     {
@@ -545,6 +526,27 @@ class StageEditorState extends UIState
       startingVolume: 0.0
     });
     FlxG.sound.music.fadeIn(10, 0, 1);
+  }
+
+  function onDropFile(file:lime.utils.DroppedFile, state:String, x:Float, y:Float):Void
+  {
+    if (!allowInput || welcomeDialog != null) return;
+
+    var data:Bytes = FileUtil.readBytesFromPath(file.path);
+
+    if (data != null)
+    {
+      objNameDialog = new NewObjDialog(this, data);
+      objNameDialog.bitmapName = new haxe.io.Path(file.path).file;
+      objNameDialog.showDialog();
+
+      objNameDialog.onDialogClosed = function(_)
+      {
+        objNameDialog = null;
+      }
+
+      return;
+    }
   }
 
   var curTestChar:Int = 0;
@@ -1765,6 +1767,8 @@ class StageEditorState extends UIState
       middleMousePanOffset.put();
       middleMousePanOffset = null;
     }
+
+    FlxG.stage.window.onDropFile.remove(onDropFile);
 
     // Reset the sounds used by some playables.
     funkin.play.GameOverSubState.reset();
