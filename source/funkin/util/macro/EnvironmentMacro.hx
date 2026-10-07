@@ -98,11 +98,6 @@ class EnvironmentMacro
 
                     Context.fatalError(errorMessage, field.pos);
                   }
-                  else
-                  {
-                    warning('Value for '.bright_red() + field.name.bold().bright_red() + ' not found in the environment file.'.bright_red(), field.pos);
-                  }
-
                   buildFields[i].kind = FVar(t, e);
                 }
               }
