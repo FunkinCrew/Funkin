@@ -164,7 +164,7 @@
     {
       "name": "hxvlc",
       "type": "git",
-      "ref": "debbf2bb23ef572920ef264df87c773e0b96043b",
+      "ref": "5ceac764bd21625d1e9d92ea02f9a0d110c6a58c",
       "url": "https://github.com/MAJigsaw77/hxvlc"
     },
     {
@@ -205,7 +205,7 @@
     {
       "name": "polymod",
       "type": "git",
-      "ref": "7c2a5626b62290c800795f97b5a28d12ea118ad5",
+      "ref": "b19830d6f7a18fc36761701a15d6d95c32c4ba66",
       "url": "https://github.com/FunkinCrew/polymod"
     },
     {
