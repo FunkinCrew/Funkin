@@ -28,6 +28,19 @@
 10. If you are targeting for native, you may need to run `lime rebuild <PLATFORM>` and `lime rebuild <PLATFORM> -debug`
 11. `lime test <PLATFORM>` to build and launch the game for your platform (for example, `lime test windows`)
 
+## Optional environment variables
+
+Some integrations load credentials from a `.env` file in the project root at compile time. Missing optional values no longer prevent compilation; the corresponding integration remains disabled at runtime.
+
+To enable Newgrounds, create a `.env` file with the following values:
+
+```text
+API_NG_APP_ID=your-newgrounds-app-id
+API_NG_ENC_KEY=your-newgrounds-encryption-key
+```
+
+Do not commit `.env` or share these values.
+
 ## Build Flags
 
 There are several useful build flags you can add to a build to affect how it works. A full list can be found in `project.hxp`, but here's information on some of them:
