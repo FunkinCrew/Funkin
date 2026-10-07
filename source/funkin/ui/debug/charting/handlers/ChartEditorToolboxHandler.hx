@@ -20,7 +20,8 @@ import funkin.ui.debug.charting.toolboxes.ChartEditorDifficultyToolbox;
 /**
  * Static functions which handle building themed UI elements for a provided ChartEditorState.
  */
-@:nullSafety @:access(funkin.ui.debug.charting.ChartEditorState)
+@:nullSafety
+@:access(funkin.ui.debug.charting.ChartEditorState)
 class ChartEditorToolboxHandler
 {
   public static function setToolboxState(state:ChartEditorState, id:String, shown:Bool):Void
@@ -70,7 +71,17 @@ class ChartEditorToolboxHandler
         case ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT:
-          cast(toolbox, ChartEditorBaseToolbox).refresh();
+          final offsetsToolbox = cast(toolbox, ChartEditorOffsetsToolbox);
+          offsetsToolbox.refresh();
+
+          haxe.Timer.delay(() ->
+          {
+            if (state.activeToolboxes.get(id) == toolbox && toolbox.visible)
+            {
+              offsetsToolbox.refresh();
+              offsetsToolbox.refreshTicks();
+            }
+          }, 0);
         case ChartEditorState.CHART_EDITOR_TOOLBOX_FREEPLAY_LAYOUT:
           cast(toolbox, ChartEditorBaseToolbox).refresh();
         case ChartEditorState.CHART_EDITOR_TOOLBOX_PLAYER_PREVIEW_LAYOUT:
