@@ -21,6 +21,11 @@ class DebugMenuSubState extends MusicBeatSubState
    */
   var camFocusPoint:FlxObject;
 
+  /**
+   * Whether an item has been selected or not
+   */
+  var hasSelected:Bool = false;
+
   override function create():Void
   {
     FlxTransitionableState.skipNextTransIn = true;
@@ -78,6 +83,8 @@ class DebugMenuSubState extends MusicBeatSubState
     onMenuChange(items.members[0]);
     FlxG.camera.focusOn(new FlxPoint(camFocusPoint.x, camFocusPoint.y + 500));
 
+    hasSelected = false;
+
     #if FEATURE_HAXEUI
     // Remove the "user" stylesheet to prevent components using incorrect style data when entering an editor.
     haxe.ui.Toolkit.styleSheet.clear("user");
@@ -93,7 +100,7 @@ class DebugMenuSubState extends MusicBeatSubState
   {
     super.update(elapsed);
 
-    if (controls.BACK_P)
+    if (controls.BACK_P && !hasSelected)
     {
       FunkinSound.playOnce(Paths.sound('ui/main-menu/cancel-menu'));
       exitDebugMenu();
@@ -111,6 +118,8 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CHART_EDITOR
   function openChartEditor():Void
   {
+    hasSelected = true;
+
     FlxTransitionableState.skipNextTransIn = true;
 
     FlxG.switchState(() -> new ChartEditorState());
@@ -125,6 +134,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_ANIMATION_EDITOR
   function openAnimationEditor():Void
   {
+    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.debug.anim.DebugBoundingState());
     trace('Animation Editor');
   }
@@ -140,6 +150,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_STAGE_EDITOR
   function openStageEditor():Void
   {
+    hasSelected = true;
     trace('Stage Editor');
     FlxG.switchState(() -> new funkin.ui.debug.stageeditor.StageEditorState());
   }
@@ -148,6 +159,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_POLYMOD_MODS
   function openModMenu():Void
   {
+    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.modmenu.ModMenuState());
   }
   #end
@@ -155,6 +167,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if FEATURE_CAMERA_EDITOR
   function openCameraEditor():Void
   {
+    hasSelected = true;
     FlxG.switchState(() -> new funkin.ui.debug.cameraeditor.CameraEditorState());
   }
   #end
@@ -169,6 +182,7 @@ class DebugMenuSubState extends MusicBeatSubState
   #if sys
   function openLogFolder()
   {
+    hasSelected = true;
     FileUtil.openFolder(CrashHandler.LOG_FOLDER);
   }
   #end
