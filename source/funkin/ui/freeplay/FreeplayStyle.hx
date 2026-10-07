@@ -47,7 +47,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getBgAssetKey():String
   {
-    return _data?.bgAsset ?? "ui/freeplay/backgrounds/bf/week1";
+    return funkin.assets.Paths.formatRelative(_data?.bgAsset ?? "ui/freeplay/backgrounds/bf/week1", 'ui/freeplay/styles/$id', Constants.EXT_IMAGE);
   }
 
   /**
@@ -56,7 +56,11 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getSelectorAssetKey():String
   {
-    return _data?.selectorAsset ?? "ui/freeplay/interface/difficulty-selector";
+    return funkin.assets.Paths.formatRelative(
+      _data?.selectorAsset ?? "ui/freeplay/interface/difficulty-selector",
+      'ui/freeplay/styles/$id',
+      Constants.EXT_IMAGE
+    );
   }
 
   /**
@@ -65,7 +69,11 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getCapsuleAssetKey():String
   {
-    return _data?.capsuleAsset ?? "ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf";
+    return funkin.assets.Paths.formatRelative(
+      _data?.capsuleAsset ?? "ui/freeplay/interface/freeplay-capsule/capsule/capsule-bf",
+      'ui/freeplay/styles/$id',
+      Constants.EXT_IMAGE
+    );
   }
 
   /**
@@ -74,7 +82,7 @@ class FreeplayStyle implements IRegistryEntry<FreeplayStyleData>
    */
   public function getNumbersAssetKey():String
   {
-    return _data?.numbersAsset ?? "digital_numbers";
+    return funkin.assets.Paths.formatRelative(_data?.numbersAsset ?? "ui/freeplay/styles/bf/digital-numbers", 'ui/freeplay/styles/$id', Constants.EXT_IMAGE);
   }
 
   /**

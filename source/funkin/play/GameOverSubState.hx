@@ -695,7 +695,7 @@ class GameOverSubState extends MusicBeatSubState
     final playerID:String = PlayerRegistry.instance.getCharacterOwnerId(boyfriend?.characterId) ?? 'bf';
 
     final audioPath:String = 'gameplay/playable-characters/$playerID/game-over/$location';
-    return audioPath;
+    return funkin.assets.Paths.formatRelative(audioPath, 'gameplay/playable-characters/$playerID/game-over', Constants.EXT_SOUND);
   }
 
   /**

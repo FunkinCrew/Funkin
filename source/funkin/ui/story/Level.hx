@@ -141,7 +141,8 @@ class Level implements IRegistryEntry<LevelData>
     if (!background.startsWith('#'))
     {
       // Image specified
-      return new FunkinSprite().loadTexture(background);
+      var bgPath:String = funkin.assets.Paths.formatRelative(background, 'ui/story-mode/levels', Constants.EXT_IMAGE);
+      return new FunkinSprite().loadTexture(bgPath);
     }
 
     // Color specified

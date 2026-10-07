@@ -47,8 +47,10 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
     var textureList:Array<FlxAtlasFrames> = [];
     var addedAssetPaths:Array<String> = [];
 
-    var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
-    var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
+    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId');
+
+    var baseAssetLibrary:String = Paths.getLibrary(assetPath);
+    var baseAssetPath:String = Paths.stripLibrary(assetPath);
 
     var mainTexture:FlxAnimateFrames = Paths.getAnimateAtlas(baseAssetPath, baseAssetLibrary, cast _data.atlasSettings);
     textureList.push(mainTexture);
@@ -66,7 +68,8 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
       switch (animation.renderType)
       {
         case "sparrow":
-          var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(animation.assetPath);
+          var sparrowPath:String = funkin.assets.Paths.formatRelative(animation.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+          var subTexture:FlxAtlasFrames = Paths.getSparrowAtlas(sparrowPath);
           // If we don't do this, the unused textures will be removed as soon as they're loaded.
 
           if (subTexture == null)
@@ -89,8 +92,10 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
           if (!_usedAtlases.contains(subTexture)) _usedAtlases.push(subTexture);
         default:
-          var subAssetLibrary:String = Paths.getLibrary(animation.assetPath);
-          var subAssetPath:String = Paths.stripLibrary(animation.assetPath);
+          var atlasPath:String = funkin.assets.Paths.formatRelative(animation.assetPath, 'gameplay/characters/$characterId');
+
+          var subAssetLibrary:String = Paths.getLibrary(atlasPath);
+          var subAssetPath:String = Paths.stripLibrary(atlasPath);
 
           var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast animation.atlasSettings ?? _data.atlasSettings);
 

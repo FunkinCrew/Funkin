@@ -111,6 +111,43 @@ class Paths implements ConsoleClass
   }
 
   /**
+   * Format a path from a relative one into the absolute one.
+   * @param file The file path to format.
+   * @param start The path to use as a starting point.
+   * @param ext The optional file extension. Leave as empty to look for an Adobe Animate texture atlas.
+   * @return String
+   */
+  public static function formatRelative(file:String, start:String, ?ext:String):String
+  {
+    // Skip doing this if the relative path already exists.
+    if (ext == null && animateAtlas(file, false).exists())
+    {
+      return file;
+    }
+
+    if (ext != null && Paths.file(file, ext, false).exists())
+    {
+      return file;
+    }
+
+    // Trim the ending of `start` for every `../` of the file.
+    while (file.startsWith('../'))
+    {
+      file = file.substring(3);
+
+      if (start.length == 0)
+      {
+        trace(' ERROR '.bold().error() + 'Path "$file" points to an asset outside of the game\'s scope!');
+        return file;
+      }
+
+      start = start.substring(0, start.lastIndexOf('/'));
+    }
+
+    return start + '/' + file;
+  }
+
+  /**
    * Constructs an asset path for an Adobe Animate texture atlas.
    *
    * @param path The path to the texture atlas, without extension
@@ -607,6 +644,8 @@ class AnimateAtlasAssetPathBuilder
    */
   public function imageExists():Bool
   {
+    if (this.image().length == 0) return false;
+
     for (image in this.image())
     {
       if (!image.exists())
@@ -623,6 +662,8 @@ class AnimateAtlasAssetPathBuilder
    */
   public function jsonExists():Bool
   {
+    if (this.json().length == 0) return false;
+
     for (json in this.json())
     {
       if (!json.exists())

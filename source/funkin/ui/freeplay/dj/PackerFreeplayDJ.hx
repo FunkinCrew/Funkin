@@ -25,7 +25,12 @@ class PackerFreeplayDJ extends BaseFreeplayDJ
 
   public function loadFrames():Void
   {
-    final tex:FlxFramesCollection = Paths.getPackerAtlas(playableCharData.getAssetPath());
+    var assetPath:String = funkin.assets.Paths.formatRelative(
+      playableCharData.getAssetPath(),
+      'gameplay/playable-characters/$characterId',
+      Constants.EXT_IMAGE
+    );
+    final tex:FlxFramesCollection = Paths.getPackerAtlas(assetPath);
     if (tex == null)
     {
       log('Could not load sparrow sprite: ' + playableCharData.getAssetPath());

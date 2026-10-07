@@ -33,7 +33,9 @@ class PackerCharacter extends BaseCharacter
   {
     trace('Loading assets for Packer character "${characterId}"');
 
-    var tex:FlxFramesCollection = Paths.getPackerAtlas(_data.assetPath);
+    var assetPath:String = funkin.assets.Paths.formatRelative(_data.assetPath, 'gameplay/characters/$characterId', Constants.EXT_IMAGE);
+
+    var tex:FlxFramesCollection = Paths.getPackerAtlas(assetPath);
     if (tex == null)
     {
       trace('Could not load Packer sprite: ${_data.assetPath}');
